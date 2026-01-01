@@ -1,6 +1,348 @@
 # New entries at the top, use proper SemVer!
 
-### Version 6.17.0  Dec 31, 2025
+### Version 6.19.2  Jan 1, 2026
+
+- **Move DatasetViewer access to navigation misc dropdown** (Author: Claude Sonnet 4)
+  - **What**: Removed the dataset button from the RE-ARC page header; added a “DatasetViewer” link to the Misc dropdown in AppNavigation pointing to `/re-arc/dataset`.
+  - **Why**: Collaborator requested a cleaner RE-ARC landing page while keeping dataset viewing available for any dataset, not just RE-ARC.
+  - **How**:
+    - `ReArc.tsx`: removed remaining button import so header stays minimal
+    - `AppNavigation.tsx`: added Misc link to `/re-arc/dataset` labeled “DatasetViewer” with Database icon and a generic dataset description
+
+### Version 6.19.1  Jan 1, 2026
+
+- **RE-ARC UI Cleanup and Chart Fix** (Author: Claude Sonnet 4)
+  - **What**: Removed "View submissions" and "Official scoring" buttons from RE-ARC page header; fixed efficiency chart Y-axis scaling from 111% to 100%.
+  - **Why**: Collaborator feedback requested cleaner RE-ARC page matching original design. The efficiency chart's dynamic Y-axis with 10% padding was showing 111% max which is misleading since no score can exceed 100%.
+  - **How**:
+    - Removed button group containing "View submissions", "Official scoring", and "View dataset" links from `ReArc.tsx` header
+    - Changed `EfficiencyPlot.tsx` Y-axis domain from dynamic `[0, Math.ceil(maxScore * 1.1)]` to fixed `[0, 100]`
+    - Routes remain intact at `/re-arc/submissions` and `/scoring` - only UI buttons removed
+  - **Files changed**:
+    - `client/src/pages/ReArc.tsx` - Removed button group, removed unused Link import
+    - `client/src/components/rearc/EfficiencyPlot.tsx` - Fixed Y-axis to 0-100%
+
+### Version 6.19.0  Jan 1, 2026
+
+- **BYOK Enforcement for ARC3 Agent Playground and Grover Controller** (Author: Claude Sonnet 4)
+  - **What**: Extended Bring Your Own Key (BYOK) enforcement to ARC3 Agent Playground and Grover iterative solver endpoints. Production environment now requires user-provided API keys for all model-calling features.
+  - **Why**: The BYOK system was implemented for Poetiq solver, Worm Arena, and Puzzle Examiner but was missing from ARC3 and Grover endpoints, allowing unexplained API calls in production.
+  - **How**:
+    - **Backend**: Added `requiresUserApiKey()` validation to:
+      - `server/routes/arc3.ts`: `/api/arc3/stream/prepare` and `/api/arc3/real-game/run` endpoints
+      - `server/controllers/groverController.ts`: `analyze` and `streamAnalyze` methods
+    - **Frontend**: Added BYOK UI card to `ARC3AgentPlayground.tsx` with amber-themed styling matching existing BYOK patterns
+    - **Hook**: Updated `useArc3AgentStream.ts` to accept and pass `apiKey` in `Arc3AgentOptions`
+    - All endpoints return 400 with clear message: "Production requires your API key. Your key is used for this session only and is never stored."
+  - **Files changed**:
+    - `server/routes/arc3.ts` - Added BYOK validation and apiKey to schemas
+    - `server/controllers/groverController.ts` - Added BYOK validation to both methods
+    - `client/src/pages/ARC3AgentPlayground.tsx` - Added BYOK UI card and validation
+    - `client/src/hooks/useArc3AgentStream.ts` - Added apiKey to options interface and API calls
+  - **BYOK Coverage Summary**: All model-calling endpoints now enforce BYOK in production:
+    - Puzzle Examiner (stream analysis)
+    - Poetiq solver
+    - Worm Arena / SnakeBench
+    - ARC3 Agent Playground (NEW)
+    - Grover iterative solver (NEW)
+
+### Version 6.18.9  Jan 1, 2026
+
+- **Document Official ARC-AGI scoring.py as Source of Truth** (Author: Claude Sonnet 4)
+  - **What**: Established `arc-agi-benchmarking/src/arc_agi_benchmarking/scoring/scoring.py` as the authoritative reference for all ARC-AGI scoring logic. Fixed undefined variable bug in leaderboard submission. Updated terminology from "test pairs" to "test cases" for clarity.
+  - **Why**: The official Python scoring implementation is the single source of truth. Users and developers need clear documentation linking to it. The Python code uses legacy naming (`num_pairs`) that refers to test cases (each with 2 attempts), which was causing terminology confusion.
+  - **How**:
+    - **Bug fix**: Fixed undefined `totalPairs`/`solvedPairs` variables in `reArcController.ts:submitToLeaderboard()` - now correctly uses `totalTestCases`/`solvedTestCases`
+    - **Terminology update**: Renamed `EvaluationResult.solvedPairs` to `solvedTestCases` in `reArcService.ts` for clarity (DB columns retain "pairs" for backwards compatibility)
+    - **Frontend**: Added "Official scoring" button to RE-ARC landing page header linking to `/scoring` page
+    - **Scoring page**: Added expandable Accordion in `UnionAccuracyExplainers.tsx` displaying official Python `score_task()` implementation with explanatory notes
+    - **Documentation**: Updated CLAUDE.md Section 6 and AGENTS.md Section 10 to explicitly reference `scoring.py` as source of truth with terminology notes
+  - **Official Scoring Reference**: `arc-agi-benchmarking/src/arc_agi_benchmarking/scoring/scoring.py:36-125` (ARCScorer.score_task method)
+  - **Files changed**:
+    - `server/controllers/reArcController.ts` - Fixed undefined vars, added terminology comments
+    - `server/services/reArc/reArcService.ts` - Renamed `solvedPairs` to `solvedTestCases` in type and implementation
+    - `client/src/pages/ReArc.tsx` - Added "Official scoring" button in header
+    - `client/src/components/huggingFaceUnionAccuracy/UnionAccuracyExplainers.tsx` - Added official Python code Accordion
+    - `CLAUDE.md` - Added official scoring.py reference to Section 6
+    - `AGENTS.md` - Added official scoring.py reference to Section 10
+  - **Terminology clarification**: The official Python uses `num_pairs` to mean "test cases" (each with 2 attempts). Our TypeScript uses "testCases" for clarity, but DB columns retain "pairs" for backwards compatibility.
+
+### Version 6.18.8  Jan 1, 2026
+
+- **Critical Fix: RE-ARC Scoring Validation Bug** (Author: Claude Haiku 4.5)
+  - **What**: Fixed inaccurate `solvedPairs` metric calculation in RE-ARC submission scoring. The validator was using `Math.round(score * totalPairs)` which caused rounding errors and mismatches between displayed pair counts and actual correctness.
+  - **Why**: The overall submission score is the average of task scores (not the overall pair ratio), so multiplying back and rounding resulted in incorrect pair counts. This could differ from the true count of pairs that matched the ground truth.
+  - **How**:
+    - Modified `scoreTask()` function to return both `{ score, solvedCount }` instead of just the score ratio.
+    - Updated `evaluateSubmission()` to accumulate the actual count of solved pairs during evaluation instead of calculating it afterward.
+    - Changed `EvaluationResult` type to include `solvedPairs: number` in the score result.
+    - Updated `reArcController.submitToLeaderboard()` to use the returned `solvedPairs` value directly instead of recalculating with rounding.
+  - **Files changed**: `server/services/reArc/reArcService.ts`, `server/controllers/reArcController.ts`
+  - **Impact**: Users now see accurate `Pairs: X/Y` metrics that reflect the true number of test pairs matching ground truth across all tasks.
+
+### Version 6.18.7  Jan 1, 2026
+
+- **GPT-5-Nano RE-ARC Solver with Corrected Submission Format** (Author: Claude Haiku 4.5)
+  - **What**: Created `scripts/solvers/rearc-gpt5-mini.ts`, a clean batch-processing RE-ARC solver using OpenAI's Responses API with GPT-5-nano and Conversations API for multi-turn state management. Fixed submission format to match validator requirements (no null grids, fallback `[[0]]` for unparseable attempts).
+  - **Why**: Needed a production-ready solver that correctly outputs RE-ARC submission format expected by the validator: `{ taskId: [{ attempt_1: Grid[], attempt_2: Grid[] }, ...] }` with both attempts as valid 2D arrays.
+  - **How**:
+    - Built two-phase batch execution: Phase 1 dispatches all 120 attempt-1s with 2-second spacing, Phase 2 chains all attempt-2s via Conversations API for context preservation.
+    - Implemented grid parsing with regex extraction and validation, using fallback grid `[[0]]` instead of null for unparseable attempts to satisfy validator schema.
+    - Updated types to use `Grid[]` instead of `(Grid | null)[]` to enforce type safety and ensure every submission element has valid arrays.
+    - Handles variable test case counts (1-5 per task) dynamically via `parseMultipleGrids(text, expectedCount)`.
+    - Configured reasoning: `high` effort with `auto` summary; `medium` text verbosity.
+    - Generates timestamped submission JSON files compatible with `/api/rearc/evaluate` and leaderboard submission endpoints.
+
+### Version 6.18.6  Jan 1, 2026
+
+- **RE-ARC Synthetic Dataset Viewer** (Author: Cascade (ChatGPT))
+  - **What**: Added `/re-arc/dataset` page for uploading and visualizing any RE-ARC dataset JSON. Purely client-side—no backend involved.
+  - **Why**: Users need to inspect their generated synthetic datasets visually, with grids rendered exactly like Puzzle Examiner.
+  - **How**:
+    - Rewrote `client/src/pages/ReArcDataset.tsx` as a drag-and-drop upload viewer using `PuzzleGridDisplay` for grid rendering.
+    - Accordion-style task list with expand/collapse all, search by task ID, and summary stats.
+    - Removed unused backend endpoint, hook, and card component that were incorrectly scoped.
+
+### Version 6.18.5  Dec 31, 2025
+
+- **ARC3 Claude Code SDK Banner** (Author: Cascade (ChatGPT))
+  - **What**: Added a Claude Code SDK highlight banner to the ARC3 landing page with updated metadata header.
+  - **Why**: Surfaces Anthropic's official ARC3 partner template so visitors can quickly access the Claude Code SDK resources.
+  - **How**:
+    - Updated `client/src/pages/ARC3Browser.tsx` header metadata and layout to inject a gradient card linking to https://docs.arcprize.org/partner_templates/anthropic.
+    - Styled the banner using existing shadcn primitives and Lucide Sparkles icon so it feels native to the page while remaining prominent.
+
+### Version 6.18.4  Dec 31, 2025
+
+- **OpenAI Native RE-ARC Solver** (Author: Cascade (ChatGPT))
+  - **What**: Added `scripts/solvers/rearc-openai-solver.ts`, a checkpoint-aware solver that drives `REARC2026.json` using OpenAI's `gpt-5.1-codex-mini` via the Responses API. Includes CLI flags, adaptive backoff, failure taxonomy, and deterministic submission exports.
+  - **Why**: Needed a first-party solver that talks to OpenAI directly (no OpenRouter) so researchers can evaluate GPT-5-class models on RE-ARC tasks.
+  - **How**:
+    - Created `docs/plans/2025-12-31-openai-native-solver-plan.md` outlining scope/objectives.
+    - Ported ReArcFS queue/checkpoint architecture to the new script, swapping in OpenAI SDK usage, dual attempt temperatures, and response parsing helpers.
+    - Emitted detailed run summaries plus timestamped submission artifacts for benchmarking parity.
+
+### Version 6.18.3  Dec 31, 2025
+
+- **RE-ARC Submissions: Remove Competitive Framing, Auto-Save Evaluations** (Author: Claude Opus 4.5)
+  - **What**: Renamed "leaderboard" to "submissions", removed public promotion, auto-save all evaluations
+  - **Why**: Previous framing was too competitive; submissions page exists for reference but is not advertised
+  - **How**:
+    - **File/Route Rename**: `ReArcLeaderboard.tsx` -> `ReArcSubmissions.tsx`, route `/re-arc/leaderboard` -> `/re-arc/submissions`
+    - **Removed public link**: No longer linking to submissions page from main RE-ARC page
+    - **Auto-save evaluations**: All evaluations with score > 0 are automatically saved (no opt-in UI)
+    - **Optional label input**: Understated input field for users to label their submissions (for their own reference)
+    - **Language cleanup**: Removed all "community" and competitive language from disclaimer and UI
+    - **Code cleanup in EvaluationSection.tsx**:
+      - Removed unused `handleSubmitToLeaderboard` function
+      - Removed unused `isSubmitting` and `currentSubmission` state
+      - Removed unused `Link` and `ExternalLink` imports
+      - Fixed solverName closure issue using ref
+  - **Files Modified**:
+    - `client/src/pages/ReArcSubmissions.tsx` (renamed from ReArcLeaderboard.tsx): Updated function name, removed subtitle, updated disclaimer to factual language
+    - `client/src/App.tsx`: Updated import and route
+    - `client/src/pages/ReArc.tsx`: Removed "View Submissions" button and unused imports
+    - `client/src/components/rearc/EvaluationSection.tsx`: Auto-save, optional label input, dead code removal, closure fix
+
+### Version 6.18.2  Dec 31, 2025
+
+- **RE-ARC Submission Board: Non-Competitive Redesign** (Author: Claude Haiku 4.5)
+  - **What**: Reframed as exploratory "submission board" and removed all competitive imagery to emphasize research and transparency over competition
+  - **Why**: Design inadvertently suggested competitive ranking; intent is community exploration and research, not competition
+  - **How**:
+    - **Terminology shift**: "RE-ARC Leaderboard" → "RE-ARC Submissions"; "RE-ARC solver results" → "Community solver results"; "About This Leaderboard" → "About These Submissions"
+    - **Removed all competitive imagery and language**:
+      - Removed Trophy icon from page header
+      - Removed Medal icons for rank 1/2/3; now shows plain rank numbers
+      - Removed Trophy icon from "Highest Score" sort option
+      - Removed Trophy icon from empty state message
+      - Removed references to "rankings" and "competitive" framing
+    - **UI clarity improvements**:
+      - Removed redundant "View:" label from view toggle
+      - Conditional display: "Sort by" dropdown now only shows in table view (not efficiency plot)
+      - Added elapsed time explanation in both views
+      - **Comprehensive "About These Submissions" disclaimer** (amber-styled):
+        - Key limitations section explicitly stating: "not reliable, not fair, and not legitimate"
+        - Clear statement: "for community analysis and fun only"
+        - "Why This Board Has These Limitations" section explaining:
+          - No verification infrastructure; self-reported submissions prone to errors or misrepresentation
+          - Unfair comparison due to different computational resources, optimization budgets, code maturity
+          - No legitimacy guarantees; impossible to verify honesty or correct dataset usage
+          - Community-driven exploratory effort, not official competition
+        - Guidance: Use for learning and fun, not for real-world decisions or quality conclusions
+    - **Efficiency Plot improvements**:
+      - Removed confusing "Submissions" legend dot
+      - Removed quadrant interpretation boxes (assumed data viz literacy)
+      - Implemented log scale for X-axis with 5-minute minimum
+      - Implemented dynamic Y-axis scaling to highest score
+      - Added explanations of log scale and elapsed time
+  - **Terminology updates across codebase**:
+    - Changed all references from "leaderboard" to "submission board" or "submissions" in user-facing text
+    - Updated button labels and success messages to use non-competitive language
+    - Updated component documentation/comments for consistency
+  - **Files Modified**:
+    - `client/src/pages/ReArcLeaderboard.tsx`: Removed Trophy/Medal imports and icons, updated PURPOSE comment, changed page title/subtitle, consolidated disclaimer text, removed duplicate content, made sort controls conditional, added explanations
+    - `client/src/pages/ReArc.tsx`: Changed "Leaderboard" button to "View Submissions"
+    - `client/src/components/rearc/EvaluationSection.tsx`: Updated PURPOSE comment, changed success message from "Submitted to leaderboard!" to "Submission added to board!", updated link text to "View submissions"
+    - `client/src/components/rearc/EfficiencyPlot.tsx`: Removed Legend component and interpretation boxes, implemented log/dynamic axes
+
+### Version 6.18.1  Dec 31, 2025
+
+- **RE-ARC UI Refinement: Analysis-First Leaderboard** (Author: Claude Haiku 4.5)
+  - Removed non-official metrics: Pairs, Verified, Tasks columns (not in ARC-AGI Prize scoring)
+  - Kept official metrics: Score, Time, Date
+  - File dropper always visible, disabled/greyed during evaluation
+  - Moved matching submissions note into Submit to Leaderboard card
+  - Added leaderboard intention copy: "community analysis and just-for-fun benchmarking"
+  - Fixed tooltips: Tasks (clarified scoring), added Time explanation
+  - Default leaderboard view: changed from table to Efficiency plot
+  - Removed bottom info section (explanations consolidated to main page)
+  - **Files Modified**: `client/src/components/rearc/EvaluationSection.tsx`, `client/src/pages/ReArcLeaderboard.tsx`
+
+
+### Version 6.18.0  Dec 31, 2025
+
+- **RE-ARC Leaderboard Opt-In UX Redesign** (Author: Claude Opus 4.5)
+  - **Core Changes**: Made leaderboard submission explicitly opt-in AFTER seeing evaluation results
+  - **UX Flow**:
+    - Old: Enter name upfront → Upload → Auto-submit to leaderboard
+    - New: Upload → See score → If score > 0%, optional "Submit to Leaderboard" card appears
+  - **Removed Trophy Icons**: Eliminated competitive imagery for neutral benchmarking experience
+    - Removed from leaderboard button in main page (client/src/pages/ReArc.tsx:55)
+    - Removed from evaluation section header (client/src/components/rearc/EvaluationSection.tsx:554)
+    - Removed "Added to leaderboard!" trophy icon
+  - **Backend Split**:
+    - `POST /api/rearc/evaluate` - Now ONLY evaluates, does NOT save to leaderboard
+    - `POST /api/rearc/submit` - NEW endpoint for opt-in leaderboard submission (server/controllers/reArcController.ts:400-485)
+  - **Opt-In UI**: New card component appears after successful evaluation when score > 0%
+    - Name input with shuffle button (appears post-evaluation, not upfront)
+    - "Submit to Leaderboard" button with loading state
+    - Success confirmation with leaderboard link
+  - **Cache Performance**: Submit endpoint re-evaluates submission (cache hit for fast response)
+  - **Files Modified**:
+    - `client/src/pages/ReArc.tsx` (line 55): Removed Trophy icon from leaderboard button
+    - `client/src/components/rearc/EvaluationSection.tsx` (lines 19, 93-104, 106-132, 285-286, 442-512, 554-557): Removed upfront name input, added opt-in submission UI
+    - `server/controllers/reArcController.ts` (lines 160-237, 388-485): Split evaluate/submit endpoints
+    - `server/routes.ts` (line 315): Added submit route
+  - **Build Status**: All TypeScript checks passing
+
+### Version 6.17.3  Dec 31, 2025
+
+- **RE-ARC Leaderboard Bug Fix & Scoring Clarifications** (Author: Claude Opus 4.5)
+  - **Bug Fixes**:
+    - Fixed Tasks column showing "/120" with no actual value - `tasksSolved` was missing from API response
+    - Fixed Time column showing "NaNd NaNh" - `elapsedMs` and `generatedAt` were missing from API response
+    - Root cause: Controller response mapping at `server/controllers/reArcController.ts:476-492` was not including
+      three fields that the repository already calculated correctly
+  - **Scoring Clarification UI**:
+    - Added tooltip on "Tasks" column header explaining: fully solved tasks (all test pairs correct)
+    - Added tooltip on "Pairs" column header explaining: each task has 1-3 test pairs, partial solves contribute
+    - Added "Tasks vs Pairs" explanation in info section clarifying the scoring relationship
+    - Key insight for users: ARC tasks can have 1-3 test pairs; solving 1/3 pairs = 33% task score, not a full solve
+  - **Files Modified**:
+    - `server/controllers/reArcController.ts` (line 484, 488-489): Added `tasksSolved`, `generatedAt`, `elapsedMs` to response
+    - `client/src/pages/ReArcLeaderboard.tsx` (lines 33-38, 238-267, 344-349): Added Tooltip imports, column tooltips, info text
+  - **Build Status**: All changes compile successfully
+
+### Version 6.17.2  Dec 31, 2025
+
+- **RE-ARC Efficiency Visualization** (Author: Claude Sonnet 4.5)
+  - **Core Features**:
+    - Elapsed time tracking: calculates time from dataset generation to submission evaluation
+    - Scatter plot visualization: score vs elapsed time showing solver efficiency patterns
+    - View toggle: switch between traditional table view and efficiency plot
+    - Interactive tooltips: hover over plot points to see detailed submission info
+  - **Backend Changes**:
+    - `server/repositories/ReArcRepository.ts` (lines 57-68, 290-337):
+      - Added `generatedAt: Date` field to `LeaderboardEntry` interface (derived from seed_id Unix timestamp)
+      - Added `elapsedMs: number` field to `LeaderboardEntry` interface (calculated as evaluated_at - generated_at)
+      - Updated SQL query to convert seed_id to timestamp: `to_timestamp(d.seed_id::bigint) as generated_at`
+      - Calculate elapsed time in milliseconds during result mapping
+  - **Frontend Components**:
+    - New `client/src/components/rearc/EfficiencyPlot.tsx` - Scatter plot component using recharts:
+      - X-axis: Elapsed time in minutes
+      - Y-axis: Score as percentage (0-100%)
+      - Custom tooltips showing solver name, score, time, tasks solved, and pairs solved
+      - Quadrant interpretation guide (top-left = efficient, top-right = thorough but slow, etc.)
+      - Styled with shadcn/ui theming for consistency
+    - Updated `client/src/pages/ReArcLeaderboard.tsx`:
+      - Added `generatedAt` and `elapsedMs` to `LeaderboardEntry` interface (lines 46-47)
+      - New `formatElapsedTime()` helper function (lines 66-76) with human-readable formatting (< 1s, Xs, Xm Ys, Xh Ym, Xd Yh)
+      - Added "Time" column to leaderboard table showing formatted elapsed time (line 208, 235-237)
+      - View toggle buttons with Table/Efficiency options using Lucide icons (lines 131-154)
+      - Conditional rendering: table view shows paginated rankings, plot view shows scatter chart (lines 230-324)
+      - Dynamic card header/description based on active view
+  - **Visualization Insights**:
+    - Top-left quadrant: High score + fast time = ideal efficient solver
+    - Top-right quadrant: High score + slow time = thorough but slow approach
+    - Bottom-left quadrant: Low score + fast time = quick but ineffective
+    - Bottom-right quadrant: Low score + slow time = struggling solver
+  - **Technical Implementation**:
+    - No database migrations required: seed_id already stored as Unix timestamp
+    - Elapsed time calculated from existing timestamps (generation time embedded in seed_id)
+    - Recharts already installed as dependency (confirmed via package.json)
+    - Fully type-safe with TypeScript interfaces
+  - **Files Modified**: 3 files, +~250 insertions
+    - Modified: `server/repositories/ReArcRepository.ts` (added fields to interface and query)
+    - Modified: `client/src/pages/ReArcLeaderboard.tsx` (added view toggle and elapsed time column)
+    - New file: `client/src/components/rearc/EfficiencyPlot.tsx` (scatter plot component)
+  - **Build Status**: All builds passing, no TypeScript errors
+
+### Version 6.17.1  Dec 31, 2025
+
+- **RE-ARC Result Persistence & Public Leaderboard** (Author: Claude Haiku 4.5)
+  - **Core Features**:
+    - Leaderboard persistence: all evaluations automatically saved with solver name
+    - Public leaderboard with multi-sort support (by score, latest, most verified)
+    - Submission verification: identical submissions trigger match detection via SHA-256 hashing
+    - Two distinct user flows: "Evaluate Your Own Solution" (saves) vs "Verify Someone Else's" (checks only)
+    - Anonymous submissions: no login required, just solver name (with optional auto-generation)
+    - Verification tracking: external uploads increment verification_count on matching submissions
+  - **Backend Architecture**:
+    - `server/repositories/ReArcRepository.ts` - Domain repository with SRP methods for leaderboard operations
+    - `server/utils/submissionHash.ts` - Deterministic SHA-256 hashing of submission JSON (sorted keys, no whitespace)
+    - `server/utils/nameGenerator.ts` - Fun random name generation (adjectives + animals) with input validation
+    - `server/repositories/database/DatabaseSchema.ts` - New tables: `rearc_datasets`, `rearc_submissions` with verification tracking
+    - **Three New Endpoints**:
+      - `POST /api/rearc/evaluate` - Evaluate submission, save to leaderboard, find matching entries
+      - `POST /api/rearc/verify` - Verify someone else's submission, increment verification_count on matches (no save)
+      - `GET /api/rearc/leaderboard?sort=score&limit=25&offset=0` - Paginated leaderboard with sorting
+      - `GET /api/rearc/submissions/:id` - Submission detail view with matching entries
+  - **Frontend Components**:
+    - Updated `client/src/components/rearc/EvaluationSection.tsx` - Solver name input with shuffle button for auto-generation
+    - New `client/src/pages/ReArcLeaderboard.tsx` - Full leaderboard page with table, medals for top 3, verification badges
+    - Updated `client/src/pages/ReArc.tsx` - Added "Leaderboard" button in header linking to `/re-arc/leaderboard`
+    - Updated `client/src/App.tsx` - New route for leaderboard page
+  - **Database Schema** (`rearc_submissions` table):
+    - `solver_name` - User-provided or auto-generated name (255 chars max)
+    - `submission_hash` - SHA-256 hash of normalized JSON (indexed for duplicate detection)
+    - `score`, `solved_pairs`, `total_pairs` - Evaluation results
+    - `verification_count` - Tracks how many times this submission was verified by others
+    - `pair_results` - JSONB for detailed per-pair correctness data
+    - Indexes on: hash, score (DESC), evaluated_at (DESC), solver_name, rearc_dataset_id
+  - **Updated API Event Format**:
+    - SSE completion event now includes `submissionId` and `matchingSubmissions` array
+    - Matching entries show id, solverName, score, and evaluatedAt timestamp
+    - Allows frontend to display verification warnings immediately on evaluation
+  - **UX Enhancements**:
+    - Success screen shows "Added to leaderboard!" with link to view rankings
+    - Yellow warning box displays matching submissions if hash collision detected
+    - Leaderboard shows rank with medal icons for gold/silver/bronze
+    - Verification count displayed as shield badge
+    - 25 entries per page with Previous/Next pagination
+    - Sort dropdown with Trophy/Clock/Shield icons for visual clarity
+  - **Files Modified**: 11 files, +~1200 insertions
+    - New files: ReArcRepository.ts, submissionHash.ts, nameGenerator.ts, ReArcLeaderboard.tsx
+    - Modified: DatabaseSchema.ts, reArcController.ts, EvaluationSection.tsx, ReArc.tsx, App.tsx, routes.ts, shared/types.ts
+  - **Implementation Notes**:
+    - Hashing uses deterministic JSON.stringify with sorted task IDs for consistent matching
+    - Verification flow doesn't save to leaderboard but increments verification_count on matches
+    - No authentication: "anyone can upload anyone else's submission to verify they're being truthful" (credit: conundrumer)
+    - Both evaluate and verify flows find and report matching entries for transparency
+  - **Special Thanks**:
+    - Credit to [conundrumer](https://github.com/conundrumer) for creating RE-ARC and the core concept of verification-by-submission
+
+### Version 6.17.0  Dec 30, 2025 21:43
 
 - **RE-ARC Bench: Self-Service Dataset Generation and Evaluation Platform** (Author: Claude Sonnet 4.5, integration by Claude Haiku 4.5)
   - **Core Features**:

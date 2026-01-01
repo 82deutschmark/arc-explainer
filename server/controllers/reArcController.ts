@@ -1,22 +1,45 @@
 /**
  * RE-ARC Dataset Generation and Evaluation Controller
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-27
- * PURPOSE: HTTP/SSE endpoints for RE-ARC dataset generation and evaluation.
+ * Author: Cascade (Claude Sonnet 4)
+ * Date: 2026-01-01
+ * PURPOSE: HTTP/SSE endpoints for RE-ARC dataset generation, evaluation, verification, and leaderboard.
  *          Generation streams JSON as chunked download, evaluation streams progress via SSE.
- * SRP/DRY check: Pass - Single responsibility: RE-ARC HTTP API
+ *          Scoring follows official ARC-AGI Python implementation (scoring.py).
+ * SRP/DRY check: Pass - Single responsibility: RE-ARC HTTP API surface
  */
 
 import type { Request, Response } from 'express';
 import { createGzip, constants } from 'zlib';
 import { pipeline } from 'stream/promises';
 import { Readable } from 'stream';
-import { generateDataset, evaluateSubmission } from '../services/reArc/reArcService';
-import type { ARCSubmission, ReArcSSEEvent } from '../../shared/types';
-import { logger } from '../utils/logger';
-import { formatResponse } from '../utils/responseFormatter';
-import { sendSSEEvent } from '../utils/sseHelpers';
+import { generateDataset, evaluateSubmission } from '../services/reArc/reArcService.ts';
+import { decodeTaskIds } from '../utils/reArcCodec.ts';
+import { computeSubmissionHash } from '../utils/submissionHash.ts';
+import { sanitizeSolverName } from '../utils/nameGenerator.ts';
+import { reArcRepository } from '../repositories/ReArcRepository.ts';
+import type { ARCSubmission, ReArcSSEEvent } from '../../shared/types.ts';
+import { logger } from '../utils/logger.ts';
+import { formatResponse } from '../utils/responseFormatter.ts';
+import { sendSSEEvent } from '../utils/sseHelpers.ts';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+interface EvaluateRequestBody {
+  submission: ARCSubmission;
+  solverName?: string;
+  fileName?: string;
+}
+
+interface VerifyRequestBody {
+  submission: ARCSubmission;
+}
+
+// ============================================================================
+// Dataset Generation
+// ============================================================================
 
 /**
  * Generate RE-ARC dataset and stream as chunked JSON download.
@@ -87,78 +110,82 @@ export async function generate(_req: Request, res: Response): Promise<void> {
   }
 }
 
+// ============================================================================
+// Submission Validation Helper
+// ============================================================================
+
+/**
+ * Validate submission structure.
+ * Returns error message if invalid, null if valid.
+ */
+function validateSubmission(submission: any): string | null {
+  if (!submission || typeof submission !== 'object' || Object.keys(submission).length === 0) {
+    return 'Submission must be a non-empty object';
+  }
+
+  for (const [taskId, predictions] of Object.entries(submission)) {
+    if (!Array.isArray(predictions)) {
+      return `Task ${taskId}: predictions must be an array`;
+    }
+
+    for (let i = 0; i < (predictions as any[]).length; i++) {
+      const prediction = (predictions as any[])[i];
+      if (!prediction || typeof prediction !== 'object') {
+        return `Task ${taskId}: prediction ${i} must be an object`;
+      }
+
+      const { attempt_1, attempt_2 } = prediction;
+      if (!Array.isArray(attempt_1) || !Array.isArray(attempt_2)) {
+        return `Task ${taskId}: prediction ${i} must have attempt_1 and attempt_2 arrays`;
+      }
+
+      // Validate grids are 2D arrays
+      for (const [gridName, grid] of [['attempt_1', attempt_1], ['attempt_2', attempt_2]] as const) {
+        if (!Array.isArray(grid)) {
+          return `Task ${taskId}: prediction ${i} ${gridName} must be an array`;
+        }
+        for (let row = 0; row < grid.length; row++) {
+          if (!Array.isArray(grid[row])) {
+            return `Task ${taskId}: prediction ${i} ${gridName} row ${row} must be an array`;
+          }
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+// ============================================================================
+// Evaluate Submission (does NOT save to leaderboard)
+// ============================================================================
+
 /**
  * Evaluate submission against deterministically regenerated ground truth.
+ * Does NOT save to leaderboard - just returns the score.
+ * Use /api/rearc/submit to save to leaderboard after evaluation.
  * Streams progress events via SSE.
  *
  * POST /api/rearc/evaluate
- * Body: ARCSubmission JSON
+ * Body: { submission: ARCSubmission }
  * Response: SSE stream with progress and completion events
  *
  * Events:
  * - event: progress, data: { current: number, total: number }
- * - event: complete, data: { type: 'score', score: number } | { type: 'mismatches', mismatches: [...] } | { type: 'malformed' }
+ * - event: complete, data: { type: 'score', score } | ...
  */
 export async function evaluate(req: Request, res: Response): Promise<void> {
   const sendReArcEvent = (event: ReArcSSEEvent) => sendSSEEvent(res, event, { logger, forceFlush: true });
-  try {
-    const submission = req.body as ARCSubmission;
 
-    // Basic validation
-    if (!submission || typeof submission !== 'object' || Object.keys(submission).length === 0) {
-      res.status(400).json(formatResponse.error('INVALID_SUBMISSION', 'Submission must be a non-empty object'));
-      return;
-    }
+  try {
+    const body = req.body as { submission?: ARCSubmission };
+    const submission = body.submission || (body as unknown as ARCSubmission);
 
     // Validate submission structure
-    for (const [taskId, predictions] of Object.entries(submission)) {
-      if (!Array.isArray(predictions)) {
-        res.status(400).json(
-          formatResponse.error('INVALID_SUBMISSION', `Task ${taskId}: predictions must be an array`)
-        );
-        return;
-      }
-
-      for (let i = 0; i < predictions.length; i++) {
-        const prediction = predictions[i];
-        if (!prediction || typeof prediction !== 'object') {
-          res.status(400).json(
-            formatResponse.error('INVALID_SUBMISSION', `Task ${taskId}: prediction ${i} must be an object`)
-          );
-          return;
-        }
-
-        const { attempt_1, attempt_2 } = prediction;
-        if (!Array.isArray(attempt_1) || !Array.isArray(attempt_2)) {
-          res.status(400).json(
-            formatResponse.error(
-              'INVALID_SUBMISSION',
-              `Task ${taskId}: prediction ${i} must have attempt_1 and attempt_2 arrays`
-            )
-          );
-          return;
-        }
-
-        // Validate grids are 2D arrays
-        const validateGrid = (grid: any, gridName: string): boolean => {
-          if (!Array.isArray(grid)) return false;
-          for (let row = 0; row < grid.length; row++) {
-            if (!Array.isArray(grid[row])) {
-              res.status(400).json(
-                formatResponse.error(
-                  'INVALID_SUBMISSION',
-                  `Task ${taskId}: prediction ${i} ${gridName} row ${row} must be an array`
-                )
-              );
-              return false;
-            }
-          }
-          return true;
-        };
-
-        if (!validateGrid(attempt_1, 'attempt_1')) return;
-        if (!validateGrid(attempt_2, 'attempt_2')) return;
-      }
+    const validationError = validateSubmission(submission);
+    if (validationError) {
+      res.status(400).json(formatResponse.error('INVALID_SUBMISSION', validationError));
+      return;
     }
 
     logger.info(`[RE-ARC] Starting evaluation for ${Object.keys(submission).length} tasks`, 're-arc');
@@ -178,13 +205,8 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
         sendReArcEvent({ type: 'progress', data: progress });
       });
 
-      // Send completion event based on result type
-      // Note: Complete event format excludes taskIndex and error fields from EvaluationResult
-      if (result.type === 'score') {
-        sendReArcEvent({ type: 'complete', data: { type: 'score', score: result.score } });
-        logger.info(`[RE-ARC] Evaluation complete: score=${result.score.toFixed(4)}`, 're-arc');
-      } else if (result.type === 'mismatches') {
-        // Transform mismatches to exclude taskIndex from event data
+      // Handle non-score results
+      if (result.type === 'mismatches') {
         const mismatches = result.mismatches.map(({ taskId, expectedPredictions, submittedPredictions }) => ({
           taskId,
           expectedPredictions,
@@ -192,21 +214,36 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
         }));
         sendReArcEvent({ type: 'complete', data: { type: 'mismatches', mismatches } });
         logger.info(`[RE-ARC] Evaluation failed: ${result.mismatches.length} prediction count mismatches`, 're-arc');
-      } else {
+        return;
+      }
+
+      if (result.type === 'malformed') {
         sendReArcEvent({ type: 'complete', data: { type: 'malformed' } });
         logger.warn(`[RE-ARC] Evaluation failed: malformed submission - ${result.error}`, 're-arc');
+        return;
       }
+
+      // Success! Just return the score (don't save to leaderboard)
+      const score = result.score;
+
+      // Send completion event with score only
+      sendReArcEvent({
+        type: 'complete',
+        data: {
+          type: 'score',
+          score,
+        },
+      });
+      logger.info(`[RE-ARC] Evaluation complete: score=${score.toFixed(4)}`, 're-arc');
+
     } catch (evaluateErr) {
-      // Internal error during evaluation
       const errorMsg = evaluateErr instanceof Error ? evaluateErr.message : String(evaluateErr);
       logger.error(`[RE-ARC] Evaluation error: ${errorMsg}`, 're-arc');
 
-      // If headers haven't been sent yet, bubble up to send proper 500 response
       if (!res.headersSent) {
         throw evaluateErr;
       }
 
-      // SSE stream already started - send error event and end stream
       sendReArcEvent({ type: 'error', data: { message: 'Internal server error during evaluation' } });
     } finally {
       if (!res.writableEnded) {
@@ -222,5 +259,328 @@ export async function evaluate(req: Request, res: Response): Promise<void> {
     } else {
       res.end();
     }
+  }
+}
+
+// ============================================================================
+// Verify Someone Else's Submission (does NOT save)
+// ============================================================================
+
+/**
+ * Verify a submission against deterministically regenerated ground truth.
+ * Does NOT save to leaderboard - only checks score and finds matching entries.
+ * Streams progress events via SSE.
+ *
+ * POST /api/rearc/verify
+ * Body: { submission: ARCSubmission }
+ * Response: SSE stream with progress and completion events
+ */
+export async function verify(req: Request, res: Response): Promise<void> {
+  const sendReArcEvent = (event: ReArcSSEEvent) => sendSSEEvent(res, event, { logger, forceFlush: true });
+
+  try {
+    const body = req.body as VerifyRequestBody;
+    const submission = body.submission || (body as unknown as ARCSubmission);
+
+    // Validate submission structure
+    const validationError = validateSubmission(submission);
+    if (validationError) {
+      res.status(400).json(formatResponse.error('INVALID_SUBMISSION', validationError));
+      return;
+    }
+
+    logger.info(`[RE-ARC] Starting verification for ${Object.keys(submission).length} tasks`, 're-arc');
+
+    // Set up SSE connection
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    if (typeof res.flushHeaders === 'function') {
+      res.flushHeaders();
+    }
+
+    try {
+      // Run evaluation with progress callback
+      const result = await evaluateSubmission(submission, (progress) => {
+        sendReArcEvent({ type: 'progress', data: progress });
+      });
+
+      // Handle non-score results
+      if (result.type === 'mismatches') {
+        const mismatches = result.mismatches.map(({ taskId, expectedPredictions, submittedPredictions }) => ({
+          taskId,
+          expectedPredictions,
+          submittedPredictions,
+        }));
+        sendReArcEvent({ type: 'complete', data: { type: 'mismatches', mismatches } });
+        logger.info(`[RE-ARC] Verification failed: ${result.mismatches.length} prediction count mismatches`, 're-arc');
+        return;
+      }
+
+      if (result.type === 'malformed') {
+        sendReArcEvent({ type: 'complete', data: { type: 'malformed' } });
+        logger.warn(`[RE-ARC] Verification failed: malformed submission - ${result.error}`, 're-arc');
+        return;
+      }
+
+      // Success! Find matching submissions
+      const score = result.score;
+      const submissionHash = computeSubmissionHash(submission);
+      let matchingSubmissions: { id: number; solverName: string; score: number; evaluatedAt: Date }[] = [];
+
+      try {
+        matchingSubmissions = await reArcRepository.findMatchingSubmissions(submissionHash);
+
+        // Increment verification count for matching submissions
+        if (matchingSubmissions.length > 0) {
+          const matchingIds = matchingSubmissions.map(m => m.id);
+          await reArcRepository.incrementVerificationCount(matchingIds);
+          logger.info(`[RE-ARC] Verification matched ${matchingIds.length} submissions`, 're-arc');
+        }
+      } catch (dbErr) {
+        logger.error(`[RE-ARC] Failed to find matching submissions: ${dbErr instanceof Error ? dbErr.message : String(dbErr)}`, 're-arc');
+      }
+
+      // Send completion event (no submissionId since we don't save)
+      sendReArcEvent({
+        type: 'complete',
+        data: {
+          type: 'score',
+          score,
+        },
+      });
+      logger.info(`[RE-ARC] Verification complete: score=${score.toFixed(4)}, matches=${matchingSubmissions.length}`, 're-arc');
+
+    } catch (evaluateErr) {
+      const errorMsg = evaluateErr instanceof Error ? evaluateErr.message : String(evaluateErr);
+      logger.error(`[RE-ARC] Verification error: ${errorMsg}`, 're-arc');
+
+      if (!res.headersSent) {
+        throw evaluateErr;
+      }
+
+      sendReArcEvent({ type: 'error', data: { message: 'Internal server error during verification' } });
+    } finally {
+      if (!res.writableEnded) {
+        res.end();
+      }
+    }
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    logger.error(`[RE-ARC] Verify endpoint error: ${errorMsg}`, 're-arc');
+
+    if (!res.headersSent) {
+      res.status(500).json(formatResponse.error('VERIFICATION_FAILED', errorMsg));
+    } else {
+      res.end();
+    }
+  }
+}
+
+// ============================================================================
+// Submit to Leaderboard
+// ============================================================================
+
+/**
+ * Submit evaluated submission to leaderboard.
+ * Re-evaluates the submission (cache hit for fast response) and saves to leaderboard.
+ *
+ * POST /api/rearc/submit
+ * Body: { submission: ARCSubmission, solverName?: string }
+ * Response: { success: true, submissionId: number }
+ */
+export async function submitToLeaderboard(req: Request, res: Response): Promise<void> {
+  const startTime = Date.now();
+
+  try {
+    const body = req.body as { submission?: ARCSubmission; solverName?: string };
+    const submission = body.submission || (body as unknown as ARCSubmission);
+    const solverName = sanitizeSolverName(body.solverName);
+
+    // Validate submission structure
+    const validationError = validateSubmission(submission);
+    if (validationError) {
+      res.status(400).json(formatResponse.error('INVALID_SUBMISSION', validationError));
+      return;
+    }
+
+    logger.info(`[RE-ARC] Submitting to leaderboard for solver="${solverName}"`, 're-arc');
+
+    // Re-evaluate submission (should hit cache for fast response)
+    const result = await evaluateSubmission(submission);
+
+    // Handle non-score results
+    if (result.type === 'mismatches' || result.type === 'malformed') {
+      res.status(400).json(formatResponse.error('INVALID_SUBMISSION',
+        result.type === 'malformed' ? result.error : 'Prediction count mismatch'
+      ));
+      return;
+    }
+
+    // Get score, task scores, and actual solved test cases count
+    // NOTE: The Python scoring.py uses "num_pairs" to refer to test cases (each with 2 attempts).
+    // We use "testCases" terminology for clarity, but DB columns retain "pairs" for backwards compatibility.
+    const score = result.score;
+    const taskScores = result.taskScores;
+    const solvedTestCases = result.solvedTestCases;
+    const submissionHash = computeSubmissionHash(submission);
+    const evaluationDurationMs = Date.now() - startTime;
+
+    // Decode task IDs to get seedId and internalSeed
+    const pepper = process.env.RE_ARC_SEED_PEPPER;
+    if (!pepper) {
+      res.status(500).json(formatResponse.error('SERVER_CONFIG_ERROR', 'RE_ARC_SEED_PEPPER not configured'));
+      return;
+    }
+
+    let submissionId: number;
+    try {
+      const decoded = decodeTaskIds(Object.keys(submission), pepper);
+      const { seedId, internalSeed } = decoded;
+      const numTasks = Object.keys(submission).length;
+
+      // Calculate total test cases across all tasks
+      let totalTestCases = 0;
+      for (const predictions of Object.values(submission)) {
+        totalTestCases += predictions.length;
+      }
+
+      // Calculate tasks fully solved (where task score = 1.0 meaning all test cases in task are correct)
+      const tasksSolved = taskScores.filter(taskScore => taskScore === 1.0).length;
+
+      // Get or create dataset record
+      const datasetId = await reArcRepository.getOrCreateDataset(seedId, internalSeed, numTasks);
+
+      // Save submission to leaderboard
+      // NOTE: DB columns use "pairs" terminology for backwards compatibility,
+      // but these represent test cases (each with 2 attempts per official scoring.py)
+      submissionId = await reArcRepository.createSubmission({
+        solverName,
+        datasetId,
+        submissionHash,
+        totalPairs: totalTestCases,
+        solvedPairs: solvedTestCases,
+        tasksSolved,
+        score,
+        evaluationDurationMs,
+      });
+
+      logger.info(`[RE-ARC] Saved submission id=${submissionId}, score=${score.toFixed(4)}, solver="${solverName}"`, 're-arc');
+
+      res.json({ success: true, submissionId });
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      logger.error(`[RE-ARC] Failed to save submission: ${errorMsg}`, 're-arc');
+      res.status(500).json(formatResponse.error('SUBMISSION_FAILED', errorMsg));
+    }
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    logger.error(`[RE-ARC] Submit endpoint error: ${errorMsg}`, 're-arc');
+    res.status(500).json(formatResponse.error('SUBMISSION_FAILED', errorMsg));
+  }
+}
+
+// ============================================================================
+// Leaderboard
+// ============================================================================
+
+/**
+ * Get RE-ARC leaderboard with pagination and sorting.
+ *
+ * GET /api/rearc/leaderboard
+ * Query params:
+ *   - limit: number (default 100, max 500)
+ *   - offset: number (default 0)
+ *   - sort: 'score' | 'latest' | 'verified' (default 'score')
+ *   - seedId: number (optional, filter by dataset)
+ *
+ * Response: { submissions: [...], totalCount: number }
+ */
+export async function getLeaderboard(req: Request, res: Response): Promise<void> {
+  try {
+    const limit = Math.min(Math.max(1, parseInt(req.query.limit as string) || 100), 500);
+    const offset = Math.max(0, parseInt(req.query.offset as string) || 0);
+    const sort = (req.query.sort as 'score' | 'latest' | 'verified') || 'score';
+    const seedId = req.query.seedId ? parseInt(req.query.seedId as string) : undefined;
+
+    const { entries, totalCount } = await reArcRepository.getLeaderboard({
+      limit,
+      offset,
+      sort,
+      seedId,
+    });
+
+    res.json({
+      submissions: entries.map((entry, index) => ({
+        rank: offset + index + 1,
+        id: entry.id,
+        solverName: entry.solverName,
+        score: entry.score,
+        solvedPairs: entry.solvedPairs,
+        totalPairs: entry.totalPairs,
+        tasksSolved: entry.tasksSolved,
+        evaluatedAt: entry.evaluatedAt.toISOString(),
+        verificationCount: entry.verificationCount,
+        datasetSeedId: entry.datasetSeedId,
+        generatedAt: entry.generatedAt.toISOString(),
+        elapsedMs: entry.elapsedMs,
+      })),
+      totalCount,
+    });
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    logger.error(`[RE-ARC] Leaderboard error: ${errorMsg}`, 're-arc');
+    res.status(500).json(formatResponse.error('LEADERBOARD_FAILED', errorMsg));
+  }
+}
+
+/**
+ * Get submission details by ID.
+ *
+ * GET /api/rearc/submissions/:id
+ * Response: { submission: {...}, matchingSubmissions: [...], datasetSeedId: string }
+ */
+export async function getSubmissionDetails(req: Request, res: Response): Promise<void> {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      res.status(400).json(formatResponse.error('INVALID_ID', 'Submission ID must be a number'));
+      return;
+    }
+
+    const details = await reArcRepository.getSubmissionDetails(id);
+
+    if (!details.submission) {
+      res.status(404).json(formatResponse.error('NOT_FOUND', 'Submission not found'));
+      return;
+    }
+
+    const { submission, matchingSubmissions, datasetSeedId } = details;
+
+    res.json({
+      submission: {
+        id: submission.id,
+        solverName: submission.solver_name,
+        score: parseFloat(submission.score),
+        solvedPairs: submission.solved_pairs,
+        totalPairs: submission.total_pairs,
+        evaluatedAt: submission.evaluated_at.toISOString(),
+        verificationCount: submission.verification_count,
+        submissionHash: submission.submission_hash,
+        pairResults: submission.pair_results,
+      },
+      matchingSubmissions: matchingSubmissions.map(m => ({
+        id: m.id,
+        solverName: m.solverName,
+        score: m.score,
+        evaluatedAt: m.evaluatedAt.toISOString(),
+      })),
+      datasetSeedId,
+    });
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    logger.error(`[RE-ARC] Submission details error: ${errorMsg}`, 're-arc');
+    res.status(500).json(formatResponse.error('DETAILS_FAILED', errorMsg));
   }
 }

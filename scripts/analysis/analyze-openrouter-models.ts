@@ -18,12 +18,12 @@ dotenv.config();
 type SourceKey = 'ARC1-Eval' | 'ARC2-Eval';
 
 type ModelKey =
-  | 'moonshotai/kimi-k2-thinking'
-  | 'z-ai/glm-4.6v';
+  | 'xiaomi/mimo-v2-flash:free'
+  | 'mistralai/devstral-2512:free';
 
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 const SOURCES: SourceKey[] = ['ARC1-Eval', 'ARC2-Eval'];
-const MODEL_KEY: ModelKey = 'z-ai/glm-4.6v';
+const MODEL_KEY: ModelKey = 'mistralai/devstral-2512:free';
 
 // Hardcoded puzzle IDs for targeted runs (overrides source fetch when non-empty)
 // Retry batch: 5 failed from run 3 (server unavailable + 400 error)

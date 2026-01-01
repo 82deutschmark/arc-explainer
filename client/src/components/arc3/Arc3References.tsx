@@ -17,6 +17,12 @@ const references = [
     label: 'github.com/arcprize/ARC-AGI-3-Agents',
   },
   {
+    href: 'https://github.com/ThariqS/ARC-AGI-3-ClaudeCode-SDK',
+    title: 'ARC AGI 3 Benchmark with Claude Code',
+    description: 'Command-line interface for solving ARC AGI 3 (Abstraction and Reasoning Corpus) puzzles using Claude through the Claude Code terminal. Anthropic\'s first benchmark competitor.',
+    label: 'github.com/ThariqS/ARC-AGI-3-ClaudeCode-SDK',
+  },
+  {
     href: 'https://arcprize.org/arc-agi/3/',
     title: 'ARC-AGI-3 Official Announcement',
     description: 'Introduction to Interactive Reasoning Benchmarks and the ARC-AGI-3 format.',

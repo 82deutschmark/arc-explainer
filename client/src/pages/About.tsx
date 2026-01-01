@@ -1,9 +1,9 @@
 /**
  * Author: Cascade (OpenAI)
- * Date: 2025-11-11
- * PURPOSE: About page highlighting ARC Explainer story, community resources, and acknowledgements.
- * Integrates ReferenceMaterial component, community outreach, and updated gratitude messaging.
- * SRP/DRY check: Pass — dedicated to About content while reusing shared components.
+ * Date: 2025-12-30
+ * PURPOSE: About page describing ARC Explainer’s mission, accessibility goals, and key contributors,
+ * including the latest ReArc Bench spotlight content and curated references.
+ * SRP/DRY check: Pass — single-responsibility About view reusing shared components (revalidated 2025-12-30).
  */
 
 import React from 'react';
@@ -239,7 +239,7 @@ export default function About() {
               </div>
             </div>
 
-            {/* David Lu Contributor Spotlight */}
+            {/* ReArc Bench Contributor Spotlight */}
             <div className="relative border border-blue-500/50 rounded-lg p-5 bg-gradient-to-br from-blue-950/80 via-slate-950 to-cyan-950/80 backdrop-blur">
               <div className="absolute -top-3 -right-3">
                 <EmojiMosaicAccent
@@ -250,13 +250,14 @@ export default function About() {
                   framed
                 />
               </div>
-              <h3 className="text-lg font-bold text-blue-100 mb-3">First Major Contributor</h3>
+              <h3 className="text-lg font-bold text-blue-100 mb-3">ReArc Bench Spotlight</h3>
               <div className="space-y-3 text-sm">
-                <p className="text-blue-50 font-semibold">
-                  David Lu <span className="text-blue-200">@conundrumer</span>
+                <p className="text-blue-50 font-semibold">@conundrumer</p>
+                <p className="text-blue-100/90">
+                  ReArc Bench is the integrated lab where we spin up ARC-style evaluation sets, run solver submissions, and stream the scoring live without juggling separate tools. @conundrumer built the backend service, SSE plumbing, and UI glue so anyone in the community can generate fresh tasks and watch results roll in from one place.
                 </p>
                 <p className="text-blue-100/90">
-                  Created RE-ARC Bench—a complete self-service platform for generating unique ARC evaluation datasets and scoring solver submissions. This is the project&apos;s first major external contribution, bringing sophisticated cryptographic seed recovery, stateless verification, and real-time evaluation streaming to the platform.
+                  The focus is practicality: predictable runtimes, cache-aware reruns, and documentation that keeps the workflow approachable for hobbyists who just want to evaluate their ideas.
                 </p>
                 <a
                   href="https://github.com/conundrumer"
@@ -265,7 +266,7 @@ export default function About() {
                   className="inline-flex items-center gap-2 px-3 py-1 bg-blue-900/60 hover:bg-blue-800 rounded text-xs font-medium text-blue-200 transition-colors"
                 >
                   <Github className="h-3 w-3" />
-                  View David&apos;s GitHub
+                  Visit @conundrumer on GitHub
                 </a>
               </div>
             </div>
@@ -288,7 +289,7 @@ export default function About() {
                   tireless documentation, tooling, and personal encouragement.
                 </p>
                 <p>
-                  <span className="text-slate-300 font-semibold">David Lu (@conundrumer)</span> for RE-ARC Bench
+                  <span className="text-slate-300 font-semibold">@conundrumer</span> for ReArc Bench
                 </p>
                 <p>
                   <span className="text-slate-300 font-semibold">François Chollet</span> for creating ARC-AGI
