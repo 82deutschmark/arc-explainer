@@ -1,5 +1,28 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.7  Jan 1, 2026
+
+- **GPT-5-Nano RE-ARC Solver with Corrected Submission Format** (Author: Claude Haiku 4.5)
+  - **What**: Created `scripts/solvers/rearc-gpt5-mini.ts`, a clean batch-processing RE-ARC solver using OpenAI's Responses API with GPT-5-nano and Conversations API for multi-turn state management. Fixed submission format to match validator requirements (no null grids, fallback `[[0]]` for unparseable attempts).
+  - **Why**: Needed a production-ready solver that correctly outputs RE-ARC submission format expected by the validator: `{ taskId: [{ attempt_1: Grid[], attempt_2: Grid[] }, ...] }` with both attempts as valid 2D arrays.
+  - **How**:
+    - Built two-phase batch execution: Phase 1 dispatches all 120 attempt-1s with 2-second spacing, Phase 2 chains all attempt-2s via Conversations API for context preservation.
+    - Implemented grid parsing with regex extraction and validation, using fallback grid `[[0]]` instead of null for unparseable attempts to satisfy validator schema.
+    - Updated types to use `Grid[]` instead of `(Grid | null)[]` to enforce type safety and ensure every submission element has valid arrays.
+    - Handles variable test case counts (1-5 per task) dynamically via `parseMultipleGrids(text, expectedCount)`.
+    - Configured reasoning: `high` effort with `auto` summary; `medium` text verbosity.
+    - Generates timestamped submission JSON files compatible with `/api/rearc/evaluate` and leaderboard submission endpoints.
+
+### Version 6.18.6  Jan 1, 2026
+
+- **RE-ARC Dataset Viewer + API Docs** (Author: Cascade (ChatGPT))
+  - **What**: Added a `/re-arc/dataset` viewer route, navigation CTA from the RE-ARC landing page, and documented the public `/api/rearc/tasks` endpoint.
+  - **Why**: Researchers asked for an easy way to browse every RE-ARC 2026 task visually and to consume the dataset via a stable API.
+  - **How**:
+    - Updated `client/src/App.tsx` metadata and routing to include the new dataset page.
+    - Extended `client/src/pages/ReArc.tsx` header CTAs so visitors can jump directly to submissions or the dataset gallery.
+    - Documented the `GET /api/rearc/tasks` contract in `docs/reference/api/EXTERNAL_API.md`, highlighting response shape, caching, and usage notes.
+
 ### Version 6.18.5  Dec 31, 2025
 
 - **ARC3 Claude Code SDK Banner** (Author: Cascade (ChatGPT))
