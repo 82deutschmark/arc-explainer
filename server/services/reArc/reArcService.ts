@@ -328,7 +328,7 @@ export interface PredictionCountMismatch {
  * Evaluation result: score, mismatches, or malformed submission.
  */
 export type EvaluationResult =
-  | { type: 'score'; score: number; taskScores: number[] }
+  | { type: 'score'; score: number; taskScores: number[]; solvedPairs: number }
   | { type: 'mismatches'; mismatches: PredictionCountMismatch[] }
   | { type: 'malformed'; error: string };
 
@@ -496,6 +496,7 @@ export async function evaluateSubmission(
   // Step 3: Check cache for this seedId (public identifier)
   const cachedTestOutputs = __testOnly_datasetCache.get(seedId);
   let totalScore = 0;
+  let solvedPairs = 0;
   const taskScores: number[] = [];
   const mismatches: PredictionCountMismatch[] = [];
 
@@ -521,9 +522,10 @@ export async function evaluateSubmission(
       });
       taskScores.push(0); // Mismatch scores 0
     } else {
-      // Score this task
-      const taskScore = scoreTask(testPairs, submittedPredictions);
+      // Score this task and track actual solved pairs
+      const { score: taskScore, solvedCount } = scoreTask(testPairs, submittedPredictions);
       totalScore += taskScore;
+      solvedPairs += solvedCount;
       taskScores.push(taskScore);
     }
 
@@ -575,7 +577,7 @@ export async function evaluateSubmission(
   }
 
   const overallScore = totalScore / numTasks;
-  return { type: 'score', score: overallScore, taskScores };
+  return { type: 'score', score: overallScore, taskScores, solvedPairs };
 }
 
 /**
@@ -588,13 +590,13 @@ export async function evaluateSubmission(
  *
  * @param testPairs - Ground truth test pairs from dataset
  * @param predictions - Array of predictions from submission (must match testPairs.length)
- * @returns Task score between 0.0 and 1.0
+ * @returns Object with { score, solvedCount } where score is 0.0-1.0 and solvedCount is actual pair count
  */
 function scoreTask(
   testPairs: { output: number[][] }[],
   predictions: { attempt_1: number[][]; attempt_2: number[][] }[],
-): number {
-  if (testPairs.length === 0) return 0;
+): { score: number; solvedCount: number } {
+  if (testPairs.length === 0) return { score: 0, solvedCount: 0 };
 
   let solvedTestInputs = 0;
 
@@ -611,7 +613,10 @@ function scoreTask(
     }
   }
 
-  return solvedTestInputs / testPairs.length;
+  return {
+    score: solvedTestInputs / testPairs.length,
+    solvedCount: solvedTestInputs,
+  };
 }
 
 /**
