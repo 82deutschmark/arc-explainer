@@ -1,9 +1,9 @@
 /**
- * Author: Cascade
- * Date: 2025-12-20
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-01
  * PURPOSE: Client-side router for ARC Explainer.
- *          Updated to include Worm Arena rules/prompt transparency page.
- * SRP/DRY check: Pass - routing table only.
+ *          Keeps all route registrations, including the new RE-ARC dataset viewer path, in one place.
+ * SRP/DRY check: Pass — centralized routing table only.
  */
 
 import { Switch, Route } from "wouter";
@@ -58,6 +58,7 @@ import WormArenaSkillAnalysis from "@/pages/WormArenaSkillAnalysis";
 import WormArenaDistributions from "@/pages/WormArenaDistributions";
 import WormArenaRules from "@/pages/WormArenaRules";
 import ReArc from "@/pages/ReArc";
+import ReArcDataset from "@/pages/ReArcDataset";
 import ReArcSubmissions from "@/pages/ReArcSubmissions";
 import Redirect from "@/components/Redirect";
 
@@ -115,6 +116,7 @@ function Router() {
         {/* RE-ARC - self-service dataset generation and evaluation */}
         <Route path="/re-arc" component={ReArc} />
         <Route path="/re-arc/submissions" component={ReArcSubmissions} />
+        <Route path="/re-arc/dataset" component={ReArcDataset} />
         {/* SnakeBench = official upstream project at snakebench.com */}
         <Route path="/snakebench" component={SnakeBenchEmbed} />
         {/* Backwards compatibility redirect */}

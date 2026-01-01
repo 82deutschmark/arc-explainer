@@ -1,12 +1,12 @@
 /**
  * Author: Cascade (ChatGPT)
- * Date: 2025-12-31
+ * Date: 2025-12-31 21:40 ET
  * PURPOSE: OpenAI-native RE-ARC solver that mirrors the hardened ReArcFS flow
  *          while calling gpt-5.1-codex-mini via the OpenAI Responses API.
  *          Handles checkpointing, resumable queues, adaptive backoff, and
  *          structured failure reporting for the REARC2026.json dataset.
- * SRP/DRY check: Pass — new script encapsulates OpenAI integration without
- *          altering existing OpenRouter solvers; helpers keep concerns isolated.
+ * SRP/DRY check: Pass — OpenAI integration + phase queues stay isolated from
+ *          legacy solvers; helpers centralize prompt/parse/backoff duties.
  *
  * Usage:
  *   npx tsx scripts/solvers/rearc-openai-solver.ts --dataset <path>
@@ -17,7 +17,7 @@
  *
  * Optional env:
  *   REARC_MODEL             - Defaults to gpt-5.1-codex-mini
- *   REARC_REASONING_EFFORT  - high|medium|low|none (default: high)
+ *   REARC_REASONING_EFFORT  - medium|low|none (default: medium)
  *   REARC_LAUNCH_DELAY_MS   - Base delay between launches (default: 7500)
  *   REARC_MAX_CONCURRENT    - Max concurrent calls (default: 4)
  *   REARC_MAX_BACKOFF_MS    - Cap for adaptive backoff (default: 60000)
@@ -29,8 +29,18 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+import type { ResponseInput } from 'openai/resources/responses/responses';
 
 dotenv.config();
+
+type ReasoningEffort = 'medium' | 'low' | 'none';
+const REASONING_EFFORT_FALLBACK: ReasoningEffort = 'medium';
+const ALLOWED_REASONING_EFFORTS: ReasoningEffort[] = ['medium', 'low', 'none'];
+
+function resolveReasoningEffort(): ReasoningEffort {
+  const raw = (process.env.REARC_REASONING_EFFORT || '').toLowerCase();
+  return (ALLOWED_REASONING_EFFORTS as string[]).includes(raw) ? (raw as ReasoningEffort) : REASONING_EFFORT_FALLBACK;
+}
 
 // -----------------------------------------------------------------------------
 // Configuration
@@ -38,8 +48,8 @@ dotenv.config();
 
 const CONFIG = {
   modelKey: process.env.REARC_MODEL || 'gpt-5.1-codex-mini',
-  reasoningEffort: (process.env.REARC_REASONING_EFFORT || 'high') as 'high' | 'medium' | 'low' | 'none',
-  launchDelayMs: Number(process.env.REARC_LAUNCH_DELAY_MS) || 7500,
+  reasoningEffort: resolveReasoningEffort(),
+  launchDelayMs: Number(process.env.REARC_LAUNCH_DELAY_MS) || 1500,
   maxConcurrent: Number(process.env.REARC_MAX_CONCURRENT) || 4,
   maxBackoffMs: Number(process.env.REARC_MAX_BACKOFF_MS) || 60000,
   checkpointInterval: Number(process.env.REARC_CHECKPOINT_INTERVAL) || 12,
@@ -333,6 +343,26 @@ function buildPrompt(task: Task, testIndex: number): string {
   return lines.join('\n');
 }
 
+function buildResponseInput(prompt: string): ResponseInput {
+  return [
+    {
+      type: 'message',
+      role: 'user',
+      content: [
+        {
+          type: 'input_text',
+          text: prompt,
+        },
+      ],
+    },
+  ];
+}
+
+function buildAttemptInput(task: Task, testIndex: number, attemptNum: 1 | 2): ResponseInput {
+  const prompt = attemptNum === 1 ? buildPrompt(task, testIndex) : CONFIG.attempt2FollowupPrompt;
+  return buildResponseInput(prompt);
+}
+
 // -----------------------------------------------------------------------------
 // Failure Categorization
 // -----------------------------------------------------------------------------
@@ -371,6 +401,20 @@ function recordFailure(stats: RuntimeState['stats'], workItem: WorkItem, categor
   const entry = `[${workItem.taskId} test ${workItem.testIndex + 1} attempt ${workItem.attemptNum}] ${message}`;
   if (stats.failureStats.samples[category].length < FAILURE_SAMPLE_LIMIT) {
     stats.failureStats.samples[category].push(entry);
+  }
+}
+
+function persistAttemptMetadata(state: RuntimeState, workItem: WorkItem, result: SolveResult) {
+  if (!result.responseId && !result.rawText) {
+    return;
+  }
+  const metadata = ensureAttemptMetadata(state, workItem.taskId, workItem.testIndex);
+  const slot = workItem.attemptNum === 1 ? metadata.attempt_1 : metadata.attempt_2;
+  if (result.responseId) {
+    slot.responseId = result.responseId;
+  }
+  if (result.rawText) {
+    slot.rawText = result.rawText;
   }
 }
 
@@ -624,16 +668,18 @@ function loadCheckpoint(
       return null;
     }
 
-    return {
+    const state: RuntimeState = {
       version: raw.version,
       datasetPath,
       datasetHash,
       timestamp: new Date().toISOString(),
       submission: raw.submission || {},
-      workQueue: normalizeQueue(raw.workQueue, freshQueue),
-      workIndex: Math.min(raw.workIndex ?? 0, raw.workQueue?.length ?? freshQueue.length),
+      submissionMetadata: raw.submissionMetadata || {},
+      workQueue: normalizeQueue(raw.workQueue),
+      workIndex: Math.min(raw.workIndex ?? 0, raw.workQueue?.length ?? 0),
+      phase: raw.phase || 'attempt1',
       stats: {
-        initialWorkItems: raw.stats?.initialWorkItems ?? freshQueue.length,
+        initialWorkItems: raw.stats?.initialWorkItems ?? computeTotalWorkItems(dataset),
         totalScheduled: raw.stats?.totalScheduled ?? 0,
         completedAttempts: raw.stats?.completedAttempts ?? 0,
         successCount: raw.stats?.successCount ?? 0,
@@ -653,6 +699,9 @@ function loadCheckpoint(
         maxRetries: CONFIG.maxRetries,
       },
     };
+
+    ensureSubmissionStructures(state, dataset);
+    return state;
   } catch (err) {
     console.warn(`Failed to load checkpoint (${checkpointPath}):`, err);
     return null;
@@ -666,8 +715,10 @@ function saveCheckpoint(state: RuntimeState, checkpointPath: string) {
     datasetHash: state.datasetHash,
     timestamp: new Date().toISOString(),
     submission: state.submission,
+    submissionMetadata: state.submissionMetadata,
     workQueue: state.workQueue,
     workIndex: state.workIndex,
+    phase: state.phase,
     stats: state.stats,
     config: state.config,
   };
@@ -680,22 +731,24 @@ function saveCheckpoint(state: RuntimeState, checkpointPath: string) {
 // OpenAI Invocation
 // -----------------------------------------------------------------------------
 
-async function solveAttempt(taskId: string, task: Task, testIndex: number, attemptNum: 1 | 2): Promise<SolveResult> {
-  const prompt = buildPrompt(task, testIndex);
-  const temperature = attemptNum === 1 ? 0 : 0.3;
+async function solveAttempt(options: SolveAttemptOptions): Promise<SolveResult> {
+  const { taskId, task, testIndex, attemptNum, chainFromResponseId } = options;
+  const isChained = attemptNum === 2 && !!chainFromResponseId;
+  const input = buildAttemptInput(task, testIndex, attemptNum);
 
   try {
     const response = await openai.responses.create({
       model: CONFIG.modelKey,
-      input: [{ role: 'user', content: prompt }],
-      temperature,
-      max_output_tokens: 8192,
-      reasoning: CONFIG.reasoningEffort !== 'none' ? { effort: CONFIG.reasoningEffort } : undefined,
-      text: CONFIG.reasoningEffort !== 'none' ? { verbosity: 'high' } : undefined,
+      input,
+      store: true,
+      previous_response_id: isChained ? chainFromResponseId : undefined,
+      reasoning: CONFIG.reasoningEffort !== 'none' ? { effort: CONFIG.reasoningEffort, summary: 'auto' } : undefined,
+      text: { verbosity: 'medium' },
     });
 
     const content = extractResponseText(response).trim();
-    const grid = parseGridFromResponse(content);
+    const grid = content ? parseGridFromResponse(content) : null;
+    const rawText = content;
 
     if (!grid) {
       return {
@@ -703,12 +756,14 @@ async function solveAttempt(taskId: string, task: Task, testIndex: number, attem
         testIndex,
         attemptNum,
         grid: null,
-        error: `Failed to parse grid from response: ${content.slice(0, 200)}`,
+        rawText,
+        responseId: response.id,
+        error: `Failed to parse grid from response: ${rawText.slice(0, 200)}`,
         failureCategory: 'parse',
       };
     }
 
-    return { taskId, testIndex, attemptNum, grid };
+    return { taskId, testIndex, attemptNum, grid, responseId: response.id, rawText };
   } catch (err) {
     const classified = classifyApiError(err);
     return {
@@ -733,100 +788,120 @@ async function runSolver(state: RuntimeState, dataset: Dataset, checkpointPath: 
   let nextLaunchTime = Date.now();
   let completionsSinceCheckpoint = 0;
 
-  while (state.workIndex < state.workQueue.length || inFlight.size > 0) {
-    while (state.workIndex < state.workQueue.length && inFlight.size < CONFIG.maxConcurrent) {
-      const now = Date.now();
-      if (now < nextLaunchTime) {
-        await delay(nextLaunchTime - now);
+  const drainCurrentQueue = async () => {
+    while (state.workIndex < state.workQueue.length || inFlight.size > 0) {
+      while (state.workIndex < state.workQueue.length && inFlight.size < CONFIG.maxConcurrent) {
+        const now = Date.now();
+        if (now < nextLaunchTime) {
+          await delay(nextLaunchTime - now);
+        }
+
+        const workItem = state.workQueue[state.workIndex];
+        const task = dataset[workItem.taskId];
+        if (!task) {
+          console.warn(`Task ${workItem.taskId} missing from dataset. Skipping.`);
+          state.workIndex++;
+          continue;
+        }
+
+        const promise = solveAttempt({
+          taskId: workItem.taskId,
+          task,
+          testIndex: workItem.testIndex,
+          attemptNum: workItem.attemptNum,
+          chainFromResponseId: workItem.chainFromResponseId,
+        });
+        inFlight.set(promise, workItem);
+
+        state.stats.totalScheduled++;
+        state.workIndex++;
+
+        console.log(
+          `[dispatch ${state.stats.totalScheduled}] ${workItem.taskId} test ${workItem.testIndex + 1} attempt ${workItem.attemptNum} (retry #${workItem.retryCount})`
+        );
+
+        nextLaunchTime = Date.now() + backoff.getDelayWithJitter();
       }
 
-      const workItem = state.workQueue[state.workIndex];
-      const task = dataset[workItem.taskId];
-      if (!task) {
-        console.warn(`Task ${workItem.taskId} missing from dataset. Skipping.`);
-        state.workIndex++;
+      if (inFlight.size === 0) {
         continue;
       }
 
-      const promise = solveAttempt(workItem.taskId, task, workItem.testIndex, workItem.attemptNum);
-      inFlight.set(promise, workItem);
-
-      state.stats.totalScheduled++;
-      state.workIndex++;
-
-      console.log(
-        `[dispatch ${state.stats.totalScheduled}] ${workItem.taskId} test ${workItem.testIndex + 1} attempt ${workItem.attemptNum} (retry #${workItem.retryCount})`
+      const wrapped = Array.from(inFlight.entries()).map(([promise, workItem]) =>
+        promise
+          .then((result: SolveResult) => ({ promise, workItem, result }))
+          .catch((err: unknown) => ({
+            promise,
+            workItem,
+            result: {
+              taskId: workItem.taskId,
+              testIndex: workItem.testIndex,
+              attemptNum: workItem.attemptNum,
+              grid: null,
+              error: err instanceof Error ? err.message : String(err),
+              failureCategory: 'unknown' as FailureCategory,
+            },
+          }))
       );
 
-      nextLaunchTime = Date.now() + backoff.getDelayWithJitter();
-    }
+      const settled = await Promise.race(wrapped);
+      inFlight.delete(settled.promise);
 
-    if (inFlight.size === 0) {
-      continue;
-    }
+      const attempt = ensureAttemptSlot(state.submission, settled.workItem.taskId, settled.workItem.testIndex);
+      const key = settled.workItem.attemptNum === 1 ? 'attempt_1' : 'attempt_2';
 
-    const wrapped = Array.from(inFlight.entries()).map(([promise, workItem]) =>
-      promise
-        .then((result: SolveResult) => ({ promise, workItem, result }))
-        .catch((err: unknown) => ({
-          promise,
-          workItem,
-          result: {
-            taskId: workItem.taskId,
-            testIndex: workItem.testIndex,
-            attemptNum: workItem.attemptNum,
-            grid: null,
-            error: err instanceof Error ? err.message : String(err),
-            failureCategory: 'unknown' as FailureCategory,
-          },
-        }))
-    );
+      state.stats.completedAttempts++;
+      completionsSinceCheckpoint++;
 
-    const settled = await Promise.race(wrapped);
-    inFlight.delete(settled.promise);
+      persistAttemptMetadata(state, settled.workItem, settled.result);
 
-    const attempt = ensureAttemptSlot(state.submission, settled.workItem.taskId, settled.workItem.testIndex);
-    const key = settled.workItem.attemptNum === 1 ? 'attempt_1' : 'attempt_2';
-
-    state.stats.completedAttempts++;
-    completionsSinceCheckpoint++;
-
-    if (settled.result.grid) {
-      attempt[key] = settled.result.grid;
-      state.stats.successCount++;
-      backoff.onSuccess();
-    } else {
-      const category = settled.result.failureCategory || 'unknown';
-      recordFailure(state.stats, settled.workItem, category, settled.result.error || 'Unknown error');
-
-      if (category === 'rate_limit') {
-        state.stats.rateLimitEvents++;
-        backoff.onRateLimit();
-        state.stats.maxObservedBackoffMs = Math.max(state.stats.maxObservedBackoffMs, backoff.getCurrent());
-        console.log(`  [RATE LIMIT] backing off to ${backoff.getCurrent()}ms`);
-      }
-
-      if (settled.workItem.retryCount + 1 <= CONFIG.maxRetries) {
-        state.workQueue.push({ ...settled.workItem, retryCount: settled.workItem.retryCount + 1 });
-        state.stats.retryScheduled++;
+      if (settled.result.grid) {
+        attempt[key] = settled.result.grid;
+        state.stats.successCount++;
+        backoff.onSuccess();
       } else {
-        state.stats.permanentFailures.push({
-          taskId: settled.workItem.taskId,
-          testIndex: settled.workItem.testIndex,
-          attemptNum: settled.workItem.attemptNum,
-          category,
-          message: settled.result.error || 'Unknown error',
-          retryCount: settled.workItem.retryCount,
-        });
-        attempt[key] = attempt[key] ?? [[0]];
-        console.log(`  [FAIL] ${settled.workItem.taskId} test ${settled.workItem.testIndex + 1} attempt ${settled.workItem.attemptNum}: ${settled.result.error?.slice(0, 160)}`);
+        const category = settled.result.failureCategory || 'unknown';
+        recordFailure(state.stats, settled.workItem, category, settled.result.error || 'Unknown error');
+
+        if (category === 'rate_limit') {
+          state.stats.rateLimitEvents++;
+          backoff.onRateLimit();
+          state.stats.maxObservedBackoffMs = Math.max(state.stats.maxObservedBackoffMs, backoff.getCurrent());
+          console.log(`  [RATE LIMIT] backing off to ${backoff.getCurrent()}ms`);
+        }
+
+        if (settled.workItem.retryCount + 1 <= CONFIG.maxRetries) {
+          state.workQueue.push({ ...settled.workItem, retryCount: settled.workItem.retryCount + 1 });
+          state.stats.retryScheduled++;
+        } else {
+          state.stats.permanentFailures.push({
+            taskId: settled.workItem.taskId,
+            testIndex: settled.workItem.testIndex,
+            attemptNum: settled.workItem.attemptNum,
+            category,
+            message: settled.result.error || 'Unknown error',
+            retryCount: settled.workItem.retryCount,
+          });
+          attempt[key] = attempt[key] ?? [[0]];
+          console.log(
+            `  [FAIL] ${settled.workItem.taskId} test ${settled.workItem.testIndex + 1} attempt ${settled.workItem.attemptNum}: ${settled.result.error?.slice(0, 160)}`
+          );
+        }
+      }
+
+      if (completionsSinceCheckpoint >= CONFIG.checkpointInterval) {
+        saveCheckpoint(state, checkpointPath);
+        completionsSinceCheckpoint = 0;
       }
     }
+  };
 
-    if (completionsSinceCheckpoint >= CONFIG.checkpointInterval) {
-      saveCheckpoint(state, checkpointPath);
-      completionsSinceCheckpoint = 0;
+  while (true) {
+    await drainCurrentQueue();
+    if (!advancePhase(state, dataset)) {
+      break;
     }
+    console.log(`[PHASE] Phase advanced to ${state.phase}. Work items: ${state.workQueue.length}`);
   }
 
   saveCheckpoint(state, checkpointPath);
@@ -837,11 +912,11 @@ function fillMissing(submission: Submission, dataset: Dataset): number {
   for (const [taskId, task] of Object.entries(dataset)) {
     for (let testIndex = 0; testIndex < task.test.length; testIndex++) {
       const attempt = ensureAttemptSlot(submission, taskId, testIndex);
-      if (!attempt.attempt_1) {
+      if (attempt.attempt_1 === null || attempt.attempt_1 === undefined) {
         attempt.attempt_1 = [[0]];
         filled++;
       }
-      if (!attempt.attempt_2) {
+      if (attempt.attempt_2 === null || attempt.attempt_2 === undefined) {
         attempt.attempt_2 = [[0]];
         filled++;
       }
@@ -921,11 +996,10 @@ async function main() {
 
   const dataset: Dataset = JSON.parse(fs.readFileSync(cli.datasetPath, 'utf-8'));
   const datasetHash = computeFileHash(cli.datasetPath);
-  const initialQueue = buildInitialQueue(dataset);
   let state: RuntimeState | null = null;
 
   if (!cli.fresh) {
-    state = loadCheckpoint(cli.checkpointPath, cli.datasetPath, datasetHash, initialQueue);
+    state = loadCheckpoint(cli.checkpointPath, cli.datasetPath, datasetHash, dataset);
     if (!state && cli.resume) {
       console.error(`--resume specified but checkpoint missing or incompatible at ${cli.checkpointPath}`);
       process.exit(1);
@@ -933,15 +1007,10 @@ async function main() {
   }
 
   if (!state) {
-    state = createInitialState(cli.datasetPath, datasetHash, initialQueue);
+    state = createInitialState(cli.datasetPath, datasetHash, dataset);
   }
 
-  for (const taskId of Object.keys(dataset)) {
-    const task = dataset[taskId];
-    state.submission[taskId] ??= Array(task.test.length)
-      .fill(null)
-      .map(() => ({ attempt_1: null, attempt_2: null }));
-  }
+  ensureSubmissionStructures(state, dataset);
 
   console.log(`Dataset:      ${cli.datasetPath}`);
   console.log(`Checkpoint:   ${cli.checkpointPath}`);

@@ -1,24 +1,26 @@
 /**
  * RE-ARC Dataset Generation and Evaluation Controller
  *
- * Author: Claude Code using Sonnet 4.5 (updated by Claude Opus 4.5)
- * Date: 2025-12-27 (updated 2025-12-30)
- * PURPOSE: HTTP/SSE endpoints for RE-ARC dataset generation, evaluation, verification, and leaderboard.
- *          Generation streams JSON as chunked download, evaluation streams progress via SSE.
- *          Supports two flows: "Evaluate Your Own" (saves to leaderboard) and "Verify Someone Else's" (check only).
- * SRP/DRY check: Pass - Single responsibility: RE-ARC HTTP API
+ * Author: Cascade (ChatGPT)
+ * Date: 2025-12-31
+ * PURPOSE: HTTP/SSE endpoints for RE-ARC dataset generation, evaluation, verification, leaderboard, and dataset viewing.
+ *          Generation streams JSON as chunked download, evaluation streams progress via SSE,
+ *          and the dataset viewer endpoint serves cached task data for the frontend browser.
+ * SRP/DRY check: Pass - Single responsibility: RE-ARC HTTP API surface
  */
 
 import type { Request, Response } from 'express';
 import { createGzip, constants } from 'zlib';
 import { pipeline } from 'stream/promises';
 import { Readable } from 'stream';
+import { promises as fs } from 'fs';
+import path from 'path';
 import { generateDataset, evaluateSubmission } from '../services/reArc/reArcService.ts';
 import { decodeTaskIds } from '../utils/reArcCodec.ts';
 import { computeSubmissionHash } from '../utils/submissionHash.ts';
 import { sanitizeSolverName } from '../utils/nameGenerator.ts';
 import { reArcRepository } from '../repositories/ReArcRepository.ts';
-import type { ARCSubmission, ReArcSSEEvent } from '../../shared/types.ts';
+import type { ARCSubmission, ReArcSSEEvent, ARCTask } from '../../shared/types.ts';
 import { logger } from '../utils/logger.ts';
 import { formatResponse } from '../utils/responseFormatter.ts';
 import { sendSSEEvent } from '../utils/sseHelpers.ts';
@@ -35,6 +37,62 @@ interface EvaluateRequestBody {
 
 interface VerifyRequestBody {
   submission: ARCSubmission;
+}
+
+type ReArcDataset = Record<string, ARCTask>;
+
+const REARC_DATASET_PATH = process.env.REARC_DATASET_PATH
+  ? path.resolve(process.env.REARC_DATASET_PATH)
+  : path.resolve(process.cwd(), 'REARC2026.json');
+
+const datasetCache: {
+  data: ReArcDataset | null;
+  mtimeMs: number;
+} = {
+  data: null,
+  mtimeMs: 0,
+};
+
+async function loadReArcDataset(): Promise<ReArcDataset> {
+  const stats = await fs.stat(REARC_DATASET_PATH);
+  if (datasetCache.data && stats.mtimeMs === datasetCache.mtimeMs) {
+    return datasetCache.data;
+  }
+
+  const raw = await fs.readFile(REARC_DATASET_PATH, 'utf-8');
+  const parsed = JSON.parse(raw) as ReArcDataset;
+  datasetCache.data = parsed;
+  datasetCache.mtimeMs = stats.mtimeMs;
+  return parsed;
+}
+
+function buildDatasetSummary(dataset: ReArcDataset) {
+  let totalTrainPairs = 0;
+  let totalTestInputs = 0;
+  let maxTrainExamples = 0;
+  let maxTestExamples = 0;
+
+  for (const task of Object.values(dataset)) {
+    const trainCount = task.train?.length ?? 0;
+    const testCount = task.test?.length ?? 0;
+    totalTrainPairs += trainCount;
+    totalTestInputs += testCount;
+    if (trainCount > maxTrainExamples) {
+      maxTrainExamples = trainCount;
+    }
+    if (testCount > maxTestExamples) {
+      maxTestExamples = testCount;
+    }
+  }
+
+  return {
+    totalTasks: Object.keys(dataset).length,
+    totalTrainPairs,
+    totalTestInputs,
+    maxTrainExamples,
+    maxTestExamples,
+    datasetPath: REARC_DATASET_PATH,
+  };
 }
 
 // ============================================================================
@@ -107,6 +165,36 @@ export async function generate(_req: Request, res: Response): Promise<void> {
       // Headers already sent - terminate stream
       res.end();
     }
+  }
+}
+
+// ============================================================================
+// Dataset Viewer
+// ============================================================================
+
+/**
+ * Serve the RE-ARC dataset (read-only) for the visual browser.
+ *
+ * GET /api/rearc/tasks
+ * Response: { success: true, data: { dataset, summary } }
+ */
+export async function getTasks(_req: Request, res: Response): Promise<void> {
+  try {
+    const dataset = await loadReArcDataset();
+    const summary = buildDatasetSummary(dataset);
+
+    res.json(
+      formatResponse.success({
+        dataset,
+        summary,
+      })
+    );
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    logger.error(`[RE-ARC] Failed to load dataset for viewer: ${errorMsg}`, 're-arc');
+    res.status(500).json(
+      formatResponse.error('DATASET_LOAD_FAILED', 'Unable to load RE-ARC dataset for viewer', { message: errorMsg })
+    );
   }
 }
 

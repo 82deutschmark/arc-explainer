@@ -310,6 +310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/rearc/generate", reArcGenerateLimiter, asyncHandler(reArcController.generate));
+  app.get("/api/rearc/tasks", asyncHandler(reArcController.getTasks));
   app.post("/api/rearc/evaluate", reArcEvaluateLimiter, asyncHandler(reArcController.evaluate));
   app.post("/api/rearc/verify", reArcEvaluateLimiter, asyncHandler(reArcController.verify));
   app.post("/api/rearc/submit", reArcEvaluateLimiter, asyncHandler(reArcController.submitToLeaderboard));

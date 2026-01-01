@@ -31,6 +31,8 @@ TERMINOLOGY:
   - Solutions: correct predictions (after evaluation)
 */
 
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 import { GenerationSection } from "@/components/rearc/GenerationSection";
 import { EvaluationSection } from "@/components/rearc/EvaluationSection";
 import { CollapsibleSection } from "@/components/rearc/CollapsibleSection";
@@ -41,11 +43,21 @@ export default function ReArc() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">RE-ARC Bench</h1>
-        <p className="text-lg text-foreground/70 mb-4">
-          Verifiable benchmarking for ARC solvers
-        </p>
+      <div className="mb-8 space-y-4">
+        <div>
+          <h1 className="text-4xl font-bold mb-2">RE-ARC Bench</h1>
+          <p className="text-lg text-foreground/70">
+            Verifiable benchmarking for ARC solvers
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild variant="outline">
+            <Link href="/re-arc/submissions">View submissions</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/re-arc/dataset">View dataset</Link>
+          </Button>
+        </div>
 
         <div className="text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
           <p className="mb-2">

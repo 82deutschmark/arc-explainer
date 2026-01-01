@@ -90,6 +90,33 @@ All API endpoints are publicly accessible and require **NO authentication**. Do 
   - **Admin endpoint**: Reloads all ARC puzzle data
   - **Limits**: No limits
 
+### RE-ARC Dataset Access ✨ NEW!
+- `GET /api/rearc/tasks` - Retrieve the full RE-ARC 2026 dataset bundled with this repo
+  - **Response**:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "dataset": {
+          "5b6f2612": { /* ARCTask payload */ },
+          "...": {}
+        },
+        "summary": {
+          "totalTasks": 120,
+          "totalTrainPairs": 360,
+          "totalTestInputs": 240,
+          "maxTrainExamples": 6,
+          "maxTestExamples": 3,
+          "datasetPath": "REARC2026.json"
+        }
+      }
+    }
+    ```
+  - **Notes**:
+    - File read is cached in-memory after the first request for fast reloads
+    - No authentication or rate limits; designed for researchers to mirror the dataset viewer UI
+    - Ideal for building custom visualization tooling or verifying solver submissions offline
+
 ### AI Model Analysis SUPER IMPORTANT!!
 - `GET /api/models` - List all available AI models and providers
   - **Limits**: No limits

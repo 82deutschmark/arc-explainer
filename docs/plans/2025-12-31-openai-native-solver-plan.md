@@ -9,9 +9,9 @@
 1. Load dataset from CLI `--dataset` (default to REARC2026.json) and create work queue (2 attempts per test).
 2. For each attempt:
    - Build prompt identical to `buildPrompt()` in ReArcFS.
-   - Call OpenAI SDK (`openai.responses.create` or chat equivalent) with model `gpt-5.1-codex-mini`.
-   - Attempt 1: `temperature 0.0`, Attempt 2: `temperature 0.3`.
-   - Extract grid output (JSON array or fallback line parsing).
+   - Call OpenAI SDK (`openai.responses.create` NO chat equivalent) with model `gpt-5.1-codex-mini`.
+   - Attempt 1: `temperature 0.0`, Attempt 2: `temperature 0.3`. WRONG!!!!! TEMPERATURE IS NOT SUPPORTED!!!
+   - Extract grid output (JSON array or fallback line parsing).  WTF?!?!  USE FUCKIGN STRUCTURED OUTPUTS!!!
 3. Assemble `submission` object in required structure and write `rearc-submission-{timestamp}.json`.
 4. Include minimal resilience features:
    - Deterministic queue, retry budget (3), and optional checkpoint (reuse hardened helpers from `rearc-free-solver.ts`).
