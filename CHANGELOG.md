@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.8  Jan 1, 2026
+
+- **Critical Fix: RE-ARC Scoring Validation Bug** (Author: Claude Haiku 4.5)
+  - **What**: Fixed inaccurate `solvedPairs` metric calculation in RE-ARC submission scoring. The validator was using `Math.round(score * totalPairs)` which caused rounding errors and mismatches between displayed pair counts and actual correctness.
+  - **Why**: The overall submission score is the average of task scores (not the overall pair ratio), so multiplying back and rounding resulted in incorrect pair counts. This could differ from the true count of pairs that matched the ground truth.
+  - **How**:
+    - Modified `scoreTask()` function to return both `{ score, solvedCount }` instead of just the score ratio.
+    - Updated `evaluateSubmission()` to accumulate the actual count of solved pairs during evaluation instead of calculating it afterward.
+    - Changed `EvaluationResult` type to include `solvedPairs: number` in the score result.
+    - Updated `reArcController.submitToLeaderboard()` to use the returned `solvedPairs` value directly instead of recalculating with rounding.
+  - **Files changed**: `server/services/reArc/reArcService.ts`, `server/controllers/reArcController.ts`
+  - **Impact**: Users now see accurate `Pairs: X/Y` metrics that reflect the true number of test pairs matching ground truth across all tasks.
+
 ### Version 6.18.7  Jan 1, 2026
 
 - **GPT-5-Nano RE-ARC Solver with Corrected Submission Format** (Author: Claude Haiku 4.5)
@@ -15,13 +28,13 @@
 
 ### Version 6.18.6  Jan 1, 2026
 
-- **RE-ARC Dataset Viewer + API Docs** (Author: Cascade (ChatGPT))
-  - **What**: Added a `/re-arc/dataset` viewer route, navigation CTA from the RE-ARC landing page, and documented the public `/api/rearc/tasks` endpoint.
-  - **Why**: Researchers asked for an easy way to browse every RE-ARC 2026 task visually and to consume the dataset via a stable API.
+- **RE-ARC Synthetic Dataset Viewer** (Author: Cascade (ChatGPT))
+  - **What**: Added `/re-arc/dataset` page for uploading and visualizing any RE-ARC dataset JSON. Purely client-side—no backend involved.
+  - **Why**: Users need to inspect their generated synthetic datasets visually, with grids rendered exactly like Puzzle Examiner.
   - **How**:
-    - Updated `client/src/App.tsx` metadata and routing to include the new dataset page.
-    - Extended `client/src/pages/ReArc.tsx` header CTAs so visitors can jump directly to submissions or the dataset gallery.
-    - Documented the `GET /api/rearc/tasks` contract in `docs/reference/api/EXTERNAL_API.md`, highlighting response shape, caching, and usage notes.
+    - Rewrote `client/src/pages/ReArcDataset.tsx` as a drag-and-drop upload viewer using `PuzzleGridDisplay` for grid rendering.
+    - Accordion-style task list with expand/collapse all, search by task ID, and summary stats.
+    - Removed unused backend endpoint, hook, and card component that were incorrectly scoped.
 
 ### Version 6.18.5  Dec 31, 2025
 

@@ -287,6 +287,16 @@ score = task_score / num_pairs
   - Persist both attempts (with correctness) for auditing.
 - Compute each task score as `solved_pairs / total_pairs`, then average across tasks for the submission score. `tasksSolved` counts tasks where all pairs are solved (score = 1.0).
 
+### Critical Implementation Note: Scoring Logic Location
+**WARNING**: All RE-ARC task-level verification/scoring should ultimately be handled by Python's RE-ARC library (via `verifiers.py` in `external/re-arc/`), NOT reimplemented in TypeScript. Currently, TypeScript does direct grid comparison in `server/services/reArc/reArcService.ts:scoreTask()`, which bypasses the official verifier logic.
+
+**Recommended Future Refactor**:
+- Python subprocess should handle submission evaluation via the verifiers (not just generation)
+- TypeScript should call Python to evaluate, not perform its own comparison
+- This ensures parity with official RE-ARC evaluation and allows complex verification rules beyond simple grid equality
+
+**Current Status**: For now, grid comparison is acceptable because RE-ARC tasks use identity matching (verifier simply checks `verifier(input) == output`), so our grid equality check is equivalent. However, any task with custom verification logic would fail under the current approach.
+
 ## 7. SnakeBench / Worm Arena Notes
 Greg’s SnakeBench backend (`external/SnakeBench/backend`) already includes “live” plumbing:
 - Endpoints `/api/games/live` and `/api/games/<game_id>/live` expose in-progress state via `data_access/live_game.py`.
