@@ -239,6 +239,21 @@ score = task_score / num_pairs
 - For each pair: extract both attempts, validate against ground truth, mark pair solved if either matches, persist attempts with correctness metadata.
 - Compute each task score as `solved_pairs / total_pairs`, then average across tasks. `tasksSolved` counts tasks with perfect scores (1.0).
 
+### CRITICAL: Where Does Scoring Actually Happen?
+**⚠️ IMPORTANT ARCHITECTURAL NOTE**: RE-ARC task verification is currently split between **Python (generators) and TypeScript (scorer)**. The Python library in `external/re-arc/` contains verifiers for each task, but scoring is reimplemented in TypeScript via `server/services/reArc/reArcService.ts:scoreTask()`.
+
+**Current flow**:
+1. Python generates tasks + test outputs (generators.py)
+2. Python has verifiers (verifiers.py) that check correctness
+3. **TypeScript re-implements grid comparison** instead of calling Python verifiers
+
+**This works for now** because RE-ARC tasks are identity-matched (no custom logic), so grid equality = correct answer. However:
+- Any future task with custom verification rules will break
+- Scoring logic is duplicated across languages
+- Single source of truth should be Python's official verifiers
+
+**Future refactor recommendation**: Move scoring to Python subprocess, call it from TypeScript for evaluation. See CLAUDE.md Section 6 for full details.
+
 ## 11. SnakeBench / Worm Arena Notes
 - Greg’s Python backend (`external/SnakeBench/backend`) provides `/api/games/live` and `/api/games/<game_id>/live`; it writes live state to the DB and logs stdout each round—no SSE out-of-the-box.
 - ARC Explainer wraps these via Express services (`server/services/snakeBench*.ts`) and frontend pages (`client/src/pages/WormArena*.tsx`). Keep our UI tethered to our DB; never fallback to upstream SnakeBench UI.
