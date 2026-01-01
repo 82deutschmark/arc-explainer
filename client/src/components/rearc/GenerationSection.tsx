@@ -179,11 +179,6 @@ export function GenerationSection({ numTasks, compact = false }: GenerationSecti
         )}
       </div>
 
-      {phase.phase === 'idle' && (
-        <p className={compact ? "mt-2 text-xs text-muted-foreground" : "mt-3 text-sm text-muted-foreground"}>
-          Creates {numTasks} fresh puzzles with unique task IDs.
-        </p>
-      )}
     </>
   );
 
