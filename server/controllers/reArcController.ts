@@ -1,10 +1,11 @@
 /**
  * RE-ARC Dataset Generation and Evaluation Controller
  *
- * Author: Cascade (ChatGPT)
+ * Author: Cascade (Claude Sonnet 4)
  * Date: 2026-01-01
  * PURPOSE: HTTP/SSE endpoints for RE-ARC dataset generation, evaluation, verification, and leaderboard.
  *          Generation streams JSON as chunked download, evaluation streams progress via SSE.
+ *          Scoring follows official ARC-AGI Python implementation (scoring.py).
  * SRP/DRY check: Pass - Single responsibility: RE-ARC HTTP API surface
  */
 
@@ -417,10 +418,12 @@ export async function submitToLeaderboard(req: Request, res: Response): Promise<
       return;
     }
 
-    // Get score, task scores, and actual solved pairs count
+    // Get score, task scores, and actual solved test cases count
+    // NOTE: The Python scoring.py uses "num_pairs" to refer to test cases (each with 2 attempts).
+    // We use "testCases" terminology for clarity, but DB columns retain "pairs" for backwards compatibility.
     const score = result.score;
     const taskScores = result.taskScores;
-    const solvedPairs = result.solvedPairs;
+    const solvedTestCases = result.solvedTestCases;
     const submissionHash = computeSubmissionHash(submission);
     const evaluationDurationMs = Date.now() - startTime;
 
@@ -437,25 +440,27 @@ export async function submitToLeaderboard(req: Request, res: Response): Promise<
       const { seedId, internalSeed } = decoded;
       const numTasks = Object.keys(submission).length;
 
-      // Calculate total pairs
-      let totalPairs = 0;
+      // Calculate total test cases across all tasks
+      let totalTestCases = 0;
       for (const predictions of Object.values(submission)) {
-        totalPairs += predictions.length;
+        totalTestCases += predictions.length;
       }
 
-      // Calculate tasks fully solved (where task score = 1.0 meaning all pairs correct)
+      // Calculate tasks fully solved (where task score = 1.0 meaning all test cases in task are correct)
       const tasksSolved = taskScores.filter(taskScore => taskScore === 1.0).length;
 
       // Get or create dataset record
       const datasetId = await reArcRepository.getOrCreateDataset(seedId, internalSeed, numTasks);
 
       // Save submission to leaderboard
+      // NOTE: DB columns use "pairs" terminology for backwards compatibility,
+      // but these represent test cases (each with 2 attempts per official scoring.py)
       submissionId = await reArcRepository.createSubmission({
         solverName,
         datasetId,
         submissionHash,
-        totalPairs,
-        solvedPairs,
+        totalPairs: totalTestCases,
+        solvedPairs: solvedTestCases,
         tasksSolved,
         score,
         evaluationDurationMs,
