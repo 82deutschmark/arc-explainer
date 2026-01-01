@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.5  Dec 31, 2025
+
+- **ARC3 Claude Code SDK Banner** (Author: Cascade (ChatGPT))
+  - **What**: Added a Claude Code SDK highlight banner to the ARC3 landing page with updated metadata header.
+  - **Why**: Surfaces Anthropic's official ARC3 partner template so visitors can quickly access the Claude Code SDK resources.
+  - **How**:
+    - Updated `client/src/pages/ARC3Browser.tsx` header metadata and layout to inject a gradient card linking to https://docs.arcprize.org/partner_templates/anthropic.
+    - Styled the banner using existing shadcn primitives and Lucide Sparkles icon so it feels native to the page while remaining prominent.
+
 ### Version 6.18.4  Dec 31, 2025
 
 - **OpenAI Native RE-ARC Solver** (Author: Cascade (ChatGPT))
