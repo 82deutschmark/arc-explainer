@@ -31,7 +31,6 @@ TERMINOLOGY:
   - Solutions: correct predictions (after evaluation)
 */
 
-import { Button } from "@/components/ui/button";
 import { GenerationSection } from "@/components/rearc/GenerationSection";
 import { EvaluationSection } from "@/components/rearc/EvaluationSection";
 import { CollapsibleSection } from "@/components/rearc/CollapsibleSection";

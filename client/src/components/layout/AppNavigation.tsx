@@ -1,6 +1,6 @@
 /**
  * Author: Cascade (OpenAI)
- * Date: 2025-12-30
+ * Date: 2026-01-01
  * PURPOSE: Hierarchical navigation with grouped dropdown menus, emoji dividers, and aligned iconography.
  * Organizes navigation items into regular links and dropdown groups for better scannability.
  * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, discussion, LLM reasoning, kaggle readiness).
@@ -193,6 +193,13 @@ const navigationItems: NavItem[] = [
         href: '/poetiq',
         icon: Code,
         description: 'Help verify the Poetiq code-generation solver with your API key'
+      },
+      {
+        type: 'link',
+        title: 'DatasetViewer',
+        href: '/dataset-viewer',
+        icon: Database,
+        description: 'Open or drop any dataset to inspect contents and metadata'
       }
     ]
   },

@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.2  Jan 1, 2026
+
+- **Move DatasetViewer access to navigation misc dropdown** (Author: Claude Sonnet 4)
+  - **What**: Removed the dataset button from the RE-ARC page header; added a “DatasetViewer” link to the Misc dropdown in AppNavigation pointing to `/re-arc/dataset`.
+  - **Why**: Collaborator requested a cleaner RE-ARC landing page while keeping dataset viewing available for any dataset, not just RE-ARC.
+  - **How**:
+    - `ReArc.tsx`: removed remaining button import so header stays minimal
+    - `AppNavigation.tsx`: added Misc link to `/re-arc/dataset` labeled “DatasetViewer” with Database icon and a generic dataset description
+
 ### Version 6.19.1  Jan 1, 2026
 
 - **RE-ARC UI Cleanup and Chart Fix** (Author: Claude Sonnet 4)
