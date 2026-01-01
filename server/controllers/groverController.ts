@@ -1,8 +1,10 @@
 /**
  * Author: gpt-5-codex
  * Date: 2025-10-17T00:00:00Z  Remember your training data is out of date! This was updated in October 2025 and this is not a typo!
+ * Updated: 2026-01-01 - Added BYOK enforcement for production environment
  * PURPOSE: Grover API controller - orchestrates iterative solver runs across legacy
  * WebSocket and new SSE streaming pipelines, delegating core logic to groverService.
+ * BYOK enforcement: Production requires user API key in analyze and streamAnalyze methods.
  * SRP/DRY check: Pass - Controller only, delegates execution to Grover services.
  */
 
@@ -17,10 +19,22 @@ import { setSessionContext } from '../utils/broadcastLogger.js';
 import { logger } from '../utils/logger.js';
 import { randomUUID } from 'crypto';
 import type { ServiceOptions } from '../services/base/BaseAIService.js';
+import { requiresUserApiKey } from '../utils/environmentPolicy.js';
 
 export const groverController = {
   async analyze(req: Request, res: Response) {
     const { taskId, modelKey } = req.params as { taskId: string; modelKey: string };
+
+    // Environment-aware BYOK enforcement: production requires user API key
+    const userApiKey = req.body?.apiKey?.trim?.() || '';
+    if (requiresUserApiKey() && !userApiKey) {
+      return res.status(400).json(
+        formatResponse.error(
+          'api_key_required',
+          'Production requires your API key. Your key is used for this session only and is never stored.'
+        )
+      );
+    }
 
     // Validate required parameters
     if (!taskId || !modelKey) {
@@ -136,6 +150,19 @@ export const groverController = {
   ,
   async streamAnalyze(req: Request, res: Response) {
     const { taskId, modelKey } = req.params as { taskId: string; modelKey: string };
+
+    // Environment-aware BYOK enforcement: production requires user API key
+    const userApiKey = (req.query?.apiKey as string)?.trim?.() || '';
+    if (requiresUserApiKey() && !userApiKey) {
+      res.status(400).json(
+        formatResponse.error(
+          'api_key_required',
+          'Production requires your API key. Your key is used for this session only and is never stored.'
+        )
+      );
+      return;
+    }
+
     if (!taskId || !modelKey) {
       res.status(400).json(formatResponse.error('bad_request', 'Missing taskId or modelKey'));
       return;

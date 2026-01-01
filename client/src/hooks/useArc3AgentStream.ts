@@ -1,8 +1,10 @@
 /**
  * Author: Claude (Windsurf Cascade)
  * Date: 2025-11-06
+ * Updated: 2026-01-01 - Added BYOK support for production environment
  * PURPOSE: React hook that orchestrates ARC3 agent streaming, bridging SSE connections with the backend
  * to provide real-time updates of agent gameplay, frame changes, and reasoning.
+ * BYOK support: Accepts optional apiKey in Arc3AgentOptions and passes to backend.
  * SRP/DRY check: Pass — follows established streaming patterns from useSaturnProgress while adapting for ARC3-specific events.
  */
 
@@ -20,6 +22,8 @@ export interface Arc3AgentOptions {
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
   systemPromptPresetId?: 'twitch' | 'playbook' | 'none';
   skipDefaultSystemPrompt?: boolean;
+  /** User-provided API key for BYOK (required in production) */
+  apiKey?: string;
 }
 
 export interface Arc3AgentStreamState {
@@ -134,6 +138,8 @@ export function useArc3AgentStream() {
             reasoningEffort: options.reasoningEffort || 'low',
             systemPromptPresetId: options.systemPromptPresetId,
             skipDefaultSystemPrompt: options.skipDefaultSystemPrompt,
+            // BYOK: Pass user API key if provided (required in production)
+            ...(options.apiKey ? { apiKey: options.apiKey } : {}),
           });
 
           const prepareData = await prepareResponse.json();
@@ -167,6 +173,8 @@ export function useArc3AgentStream() {
             reasoningEffort: options.reasoningEffort || 'low',
             systemPromptPresetId: options.systemPromptPresetId,
             skipDefaultSystemPrompt: options.skipDefaultSystemPrompt,
+            // BYOK: Pass user API key if provided (required in production)
+            ...(options.apiKey ? { apiKey: options.apiKey } : {}),
           });
 
           const result = await response.json();

@@ -1,5 +1,29 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.0  Jan 1, 2026
+
+- **BYOK Enforcement for ARC3 Agent Playground and Grover Controller** (Author: Claude Sonnet 4)
+  - **What**: Extended Bring Your Own Key (BYOK) enforcement to ARC3 Agent Playground and Grover iterative solver endpoints. Production environment now requires user-provided API keys for all model-calling features.
+  - **Why**: The BYOK system was implemented for Poetiq solver, Worm Arena, and Puzzle Examiner but was missing from ARC3 and Grover endpoints, allowing unexplained API calls in production.
+  - **How**:
+    - **Backend**: Added `requiresUserApiKey()` validation to:
+      - `server/routes/arc3.ts`: `/api/arc3/stream/prepare` and `/api/arc3/real-game/run` endpoints
+      - `server/controllers/groverController.ts`: `analyze` and `streamAnalyze` methods
+    - **Frontend**: Added BYOK UI card to `ARC3AgentPlayground.tsx` with amber-themed styling matching existing BYOK patterns
+    - **Hook**: Updated `useArc3AgentStream.ts` to accept and pass `apiKey` in `Arc3AgentOptions`
+    - All endpoints return 400 with clear message: "Production requires your API key. Your key is used for this session only and is never stored."
+  - **Files changed**:
+    - `server/routes/arc3.ts` - Added BYOK validation and apiKey to schemas
+    - `server/controllers/groverController.ts` - Added BYOK validation to both methods
+    - `client/src/pages/ARC3AgentPlayground.tsx` - Added BYOK UI card and validation
+    - `client/src/hooks/useArc3AgentStream.ts` - Added apiKey to options interface and API calls
+  - **BYOK Coverage Summary**: All model-calling endpoints now enforce BYOK in production:
+    - Puzzle Examiner (stream analysis)
+    - Poetiq solver
+    - Worm Arena / SnakeBench
+    - ARC3 Agent Playground (NEW)
+    - Grover iterative solver (NEW)
+
 ### Version 6.18.9  Jan 1, 2026
 
 - **Document Official ARC-AGI scoring.py as Source of Truth** (Author: Claude Sonnet 4)
