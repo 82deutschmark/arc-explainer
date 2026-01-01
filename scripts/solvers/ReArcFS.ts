@@ -665,14 +665,33 @@ async function main() {
 
     // Wait for completion
     if (inFlight.size > 0) {
-      const settled = await Promise.race([...inFlight.keys()]);
-      const workItem = inFlight.get(settled)!;
-      inFlight.delete(settled);
+      const wrapped = Array.from(inFlight.entries()).map(([promise, workItem]) =>
+        promise
+          .then((result) => ({ result, workItem, success: true }))
+          .catch((error) => ({
+            result: {
+              taskId: workItem.taskId,
+              testIndex: workItem.testIndex,
+              attemptNum: workItem.attemptNum,
+              grid: null,
+              error: error instanceof Error ? error.message : String(error),
+              failureCategory: 'unknown' as FailureCategory,
+            },
+            workItem,
+            success: false,
+          }))
+      );
 
-      const result = await settled;
+      const settled = await Promise.race(wrapped);
+      const { result, workItem } = settled;
+
+      // Find and delete from inFlight
+      const promiseToDelete = Array.from(inFlight.entries()).find(([_, item]) => item === workItem)?.[0];
+      if (promiseToDelete) inFlight.delete(promiseToDelete);
+
       stats.completedAttempts++;
 
-      if (result.grid) {
+      if (result && result.grid) {
         submission[workItem.taskId][workItem.testIndex][
           workItem.attemptNum === 1 ? 'attempt_1' : 'attempt_2'
         ] = result.grid;

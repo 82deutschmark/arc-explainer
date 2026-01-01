@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.18.4  Dec 31, 2025
+
+- **OpenAI Native RE-ARC Solver** (Author: Cascade (ChatGPT))
+  - **What**: Added `scripts/solvers/rearc-openai-solver.ts`, a checkpoint-aware solver that drives `REARC2026.json` using OpenAI's `gpt-5.1-codex-mini` via the Responses API. Includes CLI flags, adaptive backoff, failure taxonomy, and deterministic submission exports.
+  - **Why**: Needed a first-party solver that talks to OpenAI directly (no OpenRouter) so researchers can evaluate GPT-5-class models on RE-ARC tasks.
+  - **How**:
+    - Created `docs/plans/2025-12-31-openai-native-solver-plan.md` outlining scope/objectives.
+    - Ported ReArcFS queue/checkpoint architecture to the new script, swapping in OpenAI SDK usage, dual attempt temperatures, and response parsing helpers.
+    - Emitted detailed run summaries plus timestamped submission artifacts for benchmarking parity.
+
 ### Version 6.18.3  Dec 31, 2025
 
 - **RE-ARC Submissions: Remove Competitive Framing, Auto-Save Evaluations** (Author: Claude Opus 4.5)
