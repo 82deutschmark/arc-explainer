@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.1  Jan 1, 2026
+
+- **RE-ARC UI Cleanup and Chart Fix** (Author: Claude Sonnet 4)
+  - **What**: Removed "View submissions" and "Official scoring" buttons from RE-ARC page header; fixed efficiency chart Y-axis scaling from 111% to 100%.
+  - **Why**: Collaborator feedback requested cleaner RE-ARC page matching original design. The efficiency chart's dynamic Y-axis with 10% padding was showing 111% max which is misleading since no score can exceed 100%.
+  - **How**:
+    - Removed button group containing "View submissions", "Official scoring", and "View dataset" links from `ReArc.tsx` header
+    - Changed `EfficiencyPlot.tsx` Y-axis domain from dynamic `[0, Math.ceil(maxScore * 1.1)]` to fixed `[0, 100]`
+    - Routes remain intact at `/re-arc/submissions` and `/scoring` - only UI buttons removed
+  - **Files changed**:
+    - `client/src/pages/ReArc.tsx` - Removed button group, removed unused Link import
+    - `client/src/components/rearc/EfficiencyPlot.tsx` - Fixed Y-axis to 0-100%
+
 ### Version 6.19.0  Jan 1, 2026
 
 - **BYOK Enforcement for ARC3 Agent Playground and Grover Controller** (Author: Claude Sonnet 4)

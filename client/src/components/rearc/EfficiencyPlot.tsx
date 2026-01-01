@@ -2,7 +2,7 @@
  * EfficiencyPlot.tsx
  *
  * Author: Claude Sonnet 4.5
- * Date: 2025-12-31
+ * Date: 2026-01-01
  * PURPOSE: Scatter plot visualization for RE-ARC leaderboard showing score vs elapsed time.
  *          Helps identify efficiency patterns: fast+accurate vs slow+accurate vs struggling solvers.
  *          Uses recharts for interactive plotting with hover tooltips.
@@ -44,9 +44,8 @@ export function EfficiencyPlot({ data }: EfficiencyPlotProps) {
     totalPairs: d.totalPairs,
   }));
 
-  // Calculate max score for dynamic Y-axis scaling
-  const maxScore = Math.max(...plotData.map(p => p.y), 100);
-  const yDomain = [0, Math.ceil(maxScore * 1.1)]; // 10% padding for headroom
+  // Y-axis fixed at 0-100% since scores cannot exceed 100%
+  const yDomain = [0, 100];
 
   // Custom tooltip to show detailed submission info
   const CustomTooltip = ({ active, payload }: any) => {

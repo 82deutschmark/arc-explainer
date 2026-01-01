@@ -2,7 +2,7 @@
  * ReArc.tsx
  *
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-27
+ * Date: 2026-01-01
  * PURPOSE: Self-service page for generating RE-ARC datasets and evaluating solver predictions.
  *          Users can generate brand-new ARC puzzle sets and evaluate their solver predictions
  *          with proof of dataset authenticity via XOR-encoded timestamps.
@@ -31,7 +31,6 @@ TERMINOLOGY:
   - Solutions: correct predictions (after evaluation)
 */
 
-import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { GenerationSection } from "@/components/rearc/GenerationSection";
 import { EvaluationSection } from "@/components/rearc/EvaluationSection";
@@ -49,17 +48,6 @@ export default function ReArc() {
           <p className="text-lg text-foreground/70">
             Verifiable benchmarking for ARC solvers
           </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline">
-            <Link href="/re-arc/submissions">View submissions</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/scoring">Official scoring</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/re-arc/dataset">View dataset</Link>
-          </Button>
         </div>
 
         <div className="text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
