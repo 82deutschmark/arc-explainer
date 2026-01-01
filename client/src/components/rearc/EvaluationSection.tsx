@@ -13,10 +13,8 @@
 import { useState, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, CheckCircle2, XCircle, Loader2, Shuffle } from 'lucide-react';
+import { Upload, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import type { ARCSubmission, ReArcSSEEvent } from '@shared/types';
 import { validateSubmission } from '@/utils/arcSubmissionValidator';
 import { parseSSEEvents, SSEParseError } from '@/utils/sseParser';
@@ -53,22 +51,6 @@ interface EvaluationResult {
   timestamp: number;
   submissionId: number | null;
   matchingSubmissions: MatchingSubmission[];
-}
-
-// Fun name generator (mirrors server-side logic)
-const ADJECTIVES = [
-  'Brave', 'Swift', 'Clever', 'Noble', 'Cosmic', 'Quantum',
-  'Stellar', 'Bold', 'Wise', 'Nimble', 'Radiant', 'Mystic',
-];
-const ANIMALS = [
-  'Pangolin', 'Axolotl', 'Narwhal', 'Quokka', 'Capybara',
-  'Octopus', 'Phoenix', 'Griffin', 'Mantis', 'Falcon',
-];
-
-function generateRandomName(): string {
-  const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-  const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
-  return `${adj} ${animal}`;
 }
 
 interface UploadProgress {
@@ -254,21 +236,15 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
                         },
                       });
 
-                      // Auto-submit evaluation to backend (with optional label if user entered one)
+                      // Auto-submit evaluation to backend
                       if (data.score > 0) {
                         fetch('/api/rearc/submit', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({
                             submission,
-                            solverName: solverNameRef.current.trim() || undefined,
                           }),
                         })
-                          .then((res) => {
-                            if (res.ok) {
-                              setHasSubmitted(true);
-                            }
-                          })
                           .catch((err) => {
                             console.error('Auto-save error:', err);
                           });
@@ -399,13 +375,6 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
               )}
             </AlertDescription>
           </Alert>
-
-          {/* Confirmation after auto-save */}
-          {hasSubmitted && (
-            <div className="text-xs text-muted-foreground mt-2">
-              Evaluation recorded.
-            </div>
-          )}
         </div>
       )}
 
