@@ -1,14 +1,10 @@
 /*
-Author: Claude Code using Sonnet 4.5
-Date: 2025-11-05
-PURPOSE: Landing page for ARC-AGI-3 Interactive Reasoning Benchmark.
-         ARC-AGI-3 is fundamentally different from ARC 1&2 - it's an agent-based,
-         interactive game benchmark, not static puzzle solving. This page provides
-         information about ARC-AGI-3 and placeholders for future features like
-         games list, leaderboard, scorecard viewer, and replay viewer.
-         This component is COMPLETELY ISOLATED from ARC 1&2 puzzle code.
-SRP/DRY check: Pass - Single responsibility (ARC-AGI-3 information display).
-               No duplication with puzzle components (intentionally separate).
+Author: Cascade (ChatGPT)
+Date: 2025-12-31
+PURPOSE: Landing page for ARC-AGI-3 Interactive Reasoning Benchmark with hero CTAs,
+         roadmap context, previews, and curated resources including Claude Code SDK banner.
+         ARC-AGI-3 remains isolated from ARC 1&2 puzzle flows.
+SRP/DRY check: Pass — Verified existing functionality remains focused on ARC3 info display.
 */
 
 import React from 'react';
@@ -21,7 +17,8 @@ import {
   ExternalLink,
   BookOpen,
   Info,
-  Layers
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -66,6 +63,44 @@ export default function ARC3Browser() {
           </Button>
         </div>
       </div>
+
+      {/* Claude Code SDK highlight */}
+      <Card className="mb-10 border-amber-300/60 dark:border-amber-500/40 bg-gradient-to-r from-amber-50 via-white to-sky-50 dark:from-amber-900/30 dark:via-slate-950 dark:to-sky-900/30 shadow-[0_8px_30px_-12px_rgba(17,24,39,0.45)]">
+        <CardContent className="flex flex-col md:flex-row md:items-center gap-4 py-5">
+          <div className="flex items-start gap-3">
+            <div className="rounded-full bg-amber-100 text-amber-800 dark:bg-amber-400/20 dark:text-amber-200 p-3">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm uppercase tracking-[0.25em] text-amber-600 dark:text-amber-300">
+                Claude Code SDK
+              </p>
+              <h2 className="text-xl font-semibold text-foreground">
+                Build interactive ARC3 agents with Anthropic&apos;s official template
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Anthropic partnered with ARC Prize to ship a Claude Code SDK starter for ARC-AGI-3 runs.
+                Leverage their Responses API blueprint, tool wiring, and streaming guidance to go from prompt to agent fast.
+              </p>
+            </div>
+          </div>
+          <Button
+            asChild
+            variant="outline"
+            className="md:ml-auto border-amber-500/50 text-amber-700 dark:text-amber-200 hover:bg-amber-50/50 dark:hover:bg-amber-400/10"
+          >
+            <a
+              href="https://docs.arcprize.org/partner_templates/anthropic"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              Browse the partner template
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* Explore ARC-AGI-3 on this site */}
       <section className="mb-8">

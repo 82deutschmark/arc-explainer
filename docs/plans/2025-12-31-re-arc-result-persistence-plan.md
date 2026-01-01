@@ -1,383 +1,341 @@
-# RE-ARC Result Persistence & Leaderboard Plan
+# RE-ARC Result Persistence & Leaderboard Plan (Revised)
 
-**Author:** Claude Haiku 4.5
-**Date:** 2025-12-31
-**Status:** Design Phase — To be implemented after RE-ARC Bench MVP acceptance
-**Related:** RE-ARC Bench PR #406, `/re-arc` route, `server/services/reArc/reArcService.ts`
+**Author:** Claude Opus 4.5
+**Date:** 2025-12-30
+**Status:** Design Phase
+**Related:** RE-ARC Bench, `/re-arc` route
+
+> **Special Thanks:** [conundrumer](https://github.com/conundrumer) for creating the RE-ARC project and contributing the core verification concept - "anyone can upload anyone else's submission to verify they're being truthful."
 
 ---
 
 ## Overview
 
-Currently, RE-ARC Bench evaluation results are ephemeral—users generate datasets, evaluate submissions, and get scores, but nothing persists. This plan adds:
+RE-ARC Bench allows users to evaluate ARC solver submissions. This plan adds:
 
-1. **Result Persistence** — All evaluations auto-saved to database
-2. **User Claims** — Users can optionally claim and verify results
-3. **Read-Only Leaderboard** — Public rankings of claimed, verified submissions
-4. **Submission Audit Trail** — Who submitted what, when, with what score
+1. **Result Persistence** — All evaluations saved to database with solver name
+2. **Public Leaderboard** — Rankings of all submissions
+3. **Automatic Verification** — Hash matching to verify/detect duplicate submissions
+4. **Two UI Flows** — "Evaluate Your Own" vs "Verify Someone Else's"
 
-**Key Principle:** Users control visibility. Results are tracked automatically, but public sharing is opt-in.
+**Core Insight (conundrumer):** Anyone can upload anyone else's submission to verify they're being truthful. This is built into the system via submission hashing.
 
 ---
 
-## Database Schema
+## User Flows
 
-### New Tables
+### Flow 1: "Evaluate Your Own Solution"
+Primary use case - user submits their original work.
 
-#### `rearc_datasets`
-Tracks generated datasets for audit and re-verification.
+1. User clicks "Evaluate Your Own Solution"
+2. User uploads submission JSON file
+3. User enters their name (or we generate one like "Brave Pangolin")
+4. System evaluates submission, streams results
+5. System hashes submission, checks for matches in DB
+6. Results display:
+   - Score (e.g., "85% - 102/120 pairs solved")
+   - **If matches exist** (suspicious): "This submission matches entries by: Alice, Bob"
+7. Entry saved to leaderboard with name + hash
+
+### Flow 2: "Verify Someone Else's"
+Secondary use case - user wants to confirm someone's claimed score.
+
+1. User clicks "Verify Someone Else's"
+2. User uploads the submission file (shared by original submitter)
+3. System evaluates submission, streams results
+4. System hashes submission, checks for matches in DB
+5. Results display:
+   - Score (e.g., "85% - 102/120 pairs solved")
+   - **If matches exist**: "This submission matches entries by: Alice" (verification successful)
+   - **If no matches**: "No matching submissions found" (original claim unverified)
+6. **Not saved to leaderboard** (this is verification, not a new entry)
+
+---
+
+## Database Schema (Simplified)
+
+No login system. Just name + submission.
+
+### `rearc_datasets`
+Tracks generated datasets for reproducibility.
 
 ```sql
 CREATE TABLE rearc_datasets (
   id SERIAL PRIMARY KEY,
-  seed_id BIGINT NOT NULL,
+  seed_id BIGINT NOT NULL UNIQUE,
   internal_seed BYTEA NOT NULL,
   num_tasks INT NOT NULL,
-  generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-  -- Derived from seed_id (timestamp-encoded)
-  generation_timestamp BIGINT NOT NULL,
-
-  -- Optional: metadata for future steganography support
-  message_bytes BYTEA,
-
-  UNIQUE(seed_id),
-  INDEX idx_generated_at (generated_at),
-  INDEX idx_seed_id (seed_id)
+  generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-#### `rearc_evaluations`
-Persists every evaluation result, whether claimed or not.
+### `rearc_submissions`
+Every evaluated submission that goes on the leaderboard.
 
 ```sql
-CREATE TABLE rearc_evaluations (
+CREATE TABLE rearc_submissions (
   id SERIAL PRIMARY KEY,
+
+  -- Solver identity (no login required)
+  solver_name VARCHAR(255) NOT NULL,
 
   -- Reference to dataset
   rearc_dataset_id INT NOT NULL REFERENCES rearc_datasets(id),
 
-  -- Submission metadata
+  -- Submission fingerprint for verification
+  submission_hash VARCHAR(64) NOT NULL,  -- SHA-256 of submission JSON
   submission_file_name VARCHAR(255),
-  submission_hash VARCHAR(64),  -- SHA-256 of JSON for deduplication
 
   -- Evaluation results
   total_pairs INT NOT NULL,
   solved_pairs INT NOT NULL,
   score DECIMAL(5,4) NOT NULL,  -- 0.0000 to 1.0000
 
-  -- Per-pair breakdown (JSON for flexibility)
-  pair_results JSONB,  -- [{ pair_index, attempt_1_correct, attempt_2_correct, correct }]
+  -- Per-pair breakdown
+  pair_results JSONB,  -- [{ taskId, pairIndex, attempt1Correct, attempt2Correct, solved }]
 
-  -- Evaluation metadata
+  -- Metadata
   evaluated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   evaluation_duration_ms INT,
 
-  -- User claim (if any)
-  claimed_by_user_id INT REFERENCES users(id),
-  claimed_at TIMESTAMP,
-  is_public BOOLEAN DEFAULT FALSE,
+  -- Verification tracking
+  verification_count INT DEFAULT 0,  -- Incremented when others verify this
+  last_verified_at TIMESTAMP,
 
-  -- Verification
-  verified_at TIMESTAMP,
-  verification_hash VARCHAR(64),  -- Hash of dataset + submission for re-verification
-
-  INDEX idx_dataset_id (rearc_dataset_id),
-  INDEX idx_claimed_by (claimed_by_user_id),
-  INDEX idx_is_public (is_public),
-  INDEX idx_score (score),
-  INDEX idx_evaluated_at (evaluated_at)
-);
-```
-
-#### `rearc_solver_profiles`
-Public solver profiles (opt-in). Links multiple evaluations to a solver identity.
-
-```sql
-CREATE TABLE rearc_solver_profiles (
-  id SERIAL PRIMARY KEY,
-
-  -- User identity (can be anonymous alias)
-  user_id INT REFERENCES users(id),
-  solver_name VARCHAR(255) NOT NULL,  -- E.g., "MyAwesomeSolver v2.1"
-  solver_description TEXT,
-
-  -- Public visibility
-  is_public BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-  UNIQUE(user_id, solver_name),
-  INDEX idx_is_public (is_public)
-);
-```
-
-#### `rearc_evaluation_claims`
-Many-to-many: evaluations can be claimed by a profile, supporting batch submissions.
-
-```sql
-CREATE TABLE rearc_evaluation_claims (
-  id SERIAL PRIMARY KEY,
-  rearc_evaluation_id INT NOT NULL REFERENCES rearc_evaluations(id),
-  rearc_solver_profile_id INT NOT NULL REFERENCES rearc_solver_profiles(id),
-
-  claimed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-  UNIQUE(rearc_evaluation_id, rearc_solver_profile_id),
-  INDEX idx_profile_id (rearc_solver_profile_id)
+  INDEX idx_submission_hash (submission_hash),
+  INDEX idx_score (score DESC),
+  INDEX idx_evaluated_at (evaluated_at DESC),
+  INDEX idx_solver_name (solver_name)
 );
 ```
 
 ---
 
-## API Endpoints (New/Extended)
+## API Endpoints
 
-### Evaluation with Auto-Persistence
+### Evaluate Own Submission (saves to leaderboard)
 ```
 POST /api/rearc/evaluate
-```
-**Current behavior:** Streams SSE evaluation
-**New behavior:** Also inserts row into `rearc_evaluations` and returns `evaluationId` in completion event
-**Response addition:**
-```json
-{
-  "type": "complete",
-  "evaluationId": 12345,
-  "scoreDetails": {
-    "score": 0.875,
-    "solvedPairs": 105,
-    "totalPairs": 120
-  }
+Body: {
+  seedId: number,
+  solverName: string,
+  submission: object  // The submission JSON
 }
-```
-
-### Claim Evaluation Result
-```
-POST /api/rearc/claims
-Body:
-{
-  "evaluationId": 12345,
-  "solverProfileId": 789,
-  "makePublic": true
-}
-Response: { success: true, claimId: 456 }
-```
-
-### Get User's Evaluations
-```
-GET /api/rearc/my-evaluations?limit=50&offset=0
-Query: ?public_only=false (show claimed private results too)
-Response: {
-  evaluations: [
-    {
-      id: 12345,
-      score: 0.875,
-      evaluatedAt: "2025-12-31T...",
-      isPublic: true,
-      solverProfile: { id: 789, name: "MyAwesomeSolver v2.1" }
-    }
-  ],
-  totalCount: 43
-}
-```
-
-### Leaderboard (Read-Only)
-```
-GET /api/rearc/leaderboard?sort=score&limit=100&offset=0
-Query: ?sort=score | &sort=latest | &datasetSeedId=xyz (filter by dataset)
-Response: {
-  rankings: [
-    {
-      rank: 1,
-      solverName: "DeepARC Neural v3.0",
-      score: 0.95,
-      solvedPairs: 114,
+Response (SSE stream):
+  - Progress events during evaluation
+  - Complete event: {
+      type: "complete",
+      submissionId: 12345,
+      score: 0.85,
+      solvedPairs: 102,
       totalPairs: 120,
-      evaluations: 5,  // Number of claimed evals
-      userId: 42,  // If public
-      latestEvalAt: "2025-12-31T..."
+      matchingSubmissions: [
+        { id: 999, solverName: "Alice", score: 0.85 }
+      ]  // Empty array if unique (expected case)
+    }
+```
+
+### Verify Someone Else's Submission (does NOT save)
+```
+POST /api/rearc/verify
+Body: {
+  seedId: number,
+  submission: object  // The submission JSON to verify
+}
+Response (SSE stream):
+  - Progress events during evaluation
+  - Complete event: {
+      type: "complete",
+      score: 0.85,
+      solvedPairs: 102,
+      totalPairs: 120,
+      matchingSubmissions: [
+        { id: 123, solverName: "Alice", score: 0.85, evaluatedAt: "..." }
+      ]
+    }
+```
+
+### Get Leaderboard
+```
+GET /api/rearc/leaderboard?limit=100&offset=0&sort=score
+Query params:
+  - sort: "score" (default) | "latest" | "verified"
+  - seedId: filter by dataset (optional)
+Response: {
+  submissions: [
+    {
+      id: 123,
+      solverName: "Alice",
+      score: 0.85,
+      solvedPairs: 102,
+      totalPairs: 120,
+      evaluatedAt: "2025-12-30T...",
+      verificationCount: 3
     }
   ],
-  totalRankedSolvers: 23
+  totalCount: 47
 }
 ```
 
-### Re-Verify Submission (Optional)
+### Get Submission Details
 ```
-POST /api/rearc/verify-claim/:claimId
-Body: { submissionJson: [...] }
+GET /api/rearc/submissions/:id
 Response: {
-  verified: true,
-  originalScore: 0.875,
-  recomputedScore: 0.875,
-  datasetSeedId: 1735689600
+  id: 123,
+  solverName: "Alice",
+  score: 0.85,
+  solvedPairs: 102,
+  totalPairs: 120,
+  pairResults: [...],
+  evaluatedAt: "...",
+  verificationCount: 3,
+  matchingSubmissions: [...]  // Others with same hash
 }
 ```
 
 ---
 
-## Frontend Components (New/Extended)
+## Frontend Components
 
 ### RE-ARC Page Changes
-1. **Evaluation Result Card** — After score display:
-   - "Claim this result" button (if user logged in)
-   - "Make public" toggle after claiming
-   - Display evaluationId for sharing
 
-2. **My Results Dashboard** (`/re-arc/my-results`)
-   - Table of user's evaluations (public + private)
-   - Filter/sort by score, date, public status
-   - Claim/unclaim actions
-   - Copy-to-clipboard evaluationId for sharing
+**Two primary action buttons:**
+1. "Evaluate Your Own Solution" - Opens evaluation flow
+2. "Verify Someone Else's" - Opens verification flow
+
+**Evaluation Flow UI:**
+1. File upload dropzone
+2. Name input field (with "Generate Random Name" button)
+3. "Evaluate & Submit" button
+4. Results card showing:
+   - Score prominently
+   - Pair breakdown
+   - Match warning (if any): "This matches submissions by: X, Y"
+   - "View on Leaderboard" link
+
+**Verification Flow UI:**
+1. File upload dropzone
+2. "Verify" button (no name needed - not saving)
+3. Results card showing:
+   - Score
+   - Match results: "Matches: Alice (85%, submitted Dec 30)" or "No matches found"
 
 ### New Pages
-1. **Leaderboard** (`/re-arc/leaderboard`)
-   - Public rankings by solver
-   - Sort options: score, latest submission, evaluation count
-   - Filter by dataset seed
-   - Click to view solver profile
 
-2. **Solver Profile** (`/re-arc/solver/:profileId`)
-   - Solver name, description
-   - All public evaluations
-   - Best score, average score
-   - Evaluation history timeline
+**Leaderboard Page (`/re-arc/leaderboard`)**
+- Table: Rank, Solver Name, Score, Pairs Solved, Verified By, Date
+- Sort options: Score, Latest, Most Verified
+- Click row to see submission details
+- Filter by dataset seed (dropdown)
+
+**Submission Detail Page (`/re-arc/submissions/:id`)**
+- Full score breakdown
+- Per-task results
+- Verification history
+
+---
+
+## Name Generation
+
+When user doesn't enter a name, generate a fun one:
+
+```typescript
+const adjectives = ['Brave', 'Swift', 'Clever', 'Noble', 'Cosmic', 'Quantum', ...];
+const animals = ['Pangolin', 'Axolotl', 'Narwhal', 'Quokka', 'Capybara', ...];
+
+function generateSolverName(): string {
+  const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const animal = animals[Math.floor(Math.random() * animals.length)];
+  return `${adj} ${animal}`;
+}
+```
+
+---
+
+## Verification Logic
+
+```typescript
+async function findMatchingSubmissions(submissionHash: string): Promise<Submission[]> {
+  return db.query(`
+    SELECT id, solver_name, score, evaluated_at
+    FROM rearc_submissions
+    WHERE submission_hash = $1
+    ORDER BY evaluated_at ASC
+  `, [submissionHash]);
+}
+
+async function incrementVerificationCount(submissionIds: number[]): Promise<void> {
+  await db.query(`
+    UPDATE rearc_submissions
+    SET verification_count = verification_count + 1,
+        last_verified_at = NOW()
+    WHERE id = ANY($1)
+  `, [submissionIds]);
+}
+```
+
+When verification flow finds matches, increment their verification_count.
 
 ---
 
 ## Implementation Phases
 
-### Phase 1: Core Persistence (Prerequisite)
-**Scope:** Auto-save evaluations, simple claim system
-**Priority:** HIGH — Required for leaderboard foundation
+### Phase 1: Core Persistence & Leaderboard
+- [ ] Create Drizzle schema for `rearc_datasets`, `rearc_submissions`
+- [ ] Create `ReArcRepository.ts` with SRP methods
+- [ ] Modify evaluation endpoint to save submissions
+- [ ] Add submission hash computation (SHA-256 of JSON)
+- [ ] Add matching submission lookup
+- [ ] Implement `GET /api/rearc/leaderboard` endpoint
+- [ ] Create leaderboard page UI
+- [ ] Add name input + generation to evaluation flow
 
-**Tasks:**
-- [ ] Create `rearc_datasets`, `rearc_evaluations` tables
-- [ ] Modify `POST /api/rearc/evaluate` controller to insert `rearc_evaluations` row
-- [ ] Add `evaluationId` to SSE completion event
-- [ ] Create `rearc_solver_profiles` table
-- [ ] Implement `POST /api/rearc/claims` endpoint (basic claim without profile)
-- [ ] Implement `GET /api/rearc/my-evaluations` endpoint
-- [ ] Add "Claim this result" UI to evaluation card
+### Phase 2: Verification Flow
+- [ ] Create `POST /api/rearc/verify` endpoint (evaluate without saving)
+- [ ] Add "Verify Someone Else's" UI flow
+- [ ] Increment verification_count on matches
+- [ ] Show verification count on leaderboard
+- [ ] Add submission detail page
 
-**Estimated:** 4-6 hours
-
-### Phase 2: Leaderboard & Profile Pages
-**Scope:** Public rankings, solver profiles
-**Priority:** HIGH — Core feature
-
-**Tasks:**
-- [ ] Implement `GET /api/rearc/leaderboard` (sorting, pagination)
-- [ ] Create `/re-arc/leaderboard` page
-- [ ] Create `/re-arc/solver/:profileId` page
-- [ ] Add database indexes for leaderboard queries
-- [ ] Test leaderboard performance with 100+ submissions
-
-**Estimated:** 5-7 hours
-
-### Phase 3: Advanced Features (Nice-to-Have)
-**Scope:** Re-verification, dataset filtering, solver comparisons
-**Priority:** LOW — Post-MVP refinement
-
-**Tasks:**
-- [ ] Implement `POST /api/rearc/verify-claim/:claimId`
-- [ ] Add leaderboard filter by dataset seed
-- [ ] Add solver comparison view
-- [ ] Build "Trending Solvers" widget (last 7 days)
-- [ ] Add export/CSV of leaderboard
-
-**Estimated:** 4-5 hours
+### Phase 3: Polish
+- [ ] Filter leaderboard by dataset seed
+- [ ] Sort by verification count
+- [ ] Pagination for large leaderboards
 
 ---
 
-## Repository Pattern (SRP)
+## Files to Create/Modify
 
-Create `server/repositories/ReArcRepository.ts`:
+**New Files:**
+- `server/db/schema/rearc.ts` — Drizzle schema
+- `server/repositories/ReArcRepository.ts` — Data access
+- `server/controllers/reArcLeaderboardController.ts` — Leaderboard endpoints
+- `client/src/pages/ReArcLeaderboard.tsx` — Leaderboard page
+- `client/src/components/rearc/VerificationFlow.tsx` — Verify UI
+- `server/utils/nameGenerator.ts` — Fun name generation
 
-```typescript
-class ReArcRepository {
-  // Datasets
-  async getOrCreateDataset(seedId: bigint, internalSeed: Buffer): Promise<ReArcDataset>
-  async getDataset(seedId: bigint): Promise<ReArcDataset | null>
-
-  // Evaluations
-  async createEvaluation(eval: ReArcEvaluationInput): Promise<ReArcEvaluation>
-  async getEvaluation(evaluationId: number): Promise<ReArcEvaluation | null>
-  async getUserEvaluations(userId: number, limit: number): Promise<ReArcEvaluation[]>
-  async getPublicEvaluations(limit: number): Promise<ReArcEvaluation[]>
-
-  // Profiles & Claims
-  async createSolverProfile(userId: number, name: string, desc?: string): Promise<ReArcSolverProfile>
-  async claimEvaluation(evalId: number, profileId: number, makePublic: boolean): Promise<ReArcEvaluationClaim>
-  async getLeaderboard(sort: 'score' | 'latest', limit: number, offset: number): Promise<LeaderboardEntry[]>
-
-  // Verification
-  async verifyClaim(claimId: number, submissionHash: string): Promise<VerificationResult>
-}
-```
+**Modify:**
+- `server/services/reArc/reArcService.ts` — Add persistence
+- `server/controllers/reArcController.ts` — Add verify endpoint
+- `client/src/pages/ReArc.tsx` — Two-flow UI
+- `server/routes.ts` — New routes
+- `client/src/App.tsx` — New route
 
 ---
 
-## Considerations & Open Questions
+## Design Decisions
 
-1. **User Accounts** — Does RE-ARC require login?
-   - Current: NO auth required for evaluation
-   - Future: Suggest soft login (optional, for claiming)
-   - Alternative: Allow anonymous claims with email verification
+1. **Verification requires same dataset seed** - Stricter verification ensures same test conditions
 
-2. **Data Privacy** — What PII gets logged?
-   - Evaluation data is safe (just scores)
-   - Optional: User can choose pseudonym for profile
+2. **Duplicate submissions allowed** - If someone submits the same file twice with different names, we allow it. The matching hash reveals this.
 
-3. **Leaderboard Cheating Prevention**
-   - Submissions tied to dataset seed (prevents overfitting claims)
-   - Re-verification available but not enforced (community-driven verification)
-   - No scoring manipulation risk (external evaluator)
-
-4. **Performance at Scale**
-   - Leaderboard queries need indexes on `is_public`, `score`, `evaluated_at`
-   - Consider pagination and caching (Redis)
-   - If 1000+ evaluations, may need materialized views
-
-5. **Dataset Retention**
-   - Keep `rearc_datasets` rows forever? (for re-verification)
-   - Or expire after N days?
-   - Recommendation: Archive after 90 days, keep for re-verification only if claimed
+3. **Submission hash shown on detail page only** - Transparency without confusing non-technical users on the main leaderboard
 
 ---
 
 ## Success Criteria
 
-✅ **Phase 1 Complete When:**
-- All evaluations auto-saved to DB
-- Users can claim and make results public
-- `/re-arc/my-results` shows personal history
-
-✅ **Phase 2 Complete When:**
-- Leaderboard page loads in <500ms with 100+ entries
-- Solver profiles display with evaluation history
-- Filtering/sorting works smoothly
-
-✅ **Phase 3 Complete When:**
-- Re-verification works correctly
-- Community has submitted 20+ unique solvers
-- No fraud detected in leaderboard
-
----
-
-## Related Docs
-
-- `docs/plans/2025-12-24-re-arc-interface-plan.md` — Original RE-ARC Bench design
-- `docs/reference/api/EXTERNAL_API.md` — Current API reference (update with new endpoints)
-- `CHANGELOG.md` — Document schema changes and new endpoints per SemVer
-
----
-
-**Next Steps for Implementer:**
-
-1. Review this plan with Mark
-2. Create database migration files (Drizzle)
-3. Implement Phase 1 (core persistence)
-4. Test with 50+ mock evaluations
-5. Measure leaderboard query performance
-6. Plan Phase 2 frontend work
+- Users can evaluate and appear on leaderboard with just a name
+- Verification flow correctly identifies matching submissions
+- Leaderboard loads quickly with 100+ entries
+- Hash matching is reliable (SHA-256 of normalized JSON)

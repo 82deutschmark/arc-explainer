@@ -1,9 +1,9 @@
 /**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-19
- * PURPOSE: Hierarchical navigation with grouped dropdown menus and colorful emoji dividers.
+ * Author: Cascade (OpenAI)
+ * Date: 2026-01-01
+ * PURPOSE: Hierarchical navigation with grouped dropdown menus, emoji dividers, and aligned iconography.
  * Organizes navigation items into regular links and dropdown groups for better scannability.
- * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, LLM reasoning, kaggle readiness).
+ * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, discussion, LLM reasoning, kaggle readiness).
  * Uses shadcn/ui NavigationMenu with triggers, content, and viewport for dropdown functionality.
  * CRITICAL: NavigationMenuViewport is required for dropdown content to render properly!
  * Emoji dividers are rendered INSIDE each menu item to maintain proper Radix UI hierarchy.
@@ -45,7 +45,7 @@ import {
   Zap,
   Code,
   Worm,
-  Beaker
+  CircuitBoard
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -93,15 +93,8 @@ const navigationItems: NavItem[] = [
     type: 'link',
     title: 'RE-ARC',
     href: '/re-arc',
-    icon: Beaker,
+    icon: CircuitBoard,
     description: 'Generate unique evaluation datasets and validate solver submissions'
-  },
-  {
-    type: 'link',
-    title: 'Discussion',
-    href: '/discussion',
-    icon: Brain,
-    description: 'Uses the Responses API to do iterative self-conversation'
   },
   {
     type: 'link',
@@ -144,6 +137,13 @@ const navigationItems: NavItem[] = [
         href: '/debate',
         icon: MessageSquare,
         description: 'Watch AI models challenge each other\'s explanations'
+      },
+      {
+        type: 'link',
+        title: 'Discussion',
+        href: '/discussion',
+        icon: Brain,
+        description: 'Uses the Responses API to do iterative self-conversation'
       },
       {
         type: 'link',
@@ -193,6 +193,13 @@ const navigationItems: NavItem[] = [
         href: '/poetiq',
         icon: Code,
         description: 'Help verify the Poetiq code-generation solver with your API key'
+      },
+      {
+        type: 'link',
+        title: 'DatasetViewer',
+        href: '/dataset-viewer',
+        icon: Database,
+        description: 'Open or drop any dataset to inspect contents and metadata'
       }
     ]
   },

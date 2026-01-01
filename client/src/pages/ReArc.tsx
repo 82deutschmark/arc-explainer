@@ -2,7 +2,7 @@
  * ReArc.tsx
  *
  * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-27
+ * Date: 2026-01-01
  * PURPOSE: Self-service page for generating RE-ARC datasets and evaluating solver predictions.
  *          Users can generate brand-new ARC puzzle sets and evaluate their solver predictions
  *          with proof of dataset authenticity via XOR-encoded timestamps.
@@ -41,13 +41,15 @@ export default function ReArc() {
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">RE-ARC Bench</h1>
-        <p className="text-lg text-muted-foreground mb-4">
-          Test your ARC solver!
-        </p>
+      <div className="mb-8 space-y-4">
+        <div>
+          <h1 className="text-4xl font-bold mb-2">RE-ARC Bench</h1>
+          <p className="text-lg text-foreground/70">
+            Verifiable benchmarking for ARC solvers
+          </p>
+        </div>
 
-        <div className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
+        <div className="text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
           <p className="mb-2">
             Click "Generate" to create a brand-new set of ARC puzzles.
             Difficulty is tuned to roughly match the ARC-AGI-2 evaluation set.
@@ -62,104 +64,8 @@ export default function ReArc() {
           </p>
         </div>
 
-        <CollapsibleSection
-          triggerText="Submission format guide"
-          triggerClassName="mt-3"
-        >
-          <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
-            <p className="mb-3">
-              ARC tasks contain test inputs (input grids). Each task has one or
-              more test inputs. For each test input, your solver makes two
-              prediction attempts to generate the correct output.
-            </p>
-
-            <p className="mb-2 font-semibold">Type:</p>
-            <pre className="bg-background p-3 rounded text-xs overflow-x-auto mb-3 font-mono">
-              {`type Submission = {
-  [taskId: string]: Prediction[];
-}
-type Prediction = {
-    attempt_1: Grid;
-    attempt_2: Grid;
-}
-type Grid = number[][]`}
-            </pre>
-
-            <p className="mb-2 font-semibold">
-              Example (second task has two test inputs):
-            </p>
-            <pre className="bg-background p-3 rounded text-xs overflow-x-auto">
-              {`{
-  "abc12345": [
-    {
-      "attempt_1": [[0, 1], [2, 3]],
-      "attempt_2": [[2, 3], [0, 1]]
-    }
-  ],
-  "1234abcd": [
-    {
-      "attempt_1": [[1, 2], [3, 4]],
-      "attempt_2": [[3, 4], [1, 2]]
-    },
-    {
-      "attempt_1": [[5, 6], [7, 8]],
-      "attempt_2": [[7, 8], [5, 6]]
-    }
-  ]
-}`}
-            </pre>
-          </div>
-        </CollapsibleSection>
-
-        <CollapsibleSection
-          triggerText="How scoring works"
-          triggerClassName="mt-2"
-        >
-          <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
-            <div className="space-y-3">
-              <div>
-                <p className="font-semibold mb-1">Per test input:</p>
-                <p>
-                  A test input is considered <strong>solved</strong> if{" "}
-                  <strong>ANY</strong> of your 2 prediction attempts matches the
-                  correct output. You only need one attempt to be correct.
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold mb-1">Per task:</p>
-                <p>
-                  Task score = (number of solved test inputs) / (total test
-                  inputs in that task)
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold mb-1">Overall score:</p>
-                <p>
-                  Your final score is the average of all task scores across the
-                  submission.
-                </p>
-              </div>
-
-              <div className="pt-2 border-t border-border/50">
-                <p className="font-semibold mb-1">Example:</p>
-                <p className="text-xs">
-                  Task A has 2 test inputs. You solve 1 of them → Task A score:
-                  1/2 = 0.5
-                  <br />
-                  Task B has 1 test input. You solve it → Task B score: 1/1 =
-                  1.0
-                  <br />
-                  <strong>Overall score: (0.5 + 1.0) / 2 = 0.75 or 75%</strong>
-                </p>
-              </div>
-            </div>
-          </div>
-        </CollapsibleSection>
-
-        <CollapsibleSection triggerText="About RE-ARC" triggerClassName="mt-2">
-          <div className="mt-2 text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
+        <CollapsibleSection triggerText="About RE-ARC" triggerClassName="mt-3">
+          <div className="mt-2 text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
             <div className="space-y-3">
               <div>
                 <p className="font-semibold mb-1">Origin</p>
@@ -212,6 +118,102 @@ type Grid = number[][]`}
                 </p>
               </div>
             </div>
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          triggerText="How scoring works"
+          triggerClassName="mt-2"
+        >
+          <div className="mt-2 text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
+            <div className="space-y-3">
+              <div>
+                <p className="font-semibold mb-1">Per test input:</p>
+                <p>
+                  A test input is considered <strong>solved</strong> if{" "}
+                  <strong>ANY</strong> of your 2 prediction attempts matches the
+                  correct output. You only need one attempt to be correct.
+                </p>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-1">Per task:</p>
+                <p>
+                  Task score = (number of solved test inputs) / (total test
+                  inputs in that task)
+                </p>
+              </div>
+
+              <div>
+                <p className="font-semibold mb-1">Overall score:</p>
+                <p>
+                  Your final score is the average of all task scores across the
+                  submission.
+                </p>
+              </div>
+
+              <div className="pt-2 border-t border-border/50">
+                <p className="font-semibold mb-1">Example:</p>
+                <p className="text-xs">
+                  Task A has 2 test inputs. You solve 1 of them → Task A score:
+                  1/2 = 0.5
+                  <br />
+                  Task B has 1 test input. You solve it → Task B score: 1/1 =
+                  1.0
+                  <br />
+                  <strong>Overall score: (0.5 + 1.0) / 2 = 0.75 or 75%</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          triggerText="Submission format guide"
+          triggerClassName="mt-2"
+        >
+          <div className="mt-2 text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
+            <p className="mb-3">
+              ARC tasks contain test inputs (input grids). Each task has one or
+              more test inputs. For each test input, your solver makes two
+              prediction attempts to generate the correct output.
+            </p>
+
+            <p className="mb-2 font-semibold">Type:</p>
+            <pre className="bg-background p-3 rounded text-xs overflow-x-auto mb-3 font-mono">
+              {`type Submission = {
+  [taskId: string]: Prediction[];
+}
+type Prediction = {
+    attempt_1: Grid;
+    attempt_2: Grid;
+}
+type Grid = number[][]`}
+            </pre>
+
+            <p className="mb-2 font-semibold">
+              Example (second task has two test inputs):
+            </p>
+            <pre className="bg-background p-3 rounded text-xs overflow-x-auto">
+              {`{
+  "abc12345": [
+    {
+      "attempt_1": [[0, 1], [2, 3]],
+      "attempt_2": [[2, 3], [0, 1]]
+    }
+  ],
+  "1234abcd": [
+    {
+      "attempt_1": [[1, 2], [3, 4]],
+      "attempt_2": [[3, 4], [1, 2]]
+    },
+    {
+      "attempt_1": [[5, 6], [7, 8]],
+      "attempt_2": [[7, 8], [5, 6]]
+    }
+  ]
+}`}
+            </pre>
           </div>
         </CollapsibleSection>
       </div>

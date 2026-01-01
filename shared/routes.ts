@@ -27,10 +27,16 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
     type: 'website',
   },
 
+  '/re-arc/leaderboard': {
+    title: 'RE-ARC Bench Leaderboard',
+    description: 'Generate fresh ARC puzzles and evaluate your solver with verifiable results',
+    url: 'https://arc.markbarney.net/re-arc/leaderboard',
+    type: 'website',
+  },
+
   // ==================== Future Routes ====================
   // '/puzzle/:id': dynamic meta tags based on puzzle data
   // '/debate/:id': dynamic meta tags based on debate data
   // '/worm-arena/live/:id': dynamic meta tags for live matches
-  // '/leaderboard': leaderboard meta tags
   // '/analytics': analytics dashboard meta tags
 };
