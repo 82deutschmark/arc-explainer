@@ -506,9 +506,10 @@ export async function submitToLeaderboard(req: Request, res: Response): Promise<
       return;
     }
 
-    // Get score and task scores
+    // Get score, task scores, and actual solved pairs count
     const score = result.score;
     const taskScores = result.taskScores;
+    const solvedPairs = result.solvedPairs;
     const submissionHash = computeSubmissionHash(submission);
     const evaluationDurationMs = Date.now() - startTime;
 
@@ -525,12 +526,11 @@ export async function submitToLeaderboard(req: Request, res: Response): Promise<
       const { seedId, internalSeed } = decoded;
       const numTasks = Object.keys(submission).length;
 
-      // Calculate total pairs and solved pairs
+      // Calculate total pairs
       let totalPairs = 0;
       for (const predictions of Object.values(submission)) {
         totalPairs += predictions.length;
       }
-      const solvedPairs = Math.round(score * totalPairs);
 
       // Calculate tasks fully solved (where task score = 1.0 meaning all pairs correct)
       const tasksSolved = taskScores.filter(taskScore => taskScore === 1.0).length;
