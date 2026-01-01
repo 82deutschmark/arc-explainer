@@ -44,6 +44,8 @@ const CONFIG = {
   maxBackoffMs: Number(process.env.REARC_MAX_BACKOFF_MS) || 60000,
   checkpointInterval: Number(process.env.REARC_CHECKPOINT_INTERVAL) || 12,
   maxRetries: 3,
+  attempt2FollowupPrompt:
+    'Continue reasoning on the same ARC puzzle you just analyzed. Produce an alternative output grid if possible. Respond with ONLY the JSON grid.',
 };
 
 const DEFAULT_DATASET = path.resolve(process.cwd(), 'REARC2026.json');
@@ -92,6 +94,8 @@ interface Submission {
   [taskId: string]: Attempt[];
 }
 
+type SolvePhase = 'attempt1' | 'attempt2' | 'complete';
+
 type FailureCategory = 'rate_limit' | 'parse' | 'api' | 'network' | 'unknown';
 
 interface SolveResult {
@@ -102,6 +106,8 @@ interface SolveResult {
   error?: string;
   failureCategory?: FailureCategory;
   statusCode?: number;
+  responseId?: string;
+  rawText?: string;
 }
 
 interface WorkItem {
@@ -109,6 +115,15 @@ interface WorkItem {
   testIndex: number;
   attemptNum: 1 | 2;
   retryCount: number;
+  chainFromResponseId?: string;
+}
+
+interface SolveAttemptOptions {
+  taskId: string;
+  task: Task;
+  testIndex: number;
+  attemptNum: 1 | 2;
+  chainFromResponseId?: string;
 }
 
 interface FailureRecord {
@@ -148,14 +163,30 @@ interface ConfigSnapshot {
   maxRetries: number;
 }
 
+interface AttemptMetadataEntry {
+  responseId?: string;
+  rawText?: string;
+}
+
+interface AttemptMetadata {
+  attempt_1: AttemptMetadataEntry;
+  attempt_2: AttemptMetadataEntry;
+}
+
+interface SubmissionMetadata {
+  [taskId: string]: AttemptMetadata[];
+}
+
 interface CheckpointData {
   version: number;
   datasetPath: string;
   datasetHash: string;
   timestamp: string;
   submission: Submission;
+  submissionMetadata: SubmissionMetadata;
   workQueue: WorkItem[];
   workIndex: number;
+  phase: SolvePhase;
   stats: RuntimeStats;
   config: ConfigSnapshot;
 }
@@ -185,25 +216,35 @@ function computeFileHash(filePath: string): string {
   return hash.digest('hex');
 }
 
-function gridToString(grid: Grid): string {
-  return grid.map((row) => row.join(' ')).join('\n');
+function formatGridJSON(grid: Grid): string {
+  return JSON.stringify(grid);
+}
+
+function isValidGrid(candidate: unknown): candidate is Grid {
+  return (
+    Array.isArray(candidate) &&
+    candidate.length > 0 &&
+    candidate.every(
+      (row) =>
+        Array.isArray(row) &&
+        row.length > 0 &&
+        row.every((cell) => typeof cell === 'number' && Number.isInteger(cell))
+    )
+  );
 }
 
 function parseGridFromResponse(text: string): Grid | null {
-  const jsonMatch = text.match(/\[\s*\[[\s\S]*?\]\s*\]/);
-  if (jsonMatch) {
+  const regex = /\[\s*\[[\s\S]*?\]\s*\]/g;
+  const matches = Array.from(text.matchAll(regex));
+  for (let i = matches.length - 1; i >= 0; i--) {
+    const snippet = matches[i][0];
     try {
-      const parsed = JSON.parse(jsonMatch[0]);
-      if (Array.isArray(parsed) && parsed.every((row) => Array.isArray(row))) {
-        const valid = parsed.every((row) =>
-          row.every((cell: unknown) => typeof cell === 'number' && cell >= 0 && cell <= 9)
-        );
-        if (valid) {
-          return parsed as Grid;
-        }
+      const candidate = JSON.parse(snippet);
+      if (isValidGrid(candidate)) {
+        return candidate;
       }
     } catch {
-      // fallthrough
+      continue;
     }
   }
 
@@ -267,38 +308,29 @@ function extractResponseText(response: any): string {
 }
 
 function buildPrompt(task: Task, testIndex: number): string {
-  let prompt = `You are solving an ARC (Abstraction and Reasoning Corpus) puzzle.
+  const lines: string[] = [];
+  lines.push('You are solving an ARC (Abstraction and Reasoning Corpus) puzzle.');
+  lines.push('');
+  lines.push('## Training Examples');
+  lines.push('');
 
-## Training Examples
-`;
+  task.train.forEach((pair, idx) => {
+    lines.push(`-- Example ${idx} --`);
+    lines.push('INPUT:');
+    lines.push(formatGridJSON(pair.input));
+    lines.push('');
+    lines.push('OUTPUT:');
+    lines.push(formatGridJSON(pair.output));
+    lines.push('');
+  });
 
-  for (let i = 0; i < task.train.length; i++) {
-    prompt += `
-### Example ${i + 1}
-Input:
-${gridToString(task.train[i].input)}
+  lines.push('## Task');
+  lines.push('INPUT:');
+  lines.push(formatGridJSON(task.test[testIndex].input));
+  lines.push('');
+  lines.push('Respond with ONLY the output grid as a JSON array (e.g., [[1,2],[3,4]]).');
 
-Output:
-${gridToString(task.train[i].output)}
-`;
-  }
-
-  prompt += `
-## Task
-Study the training examples above. Find the rule that transforms each input into its output.
-Then apply that rule to the following test input.
-
-Test Input:
-${gridToString(task.test[testIndex].input)}
-
-## Response Format
-Respond with ONLY the output grid as a JSON array of arrays, e.g.:
-[[1,2,3],[4,5,6]]
-
-No narration or explanation.
-`;
-
-  return prompt;
+  return lines.join('\n');
 }
 
 // -----------------------------------------------------------------------------
@@ -415,17 +447,89 @@ function initFailureStats(): FailureStats {
   };
 }
 
-function buildInitialQueue(dataset: Dataset): WorkItem[] {
+function computeTotalWorkItems(dataset: Dataset): number {
+  return Object.values(dataset).reduce((sum, task) => sum + task.test.length * 2, 0);
+}
+
+function buildAttempt1Queue(dataset: Dataset): WorkItem[] {
   const queue: WorkItem[] = [];
   const sortedTaskIds = Object.keys(dataset).sort();
   for (const taskId of sortedTaskIds) {
     const task = dataset[taskId];
     for (let testIndex = 0; testIndex < task.test.length; testIndex++) {
       queue.push({ taskId, testIndex, attemptNum: 1, retryCount: 0 });
-      queue.push({ taskId, testIndex, attemptNum: 2, retryCount: 0 });
     }
   }
   return queue;
+}
+
+function ensureAttemptMetadata(state: RuntimeState, taskId: string, testIndex: number): AttemptMetadata {
+  state.submissionMetadata[taskId] ??= [];
+  state.submissionMetadata[taskId][testIndex] ??= {
+    attempt_1: {},
+    attempt_2: {},
+  };
+  return state.submissionMetadata[taskId][testIndex];
+}
+
+function ensureSubmissionStructures(state: RuntimeState, dataset: Dataset) {
+  for (const [taskId, task] of Object.entries(dataset)) {
+    state.submission[taskId] ??= [];
+    state.submissionMetadata[taskId] ??= [];
+    for (let testIndex = 0; testIndex < task.test.length; testIndex++) {
+      state.submission[taskId][testIndex] ??= { attempt_1: null, attempt_2: null };
+      state.submissionMetadata[taskId][testIndex] ??= {
+        attempt_1: state.submissionMetadata[taskId][testIndex]?.attempt_1 ?? {},
+        attempt_2: state.submissionMetadata[taskId][testIndex]?.attempt_2 ?? {},
+      };
+    }
+  }
+}
+
+function buildAttempt2Queue(state: RuntimeState, dataset: Dataset): WorkItem[] {
+  const queue: WorkItem[] = [];
+  const sortedTaskIds = Object.keys(dataset).sort();
+  for (const taskId of sortedTaskIds) {
+    const task = dataset[taskId];
+    for (let testIndex = 0; testIndex < task.test.length; testIndex++) {
+      const attempt = ensureAttemptSlot(state.submission, taskId, testIndex);
+      const metadata = ensureAttemptMetadata(state, taskId, testIndex);
+      if (attempt.attempt_2) {
+        continue;
+      }
+      queue.push({
+        taskId,
+        testIndex,
+        attemptNum: 2,
+        retryCount: 0,
+        chainFromResponseId: metadata.attempt_1.responseId,
+      });
+    }
+  }
+  return queue;
+}
+
+function advancePhase(state: RuntimeState, dataset: Dataset): boolean {
+  if (state.phase === 'attempt1') {
+    const attempt2Queue = buildAttempt2Queue(state, dataset);
+    if (attempt2Queue.length === 0) {
+      state.phase = 'complete';
+      state.workQueue = [];
+      state.workIndex = 0;
+      return false;
+    }
+    state.phase = 'attempt2';
+    state.workQueue = attempt2Queue;
+    state.workIndex = 0;
+    console.log(`[PHASE] Starting attempt 2 sweep (${attempt2Queue.length} work items).`);
+    return true;
+  }
+  if (state.phase === 'attempt2') {
+    state.phase = 'complete';
+    state.workQueue = [];
+    state.workIndex = 0;
+  }
+  return false;
 }
 
 function ensureAttemptSlot(submission: Submission, taskId: string, testIndex: number): Attempt {
@@ -438,17 +542,20 @@ function ensureAttemptSlot(submission: Submission, taskId: string, testIndex: nu
   return submission[taskId][testIndex];
 }
 
-function createInitialState(datasetPath: string, datasetHash: string, queue: WorkItem[]): RuntimeState {
+function createInitialState(datasetPath: string, datasetHash: string, dataset: Dataset): RuntimeState {
+  const attempt1Queue = buildAttempt1Queue(dataset);
   return {
     version: 1,
     datasetPath,
     datasetHash,
     timestamp: new Date().toISOString(),
     submission: {},
-    workQueue: queue,
+    submissionMetadata: {},
+    workQueue: attempt1Queue,
     workIndex: 0,
+    phase: 'attempt1',
     stats: {
-      initialWorkItems: queue.length,
+      initialWorkItems: computeTotalWorkItems(dataset),
       totalScheduled: 0,
       completedAttempts: 0,
       successCount: 0,
@@ -470,9 +577,9 @@ function createInitialState(datasetPath: string, datasetHash: string, queue: Wor
   };
 }
 
-function normalizeQueue(queue: WorkItem[] | undefined, fresh: WorkItem[]): WorkItem[] {
+function normalizeQueue(queue?: WorkItem[]): WorkItem[] {
   if (!queue || queue.length === 0) {
-    return fresh;
+    return [];
   }
   return queue.map((item) => ({ ...item, retryCount: item.retryCount ?? 0 }));
 }
@@ -504,7 +611,7 @@ function loadCheckpoint(
   checkpointPath: string,
   datasetPath: string,
   datasetHash: string,
-  freshQueue: WorkItem[]
+  dataset: Dataset
 ): RuntimeState | null {
   if (!fs.existsSync(checkpointPath)) {
     return null;

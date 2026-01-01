@@ -179,47 +179,62 @@ function hashDataset(data: Dataset): string {
   return crypto.createHash('sha256').update(json).digest('hex');
 }
 
-function gridToString(grid: Grid): string {
-  return grid.map((row) => row.join(' ')).join('\n');
-}
-
 function parseGridFromResponse(text: string): Grid | null {
-  // Try JSON array extraction first
-  const jsonMatch = text.match(/\[\s*\[[\s\S]*?\]\s*\]/);
-  if (jsonMatch) {
+  // 1. Try LaTeX \boxed{} extraction (for models that use it)
+  const boxedMatch = text.match(/\\boxed\{([\s\S]*?)\}/);
+  if (boxedMatch) {
     try {
-      const parsed = JSON.parse(jsonMatch[0]);
-      if (Array.isArray(parsed) && parsed.every((row) => Array.isArray(row))) {
-        const valid = parsed.every((row) =>
-          row.every((cell: unknown) => typeof cell === 'number' && cell >= 0 && cell <= 9)
-        );
-        if (valid) return parsed as Grid;
+      const boxedContent = boxedMatch[1].trim();
+      const parsed = JSON.parse(boxedContent);
+      if (isValidGrid(parsed)) {
+        return parsed;
       }
     } catch {
-      // Fall through
+      // Fall through to backscan
     }
   }
 
-  // Try line-by-line format
-  const lines = text.split('\n').filter((line) => /^[\d\s,\[\]]+$/.test(line.trim()));
-  if (lines.length > 0) {
-    try {
-      const grid: Grid = [];
-      for (const line of lines) {
-        const nums = line.match(/\d/g);
-        if (nums && nums.length > 0) {
-          grid.push(nums.map(Number));
+  // 2. Backscan JSON parser: find the LAST valid JSON array by scanning backward
+  // This handles responses with explanatory text before the answer
+  let depth = 0;
+  let bracketStart = -1;
+  for (let i = text.length - 1; i >= 0; i--) {
+    const char = text[i];
+    if (char === ']') {
+      depth++;
+      if (bracketStart === -1) {
+        bracketStart = i;
+      }
+    } else if (char === '[') {
+      depth--;
+      if (depth === 0 && bracketStart !== -1) {
+        // Found complete array structure
+        const candidate = text.substring(i, bracketStart + 1);
+        try {
+          const parsed = JSON.parse(candidate);
+          if (isValidGrid(parsed)) {
+            return parsed;
+          }
+        } catch {
+          // Continue scanning
         }
+        bracketStart = -1;
       }
-      if (grid.length > 0 && grid.every((row) => row.length === grid[0].length)) {
-        return grid;
-      }
-    } catch {
-      // Fall through
     }
   }
 
   return null;
+}
+
+function isValidGrid(parsed: unknown): parsed is Grid {
+  if (!Array.isArray(parsed)) return false;
+  if (parsed.length === 0) return false;
+  return parsed.every(
+    (row) =>
+      Array.isArray(row) &&
+      row.length > 0 &&
+      row.every((cell) => typeof cell === 'number' && cell >= 0 && cell <= 9)
+  );
 }
 
 // ============================================================================
@@ -348,36 +363,32 @@ class CheckpointManager {
 // ============================================================================
 
 function buildPrompt(task: Task, testIndex: number): string {
-  let prompt = `You are solving an ARC (Abstraction and Reasoning Corpus) puzzle.
-
-## Training Examples
-`;
-
+  // Build training examples in official arc-agi-benchmarking format (JSON arrays)
+  let trainingExamples = '';
   for (let i = 0; i < task.train.length; i++) {
-    prompt += `
-### Example ${i + 1}
-Input:
-${gridToString(task.train[i].input)}
-
-Output:
-${gridToString(task.train[i].output)}
-`;
+    trainingExamples += `--Example ${i}-- \n\n INPUT: \n\n`;
+    trainingExamples += JSON.stringify(task.train[i].input) + '\n\n';
+    trainingExamples += `OUTPUT: \n\n`;
+    trainingExamples += JSON.stringify(task.train[i].output) + '\n\n';
   }
 
-  prompt += `
-## Task
-Study the training examples above. Find the pattern/rule that transforms each input to its output.
-Then apply that same rule to the following test input.
+  // Official system prompt from arc-agi-benchmarking
+  const prompt = `You are participating in a puzzle solving competition. You are an expert at solving puzzles.
 
-Test Input:
-${gridToString(task.test[testIndex].input)}
+Below is a list of input and output pairs with a pattern. Your goal is to identify the pattern or transformation in the training examples that maps the input to the output, then apply that pattern to the test input to give a final output.
 
-## Response Format
-Respond with ONLY the output grid as a JSON array of arrays. Example:
-[[1, 2, 3], [4, 5, 6]]
+Respond in the format of the training output examples
 
-Do not include any explanation, just the JSON grid.
-`;
+--Training Examples--
+${trainingExamples}--End of Training Examples--
+
+--Test Input--
+
+${JSON.stringify(task.test[testIndex].input)}
+
+--End of Test Input--
+
+Your response:`;
 
   return prompt;
 }
@@ -394,8 +405,7 @@ async function solveAttempt(
     const requestParams: any = {
       model: CONFIG.modelKey,
       messages: [{ role: 'user', content: prompt }],
-      temperature: attemptNum === 1 ? 0.0 : 0.3,
-      max_tokens: 8192,
+      temperature: 0.7, // Reasoning models need temperature for quality
     };
 
     if (CONFIG.reasoningEffort !== 'none') {
