@@ -2,7 +2,7 @@
   "version": 1,
   "datasetPath": "D:\\GitHub\\arc-explainer\\REARC2026.json",
   "datasetHash": "dbfb0745637f6279b5ef91ef710ea682ec673e2c494de49ce8d765311ed4b8d3",
-  "timestamp": "2026-01-01T00:24:06.717Z",
+  "timestamp": "2026-01-01T00:30:17.176Z",
   "submission": {
     "17081421": [
       {
@@ -4541,24 +4541,312 @@
       "testIndex": 1,
       "attemptNum": 2,
       "retryCount": 1
+    },
+    {
+      "taskId": "0ec937d4",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0ec937d4",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0ec937d4",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0ec937d4",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0f7f3ede",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0f7f3ede",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0f7f3ede",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0f7f3ede",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0fef3f21",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0fef3f21",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0fef3f21",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "0fef3f21",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "104a0b76",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "104a0b76",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "104a0b76",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "104a0b76",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "10ee0c4e",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "10ee0c4e",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "10ee0c4e",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "10ee0c4e",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "110466cd",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "110466cd",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "110466cd",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "110466cd",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "12b63bd6",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "12b63bd6",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "12b63bd6",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "12b63bd6",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "12f17753",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "12f17753",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "12f17753",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "12f17753",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "13057ba6",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "13057ba6",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "13057ba6",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "13057ba6",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "146d7131",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "146d7131",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "146d7131",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "146d7131",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "14780f17",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "14780f17",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "14780f17",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "14780f17",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "17081421",
+      "testIndex": 0,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "17081421",
+      "testIndex": 0,
+      "attemptNum": 2,
+      "retryCount": 1
+    },
+    {
+      "taskId": "17081421",
+      "testIndex": 1,
+      "attemptNum": 1,
+      "retryCount": 1
+    },
+    {
+      "taskId": "17081421",
+      "testIndex": 1,
+      "attemptNum": 2,
+      "retryCount": 1
     }
   ],
-  "workIndex": 63,
+  "workIndex": 111,
   "stats": {
     "initialWorkItems": 492,
-    "totalScheduled": 63,
-    "completedAttempts": 60,
+    "totalScheduled": 111,
+    "completedAttempts": 108,
     "successCount": 0,
-    "failureCount": 60,
-    "retryScheduled": 60,
+    "failureCount": 108,
+    "retryScheduled": 108,
     "rateLimitEvents": 0,
     "maxObservedBackoffMs": 7500,
     "failureStats": {
-      "total": 60,
+      "total": 108,
       "byCategory": {
         "rate_limit": 0,
         "parse": 0,
-        "api": 60,
+        "api": 108,
         "network": 0,
         "unknown": 0
       },
