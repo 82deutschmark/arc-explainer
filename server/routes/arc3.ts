@@ -1,8 +1,10 @@
 /*
 Author: Claude Code using Sonnet 4.5
 Date: 2025-11-06
+Updated: 2026-01-01 - Added BYOK enforcement for production environment
 PURPOSE: Express router exposing the ARC3 agent playground API backed by the OpenAI Agents SDK runner.
 Manages scorecard lifecycle for the real ARC3 API integration.
+BYOK enforcement: Production requires user API key in stream/prepare and real-game/run endpoints.
 SRP/DRY check: Pass — isolates HTTP contract and validation for ARC3 playground endpoints.
 */
 
@@ -19,6 +21,7 @@ import { buildArc3DefaultPrompt, listArc3PromptPresets, getArc3PromptBody } from
 import { logger } from '../utils/logger';
 import { ARC3_GAMES } from '../../shared/arc3Games';
 import { discoverLevelScreenshots, enrichGameWithScreenshots } from '../services/arc3ScreenshotService';
+import { requiresUserApiKey } from '../utils/environmentPolicy.js';
 
 const router = Router();
 
@@ -43,6 +46,7 @@ const runSchema = z.object({
   reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
   systemPromptPresetId: z.enum(['twitch', 'playbook', 'none']).optional(),
   skipDefaultSystemPrompt: z.boolean().optional(),
+  apiKey: z.string().trim().optional(),
 });
 
 // NEW: Real ARC3 API endpoints
@@ -242,6 +246,17 @@ router.post(
 router.post(
   '/real-game/run',
   asyncHandler(async (req: Request, res: Response) => {
+    // Environment-aware BYOK enforcement: production requires user API key
+    const userApiKey = req.body?.apiKey?.trim?.() || '';
+    if (requiresUserApiKey() && !userApiKey) {
+      return res.status(400).json(
+        formatResponse.error(
+          'API_KEY_REQUIRED',
+          'Production requires your API key. Your key is used for this session only and is never stored.'
+        )
+      );
+    }
+
     const payload = runSchema.parse(req.body);
     const result = await realGameRunner.run(payload);
     res.json(formatResponse.success(result));
@@ -267,6 +282,7 @@ const streamRunSchema = z.object({
   reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
   systemPromptPresetId: z.enum(['twitch', 'playbook', 'none']).optional(),
   skipDefaultSystemPrompt: z.boolean().optional(),
+  apiKey: z.string().trim().optional(),
 });
 
 /**
@@ -276,6 +292,17 @@ const streamRunSchema = z.object({
 router.post(
   '/stream/prepare',
   asyncHandler(async (req: Request, res: Response) => {
+    // Environment-aware BYOK enforcement: production requires user API key
+    const userApiKey = req.body?.apiKey?.trim?.() || '';
+    if (requiresUserApiKey() && !userApiKey) {
+      return res.status(400).json(
+        formatResponse.error(
+          'API_KEY_REQUIRED',
+          'Production requires your API key. Your key is used for this session only and is never stored.'
+        )
+      );
+    }
+
     const payload = streamRunSchema.parse(req.body);
     const sessionId = arc3StreamService.savePendingPayload(payload);
     res.json(formatResponse.success({ sessionId }));

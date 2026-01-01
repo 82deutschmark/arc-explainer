@@ -1,8 +1,10 @@
 /*
 Author: Claude (Windsurf Cascade)  
 Date: 2025-11-06
+Updated: 2026-01-01 - Added BYOK support for production environment
 PURPOSE: Ultra-compact ARC3 Agent Playground matching real ARC-AGI-3 site layout.
 Game selector above grid in center. Models from config. Minimal controls.
+BYOK enforcement: Production requires user API key; key is session-only, never stored.
 SRP/DRY check: Pass
 */
 
@@ -10,7 +12,11 @@ import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Gamepad2, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Gamepad2, ArrowLeft, RefreshCw, Key } from 'lucide-react';
+import { requiresUserApiKey } from '@/lib/environmentPolicy';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
 import { Arc3ReasoningViewer } from '@/components/arc3/Arc3ReasoningViewer';
@@ -275,11 +281,20 @@ export default function ARC3AgentPlayground() {
   );
   const [userMessage, setUserMessage] = useState('');
   const [showUserInput, setShowUserInput] = useState(false);
+  // BYOK: API key state for production environment
+  const [userApiKey, setUserApiKey] = useState('');
+  const byokRequired = requiresUserApiKey();
 
   // Streaming
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
 
   const handleStart = () => {
+    // BYOK: Block start if key required but not provided
+    if (byokRequired && !userApiKey.trim()) {
+      alert('API key is required in production. Please enter your OpenAI API key.');
+      return;
+    }
+
     const skipDefaultSystemPrompt = systemPromptPresetId === 'none';
 
     start({
@@ -292,6 +307,8 @@ export default function ARC3AgentPlayground() {
       reasoningEffort,
       systemPromptPresetId,
       skipDefaultSystemPrompt,
+      // BYOK: Pass user API key if provided (required in production)
+      ...(userApiKey.trim() ? { apiKey: userApiKey.trim() } : {}),
     });
   };
 
@@ -448,6 +465,46 @@ export default function ARC3AgentPlayground() {
 
         {/* LEFT: Ultra-compact controls */}
         <div className="lg:col-span-3 space-y-3">
+
+          {/* BYOK: API Key Input - Only shown in production */}
+          {byokRequired && !isPlaying && (
+            <Card className="border-amber-200 bg-amber-50/50">
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <CardTitle className="text-sm text-amber-900 flex items-center gap-1.5">
+                      <Key className="h-3.5 w-3.5" />
+                      API Key Required
+                    </CardTitle>
+                    <CardDescription className="text-xs mt-1 text-amber-700">
+                      Your key is used for this session only and is never stored.
+                    </CardDescription>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] uppercase tracking-wide border-amber-300 text-amber-700">
+                    BYOK
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <Label htmlFor="arc3-api-key" className="sr-only">API Key</Label>
+                    <Input
+                      id="arc3-api-key"
+                      type="password"
+                      placeholder="Enter your OpenAI API key..."
+                      value={userApiKey}
+                      onChange={(e) => setUserApiKey(e.target.value)}
+                      className="font-mono text-xs h-8"
+                    />
+                  </div>
+                  {userApiKey.trim() && (
+                    <span className="text-[10px] text-green-600 font-medium whitespace-nowrap">Key provided</span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Config - Hidden when playing */}
           {!isPlaying && (
