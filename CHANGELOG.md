@@ -2,6 +2,16 @@
 
 ### Version 6.21.0  Jan 2, 2026
 
+- **BYOK Integration for Council** (Author: Grok_Codefast1)
+  - **What**: Applied Bring Your Own Key (BYOK) enforcement to Council assessment endpoints, following established patterns from other services.
+  - **Why**: Council was inconsistent with other services (Poetiq, SnakeBench, streamController) that already enforce BYOK in production. Users were incurring API costs without control over their budgets.
+  - **How**: 
+    - **Backend**: Updated `councilController.ts` to validate BYOK requirements and return 400 error when production requires key but none provided. Modified `councilService.ts` to accept and resolve `apiKey`/`provider` parameters. Updated `councilBridge.ts` to accept resolved API key and set `OPENROUTER_API_KEY` environment variable. Added health check log muting (5-minute cooldown).
+    - **Frontend**: Updated `LLMCouncil.tsx` to show BYOK input card only in production (amber styling matching PuzzleExaminer pattern), added client-side validation, included `apiKey`/`provider` in API requests, implemented dynamic health check polling (30s healthy, 5min unhealthy).
+    - **Pattern compliance**: Follows exact `streamController` validation pattern, uses established `environmentPolicy` utilities (`requiresUserApiKey()`, `getEffectiveApiKey()`), maintains backward compatibility (dev mode uses server key fallbacks).
+  - **Security**: API keys never logged or stored server-side, only used for session execution. Production blocks without user keys, development allows server fallbacks.
+  - **Files changed**: `councilController.ts`, `councilService.ts`, `councilBridge.ts`, `LLMCouncil.tsx`, `2026-01-02-byok-system-integration-plan.md`
+
 - **LLM Council Integration** (Author: Claude Sonnet 4 / Fixed by Claude Haiku)
   - **What**: Integrated llm-council submodule for multi-model consensus evaluation of ARC puzzles. New `/council` route with full 3-stage deliberation UI.
   - **Why**: The llm-council submodule was added but never wired up. Users can now have multiple LLMs independently solve puzzles, rank each other's work, and produce a synthesized consensus answer.
