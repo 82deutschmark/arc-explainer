@@ -212,8 +212,13 @@ export function TaskEfficiencyLeaderboard({
 
   return (
     <div className="rounded-xl border border-gray-800 bg-gray-900/60 overflow-hidden h-full flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-gray-800 bg-gradient-to-r from-emerald-950/40 to-gray-900">
+      {/* Header - clickable to open full efficiency page */}
+      <a
+        href={taskId ? `/task/${taskId}/efficiency` : undefined}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-between gap-2 px-4 py-3 border-b border-gray-800 bg-gradient-to-r from-emerald-950/40 to-gray-900 hover:from-emerald-950/60 hover:to-gray-800 transition-colors cursor-pointer"
+      >
         <div className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-emerald-400" />
           <span className="text-base font-semibold text-gray-100">Efficiency</span>
@@ -221,7 +226,8 @@ export function TaskEfficiencyLeaderboard({
             {explanations.length}
           </Badge>
         </div>
-      </div>
+        {taskId && <ExternalLink className="h-4 w-4 text-gray-500" />}
+      </a>
 
       {/* Quick stats bar */}
       <div className="grid grid-cols-3 gap-2 px-4 py-2 bg-gray-900/80 border-b border-gray-800/60 text-[11px]">
@@ -333,3 +339,5 @@ export function TaskEfficiencyLeaderboard({
         })}
       </div>
     </div>
+  );
+}

@@ -286,6 +286,7 @@ export default function PuzzleAnalyst() {
             {correctnessFilter === 'correct' && summaries.length > 0 && (
               <TaskEfficiencyLeaderboard
                 explanations={summaries}
+                taskId={taskId}
                 onSelectExplanation={(id) => {
                   // Expand the selected row
                   setExpandedRows((prev) => {

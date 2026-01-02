@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.9  Jan 1, 2026
+
+- **Task Efficiency - Major Improvements** (Author: ChatGPT)
+  - **What**: Fixed all cost/time/token calculations, added #correct URL hash support, simplified efficiency page, made leaderboard header clickable.
+  - **Why**: Costs weren't showing (DB returns strings), highlight wasn't expanding cards, efficiency page was bloated.
+  - **How**:
+    - Added `toNum()` helper throughout TaskEfficiencyLeaderboard for consistent string-to-number parsing.
+    - Support `#correct` in URL (e.g., `/task/b5ca7ac4#correct`) to auto-filter to correct solutions.
+    - Removed blue ring from highlight - just expand card and scroll.
+    - Made leaderboard header clickable to open `/task/:id/efficiency` in new tab.
+    - Rewrote TaskEfficiency page to embed TaskEfficiencyLeaderboard with a comparison summary.
+  - **Files changed**: `TaskEfficiencyLeaderboard.tsx`, `PuzzleAnalyst.tsx`, `TaskEfficiency.tsx`
+
 ### Version 6.19.8  Jan 1, 2026
 
 - **Task Efficiency Leaderboard - Bug Fixes & Highlight Support** (Author: ChatGPT)
