@@ -595,7 +595,6 @@ export default function LLMCouncil() {
             </div>
           )}
         </div>
-        </div>
       </div>
     </div>
   );
