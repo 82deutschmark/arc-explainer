@@ -33,6 +33,7 @@ import { Label } from '@/components/ui/label';
 import { PuzzleProgressGrid } from '@/components/poetiq/PuzzleProgressGrid';
 import { usePoetiqCommunityProgress } from '@/hooks/usePoetiqCommunityProgress';
 import { usePoetiqModels } from '@/hooks/usePoetiqModels';
+import { useRequiresUserApiKey } from '@/hooks/useAppConfig';
 
 const EXPERT_OPTIONS = [
   { value: '1', label: '1 Expert (Poetiq-a)' },
@@ -101,15 +102,16 @@ export default function PoetiqCommunity() {
 
   const selectedModel = models.find(m => m.id === selectedModelId) ?? null;
   const providerSlug = mapProviderToSlug(selectedModel?.provider);
-  const requiresByo = selectedModel?.requiresBYO ?? false;
-  const requiresApiKey = requiresByo;
+  const globalByokRequired = useRequiresUserApiKey();
+  const modelRequiresByo = selectedModel?.requiresBYO ?? false;
+  const requiresApiKey = globalByokRequired || modelRequiresByo;
   const routingLabel = getRoutingLabel(selectedModel?.routing);
   const recommendedModels = useMemo(() => models.filter(m => m.recommended), [models]);
   const keyPlaceholder = KEY_PLACEHOLDERS[providerSlug];
   const providerKeyUrl = PROVIDER_KEY_URLS[providerSlug];
 
   const nextPuzzle = progress.getNextRecommended();
-  const canStart = !!nextPuzzle && !!selectedModel && !modelsLoading && (!requiresByo || !!apiKey.trim());
+  const canStart = !!nextPuzzle && !!selectedModel && !modelsLoading && (!requiresApiKey || !!apiKey.trim());
   const usingProjectKey = !apiKey.trim();
 
   const handleOpenTransparency = () => {
@@ -260,8 +262,10 @@ export default function PoetiqCommunity() {
                       <>
                         <Badge variant="outline">{selectedModel.provider}</Badge>
                         <Badge variant="secondary">{routingLabel}</Badge>
-                        {selectedModel.requiresBYO && (
-                          <Badge variant="destructive">BYO Key Required</Badge>
+                        {(globalByokRequired || selectedModel.requiresBYO) && (
+                          <Badge variant="destructive">
+                            {globalByokRequired ? 'API Key Required (Production)' : 'BYO Key Required'}
+                          </Badge>
                         )}
                       </>
                     ) : (
