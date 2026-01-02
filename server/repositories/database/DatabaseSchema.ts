@@ -629,6 +629,23 @@ export class DatabaseSchema {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_consensus ON explanations(beetree_consensus_strength DESC) WHERE beetree_consensus_strength IS NOT NULL`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_model_results ON explanations USING GIN(beetree_model_results) WHERE beetree_model_results IS NOT NULL`);
 
+    // Migration: Add LLM Council columns for multi-model consensus assessments
+    await client.query(`
+      ALTER TABLE explanations
+      ADD COLUMN IF NOT EXISTS council_mode VARCHAR(20) DEFAULT NULL CHECK (council_mode IN ('solve', 'assess')),
+      ADD COLUMN IF NOT EXISTS council_stage1_results JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_stage2_rankings JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_stage3_synthesis JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_metadata JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_assessed_explanation_ids INTEGER[] DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_aggregate_rankings JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_prompt_used TEXT DEFAULT NULL;
+    `);
+
+    // Migration: Add indexes for Council queries
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_council_mode ON explanations(council_mode) WHERE council_mode IS NOT NULL`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_council_stage1 ON explanations USING GIN(council_stage1_results) WHERE council_stage1_results IS NOT NULL`);
+
     // Migration: Align SnakeBench models table with Greg's TrueSkill fields
     await client.query(`
       ALTER TABLE public.models
