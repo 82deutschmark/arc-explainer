@@ -14,7 +14,7 @@ import fs from 'fs';
 import { logger } from '../../utils/logger.ts';
 
 // Configuration
-const COUNCIL_TIMEOUT_MS = parseInt(process.env.COUNCIL_TIMEOUT_MS || '180000', 10); // 3 min default for council
+const COUNCIL_TIMEOUT_MS = parseInt(process.env.COUNCIL_TIMEOUT_MS || '1200000', 10); // 20 min default for council
 
 // Log muting for health check failures
 let lastHealthCheckFailureTime: number | null = null;
