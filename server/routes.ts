@@ -33,6 +33,7 @@ import modelDatasetController from "./controllers/modelDatasetController.ts";
 import { snakeBenchController } from "./controllers/snakeBenchController.ts";
 import { contributorController } from './controllers/contributorController.ts';
 import * as reArcController from './controllers/reArcController.ts';
+import { councilController } from './controllers/councilController.ts';
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
@@ -303,6 +304,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Harness-aligned accuracy (public, no auth)
   app.get("/api/accuracy/harness", asyncHandler(getHarnessAlignedAccuracy));
+
+  // LLM Council routes - multi-model consensus evaluation
+  app.get("/api/council/health", asyncHandler(councilController.healthCheck));
+  app.get("/api/council/unsolved-puzzles", asyncHandler(councilController.getUnsolvedPuzzles));
+  app.get("/api/council/puzzle/:taskId/explanations", asyncHandler(councilController.getExplanationsForAssessment));
+  app.post("/api/council/assess", asyncHandler(councilController.assessPuzzle));
+  app.post("/api/council/assess/stream", asyncHandler(councilController.streamAssessment));
 
   // RE-ARC dataset generation and verification routes
   // Rate limiting: 5 generations per 5min, 50 verifications per 5min per IP

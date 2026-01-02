@@ -1,5 +1,23 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.21.0  Jan 2, 2026
+
+- **LLM Council Integration** (Author: Claude Sonnet 4)
+  - **What**: Integrated llm-council submodule for multi-model consensus evaluation of ARC puzzles. New `/council` route with full 3-stage deliberation UI.
+  - **Why**: The llm-council submodule was added but never wired up. Users can now have multiple LLMs independently solve puzzles, rank each other's work, and produce a synthesized consensus answer.
+  - **How** (subprocess pattern like Saturn/Grover/Beetree):
+    - Created `server/python/council_wrapper.py` - Python wrapper that imports llm-council modules
+    - Created `server/services/council/councilBridge.ts` - Spawns Python subprocess, NDJSON protocol
+    - Created `server/services/council/councilService.ts` - ARC puzzle formatting and orchestration
+    - Created `server/controllers/councilController.ts` - API endpoints for council operations
+    - Added routes: `GET /api/council/health`, `GET /api/council/unsolved-puzzles`, `GET /api/council/puzzle/:taskId/explanations`, `POST /api/council/assess`, `POST /api/council/assess/stream`
+    - Created `client/src/pages/LLMCouncil.tsx` - Full UI for puzzle selection, mode selection (solve/assess), and 3-stage result display
+    - Added frontend routes `/council` and `/council/:taskId`
+  - **Requirements**: Python installed, `llm-council` submodule checked out, `OPENROUTER_API_KEY` env var set
+  - **Usage**: Visit `/council`, select puzzle, run assessment. No separate service needed.
+  - **TODO**: ELO integration for council votes, `council_votes` DB migration
+  - **Files changed**: `council_wrapper.py`, `councilBridge.ts`, `councilService.ts`, `councilController.ts`, `routes.ts`, `LLMCouncil.tsx`, `App.tsx`, `2026-01-01-llm-council-integration-plan.md`
+
 ### Version 6.20.0  Jan 1, 2026 23:39
 
 - **Efficiency + Analyst UX Polish** (Author: ChatGPT)
