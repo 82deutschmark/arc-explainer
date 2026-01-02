@@ -131,22 +131,29 @@ export function TaskEfficiencyLeaderboard({
   }, [explanations]);
 
   // Formatters - show exact values, no rounding for tokens
-  const formatCost = (value: number | null | undefined): string => {
-    if (value == null || value === 0) return '-';
+  // Handle string values from DB by parsing to number first
+  const formatCost = (value: number | string | null | undefined): string => {
+    if (value == null) return '-';
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    if (!Number.isFinite(num) || num === 0) return '-';
     // Always show 4 decimal places for precision
-    return `$${value.toFixed(4)}`;
+    return `$${num.toFixed(4)}`;
   };
 
-  const formatTime = (ms: number | null | undefined): string => {
-    if (ms == null || ms === 0) return '-';
-    const result = formatProcessingTimeDetailed(ms);
+  const formatTime = (ms: number | string | null | undefined): string => {
+    if (ms == null) return '-';
+    const num = typeof ms === 'string' ? parseFloat(ms) : ms;
+    if (!Number.isFinite(num) || num === 0) return '-';
+    const result = formatProcessingTimeDetailed(num);
     return result ?? '-';
   };
 
-  const formatTokens = (value: number | null | undefined): string => {
-    if (value == null || value === 0) return '-';
+  const formatTokens = (value: number | string | null | undefined): string => {
+    if (value == null) return '-';
+    const num = typeof value === 'string' ? parseInt(value, 10) : value;
+    if (!Number.isFinite(num) || num === 0) return '-';
     // Show exact number with commas, no rounding
-    return value.toLocaleString();
+    return num.toLocaleString();
   };
 
   // Get thinking label

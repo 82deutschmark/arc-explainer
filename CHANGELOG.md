@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.8  Jan 1, 2026
+
+- **Task Efficiency Leaderboard - Bug Fixes & Highlight Support** (Author: ChatGPT)
+  - **What**: Fixed TypeError crash when cost/time/tokens are strings from DB. Added highlight=ID deep linking to PuzzleAnalyst.
+  - **Why**: Page was crashing with "b.toFixed is not a function" because DB sometimes returns numeric strings. Also, `/task/:id?highlight=:explanationId` URLs were not working (card didn't auto-expand or scroll into view).
+  - **How**:
+    - Added string-to-number parsing in formatCost/formatTime/formatTokens before calling toFixed/toLocaleString.
+    - Added useEffect to parse `highlight` query param on mount and auto-expand the row.
+    - Added second useEffect to scroll to highlighted row once summaries load, with temporary blue ring highlight.
+  - **Files changed**: `TaskEfficiencyLeaderboard.tsx`, `PuzzleAnalyst.tsx`
+
 ### Version 6.19.7  Jan 1, 2026
 
 - **Task Efficiency Leaderboard - Major Fixes** (Author: ChatGPT)
