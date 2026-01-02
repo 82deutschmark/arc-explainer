@@ -199,9 +199,9 @@ export default function PuzzleAnalyst() {
         correctnessFilter === 'correct' ? 'max-w-[1800px]' : 'max-w-7xl'
       )}>
         <div className={cn(
-          'grid gap-4 transition-all duration-300 ease-out',
+          'grid gap-6 transition-all duration-300 ease-out',
           correctnessFilter === 'correct' && summaries.length > 0
-            ? 'lg:grid-cols-[1fr_420px]'
+            ? 'lg:grid-cols-2'
             : 'grid-cols-1'
         )}>
           {/* Left: Results grid */}
