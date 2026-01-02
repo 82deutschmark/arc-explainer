@@ -187,7 +187,7 @@ export function TaskEfficiencyLeaderboard({
     <button
       onClick={() => handleSort(field)}
       className={cn(
-        'flex items-center justify-end gap-1 w-full text-[10px] font-semibold uppercase tracking-wide transition-colors',
+        'flex items-center justify-end gap-1 w-full text-xs font-semibold uppercase tracking-wide transition-colors',
         sortField === field
           ? 'text-emerald-300'
           : 'text-gray-500 hover:text-gray-300'
@@ -229,48 +229,40 @@ export function TaskEfficiencyLeaderboard({
         {taskId && <ExternalLink className="h-4 w-4 text-gray-500" />}
       </a>
 
-      {/* Quick stats bar */}
-      <div className="grid grid-cols-3 gap-2 px-4 py-2 bg-gray-900/80 border-b border-gray-800/60 text-[11px]">
-        <div className="flex flex-col">
-          <span className="flex items-center gap-1 text-gray-500">
-            <Zap className="h-3 w-3 text-emerald-500" />
-            Fastest
-          </span>
-          <span className="text-emerald-300 font-mono font-medium">
-            {stats.minTime != null ? formatTime(stats.minTime) : 'N/A'}
-          </span>
+      {/* Comparison bar - shows range/spread, not just best */}
+      {stats.minTime && stats.maxTime && stats.minCost && stats.maxCost && (
+        <div className="grid grid-cols-2 gap-3 px-4 py-2.5 bg-gray-900/80 border-b border-gray-800/60 text-sm">
+          <div>
+            <span className="text-gray-500 text-xs">Time spread:</span>
+            <div className="flex items-center gap-1">
+              <span className="text-emerald-300 font-mono">{formatTime(stats.minTime)}</span>
+              <span className="text-gray-600">→</span>
+              <span className="text-rose-300 font-mono">{formatTime(stats.maxTime)}</span>
+              <span className="text-gray-500 text-xs">({(stats.maxTime / stats.minTime).toFixed(1)}x)</span>
+            </div>
+          </div>
+          <div>
+            <span className="text-gray-500 text-xs">Cost spread:</span>
+            <div className="flex items-center gap-1">
+              <span className="text-emerald-300 font-mono">{formatCost(stats.minCost)}</span>
+              <span className="text-gray-600">→</span>
+              <span className="text-rose-300 font-mono">{formatCost(stats.maxCost)}</span>
+              <span className="text-gray-500 text-xs">({(stats.maxCost / stats.minCost).toFixed(1)}x)</span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <span className="flex items-center gap-1 text-gray-500">
-            <DollarSign className="h-3 w-3 text-emerald-500" />
-            Cheapest
-          </span>
-          <span className="text-emerald-300 font-mono font-medium">
-            {stats.minCost != null ? formatCost(stats.minCost) : 'N/A'}
-          </span>
-        </div>
-        <div className="flex flex-col">
-          <span className="flex items-center gap-1 text-gray-500">
-            <Coins className="h-3 w-3 text-emerald-500" />
-            Fewest
-          </span>
-          <span className="text-emerald-300 font-mono font-medium">
-            {stats.minTokens != null ? formatTokens(stats.minTokens) : 'N/A'}
-          </span>
-        </div>
-      </div>
+      )}
 
       {/* Column headers - sortable */}
-      <div className="grid grid-cols-[1fr_50px_80px_70px_80px] gap-2 px-4 py-2 border-b border-gray-800 bg-black text-gray-500">
-        <div className="text-[10px] font-semibold uppercase tracking-wide">Model</div>
-        <div className="text-[10px] font-semibold uppercase tracking-wide text-center">Think</div>
+      <div className="grid grid-cols-[1fr_70px_75px_70px] gap-2 px-4 py-2.5 border-b border-gray-800 bg-black text-gray-500">
+        <div className="text-xs font-semibold uppercase tracking-wide">Model</div>
         <SortHeader field="time" label="Time" icon={Clock} />
         <SortHeader field="cost" label="Cost" icon={DollarSign} />
         <SortHeader field="tokens" label="Tokens" icon={Coins} />
       </div>
 
-      {/* Rows - scrollable */}
-      <div className="flex-1 overflow-y-auto divide-y divide-gray-800/40">
+      {/* Rows - scrollable with visible scrollbar */}
+      <div className="flex-1 overflow-y-auto overflow-x-auto divide-y divide-gray-800/40 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
         {sortedExplanations.map((exp, idx) => {
           const isFastest = exp.id === fastestId;
           const isCheapest = exp.id === cheapestId;
@@ -285,35 +277,24 @@ export function TaskEfficiencyLeaderboard({
               key={exp.id}
               onClick={() => onSelectExplanation?.(exp.id)}
               className={cn(
-                'grid grid-cols-[1fr_50px_80px_70px_80px] gap-2 px-4 py-2 cursor-pointer transition-colors hover:bg-gray-800/60',
+                'grid grid-cols-[1fr_70px_75px_70px] gap-2 px-4 py-2.5 cursor-pointer transition-colors hover:bg-gray-800/60',
                 idx % 2 === 1 && 'bg-gray-900/30',
                 (isFastest || isCheapest || isFewest) && 'bg-emerald-950/20'
               )}
             >
               {/* Model name */}
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-[10px] font-mono text-gray-600 w-4">{idx + 1}</span>
-                <span className="text-xs font-medium text-gray-200 truncate" title={exp.modelName}>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xs font-mono text-gray-600 w-5">{idx + 1}</span>
+                <span className="text-sm font-medium text-gray-200 truncate" title={exp.modelName}>
                   {exp.modelName}
                 </span>
-                {isFastest && <Zap className="h-3 w-3 text-emerald-400 flex-shrink-0" />}
-                {isCheapest && !isFastest && <DollarSign className="h-3 w-3 text-emerald-400 flex-shrink-0" />}
-              </div>
-
-              {/* Thinking */}
-              <div className="flex items-center justify-center">
-                {thinkingLabel ? (
-                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-gray-700 text-gray-400">
-                    {thinkingLabel}
-                  </Badge>
-                ) : (
-                  <span className="text-gray-600">-</span>
-                )}
+                {isFastest && <Zap className="h-4 w-4 text-emerald-400 flex-shrink-0" />}
+                {isCheapest && !isFastest && <DollarSign className="h-4 w-4 text-emerald-400 flex-shrink-0" />}
               </div>
 
               {/* Time */}
               <div className={cn(
-                'text-right text-[11px] font-mono',
+                'text-right text-sm font-mono',
                 isFastest ? 'text-emerald-300 font-semibold' : 'text-gray-400'
               )}>
                 {formatTime(time)}
@@ -321,7 +302,7 @@ export function TaskEfficiencyLeaderboard({
 
               {/* Cost */}
               <div className={cn(
-                'text-right text-[11px] font-mono',
+                'text-right text-sm font-mono',
                 isCheapest ? 'text-emerald-300 font-semibold' : cost && cost > 0 ? 'text-gray-400' : 'text-gray-600'
               )}>
                 {formatCost(cost)}
@@ -329,7 +310,7 @@ export function TaskEfficiencyLeaderboard({
 
               {/* Tokens */}
               <div className={cn(
-                'text-right text-[11px] font-mono',
+                'text-right text-sm font-mono',
                 isFewest ? 'text-emerald-300 font-semibold' : 'text-gray-400'
               )}>
                 {formatTokens(tokens)}
