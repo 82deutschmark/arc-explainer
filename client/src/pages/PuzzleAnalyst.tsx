@@ -7,7 +7,7 @@
  * SRP/DRY check: Pass - orchestrates layout and filtering, delegates rows/leaderboard to components.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams } from 'wouter';
 import { AlertCircle, CheckCircle, Filter, XCircle } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
@@ -27,6 +27,8 @@ export default function PuzzleAnalyst() {
   const { taskId } = useParams<{ taskId: string }>();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
+  const [highlightedId, setHighlightedId] = useState<number | null>(null);
+
   // Fetch puzzle metadata
   const { task, isLoadingTask: isPuzzleLoading } = usePuzzle(taskId);
 
@@ -46,6 +48,39 @@ export default function PuzzleAnalyst() {
   const summaryStats = counts ?? { all: 0, correct: 0, incorrect: 0 };
   // Provide expected outputs so AnalysisResultCard can render grids and mismatches.
   const testCases = task?.test ?? [];
+
+  // Handle highlight query parameter for deep linking - auto-expand and scroll to the highlighted card
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const highlightParam = params.get('highlight');
+    const parsedHighlight = highlightParam ? Number.parseInt(highlightParam, 10) : NaN;
+
+    if (Number.isFinite(parsedHighlight)) {
+      setHighlightedId(parsedHighlight);
+      // Auto-expand the highlighted row
+      setExpandedRows((prev) => new Set([...prev, parsedHighlight]));
+    } else {
+      setHighlightedId(null);
+    }
+  }, []);
+
+  // Scroll to highlighted row once summaries are loaded
+  useEffect(() => {
+    if (highlightedId !== null && summaries.length > 0) {
+      const timeoutId = setTimeout(() => {
+        const element = document.getElementById(`explanation-row-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.classList.add('ring-2', 'ring-blue-500/70');
+          // Remove highlight ring after a few seconds
+          setTimeout(() => {
+            element.classList.remove('ring-2', 'ring-blue-500/70');
+          }, 4000);
+        }
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [highlightedId, summaries]);
 
   const handleToggleRow = (explanationId: number) => {
     setExpandedRows(prev => {
@@ -199,9 +234,9 @@ export default function PuzzleAnalyst() {
         correctnessFilter === 'correct' ? 'max-w-[1800px]' : 'max-w-7xl'
       )}>
         <div className={cn(
-          'grid gap-4 transition-all duration-300 ease-out',
+          'grid gap-6 transition-all duration-300 ease-out',
           correctnessFilter === 'correct' && summaries.length > 0
-            ? 'lg:grid-cols-[1fr_420px]'
+            ? 'lg:grid-cols-2'
             : 'grid-cols-1'
         )}>
           {/* Left: Results grid */}
