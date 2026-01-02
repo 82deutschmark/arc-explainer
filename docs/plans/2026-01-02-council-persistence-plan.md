@@ -1,7 +1,7 @@
 # Council Result Persistence Architecture Plan
 
 **Date:** 2026-01-02
-**Status:** Planning
+**Status:** COMPLETE (Phases 2-4 implemented)
 **Author:** Claude Haiku
 **Goal:** Enable LLM Council results to be persisted to database and integrated with ELO/voting system
 
@@ -195,20 +195,20 @@ council_prompt_used = "[full prompt text]"
 - ✅ Add schema columns to DatabaseSchema.ts
 - ✅ Add interface fields to IExplanationRepository.ts
 
-### Phase 2: Repository Layer (NEXT)
-1. **ExplanationRepository.saveExplanation()** - Add council columns to INSERT query
-2. **All SELECT queries** - Include council columns in result
-3. **mapRowToExplanation()** - Map DB columns to DTO fields
+### Phase 2: Repository Layer (COMPLETE)
+- ✅ **ExplanationRepository.saveExplanation()** - Added council columns to INSERT query (8 new columns: council_mode, stage1/2/3, metadata, assessed_ids, aggregate_rankings, prompt_used)
+- ✅ **All SELECT queries** - Updated getExplanationForPuzzle(), getExplanationsForPuzzle(), getExplanationById() to include council columns with camelCase aliases
+- ✅ **mapRowToExplanation()** - Added JSONB parsing for council fields (stage1/2/3 results, metadata, aggregate rankings)
 
-### Phase 3: Transformation & Saving (NEXT)
-4. **Create transformCouncilResult()** - Convert CouncilAssessmentResult → ExplanationData
-5. **Create extractPredictedGridFromSynthesis()** - Parse chairman's response
-6. **Create deriveConfidenceFromRankings()** - Calculate numeric confidence
-7. **Update councilService.assessPuzzle()** - Call transform + save after completion
+### Phase 3: Transformation & Saving (COMPLETE)
+- ✅ **transformCouncilResult()** - Converts CouncilAssessmentResult → ExplanationData with full 3-stage data and metadata
+- ✅ **extractPredictedGridFromSynthesis()** - Regex pattern matching to extract output grids from stage3 text
+- ✅ **deriveConfidenceFromRankings()** - Calculates 0-100 confidence using formula: 100 - (avg_rank * 20)
+- ✅ **Update councilService.assessPuzzle()** - Auto-saves results via saveCouncilResult() after completion
 
-### Phase 4: Scoring
-8. **Integrate existing prediction scorer** - Use existing grid comparison logic
-9. **Set is_prediction_correct** - If prediction extracted, score it
+### Phase 4: Scoring (COMPLETE)
+- ✅ **Integrated prediction scorer** - Uses existing JSON.stringify() grid comparison logic
+- ✅ **Set is_prediction_correct** - Scores against first test output if prediction extracted
 
 ### Phase 5: Frontend Integration
 10. **Update LLMCouncil component** - Show "Saved to database" confirmation

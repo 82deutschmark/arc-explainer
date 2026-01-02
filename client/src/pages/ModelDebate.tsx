@@ -12,13 +12,15 @@
  */
 
 import React, { useEffect, useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { AnalysisResult, ExplanationData } from '@/types/puzzle';
 import { useParams, Link, useLocation } from 'wouter';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { MessageSquare, Plus, Loader2 } from 'lucide-react';
+import { MessageSquare, Plus, Loader2, Grid3X3, Database, Trophy, Users, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Focused components
@@ -334,9 +336,134 @@ export default function ModelDebate() {
     );
   }
 
-  // No taskId - show header with input form
+  // Fetch hardest puzzles for landing page
+  const { data: hardestPuzzles, isLoading: isLoadingHardest } = useQuery({
+    queryKey: ['hardest-puzzles-with-explanations'],
+    queryFn: async () => {
+      const res = await fetch('/api/puzzle/worst-performing?limit=12');
+      const data = await res.json();
+      return data.success ? data.data.puzzles : [];
+    },
+    enabled: !taskId,
+  });
+
+  // No taskId - show hardest puzzles
   if (!taskId) {
-    return <PuzzleDebateHeader />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <MessageSquare className="h-12 w-12 text-amber-600" />
+              <h1 className="text-3xl font-bold text-amber-900">Model Debate Arena</h1>
+            </div>
+            <p className="text-lg text-amber-700 mb-2">
+              Watch AI models challenge each other's explanations
+            </p>
+            <p className="text-amber-600">
+              Select from the hardest puzzles that models struggle with
+            </p>
+          </div>
+
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5" />
+                Hardest Puzzles for Debate
+              </CardTitle>
+              <CardDescription>
+                These puzzles have the lowest model success rates - perfect for testing different approaches
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingHardest ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                  <span>Loading hardest puzzles...</span>
+                </div>
+              ) : hardestPuzzles && hardestPuzzles.length > 0 ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {hardestPuzzles.map((puzzle: any) => (
+                    <Card key={puzzle.taskId} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="font-mono text-sm font-medium">{puzzle.taskId}</span>
+                          <Badge variant="destructive" className="text-xs">
+                            {Math.round(puzzle.accuracy || 0)}% success
+                          </Badge>
+                        </div>
+                        
+                        <div className="text-xs text-muted-foreground mb-3 space-y-1">
+                          <div>Explanations: {puzzle.explanationCount || 0}</div>
+                          <div>Attempts: {puzzle.totalAttempts || 0}</div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Link href={`/debate/${puzzle.taskId}`}>
+                            <Button size="sm" className="flex-1">
+                              <MessageSquare className="h-3 w-3 mr-1" />
+                              Debate
+                            </Button>
+                          </Link>
+                          <Link href={`/task/${puzzle.taskId}`}>
+                            <Button size="sm" variant="outline">
+                              View
+                            </Button>
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <AlertCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-500 mb-4">No puzzles found</p>
+                  <Link href="/">
+                    <Button>Browse All Puzzles</Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Or Select Specific Puzzle</CardTitle>
+              <CardDescription>
+                Enter a puzzle ID directly or browse the full puzzle database
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PuzzleDebateHeader />
+              
+              <div className="mt-6 pt-6 border-t">
+                <div className="grid sm:grid-cols-3 gap-3">
+                  <Link href="/">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Grid3X3 className="h-4 w-4 mr-2" />
+                      Browse All Puzzles
+                    </Button>
+                  </Link>
+                  <Link href="/analytics">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Database className="h-4 w-4 mr-2" />
+                      View Analytics
+                    </Button>
+                  </Link>
+                  <Link href="/council">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Users className="h-4 w-4 mr-2" />
+                      Try LLM Council
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   // Main debate interface

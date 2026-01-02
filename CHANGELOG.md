@@ -26,9 +26,22 @@
       - Disabled controls during streaming to prevent race conditions
       - Added stream error handling and display
   - **Requirements**: Python installed, `llm-council` submodule checked out, `OPENROUTER_API_KEY` env var set
-  - **Usage**: Visit `/council`, select puzzle, run assessment. No separate service needed. SSE streaming available at `/api/council/assess/stream`.
-  - **TODO**: ELO integration for council votes, `council_votes` DB migration
-  - **Files changed**: `council_wrapper.py`, `councilBridge.ts`, `councilService.ts`, `councilController.ts`, `routes.ts`, `LLMCouncil.tsx`, `App.tsx`, `2026-01-01-llm-council-integration-plan.md`
+  - **Council Result Persistence** (Phases 2-4 complete):
+    - **What**: Council deliberation results now automatically save to database as "explanations" with full 3-stage audit trail.
+    - **Why**: Results previously streamed to UI then disappeared. Now they persist, can be queried, scored against ground truth, and voted on in ELO system.
+    - **Implementation**:
+      - Added 8 columns to explanations table for council metadata (mode, 3-stage results, rankings, assessed IDs, prompt)
+      - Updated `ExplanationRepository.ts` - council columns in INSERT, all SELECT queries, and JSONB parsing
+      - Created transformation pipeline in `councilService.ts`:
+        - `extractPredictedGridFromSynthesis()` - regex extraction of output grids from stage3 text
+        - `deriveConfidenceFromRankings()` - calculates 0-100 confidence from aggregate rankings
+        - `transformCouncilResult()` - converts CouncilAssessmentResult to ExplanationData
+        - `saveCouncilResult()` - persists to DB and scores prediction vs ground truth
+      - `assessPuzzle()` auto-saves results after completion
+    - **Edge cases**: assess mode (no prediction), missing grids, confidence parse failures, assessed explanation tracking
+  - **Usage**: Visit `/council`, run assessment. Results auto-persist. Queryable as explanations with `councilMode IS NOT NULL`.
+  - **TODO**: ELO integration, council voting system, council leaderboards
+  - **Files changed**: `DatabaseSchema.ts`, `IExplanationRepository.ts`, `ExplanationRepository.ts`, `councilService.ts`, `2026-01-02-council-persistence-plan.md`
 
 ### Version 6.20.0  Jan 1, 2026 23:39
 

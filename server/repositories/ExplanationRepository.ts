@@ -65,9 +65,11 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
           grover_iterations, grover_best_program, iteration_count,
           beetree_stage, beetree_consensus_count, beetree_model_results, beetree_cost_breakdown,
           beetree_token_usage, beetree_run_timestamp, beetree_mode, beetree_consensus_strength, beetree_diversity_score,
+          council_mode, council_stage1_results, council_stage2_rankings, council_stage3_synthesis,
+          council_metadata, council_assessed_explanation_ids, council_aggregate_rankings, council_prompt_used,
           num_test_pairs
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62
         ) RETURNING *
       `, [
         data.puzzleId, // Simplified - consistent with ExplanationData interface
@@ -131,6 +133,15 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         data.beetreeMode ?? null,
         data.beetreeConsensusStrength ?? null,
         data.beetreeDiversityScore ?? null,
+        // NEW: LLM Council fields
+        data.councilMode ?? null,
+        this.safeJsonStringify(data.councilStage1Results),
+        this.safeJsonStringify(data.councilStage2Rankings),
+        this.safeJsonStringify(data.councilStage3Synthesis),
+        this.safeJsonStringify(data.councilMetadata),
+        Array.isArray(data.councilAssessedExplanationIds) ? data.councilAssessedExplanationIds : null,
+        this.safeJsonStringify(data.councilAggregateRankings),
+        data.councilPromptUsed ?? null,
         numTestPairs
       ], client);
 
@@ -153,7 +164,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     }
 
     const result = await this.query(`
-      SELECT 
+      SELECT
         id, puzzle_id AS "puzzleId", pattern_description AS "patternDescription",
         solving_strategy AS "solvingStrategy", hints, confidence,
         alien_meaning_confidence AS "alienMeaningConfidence",
@@ -181,12 +192,15 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         beetree_stage AS "beetreeStage", beetree_consensus_count AS "beetreeConsensusCount", beetree_model_results AS "beetreeModelResults",
         beetree_cost_breakdown AS "beetreeCostBreakdown", beetree_token_usage AS "beetreeTokenUsage", beetree_run_timestamp AS "beetreeRunTimestamp",
         beetree_mode AS "beetreeMode", beetree_consensus_strength AS "beetreeConsensusStrength", beetree_diversity_score AS "beetreeDiversityScore",
+        council_mode AS "councilMode", council_stage1_results AS "councilStage1Results", council_stage2_rankings AS "councilStage2Rankings",
+        council_stage3_synthesis AS "councilStage3Synthesis", council_metadata AS "councilMetadata", council_assessed_explanation_ids AS "councilAssessedExplanationIds",
+        council_aggregate_rankings AS "councilAggregateRankings", council_prompt_used AS "councilPromptUsed",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
-      FROM explanations 
-      WHERE puzzle_id = $1 
-      ORDER BY created_at DESC 
+      FROM explanations
+      WHERE puzzle_id = $1
+      ORDER BY created_at DESC
       LIMIT 1
     `, [puzzleId]);
 
@@ -249,6 +263,9 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         beetree_stage AS "beetreeStage", beetree_consensus_count AS "beetreeConsensusCount", beetree_model_results AS "beetreeModelResults",
         beetree_cost_breakdown AS "beetreeCostBreakdown", beetree_token_usage AS "beetreeTokenUsage", beetree_run_timestamp AS "beetreeRunTimestamp",
         beetree_mode AS "beetreeMode", beetree_consensus_strength AS "beetreeConsensusStrength", beetree_diversity_score AS "beetreeDiversityScore",
+        council_mode AS "councilMode", council_stage1_results AS "councilStage1Results", council_stage2_rankings AS "councilStage2Rankings",
+        council_stage3_synthesis AS "councilStage3Synthesis", council_metadata AS "councilMetadata", council_assessed_explanation_ids AS "councilAssessedExplanationIds",
+        council_aggregate_rankings AS "councilAggregateRankings", council_prompt_used AS "councilPromptUsed",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
@@ -387,7 +404,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     }
 
     const result = await this.query(`
-      SELECT 
+      SELECT
         id, puzzle_id AS "puzzleId", pattern_description AS "patternDescription",
         solving_strategy AS "solvingStrategy", hints, confidence,
         alien_meaning_confidence AS "alienMeaningConfidence",
@@ -414,10 +431,13 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
         grover_iterations AS "groverIterations",
         grover_best_program AS "groverBestProgram",
         iteration_count AS "iterationCount",
+        council_mode AS "councilMode", council_stage1_results AS "councilStage1Results", council_stage2_rankings AS "councilStage2Rankings",
+        council_stage3_synthesis AS "councilStage3Synthesis", council_metadata AS "councilMetadata", council_assessed_explanation_ids AS "councilAssessedExplanationIds",
+        council_aggregate_rankings AS "councilAggregateRankings", council_prompt_used AS "councilPromptUsed",
         created_at AS "createdAt",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'helpful') AS "helpfulVotes",
         (SELECT COUNT(*) FROM feedback WHERE explanation_id = explanations.id AND feedback_type = 'not_helpful') AS "notHelpfulVotes"
-      FROM explanations 
+      FROM explanations
       WHERE id = $1
     `, [id]);
 
@@ -841,7 +861,7 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
     return {
       // Basic fields (already camelCase from SQL aliases)
       ...row,
-      
+
       // Parse JSON fields that need to be objects/arrays
       hints: this.processHints(row.hints),
       confidence: this.normalizeConfidence(row.confidence),
@@ -857,15 +877,23 @@ export class ExplanationRepository extends BaseRepository implements IExplanatio
       multiTestResults: this.safeJsonParse(row.multiTestResults, 'multiTestResults'),
       // CRITICAL FIX: Sanitize multi-test prediction grids on READ as well
       multiTestPredictionGrids: this.sanitizeMultipleGrids(this.safeJsonParse(row.multiTestPredictionGrids, 'multiTestPredictionGrids')),
-      
+
       // Parse Grover-specific JSONB field
       groverIterations: this.safeJsonParse(row.groverIterations, 'groverIterations', null),
-      
+
       // Parse Beetree-specific JSONB fields
       beetreeModelResults: this.safeJsonParse(row.beetreeModelResults, 'beetreeModelResults', null),
       beetreeCostBreakdown: this.safeJsonParse(row.beetreeCostBreakdown, 'beetreeCostBreakdown', null),
       beetreeTokenUsage: this.safeJsonParse(row.beetreeTokenUsage, 'beetreeTokenUsage', null),
-      
+
+      // Parse Council-specific JSONB fields
+      councilStage1Results: this.safeJsonParse(row.councilStage1Results, 'councilStage1Results', null),
+      councilStage2Rankings: this.safeJsonParse(row.councilStage2Rankings, 'councilStage2Rankings', null),
+      councilStage3Synthesis: this.safeJsonParse(row.councilStage3Synthesis, 'councilStage3Synthesis', null),
+      councilMetadata: this.safeJsonParse(row.councilMetadata, 'councilMetadata', null),
+      councilAggregateRankings: this.safeJsonParse(row.councilAggregateRankings, 'councilAggregateRankings', null),
+      // councilAssessedExplanationIds is INTEGER[] from database, already parsed
+
       // Ensure boolean fields are properly typed
       hasReasoningLog: typeof row.hasReasoningLog === 'boolean' ? row.hasReasoningLog : false,
       saturnSuccess: row.saturnSuccess ?? null,
