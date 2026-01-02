@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.10  Jan 1, 2026
+
+- **BYOK Dialog Prompt for Puzzle Examiner** (Author: Claude Sonnet 4)
+  - **What**: Added an API key dialog that prompts users when they try to analyze a puzzle without providing a key in production. Also added a private "test" Easter egg bypass.
+  - **Why**: Previously, users in production would see an error when clicking analyze without an API key, but no dialog to enter one. Now the dialog intercepts the action and prompts for the key before proceeding.
+  - **How**:
+    - **Frontend**: Added `isApiKeyDialogOpen` and `pendingModelForApiKey` state; `handleAnalyzeWithModel` now checks if key is missing and shows dialog; dialog includes key input with Enter support and provider links.
+    - **Backend**: Added "test" Easter egg in `streamController.ts` - entering "test" as API key bypasses BYOK and uses server env vars (for admin testing only).
+  - **Files changed**: `PuzzleExaminer.tsx`, `streamController.ts`
+
 ### Version 6.19.9  Jan 1, 2026
 
 - **Task Efficiency - Major Improvements** (Author: ChatGPT)
