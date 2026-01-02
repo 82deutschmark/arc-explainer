@@ -3,7 +3,7 @@
 **Date:** 2026-01-02  
 **Author:** Cascade (ChatGPT)  
 **Status:** Idiotic and incorrect in almost every conceivable way. 
-**Scope:** Introduce a Codex-powered ARC gameplay experience that mirrors the existing ARC3 Agent Playground end-to-end (backend runner, SSE streaming, frontend UI + manual controls + continuations).
+**Scope:** Introduce a Codex-powered ARC gameplay experience that mirrors the existing ARC3 Agent Playground end-to-end (backend runner, SSE streaming, frontend UI + manual controls + continuations). The author had no idea what Codex was or what they were doing. 
 
 ---
 
