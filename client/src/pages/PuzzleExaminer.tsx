@@ -38,9 +38,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 // Types
 import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
@@ -88,6 +89,8 @@ export default function PuzzleExaminer() {
   const [highlightedExplanationId, setHighlightedExplanationId] = useState<number | null>(null);
   // BYOK: API key state for production environment
   const [userApiKey, setUserApiKey] = useState('');
+  const [isApiKeyDialogOpen, setIsApiKeyDialogOpen] = useState(false);
+  const [pendingModelForApiKey, setPendingModelForApiKey] = useState<{ modelKey: string; supportsTemperature: boolean } | null>(null);
   const [isModelSelectorExpanded, setIsModelSelectorExpanded] = useState(() => {
     // Default to COLLAPSED - users want to see results first
     const saved = localStorage.getItem('puzzleExaminer.modelSelector.expanded');
@@ -293,11 +296,23 @@ export default function PuzzleExaminer() {
 
   const currentModel = currentModelKey ? models?.find(model => model.key === currentModelKey) ?? null : null;
 
-  // Handle model selection
+  // Handle model selection - intercept if API key needed but missing
   const handleAnalyzeWithModel = (modelKey: string) => {
     console.log('[PuzzleExaminer] handleAnalyzeWithModel called with:', modelKey);
     const model = models?.find(m => m.key === modelKey);
     console.log('[PuzzleExaminer] Found model:', model?.name);
+    
+    // Check if API key is required but missing (and not the "test" bypass)
+    if (requiresUserApiKey() && !userApiKey.trim()) {
+      console.log('[PuzzleExaminer] API key required but missing, showing dialog');
+      setPendingModelForApiKey({
+        modelKey,
+        supportsTemperature: model?.supportsTemperature ?? true,
+      });
+      setIsApiKeyDialogOpen(true);
+      return;
+    }
+    
     console.log('[PuzzleExaminer] Setting pendingAnalysis and opening modal');
     setPendingAnalysis({
       modelKey,
@@ -305,6 +320,22 @@ export default function PuzzleExaminer() {
     });
     setIsPromptPreviewOpen(true);
     console.log('[PuzzleExaminer] Modal should now be open');
+  };
+  
+  // Handle API key dialog submission
+  const handleApiKeySubmit = () => {
+    if (!userApiKey.trim() || !pendingModelForApiKey) return;
+    
+    setIsApiKeyDialogOpen(false);
+    // Now proceed with the original flow
+    setPendingAnalysis(pendingModelForApiKey);
+    setIsPromptPreviewOpen(true);
+    setPendingModelForApiKey(null);
+  };
+  
+  const handleApiKeyDialogClose = () => {
+    setIsApiKeyDialogOpen(false);
+    setPendingModelForApiKey(null);
   };
 
   const handleConfirmAnalysis = async () => {
@@ -628,6 +659,55 @@ export default function PuzzleExaminer() {
         onConfirm={pendingAnalysis ? handleConfirmAnalysis : undefined}
         confirmButtonText="Confirm & Send Analysis"
       />
+
+      {/* API Key Required Dialog - Shows when user tries to analyze without key in production */}
+      <Dialog open={isApiKeyDialogOpen} onOpenChange={(open) => !open && handleApiKeyDialogClose()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-amber-900">API Key Required</DialogTitle>
+            <DialogDescription className="text-amber-700">
+              Production mode requires your own API key to run analysis. Your key is used for this request only and is never stored on our servers.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="dialog-api-key">Your API Key</Label>
+              <Input
+                id="dialog-api-key"
+                type="password"
+                placeholder="sk-... or AIza... (OpenAI/Anthropic/OpenRouter/Gemini)"
+                value={userApiKey}
+                onChange={(e) => setUserApiKey(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && userApiKey.trim()) {
+                    handleApiKeySubmit();
+                  }
+                }}
+                className="font-mono"
+                autoFocus
+              />
+              <p className="text-xs text-muted-foreground">
+                Get keys from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">OpenAI</a>,{' '}
+                <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="underline">Anthropic</a>,{' '}
+                <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" className="underline">OpenRouter</a>, or{' '}
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline">Google AI Studio</a>
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={handleApiKeyDialogClose}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleApiKeySubmit} 
+              disabled={!userApiKey.trim()}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              Continue to Analysis
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
