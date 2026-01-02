@@ -143,7 +143,7 @@ export interface ExplanationData {
   allPredictionsCorrect?: boolean; // Whether all test predictions are correct (from allCorrect)
   averageTrustworthinessScore?: number; // Average trustworthiness across all tests (from averageAccuracyScore)
   // Database field names for multi-test data (raw storage format)
-  multiplePredictedOutputs?: number[][][] | null; // Raw database field: array of predicted grids
+  multiplePredictedOutputs?: (number[][] | null)[] | null; // Raw database field: array of predicted grids
   multiTestResults?: Array<any> | null; // Raw database field: validation results
   multiTestAllCorrect?: boolean | null; // Raw database field: all predictions correct flag
   multiTestAverageAccuracy?: number | null; // Raw database field: average accuracy score

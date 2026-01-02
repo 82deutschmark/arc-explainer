@@ -60,6 +60,7 @@ import WormArenaRules from "@/pages/WormArenaRules";
 import ReArc from "@/pages/ReArc";
 import ReArcDataset from "@/pages/ReArcDataset";
 import ReArcSubmissions from "@/pages/ReArcSubmissions";
+import TaskEfficiency from "@/pages/TaskEfficiency";
 import Redirect from "@/components/Redirect";
 
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
@@ -133,6 +134,7 @@ function Router() {
         <Route path="/worm-arena/rules" component={WormArenaRules} />
         <Route path="/puzzle/:taskId" component={PuzzleExaminer} />
         <Route path="/examine/:taskId" component={PuzzleExaminer} />
+        <Route path="/task/:taskId/efficiency" component={TaskEfficiency} />
         <Route path="/task/:taskId" component={PuzzleAnalyst} />
 
         {/* Dev-only routes for component showcases (excluded from production builds)
