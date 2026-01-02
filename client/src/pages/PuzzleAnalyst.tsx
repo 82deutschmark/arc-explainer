@@ -172,19 +172,6 @@ export default function PuzzleAnalyst() {
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gray-400 mt-1">
             Analyzing {total} explanation{total !== 1 ? 's' : ''}
           </p>
-          {/* Summary badges keep the header informative at a glance. */}
-          <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold uppercase text-gray-300">
-            <span className="rounded-full border border-gray-800 px-2 py-0.5 bg-white/5">
-              All {summaryStats.all}
-            </span>
-            <span className="rounded-full border border-gray-800 px-2 py-0.5 bg-emerald-500/10 text-emerald-200">
-              Correct {summaryStats.correct}
-            </span>
-            <span className="rounded-full border border-gray-800 px-2 py-0.5 bg-rose-500/10 text-rose-200">
-              Incorrect {summaryStats.incorrect}
-            </span>
-          </div>
-
           {/* Correctness filters */}
           <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-gray-300">
             <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-gray-500">
