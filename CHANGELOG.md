@@ -2,7 +2,7 @@
 
 ### Version 6.21.0  Jan 2, 2026
 
-- **LLM Council Integration** (Author: Claude Sonnet 4)
+- **LLM Council Integration** (Author: Claude Sonnet 4 / Fixed by Claude Haiku)
   - **What**: Integrated llm-council submodule for multi-model consensus evaluation of ARC puzzles. New `/council` route with full 3-stage deliberation UI.
   - **Why**: The llm-council submodule was added but never wired up. Users can now have multiple LLMs independently solve puzzles, rank each other's work, and produce a synthesized consensus answer.
   - **How** (subprocess pattern like Saturn/Grover/Beetree):
@@ -13,8 +13,20 @@
     - Added routes: `GET /api/council/health`, `GET /api/council/unsolved-puzzles`, `GET /api/council/puzzle/:taskId/explanations`, `POST /api/council/assess`, `POST /api/council/assess/stream`
     - Created `client/src/pages/LLMCouncil.tsx` - Full UI for puzzle selection, mode selection (solve/assess), and 3-stage result display
     - Added frontend routes `/council` and `/council/:taskId`
+  - **Bug fixes & completion**:
+    - Fixed type errors in `streamAssessment()` endpoint by removing non-existent `createConversation()` and `streamMessage()` calls
+    - Removed duplicate mode validation in controller (line 179)
+    - Modified `councilService.assessPuzzle()` to accept optional `onEvent` callback and forward to `councilBridge.runCouncil()`
+    - Streaming endpoint now properly pipes council events to client via SSE
+    - **Frontend completions**:
+      - Rewired component to use `/api/council/assess/stream` endpoint instead of blocking request
+      - Added URL parameter support (`:taskId`) to pre-select puzzle from direct links
+      - Implemented live event stream display showing real-time progress through 3 stages with visual indicators
+      - Added proper UI validation preventing assess mode submission without explanation selection
+      - Disabled controls during streaming to prevent race conditions
+      - Added stream error handling and display
   - **Requirements**: Python installed, `llm-council` submodule checked out, `OPENROUTER_API_KEY` env var set
-  - **Usage**: Visit `/council`, select puzzle, run assessment. No separate service needed.
+  - **Usage**: Visit `/council`, select puzzle, run assessment. No separate service needed. SSE streaming available at `/api/council/assess/stream`.
   - **TODO**: ELO integration for council votes, `council_votes` DB migration
   - **Files changed**: `council_wrapper.py`, `councilBridge.ts`, `councilService.ts`, `councilController.ts`, `routes.ts`, `LLMCouncil.tsx`, `App.tsx`, `2026-01-01-llm-council-integration-plan.md`
 

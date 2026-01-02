@@ -1,15 +1,15 @@
 /**
- * Author: Claude Sonnet 4 (Cascade)
+ * Author: Claude Sonnet 4 (Fixed by Claude Haiku)
  * Date: 2026-01-02
  * PURPOSE: LLM Council page for multi-model consensus evaluation of ARC puzzles.
- *          Allows users to have a council of LLMs assess unsolved puzzles or existing explanations.
- *          DEPLOYMENT: Requires llm-council Python service running. Shows clear error when unavailable.
- * SRP/DRY check: Pass - Single responsibility: Council assessment orchestration UI.
+ *          Uses SSE streaming for live event updates during deliberation.
+ *          Handles URL parameter :taskId for direct puzzle linking.
+ * SRP/DRY check: Pass - Single responsibility: Council assessment UI with streaming.
  */
 
-import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { Link } from 'wouter';
+import React, { useState, useEffect, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useParams, Link } from 'wouter';
 import {
   Card,
   CardContent,
@@ -40,6 +40,7 @@ import {
   Play,
   ArrowRight,
   ExternalLink,
+  Zap,
 } from 'lucide-react';
 
 interface CouncilStage1Result {
@@ -87,6 +88,11 @@ interface ExplanationForCouncil {
   createdAt: string;
 }
 
+interface StreamEvent {
+  type: string;
+  [key: string]: any;
+}
+
 // Unsolved puzzles from the user's list
 const UNSOLVED_PUZZLES = [
   '78332cb0', 'de809cff', '62593bfd', '5545f144', 'f560132c',
@@ -98,10 +104,24 @@ const UNSOLVED_PUZZLES = [
 ];
 
 export default function LLMCouncil() {
-  const [selectedPuzzle, setSelectedPuzzle] = useState<string>('');
+  const params = useParams();
+  const urlTaskId = params?.taskId as string | undefined;
+
+  const [selectedPuzzle, setSelectedPuzzle] = useState<string>(urlTaskId || '');
   const [mode, setMode] = useState<'solve' | 'assess'>('solve');
   const [selectedExplanationIds, setSelectedExplanationIds] = useState<number[]>([]);
   const [assessmentResult, setAssessmentResult] = useState<CouncilAssessmentResult | null>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamEvents, setStreamEvents] = useState<StreamEvent[]>([]);
+  const [streamError, setStreamError] = useState<string | null>(null);
+  const streamAbortController = useRef<AbortController | null>(null);
+
+  // Update selectedPuzzle when URL changes
+  useEffect(() => {
+    if (urlTaskId) {
+      setSelectedPuzzle(urlTaskId);
+    }
+  }, [urlTaskId]);
 
   // Set page title
   useEffect(() => {
@@ -116,7 +136,7 @@ export default function LLMCouncil() {
       const data = await res.json();
       return data;
     },
-    refetchInterval: 30000, // Check every 30 seconds
+    refetchInterval: 30000,
   });
 
   const councilHealthy = healthData?.success && healthData?.data?.status === 'healthy';
@@ -135,47 +155,91 @@ export default function LLMCouncil() {
 
   const explanations: ExplanationForCouncil[] = explanationsData?.success ? explanationsData.data.explanations : [];
 
-  // Assessment mutation
-  const assessMutation = useMutation({
-    mutationFn: async (params: { taskId: string; mode: 'solve' | 'assess'; explanationIds?: number[] }) => {
-      const res = await fetch('/api/council/assess', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
-      });
-      const data = await res.json();
-      if (!data.success) {
-        throw new Error(data.error?.message || 'Assessment failed');
-      }
-      return data.data as CouncilAssessmentResult;
-    },
-    onSuccess: (data) => {
-      setAssessmentResult(data);
-    },
-  });
-
-  const handleStartAssessment = () => {
-    if (!selectedPuzzle) return;
-    
-    const params: { taskId: string; mode: 'solve' | 'assess'; explanationIds?: number[] } = {
-      taskId: selectedPuzzle,
-      mode,
-    };
-    
-    if (mode === 'assess' && selectedExplanationIds.length > 0) {
-      params.explanationIds = selectedExplanationIds;
-    }
-    
-    assessMutation.mutate(params);
-  };
-
   const toggleExplanationSelection = (id: number) => {
-    setSelectedExplanationIds(prev => 
-      prev.includes(id) 
+    setSelectedExplanationIds(prev =>
+      prev.includes(id)
         ? prev.filter(x => x !== id)
         : [...prev, id]
     );
   };
+
+  const handleStartAssessment = async () => {
+    if (!selectedPuzzle) return;
+    if (mode === 'assess' && selectedExplanationIds.length === 0) return;
+
+    setIsStreaming(true);
+    setStreamEvents([]);
+    setStreamError(null);
+    setAssessmentResult(null);
+
+    try {
+      streamAbortController.current = new AbortController();
+
+      const body = {
+        taskId: selectedPuzzle,
+        mode,
+        ...(mode === 'assess' && { explanationIds: selectedExplanationIds }),
+      };
+
+      const res = await fetch('/api/council/assess/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: streamAbortController.current.signal,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error?.message || `HTTP ${res.status}`);
+      }
+
+      if (!res.body) throw new Error('No response body');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const evt = JSON.parse(line.slice(6)) as StreamEvent;
+              setStreamEvents(prev => [...prev, evt]);
+
+              // Capture final result
+              if (evt.type === 'done' && evt.result) {
+                setAssessmentResult(evt.result as CouncilAssessmentResult);
+              }
+            } catch (e) {
+              console.error('Failed to parse event:', e);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        setStreamError(error.message);
+      }
+    } finally {
+      setIsStreaming(false);
+    }
+  };
+
+  const getStageProgress = () => {
+    let stage1Done = streamEvents.some(e => e.type === 'stage1_complete');
+    let stage2Done = streamEvents.some(e => e.type === 'stage2_complete');
+    let stage3Done = streamEvents.some(e => e.type === 'stage3_complete');
+    return { stage1Done, stage2Done, stage3Done };
+  };
+
+  const { stage1Done, stage2Done, stage3Done } = getStageProgress();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50">
@@ -189,8 +253,8 @@ export default function LLMCouncil() {
               Multi-model consensus evaluation for ARC puzzles
             </p>
           </div>
-          <Badge 
-            variant={councilHealthy ? 'default' : 'destructive'} 
+          <Badge
+            variant={councilHealthy ? 'default' : 'destructive'}
             className="ml-auto"
           >
             {isCheckingHealth ? (
@@ -249,9 +313,9 @@ export default function LLMCouncil() {
                         View Puzzle <ExternalLink className="h-3 w-3 ml-1" />
                       </Button>
                     </Link>
-                    <Link href={`/puzzles/database`}>
+                    <Link href={`/council/${selectedPuzzle}`}>
                       <Button variant="ghost" size="sm" className="text-xs">
-                        Browse DB
+                        Link <Zap className="h-3 w-3 ml-1" />
                       </Button>
                     </Link>
                   </div>
@@ -273,6 +337,7 @@ export default function LLMCouncil() {
                     size="sm"
                     onClick={() => setMode('solve')}
                     className="flex-1"
+                    disabled={isStreaming}
                   >
                     <Brain className="h-4 w-4 mr-1" />
                     Solve
@@ -282,13 +347,14 @@ export default function LLMCouncil() {
                     size="sm"
                     onClick={() => setMode('assess')}
                     className="flex-1"
+                    disabled={isStreaming}
                   >
                     <Trophy className="h-4 w-4 mr-1" />
                     Assess
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {mode === 'solve' 
+                  {mode === 'solve'
                     ? 'Council members will independently solve the puzzle and rank each other.'
                     : 'Council will evaluate existing explanations from the database.'}
                 </p>
@@ -301,7 +367,7 @@ export default function LLMCouncil() {
                 <CardHeader>
                   <CardTitle className="text-base">Select Explanations</CardTitle>
                   <CardDescription>
-                    {explanations.length} explanations available
+                    {selectedExplanationIds.length} of {explanations.length} selected
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -311,12 +377,15 @@ export default function LLMCouncil() {
                       <span className="text-sm">Loading explanations...</span>
                     </div>
                   ) : explanations.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      No explanations found. Try "Solve" mode instead.
-                    </p>
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        No explanations found for this puzzle. Try "Solve" mode instead.
+                      </AlertDescription>
+                    </Alert>
                   ) : (
                     <ScrollArea className="h-48">
-                      <div className="space-y-2">
+                      <div className="space-y-2 pr-4">
                         {explanations.map(exp => (
                           <div
                             key={exp.id}
@@ -356,37 +425,91 @@ export default function LLMCouncil() {
               disabled={
                 !councilHealthy ||
                 !selectedPuzzle ||
-                assessMutation.isPending ||
+                isStreaming ||
                 (mode === 'assess' && selectedExplanationIds.length === 0)
               }
               onClick={handleStartAssessment}
             >
-              {assessMutation.isPending ? (
+              {isStreaming ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Council Deliberating...
+                  Deliberating...
                 </>
               ) : (
                 <>
                   <Play className="h-4 w-4 mr-2" />
-                  Start Council Assessment
+                  Start Assessment
                 </>
               )}
             </Button>
 
-            {assessMutation.isError && (
+            {streamError && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  {assessMutation.error?.message || 'Assessment failed'}
-                </AlertDescription>
+                <AlertDescription>{streamError}</AlertDescription>
               </Alert>
             )}
           </div>
 
-          {/* Right Panel - Results */}
+          {/* Right Panel - Results & Stream */}
           <div className="lg:col-span-2">
-            {assessmentResult ? (
+            {isStreaming ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Deliberation in Progress</CardTitle>
+                  <CardDescription>
+                    Watch the council's 3-stage deliberation process
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Progress Indicators */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      {stage1Done ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                      )}
+                      <span className="text-sm font-medium">Stage 1: Individual Responses</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {stage2Done ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      ) : stage1Done ? (
+                        <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                      ) : (
+                        <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                      )}
+                      <span className="text-sm font-medium">Stage 2: Peer Rankings</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {stage3Done ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      ) : stage2Done ? (
+                        <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                      ) : (
+                        <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                      )}
+                      <span className="text-sm font-medium">Stage 3: Final Synthesis</span>
+                    </div>
+                  </div>
+
+                  {/* Event Log */}
+                  <Separator />
+                  <ScrollArea className="h-64 border rounded p-3 bg-gray-50">
+                    <div className="space-y-2">
+                      {streamEvents.map((evt, idx) => (
+                        <div key={idx} className="text-xs font-mono text-gray-600">
+                          <span className="text-blue-600">[{evt.type}]</span>
+                          {evt.message && <span> {evt.message}</span>}
+                          {evt.count && <span> ({evt.count} results)</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            ) : assessmentResult ? (
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -397,7 +520,7 @@ export default function LLMCouncil() {
                       </CardDescription>
                     </div>
                     <Badge variant="outline">
-                      {assessmentResult.stage1.length} models participated
+                      {assessmentResult.stage1.length} models
                     </Badge>
                   </div>
                 </CardHeader>
@@ -405,8 +528,8 @@ export default function LLMCouncil() {
                   <Tabs defaultValue="synthesis" className="w-full">
                     <TabsList className="grid w-full grid-cols-4">
                       <TabsTrigger value="synthesis">Final Synthesis</TabsTrigger>
-                      <TabsTrigger value="stage1">Stage 1: Responses</TabsTrigger>
-                      <TabsTrigger value="stage2">Stage 2: Rankings</TabsTrigger>
+                      <TabsTrigger value="stage1">Stage 1</TabsTrigger>
+                      <TabsTrigger value="stage2">Stage 2</TabsTrigger>
                       <TabsTrigger value="aggregate">Aggregate</TabsTrigger>
                     </TabsList>
 
@@ -419,11 +542,9 @@ export default function LLMCouncil() {
                             Chairman: {assessmentResult.stage3.model}
                           </span>
                         </div>
-                        <div className="prose prose-sm max-w-none">
-                          <pre className="whitespace-pre-wrap text-sm bg-white p-3 rounded border">
-                            {assessmentResult.stage3.response}
-                          </pre>
-                        </div>
+                        <pre className="whitespace-pre-wrap text-sm bg-white p-3 rounded border max-h-96 overflow-auto">
+                          {assessmentResult.stage3.response}
+                        </pre>
                       </div>
                     </TabsContent>
 
@@ -455,11 +576,10 @@ export default function LLMCouncil() {
                           <div key={idx} className="p-3 bg-amber-50 rounded-lg border border-amber-200">
                             <div className="flex items-center justify-between mb-2">
                               <span className="font-medium text-amber-800 text-sm">
-                                {result.model}'s Evaluation
+                                {result.model}'s Ranking
                               </span>
                               {result.parsed_ranking.length > 0 && (
                                 <div className="flex items-center gap-1 text-xs">
-                                  <span className="text-amber-600">Ranking:</span>
                                   {result.parsed_ranking.map((label, i) => (
                                     <React.Fragment key={i}>
                                       <Badge variant="outline" className="text-[10px]">
@@ -509,9 +629,9 @@ export default function LLMCouncil() {
                           </div>
                         ))}
                       </div>
-                      
+
                       <Separator className="my-4" />
-                      
+
                       <div className="text-xs text-muted-foreground">
                         <strong>Label Mapping:</strong>
                         <div className="flex flex-wrap gap-2 mt-2">
@@ -534,9 +654,8 @@ export default function LLMCouncil() {
                     No Assessment Yet
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-md">
-                    Select a puzzle and start an assessment to see the council's 
-                    deliberation process. The council will provide individual responses, 
-                    peer rankings, and a final synthesis.
+                    Select a puzzle and start an assessment to see the council's
+                    deliberation process. Stream events will appear here in real-time.
                   </p>
                 </CardContent>
               </Card>

@@ -170,18 +170,34 @@ export async function assessPuzzle(req: Request, res: Response): Promise<void> {
  */
 export async function streamAssessment(req: Request, res: Response): Promise<void> {
   const { taskId, mode, explanationIds } = req.body;
-  
+
   if (!taskId || !mode) {
     res.status(400).json(formatResponse.error('INVALID_REQUEST', 'taskId and mode are required'));
     return;
   }
-  
+
+  if (!['solve', 'assess'].includes(mode)) {
+    res.status(400).json(formatResponse.error(
+      'INVALID_MODE',
+      'Mode must be "solve" or "assess"'
+    ));
+    return;
+  }
+
+  if (mode === 'assess' && (!explanationIds || !Array.isArray(explanationIds) || explanationIds.length === 0)) {
+    res.status(400).json(formatResponse.error(
+      'MISSING_EXPLANATIONS',
+      'Assessment mode requires explanationIds array'
+    ));
+    return;
+  }
+
   // Set up SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('X-Accel-Buffering', 'no');
-  
+
   try {
     // Check health first
     const isHealthy = await councilBridge.healthCheck();
@@ -190,20 +206,20 @@ export async function streamAssessment(req: Request, res: Response): Promise<voi
       res.end();
       return;
     }
-    
-    // Create conversation
-    const conversation = await councilBridge.createConversation();
-    res.write(`data: ${JSON.stringify({ type: 'conversation_created', data: { id: conversation.id } })}\n\n`);
-    
-    // Build prompt (simplified - full implementation would use councilService)
-    const prompt = `Assess ARC puzzle ${taskId} in ${mode} mode.`;
-    
-    // Stream the response
-    for await (const event of councilBridge.streamMessage(conversation.id, prompt)) {
-      res.write(`data: ${JSON.stringify(event)}\n\n`);
-    }
-    
-    res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+
+    logger.info(`[CouncilController] Starting streaming ${mode} assessment for puzzle ${taskId}`);
+    res.write(`data: ${JSON.stringify({ type: 'start', message: `Beginning ${mode} assessment` })}\n\n`);
+
+    // Run council assessment with streaming events
+    const result = await councilService.assessPuzzle(
+      { taskId, mode, explanationIds },
+      (event) => {
+        // Stream each council event to client via SSE
+        res.write(`data: ${JSON.stringify(event)}\n\n`);
+      }
+    );
+
+    res.write(`data: ${JSON.stringify({ type: 'done', result })}\n\n`);
     res.end();
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : 'Stream failed';
