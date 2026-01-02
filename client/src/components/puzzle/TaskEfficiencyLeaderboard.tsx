@@ -8,7 +8,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { Clock, DollarSign, Coins, ArrowUp, ArrowDown, Zap, Trophy } from 'lucide-react';
+import { Clock, DollarSign, Coins, ArrowUp, ArrowDown, Zap, Trophy, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { formatProcessingTimeDetailed } from '@/utils/timeFormatters';
@@ -16,6 +16,7 @@ import type { ExplanationData } from '@/types/puzzle';
 
 interface TaskEfficiencyLeaderboardProps {
   explanations: ExplanationData[];
+  taskId?: string;
   onSelectExplanation?: (id: number) => void;
 }
 
@@ -23,6 +24,7 @@ type SortField = 'time' | 'cost' | 'tokens';
 
 export function TaskEfficiencyLeaderboard({
   explanations,
+  taskId,
   onSelectExplanation,
 }: TaskEfficiencyLeaderboardProps) {
   const [sortField, setSortField] = useState<SortField>('time');
@@ -37,6 +39,13 @@ export function TaskEfficiencyLeaderboard({
   //   tokens: e.totalTokens,
   // })));
 
+  // Helper to parse potentially string values from DB
+  const toNum = (val: unknown): number | null => {
+    if (val == null) return null;
+    const num = typeof val === 'string' ? parseFloat(val) : Number(val);
+    return Number.isFinite(num) && num > 0 ? num : null;
+  };
+
   // Compute stats - exclude zeros/nulls from min calculations
   const stats = useMemo(() => {
     const validTimes: number[] = [];
@@ -44,90 +53,88 @@ export function TaskEfficiencyLeaderboard({
     const validTokens: number[] = [];
 
     for (const e of explanations) {
-      const time = e.apiProcessingTimeMs;
-      const cost = e.estimatedCost;
-      const tokens = e.totalTokens;
+      const time = toNum(e.apiProcessingTimeMs);
+      const cost = toNum(e.estimatedCost);
+      const tokens = toNum(e.totalTokens);
 
-      if (typeof time === 'number' && time > 0) validTimes.push(time);
-      if (typeof cost === 'number' && cost > 0) validCosts.push(cost);
-      if (typeof tokens === 'number' && tokens > 0) validTokens.push(tokens);
+      if (time !== null) validTimes.push(time);
+      if (cost !== null) validCosts.push(cost);
+      if (tokens !== null) validTokens.push(tokens);
     }
 
     return {
       minTime: validTimes.length > 0 ? Math.min(...validTimes) : null,
+      maxTime: validTimes.length > 0 ? Math.max(...validTimes) : null,
       minCost: validCosts.length > 0 ? Math.min(...validCosts) : null,
+      maxCost: validCosts.length > 0 ? Math.max(...validCosts) : null,
       minTokens: validTokens.length > 0 ? Math.min(...validTokens) : null,
     };
   }, [explanations]);
 
-  // Sort explanations
+  // Sort explanations - use toNum for proper string handling
   const sortedExplanations = useMemo(() => {
     const sorted = [...explanations].sort((a, b) => {
-      let aVal: number;
-      let bVal: number;
+      const fallback = sortAsc ? Infinity : -Infinity;
 
       switch (sortField) {
         case 'time':
-          aVal = a.apiProcessingTimeMs ?? (sortAsc ? Infinity : -Infinity);
-          bVal = b.apiProcessingTimeMs ?? (sortAsc ? Infinity : -Infinity);
-          break;
+          return sortAsc
+            ? (toNum(a.apiProcessingTimeMs) ?? fallback) - (toNum(b.apiProcessingTimeMs) ?? fallback)
+            : (toNum(b.apiProcessingTimeMs) ?? fallback) - (toNum(a.apiProcessingTimeMs) ?? fallback);
         case 'cost':
-          // Treat 0 and null as "no data" - sort to end
-          aVal = (a.estimatedCost && a.estimatedCost > 0) ? a.estimatedCost : (sortAsc ? Infinity : -Infinity);
-          bVal = (b.estimatedCost && b.estimatedCost > 0) ? b.estimatedCost : (sortAsc ? Infinity : -Infinity);
-          break;
+          return sortAsc
+            ? (toNum(a.estimatedCost) ?? fallback) - (toNum(b.estimatedCost) ?? fallback)
+            : (toNum(b.estimatedCost) ?? fallback) - (toNum(a.estimatedCost) ?? fallback);
         case 'tokens':
-          aVal = a.totalTokens ?? (sortAsc ? Infinity : -Infinity);
-          bVal = b.totalTokens ?? (sortAsc ? Infinity : -Infinity);
-          break;
+          return sortAsc
+            ? (toNum(a.totalTokens) ?? fallback) - (toNum(b.totalTokens) ?? fallback)
+            : (toNum(b.totalTokens) ?? fallback) - (toNum(a.totalTokens) ?? fallback);
         default:
           return 0;
       }
-
-      return sortAsc ? aVal - bVal : bVal - aVal;
     });
 
     return sorted;
   }, [explanations, sortField, sortAsc]);
 
-  // Find best IDs for highlighting
+  // Find best IDs for highlighting - use toNum for proper string handling
   const fastestId = useMemo(() => {
-    let best: ExplanationData | null = null;
+    let bestId: number | null = null;
+    let bestTime = Infinity;
     for (const e of explanations) {
-      const time = e.apiProcessingTimeMs;
-      if (typeof time === 'number' && time > 0) {
-        if (!best || time < (best.apiProcessingTimeMs ?? Infinity)) {
-          best = e;
-        }
+      const time = toNum(e.apiProcessingTimeMs);
+      if (time !== null && time < bestTime) {
+        bestTime = time;
+        bestId = e.id;
       }
     }
-    return best?.id ?? null;
+    return bestId;
   }, [explanations]);
 
   const cheapestId = useMemo(() => {
-    let best: ExplanationData | null = null;
+    let bestId: number | null = null;
+    let bestCost = Infinity;
     for (const e of explanations) {
-      const cost = e.estimatedCost;
-      if (typeof cost === 'number' && cost > 0) {
-        if (!best || cost < (best.estimatedCost ?? Infinity)) {
-          best = e;
-        }
+      const cost = toNum(e.estimatedCost);
+      if (cost !== null && cost < bestCost) {
+        bestCost = cost;
+        bestId = e.id;
       }
     }
-    return best?.id ?? null;
+    return bestId;
   }, [explanations]);
 
   const fewestTokensId = useMemo(() => {
-    let best: ExplanationData | null = null;
+    let bestId: number | null = null;
+    let bestTokens = Infinity;
     for (const e of explanations) {
-      const tokens = e.totalTokens;
-      if (typeof tokens === 'number' && tokens > 0) {
-        if (!best || tokens < (best.totalTokens ?? Infinity)) {
-          best = e;
-        }
+      const tokens = toNum(e.totalTokens);
+      if (tokens !== null && tokens < bestTokens) {
+        bestTokens = tokens;
+        bestId = e.id;
       }
     }
-    return best?.id ?? null;
+    return bestId;
   }, [explanations]);
 
   // Formatters - show exact values, no rounding for tokens
@@ -326,5 +333,3 @@ export function TaskEfficiencyLeaderboard({
         })}
       </div>
     </div>
-  );
-}
