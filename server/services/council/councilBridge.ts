@@ -16,6 +16,10 @@ import { logger } from '../../utils/logger.ts';
 // Configuration
 const COUNCIL_TIMEOUT_MS = parseInt(process.env.COUNCIL_TIMEOUT_MS || '180000', 10); // 3 min default for council
 
+// Log muting for health check failures
+let lastHealthCheckFailureTime: number | null = null;
+const HEALTH_CHECK_MUTE_MS = 5 * 60 * 1000; // 5 minutes
+
 export interface CouncilStage1Result {
   model: string;
   response: string;
@@ -113,7 +117,16 @@ export async function healthCheck(): Promise<boolean> {
     return true;
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : String(error);
-    logger.warn('[CouncilBridge] Health check failed:', errMsg);
+    
+    // Log muting: only log if 5+ minutes since last logged failure
+    const now = Date.now();
+    const shouldLog = !lastHealthCheckFailureTime || (now - lastHealthCheckFailureTime) >= HEALTH_CHECK_MUTE_MS;
+    
+    if (shouldLog) {
+      logger.warn('[CouncilBridge] Health check failed:', errMsg);
+      lastHealthCheckFailureTime = now;
+    }
+    
     return false;
   }
 }
@@ -121,11 +134,13 @@ export async function healthCheck(): Promise<boolean> {
 /**
  * Run council deliberation via Python subprocess
  * @param query - The query/prompt to send to the council
+ * @param apiKey - The API key to use for council operations
  * @param onEvent - Callback for streaming events
  * @returns Promise with final result
  */
 export async function runCouncil(
   query: string,
+  apiKey: string,
   onEvent?: (evt: CouncilBridgeEvent) => void
 ): Promise<CouncilResponse> {
   return new Promise((resolve, reject) => {
@@ -139,10 +154,8 @@ export async function runCouncil(
       PYTHONUTF8: '1',
     };
     
-    // Ensure OPENROUTER_API_KEY is passed through
-    if (process.env.OPENROUTER_API_KEY) {
-      env.OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-    }
+    // Set OPENROUTER_API_KEY to the resolved key (user key or server fallback)
+    env.OPENROUTER_API_KEY = apiKey;
     
     const spawnOpts: SpawnOptions = {
       cwd: path.dirname(wrapperPath),

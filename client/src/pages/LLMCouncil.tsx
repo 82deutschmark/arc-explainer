@@ -10,6 +10,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, Link } from 'wouter';
+import { useAppConfig, useRequiresUserApiKey } from '@/hooks/useAppConfig';
 import {
   Card,
   CardContent,
@@ -23,6 +24,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -106,6 +109,7 @@ const UNSOLVED_PUZZLES = [
 export default function LLMCouncil() {
   const params = useParams();
   const urlTaskId = params?.taskId as string | undefined;
+  const requiresUserApiKey = useRequiresUserApiKey();
 
   const [selectedPuzzle, setSelectedPuzzle] = useState<string>(urlTaskId || '');
   const [mode, setMode] = useState<'solve' | 'assess'>('solve');
@@ -115,6 +119,10 @@ export default function LLMCouncil() {
   const [streamEvents, setStreamEvents] = useState<StreamEvent[]>([]);
   const [streamError, setStreamError] = useState<string | null>(null);
   const streamAbortController = useRef<AbortController | null>(null);
+
+  // BYOK state
+  const [apiKey, setApiKey] = useState('');
+  const [provider, setProvider] = useState('openrouter');
 
   // Update selectedPuzzle when URL changes
   useEffect(() => {
@@ -128,7 +136,7 @@ export default function LLMCouncil() {
     document.title = 'LLM Council - ARC Puzzle Assessment';
   }, []);
 
-  // Check council health
+  // Check council health with dynamic polling interval
   const { data: healthData, isLoading: isCheckingHealth } = useQuery({
     queryKey: ['council-health'],
     queryFn: async () => {
@@ -136,7 +144,11 @@ export default function LLMCouncil() {
       const data = await res.json();
       return data;
     },
-    refetchInterval: 30000,
+    refetchInterval: (query) => {
+      // Health check polling: 30s when healthy, 5min when unhealthy
+      const healthy = query.state.data?.success && query.state.data?.data?.status === 'healthy';
+      return healthy ? 30000 : 5 * 60 * 1000;
+    },
   });
 
   const councilHealthy = healthData?.success && healthData?.data?.status === 'healthy';
@@ -167,6 +179,12 @@ export default function LLMCouncil() {
     if (!selectedPuzzle) return;
     if (mode === 'assess' && selectedExplanationIds.length === 0) return;
 
+    // BYOK validation: check if key required and missing
+    if (requiresUserApiKey && !apiKey.trim()) {
+      setStreamError('Production requires your API key. Your key is used for this session only and is never stored.');
+      return;
+    }
+
     setIsStreaming(true);
     setStreamEvents([]);
     setStreamError(null);
@@ -179,6 +197,7 @@ export default function LLMCouncil() {
         taskId: selectedPuzzle,
         mode,
         ...(mode === 'assess' && { explanationIds: selectedExplanationIds }),
+        ...(requiresUserApiKey && { apiKey: apiKey.trim(), provider }),
       };
 
       const res = await fetch('/api/council/assess/stream', {
@@ -389,6 +408,44 @@ export default function LLMCouncil() {
           )}
 
           <Separator className="my-2" />
+
+          {/* BYOK: API Key Input - Only shown in production */}
+          {requiresUserApiKey && (
+            <Card className="border-amber-200 bg-amber-50/50">
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <CardTitle className="text-sm text-amber-900">API Key Required</CardTitle>
+                    <CardDescription className="text-xs mt-1 text-amber-700">
+                      Production requires your API key. Your key is used for this session only and is never stored.
+                    </CardDescription>
+                  </div>
+                  <Badge variant="outline" className="text-xs uppercase tracking-wide border-amber-300 text-amber-700">
+                    BYOK
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <Label htmlFor="api-key" className="sr-only">API Key</Label>
+                    <Input
+                      id="api-key"
+                      type="password"
+                      placeholder="Enter your OpenRouter API key..."
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      className="font-mono text-sm"
+                      disabled={isStreaming}
+                    />
+                  </div>
+                  {apiKey.trim() && (
+                    <span className="text-xs text-green-600 font-medium">Key provided</span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Start Button */}
           <Button

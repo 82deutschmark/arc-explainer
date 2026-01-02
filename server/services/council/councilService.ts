@@ -11,6 +11,16 @@ import { councilBridge, type CouncilResponse } from './councilBridge.ts';
 import { puzzleLoader } from '../puzzleLoader.ts';
 import { repositoryService } from '../../repositories/RepositoryService.ts';
 import { logger } from '../../utils/logger.ts';
+import { getEffectiveApiKey } from '../../utils/environmentPolicy.ts';
+
+/**
+ * Get the server API key for a given provider
+ * Council currently only supports OpenRouter
+ */
+function getServerKey(provider?: string): string | undefined {
+  // Council currently only uses OpenRouter
+  return process.env.OPENROUTER_API_KEY;
+}
 
 export interface PuzzleForCouncil {
   taskId: string;
@@ -33,6 +43,8 @@ export interface CouncilAssessmentRequest {
   taskId: string;
   mode: 'solve' | 'assess';
   explanationIds?: number[]; // For 'assess' mode - which explanations to evaluate
+  apiKey?: string;
+  provider?: string;
 }
 
 export interface CouncilAssessmentResult {
@@ -196,8 +208,14 @@ export async function assessPuzzle(
     prompt = buildSolvePrompt(puzzleForCouncil);
   }
 
+  // Resolve API key: prefer user key, fallback to server key in dev/staging
+  const effectiveApiKey = getEffectiveApiKey(request.apiKey, getServerKey(request.provider));
+  if (!effectiveApiKey) {
+    throw new Error('API key resolution failed - this should not happen if controller validation passed');
+  }
+
   // Run council via subprocess with optional event callback
-  const response = await councilBridge.runCouncil(prompt, onEvent);
+  const response = await councilBridge.runCouncil(prompt, effectiveApiKey, onEvent);
 
   logger.info(`[CouncilService] Assessment complete for ${request.taskId}`);
 
