@@ -26,7 +26,14 @@ import { cn } from '@/lib/utils';
 export default function PuzzleAnalyst() {
   const { taskId } = useParams<{ taskId: string }>();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
-  const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
+  
+  // Support #correct hash in URL to auto-filter
+  const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash === 'correct') return 'correct';
+    if (hash === 'incorrect') return 'incorrect';
+    return 'all';
+  });
   const [highlightedId, setHighlightedId] = useState<number | null>(null);
 
   // Fetch puzzle metadata
@@ -49,7 +56,7 @@ export default function PuzzleAnalyst() {
   // Provide expected outputs so AnalysisResultCard can render grids and mismatches.
   const testCases = task?.test ?? [];
 
-  // Handle highlight query parameter for deep linking - auto-expand and scroll to the highlighted card
+  // Handle highlight query parameter for deep linking - auto-expand and scroll
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const highlightParam = params.get('highlight');
@@ -57,7 +64,6 @@ export default function PuzzleAnalyst() {
 
     if (Number.isFinite(parsedHighlight)) {
       setHighlightedId(parsedHighlight);
-      // Auto-expand the highlighted row
       setExpandedRows((prev) => new Set([...prev, parsedHighlight]));
     } else {
       setHighlightedId(null);
@@ -67,18 +73,17 @@ export default function PuzzleAnalyst() {
   // Scroll to highlighted row once summaries are loaded
   useEffect(() => {
     if (highlightedId !== null && summaries.length > 0) {
-      const timeoutId = setTimeout(() => {
-        const element = document.getElementById(`explanation-row-${highlightedId}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.classList.add('ring-2', 'ring-blue-500/70');
-          // Remove highlight ring after a few seconds
-          setTimeout(() => {
-            element.classList.remove('ring-2', 'ring-blue-500/70');
-          }, 4000);
-        }
-      }, 100);
-      return () => clearTimeout(timeoutId);
+      // Check if the highlighted row exists in current summaries
+      const exists = summaries.some((s) => s.id === highlightedId);
+      if (exists) {
+        const timeoutId = setTimeout(() => {
+          const element = document.getElementById(`explanation-row-${highlightedId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 150);
+        return () => clearTimeout(timeoutId);
+      }
     }
   }, [highlightedId, summaries]);
 
@@ -281,6 +286,7 @@ export default function PuzzleAnalyst() {
             {correctnessFilter === 'correct' && summaries.length > 0 && (
               <TaskEfficiencyLeaderboard
                 explanations={summaries}
+                taskId={taskId}
                 onSelectExplanation={(id) => {
                   // Expand the selected row
                   setExpandedRows((prev) => {
