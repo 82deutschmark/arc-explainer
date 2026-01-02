@@ -1,5 +1,17 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.6  Jan 1, 2026
+
+- **Shareable Task Efficiency Page** (Author: ChatGPT)
+  - **What**: New dedicated page at `/task/:taskId/efficiency` showing top 3 in each category: Fastest, Slowest, Cheapest, Most Expensive, Fewest Tokens. One shareable link that proves efficiency matters.
+  - **Why**: Previously needed 3+ separate links to share efficiency comparisons on Twitter. Now one URL shows all rankings with clickable links to each solution.
+  - **How**:
+    - Created `client/src/pages/TaskEfficiency.tsx` with category cards showing top 3 entries.
+    - Each entry links to `/task/:taskId?highlight=:id` for direct solution viewing.
+    - Quick comparison section shows multipliers (e.g., "11x slower", "12x more expensive").
+    - Dark theme, tweet-friendly design with medal rankings.
+  - **Files changed**: `TaskEfficiency.tsx` (new), `App.tsx` (route)
+
 ### Version 6.19.5  Jan 1, 2026
 
 - **Task Efficiency Leaderboard - Compact Redesign** (Author: ChatGPT)
