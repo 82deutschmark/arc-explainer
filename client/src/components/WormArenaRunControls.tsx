@@ -10,7 +10,8 @@
  */
 
 import React from 'react';
-import { Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react';
+import { Check, ChevronsUpDown, Plus, Trash2, Key, AlertCircle } from 'lucide-react';
+import { useRequiresUserApiKey } from '@/hooks/useAppConfig';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import {
@@ -198,6 +199,11 @@ export default function WormArenaRunControls({
   // Champion vs Challengers mode
   const [challengers, setChallengers] = React.useState<string[]>([]);
   const [showChallengers, setShowChallengers] = React.useState(false);
+  
+  // BYOK: In production, API keys are required for all matches
+  const globalByokRequired = useRequiresUserApiKey();
+  const hasApiKey = byoApiKey.trim().length > 0;
+  const canStartMatch = matchupAvailable && (!globalByokRequired || hasApiKey);
 
   const resolvedModels = React.useMemo(() => {
     if (Array.isArray(modelOptions) && modelOptions.length > 0) return modelOptions;
@@ -311,14 +317,25 @@ export default function WormArenaRunControls({
         </div>
       )}
 
+      {/* BYOK Notice - Show prominently in production when key is required but missing */}
+      {globalByokRequired && !hasApiKey && (
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-300 text-amber-800">
+          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <div className="text-xs">
+            <p className="font-bold">API Key Required</p>
+            <p>Production mode requires your own API key. Open "API Key" section below to enter your key.</p>
+          </div>
+        </div>
+      )}
+
       {/* Primary actions: Start single match or add challenger */}
       <div className="flex gap-2">
         <button
           onClick={onStart}
-          disabled={isLiveLocked || loadingModels || !matchupAvailable}
+          disabled={isLiveLocked || loadingModels || !canStartMatch}
           className="flex-1 px-4 py-3 rounded-lg text-sm font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-worm-green hover:bg-worm-green-hover shadow-md hover:shadow-lg text-center"
         >
-          {isLiveLocked ? 'Running...' : 'Start Match'}
+          {isLiveLocked ? 'Running...' : globalByokRequired && !hasApiKey ? 'API Key Required' : 'Start Match'}
         </button>
         <button
           onClick={handleAddChallenger}
@@ -452,20 +469,30 @@ export default function WormArenaRunControls({
         </CollapsibleContent>
       </Collapsible>
 
-      <Collapsible open={byoOpen} onOpenChange={setByoOpen}>
+      <Collapsible open={byoOpen || globalByokRequired} onOpenChange={setByoOpen}>
         <CollapsibleTrigger asChild>
           <button
             type="button"
             disabled={isLiveLocked}
-            className="w-full flex items-center justify-between px-3 py-2 rounded border bg-white/80 text-xs font-semibold worm-border text-worm-ink hover:bg-white transition-colors disabled:opacity-50"
+            className={cn(
+              'w-full flex items-center justify-between px-3 py-2 rounded border text-xs font-semibold hover:bg-white transition-colors disabled:opacity-50',
+              globalByokRequired && !hasApiKey
+                ? 'bg-amber-50 border-amber-300 text-amber-800'
+                : 'bg-white/80 worm-border text-worm-ink'
+            )}
           >
-            <span>Advanced: use your own API key</span>
-            <span>{byoOpen ? '▲' : '▼'}</span>
+            <span className="flex items-center gap-2">
+              <Key className={cn('h-3.5 w-3.5', hasApiKey ? 'text-green-600' : globalByokRequired ? 'text-amber-500' : 'text-gray-400')} />
+              {globalByokRequired ? 'API Key (Required)' : 'API Key (Optional)'}
+            </span>
+            <span>{(byoOpen || globalByokRequired) ? '▲' : '▼'}</span>
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="pt-3 space-y-3 bg-white/50 rounded p-3 border worm-border">
-          <div className="text-[11px] text-worm-ink">
-            Key is used only for this request from your browser; it is not stored server-side.
+          <div className={cn('text-[11px]', globalByokRequired ? 'text-amber-800 font-medium' : 'text-worm-ink')}>
+            {globalByokRequired
+              ? 'Production mode: Your API key is required to run matches. Key is used only for this request and never stored.'
+              : 'Key is used only for this request from your browser; it is not stored server-side.'}
           </div>
 
           <input

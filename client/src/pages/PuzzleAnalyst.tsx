@@ -1,27 +1,32 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-24
- * PURPOSE: Tighten the Puzzle Analyst layout so the dense grid matches the reference art direction.
- *          Removes sticky header layers to prevent overlap, keeps the grid aligned, and boosts
- *          font sizes for better readability.
- * SRP/DRY check: Pass - this file orchestrates layout only and reuses ExplanationGridRow for details.
+ * Author: ChatGPT
+ * Date: 2026-01-01
+ * PURPOSE: Task Examiner with correctness filtering and side-by-side Task Efficiency Leaderboard.
+ *          When filtering to "correct", the layout elegantly splits into two columns: results on left,
+ *          leaderboard on right. Smooth transitions make the UI feel reactive and polished.
+ * SRP/DRY check: Pass - orchestrates layout and filtering, delegates rows/leaderboard to components.
  */
 
 import React, { useMemo, useState } from 'react';
 import { useParams } from 'wouter';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Filter, XCircle } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { usePaginatedExplanationSummaries } from '@/hooks/useExplanation';
 import { usePuzzle } from '@/hooks/usePuzzle';
+import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
 
 // UI Components
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import ExplanationGridRow from '@/components/puzzle/ExplanationGridRow';
+import { TaskEfficiencyLeaderboard } from '@/components/puzzle/TaskEfficiencyLeaderboard';
+import { cn } from '@/lib/utils';
 
 export default function PuzzleAnalyst() {
   const { taskId } = useParams<{ taskId: string }>();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
   // Fetch puzzle metadata
   const { task, isLoadingTask: isPuzzleLoading } = usePuzzle(taskId);
 
@@ -34,7 +39,7 @@ export default function PuzzleAnalyst() {
     counts,
   } = usePaginatedExplanationSummaries(taskId, {
     pageSize: 1000,
-    correctness: 'all',
+    correctness: correctnessFilter,
   });
 
   // Keep a simple summary of totals for the header badges.
@@ -139,11 +144,68 @@ export default function PuzzleAnalyst() {
               Incorrect {summaryStats.incorrect}
             </span>
           </div>
+
+          {/* Correctness filters */}
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-gray-300">
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-gray-500">
+              <Filter className="h-4 w-4 opacity-70" />
+              <span>Filter</span>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'flex items-center gap-2 rounded-full border border-gray-800 bg-gray-900/70 px-3 py-1 text-gray-100 transition-colors',
+                correctnessFilter === 'all' && 'border-gray-600 bg-gray-800 text-white shadow-inner'
+              )}
+              onClick={() => setCorrectnessFilter('all')}
+            >
+              All ({summaryStats.all})
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'flex items-center gap-2 rounded-full border border-emerald-900/70 bg-emerald-950/40 px-3 py-1 text-emerald-100 transition-colors',
+                correctnessFilter === 'correct' && 'border-emerald-400 bg-emerald-900/70 text-emerald-50 shadow-inner'
+              )}
+              onClick={() => setCorrectnessFilter('correct')}
+            >
+              <CheckCircle className="h-4 w-4" />
+              Correct ({summaryStats.correct})
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'flex items-center gap-2 rounded-full border border-rose-900/70 bg-rose-950/40 px-3 py-1 text-rose-100 transition-colors',
+                correctnessFilter === 'incorrect' && 'border-rose-400 bg-rose-900/70 text-rose-50 shadow-inner'
+              )}
+              onClick={() => setCorrectnessFilter('incorrect')}
+            >
+              <XCircle className="h-4 w-4" />
+              Incorrect ({summaryStats.incorrect})
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pt-1 pb-3">
-        <div className="space-y-px border border-gray-800/80 rounded-xl bg-black shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
+      {/* Side-by-side layout: grid left, leaderboard right when filtering to correct */}
+      <div className={cn(
+        'mx-auto px-4 pt-1 pb-3 transition-all duration-300 ease-out',
+        correctnessFilter === 'correct' ? 'max-w-[1800px]' : 'max-w-7xl'
+      )}>
+        <div className={cn(
+          'grid gap-4 transition-all duration-300 ease-out',
+          correctnessFilter === 'correct' && summaries.length > 0
+            ? 'lg:grid-cols-[1fr_420px]'
+            : 'grid-cols-1'
+        )}>
+          {/* Left: Results grid */}
+          <div className="space-y-px border border-gray-800/80 rounded-xl bg-black shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden transition-all duration-300">
           {/* Column headers align with ExplanationGridRow widths so every value lines up. */}
           <div
             className="hidden md:grid grid-cols-[60px_minmax(220px,1fr)_110px_90px_100px_100px_92px_44px] gap-3 px-3 py-1.5 bg-black border-b border-gray-800 text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-500"
@@ -161,15 +223,42 @@ export default function PuzzleAnalyst() {
           {/* Rows */}
           <div className="divide-y divide-gray-900/50">
             {summaries.map((explanation, idx) => (
-              <ExplanationGridRow
-                key={explanation.id}
-                explanation={explanation}
-                testCases={testCases}
-                isExpanded={expandedRows.has(explanation.id)}
-                onToggleExpand={() => handleToggleRow(explanation.id)}
-                isAlternate={idx % 2 === 1}
-              />
+              <div key={explanation.id} id={`explanation-row-${explanation.id}`}>
+                <ExplanationGridRow
+                  explanation={explanation}
+                  testCases={testCases}
+                  isExpanded={expandedRows.has(explanation.id)}
+                  onToggleExpand={() => handleToggleRow(explanation.id)}
+                  isAlternate={idx % 2 === 1}
+                />
+              </div>
             ))}
+          </div>
+          </div>
+
+          {/* Right: Task Efficiency Leaderboard (appears elegantly when filtering to correct) */}
+          <div className={cn(
+            'transition-all duration-300 ease-out lg:sticky lg:top-4 lg:self-start',
+            correctnessFilter === 'correct' && summaries.length > 0
+              ? 'opacity-100 translate-x-0'
+              : 'hidden lg:hidden'
+          )}>
+            {correctnessFilter === 'correct' && summaries.length > 0 && (
+              <TaskEfficiencyLeaderboard
+                explanations={summaries}
+                onSelectExplanation={(id) => {
+                  // Expand the selected row
+                  setExpandedRows((prev) => {
+                    const next = new Set(prev);
+                    next.add(id);
+                    return next;
+                  });
+                  // Scroll to the row
+                  const element = document.getElementById(`explanation-row-${id}`);
+                  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}
+              />
+            )}
           </div>
         </div>
 

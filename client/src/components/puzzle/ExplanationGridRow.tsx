@@ -210,15 +210,25 @@ export default function ExplanationGridRow({
   const rowBackground = isAlternate ? 'bg-gray-900/40' : 'bg-transparent';
   const borderStyle = isExpanded ? 'border-b border-gray-700/70' : 'border-b border-gray-800/60';
 
+  // Helper to validate a grid is a proper 2D number array
+  const isValidGrid = (grid: any): grid is number[][] => {
+    return (
+      Array.isArray(grid) &&
+      grid.length > 0 &&
+      Array.isArray(grid[0]) &&
+      typeof grid[0][0] === 'number'
+    );
+  };
+
   // Build a compact preview grid, favoring multi-test predictions when available.
-  const predictedGrid = explanation.predictedOutputGrid ?? null;
+  const predictedGrid = isValidGrid(explanation.predictedOutputGrid) ? explanation.predictedOutputGrid : null;
   const multiTestGrids =
     (Array.isArray(explanation.multiTestPredictionGrids) && explanation.multiTestPredictionGrids.length > 0)
-      ? explanation.multiTestPredictionGrids
+      ? explanation.multiTestPredictionGrids.filter(isValidGrid)
       : (Array.isArray(explanation.multiplePredictedOutputs) && explanation.multiplePredictedOutputs.length > 0)
-        ? explanation.multiplePredictedOutputs
+        ? explanation.multiplePredictedOutputs.filter(isValidGrid)
         : (Array.isArray(explanation.predictedOutputGrids) && explanation.predictedOutputGrids.length > 0)
-          ? explanation.predictedOutputGrids
+          ? explanation.predictedOutputGrids.filter(isValidGrid)
           : [];
   const previewGrid = predictedGrid ?? multiTestGrids[0] ?? null;
   const previewCount = multiTestGrids.length;

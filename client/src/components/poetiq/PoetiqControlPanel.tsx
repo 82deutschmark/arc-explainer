@@ -12,6 +12,7 @@ import React, { useMemo, useEffect } from 'react';
 import { Key, Loader2, Brain } from 'lucide-react';
 import type { PoetiqProgressState } from '@/hooks/usePoetiqProgress';
 import { usePoetiqModels } from '@/hooks/usePoetiqModels';
+import { useRequiresUserApiKey } from '@/hooks/useAppConfig';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -113,7 +114,10 @@ export default function PoetiqControlPanel({
     () => poetiqModels?.find(m => m.id === model),
     [poetiqModels, model],
   );
-  const requiresApiKey = !!(selectedModelObj as any)?.requiresBYO;
+  // BYOK: In production ALL models require user keys. Model-level flag is also checked.
+  const globalByokRequired = useRequiresUserApiKey();
+  const modelRequiresByo = !!(selectedModelObj as any)?.requiresBYO;
+  const requiresApiKey = globalByokRequired || modelRequiresByo;
   const canUseAgents =
     !!selectedModelObj &&
     selectedModelObj.provider === 'OpenAI' &&
@@ -168,7 +172,7 @@ export default function PoetiqControlPanel({
           )}
         </div>
 
-        {/* API Key */}
+        {/* API Key - Always visible, required indicator shown when needed */}
         <div className="flex items-center gap-1.5">
           <Key
             className={cn(
@@ -181,12 +185,15 @@ export default function PoetiqControlPanel({
             value={apiKey}
             onChange={e => setApiKey(e.target.value)}
             disabled={isRunning}
-            placeholder={keyPlaceholder}
+            placeholder={requiresApiKey ? `${keyPlaceholder} (Required)` : keyPlaceholder}
             className={cn(
               'h-8 w-40 font-mono text-[11px]',
-              requiresApiKey && !hasApiKey && 'border-amber-400',
+              requiresApiKey && !hasApiKey && 'border-amber-400 ring-1 ring-amber-300',
             )}
           />
+          {requiresApiKey && !hasApiKey && (
+            <span className="text-[10px] font-semibold text-amber-600">Required</span>
+          )}
         </div>
 
         {/* Experts */}
@@ -292,8 +299,10 @@ export default function PoetiqControlPanel({
           <span className="font-semibold">Model</span>: which LLM writes and revises the candidate Python solver.
         </div>
         <div>
-          <span className="font-semibold">Key</span>: BYO provider key; never stored. Required only when the model is
-          marked BYO.
+          <span className="font-semibold">Key</span>: BYO provider key; never stored.{' '}
+          {globalByokRequired
+            ? <span className="text-amber-600 font-semibold">Required in production for all models.</span>
+            : 'Required only when the model is marked BYO.'}
         </div>
         <div>
           <span className="font-semibold">Experts</span>: number of parallel coders. 1 = fastest, 8 = most thorough.
