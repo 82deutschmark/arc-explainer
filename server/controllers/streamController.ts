@@ -280,7 +280,10 @@ function buildPayloadFromBody(body: any): { payload?: StreamAnalysisPayload; err
 export const streamController = {
   async prepareAnalysisStream(req: Request, res: Response) {
     // Environment-aware BYOK enforcement: production requires user API key
+    // Easter egg: "test" bypasses BYOK and uses server env vars (for admin testing)
     const userApiKey = ensureString(req.body?.apiKey);
+    const isTestBypass = userApiKey === 'test';
+    
     if (requiresUserApiKey() && !userApiKey) {
       res.status(400).json({
         error: "Production requires your API key. Your key is used for this session only and is never stored.",
@@ -299,7 +302,8 @@ export const streamController = {
     }
 
     // Attach user API key to payload for downstream services
-    if (userApiKey) {
+    // If "test" bypass is used, don't attach any key - let server use its env vars
+    if (userApiKey && !isTestBypass) {
       (payload as any).apiKey = userApiKey;
     }
 
