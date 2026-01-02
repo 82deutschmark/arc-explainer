@@ -14,7 +14,7 @@ The LLM Council feature runs a sophisticated 3-stage deliberation process:
 2. Stage 2: Each model ranks the other solutions
 3. Stage 3: A "chairman" LLM synthesizes all inputs into a final assessment
 
-Currently, these results stream beautifully to the UI and then **disappear entirely**. Nothing is saved to the database. This means:
+Currently, these results DO NOT stream beautifully to the UI and then **disappear entirely**. Nothing is saved to the database. This means:
 - No audit trail of what the council decided
 - No way to query past council assessments
 - Council results can't participate in the ELO voting system

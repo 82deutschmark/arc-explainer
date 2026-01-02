@@ -242,425 +242,359 @@ export default function LLMCouncil() {
   const { stage1Done, stage2Done, stage3Done } = getStageProgress();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50">
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <Users className="h-8 w-8 text-purple-600" />
-          <div>
-            <h1 className="text-2xl font-bold text-purple-900">LLM Council</h1>
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 flex flex-col">
+      {/* Header - Edge-to-edge */}
+      <div className="border-b border-purple-200 bg-white/50 backdrop-blur-sm">
+        <div className="px-6 py-4">
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-3xl font-bold text-purple-900">Council</h1>
             <p className="text-sm text-purple-600">
-              Multi-model consensus evaluation for ARC puzzles
+              Multi-model consensus evaluation
             </p>
           </div>
-          <Badge
-            variant={councilHealthy ? 'default' : 'destructive'}
-            className="ml-auto"
-          >
-            {isCheckingHealth ? (
-              <Loader2 className="h-3 w-3 animate-spin mr-1" />
-            ) : councilHealthy ? (
-              <CheckCircle2 className="h-3 w-3 mr-1" />
-            ) : (
-              <AlertCircle className="h-3 w-3 mr-1" />
-            )}
-            {councilHealthy ? 'Council Online' : 'Council Offline'}
-          </Badge>
         </div>
+      </div>
 
-        {/* Health Warning */}
-        {!councilHealthy && !isCheckingHealth && (
-          <Alert variant="destructive" className="mb-6">
+      {/* Health Warning - Full width */}
+      {!councilHealthy && !isCheckingHealth && (
+        <div className="px-6 py-4 bg-red-50 border-b border-red-200">
+          <Alert variant="destructive" className="bg-transparent border-0 p-0">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Council Service Unavailable</AlertTitle>
             <AlertDescription>
-              The LLM Council service is not running. Please start the council backend:
-              <pre className="mt-2 p-2 bg-red-50 rounded text-xs">
+              The LLM Council service is not running. Start it with:
+              <code className="block mt-2 p-2 bg-red-100 rounded text-xs font-mono">
                 cd llm-council && uv run python -m backend.main
-              </pre>
+              </code>
             </AlertDescription>
           </Alert>
-        )}
+        </div>
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Configuration */}
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Select Puzzle</CardTitle>
-                <CardDescription>
-                  Choose an unsolved ARC2 Evaluation puzzle
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Select value={selectedPuzzle} onValueChange={setSelectedPuzzle}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a puzzle..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {UNSOLVED_PUZZLES.map(puzzleId => (
-                      <SelectItem key={puzzleId} value={puzzleId}>
-                        {puzzleId}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+      {/* Main Content - Edge-to-edge grid */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[28rem_1fr] gap-0">
+        {/* Left Panel - Configuration Rail */}
+        <div className="border-r border-purple-200 bg-white/30 px-6 py-6 overflow-y-auto space-y-4">
+          <div>
+            <h2 className="text-sm font-semibold text-purple-900 mb-3">Puzzle</h2>
+            <Select value={selectedPuzzle} onValueChange={setSelectedPuzzle}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a puzzle..." />
+              </SelectTrigger>
+              <SelectContent>
+                {UNSOLVED_PUZZLES.map(puzzleId => (
+                  <SelectItem key={puzzleId} value={puzzleId}>
+                    {puzzleId}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-                {selectedPuzzle && (
-                  <div className="flex gap-2">
-                    <Link href={`/puzzle/${selectedPuzzle}`}>
-                      <Button variant="outline" size="sm" className="text-xs">
-                        View Puzzle <ExternalLink className="h-3 w-3 ml-1" />
-                      </Button>
-                    </Link>
-                    <Link href={`/council/${selectedPuzzle}`}>
-                      <Button variant="ghost" size="sm" className="text-xs">
-                        Link <Zap className="h-3 w-3 ml-1" />
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Assessment Mode</CardTitle>
-                <CardDescription>
-                  How should the council evaluate?
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                  <Button
-                    variant={mode === 'solve' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setMode('solve')}
-                    className="flex-1"
-                    disabled={isStreaming}
-                  >
-                    <Brain className="h-4 w-4 mr-1" />
-                    Solve
+            {selectedPuzzle && (
+              <div className="flex gap-2 mt-3">
+                <Link href={`/puzzle/${selectedPuzzle}`}>
+                  <Button variant="outline" size="sm" className="text-xs flex-1">
+                    View <ExternalLink className="h-3 w-3 ml-1" />
                   </Button>
-                  <Button
-                    variant={mode === 'assess' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setMode('assess')}
-                    className="flex-1"
-                    disabled={isStreaming}
-                  >
-                    <Trophy className="h-4 w-4 mr-1" />
-                    Assess
+                </Link>
+                <Link href={`/council/${selectedPuzzle}`}>
+                  <Button variant="ghost" size="sm" className="text-xs flex-1">
+                    Link <Zap className="h-3 w-3 ml-1" />
                   </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {mode === 'solve'
-                    ? 'Council members will independently solve the puzzle and rank each other.'
-                    : 'Council will evaluate existing explanations from the database.'}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Explanation Selection for Assess Mode */}
-            {mode === 'assess' && selectedPuzzle && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Select Explanations</CardTitle>
-                  <CardDescription>
-                    {selectedExplanationIds.length} of {explanations.length} selected
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingExplanations ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm">Loading explanations...</span>
-                    </div>
-                  ) : explanations.length === 0 ? (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>
-                        No explanations found for this puzzle. Try "Solve" mode instead.
-                      </AlertDescription>
-                    </Alert>
-                  ) : (
-                    <ScrollArea className="h-48">
-                      <div className="space-y-2 pr-4">
-                        {explanations.map(exp => (
-                          <div
-                            key={exp.id}
-                            className={`p-2 rounded border cursor-pointer transition-colors ${
-                              selectedExplanationIds.includes(exp.id)
-                                ? 'border-purple-500 bg-purple-50'
-                                : 'border-gray-200 hover:border-purple-300'
-                            }`}
-                            onClick={() => toggleExplanationSelection(exp.id)}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-medium truncate">
-                                {exp.modelName}
-                              </span>
-                              {exp.isCorrect !== undefined && (
-                                <Badge variant={exp.isCorrect ? 'default' : 'secondary'} className="text-[10px]">
-                                  {exp.isCorrect ? 'Correct' : 'Incorrect'}
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-[10px] text-muted-foreground truncate mt-1">
-                              {exp.explanation.slice(0, 80)}...
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Start Button */}
-            <Button
-              className="w-full"
-              size="lg"
-              disabled={
-                !councilHealthy ||
-                !selectedPuzzle ||
-                isStreaming ||
-                (mode === 'assess' && selectedExplanationIds.length === 0)
-              }
-              onClick={handleStartAssessment}
-            >
-              {isStreaming ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Deliberating...
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4 mr-2" />
-                  Start Assessment
-                </>
-              )}
-            </Button>
-
-            {streamError && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{streamError}</AlertDescription>
-              </Alert>
+                </Link>
+              </div>
             )}
           </div>
 
-          {/* Right Panel - Results & Stream */}
-          <div className="lg:col-span-2">
-            {isStreaming ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Deliberation in Progress</CardTitle>
-                  <CardDescription>
-                    Watch the council's 3-stage deliberation process
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Progress Indicators */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      {stage1Done ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      ) : (
-                        <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
-                      )}
-                      <span className="text-sm font-medium">Stage 1: Individual Responses</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {stage2Done ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      ) : stage1Done ? (
-                        <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
-                      ) : (
-                        <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
-                      )}
-                      <span className="text-sm font-medium">Stage 2: Peer Rankings</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {stage3Done ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      ) : stage2Done ? (
-                        <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
-                      ) : (
-                        <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
-                      )}
-                      <span className="text-sm font-medium">Stage 3: Final Synthesis</span>
-                    </div>
-                  </div>
+          <Separator className="my-2" />
 
-                  {/* Event Log */}
-                  <Separator />
-                  <ScrollArea className="h-64 border rounded p-3 bg-gray-50">
-                    <div className="space-y-2">
-                      {streamEvents.map((evt, idx) => (
-                        <div key={idx} className="text-xs font-mono text-gray-600">
-                          <span className="text-blue-600">[{evt.type}]</span>
-                          {evt.message && <span> {evt.message}</span>}
-                          {evt.count && <span> ({evt.count} results)</span>}
+          <div>
+            <h2 className="text-sm font-semibold text-purple-900 mb-3">Mode</h2>
+            <div className="flex gap-2">
+              <Button
+                variant={mode === 'solve' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setMode('solve')}
+                className="flex-1 text-xs"
+                disabled={isStreaming}
+              >
+                <Brain className="h-4 w-4 mr-1" />
+                Solve
+              </Button>
+              <Button
+                variant={mode === 'assess' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setMode('assess')}
+                className="flex-1 text-xs"
+                disabled={isStreaming}
+              >
+                <Trophy className="h-4 w-4 mr-1" />
+                Assess
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {mode === 'solve'
+                ? 'Council members independently solve and rank each other'
+                : 'Council evaluates existing explanations'}
+            </p>
+          </div>
+
+          {/* Explanation Selection for Assess Mode */}
+          {mode === 'assess' && selectedPuzzle && (
+            <>
+              <Separator className="my-2" />
+              <div>
+                <h2 className="text-sm font-semibold text-purple-900 mb-3">
+                  Explanations ({selectedExplanationIds.length}/{explanations.length})
+                </h2>
+                {isLoadingExplanations ? (
+                  <div className="flex items-center gap-2 py-4">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-xs">Loading...</span>
+                  </div>
+                ) : explanations.length === 0 ? (
+                  <div className="text-xs text-muted-foreground p-2 bg-red-50 rounded border border-red-200">
+                    No explanations found for this puzzle. Try "Solve" mode instead.
+                  </div>
+                ) : (
+                  <ScrollArea className="h-40 border rounded bg-white/50">
+                    <div className="space-y-2 p-2">
+                      {explanations.map(exp => (
+                        <div
+                          key={exp.id}
+                          className={`p-2 rounded border text-xs cursor-pointer transition-colors ${
+                            selectedExplanationIds.includes(exp.id)
+                              ? 'border-purple-500 bg-purple-50'
+                              : 'border-gray-200 hover:border-purple-300'
+                          }`}
+                          onClick={() => toggleExplanationSelection(exp.id)}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-medium truncate flex-1">
+                              {exp.modelName}
+                            </span>
+                            {exp.isCorrect !== undefined && (
+                              <Badge variant={exp.isCorrect ? 'default' : 'secondary'} className="text-[10px] shrink-0">
+                                {exp.isCorrect ? 'OK' : 'Wrong'}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
                   </ScrollArea>
-                </CardContent>
-              </Card>
-            ) : assessmentResult ? (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Council Assessment: {assessmentResult.taskId}</CardTitle>
-                      <CardDescription>
-                        Mode: {assessmentResult.mode}
-                      </CardDescription>
-                    </div>
-                    <Badge variant="outline">
-                      {assessmentResult.stage1.length} models
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Tabs defaultValue="synthesis" className="w-full">
-                    <TabsList className="grid w-full grid-cols-4">
-                      <TabsTrigger value="synthesis">Final Synthesis</TabsTrigger>
-                      <TabsTrigger value="stage1">Stage 1</TabsTrigger>
-                      <TabsTrigger value="stage2">Stage 2</TabsTrigger>
-                      <TabsTrigger value="aggregate">Aggregate</TabsTrigger>
-                    </TabsList>
+                )}
+              </div>
+            </>
+          )}
 
-                    {/* Final Synthesis */}
-                    <TabsContent value="synthesis" className="mt-4">
-                      <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+          <Separator className="my-2" />
+
+          {/* Start Button */}
+          <Button
+            className="w-full"
+            size="sm"
+            disabled={
+              !councilHealthy ||
+              !selectedPuzzle ||
+              isStreaming ||
+              (mode === 'assess' && selectedExplanationIds.length === 0)
+            }
+            onClick={handleStartAssessment}
+          >
+            {isStreaming ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Running...
+              </>
+            ) : (
+              <>
+                <Play className="h-4 w-4 mr-2" />
+                Start
+              </>
+            )}
+          </Button>
+
+          {streamError && (
+            <div className="p-3 bg-red-50 rounded border border-red-200">
+              <p className="text-xs text-red-700">{streamError}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Right Panel - Results & Stream */}
+        <div className="px-6 py-6 overflow-y-auto">
+          {isStreaming ? (
+            <div className="space-y-4">
+              <h2 className="text-base font-semibold text-purple-900">Deliberation in Progress</h2>
+
+              {/* Progress Indicators */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  {stage1Done ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                  ) : (
+                    <Loader2 className="h-5 w-5 text-blue-500 animate-spin shrink-0" />
+                  )}
+                  <span className="text-sm">Stage 1: Individual Responses</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  {stage2Done ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                  ) : stage1Done ? (
+                    <Loader2 className="h-5 w-5 text-blue-500 animate-spin shrink-0" />
+                  ) : (
+                    <div className="h-5 w-5 rounded-full border-2 border-gray-300 shrink-0" />
+                  )}
+                  <span className="text-sm">Stage 2: Peer Rankings</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  {stage3Done ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0" />
+                  ) : stage2Done ? (
+                    <Loader2 className="h-5 w-5 text-blue-500 animate-spin shrink-0" />
+                  ) : (
+                    <div className="h-5 w-5 rounded-full border-2 border-gray-300 shrink-0" />
+                  )}
+                  <span className="text-sm">Stage 3: Final Synthesis</span>
+                </div>
+              </div>
+
+              {/* Event Log */}
+              <div>
+                <h3 className="text-xs font-semibold text-gray-700 mb-2">Event Log</h3>
+                <ScrollArea className="h-48 border rounded p-3 bg-gray-900 border-gray-700">
+                  <div className="space-y-1">
+                    {streamEvents.map((evt, idx) => (
+                      <div key={idx} className="text-xs font-mono text-gray-300">
+                        <span className="text-blue-400">[{evt.type}]</span>
+                        {evt.message && <span className="text-gray-400"> {evt.message}</span>}
+                        {evt.count && <span className="text-gray-500"> ({evt.count})</span>}
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+          ) : assessmentResult ? (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-base font-semibold text-purple-900">Council Assessment</h2>
+                <p className="text-xs text-muted-foreground">
+                  {assessmentResult.taskId} ({assessmentResult.mode}, {assessmentResult.stage1.length} models)
+                </p>
+              </div>
+
+              <Tabs defaultValue="synthesis" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 text-xs">
+                  <TabsTrigger value="synthesis">Final</TabsTrigger>
+                  <TabsTrigger value="stage1">Stage 1</TabsTrigger>
+                  <TabsTrigger value="stage2">Stage 2</TabsTrigger>
+                  <TabsTrigger value="aggregate">Ranks</TabsTrigger>
+                </TabsList>
+
+                {/* Final Synthesis */}
+                <TabsContent value="synthesis" className="mt-4">
+                  <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Trophy className="h-4 w-4 text-green-600" />
+                      <span className="font-semibold text-sm text-green-800">
+                        Chairman: {assessmentResult.stage3.model}
+                      </span>
+                    </div>
+                    <pre className="text-xs bg-white p-3 rounded border max-h-80 overflow-auto whitespace-pre-wrap break-words">
+                      {assessmentResult.stage3.response}
+                    </pre>
+                  </div>
+                </TabsContent>
+
+                {/* Stage 1 - Individual Responses */}
+                <TabsContent value="stage1" className="mt-4">
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
+                    {assessmentResult.stage1.map((result, idx) => (
+                      <div key={idx} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                         <div className="flex items-center gap-2 mb-2">
-                          <Trophy className="h-5 w-5 text-green-600" />
-                          <span className="font-semibold text-green-800">
-                            Chairman: {assessmentResult.stage3.model}
+                          <Brain className="h-4 w-4 text-blue-600" />
+                          <span className="font-medium text-xs text-blue-800">
+                            {result.model}
                           </span>
                         </div>
-                        <pre className="whitespace-pre-wrap text-sm bg-white p-3 rounded border max-h-96 overflow-auto">
-                          {assessmentResult.stage3.response}
+                        <pre className="text-xs bg-white p-2 rounded max-h-40 overflow-auto whitespace-pre-wrap break-words">
+                          {result.response}
                         </pre>
                       </div>
-                    </TabsContent>
+                    ))}
+                  </div>
+                </TabsContent>
 
-                    {/* Stage 1 - Individual Responses */}
-                    <TabsContent value="stage1" className="mt-4">
-                      <div className="space-y-4">
-                        {assessmentResult.stage1.map((result, idx) => (
-                          <div key={idx} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Brain className="h-4 w-4 text-blue-600" />
-                              <span className="font-medium text-blue-800 text-sm">
-                                {result.model}
-                              </span>
+                {/* Stage 2 - Rankings */}
+                <TabsContent value="stage2" className="mt-4">
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
+                    {assessmentResult.stage2.map((result, idx) => (
+                      <div key={idx} className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="font-medium text-xs text-amber-800">
+                            {result.model}
+                          </span>
+                          {result.parsed_ranking.length > 0 && (
+                            <div className="flex items-center gap-1">
+                              {result.parsed_ranking.slice(0, 3).map((label, i) => (
+                                <React.Fragment key={i}>
+                                  <Badge variant="outline" className="text-[9px] py-0 px-1">
+                                    {assessmentResult.metadata.label_to_model[label] || label}
+                                  </Badge>
+                                  {i < Math.min(2, result.parsed_ranking.length - 1) && (
+                                    <ArrowRight className="h-2 w-2 text-amber-400" />
+                                  )}
+                                </React.Fragment>
+                              ))}
                             </div>
-                            <ScrollArea className="h-40">
-                              <pre className="whitespace-pre-wrap text-xs bg-white p-2 rounded">
-                                {result.response}
-                              </pre>
-                            </ScrollArea>
-                          </div>
-                        ))}
+                          )}
+                        </div>
+                        <pre className="text-xs bg-white p-2 rounded max-h-32 overflow-auto whitespace-pre-wrap break-words">
+                          {result.ranking}
+                        </pre>
                       </div>
-                    </TabsContent>
+                    ))}
+                  </div>
+                </TabsContent>
 
-                    {/* Stage 2 - Rankings */}
-                    <TabsContent value="stage2" className="mt-4">
-                      <div className="space-y-4">
-                        {assessmentResult.stage2.map((result, idx) => (
-                          <div key={idx} className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="font-medium text-amber-800 text-sm">
-                                {result.model}'s Ranking
-                              </span>
-                              {result.parsed_ranking.length > 0 && (
-                                <div className="flex items-center gap-1 text-xs">
-                                  {result.parsed_ranking.map((label, i) => (
-                                    <React.Fragment key={i}>
-                                      <Badge variant="outline" className="text-[10px]">
-                                        {assessmentResult.metadata.label_to_model[label] || label}
-                                      </Badge>
-                                      {i < result.parsed_ranking.length - 1 && (
-                                        <ArrowRight className="h-3 w-3 text-amber-400" />
-                                      )}
-                                    </React.Fragment>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <ScrollArea className="h-32">
-                              <pre className="whitespace-pre-wrap text-xs bg-white p-2 rounded">
-                                {result.ranking}
-                              </pre>
-                            </ScrollArea>
-                          </div>
-                        ))}
-                      </div>
-                    </TabsContent>
-
-                    {/* Aggregate Rankings */}
-                    <TabsContent value="aggregate" className="mt-4">
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-sm">Aggregate Rankings (by average position)</h4>
-                        {assessmentResult.metadata.aggregate_rankings.map((ranking, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-200"
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className="text-2xl font-bold text-purple-600">
-                                #{idx + 1}
-                              </span>
-                              <span className="font-medium">{ranking.model}</span>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-sm font-medium">
-                                Avg Rank: {ranking.average_rank.toFixed(2)}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {ranking.rankings_count} votes
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <Separator className="my-4" />
-
-                      <div className="text-xs text-muted-foreground">
-                        <strong>Label Mapping:</strong>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {Object.entries(assessmentResult.metadata.label_to_model).map(([label, model]) => (
-                            <Badge key={label} variant="outline" className="text-[10px]">
-                              {label} = {model}
-                            </Badge>
-                          ))}
+                {/* Aggregate Rankings */}
+                <TabsContent value="aggregate" className="mt-4">
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {assessmentResult.metadata.aggregate_rankings.map((ranking, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-2 bg-purple-50 rounded-lg border border-purple-200"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-bold text-purple-600">
+                            #{idx + 1}
+                          </span>
+                          <span className="font-medium text-sm">{ranking.model}</span>
+                        </div>
+                        <div className="text-right text-xs">
+                          <div>Avg: {ranking.average_rank.toFixed(1)}</div>
+                          <div className="text-muted-foreground">{ranking.rankings_count} votes</div>
                         </div>
                       </div>
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="h-full min-h-[400px] flex items-center justify-center">
-                <CardContent className="text-center">
-                  <Users className="h-16 w-16 mx-auto text-purple-200 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-600 mb-2">
-                    No Assessment Yet
-                  </h3>
-                  <p className="text-sm text-muted-foreground max-w-md">
-                    Select a puzzle and start an assessment to see the council's
-                    deliberation process. Stream events will appear here in real-time.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Users className="h-12 w-12 text-purple-200 mb-3" />
+              <h3 className="text-sm font-medium text-gray-600 mb-1">
+                No Assessment Yet
+              </h3>
+              <p className="text-xs text-muted-foreground max-w-xs">
+                Select a puzzle and click start to begin the council deliberation process.
+              </p>
+            </div>
+          )}
+        </div>
         </div>
       </div>
     </div>
