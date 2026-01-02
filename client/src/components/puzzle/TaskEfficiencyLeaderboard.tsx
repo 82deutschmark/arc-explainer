@@ -254,16 +254,15 @@ export function TaskEfficiencyLeaderboard({
       )}
 
       {/* Column headers - sortable */}
-      <div className="grid grid-cols-[1fr_55px_85px_80px_85px] gap-2 px-4 py-2.5 border-b border-gray-800 bg-black text-gray-500">
+      <div className="grid grid-cols-[1fr_70px_75px_70px] gap-2 px-4 py-2.5 border-b border-gray-800 bg-black text-gray-500">
         <div className="text-xs font-semibold uppercase tracking-wide">Model</div>
-        <div className="text-xs font-semibold uppercase tracking-wide text-center">Think</div>
         <SortHeader field="time" label="Time" icon={Clock} />
         <SortHeader field="cost" label="Cost" icon={DollarSign} />
         <SortHeader field="tokens" label="Tokens" icon={Coins} />
       </div>
 
-      {/* Rows - scrollable */}
-      <div className="flex-1 overflow-y-auto divide-y divide-gray-800/40">
+      {/* Rows - scrollable with visible scrollbar */}
+      <div className="flex-1 overflow-y-auto overflow-x-auto divide-y divide-gray-800/40 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
         {sortedExplanations.map((exp, idx) => {
           const isFastest = exp.id === fastestId;
           const isCheapest = exp.id === cheapestId;
@@ -278,7 +277,7 @@ export function TaskEfficiencyLeaderboard({
               key={exp.id}
               onClick={() => onSelectExplanation?.(exp.id)}
               className={cn(
-                'grid grid-cols-[1fr_55px_85px_80px_85px] gap-2 px-4 py-2.5 cursor-pointer transition-colors hover:bg-gray-800/60',
+                'grid grid-cols-[1fr_70px_75px_70px] gap-2 px-4 py-2.5 cursor-pointer transition-colors hover:bg-gray-800/60',
                 idx % 2 === 1 && 'bg-gray-900/30',
                 (isFastest || isCheapest || isFewest) && 'bg-emerald-950/20'
               )}
@@ -291,17 +290,6 @@ export function TaskEfficiencyLeaderboard({
                 </span>
                 {isFastest && <Zap className="h-4 w-4 text-emerald-400 flex-shrink-0" />}
                 {isCheapest && !isFastest && <DollarSign className="h-4 w-4 text-emerald-400 flex-shrink-0" />}
-              </div>
-
-              {/* Thinking */}
-              <div className="flex items-center justify-center">
-                {thinkingLabel ? (
-                  <Badge variant="outline" className="text-xs px-1.5 py-0.5 border-gray-700 text-gray-400">
-                    {thinkingLabel}
-                  </Badge>
-                ) : (
-                  <span className="text-gray-600">-</span>
-                )}
               </div>
 
               {/* Time */}
