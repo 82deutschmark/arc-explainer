@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.7  Jan 1, 2026
+
+- **Task Efficiency Leaderboard - Major Fixes** (Author: ChatGPT)
+  - **What**: Fixed multiple issues with the Task Efficiency Leaderboard: 50/50 layout split, correct cost/time/token display, working column sorting, exact token counts.
+  - **Why**: Previous version had crammed layout (420px fixed width), stats bar showing incorrect values, sorting not visually working, rounded token counts.
+  - **How**:
+    - Changed layout from `lg:grid-cols-[1fr_420px]` to `lg:grid-cols-2` for equal 50/50 split.
+    - Fixed stats calculation to properly check for null/undefined vs zero values.
+    - Added bidirectional sorting (click header to toggle asc/desc) with visual arrows.
+    - Show exact token counts with commas (e.g., "45,231") instead of rounded "45.2k".
+    - Show 4 decimal places for cost (e.g., "$0.0934") for precision.
+    - Proper grid layout with sortable column headers.
+  - **Files changed**: `TaskEfficiencyLeaderboard.tsx` (rewritten), `PuzzleAnalyst.tsx`
+
 ### Version 6.19.6  Jan 1, 2026
 
 - **Shareable Task Efficiency Page** (Author: ChatGPT)
