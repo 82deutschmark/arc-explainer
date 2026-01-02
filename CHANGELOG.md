@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.5  Jan 1, 2026
+
+- **Correct Answers Leaderboard for Task Examiner** (Author: ChatGPT)
+  - **What**: Added an interactive `CorrectAnswersLeaderboard` component that appears when filtering to "Correct" on the Task Examiner page. Shows key metrics at a glance: model, thinking setting (none/low/medium/high/x-high), time to solve, and cost. Features sortable columns, visual bar indicators for relative comparison, and highlights for fastest/cheapest runs.
+  - **Why**: Users needed a quick way to compare correct answers across models and reasoning settings, understanding trade-offs between speed, cost, and thinking effort.
+  - **How**:
+    - Created `client/src/components/puzzle/CorrectAnswersLeaderboard.tsx` with sortable columns (Model, Thinking, Time, Cost), color-coded progress bars, and "Fastest"/"Cheapest" badges.
+    - Integrated into `PuzzleAnalyst.tsx` to display above the grid when `correctnessFilter === 'correct'`.
+    - Clicking a leaderboard row expands and scrolls to the corresponding detail row.
+  - **Files changed**: `CorrectAnswersLeaderboard.tsx` (new), `PuzzleAnalyst.tsx`
+
 ### Version 6.19.4  Jan 1, 2026
 
 - **Task Examiner correctness filtering** (Author: ChatGPT)

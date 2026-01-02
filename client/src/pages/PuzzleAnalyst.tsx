@@ -19,6 +19,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import ExplanationGridRow from '@/components/puzzle/ExplanationGridRow';
+import { CorrectAnswersLeaderboard } from '@/components/puzzle/CorrectAnswersLeaderboard';
 import { cn } from '@/lib/utils';
 
 export default function PuzzleAnalyst() {
@@ -192,6 +193,26 @@ export default function PuzzleAnalyst() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 pt-1 pb-3">
+        {/* Show interactive leaderboard when filtering to correct answers */}
+        {correctnessFilter === 'correct' && summaries.length > 0 && (
+          <div className="mb-4">
+            <CorrectAnswersLeaderboard
+              explanations={summaries}
+              onSelectExplanation={(id) => {
+                // Expand the selected row
+                setExpandedRows((prev) => {
+                  const next = new Set(prev);
+                  next.add(id);
+                  return next;
+                });
+                // Scroll to the row
+                const element = document.getElementById(`explanation-row-${id}`);
+                element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }}
+            />
+          </div>
+        )}
+
         <div className="space-y-px border border-gray-800/80 rounded-xl bg-black shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
           {/* Column headers align with ExplanationGridRow widths so every value lines up. */}
           <div
@@ -210,14 +231,15 @@ export default function PuzzleAnalyst() {
           {/* Rows */}
           <div className="divide-y divide-gray-900/50">
             {summaries.map((explanation, idx) => (
-              <ExplanationGridRow
-                key={explanation.id}
-                explanation={explanation}
-                testCases={testCases}
-                isExpanded={expandedRows.has(explanation.id)}
-                onToggleExpand={() => handleToggleRow(explanation.id)}
-                isAlternate={idx % 2 === 1}
-              />
+              <div key={explanation.id} id={`explanation-row-${explanation.id}`}>
+                <ExplanationGridRow
+                  explanation={explanation}
+                  testCases={testCases}
+                  isExpanded={expandedRows.has(explanation.id)}
+                  onToggleExpand={() => handleToggleRow(explanation.id)}
+                  isAlternate={idx % 2 === 1}
+                />
+              </div>
             ))}
           </div>
         </div>
