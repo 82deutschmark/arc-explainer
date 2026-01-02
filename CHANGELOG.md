@@ -2,6 +2,14 @@
 
 ### Version 6.21.0  Jan 2, 2026
 
+- **Council UI – Non-Streaming Execution** (Author: Cascade (ChatGPT))
+  - **What**: Disabled SSE mode on the `/council` page and reverted to the blocking `/api/council/assess` flow. The UI now keeps the latest assessment visible with timestamped metadata and surfaces failures inline.
+  - **Why**: Streaming UX was wiping logs/results when runs errored, leaving no trace of costly API calls. The product owner approved a non-stream experience to keep evidence on screen.
+  - **How**:
+    - Simplified `LLMCouncil.tsx` state to `runStatus`/`runError`, removed event-log rendering, and guarded controls with a single `isRunning` flag.
+    - Added completion timestamp display plus amber BYOK validation messaging that blocks runs without a key when required.
+    - Documented the strategy in `docs/plans/2026-01-02-llm-council-non-stream-plan.md`.
+
 - **BYOK Integration for Council** (Author: Grok_Codefast1)
   - **What**: Applied Bring Your Own Key (BYOK) enforcement to Council assessment endpoints, following established patterns from other services.
   - **Why**: Council was inconsistent with other services (Poetiq, SnakeBench, streamController) that already enforce BYOK in production. Users were incurring API costs without control over their budgets.
