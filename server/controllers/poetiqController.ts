@@ -28,7 +28,7 @@ import { MODELS } from '../config/models.js';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { requiresUserApiKey } from '../utils/environmentPolicy.js';
+import { requiresUserApiKey, isProduction } from '../utils/environmentPolicy.js';
 
 // In-memory batch session storage
 interface PoetiqBatchSession {
@@ -363,20 +363,24 @@ export const poetiqController = {
         ? (promptStyleRaw as 'classic' | 'arc' | 'arc_de' | 'arc_ru' | 'arc_fr' | 'arc_tr')
         : undefined;
 
-    // Check BYO key requirements
+    // Environment-aware BYOK enforcement (same logic as /solve endpoint)
     const lowerModel = (model || '').toLowerCase();
     const isOpenRouterModel =
       provider === 'openrouter' ||
       (!provider && lowerModel.startsWith('openrouter/'));
-    const requiresByo =
+    
+    // In production, require keys for all models. In dev, use existing whitelist logic.
+    const requiresByo = requiresUserApiKey() || (
       provider === 'gemini' ||
       (!provider && lowerModel.startsWith('gemini/')) ||
-      (isOpenRouterModel && !OPENROUTER_SERVER_KEY_MODELS.has(lowerModel));
+      (isOpenRouterModel && !OPENROUTER_SERVER_KEY_MODELS.has(lowerModel))
+    );
 
     if (requiresByo && (!apiKey || apiKey.trim().length === 0)) {
+      const envContext = requiresUserApiKey() ? 'Production' : 'This model';
       return res.status(400).json(formatResponse.error(
         'api_key_required',
-        'Bring Your Own Key required: Please provide your API key for this model.'
+        `${envContext} requires your API key. Your key is used for this session only and is never stored.`
       ));
     }
 
@@ -469,40 +473,47 @@ export const poetiqController = {
    * GET /api/poetiq/models
    * 
    * Get the list of supported Poetiq models.
+   * In production, ALL models require BYO API keys.
+   * In dev/staging, only specific models require BYO keys.
    */
   async getModels(_req: Request, res: Response) {
+    // Environment-aware BYOK: In production, ALL models require user API keys
+    const productionMode = isProduction();
+    
     // Models supported by Poetiq via LiteLLM
     // All models route through OpenRouter (server key) or require BYO API key for direct access
     // Label format: "Model Name" + routing info to avoid confusion
     const models = [
       // SOTA Models (Featured in Blog) - via OpenRouter (BYO required)
-      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
-      { id: 'openai/gpt-5.1', name: 'GPT-5.1', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
-      { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
-      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: true },
+      { id: 'openrouter/google/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: productionMode || true },
+      { id: 'openai/gpt-5.1', name: 'GPT-5.1', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: productionMode || true },
+      { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: productionMode || true },
+      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B', provider: 'OpenRouter', recommended: true, routing: 'openrouter', requiresBYO: productionMode || true },
 
       // Direct API access
-      // Gemini direct requires BYO; OpenAI direct can fall back to server key.
-      { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'Google', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: false },
-      { id: 'gpt-5.1-codex', name: 'GPT-5.1 Codex', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: false },
-      { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: false },
-      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: false },
-      { id: 'deepseek-chat', name: 'DeepSeek Chat v3.2', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'deepseek-reasoner', name: 'DeepSeek Reasoner v3.2', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
-      { id: 'deepseek-reasoner-speciale', name: 'DeepSeek Reasoner v3.2-Speciale', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: true },
+      // In production: ALL require BYO. In dev: Gemini requires BYO, others can use server key.
+      { id: 'gemini/gemini-3-pro-preview', name: 'Gemini 3 Pro', provider: 'Google', recommended: false, routing: 'direct', requiresBYO: productionMode || true },
+      { id: 'gpt-5.1-codex-mini', name: 'GPT-5.1 Codex Mini', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: productionMode },
+      { id: 'gpt-5.1-codex', name: 'GPT-5.1 Codex', provider: 'OpenAI', recommended: false, routing: 'direct', requiresBYO: productionMode },
+      { id: 'grok-4-fast-reasoning', name: 'Grok 4 Fast Reasoning', provider: 'xAI', recommended: false, routing: 'direct', requiresBYO: productionMode },
+      { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', provider: 'Anthropic', recommended: false, routing: 'direct', requiresBYO: productionMode },
+      { id: 'deepseek-chat', name: 'DeepSeek Chat v3.2', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: productionMode || true },
+      { id: 'deepseek-reasoner', name: 'DeepSeek Reasoner v3.2', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: productionMode || true },
+      { id: 'deepseek-reasoner-speciale', name: 'DeepSeek Reasoner v3.2-Speciale', provider: 'DeepSeek', recommended: false, routing: 'direct', requiresBYO: productionMode || true },
 
-      // Other via OpenRouter (BYO required)
-      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
-      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: true },
-      { id: 'openrouter/mistralai/mistral-large-2512', name: 'Mistral Large 2512', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
-      { id: 'openrouter/kwaipilot/kat-coder-pro:free', name: 'Kat Coder Pro (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
+      // Other via OpenRouter
+      // In production: ALL require BYO. In dev: free models and server-key models don't require BYO.
+      { id: 'openrouter/google/gemini-2.5-flash-preview-09-2025', name: 'Gemini 2.5 Flash', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: productionMode || true },
+      { id: 'openrouter/anthropic/claude-sonnet-4', name: 'Claude Sonnet 4', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: productionMode || true },
+      { id: 'openrouter/mistralai/mistral-large-2512', name: 'Mistral Large 2512', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: productionMode },
+      { id: 'openrouter/kwaipilot/kat-coder-pro:free', name: 'Kat Coder Pro (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: productionMode },
       // Free OpenRouter arena models (December 2025 drop)
-      { id: 'openrouter/arcee-ai/trinity-mini:free', name: 'Arcee Trinity Mini (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
-      { id: 'openrouter/amazon/nova-2-lite-v1:free', name: 'Amazon Nova 2 Lite (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: false },
+      { id: 'openrouter/arcee-ai/trinity-mini:free', name: 'Arcee Trinity Mini (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: productionMode },
+      { id: 'openrouter/amazon/nova-2-lite-v1:free', name: 'Amazon Nova 2 Lite (Free)', provider: 'OpenRouter', recommended: false, routing: 'openrouter', requiresBYO: productionMode },
     ];
 
-    return res.json(formatResponse.success({ models }));
+    // Also expose the global BYOK requirement flag so clients know if ALL models require keys
+    return res.json(formatResponse.success({ models, requiresUserApiKey: productionMode }));
   },
 
   /**
