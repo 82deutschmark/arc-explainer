@@ -1,10 +1,10 @@
 /**
- * Author: Claude Sonnet 4 (Fixed by Claude Haiku)
+ * Author: Cascade (ChatGPT)
  * Date: 2026-01-02
  * PURPOSE: LLM Council page for multi-model consensus evaluation of ARC puzzles.
- *          Uses SSE streaming for live event updates during deliberation.
+ *          Persists SSE streaming logs/status so costly runs remain inspectable after completion/failure.
  *          Handles URL parameter :taskId for direct puzzle linking.
- * SRP/DRY check: Pass - Single responsibility: Council assessment UI with streaming.
+ * SRP/DRY check: Pass - Council assessment UI still maintains single responsibility for UX + streaming.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
