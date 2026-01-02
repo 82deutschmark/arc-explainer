@@ -141,36 +141,37 @@ Please provide a thorough assessment.`;
  * Assess an ARC puzzle using the LLM Council
  */
 export async function assessPuzzle(
-  request: CouncilAssessmentRequest
+  request: CouncilAssessmentRequest,
+  onEvent?: (evt: any) => void
 ): Promise<CouncilAssessmentResult> {
   logger.info(`[CouncilService] Starting ${request.mode} assessment for puzzle ${request.taskId}`);
-  
+
   // Check council health (Python wrapper + llm-council submodule + OPENROUTER_API_KEY)
   const isHealthy = await councilBridge.healthCheck();
   if (!isHealthy) {
     throw new Error('LLM Council not available. Check: Python installed, llm-council submodule present, OPENROUTER_API_KEY set.');
   }
-  
+
   // Load the puzzle
   const puzzle = await puzzleLoader.loadPuzzle(request.taskId);
   if (!puzzle) {
     throw new Error(`Puzzle ${request.taskId} not found`);
   }
-  
+
   const puzzleForCouncil: PuzzleForCouncil = {
     taskId: request.taskId,
     source: puzzle.source,
     train: puzzle.train,
     test: puzzle.test,
   };
-  
+
   // Build the appropriate prompt
   let prompt: string;
-  
+
   if (request.mode === 'assess' && request.explanationIds?.length) {
     // Load explanations to assess
     const explanations: ExplanationForCouncil[] = [];
-    
+
     for (const id of request.explanationIds) {
       const exp = await repositoryService.explanations.getExplanationById(id);
       if (exp) {
@@ -185,21 +186,21 @@ export async function assessPuzzle(
         });
       }
     }
-    
+
     if (explanations.length === 0) {
       throw new Error('No valid explanations found for assessment');
     }
-    
+
     prompt = buildAssessPrompt(puzzleForCouncil, explanations);
   } else {
     prompt = buildSolvePrompt(puzzleForCouncil);
   }
-  
-  // Run council via subprocess
-  const response = await councilBridge.runCouncil(prompt);
-  
+
+  // Run council via subprocess with optional event callback
+  const response = await councilBridge.runCouncil(prompt, onEvent);
+
   logger.info(`[CouncilService] Assessment complete for ${request.taskId}`);
-  
+
   return {
     taskId: request.taskId,
     mode: request.mode,
