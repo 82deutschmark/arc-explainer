@@ -2,8 +2,7 @@
 
 **Date**: 2026-01-01
 **Objective**: Replace existing `/debate` endpoint with llm-council to have multiple LLMs rate explanations in the ELO system
-**Status**: Planning complete, ready for implementation
-
+**Status**: Planning.  I want the council to return their judgment on what they think that the grid or grids in question should be. 
 ## Overview
 
 ### Current State
