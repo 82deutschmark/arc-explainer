@@ -1,9 +1,11 @@
 /**
  * Author: ChatGPT
  * Date: 2026-01-01
+ * Updated: 2026-01-01 - Fixed deep linking with ?highlight= parameter to properly scroll and highlight rows
  * PURPOSE: Task Examiner with correctness filtering and side-by-side Task Efficiency Leaderboard.
  *          When filtering to "correct", the layout elegantly splits into two columns: results on left,
  *          leaderboard on right. Smooth transitions make the UI feel reactive and polished.
+ *          Deep linking with ?highlight=<id> now properly auto-expands rows and scrolls with visual feedback.
  * SRP/DRY check: Pass - orchestrates layout and filtering, delegates rows/leaderboard to components.
  */
 
@@ -70,20 +72,21 @@ export default function PuzzleAnalyst() {
     }
   }, []);
 
-  // Scroll to highlighted row once summaries are loaded
+  // Scroll to highlighted row once summaries are loaded and add visual feedback
   useEffect(() => {
     if (highlightedId !== null && summaries.length > 0) {
-      // Check if the highlighted row exists in current summaries
-      const exists = summaries.some((s) => s.id === highlightedId);
-      if (exists) {
-        const timeoutId = setTimeout(() => {
-          const element = document.getElementById(`explanation-row-${highlightedId}`);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 150);
-        return () => clearTimeout(timeoutId);
-      }
+      const timeoutId = setTimeout(() => {
+        const element = document.getElementById(`explanation-row-${highlightedId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Add visual ring highlight (same as PuzzleExaminer for consistency)
+          element.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
+          setTimeout(() => {
+            element.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
+          }, 3000);
+        }
+      }, 150);
+      return () => clearTimeout(timeoutId);
     }
   }, [highlightedId, summaries]);
 

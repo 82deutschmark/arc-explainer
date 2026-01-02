@@ -37,6 +37,7 @@ import EloLeaderboard from "@/pages/EloLeaderboard";
 import PuzzleFeedback from "@/pages/PuzzleFeedback";
 import FeedbackExplorer from "@/pages/FeedbackExplorer";
 import ModelDebate from "@/pages/ModelDebate";
+import LLMCouncil from "@/pages/LLMCouncil";
 import ModelComparisonPage from "@/pages/ModelComparisonPage";
 import HuggingFaceUnionAccuracy from "@/pages/HuggingFaceUnionAccuracy";
 import About from "@/pages/About";
@@ -105,6 +106,8 @@ function Router() {
         <Route path="/test-solution/:taskId" component={PuzzleFeedback} />
         <Route path="/debate" component={ModelDebate} />
         <Route path="/debate/:taskId" component={ModelDebate} />
+        <Route path="/council" component={LLMCouncil} />
+        <Route path="/council/:taskId" component={LLMCouncil} />
         <Route path="/model-comparison" component={ModelComparisonPage} />
         <Route path="/scoring" component={HuggingFaceUnionAccuracy} />
         <Route path="/about" component={About} />

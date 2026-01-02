@@ -1,9 +1,56 @@
 # LLM Council Integration Plan (new `/council` endpoint)
 
 **Date**: 2026-01-01  
+**Updated**: 2026-01-02 (Claude Sonnet 4) - Implemented subprocess integration (like Saturn/Grover)  
 **Objective**: Ship a dedicated `/council` endpoint that lets the llm-council vote on two solutions for the same ARC task, deciding which is better or if both are bad/wrong, and feed that into the ELO system.  
-**Status**: Planning update (replace prior debate/elo mashup with a single council entry point).  
-**Constraint**: All API endpoints remain public (no auth middleware).  
+**Status**: **PARTIALLY IMPLEMENTED** - Core bridge, service, controller, and UI complete. ELO integration and persistence pending.  
+**Constraint**: All API endpoints remain public (no auth middleware).
+
+## Implementation Status (2026-01-02)
+
+| Component | Status | Files |
+|-----------|--------|-------|
+| Python Wrapper | Done | `server/python/council_wrapper.py` |
+| Council Bridge | Done | `server/services/council/councilBridge.ts` (subprocess) |
+| Council Service | Done | `server/services/council/councilService.ts` |
+| Council Controller | Done | `server/controllers/councilController.ts` |
+| API Routes | Done | `server/routes.ts` (5 endpoints) |
+| Frontend UI | Done | `client/src/pages/LLMCouncil.tsx` |
+| Frontend Routes | Done | `/council`, `/council/:taskId` |
+| Env Configuration | Done | `COUNCIL_TIMEOUT_MS`, `OPENROUTER_API_KEY` |
+| ELO Integration | **TODO** | Needs vote persistence and weight config |
+| DB Migration | **TODO** | `council_votes` table not created |
+
+## Integration Architecture (Subprocess - like Saturn/Grover)
+
+The llm-council is integrated via **Python subprocess**, following the same pattern as Saturn, Grover, and Beetree solvers. **No separate service deployment required.**
+
+### How It Works
+1. `councilBridge.ts` spawns `server/python/council_wrapper.py` as a subprocess
+2. JSON payload sent via stdin
+3. NDJSON events streamed back via stdout (progress, stage completions, final result)
+4. `council_wrapper.py` imports and runs the llm-council backend modules directly
+
+### Requirements
+- Python 3.x installed (same as Saturn/Grover/Beetree)
+- `llm-council` Git submodule checked out
+- `OPENROUTER_API_KEY` environment variable set
+
+### Environment Variables
+```bash
+# Required - council uses OpenRouter for multi-model queries
+OPENROUTER_API_KEY=sk-or-v1-...
+
+# Optional - timeout for council deliberation (default: 180000ms = 3 minutes)
+COUNCIL_TIMEOUT_MS=180000
+```
+
+### Health Check
+The `/api/council/health` endpoint checks:
+- `council_wrapper.py` exists
+- `llm-council` submodule directory exists
+- Python binary available
+- `OPENROUTER_API_KEY` is set  
 
 ## Overview
 
