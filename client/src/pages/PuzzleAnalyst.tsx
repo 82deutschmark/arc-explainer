@@ -1,27 +1,30 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-24
- * PURPOSE: Tighten the Puzzle Analyst layout so the dense grid matches the reference art direction.
- *          Removes sticky header layers to prevent overlap, keeps the grid aligned, and boosts
- *          font sizes for better readability.
- * SRP/DRY check: Pass - this file orchestrates layout only and reuses ExplanationGridRow for details.
+ * Author: ChatGPT
+ * Date: 2026-01-01
+ * PURPOSE: Add correctness filtering UI/state to Puzzle Analyst so users can quickly slice explanations
+ *          by outcome, matching Puzzle Examiner behavior while preserving the dark layout.
+ * SRP/DRY check: Pass - the page orchestrates layout and filtering while delegating rows to reusable components.
  */
 
 import React, { useMemo, useState } from 'react';
 import { useParams } from 'wouter';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Filter, XCircle } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { usePaginatedExplanationSummaries } from '@/hooks/useExplanation';
 import { usePuzzle } from '@/hooks/usePuzzle';
+import type { CorrectnessFilter } from '@/hooks/useFilteredResults';
 
 // UI Components
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import ExplanationGridRow from '@/components/puzzle/ExplanationGridRow';
+import { cn } from '@/lib/utils';
 
 export default function PuzzleAnalyst() {
   const { taskId } = useParams<{ taskId: string }>();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  const [correctnessFilter, setCorrectnessFilter] = useState<CorrectnessFilter>('all');
   // Fetch puzzle metadata
   const { task, isLoadingTask: isPuzzleLoading } = usePuzzle(taskId);
 
@@ -34,7 +37,7 @@ export default function PuzzleAnalyst() {
     counts,
   } = usePaginatedExplanationSummaries(taskId, {
     pageSize: 1000,
-    correctness: 'all',
+    correctness: correctnessFilter,
   });
 
   // Keep a simple summary of totals for the header badges.
@@ -138,6 +141,52 @@ export default function PuzzleAnalyst() {
             <span className="rounded-full border border-gray-800 px-2 py-0.5 bg-rose-500/10 text-rose-200">
               Incorrect {summaryStats.incorrect}
             </span>
+          </div>
+
+          {/* Correctness filters */}
+          <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-gray-300">
+            <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-gray-500">
+              <Filter className="h-4 w-4 opacity-70" />
+              <span>Filter</span>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'flex items-center gap-2 rounded-full border border-gray-800 bg-gray-900/70 px-3 py-1 text-gray-100 transition-colors',
+                correctnessFilter === 'all' && 'border-gray-600 bg-gray-800 text-white shadow-inner'
+              )}
+              onClick={() => setCorrectnessFilter('all')}
+            >
+              All ({summaryStats.all})
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'flex items-center gap-2 rounded-full border border-emerald-900/70 bg-emerald-950/40 px-3 py-1 text-emerald-100 transition-colors',
+                correctnessFilter === 'correct' && 'border-emerald-400 bg-emerald-900/70 text-emerald-50 shadow-inner'
+              )}
+              onClick={() => setCorrectnessFilter('correct')}
+            >
+              <CheckCircle className="h-4 w-4" />
+              Correct ({summaryStats.correct})
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className={cn(
+                'flex items-center gap-2 rounded-full border border-rose-900/70 bg-rose-950/40 px-3 py-1 text-rose-100 transition-colors',
+                correctnessFilter === 'incorrect' && 'border-rose-400 bg-rose-900/70 text-rose-50 shadow-inner'
+              )}
+              onClick={() => setCorrectnessFilter('incorrect')}
+            >
+              <XCircle className="h-4 w-4" />
+              Incorrect ({summaryStats.incorrect})
+            </Button>
           </div>
         </div>
       </div>

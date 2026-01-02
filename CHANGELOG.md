@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.4  Jan 1, 2026
+
+- **Task Examiner correctness filtering** (Author: ChatGPT)
+  - **What**: Added correctness filter controls (All/Correct/Incorrect) with live counts to the Task Examiner (`PuzzleAnalyst`) so users can match Puzzle Examiner filtering behavior.
+  - **Why**: The Task Examiner page previously showed all explanations without a way to focus on correct or incorrect runs, making review cumbersome.
+  - **How**:
+    - Wired `CorrectnessFilter` state into `usePaginatedExplanationSummaries` to request filtered summaries.
+    - Added dark-themed filter buttons with lucide icons and badges showing per-filter counts.
+
 ### Version 6.19.3  Jan 1, 2026
 
 - **BYOK Production Enforcement (Poetiq + Worm Arena + Global Config)** (Author: Claude Sonnet 4)
