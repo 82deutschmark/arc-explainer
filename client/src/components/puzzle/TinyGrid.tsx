@@ -44,10 +44,13 @@ export const TinyGrid: React.FC<TinyGridProps> = ({
   className = '',
   style = {}
 }) => {
-  if (!grid || grid.length === 0) return null;
+  if (!grid || !Array.isArray(grid) || grid.length === 0) return null;
 
   const rows = grid.length;
   const cols = grid[0]?.length || 0;
+
+  // Validate grid is actually a 2D number array
+  if (!Array.isArray(grid[0])) return null;
 
   // Flatten grid for CSS Grid rendering
   const cells = grid.flat();

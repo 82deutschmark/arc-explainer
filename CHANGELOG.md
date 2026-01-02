@@ -1,5 +1,49 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.6  Jan 1, 2026
+
+- **Shareable Task Efficiency Page** (Author: ChatGPT)
+  - **What**: New dedicated page at `/task/:taskId/efficiency` showing top 3 in each category: Fastest, Slowest, Cheapest, Most Expensive, Fewest Tokens. One shareable link that proves efficiency matters.
+  - **Why**: Previously needed 3+ separate links to share efficiency comparisons on Twitter. Now one URL shows all rankings with clickable links to each solution.
+  - **How**:
+    - Created `client/src/pages/TaskEfficiency.tsx` with category cards showing top 3 entries.
+    - Each entry links to `/task/:taskId?highlight=:id` for direct solution viewing.
+    - Quick comparison section shows multipliers (e.g., "11x slower", "12x more expensive").
+    - Dark theme, tweet-friendly design with medal rankings.
+  - **Files changed**: `TaskEfficiency.tsx` (new), `App.tsx` (route)
+
+### Version 6.19.5  Jan 1, 2026
+
+- **Task Efficiency Leaderboard - Compact Redesign** (Author: ChatGPT)
+  - **What**: Completely redesigned `TaskEfficiencyLeaderboard` to be compact and punchy. Shows time, cost, and total tokens with sortable columns. Default sorts by fastest. Removed redundant "CORRECT" status (we're already filtering by correct). Zero-cost entries excluded from "Cheapest" stats.
+  - **Why**: Original design wasted space showing redundant status badges and had poor metric alignment. Users want to quickly see which models are fastest, cheapest, and most token-efficient.
+  - **How**:
+    - Compact single-line rows with rank number, model name (truncated), thinking badge (Hi/Med/Lo), and right-aligned metrics (time, cost, tokens).
+    - Sort buttons (Time/Cost/Tokens) in header - click to sort ascending (best first).
+    - Quick stats bar showing fastest time, cheapest cost, fewest tokens at a glance.
+    - Notable badges: Zap icon for fastest, $ icon for cheapest.
+    - Max height with scroll for long lists.
+    - Side-by-side layout in PuzzleAnalyst when filtering to "Correct".
+  - **Files changed**: `TaskEfficiencyLeaderboard.tsx` (rewritten), `PuzzleAnalyst.tsx`
+
+### Version 6.19.4  Jan 1, 2026
+
+- **Task Examiner correctness filtering** (Author: ChatGPT)
+  - **What**: Added correctness filter controls (All/Correct/Incorrect) with live counts to the Task Examiner (`PuzzleAnalyst`) so users can match Puzzle Examiner filtering behavior.
+  - **Why**: The Task Examiner page previously showed all explanations without a way to focus on correct or incorrect runs, making review cumbersome.
+  - **How**:
+    - Wired `CorrectnessFilter` state into `usePaginatedExplanationSummaries` to request filtered summaries.
+    - Added dark-themed filter buttons with lucide icons and badges showing per-filter counts.
+
+### Version 6.19.3  Jan 1, 2026
+
+- **BYOK Production Enforcement (Poetiq + Worm Arena + Global Config)** (Author: Claude Sonnet 4)
+  - **What**: Ensured Bring Your Own Key is always required in production across Poetiq solver UI/streaming and Worm Arena run controls; added a global `/api/config` endpoint plus a React hook to surface environment-aware BYOK requirements to the client.
+  - **Why**: In production the BYOK prompt was not shown and some flows could silently fall back to server keys, violating cost-control expectations.
+  - **How**:
+    - **Backend**: `/api/poetiq/models` now marks all models `requiresBYO` in production and returns `requiresUserApiKey`; `solveWithStream` uses the same environment-aware BYOK check as `solve`; added `/api/config` exposing `{ requiresUserApiKey, isProduction, environment }`.
+    - **Frontend**: New `useAppConfig` hook with `useRequiresUserApiKey`; Poetiq Control Panel and Poetiq Community pages now gate API key entry on global BYOK (production) plus model flag; Worm Arena run controls auto-open the API key section in production, block starts without a key, and show prominent required messaging.
+
 ### Version 6.19.2  Jan 1, 2026
 
 - **Move DatasetViewer access to navigation misc dropdown** (Author: Claude Sonnet 4)

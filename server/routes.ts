@@ -52,6 +52,7 @@ import { aiServiceFactory } from "./services/aiServiceFactory";
 import { repositoryService } from './repositories/RepositoryService.ts';
 import { logger } from "./utils/logger.ts";
 import { formatResponse } from "./utils/responseFormatter.ts";
+import { isProduction, requiresUserApiKey } from "./utils/environmentPolicy.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -60,6 +61,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Database initialization is handled in index.ts - routes should not re-initialize;
 
   // Routes with consistent naming and error handling
+
+  // Global config endpoint - exposes environment-aware settings to frontend
+  // CRITICAL: This endpoint tells the frontend if BYOK (Bring Your Own Key) is required
+  app.get("/api/config", (_req, res) => {
+    return res.json(formatResponse.success({
+      requiresUserApiKey: requiresUserApiKey(),
+      isProduction: isProduction(),
+      environment: process.env.NODE_ENV || 'development',
+    }));
+  });
 
   // Models API routes
   app.use("/api/models", modelsRouter);
