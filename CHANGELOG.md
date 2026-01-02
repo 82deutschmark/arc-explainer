@@ -1,5 +1,17 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.20.0  Jan 1, 2026 23:39
+
+- **Efficiency + Analyst UX Polish** (Author: ChatGPT)
+  - **What**: Made the Efficiency leaderboard denser and easier to scan; removed duplicate counts in Analyst header.
+  - **Why**: Users saw redundant badges and cramped columns (Think column, tiny fonts, no scroll cue).
+  - **How**:
+    - Replaced the top stats bar with meaningful spread comparisons (fastest→slowest, cheapest→expensive with multipliers).
+    - Enlarged typography and widened columns; removed the Think column to give models more room.
+    - Added horizontal scrollbar styling for overflow on small screens.
+    - Removed duplicate count badges from the PuzzleAnalyst header.
+  - **Files changed**: `TaskEfficiencyLeaderboard.tsx`, `PuzzleAnalyst.tsx`
+
 ### Version 6.19.10  Jan 1, 2026
 
 - **BYOK Dialog Prompt for Puzzle Examiner** (Author: Claude Sonnet 4)
