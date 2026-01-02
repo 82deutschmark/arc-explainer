@@ -7,7 +7,7 @@
   - **Why**: Previously, users in production would see an error when clicking analyze without an API key, but no dialog to enter one. Now the dialog intercepts the action and prompts for the key before proceeding.
   - **How**:
     - **Frontend**: Added `isApiKeyDialogOpen` and `pendingModelForApiKey` state; `handleAnalyzeWithModel` now checks if key is missing and shows dialog; dialog includes key input with Enter support and provider links.
-    - **Backend**: Added "test" Easter egg in `streamController.ts` - entering "test" as API key bypasses BYOK and uses server env vars (for admin testing only).
+
   - **Files changed**: `PuzzleExaminer.tsx`, `streamController.ts`
 
 ### Version 6.19.9  Jan 1, 2026
