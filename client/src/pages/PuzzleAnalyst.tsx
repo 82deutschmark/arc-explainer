@@ -1,9 +1,10 @@
 /**
  * Author: ChatGPT
  * Date: 2026-01-01
- * PURPOSE: Add correctness filtering UI/state to Puzzle Analyst so users can quickly slice explanations
- *          by outcome, matching Puzzle Examiner behavior while preserving the dark layout.
- * SRP/DRY check: Pass - the page orchestrates layout and filtering while delegating rows to reusable components.
+ * PURPOSE: Task Examiner with correctness filtering and side-by-side Task Efficiency Leaderboard.
+ *          When filtering to "correct", the layout elegantly splits into two columns: results on left,
+ *          leaderboard on right. Smooth transitions make the UI feel reactive and polished.
+ * SRP/DRY check: Pass - orchestrates layout and filtering, delegates rows/leaderboard to components.
  */
 
 import React, { useMemo, useState } from 'react';
@@ -19,7 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import ExplanationGridRow from '@/components/puzzle/ExplanationGridRow';
-import { CorrectAnswersLeaderboard } from '@/components/puzzle/CorrectAnswersLeaderboard';
+import { TaskEfficiencyLeaderboard } from '@/components/puzzle/TaskEfficiencyLeaderboard';
 import { cn } from '@/lib/utils';
 
 export default function PuzzleAnalyst() {
@@ -192,28 +193,19 @@ export default function PuzzleAnalyst() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pt-1 pb-3">
-        {/* Show interactive leaderboard when filtering to correct answers */}
-        {correctnessFilter === 'correct' && summaries.length > 0 && (
-          <div className="mb-4">
-            <CorrectAnswersLeaderboard
-              explanations={summaries}
-              onSelectExplanation={(id) => {
-                // Expand the selected row
-                setExpandedRows((prev) => {
-                  const next = new Set(prev);
-                  next.add(id);
-                  return next;
-                });
-                // Scroll to the row
-                const element = document.getElementById(`explanation-row-${id}`);
-                element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }}
-            />
-          </div>
-        )}
-
-        <div className="space-y-px border border-gray-800/80 rounded-xl bg-black shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden">
+      {/* Side-by-side layout: grid left, leaderboard right when filtering to correct */}
+      <div className={cn(
+        'mx-auto px-4 pt-1 pb-3 transition-all duration-300 ease-out',
+        correctnessFilter === 'correct' ? 'max-w-[1800px]' : 'max-w-7xl'
+      )}>
+        <div className={cn(
+          'grid gap-4 transition-all duration-300 ease-out',
+          correctnessFilter === 'correct' && summaries.length > 0
+            ? 'lg:grid-cols-[1fr_420px]'
+            : 'grid-cols-1'
+        )}>
+          {/* Left: Results grid */}
+          <div className="space-y-px border border-gray-800/80 rounded-xl bg-black shadow-[0_40px_120px_-60px_rgba(0,0,0,0.95)] overflow-hidden transition-all duration-300">
           {/* Column headers align with ExplanationGridRow widths so every value lines up. */}
           <div
             className="hidden md:grid grid-cols-[60px_minmax(220px,1fr)_110px_90px_100px_100px_92px_44px] gap-3 px-3 py-1.5 bg-black border-b border-gray-800 text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-500"
@@ -241,6 +233,32 @@ export default function PuzzleAnalyst() {
                 />
               </div>
             ))}
+          </div>
+          </div>
+
+          {/* Right: Task Efficiency Leaderboard (appears elegantly when filtering to correct) */}
+          <div className={cn(
+            'transition-all duration-300 ease-out lg:sticky lg:top-4 lg:self-start',
+            correctnessFilter === 'correct' && summaries.length > 0
+              ? 'opacity-100 translate-x-0'
+              : 'hidden lg:hidden'
+          )}>
+            {correctnessFilter === 'correct' && summaries.length > 0 && (
+              <TaskEfficiencyLeaderboard
+                explanations={summaries}
+                onSelectExplanation={(id) => {
+                  // Expand the selected row
+                  setExpandedRows((prev) => {
+                    const next = new Set(prev);
+                    next.add(id);
+                    return next;
+                  });
+                  // Scroll to the row
+                  const element = document.getElementById(`explanation-row-${id}`);
+                  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}
+              />
+            )}
           </div>
         </div>
 

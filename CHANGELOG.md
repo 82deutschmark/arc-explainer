@@ -2,14 +2,17 @@
 
 ### Version 6.19.5  Jan 1, 2026
 
-- **Correct Answers Leaderboard for Task Examiner** (Author: ChatGPT)
-  - **What**: Added an interactive `CorrectAnswersLeaderboard` component that appears when filtering to "Correct" on the Task Examiner page. Shows key metrics at a glance: model, thinking setting (none/low/medium/high/x-high), time to solve, and cost. Features sortable columns, visual bar indicators for relative comparison, and highlights for fastest/cheapest runs.
-  - **Why**: Users needed a quick way to compare correct answers across models and reasoning settings, understanding trade-offs between speed, cost, and thinking effort.
+- **Task Efficiency Leaderboard - Compact Redesign** (Author: ChatGPT)
+  - **What**: Completely redesigned `TaskEfficiencyLeaderboard` to be compact and punchy. Shows time, cost, and total tokens with sortable columns. Default sorts by fastest. Removed redundant "CORRECT" status (we're already filtering by correct). Zero-cost entries excluded from "Cheapest" stats.
+  - **Why**: Original design wasted space showing redundant status badges and had poor metric alignment. Users want to quickly see which models are fastest, cheapest, and most token-efficient.
   - **How**:
-    - Created `client/src/components/puzzle/CorrectAnswersLeaderboard.tsx` with sortable columns (Model, Thinking, Time, Cost), color-coded progress bars, and "Fastest"/"Cheapest" badges.
-    - Integrated into `PuzzleAnalyst.tsx` to display above the grid when `correctnessFilter === 'correct'`.
-    - Clicking a leaderboard row expands and scrolls to the corresponding detail row.
-  - **Files changed**: `CorrectAnswersLeaderboard.tsx` (new), `PuzzleAnalyst.tsx`
+    - Compact single-line rows with rank number, model name (truncated), thinking badge (Hi/Med/Lo), and right-aligned metrics (time, cost, tokens).
+    - Sort buttons (Time/Cost/Tokens) in header - click to sort ascending (best first).
+    - Quick stats bar showing fastest time, cheapest cost, fewest tokens at a glance.
+    - Notable badges: Zap icon for fastest, $ icon for cheapest.
+    - Max height with scroll for long lists.
+    - Side-by-side layout in PuzzleAnalyst when filtering to "Correct".
+  - **Files changed**: `TaskEfficiencyLeaderboard.tsx` (rewritten), `PuzzleAnalyst.tsx`
 
 ### Version 6.19.4  Jan 1, 2026
 
