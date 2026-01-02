@@ -201,7 +201,7 @@ export async function assessPuzzle(
 
   logger.info(`[CouncilService] Assessment complete for ${request.taskId}`);
 
-  return {
+  const assessmentResult: CouncilAssessmentResult = {
     taskId: request.taskId,
     mode: request.mode,
     stage1: response.stage1,
@@ -210,6 +210,16 @@ export async function assessPuzzle(
     metadata: response.metadata,
     promptUsed: prompt,
   };
+
+  // Save result to database (Phase 4)
+  try {
+    await saveCouncilResult(assessmentResult, request.explanationIds);
+  } catch (error) {
+    logger.error(`[CouncilService] Failed to persist council result: ${error instanceof Error ? error.message : String(error)}`);
+    // Don't rethrow - assessment succeeded, persistence is secondary
+  }
+
+  return assessmentResult;
 }
 
 /**
@@ -237,12 +247,12 @@ export async function getExplanationsForAssessment(
   limit: number = 10
 ): Promise<ExplanationForCouncil[]> {
   const explanations = await repositoryService.explanations.getExplanationsForPuzzle(taskId);
-  
+
   // Sort by date and limit
   const sorted = explanations
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, limit);
-  
+
   return sorted.map((exp) => ({
     id: exp.id,
     modelName: exp.modelName,
@@ -254,8 +264,160 @@ export async function getExplanationsForAssessment(
   }));
 }
 
+/**
+ * Extract a predicted output grid from the chairman's stage3 synthesis text.
+ * Looks for grid-like patterns (arrays of numbers) in the response.
+ */
+function extractPredictedGridFromSynthesis(stage3Response: any): number[][] | null {
+  if (!stage3Response) return null;
+
+  const responseText = typeof stage3Response === 'string'
+    ? stage3Response
+    : (stage3Response.response ?? stage3Response.text ?? JSON.stringify(stage3Response));
+
+  // Pattern: Look for [[ patterns followed by numbers and brackets
+  const gridPattern = /\[\s*\[\s*\d+[\s\d,\[\]]*\]\s*\]/g;
+  const matches = responseText.match(gridPattern);
+
+  if (!matches || matches.length === 0) {
+    return null;
+  }
+
+  try {
+    // Try to parse the first grid-like structure found
+    const gridStr = matches[0];
+    const parsed = JSON.parse(gridStr);
+
+    // Validate it's a 2D array of numbers
+    if (Array.isArray(parsed) && parsed.every(row =>
+      Array.isArray(row) && row.every(val => typeof val === 'number')
+    )) {
+      return parsed;
+    }
+  } catch (error) {
+    logger.warn(`[CouncilService] Failed to parse predicted grid: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  return null;
+}
+
+/**
+ * Derive confidence score from council aggregate rankings.
+ * Higher rankings = higher confidence.
+ * Formula: 100 - (average_rank_position * 20)
+ */
+function deriveConfidenceFromRankings(aggregateRankings: any): number {
+  if (!aggregateRankings) return 50; // Default neutral
+
+  try {
+    // aggregateRankings should be an object with ranking info
+    // Typical structure: { ranking_1: count, ranking_2: count, ranking_3: count }
+    if (typeof aggregateRankings !== 'object') return 50;
+
+    const entries = Object.entries(aggregateRankings);
+    if (entries.length === 0) return 50;
+
+    let totalRank = 0;
+    let totalCount = 0;
+
+    for (const [rankKey, count] of entries) {
+      // Parse rank from key like 'ranking_1', 'ranking_2', etc.
+      const rankMatch = rankKey.match(/\d+/);
+      if (rankMatch) {
+        const rank = parseInt(rankMatch[0], 10);
+        const countNum = typeof count === 'number' ? count : 1;
+        totalRank += rank * countNum;
+        totalCount += countNum;
+      }
+    }
+
+    if (totalCount === 0) return 50;
+
+    const avgRank = totalRank / totalCount;
+    const confidence = Math.max(0, Math.min(100, 100 - (avgRank * 20)));
+
+    return Math.round(confidence);
+  } catch (error) {
+    logger.warn(`[CouncilService] Failed to derive confidence: ${error instanceof Error ? error.message : String(error)}`);
+    return 50;
+  }
+}
+
+/**
+ * Transform CouncilAssessmentResult into ExplanationData for database persistence.
+ * Follows the same pattern as Beetree ensemble solver.
+ */
+function transformCouncilResult(
+  result: CouncilAssessmentResult,
+  explanationIds?: number[]
+): any {
+  const predictedGrid = extractPredictedGridFromSynthesis(result.stage3);
+  const confidence = deriveConfidenceFromRankings(result.metadata?.aggregate_rankings);
+
+  // Extract stage3 text for pattern description
+  const stage3Text = typeof result.stage3 === 'string'
+    ? result.stage3
+    : (result.stage3?.response ?? JSON.stringify(result.stage3));
+
+  return {
+    puzzleId: result.taskId,
+    modelName: 'llm-council',
+    patternDescription: stage3Text,
+    solvingStrategy: 'Multi-model consensus deliberation across 3 stages',
+    confidence,
+    predictedOutputGrid: predictedGrid,
+    isPredictionCorrect: null, // Will be scored separately if prediction exists
+    councilMode: result.mode,
+    councilStage1Results: result.stage1,
+    councilStage2Rankings: result.stage2,
+    councilStage3Synthesis: result.stage3,
+    councilMetadata: result.metadata,
+    councilAssessedExplanationIds: explanationIds ?? null,
+    councilAggregateRankings: result.metadata?.aggregate_rankings,
+    councilPromptUsed: result.promptUsed,
+    hints: [],
+  };
+}
+
+/**
+ * Save council assessment result to database as an explanation.
+ * Includes prediction scoring if a grid was extracted.
+ */
+async function saveCouncilResult(
+  result: CouncilAssessmentResult,
+  explanationIds?: number[]
+): Promise<void> {
+  try {
+    const explanationData = transformCouncilResult(result, explanationIds);
+
+    // If we have a predicted grid, score it
+    if (explanationData.predictedOutputGrid) {
+      const puzzle = await puzzleLoader.loadPuzzle(result.taskId);
+      if (puzzle && puzzle.test && puzzle.test.length > 0) {
+        // Use simple grid comparison (exact match to first test output)
+        const groundTruth = puzzle.test[0]?.output;
+        if (groundTruth) {
+          const predicted = explanationData.predictedOutputGrid;
+          // Simple grid comparison: exact match
+          explanationData.isPredictionCorrect =
+            JSON.stringify(predicted) === JSON.stringify(groundTruth);
+        }
+      }
+    }
+
+    await repositoryService.explanations.saveExplanation(explanationData);
+    logger.info(`[CouncilService] Saved council result for ${result.taskId}`);
+  } catch (error) {
+    logger.error(
+      `[CouncilService] Failed to save council result: ${error instanceof Error ? error.message : String(error)}`
+    );
+    throw error;
+  }
+}
+
 export const councilService = {
   assessPuzzle,
   getUnsolvedPuzzles,
   getExplanationsForAssessment,
+  saveCouncilResult,
 };

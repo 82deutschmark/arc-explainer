@@ -182,6 +182,13 @@ const navigationItems: NavItem[] = [
       },
       {
         type: 'link',
+        title: 'LLM Council',
+        href: '/council',
+        icon: Users,
+        description: 'Multi-model consensus evaluation for ARC puzzles with 3-stage deliberation'
+      },
+      {
+        type: 'link',
         title: 'Kaggle Readiness',
         href: '/kaggle-readiness',
         icon: FileCheck,
