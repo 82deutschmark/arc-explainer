@@ -12,6 +12,7 @@ import type { Request, Response } from 'express';
 import { councilService } from '../services/council/councilService.ts';
 import { councilBridge } from '../services/council/councilBridge.ts';
 import { formatResponse } from '../utils/responseFormatter.ts';
+import { requiresUserApiKey } from '../utils/environmentPolicy.js';
 import { logger } from '../utils/logger.ts';
 
 /**
@@ -104,7 +105,7 @@ export async function getExplanationsForAssessment(req: Request, res: Response):
  */
 export async function assessPuzzle(req: Request, res: Response): Promise<void> {
   try {
-    const { taskId, mode, explanationIds } = req.body;
+    const { taskId, mode, explanationIds, apiKey, provider } = req.body;
     
     if (!taskId) {
       res.status(400).json(formatResponse.error('MISSING_TASK_ID', 'Task ID is required'));
@@ -127,12 +128,23 @@ export async function assessPuzzle(req: Request, res: Response): Promise<void> {
       return;
     }
     
+    // BYOK validation: production requires user API key
+    if (requiresUserApiKey() && !apiKey) {
+      res.status(400).json(formatResponse.error(
+        'api_key_required',
+        'Production requires your API key. Your key is used for this session only and is never stored.'
+      ));
+      return;
+    }
+    
     logger.info(`[CouncilController] Starting ${mode} assessment for puzzle ${taskId}`);
     
     const result = await councilService.assessPuzzle({
       taskId,
       mode,
       explanationIds,
+      apiKey,
+      provider,
     });
     
     res.json(formatResponse.success(result));
@@ -169,7 +181,7 @@ export async function assessPuzzle(req: Request, res: Response): Promise<void> {
  * Body: { taskId: string, mode: 'solve' | 'assess', explanationIds?: number[] }
  */
 export async function streamAssessment(req: Request, res: Response): Promise<void> {
-  const { taskId, mode, explanationIds } = req.body;
+  const { taskId, mode, explanationIds, apiKey, provider } = req.body;
 
   if (!taskId || !mode) {
     res.status(400).json(formatResponse.error('INVALID_REQUEST', 'taskId and mode are required'));
@@ -188,6 +200,15 @@ export async function streamAssessment(req: Request, res: Response): Promise<voi
     res.status(400).json(formatResponse.error(
       'MISSING_EXPLANATIONS',
       'Assessment mode requires explanationIds array'
+    ));
+    return;
+  }
+
+  // BYOK validation: production requires user API key
+  if (requiresUserApiKey() && !apiKey) {
+    res.status(400).json(formatResponse.error(
+      'api_key_required',
+      'Production requires your API key. Your key is used for this session only and is never stored.'
     ));
     return;
   }
@@ -212,7 +233,7 @@ export async function streamAssessment(req: Request, res: Response): Promise<voi
 
     // Run council assessment with streaming events
     const result = await councilService.assessPuzzle(
-      { taskId, mode, explanationIds },
+      { taskId, mode, explanationIds, apiKey, provider },
       (event) => {
         // Stream each council event to client via SSE
         res.write(`data: ${JSON.stringify(event)}\n\n`);
