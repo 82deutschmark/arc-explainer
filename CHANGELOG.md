@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.19.3  Jan 1, 2026
+
+- **BYOK Production Enforcement (Poetiq + Worm Arena + Global Config)** (Author: Claude Sonnet 4)
+  - **What**: Ensured Bring Your Own Key is always required in production across Poetiq solver UI/streaming and Worm Arena run controls; added a global `/api/config` endpoint plus a React hook to surface environment-aware BYOK requirements to the client.
+  - **Why**: In production the BYOK prompt was not shown and some flows could silently fall back to server keys, violating cost-control expectations.
+  - **How**:
+    - **Backend**: `/api/poetiq/models` now marks all models `requiresBYO` in production and returns `requiresUserApiKey`; `solveWithStream` uses the same environment-aware BYOK check as `solve`; added `/api/config` exposing `{ requiresUserApiKey, isProduction, environment }`.
+    - **Frontend**: New `useAppConfig` hook with `useRequiresUserApiKey`; Poetiq Control Panel and Poetiq Community pages now gate API key entry on global BYOK (production) plus model flag; Worm Arena run controls auto-open the API key section in production, block starts without a key, and show prominent required messaging.
+
 ### Version 6.19.2  Jan 1, 2026
 
 - **Move DatasetViewer access to navigation misc dropdown** (Author: Claude Sonnet 4)
