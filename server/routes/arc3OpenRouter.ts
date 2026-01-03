@@ -135,4 +135,70 @@ router.get(
   })
 );
 
+/**
+ * POST /credits
+ * Fetch OpenRouter credits for the provided API key.
+ * BYOK: User must provide their API key - we never store it.
+ * 
+ * OpenRouter API: GET https://openrouter.ai/api/v1/auth/key
+ * Returns: { data: { label, usage, limit, is_free_tier, rate_limit } }
+ */
+router.post(
+  '/credits',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { apiKey } = req.body;
+    
+    if (!apiKey || typeof apiKey !== 'string' || !apiKey.trim()) {
+      return res.status(400).json(
+        formatResponse.error('API_KEY_REQUIRED', 'OpenRouter API key is required to fetch credits')
+      );
+    }
+    
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/auth/key', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${apiKey.trim()}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.warn(`[Arc3OpenRouter] Credits fetch failed: ${response.status} ${errorText}`, 'arc3-openrouter');
+        return res.status(response.status).json(
+          formatResponse.error('OPENROUTER_ERROR', `OpenRouter API error: ${response.status}`)
+        );
+      }
+      
+      const data = await response.json();
+      
+      // OpenRouter returns: { data: { label, usage, limit, is_free_tier, rate_limit } }
+      // usage and limit are in USD cents (or null for unlimited)
+      const keyData = data.data || data;
+      
+      // Calculate remaining credits
+      const usage = keyData.usage ?? 0;  // Amount used in USD
+      const limit = keyData.limit;        // Credit limit (null = unlimited)
+      const remaining = limit !== null && limit !== undefined ? limit - usage : null;
+      
+      res.json(formatResponse.success({
+        label: keyData.label || 'API Key',
+        usage: usage,
+        limit: limit,
+        remaining: remaining,
+        isFreeTier: keyData.is_free_tier ?? false,
+        rateLimit: keyData.rate_limit || null,
+        timestamp: Date.now(),
+      }));
+      
+    } catch (error) {
+      logger.error(`[Arc3OpenRouter] Credits fetch error: ${error}`, 'arc3-openrouter');
+      return res.status(500).json(
+        formatResponse.error('FETCH_ERROR', 'Failed to fetch credits from OpenRouter')
+      );
+    }
+  })
+);
+
 export default router;
