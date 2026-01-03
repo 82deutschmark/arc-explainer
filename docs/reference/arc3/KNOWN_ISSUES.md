@@ -10,8 +10,8 @@ Current ARC3 runners (Arc3RealGameRunner and CodexArc3Runner) use the OpenAI Age
 ## Risks
 - Higher LLM cost and latency (Agents SDK overhead)
 - Duplicate codebases (two runners using the same tech stack)
-- Missing ACTION7 (undo)
-- Confusing provider labels (“Claude” vs “Codex” though both are OpenAI)
+- Missing ACTION7 (undo)  THIS ACTION IS yet used in any of the games, and it does not need to be included yet. 
+- Confusing provider labels (“Claude” vs “Codex” though both are OpenAI)  this may even be confused by the idiot who wrote this plan, because he seems to think Claude is part of OpenAI, which Claude most certainly is not. 
 
 ## Temporary Guidance
 - Treat current runners as deprecated for new work.
@@ -22,5 +22,5 @@ Current ARC3 runners (Arc3RealGameRunner and CodexArc3Runner) use the OpenAI Age
 1. Rename provider labels to `openai_nano` / `openai_codex` (done in UI types).
 2. Implement `Arc3OpenAIRunner` (direct Responses API, ACTION1-7).
 3. Port helper utilities from `.cache/external/ARC-AGI-3-ClaudeCode-SDK/helpers/`.
-4. Add ACTION7 support end-to-end.
-5. Deprecate and remove Agents SDK runners after migration.
+
+
