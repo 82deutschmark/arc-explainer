@@ -1517,6 +1517,82 @@ export interface OpenRouterSyncStatus {
 }
 
 /**
+ * Codex ARC3 Interactive Playground Types
+ * SSE streaming events for Codex-powered ARC-AGI-3 gameplay.
+ */
+export type CodexArc3Provider = 'codex' | 'arc3_claude';
+
+export interface CodexArc3ActionStartEvent {
+  action: string;
+  coordinates?: [number, number];
+  hypothesis?: string;
+  timestamp: number;
+}
+
+export interface CodexArc3ActionResultEvent {
+  action: string;
+  coordinates?: [number, number];
+  success: boolean;
+  newState: string;
+  newScore: number;
+  rewardDelta: number;
+  timestamp: number;
+}
+
+export interface CodexArc3HypothesizeEvent {
+  hypothesis: string;
+  frameIndex: number;
+  timestamp: number;
+}
+
+export interface CodexArc3FrameUpdateEvent {
+  frameIndex: string;
+  frameData: any;
+  caption: string;
+  action: { type: string; coordinates?: [number, number] };
+  isAnimation: boolean;
+  animationFrame: number;
+  animationTotalFrames: number;
+  isLastAnimationFrame: boolean;
+  timestamp: number;
+}
+
+export interface CodexArc3CompletedEvent {
+  runId: string;
+  gameGuid: string;
+  finalOutput?: string;
+  summary: {
+    state: string;
+    score: number;
+    stepsTaken: number;
+    scenarioId: string;
+  };
+  usage: {
+    requests: number;
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+  };
+  timelineLength: number;
+  frameCount: number;
+  providerResponseId: string | null;
+  provider: CodexArc3Provider;
+  hypotheses?: string[];
+  timestamp: number;
+}
+
+export interface CodexArc3StreamPayload {
+  game_id: string;
+  agentName?: string;
+  systemPrompt?: string;
+  instructions: string;
+  model?: string;
+  maxTurns?: number;
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  provider?: CodexArc3Provider;
+}
+
+/**
  * RE-ARC SSE Event Types
  * Shared between frontend and backend for type-safe SSE streaming.
  */

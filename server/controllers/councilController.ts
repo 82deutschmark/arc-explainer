@@ -32,7 +32,7 @@ export async function healthCheck(req: Request, res: Response): Promise<void> {
     } else {
       res.status(503).json(formatResponse.error(
         'COUNCIL_UNAVAILABLE',
-        'LLM Council service is not available. Ensure it is running on port 8001.'
+        'LLM Council prerequisites not met. Check: Python installed, llm-council submodule present, OPENROUTER_API_KEY environment variable set.'
       ));
     }
   } catch (error: unknown) {
