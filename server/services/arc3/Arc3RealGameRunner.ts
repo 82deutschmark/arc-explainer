@@ -1,6 +1,6 @@
 /*
-Author: Claude Haiku 4.5
-Date: 2025-12-20 (CRITICAL FIX: Multi-frame animation unpacking)
+Author: Claude Haiku 4.5 → Cascade (Claude Opus 4.5)
+Date: 2025-12-20 (CRITICAL FIX: Multi-frame animation unpacking) → 2026-01-03 (DRY refactor: tool factory + helpers)
 PURPOSE: Runs OpenAI Agents SDK workflows against the real ARC-AGI-3 API with PostgreSQL frame persistence.
 
 CRITICAL CHANGES (2025-12-20):
@@ -25,11 +25,11 @@ Architecture:
 - Agent always reasons about final "settled" frame, but database has complete history
 
 SRP/DRY check: Pass — frame unpacking separated into dedicated module, reusable across both methods.
+         Tools extracted to Arc3ToolFactory.ts, shared helpers in runHelpers.ts.
 */
 
 import { randomUUID, createHash } from 'node:crypto';
-import { Agent, run, tool, extractAllTextOutput } from '@openai/agents';
-import { z } from 'zod';
+import { Agent, run, extractAllTextOutput } from '@openai/agents';
 import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient.ts';
 import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry, Arc3RunSummary, Arc3GameState } from './types.ts';
 import { buildArc3DefaultPrompt } from './prompts.ts';
@@ -44,6 +44,8 @@ import { saveFrame } from './persistence/framePersistence.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
 import { executeGridAnalysis } from './helpers/gridAnalyzer.ts';
 import { logger } from '../../utils/logger.ts';
+import { createArc3Tools, type Arc3ToolContext, type Arc3StreamHarness as FactoryStreamHarness } from './tools/Arc3ToolFactory.ts';
+import { buildCombinedInstructions, buildRunSummary } from './helpers/runHelpers.ts';
 
 export interface Arc3StreamHarness {
   sessionId: string;
