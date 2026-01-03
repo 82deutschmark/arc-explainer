@@ -2,9 +2,16 @@
 """
 Author: Cascade
 Date: 2026-01-02
+Updated: 2026-01-03 - Major upgrade: Structured outputs, observation journal, frame delta analysis
 PURPOSE: ARC3 OpenRouter Runner using LangGraph thinking agent pattern.
          Reads JSON config from stdin, emits NDJSON events to stdout.
          Model: xiaomi/mimo-v2-flash:free (configurable)
+         
+         Key features (per audit 2026-01-03-arc3-agents2-integration-audit.md):
+         - Pydantic structured outputs (eliminates fragile regex parsing)
+         - Observation journal (persistent memory across turns)
+         - Frame delta analysis (learns from action outcomes)
+         
 SRP/DRY check: Pass - isolated agent runner, emits events for TypeScript to consume.
 
 Usage:
@@ -13,15 +20,23 @@ Usage:
 
 import json
 import os
+import re
 import sys
 import time
 import base64
 from io import BytesIO
-from typing import Any, Optional, TypedDict
+from typing import Any, Optional, TypedDict, List, Tuple
 from enum import Enum
 
 import requests
 from PIL import Image
+
+# Pydantic for structured outputs (Phase 1 upgrade)
+try:
+    from pydantic import BaseModel, Field, field_validator
+    PYDANTIC_AVAILABLE = True
+except ImportError:
+    PYDANTIC_AVAILABLE = False
 
 # LangChain imports for OpenRouter integration
 try:
@@ -30,6 +45,119 @@ try:
     LANGCHAIN_AVAILABLE = True
 except ImportError:
     LANGCHAIN_AVAILABLE = False
+
+
+# ============================================================================
+# Pydantic Schemas for Structured Outputs (Phase 1)
+# ============================================================================
+
+if PYDANTIC_AVAILABLE:
+    class ActionDecision(BaseModel):
+        """Structured action decision from LLM.
+        
+        Uses Pydantic for reliable, type-safe action extraction.
+        Replaces fragile regex JSON parsing (per audit recommendation).
+        """
+        action: str = Field(
+            description="One of: ACTION1, ACTION2, ACTION3, ACTION4, ACTION5, ACTION6, RESET"
+        )
+        reasoning: str = Field(
+            description="Brief explanation of why this action was chosen"
+        )
+        coordinates: Optional[Tuple[int, int]] = Field(
+            default=None, 
+            description="x,y coordinates for ACTION6 only (click position)"
+        )
+        
+        @field_validator('action')
+        @classmethod
+        def validate_action(cls, v: str) -> str:
+            """Ensure action is one of the valid game actions."""
+            valid = ["RESET", "ACTION1", "ACTION2", "ACTION3", "ACTION4", "ACTION5", "ACTION6"]
+            upper = v.upper().strip()
+            if upper not in valid:
+                # Try to extract action from malformed input
+                for valid_action in valid:
+                    if valid_action in upper:
+                        return valid_action
+                raise ValueError(f"Invalid action: {v}. Must be one of: {valid}")
+            return upper
+        
+        @field_validator('coordinates')
+        @classmethod
+        def validate_coordinates(cls, v, info):
+            """Ensure coordinates are provided for ACTION6."""
+            # Note: cross-field validation happens after individual field validation
+            # We handle ACTION6 coordinate requirement in the agent logic
+            if v is not None:
+                if not isinstance(v, (list, tuple)) or len(v) != 2:
+                    raise ValueError("Coordinates must be [x, y] tuple")
+                return tuple(v)
+            return v
+
+
+# ============================================================================
+# Frame Delta Analysis (Phase 3)
+# ============================================================================
+
+def analyze_frame_delta(previous_frame: list, current_frame: list) -> str:
+    """Analyze pixel differences between frames.
+    
+    Pattern from: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/nodes.py
+    Returns human-readable summary of changes to help agent learn cause-effect.
+    
+    Args:
+        previous_frame: 3D frame array from previous turn [layer][height][width]
+        current_frame: 3D frame array from current turn
+        
+    Returns:
+        Human-readable description of what changed
+    """
+    if not previous_frame or not current_frame:
+        return "No previous frame to compare"
+    
+    # Handle 3D frames (take layer 0 for comparison)
+    try:
+        prev_grid = previous_frame[0] if len(previous_frame) > 0 and isinstance(previous_frame[0], list) else previous_frame
+        curr_grid = current_frame[0] if len(current_frame) > 0 and isinstance(current_frame[0], list) else current_frame
+    except (IndexError, TypeError):
+        return "Frame format error - cannot compare"
+    
+    changes = []
+    movement_pixels = 0
+    color_changes = {}  # Track color transitions
+    
+    try:
+        for y in range(min(len(prev_grid), len(curr_grid))):
+            for x in range(min(len(prev_grid[y]), len(curr_grid[y]))):
+                prev_val = prev_grid[y][x]
+                curr_val = curr_grid[y][x]
+                if prev_val != curr_val:
+                    movement_pixels += 1
+                    # Track color transitions (useful for understanding game mechanics)
+                    transition = f"{prev_val}->{curr_val}"
+                    color_changes[transition] = color_changes.get(transition, 0) + 1
+                    # Only log first few specific changes to avoid spam
+                    if len(changes) < 5:
+                        changes.append(f"({x},{y}): {prev_val}->{curr_val}")
+        
+        if movement_pixels == 0:
+            return "No visible changes - action may have failed or hit obstacle"
+        elif movement_pixels < 10:
+            details = ", ".join(changes[:3])
+            return f"Small change ({movement_pixels} pixels): {details}"
+        elif movement_pixels < 50:
+            # Summarize by most common color transitions
+            top_transitions = sorted(color_changes.items(), key=lambda x: -x[1])[:3]
+            trans_str = ", ".join([f"{t[0]}({t[1]}x)" for t in top_transitions])
+            return f"Moderate change ({movement_pixels} pixels) - transitions: {trans_str}"
+        elif movement_pixels < 200:
+            return f"Large change ({movement_pixels} pixels) - likely major player movement or interaction"
+        else:
+            return f"Massive change ({movement_pixels} pixels) - possible game reset or scene transition"
+    
+    except Exception as e:
+        return f"Delta analysis error: {e}"
 
 
 # ============================================================================
@@ -228,9 +356,15 @@ class Arc3OpenRouterAgent:
     """
     LangGraph-style agent for ARC3 games using OpenRouter.
     Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/
+    
+    Key upgrades (per audit 2026-01-03):
+    - Pydantic structured outputs for reliable action parsing
+    - Observation journal for persistent memory across turns
+    - Frame delta analysis integration for learning from outcomes
     """
     
-    SYSTEM_PROMPT = """You are an expert ARC-AGI-3 game player. Your goal is to explore and discover the rules of the game.
+    # Base system prompt (will be extended dynamically with observations/thoughts)
+    BASE_SYSTEM_PROMPT = """You are an expert ARC-AGI-3 game player. Your goal is to explore and discover the rules of the game.
 
 The game has the following actions:
 - ACTION1: Move/interact up
@@ -239,17 +373,16 @@ The game has the following actions:
 - ACTION4: Move/interact right
 - ACTION5: Special action (rotate, transform, etc.)
 - ACTION6: Click at specific coordinates (requires x, y)
-- RESET: Start over (only use if stuck)
+- RESET: Start over (only use if stuck or in a loop)
 
 Analyze the game frame carefully. Look for:
 1. Patterns and shapes
-2. Color relationships
+2. Color relationships  
 3. Possible objectives (doors, keys, targets)
 4. Changes from previous actions
+5. What worked and what didn't in previous turns
 
-Think step by step about what action to take next. Your response must be a JSON object:
-{"action": "ACTION1|ACTION2|ACTION3|ACTION4|ACTION5|ACTION6|RESET", "reasoning": "your explanation", "coordinates": [x, y] (only for ACTION6)}
-"""
+Think step by step about what action to take next."""
     
     def __init__(self, model: str, api_key: str, instructions: str = None, 
                  reasoning_enabled: bool = True, agent_name: str = "OpenRouter Agent"):
@@ -286,30 +419,82 @@ Think step by step about what action to take next. Your response must be a JSON 
             model_kwargs=model_kwargs,
         )
         
+        # State tracking
         self.previous_frame = None
-        self.action_history = []
+        self.action_history: List[str] = []
+        
+        # Phase 2: Observation journal & persistent memory
+        # Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/nodes.py
+        self.observations: List[str] = []  # What agent learned about the game
+        self.thoughts: List[str] = []       # Agent's hypotheses and strategies
+    
+    def add_observation(self, observation: str):
+        """Add observation to journal, keeping only last 15.
+        
+        Observations are facts learned about the game through exploration.
+        """
+        self.observations.append(observation)
+        if len(self.observations) > 15:
+            self.observations = self.observations[-15:]
+        emit_event("agent.reasoning", {"content": f"[OBS] {observation}"})
+    
+    def add_thought(self, thought: str):
+        """Add thought to journal, keeping only last 10.
+        
+        Thoughts are hypotheses and strategic insights.
+        """
+        self.thoughts.append(thought)
+        if len(self.thoughts) > 10:
+            self.thoughts = self.thoughts[-10:]
+    
+    def build_system_prompt(self) -> str:
+        """Build dynamic system prompt with observations and thoughts.
+        
+        Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/prompts.py
+        This provides persistent memory across turns.
+        """
+        prompt = self.BASE_SYSTEM_PROMPT
+        
+        # Add user instructions if provided
+        if self.instructions:
+            prompt += f"\n\n**User Instructions:**\n{self.instructions}"
+        
+        # Add thoughts (strategic insights) if any
+        if self.thoughts:
+            thoughts_str = "\n".join([f"- {t}" for t in self.thoughts[-5:]])  # Last 5 thoughts
+            prompt += f"\n\n**Your Strategic Thoughts:**\n{thoughts_str}"
+        
+        # Add observations (learned facts) if any
+        if self.observations:
+            obs_str = "\n".join([f"- {o}" for o in self.observations[-10:]])  # Last 10 observations
+            prompt += f"\n\n**Your Observations:**\n{obs_str}"
+        
+        return prompt
     
     def analyze_frame(self, frame_data: dict) -> dict:
-        """Analyze frame and choose next action using LLM."""
+        """Analyze frame and choose next action using LLM.
+        
+        Uses Pydantic structured outputs (Phase 1) for reliable parsing.
+        Injects observations/thoughts (Phase 2) via dynamic system prompt.
+        """
         frame = frame_data.get("frame", [])
         state = frame_data.get("state", "IN_PROGRESS")
         score = frame_data.get("score", 0)
         
         # Build context message
         context_parts = []
-        
-        # Add game state info
         context_parts.append(f"Game State: {state}")
         context_parts.append(f"Current Score: {score}")
+        context_parts.append(f"Turn: {len(self.action_history) + 1}")
         
         if self.action_history:
             recent = self.action_history[-5:]  # Last 5 actions
             context_parts.append(f"Recent Actions: {', '.join(recent)}")
         
-        if self.instructions:
-            context_parts.append(f"User Instructions: {self.instructions}")
-        
         context_text = "\n".join(context_parts)
+        
+        # Build dynamic system prompt with observations/thoughts (Phase 2)
+        system_prompt = self.build_system_prompt()
         
         # Render frame to image
         try:
@@ -317,7 +502,7 @@ Think step by step about what action to take next. Your response must be a JSON 
             
             # Create multimodal message
             messages = [
-                SystemMessage(content=self.SYSTEM_PROMPT),
+                SystemMessage(content=system_prompt),
                 HumanMessage(content=[
                     {"type": "text", "text": f"{context_text}\n\nAnalyze the current game frame and decide your next action:"},
                     {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{frame_image_b64}"}},
@@ -327,32 +512,53 @@ Think step by step about what action to take next. Your response must be a JSON 
             # Fallback to text-only if image rendering fails
             emit_event("agent.reasoning", {"content": f"Image rendering failed: {e}, using text mode"})
             messages = [
-                SystemMessage(content=self.SYSTEM_PROMPT),
+                SystemMessage(content=system_prompt),
                 HumanMessage(content=f"{context_text}\n\nThe game frame is a grid. Choose an action to explore."),
             ]
         
         # Get LLM response
         emit_event("agent.reasoning", {"content": "Analyzing frame with LLM..."})
         
+        # Phase 1: Use structured output with Pydantic (if available)
+        if PYDANTIC_AVAILABLE:
+            try:
+                # Use LangChain's with_structured_output for reliable parsing
+                structured_llm = self.llm.with_structured_output(
+                    ActionDecision,
+                    method="json_schema",
+                )
+                result = structured_llm.invoke(messages)
+                
+                emit_event("agent.reasoning", {
+                    "content": f"Structured output: action={result.action}, reasoning={result.reasoning[:100]}"
+                })
+                
+                return {
+                    "action": result.action,
+                    "reasoning": result.reasoning,
+                    "coordinates": list(result.coordinates) if result.coordinates else None,
+                }
+                
+            except Exception as e:
+                emit_event("agent.reasoning", {
+                    "content": f"Structured output failed ({e}), using fallback regex parsing"
+                })
+                # Fall through to regex fallback
+        
+        # Fallback: Legacy regex parsing (kept for compatibility)
         try:
             response = self.llm.invoke(messages)
             response_text = response.content
             
             emit_event("agent.reasoning", {"content": f"LLM response: {response_text[:500]}"})
             
-            # Parse JSON response
             # Try to extract JSON from response
-            try:
-                # Look for JSON in response
-                import re
-                json_match = re.search(r'\{[^}]+\}', response_text)
-                if json_match:
-                    action_data = json.loads(json_match.group())
-                else:
-                    # Default to random exploration
-                    action_data = {"action": "ACTION1", "reasoning": "Exploring"}
-            except json.JSONDecodeError:
-                action_data = {"action": "ACTION1", "reasoning": response_text[:200]}
+            json_match = re.search(r'\{[^}]+\}', response_text)
+            if json_match:
+                action_data = json.loads(json_match.group())
+            else:
+                # Default to exploration
+                action_data = {"action": "ACTION1", "reasoning": "Exploring (no JSON found)"}
             
             return action_data
             
@@ -361,7 +567,10 @@ Think step by step about what action to take next. Your response must be a JSON 
             return {"action": "ACTION1", "reasoning": f"LLM error, defaulting: {e}"}
     
     def choose_action(self, frame_data: dict) -> tuple[str, str, Optional[tuple[int, int]]]:
-        """Choose action based on frame analysis. Returns (action, reasoning, coordinates)."""
+        """Choose action based on frame analysis. Returns (action, reasoning, coordinates).
+        
+        Integrates Phase 3 frame delta analysis for learning from outcomes.
+        """
         state = frame_data.get("state", "IN_PROGRESS")
         
         # Handle game states
@@ -370,6 +579,25 @@ Think step by step about what action to take next. Your response must be a JSON 
         
         if state == GameState.WIN.value:
             return None, "Game won!", None
+        
+        # Phase 3: Analyze what changed from previous action (frame delta)
+        if self.previous_frame and self.action_history:
+            prev_frame_data = self.previous_frame.get("frame", [])
+            curr_frame_data = frame_data.get("frame", [])
+            delta_summary = analyze_frame_delta(prev_frame_data, curr_frame_data)
+            
+            # Add delta to observations (helps agent learn cause-effect)
+            last_action = self.action_history[-1] if self.action_history else "unknown"
+            self.add_observation(f"After {last_action}: {delta_summary}")
+            
+            # Emit delta for debugging
+            emit_event("agent.reasoning", {"content": f"Frame delta: {delta_summary}"})
+            
+            # Detect if stuck (same action, no change)
+            if "No visible changes" in delta_summary and len(self.action_history) >= 3:
+                recent = self.action_history[-3:]
+                if len(set(recent)) == 1:  # Same action 3 times
+                    self.add_thought(f"{recent[0]} seems blocked - should try different direction")
         
         # Analyze and choose action
         result = self.analyze_frame(frame_data)
@@ -383,8 +611,14 @@ Think step by step about what action to take next. Your response must be a JSON 
         if action not in valid_actions:
             action = "ACTION1"
         
-        # Track action history
+        # ACTION6 requires coordinates
+        if action == "ACTION6" and not coordinates:
+            emit_event("agent.reasoning", {"content": "ACTION6 without coordinates - falling back to ACTION1"})
+            action = "ACTION1"
+        
+        # Track action history and add reasoning to thoughts
         self.action_history.append(action)
+        self.add_thought(f"Turn {len(self.action_history)}: {action} - {reasoning[:80]}")
         self.previous_frame = frame_data
         
         return action, reasoning, tuple(coordinates) if coordinates else None
