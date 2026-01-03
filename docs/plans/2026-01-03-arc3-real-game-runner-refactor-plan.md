@@ -1,8 +1,8 @@
 # Arc3RealGameRunner Refactoring Plan
 
-**Author:** Cascade  
+**Author:** Cascade (Claude Opus 4.5)  
 **Date:** 2026-01-03  
-**Status:** In Progress  
+**Status:** Complete  
 **Priority:** High (fixes audit bugs + eliminates ~400 lines of duplication)
 
 ---
@@ -225,12 +225,12 @@ Use strategy pattern or callbacks for streaming-specific behavior.
 - [x] **Task 2.4:** Extract `analyzeGridTool` (DONE - in factory)
 - [x] **Task 2.5:** Extract `simpleAction` factory (DONE - in factory)
 - [x] **Task 2.6:** Extract `action6Tool` (DONE - in factory)
-- [ ] **Task 2.7:** Update `run()` to use factory (PENDING - factory ready, integration deferred)
-- [ ] **Task 2.8:** Update `runWithStreaming()` to use factory (PENDING - factory ready, integration deferred)
+- [x] **Task 2.7:** Update `run()` to use factory (DONE - Cascade/Claude Opus 4.5)
+- [x] **Task 2.8:** Update `runWithStreaming()` to use factory (DONE - Cascade/Claude Opus 4.5)
 - [x] **Task 2.9:** Test build passes (DONE - factory compiles)
-- [ ] **Task 3.1:** Extract `selectSystemPrompt()` to helpers (PENDING)
-- [ ] **Task 3.2:** Extract `mapState()` to helpers (PENDING)
-- [ ] **Task 3.3:** Test build passes (PENDING)
+- [x] **Task 3.1:** Extract `selectSystemPrompt()` to helpers (DONE - runHelpers.ts)
+- [x] **Task 3.2:** Extract `mapState()` to helpers (DONE - runHelpers.ts)
+- [x] **Task 3.3:** Test build passes (DONE - build successful)
 - [x] **Task 4:** Update CHANGELOG with refactoring entry (DONE - v6.25.0)
 
 ---
