@@ -86,6 +86,9 @@ export default defineConfig(async ({ mode }): Promise<import('vite').UserConfig>
       hmr: {
         overlay: false, // Suppress HMR error overlay when accessing via backend (localhost:5000)
       },
+      allowedHosts: [
+        "arc-explainer-staging.up.railway.app",
+      ],
       fs: {
         strict: true,
         deny: ["**/.*"],
