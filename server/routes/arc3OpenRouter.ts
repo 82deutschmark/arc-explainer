@@ -25,7 +25,7 @@ const prepareSchema = z.object({
   apiKey: z.string().optional(),                 // OpenRouter BYOK
   arc3ApiKey: z.string().optional(),             // ARC3 API key BYOK
   agentName: z.string().optional(),              // User-defined agent name for scorecard
-  reasoningEnabled: z.boolean().optional().default(true),  // MiMo reasoning toggle
+  reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high', 'xhigh']).optional().default('low'),  // OpenRouter reasoning.effort per docs
 });
 
 // Helper for consistent response format

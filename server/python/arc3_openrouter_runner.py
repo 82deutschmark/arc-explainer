@@ -384,29 +384,32 @@ Analyze the game frame carefully. Look for:
 
 Think step by step about what action to take next."""
     
-    def __init__(self, model: str, api_key: str, instructions: str = None, 
-                 reasoning_enabled: bool = True, agent_name: str = "OpenRouter Agent"):
+    def __init__(self, model: str, api_key: str, instructions: str = None,
+                 reasoning_effort: str = "low", agent_name: str = "OpenRouter Agent"):
         self.model = model
         self.api_key = api_key
         self.instructions = instructions or ""
-        self.reasoning_enabled = reasoning_enabled
+        self.reasoning_effort = reasoning_effort
         self.agent_name = agent_name
-        
+
         if not LANGCHAIN_AVAILABLE:
             emit_error("LangChain not installed. Run: pip install langchain-openai", "DEPENDENCY_ERROR")
-        
+
         # Build extra headers for OpenRouter
-        # MiMo-V2-Flash and other models support reasoning toggle via provider params
         extra_headers = {
             "HTTP-Referer": "https://arc-explainer.com",
             "X-Title": f"ARC Explainer - {agent_name}",
         }
-        
-        # Model kwargs for reasoning-capable models (like MiMo-V2-Flash)
-        model_kwargs = {}
-        if reasoning_enabled:
-            # OpenRouter passes this to models that support reasoning toggle
-            model_kwargs["extra_body"] = {"reasoning": {"enabled": True}}
+
+        # Model kwargs for reasoning-capable models (per OpenRouter docs)
+        # Pass reasoning.effort to control thinking budget allocation
+        model_kwargs = {
+            "extra_body": {
+                "reasoning": {
+                    "effort": reasoning_effort,  # "minimal", "low", "medium", "high", "xhigh"
+                }
+            }
+        }
         
         # Initialize LangChain ChatOpenAI with OpenRouter
         self.llm = ChatOpenAI(
@@ -630,18 +633,18 @@ Think step by step about what action to take next."""
 
 def run_agent(config: dict):
     """Main agent loop - plays the game and emits events.
-    
+
     This is the competition-emulation mode: agent runs autonomously until WIN or GAME_OVER.
     No human interaction during the run - designed to mirror the official ARC3 harness.
     """
-    
+
     game_id = config.get("game_id", "ls20")
     model = config.get("model", "xiaomi/mimo-v2-flash:free")
     instructions = config.get("instructions", "")
     system_prompt = config.get("system_prompt", "")  # User's genius system prompt
     max_turns = config.get("max_turns", 80)  # Match ARC-AGI-3-Agents2 MAX_ACTIONS default
     agent_name = config.get("agent_name", "OpenRouter Agent")
-    reasoning_enabled = config.get("reasoning_enabled", True)  # MiMo reasoning toggle
+    reasoning_effort = config.get("reasoning_effort", "low")  # OpenRouter reasoning.effort per docs
     
     # API keys
     arc3_api_key = config.get("arc3_api_key") or os.getenv("ARC3_API_KEY", "")
@@ -654,25 +657,25 @@ def run_agent(config: dict):
         emit_error("ARC3 API key required", "AUTH_ERROR")
     
     emit_event("agent.starting", {
-        "message": "Initializing OpenRouter agent (competition mode)...", 
+        "message": "Initializing OpenRouter agent (competition mode)...",
         "model": model,
         "agent_name": agent_name,
-        "reasoning_enabled": reasoning_enabled,
+        "reasoning_effort": reasoning_effort,
     })
-    
+
     # Combine system prompt + instructions for the agent
     combined_instructions = instructions
     if system_prompt:
         combined_instructions = f"{system_prompt}\n\n{instructions}" if instructions else system_prompt
-    
+
     # Initialize clients
     try:
         arc3_client = Arc3ApiClient(arc3_api_key)
         agent = Arc3OpenRouterAgent(
-            model, 
-            openrouter_api_key, 
+            model,
+            openrouter_api_key,
             combined_instructions,
-            reasoning_enabled=reasoning_enabled,
+            reasoning_effort=reasoning_effort,
             agent_name=agent_name,
         )
     except Exception as e:
@@ -692,10 +695,9 @@ def run_agent(config: dict):
             "openrouter-playground",
             "competition-emulation",
             model_tag,
+            f"reasoning-{reasoning_effort}",
         ]
-        if reasoning_enabled:
-            scorecard_tags.append("reasoning-enabled")
-        
+
         # Rich metadata for scorecard (passed as 'opaque' field)
         scorecard_metadata = {
             "source": "arc-explainer",
@@ -703,7 +705,7 @@ def run_agent(config: dict):
             "game_id": game_id,
             "agent_name": agent_name,
             "model": model,
-            "reasoning_enabled": reasoning_enabled,
+            "reasoning_effort": reasoning_effort,
             "max_turns": max_turns,
         }
         

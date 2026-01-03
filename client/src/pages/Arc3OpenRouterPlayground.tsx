@@ -197,10 +197,10 @@ export default function Arc3OpenRouterPlayground() {
       const data = await response.json();
       if (Array.isArray(data)) {
         setModels(data);
-        // Set default model if available (prefer free models)
+        // Set default model: explicitly prefer xiaomi/mimo-v2-flash:free
         const openRouterModels = data.filter((m: ModelInfo) => m.provider === 'OpenRouter');
-        const defaultModel = openRouterModels.find((m: ModelInfo) => m.key.includes(':free')) ||
-                            openRouterModels.find((m: ModelInfo) => m.key === 'xiaomi/mimo-v2-flash:free') ||
+        const defaultModel = openRouterModels.find((m: ModelInfo) => m.key === 'xiaomi/mimo-v2-flash:free') ||
+                            openRouterModels.find((m: ModelInfo) => m.key.includes(':free')) ||
                             openRouterModels[0];
         if (defaultModel) {
           setModel(defaultModel.key);
@@ -277,7 +277,7 @@ export default function Arc3OpenRouterPlayground() {
   const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
   const [agentName, setAgentName] = useState('OpenRouter Explorer');
   const [model, setModel] = useState<string>('');
-  const [maxTurns, setMaxTurns] = useState(100000);
+  const [maxTurns, setMaxTurns] = useState(80);  // Max 500 per OpenRouter route validation
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [systemPrompt, setSystemPrompt] = useState('Loading default prompt...');
   const [instructions, setInstructions] = useState(

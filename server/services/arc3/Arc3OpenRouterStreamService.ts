@@ -30,7 +30,7 @@ export interface OpenRouterStreamPayload {
   expiresAt?: number;
   // Competition-emulation mode parameters
   agentName?: string;          // User-defined agent name for scorecard
-  reasoningEnabled?: boolean;  // MiMo reasoning toggle (default: true)
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high' | 'xhigh';  // OpenRouter reasoning.effort per docs
 }
 
 const SESSION_TTL_MS = 15 * 60 * 1000; // 15 minutes
@@ -113,9 +113,9 @@ export class Arc3OpenRouterStreamService {
       return;
     }
 
-    const { 
-      game_id, model, instructions, systemPrompt, maxTurns, 
-      apiKey, arc3ApiKey, agentName, reasoningEnabled 
+    const {
+      game_id, model, instructions, systemPrompt, maxTurns,
+      apiKey, arc3ApiKey, agentName, reasoningEffort
     } = payload;
 
     // Send initial status
@@ -125,7 +125,7 @@ export class Arc3OpenRouterStreamService {
       model,
       provider: 'openrouter',
       agentName: agentName || 'OpenRouter Agent',
-      reasoningEnabled: reasoningEnabled ?? true,
+      reasoningEffort: reasoningEffort ?? 'low',
     });
 
     sseStreamManager.sendEvent(sessionId, 'stream.status', {
@@ -144,7 +144,7 @@ export class Arc3OpenRouterStreamService {
       api_key: apiKey,
       arc3_api_key: arc3ApiKey || process.env.ARC3_API_KEY,
       agent_name: agentName || 'OpenRouter Agent',
-      reasoning_enabled: reasoningEnabled ?? true,
+      reasoning_effort: reasoningEffort ?? 'low',
     };
 
     try {

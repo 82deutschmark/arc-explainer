@@ -122,6 +122,13 @@ const navigationItems: NavItem[] = [
         href: '/arc3/playground',
         icon: FlaskConical,
         description: 'Experiment with ARC-3 games'
+      },
+      {
+        type: 'link',
+        title: 'OpenRouter Agent Laboratory',
+        href: '/arc3/openrouter-playground',
+        icon: FlaskConical,
+        description: 'Experiment with OpenRouter models on ARC-3 games'
       }
     ]
   },
