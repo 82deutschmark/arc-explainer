@@ -4,8 +4,8 @@
 
 ARC-AGI-3 games are turn-based systems where agents interact with 2D grid environments through a standardized action interface. Each game maintains state through discrete action-response cycles.
 
-* Agents will receive a 1-N frames of JSON objects with the game state and metadata.
-* Agents will respond with an [action](/actions) 1-5 or a 6th action which includes x, y coordinates.
+* Agents will receive 1–N frames of JSON objects with the game state and metadata (3D or 4D; 4D gets unpacked).
+* Agents will respond with an [action](/actions) RESET or ACTION1–7; ACTION6 includes x, y coordinates. ACTION7 is undo where supported.
 
 ### Available Games
 
@@ -31,12 +31,14 @@ Game IDs are formatted as `<game_name>`-`<version>`.
 
 ### Game Available Actions
 
-Each game provides an explicit set of actions that an agent can take. Actions available vary per game.
+Each game provides an explicit set of actions; unavailable actions are omitted. The API may send numeric tokens or strings—server normalizes to canonical `RESET` / `ACTION1-7`. Missing/empty available_actions means “no restriction”.
 
-Typically, the available actions include:
+Typical semantics:
 
-* Actions 1–4: ex: move up, down, left, or right
-* Action 6: A complex action (if supported by the game)
+* ACTION1–4: directional / simple interactions (game-specific)
+* ACTION5: context-specific interact/execute
+* ACTION6: coordinate-based (requires x,y)
+* ACTION7: undo (if supported by the game)
 
 To learn more about each action and what it does, please visit the [Actions](/actions).
 
@@ -48,7 +50,9 @@ To run a complete playtest, you'll need to integrate your agent with scorecard m
 
 | State          | Description                                                        |
 | -------------- | ------------------------------------------------------------------ |
-| `NOT_FINISHED` | Game is active and awaiting next action                            |
+| `NOT_PLAYED`   | Fresh session, no actions taken yet                                |
+| `IN_PROGRESS`  | Active run                                                         |
+| `NOT_FINISHED` | Active but non-terminal (alias seen in some responses)             |
 | `WIN`          | Objective completed successfully                                   |
 | `GAME_OVER`    | Game terminated due to the max actions reached or other conditions |
 
