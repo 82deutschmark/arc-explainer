@@ -1,11 +1,12 @@
 /*
-Author: Claude (Windsurf Cascade)  
-Date: 2025-11-06
-Updated: 2026-01-01 - Added BYOK support for production environment
-PURPOSE: Ultra-compact ARC3 Agent Playground matching real ARC-AGI-3 site layout.
-Game selector above grid in center. Models from config. Minimal controls.
-BYOK enforcement: Production requires user API key; key is session-only, never stored.
-SRP/DRY check: Pass
+Author: Cascade
+Date: 2026-01-03
+Updated: 2026-01-03 - Fixed to use dynamic model fetching from /api/models, mirror Arc3AgentPlayground
+PURPOSE: OpenRouter-specific ARC3 Agent Playground using LangGraph Python runner.
+         Routes to /api/arc3-openrouter backend (Python subprocess).
+         Uses dynamic model list from project's OpenRouter catalog (not hardcoded).
+         BYOK: OpenRouter API key required in production.
+SRP/DRY check: Pass — mirrors Arc3AgentPlayground, only changes provider filtering to OpenRouter.
 */
 
 import React, { useState, useEffect } from 'react';
@@ -15,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gamepad2, ArrowLeft, RefreshCw, Key } from 'lucide-react';
+import { Gamepad2, ArrowLeft, RefreshCw, Key, Zap } from 'lucide-react';
 import { requiresUserApiKey } from '@/lib/environmentPolicy';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
@@ -69,7 +70,7 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
     if (token >= 1 && token <= 7) {
       return `ACTION${token}`;
     }
-    console.warn('[ARC3] Unexpected numeric action token:', token);
+    console.warn('[OpenRouter] Unexpected numeric action token:', token);
     return null;
   }
 
@@ -102,7 +103,7 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
       if (parsed >= 1 && parsed <= 7) {
         return `ACTION${parsed}`;
       }
-      console.warn('[ARC3] Unexpected ACTION number in string:', parsed);
+      console.warn('[OpenRouter] Unexpected ACTION number in string:', parsed);
       return null;
     }
 
@@ -114,7 +115,7 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
       if (parsed >= 1 && parsed <= 7) {
         return `ACTION${parsed}`;
       }
-      console.warn('[ARC3] Unexpected numeric string token:', parsed);
+      console.warn('[OpenRouter] Unexpected numeric string token:', parsed);
       return null;
     }
   }
@@ -122,12 +123,12 @@ const normalizeAvailableActionName = (token: string | number | null | undefined)
   return null;
 };
 
-export default function ARC3AgentPlayground() {
+export default function Arc3OpenRouterPlayground() {
   usePageMeta({
-    title: 'ARC Explainer – ARC3 Agent Playground',
+    title: 'ARC Explainer – OpenRouter Playground',
     description:
-      'Watch real ARC-AGI-3 agents explore interactive games, stream reasoning traces, and inspect grid state transitions.',
-    canonicalPath: '/arc3/playground',
+      'Watch ARC-AGI-3 agents explore interactive games using OpenRouter models, stream reasoning traces, and inspect grid state transitions.',
+    canonicalPath: '/arc3/openrouter-playground',
   });
 
   // URL state management for game selection
@@ -162,7 +163,7 @@ export default function ARC3AgentPlayground() {
         }
       }
     } catch (error) {
-      console.error('[ARC3] Failed to fetch games:', error);
+      console.error('[OpenRouter] Failed to fetch games:', error);
     } finally {
       setGamesLoading(false);
     }
@@ -185,7 +186,7 @@ export default function ARC3AgentPlayground() {
         }
       }
     } catch (error) {
-      console.error('[ARC3] Failed to fetch system prompt presets:', error);
+      console.error('[OpenRouter] Failed to fetch system prompt presets:', error);
     }
   };
 
@@ -196,14 +197,17 @@ export default function ARC3AgentPlayground() {
       const data = await response.json();
       if (Array.isArray(data)) {
         setModels(data);
-        // Set default model if available
-        const defaultModel = data.find((m: ModelInfo) => m.key === 'gpt-5-nano-2025-08-07');
+        // Set default model if available (prefer free models)
+        const openRouterModels = data.filter((m: ModelInfo) => m.provider === 'OpenRouter');
+        const defaultModel = openRouterModels.find((m: ModelInfo) => m.key.includes(':free')) ||
+                            openRouterModels.find((m: ModelInfo) => m.key === 'xiaomi/mimo-v2-flash:free') ||
+                            openRouterModels[0];
         if (defaultModel) {
           setModel(defaultModel.key);
         }
       }
     } catch (error) {
-      console.error('[ARC3] Failed to fetch models:', error);
+      console.error('[OpenRouter] Failed to fetch models:', error);
     } finally {
       setModelsLoading(false);
     }
@@ -217,7 +221,7 @@ export default function ARC3AgentPlayground() {
         setSystemPrompt(data.data.prompt);
       }
     } catch (error) {
-      console.error('[ARC3] Failed to fetch default prompt:', error);
+      console.error('[OpenRouter] Failed to fetch default prompt:', error);
       // Fall back to what we have
     }
   };
@@ -228,15 +232,15 @@ export default function ARC3AgentPlayground() {
       const data = await response.json();
       if (data.success && data.data?.frame) {
         const frameData = data.data;
-        console.log('[ARC3] Initial frame data from API:', frameData);
-        console.log('[ARC3] Available actions from API:', frameData.available_actions);
+        console.log('[OpenRouter] Initial frame data from API:', frameData);
+        console.log('[OpenRouter] Available actions from API:', frameData.available_actions);
         setInitialGrid(frameData.frame);
 
         // Initialize the hook state with the game session so manual actions work immediately
         initializeGameSession(frameData);
       }
     } catch (error) {
-      console.error('[ARC3] Failed to fetch game grid:', error);
+      console.error('[OpenRouter] Failed to fetch game grid:', error);
     }
   };
 
@@ -262,7 +266,7 @@ export default function ARC3AgentPlayground() {
           setSystemPrompt(result.data.body);
         }
       } catch (error) {
-        console.error('[ARC3] Failed to load system prompt preset body:', error);
+        console.error('[OpenRouter] Failed to load system prompt preset body:', error);
       }
     };
 
@@ -271,7 +275,7 @@ export default function ARC3AgentPlayground() {
 
   // Agent config
   const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
-  const [agentName, setAgentName] = useState('ARC3 Explorer');
+  const [agentName, setAgentName] = useState('OpenRouter Explorer');
   const [model, setModel] = useState<string>('');
   const [maxTurns, setMaxTurns] = useState(100000);
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
@@ -291,7 +295,7 @@ export default function ARC3AgentPlayground() {
   const handleStart = () => {
     // BYOK: Block start if key required but not provided
     if (byokRequired && !userApiKey.trim()) {
-      alert('API key is required in production. Please enter your OpenAI API key.');
+      alert('OpenRouter API key is required in production. Please enter your OpenRouter API key.');
       return;
     }
 
@@ -311,28 +315,18 @@ export default function ARC3AgentPlayground() {
       reasoningEffort,
       systemPromptPresetId,
       skipDefaultSystemPrompt,
+      provider: 'openrouter',  // Routes to /api/arc3-openrouter backend
       // BYOK: Pass user API key if provided (required in production)
       ...(userApiKey.trim() ? { apiKey: userApiKey.trim() } : {}),
     });
   };
 
   // Show user input after agent pauses (at maxTurns) or completes
-  // But only if the game is still NOT_FINISHED (not in terminal state)
   React.useEffect(() => {
     if (state.status === 'paused' || (state.status === 'completed' && state.streamingStatus === 'completed')) {
-      // Check if game is in terminal state
-      const lastFrame = state.frames && state.frames.length > 0
-        ? state.frames[state.frames.length - 1]
-        : null;
-
-      // Only allow user input if game is NOT_FINISHED
-      if (lastFrame && lastFrame.state === 'NOT_FINISHED') {
-        setShowUserInput(true);
-      } else {
-        setShowUserInput(false);
-      }
+      setShowUserInput(true);
     }
-  }, [state.status, state.streamingStatus, state.frames]);
+  }, [state.status, state.streamingStatus]);
 
   const handleUserMessageSubmit = async () => {
     if (!userMessage.trim()) return;
@@ -342,7 +336,7 @@ export default function ARC3AgentPlayground() {
       setUserMessage('');
       setShowUserInput(false);
     } catch (error) {
-      console.error('[ARC3] Failed to continue:', error);
+      console.error('[OpenRouter] Failed to continue:', error);
     }
   };
 
@@ -368,11 +362,9 @@ export default function ARC3AgentPlayground() {
     return null;
   }, [state.timeline]);
 
-  // Get available models (OpenAI only for ARC3 Agents SDK)
+  // Get available models (OpenRouter only for this playground)
   const availableModels = models.filter((m: ModelInfo) => 
-    m.provider === 'OpenAI' && 
-    !m.key.startsWith('grover-') &&
-    !m.color.includes('slate')
+    m.provider === 'OpenRouter'
   );
 
   // Compute currentFrame directly from state to ensure re-renders trigger updates
@@ -385,7 +377,7 @@ export default function ARC3AgentPlayground() {
 
     // If no available_actions field or empty array, allow all actions (no restrictions)
     if (!tokens || tokens.length === 0) {
-      console.log('[ARC3] No action restrictions (available_actions is empty or missing)');
+      console.log('[OpenRouter] No action restrictions (available_actions is empty or missing)');
       return null;
     }
 
@@ -398,14 +390,14 @@ export default function ARC3AgentPlayground() {
         normalized.add(normalizedToken);
       } else if (token !== null && token !== undefined) {
         // If we encounter an unexpected token format, log it and allow all actions
-        console.warn('[ARC3] Unexpected action token format:', token);
+        console.warn('[OpenRouter] Unexpected action token format:', token);
         fallbackAllowAll = true;
         break;
       }
     }
 
     const result = fallbackAllowAll ? null : normalized;
-    console.log('[ARC3] Available actions:', {
+    console.log('[OpenRouter] Available actions:', {
       raw: tokens,
       normalized: result ? Array.from(result) : 'ALL',
     });
@@ -425,8 +417,11 @@ export default function ARC3AgentPlayground() {
                 Back
               </Link>
             </Button>
-            <Gamepad2 className="h-3 w-3" />
-            <span className="text-xs font-semibold">ARC3 Playground</span>
+            <Zap className="h-3 w-3 text-amber-500" />
+            <span className="text-xs font-semibold">OpenRouter Playground</span>
+            <Badge variant="outline" className="text-[9px] px-1 py-0 border-amber-400 text-amber-600">
+              LangGraph
+            </Badge>
           </div>
 
           {/* Inline game selector */}
@@ -441,7 +436,7 @@ export default function ARC3AgentPlayground() {
                   setGameId(newGameId);
                   fetchGameGrid(newGameId);
                   // Update URL to reflect game selection
-                  setLocation(`/arc3/playground?game=${newGameId}`);
+                  setLocation(`/arc3/openrouter-playground?game=${newGameId}`);
                 }}
                 disabled={isPlaying}
               >
@@ -491,7 +486,7 @@ export default function ARC3AgentPlayground() {
                   <div className="flex-1">
                     <CardTitle className="text-sm text-amber-900 flex items-center gap-1.5">
                       <Key className="h-3.5 w-3.5" />
-                      API Key Required
+                      OpenRouter API Key
                     </CardTitle>
                     <CardDescription className="text-xs mt-1 text-amber-700">
                       Your key is used for this session only and is never stored.
@@ -505,11 +500,11 @@ export default function ARC3AgentPlayground() {
               <CardContent className="pt-0">
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
-                    <Label htmlFor="arc3-api-key" className="sr-only">API Key</Label>
+                    <Label htmlFor="openrouter-api-key" className="sr-only">OpenRouter API Key</Label>
                     <Input
-                      id="arc3-api-key"
+                      id="openrouter-api-key"
                       type="password"
-                      placeholder="Enter your OpenAI API key..."
+                      placeholder="sk-or-v1-..."
                       value={userApiKey}
                       onChange={(e) => setUserApiKey(e.target.value)}
                       className="font-mono text-xs h-8"

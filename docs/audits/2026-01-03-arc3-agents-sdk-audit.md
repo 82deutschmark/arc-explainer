@@ -3,12 +3,19 @@
 **Date:** 2026-01-03
 **Auditor:** Claude Sonnet 4.5
 **Scope:** Arc3RealGameRunner + Arc3StreamService session/continuation behavior
+**Context:** Educational playground for demystifying agents (not official competition entry)
 
 ---
 
 ## Executive Summary
 
-Our implementation **diverges significantly** from the official ARC-AGI-3 workflow documented in the ARC API reference. The official workflow shows a continuous game loop until WIN/GAME_OVER, but our implementation stops agents early and asks for user input, causing session management issues.
+Our implementation **intentionally diverges** from the official ARC-AGI-3 competition workflow. The Playground is designed as an **interactive learning tool** where users can:
+- Watch agents think and reason
+- See what agents observe (frames, grid analysis)
+- Interrupt and guide agents with instructions
+- Understand how agentic AI works
+
+The user input capability is **correct and intentional**. However, there are **session management bugs** that prevent continuations from working properly. This audit identifies and fixes those bugs while preserving the educational interaction model.
 
 ---
 
@@ -214,156 +221,337 @@ The real agents use smarter strategies instead of random!
 
 ---
 
-## Is Human Input Allowed?
+## Educational Design vs. Competition Design
 
-**According to the official docs: Not in the standard workflow shown.**
+### Official ARC-AGI-3 (Competition)
+- **Goal:** Win games autonomously
+- **Interaction:** None (agent plays alone)
+- **Evaluation:** Puzzle score
+- **User role:** Passive observer
+- **Workflow:** RESET → loop actions → WIN/GAME_OVER → close
 
-However, this doesn't mean it's impossible. Theoretically:
-1. Keep scorecard open after first agent run
-2. On user input, take the user's action via `api/cmd/[USER_ACTION]`
-3. Return to agent for next decision
-4. Continue loop until WIN/GAME_OVER
-5. Close scorecard
+### Arc3 Playground (Educational)
+- **Goal:** Demystify what agents do
+- **Interaction:** User interrupts and guides
+- **Evaluation:** User understanding
+- **User role:** Active collaborator
+- **Workflow:** RESET → agent plays → user intervenes with guidance → agent continues → repeat until WIN/GAME_OVER
 
-**But our code doesn't do this.** Instead, it tries to run a second agent, which creates a new session entirely.
-
----
-
-## Recommendations
-
-### Option A: Strict Compliance (Recommended for MVP)
-
-Follow the official workflow exactly:
-1. **Remove user input capability** during gameplay
-2. **Agent plays continuously** until `state` is `WIN` or `GAME_OVER` (not maxTurns)
-3. **Close scorecard** when game ends naturally
-4. Allow user to **start a new game**, not continue
-
-**Implementation:**
-- Remove "Send Message" UI
-- Remove continuation flow
-- Set agent to respect `state` field, not `maxTurns`
-- Close scorecard when game reaches terminal state
-
-**Pros:**
-- Matches official workflow exactly
-- No session management complexity
-- Clear semantics (one game = one scorecard)
-
-**Cons:**
-- No human feedback capability
-- Less interactive experience
-
-### Option B: Hybrid Approach (More Complex)
-
-Support human input mid-game while staying close to official workflow:
-
-1. **Keep scorecard open** across multiple runs
-2. **On user input:**
-   - Execute user's action directly via ARC API (not via agent)
-   - Return frame to user
-   - Let user decide: "Run agent again" or "Give another action"
-3. **Loop until WIN/GAME_OVER**
-4. **Close scorecard** when done
-
-**Implementation:**
-- Store `card_id` with session
-- Add route: `POST /api/arc3/stream/user-action` to execute user actions
-- Keep game loop open until terminal state
-- Multiple agent runs against same scorecard
-
-**Pros:**
-- Supports human-agent collaboration
-- Stays closer to official semantics (one scorecard per game)
-
-**Cons:**
-- More complex state management
-- New API routes needed
-
-### Option C: Current Implementation (Needs Fixes)
-
-Keep user input capability but fix the bugs:
-
-1. **Don't close scorecard** after first agent run
-2. **Pass `card_id` to continuation**
-3. **Validate game state** before allowing continuation
-4. **Check game hasn't reached WIN/GAME_OVER** before asking for input
-5. **Continue against same scorecard**, not create new session
-
-**Implementation:**
-- Store `card_id` in session payload
-- Skip scorecard close in first run
-- Pass `card_id` to continuation requests
-- Add validation: `if (lastFrame.state in ['WIN', 'GAME_OVER']) show "Game ended"`
-
-**Pros:**
-- Preserves current UX
-- Minimal code changes
-
-**Cons:**
-- Still diverges from official workflow
-- Complex session state tracking
+**Key insight:** The Playground is teaching tool, not a competition entry. The user input capability is **correct and essential**. It's how we show users what it's like to work WITH an agent.
 
 ---
 
-## Questions for Product/Architecture
+## Current Implementation Design
 
-1. **Should agents be autonomous or interactive?**
-   - Official docs: Autonomous (Option A)
-   - Current UI: Interactive (Option B/C)
+Our approach (Option C - which I now understand is intentional):
 
-2. **If human input is desired, who decides the action?**
-   - User picks action → agent observes?
-   - Agent suggests action → user approves/rejects?
-   - Free-form text → agent interprets?
+1. **Agent plays autonomously** (respects `maxTurns` as safety limit, not target)
+2. **User can interrupt** with guidance/instructions
+3. **Continuation with new context** - agent re-runs with user feedback appended
+4. **Scorecard stays open** across agent runs and user interactions
+5. **Game ends when** state reaches `WIN` or `GAME_OVER`
 
-3. **What's the terminal condition for a game?**
-   - Official docs: `state` in `[WIN, GAME_OVER]`
-   - Current code: `maxTurns` or agent stops
-
-4. **Should one game = one scorecard (official)?**
-   - YES: Simpler, matches official workflow
-   - NO: Multiple runs per scorecard (complex)
+**This is the right design.** It's not meant to be official-compliant; it's meant to be educational.
 
 ---
 
-## Immediate Fixes (High Priority)
+## The Real Problem: Session Management Bugs
 
-1. **Fix scorecard closure:**
-   - Don't close scorecard at end of `runWithStreaming()`
-   - Keep it open for continuation
+Our design is correct, but the **implementation has bugs**:
 
-2. **Pass `card_id` to continuation:**
-   - Store in session payload
-   - Use in continued action requests
+1. ✗ Scorecard closes after first run (should stay open)
+2. ✗ `card_id` not preserved for continuation (should be in session)
+3. ✗ User input shown even when game is won/over (should validate state)
+4. ✗ Continuation doesn't pass `card_id` to ARC API (should include it)
 
-3. **Validate game state before user input:**
-   - Check `lastFrame.state`
-   - Only show "Send Message" if `state === 'NOT_FINISHED'`
-   - Don't show if `state in ['WIN', 'GAME_OVER']`
+**These bugs break the intended educational experience.** Users expect:
+- "Start agent" → watch it play
+- "Interrupt and say: try moving left" → agent resumes with new guidance
+- Agent continues until winning (or hitting game over)
 
-4. **Handle terminal states:**
-   - When game reaches WIN/GAME_OVER, close scorecard
-   - Don't prompt for input
-
-5. **Test continuation flow:**
-   - Verify `card_id` is valid in continuation
-   - Verify actions execute correctly
-   - Verify game state updates properly
+Instead, they get:
+- Agent plays, stops
+- User tries to give input
+- Continuation fails (dead session)
+- Confusing error or silent failure
 
 ---
 
-## Files Needing Changes
+## What Needs to Be Fixed (Not Redesigned)
 
-- `server/services/arc3/Arc3RealGameRunner.ts` – Don't close scorecard automatically
-- `server/services/arc3/Arc3StreamService.ts` – Pass `card_id`, validate state
-- `client/src/pages/ARC3AgentPlayground.tsx` – Don't show input if `state in [WIN, GAME_OVER]`
-- `client/src/hooks/useArc3AgentStream.ts` – Validate state before offering continuation
+### Bug 1: Scorecard Closure
+
+**Current:** Scorecard closes at end of first `runWithStreaming()`
+
+**Should:** Scorecard stays open until game reaches terminal state
+
+**Fix:** Don't close scorecard automatically. Only close when `state in ['WIN', 'GAME_OVER']`.
+
+### Bug 2: Missing `card_id` in Continuation
+
+**Current:** `existingGameGuid` is used to continue, but `card_id` is not passed
+
+**Should:** `card_id` must be passed to all action requests in continuation
+
+**Fix:** Store `card_id` in session payload and forward to continued game runner.
+
+### Bug 3: Premature User Input Prompt
+
+**Current:** Show "Send Message" even if game is already won/over
+
+**Should:** Only show input if `state === 'NOT_FINISHED'`
+
+**Fix:** Frontend validates `lastFrame.state` before showing continuation UI.
+
+### Bug 4: No State Validation in Continuation
+
+**Current:** Try to continue even if game is finished
+
+**Should:** Reject continuation if game is in terminal state
+
+**Fix:** Validate `seedFrame.state` is `NOT_FINISHED` before continuing.
+
+---
+
+## Implementation Strategy (Option C - The Right One)
+
+Keep the current design, fix the bugs, **stay competition-compliant via metadata tags**:
+
+**Backend:**
+1. Store `card_id` from scorecard open in session payload
+2. Don't auto-close scorecard (keep it open)
+3. Pass `card_id` to all ARC API action requests in continuation
+4. Close scorecard only when `state in ['WIN', 'GAME_OVER']`
+5. Validate game state before allowing continuation
+6. **Tag scorecard with `'educational-playground'` and `'interactive-agent'`** (via metadata)
+7. **Include model name, reasoning level in tags**
+
+**Frontend:**
+1. Check `lastFrame.state` before showing "Send Message"
+2. Only show input if `state === 'NOT_FINISHED'`
+3. Show "Game Won!" or "Game Over" if terminal state reached
+4. Disable continuation if game is finished
+
+**Compliance:**
+- Runs follow official ARC workflow (one scorecard, actions loop until WIN/GAME_OVER)
+- Scorecard tags transparently mark as educational (not competition entry)
+- Metadata enables filtering/analysis
+- Technically valid but clearly distinguished
+
+**Testing:**
+1. User starts game, agent plays
+2. User interrupts mid-game with instruction
+3. Agent resumes with new guidance
+4. Game continues until WIN or GAME_OVER
+5. UI shows final state, not "Send Message" prompt
+6. Scorecard is properly tagged and closed
+7. Metadata is queryable for analysis
+
+---
+
+## Why This Design Works for Education
+
+**Authentic agent experience:** Users see what it's really like to work with agents:
+- Set direction → agent executes → observe results → adjust → repeat
+
+**Transparency:** All visible:
+- Agent reasoning (what it's thinking)
+- Agent observations (what it sees in the grid)
+- Agent actions (what it decides to do)
+- User guidance (how to steer it)
+
+**Learning:** Users understand:
+- Agents aren't magic (they follow instructions)
+- Agents can make mistakes (need human guidance)
+- Collaboration > automation (agents + humans together)
+- What agents actually see vs. what we see
+
+**Engagement:** Interactive model is more compelling than passive observation.
+
+---
+
+## Files Needing Fixes
+
+1. **Arc3RealGameRunner.ts**
+   - Store `card_id` from scorecard
+   - Don't auto-close scorecard
+   - Pass `card_id` to all action requests
+
+2. **Arc3StreamService.ts**
+   - Preserve `card_id` in session payload
+   - Validate `state !== NOT_FINISHED` before continuation
+   - Close scorecard when game reaches terminal state
+
+3. **ARC3AgentPlayground.tsx**
+   - Check `lastFrame.state` before showing input
+   - Show "Game Won!" / "Game Over" UI if terminal
+
+4. **useArc3AgentStream.ts**
+   - Validate state before offering continuation
+
+---
+
+## Priority Fixes
+
+### 1. Backend: Preserve `card_id` Across Session
+
+**File:** `Arc3RealGameRunner.ts`
+
+Currently: Scorecard is opened but `card_id` is lost after first run.
+
+Needed:
+- Return `card_id` in the result
+- Store it in session payload for continuation
+- Pass `card_id` to all ARC API action requests (currently missing)
+
+### 2. Backend: Don't Auto-Close Scorecard
+
+**File:** `Arc3RealGameRunner.ts` + `Arc3StreamService.ts`
+
+Currently: Scorecard closes implicitly at end of run.
+
+Needed:
+- Keep scorecard open after `runWithStreaming()`
+- Only close when game reaches `WIN` or `GAME_OVER`
+- Move closure logic to explicit "game ended" handler
+
+### 3. Backend: Validate State in Continuation
+
+**File:** `Arc3StreamService.ts` → `continueStreaming()`
+
+Currently: Tries to continue even if game is finished.
+
+Needed:
+- Check `seedFrame.state` before continuing
+- Reject if `state in ['WIN', 'GAME_OVER']`
+- Return clear error: "Game is already finished"
+
+### 4. Frontend: Don't Show Input If Game Is Over
+
+**File:** `ARC3AgentPlayground.tsx`
+
+Currently: Shows "Send Message" even after game ends.
+
+Needed:
+- Check `state.frames[last].state` before showing input
+- Only show if `state === 'NOT_FINISHED'`
+- Show "Game Won!" / "Game Over" if terminal state reached
+- Disable continuation button
+
+### 5. Frontend: Validate in Hook
+
+**File:** `useArc3AgentStream.ts`
+
+Currently: No validation before attempting continuation.
+
+Needed:
+- Check game state before calling `continueStreaming()`
+- Prevent continuation if game is finished
+- Provide user feedback
+
+---
+
+## Why These Fixes Matter
+
+**Current experience:**
+```
+User: "Start agent"
+Agent: Plays and stops
+User: Tries to give instruction → "Send Message"
+Backend: Continuation fails (dead session)
+User: ??? (confused, session is dead)
+```
+
+**After fixes:**
+```
+User: "Start agent"
+Agent: Plays and stops (but session open)
+User: Gives instruction → "Send Message"
+Backend: Continuation succeeds (scorecard still open, card_id valid)
+Agent: Resumes with new guidance
+Loop continues until WIN/GAME_OVER
+Frontend: Shows "Game Won!" or "Game Over"
+```
+
+---
+
+## Testing Checklist
+
+- [ ] Start agent, watch it play
+- [ ] Agent completes, "Send Message" shows
+- [ ] User provides instruction
+- [ ] Agent resumes with new guidance
+- [ ] Agent can be interrupted multiple times
+- [ ] Game continues until WIN state (not maxTurns)
+- [ ] When game wins: "Game Won!" shows, no "Send Message"
+- [ ] Scorecard is closed after game ends
+- [ ] Continue attempting to send message after game ends: error
+
+---
+
+## Context for 2026
+
+This is part of the broader push to introduce agents to users in 2026. The Playground helps demystify:
+- **What agents see** (frame images, grid analysis)
+- **What agents know** (their reasoning, observations)
+- **How to work with them** (interrupt, guide, observe)
+- **Why they matter** (autonomous systems that learn from feedback)
+
+The interactive model is essential to this educational goal.
+
+---
+
+## Scorecard Metadata Tags (Competitive Compliance)
+
+The implementation stays competition-compliant by leveraging scorecard metadata tags. When opening a scorecard, we attach tags that clearly identify educational runs:
+
+**Tags to include:**
+```
+- 'educational-playground'     # Marks as educational, not official entry
+- 'interactive-agent'           # User can interrupt/guide mid-game
+- 'model:gpt-5-nano-2025-08-07' # Which model was used
+- 'reasoning:high'              # Reasoning effort level
+- 'max-turns:100000'            # Safety limit for this run
+```
+
+**Example:**
+```typescript
+const scorecardId = await this.apiClient.openScorecard(
+  [
+    'arc-explainer',
+    'educational-playground',
+    'interactive-agent',
+    `model:${config.model}`,
+    `reasoning:${config.reasoningEffort}`,
+  ],
+  'https://github.com/arc-explainer/arc-explainer',
+  {
+    source: 'arc-explainer',
+    mode: 'educational-interactive',
+    game_id: gameId,
+    agentName,
+    userInterruptible: true,
+  }
+);
+```
+
+**Benefits:**
+- ✅ Runs are technically valid (could be submitted if desired)
+- ✅ Clearly marked as educational (not official entries)
+- ✅ Metadata provides analysis context
+- ✅ Transparency: users understand these aren't competition submissions
+- ✅ Compliance: follows official scorecard API exactly
+
+**In analytics/review:**
+- Filter by `educational-playground` tag to exclude from official rankings
+- Filter by `interactive-agent` to study user-guided gameplay
+- Analyze model performance with/without user interruption
 
 ---
 
 ## References
 
-- Official docs: `docs/reference/arc3/ARC3_Games.md` (Full Playtest section)
+- Official docs: `docs/reference/arc3/ARC3_Games.md` (for context on official workflow)
 - Game state enum: `NOT_FINISHED`, `WIN`, `GAME_OVER`
 - Current implementation: `Arc3RealGameRunner.runWithStreaming()`, `Arc3StreamService.continueStreaming()`
+- Educational mission: Demystify agents for users in 2026
