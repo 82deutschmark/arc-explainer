@@ -1,5 +1,51 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.29.0  Jan 3, 2026
+
+- **Add External Agent Submodules – TOMAS & GuidedRandomAgent** (Author: Claude Code)
+  - **What**: Added two reference agent implementations as git submodules for study and integration: TOMAS Engine (multi-agent cognitive architecture) and GuidedRandomAgent (action bias heuristic solver).
+  - **Why**: These are high-quality, documented agent implementations that solve ARC-AGI-3 games. TOMAS demonstrates advanced multi-agent orchestration; GuidedRandomAgent shows practical heuristic-based approaches. Having them as submodules enables direct code reference, architecture learning, and future feature extraction.
+  - **How**:
+    - **TOMAS Engine** (`external/tomas-engine-arc-agi-3`):
+      - Multi-agent system with three specialized minds: **AISTHESIS** (visual analysis, spatial math), **SOPHIA** (rule learning, hypothesis testing), **LOGOS** (strategic decision-making, emotional state).
+      - Processes game frames → analyzes changes → learns mechanics → decides actions with human-like psychology.
+      - Features rule consolidation (successful patterns become persistent knowledge), frustration/curiosity modeling, precise movement vectors.
+      - Built for ARC-AGI-3 Agent Preview competition, uses Google Gemini API.
+    - **GuidedRandomAgent** (`external/GuidedRandomAgent`):
+      - Action bias agent using object tracking and weighted action selection.
+      - Key heuristics: effective action prop bias (tracks which action types change game state), object click-effectiveness (learned weights for clickable objects), spontaneous change detection (buffs objects that change unexpectedly), dead-end avoidance.
+      - Pragmatic approach focusing on pixel-level change detection and adaptive action probability.
+      - Built for ARC-AGI-3 competition, uses ARC API key.
+  - **Files Modified**: `.gitmodules`, `CHANGELOG.md`
+  - **Files Created**: `external/tomas-engine-arc-agi-3/`, `external/GuidedRandomAgent/`
+  - **Reference Value**: Both agents provide architectural patterns for solver design: TOMAS shows multi-agent orchestration; GuidedRandomAgent shows pragmatic heuristic efficiency. Source for feature extraction and integration ideas.
+  - **Future Use**: Code can be studied for:
+    - Rule learning strategies (TOMAS SOPHIA module)
+    - Visual analysis techniques (TOMAS AISTHESIS)
+    - Object tracking from pixel grids (GuidedRandomAgent)
+    - Action weighting and confidence modeling (both)
+
+- **Remove Hardcoded Level Screenshots – Enable Auto-Discovery** (Author: Claude Code)
+  - **What**: Removed manual `levelScreenshots` arrays from FT09, LS20, and AS66 game metadata. Auto-discovery service now scans public folder and populates screenshots dynamically.
+  - **Why**: Hardcoded arrays duplicate filesystem truth (screenshots exist in `public/`). This caused FT09 to hide 4 out of 6 available screenshots. Single source of truth (filesystem) is cleaner and reduces maintenance burden.
+  - **How**:
+    - Deleted `levelScreenshots` property from `shared/arc3Games/ft09.ts`, `shared/arc3Games/ls20.ts`, `shared/arc3Games/as66.ts`.
+    - Service (`server/services/arc3ScreenshotService.ts`) now auto-discovers all matching PNG files using pattern `{gameId}-lvl{levelNumber}[optional-suffix].png`.
+    - Screenshots sorted by level, variants (e.g., `lvl6a`) preserved with auto-generated captions.
+  - **Files Modified**: `shared/arc3Games/ft09.ts`, `shared/arc3Games/ls20.ts`, `shared/arc3Games/as66.ts`
+  - **Impact**: FT09 now displays all 6 level screenshots (was 2). LS20 and AS66 unchanged. No manual curation needed for future screenshots.
+
+- **Add FT09 Level 2 Replay & Level 1/5 Screenshots** (Author: Claude Code)
+  - **What**: Added official ARC Prize replay link demonstrating color priority mechanic (blue over red). Added missing FT09 level 1, 1-win, 5, 5-lesson screenshots to public folder.
+  - **Why**: Visual documentation of game mechanics is critical for understanding. Color priority insight unlocks Level 2 puzzle logic. Screenshots provide gameplay context.
+  - **How**:
+    - **Replay Resource**: Added to FT09 `resources` array: "FT09 Level 2 Replay" (type: 'replay', demonstrates blue priority rule).
+    - **Screenshots**: Added to `client/public/`: `ft09-lvl1.png`, `ft09-lvl1-win.png`, `ft09-lvl5.png`, `ft09-lvl5-lesson.png`.
+    - These are auto-discovered by screenshot service and displayed in FT09 spoiler page.
+  - **Files Modified**: `shared/arc3Games/ft09.ts`
+  - **Files Created**: `client/public/ft09-lvl1.png`, `client/public/ft09-lvl1-win.png`, `client/public/ft09-lvl5.png`, `client/public/ft09-lvl5-lesson.png`
+  - **Game Understanding**: Color priority is the key insight for FT09 puzzle logic.
+
 ### Version 6.28.1  Jan 3, 2026
 
 - **OpenRouter Agent Fixes – Reasoning Effort & Validation** (Author: Claude Code)
