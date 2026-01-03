@@ -21,7 +21,7 @@ export interface Arc3OpenRouterPayload {
   api_key?: string;            // OpenRouter API key (BYOK)
   arc3_api_key?: string;       // ARC3 API key
   agent_name?: string;         // User-defined agent name for scorecard
-  reasoning_enabled?: boolean; // MiMo reasoning toggle (default: true)
+  reasoning_effort?: 'minimal' | 'low' | 'medium' | 'high' | 'xhigh'; // OpenRouter reasoning.effort per docs
 }
 
 export interface Arc3OpenRouterSpawnOptions {
