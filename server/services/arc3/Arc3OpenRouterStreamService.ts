@@ -28,6 +28,9 @@ export interface OpenRouterStreamPayload {
   sessionId?: string;
   createdAt?: number;
   expiresAt?: number;
+  // Competition-emulation mode parameters
+  agentName?: string;          // User-defined agent name for scorecard
+  reasoningEnabled?: boolean;  // MiMo reasoning toggle (default: true)
 }
 
 const SESSION_TTL_MS = 15 * 60 * 1000; // 15 minutes
@@ -110,7 +113,10 @@ export class Arc3OpenRouterStreamService {
       return;
     }
 
-    const { game_id, model, instructions, maxTurns, apiKey, arc3ApiKey } = payload;
+    const { 
+      game_id, model, instructions, systemPrompt, maxTurns, 
+      apiKey, arc3ApiKey, agentName, reasoningEnabled 
+    } = payload;
 
     // Send initial status
     sseStreamManager.sendEvent(sessionId, 'stream.init', {
@@ -118,22 +124,27 @@ export class Arc3OpenRouterStreamService {
       game_id,
       model,
       provider: 'openrouter',
+      agentName: agentName || 'OpenRouter Agent',
+      reasoningEnabled: reasoningEnabled ?? true,
     });
 
     sseStreamManager.sendEvent(sessionId, 'stream.status', {
       state: 'running',
-      message: 'Spawning OpenRouter agent...',
+      message: 'Spawning OpenRouter agent (competition mode)...',
       game_id,
     });
 
-    // Build payload for Python runner
+    // Build payload for Python runner (competition-emulation mode)
     const pythonPayload: Arc3OpenRouterPayload = {
       game_id,
       model,
       instructions,
-      max_turns: maxTurns ?? 50,
+      system_prompt: systemPrompt,
+      max_turns: maxTurns ?? 80,  // Match ARC-AGI-3-Agents2 MAX_ACTIONS default
       api_key: apiKey,
       arc3_api_key: arc3ApiKey || process.env.ARC3_API_KEY,
+      agent_name: agentName || 'OpenRouter Agent',
+      reasoning_enabled: reasoningEnabled ?? true,
     };
 
     try {

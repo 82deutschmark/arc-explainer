@@ -16,9 +16,12 @@ export interface Arc3OpenRouterPayload {
   game_id: string;
   model: string;
   instructions?: string;
+  system_prompt?: string;      // User's custom system prompt (genius prompt)
   max_turns?: number;
-  api_key?: string;       // OpenRouter API key (BYOK)
-  arc3_api_key?: string;  // ARC3 API key
+  api_key?: string;            // OpenRouter API key (BYOK)
+  arc3_api_key?: string;       // ARC3 API key
+  agent_name?: string;         // User-defined agent name for scorecard
+  reasoning_enabled?: boolean; // MiMo reasoning toggle (default: true)
 }
 
 export interface Arc3OpenRouterSpawnOptions {
