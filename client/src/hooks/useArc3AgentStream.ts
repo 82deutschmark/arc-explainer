@@ -24,8 +24,8 @@ export interface Arc3AgentOptions {
   skipDefaultSystemPrompt?: boolean;
   /** User-provided API key for BYOK (required in production) */
   apiKey?: string;
-  /** Provider toggle: 'openai_nano' (default) or 'openai_codex' */
-  provider?: 'openai_nano' | 'openai_codex';
+  /** Provider toggle: 'openai_nano' (default), 'openai_codex', or 'openrouter' */
+  provider?: 'openai_nano' | 'openai_codex' | 'openrouter';
 }
 
 export interface Arc3AgentStreamState {
@@ -95,7 +95,7 @@ export function useArc3AgentStream() {
   const latestGameIdRef = useRef<string | null>(null);  // CRITICAL: Track gameId in sync with guid to prevent mismatch
   const isPendingActionRef = useRef(false);  // CRITICAL: Ref-based lock for synchronous check (state has stale closure issue)
   const [isPendingManualAction, setIsPendingManualAction] = useState(false);  // State for UI updates (disable buttons)
-  const providerRef = useRef<'openai_nano' | 'openai_codex'>('openai_nano');  // Track current provider for cancel/continuation
+  const providerRef = useRef<'openai_nano' | 'openai_codex' | 'openrouter'>('openai_nano');  // Track current provider for cancel/continuation
   const streamingEnabled = isStreamingEnabled();
 
   const closeEventSource = useCallback(() => {
@@ -130,12 +130,14 @@ export function useArc3AgentStream() {
         });
 
         if (streamingEnabled) {
-          // Use the existing Arc3StreamService (OpenAI Agents SDK runner)
-          // NOTE: Arc3OpenAI routes exist but are not registered in routes.ts
-          // Using the working /api/arc3 routes instead
+          // Route to appropriate API based on provider selection
           const selectedProvider = options.provider || 'openai_nano';
           providerRef.current = selectedProvider;
-          const apiBasePath = '/api/arc3';
+          
+          // Provider routing: OpenRouter uses dedicated Python-based runner, others use /api/arc3
+          const apiBasePath = selectedProvider === 'openrouter' 
+            ? '/api/arc3-openrouter'
+            : '/api/arc3';  // Default: OpenAI Agents SDK via Arc3RealGameRunner
           console.log('[ARC3 Stream] Using provider:', selectedProvider, 'API path:', apiBasePath);
 
           // Step 1: Prepare streaming session

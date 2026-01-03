@@ -40,6 +40,7 @@ import modelsRouter from "./routes/models.js";
 import metricsRouter from './routes/metricsRoutes.ts';
 import arc3Router from "./routes/arc3";
 import arc3CodexRouter from "./routes/arc3Codex";
+import arc3OpenRouterRouter from "./routes/arc3OpenRouter";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -82,6 +83,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Codex ARC3 interactive playground routes
   app.use("/api/arc3-codex", arc3CodexRouter);
+
+  // OpenRouter ARC3 agent playground routes (LangGraph + xiaomi/mimo-v2-flash:free)
+  app.use("/api/arc3-openrouter", arc3OpenRouterRouter);
 
   // Contributor trading cards routes
   app.use("/api/contributors", contributorController);

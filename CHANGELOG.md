@@ -1,5 +1,22 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.23.0  Jan 2, 2026 (Late Evening)
+
+- **ARC3 OpenRouter Integration – LangGraph Python Agent** (Author: Cascade)
+  - **What**: Added OpenRouter as a third provider option for ARC3 Agent Playground using LangGraph-style Python agent with model `xiaomi/mimo-v2-flash:free`.
+  - **Why**: Enables users to play ARC-AGI-3 games with free/low-cost models via OpenRouter. Follows the LangGraph thinking agent pattern from `external/ARC-AGI-3-Agents2/` for rule discovery and exploration gameplay.
+  - **How**:
+    - **Python Runner**: Created `server/python/arc3_openrouter_runner.py` - LangGraph-style agent using LangChain's ChatOpenAI with OpenRouter base URL. Emits NDJSON events to stdout matching frontend expectations (`agent.starting`, `agent.tool_call`, `agent.tool_result`, `game.frame_update`, `agent.completed`).
+    - **TypeScript Bridge**: Created `server/services/arc3/Arc3OpenRouterPythonBridge.ts` - spawns Python subprocess, parses NDJSON events line-by-line via readline, forwards to SSE. Pattern from `SnakeBenchPythonBridge.ts`.
+    - **Stream Service**: Created `server/services/arc3/Arc3OpenRouterStreamService.ts` - session management, SSE emission coordination. Pattern from existing `Arc3StreamService.ts`.
+    - **Routes**: Created `server/routes/arc3OpenRouter.ts` - endpoints `POST /stream/prepare`, `GET /stream/:sessionId`, `POST /stream/cancel/:sessionId`, `GET /health`.
+    - **Route Registration**: Added `arc3OpenRouterRouter` import and `app.use("/api/arc3-openrouter", ...)` in `server/routes.ts`.
+    - **Frontend**: Updated `useArc3AgentStream.ts` to route to `/api/arc3-openrouter` when provider is `'openrouter'`. Added `'openrouter'` to provider type union.
+    - **Plan Document**: Created `docs/plans/2026-01-02-arc3-openrouter-integration-plan.md` with architecture diagram, event flow, and implementation phases.
+  - **Architecture**: Frontend → TypeScript routes → Python subprocess (NDJSON) → LangChain/OpenRouter → ARC3 API
+  - **Model**: Default `xiaomi/mimo-v2-flash:free` (configurable via payload)
+  - **Files**: `arc3_openrouter_runner.py`, `Arc3OpenRouterPythonBridge.ts`, `Arc3OpenRouterStreamService.ts`, `arc3OpenRouter.ts`, `routes.ts`, `useArc3AgentStream.ts`
+
 ### Version 6.22.1  Jan 2, 2026 (Evening)
 
 - **ARC3 Architecture Clarification – Critical Documentation Update** (Author: Claude Haiku 4.5)
