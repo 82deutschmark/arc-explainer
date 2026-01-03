@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gamepad2, ArrowLeft, RefreshCw, Key, Zap } from 'lucide-react';
+import { Gamepad2, ArrowLeft, RefreshCw, Key } from 'lucide-react';
 import { requiresUserApiKey } from '@/lib/environmentPolicy';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
@@ -269,9 +269,6 @@ export default function ARC3AgentPlayground() {
     loadPresetBody();
   }, [systemPromptPresetId]);
 
-  // Provider toggle (OpenAI Nano vs Codex)
-  const [provider, setProvider] = useState<'openai_nano' | 'openai_codex'>('openai_nano');
-
   // Agent config
   const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
   const [agentName, setAgentName] = useState('ARC3 Explorer');
@@ -310,8 +307,6 @@ export default function ARC3AgentPlayground() {
       reasoningEffort,
       systemPromptPresetId,
       skipDefaultSystemPrompt,
-      // Provider toggle: use Codex or Claude runner
-      provider,
       // BYOK: Pass user API key if provided (required in production)
       ...(userApiKey.trim() ? { apiKey: userApiKey.trim() } : {}),
     });
@@ -460,33 +455,6 @@ export default function ARC3AgentPlayground() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Provider Toggle */}
-            <div className="flex items-center gap-1 border rounded px-1.5 py-0.5">
-              <button
-                onClick={() => setProvider('openai_nano')}
-                disabled={isPlaying}
-                className={`text-[10px] px-1.5 py-0.5 rounded transition-colors ${
-                  provider === 'openai_nano'
-                    ? 'bg-blue-100 text-blue-700 font-medium'
-                    : 'text-muted-foreground hover:bg-muted'
-                } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                OpenAI Nano
-              </button>
-              <button
-                onClick={() => setProvider('openai_codex')}
-                disabled={isPlaying}
-                className={`text-[10px] px-1.5 py-0.5 rounded transition-colors flex items-center gap-0.5 ${
-                  provider === 'openai_codex'
-                    ? 'bg-emerald-100 text-emerald-700 font-medium'
-                    : 'text-muted-foreground hover:bg-muted'
-                } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                <Zap className="h-2.5 w-2.5" />
-                OpenAI Codex
-              </button>
-            </div>
-
             <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
               {state.status}
             </Badge>
