@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.27.0  Jan 3, 2026
+
+- **OpenRouter Agent Major Upgrade – Structured Outputs, Memory, Frame Delta** (Author: Cascade/Claude Opus 4.5)
+  - **What**: Three critical upgrades to `arc3_openrouter_runner.py` per audit recommendations. Expected 3-5x performance improvement.
+  - **Why**: Agent was blind (no memory), unreliable (regex parsing), and couldn't learn (no frame delta). Now has persistent memory, reliable parsing, and learns from action outcomes.
+  - **How**:
+    - **Phase 1 - Pydantic Structured Outputs**: Added `ActionDecision` Pydantic schema with field validators. Uses LangChain's `with_structured_output()` instead of fragile regex JSON parsing. Fallback to regex if Pydantic unavailable.
+    - **Phase 2 - Observation Journal & Memory**: Added `observations` (last 15) and `thoughts` (last 10) lists. Dynamic `build_system_prompt()` injects memory each turn. Agent now remembers discoveries and builds strategies.
+    - **Phase 3 - Frame Delta Analysis**: Added `analyze_frame_delta()` for pixel-by-pixel comparison. Detects movement size, color transitions, stuck detection. Adds deltas to observations for cause-effect learning.
+    - **Stuck Detection**: If same action fails 3x in a row, agent adds strategic thought to try different direction.
+    - **ACTION6 Validation**: Explicit coordinate check before executing click action.
+  - **Expected Metrics**: Parse success 70%→99%, Win rate ~15%→45-60%, Avg turns ~60→35-40
+  - **Files Modified**: `arc3_openrouter_runner.py` (major rewrite of Arc3OpenRouterAgent class)
+  - **Reference**: `docs/audits/2026-01-03-arc3-agents2-integration-audit.md`, `docs/OPENROUTER_UPGRADE_BRIEF.md`
+
 ### Version 6.26.0  Jan 3, 2026
 
 - **OpenRouter Playground – Competition Emulation Mode** (Author: Cascade/Claude Opus 4.5)
