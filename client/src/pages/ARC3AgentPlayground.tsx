@@ -426,71 +426,77 @@ export default function ARC3AgentPlayground() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Onboarding Modal - Educational Introduction */}
+      {/* Onboarding Modal - How AI Agents Work */}
       <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Welcome to ARC-AGI-3 Agent Playground</DialogTitle>
-            <DialogDescription>Learn how to collaborate with an AI agent to win games</DialogDescription>
+            <DialogTitle className="text-2xl">How to Work with an AI Agent</DialogTitle>
+            <DialogDescription>Understanding agent-based workflows</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             {/* What is an AI Agent */}
             <div className="space-y-2">
-              <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 flex-shrink-0">
-                  <Brain className="h-4 w-4 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">What is an AI Agent?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    An AI agent is an intelligent system that can observe the game state, make decisions, and take actions. Unlike a static AI, it learns and adapts as it plays.
-                  </p>
-                </div>
-              </div>
+              <h3 className="font-semibold">What is an AI Agent?</h3>
+              <p className="text-sm text-muted-foreground">
+                An AI agent is a system that observes its environment, reasons about what it observes, and takes actions based on that reasoning. Unlike a simple tool that responds to individual commands, an agent operates autonomously over multiple steps, maintaining state and learning from outcomes.
+              </p>
             </div>
 
-            {/* How You Work Together */}
+            {/* The Agent Workflow */}
             <div className="space-y-2">
-              <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-100 flex-shrink-0">
-                  <MessageSquare className="h-4 w-4 text-purple-600" />
+              <h3 className="font-semibold">The Agent Workflow</h3>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">1</div>
+                  <div>
+                    <p className="font-medium text-foreground">Agent observes</p>
+                    <p>The agent examines the current state of the environment.</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold">Your Role: Guide the Agent</h3>
-                  <p className="text-sm text-muted-foreground">
-                    You don't control the game directly. Instead, you collaborate with the agent:
-                  </p>
-                  <ol className="text-sm text-muted-foreground list-decimal list-inside mt-2 space-y-1 ml-2">
-                    <li>The agent takes exploratory actions to understand the game</li>
-                    <li>It analyzes what happened and reports its findings to you</li>
-                    <li>You read its reasoning and give strategic instructions</li>
-                    <li>The agent executes your instructions in the next round</li>
-                    <li>Repeat until the game is won</li>
-                  </ol>
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">2</div>
+                  <div>
+                    <p className="font-medium text-foreground">Agent reasons</p>
+                    <p>It analyzes what changed, what patterns it sees, and what hypotheses might explain the behavior.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">3</div>
+                  <div>
+                    <p className="font-medium text-foreground">Agent reports findings</p>
+                    <p>It shares its analysis, observations, and next action plan with you.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">4</div>
+                  <div>
+                    <p className="font-medium text-foreground">You provide guidance</p>
+                    <p>You review the agent's reasoning and either approve its plan, suggest a different approach, or provide new information.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">5</div>
+                  <div>
+                    <p className="font-medium text-foreground">Agent executes</p>
+                    <p>The agent takes the next action based on your guidance and returns to step 1.</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Multiple Levels */}
+            {/* Your Role */}
             <div className="space-y-2">
-              <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-amber-100 flex-shrink-0">
-                  <Trophy className="h-4 w-4 text-amber-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">The Challenge: Multiple Levels</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Each game has multiple levels with different rules and mechanics. Your job is to help the agent discover the pattern, understand the rules, and win each level.
-                  </p>
-                </div>
-              </div>
+              <h3 className="font-semibold">Your Role</h3>
+              <p className="text-sm text-muted-foreground">
+                You are not controlling the agent directly. Instead, you are collaborating with it. Your responsibility is to evaluate its reasoning, catch errors, provide strategic direction, and give it information it might lack. The agent handles exploration, analysis, and execution.
+              </p>
             </div>
 
-            {/* Key Tip */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm font-medium text-blue-900">
-                Tip: Pay attention to what the agent reports. The more specific your instructions, the better it performs.
+            {/* Key Note */}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+              <p className="text-sm text-slate-900">
+                <span className="font-medium">Important:</span> Agents are not perfect. They can make mistakes, misinterpret situations, or get stuck in loops. Your judgment and oversight are essential to effective collaboration.
               </p>
             </div>
           </div>
@@ -500,13 +506,12 @@ export default function ARC3AgentPlayground() {
               variant="outline"
               onClick={() => setShowOnboarding(false)}
             >
-              Skip for Now
+              Skip
             </Button>
             <Button
               onClick={handleOnboardingStart}
-              className="bg-blue-600 hover:bg-blue-700"
             >
-              Start Game
+              Start
             </Button>
           </div>
         </DialogContent>
