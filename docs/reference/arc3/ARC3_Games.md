@@ -1,0 +1,228 @@
+# Games
+
+> Hand crafted environments that test interactive abstraction and reasoning
+
+ARC-AGI-3 games are turn-based systems where agents interact with 2D grid environments through a standardized action interface. Each game maintains state through discrete action-response cycles.
+
+* Agents will receive a 1-N frames of JSON objects with the game state and metadata.
+* Agents will respond with an [action](/actions) 1-5 or a 6th action which includes x, y coordinates.
+
+### Available Games
+
+To see which games are available, either go to [three.arcprize.org](https://three.arcprize.org) or make an API call to [list games](/api-reference/games/list-available-games).
+
+Example games include
+
+* [ls20](https://three.arcprize.org/games/ls20) - Agent reasoning
+* [ft09](https://three.arcprize.org/games/ft09) - Elementary Logic
+* [vc33](https://three.arcprize.org/games/vc33) - Orchestration
+
+### Game ID
+
+Game IDs are formatted as `<game_name>`-`<version>`.
+
+`game_names` are stable, but `version` may change as games update.
+
+### Grid Structure
+
+* **Dimensions:** Maximum 64x64 grid size
+* **Cell Values:** Integer values 0-15 representing different states/colors
+* **Coordinate System:** (0,0) at top-left, (x,y) format
+
+### Game Available Actions
+
+Each game provides an explicit set of actions that an agent can take. Actions available vary per game.
+
+Typically, the available actions include:
+
+* Actions 1–4: ex: move up, down, left, or right
+* Action 6: A complex action (if supported by the game)
+
+To learn more about each action and what it does, please visit the [Actions](/actions).
+
+## Running a Full Playtest
+
+To run a complete playtest, you'll need to integrate your agent with scorecard management and the game loop. This is what happens "under the hood" when you run commands like `uv run main.py --agent=random --game=ls20` (from the [Quick Start](./quick-start.md)). Below is pseudocode for the key steps. For a ready-to-use implementation, see the [Swarms](./swarms.md) guide—which can automate this for you across multiple games.
+
+## Game State Enumeration
+
+| State          | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| `NOT_FINISHED` | Game is active and awaiting next action                            |
+| `WIN`          | Objective completed successfully                                   |
+| `GAME_OVER`    | Game terminated due to the max actions reached or other conditions |
+
+## Full Playtest
+
+This is a bare-bones example for (educational purposes) is also available as a [notebook](https://colab.research.google.com/drive/1Bt4PU6Xl_avLPV70hNAyReXaRqFDhifJ?usp=sharing).
+
+```python
+#!/usr/bin/env python3
+"""
+Simple demo showing what a swarm agent does under the hood.
+This is a bare-bones example for educational purposes.
+"""
+
+import json
+import os
+import random
+import requests
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv(dotenv_path=".env")
+
+# Setup
+ROOT_URL = "https://three.arcprize.org"
+API_KEY = os.getenv("ARC_API_KEY")
+
+# Create a session with headers
+session = requests.Session()
+session.headers.update({
+    "X-API-Key": API_KEY,
+    "Accept": "application/json"
+})
+
+print("=== MANUAL SWARM DEMO ===")
+print("This shows what happens when an agent plays an ARC game.\n")
+
+# Step 1: Get available games
+print("STEP 1: Getting list of games...")
+response = session.get(f"{ROOT_URL}/api/games")
+games = [g["game_id"] for g in response.json()]
+print(f"Found {len(games)} games")
+
+# Pick a random game
+game_id = random.choice(games)
+print(f"Selected game: {game_id}\n")
+
+# Step 2: Open a scorecard (tracks performance)
+print("STEP 2: Opening scorecard...")
+response = session.post(
+    f"{ROOT_URL}/api/scorecard/open",
+    json={"tags": ["manual_demo"]}
+)
+card_id = response.json()["card_id"]
+print(f"Scorecard ID: {card_id}\n")
+
+# Step 3: Start the game
+print("STEP 3: Starting game with RESET action...")
+url = f"{ROOT_URL}/api/cmd/RESET"
+print(f"URL: {url}")
+response = session.post(
+    url,
+    json={
+        "game_id": game_id,
+        "card_id": card_id
+    }
+)
+
+# Check if response is valid
+if response.status_code != 200:
+    print(f"Error: {response.status_code} - {response.text}")
+    exit()
+
+game_data = response.json()
+guid = game_data["guid"]
+state = game_data["state"]
+score = game_data.get("score", 0)
+print(f"Game started! State: {state}, Score: {score}\n")
+
+# Step 4: Play with random actions (max 5 actions)
+print("STEP 4: Taking random actions...")
+actions = ["ACTION1", "ACTION2", "ACTION3", "ACTION4", "ACTION5", "ACTION6", "ACTION7"]
+
+for i in range(5):
+    # Check if game is over
+    if state in ["WIN", "GAME_OVER"]:
+        print(f"\nGame ended! Final state: {state}, Score: {score}")
+        break
+    
+    # Pick a random action
+    action = random.choice(actions)
+    
+    # Build request data
+    request_data = {
+        "game_id": game_id,
+        "card_id": card_id,
+        "guid": guid
+    }
+    
+    # ACTION6 needs x,y coordinates
+    if action == "ACTION6":
+        request_data["x"] = random.randint(0, 29)
+        request_data["y"] = random.randint(0, 29)
+        print(f"Action {i+1}: {action} at ({request_data['x']}, {request_data['y']})", end="")
+    else:
+        print(f"Action {i+1}: {action}", end="")
+    
+    # Take the action
+    response = session.post(
+        f"{ROOT_URL}/api/cmd/{action}",
+        json=request_data
+    )
+    
+    game_data = response.json()
+    state = game_data["state"]
+    score = game_data.get("score", 0)
+    print(f" -> State: {state}, Score: {score}")
+
+# Step 5: Close scorecard
+print("\nSTEP 5: Closing scorecard...")
+response = session.post(
+    f"{ROOT_URL}/api/scorecard/close",
+    json={"card_id": card_id}
+)
+scorecard = response.json()
+print("Scorecard closed!")
+print(f"\nView results at: {ROOT_URL}/scorecards/{card_id}")
+
+print("\n=== DEMO COMPLETE ===")
+print("\nThis is what every agent does:")
+print("1. Get games list")
+print("2. Open a scorecard")
+print("3. Reset to start the game")
+print("4. Take actions based on its strategy (we used random)")
+print("5. Close the scorecard when done")
+print("\nThe real agents use smarter strategies instead of random!")
+```
+
+This workflow ensures your plays are tracked officially. For parallel playtests across games, use a [swarm](./swarms.md) to handle the orchestration automatically.
+
+
+---
+
+> To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.arcprize.org/llms.txt
+
+## Scorecards
+# Scorecards
+
+> Keeping track of agent performance
+
+Scorecards aggregate the results from your agent's [game](/games) performance.
+
+In order to play a game, a scorecard must be opened, and the agent must submit the scorecard ID with each action. Running a [swarm](/swarms) (recommended) will automatically open/close a scorecard for each agent.
+
+Scorecards can be viewed online at [https://three.arcprize.org/scorecards](https://three.arcprize.org/scorecards) and [https://three.arcprize.org/scorecards/\`scorecard\_id\`](https://three.arcprize.org/scorecards/`scorecard_id`).
+
+Scorecard fields
+
+| Field       | Description                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------- |
+| tags        | Array of strings used to categorize and filter scorecards (e.g., \["experiment1", "v2.0", "test"]) |
+| source\_url | Optional URL field returned in the scorecard response                                              |
+| opaque      | Optional field for arbitrary data                                                                  |
+
+Scorecards are not public, however you can share [replays](/recordings) with others.
+
+Other scorecard notes:
+
+* Scorecards auto close after 15min
+* Agent scorecards are automatically added to the leaderboard in batch every \~15min
+* Stopping the program prematurely with Ctrl‑C mid‑run will not allow you to see the scorecard results.
+
+
+---
+
+> To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.arcprize.org/llms.txt
+
