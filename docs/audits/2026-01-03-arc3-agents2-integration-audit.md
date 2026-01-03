@@ -291,13 +291,27 @@ The external ARC-AGI-3-Agents2 repo is now on branch `2026` (isolated from upstr
 
 ## Next Steps
 
-1. **User Decision:** Which priorities to tackle first?
-2. **Smoke Test:** Run current runner on dev server to establish baseline
-3. **Implementation:** Add features incrementally with tests
-4. **Comparison:** Run A/B test (simple vs. advanced mode)
+1. **Smoke Test:** Run current runner on dev server to establish baseline performance
+2. **Phase 1 Implementation:** Structured outputs (1 hour) - immediate reliability improvement
+3. **Phase 2 Implementation:** Observation journal (2 hours) - memory and learning
+4. **Phase 3 Implementation:** Frame delta analysis (2 hours) - action feedback
+5. **Comparison:** Run A/B test (baseline vs. enhanced mode) on same game
+6. **Metrics:** Track success rate, average turns to win, token usage
 
 ## Conclusion
 
-The nodes.py file contains battle-tested patterns that could significantly improve our agent's performance. The tool-use architecture and frame delta analysis are particularly valuable. However, we must avoid the overfitting pitfalls in prompts.py and ignore the outdated llm.py.
+The nodes.py file contains battle-tested patterns that will significantly improve our agent's performance:
 
-Our current runner is a solid foundation - we should enhance it incrementally rather than replace it wholesale.
+**Critical Improvements:**
+1. **Pydantic structured outputs** - Eliminates fragile regex parsing, ensures type safety
+2. **Observation journal** - Agent builds persistent memory, learns game rules over time
+3. **Frame delta analysis** - Agent understands action consequences, debugs strategies
+
+**Rejected Pattern:**
+- Tool-use multi-step reasoning - unnecessary token waste for simple actions with reasoning models
+
+**Avoid:**
+- prompts.py game-specific overfitting (LS20 spoilers)
+- llm.py outdated implementation (non-existent models, deprecated API)
+
+Our current runner is a solid foundation built on modern patterns (NDJSON events, multimodal input, reasoning toggle). We should enhance it incrementally with the three critical improvements above, which together will provide 3-5x performance gains through reliability and memory.
