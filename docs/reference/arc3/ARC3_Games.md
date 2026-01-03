@@ -226,3 +226,78 @@ Other scorecard notes:
 
 > To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.arcprize.org/llms.txt
 
+# Actions
+
+> Your agent's interaction with the game
+
+All games implement a standardized action interface with seven core actions:
+
+| Action    | Description                                                                                   |
+| --------- | --------------------------------------------------------------------------------------------- |
+| `RESET`   | Initialize or restarts the game/level state                                                   |
+| `ACTION1` | Simple action - varies by game (semantically mapped to up)                                    |
+| `ACTION2` | Simple action - varies by game (semantically mapped to down)                                  |
+| `ACTION3` | Simple action - varies by game (semantically mapped to left)                                  |
+| `ACTION4` | Simple action - varies by game (semantically mapped to right)                                 |
+| `ACTION5` | Simple action - varies by game (e.g., interact, select, rotate, attach/detach, execute, etc.) |
+| `ACTION6` | Complex action requiring x,y coordinates (0-63 range)                                         |
+| `ACTION7` | Simple action - Undo (e.g., interact, select)                                                 |
+
+### Human Player Keybindings
+
+When playing games manually in the ARC-AGI-3 UI, you can use these keyboard shortcuts instead of clicking action buttons:
+
+| Control Scheme     | ACTION1 | ACTION2 | ACTION3 | ACTION4 | ACTION5 | ACTION6     | ACTION7    |
+| ------------------ | ------- | ------- | ------- | ------- | ------- | ----------- | ---------- |
+| **WASD + Space**   | `W`     | `S`     | `A`     | `D`     | `Space` | Mouse Click | CTRL/CMD+Z |
+| **Arrow Keys + F** | `↑`     | `↓`     | `←`     | `→`     | `F`     | Mouse Click | CTRL/CMD+Z |
+
+All control schemes support mouse clicking for ACTION6 (coordinate-based actions). Choose whichever scheme feels most comfortable for your playstyle.
+
+### Available Actions
+
+Each game explicitly defines the set of available actions that can be used within that game. This approach ensures clarity for both human and AI participants by making it clear which actions are permitted, thereby reducing confusion. In the human-facing UI, available actions are visually highlighted or dismissed to provide the same affordance.
+
+For each action taken, the metadata of the returned frame will indicate which actions are available. Agents may use this information to narrow the action space and develop effective strategies for completing the game.
+
+Note: Action 6 does not provide explicit X/Y coordinates for active areas. If Action 6 is available, only its availability will be indicated, without specifying which coordinates are active.
+
+Action 7:  NOT USED IN ANY PREVIEW GAMES
+---
+# Recordings & Replays
+
+> Viewing your agent's gameplay
+
+The ARC-AGI-3 agent system includes automatic recording of gameplay sessions.
+
+The most common way to view a recording is online in the ARC-AGI-3 UI. You can navigate to your scorecard to review your gameplay sessions.
+
+Ex: `https://three.arcprize.org/scorecards/<scorecard_id>`
+
+Here is an example [recording](https://three.arcprize.org/replay/ft09-16726c5b26ff/1d251d20-9043-4ace-9f9d-09822f5438d8)
+
+## Automatic Recording
+
+When running a [swarm](/swarms) all agent gameplay is also recorded by default and stored in the `recordings/` directory with GUID-based filenames:
+
+```
+ls20-6cbb1acf0530.random.100.a1b2c3d4-e5f6-7890-abcd-ef1234567890.recording.jsonl
+```
+
+The filename format is: `{game_id}.{agent_type}.{max_actions}.{guid}.recording.jsonl`
+
+## Recording File Format
+
+### JSONL Format
+
+Recordings are stored in JSONL format with timestamped entries:
+
+```json
+{"timestamp": "2024-01-15T10:30:45.123456+00:00", "data": {"game_id": "ls20-016295f7601e", "frame": [...], "state": "NOT_FINISHED", "score": 5, "action_input": {"id": 0, "data": {"game_id": "ls20-016295f7601e"}, "reasoning": "..."}, "guid": "...", "full_reset": false}}
+{"timestamp": "2024-01-15T10:30:46.234567+00:00", "data": {"game_id": "ls20-016295f7601e", "frame": [...], "state": "NOT_FINISHED", "score": 6, "action_input": {"id": 1, "data": {"game_id": "ls20-016295f7601e"}, "reasoning": "..."}, "guid": "...", "full_reset": false}}
+```
+
+
+---
+
+> To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.arcprize.org/llms.txt
