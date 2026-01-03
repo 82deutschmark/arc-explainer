@@ -22,3 +22,6 @@
 [submodule "external/ARC-AGI-3-ClaudeCode-SDK"]
 	path = external/ARC-AGI-3-ClaudeCode-SDK
 	url = https://github.com/ThariqS/ARC-AGI-3-ClaudeCode-SDK
+[submodule "external/ARC-AGI-3-Agents2"]
+	path = external/ARC-AGI-3-Agents2
+	url = https://github.com/82deutschmark/ARC-AGI-3-Agents2
