@@ -141,54 +141,9 @@ The external ARC-AGI-3-Agents2 repository contains significantly more sophistica
 
 ## Recommendations
 
-### Priority 1: Add Tool Support (HIGH IMPACT)
+### Priority 1: Structured Outputs with Pydantic (CRITICAL IMPACT)
 
-**Goal:** Let agent think multiple times before acting
-
-**Pattern from nodes.py:**
-```python
-# nodes.py lines 79-84
-response = llm.bind_tools(
-    all_tools,
-    tool_choice="required",
-    parallel_tool_calls=False,
-    strict=True,
-).invoke([system_message, *messages])
-```
-
-**Implementation:**
-1. Define tools: `think(thought: str)`, `act(action: str, reasoning: str, x: int, y: int)`
-2. Allow agent to call `think` multiple times
-3. Extract action only when `act` tool is called
-4. Emit `agent.reasoning` events for each thought
-
-**Benefit:** Agent can deliberate before acting, build multi-step reasoning chains
-
-### Priority 2: Frame Delta Analysis (MEDIUM IMPACT)
-
-**Goal:** Help agent learn from action outcomes
-
-**Pattern from nodes.py:**
-```python
-# nodes.py lines 169-193
-for i in range(len(latest_frame.frame)):
-    for j in range(len(latest_frame.frame[i])):
-        for k in range(len(latest_frame.frame[i][j])):
-            if latest_frame.frame[i][j][k] != previous_frame.frame[i][j][k]:
-                movements.append(f"<{j},{k}>: {prev} -> {curr}")
-```
-
-**Implementation:**
-1. Store `previous_frame` in agent state
-2. After each action, compute pixel-level diff
-3. Summarize changes (movement, state changes, etc.)
-4. Add diff summary to next LLM call context
-
-**Benefit:** Agent understands action consequences, can debug failed strategies
-
-### Priority 3: Structured Outputs (LOW IMPACT)
-
-**Goal:** Reliable action extraction without regex
+**Goal:** Reliable, type-safe action extraction - eliminate fragile regex parsing
 
 **Pattern from nodes.py:**
 ```python
@@ -200,15 +155,26 @@ result = llm.with_structured_output(
 ```
 
 **Implementation:**
-1. Define Pydantic schema for action response
-2. Use `with_structured_output()` instead of JSON regex
-3. Handle schema validation errors gracefully
+1. Define Pydantic schema for action response with proper validation
+2. Use `with_structured_output()` instead of JSON regex extraction
+3. Handle schema validation errors gracefully with fallback
+4. Ensure coordinates are properly typed and validated
 
-**Benefit:** More reliable, eliminates regex parsing bugs
+**Current Problem:**
+```python
+# arc3_openrouter_runner.py lines 346-355 - FRAGILE
+json_match = re.search(r'\{[^}]+\}', response_text)
+if json_match:
+    action_data = json.loads(json_match.group())
+else:
+    action_data = {"action": "ACTION1", "reasoning": "Exploring"}
+```
 
-### Priority 4: Observation Journal (MEDIUM IMPACT)
+**Benefit:** Eliminates parsing failures, proper type safety, guaranteed valid actions
 
-**Goal:** Persistent memory across turns
+### Priority 2: Observation Journal & Persistent Memory (CRITICAL IMPACT)
+
+**Goal:** Agent builds knowledge across turns, remembers discoveries and hypotheses
 
 **Pattern from nodes.py:**
 ```python
@@ -223,12 +189,50 @@ system_message = SystemMessage(
 ```
 
 **Implementation:**
-1. Maintain list of observations in agent state
-2. Add new observations after frame delta analysis
-3. Inject observations into system prompt
-4. Limit to last N observations (avoid context bloat)
+1. Maintain `observations` list in agent state (not LangGraph store for simplicity)
+2. Add new observations after each frame delta analysis
+3. Inject observations into system prompt dynamically each turn
+4. Limit to last 10-15 observations to avoid context bloat
+5. Track `thoughts` list for agent's hypotheses and learnings
 
-**Benefit:** Agent builds up knowledge, remembers discoveries
+**Current Problem:** Agent has no memory - every turn is independent, can't build on discoveries
+
+**Benefit:** Agent learns game rules, remembers what works, builds coherent strategies
+
+### Priority 3: Frame Delta Analysis (HIGH IMPACT)
+
+**Goal:** Help agent learn from action outcomes by showing what changed
+
+**Pattern from nodes.py:**
+```python
+# nodes.py lines 169-193
+for i in range(len(latest_frame.frame)):
+    for j in range(len(latest_frame.frame[i])):
+        for k in range(len(latest_frame.frame[i][j])):
+            if latest_frame.frame[i][j][k] != previous_frame.frame[i][j][k]:
+                movements.append(f"<{j},{k}>: {prev} -> {curr}")
+```
+
+**Implementation:**
+1. Store `previous_frame` in agent state
+2. After each action, compute pixel-level diff
+3. Summarize changes (movement, state changes, energy usage, etc.)
+4. Add diff summary to observations journal
+5. Include recent deltas in next LLM call context
+
+**Current Problem:** Agent doesn't know if actions succeeded, failed, or had unintended effects
+
+**Benefit:** Agent understands action consequences, can debug failed strategies, learns cause-effect
+
+### ~~Priority 4: Tool Support~~ (REJECTED - Token Waste)
+
+**Why NOT implementing:**
+- Actions are simple (ACTION1-6, RESET) - no complex reasoning needed
+- Reasoning models already think deeply in single pass
+- Multi-step tool calls waste tokens without adding value
+- Frame delta analysis provides feedback loop instead
+
+**Decision:** Keep single-shot LLM calls, use reasoning budget for frame analysis instead
 
 ## Integration Risks
 
@@ -246,32 +250,37 @@ system_message = SystemMessage(
 
 ## Proposed Implementation Plan
 
-### Phase 1: Tool Support (2-3 hours)
-1. Define `think` and `act` tools with Pydantic schemas
-2. Update `analyze_frame()` to use `bind_tools()`
-3. Implement tool execution loop (max 5 iterations)
-4. Emit reasoning events for each thought
-5. Test with MiMo-V2-Flash
+### Phase 1: Structured Outputs with Pydantic (1 hour) - CRITICAL
+1. Define Pydantic `ActionDecision` schema with fields: `action`, `reasoning`, `coordinates` (optional)
+2. Add validation: action must be valid enum, coordinates required only for ACTION6
+3. Replace regex extraction with `llm.with_structured_output(ActionDecision)`
+4. Add fallback handling for schema validation failures
+5. Test with edge cases (malformed responses, missing fields)
 
-### Phase 2: Frame Delta Analysis (1-2 hours)
-1. Add `previous_frame` storage
-2. Implement pixel-level diff function
-3. Add diff summary to context
-4. Test on game with clear state changes
+**Files to modify:** `server/python/arc3_openrouter_runner.py` (lines 292-361)
 
-### Phase 3: Observation Journal (1 hour)
-1. Add `observations` list to agent state
-2. Inject observations into system prompt
-3. Limit to last 10 observations
-4. Test memory persistence across turns
+### Phase 2: Observation Journal & Persistent Memory (2 hours) - CRITICAL
+1. Add `observations: list[str]` and `thoughts: list[str]` to `Arc3OpenRouterAgent.__init__`
+2. Create `add_observation(text: str)` method with length limiting (max 15 items)
+3. Update `build_system_prompt()` to inject observations and thoughts
+4. After frame delta analysis, add summary to observations
+5. After each action, optionally add agent's reasoning to thoughts
+6. Test memory persistence across full game session
 
-### Phase 4: Structured Outputs (30 min)
-1. Define action schema with Pydantic
-2. Replace regex with `with_structured_output()`
-3. Test with edge cases
+**Files to modify:** `server/python/arc3_openrouter_runner.py` (Arc3OpenRouterAgent class)
 
-**Total Estimated Effort:** 5-7 hours
-**Expected Impact:** 2-3x improvement in agent performance
+### Phase 3: Frame Delta Analysis (2 hours)
+1. Add `previous_frame: Optional[dict]` to agent state
+2. Create `analyze_frame_delta(prev, curr) -> str` function
+3. Implement pixel-level diff with movement/state change detection
+4. Generate human-readable delta summary
+5. Add delta summary to observations journal
+6. Test on game with clear visual changes
+
+**Files to modify:** `server/python/arc3_openrouter_runner.py` (new function + integration)
+
+**Total Estimated Effort:** 5 hours
+**Expected Impact:** 3-5x improvement in agent performance through memory and reliability
 
 ## Files on 2026 Branch
 
