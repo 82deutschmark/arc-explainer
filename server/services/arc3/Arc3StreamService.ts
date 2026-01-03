@@ -28,6 +28,7 @@ export interface StreamArc3Payload {
   createdAt?: number;
   expiresAt?: number;
   existingGameGuid?: string;
+  scorecardId?: string;  // CRITICAL: Scorecard ID for ARC API calls during continuation
   providerResponseId?: string | null;
   lastFrame?: FrameData; // Cached last known frame for safe continuation
   systemPromptPresetId?: 'twitch' | 'playbook' | 'none';
@@ -289,8 +290,10 @@ export class Arc3StreamService {
       logger.info(`[ARC3 Streaming] Caching final frame for session ${sessionId}; frame index=${runResult.frames?.length ?? 0}`, 'arc3-stream-service');
 
       // Persist response metadata for future continuations
+      // CRITICAL: Store scorecardId and game state for session continuation
       this.updatePendingPayload(sessionId, {
         existingGameGuid: runResult.gameGuid,
+        scorecardId: runResult.scorecardId,  // CRITICAL: Required for continuation requests
         providerResponseId: runResult.providerResponseId ?? null,
         lastFrame: finalFrame,
       });

@@ -607,10 +607,27 @@ export class Arc3RealGameRunner {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
     const maxTurns = config.maxTurns ?? DEFAULT_MAX_TURNS;
     const gameId = config.game_id ?? DEFAULT_GAME_ID;
+
+    // Build scorecard tags: include educational playground metadata for transparency
+    const scorecardTags = [
+      'arc-explainer',
+      'educational-playground',  // Mark as educational, not official competition entry
+      'interactive-agent',         // User can interrupt/guide mid-game
+      `model:${config.model ?? DEFAULT_MODEL}`,
+      `reasoning:${config.reasoningEffort ?? 'low'}`,
+    ];
+
     const scorecardId = await this.apiClient.openScorecard(
-      ['arc-explainer', 'agent-run', 'streaming'],
+      scorecardTags,
       'https://github.com/arc-explainer/arc-explainer',
-      { source: 'arc-explainer', mode: 'agent-run-stream', game_id: gameId, agentName }
+      {
+        source: 'arc-explainer',
+        mode: 'educational-interactive',
+        game_id: gameId,
+        agentName,
+        userInterruptible: true,
+        reasoningLevel: config.reasoningEffort ?? 'low',
+      }
     );
 
     let gameGuid: string | null = null;
@@ -1228,10 +1245,11 @@ export class Arc3RealGameRunner {
     const generatedRunId = randomUUID();
     const providerResponseId = result.lastResponseId ?? null;
 
-    // Emit completion event
+    // Emit completion event with scorecard ID for session continuation
     streamHarness.emitEvent("agent.completed", {
       runId: generatedRunId,
       gameGuid: gameGuid || 'unknown',  // Include game session guid for continuation
+      scorecardId,  // CRITICAL: Include scorecard ID for continuation requests
       finalOutput,
       summary,
       usage: {
@@ -1249,6 +1267,7 @@ export class Arc3RealGameRunner {
     return {
       runId: generatedRunId,
       gameGuid: gameGuid || 'unknown',
+      scorecardId,  // CRITICAL: Return scorecard ID for session continuation
       finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
       timeline,
       frames: frames as any[],  // Arc3AgentRunResult accepts any[] for frames

@@ -61,6 +61,9 @@ export default function ARC3Browser() {
           <Button asChild variant="outline">
             <Link href="/arc3/playground">Launch ARC3 Playground</Link>
           </Button>
+          <Button asChild variant="outline" className="border-amber-400 text-amber-700 hover:bg-amber-50">
+            <Link href="/arc3/openrouter-playground">OpenRouter Playground</Link>
+          </Button>
         </div>
       </div>
 

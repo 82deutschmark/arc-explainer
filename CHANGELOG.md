@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.24.0  Jan 3, 2026
+
+- **OpenRouter Playground – Dedicated Frontend Page** (Author: Cascade)
+  - **What**: Created dedicated ARC3 playground page for OpenRouter models at `/arc3/openrouter-playground`, separate from the OpenAI-focused playground.
+  - **Why**: The existing playground uses OpenAI's Responses API (Agents SDK). OpenRouter requires different scaffolding (Python LangGraph runner via `/api/arc3-openrouter`). Separate pages maintain clarity and allow each to be optimized for its provider.
+  - **How**:
+    - **Frontend Page**: Created `Arc3OpenRouterPlayground.tsx` reusing all Arc3 UI components (GamePanel, ReasoningViewer, ToolTimeline, etc.)
+    - **Provider Routing**: Always passes `provider: 'openrouter'` to `useArc3AgentStream`, routing to `/api/arc3-openrouter` backend
+    - **BYOK Card**: OpenRouter API key input (amber styling, session-only, never stored)
+    - **Model Selection**: Dropdown with free OpenRouter models including `xiaomi/mimo-v2-flash:free`, `google/gemini-2.0-flash-exp:free`, `meta-llama/llama-3.3-70b-instruct:free`, `qwen/qwen-2.5-72b-instruct:free`, `deepseek/deepseek-r1:free`
+    - **Route**: Added `/arc3/openrouter-playground` route in `App.tsx`
+    - **Navigation**: Added amber-styled "OpenRouter Playground" button on ARC3 landing page
+  - **Pattern**: Follows LLM-Council approach (Python subprocess + TypeScript bridge + BYOK)
+  - **Files**: `Arc3OpenRouterPlayground.tsx`, `App.tsx`, `ARC3Browser.tsx`
+
 ### Version 6.23.0  Jan 2, 2026 (Late Evening)
 
 - **ARC3 OpenRouter Integration – LangGraph Python Agent** (Author: Cascade)
