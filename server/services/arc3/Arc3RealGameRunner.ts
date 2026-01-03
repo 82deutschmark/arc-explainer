@@ -684,15 +684,19 @@ export class Arc3RealGameRunner {
     // Process final timeline entries using extracted utility (eliminates duplication)
     const timeline = processRunItemsWithReasoning(result.newItems, agentName, streamState.accumulatedReasoning);
 
+    // Get final frame from context (tools mutate context during run)
+    const finalFrame = toolContext.currentFrame;
+    const finalGameGuid = toolContext.gameGuid;
+
     // Close scorecard when game reaches terminal state (per audit: must close after WIN/GAME_OVER)
     // Sessions remain open for continuations ONLY if game is still in progress
-    if (currentFrame && (currentFrame.state === 'WIN' || currentFrame.state === 'GAME_OVER')) {
+    if (finalFrame && (finalFrame.state === 'WIN' || finalFrame.state === 'GAME_OVER')) {
       try {
         await this.apiClient.closeScorecard(scorecardId);
-        logger.info(`[ARC3 STREAMING] Closed scorecard ${scorecardId} - game ended with ${currentFrame.state}`, 'arc3');
+        logger.info(`[ARC3 STREAMING] Closed scorecard ${scorecardId} - game ended with ${finalFrame.state}`, 'arc3');
         streamHarness.emitEvent("scorecard.closed", {
           scorecardId,
-          finalState: currentFrame.state,
+          finalState: finalFrame.state,
           timestamp: Date.now(),
         });
       } catch (error) {
@@ -706,32 +710,13 @@ export class Arc3RealGameRunner {
       ? finalOutputCandidate
       : extractAllTextOutput(result.newItems);
 
-    // Map ARC3 API state strings to Arc3GameState type
-    const mapState = (state: string): Arc3GameState => {
-      if (state === 'NOT_PLAYED') return 'NOT_PLAYED';
-      if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
-      if (state === 'WIN') return 'WIN';
-      if (state === 'GAME_OVER') return 'GAME_OVER';
-      if (state === 'NOT_FINISHED') return 'NOT_FINISHED';  // Game incomplete but not over
-      // If we get an unexpected state, throw an error
-      throw new Error(`Unexpected game state from ARC3 API: ${state}`);
-    };
-
     // Create summary from the last frame (should always exist since we start the game before agent runs)
-    if (currentFrame === null) {
+    // Use shared helper for summary building (DRY: eliminates duplicated mapState + summary construction)
+    if (finalFrame === null) {
       throw new Error('No frame data available - game did not start properly');
     }
 
-    const cf = currentFrame as FrameData;
-    const summary: Arc3RunSummary = {
-      state: mapState(cf.state),
-      score: cf.score,
-      stepsTaken: cf.action_counter ?? Math.max(0, frames.length - 1),
-      simpleActionsUsed: [],  // ARC3 doesn't track this the same way
-      coordinateGuesses: 0,  // ARC3 doesn't track this separately
-      scenarioId: gameId,
-      scenarioName: gameId,  // Use gameId as name for now
-    };
+    const summary = buildRunSummary(finalFrame, gameId, toolContext.frames.length);
 
     const generatedRunId = randomUUID();
     const providerResponseId = result.lastResponseId ?? null;
@@ -739,7 +724,7 @@ export class Arc3RealGameRunner {
     // Emit completion event with scorecard ID for session continuation
     streamHarness.emitEvent("agent.completed", {
       runId: generatedRunId,
-      gameGuid: gameGuid || 'unknown',  // Include game session guid for continuation
+      gameGuid: finalGameGuid || 'unknown',  // Include game session guid for continuation
       scorecardId,  // CRITICAL: Include scorecard ID for continuation requests
       finalOutput,
       summary,
@@ -750,18 +735,18 @@ export class Arc3RealGameRunner {
         totalTokens: usage.totalTokens,
       },
       timelineLength: timeline.length,
-      frameCount: frames.length,
+      frameCount: toolContext.frames.length,
       providerResponseId,
       timestamp: Date.now(),
     });
 
     return {
       runId: generatedRunId,
-      gameGuid: gameGuid || 'unknown',
+      gameGuid: finalGameGuid || 'unknown',
       scorecardId,  // CRITICAL: Return scorecard ID for session continuation
       finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
       timeline,
-      frames: frames as any[],  // Arc3AgentRunResult accepts any[] for frames
+      frames: toolContext.frames as any[],  // Arc3AgentRunResult accepts any[] for frames
       summary,
       usage: {
         requests: usage.requests,
