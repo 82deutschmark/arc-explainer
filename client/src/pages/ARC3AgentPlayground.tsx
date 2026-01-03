@@ -269,8 +269,8 @@ export default function ARC3AgentPlayground() {
     loadPresetBody();
   }, [systemPromptPresetId]);
 
-  // Provider toggle (Claude vs Codex)
-  const [provider, setProvider] = useState<'arc3_claude' | 'codex'>('arc3_claude');
+  // Provider toggle (OpenAI Nano vs Codex)
+  const [provider, setProvider] = useState<'openai_nano' | 'openai_codex'>('openai_nano');
 
   // Agent config
   const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
@@ -463,27 +463,27 @@ export default function ARC3AgentPlayground() {
             {/* Provider Toggle */}
             <div className="flex items-center gap-1 border rounded px-1.5 py-0.5">
               <button
-                onClick={() => setProvider('arc3_claude')}
+                onClick={() => setProvider('openai_nano')}
                 disabled={isPlaying}
                 className={`text-[10px] px-1.5 py-0.5 rounded transition-colors ${
-                  provider === 'arc3_claude'
+                  provider === 'openai_nano'
                     ? 'bg-blue-100 text-blue-700 font-medium'
                     : 'text-muted-foreground hover:bg-muted'
                 } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Claude
+                OpenAI Nano
               </button>
               <button
-                onClick={() => setProvider('codex')}
+                onClick={() => setProvider('openai_codex')}
                 disabled={isPlaying}
                 className={`text-[10px] px-1.5 py-0.5 rounded transition-colors flex items-center gap-0.5 ${
-                  provider === 'codex'
+                  provider === 'openai_codex'
                     ? 'bg-emerald-100 text-emerald-700 font-medium'
                     : 'text-muted-foreground hover:bg-muted'
                 } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <Zap className="h-2.5 w-2.5" />
-                Codex
+                OpenAI Codex
               </button>
             </div>
 

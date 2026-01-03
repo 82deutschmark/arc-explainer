@@ -24,8 +24,8 @@ export interface Arc3AgentOptions {
   skipDefaultSystemPrompt?: boolean;
   /** User-provided API key for BYOK (required in production) */
   apiKey?: string;
-  /** Provider toggle: 'arc3_claude' (default) or 'codex' for Codex-powered runner */
-  provider?: 'arc3_claude' | 'codex';
+  /** Provider toggle: 'openai_nano' (default) or 'openai_codex' */
+  provider?: 'openai_nano' | 'openai_codex';
 }
 
 export interface Arc3AgentStreamState {
@@ -95,7 +95,7 @@ export function useArc3AgentStream() {
   const latestGameIdRef = useRef<string | null>(null);  // CRITICAL: Track gameId in sync with guid to prevent mismatch
   const isPendingActionRef = useRef(false);  // CRITICAL: Ref-based lock for synchronous check (state has stale closure issue)
   const [isPendingManualAction, setIsPendingManualAction] = useState(false);  // State for UI updates (disable buttons)
-  const providerRef = useRef<'arc3_claude' | 'codex'>('arc3_claude');  // Track current provider for cancel/continuation
+  const providerRef = useRef<'openai_nano' | 'openai_codex'>('openai_nano');  // Track current provider for cancel/continuation
   const streamingEnabled = isStreamingEnabled();
 
   const closeEventSource = useCallback(() => {
@@ -130,10 +130,10 @@ export function useArc3AgentStream() {
         });
 
         if (streamingEnabled) {
-          // Determine API path based on provider
-          const selectedProvider = options.provider || 'arc3_claude';
+          // Single lightweight runner: Arc3OpenAIRunner (Responses API)
+          const selectedProvider = options.provider || 'openai_nano';
           providerRef.current = selectedProvider;
-          const apiBasePath = selectedProvider === 'codex' ? '/api/arc3-codex' : '/api/arc3';
+          const apiBasePath = '/api/arc3-openai';
           console.log('[ARC3 Stream] Using provider:', selectedProvider, 'API path:', apiBasePath);
 
           // Step 1: Prepare streaming session
@@ -224,7 +224,7 @@ export function useArc3AgentStream() {
     }
 
     try {
-      const apiBasePath = providerRef.current === 'codex' ? '/api/arc3-codex' : '/api/arc3';
+      const apiBasePath = '/api/arc3-openai';
       await apiRequest('POST', `${apiBasePath}/stream/${sessionId}/cancel`);
       closeEventSource();
 
