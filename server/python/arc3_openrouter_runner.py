@@ -89,13 +89,22 @@ class Arc3ApiClient:
             "X-API-Key": api_key,
         })
     
-    def open_scorecard(self, tags: list[str] = None, source_url: str = None) -> str:
-        """Open a new scorecard. MUST be called before starting any games."""
+    def open_scorecard(self, tags: list[str] = None, source_url: str = None, 
+                        opaque_metadata: dict = None) -> str:
+        """Open a new scorecard. MUST be called before starting any games.
+        
+        Args:
+            tags: List of string tags for categorization (e.g., ['openrouter', 'competition'])
+            source_url: URL identifying the source application
+            opaque_metadata: Additional metadata dict passed as 'opaque' field (for rich context)
+        """
         body = {}
         if tags:
             body["tags"] = tags
         if source_url:
             body["source_url"] = source_url
+        if opaque_metadata:
+            body["opaque"] = opaque_metadata
         
         response = self.session.post(f"{self.BASE_URL}/api/scorecard/open", json=body)
         response.raise_for_status()
@@ -242,25 +251,39 @@ Think step by step about what action to take next. Your response must be a JSON 
 {"action": "ACTION1|ACTION2|ACTION3|ACTION4|ACTION5|ACTION6|RESET", "reasoning": "your explanation", "coordinates": [x, y] (only for ACTION6)}
 """
     
-    def __init__(self, model: str, api_key: str, instructions: str = None):
+    def __init__(self, model: str, api_key: str, instructions: str = None, 
+                 reasoning_enabled: bool = True, agent_name: str = "OpenRouter Agent"):
         self.model = model
         self.api_key = api_key
         self.instructions = instructions or ""
+        self.reasoning_enabled = reasoning_enabled
+        self.agent_name = agent_name
         
         if not LANGCHAIN_AVAILABLE:
             emit_error("LangChain not installed. Run: pip install langchain-openai", "DEPENDENCY_ERROR")
+        
+        # Build extra headers for OpenRouter
+        # MiMo-V2-Flash and other models support reasoning toggle via provider params
+        extra_headers = {
+            "HTTP-Referer": "https://arc-explainer.com",
+            "X-Title": f"ARC Explainer - {agent_name}",
+        }
+        
+        # Model kwargs for reasoning-capable models (like MiMo-V2-Flash)
+        model_kwargs = {}
+        if reasoning_enabled:
+            # OpenRouter passes this to models that support reasoning toggle
+            model_kwargs["extra_body"] = {"reasoning": {"enabled": True}}
         
         # Initialize LangChain ChatOpenAI with OpenRouter
         self.llm = ChatOpenAI(
             model=model,
             openai_api_base="https://openrouter.ai/api/v1",
             openai_api_key=api_key,
-            default_headers={
-                "HTTP-Referer": "https://arc-explainer.com",
-                "X-Title": "ARC Explainer - OpenRouter Agent",
-            },
+            default_headers=extra_headers,
             temperature=0.7,
-            max_tokens=1024,
+            max_tokens=2048,  # Increased for reasoning output
+            model_kwargs=model_kwargs,
         )
         
         self.previous_frame = None
@@ -372,12 +395,19 @@ Think step by step about what action to take next. Your response must be a JSON 
 # ============================================================================
 
 def run_agent(config: dict):
-    """Main agent loop - plays the game and emits events."""
+    """Main agent loop - plays the game and emits events.
+    
+    This is the competition-emulation mode: agent runs autonomously until WIN or GAME_OVER.
+    No human interaction during the run - designed to mirror the official ARC3 harness.
+    """
     
     game_id = config.get("game_id", "ls20")
     model = config.get("model", "xiaomi/mimo-v2-flash:free")
     instructions = config.get("instructions", "")
-    max_turns = config.get("max_turns", 50)
+    system_prompt = config.get("system_prompt", "")  # User's genius system prompt
+    max_turns = config.get("max_turns", 80)  # Match ARC-AGI-3-Agents2 MAX_ACTIONS default
+    agent_name = config.get("agent_name", "OpenRouter Agent")
+    reasoning_enabled = config.get("reasoning_enabled", True)  # MiMo reasoning toggle
     
     # API keys
     arc3_api_key = config.get("arc3_api_key") or os.getenv("ARC3_API_KEY", "")
@@ -389,23 +419,64 @@ def run_agent(config: dict):
     if not arc3_api_key:
         emit_error("ARC3 API key required", "AUTH_ERROR")
     
-    emit_event("agent.starting", {"message": "Initializing OpenRouter agent...", "model": model})
+    emit_event("agent.starting", {
+        "message": "Initializing OpenRouter agent (competition mode)...", 
+        "model": model,
+        "agent_name": agent_name,
+        "reasoning_enabled": reasoning_enabled,
+    })
+    
+    # Combine system prompt + instructions for the agent
+    combined_instructions = instructions
+    if system_prompt:
+        combined_instructions = f"{system_prompt}\n\n{instructions}" if instructions else system_prompt
     
     # Initialize clients
     try:
         arc3_client = Arc3ApiClient(arc3_api_key)
-        agent = Arc3OpenRouterAgent(model, openrouter_api_key, instructions)
+        agent = Arc3OpenRouterAgent(
+            model, 
+            openrouter_api_key, 
+            combined_instructions,
+            reasoning_enabled=reasoning_enabled,
+            agent_name=agent_name,
+        )
     except Exception as e:
         emit_error(f"Failed to initialize: {e}", "INIT_ERROR")
     
-    emit_event("agent.ready", {"model": model, "game_id": game_id})
+    emit_event("agent.ready", {"model": model, "game_id": game_id, "agent_name": agent_name})
     
-    # Open scorecard
+    # Open scorecard with rich metadata (matching TypeScript pattern)
+    # Tags and opaque metadata help identify runs on the ARC3 leaderboard
     try:
         emit_event("stream.status", {"state": "running", "message": "Opening scorecard..."})
+        
+        # Build descriptive tags
+        model_tag = model.replace("/", "-").replace(":", "-")  # e.g., "xiaomi-mimo-v2-flash-free"
+        scorecard_tags = [
+            "arc-explainer",
+            "openrouter-playground",
+            "competition-emulation",
+            model_tag,
+        ]
+        if reasoning_enabled:
+            scorecard_tags.append("reasoning-enabled")
+        
+        # Rich metadata for scorecard (passed as 'opaque' field)
+        scorecard_metadata = {
+            "source": "arc-explainer",
+            "mode": "openrouter-competition-emulation",
+            "game_id": game_id,
+            "agent_name": agent_name,
+            "model": model,
+            "reasoning_enabled": reasoning_enabled,
+            "max_turns": max_turns,
+        }
+        
         card_id = arc3_client.open_scorecard(
-            tags=["openrouter", model.replace("/", "-")],
-            source_url="https://arc-explainer.com"
+            tags=scorecard_tags,
+            source_url="https://arc-explainer.com/arc3/openrouter-playground",
+            opaque_metadata=scorecard_metadata,
         )
         emit_event("stream.status", {"state": "running", "message": f"Scorecard opened: {card_id}"})
     except Exception as e:

@@ -15,15 +15,17 @@ import { logger } from '../utils/logger.ts';
 
 const router = Router();
 
-// Validation schema for stream prepare request
+// Validation schema for stream prepare request (competition-emulation mode)
 const prepareSchema = z.object({
   game_id: z.string().min(1, 'game_id is required'),
   model: z.string().default('xiaomi/mimo-v2-flash:free'),
-  instructions: z.string().optional(),
-  systemPrompt: z.string().optional(),
-  maxTurns: z.number().int().min(1).max(200).optional().default(50),
-  apiKey: z.string().optional(),  // OpenRouter BYOK
-  arc3ApiKey: z.string().optional(),  // ARC3 API key BYOK
+  instructions: z.string().optional(),           // User prompt / operator guidance
+  systemPrompt: z.string().optional(),           // User's genius system prompt
+  maxTurns: z.number().int().min(1).max(500).optional().default(80),  // Match ARC-AGI-3-Agents2 MAX_ACTIONS
+  apiKey: z.string().optional(),                 // OpenRouter BYOK
+  arc3ApiKey: z.string().optional(),             // ARC3 API key BYOK
+  agentName: z.string().optional(),              // User-defined agent name for scorecard
+  reasoningEnabled: z.boolean().optional().default(true),  // MiMo reasoning toggle
 });
 
 // Helper for consistent response format

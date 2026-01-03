@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.26.0  Jan 3, 2026
+
+- **OpenRouter Playground – Competition Emulation Mode** (Author: Cascade/Claude Opus 4.5)
+  - **What**: Enhanced OpenRouter Playground for competition-emulation mode with rich scorecard metadata and MiMo reasoning toggle.
+  - **Why**: The OpenRouter page is for autonomous batch runs (no babysitting), emulating the official ARC3 competition harness. Users enter their "genius" system prompt, user prompt, and OpenRouter API key, then agent runs until WIN or GAME_OVER with scorecard registered.
+  - **How**:
+    - **Rich Scorecard Metadata**: Tags now include `['arc-explainer', 'openrouter-playground', 'competition-emulation', model-tag, 'reasoning-enabled']`. Opaque metadata includes `source`, `mode`, `game_id`, `agent_name`, `model`, `reasoning_enabled`, `max_turns`.
+    - **MiMo Reasoning Toggle**: Added `reasoning_enabled` parameter (default: `true`) passed through entire stack (frontend → hook → route → service → Python runner → OpenRouter API via `extra_body.reasoning.enabled`)
+    - **Agent Name**: User-defined `agentName` now flows to scorecard metadata
+    - **Combined Prompts**: System prompt + instructions combined properly in Python runner
+    - **Default Model**: `xiaomi/mimo-v2-flash:free` (MiMo-V2-Flash: 309B params, 15B active, #1 open-source on SWE-bench)
+    - **MAX_ACTIONS**: Increased from 50 to 80 to match ARC-AGI-3-Agents2 default
+  - **Files Modified**: `arc3_openrouter_runner.py`, `Arc3OpenRouterStreamService.ts`, `Arc3OpenRouterPythonBridge.ts`, `arc3OpenRouter.ts`, `useArc3AgentStream.ts`
+
 ### Version 6.25.1  Jan 3, 2026
 
 - **Arc3RealGameRunner Refactoring – Factory Integration Complete** (Author: Cascade/Claude Opus 4.5)

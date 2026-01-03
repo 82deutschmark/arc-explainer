@@ -26,6 +26,8 @@ export interface Arc3AgentOptions {
   apiKey?: string;
   /** Provider toggle: 'openai_nano' (default), 'openai_codex', or 'openrouter' */
   provider?: 'openai_nano' | 'openai_codex' | 'openrouter';
+  /** MiMo reasoning toggle for OpenRouter (default: true) */
+  reasoningEnabled?: boolean;
 }
 
 export interface Arc3AgentStreamState {
@@ -153,6 +155,8 @@ export function useArc3AgentStream() {
             skipDefaultSystemPrompt: options.skipDefaultSystemPrompt,
             // BYOK: Pass user API key if provided (required in production)
             ...(options.apiKey ? { apiKey: options.apiKey } : {}),
+            // OpenRouter-specific: MiMo reasoning toggle (default: true)
+            ...(selectedProvider === 'openrouter' ? { reasoningEnabled: options.reasoningEnabled ?? true } : {}),
           });
 
           const prepareData = await prepareResponse.json();
