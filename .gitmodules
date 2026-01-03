@@ -25,3 +25,9 @@
 [submodule "external/ARC-AGI-3-Agents2"]
 	path = external/ARC-AGI-3-Agents2
 	url = https://github.com/82deutschmark/ARC-AGI-3-Agents2
+[submodule "external/tomas-engine-arc-agi-3"]
+	path = external/tomas-engine-arc-agi-3
+	url = https://github.com/82deutschmark/tomas-engine-arc-agi-3
+[submodule "external/GuidedRandomAgent"]
+	path = external/GuidedRandomAgent
+	url = https://github.com/82deutschmark/GuidedRandomAgent
