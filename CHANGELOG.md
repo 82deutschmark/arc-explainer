@@ -1,5 +1,17 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.25.1  Jan 3, 2026
+
+- **Arc3RealGameRunner Refactoring – Factory Integration Complete** (Author: Cascade/Claude Opus 4.5)
+  - **What**: Integrated tool factory into both `run()` and `runWithStreaming()` methods, extracted helpers, achieved 48% line reduction.
+  - **Why**: Completes the DRY refactoring started in v6.25.0. Inline tool definitions (240+ lines duplicated) replaced with factory calls.
+  - **How**:
+    - **Factory Integration**: Both `run()` and `runWithStreaming()` now call `createArc3Tools(toolContext)` instead of defining tools inline
+    - **runHelpers.ts**: Created `server/services/arc3/helpers/runHelpers.ts` with `selectSystemPrompt()`, `buildCombinedInstructions()`, `mapState()`, `buildRunSummary()`
+    - **Line Reduction**: Arc3RealGameRunner.ts reduced from 1,295 → 678 lines (**48% reduction, 617 lines saved**)
+  - **Files Created**: `runHelpers.ts`
+  - **Files Modified**: `Arc3RealGameRunner.ts` (factory integration + helpers)
+
 ### Version 6.25.0  Jan 3, 2026
 
 - **Arc3RealGameRunner Refactoring – Scorecard Fix + Tool Factory** (Author: Cascade)
@@ -12,7 +24,6 @@
     - **Plan Document**: Created `docs/plans/2026-01-03-arc3-real-game-runner-refactor-plan.md` with full audit and remaining tasks
   - **Files Created**: `Arc3ToolFactory.ts`, `tools/index.ts`, refactor plan document
   - **Files Modified**: `Arc3ApiClient.ts` (+closeScorecard), `Arc3RealGameRunner.ts` (+scorecard close calls)
-  - **Remaining Work**: Integration of tool factory into Arc3RealGameRunner (tools still defined inline, factory ready for use)
 
 ### Version 6.24.1  Jan 3, 2026
 
