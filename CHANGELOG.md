@@ -1,5 +1,37 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.28.1  Jan 3, 2026
+
+- **OpenRouter Agent Fixes – Reasoning Effort & Validation** (Author: Claude Code)
+  - **What**: Fixed OpenRouter playground validation errors, wired up reasoning effort parameter per OpenRouter docs, set correct default model, and added navigation link.
+  - **Why**: Frontend was sending 100,000 max turns but backend only accepted 500 (causing 400 errors). Reasoning effort UI was not actually controlling thinking budget. Default model wasn't set correctly.
+  - **How**:
+    - **Max Turns Fix**: Changed default from 100,000 to 80 (matching ARC-AGI-3-Agents2 standard). Route validates max(500).
+    - **Default Model**: Reordered model selection to explicitly prefer `xiaomi/mimo-v2-flash:free` (not just any `:free` model).
+    - **Reasoning Effort Parameter**:
+      - Route now accepts `reasoningEffort` enum (`'minimal'|'low'|'medium'|'high'|'xhigh'`) instead of boolean `reasoningEnabled`
+      - Service passes `reasoning_effort` to Python runner
+      - Python agent sets `extra_body.reasoning.effort` in OpenRouter API call per official docs
+      - This controls thinking token budget allocation (e.g., "high" = 80% of max_tokens for reasoning)
+    - **Navigation**: Added "OpenRouter Agent Laboratory" link to ARC-3 dropdown in AppNavigation
+  - **Files Modified**: `client/src/pages/Arc3OpenRouterPlayground.tsx`, `server/routes/arc3OpenRouter.ts`, `server/services/arc3/Arc3OpenRouterStreamService.ts`, `server/services/arc3/Arc3OpenRouterPythonBridge.ts`, `server/python/arc3_openrouter_runner.py`, `client/src/components/layout/AppNavigation.tsx`
+  - **Impact**: User can now control model reasoning effort from UI. Reasoning effort UI actually controls OpenRouter thinking budget (per official OpenRouter docs).
+  - **Reference**: `docs/plans/2026-01-03-openrouter-agent-prompt-consistency-plan.md` (planning document for future system prompt consistency work)
+
+- **ARC3 Agent Playground – Onboarding Modal** (Author: Claude Code)
+  - **What**: Added educational onboarding modal for new users entering the ARC3 Agent Playground, explaining agent-based gameplay and auto-starting game with defaults.
+  - **Why**: New users unfamiliar with AI agents need guidance on collaboration model. Modal explains that agents explore/report/learn while users guide through instructions (not direct control).
+  - **How**:
+    - **Modal Content**:
+      - Explains what an AI agent is (observes, decides, adapts)
+      - Shows gameplay loop: agent explores → reports → user instructs → agent executes
+      - Explains multiple levels to win
+      - Pro tip on specific instructions
+    - **Auto-Start**: Clicking "Start Game" closes modal and immediately starts game with defaults (GPT-5 Nano, playbook prompt, ls20 game)
+    - **Skip Option**: "Skip for Now" button allows users to access manual controls if preferred
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx`
+  - **UX Impact**: First-time users immediately understand they're collaborating with an agent, not controlling it. Clear expectations set before gameplay begins.
+
 ### Version 6.28.0  Jan 3, 2026
 
 - **OpenRouter Credits Monitor – BYOK Balance Display** (Author: Cascade/Claude Opus 4.5)
