@@ -1,5 +1,21 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.28.0  Jan 3, 2026
+
+- **OpenRouter Credits Monitor – BYOK Balance Display** (Author: Cascade/Claude Opus 4.5)
+  - **What**: Real-time credits monitor in OpenRouter Playground header showing remaining balance for user's API key.
+  - **Why**: Free tier models have limited credits. Users need visibility into their burn rate while agents run.
+  - **How**:
+    - **Backend**: Added `POST /api/arc3-openrouter/credits` endpoint that proxies OpenRouter's `/api/v1/auth/key` endpoint with user's BYOK key.
+    - **Frontend Hook**: Created `useOpenRouterCredits` hook with 15s polling interval, tracks usage/limit/remaining.
+    - **Header Display**: Amber-styled credits badge in playground header showing `$X.XX remaining` or `$X.XX used` (for unlimited keys).
+    - **Tooltip Details**: Hover reveals full breakdown: label, usage, limit, remaining, free tier status.
+    - **Manual Refresh**: Button to force-refresh credits on demand.
+    - **Error Handling**: Shows error state if API key is invalid or network fails.
+  - **BYOK Compliance**: Key is passed per-request to backend, never stored. Backend proxies to OpenRouter and returns balance.
+  - **Files Created**: `client/src/hooks/useOpenRouterCredits.ts`
+  - **Files Modified**: `server/routes/arc3OpenRouter.ts`, `client/src/pages/Arc3OpenRouterPlayground.tsx`
+
 ### Version 6.27.0  Jan 3, 2026
 
 - **OpenRouter Agent Major Upgrade – Structured Outputs, Memory, Frame Delta** (Author: Cascade/Claude Opus 4.5)
