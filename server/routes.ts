@@ -39,6 +39,7 @@ import { councilController } from './controllers/councilController.ts';
 import modelsRouter from "./routes/models.js";
 import metricsRouter from './routes/metricsRoutes.ts';
 import arc3Router from "./routes/arc3";
+import arc3CodexRouter from "./routes/arc3Codex";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -78,6 +79,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ARC3 playground routes
   app.use("/api/arc3", arc3Router);
+
+  // Codex ARC3 interactive playground routes
+  app.use("/api/arc3-codex", arc3CodexRouter);
 
   // Contributor trading cards routes
   app.use("/api/contributors", contributorController);

@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.22.0  Jan 2, 2026
+
+- **Codex ARC Playground – Interactive Trajectory Runner** (Author: Cascade (ChatGPT 5.1 Codex))
+  - **What**: Added a Codex-powered ARC-AGI-3 interactive runner alongside the existing Claude runner. Users can toggle between providers in the ARC3 Playground UI.
+  - **Why**: ARC-AGI-3 is a trajectory-based benchmark requiring real-time action-perception loops. A Codex-native runner enables researchers to compare Codex vs Claude trajectories, test different reasoning approaches, and record sessions for ARC Prize submission.
+  - **How**:
+    - **Backend**: Created `server/services/arc3/CodexArc3Runner.ts` implementing the event loop with OpenAI Agents SDK, PNG rendering for multimodal prompts, scorecard integration, and JSONL persistence.
+    - **Backend**: Created `server/services/arc3/CodexArc3StreamService.ts` for session management and SSE streaming coordination.
+    - **Backend**: Created `server/routes/arc3Codex.ts` with endpoints: `POST /api/arc3-codex/stream/prepare`, `GET /api/arc3-codex/stream/:sessionId`, `POST /api/arc3-codex/manual-action`, `POST /api/arc3-codex/stream/:sessionId/continue`, `GET /api/arc3-codex/stream/:sessionId/continue-stream`, `POST /api/arc3-codex/stream/:sessionId/cancel`, `GET /api/arc3-codex/health`.
+    - **Shared types**: Added `CodexArc3Provider`, `CodexArc3ActionStartEvent`, `CodexArc3ActionResultEvent`, `CodexArc3HypothesizeEvent`, `CodexArc3FrameUpdateEvent`, `CodexArc3CompletedEvent`, `CodexArc3StreamPayload` to `shared/types.ts`.
+    - **Frontend**: Updated `client/src/pages/ARC3AgentPlayground.tsx` with provider toggle (Claude/Codex) in header.
+    - **Frontend**: Updated `client/src/hooks/useArc3AgentStream.ts` to route to correct backend based on provider selection.
+  - **SSE Events**: Extended streaming schema with trajectory-aware events (`game.action_start`, `game.action_result`, `agent.hypothesize`) for real-time visualization.
+  - **Files**: `CodexArc3Runner.ts`, `CodexArc3StreamService.ts`, `arc3Codex.ts`, `routes.ts`, `shared/types.ts`, `ARC3AgentPlayground.tsx`, `useArc3AgentStream.ts`, `docs/plans/2026-01-02-codex-arc-playground-plan.md`
+
 ### Version 6.21.0  Jan 2, 2026
 
 - **Council UI – Non-Streaming Execution** (Author: Cascade (ChatGPT))

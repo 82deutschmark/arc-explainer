@@ -43,6 +43,7 @@ async def run_council(query: str):
     Returns tuple of (stage1_results, stage2_results, stage3_result, metadata)
     """
     try:
+        emit_log("info", "Attempting to import council backend modules...")
         from backend.council import (
             stage1_collect_responses,
             stage2_collect_rankings,
@@ -50,13 +51,15 @@ async def run_council(query: str):
             calculate_aggregate_rankings
         )
         from backend.config import COUNCIL_MODELS, CHAIRMAN_MODEL
-        
-        emit_log("info", f"Council models: {COUNCIL_MODELS}")
+
+        emit_log("info", f"Imports successful. Council models: {COUNCIL_MODELS}")
         emit_log("info", f"Chairman model: {CHAIRMAN_MODEL}")
-        
+
         # Stage 1: Collect individual responses
         emit_progress("stage1", "Collecting individual responses from council members...")
+        emit_log("info", "Starting stage1_collect_responses...")
         stage1_results = await stage1_collect_responses(query)
+        emit_log("info", f"Stage 1 complete, got {len(stage1_results) if stage1_results else 0} results")
         
         if not stage1_results:
             emit_error("All council models failed to respond")
@@ -70,19 +73,23 @@ async def run_council(query: str):
         
         # Stage 2: Collect rankings
         emit_progress("stage2", "Council members evaluating and ranking each other's responses...")
+        emit_log("info", "Starting stage2_collect_rankings...")
         stage2_results, label_to_model = await stage2_collect_rankings(query, stage1_results)
+        emit_log("info", f"Stage 2 complete, got {len(stage2_results) if stage2_results else 0} rankings")
         aggregate_rankings = calculate_aggregate_rankings(stage2_results, label_to_model)
-        
+
         emit_event({
             "type": "stage2_complete",
             "data": stage2_results,
             "label_to_model": label_to_model,
             "aggregate_rankings": aggregate_rankings
         })
-        
+
         # Stage 3: Synthesize final answer
         emit_progress("stage3", "Chairman synthesizing final response...")
+        emit_log("info", "Starting stage3_synthesize_final...")
         stage3_result = await stage3_synthesize_final(query, stage1_results, stage2_results)
+        emit_log("info", "Stage 3 complete")
         
         emit_event({
             "type": "stage3_complete",
@@ -106,14 +113,17 @@ async def run_council(query: str):
 async def main():
     """Main entry point - read stdin, run council, emit results."""
     try:
+        emit_log("info", "Main function started")
         # Read JSON payload from stdin
         input_data = sys.stdin.read()
+        emit_log("info", f"Received input: {len(input_data)} chars")
         if not input_data.strip():
             emit_error("No input provided")
             return 1
-            
+
         payload = json.loads(input_data)
         query = payload.get("query", "")
+        emit_log("info", f"Parsed query: {len(query)} chars")
         
         if not query:
             emit_error("No query provided in payload")
