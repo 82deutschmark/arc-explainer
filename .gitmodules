@@ -19,3 +19,6 @@
 [submodule "llm-council"]
 	path = llm-council
 	url = https://github.com/VoynichLabs/llm-council.git
+[submodule "external/ARC-AGI-3-ClaudeCode-SDK"]
+	path = external/ARC-AGI-3-ClaudeCode-SDK
+	url = https://github.com/ThariqS/ARC-AGI-3-ClaudeCode-SDK
