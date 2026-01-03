@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.22.1  Jan 2, 2026 (Evening)
+
+- **ARC3 Architecture Clarification – Critical Documentation Update** (Author: Claude Haiku 4.5)
+  - **What**: Comprehensive clarification of Arc3RealGameRunner event types vs Arc3OpenAIRunner, with corrected implementation guidance for future OpenRouter support.
+  - **Why**: Previous audit recommended copying Arc3OpenAIRunner for OpenRouter, which would have silent UI failures due to event type mismatches. Streaming already works perfectly; no urgent work needed. Documentation was misleading.
+  - **How**:
+    - **Key Finding**: Arc3RealGameRunner emits correct events (`agent.starting`, `agent.tool_call`, `agent.reasoning`, etc.) while Arc3OpenAIRunner emits incomplete set (`stream.init`, `game.action_start`, `game.action_result`) causing silent UI failures.
+    - **Decision**: Streaming architecture is complete and functional. Arc3RealGameRunner with OpenAI Agents SDK works perfectly. No work needed on Arc3OpenAI routes.
+    - **Future Path**: If OpenRouter support is added later, must emit Arc3RealGameRunner event types (not copy Arc3OpenAIRunner pattern). Two options documented: (A) Refactor Arc3OpenAIRunner to fix events first, or (B) Lightweight HTTP implementation like Python agents.
+    - **Documentation**: Completely rewrote "OpenRouter Implementation Strategy" section in `docs/reference/arc3/KNOWN_ISSUES.md` with event comparison table, two implementation options, and why Arc3OpenAIRunner pattern is incorrect.
+    - **Tests**: Verified streaming works end-to-end via `/api/arc3/stream/*` routes. Build passes. No functionality changed.
+  - **Files changed**: `docs/reference/arc3/KNOWN_ISSUES.md`
+  - **Impact**: Prevents future developer from making critical mistake (copying Arc3OpenAIRunner). Clarifies that streaming is complete. Reduces scope of future work.
+
 ### Version 6.22.0  Jan 2, 2026
 
 - **Codex ARC Playground – Interactive Trajectory Runner** (Author: Cascade (ChatGPT 5.1 Codex))
