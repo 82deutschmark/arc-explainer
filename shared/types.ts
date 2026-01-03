@@ -1,10 +1,8 @@
 /**
- * Author: Cascade
- * Date: 2025-12-29
- * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer.
- *          Includes comprehensive definitions for Worm Arena model insights,
- *          performance metrics, and streaming status.
- * SRP/DRY check: Pass - shared types only.
+ * Author: Cascade (ChatGPT 5.1 Codex)
+ * Date: 2026-01-02
+ * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including ARC3 and Codex streaming schemas.
+ * SRP/DRY check: Pass — centralized type registry only.
  */
 
 export interface ARCTask {
@@ -1520,7 +1518,7 @@ export interface OpenRouterSyncStatus {
  * Codex ARC3 Interactive Playground Types
  * SSE streaming events for Codex-powered ARC-AGI-3 gameplay.
  */
-export type CodexArc3Provider = 'codex' | 'arc3_claude';
+export type CodexArc3Provider = 'openai_nano' | 'openai_codex';
 
 export interface CodexArc3ActionStartEvent {
   action: string;
