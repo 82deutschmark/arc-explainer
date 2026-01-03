@@ -130,10 +130,12 @@ export function useArc3AgentStream() {
         });
 
         if (streamingEnabled) {
-          // Single lightweight runner: Arc3OpenAIRunner (Responses API)
+          // Use the existing Arc3StreamService (OpenAI Agents SDK runner)
+          // NOTE: Arc3OpenAI routes exist but are not registered in routes.ts
+          // Using the working /api/arc3 routes instead
           const selectedProvider = options.provider || 'openai_nano';
           providerRef.current = selectedProvider;
-          const apiBasePath = '/api/arc3-openai';
+          const apiBasePath = '/api/arc3';
           console.log('[ARC3 Stream] Using provider:', selectedProvider, 'API path:', apiBasePath);
 
           // Step 1: Prepare streaming session
@@ -224,8 +226,9 @@ export function useArc3AgentStream() {
     }
 
     try {
-      const apiBasePath = '/api/arc3-openai';
-      await apiRequest('POST', `${apiBasePath}/stream/${sessionId}/cancel`);
+      // NOTE: arc3 routes use /stream/cancel/:sessionId path format
+      const apiBasePath = '/api/arc3';
+      await apiRequest('POST', `${apiBasePath}/stream/cancel/${sessionId}`);
       closeEventSource();
 
       setState(prev => ({
