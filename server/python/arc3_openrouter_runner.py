@@ -136,6 +136,21 @@ class Arc3ApiClient:
         response = self.session.post(f"{self.BASE_URL}/api/cmd/{action}", json=body)
         response.raise_for_status()
         return response.json()
+    
+    def close_scorecard(self) -> bool:
+        """Close the scorecard when game ends. Should be called after WIN or GAME_OVER."""
+        if not self.card_id:
+            return False
+        
+        try:
+            response = self.session.post(
+                f"{self.BASE_URL}/api/scorecard/close",
+                json={"card_id": self.card_id}
+            )
+            response.raise_for_status()
+            return True
+        except Exception:
+            return False
 
 
 # ============================================================================
@@ -442,6 +457,15 @@ def run_agent(config: dict):
         
         # Small delay to avoid rate limiting
         time.sleep(0.5)
+    
+    # Close scorecard when game ends (per audit: scorecard must be closed after WIN/GAME_OVER)
+    if final_state in ["WIN", "GAME_OVER"] or turn >= max_turns:
+        try:
+            emit_event("stream.status", {"state": "running", "message": "Closing scorecard..."})
+            arc3_client.close_scorecard()
+            emit_event("stream.status", {"state": "running", "message": "Scorecard closed"})
+        except Exception as e:
+            emit_event("stream.status", {"state": "warning", "message": f"Failed to close scorecard: {e}"})
     
     # Emit completion
     emit_event("agent.completed", {

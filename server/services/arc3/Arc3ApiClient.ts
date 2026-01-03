@@ -143,6 +143,28 @@ export class Arc3ApiClient {
   }
 
   /**
+   * Close a scorecard when the game session ends.
+   * MUST be called when game reaches WIN or GAME_OVER state.
+   * Reference: ARC-AGI-3 official docs - scorecards must be closed after game completion.
+   */
+  async closeScorecard(cardId?: string): Promise<void> {
+    const targetCardId = cardId ?? this.cardId;
+    if (!targetCardId) {
+      throw new Error('No scorecard ID provided or stored. Cannot close scorecard.');
+    }
+
+    await this.makeRequest<{ success: boolean }>('/api/scorecard/close', {
+      method: 'POST',
+      body: JSON.stringify({ card_id: targetCardId }),
+    });
+
+    // Clear stored card ID if we closed the current one
+    if (targetCardId === this.cardId) {
+      this.cardId = null;
+    }
+  }
+
+  /**
    * List all available games
    * Reference: ARC-AGI-3-ClaudeCode-SDK/actions/list-games.js line 8
    */
