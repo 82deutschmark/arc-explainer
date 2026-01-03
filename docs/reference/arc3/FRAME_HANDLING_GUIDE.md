@@ -6,7 +6,7 @@
 
 ---
 
-## Quick Reference: Frame Types
+## Quick Reference: Frame Types (2026)
 
 ### 3D Array (Single Frame)
 ```
@@ -26,7 +26,9 @@ When it happens: Internal environment animations (object movement, transitions, 
 
 ---
 
-## For Action Tool Developers
+## For Action Tool Developers (RESET + ACTION1–7, normalized)
+
+- Available actions arrive as numeric or string tokens; the server normalizes to canonical `RESET` / `ACTION1-7` before emitting to the UI/stream. Do not infer availability client-side—trust normalized `available_actions`.
 
 If you're adding a **new action** or **modifying existing action tools**, follow this pattern:
 

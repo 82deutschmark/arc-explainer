@@ -1,7 +1,7 @@
 # ARC-3 Multi-Frame Animation Fix — Implementation Summary
 
-**Completed:** 2025-12-20
-**Status:** ✅ READY FOR TESTING & DEPLOYMENT
+**Completed:** 2025-12-20 (Updated 2026-01-03)
+**Status:** READY FOR TESTING & DEPLOYMENT
 
 ---
 
@@ -30,15 +30,15 @@ Detects and unpacks 4D frame arrays into individual 3D frames:
 ✅ summarizeFrameStructure() - Debug utility
 ```
 
-### 2. Updated Arc3RealGameRunner
+### 2. Updated Arc3RealGameRunner (2026)
 
-**File:** `server/services/arc3/Arc3RealGameRunner.ts` (1100+ lines)
+**File:** `server/services/arc3/Arc3RealGameRunner.ts` (~760+ lines current)
 
 **Changes:**
 - ✅ Added `persistUnpackedFrames()` helper method
 - ✅ Imported and integrated frameUnpacker
 - ✅ Updated initial frame handling (both sync & streaming)
-- ✅ Updated all action tools (RESET, ACTION1-5, ACTION6) to unpack
+- ✅ Updated all action tools (RESET, ACTION1-7) to unpack
 - ✅ Streaming mode now emits animation metadata per frame
 - ✅ Database persistence tracks sequential frame numbers
 
@@ -166,11 +166,11 @@ Database:
 
 ## Key Invariants Maintained
 
-✅ **No breaking changes** — All APIs remain compatible
+✅ **No breaking changes** — All APIs remain compatible (now with ACTION7)
 ✅ **No schema changes** — Existing databases work unchanged
 ✅ **Backward compatible** — Old code consuming events still works (new metadata is optional)
 ✅ **Agent behavior unchanged** — Still reasons about final frames only
-✅ **Performance neutral** — Frame unpacking is negligible overhead
+✅ **Performance neutral** — Frame unpacking is negligible overhead; available_actions normalized server-side
 
 ---
 

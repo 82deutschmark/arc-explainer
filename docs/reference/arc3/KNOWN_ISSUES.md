@@ -1,21 +1,19 @@
 # Known Issues and Implementation Status for ARC3 Agent Playground
 
-**Last Updated:** 2026-01-02 21:36 (Cascade fix applied)
-**Status:** STREAMING FIXED - Using existing Arc3StreamService
-**Strategy:** Single working implementation using Arc3RealGameRunner (OpenAI Agents SDK)
-**Session Notes:** Critical streaming bug fixed - frontend was calling unregistered routes
+**Last Updated:** 2026-01-03
+**Status:** STREAMING FIXED - Arc3StreamService + Arc3RealGameRunner (OpenAI Agents SDK); OpenRouter handled via dedicated arc3-openrouter stack
+**Strategy:** Single primary implementation using Arc3RealGameRunner (OpenAI Agents SDK); OpenRouter path uses Arc3OpenRouter* services/python bridge
+**Session Notes:** Critical streaming bug fixed - frontend now targets `/api/arc3` routes; cancel path corrected
 
 ---
 
 ## Current Architecture
 
-We maintain **three parallel agent runners**, each calling the official ARC3 API using the same lightweight pattern:
+Primary runner: **Arc3RealGameRunner** (OpenAI Agents SDK) via `/api/arc3` + `Arc3StreamService`.
 
-| Runner | Provider | Status | Location | Pattern |
-|--------|----------|--------|----------|---------|
-| **Claude SDK** (Reference) | Anthropic Claude | ✅ Working | `external/ARC-AGI-3-ClaudeCode-SDK/` | CLI scripts (reference pattern) |
-| **Arc3OpenAIRunner** | OpenAI (Responses API) | 🔧 Partially Complete | `server/services/arc3/Arc3OpenAIRunner.ts` | Direct HTTP to ARC3 API |
-| **Arc3OpenRouterRunner** | OpenRouter | ⏳ TODO | `server/services/arc3/Arc3OpenRouterRunner.ts` | Direct HTTP to ARC3 API |
+OpenRouter path: dedicated stack (`/api/arc3-openrouter`, Arc3OpenRouter* services + python bridge) with matching event model.
+
+Reference: Claude SDK (external/ARC-AGI-3-ClaudeCode-SDK/) and ARC-AGI-3-Agents2 (external).
 
 ### The Pattern (from Claude SDK)
 
@@ -40,25 +38,16 @@ All three implementations follow this flow:
 - **Frontend Provider Naming:** Updated to `openai_nano` and `openai_codex` (clear labeling)
 - **Claude SDK Reference:** Available at `external/ARC-AGI-3-ClaudeCode-SDK/` with full pattern documentation
 
-### ✅ FIXED (2026-01-02 21:36)
-- **Frontend Hook Bug:** Was calling `/api/arc3-openai` which was never registered
-  - **Root Cause:** Previous developer changed hook to use unregistered routes
-  - **Fix Applied:** Changed `useArc3AgentStream.ts` to use existing `/api/arc3` routes
-  - **Also Fixed:** Cancel endpoint path mismatch (`/stream/cancel/:sessionId` vs `/stream/:sessionId/cancel`)
-- **Arc3OpenAIRunner**: Exists but should NOT be wired up
-  - **Reason:** Event type mismatch - emits different events than frontend expects
-  - **Decision:** Keep using Arc3RealGameRunner via `/api/arc3` routes (it works!)
+### ✅ FIXED (2026-01-02 to 2026-01-03)
+- Frontend hook now targets `/api/arc3` prepare/stream/cancel and matches cancel path.
+- Cancel endpoint path mismatch corrected (`/stream/cancel/:sessionId`).
+- Action set includes ACTION7; available_actions normalized server-side.
+- Streaming animation frames unpacked and emitted (frameUnpacker).
+- OpenRouter page uses dedicated routes/bridge; event model aligned with frontend.
 
-### ⏳ TODO - CRITICAL: Read Below First!
-- **Arc3OpenRouterRunner:** New runner needed
-  - **IMPORTANT:** Do NOT copy Arc3OpenAIRunner (it has event type mismatches)
-  - See "OpenRouter Implementation Strategy" section below for correct approach
-- **Helper Utilities:** Port from Claude SDK for better analysis
-  - `frameAnalysis.ts` - compareFrames, getGrid, diffs
-  - `gridAnalysis.ts` - color distribution, connected components
-  - `gridVisualization.ts` - ASCII art, side-by-side diffs
-- **Old Agents SDK Runners:** Arc3RealGameRunner and CodexArc3Runner still exist
-  - Decision: Keep as fallback or delete? (User to decide)
+### ⏳ TODO
+- Optional: Port analysis helpers from Claude SDK (frame/grid analysis) into TS runner for richer reasoning.
+- Decide fate of legacy runners (Arc3OpenAIRunner, CodexArc3Runner) — keep as reference or remove.
 
 ### ⚠️ CRITICAL: Do NOT Wire Arc3OpenAI Routes
 The previous audit recommended registering `arc3OpenAI` routes. **DO NOT DO THIS** without fixing event types first.
@@ -76,11 +65,7 @@ The previous audit recommended registering `arc3OpenAI` routes. **DO NOT DO THIS
 **Current working solution:** Use `/api/arc3` routes which use `Arc3RealGameRunner` + `Arc3StreamService` - this emits all the events the frontend expects.
 
 ### ❌ KNOWN LIMITATIONS (By Design)
-- **ACTION7 (Undo):** Not implemented
-  - Reason: Not needed for current preview games
-  - Status: Can add later if games require it
-- **Multi-turn Continuation:** Supported via `/api/arc3/stream/:sessionId/continue`
-  - Uses OpenAI Responses API `previousResponseId` for conversation chaining
+- Multi-turn continuation: supported via SSE session continuation with `previousResponseId`; keep cache TTL in mind.
 
 ---
 

@@ -1,7 +1,7 @@
 # ARC-3 Agent Implementation Code Map
 
 **Author:** Claude Haiku (Explore Agent)
-**Date:** 2025-12-20
+**Date:** 2025-12-20 (Updated 2026-01-03)
 **PURPOSE:** A comprehensive developer guide explaining the ARC-3 agent implementation architecture, data flow, key files, patterns, and how to extend the system.
 **SRP/DRY Check:** PASS — This document consolidates scattered information into a single source of truth for developers. No code duplication; modular design patterns are explained and referenced.
 
@@ -37,9 +37,10 @@ The ARC-3 agent is a **streaming, multi-step game solver** that uses the **OpenA
                             ↕
 ┌─────────────────────────────────────────────────────────────┐
 │ Express Routes (server/routes/arc3.ts)                      │
-│ - POST /api/arc3/stream/prepare (session setup)             │
+│ - POST /api/arc3/stream/prepare (session setup; BYOK allowed/required in prod) │
 │ - GET  /api/arc3/stream/:sessionId (SSE endpoint)           │
-│ - POST /api/arc3/stream/:sessionId/continue (chaining)      │
+│ - POST /api/arc3/stream/cancel/:sessionId (cancel)          │
+│ - POST /api/arc3/real-game/run (non-stream fallback)        │
 └─────────────────────────────────────────────────────────────┘
                             ↕
 ┌─────────────────────────────────────────────────────────────┐
@@ -48,6 +49,8 @@ The ARC-3 agent is a **streaming, multi-step game solver** that uses the **OpenA
 │ │ Arc3StreamService.ts - Session lifecycle & SSE control  │ │
 │ │ Arc3RealGameRunner.ts - Agent + Tools orchestration    │ │
 │ │ Arc3ApiClient.ts - HTTP wrapper for ARC-AGI-3 API      │ │
+│ │ frameUnpacker.ts - 3D/4D detection + unpack            │ │
+│ │ helpers/runHelpers.ts - mapState, prompt selection     │ │
 │ │ Persistence layer - Session & frame storage            │ │
 │ └─────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
@@ -131,6 +134,7 @@ Tools are exposed to the agent as callable functions with descriptions. The agen
 4. **action1–5** → Simple actions (directional, interact, etc.)
 5. **action6** → Coordinate-based action (click, tap, point)
 6. **action7** → Undo (if supported by game)
+7. Actions normalized from numeric tokens to canonical strings server-side
 
 ---
 

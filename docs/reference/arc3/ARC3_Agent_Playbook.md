@@ -55,7 +55,7 @@ On first contact with a game:
    - Use `analyze_grid` tool for programmatic pattern detection when visual inspection is insufficient.
 
 2. **Identify visible interfaces.**
-   - Available actions (`RESET`, `ACTION1`–`ACTION6/7`).
+   - Available actions (`RESET`, `ACTION1`–`ACTION7`); note that the API may send numeric tokens but is normalized server-side to canonical action names.
    - UI elements such as health bars, score, timers, level index, inventory bars.
    - Treat each as a variable in a conceptual state vector (e.g., `health`, `score`, `level`, `door_open`, `inventory`).
 
