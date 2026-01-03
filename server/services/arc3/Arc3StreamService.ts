@@ -332,10 +332,15 @@ export class Arc3StreamService {
         return sessionId;
       }
 
-      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId, existingGameGuid, systemPromptPresetId, skipDefaultSystemPrompt } = payload;
+      const { game_id, agentName, systemPrompt, instructions, model, maxTurns, reasoningEffort, userMessage, previousResponseId, existingGameGuid, scorecardId, systemPromptPresetId, skipDefaultSystemPrompt } = payload;
 
       if (!previousResponseId) {
         throw new Error('ARC3 continuation requires a previousResponseId to maintain conversation state.');
+      }
+
+      // CRITICAL: Validate game state before continuation - don't continue finished games
+      if (payload.lastFrame?.state && payload.lastFrame.state !== 'NOT_FINISHED') {
+        throw new Error(`Cannot continue game in terminal state: ${payload.lastFrame.state}. Game has already ended.`);
       }
 
       // Send initial status
@@ -406,6 +411,7 @@ export class Arc3StreamService {
         maxTurns,
         reasoningEffort,
         existingGameGuid,  // Pass the game session guid to continue
+        scorecardId,  // CRITICAL: Pass scorecard ID to keep scorecard open across continuations
         previousResponseId,
         seedFrame: payload.lastFrame,  // CRITICAL FIX: Pass cached frame to avoid executing actions
         storeResponse: true,
@@ -424,8 +430,10 @@ export class Arc3StreamService {
 
       logger.info(`[ARC3 Streaming] Caching continuation frame for session ${sessionId}; frame index=${runResult.frames?.length ?? 0}`, 'arc3-stream-service');
 
+      // CRITICAL: Preserve scorecardId across continuations (stays open until game ends)
       this.updatePendingPayload(sessionId, {
         existingGameGuid: runResult.gameGuid,
+        scorecardId: runResult.scorecardId,  // CRITICAL: Keep scorecard ID for future continuations
         providerResponseId: runResult.providerResponseId ?? null,
         lastFrame: finalFrame,
       });

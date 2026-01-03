@@ -1,5 +1,31 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.25.0  Jan 3, 2026
+
+- **Arc3RealGameRunner Refactoring – Scorecard Fix + Tool Factory** (Author: Cascade)
+  - **What**: Fixed critical scorecard bug (never closed) and created tool factory to eliminate duplication.
+  - **Why**: Per audit (`docs/audits/2026-01-03-arc3-agents-sdk-audit.md`), scorecards must be closed when game reaches WIN or GAME_OVER. The 1,295-line file had ~400 lines of duplicated tool definitions between `run()` and `runWithStreaming()`.
+  - **How**:
+    - **Bug Fix**: Added `closeScorecard()` to `Arc3ApiClient.ts` and calls in both `run()` and `runWithStreaming()` when game state is WIN or GAME_OVER
+    - **Tool Factory**: Created `server/services/arc3/tools/Arc3ToolFactory.ts` with context-based tool creation functions
+    - **Context Pattern**: Tools receive `Arc3ToolContext` object with mutable game state, services, and optional streaming harness
+    - **Plan Document**: Created `docs/plans/2026-01-03-arc3-real-game-runner-refactor-plan.md` with full audit and remaining tasks
+  - **Files Created**: `Arc3ToolFactory.ts`, `tools/index.ts`, refactor plan document
+  - **Files Modified**: `Arc3ApiClient.ts` (+closeScorecard), `Arc3RealGameRunner.ts` (+scorecard close calls)
+  - **Remaining Work**: Integration of tool factory into Arc3RealGameRunner (tools still defined inline, factory ready for use)
+
+### Version 6.24.1  Jan 3, 2026
+
+- **OpenRouter Playground – Fixes and Improvements** (Author: Cascade)
+  - **What**: Fixed OpenRouter Playground to use dynamic model fetching from `/api/models` (from project's OpenRouter catalog), mirror Arc3AgentPlayground structure with `Arc3ConfigurationPanel`, and add proper scorecard handling.
+  - **Why**: Initial implementation used hardcoded outdated models from training data instead of the project's mature OpenRouter model catalog. Page structure diverged from the main playground, missing system prompt presets and configuration panel.
+  - **How**:
+    - **Dynamic Models**: Fetch from `/api/models` and filter by `provider === 'OpenRouter'` (matches project's `openrouterModels.ts` catalog)
+    - **Arc3ConfigurationPanel**: Reuse the same configuration component as Arc3AgentPlayground (system prompts, reasoning effort, etc.)
+    - **System Prompt Presets**: Added support for `twitch`, `playbook`, `none` presets via `/api/arc3/system-prompts`
+    - **Scorecard Fix**: Added `close_scorecard()` method to Python runner and call it after WIN/GAME_OVER (per audit findings)
+  - **Files**: `Arc3OpenRouterPlayground.tsx`, `arc3_openrouter_runner.py`
+
 ### Version 6.24.0  Jan 3, 2026
 
 - **OpenRouter Playground – Dedicated Frontend Page** (Author: Cascade)
@@ -9,7 +35,7 @@
     - **Frontend Page**: Created `Arc3OpenRouterPlayground.tsx` reusing all Arc3 UI components (GamePanel, ReasoningViewer, ToolTimeline, etc.)
     - **Provider Routing**: Always passes `provider: 'openrouter'` to `useArc3AgentStream`, routing to `/api/arc3-openrouter` backend
     - **BYOK Card**: OpenRouter API key input (amber styling, session-only, never stored)
-    - **Model Selection**: Dropdown with free OpenRouter models including `xiaomi/mimo-v2-flash:free`, `google/gemini-2.0-flash-exp:free`, `meta-llama/llama-3.3-70b-instruct:free`, `qwen/qwen-2.5-72b-instruct:free`, `deepseek/deepseek-r1:free`
+    - **Model Selection**: Dynamic model list from project's OpenRouter catalog via `/api/models`
     - **Route**: Added `/arc3/openrouter-playground` route in `App.tsx`
     - **Navigation**: Added amber-styled "OpenRouter Playground" button on ARC3 landing page
   - **Pattern**: Follows LLM-Council approach (Python subprocess + TypeScript bridge + BYOK)

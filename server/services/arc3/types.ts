@@ -20,6 +20,7 @@ export interface Arc3RunTimelineEntry {
 export interface Arc3AgentRunResult {
   runId: string;
   gameGuid: string;  // Game session identifier for continuation
+  scorecardId: string;  // CRITICAL: Scorecard ID for ARC API continuations (stays open across runs)
   finalOutput?: string;
   timeline: Arc3RunTimelineEntry[];
   frames: any[];
@@ -52,6 +53,7 @@ export interface Arc3AgentRunConfig {
   game_id?: string;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
   existingGameGuid?: string;  // For continuing existing game sessions
+  scorecardId?: string;  // CRITICAL: Scorecard ID for continuation (must be passed to keep scorecard open)
   previousResponseId?: string; // Responses API chaining support (must be provided by GPT-5 class callers)
   storeResponse?: boolean; // Whether to persist the response server-side (mandatory for GPT-5)
   seedFrame?: FrameData; // Optional cached frame to seed continuations without extra API calls

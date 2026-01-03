@@ -549,8 +549,16 @@ export class Arc3RealGameRunner {
     // Process timeline entries using extracted utility (eliminates duplication)
     const timeline = processRunItems(result.newItems, agentName);
 
-    // NOTE: Do NOT end the session here. Sessions remain open for continuations.
-    // The session ends naturally when the game reaches WIN or GAME_OVER state.
+    // Close scorecard when game reaches terminal state (per audit: must close after WIN/GAME_OVER)
+    // Sessions remain open for continuations ONLY if game is still in progress
+    if (currentFrame && (currentFrame.state === 'WIN' || currentFrame.state === 'GAME_OVER')) {
+      try {
+        await this.apiClient.closeScorecard(scorecardId);
+        logger.info(`[ARC3] Closed scorecard ${scorecardId} - game ended with ${currentFrame.state}`, 'arc3');
+      } catch (error) {
+        logger.warn(`[ARC3] Failed to close scorecard ${scorecardId}: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+      }
+    }
 
     const usage = result.state._context.usage;
     const providerResponseId = result.lastResponseId ?? null;
@@ -589,6 +597,7 @@ export class Arc3RealGameRunner {
     return {
       runId: randomUUID(),
       gameGuid: gameGuid || 'unknown',
+      scorecardId,  // CRITICAL: Return scorecard ID for session continuation
       finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
       timeline,
       frames: frames as any[],  // Arc3AgentRunResult accepts any[] for frames
@@ -608,27 +617,36 @@ export class Arc3RealGameRunner {
     const maxTurns = config.maxTurns ?? DEFAULT_MAX_TURNS;
     const gameId = config.game_id ?? DEFAULT_GAME_ID;
 
-    // Build scorecard tags: include educational playground metadata for transparency
-    const scorecardTags = [
-      'arc-explainer',
-      'educational-playground',  // Mark as educational, not official competition entry
-      'interactive-agent',         // User can interrupt/guide mid-game
-      `model:${config.model ?? DEFAULT_MODEL}`,
-      `reasoning:${config.reasoningEffort ?? 'low'}`,
-    ];
+    // CRITICAL: Reuse existing scorecard on continuation, open new one on fresh start
+    let scorecardId: string;
+    if (config.scorecardId) {
+      // Continuation: reuse existing scorecard (stays open across multiple agent runs)
+      scorecardId = config.scorecardId;
+      logger.info(`[ARC3 STREAMING] Reusing existing scorecard ${scorecardId} for continuation`, 'arc3');
+    } else {
+      // Fresh start: open new scorecard with educational metadata tags
+      const scorecardTags = [
+        'arc-explainer',
+        'educational-playground',  // Mark as educational, not official competition entry
+        'interactive-agent',         // User can interrupt/guide mid-game
+        `model:${config.model ?? DEFAULT_MODEL}`,
+        `reasoning:${config.reasoningEffort ?? 'low'}`,
+      ];
 
-    const scorecardId = await this.apiClient.openScorecard(
-      scorecardTags,
-      'https://github.com/arc-explainer/arc-explainer',
-      {
-        source: 'arc-explainer',
-        mode: 'educational-interactive',
-        game_id: gameId,
-        agentName,
-        userInterruptible: true,
-        reasoningLevel: config.reasoningEffort ?? 'low',
-      }
-    );
+      scorecardId = await this.apiClient.openScorecard(
+        scorecardTags,
+        'https://github.com/arc-explainer/arc-explainer',
+        {
+          source: 'arc-explainer',
+          mode: 'educational-interactive',
+          game_id: gameId,
+          agentName,
+          userInterruptible: true,
+          reasoningLevel: config.reasoningEffort ?? 'low',
+        }
+      );
+      logger.info(`[ARC3 STREAMING] Opened new scorecard ${scorecardId} for fresh game`, 'arc3');
+    }
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
@@ -1206,8 +1224,21 @@ export class Arc3RealGameRunner {
     // Process final timeline entries using extracted utility (eliminates duplication)
     const timeline = processRunItemsWithReasoning(result.newItems, agentName, streamState.accumulatedReasoning);
 
-    // NOTE: Do NOT end the session here. Sessions remain open for continuations.
-    // The session ends naturally when the game reaches WIN or GAME_OVER state.
+    // Close scorecard when game reaches terminal state (per audit: must close after WIN/GAME_OVER)
+    // Sessions remain open for continuations ONLY if game is still in progress
+    if (currentFrame && (currentFrame.state === 'WIN' || currentFrame.state === 'GAME_OVER')) {
+      try {
+        await this.apiClient.closeScorecard(scorecardId);
+        logger.info(`[ARC3 STREAMING] Closed scorecard ${scorecardId} - game ended with ${currentFrame.state}`, 'arc3');
+        streamHarness.emitEvent("scorecard.closed", {
+          scorecardId,
+          finalState: currentFrame.state,
+          timestamp: Date.now(),
+        });
+      } catch (error) {
+        logger.warn(`[ARC3 STREAMING] Failed to close scorecard ${scorecardId}: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+      }
+    }
 
     const usage = result.state._context.usage;
     const finalOutputCandidate = result.finalOutput;
