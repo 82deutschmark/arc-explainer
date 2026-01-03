@@ -528,7 +528,7 @@ export class Arc3RealGameRunner {
           effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
           summary: 'detailed',
         },
-        text: { verbosity: 'high' },
+        text: { verbosity: 'medium' },
         store: storeResponse,
         providerData: {
           metadata,
@@ -1057,7 +1057,7 @@ export class Arc3RealGameRunner {
           effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
           summary: 'detailed',
         },
-        text: { verbosity: 'high' },
+        text: { verbosity: 'medium' },
         store: storeResponse,
         providerData: {
           metadata,

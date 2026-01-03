@@ -297,6 +297,10 @@ export default function ARC3AgentPlayground() {
 
     const skipDefaultSystemPrompt = systemPromptPresetId === 'none';
 
+    // Reset user input visibility (prevent showing "send message" during run)
+    setShowUserInput(false);
+    setUserMessage('');
+
     start({
       game_id: gameId,
       agentName,
