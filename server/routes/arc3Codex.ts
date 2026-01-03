@@ -108,13 +108,20 @@ router.get(
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
-    res.flushHeaders();
 
-    // Register SSE connection
+    // Register SSE connection before flushing
     sseStreamManager.register(sessionId, res);
 
-    // Start streaming
-    await codexArc3StreamService.startStreaming(req, { ...payload, sessionId });
+    // Flush headers after registration
+    res.flushHeaders();
+
+    // Start streaming with error handling
+    try {
+      await codexArc3StreamService.startStreaming(req, { ...payload, sessionId });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      sseStreamManager.error(sessionId, 'STREAMING_ERROR', message);
+    }
   }),
 );
 
@@ -249,13 +256,20 @@ router.get(
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
-    res.flushHeaders();
 
-    // Register SSE connection
+    // Register SSE connection before flushing
     sseStreamManager.register(sessionId, res);
 
-    // Continue streaming
-    await codexArc3StreamService.continueStreaming(req, continuationPayload);
+    // Flush headers after registration
+    res.flushHeaders();
+
+    // Continue streaming with error handling
+    try {
+      await codexArc3StreamService.continueStreaming(req, continuationPayload);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      sseStreamManager.error(sessionId, 'STREAMING_ERROR', message);
+    }
   }),
 );
 
