@@ -16,10 +16,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gamepad2, ArrowLeft, RefreshCw, Key, Zap } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Gamepad2, ArrowLeft, RefreshCw, Key, Zap, Coins, AlertCircle, Loader2 } from 'lucide-react';
 import { requiresUserApiKey } from '@/lib/environmentPolicy';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
+import { useOpenRouterCredits, formatCredits } from '@/hooks/useOpenRouterCredits';
 import { Arc3ReasoningViewer } from '@/components/arc3/Arc3ReasoningViewer';
 import { Arc3ToolTimeline } from '@/components/arc3/Arc3ToolTimeline';
 import { Arc3GamePanel } from '@/components/arc3/Arc3GamePanel';
@@ -289,6 +291,13 @@ export default function Arc3OpenRouterPlayground() {
   const [userApiKey, setUserApiKey] = useState('');
   const byokRequired = requiresUserApiKey();
 
+  // Credits monitor - polls OpenRouter for current balance
+  const { credits, isLoading: creditsLoading, error: creditsError, refetch: refetchCredits } = useOpenRouterCredits({
+    apiKey: userApiKey,
+    pollInterval: 15000, // Poll every 15s during active use
+    enabled: Boolean(userApiKey.trim()),
+  });
+
   // Streaming
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
 
@@ -465,6 +474,64 @@ export default function Arc3OpenRouterPlayground() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Credits Monitor - shows when API key is provided */}
+            {userApiKey.trim() && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200">
+                      {creditsLoading ? (
+                        <Loader2 className="h-3 w-3 animate-spin text-amber-600" />
+                      ) : creditsError ? (
+                        <AlertCircle className="h-3 w-3 text-red-500" />
+                      ) : (
+                        <Coins className="h-3 w-3 text-amber-600" />
+                      )}
+                      <span className="text-[10px] font-medium text-amber-800">
+                        {creditsError ? (
+                          'Error'
+                        ) : credits ? (
+                          credits.remaining !== null ? (
+                            `${formatCredits(credits.remaining)} remaining`
+                          ) : (
+                            `${formatCredits(credits.usage)} used`
+                          )
+                        ) : (
+                          'Loading...'
+                        )}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => { e.stopPropagation(); refetchCredits(); }}
+                        className="h-4 w-4 p-0 ml-0.5 hover:bg-amber-100"
+                        disabled={creditsLoading}
+                      >
+                        <RefreshCw className={`h-2.5 w-2.5 text-amber-600 ${creditsLoading ? 'animate-spin' : ''}`} />
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs">
+                    {creditsError ? (
+                      <span className="text-red-600">{creditsError}</span>
+                    ) : credits ? (
+                      <div className="space-y-1">
+                        <div><strong>Label:</strong> {credits.label}</div>
+                        <div><strong>Used:</strong> {formatCredits(credits.usage)}</div>
+                        <div><strong>Limit:</strong> {credits.limit !== null ? formatCredits(credits.limit) : 'Unlimited'}</div>
+                        {credits.remaining !== null && (
+                          <div><strong>Remaining:</strong> {formatCredits(credits.remaining)}</div>
+                        )}
+                        <div><strong>Free Tier:</strong> {credits.isFreeTier ? 'Yes' : 'No'}</div>
+                      </div>
+                    ) : (
+                      'Enter API key to see credits'
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
             <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
               {state.status}
             </Badge>

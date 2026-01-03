@@ -15,7 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gamepad2, ArrowLeft, RefreshCw, Key } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Gamepad2, ArrowLeft, RefreshCw, Key, Brain, MessageSquare, Trophy } from 'lucide-react';
 import { requiresUserApiKey } from '@/lib/environmentPolicy';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
@@ -285,8 +286,18 @@ export default function ARC3AgentPlayground() {
   const [userApiKey, setUserApiKey] = useState('');
   const byokRequired = requiresUserApiKey();
 
+  // Onboarding modal - show once per session unless dismissed
+  const [showOnboarding, setShowOnboarding] = useState(true);
+
   // Streaming
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
+
+  // Handler for onboarding modal - starts game with defaults
+  const handleOnboardingStart = () => {
+    setShowOnboarding(false);
+    // Auto-start game with default settings (GPT-5 Nano, playbook prompt, ls20 game)
+    handleStart();
+  };
 
   const handleStart = () => {
     // BYOK: Block start if key required but not provided
@@ -415,6 +426,92 @@ export default function ARC3AgentPlayground() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Onboarding Modal - Educational Introduction */}
+      <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Welcome to ARC-AGI-3 Agent Playground</DialogTitle>
+            <DialogDescription>Learn how to collaborate with an AI agent to win games</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* What is an AI Agent */}
+            <div className="space-y-2">
+              <div className="flex items-start gap-3">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 flex-shrink-0">
+                  <Brain className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">What is an AI Agent?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    An AI agent is an intelligent system that can observe the game state, make decisions, and take actions. Unlike a static AI, it learns and adapts as it plays.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* How You Work Together */}
+            <div className="space-y-2">
+              <div className="flex items-start gap-3">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-100 flex-shrink-0">
+                  <MessageSquare className="h-4 w-4 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Your Role: Guide the Agent</h3>
+                  <p className="text-sm text-muted-foreground">
+                    You don't control the game directly. Instead, you collaborate with the agent:
+                  </p>
+                  <ol className="text-sm text-muted-foreground list-decimal list-inside mt-2 space-y-1 ml-2">
+                    <li>The agent takes exploratory actions to understand the game</li>
+                    <li>It analyzes what happened and reports its findings to you</li>
+                    <li>You read its reasoning and give strategic instructions</li>
+                    <li>The agent executes your instructions in the next round</li>
+                    <li>Repeat until the game is won</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            {/* Multiple Levels */}
+            <div className="space-y-2">
+              <div className="flex items-start gap-3">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-amber-100 flex-shrink-0">
+                  <Trophy className="h-4 w-4 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">The Challenge: Multiple Levels</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Each game has multiple levels with different rules and mechanics. Your job is to help the agent discover the pattern, understand the rules, and win each level.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Tip */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm font-medium text-blue-900">
+                Tip: Pay attention to what the agent reports. The more specific your instructions, the better it performs.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setShowOnboarding(false)}
+            >
+              Skip for Now
+            </Button>
+            <Button
+              onClick={handleOnboardingStart}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Start Game
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Ultra-compact single-line header */}
       <div className="border-b px-3 py-1">
         <div className="max-w-[1800px] mx-auto flex items-center justify-between gap-3">
