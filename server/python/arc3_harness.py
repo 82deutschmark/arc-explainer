@@ -165,8 +165,8 @@ class Arc3Harness:
         
         # Extract colors mentioned
         colors_mentioned = []
-        for color_name, color_value in COLOR_NAMES.items():
-            if color_name.lower() in statement.lower():
+        for color_value, color_name in COLOR_NAMES.items():
+            if isinstance(color_name, str) and color_name.lower() in statement.lower():
                 colors_mentioned.append((color_name, color_value))
         
         # Check if mentioned colors actually exist

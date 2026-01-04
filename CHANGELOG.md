@@ -1,5 +1,39 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.31.0  Jan 3, 2026
+
+- **Add General Intelligence Harness for ARC-AGI-3** (Author: Cascade)
+  - **What**: Implemented mathematical and topological grid analysis library (`arc3_harness.py`) for ARC-AGI-3 agents, with integration into OpenRouter runner.
+  - **Why**: Agents need mathematical understanding of grid state beyond heuristics. General Intelligence Harness provides entropy, symmetry, component analysis, delta tracking, and statement verification for any ARC-AGI-3 game without game-specific assumptions.
+  - **How**:
+    - **Core Harness** (`server/python/arc3_harness.py`):
+      - **Grid Analysis**: Entropy calculation, symmetry detection (5 axes), color histograms, connected components with flood-fill
+      - **Delta Analysis**: Frame-to-frame change detection, component matching across frames, transformation tracking
+      - **Semantic Bridge**: Coordinate extraction from LLM text, statement verification against actual grid state
+      - **General Design**: No fixed player object, no fog of war assumptions - works for any ARC-AGI-3 game
+    - **Integration** (`server/python/arc3_openrouter_runner.py`):
+      - Enhanced `Arc3OpenRouterAgent` with harness initialization and analysis
+      - Mathematical context injected into LLM prompts (entropy, component count, symmetry axes)
+      - Statement verification detects hallucinations by checking reasoning against grid changes
+      - Graceful fallback when harness unavailable
+    - **Documentation** (`docs/2026-01-03-arc3-python-preprocessing-guide.md`):
+      - Added complete General Intelligence Harness specification
+      - Mathematical analysis methods, delta reasoning, semantic bridge implementation
+      - Example usage and integration patterns
+    - **Testing**:
+      - `test_harness.py`: Comprehensive test suite (grid analysis, delta, coordinates, verification)
+      - `test_integration.py`: Integration test with OpenRouter runner
+      - All tests passing successfully
+  - **Technical Details**:
+    - Uses NumPy for efficient grid operations
+    - Flood-fill algorithm for connected component detection
+    - Component matching using position overlap across frames
+    - Coordinate extraction with regex patterns for (x, y) format
+    - Color name mapping for semantic verification
+  - **Files Created**: `server/python/arc3_harness.py`, `test_harness.py`, `test_integration.py`
+  - **Files Modified**: `server/python/arc3_openrouter_runner.py`, `docs/2026-01-03-arc3-python-preprocessing-guide.md`, `CHANGELOG.md`
+  - **Impact**: Provides agents with mathematical grid understanding, enables reasoning verification, supports any ARC-AGI-3 game through generalized analysis
+
 ### Version 6.30.0  Jan 3, 2026
 
 - **Add Codex Playground & Python Preprocessing Documentation** (Author: Claude Sonnet 4.5)
