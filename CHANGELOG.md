@@ -1,5 +1,24 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.1  Jan 3, 2026
+
+- **Fix ARC3 Game ID Resolution in OpenRouter Python Runner** (Author: Claude Haiku 4.5)
+  - **What**: Fixed critical bug preventing OpenRouter agent from starting games - ARC3 API requires full game IDs with hash suffixes.
+  - **Why**: The ARC3 API at `three.arcprize.org` returns game IDs like `ls20-fa137e247ce6`, not `ls20`. When the playground passed just the prefix, the API returned "no available game backend" (400 error).
+  - **How**:
+    - **Arc3Client Methods** (`server/python/arc3_openrouter_runner.py:227-258`):
+      - `list_games()`: Fetch list of available games from `/api/games` endpoint
+      - `resolve_game_id()`: Match game ID prefix (e.g., 'ls20') to full game ID with hash suffix (e.g., 'ls20-fa137e247ce6')
+    - **Main Game Loop** (`server/python/arc3_openrouter_runner.py:823-834`):
+      - Resolve game_id before starting game
+      - Pass resolved_game_id to both `start_game()` and `execute_action()` calls
+      - Emit resolution status message for debugging
+  - **Impact**:
+    - OpenRouter agent can now successfully start games
+    - Game frames load and update correctly
+    - Agent reasoning and actions execute properly
+  - **Files Modified**: `server/python/arc3_openrouter_runner.py`
+
 ### Version 6.33.0  Jan 3, 2026
 
 - **Fix OpenRouter Playground Streaming and Credits** (Author: Claude Haiku 4.5)
