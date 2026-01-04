@@ -1,669 +1,227 @@
 # Arc3 Council Voting Integration Plan
 
-**Date:** 2026-01-04
-**Author:** Sonnet 4.5
-**Purpose:** Design and implement a council voting system that advises Arc3 agents on which action to take. Only one agent runs the game; the council provides multi-LLM consensus on action selection.
+**Date:** 2026-01-04  
+**Author:** Sonnet 4.5  
+**Purpose:** Restore a full three-stage LLM council deliberation loop for ARC3 gameplay. Only one gameplay agent executes actions, but it consults a multi-model council (minimum four advisors + one chairman) for hypotheses, critique, and action selection. This plan aligns with ARC3 reference docs, preprocessing guide, and external agent learnings.
 
 ---
 
-## Overview
+## 1. Objectives & Constraints
 
-Create a council service that integrates with existing Arc3 agents (Codex, OpenRouter, Haiku) to provide multi-LLM voting on action decisions:
-
-1. **Action Query**: Playing agent sends game state to council before deciding on an action
-2. **Parallel Voting**: Council queries multiple LLMs in parallel, each votes on which of the 7 actions to take
-3. **Consensus Aggregation**: Council aggregates votes and returns the most recommended action
-4. **Agent Execution**: Playing agent executes the council-recommended action
-
-**Key Design Principle:** Simple voting system. Each LLM returns just an action name (ACTION1-7) + coordinates if needed. Council returns the winning action to the playing agent.
-
----
-
-## Architecture
-
-### Communication Flow
-
-```
-Playing Agent (Codex/OpenRouter/Haiku)
-    ↓ "What action should I take?"
-POST /api/arc3-council/vote
-    ↓
-Arc3CouncilService.ts (TypeScript)
-    ↓
-Parallel queries to OpenRouter API
-    ↓
-Multiple LLMs vote (ACTION1-7 + coordinates)
-    ↓
-Aggregate votes → return winner
-    ↓
-Playing Agent executes council-recommended action
-```
-
-### Simple Voting Process
-
-**Input to Council:**
-- Game state (3D grid frame)
-- Available actions (ACTION1-7)
-- Current score, turn, game state
-- Optional: previous action history
-
-**Each LLM Vote:**
-- Receives game state as text description (or base64 image for vision models)
-- Returns: `{ action: "ACTION3", coordinates: [x, y] or null, reasoning: "..." }`
-
-**Council Aggregation:**
-- Count votes per action
-- Return winning action with highest vote count
-- Break ties by random selection or confidence score
-- Include vote breakdown for transparency
-
-**Output to Agent:**
-```json
-{
-  "recommended_action": "ACTION3",
-  "coordinates": [5, 7],
-  "confidence": 0.8,
-  "vote_breakdown": {
-    "ACTION1": 1,
-    "ACTION2": 0,
-    "ACTION3": 3,
-    "ACTION4": 0,
-    "ACTION5": 1,
-    "ACTION6": 1,
-    "ACTION7": 0
-  },
-  "total_votes": 6
-}
-```
+| Goal | Details |
+| --- | --- |
+| Multi-LLM Deliberation | Use **4 advisor LLMs + 1 chairman** (default: Claude Haiku 4.5, Gemini 2 Flash Thinking, GPT-5 mini, Grok 4.1 fast; chairman = Claude Sonnet 4.5). Models sourced via OpenRouter, matching `llm-council` patterns. |
+| Three-Stage Flow | **Stage 1 (Hypothesis Generation)** → **Stage 2 (Peer Ranking)** → **Stage 3 (Chairman Synthesis)**, identical in spirit to `llm-council` but ARC3-specific. |
+| Python Preprocessing | Every council request must include structured arc3_python_preprocessing outputs (objects, deltas, symmetry, change detection, etc.) plus PNG renders per `arc3GridImageService`. |
+| Integration Scope | Works with Codex (TS runner), OpenRouter (Python runner), and Haiku harness without duplicating game loops. Council provides advice; agents still act. |
+| Performance Guardrails | Council should be optional per run, BYOK-compliant, respect ARC3 rate limits, and degrade gracefully if any model times out. |
 
 ---
 
-## File Structure
-
-### New Files to Create
+## 2. High-Level Architecture
 
 ```
-server/services/arc3/Arc3CouncilService.ts        # Core voting service
-server/routes/arc3Council.ts                      # HTTP endpoints
-server/python/arc3_council_vote.py                # Python voting logic (optional, can be pure TS)
-client/src/hooks/useArc3Council.ts                # React hook for council integration
+Gameplay Agent (Codex / OpenRouter / Haiku)
+    │ (requests advice)
+    ▼
+POST /api/arc3-council/prepare              (stage payload with preprocessed frame + metadata)
+    │
+    ▼
+Arc3CouncilStreamService (TS) ─┬─> Stage 1 workers (advisor LLMs)
+                               ├─> Stage 2 workers (advisor LLMs, anonymized)
+                               └─> Stage 3 chairman (Sonnet 4.5)
+    │                                  │
+    │ (SSE events: stage start/complete, council.status, council.completed)
+    ▼
+Gameplay Agent receives recommendations (via SSE or direct call)
+    │
+    ▼
+Agent chooses final action (may follow or override council)
 ```
 
-### Files to Modify (Integration Points)
-
-```
-server/services/arc3/CodexArc3Runner.ts           # Add council query before action decision
-server/services/arc3/Arc3OpenRouterStreamService.ts  # Add council query to Python runner
-server/services/arc3/HaikuArc3StreamService.ts    # Add council query to Haiku agent
-client/src/pages/Arc3CodexPlayground.tsx          # Add "Enable Council" toggle
-client/src/pages/Arc3OpenRouterPlayground.tsx     # Add "Enable Council" toggle
-client/src/pages/Arc3HaikuPlayground.tsx          # Add "Enable Council" toggle
-```
+Key references:
+- [`docs/reference/arc3/ARC3.md`](../reference/arc3/ARC3.md) – canonical action/state spec.
+- [`docs/reference/arc3/ARC3_Games.md`](../reference/arc3/ARC3_Games.md) – action semantics applied to council prompts.
+- [`docs/2026-01-03-arc3-python-preprocessing-guide.md`](../2026-01-03-arc3-python-preprocessing-guide.md) – preprocessing contract for Stage 1 payloads.
+- [`docs/2026-01-03-arc3-agent-external-learnings.md`](../2026-01-03-arc3-agent-external-learnings.md) & [`docs/2026-01-03-external-agents-detailed-analysis.md`](../2026-01-03-external-agents-detailed-analysis.md) – TOMAS (perception/learning/decision) + GuidedRandom heuristics we reuse in the council reasoning narrative.
+- [`llm-council/`](../../llm-council) – reference for multi-model orchestration + anonymized ranking.
 
 ---
 
-## Implementation Plan
+## 3. Detailed Flow (Three Stages)
 
-### Phase 1: Core Council Service (TypeScript)
+### 3.1 Payload Preparation (before Stage 1)
+1. Gameplay agent captures latest frame bundle (3D grid array, metadata, score, state, available actions, last 5 actions).
+2. Python preprocessing (per guide §70–§904):
+   - Connected components w/ color naming.
+   - Spatial region tagging (9-zone grid).
+   - Frame differencing (pixels changed, objects moved/appeared/disappeared).
+   - Symmetry/global pattern detection.
+   - Navigation vectors (player ↔ objectives) when detectable.
+   - Surprise metric (if agent predicted prior result).
+3. Render 2D PNG via `arc3GridImageService` (JS) or `render_arc3_frame_to_png` (Python fallback) for vision-capable advisors.
+4. Compose `StageContext` JSON:
+   ```json
+   {
+     "game_id": "ls20-fa137e247ce6",
+     "turn": 14,
+     "score": 120,
+     "state": "IN_PROGRESS",
+     "available_actions": ["RESET","ACTION1","ACTION2","ACTION5","ACTION6"],
+     "action_history": ["RESET","ACTION1","ACTION1","ACTION5"],
+     "preprocessing": { ... },     // from Python guide structures
+     "frame_image_b64": "iVBORw0KGgo...",
+     "council_models": ["anthropic/claude-haiku-4.5", ...],
+     "chairman_model": "anthropic/claude-sonnet-4.5"
+   }
+   ```
 
-**File: `server/services/arc3/Arc3CouncilService.ts`**
-
-```typescript
-/**
- * Arc3 Council Voting Service
- * Queries multiple LLMs in parallel to vote on which action to take.
- * Returns the winning action with vote breakdown.
- */
-
-import { logger } from '../../utils/logger.ts';
-
-export interface CouncilVoteRequest {
-  game_id: string;
-  turn: number;
-  score: number;
-  state: string;
-  available_actions: string[];
-  frame: number[][][];  // 3D grid
-  action_history?: string[];
-  council_models?: string[];  // Default: 3-4 models
-  api_key?: string;
-}
-
-export interface LLMVote {
-  model: string;
-  action: string;
-  coordinates: [number, number] | null;
-  reasoning: string;
-}
-
-export interface CouncilVoteResult {
-  recommended_action: string;
-  coordinates: [number, number] | null;
-  confidence: number;
-  vote_breakdown: Record<string, number>;
-  total_votes: number;
-  all_votes: LLMVote[];
-}
-
-/**
- * Query a single LLM for its action vote
- */
-async function queryLLMVoting(
-  model: string,
-  gameDescription: string,
-  availableActions: string[],
-  apiKey: string
-): Promise<LLMVote> {
-  const prompt = `You are playing an Arc3 puzzle game. Based on the game state, vote on which action to take.
-
-GAME STATE:
-${gameDescription}
-
-AVAILABLE ACTIONS: ${availableActions.join(', ')}
-
-Return your vote as JSON:
-{
-  "action": "ACTION3",
-  "coordinates": [x, y] or null,
-  "reasoning": "brief explanation"
-}
-
-Only return the JSON, nothing else.`;
-
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://arc-explainer.com',
-    },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      response_format: { type: 'json_object' },
-    }),
-  });
-
-  const data = await response.json();
-  const content = data.choices[0].message.content;
-  const parsed = JSON.parse(content);
-
-  return {
-    model,
-    action: parsed.action,
-    coordinates: parsed.coordinates || null,
-    reasoning: parsed.reasoning || '',
-  };
-}
-
-/**
- * Build text description of game state for LLMs
- */
-function buildGameDescription(request: CouncilVoteRequest): string {
-  const frame = request.frame[0] || [];  // First layer
-  const height = frame.length;
-  const width = height > 0 ? frame[0].length : 0;
-
-  let desc = `Game: ${request.game_id}\n`;
-  desc += `Turn: ${request.turn}, Score: ${request.score}, State: ${request.state}\n`;
-  desc += `Grid size: ${height}x${width}\n`;
-
-  // Simple grid representation (can be enhanced)
-  desc += 'Grid:\n';
-  for (const row of frame) {
-    desc += row.map(cell => cell.toString().padStart(2)).join(' ') + '\n';
+### 3.2 Stage 1 – Hypothesis Generation (AISTHESIS analogue)
+- **Participants:** All advisor LLMs (default 4).
+- **Prompt Inputs:** Preprocessing summary + PNG + ARC3 action spec pulled from docs.
+- **Prompt Tasks:**
+  1. Describe observed objects, rules, and win hypotheses.
+  2. Predict semantics of ACTION1–7 given the scene (tie back to `ARC3_Games.md`).
+  3. Propose up to 5 testable hypotheses with confidence, referencing preprocessing evidence (objects moved, symmetry, etc.).
+  4. Suggest candidate coordinates for ACTION6 if relevant (0–63 range).
+- **Output Schema:**
+  ```json
+  {
+    "model": "google/gemini-2-flash-thinking-exp",
+    "hypotheses": [
+      {"id":"H1","text":"ACTION1 moves the key up","confidence":0.62,"evidence":["object OBJ_3 shifted -1y"]},
+      ...
+    ],
+    "action_rationale": [{"action":"ACTION5","reason":"Interact with rotator at (18,12)"}],
+    "concerns": ["Health dropping 5/turn"]
   }
+  ```
+- **SSE Events:** `council.stage1_start`, per-model `council.stage1_chunk`, final `council.stage1_complete`.
 
-  if (request.action_history && request.action_history.length > 0) {
-    desc += `Recent actions: ${request.action_history.slice(-5).join(', ')}\n`;
+### 3.3 Stage 2 – Peer Ranking / Cross-Examination (SOPHIA critique)
+- **Anonymization:** Label outputs as Set A/B/C/D (shuffle order).
+- **Prompt Tasks:**
+  - Evaluate each hypothesis set on specificity, evidence, parsimony, and coverage (per user request).
+  - Identify contradictions or missing considerations (e.g., ignoring ACTION6).
+  - Vote for top 2 hypothesis sets; optionally propose merged rules.
+- **Output Schema:**
+  ```json
+  {
+    "model":"openai/gpt-5-mini",
+    "ranking":[{"set":"B","score":0.9},{"set":"D","score":0.75}],
+    "criticisms":{"Set A":"ignores coordinate action","Set C":"contradicts color change report"},
+    "suggested_tests":["ACTION6 at (27,14) to confirm rotator"]
   }
+  ```
+- **Events:** `council.stage2_start`, `council.stage2_complete` (includes ranking matrix + anonymization map).
 
-  return desc;
-}
-
-/**
- * Aggregate votes and determine winner
- */
-function aggregateVotes(votes: LLMVote[]): CouncilVoteResult {
-  const voteBreakdown: Record<string, number> = {
-    ACTION1: 0, ACTION2: 0, ACTION3: 0, ACTION4: 0,
-    ACTION5: 0, ACTION6: 0, ACTION7: 0,
-  };
-
-  for (const vote of votes) {
-    const action = vote.action.toUpperCase();
-    if (voteBreakdown.hasOwnProperty(action)) {
-      voteBreakdown[action]++;
-    }
+### 3.4 Stage 3 – Chairman Synthesis (LOGOS)
+- **Inputs:** Raw Stage 1 hypotheses, Stage 2 rankings/criticisms, preprocessing snapshot, ARC3 action/state data.
+- **Prompt Requirements:**
+  - Summarize consensus top rules and disagreements.
+  - Recommend next action (one of 7 actions, ACTION6 may include coords).
+  - Provide reasoning referencing hypotheses + rankings + preprocessing evidence.
+  - Output confidence (0–1) and fallback plan if action fails.
+- **Output Schema:**
+  ```json
+  {
+    "top_rules": [
+      {"text":"ACTION1 moves player north reducing health by 5", "confidence":0.82},
+      {"text":"Rotator at (18,12) toggles key shape", "confidence":0.71}
+    ],
+    "suggested_action": {"name":"ACTION5","coordinates":[18,12]},
+    "reasoning":"Council consensus favors testing rotator before health depletes.",
+    "confidence":0.78,
+    "follow_up":"If rotator fails, use ACTION6 on door at (30,8)"
   }
-
-  // Find winning action
-  let maxVotes = 0;
-  let winner = 'ACTION1';
-  let winnerCoords: [number, number] | null = null;
-
-  for (const [action, count] of Object.entries(voteBreakdown)) {
-    if (count > maxVotes) {
-      maxVotes = count;
-      winner = action;
-      // Use coordinates from first vote for winning action
-      const winningVote = votes.find(v => v.action.toUpperCase() === action);
-      winnerCoords = winningVote?.coordinates || null;
-    }
-  }
-
-  const confidence = maxVotes / votes.length;
-
-  return {
-    recommended_action: winner,
-    coordinates: winnerCoords,
-    confidence,
-    vote_breakdown: voteBreakdown,
-    total_votes: votes.length,
-    all_votes: votes,
-  };
-}
-
-/**
- * Main voting function - queries multiple LLMs in parallel
- */
-export async function voteOnAction(
-  request: CouncilVoteRequest
-): Promise<CouncilVoteResult> {
-  const apiKey = request.api_key || process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    throw new Error('OpenRouter API key required');
-  }
-
-  const councilModels = request.council_models || [
-    'anthropic/claude-haiku-4.5',
-    'google/gemini-2-flash-thinking-exp',
-    'openai/gpt-5-mini',
-  ];
-
-  const gameDescription = buildGameDescription(request);
-
-  logger.info(
-    `[Arc3Council] Starting vote for ${request.game_id} turn ${request.turn} with ${councilModels.length} models`,
-    'arc3-council'
-  );
-
-  // Query all models in parallel
-  const votePromises = councilModels.map(model =>
-    queryLLMVoting(model, gameDescription, request.available_actions, apiKey)
-  );
-
-  const votes = await Promise.all(votePromises);
-
-  logger.info(
-    `[Arc3Council] Received ${votes.length} votes for ${request.game_id}`,
-    'arc3-council'
-  );
-
-  return aggregateVotes(votes);
-}
-
-export const arc3CouncilService = {
-  voteOnAction,
-};
-```
+  ```
+- **Events:** `council.stage3_start`, `council.stage3_complete`, `council.completed`.
 
 ---
 
-### Phase 2: HTTP Endpoints
+## 4. Components & File Work
 
-**File: `server/routes/arc3Council.ts`**
-
-```typescript
-/**
- * HTTP endpoints for Arc3 council voting.
- */
-
-import express, { type Request, type Response } from 'express';
-import { z } from 'zod';
-import { arc3CouncilService } from '../services/arc3/Arc3CouncilService.ts';
-import { logger } from '../utils/logger.ts';
-import { requiresUserApiKey } from '@shared/config/environmentPolicy.ts';
-
-const router = express.Router();
-
-const VoteSchema = z.object({
-  game_id: z.string(),
-  turn: z.number().int().min(0),
-  score: z.number().int().min(0),
-  state: z.string(),
-  available_actions: z.array(z.string()),
-  frame: z.array(z.array(z.array(z.number()))),  // 3D grid
-  action_history: z.array(z.string()).optional().default([]),
-  council_models: z.array(z.string()).optional(),
-  api_key: z.string().optional(),
-});
-
-/**
- * POST /api/arc3-council/vote
- * Query council for action recommendation.
- */
-router.post('/vote', async (req: Request, res: Response) => {
-  try {
-    const validated = VoteSchema.parse(req.body);
-
-    // BYOK check
-    const byokRequired = requiresUserApiKey();
-    if (byokRequired && !validated.api_key) {
-      return res.status(400).json({
-        success: false,
-        error: 'OpenRouter API key required in production (BYOK)',
-      });
-    }
-
-    logger.info(
-      `[Arc3Council] Vote request for ${validated.game_id} turn ${validated.turn}`,
-      'arc3-council'
-    );
-
-    const result = await arc3CouncilService.voteOnAction(validated);
-
-    res.json({
-      success: true,
-      data: result,
-    });
-  } catch (error) {
-    logger.error(
-      `[Arc3Council] Vote failed: ${error instanceof Error ? error.message : String(error)}`,
-      'arc3-council'
-    );
-    res.status(400).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Vote failed',
-    });
-  }
-});
-
-export { router as arc3CouncilRouter };
-```
+| Area | Work |
+| --- | --- |
+| **Backend Routes** | Recreate `/api/arc3-council/prepare`, `/stream/:sessionId`, `/cancel/:sessionId` using SSE (Arc3Codex pattern). Prepare route stores StageContext; stream route orchestrates 3-stage flow. |
+| **Services (TS)** | `Arc3CouncilStreamService.ts` (session store, SSE wiring) + `Arc3CouncilOrchestrator.ts` (stage runner). Integrate `arc3GridImageService` + new preprocess payload schema. |
+| **Python Helpers** | Optional `server/python/arc3_council_preprocess.py` to reuse object detection/delta logic from `arc3_python_preprocessing`. Ensure output matches StageContext spec. |
+| **Model Workers** | Stage 1 & Stage 2 can reuse `llm-council` NDJSON patterns or converge in TS via parallel OpenRouter calls. Stage 3 uses chairman model with structured JSON output. |
+| **Agent Integration** | - Codex runner: listen for `council.*` SSE events, show reasoning viewer updates, optionally bias tool choice. <br> - OpenRouter runner: call REST endpoint between turns (since Python already handles NDJSON). <br> - Haiku: use existing SSE input to overlay council notes on observations panel. |
+| **Frontend** | Extend `useArc3AgentStream` to subscribe to `council.stage*` events. Add Council panel (tabs: Hypotheses, Rankings, Recommendation). Provide toggle + model selection in each playground config. |
+| **Config** | `server/config/arc3Council.ts` storing default advisor roster, chairman, timeout budgets (Stage 1: 12s, Stage 2: 10s, Stage 3: 8s), max tokens, reasoning settings. |
 
 ---
 
-### Phase 3: Agent Integration
+## 5. Prompt & Payload Design Notes
 
-**Integration Point: `server/services/arc3/CodexArc3Runner.ts`**
-
-Add council query before action decision in the tool execution loop:
-
-```typescript
-// Inside CodexArc3Runner.runWithStreaming() method, before calling executeAction()
-
-// Check if council voting is enabled
-if (runConfig.enableCouncil) {
-  try {
-    const voteResult = await arc3CouncilService.voteOnAction({
-      game_id: gameId,
-      turn: currentFrameNumber,
-      score: currentScore || 0,
-      state: gameState,
-      available_actions: availableActions,
-      frame: currentFrame,
-      action_history: actionHistory,
-      council_models: runConfig.councilModels,
-      api_key: runConfig.apiKey,
-    });
-
-    logger.info(
-      `[CodexRunner] Council recommends ${voteResult.recommended_action} with confidence ${voteResult.confidence}`,
-      'arc3-council'
-    );
-
-    // Emit council result to SSE for UI display
-    streamHarness.emitEvent('council.vote_result', voteResult);
-
-    // Store council recommendation for agent to consider
-    streamState.councilRecommendation = voteResult;
-  } catch (error) {
-    logger.warn(`[CodexRunner] Council query failed, proceeding without: ${error}`, 'arc3-council');
-  }
-}
-
-// Then agent makes its own decision (can optionally consider council recommendation)
-const actionDecision = await agent.decideAction(currentFrame, availableActions, streamState.councilRecommendation);
-```
-
-**Integration Point: `server/python/arc3_openrouter_runner.py`**
-
-Add council query before LLM action decision:
-
-```python
-# Inside Arc3OpenRouterAgent.decide_action() method
-
-# Check if council voting is enabled
-if self.enable_council:
-    try:
-        # Call TypeScript council service via HTTP
-        vote_response = requests.post(
-            'http://localhost:3000/api/arc3-council/vote',
-            json={
-                'game_id': self.game_id,
-                'turn': self.turn,
-                'score': self.score,
-                'state': self.state,
-                'available_actions': self.available_actions,
-                'frame': self.current_frame,
-                'action_history': self.action_history,
-                'council_models': self.council_models,
-                'api_key': self.api_key,
-            },
-            timeout=30
-        )
-        vote_result = vote_response.json()['data']
-
-        print(f'[Council] Recommends {vote_result["recommended_action"]} (confidence: {vote_result["confidence"]})')
-
-        # Include council recommendation in system prompt
-        council_guidance = f"\n\nCOUNCIL RECOMMENDATION: {vote_result['recommended_action']} with {vote_result['confidence']:.0%} confidence.\nVote breakdown: {vote_result['vote_breakdown']}\n"
-        system_prompt += council_guidance
-    except Exception as e:
-        print(f'[Council] Query failed: {e}, proceeding without council guidance')
-```
+1. **Grounding** – All prompts inject a mini-spec excerpt (ARC3 actions table + coordinate rules) so advisors stay consistent.
+2. **Preprocessing Attachment** – Provide both JSON summary and PNG to advisors; Stage 2 may omit PNG to save cost.
+3. **Token Budgets** – Stage 1 advisors limited to ~900 tokens output; Stage 2 ranking <600 tokens; Stage 3 chairman <700 tokens.
+4. **Failure Handling** – If any advisor fails, log `council.stage_error` but continue with remaining votes (minimum quorum = 2).
+5. **Rate Limits** – Enforce per-turn cooldown (e.g., only consult council every N turns or when agent requests) to stay under ARC API limits and OpenRouter quotas.
+6. **Security/BYOK** – Route must respect environment policy (production requires user-supplied OpenRouter key).
 
 ---
 
-### Phase 4: Frontend Integration
+## 6. Implementation Phases
 
-**File: `client/src/hooks/useArc3Council.ts`**
+1. **Phase A – Foundations (Backend)**
+   - Recreate docs from StageContext spec.
+   - Implement SSE route + session TTL.
+   - Wire Stage 1/2/3 orchestrator with mock advisors (unit tests).
 
-```typescript
-/**
- * React hook for Arc3 council voting.
- * Simple blocking API - no SSE needed for voting.
- */
+2. **Phase B – Preprocessing & Payload**
+   - Integrate Python preprocessing outputs (reuse or import from existing guide implementations).
+   - Ensure ACTION6 coordinates validated (0–63) before sending to LLMs.
 
-import { useState } from 'react';
-import { apiRequest } from '@/lib/queryClient';
+3. **Phase C – Advisor/Chairman Prompts**
+   - Author prompts referencing ARC docs.
+   - Implement anonymization + ranking aggregator (use `llm-council` approach).
+   - Add logging + metrics (per-stage latency, failures).
 
-export interface CouncilVoteRequest {
-  game_id: string;
-  turn: number;
-  score: number;
-  state: string;
-  available_actions: string[];
-  frame: number[][][];
-  action_history?: string[];
-  council_models?: string[];
-  api_key?: string;
-}
+4. **Phase D – Agent + Frontend Integration**
+   - Hook Codex/OpenRouter/Haiku to optional council toggle.
+   - Surface SSE events in UI (council timeline).
+   - Provide plan for how agents use recommendations (auto-follow threshold or informational only).
 
-export interface CouncilVoteResult {
-  recommended_action: string;
-  coordinates: [number, number] | null;
-  confidence: number;
-  vote_breakdown: Record<string, number>;
-  total_votes: number;
-  all_votes: Array<{
-    model: string;
-    action: string;
-    coordinates: [number, number] | null;
-    reasoning: string;
-  }>;
-}
-
-export function useArc3Council() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const vote = async (request: CouncilVoteRequest): Promise<CouncilVoteResult | null> => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await apiRequest('POST', '/api/arc3-council/vote', request);
-      const result = await response.json();
-      return result.data;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Council vote failed';
-      setError(message);
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return { vote, isLoading, error };
-}
-```
-
-**Frontend Toggle Integration (Example: `Arc3CodexPlayground.tsx`)**
-
-```typescript
-// Add to playground configuration panel
-const [enableCouncil, setEnableCouncil] = useState(false);
-
-// Pass to backend when starting game
-const startResult = await apiRequest('POST', '/api/arc3-codex/stream/prepare', {
-  game_id: gameId,
-  agentName,
-  enableCouncil,  // NEW
-  councilModels: ['anthropic/claude-haiku-4.5', 'google/gemini-2-flash-thinking-exp', 'openai/gpt-5-mini'],
-  // ... other config
-});
-
-// Display council vote results in UI
-{state.councilVoteResult && (
-  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-    <h4 className="font-semibold text-purple-900 flex items-center gap-2">
-      <Users className="w-4 h-4" />
-      Council Recommendation
-    </h4>
-    <div className="mt-2 space-y-2">
-      <div className="flex justify-between items-center">
-        <span className="text-purple-700">Action:</span>
-        <span className="font-mono font-bold text-purple-900">
-          {state.councilVoteResult.recommended_action}
-        </span>
-      </div>
-      <div className="flex justify-between items-center">
-        <span className="text-purple-700">Confidence:</span>
-        <span className="text-purple-900">
-          {(state.councilVoteResult.confidence * 100).toFixed(0)}%
-        </span>
-      </div>
-      <div className="mt-3 pt-3 border-t border-purple-200">
-        <span className="text-sm text-purple-600">Vote Breakdown:</span>
-        <div className="grid grid-cols-7 gap-1 mt-2">
-          {Object.entries(state.councilVoteResult.vote_breakdown).map(([action, count]) => (
-            <div key={action} className="text-center">
-              <div className="text-xs text-purple-600">{action}</div>
-              <div className="font-bold text-purple-900">{count}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-```
+5. **Phase E – QA & Observability**
+   - Test on ls20 + ft09 to validate hypotheses quality.
+   - Add analytics (per-stage success, average confidence, follow-rate).
+   - Update `CHANGELOG.md` + docs references.
 
 ---
 
-## Implementation Phases
+## 7. Risks & Mitigations
 
-### Phase 1: Core Service (2 hours)
-- Create `Arc3CouncilService.ts` with voting logic
-- Create `arc3Council.ts` routes
-- Add route to `server/routes.ts`
-- Test with curl/Postman
-
-### Phase 2: Agent Integration (3 hours)
-- Integrate into `CodexArc3Runner.ts`
-- Integrate into `arc3_openrouter_runner.py`
-- Add `enableCouncil` flag to run configs
-- Test council voting in both agents
-
-### Phase 3: Frontend (2 hours)
-- Create `useArc3Council.ts` hook
-- Add "Enable Council" toggle to all three playgrounds
-- Display council vote results in UI
-- Test end-to-end
-
-### Phase 4: Polish (1 hour)
-- Add council vote history to timeline
-- Improve game description for LLMs
-- Add configurable council models
-- Update CHANGELOG
-
-**Total Estimated Time: 8 hours**
+| Risk | Mitigation |
+| --- | --- |
+| Token/Latency blowups | Enforce strict prompt budgets, bail-out timers (Stage 1 12s, Stage 2 10s, Stage 3 8s). |
+| Advisor disagreement | Chairman includes tie-break + fallback plan; agent may override if confidence < threshold. |
+| Preprocessing drift | Keep preprocessing library versioned (import from `arc3_python_preprocessing` guide). Add schema validation before sending. |
+| Cost | Allow per-provider model list (user may drop expensive Grok). Add “light council” mode (2 advisors + chairman) for dev. |
+| Agent dependency | Council is advisory; agent must still verify ACTION6 coordinates; manual actions unaffected. |
 
 ---
 
-## Testing Strategy
+## 8. Success Criteria
 
-1. **Unit Tests**: Test vote aggregation logic
-2. **Integration Tests**: Test council service with mock LLM responses
-3. **E2E Tests**: Test full agent run with council enabled
-4. **Manual Tests**: Run ls20 game with council, observe vote patterns
-
----
-
-## Future Enhancements
-
-- **Vision Models**: Use base64 PNG images instead of text grid description
-- **Weighted Voting**: Give some models more weight based on historical accuracy
-- **Learning**: Track which council votes lead to successful actions, adjust model weights
-- **Multi-Turn Memory**: Council remembers previous hypotheses across turns
-- **Explainability**: Detailed reasoning from each LLM voter
+1. Council runs complete Stage 1–3 in <35s total with ≥3 advisors participating.
+2. Stage outputs reference preprocessing evidence and ARC3 action semantics.
+3. Agents can subscribe to `council.*` SSE events and display them in UI timelines.
+4. Optional auto-follow threshold (e.g., follow council if confidence ≥0.75) works without breaking existing runs.
+5. Documentation updated (plan, integration notes, changelog) and aligned with ARC3 references.
 
 ---
 
-## Configuration
+## 9. Follow-Up Work (Post-MVP)
 
-Add to `server/config/arc3.ts`:
-
-```typescript
-export const ARC3_COUNCIL_CONFIG = {
-  defaultCouncilModels: [
-    'anthropic/claude-haiku-4.5',
-    'google/gemini-2-flash-thinking-exp',
-    'openai/gpt-5-mini',
-  ],
-  timeoutMs: 30 * 1000,  // 30 seconds per vote
-};
-```
+- Weighted advisor scores based on historical accuracy.
+- Persistent council memory per game (store hypotheses between turns).
+- Replay viewer overlay showing council recommendations vs actual actions.
+- Council-only playground (manual execution) for human debugging.
+- Integration with scorecard analytics (correlate council confidence with win rate).
 
 ---
 
-## Success Criteria
-
-1. ✅ Council queries 3+ LLMs in parallel
-2. ✅ Vote aggregation returns winning action with confidence
-3. ✅ Agent integrates council recommendation into decision
-4. ✅ Frontend displays council vote breakdown
-5. ✅ Council failures are graceful (agent proceeds without council)
-
----
-
-## Notes
-
-- **Simple blocking API** - no SSE needed for voting
-- **Only 7 actions** - keep prompts focused and simple
-- **Graceful degradation** - council failures shouldn't stop the agent
-- **BYOK support** - respects production API key requirements
-- **Cost consideration** - each council vote costs 3x API calls (3 models)
+**Next Action:** Implement Phase A foundations, ensuring preprocessing contract and stage orchestration are validated before wiring to gameplay agents.
