@@ -438,6 +438,146 @@ def calculate_model_surprise(intent: str, actual_changes: dict):
 
 ---
 
+## Reasoning Extraction: Mining the "Inner Monologue"
+
+Large Language Models generate massive amounts of "Chain of Thought" reasoning. Instead of treating this as dead text, we can use Python to extract **Structured Beliefs**.
+
+### 11. Hypothesis Clustering & Drift Detection
+
+**Purpose:** Track how the agent's beliefs evolve over time and detect if it is "drifting" away from a previously successful strategy.
+
+**Implementation:**
+Use Python to maintain a **Belief Dictionary** extracted from the `hypothesis` field.
+```python
+def extract_beliefs(reasoning_history: List[str]):
+    """Extract key-value beliefs from text history."""
+    # Beliefs like: "ACTION1": "MOVE_UP", "COLOR_8": "WALL"
+    # Use NLP or Regex to cluster similar phrases
+    beliefs = {}
+    for entry in reasoning_history:
+        # Example: "I believe red pixels (8) are lethal"
+        matches = re.findall(r"(\w+) pixels \((\d+)\) are (\w+)", entry)
+        for name, code, trait in matches:
+            beliefs[code] = trait
+    return beliefs
+```
+
+### 12. Confidence & Contradiction Checking
+
+**Purpose:** Automatically flag when the LLM says something that contradicts its own previous "Aggregated Findings".
+
+**The Logic:**
+Before the next turn, a Python script runs a **Contradiction Check**:
+1. Load `Confirmed_Rules.json`.
+2. Parse the new `hypothesis`.
+3. If the agent says "ACTION1 moves right" but the rules say "ACTION1 moves up", inject a warning:
+   > "SYSTEM WARNING: Your current hypothesis contradicts Rule #4. Re-evaluate."
+
+---
+
+## Advanced Spatial Reasoning
+
+### 13. Topology & Anchor Points
+
+**Purpose:** Instead of raw pixels, represent the game as a **Graph of Anchors**.
+
+**Why this works:** ARC-AGI-3 often uses "Key-Door" or "Portal" mechanics. Identifying these as static "Anchor Points" allows the agent to reason about **Topological Connectivity**.
+
+**Implementation:**
+```python
+def build_topology_graph(objects: List[SimpleObject]):
+    """Create a graph where nodes are objects and edges are distances."""
+    G = nx.Graph()
+    for obj in objects:
+        G.add_node(obj.id, color=obj.color, type=classify_type(obj))
+    
+    for u, v in combinations(objects, 2):
+        dist = calculate_l1_distance(u.center, v.center)
+        if dist < THRESHOLD:
+            G.add_edge(u.id, v.id, weight=dist)
+    return G
+```
+
+### 14. Action Pruning (The "Safety Filter")
+
+**Purpose:** Use Python to filter out "Stupid Actions" before the LLM even sees them.
+
+**Strategy:**
+If the Python preprocessor detects a wall at `(x, y+1)`, it can append a metadata tag to the `ACTION1` (Move Up) description:
+`"ACTION1": "MOVE_UP (BLOCKED BY BLACK WALL)"`
+
+This forces the LLM to spend its "Reasoning Tokens" on valid strategies rather than bumping into walls for 10 turns.
+
+---
+
+## The "Inner Simulator" Strategy
+
+Since the LLM has a Python console, we can provide it with **Template Scripts** to run "Virtual Experiments".
+
+### 15. Hypothesis Verification Code
+
+**The Idea:** The LLM writes a script to check if its hypothesis holds true for every pixel in the grid.
+
+**Prompt Example:**
+> "If you believe every red object is a lethal obstacle, run this script to find the distance between the player and every red pixel. If any distance is 0, your hypothesis is likely correct."
+
+```python
+# LLM's Inner Sandbox Code
+def verify_lethality(grid, player_pos, lethal_color=8):
+    for r, c in find_pixels(grid, lethal_color):
+        if dist(player_pos, (r, c)) == 0:
+            return "LETHAL COLLISION DETECTED"
+    return "SAFE"
+```
+
+### 16. The "Surprise" Loop (Closing the Gap)
+
+**Purpose:** Mathematically measure how much the agent was "surprised" by an action's result.
+
+**The Algorithm:**
+1. **Pre-Action:** Ask the LLM to output a `predicted_grid_hash` or `predicted_object_deltas`.
+2. **Post-Action:** Calculate the Euclidean distance between the `predicted_state` and the `actual_state`.
+3. **Surprise Score:** If the score is > 0, the agent's mental model is flawed.
+
+**Why this matters:** It gives the agent a clear signal: "Your logic failed. 85% of your prediction was wrong. Stop and re-hypothesize."
+
+---
+
+## Constructing a Mental Model
+
+Instead of just storing findings as strings, we can guide the LLM to maintain a **Formal Game State Machine** in Python.
+
+### 17. Semantic Rule Consolidation
+
+**The Flow:**
+- **Turn 1-5:** "Exploratory" (high hypothesis count).
+- **Turn 6-10:** "Consolidation" (clustering hypothesis into rules).
+- **Turn 11+:** "Execution" (using consolidated rules).
+
+We can provide the LLM with a `GameModel` class it can update in its sandbox:
+
+```python
+class GameModel:
+    def __init__(self):
+        self.rules = {
+            "ACTION1": "UNKNOWN",
+            "COLOR_8": "UNKNOWN",
+            "WIN_CONDITION": "REACH_PINK_DOOR"
+        }
+    
+    def update_rule(self, key, value, confidence):
+        if confidence > 0.9:
+            self.rules[key] = value
+```
+
+### 18. Topological Mapping (The "Anchor" Graph)
+
+**Purpose:** Represent the game as a series of connected "Rooms" or "Regions" rather than a 64x64 grid.
+
+**The Benefit:** LLMs are great at reasoning about graphs. "Move from Room A to Room B" is a much easier instruction than "Move from (10,10) to (10,45)".
+
+---
+
 ## Multimodal Enhancement: PNG Rendering
 
 **Purpose:** Send visual frames to vision-capable LLMs instead of JSON grids.
@@ -566,6 +706,15 @@ The external agent **TOMAS Engine** (`external/tomas-engine-arc-agi-3`) already 
     - Pathfinding/Distance calculation
     - Reasoning-Action loop closure (Surprise Detection)
     - Structured "Inner Sandbox" prompt templates
+    - **Reasoning Extraction & Belief Tracking:**
+        - Hypothesis Clustering
+        - Contradiction Detection
+        - Action Pruning (Semantic Constraints)
+        - Topology Graph Representation
+    - **The Inner Simulator:**
+        - "Virtual Experiments" via Python Console
+        - Surprise Metric Quantification
+        - Semantic Rule Consolidation (State Machines)
 
 ### 🔧 Recommended Next Steps
 
