@@ -425,7 +425,7 @@ Think step by step about what action to take next."""
                 }
             }
         }
-        
+
         # Initialize LangChain ChatOpenAI with OpenRouter
         self.llm = ChatOpenAI(
             model=model,
@@ -436,16 +436,17 @@ Think step by step about what action to take next."""
             max_tokens=2048,  # Increased for reasoning output
             model_kwargs=model_kwargs,
         )
-        
+
         # State tracking
         self.previous_frame = None
         self.action_history: List[str] = []
         self.frame_sequence: List[List[List[int]]] = []
-        
+
         # Phase 2: Observation journal & persistent memory
         # Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/nodes.py
         self.observations: List[str] = []  # What agent learned about the game
         self.thoughts: List[str] = []       # Agent's hypotheses and strategies
+        self.current_reasoning: List[str] = []  # Accumulate reasoning during analysis
     
     def add_observation(self, observation: str):
         """Add observation to journal, keeping only last 15.
@@ -634,43 +635,52 @@ Think step by step about what action to take next."""
     
     def choose_action(self, frame_data: dict) -> tuple[str, str, Optional[tuple[int, int]]]:
         """Choose action based on frame analysis. Returns (action, reasoning, coordinates).
-        
+
         Integrates Phase 3 frame delta analysis for learning from outcomes.
         """
+        # Clear reasoning buffer for this decision
+        self.current_reasoning = []
+
         state = frame_data.get("state", "IN_PROGRESS")
-        
+
         # Handle game states
         if state in [GameState.NOT_PLAYED.value, GameState.GAME_OVER.value]:
             return "RESET", "Game not started or over - resetting", None
-        
+
         if state == GameState.WIN.value:
             return None, "Game won!", None
-        
+
         # Phase 3: Analyze what changed from previous action (frame delta)
         if self.previous_frame and self.action_history:
             prev_frame_data = self.previous_frame.get("frame", [])
             curr_frame_data = frame_data.get("frame", [])
             delta_summary = analyze_frame_delta(prev_frame_data, curr_frame_data)
-            
+
             # Add delta to observations (helps agent learn cause-effect)
             last_action = self.action_history[-1] if self.action_history else "unknown"
             self.add_observation(f"After {last_action}: {delta_summary}")
-            
-            # Emit delta for debugging
-            emit_event("agent.reasoning", {"content": f"Frame delta: {delta_summary}"})
-            
+            self.current_reasoning.append(f"Frame delta: {delta_summary}")
+
             # Detect if stuck (same action, no change)
             if "No visible changes" in delta_summary and len(self.action_history) >= 3:
                 recent = self.action_history[-3:]
                 if len(set(recent)) == 1:  # Same action 3 times
                     self.add_thought(f"{recent[0]} seems blocked - should try different direction")
-        
+                    self.current_reasoning.append(f"Agent is stuck, will try different action")
+
         # Analyze and choose action
         result = self.analyze_frame(frame_data)
-        
+
         action = result.get("action", "ACTION1").upper()
         reasoning = result.get("reasoning", "Exploring")
         coordinates = result.get("coordinates")
+
+        # Add final decision to reasoning and emit completion
+        self.current_reasoning.append(f"Decision: {action} ({reasoning})")
+        final_reasoning = "\n".join(self.current_reasoning)
+        emit_event("agent.reasoning_complete", {
+            "finalContent": final_reasoning
+        })
         
         # Validate action
         valid_actions = ["RESET", "ACTION1", "ACTION2", "ACTION3", "ACTION4", "ACTION5", "ACTION6"]
@@ -781,7 +791,7 @@ def run_agent(config: dict):
     try:
         emit_event("stream.status", {"state": "running", "message": f"Starting game: {game_id}"})
         frame_data = arc3_client.start_game(game_id)
-        emit_event("game.frame_update", {"frame": frame_data, "turn": 0})
+        emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": 0})
     except Exception as e:
         emit_error(f"Failed to start game: {e}", "API_ERROR")
     
@@ -806,17 +816,17 @@ def run_agent(config: dict):
             break
         
         emit_event("agent.tool_call", {"tool": action, "reasoning": reasoning, "turn": turn})
-        
+
         # Execute action
         try:
             guid = frame_data.get("guid", "")
             frame_data = arc3_client.execute_action(
-                game_id, guid, action, 
+                game_id, guid, action,
                 coordinates=coordinates,
                 reasoning={"agent": "openrouter", "model": model, "thought": reasoning}
             )
             emit_event("agent.tool_result", {"tool": action, "result": "executed", "turn": turn})
-            emit_event("game.frame_update", {"frame": frame_data, "turn": turn})
+            emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": turn})
         except Exception as e:
             emit_event("agent.tool_result", {"tool": action, "result": f"error: {e}", "turn": turn})
             # Continue anyway
