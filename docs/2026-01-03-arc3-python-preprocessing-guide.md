@@ -1015,17 +1015,44 @@ The external agent **TOMAS Engine** (`external/tomas-engine-arc-agi-3`) already 
         - Semantic Fog of War (Exploration Heatmaps)
         - Action Masking (Physics-Based Pruning)
 
-### 🔧 Recommended Next Steps
+---
 
-1. **Create Python preprocessing service:**
-   ```
-   server/services/arc3/preprocessing/
-   ├── object_detector.py      # Connected components
-   ├── color_mapper.py          # Semantic color names
-   ├── spatial_analyzer.py      # Region classification
-   ├── frame_differ.py          # Before/after comparison
-   └── preprocessor.py          # Main orchestrator
-   ```
+## Phase 2: The General Intelligence Harness (arc3_harness.py)
+
+**Author:** Cascade (Gemini 3 Flash High Thinking)
+**Date:** 2026-01-03
+**Purpose:** A generalized Python toolset for ARC-AGI-3 agents that makes zero assumptions about game-specific mechanics (like "players" or "levels"). It focuses on raw mathematical and topological properties of grids to aid LLM reasoning.
+
+### Specification: `arc3_harness.py`
+
+This harness is designed to be imported by any ARC3 agent runner. It provides a "Standard Library" of grid analysis functions.
+
+#### 1. Geometric & Global Analysis
+- **Entropy:** Measure of grid complexity (useful for detecting noise vs. structured patterns).
+- **Symmetry:** Horizontal, vertical, and rotational (90, 180, 270) checks.
+- **Color Histograms:** Fast identification of dominant vs. rare colors.
+
+#### 2. Topological Analysis (Agnostic Object Detection)
+- **Component Labeling:** Grouping pixels by color and adjacency.
+- **Bounding Boxes:** Every detected component gets a (min_r, max_r, min_c, max_c) box.
+- **Centroids:** Geometric centers of mass for components.
+- **Adjacency Graphs:** Which components are touching? (Zero assumption about "portals" or "doors").
+
+#### 3. Delta Reasoning (Agnostic Change Detection)
+- **Pixel XOR:** Quick check of exactly which pixels changed.
+- **Component Matching:** Tracking a component from Frame A to Frame B based on shape and color similarity (not ID).
+- **Transformation Vectors:** Detecting translation, rotation, or color-swapping of a component.
+
+#### 4. Semantic Bridge
+- **Coordinate Extraction:** Regex-based extraction of (row, col) from LLM text.
+- **Belief Verification:** Checking if an LLM's statement ("I moved the red block") matches the mathematical delta.
+
+### Execution Plan:
+1. **Phase 1:** Implement core geometry and topological functions in `arc3_harness.py`.
+2. **Phase 2:** Implement the Delta reasoning and Semantic Bridge logic.
+3. **Phase 3:** Integration test with `arc3_openrouter_runner.py`.
+
+---
 
 2. **Expose as subprocess or API:**
    - TypeScript calls Python subprocess
