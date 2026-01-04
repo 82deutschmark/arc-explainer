@@ -1,5 +1,31 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.0  Jan 3, 2026
+
+- **Fix OpenRouter Playground Streaming and Credits** (Author: Claude Haiku 4.5)
+  - **What**: Fixed critical issues preventing game grid and reasoning from loading in OpenRouter playground, and implemented auto-fetching of credits from environment variable.
+  - **Why**: Event field name mismatch prevented TypeScript hook from recognizing frame updates. Missing reasoning completion events prevented reasoning viewer from displaying. Credits were hidden without manual BYOK input despite env key being available.
+  - **How**:
+    - **Python Agent Event Fixes** (`server/python/arc3_openrouter_runner.py`):
+      - Changed `game.frame_update` event fields: `frame` → `frameData`, `turn` → `frameIndex` (matches TypeScript hook expectations)
+      - Added `current_reasoning` buffer to accumulate reasoning per turn decision
+      - Emit `agent.reasoning_complete` event with full decision reasoning at end of turn
+      - Properly format frame updates with correct field names
+    - **Server-Side Credits Endpoint** (`server/routes/arc3OpenRouter.ts`):
+      - New `GET /api/arc3-openrouter/credits-env` endpoint reads `OPENROUTER_API_KEY` from environment
+      - Returns credits data without requiring BYOK
+      - Existing `POST /api/arc3-openrouter/credits` unchanged for manual BYOK scenario
+    - **Frontend Auto-Credits** (`client/src/pages/Arc3OpenRouterPlayground.tsx`):
+      - Auto-fetch credits from server on mount using `credentials-env` endpoint
+      - Display credits automatically when available (server env key or user-provided)
+      - Add visual indicator showing source of credits ("Server API Key" vs "User-provided Key")
+      - Fixed TypeScript errors with proper type annotations
+  - **Impact**:
+    - Game grid now loads and updates correctly during streaming
+    - Agent reasoning appears in viewer with proper completion signals
+    - Credits display automatically in development without manual API key entry
+  - **Files Modified**: `server/python/arc3_openrouter_runner.py`, `server/routes/arc3OpenRouter.ts`, `client/src/pages/Arc3OpenRouterPlayground.tsx`
+
 ### Version 6.32.0  Jan 3, 2026
 
 - **Add Haiku 4.5 Agent Harness for ARC-AGI-3** (Author: Claude Sonnet 4)
