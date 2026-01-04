@@ -1,5 +1,31 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.2  Jan 4, 2026
+
+- **Add Scorecard Link Display to All Arc3 Playgrounds** (Author: Claude Haiku 4.5)
+  - **What**: Users can now click through to view official Arc3 scorecards for their agent runs on `three.arcprize.org`.
+  - **Why**: Agents create scorecards on the official Arc3 API when they start games. Users need an easy way to see the official record of their runs.
+  - **How**:
+    - **Reusable Component** (`client/src/components/arc3/Arc3ScorecardLink.tsx`):
+      - Displays a blue "Scorecard" button with external link icon in the top bar
+      - Shows tooltip with card_id and confirmation it's recorded officially
+      - Only displays when scorecard data is available
+    - **Python Event Emission** (`server/python/arc3_openrouter_runner.py`):
+      - Emits `scorecard.opened` event after opening scorecard on ARC3 API
+      - Includes `card_id` and `url` in event payload
+    - **TypeScript Integration**:
+      - `useArc3AgentStream.ts`: Added `scorecard` field to state, listens for `scorecard.opened` events
+      - `Arc3HaikuPlayground.tsx`: Custom event listener for scorecard (Haiku has its own state system)
+    - **Playground Updates** (all three):
+      - `Arc3OpenRouterPlayground.tsx`: Import + display component
+      - `Arc3CodexPlayground.tsx`: Import + display component
+      - `Arc3HaikuPlayground.tsx`: Import + state field + event listener + display component
+  - **Impact**:
+    - Users can view official Arc3 scorecard results immediately after run completes
+    - All playgrounds now have consistent scorecard link display
+    - URLs are clickable with external link icon for clear affordance
+  - **Files Modified**: `client/src/components/arc3/Arc3ScorecardLink.tsx` (new), `server/python/arc3_openrouter_runner.py`, `client/src/hooks/useArc3AgentStream.ts`, `client/src/pages/Arc3OpenRouterPlayground.tsx`, `client/src/pages/Arc3CodexPlayground.tsx`, `client/src/pages/Arc3HaikuPlayground.tsx`
+
 ### Version 6.33.1  Jan 3, 2026
 
 - **Fix ARC3 Game ID Resolution in OpenRouter Python Runner** (Author: Claude Haiku 4.5)
