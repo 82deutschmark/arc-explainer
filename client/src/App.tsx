@@ -45,6 +45,7 @@ import ARC3Browser from "@/pages/ARC3Browser";
 import ARC3AgentPlayground from "@/pages/ARC3AgentPlayground";
 import Arc3OpenRouterPlayground from "@/pages/Arc3OpenRouterPlayground";
 import Arc3CodexPlayground from "@/pages/Arc3CodexPlayground";
+import Arc3HaikuPlayground from "@/pages/Arc3HaikuPlayground";
 import Arc3GamesBrowser from "@/pages/Arc3GamesBrowser";
 import Arc3GameSpoiler from "@/pages/Arc3GameSpoiler";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
@@ -119,6 +120,7 @@ function Router() {
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/arc3/openrouter-playground" component={Arc3OpenRouterPlayground} />
         <Route path="/arc3/codex-playground" component={Arc3CodexPlayground} />
+        <Route path="/arc3/haiku-playground" component={Arc3HaikuPlayground} />
         <Route path="/arc3/games" component={Arc3GamesBrowser} />
         <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
         {/* RE-ARC - self-service dataset generation and evaluation */}

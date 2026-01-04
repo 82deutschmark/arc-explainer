@@ -7,7 +7,7 @@ SRP/DRY check: Pass — isolated qualitative summarization; does not alter exist
 */
 
 import type { FrameData } from "../Arc3ApiClient.ts";
-import { analyzeFrameChanges, type FrameChanges } from "./frameAnalysis.ts";
+import { analyzeFrameChanges } from "./frameAnalysis.ts";
 
 export interface CascadeHarnessContext {
   turn: number;
