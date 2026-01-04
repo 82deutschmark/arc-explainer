@@ -39,8 +39,9 @@ import { generateActionCaption, generateInspectCaption } from './helpers/caption
 import { countChangedPixels, analyzeFrameChanges, extractGrid, extractLayerStack } from './helpers/frameAnalysis.ts';
 import { calculateColorDistribution } from './helpers/colorAnalysis.ts';
 import { unpackFrames, summarizeFrameStructure } from './helpers/frameUnpacker.ts';
-import { createSession } from './persistence/sessionManager.ts';
-import { saveFrame } from './persistence/framePersistence.ts';
+import { createSession, getSessionByGuid, endSession, type SessionMetadata } from './persistence/sessionManager';
+import { saveFrame, type SavedFrame } from './persistence/framePersistence';
+import { openScorecard, closeScorecard, getScorecard } from './scorecardService.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
 import { executeGridAnalysis } from './helpers/gridAnalyzer.ts';
 import { logger } from '../../utils/logger.ts';
@@ -211,7 +212,7 @@ export class Arc3RealGameRunner {
     let currentFrameNumber = 0;
     try {
       if (!config.existingGameGuid) {
-        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score);
+        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score, scorecardId);
 
         // Persist all unpacked initial frames
         currentFrameNumber = await this.persistUnpackedFrames(
@@ -223,7 +224,7 @@ export class Arc3RealGameRunner {
         );
 
         logger.info(
-          `Created session ${dbSessionId} for game ${gameId} ` +
+          `Created session ${dbSessionId} for game ${gameId} (scorecard: ${scorecardId}) ` +
           `(${unpackedInitialFrames.length} initial frame(s))`,
           'arc3'
         );
@@ -426,7 +427,7 @@ export class Arc3RealGameRunner {
       if (isContinuation) {
         logger.info(`[ARC3 STREAMING] Continuing game session ${gameGuid} on game ${gameId}`, 'arc3');
       } else {
-        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score);
+        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score, scorecardId);
 
         // Persist all unpacked initial frames
         currentFrameNumber = await this.persistUnpackedFrames(
@@ -438,7 +439,7 @@ export class Arc3RealGameRunner {
         );
 
         logger.info(
-          `Created streaming session ${dbSessionId} for game ${gameId} ` +
+          `Created streaming session ${dbSessionId} for game ${gameId} (scorecard: ${scorecardId}) ` +
           `(${unpackedInitialFrames.length} initial frame(s))`,
           'arc3'
         );
