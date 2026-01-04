@@ -28,6 +28,26 @@ const prepareSchema = z.object({
   reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high', 'xhigh']).optional().default('low'),  // OpenRouter reasoning.effort per docs
 });
 
+const frameSeedSchema = z.object({
+  guid: z.string().trim(),
+  game_id: z.string().trim(),
+  frame: z.array(z.array(z.array(z.number().int()))),
+  score: z.number().int(),
+  state: z.string().trim(),
+  action_counter: z.number().int().optional(),
+  max_actions: z.number().int().optional(),
+  win_score: z.number().int().optional(),
+  full_reset: z.boolean().optional(),
+  available_actions: z.array(z.union([z.string(), z.number()])).optional(),
+});
+
+const continueSchema = z.object({
+  userMessage: z.string().trim().min(1, 'userMessage must not be empty'),
+  previousResponseId: z.string().trim().min(1).optional(),
+  existingGameGuid: z.string().optional(),
+  lastFrame: frameSeedSchema.optional(),
+});
+
 // Helper for consistent response format
 const formatResponse = {
   success: <T>(data: T) => ({ success: true, data }),
@@ -262,6 +282,69 @@ router.post(
         formatResponse.error('FETCH_ERROR', 'Failed to fetch credits from OpenRouter')
       );
     }
+  })
+);
+
+/**
+ * POST /stream/:sessionId/continue
+ * Prepare a continuation session (stores continuation payload for follow-up SSE stream)
+ */
+router.post(
+  '/stream/:sessionId/continue',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sessionId } = req.params;
+    const { userMessage, previousResponseId, existingGameGuid, lastFrame } = continueSchema.parse(req.body);
+
+    logger.info(
+      `[Arc3OpenRouter] Preparing continuation session=${sessionId}, hasResponseId=${!!previousResponseId}, existingGameGuid=${existingGameGuid}`,
+      'arc3-openrouter'
+    );
+
+    const basePayload = arc3OpenRouterStreamService.getPayload(sessionId);
+    if (!basePayload) {
+      return res.status(404).json(
+        formatResponse.error('SESSION_NOT_FOUND', `Session ${sessionId} not found or expired`)
+      );
+    }
+
+    // Build continuation payload (reuse scorecard/game state if cached)
+    const continuationPayload = {
+      ...basePayload,
+      userMessage,
+      previousResponseId: previousResponseId ?? basePayload.previousResponseId ?? null,
+      existingGameGuid: existingGameGuid ?? basePayload.existingGameGuid,
+      lastFrame: lastFrame ?? basePayload.lastFrame,
+    };
+
+    arc3OpenRouterStreamService.saveContinuationPayload(sessionId, basePayload, continuationPayload);
+
+    res.json(formatResponse.success({ sessionId }));
+  })
+);
+
+/**
+ * GET /stream/:sessionId/continue-stream
+ * Start SSE streaming for a prepared continuation session.
+ */
+router.get(
+  '/stream/:sessionId/continue-stream',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sessionId } = req.params;
+    const payload = arc3OpenRouterStreamService.getContinuationPayload(sessionId);
+
+    if (!payload) {
+      return res.status(404).json(
+        formatResponse.error('SESSION_NOT_FOUND', `Continuation session ${sessionId} not found or expired`)
+      );
+    }
+
+    logger.info(`[Arc3OpenRouter] Starting continuation streaming for session=${sessionId}`, 'arc3-openrouter');
+
+    // Register SSE connection
+    sseStreamManager.register(sessionId, res);
+
+    // Start streaming continuation
+    await arc3OpenRouterStreamService.startStreaming(req, { ...payload, sessionId });
   })
 );
 

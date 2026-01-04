@@ -762,6 +762,13 @@ def run_agent(config: dict):
     max_turns = config.get("max_turns", 80)  # Match ARC-AGI-3-Agents2 MAX_ACTIONS default
     agent_name = config.get("agent_name", "OpenRouter Agent")
     reasoning_effort = config.get("reasoning_effort", "low")  # OpenRouter reasoning.effort per docs
+    # Continuation support (parity with TypeScript runner)
+    scorecard_id_override = config.get("scorecard_id")
+    resolved_game_id_override = config.get("resolved_game_id")
+    existing_guid = config.get("existing_guid")
+    seed_frame = config.get("seed_frame")
+    user_message = config.get("user_message")
+    previous_response_id = config.get("previous_response_id")
     
     # API keys
     arc3_api_key = config.get("arc3_api_key") or os.getenv("ARC3_API_KEY", "")
@@ -788,6 +795,9 @@ def run_agent(config: dict):
     # Initialize clients
     try:
         arc3_client = Arc3ApiClient(arc3_api_key)
+        # Continuation: reuse scorecard if provided
+        if scorecard_id_override:
+            arc3_client.card_id = scorecard_id_override
         agent = Arc3OpenRouterAgent(
             model,
             openrouter_api_key,
@@ -803,35 +813,39 @@ def run_agent(config: dict):
     # Open scorecard with rich metadata (matching TypeScript pattern)
     # Tags and opaque metadata help identify runs on the ARC3 leaderboard
     try:
-        emit_event("stream.status", {"state": "running", "message": "Opening scorecard..."})
-        
-        # Build descriptive tags
-        model_tag = model.replace("/", "-").replace(":", "-")  # e.g., "xiaomi-mimo-v2-flash-free"
-        scorecard_tags = [
-            "arc-explainer",
-            "openrouter-playground",
-            "competition-emulation",
-            model_tag,
-            f"reasoning-{reasoning_effort}",
-        ]
+        if arc3_client.card_id:
+            card_id = arc3_client.card_id
+            emit_event("stream.status", {"state": "running", "message": f"Reusing scorecard: {card_id}"})
+        else:
+            emit_event("stream.status", {"state": "running", "message": "Opening scorecard..."})
+            
+            # Build descriptive tags
+            model_tag = model.replace("/", "-").replace(":", "-")  # e.g., "xiaomi-mimo-v2-flash-free"
+            scorecard_tags = [
+                "arc-explainer",
+                "openrouter-playground",
+                "competition-emulation",
+                model_tag,
+                f"reasoning-{reasoning_effort}",
+            ]
 
-        # Rich metadata for scorecard (passed as 'opaque' field)
-        scorecard_metadata = {
-            "source": "arc-explainer",
-            "mode": "openrouter-competition-emulation",
-            "game_id": game_id,
-            "agent_name": agent_name,
-            "model": model,
-            "reasoning_effort": reasoning_effort,
-            "max_turns": max_turns,
-        }
-        
-        card_id = arc3_client.open_scorecard(
-            tags=scorecard_tags,
-            source_url="https://arc-explainer.com/arc3/openrouter-playground",
-            opaque_metadata=scorecard_metadata,
-        )
-        emit_event("stream.status", {"state": "running", "message": f"Scorecard opened: {card_id}"})
+            # Rich metadata for scorecard (passed as 'opaque' field)
+            scorecard_metadata = {
+                "source": "arc-explainer",
+                "mode": "openrouter-competition-emulation",
+                "game_id": game_id,
+                "agent_name": agent_name,
+                "model": model,
+                "reasoning_effort": reasoning_effort,
+                "max_turns": max_turns,
+            }
+            
+            card_id = arc3_client.open_scorecard(
+                tags=scorecard_tags,
+                source_url="https://arc-explainer.com/arc3/openrouter-playground",
+                opaque_metadata=scorecard_metadata,
+            )
+            emit_event("stream.status", {"state": "running", "message": f"Scorecard opened: {card_id}"})
         # Emit scorecard event for frontend display
         emit_event("scorecard.opened", {
             "card_id": card_id,
@@ -842,9 +856,9 @@ def run_agent(config: dict):
         emit_error(f"Failed to open scorecard: {e}", "API_ERROR")
     
     # Resolve game ID prefix to full game ID with hash suffix
-    resolved_game_id = game_id
+    resolved_game_id = resolved_game_id_override or game_id
     try:
-        resolved_game_id = arc3_client.resolve_game_id(game_id)
+        resolved_game_id = resolved_game_id_override or arc3_client.resolve_game_id(game_id)
         if resolved_game_id != game_id:
             emit_event("stream.status", {
                 "state": "running",
@@ -854,18 +868,26 @@ def run_agent(config: dict):
         emit_error(f"Failed to resolve game ID: {e}", "API_ERROR")
         return
 
-    # Start game
-    try:
-        emit_event("stream.status", {"state": "running", "message": f"Starting game: {resolved_game_id}"})
-        frame_data = arc3_client.start_game(resolved_game_id)
+    # Start or resume game
+    frame_data = None
+    current_guid = existing_guid or ""
+    if existing_guid and seed_frame:
+        # Continuation path: seed from cached frame (no RESET)
+        emit_event("stream.status", {"state": "running", "message": f"Continuing existing game guid={existing_guid}"})
+        frame_data = seed_frame
         emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": 0})
-    except Exception as e:
-        emit_error(f"Failed to start game: {e}", "API_ERROR")
+    else:
+        try:
+            emit_event("stream.status", {"state": "running", "message": f"Starting game: {resolved_game_id}"})
+            frame_data = arc3_client.start_game(resolved_game_id)
+            emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": 0})
+            current_guid = frame_data.get("guid", current_guid)
+        except Exception as e:
+            emit_error(f"Failed to start game: {e}", "API_ERROR")
     
     # Game loop
     turn = 0
     final_state = "IN_PROGRESS"
-    current_guid = frame_data.get("guid", "")
     
     while turn < max_turns:
         turn += 1
@@ -889,7 +911,7 @@ def run_agent(config: dict):
 
             # Execute action
             try:
-                guid = frame_data.get("guid", "")
+                guid = frame_data.get("guid", current_guid) or current_guid
                 frame_data = arc3_client.execute_action(
                     resolved_game_id, guid, action,
                     coordinates=coordinates,

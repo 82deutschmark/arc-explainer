@@ -22,6 +22,13 @@ export interface Arc3OpenRouterPayload {
   arc3_api_key?: string;       // ARC3 API key
   agent_name?: string;         // User-defined agent name for scorecard
   reasoning_effort?: 'minimal' | 'low' | 'medium' | 'high' | 'xhigh'; // OpenRouter reasoning.effort per docs
+  // Continuation fields
+  scorecard_id?: string;
+  resolved_game_id?: string;
+  existing_guid?: string;
+  seed_frame?: any;
+  user_message?: string;
+  previous_response_id?: string;
 }
 
 export interface Arc3OpenRouterSpawnOptions {
