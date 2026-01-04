@@ -865,6 +865,7 @@ def run_agent(config: dict):
     # Game loop
     turn = 0
     final_state = "IN_PROGRESS"
+    current_guid = frame_data.get("guid", "")
     
     while turn < max_turns:
         turn += 1
@@ -892,8 +893,14 @@ def run_agent(config: dict):
                 frame_data = arc3_client.execute_action(
                     resolved_game_id, guid, action,
                     coordinates=coordinates,
-                    reasoning={"agent": "openrouter", "model": model, "thought": reasoning}
+                    reasoning={
+                        "agent": "openrouter",
+                        "model": model,
+                        "thought": reasoning,
+                        "card_id": arc3_client.card_id,
+                    }
                 )
+                current_guid = frame_data.get("guid", current_guid)
                 emit_event("agent.tool_result", {"tool": action, "result": "executed", "turn": turn})
                 emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": turn})
             except Exception as e:
