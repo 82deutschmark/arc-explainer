@@ -15,7 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Gamepad2, ArrowLeft, RefreshCw, Key } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Gamepad2, ArrowLeft, RefreshCw, Key, Brain, MessageSquare, Trophy } from 'lucide-react';
 import { requiresUserApiKey } from '@/lib/environmentPolicy';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
@@ -285,8 +286,18 @@ export default function ARC3AgentPlayground() {
   const [userApiKey, setUserApiKey] = useState('');
   const byokRequired = requiresUserApiKey();
 
+  // Onboarding modal - show once per session unless dismissed
+  const [showOnboarding, setShowOnboarding] = useState(true);
+
   // Streaming
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
+
+  // Handler for onboarding modal - starts game with defaults
+  const handleOnboardingStart = () => {
+    setShowOnboarding(false);
+    // Auto-start game with default settings (GPT-5 Nano, playbook prompt, ls20 game)
+    handleStart();
+  };
 
   const handleStart = () => {
     // BYOK: Block start if key required but not provided
@@ -296,6 +307,10 @@ export default function ARC3AgentPlayground() {
     }
 
     const skipDefaultSystemPrompt = systemPromptPresetId === 'none';
+
+    // Reset user input visibility (prevent showing "send message" during run)
+    setShowUserInput(false);
+    setUserMessage('');
 
     start({
       game_id: gameId,
@@ -313,11 +328,22 @@ export default function ARC3AgentPlayground() {
   };
 
   // Show user input after agent pauses (at maxTurns) or completes
+  // But only if the game is still NOT_FINISHED (not in terminal state)
   React.useEffect(() => {
     if (state.status === 'paused' || (state.status === 'completed' && state.streamingStatus === 'completed')) {
-      setShowUserInput(true);
+      // Check if game is in terminal state
+      const lastFrame = state.frames && state.frames.length > 0
+        ? state.frames[state.frames.length - 1]
+        : null;
+
+      // Only allow user input if game is NOT_FINISHED
+      if (lastFrame && lastFrame.state === 'NOT_FINISHED') {
+        setShowUserInput(true);
+      } else {
+        setShowUserInput(false);
+      }
     }
-  }, [state.status, state.streamingStatus]);
+  }, [state.status, state.streamingStatus, state.frames]);
 
   const handleUserMessageSubmit = async () => {
     if (!userMessage.trim()) return;
@@ -400,6 +426,97 @@ export default function ARC3AgentPlayground() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Onboarding Modal - How AI Agents Work */}
+      <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">How to Work with an AI Agent</DialogTitle>
+            <DialogDescription>Understanding agent-based workflows</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* What is an AI Agent */}
+            <div className="space-y-2">
+              <h3 className="font-semibold">What is an AI Agent?</h3>
+              <p className="text-sm text-muted-foreground">
+                An AI agent is a system that observes its environment, reasons about what it observes, and takes actions based on that reasoning. Unlike a simple tool that responds to individual commands, an agent operates autonomously over multiple steps, maintaining state and learning from outcomes.
+              </p>
+            </div>
+
+            {/* The Agent Workflow */}
+            <div className="space-y-2">
+              <h3 className="font-semibold">The Agent Workflow</h3>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">1</div>
+                  <div>
+                    <p className="font-medium text-foreground">Agent observes</p>
+                    <p>The agent examines the current state of the environment.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">2</div>
+                  <div>
+                    <p className="font-medium text-foreground">Agent reasons</p>
+                    <p>It analyzes what changed, what patterns it sees, and what hypotheses might explain the behavior.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">3</div>
+                  <div>
+                    <p className="font-medium text-foreground">Agent reports findings</p>
+                    <p>It shares its analysis, observations, and next action plan with you.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">4</div>
+                  <div>
+                    <p className="font-medium text-foreground">You provide guidance</p>
+                    <p>You review the agent's reasoning and either approve its plan, suggest a different approach, or provide new information.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded h-fit">5</div>
+                  <div>
+                    <p className="font-medium text-foreground">Agent executes</p>
+                    <p>The agent takes the next action based on your guidance and returns to step 1.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Your Role */}
+            <div className="space-y-2">
+              <h3 className="font-semibold">Your Role</h3>
+              <p className="text-sm text-muted-foreground">
+                You are not controlling the agent directly. Instead, you are collaborating with it. Your responsibility is to evaluate its reasoning, catch errors, provide strategic direction, and give it information it might lack. The agent handles exploration, analysis, and execution.
+              </p>
+            </div>
+
+            {/* Key Note */}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+              <p className="text-sm text-slate-900">
+                <span className="font-medium">Important:</span> Agents are not perfect. They can make mistakes, misinterpret situations, or get stuck in loops. Your judgment and oversight are essential to effective collaboration.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setShowOnboarding(false)}
+            >
+              Skip
+            </Button>
+            <Button
+              onClick={handleOnboardingStart}
+            >
+              Start
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Ultra-compact single-line header */}
       <div className="border-b px-3 py-1">
         <div className="max-w-[1800px] mx-auto flex items-center justify-between gap-3">
@@ -454,9 +571,11 @@ export default function ARC3AgentPlayground() {
             </Button>
           </div>
 
-          <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
-            {state.status}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
+              {state.status}
+            </Badge>
+          </div>
         </div>
       </div>
 

@@ -1,5 +1,564 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.8  Jan 4, 2026
+
+- **CRITICAL: Fix Duplicate Foreign Key Constraint Crash** (Author: Claude Sonnet 4.5)
+  - **What**: Removed duplicate foreign key constraint that was causing Railway deployment to crash on startup.
+  - **Why**: The `arc3_sessions` table was created with an inline FK constraint (`scorecard_id REFERENCES scorecards`), then the migration tried to add the SAME constraint again with a different name. PostgreSQL rejected the duplicate constraint, causing database initialization to fail and the server to crash immediately on Railway.
+  - **How**:
+    - **DatabaseSchema.ts:253**: Removed inline `REFERENCES scorecards(card_id) ON DELETE SET NULL` from CREATE TABLE statement
+    - **Migration**: The existing migration code (lines 703-721) now handles FK constraint creation properly with existence check
+    - **Result**: Fresh databases (Railway) and existing databases (migrations) both work correctly without duplicate constraints
+  - **Impact**: Railway deployment now starts successfully. Database initialization completes without errors. Scorecard FK constraint is created once via migration with proper name `fk_arc3_sessions_scorecard`.
+
+### Version 6.33.7  Jan 4, 2026
+
+- **Scorecard Migration Fix + Data Correction** (Author: Claude Sonnet 4.5)
+  - **What**: Fixed scorecard_id column migration and corrected erroneous explanation record.
+  - **Why**: The scorecard_id column wasn't being added to existing arc3_sessions tables on Railway, causing initialization failures. Also needed to correct explanation record 34462 which had incorrect prediction status.
+  - **How**:
+    - **Database Migration** ([DatabaseSchema.ts:697-722](server/repositories/database/DatabaseSchema.ts#L697-L722)):
+      - Added migration to `applySchemaMigrations()` to add `scorecard_id` column to existing `arc3_sessions` tables
+      - Added foreign key constraint creation with proper existence check
+      - Added index creation for scorecard_id queries
+      - Removed premature index creation from `createArc3SessionsTable()` (line 268) that was failing before migration
+    - **Data Correction** ([delete-record-34462.ts](scripts/delete-record-34462.ts)):
+      - Created script to update explanation record 34462
+      - Set `isPredictionCorrect` to `false` for puzzle abc82100
+      - Script uses dotenv to load Railway credentials
+  - **Impact**: Scorecard functionality now deploys correctly to Railway production database. All ARC3 sessions can properly track scorecard associations. Database initialization no longer fails with "column scorecard_id does not exist" error.
+
+### Version 6.33.6  Jan 4, 2026 16:11
+
+- **ARC3 Scorecard Parity Implementation** (Author: Cascade)
+  - **What**: Full backend implementation of scorecard lifecycle management to match ARC-AGI-3 ClaudeCode SDK behavior.
+  - **Why**: The SDK manages scorecards and sessions via local JSON files; we needed equivalent functionality with proper database persistence for production use.
+  - **How**:
+    - **Database Schema** (`server/repositories/database/DatabaseSchema.ts`):
+      - Added `scorecards` table with `card_id`, `source_url`, `tags`, `opaque`, timestamps, and `is_active` flag
+      - Added `scorecard_id` foreign key to `arc3_sessions` table
+      - Migration for existing databases
+    - **Scorecard Service** (`server/services/arc3/scorecardService.ts` - NEW):
+      - `openScorecard()` - Creates scorecard, returns card_id
+      - `closeScorecard()` - Closes scorecard, aggregates per-game statistics
+      - `getScorecard()` - Gets scorecard details with optional game filter
+      - `getActiveScorecard()` - Returns currently active scorecard
+    - **Scorecard Routes** (`server/routes/scorecard.ts` - NEW):
+      - `POST /api/scorecard/open` - Open new scorecard
+      - `POST /api/scorecard/close` - Close scorecard, get final stats
+      - `GET /api/scorecard/:id` - Get scorecard details (optional `?game=` filter)
+      - `GET /api/scorecard` - Get active scorecard
+    - **Session Manager Updates** (`server/services/arc3/persistence/sessionManager.ts`):
+      - `createSession()` accepts `scorecardId` parameter
+      - All queries include `scorecard_id` in results
+      - `SessionMetadata` interface updated
+    - **Game Runner Updates**:
+      - `Arc3RealGameRunner.ts` - Both `run()` and `runWithStreaming()` pass scorecard_id
+      - `CodexArc3Runner.ts` - `runWithStreaming()` passes scorecard_id
+    - **Route Updates** (`server/routes/arc3.ts`):
+      - `/api/arc3/start-game` now gets/creates active scorecard automatically
+  - **Impact**: All ARC3 games are now properly tracked with scorecards, enabling correct backend logging and statistics aggregation as required for ARC-AGI-3 parity. The UI can observe live scorecard tracking while backend ensures data integrity.
+
+### Version 6.33.5  Jan 4, 2026
+
+- **OpenRouter ARC3 continuation parity** (Author: Cascade)
+  - **What**: Added full continuation flow for OpenRouter agent runs (session caching, routes, and Python reuse of scorecard/guid/frames).
+  - **Why**: To match the OpenAI SDK path so users can continue games without losing scorecard attribution or game state.
+  - **How**:
+    - `server/routes/arc3OpenRouter.ts`: Added continuation schema, POST /stream/:sessionId/continue, GET /stream/:sessionId/continue-stream.
+    - `server/services/arc3/Arc3OpenRouterStreamService.ts`: Cache scorecardId/resolvedGameId/guid/lastFrame; propagate continuation fields to Python payload; register disconnect cancel.
+    - `server/services/arc3/Arc3OpenRouterPythonBridge.ts`: Payload extended for continuation fields.
+    - `server/python/arc3_openrouter_runner.py`: Reuse scorecard if supplied, reuse resolved_game_id/guid, seed frames on continuation, keep card_id in reasoning.
+  - **Impact**: OpenRouter runs can be continued with preserved scorecards and game sessions; stream teardown remains safe on disconnect.
+
+### Version 6.33.4  Jan 4, 2026
+
+- **OpenRouter ARC3 runner: scorecard compliance + disconnect teardown** (Author: Cascade)
+  - **What**: Ensure Python runner always sends `card_id` on RESET (with reasoning audit trail) and kill the Python child when SSE disconnects to avoid 10-minute timeouts.
+  - **Why**: ARC3 docs require `card_id` for RESET; missing it risks rejected resets. Dropped SSE clients left long-running orphaned processes.
+  - **How**:
+    - `server/python/arc3_openrouter_runner.py`: Cache `card_id`, enforce presence on RESET, attach `card_id` into reasoning metadata, keep ACTION handling unchanged.
+    - `server/services/arc3/Arc3OpenRouterPythonBridge.ts`: Track child processes by session and expose `cancel(sessionId)` to kill them.
+    - `server/services/arc3/Arc3OpenRouterStreamService.ts`: Register SSE disconnect hook to cancel Python runner; close stream config on exit.
+  - **Impact**: Resets stay compliant with ARC3 API, and Python runners stop promptly when clients disconnect; user-facing behavior otherwise unchanged.
+
+### Version 6.33.3  Jan 4, 2026
+
+- **Silence OpenRouter extra_body warning in ARC3 runner** (Author: Cascade)
+  - **What**: Pass `extra_body` explicitly to the OpenAI client instead of nesting it under `model_kwargs`.
+  - **Why**: New SDK validation warns when `extra_body` is supplied inside `model_kwargs`.
+  - **How**:
+    - `server/python/arc3_openrouter_runner.py`: Split out `extra_body` dict and provide it via `extra_body` parameter while keeping `model_kwargs` empty.
+  - **Impact**: Removes stderr warning during ARC3 OpenRouter runs; behavior unchanged.
+
+### Version 6.33.2  Jan 4, 2026
+
+- **Add Scorecard Link Display to All Arc3 Playgrounds** (Author: Claude Haiku 4.5)
+  - **What**: Users can now click through to view official Arc3 scorecards for their agent runs on `three.arcprize.org`.
+  - **Why**: Agents create scorecards on the official Arc3 API when they start games. Users need an easy way to see the official record of their runs.
+  - **How**:
+    - **Reusable Component** (`client/src/components/arc3/Arc3ScorecardLink.tsx`):
+      - Displays a blue "Scorecard" button with external link icon in the top bar
+      - Shows tooltip with card_id and confirmation it's recorded officially
+      - Only displays when scorecard data is available
+    - **Python Event Emission** (`server/python/arc3_openrouter_runner.py`):
+      - Emits `scorecard.opened` event after opening scorecard on ARC3 API
+      - Includes `card_id` and `url` in event payload
+    - **TypeScript Integration**:
+      - `useArc3AgentStream.ts`: Added `scorecard` field to state, listens for `scorecard.opened` events
+      - `Arc3HaikuPlayground.tsx`: Custom event listener for scorecard (Haiku has its own state system)
+    - **Playground Updates** (all three):
+      - `Arc3OpenRouterPlayground.tsx`: Import + display component
+      - `Arc3CodexPlayground.tsx`: Import + display component
+      - `Arc3HaikuPlayground.tsx`: Import + state field + event listener + display component
+  - **Impact**:
+    - Users can view official Arc3 scorecard results immediately after run completes
+    - All playgrounds now have consistent scorecard link display
+    - URLs are clickable with external link icon for clear affordance
+  - **Files Modified**: `client/src/components/arc3/Arc3ScorecardLink.tsx` (new), `server/python/arc3_openrouter_runner.py`, `client/src/hooks/useArc3AgentStream.ts`, `client/src/pages/Arc3OpenRouterPlayground.tsx`, `client/src/pages/Arc3CodexPlayground.tsx`, `client/src/pages/Arc3HaikuPlayground.tsx`
+
+### Version 6.33.1  Jan 3, 2026
+
+- **Fix ARC3 Game ID Resolution in OpenRouter Python Runner** (Author: Claude Haiku 4.5)
+  - **What**: Fixed critical bug preventing OpenRouter agent from starting games - ARC3 API requires full game IDs with hash suffixes.
+  - **Why**: The ARC3 API at `three.arcprize.org` returns game IDs like `ls20-fa137e247ce6`, not `ls20`. When the playground passed just the prefix, the API returned "no available game backend" (400 error).
+  - **How**:
+    - **Arc3Client Methods** (`server/python/arc3_openrouter_runner.py:227-258`):
+      - `list_games()`: Fetch list of available games from `/api/games` endpoint
+      - `resolve_game_id()`: Match game ID prefix (e.g., 'ls20') to full game ID with hash suffix (e.g., 'ls20-fa137e247ce6')
+    - **Main Game Loop** (`server/python/arc3_openrouter_runner.py:823-834`):
+      - Resolve game_id before starting game
+      - Pass resolved_game_id to both `start_game()` and `execute_action()` calls
+      - Emit resolution status message for debugging
+  - **Impact**:
+    - OpenRouter agent can now successfully start games
+    - Game frames load and update correctly
+    - Agent reasoning and actions execute properly
+  - **Files Modified**: `server/python/arc3_openrouter_runner.py`
+
+### Version 6.33.0  Jan 3, 2026
+
+- **Fix OpenRouter Playground Streaming and Credits** (Author: Claude Haiku 4.5)
+  - **What**: Fixed critical issues preventing game grid and reasoning from loading in OpenRouter playground, and implemented auto-fetching of credits from environment variable.
+  - **Why**: Event field name mismatch prevented TypeScript hook from recognizing frame updates. Missing reasoning completion events prevented reasoning viewer from displaying. Credits were hidden without manual BYOK input despite env key being available.
+  - **How**:
+    - **Python Agent Event Fixes** (`server/python/arc3_openrouter_runner.py`):
+      - Changed `game.frame_update` event fields: `frame` → `frameData`, `turn` → `frameIndex` (matches TypeScript hook expectations)
+      - Added `current_reasoning` buffer to accumulate reasoning per turn decision
+      - Emit `agent.reasoning_complete` event with full decision reasoning at end of turn
+      - Properly format frame updates with correct field names
+    - **Server-Side Credits Endpoint** (`server/routes/arc3OpenRouter.ts`):
+      - New `GET /api/arc3-openrouter/credits-env` endpoint reads `OPENROUTER_API_KEY` from environment
+      - Returns credits data without requiring BYOK
+      - Existing `POST /api/arc3-openrouter/credits` unchanged for manual BYOK scenario
+    - **Frontend Auto-Credits** (`client/src/pages/Arc3OpenRouterPlayground.tsx`):
+      - Auto-fetch credits from server on mount using `credentials-env` endpoint
+      - Display credits automatically when available (server env key or user-provided)
+      - Add visual indicator showing source of credits ("Server API Key" vs "User-provided Key")
+      - Fixed TypeScript errors with proper type annotations
+  - **Impact**:
+    - Game grid now loads and updates correctly during streaming
+    - Agent reasoning appears in viewer with proper completion signals
+    - Credits display automatically in development without manual API key entry
+  - **Files Modified**: `server/python/arc3_openrouter_runner.py`, `server/routes/arc3OpenRouter.ts`, `client/src/pages/Arc3OpenRouterPlayground.tsx`
+
+### Version 6.32.0  Jan 3, 2026
+
+- **Add Haiku 4.5 Agent Harness for ARC-AGI-3** (Author: Claude Sonnet 4)
+  - **What**: Implemented vision-first, child-like learning agent using Anthropic's Haiku 4.5 model for ARC-AGI-3 games.
+  - **Why**: Haiku excels at vision tasks and fast iteration. This harness leverages those strengths with a child-like learning approach: SEES, THINKS, ACTS, OBSERVES, LEARNS.
+  - **How**:
+    - **Python Agent** (`server/python/arc3_haiku_agent.py`):
+      - Main game loop with hypothesis-action-observation cycle
+      - Anthropic API integration with vision (base64 PNG frames)
+      - Memory system for learned observations across turns
+      - NDJSON event emission for TypeScript consumption
+    - **Python Preprocessor** (`server/python/arc3_haiku_preprocessor.py`):
+      - Clean object extraction (connected components with flood-fill)
+      - Human-readable descriptions (color names, shape types, positions)
+      - Change detection between frames with movement tracking
+      - NO mathematical analysis (entropy, symmetry) - keeps it simple
+    - **TypeScript Bridge** (`server/services/arc3/Arc3HaikuPythonBridge.ts`):
+      - Subprocess spawn and lifecycle management
+      - NDJSON parsing from stdout
+      - Timeout handling and cleanup
+    - **Stream Service** (`server/services/arc3/HaikuArc3StreamService.ts`):
+      - Session management with TTL
+      - SSE event forwarding from Python to frontend
+    - **Express Routes** (`server/routes/arc3Haiku.ts`):
+      - `/stream/prepare` - create session
+      - `/stream/:sessionId` - SSE streaming
+      - `/stream/cancel/:sessionId` - cancel session
+      - `/health` - health check
+    - **Frontend Playground** (`client/src/pages/Arc3HaikuPlayground.tsx`):
+      - Three-column layout (config, game, reasoning)
+      - BYOK for Anthropic API key in production
+      - Real-time streaming of Haiku's thoughts
+    - **Observations Component** (`client/src/components/arc3/Arc3ObservationsList.tsx`):
+      - Displays learned patterns, descriptions, and hypotheses
+      - Purple-themed UI to match Haiku branding
+    - **Types** (`shared/types.ts`):
+      - `HaikuArc3StreamPayload`, `HaikuFrameContext`
+      - `HaikuObjectDescription`, `HaikuChangeDescription`
+      - `HaikuAgentEventType` union
+  - **Files Created**:
+    - `server/python/arc3_haiku_agent.py`
+    - `server/python/arc3_haiku_preprocessor.py`
+    - `server/services/arc3/Arc3HaikuPythonBridge.ts`
+    - `server/services/arc3/HaikuArc3StreamService.ts`
+    - `server/routes/arc3Haiku.ts`
+    - `client/src/pages/Arc3HaikuPlayground.tsx`
+    - `client/src/components/arc3/Arc3ObservationsList.tsx`
+  - **Files Modified**: `server/routes.ts`, `client/src/App.tsx`, `shared/types.ts`, `CHANGELOG.md`
+  - **Route**: `/arc3/haiku-playground`
+  - **API**: `/api/arc3-haiku/*`
+
+### Version 6.31.0  Jan 3, 2026
+
+- **Add General Intelligence Harness for ARC-AGI-3** (Author: Cascade)
+  - **What**: Implemented mathematical and topological grid analysis library (`arc3_harness.py`) for ARC-AGI-3 agents, with integration into OpenRouter runner.
+  - **Why**: Agents need mathematical understanding of grid state beyond heuristics. General Intelligence Harness provides entropy, symmetry, component analysis, delta tracking, and statement verification for any ARC-AGI-3 game without game-specific assumptions.
+  - **How**:
+    - **Core Harness** (`server/python/arc3_harness.py`):
+      - **Grid Analysis**: Entropy calculation, symmetry detection (5 axes), color histograms, connected components with flood-fill
+      - **Delta Analysis**: Frame-to-frame change detection, component matching across frames, transformation tracking
+      - **Semantic Bridge**: Coordinate extraction from LLM text, statement verification against actual grid state
+      - **General Design**: No fixed player object, no fog of war assumptions - works for any ARC-AGI-3 game
+    - **Integration** (`server/python/arc3_openrouter_runner.py`):
+      - Enhanced `Arc3OpenRouterAgent` with harness initialization and analysis
+      - Mathematical context injected into LLM prompts (entropy, component count, symmetry axes)
+      - Statement verification detects hallucinations by checking reasoning against grid changes
+      - Graceful fallback when harness unavailable
+    - **Documentation** (`docs/2026-01-03-arc3-python-preprocessing-guide.md`):
+      - Added complete General Intelligence Harness specification
+      - Mathematical analysis methods, delta reasoning, semantic bridge implementation
+      - Example usage and integration patterns
+    - **Testing**:
+      - `test_harness.py`: Comprehensive test suite (grid analysis, delta, coordinates, verification)
+      - `test_integration.py`: Integration test with OpenRouter runner
+      - All tests passing successfully
+  - **Technical Details**:
+    - Uses NumPy for efficient grid operations
+    - Flood-fill algorithm for connected component detection
+    - Component matching using position overlap across frames
+    - Coordinate extraction with regex patterns for (x, y) format
+    - Color name mapping for semantic verification
+  - **Files Created**: `server/python/arc3_harness.py`, `test_harness.py`, `test_integration.py`
+  - **Files Modified**: `server/python/arc3_openrouter_runner.py`, `docs/2026-01-03-arc3-python-preprocessing-guide.md`, `CHANGELOG.md`
+  - **Impact**: Provides agents with mathematical grid understanding, enables reasoning verification, supports any ARC-AGI-3 game through generalized analysis
+
+### Version 6.30.0  Jan 3, 2026
+
+- **Add Codex Playground & Python Preprocessing Documentation** (Author: Claude Sonnet 4.5)
+  - **What**: Created dedicated Codex playground page for OpenAI's GPT-5.1 Codex models and comprehensive Python preprocessing guide for ARC3 agent workflows.
+  - **Why**: Codex models (OpenAI's agentic coding series) needed dedicated UI separate from OpenRouter and main playgrounds. Python preprocessing (object detection, frame differencing, spatial analysis) essential for effective ARC3 agents but wasn't documented.
+  - **How**:
+    - **Codex Playground** (`client/src/pages/Arc3CodexPlayground.tsx`):
+      - Cloned from `Arc3OpenRouterPlayground.tsx` with Codex-specific adaptations
+      - Routes to `/api/arc3-codex` backend (uses OpenAI Agents SDK)
+      - Default model: `gpt-5.1-codex-mini`
+      - Header clarifies: "OpenAI's agentic coding models"
+      - Removed OpenRouter-specific features (credits monitor, BYOK)
+      - Updated branding (blue theme vs amber)
+    - **Python Preprocessing Guide** (`docs/2026-01-03-arc3-python-preprocessing-guide.md`):
+      - **Core techniques**: Object detection (connected components), color mapping (semantic names), spatial region classification (9-zone grid), frame differencing (change detection), progress tracking (level transitions), color distribution analysis
+      - **Advanced intelligence**: Symmetry detection, pathfinding/navigation vectors, reasoning-action correlation (surprise metric), LLM-driven code execution
+      - **Multimodal enhancement**: PNG rendering (base64 images for vision models)
+      - **Reference implementation**: TOMAS Engine analysis showing production preprocessing architecture
+      - **Integration workflow**: Action → raw frame → Python preprocessing → structured payload → LLM reasoning
+      - **Performance analysis**: ~20-50ms preprocessing overhead for 10-100x better reasoning quality
+    - **Navigation**: Added "Codex Playground" to ARC-3 dropdown menu with Code icon
+    - **Routing**: Registered `/arc3/codex-playground` route in `App.tsx`
+  - **Files Modified**:
+    - `client/src/components/layout/AppNavigation.tsx:133-139` (added Codex menu item)
+    - `client/src/App.tsx:47,121` (imported component, registered route)
+  - **Files Created**:
+    - `client/src/pages/Arc3CodexPlayground.tsx` (669 lines, full playground UI)
+    - `docs/2026-01-03-arc3-python-preprocessing-guide.md` (500+ lines, comprehensive preprocessing guide)
+  - **Key Insight**: Raw grids are data. Preprocessed frames are information. Structured semantic extraction in Python before sending to LLM reduces tokens, improves reasoning, and accelerates agent learning.
+
+### Version 6.29.0  Jan 3, 2026
+
+- **Add External Agent Submodules – TOMAS & GuidedRandomAgent** (Author: Claude Code)
+  - **What**: Added two reference agent implementations as git submodules for study and integration: TOMAS Engine (multi-agent cognitive architecture) and GuidedRandomAgent (action bias heuristic solver).
+  - **Why**: These are high-quality, documented agent implementations that solve ARC-AGI-3 games. TOMAS demonstrates advanced multi-agent orchestration; GuidedRandomAgent shows practical heuristic-based approaches. Having them as submodules enables direct code reference, architecture learning, and future feature extraction.
+  - **How**:
+    - **TOMAS Engine** (`external/tomas-engine-arc-agi-3`):
+      - Multi-agent system with three specialized minds: **AISTHESIS** (visual analysis, spatial math), **SOPHIA** (rule learning, hypothesis testing), **LOGOS** (strategic decision-making, emotional state).
+      - Processes game frames → analyzes changes → learns mechanics → decides actions with human-like psychology.
+      - Features rule consolidation (successful patterns become persistent knowledge), frustration/curiosity modeling, precise movement vectors.
+      - Built for ARC-AGI-3 Agent Preview competition, uses Google Gemini API.
+    - **GuidedRandomAgent** (`external/GuidedRandomAgent`):
+      - Action bias agent using object tracking and weighted action selection.
+      - Key heuristics: effective action prop bias (tracks which action types change game state), object click-effectiveness (learned weights for clickable objects), spontaneous change detection (buffs objects that change unexpectedly), dead-end avoidance.
+      - Pragmatic approach focusing on pixel-level change detection and adaptive action probability.
+      - Built for ARC-AGI-3 competition, uses ARC API key.
+  - **Files Modified**: `.gitmodules`, `CHANGELOG.md`
+  - **Files Created**: `external/tomas-engine-arc-agi-3/`, `external/GuidedRandomAgent/`
+  - **Reference Value**: Both agents provide architectural patterns for solver design: TOMAS shows multi-agent orchestration; GuidedRandomAgent shows pragmatic heuristic efficiency. Source for feature extraction and integration ideas.
+  - **Future Use**: Code can be studied for:
+    - Rule learning strategies (TOMAS SOPHIA module)
+    - Visual analysis techniques (TOMAS AISTHESIS)
+    - Object tracking from pixel grids (GuidedRandomAgent)
+    - Action weighting and confidence modeling (both)
+
+- **Remove Hardcoded Level Screenshots – Enable Auto-Discovery** (Author: Claude Code)
+  - **What**: Removed manual `levelScreenshots` arrays from FT09, LS20, and AS66 game metadata. Auto-discovery service now scans public folder and populates screenshots dynamically.
+  - **Why**: Hardcoded arrays duplicate filesystem truth (screenshots exist in `public/`). This caused FT09 to hide 4 out of 6 available screenshots. Single source of truth (filesystem) is cleaner and reduces maintenance burden.
+  - **How**:
+    - Deleted `levelScreenshots` property from `shared/arc3Games/ft09.ts`, `shared/arc3Games/ls20.ts`, `shared/arc3Games/as66.ts`.
+    - Service (`server/services/arc3ScreenshotService.ts`) now auto-discovers all matching PNG files using pattern `{gameId}-lvl{levelNumber}[optional-suffix].png`.
+    - Screenshots sorted by level, variants (e.g., `lvl6a`) preserved with auto-generated captions.
+  - **Files Modified**: `shared/arc3Games/ft09.ts`, `shared/arc3Games/ls20.ts`, `shared/arc3Games/as66.ts`
+  - **Impact**: FT09 now displays all 6 level screenshots (was 2). LS20 and AS66 unchanged. No manual curation needed for future screenshots.
+
+- **Add FT09 Level 2 Replay & Level 1/5 Screenshots** (Author: Claude Code)
+  - **What**: Added official ARC Prize replay link demonstrating color priority mechanic (blue over red). Added missing FT09 level 1, 1-win, 5, 5-lesson screenshots to public folder.
+  - **Why**: Visual documentation of game mechanics is critical for understanding. Color priority insight unlocks Level 2 puzzle logic. Screenshots provide gameplay context.
+  - **How**:
+    - **Replay Resource**: Added to FT09 `resources` array: "FT09 Level 2 Replay" (type: 'replay', demonstrates blue priority rule).
+    - **Screenshots**: Added to `client/public/`: `ft09-lvl1.png`, `ft09-lvl1-win.png`, `ft09-lvl5.png`, `ft09-lvl5-lesson.png`.
+    - These are auto-discovered by screenshot service and displayed in FT09 spoiler page.
+  - **Files Modified**: `shared/arc3Games/ft09.ts`
+  - **Files Created**: `client/public/ft09-lvl1.png`, `client/public/ft09-lvl1-win.png`, `client/public/ft09-lvl5.png`, `client/public/ft09-lvl5-lesson.png`
+  - **Game Understanding**: Color priority is the key insight for FT09 puzzle logic.
+
+### Version 6.28.1  Jan 3, 2026
+
+- **OpenRouter Agent Fixes – Reasoning Effort & Validation** (Author: Claude Code)
+  - **What**: Fixed OpenRouter playground validation errors, wired up reasoning effort parameter per OpenRouter docs, set correct default model, and added navigation link.
+  - **Why**: Frontend was sending 100,000 max turns but backend only accepted 500 (causing 400 errors). Reasoning effort UI was not actually controlling thinking budget. Default model wasn't set correctly.
+  - **How**:
+    - **Max Turns Fix**: Changed default from 100,000 to 80 (matching ARC-AGI-3-Agents2 standard). Route validates max(500).
+    - **Default Model**: Reordered model selection to explicitly prefer `xiaomi/mimo-v2-flash:free` (not just any `:free` model).
+    - **Reasoning Effort Parameter**:
+      - Route now accepts `reasoningEffort` enum (`'minimal'|'low'|'medium'|'high'|'xhigh'`) instead of boolean `reasoningEnabled`
+      - Service passes `reasoning_effort` to Python runner
+      - Python agent sets `extra_body.reasoning.effort` in OpenRouter API call per official docs
+      - This controls thinking token budget allocation (e.g., "high" = 80% of max_tokens for reasoning)
+    - **Navigation**: Added "OpenRouter Agent Laboratory" link to ARC-3 dropdown in AppNavigation
+  - **Files Modified**: `client/src/pages/Arc3OpenRouterPlayground.tsx`, `server/routes/arc3OpenRouter.ts`, `server/services/arc3/Arc3OpenRouterStreamService.ts`, `server/services/arc3/Arc3OpenRouterPythonBridge.ts`, `server/python/arc3_openrouter_runner.py`, `client/src/components/layout/AppNavigation.tsx`
+  - **Impact**: User can now control model reasoning effort from UI. Reasoning effort UI actually controls OpenRouter thinking budget (per official OpenRouter docs).
+  - **Reference**: `docs/plans/2026-01-03-openrouter-agent-prompt-consistency-plan.md` (planning document for future system prompt consistency work)
+
+- **ARC3 Agent Playground – Onboarding Modal** (Author: Claude Code)
+  - **What**: Added educational onboarding modal for new users entering the ARC3 Agent Playground, explaining agent-based gameplay and auto-starting game with defaults.
+  - **Why**: New users unfamiliar with AI agents need guidance on collaboration model. Modal explains that agents explore/report/learn while users guide through instructions (not direct control).
+  - **How**:
+    - **Modal Content**:
+      - Explains what an AI agent is (observes, decides, adapts)
+      - Shows gameplay loop: agent explores → reports → user instructs → agent executes
+      - Explains multiple levels to win
+      - Pro tip on specific instructions
+    - **Auto-Start**: Clicking "Start Game" closes modal and immediately starts game with defaults (GPT-5 Nano, playbook prompt, ls20 game)
+    - **Skip Option**: "Skip for Now" button allows users to access manual controls if preferred
+  - **Files Modified**: `client/src/pages/ARC3AgentPlayground.tsx`
+  - **UX Impact**: First-time users immediately understand they're collaborating with an agent, not controlling it. Clear expectations set before gameplay begins.
+
+### Version 6.28.0  Jan 3, 2026
+
+- **OpenRouter Credits Monitor – BYOK Balance Display** (Author: Cascade/Claude Opus 4.5)
+  - **What**: Real-time credits monitor in OpenRouter Playground header showing remaining balance for user's API key.
+  - **Why**: Free tier models have limited credits. Users need visibility into their burn rate while agents run.
+  - **How**:
+    - **Backend**: Added `POST /api/arc3-openrouter/credits` endpoint that proxies OpenRouter's `/api/v1/auth/key` endpoint with user's BYOK key.
+    - **Frontend Hook**: Created `useOpenRouterCredits` hook with 15s polling interval, tracks usage/limit/remaining.
+    - **Header Display**: Amber-styled credits badge in playground header showing `$X.XX remaining` or `$X.XX used` (for unlimited keys).
+    - **Tooltip Details**: Hover reveals full breakdown: label, usage, limit, remaining, free tier status.
+    - **Manual Refresh**: Button to force-refresh credits on demand.
+    - **Error Handling**: Shows error state if API key is invalid or network fails.
+  - **BYOK Compliance**: Key is passed per-request to backend, never stored. Backend proxies to OpenRouter and returns balance.
+  - **Files Created**: `client/src/hooks/useOpenRouterCredits.ts`
+  - **Files Modified**: `server/routes/arc3OpenRouter.ts`, `client/src/pages/Arc3OpenRouterPlayground.tsx`
+
+### Version 6.27.0  Jan 3, 2026
+
+- **OpenRouter Agent Major Upgrade – Structured Outputs, Memory, Frame Delta** (Author: Cascade/Claude Opus 4.5)
+  - **What**: Three critical upgrades to `arc3_openrouter_runner.py` per audit recommendations. Expected 3-5x performance improvement.
+  - **Why**: Agent was blind (no memory), unreliable (regex parsing), and couldn't learn (no frame delta). Now has persistent memory, reliable parsing, and learns from action outcomes.
+  - **How**:
+    - **Phase 1 - Pydantic Structured Outputs**: Added `ActionDecision` Pydantic schema with field validators. Uses LangChain's `with_structured_output()` instead of fragile regex JSON parsing. Fallback to regex if Pydantic unavailable.
+    - **Phase 2 - Observation Journal & Memory**: Added `observations` (last 15) and `thoughts` (last 10) lists. Dynamic `build_system_prompt()` injects memory each turn. Agent now remembers discoveries and builds strategies.
+    - **Phase 3 - Frame Delta Analysis**: Added `analyze_frame_delta()` for pixel-by-pixel comparison. Detects movement size, color transitions, stuck detection. Adds deltas to observations for cause-effect learning.
+    - **Stuck Detection**: If same action fails 3x in a row, agent adds strategic thought to try different direction.
+    - **ACTION6 Validation**: Explicit coordinate check before executing click action.
+  - **Expected Metrics**: Parse success 70%→99%, Win rate ~15%→45-60%, Avg turns ~60→35-40
+  - **Files Modified**: `arc3_openrouter_runner.py` (major rewrite of Arc3OpenRouterAgent class)
+  - **Reference**: `docs/audits/2026-01-03-arc3-agents2-integration-audit.md`, `docs/OPENROUTER_UPGRADE_BRIEF.md`
+
+### Version 6.26.0  Jan 3, 2026
+
+- **OpenRouter Playground – Competition Emulation Mode** (Author: Cascade/Claude Opus 4.5)
+  - **What**: Enhanced OpenRouter Playground for competition-emulation mode with rich scorecard metadata and MiMo reasoning toggle.
+  - **Why**: The OpenRouter page is for autonomous batch runs (no babysitting), emulating the official ARC3 competition harness. Users enter their "genius" system prompt, user prompt, and OpenRouter API key, then agent runs until WIN or GAME_OVER with scorecard registered.
+  - **How**:
+    - **Rich Scorecard Metadata**: Tags now include `['arc-explainer', 'openrouter-playground', 'competition-emulation', model-tag, 'reasoning-enabled']`. Opaque metadata includes `source`, `mode`, `game_id`, `agent_name`, `model`, `reasoning_enabled`, `max_turns`.
+    - **MiMo Reasoning Toggle**: Added `reasoning_enabled` parameter (default: `true`) passed through entire stack (frontend → hook → route → service → Python runner → OpenRouter API via `extra_body.reasoning.enabled`)
+    - **Agent Name**: User-defined `agentName` now flows to scorecard metadata
+    - **Combined Prompts**: System prompt + instructions combined properly in Python runner
+    - **Default Model**: `xiaomi/mimo-v2-flash:free` (MiMo-V2-Flash: 309B params, 15B active, #1 open-source on SWE-bench)
+    - **MAX_ACTIONS**: Increased from 50 to 80 to match ARC-AGI-3-Agents2 default
+  - **Files Modified**: `arc3_openrouter_runner.py`, `Arc3OpenRouterStreamService.ts`, `Arc3OpenRouterPythonBridge.ts`, `arc3OpenRouter.ts`, `useArc3AgentStream.ts`
+
+### Version 6.25.1  Jan 3, 2026
+
+- **Arc3RealGameRunner Refactoring – Factory Integration Complete** (Author: Cascade/Claude Opus 4.5)
+  - **What**: Integrated tool factory into both `run()` and `runWithStreaming()` methods, extracted helpers, achieved 48% line reduction.
+  - **Why**: Completes the DRY refactoring started in v6.25.0. Inline tool definitions (240+ lines duplicated) replaced with factory calls.
+  - **How**:
+    - **Factory Integration**: Both `run()` and `runWithStreaming()` now call `createArc3Tools(toolContext)` instead of defining tools inline
+    - **runHelpers.ts**: Created `server/services/arc3/helpers/runHelpers.ts` with `selectSystemPrompt()`, `buildCombinedInstructions()`, `mapState()`, `buildRunSummary()`
+    - **Line Reduction**: Arc3RealGameRunner.ts reduced from 1,295 → 678 lines (**48% reduction, 617 lines saved**)
+  - **Files Created**: `runHelpers.ts`
+  - **Files Modified**: `Arc3RealGameRunner.ts` (factory integration + helpers)
+
+### Version 6.25.0  Jan 3, 2026
+
+- **Arc3RealGameRunner Refactoring – Scorecard Fix + Tool Factory** (Author: Cascade)
+  - **What**: Fixed critical scorecard bug (never closed) and created tool factory to eliminate duplication.
+  - **Why**: Per audit (`docs/audits/2026-01-03-arc3-agents-sdk-audit.md`), scorecards must be closed when game reaches WIN or GAME_OVER. The 1,295-line file had ~400 lines of duplicated tool definitions between `run()` and `runWithStreaming()`.
+  - **How**:
+    - **Bug Fix**: Added `closeScorecard()` to `Arc3ApiClient.ts` and calls in both `run()` and `runWithStreaming()` when game state is WIN or GAME_OVER
+    - **Tool Factory**: Created `server/services/arc3/tools/Arc3ToolFactory.ts` with context-based tool creation functions
+    - **Context Pattern**: Tools receive `Arc3ToolContext` object with mutable game state, services, and optional streaming harness
+    - **Plan Document**: Created `docs/plans/2026-01-03-arc3-real-game-runner-refactor-plan.md` with full audit and remaining tasks
+  - **Files Created**: `Arc3ToolFactory.ts`, `tools/index.ts`, refactor plan document
+  - **Files Modified**: `Arc3ApiClient.ts` (+closeScorecard), `Arc3RealGameRunner.ts` (+scorecard close calls)
+
+### Version 6.24.1  Jan 3, 2026
+
+- **OpenRouter Playground – Fixes and Improvements** (Author: Cascade)
+  - **What**: Fixed OpenRouter Playground to use dynamic model fetching from `/api/models` (from project's OpenRouter catalog), mirror Arc3AgentPlayground structure with `Arc3ConfigurationPanel`, and add proper scorecard handling.
+  - **Why**: Initial implementation used hardcoded outdated models from training data instead of the project's mature OpenRouter model catalog. Page structure diverged from the main playground, missing system prompt presets and configuration panel.
+  - **How**:
+    - **Dynamic Models**: Fetch from `/api/models` and filter by `provider === 'OpenRouter'` (matches project's `openrouterModels.ts` catalog)
+    - **Arc3ConfigurationPanel**: Reuse the same configuration component as Arc3AgentPlayground (system prompts, reasoning effort, etc.)
+    - **System Prompt Presets**: Added support for `twitch`, `playbook`, `none` presets via `/api/arc3/system-prompts`
+    - **Scorecard Fix**: Added `close_scorecard()` method to Python runner and call it after WIN/GAME_OVER (per audit findings)
+  - **Files**: `Arc3OpenRouterPlayground.tsx`, `arc3_openrouter_runner.py`
+
+### Version 6.24.0  Jan 3, 2026
+
+- **OpenRouter Playground – Dedicated Frontend Page** (Author: Cascade)
+  - **What**: Created dedicated ARC3 playground page for OpenRouter models at `/arc3/openrouter-playground`, separate from the OpenAI-focused playground.
+  - **Why**: The existing playground uses OpenAI's Responses API (Agents SDK). OpenRouter requires different scaffolding (Python LangGraph runner via `/api/arc3-openrouter`). Separate pages maintain clarity and allow each to be optimized for its provider.
+  - **How**:
+    - **Frontend Page**: Created `Arc3OpenRouterPlayground.tsx` reusing all Arc3 UI components (GamePanel, ReasoningViewer, ToolTimeline, etc.)
+    - **Provider Routing**: Always passes `provider: 'openrouter'` to `useArc3AgentStream`, routing to `/api/arc3-openrouter` backend
+    - **BYOK Card**: OpenRouter API key input (amber styling, session-only, never stored)
+    - **Model Selection**: Dynamic model list from project's OpenRouter catalog via `/api/models`
+    - **Route**: Added `/arc3/openrouter-playground` route in `App.tsx`
+    - **Navigation**: Added amber-styled "OpenRouter Playground" button on ARC3 landing page
+  - **Pattern**: Follows LLM-Council approach (Python subprocess + TypeScript bridge + BYOK)
+  - **Files**: `Arc3OpenRouterPlayground.tsx`, `App.tsx`, `ARC3Browser.tsx`
+
+### Version 6.23.0  Jan 2, 2026 (Late Evening)
+
+- **ARC3 OpenRouter Integration – LangGraph Python Agent** (Author: Cascade)
+  - **What**: Added OpenRouter as a third provider option for ARC3 Agent Playground using LangGraph-style Python agent with model `xiaomi/mimo-v2-flash:free`.
+  - **Why**: Enables users to play ARC-AGI-3 games with free/low-cost models via OpenRouter. Follows the LangGraph thinking agent pattern from `external/ARC-AGI-3-Agents2/` for rule discovery and exploration gameplay.
+  - **How**:
+    - **Python Runner**: Created `server/python/arc3_openrouter_runner.py` - LangGraph-style agent using LangChain's ChatOpenAI with OpenRouter base URL. Emits NDJSON events to stdout matching frontend expectations (`agent.starting`, `agent.tool_call`, `agent.tool_result`, `game.frame_update`, `agent.completed`).
+    - **TypeScript Bridge**: Created `server/services/arc3/Arc3OpenRouterPythonBridge.ts` - spawns Python subprocess, parses NDJSON events line-by-line via readline, forwards to SSE. Pattern from `SnakeBenchPythonBridge.ts`.
+    - **Stream Service**: Created `server/services/arc3/Arc3OpenRouterStreamService.ts` - session management, SSE emission coordination. Pattern from existing `Arc3StreamService.ts`.
+    - **Routes**: Created `server/routes/arc3OpenRouter.ts` - endpoints `POST /stream/prepare`, `GET /stream/:sessionId`, `POST /stream/cancel/:sessionId`, `GET /health`.
+    - **Route Registration**: Added `arc3OpenRouterRouter` import and `app.use("/api/arc3-openrouter", ...)` in `server/routes.ts`.
+    - **Frontend**: Updated `useArc3AgentStream.ts` to route to `/api/arc3-openrouter` when provider is `'openrouter'`. Added `'openrouter'` to provider type union.
+    - **Plan Document**: Created `docs/plans/2026-01-02-arc3-openrouter-integration-plan.md` with architecture diagram, event flow, and implementation phases.
+  - **Architecture**: Frontend → TypeScript routes → Python subprocess (NDJSON) → LangChain/OpenRouter → ARC3 API
+  - **Model**: Default `xiaomi/mimo-v2-flash:free` (configurable via payload)
+  - **Files**: `arc3_openrouter_runner.py`, `Arc3OpenRouterPythonBridge.ts`, `Arc3OpenRouterStreamService.ts`, `arc3OpenRouter.ts`, `routes.ts`, `useArc3AgentStream.ts`
+
+### Version 6.22.1  Jan 2, 2026 (Evening)
+
+- **ARC3 Architecture Clarification – Critical Documentation Update** (Author: Claude Haiku 4.5)
+  - **What**: Comprehensive clarification of Arc3RealGameRunner event types vs Arc3OpenAIRunner, with corrected implementation guidance for future OpenRouter support.
+  - **Why**: Previous audit recommended copying Arc3OpenAIRunner for OpenRouter, which would have silent UI failures due to event type mismatches. Streaming already works perfectly; no urgent work needed. Documentation was misleading.
+  - **How**:
+    - **Key Finding**: Arc3RealGameRunner emits correct events (`agent.starting`, `agent.tool_call`, `agent.reasoning`, etc.) while Arc3OpenAIRunner emits incomplete set (`stream.init`, `game.action_start`, `game.action_result`) causing silent UI failures.
+    - **Decision**: Streaming architecture is complete and functional. Arc3RealGameRunner with OpenAI Agents SDK works perfectly. No work needed on Arc3OpenAI routes.
+    - **Future Path**: If OpenRouter support is added later, must emit Arc3RealGameRunner event types (not copy Arc3OpenAIRunner pattern). Two options documented: (A) Refactor Arc3OpenAIRunner to fix events first, or (B) Lightweight HTTP implementation like Python agents.
+    - **Documentation**: Completely rewrote "OpenRouter Implementation Strategy" section in `docs/reference/arc3/KNOWN_ISSUES.md` with event comparison table, two implementation options, and why Arc3OpenAIRunner pattern is incorrect.
+    - **Tests**: Verified streaming works end-to-end via `/api/arc3/stream/*` routes. Build passes. No functionality changed.
+  - **Files changed**: `docs/reference/arc3/KNOWN_ISSUES.md`
+  - **Impact**: Prevents future developer from making critical mistake (copying Arc3OpenAIRunner). Clarifies that streaming is complete. Reduces scope of future work.
+
+### Version 6.22.0  Jan 2, 2026
+
+- **Codex ARC Playground – Interactive Trajectory Runner** (Author: Cascade (ChatGPT 5.1 Codex))
+  - **What**: Added a Codex-powered ARC-AGI-3 interactive runner alongside the existing Claude runner. Users can toggle between providers in the ARC3 Playground UI.
+  - **Why**: ARC-AGI-3 is a trajectory-based benchmark requiring real-time action-perception loops. A Codex-native runner enables researchers to compare Codex vs Claude trajectories, test different reasoning approaches, and record sessions for ARC Prize submission.
+  - **How**:
+    - **Backend**: Created `server/services/arc3/CodexArc3Runner.ts` implementing the event loop with OpenAI Agents SDK, PNG rendering for multimodal prompts, scorecard integration, and JSONL persistence.
+    - **Backend**: Created `server/services/arc3/CodexArc3StreamService.ts` for session management and SSE streaming coordination.
+    - **Backend**: Created `server/routes/arc3Codex.ts` with endpoints: `POST /api/arc3-codex/stream/prepare`, `GET /api/arc3-codex/stream/:sessionId`, `POST /api/arc3-codex/manual-action`, `POST /api/arc3-codex/stream/:sessionId/continue`, `GET /api/arc3-codex/stream/:sessionId/continue-stream`, `POST /api/arc3-codex/stream/:sessionId/cancel`, `GET /api/arc3-codex/health`.
+    - **Shared types**: Added `CodexArc3Provider`, `CodexArc3ActionStartEvent`, `CodexArc3ActionResultEvent`, `CodexArc3HypothesizeEvent`, `CodexArc3FrameUpdateEvent`, `CodexArc3CompletedEvent`, `CodexArc3StreamPayload` to `shared/types.ts`.
+    - **Frontend**: Updated `client/src/pages/ARC3AgentPlayground.tsx` with provider toggle (Claude/Codex) in header.
+    - **Frontend**: Updated `client/src/hooks/useArc3AgentStream.ts` to route to correct backend based on provider selection.
+  - **SSE Events**: Extended streaming schema with trajectory-aware events (`game.action_start`, `game.action_result`, `agent.hypothesize`) for real-time visualization.
+  - **Files**: `CodexArc3Runner.ts`, `CodexArc3StreamService.ts`, `arc3Codex.ts`, `routes.ts`, `shared/types.ts`, `ARC3AgentPlayground.tsx`, `useArc3AgentStream.ts`, `docs/plans/2026-01-02-codex-arc-playground-plan.md`
+
+### Version 6.21.0  Jan 2, 2026
+
+- **Council UI – Non-Streaming Execution** (Author: Cascade (ChatGPT))
+  - **What**: Disabled SSE mode on the `/council` page and reverted to the blocking `/api/council/assess` flow. The UI now keeps the latest assessment visible with timestamped metadata and surfaces failures inline.
+  - **Why**: Streaming UX was wiping logs/results when runs errored, leaving no trace of costly API calls. The product owner approved a non-stream experience to keep evidence on screen.
+  - **How**:
+    - Simplified `LLMCouncil.tsx` state to `runStatus`/`runError`, removed event-log rendering, and guarded controls with a single `isRunning` flag.
+    - Added completion timestamp display plus amber BYOK validation messaging that blocks runs without a key when required.
+    - Documented the strategy in `docs/plans/2026-01-02-llm-council-non-stream-plan.md`.
+
+- **BYOK Integration for Council** (Author: Grok_Codefast1)
+  - **What**: Applied Bring Your Own Key (BYOK) enforcement to Council assessment endpoints, following established patterns from other services.
+  - **Why**: Council was inconsistent with other services (Poetiq, SnakeBench, streamController) that already enforce BYOK in production. Users were incurring API costs without control over their budgets.
+  - **How**: 
+    - **Backend**: Updated `councilController.ts` to validate BYOK requirements and return 400 error when production requires key but none provided. Modified `councilService.ts` to accept and resolve `apiKey`/`provider` parameters. Updated `councilBridge.ts` to accept resolved API key and set `OPENROUTER_API_KEY` environment variable. Added health check log muting (5-minute cooldown).
+    - **Frontend**: Updated `LLMCouncil.tsx` to show BYOK input card only in production (amber styling matching PuzzleExaminer pattern), added client-side validation, included `apiKey`/`provider` in API requests, implemented dynamic health check polling (30s healthy, 5min unhealthy).
+    - **Pattern compliance**: Follows exact `streamController` validation pattern, uses established `environmentPolicy` utilities (`requiresUserApiKey()`, `getEffectiveApiKey()`), maintains backward compatibility (dev mode uses server key fallbacks).
+  - **Security**: API keys never logged or stored server-side, only used for session execution. Production blocks without user keys, development allows server fallbacks.
+  - **Files changed**: `councilController.ts`, `councilService.ts`, `councilBridge.ts`, `LLMCouncil.tsx`, `2026-01-02-byok-system-integration-plan.md`
+
+- **LLM Council Integration** (Author: Claude Sonnet 4 / Fixed by Claude Haiku)
+  - **What**: Integrated llm-council submodule for multi-model consensus evaluation of ARC puzzles. New `/council` route with full 3-stage deliberation UI.
+  - **Why**: The llm-council submodule was added but never wired up. Users can now have multiple LLMs independently solve puzzles, rank each other's work, and produce a synthesized consensus answer.
+  - **How** (subprocess pattern like Saturn/Grover/Beetree):
+    - Created `server/python/council_wrapper.py` - Python wrapper that imports llm-council modules
+    - Created `server/services/council/councilBridge.ts` - Spawns Python subprocess, NDJSON protocol
+    - Created `server/services/council/councilService.ts` - ARC puzzle formatting and orchestration
+    - Created `server/controllers/councilController.ts` - API endpoints for council operations
+    - Added routes: `GET /api/council/health`, `GET /api/council/unsolved-puzzles`, `GET /api/council/puzzle/:taskId/explanations`, `POST /api/council/assess`, `POST /api/council/assess/stream`
+    - Created `client/src/pages/LLMCouncil.tsx` - Full UI for puzzle selection, mode selection (solve/assess), and 3-stage result display
+    - Added frontend routes `/council` and `/council/:taskId`
+  - **Bug fixes & completion**:
+    - Fixed type errors in `streamAssessment()` endpoint by removing non-existent `createConversation()` and `streamMessage()` calls
+    - Removed duplicate mode validation in controller (line 179)
+    - Modified `councilService.assessPuzzle()` to accept optional `onEvent` callback and forward to `councilBridge.runCouncil()`
+    - Streaming endpoint now properly pipes council events to client via SSE
+    - **Frontend completions**:
+      - Rewired component to use `/api/council/assess/stream` endpoint instead of blocking request
+      - Added URL parameter support (`:taskId`) to pre-select puzzle from direct links
+      - Implemented live event stream display showing real-time progress through 3 stages with visual indicators
+      - Added proper UI validation preventing assess mode submission without explanation selection
+      - Disabled controls during streaming to prevent race conditions
+      - Added stream error handling and display
+  - **Requirements**: Python installed, `llm-council` submodule checked out, `OPENROUTER_API_KEY` env var set
+  - **Council Result Persistence** (Phases 2-4 complete):
+    - **What**: Council deliberation results now automatically save to database as "explanations" with full 3-stage audit trail.
+    - **Why**: Results previously streamed to UI then disappeared. Now they persist, can be queried, scored against ground truth, and voted on in ELO system.
+    - **Implementation**:
+      - Added 8 columns to explanations table for council metadata (mode, 3-stage results, rankings, assessed IDs, prompt)
+      - Updated `ExplanationRepository.ts` - council columns in INSERT, all SELECT queries, and JSONB parsing
+      - Created transformation pipeline in `councilService.ts`:
+        - `extractPredictedGridFromSynthesis()` - regex extraction of output grids from stage3 text
+        - `deriveConfidenceFromRankings()` - calculates 0-100 confidence from aggregate rankings
+        - `transformCouncilResult()` - converts CouncilAssessmentResult to ExplanationData
+        - `saveCouncilResult()` - persists to DB and scores prediction vs ground truth
+      - `assessPuzzle()` auto-saves results after completion
+    - **Edge cases**: assess mode (no prediction), missing grids, confidence parse failures, assessed explanation tracking
+  - **Usage**: Visit `/council`, run assessment. Results auto-persist. Queryable as explanations with `councilMode IS NOT NULL`.
+  - **TODO**: ELO integration, council voting system, council leaderboards
+  - **Files changed**: `DatabaseSchema.ts`, `IExplanationRepository.ts`, `ExplanationRepository.ts`, `councilService.ts`, `2026-01-02-council-persistence-plan.md`
+
 ### Version 6.20.0  Jan 1, 2026 23:39
 
 - **Efficiency + Analyst UX Polish** (Author: ChatGPT)

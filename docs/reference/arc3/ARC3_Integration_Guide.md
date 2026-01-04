@@ -1,8 +1,8 @@
 # ARC3 Integration Guide
 
 **Author:** Claude Code (Sonnet 4.5)  
-**Date:** 2025-11-06  
-**Purpose:** Comprehensive guide for integrating with ARC-AGI-3 API using OpenAI Agents SDK
+**Date:** 2026-01-03 (updated)  
+**Purpose:** Comprehensive guide for integrating with ARC-AGI-3 API using OpenAI Agents SDK (2026 stack: ACTION7, available_actions normalization, BYOK/provider routing, SSE streaming, animation unpacking)
 
 ## Overview
 
@@ -11,7 +11,7 @@ This guide documents the correct approach to integrate the ARC-AGI-3 competition
 ## Key References
 
 ### Python Reference Implementation
-Located in `external/ARC3-solution/ARC-AGI-3-Agents/`:
+Located in `external/ARC-AGI-3-Agents2/` (structured reasoning + tool calls):
 
 1. **`agents/structs.py`** - Core data structures
    - `FrameData`: Game state representation
@@ -28,11 +28,10 @@ Located in `external/ARC3-solution/ARC-AGI-3-Agents/`:
    - Tool calling with function definitions
    - Observation and action phases
 
-### TypeScript Streaming Reference
-- **`server/services/streaming/saturnStreamService.ts`** - Correct streaming implementation
-  - Uses StreamingHarness pattern
-  - Properly handles SSE events
-  - Implements database persistence
+### TypeScript Streaming Reference (current)
+- **`server/services/arc3/Arc3StreamService.ts`** – SSE streaming for ARC3 prepare/start/cancel endpoints
+- **`client/src/hooks/useArc3AgentStream.ts`** – Frontend hook orchestrating prepare + SSE + timeline
+- **`server/routes/arc3.ts`** – Public HTTP contract for ARC3 (prepare/stream/cancel + defaults/presets/games)
 
 ## ARC3 API Data Structures
 
@@ -53,7 +52,7 @@ interface FrameData {
 ### GameAction
 ```typescript
 interface GameAction {
-  action: 'RESET' | 'ACTION1' | 'ACTION2' | 'ACTION3' | 'ACTION4' | 'ACTION5' | 'ACTION6';
+  action: 'RESET' | 'ACTION1' | 'ACTION2' | 'ACTION3' | 'ACTION4' | 'ACTION5' | 'ACTION6' | 'ACTION7';
   coordinates?: [number, number];  // Required for ACTION6 only
 }
 ```
@@ -62,11 +61,20 @@ interface GameAction {
 The API returns string values that must be mapped to our type system:
 ```typescript
 const mapState = (state: string): Arc3GameState => {
-  if (state === 'NOT_PLAYED') return 'NOT_PLAYED';
-  if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
-  if (state === 'WIN') return 'WIN';
-  if (state === 'GAME_OVER') return 'GAME_OVER';
-  return 'NOT_STARTED';  // Default fallback for simulator
+  switch (state) {
+    case 'NOT_PLAYED':
+      return 'NOT_PLAYED';
+    case 'IN_PROGRESS':
+      return 'IN_PROGRESS';
+    case 'WIN':
+      return 'WIN';
+    case 'GAME_OVER':
+      return 'GAME_OVER';
+    case 'NOT_FINISHED':
+      return 'NOT_FINISHED';
+    default:
+      throw new Error(`Unexpected game state from ARC3 API: ${state}`);
+  }
 };
 ```
 
@@ -218,7 +226,22 @@ Based on `reasoning_agent.py`, effective instructions should:
    - Stop on WIN
    - Stop when no useful actions remain
 
-## Common Pitfalls Fixed
+### Available actions normalization (server-side)
+`Arc3ApiClient` normalizes numeric or string tokens to canonical `RESET`/`ACTION1-7` and defaults `action_counter` to 0:
+```typescript
+available_actions?: Array<string | number>;  // API may send numbers or strings
+// normalized → string[] | undefined
+```
+UI no longer guesses; it respects normalized tokens and allows all if missing.
+
+### Animation frames
+Frames can be 3D or 4D (animation). Runner unpacks 4D arrays into sequential frames before streaming to UI.
+
+### BYOK + provider routing
+- Production requires user API key (BYOK) in stream/prepare and run endpoints.
+- Providers: default OpenAI (`/api/arc3`), OpenRouter (`/api/arc3-openrouter`); UI passes `provider` to route accordingly.
+
+## Common Pitfalls Fixed (updated)
 
 ### Issue 1: Wrong Object Property Access
 ```typescript
@@ -255,18 +278,17 @@ const gameId = config.scenarioId;
 const gameId = config.game_id;
 ```
 
-## Integration Checklist
+## Integration Checklist (2026)
 
-- [ ] Implement Arc3ApiClient with proper FrameData types
-- [ ] Create tool definitions matching ARC3 actions
-- [ ] Add state mapping function for API response strings
-- [ ] Cache currentFrame for inspect operations
-- [ ] Generate UUIDs for runId (StreamedRunResult doesn't provide)
-- [ ] Cast frames array to any[] for Arc3AgentRunResult
-- [ ] Implement streaming event forwarding if needed
-- [ ] Handle scorecard lifecycle (openScorecard before startGame)
-- [ ] Add proper error handling for API failures
-- [ ] Test with real ARC3 API credentials
+- [ ] Arc3ApiClient with ACTION7, available_actions normalization, full_reset handling
+- [ ] Tool definitions matching ARC3 actions (RESET + ACTION1-7, ACTION6 coordinates)
+- [ ] State mapping that throws on unknown states; supports NOT_FINISHED
+- [ ] Cache currentFrame for inspect operations; unpack animation frames (4D) in runner
+- [ ] Generate UUIDs for runId; stream via SSE (prepare → stream/:sessionId → cancel)
+- [ ] BYOK flow: require apiKey in production; forward to backend; provider routing (OpenAI/OpenRouter)
+- [ ] Scorecard lifecycle: open before startGame; include card_id on RESET; close on WIN/GAME_OVER
+- [ ] Error handling surfaces validation failures to UI; pause on unexpected state/tokens
+- [ ] Test with real ARC3 API credentials and OpenRouter BYOK keys
 
 ## Testing
 
@@ -289,7 +311,8 @@ console.log(`Steps: ${result.summary.stepsTaken}`);
 ## Resources
 
 - ARC-AGI-3 Website: https://three.arcprize.org
-- Official Python SDK: https://github.com/arcprize/ARC-AGI-3-Agents
+- Official Python SDK (reference): https://github.com/arcprize/ARC-AGI-3-Agents
+- ARC-AGI-3-Agents2 templates (external reference in repo): `external/ARC-AGI-3-Agents2/agents/templates/`
 - OpenAI Agents SDK: https://www.npmjs.com/package/@openai/agents
 - Documentation: https://three.arcprize.org/docs
 
@@ -297,5 +320,6 @@ console.log(`Steps: ${result.summary.stepsTaken}`);
 
 - `server/services/arc3/Arc3RealGameRunner.ts` - TypeScript implementation
 - `server/services/arc3/Arc3ApiClient.ts` - API client
-- `server/services/streaming/saturnStreamService.ts` - Streaming reference
-- `external/ARC3-solution/ARC-AGI-3-Agents/` - Python reference implementation
+- `server/services/arc3/Arc3StreamService.ts` - ARC3 streaming service
+- `client/src/hooks/useArc3AgentStream.ts` - Frontend SSE orchestrator
+- `external/ARC-AGI-3-Agents2/` - Python reference implementation (structured reasoning/tooling)

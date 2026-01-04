@@ -17,6 +17,7 @@ export interface SessionMetadata {
   id: number;
   gameId: string;
   guid: string;
+  scorecardId?: string;
   state: string;
   finalScore: number;
   winScore: number;
@@ -30,12 +31,14 @@ export interface SessionMetadata {
  * @param gameId - Game identifier (e.g., "ls20")
  * @param guid - Session GUID from ARC3 API
  * @param winScore - Win score threshold
+ * @param scorecardId - Optional scorecard ID for tracking
  * @returns Database ID of the created session
  */
 export async function createSession(
   gameId: string,
   guid: string,
-  winScore: number
+  winScore: number,
+  scorecardId?: string
 ): Promise<number> {
   const pool = getPool();
   if (!pool) {
@@ -44,14 +47,14 @@ export async function createSession(
 
   try {
     const result = await pool.query(
-      `INSERT INTO arc3_sessions (game_id, guid, state, win_score)
-      VALUES ($1, $2, $3, $4)
+      `INSERT INTO arc3_sessions (game_id, guid, scorecard_id, state, win_score)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING id`,
-      [gameId, guid, 'IN_PROGRESS', winScore]
+      [gameId, guid, scorecardId || null, 'IN_PROGRESS', winScore]
     );
 
     const sessionId = result.rows[0].id;
-    logger.info(`Created session ${sessionId} for game ${gameId} (guid: ${guid})`, 'arc3');
+    logger.info(`Created session ${sessionId} for game ${gameId} (guid: ${guid}, scorecard: ${scorecardId || 'none'})`, 'arc3');
 
     return sessionId;
   } catch (error) {
@@ -73,7 +76,7 @@ export async function getSessionById(sessionId: number): Promise<SessionMetadata
 
   try {
     const result = await pool.query(
-      `SELECT id, game_id, guid, state, final_score, win_score, total_frames, started_at, ended_at
+      `SELECT id, game_id, guid, scorecard_id, state, final_score, win_score, total_frames, started_at, ended_at
       FROM arc3_sessions
       WHERE id = $1`,
       [sessionId]
@@ -88,6 +91,7 @@ export async function getSessionById(sessionId: number): Promise<SessionMetadata
       id: row.id,
       gameId: row.game_id,
       guid: row.guid,
+      scorecardId: row.scorecard_id,
       state: row.state,
       finalScore: row.final_score,
       winScore: row.win_score,
@@ -114,7 +118,7 @@ export async function getSessionByGuid(guid: string): Promise<SessionMetadata | 
 
   try {
     const result = await pool.query(
-      `SELECT id, game_id, guid, state, final_score, win_score, total_frames, started_at, ended_at
+      `SELECT id, game_id, guid, scorecard_id, state, final_score, win_score, total_frames, started_at, ended_at
       FROM arc3_sessions
       WHERE guid = $1`,
       [guid]
@@ -129,6 +133,7 @@ export async function getSessionByGuid(guid: string): Promise<SessionMetadata | 
       id: row.id,
       gameId: row.game_id,
       guid: row.guid,
+      scorecardId: row.scorecard_id,
       state: row.state,
       finalScore: row.final_score,
       winScore: row.win_score,
@@ -156,7 +161,7 @@ export async function listSessions(gameId: string, limit: number = 50): Promise<
 
   try {
     const result = await pool.query(
-      `SELECT id, game_id, guid, state, final_score, win_score, total_frames, started_at, ended_at
+      `SELECT id, game_id, guid, scorecard_id, state, final_score, win_score, total_frames, started_at, ended_at
       FROM arc3_sessions
       WHERE game_id = $1
       ORDER BY started_at DESC
@@ -168,6 +173,7 @@ export async function listSessions(gameId: string, limit: number = 50): Promise<
       id: row.id,
       gameId: row.game_id,
       guid: row.guid,
+      scorecardId: row.scorecard_id,
       state: row.state,
       finalScore: row.final_score,
       winScore: row.win_score,

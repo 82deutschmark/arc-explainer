@@ -61,42 +61,45 @@ export default function ARC3Browser() {
           <Button asChild variant="outline">
             <Link href="/arc3/playground">Launch ARC3 Playground</Link>
           </Button>
+          <Button asChild variant="outline" className="border-amber-400 text-amber-700 hover:bg-amber-50">
+            <Link href="/arc3/openrouter-playground">OpenRouter Playground</Link>
+          </Button>
         </div>
       </div>
 
-      {/* Claude Code SDK highlight */}
-      <Card className="mb-10 border-amber-300/60 dark:border-amber-500/40 bg-gradient-to-r from-amber-50 via-white to-sky-50 dark:from-amber-900/30 dark:via-slate-950 dark:to-sky-900/30 shadow-[0_8px_30px_-12px_rgba(17,24,39,0.45)]">
-        <CardContent className="flex flex-col md:flex-row md:items-center gap-4 py-5">
-          <div className="flex items-start gap-3">
-            <div className="rounded-full bg-amber-100 text-amber-800 dark:bg-amber-400/20 dark:text-amber-200 p-3">
-              <Sparkles className="h-5 w-5" />
+      {/* Claude Code SDK highlight (compact) */}
+      <Card className="mb-8 border-amber-300/50 dark:border-amber-500/30 bg-amber-50/40 dark:bg-amber-900/20 shadow-sm">
+        <CardContent className="flex flex-col md:flex-row md:items-center gap-3 py-3">
+          <div className="flex items-start gap-2">
+            <div className="rounded-full bg-amber-100 text-amber-800 dark:bg-amber-400/20 dark:text-amber-200 p-2">
+              <Sparkles className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-sm uppercase tracking-[0.25em] text-amber-600 dark:text-amber-300">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-amber-700 dark:text-amber-200">
                 Claude Code SDK
               </p>
-              <h2 className="text-xl font-semibold text-foreground">
-                Build interactive ARC3 agents with Anthropic&apos;s official template
+              <h2 className="text-lg font-semibold text-foreground leading-snug">
+                Build ARC3 agents with the Claude Code SDK starter
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Anthropic partnered with ARC Prize to ship a Claude Code SDK starter for ARC-AGI-3 runs.
-                Leverage their Responses API blueprint, tool wiring, and streaming guidance to go from prompt to agent fast.
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Use the official Claude Code SDK starter for ARC-AGI-3 agents—tool wiring, prompts, and streaming helpers in one template.
               </p>
             </div>
           </div>
           <Button
             asChild
+            size="sm"
             variant="outline"
-            className="md:ml-auto border-amber-500/50 text-amber-700 dark:text-amber-200 hover:bg-amber-50/50 dark:hover:bg-amber-400/10"
+            className="md:ml-auto border-amber-500/50 text-amber-700 dark:text-amber-200 hover:bg-amber-50/60 dark:hover:bg-amber-400/10"
           >
             <a
               href="https://docs.arcprize.org/partner_templates/anthropic"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2"
+              className="flex items-center gap-1.5"
             >
-              Browse the partner template
-              <ExternalLink className="h-4 w-4" />
+              Open Claude Code SDK
+              <ExternalLink className="h-3.5 w-3.5" />
             </a>
           </Button>
         </CardContent>

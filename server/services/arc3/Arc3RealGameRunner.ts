@@ -1,6 +1,6 @@
 /*
-Author: Claude Haiku 4.5
-Date: 2025-12-20 (CRITICAL FIX: Multi-frame animation unpacking)
+Author: Claude Haiku 4.5 → Cascade (Claude Opus 4.5)
+Date: 2025-12-20 (CRITICAL FIX: Multi-frame animation unpacking) → 2026-01-03 (DRY refactor: tool factory + helpers)
 PURPOSE: Runs OpenAI Agents SDK workflows against the real ARC-AGI-3 API with PostgreSQL frame persistence.
 
 CRITICAL CHANGES (2025-12-20):
@@ -25,11 +25,11 @@ Architecture:
 - Agent always reasons about final "settled" frame, but database has complete history
 
 SRP/DRY check: Pass — frame unpacking separated into dedicated module, reusable across both methods.
+         Tools extracted to Arc3ToolFactory.ts, shared helpers in runHelpers.ts.
 */
 
 import { randomUUID, createHash } from 'node:crypto';
-import { Agent, run, tool, extractAllTextOutput } from '@openai/agents';
-import { z } from 'zod';
+import { Agent, run, extractAllTextOutput } from '@openai/agents';
 import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient.ts';
 import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry, Arc3RunSummary, Arc3GameState } from './types.ts';
 import { buildArc3DefaultPrompt } from './prompts.ts';
@@ -39,11 +39,14 @@ import { generateActionCaption, generateInspectCaption } from './helpers/caption
 import { countChangedPixels, analyzeFrameChanges, extractGrid, extractLayerStack } from './helpers/frameAnalysis.ts';
 import { calculateColorDistribution } from './helpers/colorAnalysis.ts';
 import { unpackFrames, summarizeFrameStructure } from './helpers/frameUnpacker.ts';
-import { createSession } from './persistence/sessionManager.ts';
-import { saveFrame } from './persistence/framePersistence.ts';
+import { createSession, getSessionByGuid, endSession, type SessionMetadata } from './persistence/sessionManager';
+import { saveFrame, type SavedFrame } from './persistence/framePersistence';
+import { openScorecard, closeScorecard, getScorecard } from './scorecardService.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
 import { executeGridAnalysis } from './helpers/gridAnalyzer.ts';
 import { logger } from '../../utils/logger.ts';
+import { createArc3Tools, type Arc3ToolContext, type Arc3StreamHarness as FactoryStreamHarness } from './tools/Arc3ToolFactory.ts';
+import { buildCombinedInstructions, buildRunSummary } from './helpers/runHelpers.ts';
 
 export interface Arc3StreamHarness {
   sessionId: string;
@@ -209,7 +212,7 @@ export class Arc3RealGameRunner {
     let currentFrameNumber = 0;
     try {
       if (!config.existingGameGuid) {
-        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score);
+        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score, scorecardId);
 
         // Persist all unpacked initial frames
         currentFrameNumber = await this.persistUnpackedFrames(
@@ -221,7 +224,7 @@ export class Arc3RealGameRunner {
         );
 
         logger.info(
-          `Created session ${dbSessionId} for game ${gameId} ` +
+          `Created session ${dbSessionId} for game ${gameId} (scorecard: ${scorecardId}) ` +
           `(${unpackedInitialFrames.length} initial frame(s))`,
           'arc3'
         );
@@ -243,269 +246,25 @@ export class Arc3RealGameRunner {
       }
     };
 
-    const inspectTool = tool({
-      name: 'inspect_game_state',
-      description: 'Inspect the current game state visually. Returns a PNG image (frameImage) showing exactly what you see, plus structured analysis. The changes object shows what pixels changed since your last action - use this to understand action effects. Always call this before making decisions. For programmatic grid analysis, use the analyze_grid tool instead.',
-      parameters: z.object({
-        note: z
-          .string()
-          .max(240)
-          .nullable()
-          .describe('Optional reason for requesting a snapshot (used in the activity log). Use null to omit.'),
-      }),
-      execute: async (input) => {
-        logger.info(`[ARC3 TOOL] inspect_game_state called with note: "${input.note}"`, 'arc3');
-
-        if (!currentFrame) {
-          logger.error('[ARC3 TOOL] ERROR: currentFrame is null!', 'arc3');
-          throw new Error('Game session not initialized yet.');
-        }
-
-        // Normalize frame data to a 3D layer stack for rendering
-        const layerStack = extractLayerStack(currentFrame);
-
-        // Generate base64 PNG image of the current frame
-        const imageResult = await renderArc3FrameToPng(layerStack);
-        const frameImage = imageResult?.dataUrl ?? null;
-        if (frameImage) {
-          logger.info(`[ARC3 TOOL] Generated frame image: ${imageResult!.width}x${imageResult!.height}px`, 'arc3');
-        } else {
-          logger.warn('[ARC3 TOOL] Failed to generate frame image, returning numeric data only', 'arc3');
-        }
-
-        // Calculate color distribution from the latest 2D layer
-        const grid2D = extractGrid(currentFrame);
-        const colorDistribution = calculateColorDistribution(grid2D);
-
-        // Analyze changes since previous frame
-        const changes = analyzeFrameChanges(prevFrame, currentFrame);
-
-        // Return visual representation and analysis (no raw grid - use analyze_grid for that)
-        const result = {
-          gameGuid: currentFrame.guid,
-          gameId: currentFrame.game_id,
-          frameImage,  // Base64 PNG data URL - THIS is what you should look at
-          colorDistribution,  // Quick summary of which colors exist
-          changes,  // What changed since last action - critical for understanding effects
-          score: currentFrame.score,
-          state: currentFrame.state,
-          action_counter: currentFrame.action_counter,
-          max_actions: currentFrame.max_actions,
-          win_score: currentFrame.win_score,
-          note: input.note ?? null,
-        };
-
-        logger.info(
-          `[ARC3 TOOL] inspect_game_state returning: state=${result.state}, score=${result.score}, ` +
-          `actions=${result.action_counter}/${result.max_actions}, colors=${colorDistribution.length}, ` +
-          `changes=${changes?.pixelsChanged ?? 'N/A'}`,
-          'arc3'
-        );
-        return result;
-      },
-    });
-
-    const analyzeGridTool = tool({
-      name: 'analyze_grid',
-      description: 'Execute Python code to analyze the current game grid programmatically. The code runs in a sandboxed environment with numpy, scipy.ndimage available. You have access to: `grid` (3D numpy array of all layers), `current_layer` (2D array of latest layer), and helper functions: find_connected_components(layer, color=None), detect_symmetry(layer), get_bounding_box(layer, exclude_color=0), color_counts(layer). Use print() to output results - stdout is captured and returned. 10 second timeout.',
-      parameters: z.object({
-        code: z
-          .string()
-          .min(5)
-          .max(4000)
-          .describe('Python code to execute. Must use print() to output results.'),
-        note: z
-          .string()
-          .max(120)
-          .nullable()
-          .describe('Optional note explaining the purpose of this analysis.'),
-      }),
-      execute: async ({ code, note }) => {
-        logger.info(`[ARC3 TOOL] analyze_grid called with note: "${note}"`, 'arc3');
-
-        if (!currentFrame) {
-          throw new Error('Game session not initialized yet.');
-        }
-
-        const gridStack = extractLayerStack(currentFrame);
-        const result = await executeGridAnalysis(gridStack, code);
-
-        logger.info(
-          `[ARC3 TOOL] analyze_grid completed: success=${result.success}, ` +
-          `time=${result.executionTimeMs}ms`,
-          'arc3'
-        );
-
-        return {
-          success: result.success,
-          output: result.output,
-          error: result.error,
-          executionTimeMs: result.executionTimeMs,
-          note: note ?? null,
-        };
-      },
-    });
-
-    const resetGameTool = tool({
-      name: 'reset_game',
-      description: 'Reset the current ARC3 game session by issuing the RESET command. Use to restart a level or recover from GAME_OVER states.',
-      parameters: z.object({}),
-      execute: async () => {
-        logger.info('[ARC3 TOOL] reset_game called', 'arc3');
-        if (!gameGuid) throw new Error('Game session not initialized yet.');
-
-        prevFrame = currentFrame;
-        const resetFrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: 'RESET' }, undefined, scorecardId);
-
-        // CRITICAL FIX: Unpack animation frames from RESET response
-        const unpackedResetFrames = unpackFrames(resetFrameData);
-        if (unpackedResetFrames.length > 1) {
-          logger.info(
-            `[ARC3 TOOL] reset_game returned ${unpackedResetFrames.length} animation frames`,
-            'arc3'
-          );
-        }
-
-        currentFrame = unpackedResetFrames[unpackedResetFrames.length - 1]; // Final frame is settled
-        gameGuid = currentFrame.guid;
-        frames.push(...unpackedResetFrames); // Add all unpacked frames
-        updateNoScoreProgress(prevFrame, currentFrame);
-
-        logger.info(
-          `[ARC3 TOOL] reset_game executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
-          `(${unpackedResetFrames.length} frame(s))`,
-          'arc3'
-        );
-
-        // Persist unpacked reset frames
-        if (dbSessionId) {
-          currentFrameNumber = await this.persistUnpackedFrames(
-            dbSessionId,
-            unpackedResetFrames,
-            { action: 'RESET' },
-            prevFrame,
-            currentFrameNumber
-          );
-        }
-
-        return currentFrame;
-      }
-    });
-
-    // Define individual action tools to match ARC3 reference (ACTION1-6)
-    const simpleAction = (name: 'ACTION1'|'ACTION2'|'ACTION3'|'ACTION4'|'ACTION5') => tool({
-      name,
-      description: `Send simple input ${name}.`,
-      parameters: z.object({}),
-      execute: async () => {
-        logger.info(`[ARC3 TOOL] ${name} called`, 'arc3');
-        if (!gameGuid) throw new Error('Game session not initialized yet.');
-        prevFrame = currentFrame;
-
-        const actionFrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: name });
-
-        // CRITICAL FIX: Unpack animation frames from action response
-        const unpackedActionFrames = unpackFrames(actionFrameData);
-        if (unpackedActionFrames.length > 1) {
-          logger.info(
-            `[ARC3 TOOL] ${name} returned ${unpackedActionFrames.length} animation frames`,
-            'arc3'
-          );
-        }
-
-        currentFrame = unpackedActionFrames[unpackedActionFrames.length - 1]; // Final frame is settled
-        frames.push(...unpackedActionFrames); // Add all unpacked frames
-        updateNoScoreProgress(prevFrame, currentFrame);
-
-        logger.info(
-          `[ARC3 TOOL] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
-          `(${unpackedActionFrames.length} frame(s))`,
-          'arc3'
-        );
-
-        // Persist unpacked action frames
-        if (dbSessionId && prevFrame) {
-          currentFrameNumber = await this.persistUnpackedFrames(
-            dbSessionId,
-            unpackedActionFrames,
-            { action: name },
-            prevFrame,
-            currentFrameNumber
-          );
-        }
-
-        return currentFrame;
-      }
-    });
-
-    const action6Tool = tool({
-      name: 'ACTION6',
-      description: 'Send complex input with coordinates (Click/Point).',
-      parameters: z.object({ x: z.number().int(), y: z.number().int() }),
-      execute: async ({ x, y }) => {
-        logger.info(`[ARC3 TOOL] ACTION6 called with coordinates: (${x}, ${y})`, 'arc3');
-        if (!gameGuid) throw new Error('Game session not initialized yet.');
-        prevFrame = currentFrame;
-
-        const action6FrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] });
-
-        // CRITICAL FIX: Unpack animation frames from ACTION6 response
-        const unpackedAction6Frames = unpackFrames(action6FrameData);
-        if (unpackedAction6Frames.length > 1) {
-          logger.info(
-            `[ARC3 TOOL] ACTION6 returned ${unpackedAction6Frames.length} animation frames`,
-            'arc3'
-          );
-        }
-
-        currentFrame = unpackedAction6Frames[unpackedAction6Frames.length - 1]; // Final frame is settled
-        frames.push(...unpackedAction6Frames); // Add all unpacked frames
-        updateNoScoreProgress(prevFrame, currentFrame);
-
-        logger.info(
-          `[ARC3 TOOL] ACTION6(${x},${y}) executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
-          `(${unpackedAction6Frames.length} frame(s))`,
-          'arc3'
-        );
-
-        // Persist unpacked ACTION6 frames
-        if (dbSessionId && prevFrame) {
-          currentFrameNumber = await this.persistUnpackedFrames(
-            dbSessionId,
-            unpackedAction6Frames,
-            { action: 'ACTION6', coordinates: [x, y] },
-            prevFrame,
-            currentFrameNumber
-          );
-        }
-
-        return currentFrame;
-      }
-    });
-
-    const selectSystemPrompt = (): string => {
-      const explicit = config.systemPrompt?.trim() || '';
-      const skipDefault = config.skipDefaultSystemPrompt === true;
-
-      if (skipDefault) {
-        return explicit;
-      }
-
-      if (explicit) {
-        return explicit;
-      }
-
-      return buildArc3DefaultPrompt();
+    // Create tool context for factory (mutable state accessed by tools via closure)
+    const toolContext: Arc3ToolContext = {
+      currentFrame,
+      prevFrame,
+      gameGuid,
+      frames,
+      currentFrameNumber,
+      gameId,
+      scorecardId,
+      dbSessionId,
+      apiClient: this.apiClient,
+      updateNoScoreProgress,
     };
 
-    const baseSystemPrompt = selectSystemPrompt();
-    const operatorGuidance = config.instructions?.trim();
-    const combinedInstructions = operatorGuidance
-      ? (baseSystemPrompt
-          ? `${baseSystemPrompt}\n\nOperator guidance: ${operatorGuidance}`
-          : operatorGuidance)
-      : baseSystemPrompt || '';
+    // Create tools via factory (DRY: eliminates ~240 lines of duplication)
+    const tools = createArc3Tools(toolContext, true); // includeResetTool=true for non-streaming
 
+    // Use shared helper for system prompt + operator guidance
+    const combinedInstructions = buildCombinedInstructions(config);
     const storeResponse = config.storeResponse ?? true;
     const frameHash = currentFrame ? this.computeFrameHash(extractLayerStack(currentFrame)) : undefined;
     const metadata = {
@@ -528,13 +287,13 @@ export class Arc3RealGameRunner {
           effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
           summary: 'detailed',
         },
-        text: { verbosity: 'high' },
+        text: { verbosity: 'medium' },
         store: storeResponse,
         providerData: {
           metadata,
         },
       },
-      tools: [inspectTool, analyzeGridTool, resetGameTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
+      tools,
     });
 
     const result = await run(
@@ -549,8 +308,20 @@ export class Arc3RealGameRunner {
     // Process timeline entries using extracted utility (eliminates duplication)
     const timeline = processRunItems(result.newItems, agentName);
 
-    // NOTE: Do NOT end the session here. Sessions remain open for continuations.
-    // The session ends naturally when the game reaches WIN or GAME_OVER state.
+    // Get final frame from context (tools mutate context during run)
+    const finalFrame = toolContext.currentFrame;
+    const finalGameGuid = toolContext.gameGuid;
+
+    // Close scorecard when game reaches terminal state (per audit: must close after WIN/GAME_OVER)
+    // Sessions remain open for continuations ONLY if game is still in progress
+    if (finalFrame && (finalFrame.state === 'WIN' || finalFrame.state === 'GAME_OVER')) {
+      try {
+        await this.apiClient.closeScorecard(scorecardId);
+        logger.info(`[ARC3] Closed scorecard ${scorecardId} - game ended with ${finalFrame.state}`, 'arc3');
+      } catch (error) {
+        logger.warn(`[ARC3] Failed to close scorecard ${scorecardId}: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+      }
+    }
 
     const usage = result.state._context.usage;
     const providerResponseId = result.lastResponseId ?? null;
@@ -559,36 +330,18 @@ export class Arc3RealGameRunner {
       ? finalOutputCandidate
       : extractAllTextOutput(result.newItems);
 
-    // Map ARC3 API state strings to Arc3GameState type
-    const mapState = (state: string): Arc3GameState => {
-      if (state === 'NOT_PLAYED') return 'NOT_PLAYED';
-      if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
-      if (state === 'WIN') return 'WIN';
-      if (state === 'GAME_OVER') return 'GAME_OVER';
-      if (state === 'NOT_FINISHED') return 'NOT_FINISHED';  // Game incomplete but not over
-      // If we get an unexpected state, throw an error
-      throw new Error(`Unexpected game state from ARC3 API: ${state}`);
-    };
-
     // Create summary from the last frame (should always exist since we start the game before agent runs)
-    if (currentFrame === null) {
+    // Use shared helper for summary building (DRY: eliminates duplicated mapState + summary construction)
+    if (finalFrame === null) {
       throw new Error('No frame data available - game did not start properly');
     }
 
-    const cf = currentFrame as FrameData;
-    const summary: Arc3RunSummary = {
-      state: mapState(cf.state),
-      score: cf.score,
-      stepsTaken: cf.action_counter ?? Math.max(0, frames.length - 1),
-      simpleActionsUsed: [],  // ARC3 doesn't track this the same way
-      coordinateGuesses: 0,  // ARC3 doesn't track this separately
-      scenarioId: gameId,
-      scenarioName: gameId,  // Use gameId as name for now
-    };
+    const summary = buildRunSummary(finalFrame, gameId, toolContext.frames.length);
 
     return {
       runId: randomUUID(),
-      gameGuid: gameGuid || 'unknown',
+      gameGuid: finalGameGuid || 'unknown',
+      scorecardId,  // CRITICAL: Return scorecard ID for session continuation
       finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
       timeline,
       frames: frames as any[],  // Arc3AgentRunResult accepts any[] for frames
@@ -607,11 +360,37 @@ export class Arc3RealGameRunner {
     const agentName = config.agentName?.trim() || 'ARC3 Real Game Operator';
     const maxTurns = config.maxTurns ?? DEFAULT_MAX_TURNS;
     const gameId = config.game_id ?? DEFAULT_GAME_ID;
-    const scorecardId = await this.apiClient.openScorecard(
-      ['arc-explainer', 'agent-run', 'streaming'],
-      'https://github.com/arc-explainer/arc-explainer',
-      { source: 'arc-explainer', mode: 'agent-run-stream', game_id: gameId, agentName }
-    );
+
+    // CRITICAL: Reuse existing scorecard on continuation, open new one on fresh start
+    let scorecardId: string;
+    if (config.scorecardId) {
+      // Continuation: reuse existing scorecard (stays open across multiple agent runs)
+      scorecardId = config.scorecardId;
+      logger.info(`[ARC3 STREAMING] Reusing existing scorecard ${scorecardId} for continuation`, 'arc3');
+    } else {
+      // Fresh start: open new scorecard with educational metadata tags
+      const scorecardTags = [
+        'arc-explainer',
+        'educational-playground',  // Mark as educational, not official competition entry
+        'interactive-agent',         // User can interrupt/guide mid-game
+        `model:${config.model ?? DEFAULT_MODEL}`,
+        `reasoning:${config.reasoningEffort ?? 'low'}`,
+      ];
+
+      scorecardId = await this.apiClient.openScorecard(
+        scorecardTags,
+        'https://github.com/arc-explainer/arc-explainer',
+        {
+          source: 'arc-explainer',
+          mode: 'educational-interactive',
+          game_id: gameId,
+          agentName,
+          userInterruptible: true,
+          reasoningLevel: config.reasoningEffort ?? 'low',
+        }
+      );
+      logger.info(`[ARC3 STREAMING] Opened new scorecard ${scorecardId} for fresh game`, 'arc3');
+    }
 
     let gameGuid: string | null = null;
     let currentFrame: FrameData | null = null;
@@ -648,7 +427,7 @@ export class Arc3RealGameRunner {
       if (isContinuation) {
         logger.info(`[ARC3 STREAMING] Continuing game session ${gameGuid} on game ${gameId}`, 'arc3');
       } else {
-        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score);
+        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score, scorecardId);
 
         // Persist all unpacked initial frames
         currentFrameNumber = await this.persistUnpackedFrames(
@@ -660,7 +439,7 @@ export class Arc3RealGameRunner {
         );
 
         logger.info(
-          `Created streaming session ${dbSessionId} for game ${gameId} ` +
+          `Created streaming session ${dbSessionId} for game ${gameId} (scorecard: ${scorecardId}) ` +
           `(${unpackedInitialFrames.length} initial frame(s))`,
           'arc3'
         );
@@ -726,315 +505,32 @@ export class Arc3RealGameRunner {
       timestamp: Date.now(),
     });
 
-    const inspectTool = tool({
-      name: 'inspect_game_state',
-      description: 'Inspect the current game state visually. Returns a PNG image (frameImage) showing exactly what you see, plus structured analysis. The changes object shows what pixels changed since your last action - use this to understand action effects. Always call this before making decisions. For programmatic grid analysis, use the analyze_grid tool instead.',
-      parameters: z.object({
-        note: z
-          .string()
-          .max(240)
-          .nullable()
-          .describe('Optional reason for requesting a snapshot (used in the activity log). Use null to omit.'),
-      }),
-      execute: async (input) => {
-        logger.info(`[ARC3 TOOL STREAM] inspect_game_state called with note: "${input.note}"`, 'arc3');
-
-        if (!currentFrame) {
-          logger.error('[ARC3 TOOL STREAM] ERROR: currentFrame is null!', 'arc3');
-          throw new Error('Game session not initialized yet.');
-        }
-
-        // Emit tool call event
-        streamHarness.emitEvent("agent.tool_call", {
-          tool: 'inspect_game_state',
-          arguments: input,
-          timestamp: Date.now(),
-        });
-
-        // Normalize frame data to a 3D layer stack for rendering
-        const layerStack = extractLayerStack(currentFrame);
-
-        // Generate base64 PNG image of the current frame
-        const imageResult = await renderArc3FrameToPng(layerStack);
-        const frameImage = imageResult?.dataUrl ?? null;
-        if (frameImage) {
-          logger.info(`[ARC3 TOOL STREAM] Generated frame image: ${imageResult!.width}x${imageResult!.height}px`, 'arc3');
-        } else {
-          logger.warn('[ARC3 TOOL STREAM] Failed to generate frame image, returning numeric data only', 'arc3');
-        }
-
-        // Calculate color distribution from the latest 2D layer
-        const grid2D = extractGrid(currentFrame);
-        const colorDistribution = calculateColorDistribution(grid2D);
-
-        // Analyze changes since previous frame
-        const changes = analyzeFrameChanges(prevFrame, currentFrame);
-
-        // Return visual representation and analysis (no raw grid - use analyze_grid for that)
-        const result = {
-          gameGuid: currentFrame.guid,
-          gameId: currentFrame.game_id,
-          frameImage,  // Base64 PNG data URL - THIS is what you should look at
-          colorDistribution,  // Quick summary of which colors exist
-          changes,  // What changed since last action - critical for understanding effects
-          score: currentFrame.score,
-          state: currentFrame.state,
-          action_counter: currentFrame.action_counter,
-          max_actions: currentFrame.max_actions,
-          win_score: currentFrame.win_score,
-          note: input.note ?? null,
-        };
-
-        logger.info(
-          `[ARC3 TOOL STREAM] inspect_game_state returning: state=${result.state}, score=${result.score}, ` +
-          `actions=${result.action_counter}/${result.max_actions}, colors=${colorDistribution.length}, ` +
-          `changes=${changes?.pixelsChanged ?? 'N/A'}`,
-          'arc3'
-        );
-
-        // Emit tool result event
-        streamHarness.emitEvent("agent.tool_result", {
-          tool: 'inspect_game_state',
-          result,
-          timestamp: Date.now(),
-        });
-
-        return result;
+    // Create tool context for factory (mutable state accessed by tools via closure)
+    // Streaming context includes harness and reasoning accumulator
+    const toolContext: Arc3ToolContext = {
+      currentFrame,
+      prevFrame,
+      gameGuid,
+      frames,
+      currentFrameNumber,
+      gameId,
+      scorecardId,
+      dbSessionId,
+      apiClient: this.apiClient,
+      updateNoScoreProgress,
+      streaming: {
+        harness: streamHarness as FactoryStreamHarness,
+        state: streamState,
+        agentName,
       },
-    });
-
-    const analyzeGridTool = tool({
-      name: 'analyze_grid',
-      description: 'Execute Python code to analyze the current game grid programmatically. The code runs in a sandboxed environment with numpy, scipy.ndimage available. You have access to: `grid` (3D numpy array of all layers), `current_layer` (2D array of latest layer), and helper functions: find_connected_components(layer, color=None), detect_symmetry(layer), get_bounding_box(layer, exclude_color=0), color_counts(layer). Use print() to output results - stdout is captured and returned. 10 second timeout.',
-      parameters: z.object({
-        code: z
-          .string()
-          .min(5)
-          .max(4000)
-          .describe('Python code to execute. Must use print() to output results. Has access to grid, current_layer, numpy (as np), and scipy.ndimage.'),
-        note: z
-          .string()
-          .max(120)
-          .nullable()
-          .describe('Optional note explaining the purpose of this analysis.'),
-      }),
-      execute: async ({ code, note }) => {
-        logger.info(`[ARC3 TOOL STREAM] analyze_grid called with note: "${note}"`, 'arc3');
-
-        if (!currentFrame) {
-          throw new Error('Game session not initialized yet.');
-        }
-
-        streamHarness.emitEvent("agent.tool_call", {
-          tool: 'analyze_grid',
-          arguments: { code: code.slice(0, 200) + '...', note },
-          timestamp: Date.now(),
-        });
-
-        const gridStack = extractLayerStack(currentFrame);
-        const result = await executeGridAnalysis(gridStack, code);
-
-        const toolResult = {
-          success: result.success,
-          output: result.output,
-          error: result.error,
-          executionTimeMs: result.executionTimeMs,
-          note: note ?? null,
-        };
-
-        logger.info(
-          `[ARC3 TOOL STREAM] analyze_grid completed: success=${result.success}, ` +
-          `time=${result.executionTimeMs}ms, output_length=${result.output.length}`,
-          'arc3'
-        );
-
-        streamHarness.emitEvent("agent.tool_result", {
-          tool: 'analyze_grid',
-          result: toolResult,
-          timestamp: Date.now(),
-        });
-
-        return toolResult;
-      },
-    });
-
-    const simpleAction = (name: 'ACTION1'|'ACTION2'|'ACTION3'|'ACTION4'|'ACTION5') => tool({
-      name,
-      description: `Send simple input ${name}.`,
-      parameters: z.object({}),
-      execute: async () => {
-        logger.info(`[ARC3 TOOL STREAM] ${name} called`, 'arc3');
-        if (!gameGuid) throw new Error('Game session not initialized yet.');
-        streamHarness.emitEvent("agent.tool_call", { tool: name, arguments: {}, timestamp: Date.now() });
-
-        const reasoningPayload = streamState.accumulatedReasoning
-          ? {
-              type: 'agent_reasoning',
-              agentName,
-              game_id: gameId,
-              gameGuid,
-              step: frames.length,
-              text: streamState.accumulatedReasoning.slice(0, 8000),
-            }
-          : undefined;
-
-        prevFrame = currentFrame;
-        const actionFrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: name }, reasoningPayload, scorecardId);
-
-        // CRITICAL FIX: Unpack animation frames from action response
-        const unpackedActionFrames = unpackFrames(actionFrameData);
-        if (unpackedActionFrames.length > 1) {
-          logger.info(
-            `[ARC3 TOOL STREAM] ${name} returned ${unpackedActionFrames.length} animation frames`,
-            'arc3'
-          );
-        }
-
-        currentFrame = unpackedActionFrames[unpackedActionFrames.length - 1]; // Final frame is settled
-        frames.push(...unpackedActionFrames); // Add all unpacked frames
-        logger.info(
-          `[ARC3 TOOL STREAM] ${name} executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
-          `(${unpackedActionFrames.length} frame(s))`,
-          'arc3'
-        );
-
-        // Persist unpacked action frames and emit each to stream
-        if (dbSessionId && prevFrame) {
-          currentFrameNumber = await this.persistUnpackedFrames(
-            dbSessionId,
-            unpackedActionFrames,
-            { action: name },
-            prevFrame,
-            currentFrameNumber
-          );
-        }
-
-        // Emit each unpacked frame as separate update event
-        for (let i = 0; i < unpackedActionFrames.length; i++) {
-          const frame = unpackedActionFrames[i];
-          const isLastFrame = i === unpackedActionFrames.length - 1;
-          let caption = generateActionCaption({ action: name }, prevFrame, frame);
-          if (unpackedActionFrames.length > 1) {
-            caption += ` (frame ${i + 1}/${unpackedActionFrames.length})`;
-          }
-
-          streamHarness.emitEvent("game.frame_update", {
-            frameIndex: String(currentFrameNumber - unpackedActionFrames.length + i),
-            frameData: frame,
-            caption,
-            action: { type: name },
-            isAnimation: unpackedActionFrames.length > 1,
-            animationFrame: i,
-            animationTotalFrames: unpackedActionFrames.length,
-            isLastAnimationFrame: isLastFrame,
-            timestamp: Date.now()
-          });
-        }
-
-        return currentFrame;
-      }
-    });
-
-    const action6Tool = tool({
-      name: 'ACTION6',
-      description: 'Send complex input with coordinates (Click/Point).',
-      parameters: z.object({ x: z.number().int(), y: z.number().int() }),
-      execute: async ({ x, y }) => {
-        logger.info(`[ARC3 TOOL STREAM] ACTION6 called with coordinates: (${x}, ${y})`, 'arc3');
-        if (!gameGuid) throw new Error('Game session not initialized yet.');
-        streamHarness.emitEvent("agent.tool_call", { tool: 'ACTION6', arguments: { x, y }, timestamp: Date.now() });
-
-        const reasoningPayload = streamState.accumulatedReasoning
-          ? {
-              type: 'agent_reasoning',
-              agentName,
-              game_id: gameId,
-              gameGuid,
-              step: frames.length,
-              text: streamState.accumulatedReasoning.slice(0, 8000),
-            }
-          : undefined;
-
-        prevFrame = currentFrame;
-        const action6FrameData = await this.apiClient.executeAction(gameId, gameGuid, { action: 'ACTION6', coordinates: [x, y] }, reasoningPayload, scorecardId);
-
-        // CRITICAL FIX: Unpack animation frames from ACTION6 response
-        const unpackedAction6Frames = unpackFrames(action6FrameData);
-        if (unpackedAction6Frames.length > 1) {
-          logger.info(
-            `[ARC3 TOOL STREAM] ACTION6 returned ${unpackedAction6Frames.length} animation frames`,
-            'arc3'
-          );
-        }
-
-        currentFrame = unpackedAction6Frames[unpackedAction6Frames.length - 1]; // Final frame is settled
-        frames.push(...unpackedAction6Frames); // Add all unpacked frames
-        logger.info(
-          `[ARC3 TOOL STREAM] ACTION6(${x},${y}) executed: state=${currentFrame.state}, score=${currentFrame.score} ` +
-          `(${unpackedAction6Frames.length} frame(s))`,
-          'arc3'
-        );
-
-        // Persist unpacked ACTION6 frames and emit each to stream
-        if (dbSessionId && prevFrame) {
-          currentFrameNumber = await this.persistUnpackedFrames(
-            dbSessionId,
-            unpackedAction6Frames,
-            { action: 'ACTION6', coordinates: [x, y] },
-            prevFrame,
-            currentFrameNumber
-          );
-        }
-
-        // Emit each unpacked frame as separate update event
-        for (let i = 0; i < unpackedAction6Frames.length; i++) {
-          const frame = unpackedAction6Frames[i];
-          const isLastFrame = i === unpackedAction6Frames.length - 1;
-          let caption = generateActionCaption({ action: 'ACTION6', coordinates: [x, y] }, prevFrame, frame);
-          if (unpackedAction6Frames.length > 1) {
-            caption += ` (frame ${i + 1}/${unpackedAction6Frames.length})`;
-          }
-
-          streamHarness.emitEvent("game.frame_update", {
-            frameIndex: String(currentFrameNumber - unpackedAction6Frames.length + i),
-            frameData: frame,
-            caption,
-            action: { type: 'ACTION6', coordinates: [x, y] },
-            isAnimation: unpackedAction6Frames.length > 1,
-            animationFrame: i,
-            animationTotalFrames: unpackedAction6Frames.length,
-            isLastAnimationFrame: isLastFrame,
-            timestamp: Date.now()
-          });
-        }
-
-        return currentFrame;
-      }
-    });
-
-    const selectSystemPrompt = (): string => {
-      const explicit = config.systemPrompt?.trim() || '';
-      const skipDefault = config.skipDefaultSystemPrompt === true;
-
-      if (skipDefault) {
-        return explicit;
-      }
-
-      if (explicit) {
-        return explicit;
-      }
-
-      return buildArc3DefaultPrompt();
     };
 
-    const baseSystemPrompt = selectSystemPrompt();
-    const operatorGuidance = config.instructions?.trim();
-    const combinedInstructions = operatorGuidance
-      ? (baseSystemPrompt
-          ? `${baseSystemPrompt}\n\nOperator guidance: ${operatorGuidance}`
-          : operatorGuidance)
-      : baseSystemPrompt || '';
+    // Create tools via factory (DRY: eliminates ~285 lines of duplication)
+    // No reset tool for streaming mode
+    const tools = createArc3Tools(toolContext, false);
 
+    // Use shared helper for system prompt + operator guidance
+    const combinedInstructions = buildCombinedInstructions(config);
     const storeResponse = config.storeResponse ?? true;
     const frameHash = currentFrame ? this.computeFrameHash(extractLayerStack(currentFrame)) : undefined;
     const metadata = {
@@ -1057,13 +553,13 @@ export class Arc3RealGameRunner {
           effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
           summary: 'detailed',
         },
-        text: { verbosity: 'high' },
+        text: { verbosity: 'medium' },
         store: storeResponse,
         providerData: {
           metadata,
         },
       },
-      tools: [inspectTool, analyzeGridTool, simpleAction('ACTION1'), simpleAction('ACTION2'), simpleAction('ACTION3'), simpleAction('ACTION4'), simpleAction('ACTION5'), action6Tool],
+      tools,
     });
 
     // Emit agent ready event
@@ -1189,8 +685,25 @@ export class Arc3RealGameRunner {
     // Process final timeline entries using extracted utility (eliminates duplication)
     const timeline = processRunItemsWithReasoning(result.newItems, agentName, streamState.accumulatedReasoning);
 
-    // NOTE: Do NOT end the session here. Sessions remain open for continuations.
-    // The session ends naturally when the game reaches WIN or GAME_OVER state.
+    // Get final frame from context (tools mutate context during run)
+    const finalFrame = toolContext.currentFrame;
+    const finalGameGuid = toolContext.gameGuid;
+
+    // Close scorecard when game reaches terminal state (per audit: must close after WIN/GAME_OVER)
+    // Sessions remain open for continuations ONLY if game is still in progress
+    if (finalFrame && (finalFrame.state === 'WIN' || finalFrame.state === 'GAME_OVER')) {
+      try {
+        await this.apiClient.closeScorecard(scorecardId);
+        logger.info(`[ARC3 STREAMING] Closed scorecard ${scorecardId} - game ended with ${finalFrame.state}`, 'arc3');
+        streamHarness.emitEvent("scorecard.closed", {
+          scorecardId,
+          finalState: finalFrame.state,
+          timestamp: Date.now(),
+        });
+      } catch (error) {
+        logger.warn(`[ARC3 STREAMING] Failed to close scorecard ${scorecardId}: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+      }
+    }
 
     const usage = result.state._context.usage;
     const finalOutputCandidate = result.finalOutput;
@@ -1198,40 +711,22 @@ export class Arc3RealGameRunner {
       ? finalOutputCandidate
       : extractAllTextOutput(result.newItems);
 
-    // Map ARC3 API state strings to Arc3GameState type
-    const mapState = (state: string): Arc3GameState => {
-      if (state === 'NOT_PLAYED') return 'NOT_PLAYED';
-      if (state === 'IN_PROGRESS') return 'IN_PROGRESS';
-      if (state === 'WIN') return 'WIN';
-      if (state === 'GAME_OVER') return 'GAME_OVER';
-      if (state === 'NOT_FINISHED') return 'NOT_FINISHED';  // Game incomplete but not over
-      // If we get an unexpected state, throw an error
-      throw new Error(`Unexpected game state from ARC3 API: ${state}`);
-    };
-
     // Create summary from the last frame (should always exist since we start the game before agent runs)
-    if (currentFrame === null) {
+    // Use shared helper for summary building (DRY: eliminates duplicated mapState + summary construction)
+    if (finalFrame === null) {
       throw new Error('No frame data available - game did not start properly');
     }
 
-    const cf = currentFrame as FrameData;
-    const summary: Arc3RunSummary = {
-      state: mapState(cf.state),
-      score: cf.score,
-      stepsTaken: cf.action_counter ?? Math.max(0, frames.length - 1),
-      simpleActionsUsed: [],  // ARC3 doesn't track this the same way
-      coordinateGuesses: 0,  // ARC3 doesn't track this separately
-      scenarioId: gameId,
-      scenarioName: gameId,  // Use gameId as name for now
-    };
+    const summary = buildRunSummary(finalFrame, gameId, toolContext.frames.length);
 
     const generatedRunId = randomUUID();
     const providerResponseId = result.lastResponseId ?? null;
 
-    // Emit completion event
+    // Emit completion event with scorecard ID for session continuation
     streamHarness.emitEvent("agent.completed", {
       runId: generatedRunId,
-      gameGuid: gameGuid || 'unknown',  // Include game session guid for continuation
+      gameGuid: finalGameGuid || 'unknown',  // Include game session guid for continuation
+      scorecardId,  // CRITICAL: Include scorecard ID for continuation requests
       finalOutput,
       summary,
       usage: {
@@ -1241,17 +736,18 @@ export class Arc3RealGameRunner {
         totalTokens: usage.totalTokens,
       },
       timelineLength: timeline.length,
-      frameCount: frames.length,
+      frameCount: toolContext.frames.length,
       providerResponseId,
       timestamp: Date.now(),
     });
 
     return {
       runId: generatedRunId,
-      gameGuid: gameGuid || 'unknown',
+      gameGuid: finalGameGuid || 'unknown',
+      scorecardId,  // CRITICAL: Return scorecard ID for session continuation
       finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
       timeline,
-      frames: frames as any[],  // Arc3AgentRunResult accepts any[] for frames
+      frames: toolContext.frames as any[],  // Arc3AgentRunResult accepts any[] for frames
       summary,
       usage: {
         requests: usage.requests,

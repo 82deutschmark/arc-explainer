@@ -122,6 +122,20 @@ const navigationItems: NavItem[] = [
         href: '/arc3/playground',
         icon: FlaskConical,
         description: 'Experiment with ARC-3 games'
+      },
+      {
+        type: 'link',
+        title: 'OpenRouter Agent Laboratory',
+        href: '/arc3/openrouter-playground',
+        icon: FlaskConical,
+        description: 'Experiment with OpenRouter models on ARC-3 games'
+      },
+      {
+        type: 'link',
+        title: 'Codex Playground',
+        href: '/arc3/codex-playground',
+        icon: Code,
+        description: "OpenAI's GPT-5.1 Codex models for agentic coding tasks"
       }
     ]
   },
@@ -179,6 +193,13 @@ const navigationItems: NavItem[] = [
         href: '/llm-reasoning',
         icon: Brain,
         description: 'Plain-language explainer of how AI pattern matching differs from human thinking'
+      },
+      {
+        type: 'link',
+        title: 'LLM Council',
+        href: '/council',
+        icon: Users,
+        description: 'Multi-model consensus evaluation for ARC puzzles with 3-stage deliberation'
       },
       {
         type: 'link',

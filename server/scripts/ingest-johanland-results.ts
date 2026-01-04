@@ -499,7 +499,7 @@ async function processPuzzle(
     totalReasoningTokens: number;
     totalTokens: number;
     totalCost: number;
-    totalProcessingTimeMs: number;
+    totalProcessingTimeMs: number | null; // null for Johan_Land (batch-level timestamps only)
     reasoningSummary: string | null;
     providerRawResponse: JohanLandAttempt['metadata'][];
   };
@@ -518,7 +518,7 @@ async function processPuzzle(
       totalReasoningTokens: 0,
       totalTokens: 0,
       totalCost: 0,
-      totalProcessingTimeMs: 0,
+      totalProcessingTimeMs: null, // Johan_Land doesn't have per-puzzle timing (batch-level timestamps only)
       reasoningSummary: null,
       providerRawResponse: [],
     });
@@ -565,7 +565,9 @@ async function processPuzzle(
       agg.totalReasoningTokens += meta?.usage?.completion_tokens_details?.reasoning_tokens || 0;
       agg.totalTokens += meta?.usage?.total_tokens || 0;
       agg.totalCost += meta?.cost?.total_cost || 0;
-      agg.totalProcessingTimeMs += calculateProcessingTime(meta.start_timestamp, meta.end_timestamp);
+      // NOTE: Johann_Land timestamps are batch-level (entire evaluation session), not per-puzzle
+      // Do not accumulate them as they would misrepresent actual puzzle timing
+      // agg.totalProcessingTimeMs += calculateProcessingTime(meta.start_timestamp, meta.end_timestamp);
 
       if (!agg.reasoningSummary && typeof meta?.reasoning_summary === 'string' && meta.reasoning_summary.trim().length > 0) {
         agg.reasoningSummary = meta.reasoning_summary;
