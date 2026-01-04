@@ -1,5 +1,17 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.5  Jan 4, 2026
+
+- **OpenRouter ARC3 continuation parity** (Author: Cascade)
+  - **What**: Added full continuation flow for OpenRouter agent runs (session caching, routes, and Python reuse of scorecard/guid/frames).
+  - **Why**: To match the OpenAI SDK path so users can continue games without losing scorecard attribution or game state.
+  - **How**:
+    - `server/routes/arc3OpenRouter.ts`: Added continuation schema, POST /stream/:sessionId/continue, GET /stream/:sessionId/continue-stream.
+    - `server/services/arc3/Arc3OpenRouterStreamService.ts`: Cache scorecardId/resolvedGameId/guid/lastFrame; propagate continuation fields to Python payload; register disconnect cancel.
+    - `server/services/arc3/Arc3OpenRouterPythonBridge.ts`: Payload extended for continuation fields.
+    - `server/python/arc3_openrouter_runner.py`: Reuse scorecard if supplied, reuse resolved_game_id/guid, seed frames on continuation, keep card_id in reasoning.
+  - **Impact**: OpenRouter runs can be continued with preserved scorecards and game sessions; stream teardown remains safe on disconnect.
+
 ### Version 6.33.4  Jan 4, 2026
 
 - **OpenRouter ARC3 runner: scorecard compliance + disconnect teardown** (Author: Cascade)

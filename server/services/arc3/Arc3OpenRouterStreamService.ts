@@ -32,6 +32,9 @@ export interface OpenRouterStreamPayload {
   scorecardId?: string;
   resolvedGameId?: string;
   existingGameGuid?: string;
+  lastFrame?: any;
+  previousResponseId?: string | null;
+  userMessage?: string;
   // Competition-emulation mode parameters
   agentName?: string;          // User-defined agent name for scorecard
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high' | 'xhigh';  // OpenRouter reasoning.effort per docs
@@ -81,6 +84,28 @@ export class Arc3OpenRouterStreamService {
     logger.debug(`[Arc3OpenRouter] Session ${sessionId} cleared`, 'arc3-openrouter');
   }
 
+  saveContinuationPayload(sessionId: string, basePayload: OpenRouterStreamPayload, continuation: Partial<OpenRouterStreamPayload>, ttlMs: number = SESSION_TTL_MS): void {
+    const existing = this.pending.get(sessionId);
+    if (!existing) {
+      throw new Error(`Cannot continue unknown session ${sessionId}`);
+    }
+    const now = Date.now();
+    const merged: OpenRouterStreamPayload = {
+      ...existing,
+      ...continuation,
+      sessionId,
+      createdAt: existing.createdAt ?? now,
+      expiresAt: now + ttlMs,
+    };
+    this.pending.set(sessionId, merged);
+    this.scheduleExpiration(sessionId, ttlMs);
+    logger.debug(`[Arc3OpenRouter] Continuation payload saved for ${sessionId}`, 'arc3-openrouter');
+  }
+
+  getContinuationPayload(sessionId: string): OpenRouterStreamPayload | undefined {
+    return this.pending.get(sessionId);
+  }
+
   /**
    * Schedule session expiration.
    */
@@ -119,7 +144,9 @@ export class Arc3OpenRouterStreamService {
 
     const {
       game_id, model, instructions, systemPrompt, maxTurns,
-      apiKey, arc3ApiKey, agentName, reasoningEffort
+      apiKey, arc3ApiKey, agentName, reasoningEffort,
+      scorecardId, resolvedGameId, existingGameGuid, lastFrame,
+      userMessage, previousResponseId
     } = payload;
 
     // Send initial status
@@ -149,6 +176,13 @@ export class Arc3OpenRouterStreamService {
       arc3_api_key: arc3ApiKey || process.env.ARC3_API_KEY,
       agent_name: agentName || 'OpenRouter Agent',
       reasoning_effort: reasoningEffort ?? 'low',
+      // Continuation fields (parity with Arc3RealGameRunner)
+      scorecard_id: scorecardId,
+      resolved_game_id: resolvedGameId,
+      existing_guid: existingGameGuid,
+      seed_frame: lastFrame,
+      user_message: userMessage,
+      previous_response_id: previousResponseId ?? undefined,
     };
 
     // Register disconnect hook to kill Python child if client drops
@@ -223,6 +257,27 @@ export class Arc3OpenRouterStreamService {
 
       // Forward to SSE
       sseStreamManager.sendEvent(sessionId, eventType, enrichedEvent);
+
+      // Cache continuation metadata (scorecard + last frame/guid) for follow-ups
+      const existing = this.pending.get(sessionId);
+      if (existing) {
+        const updates: Partial<OpenRouterStreamPayload> = {};
+        if (eventType === 'scorecard.opened' && enrichedEvent.card_id) {
+          updates.scorecardId = enrichedEvent.card_id;
+        }
+        if (eventType === 'game.frame_update' && enrichedEvent.frameData) {
+          updates.lastFrame = enrichedEvent.frameData;
+          const guid = enrichedEvent.frameData.guid || enrichedEvent.frameData.game_guid;
+          if (guid) updates.existingGameGuid = guid;
+          if (enrichedEvent.frameData.game_id) {
+            updates.resolvedGameId = enrichedEvent.frameData.game_id;
+          }
+        }
+        if (Object.keys(updates).length > 0) {
+          const merged = { ...existing, ...updates };
+          this.pending.set(sessionId, merged);
+        }
+      }
 
       // Handle completion
       if (eventType === 'agent.completed') {
