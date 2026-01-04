@@ -46,6 +46,13 @@ try:
 except ImportError:
     LANGCHAIN_AVAILABLE = False
 
+# Import the new General Intelligence Harness
+try:
+    from arc3_harness import Arc3Harness, analyze_frame_sequence
+    HARNESS_AVAILABLE = True
+except ImportError:
+    HARNESS_AVAILABLE = False
+
 
 # ============================================================================
 # Pydantic Schemas for Structured Outputs (Phase 1)
@@ -354,13 +361,14 @@ def render_frame_to_base64(frame: list, scale: int = 8) -> str:
 
 class Arc3OpenRouterAgent:
     """
-    LangGraph-style agent for ARC3 games using OpenRouter.
+    LangGraph-style agent for ARC3 games using OpenRouter with General Intelligence Harness.
     Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/
     
     Key upgrades (per audit 2026-01-03):
     - Pydantic structured outputs for reliable action parsing
     - Observation journal for persistent memory across turns
     - Frame delta analysis integration for learning from outcomes
+    - General Intelligence Harness for mathematical grid analysis
     """
     
     # Base system prompt (will be extended dynamically with observations/thoughts)
@@ -395,6 +403,13 @@ Think step by step about what action to take next."""
         if not LANGCHAIN_AVAILABLE:
             emit_error("LangChain not installed. Run: pip install langchain-openai", "DEPENDENCY_ERROR")
 
+        # Initialize harness if available
+        if HARNESS_AVAILABLE:
+            self.harness = Arc3Harness()
+        else:
+            self.harness = None
+            emit_event("agent.reasoning", {"content": "Warning: arc3_harness not available, using basic analysis"})
+
         # Build extra headers for OpenRouter
         extra_headers = {
             "HTTP-Referer": "https://arc-explainer.com",
@@ -425,6 +440,7 @@ Think step by step about what action to take next."""
         # State tracking
         self.previous_frame = None
         self.action_history: List[str] = []
+        self.frame_sequence: List[List[List[int]]] = []
         
         # Phase 2: Observation journal & persistent memory
         # Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/nodes.py
@@ -475,10 +491,9 @@ Think step by step about what action to take next."""
         return prompt
     
     def analyze_frame(self, frame_data: dict) -> dict:
-        """Analyze frame and choose next action using LLM.
+        """Analyze frame using the General Intelligence Harness.
         
-        Uses Pydantic structured outputs (Phase 1) for reliable parsing.
-        Injects observations/thoughts (Phase 2) via dynamic system prompt.
+        Uses mathematical and topological analysis instead of heuristics.
         """
         frame = frame_data.get("frame", [])
         state = frame_data.get("state", "IN_PROGRESS")
@@ -496,7 +511,43 @@ Think step by step about what action to take next."""
         
         context_text = "\n".join(context_parts)
         
-        # Build dynamic system prompt with observations/thoughts (Phase 2)
+        # Use harness for deep analysis if available
+        if self.harness and frame:
+            try:
+                analysis = self.harness.analyze_grid(frame)
+                
+                # Add harness insights to context
+                harness_insights = [
+                    f"Grid Entropy: {analysis.entropy:.3f}",
+                    f"Components: {len(analysis.components)}",
+                    f"Symmetry: {sum(analysis.symmetry.values())}/5 axes"
+                ]
+                
+                if analysis.components:
+                    largest_comp = max(analysis.components, key=lambda c: c.size)
+                    harness_insights.append(f"Largest component: {largest_comp.color} (size {largest_comp.size})")
+                
+                context_parts.append("Harness Analysis: " + "; ".join(harness_insights))
+                
+                # Store frame for delta analysis
+                self.frame_sequence.append(frame)
+                
+                # Delta analysis if we have previous frame
+                if self.previous_frame and len(self.frame_sequence) >= 2:
+                    prev_frame = self.frame_sequence[-2]
+                    delta = self.harness.analyze_delta(prev_frame, frame)
+                    
+                    if delta.pixels_changed > 0:
+                        delta_summary = f"{delta.pixels_changed} pixels changed"
+                        if delta.component_transformations:
+                            delta_summary += f", {len(delta.component_transformations)} components transformed"
+                        self.add_observation(f"Frame delta: {delta_summary}")
+                        context_parts.append(f"Last Delta: {delta_summary}")
+                
+            except Exception as e:
+                emit_event("agent.reasoning", {"content": f"Harness analysis failed: {e}, using fallback"})
+        
+        # Build dynamic system prompt with observations/thoughts
         system_prompt = self.build_system_prompt()
         
         # Render frame to image
@@ -535,6 +586,18 @@ Think step by step about what action to take next."""
                 emit_event("agent.reasoning", {
                     "content": f"Structured output: action={result.action}, reasoning={result.reasoning[:100]}"
                 })
+                
+                # Verify statement with harness if available
+                if self.harness and self.previous_frame:
+                    verification = self.harness.verify_statement(
+                        result.reasoning, 
+                        self.harness.analyze_delta(self.frame_sequence[-2], frame) if len(self.frame_sequence) >= 2 else None,
+                        self.harness.analyze_grid(frame).components
+                    )
+                    if not verification["verified"]:
+                        emit_event("agent.reasoning", {
+                            "content": f"Statement verification failed: {verification['issues']}"
+                        })
                 
                 return {
                     "action": result.action,
@@ -626,10 +689,6 @@ Think step by step about what action to take next."""
         
         return action, reasoning, tuple(coordinates) if coordinates else None
 
-
-# ============================================================================
-# Main Runner
-# ============================================================================
 
 def run_agent(config: dict):
     """Main agent loop - plays the game and emits events.

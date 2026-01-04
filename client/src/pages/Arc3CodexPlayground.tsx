@@ -327,9 +327,7 @@ export default function Arc3CodexPlayground() {
       reasoningEffort,
       systemPromptPresetId,
       skipDefaultSystemPrompt,
-      provider: 'openrouter',  // Routes to /api/arc3-codex backend
-      // BYOK: Pass user API key if provided (required in production)
-      ...(userApiKey.trim() ? { apiKey: userApiKey.trim() } : {}),
+      provider: 'openai_codex',  // OpenAI Codex models using Responses API
     });
   };
 
@@ -478,64 +476,6 @@ export default function Arc3CodexPlayground() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Credits Monitor - shows when API key is provided */}
-            {userApiKey.trim() && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200">
-                      {creditsLoading ? (
-                        <Loader2 className="h-3 w-3 animate-spin text-amber-600" />
-                      ) : creditsError ? (
-                        <AlertCircle className="h-3 w-3 text-red-500" />
-                      ) : (
-                        <Coins className="h-3 w-3 text-amber-600" />
-                      )}
-                      <span className="text-[10px] font-medium text-amber-800">
-                        {creditsError ? (
-                          'Error'
-                        ) : credits ? (
-                          credits.remaining !== null ? (
-                            `${formatCredits(credits.remaining)} remaining`
-                          ) : (
-                            `${formatCredits(credits.usage)} used`
-                          )
-                        ) : (
-                          'Loading...'
-                        )}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => { e.stopPropagation(); refetchCredits(); }}
-                        className="h-4 w-4 p-0 ml-0.5 hover:bg-amber-100"
-                        disabled={creditsLoading}
-                      >
-                        <RefreshCw className={`h-2.5 w-2.5 text-amber-600 ${creditsLoading ? 'animate-spin' : ''}`} />
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-xs">
-                    {creditsError ? (
-                      <span className="text-red-600">{creditsError}</span>
-                    ) : credits ? (
-                      <div className="space-y-1">
-                        <div><strong>Label:</strong> {credits.label}</div>
-                        <div><strong>Used:</strong> {formatCredits(credits.usage)}</div>
-                        <div><strong>Limit:</strong> {credits.limit !== null ? formatCredits(credits.limit) : 'Unlimited'}</div>
-                        {credits.remaining !== null && (
-                          <div><strong>Remaining:</strong> {formatCredits(credits.remaining)}</div>
-                        )}
-                        <div><strong>Free Tier:</strong> {credits.isFreeTier ? 'Yes' : 'No'}</div>
-                      </div>
-                    ) : (
-                      'Enter API key to see credits'
-                    )}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-
             <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
               {state.status}
             </Badge>
@@ -551,19 +491,19 @@ export default function Arc3CodexPlayground() {
 
           {/* BYOK: API Key Input - Only shown in production */}
           {byokRequired && !isActiveSession && (
-            <Card className="border-amber-200 bg-amber-50/50">
+            <Card className="border-blue-200 bg-blue-50/50">
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
-                    <CardTitle className="text-sm text-amber-900 flex items-center gap-1.5">
+                    <CardTitle className="text-sm text-blue-900 flex items-center gap-1.5">
                       <Key className="h-3.5 w-3.5" />
-                      OpenRouter API Key
+                      OpenAI API Key
                     </CardTitle>
-                    <CardDescription className="text-xs mt-1 text-amber-700">
+                    <CardDescription className="text-xs mt-1 text-blue-700">
                       Your key is used for this session only and is never stored.
                     </CardDescription>
                   </div>
-                  <Badge variant="outline" className="text-[10px] uppercase tracking-wide border-amber-300 text-amber-700">
+                  <Badge variant="outline" className="text-[10px] uppercase tracking-wide border-blue-300 text-blue-700">
                     BYOK
                   </Badge>
                 </div>
@@ -571,11 +511,11 @@ export default function Arc3CodexPlayground() {
               <CardContent className="pt-0">
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
-                    <Label htmlFor="openrouter-api-key" className="sr-only">OpenRouter API Key</Label>
+                    <Label htmlFor="openai-api-key" className="sr-only">OpenAI API Key</Label>
                     <Input
-                      id="openrouter-api-key"
+                      id="openai-api-key"
                       type="password"
-                      placeholder="sk-or-v1-..."
+                      placeholder="sk-..."
                       value={userApiKey}
                       onChange={(e) => setUserApiKey(e.target.value)}
                       className="font-mono text-xs h-8"
