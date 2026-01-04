@@ -5,6 +5,10 @@
  * Sets isPredictionCorrect to false for this record
  */
 
+// Load environment variables from .env file
+import { config } from 'dotenv';
+config();
+
 import { repositoryService } from '../server/repositories/RepositoryService.ts';
 import { logger } from '../server/utils/logger.ts';
 

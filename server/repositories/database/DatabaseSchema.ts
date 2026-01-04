@@ -693,6 +693,33 @@ export class DatabaseSchema {
       ALTER TABLE rearc_submissions
       ADD COLUMN IF NOT EXISTS tasks_solved INTEGER DEFAULT 0;
     `);
+
+    // Migration: Add scorecard_id column to arc3_sessions for scorecard support
+    await client.query(`
+      ALTER TABLE arc3_sessions
+      ADD COLUMN IF NOT EXISTS scorecard_id VARCHAR(255) DEFAULT NULL;
+    `);
+
+    // Migration: Add foreign key constraint for scorecard_id
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.table_constraints
+          WHERE constraint_name = 'fk_arc3_sessions_scorecard'
+          AND table_name = 'arc3_sessions'
+        ) THEN
+          ALTER TABLE arc3_sessions
+          ADD CONSTRAINT fk_arc3_sessions_scorecard
+          FOREIGN KEY (scorecard_id)
+          REFERENCES scorecards(card_id)
+          ON DELETE SET NULL;
+        END IF;
+      END $$;
+    `);
+
+    // Migration: Add index for scorecard_id queries
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_scorecard ON arc3_sessions(scorecard_id)`);
   }
 
   /**
