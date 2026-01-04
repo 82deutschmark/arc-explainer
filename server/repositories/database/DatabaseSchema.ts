@@ -31,9 +31,9 @@ export class DatabaseSchema {
       await this.createComparisonVotesTable(client);
       await this.createComparisonSessionsTable(client);
       await this.createIngestionRunsTable(client);
-      await this.createArc3SessionsTable(client);
+      await this.createScorecardsTable(client); // Must be created before arc3_sessions
+      await this.createArc3SessionsTable(client); // References scorecards table
       await this.createArc3FramesTable(client);
-      await this.createScorecardsTable(client);
       await this.createArcContributorsTable(client);
       await this.createSnakeBenchModelsTable(client);
       await this.createSnakeBenchGamesTable(client);
@@ -693,32 +693,6 @@ export class DatabaseSchema {
       ALTER TABLE rearc_submissions
       ADD COLUMN IF NOT EXISTS tasks_solved INTEGER DEFAULT 0;
     `);
-
-    // Migration: Add scorecard_id column to arc3_sessions for scorecard tracking
-    await client.query(`
-      ALTER TABLE arc3_sessions
-      ADD COLUMN IF NOT EXISTS scorecard_id VARCHAR(255) DEFAULT NULL;
-    `);
-
-    // Add foreign key constraint for scorecard_id if scorecards table exists
-    await client.query(`
-      DO $$
-      BEGIN
-        IF EXISTS (
-          SELECT 1 FROM information_schema.tables
-          WHERE table_name = 'scorecards'
-        ) THEN
-          ALTER TABLE arc3_sessions
-          ADD CONSTRAINT fk_arc3_sessions_scorecard
-          FOREIGN KEY (scorecard_id)
-          REFERENCES scorecards(card_id)
-          ON DELETE SET NULL;
-        END IF;
-      END $$;
-    `);
-
-    // Create index for scorecard_id if it doesn't exist
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_scorecard ON arc3_sessions(scorecard_id)`);
   }
 
   /**
