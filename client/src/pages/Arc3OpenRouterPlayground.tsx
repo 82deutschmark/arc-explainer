@@ -1,7 +1,7 @@
 /*
 Author: Cascade
 Date: 2026-01-03
-Updated: 2026-01-03 - Fixed to use dynamic model fetching from /api/models, mirror Arc3AgentPlayground
+Updated: 2026-01-03 - Locked config/system prompt when run starts (align with main playground), dynamic models, BYOK handling
 PURPOSE: OpenRouter-specific ARC3 Agent Playground using LangGraph Python runner.
          Routes to /api/arc3-openrouter backend (Python subprocess).
          Uses dynamic model list from project's OpenRouter catalog (not hardcoded).
@@ -301,6 +301,12 @@ export default function Arc3OpenRouterPlayground() {
   // Streaming
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
 
+  // Treat starting/running/streaming as "active" to hide config/system prompt consistently.
+  const isActiveSession =
+    state.streamingStatus === 'starting' ||
+    state.streamingStatus === 'in_progress' ||
+    state.status === 'running';
+
   const handleStart = () => {
     // BYOK: Block start if key required but not provided
     if (byokRequired && !userApiKey.trim()) {
@@ -546,7 +552,7 @@ export default function Arc3OpenRouterPlayground() {
         <div className="lg:col-span-3 space-y-3">
 
           {/* BYOK: API Key Input - Only shown in production */}
-          {byokRequired && !isPlaying && (
+          {byokRequired && !isActiveSession && (
             <Card className="border-amber-200 bg-amber-50/50">
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
@@ -586,7 +592,7 @@ export default function Arc3OpenRouterPlayground() {
           )}
 
           {/* Config - Hidden when playing */}
-          {!isPlaying && (
+          {!isActiveSession && (
             <Arc3ConfigurationPanel
               systemPrompt={systemPrompt}
               setSystemPrompt={setSystemPrompt}
