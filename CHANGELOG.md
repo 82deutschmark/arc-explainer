@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.8  Jan 4, 2026
+
+- **CRITICAL: Fix Duplicate Foreign Key Constraint Crash** (Author: Claude Sonnet 4.5)
+  - **What**: Removed duplicate foreign key constraint that was causing Railway deployment to crash on startup.
+  - **Why**: The `arc3_sessions` table was created with an inline FK constraint (`scorecard_id REFERENCES scorecards`), then the migration tried to add the SAME constraint again with a different name. PostgreSQL rejected the duplicate constraint, causing database initialization to fail and the server to crash immediately on Railway.
+  - **How**:
+    - **DatabaseSchema.ts:253**: Removed inline `REFERENCES scorecards(card_id) ON DELETE SET NULL` from CREATE TABLE statement
+    - **Migration**: The existing migration code (lines 703-721) now handles FK constraint creation properly with existence check
+    - **Result**: Fresh databases (Railway) and existing databases (migrations) both work correctly without duplicate constraints
+  - **Impact**: Railway deployment now starts successfully. Database initialization completes without errors. Scorecard FK constraint is created once via migration with proper name `fk_arc3_sessions_scorecard`.
+
 ### Version 6.33.7  Jan 4, 2026
 
 - **Scorecard Migration Fix + Data Correction** (Author: Claude Sonnet 4.5)

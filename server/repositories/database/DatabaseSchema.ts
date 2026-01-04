@@ -250,7 +250,7 @@ export class DatabaseSchema {
         id SERIAL PRIMARY KEY,
         game_id VARCHAR(255) NOT NULL,
         guid VARCHAR(255) NOT NULL UNIQUE,
-        scorecard_id VARCHAR(255) DEFAULT NULL REFERENCES scorecards(card_id) ON DELETE SET NULL,
+        scorecard_id VARCHAR(255) DEFAULT NULL,
         state VARCHAR(50) NOT NULL DEFAULT 'NOT_PLAYED',
         final_score INTEGER DEFAULT 0,
         win_score INTEGER DEFAULT 0,
