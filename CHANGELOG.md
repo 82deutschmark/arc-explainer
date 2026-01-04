@@ -1,5 +1,56 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.32.0  Jan 3, 2026
+
+- **Add Haiku 4.5 Agent Harness for ARC-AGI-3** (Author: Claude Sonnet 4)
+  - **What**: Implemented vision-first, child-like learning agent using Anthropic's Haiku 4.5 model for ARC-AGI-3 games.
+  - **Why**: Haiku excels at vision tasks and fast iteration. This harness leverages those strengths with a child-like learning approach: SEES, THINKS, ACTS, OBSERVES, LEARNS.
+  - **How**:
+    - **Python Agent** (`server/python/arc3_haiku_agent.py`):
+      - Main game loop with hypothesis-action-observation cycle
+      - Anthropic API integration with vision (base64 PNG frames)
+      - Memory system for learned observations across turns
+      - NDJSON event emission for TypeScript consumption
+    - **Python Preprocessor** (`server/python/arc3_haiku_preprocessor.py`):
+      - Clean object extraction (connected components with flood-fill)
+      - Human-readable descriptions (color names, shape types, positions)
+      - Change detection between frames with movement tracking
+      - NO mathematical analysis (entropy, symmetry) - keeps it simple
+    - **TypeScript Bridge** (`server/services/arc3/Arc3HaikuPythonBridge.ts`):
+      - Subprocess spawn and lifecycle management
+      - NDJSON parsing from stdout
+      - Timeout handling and cleanup
+    - **Stream Service** (`server/services/arc3/HaikuArc3StreamService.ts`):
+      - Session management with TTL
+      - SSE event forwarding from Python to frontend
+    - **Express Routes** (`server/routes/arc3Haiku.ts`):
+      - `/stream/prepare` - create session
+      - `/stream/:sessionId` - SSE streaming
+      - `/stream/cancel/:sessionId` - cancel session
+      - `/health` - health check
+    - **Frontend Playground** (`client/src/pages/Arc3HaikuPlayground.tsx`):
+      - Three-column layout (config, game, reasoning)
+      - BYOK for Anthropic API key in production
+      - Real-time streaming of Haiku's thoughts
+    - **Observations Component** (`client/src/components/arc3/Arc3ObservationsList.tsx`):
+      - Displays learned patterns, descriptions, and hypotheses
+      - Purple-themed UI to match Haiku branding
+    - **Types** (`shared/types.ts`):
+      - `HaikuArc3StreamPayload`, `HaikuFrameContext`
+      - `HaikuObjectDescription`, `HaikuChangeDescription`
+      - `HaikuAgentEventType` union
+  - **Files Created**:
+    - `server/python/arc3_haiku_agent.py`
+    - `server/python/arc3_haiku_preprocessor.py`
+    - `server/services/arc3/Arc3HaikuPythonBridge.ts`
+    - `server/services/arc3/HaikuArc3StreamService.ts`
+    - `server/routes/arc3Haiku.ts`
+    - `client/src/pages/Arc3HaikuPlayground.tsx`
+    - `client/src/components/arc3/Arc3ObservationsList.tsx`
+  - **Files Modified**: `server/routes.ts`, `client/src/App.tsx`, `shared/types.ts`, `CHANGELOG.md`
+  - **Route**: `/arc3/haiku-playground`
+  - **API**: `/api/arc3-haiku/*`
+
 ### Version 6.31.0  Jan 3, 2026
 
 - **Add General Intelligence Harness for ARC-AGI-3** (Author: Cascade)

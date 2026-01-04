@@ -25,6 +25,7 @@ import { createSession } from './persistence/sessionManager.ts';
 import { saveFrame } from './persistence/framePersistence.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
 import { executeGridAnalysis } from './helpers/gridAnalyzer.ts';
+import { buildCascadeContext, stringifyCascadeContext } from './helpers/cascadeHarness.ts';
 import { logger } from '../../utils/logger.ts';
 
 // Codex-specific default model
@@ -134,6 +135,7 @@ export class CodexArc3Runner {
     const agentName = config.agentName?.trim() || 'Codex ARC3 Agent';
     const maxTurns = config.maxTurns ?? DEFAULT_MAX_TURNS;
     const gameId = config.game_id ?? DEFAULT_GAME_ID;
+    const harnessMode = config.harnessMode ?? 'default';
     
     // Open scorecard (required by ARC3 API before any game actions)
     const scorecardId = await this.apiClient.openScorecard(
@@ -290,6 +292,15 @@ export class CodexArc3Runner {
         const colorDistribution = calculateColorDistribution(grid2D);
         const changes = analyzeFrameChanges(prevFrame, currentFrame);
 
+        const cascadeCtx = harnessMode === 'cascade'
+          ? buildCascadeContext({
+              prevFrame,
+              currentFrame,
+              lastAction: streamState.hypotheses.slice(-1)[0],
+              turn: frames.length,
+            })
+          : null;
+
         const result = {
           gameGuid: currentFrame.guid,
           gameId: currentFrame.game_id,
@@ -302,6 +313,9 @@ export class CodexArc3Runner {
           max_actions: currentFrame.max_actions,
           win_score: currentFrame.win_score,
           note: input.note ?? null,
+          ...(cascadeCtx
+            ? { cascadeContext: stringifyCascadeContext(cascadeCtx) }
+            : {}),
         };
 
         logger.info(
@@ -397,6 +411,15 @@ export class CodexArc3Runner {
             caption += ` (frame ${i + 1}/${unpackedActionFrames.length})`;
           }
 
+          const cascadeCtx = harnessMode === 'cascade'
+            ? buildCascadeContext({
+                prevFrame,
+                currentFrame: frame,
+                lastAction: name,
+                turn: frames.length - unpackedActionFrames.length + i + 1,
+              })
+            : null;
+
           streamHarness.emitEvent("game.frame_update", {
             frameIndex: String(currentFrameNumber - unpackedActionFrames.length + i),
             frameData: frame,
@@ -406,6 +429,7 @@ export class CodexArc3Runner {
             animationFrame: i,
             animationTotalFrames: unpackedActionFrames.length,
             isLastAnimationFrame: isLastFrame,
+            ...(cascadeCtx ? { cascadeContext: stringifyCascadeContext(cascadeCtx) } : {}),
             timestamp: Date.now()
           });
         }
@@ -476,6 +500,15 @@ export class CodexArc3Runner {
             caption += ` (frame ${i + 1}/${unpackedAction6Frames.length})`;
           }
 
+          const cascadeCtx = harnessMode === 'cascade'
+            ? buildCascadeContext({
+                prevFrame,
+                currentFrame: frame,
+                lastAction: 'ACTION6',
+                turn: frames.length - unpackedAction6Frames.length + i + 1,
+              })
+            : null;
+
           streamHarness.emitEvent("game.frame_update", {
             frameIndex: String(currentFrameNumber - unpackedAction6Frames.length + i),
             frameData: frame,
@@ -485,6 +518,7 @@ export class CodexArc3Runner {
             animationFrame: i,
             animationTotalFrames: unpackedAction6Frames.length,
             isLastAnimationFrame: isLastFrame,
+            ...(cascadeCtx ? { cascadeContext: stringifyCascadeContext(cascadeCtx) } : {}),
             timestamp: Date.now()
           });
         }
@@ -515,11 +549,14 @@ export class CodexArc3Runner {
 
     const baseSystemPrompt = selectSystemPrompt();
     const operatorGuidance = config.instructions?.trim();
-    const combinedInstructions = operatorGuidance
-      ? (baseSystemPrompt
-          ? `${baseSystemPrompt}\n\nOperator guidance: ${operatorGuidance}`
-          : operatorGuidance)
-      : baseSystemPrompt || '';
+
+    const cascadeHarnessNote = harnessMode === 'cascade'
+      ? 'Harness: Focus on what moved/appeared/disappeared after each action. Describe cause-effect in plain language and plan the next small experiment. Prefer concise bullet observations over numeric stats.'
+      : '';
+
+    const combinedInstructions = [baseSystemPrompt, operatorGuidance, cascadeHarnessNote]
+      .filter(Boolean)
+      .join('\n\n');
 
     const storeResponse = config.storeResponse ?? true;
     const frameHash = currentFrame ? this.computeFrameHash(extractLayerStack(currentFrame)) : undefined;
@@ -754,6 +791,7 @@ export class CodexArc3Runner {
         totalTokens: usage.totalTokens,
       },
       providerResponseId,
+      scorecardId,
     };
   }
 }

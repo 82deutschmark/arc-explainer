@@ -276,6 +276,7 @@ export default function Arc3CodexPlayground() {
   const [gameId, setGameId] = useState(urlGameId);  // Initialize from URL param
   const [agentName, setAgentName] = useState('Codex Agent');
   const [model, setModel] = useState<string>('');
+  const [harnessMode, setHarnessMode] = useState<'default' | 'cascade'>('default');
   const [maxTurns, setMaxTurns] = useState(80);  // Max 500 per OpenRouter route validation
   const [reasoningEffort, setReasoningEffort] = useState<'minimal' | 'low' | 'medium' | 'high'>('low');
   const [systemPrompt, setSystemPrompt] = useState('Loading default prompt...');
@@ -328,6 +329,7 @@ export default function Arc3CodexPlayground() {
       systemPromptPresetId,
       skipDefaultSystemPrompt,
       provider: 'openai_codex',  // OpenAI Codex models using Responses API
+      harnessMode,
     });
   };
 
@@ -433,6 +435,55 @@ export default function Arc3CodexPlayground() {
               GPT-5.1
             </Badge>
             <span className="text-[10px] text-muted-foreground ml-1">OpenAI's agentic coding models</span>
+          </div>
+
+          {/* Model */}
+          <div className="space-y-0.5">
+            <label className="font-medium text-[10px]">Model</label>
+            {modelsLoading ? (
+              <div className="flex items-center gap-1 h-7 px-2 text-[10px] text-muted-foreground">
+                <RefreshCw className="h-3 w-3 animate-spin" />
+                Loading...
+              </div>
+            ) : (
+              <Select
+                value={model}
+                onValueChange={(v) => setModel(v as string)}
+                disabled={isPlaying}
+              >
+                <SelectTrigger className="h-7 text-[10px] px-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableModels.map((model) => (
+                    <SelectItem key={model.model_id} value={model.model_id} className="text-xs">
+                      {model.title} ({model.model_id})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+
+          {/* Harness preset */}
+          <div className="space-y-0.5">
+            <label className="font-medium text-[10px]">Harness</label>
+            <Select
+              value={harnessMode}
+              onValueChange={(v) => setHarnessMode(v as 'default' | 'cascade')}
+              disabled={isPlaying}
+            >
+              <SelectTrigger className="h-7 text-[10px] px-2">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default" className="text-[10px]">Default (math/topology)</SelectItem>
+                <SelectItem value="cascade" className="text-[10px]">GPT-5.2 Cascade (cause-effect)</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-[9px] text-muted-foreground">
+              System prompt = base rules; User prompt = your guidance; Harness = auto frame-to-text context. Cascade focuses on what moved/changed each turn.
+            </p>
           </div>
 
           {/* Inline game selector */}

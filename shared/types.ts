@@ -1591,6 +1591,89 @@ export interface CodexArc3StreamPayload {
 }
 
 /**
+ * Haiku 4.5 ARC3 Agent Types
+ * Vision-first, child-like learning agent using Anthropic's Haiku model.
+ */
+export interface HaikuArc3StreamPayload {
+  game_id: string;
+  model?: string;                // Default: claude-3-5-haiku-20241022
+  max_turns?: number;
+  anthropic_api_key?: string;    // BYOK
+  arc3_api_key?: string;
+  agent_name?: string;
+  system_prompt?: string;
+}
+
+export interface HaikuFrameContext {
+  objects: HaikuObjectDescription[];
+  grid_state: {
+    width: number;
+    height: number;
+    non_background_pixels: number;
+  };
+  changes_from_previous: HaikuChangeDescription | null;
+  score: number;
+  state: string;
+}
+
+export interface HaikuObjectDescription {
+  color: string;
+  color_value: number;
+  shape: string;
+  position: string;
+  bounds: {
+    min_row: number;
+    max_row: number;
+    min_col: number;
+    max_col: number;
+  };
+  size: number;
+  center: [number, number];
+}
+
+export interface HaikuChangeDescription {
+  pixels_changed: number;
+  objects_moved: Array<{
+    color: string;
+    from_center: [number, number];
+    to_center: [number, number];
+    delta: [number, number];
+    description: string;
+  }>;
+  new_objects: Array<{
+    color: string;
+    position: string;
+    size: number;
+  }>;
+  disappeared_objects: Array<{
+    color: string;
+    position: string;
+    size: number;
+  }>;
+  summary: string;
+}
+
+export type HaikuAgentEventType =
+  | 'stream.init'
+  | 'stream.status'
+  | 'stream.error'
+  | 'agent.starting'
+  | 'agent.turn_start'
+  | 'agent.thinking'
+  | 'agent.description'
+  | 'agent.hypothesis'
+  | 'agent.tool_call'
+  | 'agent.tool_result'
+  | 'agent.observation'
+  | 'agent.completed'
+  | 'agent.warning'
+  | 'agent.context'
+  | 'game.started'
+  | 'game.frame_update'
+  | 'game.won'
+  | 'game.over';
+
+/**
  * RE-ARC SSE Event Types
  * Shared between frontend and backend for type-safe SSE streaming.
  */

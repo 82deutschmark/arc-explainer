@@ -41,6 +41,7 @@ import metricsRouter from './routes/metricsRoutes.ts';
 import arc3Router from "./routes/arc3";
 import arc3CodexRouter from "./routes/arc3Codex";
 import arc3OpenRouterRouter from "./routes/arc3OpenRouter";
+import arc3HaikuRouter from "./routes/arc3Haiku";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -86,6 +87,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // OpenRouter ARC3 agent playground routes (LangGraph + xiaomi/mimo-v2-flash:free)
   app.use("/api/arc3-openrouter", arc3OpenRouterRouter);
+
+  // Haiku 4.5 ARC3 agent playground routes (vision-first, child-like learning)
+  app.use("/api/arc3-haiku", arc3HaikuRouter);
 
   // Contributor trading cards routes
   app.use("/api/contributors", contributorController);
