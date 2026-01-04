@@ -8,7 +8,7 @@
  */
 
 import { Arc3ApiClient, type FrameData } from "./Arc3ApiClient";
-import { logger } from "../utils/logger";
+import { logger } from "../../utils/logger";
 import { ARC3_API_BASE_URL } from "./utils/constants";
 
 export interface Arc3OpenAIRunConfig {
@@ -72,7 +72,7 @@ export class Arc3OpenAIRunner {
         config.game_id,
         frame.guid,
         {
-          action: action.type,
+          action: action.type as 'RESET' | 'ACTION1' | 'ACTION2' | 'ACTION3' | 'ACTION4' | 'ACTION5' | 'ACTION6' | 'ACTION7',
           coordinates: action.coordinates ? [action.coordinates.x, action.coordinates.y] : undefined,
         },
         undefined,

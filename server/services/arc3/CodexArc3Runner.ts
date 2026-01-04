@@ -21,8 +21,9 @@ import { generateActionCaption } from './helpers/captionGenerator.ts';
 import { countChangedPixels, analyzeFrameChanges, extractGrid, extractLayerStack } from './helpers/frameAnalysis.ts';
 import { calculateColorDistribution } from './helpers/colorAnalysis.ts';
 import { unpackFrames, summarizeFrameStructure } from './helpers/frameUnpacker.ts';
-import { createSession } from './persistence/sessionManager.ts';
-import { saveFrame } from './persistence/framePersistence.ts';
+import { createSession, getSessionByGuid, endSession, type SessionMetadata } from './persistence/sessionManager';
+import { saveFrame, type SavedFrame } from './persistence/framePersistence';
+import { openScorecard, closeScorecard, getScorecard } from './scorecardService.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
 import { executeGridAnalysis } from './helpers/gridAnalyzer.ts';
 import { buildCascadeContext, stringifyCascadeContext } from './helpers/cascadeHarness.ts';
@@ -177,7 +178,7 @@ export class CodexArc3Runner {
       if (isContinuation) {
         logger.info(`[Codex ARC3] Continuing game session ${gameGuid} on game ${gameId}`, 'codex-arc3');
       } else {
-        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score);
+        dbSessionId = await createSession(gameId, gameGuid, currentFrame.win_score, scorecardId);
         currentFrameNumber = await this.persistUnpackedFrames(
           dbSessionId,
           unpackedInitialFrames,

@@ -33,6 +33,7 @@ export class DatabaseSchema {
       await this.createIngestionRunsTable(client);
       await this.createArc3SessionsTable(client);
       await this.createArc3FramesTable(client);
+      await this.createScorecardsTable(client);
       await this.createArcContributorsTable(client);
       await this.createSnakeBenchModelsTable(client);
       await this.createSnakeBenchGamesTable(client);
@@ -249,6 +250,7 @@ export class DatabaseSchema {
         id SERIAL PRIMARY KEY,
         game_id VARCHAR(255) NOT NULL,
         guid VARCHAR(255) NOT NULL UNIQUE,
+        scorecard_id VARCHAR(255) DEFAULT NULL REFERENCES scorecards(card_id) ON DELETE SET NULL,
         state VARCHAR(50) NOT NULL DEFAULT 'NOT_PLAYED',
         final_score INTEGER DEFAULT 0,
         win_score INTEGER DEFAULT 0,
@@ -263,6 +265,7 @@ export class DatabaseSchema {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_game_id ON arc3_sessions(game_id)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_guid ON arc3_sessions(guid)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_started ON arc3_sessions(started_at DESC)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_scorecard ON arc3_sessions(scorecard_id)`);
   }
 
   private static async createArc3FramesTable(client: PoolClient): Promise<void> {
@@ -287,6 +290,24 @@ export class DatabaseSchema {
     // Create indexes for arc3_frames table
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_frames_session ON arc3_frames(session_id, frame_number)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_frames_timestamp ON arc3_frames(timestamp DESC)`);
+  }
+
+  private static async createScorecardsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS scorecards (
+        card_id VARCHAR(255) PRIMARY KEY,
+        source_url TEXT DEFAULT NULL,
+        tags TEXT[] DEFAULT '{}',
+        opaque JSONB DEFAULT NULL,
+        opened_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        closed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+        is_active BOOLEAN DEFAULT true
+      )
+    `);
+
+    // Create indexes for scorecards table
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_scorecards_is_active ON scorecards(is_active)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_scorecards_opened_at ON scorecards(opened_at DESC)`);
   }
 
   private static async createArcContributorsTable(client: PoolClient): Promise<void> {
@@ -672,6 +693,32 @@ export class DatabaseSchema {
       ALTER TABLE rearc_submissions
       ADD COLUMN IF NOT EXISTS tasks_solved INTEGER DEFAULT 0;
     `);
+
+    // Migration: Add scorecard_id column to arc3_sessions for scorecard tracking
+    await client.query(`
+      ALTER TABLE arc3_sessions
+      ADD COLUMN IF NOT EXISTS scorecard_id VARCHAR(255) DEFAULT NULL;
+    `);
+
+    // Add foreign key constraint for scorecard_id if scorecards table exists
+    await client.query(`
+      DO $$
+      BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.tables
+          WHERE table_name = 'scorecards'
+        ) THEN
+          ALTER TABLE arc3_sessions
+          ADD CONSTRAINT fk_arc3_sessions_scorecard
+          FOREIGN KEY (scorecard_id)
+          REFERENCES scorecards(card_id)
+          ON DELETE SET NULL;
+        END IF;
+      END $$;
+    `);
+
+    // Create index for scorecard_id if it doesn't exist
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_scorecard ON arc3_sessions(scorecard_id)`);
   }
 
   /**

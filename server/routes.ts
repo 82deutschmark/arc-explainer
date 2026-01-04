@@ -37,6 +37,7 @@ import { councilController } from './controllers/councilController.ts';
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
+import scorecardRoutes from './routes/scorecard.ts';
 import metricsRouter from './routes/metricsRoutes.ts';
 import arc3Router from "./routes/arc3";
 import arc3CodexRouter from "./routes/arc3Codex";
@@ -346,6 +347,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/rearc/submit", reArcEvaluateLimiter, asyncHandler(reArcController.submitToLeaderboard));
   app.get("/api/rearc/leaderboard", asyncHandler(reArcController.getLeaderboard));
   app.get("/api/rearc/submissions/:id", asyncHandler(reArcController.getSubmissionDetails));
+
+  // Scorecard management routes for ARC3 games
+  app.use("/api/scorecard", scorecardRoutes);
 
   // Batch analysis routes
   app.post("/api/batch/start", asyncHandler(batchController.startBatch));
