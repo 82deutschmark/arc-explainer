@@ -34,6 +34,7 @@ const runSchema = z.object({
   reasoningEffort: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
   systemPromptPresetId: z.enum(['twitch', 'playbook', 'none']).optional(),
   skipDefaultSystemPrompt: z.boolean().optional(),
+  harnessMode: z.enum(['default', 'cascade']).optional(),
 });
 
 const manualActionSchema = z.object({
@@ -81,6 +82,7 @@ router.post(
       reasoningEffort: payload.reasoningEffort,
       systemPromptPresetId: payload.systemPromptPresetId,
       skipDefaultSystemPrompt: payload.skipDefaultSystemPrompt,
+      harnessMode: payload.harnessMode,
     });
 
     res.json(formatResponse.success({ sessionId, provider: 'codex' }));
