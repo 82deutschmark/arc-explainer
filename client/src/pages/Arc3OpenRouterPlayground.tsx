@@ -291,12 +291,43 @@ export default function Arc3OpenRouterPlayground() {
   const [userApiKey, setUserApiKey] = useState('');
   const byokRequired = requiresUserApiKey();
 
-  // Credits monitor - polls OpenRouter for current balance
-  const { credits, isLoading: creditsLoading, error: creditsError, refetch: refetchCredits } = useOpenRouterCredits({
+  // Credits monitor - tries server env key first, falls back to user-provided key
+  const [serverCreditsLoading, setServerCreditsLoading] = useState(true);
+  const [serverCredits, setServerCredits] = useState<typeof credits | null>(null);
+  const [creditsSource, setCreditsSource] = useState<'server' | 'user' | 'none'>('none');
+
+  // Fetch credits from server env key on mount
+  useEffect(() => {
+    const fetchServerCredits = async () => {
+      try {
+        setServerCreditsLoading(true);
+        const response = await apiRequest('GET', '/api/arc3-openrouter/credits-env');
+        const data = await response.json();
+        if (data.success && data.data) {
+          setServerCredits(data.data);
+          setCreditsSource('server');
+        }
+      } catch (error) {
+        // No server key configured - that's OK, user can provide their own
+        setServerCredits(null);
+      } finally {
+        setServerCreditsLoading(false);
+      }
+    };
+    fetchServerCredits();
+  }, []);
+
+  // Credits monitor - polls OpenRouter for user-provided key (fallback)
+  const { credits: userCredits, isLoading: userCreditsLoading, error: userCreditsError, refetch: refetchCredits } = useOpenRouterCredits({
     apiKey: userApiKey,
     pollInterval: 15000, // Poll every 15s during active use
-    enabled: Boolean(userApiKey.trim()),
+    enabled: Boolean(userApiKey.trim() && !serverCredits), // Only if no server credits
   });
+
+  // Use server credits if available, otherwise user credits
+  const credits = serverCredits || userCredits;
+  const creditsLoading = serverCreditsLoading || userCreditsLoading;
+  const creditsError = userCreditsError;
 
   // Streaming
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
@@ -480,8 +511,8 @@ export default function Arc3OpenRouterPlayground() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Credits Monitor - shows when API key is provided */}
-            {userApiKey.trim() && (
+            {/* Credits Monitor - shows when available (server env key or user-provided key) */}
+            {(credits || creditsLoading) && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -529,10 +560,11 @@ export default function Arc3OpenRouterPlayground() {
                           <div><strong>Remaining:</strong> {formatCredits(credits.remaining)}</div>
                         )}
                         <div><strong>Free Tier:</strong> {credits.isFreeTier ? 'Yes' : 'No'}</div>
+                        <div className="text-[9px] pt-2 border-t text-muted-foreground">
+                          {creditsSource === 'server' ? 'Server API Key' : 'User-provided Key'}
+                        </div>
                       </div>
-                    ) : (
-                      'Enter API key to see credits'
-                    )}
+                    ) : null}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
