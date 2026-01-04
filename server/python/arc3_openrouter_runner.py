@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Author: Cascade
-Date: 2026-01-02
-Updated: 2026-01-03 - Major upgrade: Structured outputs, observation journal, frame delta analysis
+Date: 2026-01-04
+Updated: 2026-01-04 - Pass extra_body explicitly (not via model_kwargs) to satisfy OpenAI SDK expectations and silence warnings
 PURPOSE: ARC3 OpenRouter Runner using LangGraph thinking agent pattern.
          Reads JSON config from stdin, emits NDJSON events to stdout.
          Model: xiaomi/mimo-v2-flash:free (configurable)
@@ -451,11 +451,10 @@ Think step by step about what action to take next."""
 
         # Model kwargs for reasoning-capable models (per OpenRouter docs)
         # Pass reasoning.effort to control thinking budget allocation
-        model_kwargs = {
-            "extra_body": {
-                "reasoning": {
-                    "effort": reasoning_effort,  # "minimal", "low", "medium", "high", "xhigh"
-                }
+        model_kwargs = {}
+        extra_body = {
+            "reasoning": {
+                "effort": reasoning_effort,  # "minimal", "low", "medium", "high", "xhigh"
             }
         }
 
@@ -468,6 +467,7 @@ Think step by step about what action to take next."""
             temperature=0.7,
             max_tokens=2048,  # Increased for reasoning output
             model_kwargs=model_kwargs,
+            extra_body=extra_body,
         )
 
         # State tracking
@@ -853,36 +853,43 @@ def run_agent(config: dict):
     
     while turn < max_turns:
         turn += 1
-        
+
         state = frame_data.get("state", "IN_PROGRESS")
         if state == GameState.WIN.value:
             final_state = "WIN"
             emit_event("stream.status", {"state": "completed", "message": "Game won!"})
             break
-        
-        # Choose action
-        emit_event("agent.tool_call", {"tool": "analyze_frame", "turn": turn})
-        action, reasoning, coordinates = agent.choose_action(frame_data)
-        
-        if action is None:
-            break
-        
-        emit_event("agent.tool_call", {"tool": action, "reasoning": reasoning, "turn": turn})
 
-        # Execute action
+        # Choose action
         try:
-            guid = frame_data.get("guid", "")
-            frame_data = arc3_client.execute_action(
-                resolved_game_id, guid, action,
-                coordinates=coordinates,
-                reasoning={"agent": "openrouter", "model": model, "thought": reasoning}
-            )
-            emit_event("agent.tool_result", {"tool": action, "result": "executed", "turn": turn})
-            emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": turn})
+            emit_event("agent.tool_call", {"tool": "analyze_frame", "turn": turn})
+            action, reasoning, coordinates = agent.choose_action(frame_data)
+
+            if action is None:
+                emit_event("stream.status", {"state": "error", "message": f"Agent returned None action on turn {turn}"})
+                break
+
+            emit_event("agent.tool_call", {"tool": action, "reasoning": reasoning, "turn": turn})
+
+            # Execute action
+            try:
+                guid = frame_data.get("guid", "")
+                frame_data = arc3_client.execute_action(
+                    resolved_game_id, guid, action,
+                    coordinates=coordinates,
+                    reasoning={"agent": "openrouter", "model": model, "thought": reasoning}
+                )
+                emit_event("agent.tool_result", {"tool": action, "result": "executed", "turn": turn})
+                emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": turn})
+            except Exception as e:
+                emit_event("agent.tool_result", {"tool": action, "result": f"error: {e}", "turn": turn})
+                emit_event("stream.status", {"state": "warning", "message": f"Action execution failed on turn {turn}: {e}"})
+                # Continue anyway
+
         except Exception as e:
-            emit_event("agent.tool_result", {"tool": action, "result": f"error: {e}", "turn": turn})
-            # Continue anyway
-        
+            emit_event("stream.status", {"state": "error", "message": f"Choose action failed on turn {turn}: {e}"})
+            break
+
         # Small delay to avoid rate limiting
         time.sleep(0.5)
     
