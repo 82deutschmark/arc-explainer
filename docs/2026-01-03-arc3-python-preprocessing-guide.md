@@ -578,6 +578,278 @@ class GameModel:
 
 ---
 
+## Creative Python for Intelligence Extraction
+
+### 19. Surprised-Action Heatmaps
+
+**Purpose:** Track which regions of the grid have caused the most "Surprise" (model mismatches).
+
+**How it works:** Every time `calculate_model_surprise` returns "HIGH", we increment a counter for that grid region. 
+
+**Why it matters:** It tells the LLM: "You keep failing in the bottom-right corner. There is a hidden mechanic there you don't understand yet. Focus your experiments there."
+
+```python
+def generate_surprise_heatmap(surprise_history: List[dict]):
+    """Generate a 3x3 heatmap of where the model's logic failed."""
+    heatmap = np.zeros((3, 3))
+    for s in surprise_history:
+        r, c = s["coords"]
+        heatmap[r//21, c//21] += 1
+    return heatmap
+```
+
+### 20. Trajectory Efficiency Analysis
+
+**Purpose:** Detect if the agent is "pacing" (moving back and forth) or stuck in a loop.
+
+**Implementation:** Analyze the last 10 `player_pos` updates. If the agent visits the same 3 cells repeatedly, inject a "Loop Detected" warning.
+
+```python
+def detect_agent_loops(positions: List[Tuple[int, int]]):
+    """Detect if the agent is stuck in a spatial loop."""
+    if len(set(positions[-10:])) < 3:
+        return "LOOP_DETECTED: You are oscillating between the same cells. Try a different direction."
+    return "STABLE"
+```
+
+### 21. Hypothesis-to-Rule "Promotion" Engine
+
+**Purpose:** Automate the "Aggregated Findings" by using Python to "verify" hypotheses.
+
+**The Flow:**
+1. LLM proposes: "Hypothesis: ACTION1 = MOVE_UP".
+2. Python observes ACTION1 was used 5 times.
+3. Python checks if `delta_y` was `-1` in all 5 cases.
+4. Python outputs: "PROMOTED: Hypothesis 'ACTION1 = MOVE_UP' is now a Verified Rule (100% confidence over 5 samples)."
+
+### 22. Action Sequence "Macro" Generation
+
+**Purpose:** Allow the LLM to think in high-level "Macros" rather than single steps.
+
+**Creative Preprocessing:**
+If the LLM says "I want to go to the key", the Python preprocessor can generate the exact sequence:
+`"NAV_MACRO": "ACTION4, ACTION4, ACTION2 (Arrives at OBJ_2 in 3 steps)"`
+
+This saves the LLM from having to calculate step-by-step coordinates, which they are notoriously bad at.
+
+---
+
+## Psychological & Meta-Cognitive Extraction
+
+Looking at advanced agents like **TOMAS Engine**, we see that intelligence isn't just about the grid—it's about the **Agent's state of mind**.
+
+### 23. The "Frustration" Meter (Surprise Accumulation)
+
+**Purpose:** Calculate a "Frustration Score" based on recent performance.
+
+**The Metric:**
+`Frustration = (Number of NO_EFFECT actions in last 5 turns) + (Surprise Score > 0.5)`
+
+**Why it matters:** When frustration is high, the system can inject a "Pivot Prompt":
+> "SYSTEM: You have failed to make progress for 5 turns. Your current strategy is clearly not working. Ignore your previous hypothesis and try a completely random ACTION5 or RESET."
+
+### 24. Confidence Degradation (The "Entropy" Rule)
+
+**Purpose:** Rules aren't permanent. If a rule hasn't been confirmed in 20 turns, its confidence should decay.
+
+**Implementation:**
+```python
+def apply_rule_decay(rules: List[GameRule], current_turn: int):
+    for rule in rules:
+        turns_since_check = current_turn - rule.last_confirmed_turn
+        decay = 0.01 * turns_since_check
+        rule.confidence -= decay
+```
+
+### 25. The "Findings Auditor" (Anti-Slop Filter)
+
+**Purpose:** Check if the agent's `aggregated_findings` are actually improving or just repeating.
+
+**Creative Python:** Use a similarity score (like Levenshtein or Cosine Similarity) between the findings of Turn N and Turn N-1. If they are 95% similar, the agent is stuck in a "Reasoning Loop".
+
+---
+
+## Symbolic Execution & Template Reasoning
+
+Since the LLM has a Python console, we can provide it with **Symbolic Primitives** to help it reason like a programmer rather than a narrator.
+
+### 26. The "Primitive Library" (ARC3 Standard Library)
+
+**Purpose:** Provide the LLM with a pre-loaded Python module `arc3_utils.py` that contains highly optimized functions for ARC-AGI-3 logic.
+
+**What's in the library?**
+- `get_objects(grid)`: Returns list of `SimpleObject`.
+- `predict_move(obj, direction)`: Returns the new coordinates.
+- `check_symmetry(grid)`: Returns a symmetry report.
+- `is_goal_reached(player, goal)`: Boolean check.
+
+**Why this matters:** It shifts the LLM's workload from "How do I calculate coordinates?" to "Which utility should I call to verify my plan?".
+
+### 27. Symbolic Path Prototyping
+
+**Purpose:** Instead of saying "I'll move right", the LLM writes a script to **simulate** a 5-step path and check for collisions.
+
+```python
+# LLM Sandbox: Path Prototyping
+path = ["RIGHT", "RIGHT", "UP", "UP"]
+sim_pos = player.pos
+for step in path:
+    sim_pos = simulate_step(grid, sim_pos, step)
+    if is_collision(grid, sim_pos):
+        print(f"FAILED at {step}")
+        break
+```
+
+---
+
+## Meta-Reasoning Extraction
+
+### 28. Belief Cross-Validation (The "Jury" System)
+
+**Purpose:** Use Python to compare the reasoning of two different turns (or even two different models) and find contradictions.
+
+**The Algorithm:**
+1. Turn 1 Reasoning: "Blue pixels are walls."
+2. Turn 2 Reasoning: "I walked over a blue pixel."
+3. **Python Extraction:** Detection of the contradiction `(Wall AND Walkable)`.
+4. **Injection:** "CRITICAL CONTRADICTION: Your Turn 2 observation violates your Turn 1 belief. One is false."
+
+### 29. Delta-Compressed Reasoning
+
+**Purpose:** To save tokens and focus the LLM, use Python to strip out everything from the `aggregated_findings` that hasn't changed.
+
+**Implementation:**
+- Turn 5 Findings: A, B, C.
+- Turn 6 Findings: A, B, D.
+- **Python Output:** "New Discovery: D. (A and B are still confirmed)."
+
+---
+
+## Visual Overlay Reasoning (Drawing Thoughts)
+
+### 30. The "Ghost Grid"
+
+**Purpose:** Use Python to render a secondary PNG called the `thinking_overlay.png`.
+
+**The Content:**
+- Draw arrows showing where the LLM *thought* the object would move.
+- Highlight the pixels the LLM *claims* are the goal.
+- If the actual move doesn't match the arrow, the mismatch is visually obvious to the LLM's vision system.
+
+**Why this works:** It closes the "Vision-Reasoning Gap" by forcing the model to see its own logic superimposed on reality.
+
+---
+
+## Extracting Intelligence from the "Reasoning Slop"
+
+LLMs often output thousands of words of reasoning. We can use Python to distill this into **Actionable Metadata**.
+
+### 31. The "Intent-to-Constraint" Bridge
+
+**Purpose:** Convert the agent's textual plan into a hard Python constraint for the next turn.
+
+**The Workflow:**
+1. LLM reasons: "I must avoid the black walls at all costs."
+2. Python extracts: `{ "avoid_color": 5 }`.
+3. If the LLM later tries to move into a black wall, the Python preprocessor blocks the action and sends a "Rule Violation" alert.
+
+### 32. Multi-Agent Reasoning Consensus (The "Council" Distiller)
+
+**Purpose:** When using multiple agents (like the TOMAS Engine nuclei), use Python to find the **Reasoning Intersection**.
+
+**Strategy:**
+Compare the `aggregated_findings` from Sophia (Learning) and Aisthesis (Perception). If both mention "The red block is a key," promote that to a **High-Confidence Fact**. If they disagree, flag it as a **Contradiction**.
+
+### 33. The "Meta-Instruction" Injector
+
+**Purpose:** Automatically append "Agentic Guidance" based on the reasoning history.
+
+**Example:**
+If the last 3 reasoning blocks mention "I'm confused about the pink border," the Python preprocessor can automatically inject:
+> "STRATEGY PIVOT: You have mentioned the 'pink border' 3 times without interacting with it. Try ACTION5 on coordinate (x,y) to test its function."
+
+---
+
+## The "Automated Auditor": Distilling Reasoning Slop
+
+Since agents output massive text blocks, we can use Python as a **Meta-Cognitive Layer** to verify the truth of their statements.
+
+### 34. Coordinate & Color "Hallucination" Filter
+
+**Purpose:** Detect when the LLM references objects or coordinates that don't exist in the current grid.
+
+**The Creative Python:**
+1. Extract all `(x, y)` pairs and `color_name` strings from the `reason` field using Regex.
+2. Check them against the actual `FrameData`.
+3. If the LLM says "I'm moving to the blue block at (10, 10)" but (10, 10) is empty or red, inject an immediate **Hallucination Correction**:
+   > "REASONING ERROR: You mentioned a blue block at (10,10), but that cell is currently white. The nearest blue block is actually at (12,15)."
+
+### 35. The "Scientist" Loop: Hypothesis Verification
+
+**Purpose:** Turn the `hypothesis` field into a statistically verified **Rule**.
+
+**The Logic:**
+- **Step 1:** Extract the hypothesis (e.g., "ACTION1 moves the player up").
+- **Step 2:** Maintain a Python counter for this specific hypothesis.
+- **Step 3:** Every time ACTION1 is taken, check the actual delta.
+- **Step 4:** Once the hypothesis has a 100% success rate over 5 trials, move it to the `Verified_Rules` list and tell the LLM:
+   > "RULE CONFIRMED: Your hypothesis about ACTION1 has been verified over 5 trials. It is now a hard rule."
+
+### 36. Reasoning "Drift" Detection (Strategy Entropy)
+
+**Purpose:** Identify when the agent is "losing the thread" or becoming repetitive.
+
+**The Creative Python:**
+Calculate the **Semantic Similarity** (using Jaccard index or simple word-overlap) between the `aggregated_findings` of Turn N and Turn N-5.
+- If similarity is > 90%, the agent is not learning anything new.
+- **Action:** Inject a "Stagnation Warning" to force a strategy pivot.
+
+### 37. Knowledge Graph Construction (The "Game Wiki")
+
+**Purpose:** Build a persistent, structured representation of the game world extracted from text.
+
+**The Vision:**
+Every time the LLM describes a mechanic (e.g., "The pink border is a door"), Python adds an entry to a **Game Wiki** (JSON/Dictionary).
+- **Node:** Pink Border
+- **Attribute:** Type = Door
+- **Attribute:** Requirement = Needs Key (Hypothesized)
+
+This wiki is then fed back into the prompt as a **"System Knowledge Base"**, freeing up the LLM's context window from having to remember rules manually.
+
+---
+
+## Strategy & Performance Optimization
+
+### 38. Error Attribution (Post-Mortem Analysis)
+
+**Purpose:** When a "GAME_OVER" occurs, use Python to backtrack and find the "Critical Failure Point".
+
+**The Algorithm:**
+1. Retrieve the last 10 frames and reasoning logs.
+2. Identify the turn where "Surprise" was highest but the agent ignored it.
+3. Inject a "Post-Mortem" report into the next RESET:
+   > "ANALYSIS: Your last attempt failed because on Turn 14, you assumed ACTION3 was safe despite the Surprise Metric being 0.9. Avoid this coordinate in the next run."
+
+### 39. Semantic "Fog of War" (Exploration Heatmaps)
+
+**Purpose:** Track which areas of the 64x64 grid have NEVER been "Seen" or "Interacted with" by the agent.
+
+**Implementation:**
+Maintain a `visibility_mask`. Every time a coordinate is clicked or an object is detected in a region, mark it as "Explored".
+- **Prompt Injection:** "You have explored 40% of the grid. The entire bottom-left region is still 'Fog of War'. Move there to maximize discovery."
+
+### 40. The "Action Mask" (Zero-Shot Pruning)
+
+**Purpose:** Prevent the LLM from even *proposing* actions that are mathematically impossible.
+
+**The Workflow:**
+1. Python calculates valid moves based on current physics (walls, boundaries).
+2. The `tools` schema sent to the LLM is **dynamically updated**:
+   - `ACTION1` (Up) is removed from the tool list if there is a wall at `y+1`.
+3. This forces the LLM to choose only from physically possible actions, reducing hallucination.
+
+---
+
 ## Multimodal Enhancement: PNG Rendering
 
 **Purpose:** Send visual frames to vision-capable LLMs instead of JSON grids.
@@ -715,6 +987,33 @@ The external agent **TOMAS Engine** (`external/tomas-engine-arc-agi-3`) already 
         - "Virtual Experiments" via Python Console
         - Surprise Metric Quantification
         - Semantic Rule Consolidation (State Machines)
+    - **Creative Intelligence Extraction:**
+        - Surprise Heatmaps (Spatial Focus)
+        - Trajectory Analysis (Loop Detection)
+        - Hypothesis Promotion (Automated Rule-Making)
+        - Action Macros (High-Level Planning)
+    - **Psychological & Meta-Cognitive Extraction:**
+        - Frustration Meter (Strategy Pivoting)
+        - Confidence Decay (Knowledge Entropy)
+        - Findings Auditor (Reasoning Loop Detection)
+    - **Symbolic & Meta-Reasoning:**
+        - Primitive Library (ARC3 Standard Lib)
+        - Symbolic Path Prototyping
+        - Belief Cross-Validation
+        - Visual Overlay Reasoning (Ghost Grids)
+    - **Advanced Reasoning Extraction:**
+        - Intent-to-Constraint Mapping
+        - Multi-Agent Consensus Distillation
+        - Meta-Instruction Injection
+    - **The Automated Auditor (Distilling Slop):**
+        - Hallucination Filtering (Coordinate/Color Check)
+        - Hypothesis-to-Rule Promotion (Scientist Loop)
+        - Strategy Drift Detection (Semantic Similarity)
+        - Knowledge Graph Construction (The Game Wiki)
+    - **Strategy & Performance Optimization:**
+        - Error Attribution (Post-Mortem Analysis)
+        - Semantic Fog of War (Exploration Heatmaps)
+        - Action Masking (Physics-Based Pruning)
 
 ### 🔧 Recommended Next Steps
 
