@@ -79,6 +79,9 @@ export class Arc3OpenRouterPythonBridge {
     };
   }
 
+  // Track active children by session for disconnect-driven teardown
+  private activeChildren: Map<string, ReturnType<typeof spawn>> = new Map();
+
   /**
    * Spawn the OpenRouter agent subprocess with streaming line-by-line output.
    * Parses stdout as NDJSON events and forwards to callbacks.
@@ -87,7 +90,8 @@ export class Arc3OpenRouterPythonBridge {
     payload: Arc3OpenRouterPayload,
     spawnOpts: Arc3OpenRouterSpawnOptions,
     onStdoutLine: (line: string) => void,
-    onStderrLine: (line: string) => void
+    onStderrLine: (line: string) => void,
+    sessionId?: string
   ): Promise<{ stdout: string; stderr: string; code: number | null }> {
     const pythonBin = this.resolvePythonBin();
     const runnerPath = this.resolveRunnerPath();
@@ -106,6 +110,9 @@ export class Arc3OpenRouterPythonBridge {
       );
 
       const child = spawn(pythonBin, [runnerPath], childSpawnOpts);
+      if (sessionId) {
+        this.activeChildren.set(sessionId, child);
+      }
 
       if (!child.stdout || !child.stderr || !child.stdin) {
         return reject(
@@ -165,6 +172,9 @@ export class Arc3OpenRouterPythonBridge {
           `[Arc3OpenRouter] Python process exited with code ${code}`,
           'arc3-openrouter'
         );
+        if (sessionId) {
+          this.activeChildren.delete(sessionId);
+        }
         resolve({ stdout: stdoutBuf, stderr: stderrBuf, code });
       });
 
@@ -175,6 +185,9 @@ export class Arc3OpenRouterPythonBridge {
           `[Arc3OpenRouter] Failed to spawn runner: ${err instanceof Error ? err.message : String(err)}`,
           'arc3-openrouter'
         );
+        if (sessionId) {
+          this.activeChildren.delete(sessionId);
+        }
         reject(err);
       });
 
@@ -195,9 +208,24 @@ export class Arc3OpenRouterPythonBridge {
           'arc3-openrouter'
         );
         child.kill();
+        if (sessionId) {
+          this.activeChildren.delete(sessionId);
+        }
         reject(err);
       }
     });
+  }
+
+  /**
+   * Kill an active child process for a session (used on SSE disconnect).
+   */
+  cancel(sessionId: string): void {
+    const child = this.activeChildren.get(sessionId);
+    if (child && !child.killed) {
+      child.kill('SIGTERM');
+      logger.info(`[Arc3OpenRouter] Killed Python runner for session ${sessionId} on disconnect`, 'arc3-openrouter');
+    }
+    this.activeChildren.delete(sessionId);
   }
 }
 

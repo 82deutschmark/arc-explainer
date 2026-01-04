@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.4  Jan 4, 2026
+
+- **OpenRouter ARC3 runner: scorecard compliance + disconnect teardown** (Author: Cascade)
+  - **What**: Ensure Python runner always sends `card_id` on RESET (with reasoning audit trail) and kill the Python child when SSE disconnects to avoid 10-minute timeouts.
+  - **Why**: ARC3 docs require `card_id` for RESET; missing it risks rejected resets. Dropped SSE clients left long-running orphaned processes.
+  - **How**:
+    - `server/python/arc3_openrouter_runner.py`: Cache `card_id`, enforce presence on RESET, attach `card_id` into reasoning metadata, keep ACTION handling unchanged.
+    - `server/services/arc3/Arc3OpenRouterPythonBridge.ts`: Track child processes by session and expose `cancel(sessionId)` to kill them.
+    - `server/services/arc3/Arc3OpenRouterStreamService.ts`: Register SSE disconnect hook to cancel Python runner; close stream config on exit.
+  - **Impact**: Resets stay compliant with ARC3 API, and Python runners stop promptly when clients disconnect; user-facing behavior otherwise unchanged.
+
 ### Version 6.33.3  Jan 4, 2026
 
 - **Silence OpenRouter extra_body warning in ARC3 runner** (Author: Cascade)
