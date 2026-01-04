@@ -1,5 +1,36 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.6  Jan 4, 2026
+
+- **ARC3 Scorecard Parity Implementation** (Author: Cascade)
+  - **What**: Full backend implementation of scorecard lifecycle management to match ARC-AGI-3 ClaudeCode SDK behavior.
+  - **Why**: The SDK manages scorecards and sessions via local JSON files; we needed equivalent functionality with proper database persistence for production use.
+  - **How**:
+    - **Database Schema** (`server/repositories/database/DatabaseSchema.ts`):
+      - Added `scorecards` table with `card_id`, `source_url`, `tags`, `opaque`, timestamps, and `is_active` flag
+      - Added `scorecard_id` foreign key to `arc3_sessions` table
+      - Migration for existing databases
+    - **Scorecard Service** (`server/services/arc3/scorecardService.ts` - NEW):
+      - `openScorecard()` - Creates scorecard, returns card_id
+      - `closeScorecard()` - Closes scorecard, aggregates per-game statistics
+      - `getScorecard()` - Gets scorecard details with optional game filter
+      - `getActiveScorecard()` - Returns currently active scorecard
+    - **Scorecard Routes** (`server/routes/scorecard.ts` - NEW):
+      - `POST /api/scorecard/open` - Open new scorecard
+      - `POST /api/scorecard/close` - Close scorecard, get final stats
+      - `GET /api/scorecard/:id` - Get scorecard details (optional `?game=` filter)
+      - `GET /api/scorecard` - Get active scorecard
+    - **Session Manager Updates** (`server/services/arc3/persistence/sessionManager.ts`):
+      - `createSession()` accepts `scorecardId` parameter
+      - All queries include `scorecard_id` in results
+      - `SessionMetadata` interface updated
+    - **Game Runner Updates**:
+      - `Arc3RealGameRunner.ts` - Both `run()` and `runWithStreaming()` pass scorecard_id
+      - `CodexArc3Runner.ts` - `runWithStreaming()` passes scorecard_id
+    - **Route Updates** (`server/routes/arc3.ts`):
+      - `/api/arc3/start-game` now gets/creates active scorecard automatically
+  - **Impact**: All ARC3 games are now properly tracked with scorecards, enabling correct backend logging and statistics aggregation as required for ARC-AGI-3 parity. The UI can observe live scorecard tracking while backend ensures data integrity.
+
 ### Version 6.33.5  Jan 4, 2026
 
 - **OpenRouter ARC3 continuation parity** (Author: Cascade)
