@@ -1,5 +1,35 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.30.0  Jan 3, 2026
+
+- **Add Codex Playground & Python Preprocessing Documentation** (Author: Claude Sonnet 4.5)
+  - **What**: Created dedicated Codex playground page for OpenAI's GPT-5.1 Codex models and comprehensive Python preprocessing guide for ARC3 agent workflows.
+  - **Why**: Codex models (OpenAI's agentic coding series) needed dedicated UI separate from OpenRouter and main playgrounds. Python preprocessing (object detection, frame differencing, spatial analysis) essential for effective ARC3 agents but wasn't documented.
+  - **How**:
+    - **Codex Playground** (`client/src/pages/Arc3CodexPlayground.tsx`):
+      - Cloned from `Arc3OpenRouterPlayground.tsx` with Codex-specific adaptations
+      - Routes to `/api/arc3-codex` backend (uses OpenAI Agents SDK)
+      - Default model: `gpt-5.1-codex-mini`
+      - Header clarifies: "OpenAI's agentic coding models"
+      - Removed OpenRouter-specific features (credits monitor, BYOK)
+      - Updated branding (blue theme vs amber)
+    - **Python Preprocessing Guide** (`docs/2026-01-03-arc3-python-preprocessing-guide.md`):
+      - **Core techniques**: Object detection (connected components), color mapping (semantic names), spatial region classification (9-zone grid), frame differencing (change detection), progress tracking (level transitions), color distribution analysis
+      - **Advanced intelligence**: Symmetry detection, pathfinding/navigation vectors, reasoning-action correlation (surprise metric), LLM-driven code execution
+      - **Multimodal enhancement**: PNG rendering (base64 images for vision models)
+      - **Reference implementation**: TOMAS Engine analysis showing production preprocessing architecture
+      - **Integration workflow**: Action → raw frame → Python preprocessing → structured payload → LLM reasoning
+      - **Performance analysis**: ~20-50ms preprocessing overhead for 10-100x better reasoning quality
+    - **Navigation**: Added "Codex Playground" to ARC-3 dropdown menu with Code icon
+    - **Routing**: Registered `/arc3/codex-playground` route in `App.tsx`
+  - **Files Modified**:
+    - `client/src/components/layout/AppNavigation.tsx:133-139` (added Codex menu item)
+    - `client/src/App.tsx:47,121` (imported component, registered route)
+  - **Files Created**:
+    - `client/src/pages/Arc3CodexPlayground.tsx` (669 lines, full playground UI)
+    - `docs/2026-01-03-arc3-python-preprocessing-guide.md` (500+ lines, comprehensive preprocessing guide)
+  - **Key Insight**: Raw grids are data. Preprocessed frames are information. Structured semantic extraction in Python before sending to LLM reduces tokens, improves reasoning, and accelerates agent learning.
+
 ### Version 6.29.0  Jan 3, 2026
 
 - **Add External Agent Submodules – TOMAS & GuidedRandomAgent** (Author: Claude Code)
