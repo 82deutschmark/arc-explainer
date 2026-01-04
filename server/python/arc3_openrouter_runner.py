@@ -817,6 +817,12 @@ def run_agent(config: dict):
             opaque_metadata=scorecard_metadata,
         )
         emit_event("stream.status", {"state": "running", "message": f"Scorecard opened: {card_id}"})
+        # Emit scorecard event for frontend display
+        emit_event("scorecard.opened", {
+            "card_id": card_id,
+            "url": f"https://three.arcprize.org/scorecards/{card_id}",
+            "message": f"View scorecard: {card_id}"
+        })
     except Exception as e:
         emit_error(f"Failed to open scorecard: {e}", "API_ERROR")
     

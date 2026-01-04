@@ -24,6 +24,7 @@ import { Arc3ReasoningViewer } from '@/components/arc3/Arc3ReasoningViewer';
 import { Arc3ToolTimeline } from '@/components/arc3/Arc3ToolTimeline';
 import { Arc3GamePanel } from '@/components/arc3/Arc3GamePanel';
 import { Arc3ObservationsList } from '@/components/arc3/Arc3ObservationsList';
+import { Arc3ScorecardLink } from '@/components/arc3/Arc3ScorecardLink';
 import { apiRequest } from '@/lib/queryClient';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -48,6 +49,10 @@ interface HaikuStreamState {
   hypotheses: string[];
   turn: number;
   score: number;
+  scorecard?: {
+    card_id: string;
+    url: string;
+  };
 }
 
 const initialState: HaikuStreamState = {
@@ -210,6 +215,17 @@ export default function Arc3HaikuPlayground() {
         setState(prev => ({
           ...prev,
           streamingMessage: data.message || prev.streamingMessage,
+        }));
+      });
+
+      es.addEventListener('scorecard.opened', (evt) => {
+        const data = JSON.parse(evt.data);
+        setState(prev => ({
+          ...prev,
+          scorecard: {
+            card_id: data.card_id,
+            url: data.url,
+          },
         }));
       });
 
@@ -469,6 +485,9 @@ export default function Arc3HaikuPlayground() {
             <Badge variant="outline" className="text-[10px] px-1.5 py-0">
               Turn {state.turn} | Score {state.score}
             </Badge>
+            {/* Scorecard Link - shows when scorecard is opened during streaming */}
+            <Arc3ScorecardLink card_id={state.scorecard?.card_id} url={state.scorecard?.url} />
+
             <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
               {state.status}
             </Badge>

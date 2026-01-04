@@ -37,6 +37,10 @@ export interface Arc3AgentStreamState {
   message?: string;
   finalOutput?: string;
   streamingReasoning?: string;  // Accumulates reasoning content during streaming
+  scorecard?: {
+    card_id: string;
+    url: string;
+  };
   frames: Array<{
     guid?: string;
     game_id?: string;
@@ -319,6 +323,23 @@ export function useArc3AgentStream() {
         }));
       } catch (error) {
         console.error('[ARC3 Stream] Failed to parse agent.ready payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('scorecard.opened', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Scorecard opened:', data);
+
+        setState((prev) => ({
+          ...prev,
+          scorecard: {
+            card_id: data.card_id,
+            url: data.url,
+          },
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse scorecard.opened payload:', error);
       }
     });
 

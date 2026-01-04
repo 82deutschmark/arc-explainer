@@ -27,6 +27,7 @@ import { Arc3GamePanel } from '@/components/arc3/Arc3GamePanel';
 import { Arc3ConfigurationPanel } from '@/components/arc3/Arc3ConfigurationPanel';
 import { Arc3AgentControls } from '@/components/arc3/Arc3AgentControls';
 import { Arc3AgentVisionPreview } from '@/components/arc3/Arc3AgentVisionPreview';
+import { Arc3ScorecardLink } from '@/components/arc3/Arc3ScorecardLink';
 import { apiRequest } from '@/lib/queryClient';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
@@ -521,6 +522,9 @@ export default function Arc3CodexPlayground() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Scorecard Link - shows when scorecard is opened during streaming */}
+            <Arc3ScorecardLink card_id={state.scorecard?.card_id} url={state.scorecard?.url} />
+
             <Badge variant={state.status === 'running' ? 'default' : 'outline'} className="text-[10px] px-1.5 py-0">
               {state.status}
             </Badge>
