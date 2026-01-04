@@ -1,12 +1,13 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2025-12-24
+ * Author: Claude Haiku 4.5
+ * Date: 2026-01-01
+ * Updated: 2026-01-01 - Fixed auto-load of detailed explanation when expanded via parent (deep linking support)
  * PURPOSE: Render a high-density explanation row for PuzzleAnalyst with compact metadata, status badges,
  *          stacked multi-test previews, client-side PNG thumbnails, and streamed detail expansion.
  *          Adds larger typography and a dark AnalysisResultCard theme for the Puzzle Analyst view.
  *          Comments explain data formatting and preview selection to keep the row responsive.
  * SRP/DRY check: Pass - responsibility limited to one explanation row; reuses TinyGrid, badges, and
- *                AnalysisResultCard. No new hooks or fetch logic outside this component.
+ *                AnalysisResultCard. Auto-loads details when expanded via parent useEffect.
  */
 
 import React, { useMemo, useState } from 'react';
@@ -103,6 +104,29 @@ export default function ExplanationGridRow({
   const [detailedExplanation, setDetailedExplanation] = useState<ExplanationData | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
+
+  // Auto-load details when expanded via parent (for deep linking and leaderboard clicks)
+  React.useEffect(() => {
+    if (isExpanded && !detailedExplanation && !isLoadingDetails && !detailError) {
+      const loadDetails = async () => {
+        setIsLoadingDetails(true);
+        setDetailError(null);
+        try {
+          const full = await fetchExplanationById(explanation.id);
+          if (full) {
+            setDetailedExplanation(full);
+          } else {
+            setDetailError('Details unavailable');
+          }
+        } catch (err) {
+          setDetailError(err instanceof Error ? err.message : 'Unknown error');
+        } finally {
+          setIsLoadingDetails(false);
+        }
+      };
+      loadDetails();
+    }
+  }, [isExpanded, explanation.id, detailedExplanation, isLoadingDetails, detailError]);
 
   // Load full explanation details once before expanding so we can show AnalysisResultCard inline.
   const handleExpand = async () => {

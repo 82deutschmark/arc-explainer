@@ -85,7 +85,9 @@ paths:
                   - If no ACTION commands have been executed since the last level
                     transition, the entire game is reset to its initial state.
 
+
               Sending two RESET commands back-to-back therefore always yields a
+
 
               completely fresh game.
 
@@ -124,7 +126,7 @@ paths:
               guid:
                 allOf:
                   - type: string
-                    description: >-
+                    description: >
                       Server-generated session ID; use this for all subsequent
                       commands.
               frame:
@@ -156,18 +158,23 @@ paths:
                       Current state of the session:
 
 
-                      • **NOT_FINISHED** - game in progress, not yet WIN or
-                      GAME_OVER.  
+                      • **NOT_PLAYED**   - fresh session, no actions yet.
 
-                      • **NOT_STARTED**  - session has ended (WIN or GAME_OVER)
-                      and requires RESET.  
+
+                      • **IN_PROGRESS**  - game in progress.
+
+
+                      • **NOT_FINISHED** - active but non-terminal (alias that may appear).
+
 
                       • **WIN**          - session ended in victory.  
 
+
                       • **GAME_OVER**    - session ended in defeat.
                     enum:
+                      - NOT_PLAYED
+                      - IN_PROGRESS
                       - NOT_FINISHED
-                      - NOT_STARTED
                       - WIN
                       - GAME_OVER
               score:
@@ -177,42 +184,35 @@ paths:
                     minimum: 0
                     maximum: 254
               win_score:
-                allOf:
-                  - type: integer
-                    description: >
-                      Score threshold required to reach the **WIN** state.
-                      Mirrors
-
-                      the game's configured win condition so agents can adapt
-
-                      dynamically without hard-coding values.
-                    minimum: 0
-                    maximum: 254
-              action_input:
-                allOf:
-                  - type: object
-                    description: Echo of the command that produced this frame.
-                    properties:
-                      id:
-                        type: integer
-                        description: Client-assigned or sequential action index.
-                      data:
                         type: object
                         description: Additional parameters originally sent with the action.
                         additionalProperties: true
               available_actions:
                 allOf:
                   - type: array
-                    description: List of available actions for the current game.
+                    description: List of available actions for the current game (numeric or string tokens normalized to RESET/ACTION1-7).
                     items:
-                      type: integer
-                      enum:
-                        - 1
-                        - 2
-                        - 3
-                        - 4
-                        - 5
-                        - 6
+                      oneOf:
+                        - type: string
+                          enum:
+                            - RESET
+                            - ACTION1
+                            - ACTION2
+                            - ACTION3
+                            - ACTION4
+                            - ACTION5
+                            - ACTION6
+                            - ACTION7
+                        - type: integer
+                          enum:
+                            - 0
+                            - 1
+                            - 2
+                            - 3
+                            - 4
+                            - 5
+                            - 6
+                            - 7
             description: |
               Snapshot returned after every RESET or ACTION command.  
               Includes the latest visual frame(s), cumulative score details, the
@@ -402,18 +402,23 @@ paths:
                       Current state of the session:
 
 
-                      • **NOT_FINISHED** - game in progress, not yet WIN or
-                      GAME_OVER.  
+                      • **NOT_PLAYED**   - fresh session, no actions yet.
 
-                      • **NOT_STARTED**  - session has ended (WIN or GAME_OVER)
-                      and requires RESET.  
+
+                      • **IN_PROGRESS**  - game in progress.
+
+
+                      • **NOT_FINISHED** - active but non-terminal (alias that may appear).
+
 
                       • **WIN**          - session ended in victory.  
 
+
                       • **GAME_OVER**    - session ended in defeat.
                     enum:
+                      - NOT_PLAYED
+                      - IN_PROGRESS
                       - NOT_FINISHED
-                      - NOT_STARTED
                       - WIN
                       - GAME_OVER
               score:
@@ -421,7 +426,6 @@ paths:
                   - type: integer
                     description: Current cumulative score for this run.
                     minimum: 0
-                    maximum: 254
               win_score:
                 allOf:
                   - type: integer

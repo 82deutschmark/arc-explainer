@@ -1,0 +1,979 @@
+#!/usr/bin/env python3
+"""
+Author: Cascade
+Date: 2026-01-04
+Updated: 2026-01-04 - Pass extra_body explicitly, add scorecard_id propagation for RESET per ARC3 docs
+PURPOSE: ARC3 OpenRouter Runner using LangGraph thinking agent pattern.
+         Reads JSON config from stdin, emits NDJSON events to stdout.
+         Model: xiaomi/mimo-v2-flash:free (configurable)
+         
+         Key features (per audit 2026-01-03-arc3-agents2-integration-audit.md):
+         - Pydantic structured outputs (eliminates fragile regex parsing)
+         - Observation journal (persistent memory across turns)
+         - Frame delta analysis (learns from action outcomes)
+         
+SRP/DRY check: Pass - isolated agent runner, emits events for TypeScript to consume.
+
+Usage:
+    echo '{"game_id":"ls20","model":"xiaomi/mimo-v2-flash:free","api_key":"sk-or-..."}' | python arc3_openrouter_runner.py
+"""
+
+import json
+import os
+import re
+import sys
+import time
+import base64
+from io import BytesIO
+from typing import Any, Optional, TypedDict, List, Tuple
+from enum import Enum
+
+import requests
+from PIL import Image
+
+# Pydantic for structured outputs (Phase 1 upgrade)
+try:
+    from pydantic import BaseModel, Field, field_validator
+    PYDANTIC_AVAILABLE = True
+except ImportError:
+    PYDANTIC_AVAILABLE = False
+
+# LangChain imports for OpenRouter integration
+try:
+    from langchain_openai import ChatOpenAI
+    from langchain_core.messages import HumanMessage, SystemMessage
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
+
+# Import the new General Intelligence Harness
+try:
+    from arc3_harness import Arc3Harness, analyze_frame_sequence
+    HARNESS_AVAILABLE = True
+except ImportError:
+    HARNESS_AVAILABLE = False
+
+
+# ============================================================================
+# Pydantic Schemas for Structured Outputs (Phase 1)
+# ============================================================================
+
+if PYDANTIC_AVAILABLE:
+    class ActionDecision(BaseModel):
+        """Structured action decision from LLM.
+        
+        Uses Pydantic for reliable, type-safe action extraction.
+        Replaces fragile regex JSON parsing (per audit recommendation).
+        """
+        action: str = Field(
+            description="One of: ACTION1, ACTION2, ACTION3, ACTION4, ACTION5, ACTION6, RESET"
+        )
+        reasoning: str = Field(
+            description="Brief explanation of why this action was chosen"
+        )
+        coordinates: Optional[Tuple[int, int]] = Field(
+            default=None, 
+            description="x,y coordinates for ACTION6 only (click position)"
+        )
+        
+        @field_validator('action')
+        @classmethod
+        def validate_action(cls, v: str) -> str:
+            """Ensure action is one of the valid game actions."""
+            valid = ["RESET", "ACTION1", "ACTION2", "ACTION3", "ACTION4", "ACTION5", "ACTION6"]
+            upper = v.upper().strip()
+            if upper not in valid:
+                # Try to extract action from malformed input
+                for valid_action in valid:
+                    if valid_action in upper:
+                        return valid_action
+                raise ValueError(f"Invalid action: {v}. Must be one of: {valid}")
+            return upper
+        
+        @field_validator('coordinates')
+        @classmethod
+        def validate_coordinates(cls, v, info):
+            """Ensure coordinates are provided for ACTION6."""
+            # Note: cross-field validation happens after individual field validation
+            # We handle ACTION6 coordinate requirement in the agent logic
+            if v is not None:
+                if not isinstance(v, (list, tuple)) or len(v) != 2:
+                    raise ValueError("Coordinates must be [x, y] tuple")
+                return tuple(v)
+            return v
+
+
+# ============================================================================
+# Frame Delta Analysis (Phase 3)
+# ============================================================================
+
+def analyze_frame_delta(previous_frame: list, current_frame: list) -> str:
+    """Analyze pixel differences between frames.
+    
+    Pattern from: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/nodes.py
+    Returns human-readable summary of changes to help agent learn cause-effect.
+    
+    Args:
+        previous_frame: 3D frame array from previous turn [layer][height][width]
+        current_frame: 3D frame array from current turn
+        
+    Returns:
+        Human-readable description of what changed
+    """
+    if not previous_frame or not current_frame:
+        return "No previous frame to compare"
+    
+    # Handle 3D frames (take layer 0 for comparison)
+    try:
+        prev_grid = previous_frame[0] if len(previous_frame) > 0 and isinstance(previous_frame[0], list) else previous_frame
+        curr_grid = current_frame[0] if len(current_frame) > 0 and isinstance(current_frame[0], list) else current_frame
+    except (IndexError, TypeError):
+        return "Frame format error - cannot compare"
+    
+    changes = []
+    movement_pixels = 0
+    color_changes = {}  # Track color transitions
+    
+    try:
+        for y in range(min(len(prev_grid), len(curr_grid))):
+            for x in range(min(len(prev_grid[y]), len(curr_grid[y]))):
+                prev_val = prev_grid[y][x]
+                curr_val = curr_grid[y][x]
+                if prev_val != curr_val:
+                    movement_pixels += 1
+                    # Track color transitions (useful for understanding game mechanics)
+                    transition = f"{prev_val}->{curr_val}"
+                    color_changes[transition] = color_changes.get(transition, 0) + 1
+                    # Only log first few specific changes to avoid spam
+                    if len(changes) < 5:
+                        changes.append(f"({x},{y}): {prev_val}->{curr_val}")
+        
+        if movement_pixels == 0:
+            return "No visible changes - action may have failed or hit obstacle"
+        elif movement_pixels < 10:
+            details = ", ".join(changes[:3])
+            return f"Small change ({movement_pixels} pixels): {details}"
+        elif movement_pixels < 50:
+            # Summarize by most common color transitions
+            top_transitions = sorted(color_changes.items(), key=lambda x: -x[1])[:3]
+            trans_str = ", ".join([f"{t[0]}({t[1]}x)" for t in top_transitions])
+            return f"Moderate change ({movement_pixels} pixels) - transitions: {trans_str}"
+        elif movement_pixels < 200:
+            return f"Large change ({movement_pixels} pixels) - likely major player movement or interaction"
+        else:
+            return f"Massive change ({movement_pixels} pixels) - possible game reset or scene transition"
+    
+    except Exception as e:
+        return f"Delta analysis error: {e}"
+
+
+# ============================================================================
+# Event Emission (NDJSON protocol for TypeScript)
+# ============================================================================
+
+def emit_event(event_type: str, data: dict = None):
+    """Emit NDJSON event to stdout for TypeScript to parse and forward to SSE."""
+    event = {"type": event_type}
+    if data:
+        event.update(data)
+    print(json.dumps(event), flush=True)
+
+
+def emit_error(message: str, code: str = "RUNNER_ERROR"):
+    """Emit error event and exit."""
+    emit_event("stream.error", {"code": code, "message": message})
+    sys.exit(1)
+
+
+# ============================================================================
+# Game State Enums (matching ARC-AGI-3-Agents2 pattern)
+# ============================================================================
+
+class GameState(str, Enum):
+    NOT_PLAYED = "NOT_PLAYED"
+    IN_PROGRESS = "IN_PROGRESS"
+    WIN = "WIN"
+    GAME_OVER = "GAME_OVER"
+
+
+class GameAction(str, Enum):
+    RESET = "RESET"
+    ACTION1 = "ACTION1"
+    ACTION2 = "ACTION2"
+    ACTION3 = "ACTION3"
+    ACTION4 = "ACTION4"
+    ACTION5 = "ACTION5"
+    ACTION6 = "ACTION6"
+
+
+# ============================================================================
+# ARC3 API Client (Python version of Arc3ApiClient.ts)
+# ============================================================================
+
+class Arc3ApiClient:
+    """HTTP client for ARC-AGI-3 API at three.arcprize.org."""
+    
+    BASE_URL = "https://three.arcprize.org"
+    
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.card_id: Optional[str] = None
+        self.session = requests.Session()
+        self.session.headers.update({
+            "Content-Type": "application/json",
+            "X-API-Key": api_key,
+        })
+        # Inline guard: ARC3 docs require card_id on RESET. We cache after open_scorecard.
+        # Never send RESET without card_id.
+    
+    def list_games(self) -> list[dict]:
+        """Get list of available games from ARC3 API."""
+        response = self.session.get(f"{self.BASE_URL}/api/games")
+        response.raise_for_status()
+        return response.json()
+
+    def resolve_game_id(self, game_id_prefix: str) -> str:
+        """Resolve a game ID prefix (e.g., 'ls20') to the full game ID (e.g., 'ls20-fa137e247ce6').
+
+        Args:
+            game_id_prefix: Game ID prefix like 'ls20', 'as66', etc.
+
+        Returns:
+            Full game ID with hash suffix, e.g., 'ls20-fa137e247ce6'
+
+        Raises:
+            ValueError: If game not found
+        """
+        games = self.list_games()
+
+        # First try exact match
+        for game in games:
+            if game["game_id"] == game_id_prefix:
+                return game["game_id"]
+
+        # Then try prefix match
+        for game in games:
+            if game["game_id"].startswith(game_id_prefix + "-"):
+                return game["game_id"]
+
+        available = ", ".join(g["game_id"] for g in games)
+        raise ValueError(f"Game not found: {game_id_prefix}. Available games: {available}")
+
+    def open_scorecard(self, tags: list[str] = None, source_url: str = None,
+                        opaque_metadata: dict = None) -> str:
+        """Open a new scorecard. MUST be called before starting any games.
+
+        Args:
+            tags: List of string tags for categorization (e.g., ['openrouter', 'competition'])
+            source_url: URL identifying the source application
+            opaque_metadata: Additional metadata dict passed as 'opaque' field (for rich context)
+        """
+        body = {}
+        if tags:
+            body["tags"] = tags
+        if source_url:
+            body["source_url"] = source_url
+        if opaque_metadata:
+            body["opaque"] = opaque_metadata
+
+        response = self.session.post(f"{self.BASE_URL}/api/scorecard/open", json=body)
+        response.raise_for_status()
+        data = response.json()
+        self.card_id = data["card_id"]
+        return self.card_id
+    
+    def start_game(self, game_id: str) -> dict:
+        """Start a new game session using RESET command."""
+        if not self.card_id:
+            raise ValueError("Must open scorecard before starting game")
+        
+        body = {
+            "game_id": game_id,
+            "card_id": self.card_id,
+        }
+        response = self.session.post(f"{self.BASE_URL}/api/cmd/RESET", json=body)
+        response.raise_for_status()
+        return response.json()
+    
+    def execute_action(self, game_id: str, guid: str, action: str, 
+                       coordinates: tuple[int, int] = None, reasoning: Any = None) -> dict:
+        """Execute an action in a game session.
+
+        Per ARC3 docs:
+        - RESET requires card_id (scorecard)
+        - ACTION* optionally accept reasoning metadata
+        - ACTION6 can include x/y coordinates
+        """
+        body = {
+            "game_id": game_id,
+            "guid": guid,
+        }
+        
+        if action == "ACTION6" and coordinates:
+            body["x"] = coordinates[0]
+            body["y"] = coordinates[1]
+        
+        if action == "RESET":
+            if not self.card_id:
+                raise ValueError("Must open scorecard before RESET; card_id is required by ARC3 API")
+            body["card_id"] = self.card_id
+            # Preserve audit trail in reasoning payload as well
+            if reasoning is None:
+                reasoning = {}
+            if isinstance(reasoning, dict):
+                reasoning = {**reasoning, "card_id": self.card_id}
+        if reasoning:
+            body["reasoning"] = reasoning
+        
+        response = self.session.post(f"{self.BASE_URL}/api/cmd/{action}", json=body)
+        response.raise_for_status()
+        return response.json()
+    
+    def close_scorecard(self) -> bool:
+        """Close the scorecard when game ends. Should be called after WIN or GAME_OVER."""
+        if not self.card_id:
+            return False
+        
+        try:
+            response = self.session.post(
+                f"{self.BASE_URL}/api/scorecard/close",
+                json={"card_id": self.card_id}
+            )
+            response.raise_for_status()
+            return True
+        except Exception:
+            return False
+
+
+# ============================================================================
+# Frame Rendering (for multimodal LLM input)
+# ============================================================================
+
+# ARC color palette (standard 16 colors)
+ARC_COLORS = [
+    (0, 0, 0),       # 0: black
+    (0, 116, 217),   # 1: blue
+    (255, 65, 54),   # 2: red
+    (46, 204, 64),   # 3: green
+    (255, 220, 0),   # 4: yellow
+    (170, 170, 170), # 5: gray
+    (240, 18, 190),  # 6: magenta
+    (255, 133, 27),  # 7: orange
+    (127, 219, 255), # 8: cyan
+    (135, 12, 37),   # 9: maroon
+    (0, 0, 0),       # 10: black (alt)
+    (0, 0, 0),       # 11: black (alt)
+    (0, 0, 0),       # 12: black (alt)
+    (0, 0, 0),       # 13: black (alt)
+    (0, 0, 0),       # 14: black (alt)
+    (255, 255, 255), # 15: white
+]
+
+
+def render_frame_to_base64(frame: list, scale: int = 8) -> str:
+    """Render a frame grid to base64 PNG image for multimodal LLM."""
+    # Handle 3D frame: [layer][height][width]
+    # We typically want layer 0 (main game layer)
+    if len(frame) > 0 and isinstance(frame[0], list):
+        if len(frame[0]) > 0 and isinstance(frame[0][0], list):
+            # 3D array - take first layer
+            grid = frame[0]
+        else:
+            # 2D array already
+            grid = frame
+    else:
+        grid = frame
+    
+    height = len(grid)
+    width = len(grid[0]) if height > 0 else 0
+    
+    img = Image.new('RGB', (width * scale, height * scale))
+    pixels = img.load()
+    
+    for y in range(height):
+        for x in range(width):
+            color_idx = grid[y][x] if grid[y][x] < len(ARC_COLORS) else 0
+            color = ARC_COLORS[color_idx]
+            for dy in range(scale):
+                for dx in range(scale):
+                    pixels[x * scale + dx, y * scale + dy] = color
+    
+    buffer = BytesIO()
+    img.save(buffer, format='PNG')
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+
+# ============================================================================
+# LangGraph-style Agent (simplified for OpenRouter)
+# ============================================================================
+
+class Arc3OpenRouterAgent:
+    """
+    LangGraph-style agent for ARC3 games using OpenRouter with General Intelligence Harness.
+    Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/
+    
+    Key upgrades (per audit 2026-01-03):
+    - Pydantic structured outputs for reliable action parsing
+    - Observation journal for persistent memory across turns
+    - Frame delta analysis integration for learning from outcomes
+    - General Intelligence Harness for mathematical grid analysis
+    """
+    
+    # Base system prompt (will be extended dynamically with observations/thoughts)
+    BASE_SYSTEM_PROMPT = """You are an expert ARC-AGI-3 game player. Your goal is to explore and discover the rules of the game.
+
+The game has the following actions:
+- ACTION1: Move/interact up
+- ACTION2: Move/interact down  
+- ACTION3: Move/interact left
+- ACTION4: Move/interact right
+- ACTION5: Special action (rotate, transform, etc.)
+- ACTION6: Click at specific coordinates (requires x, y)
+- RESET: Start over (only use if stuck or in a loop)
+
+Analyze the game frame carefully. Look for:
+1. Patterns and shapes
+2. Color relationships  
+3. Possible objectives (doors, keys, targets)
+4. Changes from previous actions
+5. What worked and what didn't in previous turns
+
+Think step by step about what action to take next."""
+    
+    def __init__(self, model: str, api_key: str, instructions: str = None,
+                 reasoning_effort: str = "low", agent_name: str = "OpenRouter Agent"):
+        self.model = model
+        self.api_key = api_key
+        self.instructions = instructions or ""
+        self.reasoning_effort = reasoning_effort
+        self.agent_name = agent_name
+
+        if not LANGCHAIN_AVAILABLE:
+            emit_error("LangChain not installed. Run: pip install langchain-openai", "DEPENDENCY_ERROR")
+
+        # Initialize harness if available
+        if HARNESS_AVAILABLE:
+            self.harness = Arc3Harness()
+        else:
+            self.harness = None
+            emit_event("agent.reasoning", {"content": "Warning: arc3_harness not available, using basic analysis"})
+
+        # Build extra headers for OpenRouter
+        extra_headers = {
+            "HTTP-Referer": "https://arc-explainer.com",
+            "X-Title": f"ARC Explainer - {agent_name}",
+        }
+
+        # Model kwargs for reasoning-capable models (per OpenRouter docs)
+        # Pass reasoning.effort to control thinking budget allocation
+        model_kwargs = {}
+        extra_body = {
+            "reasoning": {
+                "effort": reasoning_effort,  # "minimal", "low", "medium", "high", "xhigh"
+            }
+        }
+
+        # Initialize LangChain ChatOpenAI with OpenRouter
+        self.llm = ChatOpenAI(
+            model=model,
+            openai_api_base="https://openrouter.ai/api/v1",
+            openai_api_key=api_key,
+            default_headers=extra_headers,
+            temperature=0.7,
+            max_tokens=2048,  # Increased for reasoning output
+            model_kwargs=model_kwargs,
+            extra_body=extra_body,
+        )
+
+        # State tracking
+        self.previous_frame = None
+        self.action_history: List[str] = []
+        self.frame_sequence: List[List[List[int]]] = []
+
+        # Phase 2: Observation journal & persistent memory
+        # Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/nodes.py
+        self.observations: List[str] = []  # What agent learned about the game
+        self.thoughts: List[str] = []       # Agent's hypotheses and strategies
+        self.current_reasoning: List[str] = []  # Accumulate reasoning during analysis
+    
+    def add_observation(self, observation: str):
+        """Add observation to journal, keeping only last 15.
+        
+        Observations are facts learned about the game through exploration.
+        """
+        self.observations.append(observation)
+        if len(self.observations) > 15:
+            self.observations = self.observations[-15:]
+        emit_event("agent.reasoning", {"content": f"[OBS] {observation}"})
+    
+    def add_thought(self, thought: str):
+        """Add thought to journal, keeping only last 10.
+        
+        Thoughts are hypotheses and strategic insights.
+        """
+        self.thoughts.append(thought)
+        if len(self.thoughts) > 10:
+            self.thoughts = self.thoughts[-10:]
+    
+    def build_system_prompt(self) -> str:
+        """Build dynamic system prompt with observations and thoughts.
+        
+        Pattern: external/ARC-AGI-3-Agents2/agents/templates/langgraph_thinking/prompts.py
+        This provides persistent memory across turns.
+        """
+        prompt = self.BASE_SYSTEM_PROMPT
+        
+        # Add user instructions if provided
+        if self.instructions:
+            prompt += f"\n\n**User Instructions:**\n{self.instructions}"
+        
+        # Add thoughts (strategic insights) if any
+        if self.thoughts:
+            thoughts_str = "\n".join([f"- {t}" for t in self.thoughts[-5:]])  # Last 5 thoughts
+            prompt += f"\n\n**Your Strategic Thoughts:**\n{thoughts_str}"
+        
+        # Add observations (learned facts) if any
+        if self.observations:
+            obs_str = "\n".join([f"- {o}" for o in self.observations[-10:]])  # Last 10 observations
+            prompt += f"\n\n**Your Observations:**\n{obs_str}"
+        
+        return prompt
+    
+    def analyze_frame(self, frame_data: dict) -> dict:
+        """Analyze frame using the General Intelligence Harness.
+        
+        Uses mathematical and topological analysis instead of heuristics.
+        """
+        frame = frame_data.get("frame", [])
+        state = frame_data.get("state", "IN_PROGRESS")
+        score = frame_data.get("score", 0)
+        
+        # Build context message
+        context_parts = []
+        context_parts.append(f"Game State: {state}")
+        context_parts.append(f"Current Score: {score}")
+        context_parts.append(f"Turn: {len(self.action_history) + 1}")
+        
+        if self.action_history:
+            recent = self.action_history[-5:]  # Last 5 actions
+            context_parts.append(f"Recent Actions: {', '.join(recent)}")
+        
+        context_text = "\n".join(context_parts)
+        
+        # Use harness for deep analysis if available
+        if self.harness and frame:
+            try:
+                analysis = self.harness.analyze_grid(frame)
+                
+                # Add harness insights to context
+                harness_insights = [
+                    f"Grid Entropy: {analysis.entropy:.3f}",
+                    f"Components: {len(analysis.components)}",
+                    f"Symmetry: {sum(analysis.symmetry.values())}/5 axes"
+                ]
+                
+                if analysis.components:
+                    largest_comp = max(analysis.components, key=lambda c: c.size)
+                    harness_insights.append(f"Largest component: {largest_comp.color} (size {largest_comp.size})")
+                
+                context_parts.append("Harness Analysis: " + "; ".join(harness_insights))
+                
+                # Store frame for delta analysis
+                self.frame_sequence.append(frame)
+                
+                # Delta analysis if we have previous frame
+                if self.previous_frame and len(self.frame_sequence) >= 2:
+                    prev_frame = self.frame_sequence[-2]
+                    delta = self.harness.analyze_delta(prev_frame, frame)
+                    
+                    if delta.pixels_changed > 0:
+                        delta_summary = f"{delta.pixels_changed} pixels changed"
+                        if delta.component_transformations:
+                            delta_summary += f", {len(delta.component_transformations)} components transformed"
+                        self.add_observation(f"Frame delta: {delta_summary}")
+                        context_parts.append(f"Last Delta: {delta_summary}")
+                
+            except Exception as e:
+                emit_event("agent.reasoning", {"content": f"Harness analysis failed: {e}, using fallback"})
+        
+        # Build dynamic system prompt with observations/thoughts
+        system_prompt = self.build_system_prompt()
+        
+        # Render frame to image
+        try:
+            frame_image_b64 = render_frame_to_base64(frame)
+            
+            # Create multimodal message
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=[
+                    {"type": "text", "text": f"{context_text}\n\nAnalyze the current game frame and decide your next action:"},
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{frame_image_b64}"}},
+                ]),
+            ]
+        except Exception as e:
+            # Fallback to text-only if image rendering fails
+            emit_event("agent.reasoning", {"content": f"Image rendering failed: {e}, using text mode"})
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=f"{context_text}\n\nThe game frame is a grid. Choose an action to explore."),
+            ]
+        
+        # Get LLM response
+        emit_event("agent.reasoning", {"content": "Analyzing frame with LLM..."})
+        
+        # Phase 1: Use structured output with Pydantic (if available)
+        if PYDANTIC_AVAILABLE:
+            try:
+                # Use LangChain's with_structured_output for reliable parsing
+                structured_llm = self.llm.with_structured_output(
+                    ActionDecision,
+                    method="json_schema",
+                )
+                result = structured_llm.invoke(messages)
+                
+                emit_event("agent.reasoning", {
+                    "content": f"Structured output: action={result.action}, reasoning={result.reasoning[:100]}"
+                })
+                
+                # Verify statement with harness if available
+                if self.harness and self.previous_frame:
+                    verification = self.harness.verify_statement(
+                        result.reasoning, 
+                        self.harness.analyze_delta(self.frame_sequence[-2], frame) if len(self.frame_sequence) >= 2 else None,
+                        self.harness.analyze_grid(frame).components
+                    )
+                    if not verification["verified"]:
+                        emit_event("agent.reasoning", {
+                            "content": f"Statement verification failed: {verification['issues']}"
+                        })
+                
+                return {
+                    "action": result.action,
+                    "reasoning": result.reasoning,
+                    "coordinates": list(result.coordinates) if result.coordinates else None,
+                }
+                
+            except Exception as e:
+                emit_event("agent.reasoning", {
+                    "content": f"Structured output failed ({e}), using fallback regex parsing"
+                })
+                # Fall through to regex fallback
+        
+        # Fallback: Legacy regex parsing (kept for compatibility)
+        try:
+            response = self.llm.invoke(messages)
+            response_text = response.content
+            
+            emit_event("agent.reasoning", {"content": f"LLM response: {response_text[:500]}"})
+            
+            # Try to extract JSON from response
+            json_match = re.search(r'\{[^}]+\}', response_text)
+            if json_match:
+                action_data = json.loads(json_match.group())
+            else:
+                # Default to exploration
+                action_data = {"action": "ACTION1", "reasoning": "Exploring (no JSON found)"}
+            
+            return action_data
+            
+        except Exception as e:
+            emit_event("agent.reasoning", {"content": f"LLM error: {e}"})
+            return {"action": "ACTION1", "reasoning": f"LLM error, defaulting: {e}"}
+    
+    def choose_action(self, frame_data: dict) -> tuple[str, str, Optional[tuple[int, int]]]:
+        """Choose action based on frame analysis. Returns (action, reasoning, coordinates).
+
+        Integrates Phase 3 frame delta analysis for learning from outcomes.
+        """
+        # Clear reasoning buffer for this decision
+        self.current_reasoning = []
+
+        state = frame_data.get("state", "IN_PROGRESS")
+
+        # Handle game states
+        if state in [GameState.NOT_PLAYED.value, GameState.GAME_OVER.value]:
+            return "RESET", "Game not started or over - resetting", None
+
+        if state == GameState.WIN.value:
+            return None, "Game won!", None
+
+        # Phase 3: Analyze what changed from previous action (frame delta)
+        if self.previous_frame and self.action_history:
+            prev_frame_data = self.previous_frame.get("frame", [])
+            curr_frame_data = frame_data.get("frame", [])
+            delta_summary = analyze_frame_delta(prev_frame_data, curr_frame_data)
+
+            # Add delta to observations (helps agent learn cause-effect)
+            last_action = self.action_history[-1] if self.action_history else "unknown"
+            self.add_observation(f"After {last_action}: {delta_summary}")
+            self.current_reasoning.append(f"Frame delta: {delta_summary}")
+
+            # Detect if stuck (same action, no change)
+            if "No visible changes" in delta_summary and len(self.action_history) >= 3:
+                recent = self.action_history[-3:]
+                if len(set(recent)) == 1:  # Same action 3 times
+                    self.add_thought(f"{recent[0]} seems blocked - should try different direction")
+                    self.current_reasoning.append(f"Agent is stuck, will try different action")
+
+        # Analyze and choose action
+        result = self.analyze_frame(frame_data)
+
+        action = result.get("action", "ACTION1").upper()
+        reasoning = result.get("reasoning", "Exploring")
+        coordinates = result.get("coordinates")
+
+        # Add final decision to reasoning and emit completion
+        self.current_reasoning.append(f"Decision: {action} ({reasoning})")
+        final_reasoning = "\n".join(self.current_reasoning)
+        emit_event("agent.reasoning_complete", {
+            "finalContent": final_reasoning
+        })
+        
+        # Validate action
+        valid_actions = ["RESET", "ACTION1", "ACTION2", "ACTION3", "ACTION4", "ACTION5", "ACTION6"]
+        if action not in valid_actions:
+            action = "ACTION1"
+        
+        # ACTION6 requires coordinates
+        if action == "ACTION6" and not coordinates:
+            emit_event("agent.reasoning", {"content": "ACTION6 without coordinates - falling back to ACTION1"})
+            action = "ACTION1"
+        
+        # Track action history and add reasoning to thoughts
+        self.action_history.append(action)
+        self.add_thought(f"Turn {len(self.action_history)}: {action} - {reasoning[:80]}")
+        self.previous_frame = frame_data
+        
+        return action, reasoning, tuple(coordinates) if coordinates else None
+
+
+def run_agent(config: dict):
+    """Main agent loop - plays the game and emits events.
+
+    This is the competition-emulation mode: agent runs autonomously until WIN or GAME_OVER.
+    No human interaction during the run - designed to mirror the official ARC3 harness.
+    """
+
+    game_id = config.get("game_id", "ls20")
+    model = config.get("model", "xiaomi/mimo-v2-flash:free")
+    instructions = config.get("instructions", "")
+    system_prompt = config.get("system_prompt", "")  # User's genius system prompt
+    max_turns = config.get("max_turns", 80)  # Match ARC-AGI-3-Agents2 MAX_ACTIONS default
+    agent_name = config.get("agent_name", "OpenRouter Agent")
+    reasoning_effort = config.get("reasoning_effort", "low")  # OpenRouter reasoning.effort per docs
+    # Continuation support (parity with TypeScript runner)
+    scorecard_id_override = config.get("scorecard_id")
+    resolved_game_id_override = config.get("resolved_game_id")
+    existing_guid = config.get("existing_guid")
+    seed_frame = config.get("seed_frame")
+    user_message = config.get("user_message")
+    previous_response_id = config.get("previous_response_id")
+    
+    # API keys
+    arc3_api_key = config.get("arc3_api_key") or os.getenv("ARC3_API_KEY", "")
+    openrouter_api_key = config.get("api_key") or os.getenv("OPENROUTER_API_KEY", "")
+    
+    if not openrouter_api_key:
+        emit_error("OpenRouter API key required", "AUTH_ERROR")
+    
+    if not arc3_api_key:
+        emit_error("ARC3 API key required", "AUTH_ERROR")
+    
+    emit_event("agent.starting", {
+        "message": "Initializing OpenRouter agent (competition mode)...",
+        "model": model,
+        "agent_name": agent_name,
+        "reasoning_effort": reasoning_effort,
+    })
+
+    # Combine system prompt + instructions for the agent
+    combined_instructions = instructions
+    if system_prompt:
+        combined_instructions = f"{system_prompt}\n\n{instructions}" if instructions else system_prompt
+
+    # Initialize clients
+    try:
+        arc3_client = Arc3ApiClient(arc3_api_key)
+        # Continuation: reuse scorecard if provided
+        if scorecard_id_override:
+            arc3_client.card_id = scorecard_id_override
+        agent = Arc3OpenRouterAgent(
+            model,
+            openrouter_api_key,
+            combined_instructions,
+            reasoning_effort=reasoning_effort,
+            agent_name=agent_name,
+        )
+    except Exception as e:
+        emit_error(f"Failed to initialize: {e}", "INIT_ERROR")
+    
+    emit_event("agent.ready", {"model": model, "game_id": game_id, "agent_name": agent_name})
+    
+    # Open scorecard with rich metadata (matching TypeScript pattern)
+    # Tags and opaque metadata help identify runs on the ARC3 leaderboard
+    try:
+        if arc3_client.card_id:
+            card_id = arc3_client.card_id
+            emit_event("stream.status", {"state": "running", "message": f"Reusing scorecard: {card_id}"})
+        else:
+            emit_event("stream.status", {"state": "running", "message": "Opening scorecard..."})
+            
+            # Build descriptive tags
+            model_tag = model.replace("/", "-").replace(":", "-")  # e.g., "xiaomi-mimo-v2-flash-free"
+            scorecard_tags = [
+                "arc-explainer",
+                "openrouter-playground",
+                "competition-emulation",
+                model_tag,
+                f"reasoning-{reasoning_effort}",
+            ]
+
+            # Rich metadata for scorecard (passed as 'opaque' field)
+            scorecard_metadata = {
+                "source": "arc-explainer",
+                "mode": "openrouter-competition-emulation",
+                "game_id": game_id,
+                "agent_name": agent_name,
+                "model": model,
+                "reasoning_effort": reasoning_effort,
+                "max_turns": max_turns,
+            }
+            
+            card_id = arc3_client.open_scorecard(
+                tags=scorecard_tags,
+                source_url="https://arc-explainer.com/arc3/openrouter-playground",
+                opaque_metadata=scorecard_metadata,
+            )
+            emit_event("stream.status", {"state": "running", "message": f"Scorecard opened: {card_id}"})
+        # Emit scorecard event for frontend display
+        emit_event("scorecard.opened", {
+            "card_id": card_id,
+            "url": f"https://three.arcprize.org/scorecards/{card_id}",
+            "message": f"View scorecard: {card_id}"
+        })
+    except Exception as e:
+        emit_error(f"Failed to open scorecard: {e}", "API_ERROR")
+    
+    # Resolve game ID prefix to full game ID with hash suffix
+    resolved_game_id = resolved_game_id_override or game_id
+    try:
+        resolved_game_id = resolved_game_id_override or arc3_client.resolve_game_id(game_id)
+        if resolved_game_id != game_id:
+            emit_event("stream.status", {
+                "state": "running",
+                "message": f"Resolved game ID {game_id} → {resolved_game_id}"
+            })
+    except Exception as e:
+        emit_error(f"Failed to resolve game ID: {e}", "API_ERROR")
+        return
+
+    # Start or resume game
+    frame_data = None
+    current_guid = existing_guid or ""
+    if existing_guid and seed_frame:
+        # Continuation path: seed from cached frame (no RESET)
+        emit_event("stream.status", {"state": "running", "message": f"Continuing existing game guid={existing_guid}"})
+        frame_data = seed_frame
+        emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": 0})
+    else:
+        try:
+            emit_event("stream.status", {"state": "running", "message": f"Starting game: {resolved_game_id}"})
+            frame_data = arc3_client.start_game(resolved_game_id)
+            emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": 0})
+            current_guid = frame_data.get("guid", current_guid)
+        except Exception as e:
+            emit_error(f"Failed to start game: {e}", "API_ERROR")
+    
+    # Game loop
+    turn = 0
+    final_state = "IN_PROGRESS"
+    
+    while turn < max_turns:
+        turn += 1
+
+        state = frame_data.get("state", "IN_PROGRESS")
+        if state == GameState.WIN.value:
+            final_state = "WIN"
+            emit_event("stream.status", {"state": "completed", "message": "Game won!"})
+            break
+
+        # Choose action
+        try:
+            emit_event("agent.tool_call", {"tool": "analyze_frame", "turn": turn})
+            action, reasoning, coordinates = agent.choose_action(frame_data)
+
+            if action is None:
+                emit_event("stream.status", {"state": "error", "message": f"Agent returned None action on turn {turn}"})
+                break
+
+            emit_event("agent.tool_call", {"tool": action, "reasoning": reasoning, "turn": turn})
+
+            # Execute action
+            try:
+                guid = frame_data.get("guid", current_guid) or current_guid
+                frame_data = arc3_client.execute_action(
+                    resolved_game_id, guid, action,
+                    coordinates=coordinates,
+                    reasoning={
+                        "agent": "openrouter",
+                        "model": model,
+                        "thought": reasoning,
+                        "card_id": arc3_client.card_id,
+                    }
+                )
+                current_guid = frame_data.get("guid", current_guid)
+                emit_event("agent.tool_result", {"tool": action, "result": "executed", "turn": turn})
+                emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": turn})
+            except Exception as e:
+                emit_event("agent.tool_result", {"tool": action, "result": f"error: {e}", "turn": turn})
+                emit_event("stream.status", {"state": "warning", "message": f"Action execution failed on turn {turn}: {e}"})
+                # Continue anyway
+
+        except Exception as e:
+            emit_event("stream.status", {"state": "error", "message": f"Choose action failed on turn {turn}: {e}"})
+            break
+
+        # Small delay to avoid rate limiting
+        time.sleep(0.5)
+    
+    # Close scorecard when game ends (per audit: scorecard must be closed after WIN/GAME_OVER)
+    if final_state in ["WIN", "GAME_OVER"] or turn >= max_turns:
+        try:
+            emit_event("stream.status", {"state": "running", "message": "Closing scorecard..."})
+            arc3_client.close_scorecard()
+            emit_event("stream.status", {"state": "running", "message": "Scorecard closed"})
+        except Exception as e:
+            emit_event("stream.status", {"state": "warning", "message": f"Failed to close scorecard: {e}"})
+    
+    # Emit completion
+    emit_event("agent.completed", {
+        "finalState": final_state,
+        "totalTurns": turn,
+        "game_id": game_id,
+        "model": model,
+    })
+
+
+def main():
+    """Entry point - read config from stdin, run agent."""
+    try:
+        # Read JSON config from stdin
+        input_data = sys.stdin.read()
+        if not input_data.strip():
+            emit_error("No input provided. Send JSON config via stdin.", "INPUT_ERROR")
+        
+        config = json.loads(input_data)
+        run_agent(config)
+        
+    except json.JSONDecodeError as e:
+        emit_error(f"Invalid JSON input: {e}", "INPUT_ERROR")
+    except KeyboardInterrupt:
+        emit_event("stream.status", {"state": "cancelled", "message": "Interrupted by user"})
+        sys.exit(0)
+    except Exception as e:
+        emit_error(f"Unexpected error: {e}", "RUNNER_ERROR")
+
+
+if __name__ == "__main__":
+    main()

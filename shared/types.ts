@@ -1,10 +1,8 @@
 /**
- * Author: Cascade
- * Date: 2025-12-29
- * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer.
- *          Includes comprehensive definitions for Worm Arena model insights,
- *          performance metrics, and streaming status.
- * SRP/DRY check: Pass - shared types only.
+ * Author: Cascade (ChatGPT 5.1 Codex)
+ * Date: 2026-01-02
+ * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including ARC3 and Codex streaming schemas.
+ * SRP/DRY check: Pass — centralized type registry only.
  */
 
 export interface ARCTask {
@@ -1515,6 +1513,165 @@ export interface OpenRouterSyncStatus {
     createdAt: string;          // ISO timestamp when model was created on OpenRouter
   }>;
 }
+
+/**
+ * Codex ARC3 Interactive Playground Types
+ * SSE streaming events for Codex-powered ARC-AGI-3 gameplay.
+ */
+export type CodexArc3Provider = 'openai_nano' | 'openai_codex';
+
+export interface CodexArc3ActionStartEvent {
+  action: string;
+  coordinates?: [number, number];
+  hypothesis?: string;
+  timestamp: number;
+}
+
+export interface CodexArc3ActionResultEvent {
+  action: string;
+  coordinates?: [number, number];
+  success: boolean;
+  newState: string;
+  newScore: number;
+  rewardDelta: number;
+  timestamp: number;
+}
+
+export interface CodexArc3HypothesizeEvent {
+  hypothesis: string;
+  frameIndex: number;
+  timestamp: number;
+}
+
+export interface CodexArc3FrameUpdateEvent {
+  frameIndex: string;
+  frameData: any;
+  caption: string;
+  action: { type: string; coordinates?: [number, number] };
+  isAnimation: boolean;
+  animationFrame: number;
+  animationTotalFrames: number;
+  isLastAnimationFrame: boolean;
+  timestamp: number;
+}
+
+export interface CodexArc3CompletedEvent {
+  runId: string;
+  gameGuid: string;
+  finalOutput?: string;
+  summary: {
+    state: string;
+    score: number;
+    stepsTaken: number;
+    scenarioId: string;
+  };
+  usage: {
+    requests: number;
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+  };
+  timelineLength: number;
+  frameCount: number;
+  providerResponseId: string | null;
+  provider: CodexArc3Provider;
+  hypotheses?: string[];
+  timestamp: number;
+}
+
+export interface CodexArc3StreamPayload {
+  game_id: string;
+  agentName?: string;
+  systemPrompt?: string;
+  instructions: string;
+  model?: string;
+  maxTurns?: number;
+  reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  provider?: CodexArc3Provider;
+}
+
+/**
+ * Haiku 4.5 ARC3 Agent Types
+ * Vision-first, child-like learning agent using Anthropic's Haiku model.
+ */
+export interface HaikuArc3StreamPayload {
+  game_id: string;
+  model?: string;                // Default: claude-3-5-haiku-20241022
+  max_turns?: number;
+  anthropic_api_key?: string;    // BYOK
+  arc3_api_key?: string;
+  agent_name?: string;
+  system_prompt?: string;
+}
+
+export interface HaikuFrameContext {
+  objects: HaikuObjectDescription[];
+  grid_state: {
+    width: number;
+    height: number;
+    non_background_pixels: number;
+  };
+  changes_from_previous: HaikuChangeDescription | null;
+  score: number;
+  state: string;
+}
+
+export interface HaikuObjectDescription {
+  color: string;
+  color_value: number;
+  shape: string;
+  position: string;
+  bounds: {
+    min_row: number;
+    max_row: number;
+    min_col: number;
+    max_col: number;
+  };
+  size: number;
+  center: [number, number];
+}
+
+export interface HaikuChangeDescription {
+  pixels_changed: number;
+  objects_moved: Array<{
+    color: string;
+    from_center: [number, number];
+    to_center: [number, number];
+    delta: [number, number];
+    description: string;
+  }>;
+  new_objects: Array<{
+    color: string;
+    position: string;
+    size: number;
+  }>;
+  disappeared_objects: Array<{
+    color: string;
+    position: string;
+    size: number;
+  }>;
+  summary: string;
+}
+
+export type HaikuAgentEventType =
+  | 'stream.init'
+  | 'stream.status'
+  | 'stream.error'
+  | 'agent.starting'
+  | 'agent.turn_start'
+  | 'agent.thinking'
+  | 'agent.description'
+  | 'agent.hypothesis'
+  | 'agent.tool_call'
+  | 'agent.tool_result'
+  | 'agent.observation'
+  | 'agent.completed'
+  | 'agent.warning'
+  | 'agent.context'
+  | 'game.started'
+  | 'game.frame_update'
+  | 'game.won'
+  | 'game.over';
 
 /**
  * RE-ARC SSE Event Types

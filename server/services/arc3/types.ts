@@ -1,8 +1,8 @@
 /*
-Author: gpt-5-codex
-Date: 2025-11-06
+Author: Cascade (GPT-5.2 medium reasoning)
+Date: 2026-01-03
 PURPOSE: Shared type definitions for the ARC-AGI-3 playground simulator and agent runner services.
-SRP/DRY check: Pass — centralizes enums and interfaces used by the new ARC3 backend modules.
+SRP/DRY check: Pass — centralizes enums and interfaces used by ARC3 backend modules; added harnessMode to support Cascade preset.
 */
 
 import type { FrameData } from './Arc3ApiClient.ts';
@@ -20,6 +20,7 @@ export interface Arc3RunTimelineEntry {
 export interface Arc3AgentRunResult {
   runId: string;
   gameGuid: string;  // Game session identifier for continuation
+  scorecardId: string;  // CRITICAL: Scorecard ID for ARC API continuations (stays open across runs)
   finalOutput?: string;
   timeline: Arc3RunTimelineEntry[];
   frames: any[];
@@ -52,10 +53,12 @@ export interface Arc3AgentRunConfig {
   game_id?: string;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
   existingGameGuid?: string;  // For continuing existing game sessions
+  scorecardId?: string;  // CRITICAL: Scorecard ID for continuation (must be passed to keep scorecard open)
   previousResponseId?: string; // Responses API chaining support (must be provided by GPT-5 class callers)
   storeResponse?: boolean; // Whether to persist the response server-side (mandatory for GPT-5)
   seedFrame?: FrameData; // Optional cached frame to seed continuations without extra API calls
   sessionId?: string; // For tracing/metadata on provider calls
   systemPromptPresetId?: Arc3PromptPresetId; // One-word preset id: 'twitch' | 'playbook' | 'none'
   skipDefaultSystemPrompt?: boolean; // When true, never fall back to any default system prompt
+  harnessMode?: 'default' | 'cascade'; // Optional qualitative harness toggle (defaults to existing math harness)
 }

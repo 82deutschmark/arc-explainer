@@ -31,7 +31,8 @@ export class DatabaseSchema {
       await this.createComparisonVotesTable(client);
       await this.createComparisonSessionsTable(client);
       await this.createIngestionRunsTable(client);
-      await this.createArc3SessionsTable(client);
+      await this.createScorecardsTable(client); // Must be created before arc3_sessions
+      await this.createArc3SessionsTable(client); // References scorecards table
       await this.createArc3FramesTable(client);
       await this.createArcContributorsTable(client);
       await this.createSnakeBenchModelsTable(client);
@@ -249,6 +250,7 @@ export class DatabaseSchema {
         id SERIAL PRIMARY KEY,
         game_id VARCHAR(255) NOT NULL,
         guid VARCHAR(255) NOT NULL UNIQUE,
+        scorecard_id VARCHAR(255) DEFAULT NULL,
         state VARCHAR(50) NOT NULL DEFAULT 'NOT_PLAYED',
         final_score INTEGER DEFAULT 0,
         win_score INTEGER DEFAULT 0,
@@ -287,6 +289,24 @@ export class DatabaseSchema {
     // Create indexes for arc3_frames table
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_frames_session ON arc3_frames(session_id, frame_number)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_frames_timestamp ON arc3_frames(timestamp DESC)`);
+  }
+
+  private static async createScorecardsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS scorecards (
+        card_id VARCHAR(255) PRIMARY KEY,
+        source_url TEXT DEFAULT NULL,
+        tags TEXT[] DEFAULT '{}',
+        opaque JSONB DEFAULT NULL,
+        opened_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        closed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+        is_active BOOLEAN DEFAULT true
+      )
+    `);
+
+    // Create indexes for scorecards table
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_scorecards_is_active ON scorecards(is_active)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_scorecards_opened_at ON scorecards(opened_at DESC)`);
   }
 
   private static async createArcContributorsTable(client: PoolClient): Promise<void> {
@@ -629,6 +649,23 @@ export class DatabaseSchema {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_consensus ON explanations(beetree_consensus_strength DESC) WHERE beetree_consensus_strength IS NOT NULL`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_beetree_model_results ON explanations USING GIN(beetree_model_results) WHERE beetree_model_results IS NOT NULL`);
 
+    // Migration: Add LLM Council columns for multi-model consensus assessments
+    await client.query(`
+      ALTER TABLE explanations
+      ADD COLUMN IF NOT EXISTS council_mode VARCHAR(20) DEFAULT NULL CHECK (council_mode IN ('solve', 'assess')),
+      ADD COLUMN IF NOT EXISTS council_stage1_results JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_stage2_rankings JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_stage3_synthesis JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_metadata JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_assessed_explanation_ids INTEGER[] DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_aggregate_rankings JSONB DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS council_prompt_used TEXT DEFAULT NULL;
+    `);
+
+    // Migration: Add indexes for Council queries
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_council_mode ON explanations(council_mode) WHERE council_mode IS NOT NULL`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_explanations_council_stage1 ON explanations USING GIN(council_stage1_results) WHERE council_stage1_results IS NOT NULL`);
+
     // Migration: Align SnakeBench models table with Greg's TrueSkill fields
     await client.query(`
       ALTER TABLE public.models
@@ -655,6 +692,33 @@ export class DatabaseSchema {
       ALTER TABLE rearc_submissions
       ADD COLUMN IF NOT EXISTS tasks_solved INTEGER DEFAULT 0;
     `);
+
+    // Migration: Add scorecard_id column to arc3_sessions for scorecard support
+    await client.query(`
+      ALTER TABLE arc3_sessions
+      ADD COLUMN IF NOT EXISTS scorecard_id VARCHAR(255) DEFAULT NULL;
+    `);
+
+    // Migration: Add foreign key constraint for scorecard_id
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.table_constraints
+          WHERE constraint_name = 'fk_arc3_sessions_scorecard'
+          AND table_name = 'arc3_sessions'
+        ) THEN
+          ALTER TABLE arc3_sessions
+          ADD CONSTRAINT fk_arc3_sessions_scorecard
+          FOREIGN KEY (scorecard_id)
+          REFERENCES scorecards(card_id)
+          ON DELETE SET NULL;
+        END IF;
+      END $$;
+    `);
+
+    // Migration: Add index for scorecard_id queries
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_scorecard ON arc3_sessions(scorecard_id)`);
   }
 
   /**

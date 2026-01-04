@@ -1,4 +1,4 @@
-SOURCE OF TRUTH AS OF DECEMBER 7, 2025
+SOURCE OF TRUTH AS OF JANUARY 3, 2026
 1) Summarize ARC-AGI-3’s purpose, scope, and timeline.
 2) Specify the environment, games, actions, API, scorecards, and rate limits.
 3) Summarize preview games, human results, AI results, and leading agent designs.
@@ -102,12 +102,14 @@ All games implement the same **7 core actions**.
   - Undo / inverse of previous operation where applicable (interact/select/undo).  
 
 2.2 Available actions per game / step
-- Each game **specifies which actions are available**; unavailable actions are disabled in human UI and marked in frame metadata for agents.
+- Each game **specifies which actions are available**; unavailable actions are disabled in human UI and marked in frame metadata for agents. Server-side normalization maps numeric tokens and strings to canonical `RESET` / `ACTION1-7`; missing or empty lists mean “no restriction”.
 - **Action 6 availability** is binary: the environment exposes “ACTION6 is allowed” but **does not tell which coordinates will have an effect**; the agent must explore.
 
 2.3 Game state enumeration
-Frame metadata includes a **state** field:
-- `NOT_FINISHED` – Game/level active, awaiting next action.
+Frame metadata includes a **state** field (normalized server-side):
+- `NOT_PLAYED` – No actions taken yet (fresh game start).
+- `IN_PROGRESS` – Mid-run state.
+- `NOT_FINISHED` – Active but not terminal (equivalent to IN_PROGRESS in some responses).
 - `WIN` – Objective completed successfully.
 - `GAME_OVER` – Game terminated (max actions reached, death, or other failure condition).
 

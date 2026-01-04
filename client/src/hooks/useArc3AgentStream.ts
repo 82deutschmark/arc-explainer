@@ -1,11 +1,8 @@
 /**
- * Author: Claude (Windsurf Cascade)
- * Date: 2025-11-06
- * Updated: 2026-01-01 - Added BYOK support for production environment
- * PURPOSE: React hook that orchestrates ARC3 agent streaming, bridging SSE connections with the backend
- * to provide real-time updates of agent gameplay, frame changes, and reasoning.
- * BYOK support: Accepts optional apiKey in Arc3AgentOptions and passes to backend.
- * SRP/DRY check: Pass — follows established streaming patterns from useSaturnProgress while adapting for ARC3-specific events.
+ * Author: Cascade (GPT-5.2 medium reasoning)
+ * Date: 2026-01-03
+ * PURPOSE: React hook orchestrating ARC3 agent streaming, bridging SSE with backend for real-time gameplay, frames, and reasoning.
+ * SRP/DRY check: Pass — reused existing streaming patterns and added harnessMode passthrough without altering other consumers.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,6 +21,12 @@ export interface Arc3AgentOptions {
   skipDefaultSystemPrompt?: boolean;
   /** User-provided API key for BYOK (required in production) */
   apiKey?: string;
+  /** Provider toggle: 'openai_nano' (default), 'openai_codex', or 'openrouter' */
+  provider?: 'openai_nano' | 'openai_codex' | 'openrouter';
+  /** MiMo reasoning toggle for OpenRouter (default: true) */
+  reasoningEnabled?: boolean;
+  /** Optional harness selector for Codex/OpenAI providers */
+  harnessMode?: 'default' | 'cascade';
 }
 
 export interface Arc3AgentStreamState {
@@ -34,6 +37,10 @@ export interface Arc3AgentStreamState {
   message?: string;
   finalOutput?: string;
   streamingReasoning?: string;  // Accumulates reasoning content during streaming
+  scorecard?: {
+    card_id: string;
+    url: string;
+  };
   frames: Array<{
     guid?: string;
     game_id?: string;
@@ -93,6 +100,7 @@ export function useArc3AgentStream() {
   const latestGameIdRef = useRef<string | null>(null);  // CRITICAL: Track gameId in sync with guid to prevent mismatch
   const isPendingActionRef = useRef(false);  // CRITICAL: Ref-based lock for synchronous check (state has stale closure issue)
   const [isPendingManualAction, setIsPendingManualAction] = useState(false);  // State for UI updates (disable buttons)
+  const providerRef = useRef<'openai_nano' | 'openai_codex' | 'openrouter'>('openai_nano');  // Track current provider for cancel/continuation
   const streamingEnabled = isStreamingEnabled();
 
   const closeEventSource = useCallback(() => {
@@ -127,8 +135,18 @@ export function useArc3AgentStream() {
         });
 
         if (streamingEnabled) {
+          // Route to appropriate API based on provider selection
+          const selectedProvider = options.provider || 'openai_nano';
+          providerRef.current = selectedProvider;
+          
+          // Provider routing: OpenRouter uses dedicated Python-based runner, others use /api/arc3
+          const apiBasePath = selectedProvider === 'openrouter' 
+            ? '/api/arc3-openrouter'
+            : '/api/arc3';  // Default: OpenAI Agents SDK via Arc3RealGameRunner
+          console.log('[ARC3 Stream] Using provider:', selectedProvider, 'API path:', apiBasePath);
+
           // Step 1: Prepare streaming session
-          const prepareResponse = await apiRequest('POST', '/api/arc3/stream/prepare', {
+          const prepareResponse = await apiRequest('POST', `${apiBasePath}/stream/prepare`, {
             game_id: options.game_id || 'ls20',  // Match API property name
             agentName: options.agentName,
             systemPrompt: options.systemPrompt,
@@ -140,6 +158,10 @@ export function useArc3AgentStream() {
             skipDefaultSystemPrompt: options.skipDefaultSystemPrompt,
             // BYOK: Pass user API key if provided (required in production)
             ...(options.apiKey ? { apiKey: options.apiKey } : {}),
+            // OpenRouter-specific: MiMo reasoning toggle (default: true)
+            ...(selectedProvider === 'openrouter' ? { reasoningEnabled: options.reasoningEnabled ?? true } : {}),
+            // Harness selection (opt-in, ignored by backends that don't support it)
+            ...(options.harnessMode ? { harnessMode: options.harnessMode } : {}),
           });
 
           const prepareData = await prepareResponse.json();
@@ -152,7 +174,7 @@ export function useArc3AgentStream() {
           setSessionId(newSessionId);
 
           // Step 2: Start SSE connection
-          const streamUrl = `/api/arc3/stream/${newSessionId}`;
+          const streamUrl = `${apiBasePath}/stream/${newSessionId}`;
           console.log('[ARC3 Stream] Starting SSE connection:', streamUrl);
 
           const eventSource = new EventSource(streamUrl);
@@ -215,7 +237,9 @@ export function useArc3AgentStream() {
     }
 
     try {
-      await apiRequest('POST', `/api/arc3/stream/cancel/${sessionId}`);
+      // NOTE: arc3 routes use /stream/cancel/:sessionId path format
+      const apiBasePath = '/api/arc3';
+      await apiRequest('POST', `${apiBasePath}/stream/cancel/${sessionId}`);
       closeEventSource();
 
       setState(prev => ({
@@ -299,6 +323,23 @@ export function useArc3AgentStream() {
         }));
       } catch (error) {
         console.error('[ARC3 Stream] Failed to parse agent.ready payload:', error);
+      }
+    });
+
+    eventSource.addEventListener('scorecard.opened', (evt) => {
+      try {
+        const data = JSON.parse((evt as MessageEvent<string>).data);
+        console.log('[ARC3 Stream] Scorecard opened:', data);
+
+        setState((prev) => ({
+          ...prev,
+          scorecard: {
+            card_id: data.card_id,
+            url: data.url,
+          },
+        }));
+      } catch (error) {
+        console.error('[ARC3 Stream] Failed to parse scorecard.opened payload:', error);
       }
     });
 

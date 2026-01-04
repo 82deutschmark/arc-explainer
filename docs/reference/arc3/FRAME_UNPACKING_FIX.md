@@ -104,7 +104,7 @@ private async persistUnpackedFrames(
 }
 ```
 
-### Updated Call Sites
+### Updated Call Sites (RESET + ACTION1–7)
 
 **Before:** Single frame per action
 **After:** Array of unpacked frames per action
@@ -126,7 +126,7 @@ currentFrameNumber = await this.persistUnpackedFrames(
 );
 ```
 
-#### Action Tools (ACTION1-6, RESET)
+#### Action Tools (RESET, ACTION1-7)
 
 ```typescript
 // NEW: In each tool, unpack the response
@@ -137,7 +137,7 @@ frames.push(...unpackedFrames);  // Keep all for history
 currentFrameNumber = await this.persistUnpackedFrames(
   dbSessionId,
   unpackedFrames,
-  action,
+  action,  // normalized server-side to RESET/ACTION1-7
   prevFrame,
   currentFrameNumber
 );

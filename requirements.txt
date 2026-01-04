@@ -25,6 +25,9 @@ anthropic>=0.40.0
 # Google GenAI SDK (new client) - for Gemini models
 google-genai>=1.52.0
 
+# LangChain OpenAI - for LangChain agent/chain workflows with OpenAI
+langchain-openai>=1.1.0
+
 # Note: OpenRouter and xAI use OpenAI SDK with custom base_url
 
 # ===========================================

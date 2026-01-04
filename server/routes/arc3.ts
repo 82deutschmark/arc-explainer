@@ -22,6 +22,7 @@ import { logger } from '../utils/logger';
 import { ARC3_GAMES } from '../../shared/arc3Games';
 import { discoverLevelScreenshots, enrichGameWithScreenshots } from '../services/arc3ScreenshotService';
 import { requiresUserApiKey } from '../utils/environmentPolicy.js';
+import { openScorecard, getActiveScorecard } from '../services/arc3/scorecardService';
 
 const router = Router();
 
@@ -176,21 +177,33 @@ router.get(
 
 /**
  * POST /api/arc3/start-game
- * Start a game to get initial grid state
+ * Start a new ARC3 game with scorecard tracking
  */
 router.post(
   '/start-game',
   asyncHandler(async (req: Request, res: Response) => {
-    const { game_id } = req.body;
-    if (!game_id) {
-      return res.status(400).json(formatResponse.error('MISSING_GAME_ID', 'game_id is required'));
+    const parsed = runSchema.pick({ game_id: true }).parse(req.body);
+    const game_id = parsed.game_id || 'ls20'; // Default to ls20 if not provided
+    
+    // Get or create active scorecard
+    let scorecardId: string;
+    try {
+      const activeScorecard = await getActiveScorecard();
+      if (activeScorecard) {
+        scorecardId = activeScorecard.cardId;
+      } else {
+        // Create a new scorecard if none exists
+        scorecardId = await openScorecard(
+          'https://github.com/arc-explainer/arc-explainer',
+          ['arc-explainer', 'web-ui'],
+          { source: 'arc-explainer', mode: 'web-ui', game_id }
+        );
+      }
+    } catch (error) {
+      logger.error(`Failed to get/create scorecard: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+      return res.status(500).json(formatResponse.error('SCORECARD_ERROR', 'Failed to initialize scorecard'));
     }
 
-    const scorecardId = await arc3ApiClient.openScorecard(
-      ['arc-explainer', 'web-ui'],
-      'https://github.com/yourusername/arc-explainer',
-      { source: 'arc-explainer', mode: 'web-ui', game_id }
-    );
     const frameData = await arc3ApiClient.startGame(game_id, undefined, scorecardId);
     res.json(formatResponse.success({ ...frameData, card_id: scorecardId }));
   }),
