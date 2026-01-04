@@ -224,10 +224,43 @@ class Arc3ApiClient:
             "X-API-Key": api_key,
         })
     
-    def open_scorecard(self, tags: list[str] = None, source_url: str = None, 
+    def list_games(self) -> list[dict]:
+        """Get list of available games from ARC3 API."""
+        response = self.session.get(f"{self.BASE_URL}/api/games")
+        response.raise_for_status()
+        return response.json()
+
+    def resolve_game_id(self, game_id_prefix: str) -> str:
+        """Resolve a game ID prefix (e.g., 'ls20') to the full game ID (e.g., 'ls20-fa137e247ce6').
+
+        Args:
+            game_id_prefix: Game ID prefix like 'ls20', 'as66', etc.
+
+        Returns:
+            Full game ID with hash suffix, e.g., 'ls20-fa137e247ce6'
+
+        Raises:
+            ValueError: If game not found
+        """
+        games = self.list_games()
+
+        # First try exact match
+        for game in games:
+            if game["game_id"] == game_id_prefix:
+                return game["game_id"]
+
+        # Then try prefix match
+        for game in games:
+            if game["game_id"].startswith(game_id_prefix + "-"):
+                return game["game_id"]
+
+        available = ", ".join(g["game_id"] for g in games)
+        raise ValueError(f"Game not found: {game_id_prefix}. Available games: {available}")
+
+    def open_scorecard(self, tags: list[str] = None, source_url: str = None,
                         opaque_metadata: dict = None) -> str:
         """Open a new scorecard. MUST be called before starting any games.
-        
+
         Args:
             tags: List of string tags for categorization (e.g., ['openrouter', 'competition'])
             source_url: URL identifying the source application
@@ -240,7 +273,7 @@ class Arc3ApiClient:
             body["source_url"] = source_url
         if opaque_metadata:
             body["opaque"] = opaque_metadata
-        
+
         response = self.session.post(f"{self.BASE_URL}/api/scorecard/open", json=body)
         response.raise_for_status()
         data = response.json()
@@ -787,10 +820,23 @@ def run_agent(config: dict):
     except Exception as e:
         emit_error(f"Failed to open scorecard: {e}", "API_ERROR")
     
+    # Resolve game ID prefix to full game ID with hash suffix
+    resolved_game_id = game_id
+    try:
+        resolved_game_id = arc3_client.resolve_game_id(game_id)
+        if resolved_game_id != game_id:
+            emit_event("stream.status", {
+                "state": "running",
+                "message": f"Resolved game ID {game_id} → {resolved_game_id}"
+            })
+    except Exception as e:
+        emit_error(f"Failed to resolve game ID: {e}", "API_ERROR")
+        return
+
     # Start game
     try:
-        emit_event("stream.status", {"state": "running", "message": f"Starting game: {game_id}"})
-        frame_data = arc3_client.start_game(game_id)
+        emit_event("stream.status", {"state": "running", "message": f"Starting game: {resolved_game_id}"})
+        frame_data = arc3_client.start_game(resolved_game_id)
         emit_event("game.frame_update", {"frameData": frame_data, "frameIndex": 0})
     except Exception as e:
         emit_error(f"Failed to start game: {e}", "API_ERROR")
@@ -821,7 +867,7 @@ def run_agent(config: dict):
         try:
             guid = frame_data.get("guid", "")
             frame_data = arc3_client.execute_action(
-                game_id, guid, action,
+                resolved_game_id, guid, action,
                 coordinates=coordinates,
                 reasoning={"agent": "openrouter", "model": model, "thought": reasoning}
             )
