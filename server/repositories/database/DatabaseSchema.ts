@@ -265,7 +265,6 @@ export class DatabaseSchema {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_game_id ON arc3_sessions(game_id)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_guid ON arc3_sessions(guid)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_started ON arc3_sessions(started_at DESC)`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_arc3_sessions_scorecard ON arc3_sessions(scorecard_id)`);
   }
 
   private static async createArc3FramesTable(client: PoolClient): Promise<void> {
