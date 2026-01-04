@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.3  Jan 4, 2026
+
+- **Silence OpenRouter extra_body warning in ARC3 runner** (Author: Cascade)
+  - **What**: Pass `extra_body` explicitly to the OpenAI client instead of nesting it under `model_kwargs`.
+  - **Why**: New SDK validation warns when `extra_body` is supplied inside `model_kwargs`.
+  - **How**:
+    - `server/python/arc3_openrouter_runner.py`: Split out `extra_body` dict and provide it via `extra_body` parameter while keeping `model_kwargs` empty.
+  - **Impact**: Removes stderr warning during ARC3 OpenRouter runs; behavior unchanged.
+
 ### Version 6.33.2  Jan 4, 2026
 
 - **Add Scorecard Link Display to All Arc3 Playgrounds** (Author: Claude Haiku 4.5)

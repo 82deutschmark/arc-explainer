@@ -18,7 +18,7 @@ const router = Router();
 // Validation schema for stream prepare request (competition-emulation mode)
 const prepareSchema = z.object({
   game_id: z.string().min(1, 'game_id is required'),
-  model: z.string().default('xiaomi/mimo-v2-flash:free'),
+  model: z.string().default('x-ai/grok-4.1-fast'),
   instructions: z.string().optional(),           // User prompt / operator guidance
   systemPrompt: z.string().optional(),           // User's genius system prompt
   maxTurns: z.number().int().min(1).max(500).optional().default(80),  // Match ARC-AGI-3-Agents2 MAX_ACTIONS
@@ -137,11 +137,11 @@ router.get(
 
 /**
  * GET /credits-env
- * Fetch OpenRouter credits using the server's environment variable API key.
+ * Fetch OpenRouter account balance using the server's environment variable API key.
  * No BYOK required - uses the configured OPENROUTER_API_KEY.
  *
- * OpenRouter API: GET https://openrouter.ai/api/v1/auth/key
- * Returns: { data: { label, usage, limit, is_free_tier, rate_limit } }
+ * OpenRouter API: GET https://openrouter.ai/api/v1/credits
+ * Returns: { data: { total_credits, total_usage } }
  */
 router.get(
   '/credits-env',
@@ -155,7 +155,7 @@ router.get(
     }
 
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/auth/key', {
+      const response = await fetch('https://openrouter.ai/api/v1/credits', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${apiKey.trim()}`,
@@ -173,21 +173,21 @@ router.get(
 
       const data = await response.json();
 
-      // OpenRouter returns: { data: { label, usage, limit, is_free_tier, rate_limit } }
-      const keyData = data.data || data;
+      // OpenRouter /credits returns: { data: { total_credits, total_usage } }
+      const creditsData = data.data || data;
 
-      // Calculate remaining credits
-      const usage = keyData.usage ?? 0;
-      const limit = keyData.limit;
-      const remaining = limit !== null && limit !== undefined ? limit - usage : null;
+      // Calculate remaining credits (balance = purchased - used)
+      const totalCredits = creditsData.total_credits ?? 0;
+      const totalUsage = creditsData.total_usage ?? 0;
+      const remaining = totalCredits - totalUsage;
 
       res.json(formatResponse.success({
-        label: keyData.label || 'Server API Key',
-        usage: usage,
-        limit: limit,
+        label: 'Account Balance',
+        usage: totalUsage,
+        limit: totalCredits,
         remaining: remaining,
-        isFreeTier: keyData.is_free_tier ?? false,
-        rateLimit: keyData.rate_limit || null,
+        isFreeTier: false,
+        rateLimit: null,
         timestamp: Date.now(),
       }));
 
@@ -202,11 +202,11 @@ router.get(
 
 /**
  * POST /credits
- * Fetch OpenRouter credits for the provided API key.
+ * Fetch OpenRouter account balance for the provided API key.
  * BYOK: User must provide their API key - we never store it.
  *
- * OpenRouter API: GET https://openrouter.ai/api/v1/auth/key
- * Returns: { data: { label, usage, limit, is_free_tier, rate_limit } }
+ * OpenRouter API: GET https://openrouter.ai/api/v1/credits
+ * Returns: { data: { total_credits, total_usage } }
  */
 router.post(
   '/credits',
@@ -220,7 +220,7 @@ router.post(
     }
 
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/auth/key', {
+      const response = await fetch('https://openrouter.ai/api/v1/credits', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${apiKey.trim()}`,
@@ -238,22 +238,21 @@ router.post(
 
       const data = await response.json();
 
-      // OpenRouter returns: { data: { label, usage, limit, is_free_tier, rate_limit } }
-      // usage and limit are in USD cents (or null for unlimited)
-      const keyData = data.data || data;
+      // OpenRouter /credits returns: { data: { total_credits, total_usage } }
+      const creditsData = data.data || data;
 
-      // Calculate remaining credits
-      const usage = keyData.usage ?? 0;  // Amount used in USD
-      const limit = keyData.limit;        // Credit limit (null = unlimited)
-      const remaining = limit !== null && limit !== undefined ? limit - usage : null;
+      // Calculate remaining credits (balance = purchased - used)
+      const totalCredits = creditsData.total_credits ?? 0;
+      const totalUsage = creditsData.total_usage ?? 0;
+      const remaining = totalCredits - totalUsage;
 
       res.json(formatResponse.success({
-        label: keyData.label || 'API Key',
-        usage: usage,
-        limit: limit,
+        label: 'Account Balance',
+        usage: totalUsage,
+        limit: totalCredits,
         remaining: remaining,
-        isFreeTier: keyData.is_free_tier ?? false,
-        rateLimit: keyData.rate_limit || null,
+        isFreeTier: false,
+        rateLimit: null,
         timestamp: Date.now(),
       }));
 
