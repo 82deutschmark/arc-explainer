@@ -129,6 +129,13 @@ const navigationItems: NavItem[] = [
         href: '/arc3/openrouter-playground',
         icon: FlaskConical,
         description: 'Experiment with OpenRouter models on ARC-3 games'
+      },
+      {
+        type: 'link',
+        title: 'Codex Playground',
+        href: '/arc3/codex-playground',
+        icon: Code,
+        description: "OpenAI's GPT-5.1 Codex models for agentic coding tasks"
       }
     ]
   },

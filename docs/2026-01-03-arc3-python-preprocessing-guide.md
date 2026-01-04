@@ -345,6 +345,99 @@ def calculate_color_distribution(grid: np.ndarray):
 
 ---
 
+## Advanced Preprocessing: Extracting Intelligence
+
+The following techniques move beyond simple data cleaning into **feature engineering** for the LLM's internal reasoning engine.
+
+### 7. Symmetry & Global Pattern Detection
+
+**Purpose:** Identify if the grid follows a specific geometric rule (reflection, rotation, repetition).
+
+**Why this matters:** ARC puzzles often rely on symmetry. If an agent knows the grid is 90-degree rotationally symmetric, it can narrow down the "correct" state much faster.
+
+**Implementation Concept:**
+```python
+def analyze_symmetry(grid: np.ndarray):
+    """Detect horizontal, vertical, and rotational symmetries."""
+    h_sym = np.array_equal(grid, np.flipud(grid))
+    v_sym = np.array_equal(grid, np.fliplr(grid))
+    rot90 = np.array_equal(grid, np.rot90(grid))
+
+    return {
+        "horizontalReflection": h_sym,
+        "verticalReflection": v_sym,
+        "rotational90": rot90,
+        "isUniform": len(np.unique(grid)) == 1
+    }
+```
+
+---
+
+### 8. Pathfinding & Navigation Semantics
+
+**Purpose:** Calculate distances between the "player" object and "goal" objects.
+
+**Why this matters:** Instead of the LLM guessing coordinates, we provide it with navigation vectors: "The nearest red object (Goal) is 15 pixels away at a 45-degree angle. Action ACTION4 (Right) reduces this distance."
+
+**Implementation Concept:**
+```python
+def calculate_navigation_vectors(player_pos: Tuple[int, int], targets: List[SimpleObject]):
+    """Calculate distances and directions to all detected targets."""
+    vectors = []
+    for target in targets:
+        dist = np.linalg.norm(np.array(player_pos) - np.array(target.center))
+        direction = get_cardinal_direction(player_pos, target.center)
+        vectors.append({
+            "targetId": target.id,
+            "distance": round(dist, 2),
+            "direction": direction,
+            "isPathBlocked": check_collision_on_path(player_pos, target.center)
+        })
+    return vectors
+```
+
+---
+
+### 9. Closing the Loop: Reasoning-Action Correlation
+
+**Purpose:** Map the agent's *textual intent* to the *actual outcome*.
+
+**The Mechanism:**
+1. **Extraction:** Use Python regex or a small "Reasoning Parser" to extract the `predicted_outcome` from the agent's `reason` field.
+2. **Comparison:** After the action, compare the `predicted_outcome` with the `actual_diff`.
+3. **Surprise Metric:** If the prediction fails, flag a "High Surprise" event to the LLM.
+
+**Why this matters:** It forces the LLM to acknowledge when its mental model of the game is wrong.
+
+```python
+def calculate_model_surprise(intent: str, actual_changes: dict):
+    """Evaluate if the actual grid changes match the agent's stated intent."""
+    # Intent extraction (e.g., "I will move the blue block right")
+    # Actual check (e.g., "objectsMoved": [{"id": "OBJ_1", "delta": [0, 1]}])
+    success = match_intent_to_outcome(intent, actual_changes)
+    return {
+        "predictionSuccess": success,
+        "surpriseLevel": "LOW" if success else "HIGH",
+        "mismatchDetails": "Expected right movement, but object disappeared" if not success else ""
+    }
+```
+
+---
+
+### 10. LLM-Driven Code Execution (The "Inner Sandbox")
+
+**Purpose:** Empower the LLM to verify its own complex hypotheses using its internal Python console.
+
+**Strategies for the LLM:**
+- **"The Counter":** "Wait, is every green pixel next to a yellow one? I'll write a script to check the whole 64x64 grid."
+- **"The Projector":** "If I press ACTION1 five times, where will the player be? I'll write a loop to simulate the movement based on my current rule-set."
+- **"The Mask":** "Show me the grid but only the red and blue pixels so I can see the pattern without the background noise."
+
+**Prompting the LLM to use its Sandbox:**
+> "You have a Python interpreter. If the grid is too complex to eye-ball, write a script to find patterns, count objects, or verify if your hypothesis holds for every pixel."
+
+---
+
 ## Multimodal Enhancement: PNG Rendering
 
 **Purpose:** Send visual frames to vision-capable LLMs instead of JSON grids.
@@ -468,6 +561,11 @@ The external agent **TOMAS Engine** (`external/tomas-engine-arc-agi-3`) already 
 - Object movement tracking
 - Semantic change descriptions ("blue moved right" vs "12 pixels changed")
 - Python-side preprocessing service (currently done in TypeScript)
+- **Advanced Intelligence Extraction:**
+    - Symmetry detection
+    - Pathfinding/Distance calculation
+    - Reasoning-Action loop closure (Surprise Detection)
+    - Structured "Inner Sandbox" prompt templates
 
 ### 🔧 Recommended Next Steps
 
