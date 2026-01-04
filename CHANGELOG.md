@@ -1,5 +1,22 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.33.7  Jan 4, 2026
+
+- **Scorecard Migration Fix + Data Correction** (Author: Claude Sonnet 4.5)
+  - **What**: Fixed scorecard_id column migration and corrected erroneous explanation record.
+  - **Why**: The scorecard_id column wasn't being added to existing arc3_sessions tables on Railway, causing initialization failures. Also needed to correct explanation record 34462 which had incorrect prediction status.
+  - **How**:
+    - **Database Migration** ([DatabaseSchema.ts:697-722](server/repositories/database/DatabaseSchema.ts#L697-L722)):
+      - Added migration to `applySchemaMigrations()` to add `scorecard_id` column to existing `arc3_sessions` tables
+      - Added foreign key constraint creation with proper existence check
+      - Added index creation for scorecard_id queries
+      - Removed premature index creation from `createArc3SessionsTable()` (line 268) that was failing before migration
+    - **Data Correction** ([delete-record-34462.ts](scripts/delete-record-34462.ts)):
+      - Created script to update explanation record 34462
+      - Set `isPredictionCorrect` to `false` for puzzle abc82100
+      - Script uses dotenv to load Railway credentials
+  - **Impact**: Scorecard functionality now deploys correctly to Railway production database. All ARC3 sessions can properly track scorecard associations. Database initialization no longer fails with "column scorecard_id does not exist" error.
+
 ### Version 6.33.6  Jan 4, 2026 16:11
 
 - **ARC3 Scorecard Parity Implementation** (Author: Cascade)
