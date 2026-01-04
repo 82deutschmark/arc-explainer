@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2026-01-02
+ * Date: 2026-01-04
  * PURPOSE: Session management and SSE emission for OpenRouter ARC3 agent.
  *          Prepares sessions, spawns Python agent, parses NDJSON events, forwards to SSE.
  *          Pattern: Arc3StreamService.ts + SnakeBenchStreamingRunner.ts
@@ -28,6 +28,10 @@ export interface OpenRouterStreamPayload {
   sessionId?: string;
   createdAt?: number;
   expiresAt?: number;
+  // Streaming metadata for potential continuation/follow-up
+  scorecardId?: string;
+  resolvedGameId?: string;
+  existingGameGuid?: string;
   // Competition-emulation mode parameters
   agentName?: string;          // User-defined agent name for scorecard
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high' | 'xhigh';  // OpenRouter reasoning.effort per docs
