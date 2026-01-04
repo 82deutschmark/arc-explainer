@@ -1,11 +1,8 @@
 /**
- * Author: Claude (Windsurf Cascade)
- * Date: 2025-11-06
- * Updated: 2026-01-01 - Added BYOK support for production environment
- * PURPOSE: React hook that orchestrates ARC3 agent streaming, bridging SSE connections with the backend
- * to provide real-time updates of agent gameplay, frame changes, and reasoning.
- * BYOK support: Accepts optional apiKey in Arc3AgentOptions and passes to backend.
- * SRP/DRY check: Pass — follows established streaming patterns from useSaturnProgress while adapting for ARC3-specific events.
+ * Author: Cascade (GPT-5.2 medium reasoning)
+ * Date: 2026-01-03
+ * PURPOSE: React hook orchestrating ARC3 agent streaming, bridging SSE with backend for real-time gameplay, frames, and reasoning.
+ * SRP/DRY check: Pass — reused existing streaming patterns and added harnessMode passthrough without altering other consumers.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -28,6 +25,8 @@ export interface Arc3AgentOptions {
   provider?: 'openai_nano' | 'openai_codex' | 'openrouter';
   /** MiMo reasoning toggle for OpenRouter (default: true) */
   reasoningEnabled?: boolean;
+  /** Optional harness selector for Codex/OpenAI providers */
+  harnessMode?: 'default' | 'cascade';
 }
 
 export interface Arc3AgentStreamState {
@@ -157,6 +156,8 @@ export function useArc3AgentStream() {
             ...(options.apiKey ? { apiKey: options.apiKey } : {}),
             // OpenRouter-specific: MiMo reasoning toggle (default: true)
             ...(selectedProvider === 'openrouter' ? { reasoningEnabled: options.reasoningEnabled ?? true } : {}),
+            // Harness selection (opt-in, ignored by backends that don't support it)
+            ...(options.harnessMode ? { harnessMode: options.harnessMode } : {}),
           });
 
           const prepareData = await prepareResponse.json();

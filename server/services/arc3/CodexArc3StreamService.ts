@@ -24,6 +24,7 @@ export interface CodexStreamArc3Payload {
   model?: string;
   maxTurns?: number;
   reasoningEffort?: 'minimal' | 'low' | 'medium' | 'high';
+  harnessMode?: 'default' | 'cascade';
   sessionId?: string;
   createdAt?: number;
   expiresAt?: number;
@@ -255,6 +256,7 @@ export class CodexArc3StreamService {
         model,
         maxTurns,
         reasoningEffort,
+        harnessMode: payload.harnessMode,
         storeResponse: true,
         sessionId,
         systemPromptPresetId,
@@ -391,6 +393,7 @@ export class CodexArc3StreamService {
         model,
         maxTurns,
         reasoningEffort,
+        harnessMode: payload.harnessMode,
         existingGameGuid,
         previousResponseId,
         seedFrame: payload.lastFrame,

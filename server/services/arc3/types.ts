@@ -1,8 +1,8 @@
 /*
-Author: gpt-5-codex
-Date: 2025-11-06
+Author: Cascade (GPT-5.2 medium reasoning)
+Date: 2026-01-03
 PURPOSE: Shared type definitions for the ARC-AGI-3 playground simulator and agent runner services.
-SRP/DRY check: Pass — centralizes enums and interfaces used by the new ARC3 backend modules.
+SRP/DRY check: Pass — centralizes enums and interfaces used by ARC3 backend modules; added harnessMode to support Cascade preset.
 */
 
 import type { FrameData } from './Arc3ApiClient.ts';
@@ -60,4 +60,5 @@ export interface Arc3AgentRunConfig {
   sessionId?: string; // For tracing/metadata on provider calls
   systemPromptPresetId?: Arc3PromptPresetId; // One-word preset id: 'twitch' | 'playbook' | 'none'
   skipDefaultSystemPrompt?: boolean; // When true, never fall back to any default system prompt
+  harnessMode?: 'default' | 'cascade'; // Optional qualitative harness toggle (defaults to existing math harness)
 }
