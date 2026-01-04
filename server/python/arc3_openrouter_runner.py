@@ -2,7 +2,7 @@
 """
 Author: Cascade
 Date: 2026-01-04
-Updated: 2026-01-04 - Pass extra_body explicitly (not via model_kwargs) to satisfy OpenAI SDK expectations and silence warnings
+Updated: 2026-01-04 - Pass extra_body explicitly, add scorecard_id propagation for RESET per ARC3 docs
 PURPOSE: ARC3 OpenRouter Runner using LangGraph thinking agent pattern.
          Reads JSON config from stdin, emits NDJSON events to stdout.
          Model: xiaomi/mimo-v2-flash:free (configurable)
@@ -223,6 +223,8 @@ class Arc3ApiClient:
             "Content-Type": "application/json",
             "X-API-Key": api_key,
         })
+        # Inline guard: ARC3 docs require card_id on RESET. We cache after open_scorecard.
+        # Never send RESET without card_id.
     
     def list_games(self) -> list[dict]:
         """Get list of available games from ARC3 API."""
@@ -295,7 +297,13 @@ class Arc3ApiClient:
     
     def execute_action(self, game_id: str, guid: str, action: str, 
                        coordinates: tuple[int, int] = None, reasoning: Any = None) -> dict:
-        """Execute an action in a game session."""
+        """Execute an action in a game session.
+
+        Per ARC3 docs:
+        - RESET requires card_id (scorecard)
+        - ACTION* optionally accept reasoning metadata
+        - ACTION6 can include x/y coordinates
+        """
         body = {
             "game_id": game_id,
             "guid": guid,
@@ -306,8 +314,15 @@ class Arc3ApiClient:
             body["y"] = coordinates[1]
         
         if action == "RESET":
+            if not self.card_id:
+                raise ValueError("Must open scorecard before RESET; card_id is required by ARC3 API")
             body["card_id"] = self.card_id
-        elif reasoning:
+            # Preserve audit trail in reasoning payload as well
+            if reasoning is None:
+                reasoning = {}
+            if isinstance(reasoning, dict):
+                reasoning = {**reasoning, "card_id": self.card_id}
+        if reasoning:
             body["reasoning"] = reasoning
         
         response = self.session.post(f"{self.BASE_URL}/api/cmd/{action}", json=body)

@@ -147,6 +147,14 @@ export class Arc3OpenRouterStreamService {
       reasoning_effort: reasoningEffort ?? 'low',
     };
 
+    // Register disconnect hook to kill Python child if client drops
+    sseStreamManager.createStream(sessionId, {
+      onDisconnect: () => {
+        arc3OpenRouterPythonBridge.cancel(sessionId);
+        this.clear(sessionId);
+      },
+    });
+
     try {
       // Spawn Python agent and parse NDJSON events
       const { code } = await arc3OpenRouterPythonBridge.spawnAgent(
@@ -159,7 +167,8 @@ export class Arc3OpenRouterStreamService {
         (line: string) => {
           // Log stderr
           logger.warn(`[Arc3OpenRouter] stderr: ${line}`, 'arc3-openrouter');
-        }
+        },
+        sessionId
       );
 
       if (code !== 0) {
@@ -178,6 +187,8 @@ export class Arc3OpenRouterStreamService {
       logger.error(`[Arc3OpenRouter] Streaming failed: ${message}`, 'arc3-openrouter');
       sseStreamManager.error(sessionId, 'STREAMING_ERROR', message);
       this.clear(sessionId);
+    } finally {
+      sseStreamManager.closeStream(sessionId);
     }
   }
 
