@@ -1,6 +1,7 @@
 /*
 Author: Claude Sonnet 4.5
 Date: 2026-01-03
+Updated: 2026-01-03 - Removed OpenRouter credits hook, aligned model select with Codex model fields (key/name).
 PURPOSE: Codex-specific ARC3 Agent Playground using OpenAI Agents SDK.
          Routes to /api/arc3-codex backend.
          Uses GPT-5.1 Codex models for agentic gameplay.
@@ -289,13 +290,6 @@ export default function Arc3CodexPlayground() {
   const [userApiKey, setUserApiKey] = useState('');
   const byokRequired = requiresUserApiKey();
 
-  // Credits monitor - polls OpenRouter for current balance
-  const { credits, isLoading: creditsLoading, error: creditsError, refetch: refetchCredits } = useOpenRouterCredits({
-    apiKey: userApiKey,
-    pollInterval: 15000, // Poll every 15s during active use
-    enabled: Boolean(userApiKey.trim()),
-  });
-
   // Streaming
   const { state, start, cancel, continueWithMessage, executeManualAction, initializeGameSession, setCurrentFrame, isPlaying, isPendingManualAction } = useArc3AgentStream();
 
@@ -374,9 +368,9 @@ export default function Arc3CodexPlayground() {
     return null;
   }, [state.timeline]);
 
-  // Get available models (OpenRouter only for this playground)
-  const availableModels = models.filter((m: ModelInfo) => 
-    m.provider === 'OpenRouter'
+  // Get available models (Codex-only for this playground)
+  const availableModels = models.filter((m: ModelInfo) =>
+    m.key.toLowerCase().includes('codex') || m.name.toLowerCase().includes('codex')
   );
 
   // Compute currentFrame directly from state to ensure re-renders trigger updates
@@ -456,8 +450,8 @@ export default function Arc3CodexPlayground() {
                 </SelectTrigger>
                 <SelectContent>
                   {availableModels.map((model) => (
-                    <SelectItem key={model.model_id} value={model.model_id} className="text-xs">
-                      {model.title} ({model.model_id})
+                    <SelectItem key={model.key} value={model.key} className="text-xs">
+                      {model.name} ({model.key})
                     </SelectItem>
                   ))}
                 </SelectContent>

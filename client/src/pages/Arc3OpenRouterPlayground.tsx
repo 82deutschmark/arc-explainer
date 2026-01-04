@@ -21,7 +21,7 @@ import { Gamepad2, ArrowLeft, RefreshCw, Key, Zap, Coins, AlertCircle, Loader2 }
 import { requiresUserApiKey } from '@/lib/environmentPolicy';
 import { Link, useLocation, useSearch } from 'wouter';
 import { useArc3AgentStream } from '@/hooks/useArc3AgentStream';
-import { useOpenRouterCredits, formatCredits } from '@/hooks/useOpenRouterCredits';
+import { useOpenRouterCredits, formatCredits, type OpenRouterCredits } from '@/hooks/useOpenRouterCredits';
 import { Arc3ReasoningViewer } from '@/components/arc3/Arc3ReasoningViewer';
 import { Arc3ToolTimeline } from '@/components/arc3/Arc3ToolTimeline';
 import { Arc3GamePanel } from '@/components/arc3/Arc3GamePanel';
@@ -293,7 +293,7 @@ export default function Arc3OpenRouterPlayground() {
 
   // Credits monitor - tries server env key first, falls back to user-provided key
   const [serverCreditsLoading, setServerCreditsLoading] = useState(true);
-  const [serverCredits, setServerCredits] = useState<typeof credits | null>(null);
+  const [serverCredits, setServerCredits] = useState<OpenRouterCredits | null>(null);
   const [creditsSource, setCreditsSource] = useState<'server' | 'user' | 'none'>('none');
 
   // Fetch credits from server env key on mount
@@ -325,7 +325,7 @@ export default function Arc3OpenRouterPlayground() {
   });
 
   // Use server credits if available, otherwise user credits
-  const credits = serverCredits || userCredits;
+  const credits: OpenRouterCredits | null = serverCredits || userCredits;
   const creditsLoading = serverCreditsLoading || userCreditsLoading;
   const creditsError = userCreditsError;
 
