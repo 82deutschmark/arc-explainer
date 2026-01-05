@@ -1,5 +1,31 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.34.1  Jan 5, 2026
+
+- **FIX: OpenRouter API Parameter Validation** (Author: Claude Haiku 4.5)
+  - **What**: Fixed malformed request parameters causing 400 Bad Request errors when calling OpenRouter models.
+  - **Why**: OpenRouter models were marked as streaming-enabled, but requests failed due to invalid parameter formatting. The issue was in the payload construction for the OpenRouter API integration, not in model capability support.
+  - **How**:
+    - **Fixed `reasoning` parameter format** ([server/services/openrouter.ts:226-234](server/services/openrouter.ts#L226-L234)):
+      - **Was**: `reasoning: serviceOpts.captureReasoning` (sending boolean `true`/`false`)
+      - **Now**: `reasoning: { enabled: true, effort: 'medium', exclude: false }` (proper object format per OpenRouter API spec)
+      - Prevents 400 Bad Request errors when reasoning is enabled
+    - **Removed invalid `stream_options: undefined`** ([server/services/openrouter.ts:226](server/services/openrouter.ts#L226)):
+      - Explicitly setting properties to `undefined` violates JSON API contract
+      - Now properties are omitted from payload when not needed (cleaner request)
+    - **Enhanced logging** ([server/services/openrouter.ts:233, 236](server/services/openrouter.ts#L233-L236)):
+      - Now logs when reasoning is enabled and with which effort level
+      - Clearer debugging when requests fail
+  - **Impact**:
+    - OpenRouter models no longer return 400 errors on API calls
+    - Streaming can now be safely enabled without parameter validation failures
+    - All models marked as `supportsStreaming: true` will work correctly
+    - Request payloads now conform to OpenRouter API specification
+  - **Files Changed**:
+    - `server/services/openrouter.ts` (3 edits: parameter formatting, stream_options removal, enhanced logging)
+  - **Build**: Verified with `npm run build` - all TypeScript compilation successful
+  - **Root Cause**: The parameter formatting was not aligned with OpenRouter's actual API specification for the `reasoning` parameter, which requires an object structure rather than a boolean value.
+
 ### Version 6.34.0  Jan 4, 2026
 
 - **MAJOR: Test Infrastructure Overhaul** (Author: Claude Sonnet 4.5)

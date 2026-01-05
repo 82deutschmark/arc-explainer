@@ -1,9 +1,9 @@
 /**
- * Author: Claude Sonnet 4.5
- * Date: 2026-01-04
- * PURPOSE: Comprehensive unit tests for BaseAIService
- *          Tests cost calculation, truncation detection, response building, JSON extraction
- * SRP/DRY check: Pass - Isolated tests for base AI service functionality
+ * Author: Cascade
+ * Date: 2026-01-05T18:45:00Z
+ * PURPOSE: Comprehensive BaseAIService regression suite covering truncation detection, response shaping,
+ *          token accounting, and JSON extraction for provider integrations.
+ * SRP/DRY check: Pass — focuses solely on BaseAIService behavior without duplicating provider tests.
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -76,9 +76,35 @@ class TestAIService extends BaseAIService {
     temperature: number,
     result: any,
     tokenUsage: TokenUsage,
-    serviceOpts: any
+    serviceOpts: any,
+    reasoningLog?: any,
+    hasReasoningLog: boolean = false,
+    reasoningItems?: any[],
+    status?: string,
+    incomplete?: boolean,
+    incompleteReason?: string,
+    promptPackage?: any,
+    promptTemplateId?: string,
+    customPromptText?: string,
+    responseId?: string
   ): AIResponse {
-    return this.buildStandardResponse(modelKey, temperature, result, tokenUsage, serviceOpts);
+    return this.buildStandardResponse(
+      modelKey,
+      temperature,
+      result,
+      tokenUsage,
+      serviceOpts,
+      reasoningLog,
+      hasReasoningLog,
+      reasoningItems,
+      status,
+      incomplete,
+      incompleteReason,
+      promptPackage,
+      promptTemplateId,
+      customPromptText,
+      responseId
+    );
   }
 
   public testExtractJsonFromResponse(text: string, modelKey: string): any {

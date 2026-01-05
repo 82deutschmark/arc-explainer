@@ -1,11 +1,15 @@
 /**
+ * Author: Cascade
+ * Date: 2026-01-05T17:25:00Z
+ * PURPOSE: Contracts + DTOs for explanation persistence layer, kept in sync with ExplanationRepository mappings.
+ * SRP/DRY check: Pass — reviewed repository mapRowToExplanation output for parity.
+ */
+
+/**
  * Explanation Repository Interface
- * 
+ *
  * Defines the contract for explanation data access operations.
  * Separates explanation-related database operations from other concerns.
- * 
- * @author Claude
- * @date 2025-08-27
  */
 
 export interface ExplanationData {
@@ -114,9 +118,9 @@ export interface ExplanationResponse {
   multiplePredictedOutputs: any | null;
   multiTestResults: any | null;
   multiTestAllCorrect: boolean | null;
-  multiTestAverageAccuracy: number | null;
-  hasMultiplePredictions: boolean | null;
-  multiTestPredictionGrids: any | null;
+  multiTestAverageAccuracy?: number | null;
+  hasMultiplePredictions?: boolean | null;
+  multiTestPredictionGrids?: any | null;
   // NEW: Prompt tracking fields for full traceability
   systemPromptUsed: string | null;
   userPromptUsed: string | null;
