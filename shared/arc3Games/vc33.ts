@@ -16,7 +16,14 @@ export const vc33: Arc3GameMetadata = {
   difficulty: 'easy',
   actionMappings: [],
   hints: [],
-  resources: [],
+  resources: [
+    {
+      title: 'VC33 Replay',
+      url: 'https://three.arcprize.org/replay/vc33-6ae7bf49eea5/29409ce8-c164-447e-8810-828b96fa4ceb',
+      type: 'replay',
+      description: 'Gameplay replay of VC33 (Volume Control)',
+    },
+  ],
   tags: ['evaluation-set', 'orchestration', 'volume'],
   thumbnailUrl: '/vc33.png',
   isFullyDocumented: false,

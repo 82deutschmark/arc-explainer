@@ -55,6 +55,12 @@ The implicit goal is to discover a route and sequence of transformations that bo
       type: 'article',
       description: 'Detailed frame-by-frame analysis of LS20 grid patterns, color mappings, and action effects',
     },
+    {
+      title: 'LS20 Replay',
+      url: 'https://three.arcprize.org/replay/ls20-fa137e247ce6/7405808f-ec5b-4949-a252-a1451b946bae',
+      type: 'replay',
+      description: 'Gameplay replay of LS20 (Locksmith)',
+    },
   ],
   levelScreenshots: [
     {

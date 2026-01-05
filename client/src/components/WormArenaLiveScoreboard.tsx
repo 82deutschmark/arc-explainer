@@ -50,9 +50,13 @@ export default function WormArenaLiveScoreboard({
   const aWinning = playerAScore > playerBScore;
   const bWinning = playerBScore > playerAScore;
 
-  const formatSeconds = (value: number | null | undefined) => {
+  // Format times in proper MM:SS format
+  const formatTime = (value: number | null | undefined) => {
     if (value == null || Number.isNaN(value)) return '—';
-    return `${Math.max(0, value).toFixed(1)}s`;
+    const totalSeconds = Math.max(0, Math.floor(value));
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}`;
   };
 
   const renderPlayer = (
@@ -129,10 +133,10 @@ export default function WormArenaLiveScoreboard({
       </div>
 
       <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-mono">
-        <span className="uppercase text-[10px] text-worm-ink/70">Wall</span>
-        <span className="tabular-nums">{formatSeconds(wallClockSeconds)}</span>
+        <span className="uppercase text-[10px] text-worm-ink/70">Clock</span>
+        <span className="tabular-nums">{formatTime(wallClockSeconds)}</span>
         <span className="uppercase text-[10px] text-worm-ink/70">Since move</span>
-        <span className="tabular-nums">{formatSeconds(sinceLastMoveSeconds)}</span>
+        <span className="tabular-nums">{formatTime(sinceLastMoveSeconds)}</span>
       </div>
     </div>
   );

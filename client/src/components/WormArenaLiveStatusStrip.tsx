@@ -58,25 +58,27 @@ export default function WormArenaLiveStatusStrip({
     status === 'failed'
       ? 'bg-red-500'
       : status === 'completed'
-      ? 'bg-emerald-500'
-      : status === 'in_progress'
-      ? 'bg-green-500'
-      : status === 'starting' || status === 'connecting'
-      ? 'bg-amber-400'
-      : 'bg-slate-400';
+        ? 'bg-emerald-500'
+        : status === 'in_progress'
+          ? 'bg-green-500'
+          : status === 'starting' || status === 'connecting'
+            ? 'bg-amber-400'
+            : 'bg-slate-400';
   const statusLabel = STATUS_LABELS[status] || STATUS_LABELS.idle;
   const roundValue =
     maxRounds && maxRounds > 0
       ? `${Math.max(0, currentRound ?? 0)} / ${maxRounds}`
       : currentRound !== null && currentRound !== undefined
-      ? `${Math.max(0, currentRound)}`
-      : '—';
+        ? `${Math.max(0, currentRound)}`
+        : '—';
 
-  // Format wall clock and idle timers in minutes to avoid large second counts for long games.
-  const formatMinutes = (seconds: number | null | undefined) => {
+  // Format times in proper MM:SS format (e.g., "2:24" not "2.4m")
+  const formatTime = (seconds: number | null | undefined) => {
     if (seconds == null || Number.isNaN(seconds)) return '—';
-    const mins = Math.max(0, seconds) / 60;
-    return `${mins.toFixed(1)}m`;
+    const totalSeconds = Math.max(0, Math.floor(seconds));
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins}:${String(secs).padStart(2, '0')}`;
   };
 
   const copySession = React.useCallback(() => {
@@ -105,16 +107,16 @@ export default function WormArenaLiveStatusStrip({
         </div>
 
         <div>
-          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Wall clock</div>
+          <div className="text-[11px] uppercase font-semibold text-muted-foreground">Clock</div>
           <div className="text-worm-ink font-medium">
-            {formatMinutes(wallClockSeconds)}
+            {formatTime(wallClockSeconds)}
           </div>
         </div>
 
         <div>
           <div className="text-[11px] uppercase font-semibold text-muted-foreground">Since move</div>
           <div className="text-worm-ink font-medium">
-            {formatMinutes(sinceLastMoveSeconds)}
+            {formatTime(sinceLastMoveSeconds)}
           </div>
         </div>
       </div>
