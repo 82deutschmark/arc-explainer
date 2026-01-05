@@ -1,5 +1,5 @@
 # ARC3 GPT-5 Nano Background Agent
-
+The task list document is at: docs/plans/2026-01-04-arc3-gpt5-nano-background-agent-tasks.md That's the comprehensive one I created for the next developer—it has everything they need to know about what's done and what's left to do.
 A lightweight Python agent that plays ARC3 games in the background using OpenAI's GPT-5 nano model. Designed to run while you sleep—no frontend, no TypeScript, just pure Python game playing.
 
 ## Quick Start
