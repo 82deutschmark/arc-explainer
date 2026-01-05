@@ -23,6 +23,12 @@ export const lp85: Arc3GameMetadata = {
       type: 'replay',
       description: 'Grandmaster gameplay by Zanthous - expert playthrough completing all levels in 92 moves',
     },
+    {
+      title: 'LP85 Replay',
+      url: 'https://three.arcprize.org/replay/lp85-d265526edbaa/dc3d96aa-762b-4c2e-ac68-6418c8f54c74',
+      type: 'replay',
+      description: 'Gameplay replay of LP85 (Loop & Pull)',
+    },
   ],
   tags: ['evaluation-set'],
   thumbnailUrl: '/lp85.png',

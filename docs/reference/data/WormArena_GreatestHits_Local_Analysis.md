@@ -4,7 +4,7 @@
 **Date:** 2025-12-11  \
 **Purpose:** Document how Worm Arena "greatest hits" are selected in the database, how that relates to local replay JSONs and MP4s, and how to analyze local games using the Python helper script.
 
-This doc explains why some "greatest hits" game IDs returned from the database do **not** have local replay files, and how to find the most interesting games that actually exist under `external/SnakeBench/backend/completed_games`.
+This doc explains why some "greatest hits" game IDs returned from the database do **not** have local replay files, and how to find the most interesting games that actually exist under `external/SnakeBench/backend/completed_games` and `external/SnakeBench/backend/completed_games/local`.
 
 ---
 

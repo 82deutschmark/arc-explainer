@@ -16,7 +16,14 @@ export const sp80: Arc3GameMetadata = {
   difficulty: 'medium',
   actionMappings: [],
   hints: [],
-  resources: [],
+  resources: [
+    {
+      title: 'SP80 Replay',
+      url: 'https://three.arcprize.org/replay/sp80-0605ab9e5b2a/212c541e-db90-40c3-9601-79049867dab2',
+      type: 'replay',
+      description: 'Gameplay replay of SP80 (Streaming Purple)',
+    },
+  ],
   tags: ['evaluation-set'],
   thumbnailUrl: '/sp80.png',
   isFullyDocumented: false,

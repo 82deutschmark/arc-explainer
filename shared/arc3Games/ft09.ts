@@ -35,7 +35,14 @@ Beyond this high-level description, detailed tile semantics are not yet fully do
     { action: 'ACTION6', commonName: 'Click', description: 'Click at specific coordinates (x, y)', notes: 'Requires coordinate parameters' },
   ],
   hints: [],
-  resources: [],
+  resources: [
+    {
+      title: 'FT09 Replay',
+      url: 'https://three.arcprize.org/replay/ft09-b8377d4b7815/39b51ef3-b565-43fe-b3a8-7374ca4c5058',
+      type: 'replay',
+      description: 'Gameplay replay of FT09 (Functional Tiles)',
+    },
+  ],
   levelScreenshots: [
     {
       level: 8,

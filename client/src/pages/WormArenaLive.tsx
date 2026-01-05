@@ -30,6 +30,7 @@ import WormArenaReasoning from '@/components/WormArenaReasoning';
 import WormArenaLiveScoreboard from '@/components/WormArenaLiveScoreboard';
 import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
 import WormArenaConsoleMirror from '@/components/WormArenaConsoleMirror';
+import WormArenaRecentMatchesList from '@/components/WormArenaRecentMatchesList';
 import { Button } from '@/components/ui/button';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest, WormArenaSuggestedMatchup } from '@shared/types';
@@ -591,51 +592,45 @@ export default function WormArenaLive() {
                 onRunMatch={handleSuggestedMatchupRun}
               />
 
-              {/* Run controls form */}
-              <WormArenaRunControls
-                viewMode="setup"
-                status={status}
-                isStarting={isStarting}
-                loadingModels={loadingModels}
-                matchupAvailable={matchupAvailable}
-                availableModels={availableModelSet}
-                modelOptions={selectableModels}
-                modelA={modelA}
-                modelB={modelB}
-                onModelAChange={setModelA}
-                onModelBChange={setModelB}
-                width={width}
-                height={height}
-                maxRounds={maxRounds}
-                numApples={numApples}
-                onWidthChange={setWidth}
-                onHeightChange={setHeight}
-                onMaxRoundsChange={setMaxRounds}
-                onNumApplesChange={setNumApples}
-                byoApiKey={byoApiKey}
-                byoProvider={byoProvider}
-                onByoApiKeyChange={setByoApiKey}
-                onByoProviderChange={setByoProvider}
-                onStart={handleRunMatch}
-                launchNotice={launchNotice}
-              />
+              {/* Run controls form + Recent matches */}
+              <div className="space-y-6">
+                <WormArenaRunControls
+                  viewMode="setup"
+                  status={status}
+                  isStarting={isStarting}
+                  loadingModels={loadingModels}
+                  matchupAvailable={matchupAvailable}
+                  availableModels={availableModelSet}
+                  modelOptions={selectableModels}
+                  modelA={modelA}
+                  modelB={modelB}
+                  onModelAChange={setModelA}
+                  onModelBChange={setModelB}
+                  width={width}
+                  height={height}
+                  maxRounds={maxRounds}
+                  numApples={numApples}
+                  onWidthChange={setWidth}
+                  onHeightChange={setHeight}
+                  onMaxRoundsChange={setMaxRounds}
+                  onNumApplesChange={setNumApples}
+                  byoApiKey={byoApiKey}
+                  byoProvider={byoProvider}
+                  onByoApiKeyChange={setByoApiKey}
+                  onByoProviderChange={setByoProvider}
+                  onStart={handleRunMatch}
+                  launchNotice={launchNotice}
+                />
+
+                {/* Recent matches section */}
+                <WormArenaRecentMatchesList limit={8} />
+              </div>
             </div>
           </div>
         )}
 
         {isActiveView && (
           <div className="space-y-4 transition-opacity duration-300 ease-in-out animate-in fade-in">
-            <WormArenaLiveScoreboard
-              playerAName={leftName}
-              playerBName={rightName}
-              playerAScore={playerAScore}
-              playerBScore={playerBScore}
-              wallClockSeconds={wallClockSeconds}
-              sinceLastMoveSeconds={sinceLastMoveSeconds}
-              playerAStats={leftStats}
-              playerBStats={rightStats}
-            />
-
             {/* View mode toggle */}
             <div className="flex justify-center mb-2">
               <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1 shadow-sm">
@@ -679,60 +674,60 @@ export default function WormArenaLive() {
                     finalSummary={finalSummary}
                   />
 
-                <WormArenaLiveStatusStrip
-                  status={status}
-                  message={statusMessage}
-                  error={error}
-                  sessionId={sessionId}
-                  currentMatchIndex={currentMatchIndex}
-                  totalMatches={totalMatches}
-                  playerAName={leftName}
-                  playerBName={rightName}
-                  playerAScore={playerAScore}
-                  playerBScore={playerBScore}
-                  currentRound={currentRoundValue}
-                  maxRounds={maxRoundsValue}
-                  phase={phase}
-                  aliveSnakes={aliveNames}
-                  wallClockSeconds={wallClockSeconds}
-                  sinceLastMoveSeconds={sinceLastMoveSeconds}
+                  <WormArenaLiveStatusStrip
+                    status={status}
+                    message={statusMessage}
+                    error={error}
+                    sessionId={sessionId}
+                    currentMatchIndex={currentMatchIndex}
+                    totalMatches={totalMatches}
+                    playerAName={leftName}
+                    playerBName={rightName}
+                    playerAScore={playerAScore}
+                    playerBScore={playerBScore}
+                    currentRound={currentRoundValue}
+                    maxRounds={maxRoundsValue}
+                    phase={phase}
+                    aliveSnakes={aliveNames}
+                    wallClockSeconds={wallClockSeconds}
+                    sinceLastMoveSeconds={sinceLastMoveSeconds}
+                  />
+
+                  {sessionId && (
+                    <div className="rounded-lg border-2 worm-border bg-white shadow-sm px-4 py-3 space-y-2">
+                      <div className="text-[11px] uppercase font-semibold text-muted-foreground">
+                        {finalSummary?.gameId ? 'Share Replay' : 'Share Live Match'}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <code className="text-xs sm:text-sm font-mono bg-worm-card rounded px-2 py-1 text-worm-ink break-all">
+                          {finalSummary?.gameId || sessionId}
+                        </code>
+                        <button
+                          type="button"
+                          onClick={handleCopyShareLink}
+                          className="px-3 py-1.5 text-xs font-semibold rounded border border-worm-ink text-worm-ink hover:bg-worm-card transition-colors"
+                        >
+                          {copyHint ? 'Copied!' : 'Copy Link'}
+                        </button>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {copyHint || (finalSummary?.gameId
+                          ? 'Share this link so others can watch the replay.'
+                          : 'Share this link so others can watch the live match.')}
+                      </div>
+                    </div>
+                  )}
+
+                  {finalSummary && <WormArenaLiveResultsPanel finalSummary={finalSummary} />}
+                </div>
+
+                <WormArenaReasoning
+                  playerName={rightName}
+                  color="blue"
+                  reasoning={rightReasoning}
+                  score={playerBScore}
+                  strategyLabel="Live output"
                 />
-
-                {sessionId && (
-                  <div className="rounded-lg border-2 worm-border bg-white shadow-sm px-4 py-3 space-y-2">
-                    <div className="text-[11px] uppercase font-semibold text-muted-foreground">
-                      {finalSummary?.gameId ? 'Share Replay' : 'Share Live Match'}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <code className="text-xs sm:text-sm font-mono bg-worm-card rounded px-2 py-1 text-worm-ink break-all">
-                        {finalSummary?.gameId || sessionId}
-                      </code>
-                      <button
-                        type="button"
-                        onClick={handleCopyShareLink}
-                        className="px-3 py-1.5 text-xs font-semibold rounded border border-worm-ink text-worm-ink hover:bg-worm-card transition-colors"
-                      >
-                        {copyHint ? 'Copied!' : 'Copy Link'}
-                      </button>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {copyHint || (finalSummary?.gameId
-                        ? 'Share this link so others can watch the replay.'
-                        : 'Share this link so others can watch the live match.')}
-                    </div>
-                  </div>
-                )}
-
-                {finalSummary && <WormArenaLiveResultsPanel finalSummary={finalSummary} />}
-              </div>
-
-              <WormArenaReasoning
-                playerName={rightName}
-                color="blue"
-                reasoning={rightReasoning}
-                score={playerBScore}
-                strategyLabel="Live output"
-              />
               </div>
             )}
 
@@ -808,4 +803,4 @@ export default function WormArenaLive() {
       </main>
     </div>
   );
- }
+}
