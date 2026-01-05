@@ -220,13 +220,20 @@ export class OpenRouterService extends BaseAIService {
         const payload: any = {
           model: modelName,
           temperature: temperature,
-          stream: false, // Explicitly disable streaming,
-          reasoning: serviceOpts.captureReasoning, // NEW: Explicitly request reasoning logs
-          // Additional streaming prevention
-          stream_options: undefined // Ensure no stream options
+          stream: false, // Explicitly disable streaming
         };
 
-        logger.service('OpenRouter', `Request payload streaming config - stream: ${payload.stream}, step: ${continuationStep}`);;
+        // Only include reasoning parameter if explicitly requested, formatted per OpenRouter API spec
+        if (serviceOpts.captureReasoning) {
+          payload.reasoning = {
+            enabled: true,
+            effort: 'medium',
+            exclude: false
+          };
+          logger.service('OpenRouter', `Reasoning enabled for ${modelName} with effort: medium`);
+        }
+
+        logger.service('OpenRouter', `Request payload - stream: ${payload.stream}, reasoning: ${serviceOpts.captureReasoning ? 'enabled' : 'disabled'}, step: ${continuationStep}`);;
 
         // Conditionally apply JSON mode based on model configuration
         const modelConfig = getModelConfig(modelKey);
