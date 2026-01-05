@@ -136,6 +136,13 @@ const navigationItems: NavItem[] = [
         href: '/arc3/codex-playground',
         icon: Code,
         description: "OpenAI's GPT-5.1 Codex models for agentic coding tasks"
+      },
+      {
+        type: 'link',
+        title: 'Haiku Playground',
+        href: '/arc3/haiku-playground',
+        icon: FlaskConical,
+        description: 'Experiment with Anthropic Claude Haiku model on ARC-3 games'
       }
     ]
   },
