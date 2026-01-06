@@ -1,5 +1,30 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.1  Jan 6, 2026
+
+- **FEATURE: Dedicated Landing Page with ARC 1/2 vs ARC 3 Distinction** (Author: Cascade)
+  - **What**: Created a new dedicated landing page that clearly distinguishes between ARC 1/2 (visual puzzle reasoning) and ARC 3 (agent-based game environment) systems.
+  - **Why**: Users visiting arc.markbarney.net need clear guidance on which system to explore. ARC 1/2 and ARC 3 serve fundamentally different purposes and user journeys.
+  - **How**:
+    - **New `LandingPage.tsx`** ([client/src/pages/LandingPage.tsx](client/src/pages/LandingPage.tsx)):
+      - Two-column layout with distinct visual identity for each ARC system
+      - ARC 1/2: Focus on puzzle browsing, analytics, and model comparison
+      - ARC 3: Focus on agent playground, live games, and strategy analysis
+      - Community integration with Discord and YouTube links
+      - Responsive design with ARC-inspired emoji patterns
+    - **Updated routing** ([client/src/App.tsx](client/src/App.tsx)):
+      - Root route (`/`) now points to `LandingPage` instead of `PuzzleBrowser`
+      - Preserved `/browser` route for direct puzzle access
+    - **Visual branding**: Consistent with existing ARC Explainer design system
+  - **Impact**:
+    - Clear first-time user experience with system choice guidance
+    - Better conversion from social media links and direct traffic
+    - Maintains existing user workflows while adding discovery path
+  - **Files Changed**:
+    - `client/src/pages/LandingPage.tsx` (new)
+    - `client/src/App.tsx` (routing updated)
+  - **Testing**: Verified TypeScript compilation, routing functionality, and responsive design
+
 ### Version 6.35.0  Jan 5, 2026
 
 - **FEATURE: OG Image Generation for Social Media Link Unfurling** (Author: Sonnet 4)
