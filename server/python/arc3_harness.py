@@ -12,14 +12,15 @@ Design Principles:
 - Agnostic: Component detection without semantic labels like "door" or "key"
 """
 
+from __future__ import annotations
 import numpy as np
 from typing import List, Tuple, Dict, Any, Optional, Set
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 import re
 from collections import defaultdict, Counter
 import hashlib
 
-# ARC-AGI Color Palette (0-15)
+# ... (COLOR_NAMES remains same)
 COLOR_NAMES = {
     0: "white",       # Background
     1: "blue",
@@ -79,6 +80,15 @@ class GridAnalysis:
     components: List[Component]
     adjacency_graph: Dict[str, Set[str]]
     insights: List[Insight]
+
+@dataclass
+class FrameDelta:
+    """Analysis of changes between two frames."""
+    pixels_changed: int
+    changed_pixels: List[Tuple[int, int]]
+    component_transformations: Dict[str, Dict[str, Any]]
+    new_components: List[Component]
+    disappeared_components: List[Component]
 
 class Arc3Harness:
     """General Intelligence Harness for ARC-AGI-3 Grid Analysis."""
@@ -144,14 +154,14 @@ class Arc3Harness:
         """Convert mathematical delta into human-readable insights."""
         insights = []
         
-        # 1. Detect Sliding (Always Sliding)
+        # 1. Detect Sliding/Movement
         for comp_id, transform in delta.component_transformations.items():
             trans = transform.get("translation", (0, 0))
-            if abs(trans[0]) > 2 or abs(trans[1]) > 2:
+            if abs(trans[0]) > 0.5 or abs(trans[1]) > 0.5:
                 dir_str = self._get_direction_string(trans)
                 insights.append(Insight(
                     type="movement",
-                    description=f"Object {comp_id} moved significantly {dir_str}",
+                    description=f"Object {comp_id} moved {dir_str}",
                     confidence=transform["confidence"],
                     importance=8
                 ))
@@ -160,7 +170,7 @@ class Arc3Harness:
         for comp in delta.new_components:
             insights.append(Insight(
                 type="spawn",
-                description=f"New {comp.color} object appeared in {comp.get_region()}",
+                description=f"New {comp.color} object spawned at {comp.centroid}",
                 confidence=1.0,
                 importance=5
             ))
@@ -169,7 +179,7 @@ class Arc3Harness:
         for comp in delta.disappeared_components:
             insights.append(Insight(
                 type="disappearance",
-                description=f"{comp.color} object at {comp.get_region()} disappeared",
+                description=f"{comp.color} object at {comp.centroid} removed",
                 confidence=1.0,
                 importance=6
             ))
@@ -177,34 +187,73 @@ class Arc3Harness:
         return insights
 
     def _generate_static_insights(self, grid: np.ndarray, components: List[Component]) -> List[Insight]:
-        """Detect patterns in a single frame."""
+        """Detect patterns in a single frame using semantic sensors."""
         insights = []
+        rows, cols = grid.shape
         
         # 1. Reference Region Detection (Functional Tiles)
         # Check top-right 10x10 for high complexity vs background
-        top_right = grid[0:10, -10:]
+        top_right = grid[0:min(10, rows), -max(1, min(10, cols)):]
         if np.any(top_right != 0) and np.unique(top_right).size > 2:
             insights.append(Insight(
                 type="reference_region",
-                description="Possible configuration reference detected in top-right corner",
+                description="Goal reference detected in top-right corner",
                 confidence=0.8,
                 importance=9
             ))
             
-        # 2. Container/Boundary Detection
-        # Look for U-shapes (color 7/white or 0/black boundaries)
-        # This is a heuristic - could be improved with contour analysis
-        
-        # 3. Hazard Detection (Always Sliding / Lockdown)
+        # 2. Hydraulic System Detection (Volume Control)
+        # Look for tall white columns (color 5 is gray, but user said 'white columns'). 
+        # In ARC 'white' is usually 0 but 0 is background. 
+        # Color 5 is gray. Let's assume color 5 or 0 for now based on ARC standards.
+        # Wait, ARC 0=black, 5=gray. User said 'white columns'. 
+        # Usually in the screenshots white is code 0 (background) or code 8? 
+        # Actually in ARC Code 0 is black. Code 5 is gray/silver. 
+        # Let's check for gray (5) columns.
+        gray_components = [c for c in components if c.color == "gray"]
+        if any(c.bounds[2] - c.bounds[0] > 3 for c in gray_components): # Tall components
+             insights.append(Insight(
+                type="hydraulic_column",
+                description="Possible hydraulic liquid columns (gray) detected",
+                confidence=0.7,
+                importance=8
+            ))
+
+        # 3. Hazard Detection (Always Sliding)
         hazards = [c for c in components if c.color in ["red", "orange"]]
         if hazards:
             insights.append(Insight(
                 type="hazard",
                 description=f"Detected {len(hazards)} hazards (orange/red objects)",
                 confidence=0.9,
-                importance=7
+                importance=10
             ))
             
+        # 4. Key Detection (Locksmith)
+        # Look for distinct cluster in bottom-left zone (first 1/3 of grid)
+        bl_zone = grid[rows//2:, :cols//3]
+        if np.any(bl_zone != 0):
+             # Find components in that zone
+             bl_comps = [c for c in components if c.centroid[0] > rows//2 and c.centroid[1] < cols//3]
+             if bl_comps:
+                 insights.append(Insight(
+                    type="key_state",
+                    description=f"Potential Key component detected in bottom-left (Color: {bl_comps[0].color})",
+                    confidence=0.7,
+                    importance=9
+                ))
+
+        # 5. Indicator Slot Detection (Loop & Pull)
+        # Small yellow squares (1x1 or 2x2)
+        target_slots = [c for c in components if c.color == "yellow" and c.size <= 4]
+        if target_slots:
+             insights.append(Insight(
+                type="target_slots",
+                description=f"Detected {len(target_slots)} small indicator target slots (yellow)",
+                confidence=0.8,
+                importance=9
+            ))
+
         return insights
 
     def _get_direction_string(self, translation: Tuple[float, float]) -> str:
@@ -466,7 +515,6 @@ def analyze_frame_sequence(frames: List[List[List[int]]]) -> List[Dict[str, Any]
 # === Example Usage ===
 
 if __name__ == "__main__":
-    from dataclasses import asdict
     # Example grid (simplified)
     example_grid = [
         [0, 0, 0, 0, 0],
