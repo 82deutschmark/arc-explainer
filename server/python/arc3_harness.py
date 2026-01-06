@@ -63,22 +63,22 @@ class Component:
         return regions[row_zone * 3 + col_zone]
 
 @dataclass
+class Insight:
+    """A high-level semantic observation about the grid state or changes."""
+    type: str  # e.g., "movement", "transformation", "spillage", "reference_match"
+    description: str
+    confidence: float
+    importance: int # 1-10
+
+@dataclass
 class GridAnalysis:
     """Complete analysis of a single grid frame."""
     entropy: float
     symmetry: Dict[str, bool]
     color_histogram: Dict[str, int]
     components: List[Component]
-    adjacency_graph: Dict[str, Set[str]]  # component_id -> neighboring component_ids
-
-@dataclass
-class FrameDelta:
-    """Analysis of changes between two frames."""
-    pixels_changed: int
-    changed_pixels: List[Tuple[int, int]]
-    component_transformations: Dict[str, Dict[str, Any]]  # component_id -> transformation info
-    new_components: List[Component]
-    disappeared_components: List[Component]
+    adjacency_graph: Dict[str, Set[str]]
+    insights: List[Insight]
 
 class Arc3Harness:
     """General Intelligence Harness for ARC-AGI-3 Grid Analysis."""
@@ -99,12 +99,16 @@ class Arc3Harness:
         components = self._detect_components(grid_array)
         adjacency_graph = self._build_adjacency_graph(components)
         
+        # 3. Game-Specific Insights (Static)
+        insights = self._generate_static_insights(grid_array, components)
+        
         return GridAnalysis(
             entropy=entropy,
             symmetry=symmetry,
             color_histogram=color_histogram,
             components=components,
-            adjacency_graph=adjacency_graph
+            adjacency_graph=adjacency_graph,
+            insights=insights
         )
     
     def analyze_delta(self, prev_grid: List[List[int]], curr_grid: List[List[int]]) -> FrameDelta:
@@ -125,6 +129,9 @@ class Arc3Harness:
         new_components = self._find_new_components(prev_components, curr_components)
         disappeared = self._find_disappeared_components(prev_components, curr_components)
         
+        # Generate semantic delta insights
+        # This will be added to the result dict in analyze_frame_sequence or returned here
+        
         return FrameDelta(
             pixels_changed=pixels_changed,
             changed_pixels=changed_pixels,
@@ -133,6 +140,80 @@ class Arc3Harness:
             disappeared_components=disappeared
         )
     
+    def generate_delta_insights(self, delta: FrameDelta) -> List[Insight]:
+        """Convert mathematical delta into human-readable insights."""
+        insights = []
+        
+        # 1. Detect Sliding (Always Sliding)
+        for comp_id, transform in delta.component_transformations.items():
+            trans = transform.get("translation", (0, 0))
+            if abs(trans[0]) > 2 or abs(trans[1]) > 2:
+                dir_str = self._get_direction_string(trans)
+                insights.append(Insight(
+                    type="movement",
+                    description=f"Object {comp_id} moved significantly {dir_str}",
+                    confidence=transform["confidence"],
+                    importance=8
+                ))
+        
+        # 2. Detect New Objects (Spawns)
+        for comp in delta.new_components:
+            insights.append(Insight(
+                type="spawn",
+                description=f"New {comp.color} object appeared in {comp.get_region()}",
+                confidence=1.0,
+                importance=5
+            ))
+            
+        # 3. Detect Disappearances
+        for comp in delta.disappeared_components:
+            insights.append(Insight(
+                type="disappearance",
+                description=f"{comp.color} object at {comp.get_region()} disappeared",
+                confidence=1.0,
+                importance=6
+            ))
+            
+        return insights
+
+    def _generate_static_insights(self, grid: np.ndarray, components: List[Component]) -> List[Insight]:
+        """Detect patterns in a single frame."""
+        insights = []
+        
+        # 1. Reference Region Detection (Functional Tiles)
+        # Check top-right 10x10 for high complexity vs background
+        top_right = grid[0:10, -10:]
+        if np.any(top_right != 0) and np.unique(top_right).size > 2:
+            insights.append(Insight(
+                type="reference_region",
+                description="Possible configuration reference detected in top-right corner",
+                confidence=0.8,
+                importance=9
+            ))
+            
+        # 2. Container/Boundary Detection
+        # Look for U-shapes (color 7/white or 0/black boundaries)
+        # This is a heuristic - could be improved with contour analysis
+        
+        # 3. Hazard Detection (Always Sliding / Lockdown)
+        hazards = [c for c in components if c.color in ["red", "orange"]]
+        if hazards:
+            insights.append(Insight(
+                type="hazard",
+                description=f"Detected {len(hazards)} hazards (orange/red objects)",
+                confidence=0.9,
+                importance=7
+            ))
+            
+        return insights
+
+    def _get_direction_string(self, translation: Tuple[float, float]) -> str:
+        dr, dc = translation
+        if abs(dr) > abs(dc):
+            return "DOWN" if dr > 0 else "UP"
+        else:
+            return "RIGHT" if dc > 0 else "LEFT"
+
     def extract_coordinates(self, text: str) -> List[Tuple[int, int]]:
         """Extract (row, col) coordinates from text using regex."""
         # Match patterns like "(10, 15)", "(10,15)", "at 10,15", etc.
@@ -176,21 +257,12 @@ class Arc3Harness:
                 result["issues"].append(f"Color '{color_name}' not found in grid")
                 result["verified"] = False
         
-        # Check coordinate references
-        coords = self.extract_coordinates(statement)
-        for row, col in coords:
-            if not (0 <= row < len(components) and 0 <= col < len(components[0].positions) if components else False):
-                # This is a loose check - we'd need the actual grid to be precise
-                result["issues"].append(f"Coordinate ({row}, {col}) may be out of bounds")
-                result["verified"] = False
-        
         return result
     
     # === Private Methods ===
     
     def _calculate_entropy(self, grid: np.ndarray) -> float:
         """Calculate Shannon entropy of the grid (measure of complexity)."""
-        # Remove background (0) from entropy calculation
         non_bg = grid[grid != 0]
         if len(non_bg) == 0:
             return 0.0
@@ -361,6 +433,7 @@ def analyze_frame_sequence(frames: List[List[List[int]]]) -> List[Dict[str, Any]
             "frame_number": i,
             "entropy": analysis.entropy,
             "symmetry": analysis.symmetry,
+            "insights": [asdict(insight) for insight in analysis.insights],
             "component_count": len(analysis.components),
             "dominant_color": max(analysis.color_histogram.items(), key=lambda x: x[1])[0] if analysis.color_histogram else "white",
             "components": [
@@ -378,10 +451,12 @@ def analyze_frame_sequence(frames: List[List[List[int]]]) -> List[Dict[str, Any]
         # Add delta analysis if we have a previous frame
         if i > 0:
             delta = harness.analyze_delta(frames[i-1], frame)
+            delta_insights = harness.generate_delta_insights(delta)
             result["delta"] = {
                 "pixels_changed": delta.pixels_changed,
                 "new_components": len(delta.new_components),
-                "transformations": len(delta.component_transformations)
+                "transformations": len(delta.component_transformations),
+                "insights": [asdict(insight) for insight in delta_insights]
             }
         
         results.append(result)
@@ -391,6 +466,7 @@ def analyze_frame_sequence(frames: List[List[List[int]]]) -> List[Dict[str, Any]
 # === Example Usage ===
 
 if __name__ == "__main__":
+    from dataclasses import asdict
     # Example grid (simplified)
     example_grid = [
         [0, 0, 0, 0, 0],
@@ -405,11 +481,7 @@ if __name__ == "__main__":
     
     print("=== Grid Analysis ===")
     print(f"Entropy: {analysis.entropy:.3f}")
-    print(f"Symmetry: {analysis.symmetry}")
-    print(f"Components: {len(analysis.components)}")
-    
-    for comp in analysis.components:
-        print(f"  {comp.id}: {comp.color}, size={comp.size}, region={comp.get_region()}")
+    print(f"Insights: {[i.description for i in analysis.insights]}")
     
     # Example delta analysis
     next_grid = [
@@ -421,14 +493,6 @@ if __name__ == "__main__":
     ]
     
     delta = harness.analyze_delta(example_grid, next_grid)
+    delta_insights = harness.generate_delta_insights(delta)
     print(f"\n=== Delta Analysis ===")
-    print(f"Pixels changed: {delta.pixels_changed}")
-    print(f"Transformations: {len(delta.component_transformations)}")
-    
-    # Example statement verification
-    statement = "I moved the red object from (2,3) to (3,4)"
-    verification = harness.verify_statement(statement, delta, analysis.components)
-    print(f"\n=== Statement Verification ===")
-    print(f"Verified: {verification['verified']}")
-    if verification['issues']:
-        print(f"Issues: {verification['issues']}")
+    print(f"Delta Insights: {[i.description for i in delta_insights]}")
