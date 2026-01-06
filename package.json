@@ -12,7 +12,15 @@
     "local": "npm run build && npm run dev",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "check": "tsc",
-    "test": "node --import tsx --test tests/*.test.ts",
+    "test": "vitest",
+    "test:unit": "vitest run tests/unit --coverage",
+    "test:integration": "vitest run tests/integration --coverage",
+    "test:frontend": "vitest run --config vitest.frontend.config.ts",
+    "test:e2e": "playwright test",
+    "test:all": "npm run test:unit && npm run test:frontend && npm run test:e2e",
+    "test:watch": "vitest watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
     "prod": "npm run build && npm start",
     "db:push": "drizzle-kit push",
     "db:maintenance": "node --import tsx server/scripts/run-maintenance.ts",
@@ -141,6 +149,8 @@
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.5.13",
     "@vitejs/plugin-react": "^4.3.2",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/ui": "^4.0.16",
     "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
     "daisyui": "^5.2.3",
@@ -153,6 +163,7 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
-    "vite": "^6.3.0"
+    "vite": "^6.3.0",
+    "vitest": "^4.0.16"
   }
 }
