@@ -68,12 +68,13 @@ import TaskEfficiency from "@/pages/TaskEfficiency";
 import Redirect from "@/components/Redirect";
 
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
+import LandingPage from "@/pages/LandingPage";
 
 function Router() {
   return (
     <PageLayout>
       <Switch>
-        <Route path="/" component={PuzzleBrowser} />
+        <Route path="/" component={LandingPage} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />
         <Route path="/hall-of-fame" component={HumanTradingCards} />

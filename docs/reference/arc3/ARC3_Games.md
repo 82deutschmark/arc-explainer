@@ -11,11 +11,17 @@ ARC-AGI-3 games are turn-based systems where agents interact with 2D grid enviro
 
 To see which games are available, either go to [three.arcprize.org](https://three.arcprize.org) or make an API call to [list games](/api-reference/games/list-available-games).
 
-Example games include
+THREE ORIGINAL PREVIEW GAMES:
 
-* [ls20](https://three.arcprize.org/games/ls20) - Agent reasoning
-* [ft09](https://three.arcprize.org/games/ft09) - Elementary Logic
-* [vc33](https://three.arcprize.org/games/vc33) - Orchestration
+* [ls20](https://three.arcprize.org/games/ls20) - Locksmith
+* [ft09](https://three.arcprize.org/games/ft09) - Functional Tiles
+* [vc33](https://three.arcprize.org/games/vc33) - Volume Control
+
+THREE ORIGINAL Private Evaluation Games:
+
+* [sp80](https://three.arcprize.org/games/sp80) - Streaming Purple
+* [as66](https://three.arcprize.org/games/as66) - Always Sliding
+* [lp85](https://three.arcprize.org/games/lp85) - Loop & Pull
 
 ### Game ID
 
