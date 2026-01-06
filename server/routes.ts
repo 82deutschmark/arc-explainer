@@ -34,6 +34,7 @@ import { snakeBenchController } from "./controllers/snakeBenchController.ts";
 import { contributorController } from './controllers/contributorController.ts';
 import * as reArcController from './controllers/reArcController.ts';
 import { councilController } from './controllers/councilController.ts';
+import { ogImageController } from './controllers/ogImageController.ts';
 
 // Import route modules
 import modelsRouter from "./routes/models.js";
@@ -317,6 +318,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Harness-aligned accuracy (public, no auth)
   app.get("/api/accuracy/harness", asyncHandler(getHarnessAlignedAccuracy));
+
+  // OG Image generation routes (for social media link unfurling)
+  app.get("/api/og-image/stats", asyncHandler(ogImageController.getOgImageStats));
+  app.post("/api/og-image/clear-cache", asyncHandler(ogImageController.clearCache));
+  app.get("/api/og-image/:taskId", asyncHandler(ogImageController.getOgImage));
 
   // LLM Council routes - multi-model consensus evaluation
   app.get("/api/council/health", asyncHandler(councilController.healthCheck));

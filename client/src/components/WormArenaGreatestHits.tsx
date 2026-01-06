@@ -118,15 +118,15 @@ export default function WormArenaGreatestHits() {
 
   return (
     <Card className="worm-card">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold text-worm-ink">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-2xl font-bold text-black">
           Greatest Hits Matches
         </CardTitle>
-        <p className="text-sm mt-1 worm-muted">
+        <p className="text-base mt-2 text-gray-800 leading-relaxed">
           Curated Worm Arena games with long runs, high costs, big scores, or monster apple hauls.
         </p>
       </CardHeader>
-      <CardContent className="pt-0 text-base text-worm-ink">
+      <CardContent className="pt-0 text-base text-black">
         {isLoading && (
           <div className="py-3 text-base worm-muted">
             Loading greatest hits
