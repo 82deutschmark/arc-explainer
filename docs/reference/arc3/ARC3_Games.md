@@ -11,17 +11,44 @@ ARC-AGI-3 games are turn-based systems where agents interact with 2D grid enviro
 
 To see which games are available, either go to [three.arcprize.org](https://three.arcprize.org) or make an API call to [list games](/api-reference/games/list-available-games).
 
-THREE ORIGINAL PREVIEW GAMES:
+### Available Games
 
-* [ls20](https://three.arcprize.org/games/ls20) - Locksmith
-* [ft09](https://three.arcprize.org/games/ft09) - Functional Tiles
-* [vc33](https://three.arcprize.org/games/vc33) - Volume Control
+To see which games are available, either go to [three.arcprize.org](https://three.arcprize.org) or make an API call to [list games](/api-reference/games/list-available-games).
 
-THREE ORIGINAL Private Evaluation Games:
+#### THREE ORIGINAL PREVIEW GAMES:
 
-* [sp80](https://three.arcprize.org/games/sp80) - Streaming Purple
-* [as66](https://three.arcprize.org/games/as66) - Always Sliding
-* [lp85](https://three.arcprize.org/games/lp85) - Loop & Pull
+* **[ls20](https://three.arcprize.org/games/ls20) - Locksmith**
+    * **Objective**: Move a player avatar over certain tiles to change the shape of a key and reach the exit door.
+    * **Strategy**: Identify the player avatar and the door. Navigate over specific tiles to transform the key shape to match the lock requirement.
+
+* **[ft09](https://three.arcprize.org/games/ft09) - Functional Tiles**
+    * **Objective**: Click on tiles to match an expected configuration.
+    * **Mechanism**: The **dominant colors in the top right** of the grid indicate the target configuration the game expects.
+    * **Strategy**: Maintain focus on the top-right "reference" area and click the main grid to align colors.
+
+* **[vc33](https://three.arcprize.org/games/vc33) - Volume Control**
+    * **Objective**: Guide large colored squares (players) to objectives.
+    * **Mechanism**: Clicking red or blue squares adjusts the height of white columns.
+    * **Strategy**: Yellow, green, and purple squares are players. Manipulate the white column heights to allow players to pass through doors and reach goals.
+
+#### THREE ORIGINAL PRIVATE EVALUATION GAMES:
+
+* **[sp80](https://three.arcprize.org/games/sp80) - Streaming Purple**
+    * **Objective**: Redirect a purple liquid stream into white U-shaped containers.
+    * **Mechanism**: Liquid falls from an emitter according to gravity. Place platforms to redirect the flow.
+    * **Complications**: Later levels add movable platforms and emitters. Avoid spilling liquid outside the containers.
+
+* **[as66](https://three.arcprize.org/games/as66) - Always Sliding**
+    * **Objective**: Reach the objective while navigating a sliding yellow block.
+    * **Controls**: UP, DOWN, LEFT, RIGHT. The block slides until it hits an obstacle.
+    * **Strategy**: Level 1 sequence: **DOWN, LEFT, DOWN**. 
+    * **Complications**: Later levels require changing block color using special objects. Avoid orange and red enemies (static or mobile).
+
+* **[lp85](https://three.arcprize.org/games/lp85) - Loop & Pull**
+    * **Objective**: Align yellow colored blocks in indicated positions.
+    * **Mechanism**: Click green (advance) or red (reverse) objects to loop sequences of colored blocks.
+    * **Complications**: Multiple blocks, multiple loops, and non-looping buttons that control different elements.
+
 
 ### Game ID
 
