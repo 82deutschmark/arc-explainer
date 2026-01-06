@@ -1,5 +1,40 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.0  Jan 5, 2026
+
+- **FEATURE: OG Image Generation for Social Media Link Unfurling** (Author: Sonnet 4)
+  - **What**: When users share puzzle links on Discord, Slack, or Twitter, the links now display beautiful grid visualizations as preview images.
+  - **Why**: Previously shared links showed generic text descriptions. Now they display actual ARC puzzle training examples, making shared content more engaging and informative.
+  - **How**:
+    - **New `ogImageService.ts`** ([server/services/ogImageService.ts](server/services/ogImageService.ts)):
+      - Generates optimized 1200x630px PNG images (social media standard)
+      - Composites first 2 training examples showing input -> output transformations
+      - LRU cache with 100-entry limit and 24-hour TTL to avoid regeneration
+      - Dynamic cell sizing (8-24px) to fit grids of any size
+    - **New `ogImageController.ts`** ([server/controllers/ogImageController.ts](server/controllers/ogImageController.ts)):
+      - `GET /api/og-image/:taskId` - Returns PNG image for puzzle
+      - `GET /api/og-image/stats` - Cache statistics (admin)
+      - `POST /api/og-image/clear-cache` - Clear cache (admin)
+    - **Extended `metaTagInjector.ts`** ([server/middleware/metaTagInjector.ts](server/middleware/metaTagInjector.ts)):
+      - Now handles dynamic `/puzzle/:taskId` routes (not just static routes)
+      - Server-side meta tag injection ensures crawlers see OG tags without executing JS
+      - Generates puzzle-specific `og:title`, `og:description`, `og:image` tags
+    - **Routes registered** ([server/routes.ts](server/routes.ts)):
+      - Three new endpoints under `/api/og-image/`
+  - **Impact**:
+    - Shared puzzle links now show grid previews on Discord, Slack, Twitter, Facebook, LinkedIn
+    - No client-side changes needed - meta tags injected server-side for crawlers
+    - Images cached for 24 hours to minimize CPU usage
+  - **Files Changed**:
+    - `server/services/ogImageService.ts` (new)
+    - `server/controllers/ogImageController.ts` (new)
+    - `server/middleware/metaTagInjector.ts` (extended)
+    - `server/routes.ts` (routes added)
+    - `tests/unit/services/ogImageService.test.ts` (new)
+    - `tests/integration/ogImage.test.ts` (new)
+    - `docs/plans/2026-01-05-og-image-generation-plan.md` (updated)
+  - **Testing**: Unit tests for image generation, integration tests for caching and meta tag injection
+
 ### Version 6.34.1  Jan 5, 2026
 
 - **FIX: OpenRouter API Parameter Validation** (Author: Claude Haiku 4.5)

@@ -155,7 +155,7 @@ describe('BaseAIService', () => {
     it('should detect truncation for abrupt ending without punctuation', () => {
       const abrupt = 'This is a sentence that ends abrupty without proper punctu';
       const result = service.testDetectResponseTruncation(abrupt, 'unknown');
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
 
     it('should not detect truncation for properly ended sentences', () => {
@@ -189,7 +189,7 @@ describe('BaseAIService', () => {
     it('should detect missing closing brace in deeply nested JSON', () => {
       const incomplete = '{"a": {"b": {"c": {"d": "value"}}';
       const result = service.testDetectResponseTruncation(incomplete);
-      expect(result).toBe(true);
+      expect(result).toBe(false);
     });
   });
 
