@@ -8,18 +8,16 @@
 
 ## Core Mechanics
 - **Interaction**: ACTION6 (Click) based.
-- **Reference Area**: The **top-right** corner of the grid contains the "dominant colors" or "target configuration."
-- **Goal**: Modify the main grid (via clicking) so that it matches the configuration/pattern dictated by the top-right reference.
+- **Reference Area**: Static, top-right corner. It defines the goal state for the main grid.
+- **Precedence Logic**: Colors are ranked. The **top-listed color** in the reference is dominant. 
+- **Conflict Resolution**: If two colors/shapes "compete" for the same zone, the dominant color's preference takes precedent.
+- **Tile Behavior**: Clicking a tile cycles it through available colors or toggles it back to its original state.
 
 ## Proven Strategies
-- **AISTHESIS Focus**: The agent must isolate the top-right region (e.g., a 3x3 or 4x4 sector) and treat it as the "Truth" or "Objective."
-- **Iterative Alignment**: Compare the current grid state with the top-right reference and perform targeted clicks to correct discrepancies.
-
-## Potential Obstacles for Agents
-- **Static vs. Periodic**: Does the top-right reference change during the level, or is it static at the start?
-- **Click Mapping**: Does clicking a tile cycle through colors, or does it flip a state?
+- **AISTHESIS Focus**: Extract the rank order of colors from the top-right immediately.
+- **Iterative Alignment**: Map the dominant color first, then layer the sub-dominant colors where they don't conflict.
 
 ## Questions for Refining Strategy
-1. **Reference Grid Size**: Is the size of the top-right configuration area fixed (e.g., 5x5) or does it vary by difficulty/level?
-2. **Click Side-Effects**: Does clicking one tile affect its neighbors (like Lights Out), or is it a direct 1:1 state change for that specific tile?
-3. **Color Cycle**: If clicking cycles colors, what is the fixed sequence (e.g., White -> Blue -> Red -> ...)?
+1. **Z-Order Persistence**: Does the order of clicks matter (e.g., clicking Red then Blue vs Blue then Red), or is the final state determined 100% by the static precedence rules?
+2. **Behavior Uniformity**: Can a single grid contain a mix of "Toggle" tiles and "Cycle" tiles, or is the grid behavior consistent (all toggle or all cycle) per level?
+

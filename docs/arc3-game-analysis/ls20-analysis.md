@@ -7,20 +7,20 @@
 - **Difficulty**: Hard
 
 ## Core Mechanics
-- **Player Avatar**: A character that can be moved around the grid.
-- **Key Mechanics**: The "Key" has a specific shape. Stepping over certain tiles (possibly color-coded) changes the shape of the key.
-- **Goal**: Reach the **exit door** after transforming the key into the correct required shape for the lock.
+- **Player Avatar**: A character controlled by UP, DOWN, LEFT, RIGHT.
+- **Key Location**: The key is a distinct cluster of pixels located in the **bottom-left** area at the start of each level.
+- **Goal**: Transform the key to match the door's lock requirements and reach the door.
+- **Exit Logic**: The door does **not** require a trigger action (like ACTION5). Reaching it with the correct key configuration automatically wins the level.
 
 ## Proven Strategies
-- **Avatar Tracking**: Consistent monitoring of the player character's (x,y) coordinates.
-- **Transformation Discovery**: Map out which "special tiles" correspond to which key-shape changes. This is essentially a "recipe" discovery problem.
-- **Exit Logic**: The door remains locked or impassable until the "Belief" in the current key shape matches the "Lock" requirement.
+- **Three-Pillar Transformation**: Agents must account for changes in **Shape**, **Color**, and **Rotation**.
+- **Transformation Mapping**: Each level has specific tiles that modify one of these three properties.
+- **Visual Goal**: The door typically displays a "ghost" or "indicator" of the target key state.
 
 ## Potential Obstacles for Agents
-- **Pathfinding with State**: The agent cannot just walk to the exit; it must walk a specific "transformation path" first.
-- **Visual Feedback**: The "key shape" might be represented in a separate UI area or attached to the player sprite.
+- **Rotation Logic**: LLMs often struggle with 2D rotations. The harness must translate pixel-position changes into abstract rotation states (0, 90, 180, 270 deg).
 
 ## Questions for Refining Strategy
-1. **Key Visualization**: Is the current "Key Shape" shown in the main grid (e.g., as a cluster of pixels following the player) or in a separate status area?
-2. **Tile Permanence**: Do the transformation tiles disappear after one use, or can you step on them multiple times to "cycle" shapes?
-3. **Door Logic**: Is there a visual hint that reveals what the *target* key shape should be (e.g., a preview next to the door)?
+1. **Key Attachment/Collision**: Does the key cluster physically collide with walls/obstacles (potentially trapping the player), or is it a non-solid "tail" that simply follows the player?
+2. **Multi-Key Scenarios**: Are there any "Level 10+" scenarios where multiple doors require different keys simultaneously, or is the logic always one-key-to-one-door per frame?
+
