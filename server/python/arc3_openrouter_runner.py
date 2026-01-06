@@ -572,6 +572,10 @@ Think step by step about what action to take next."""
                     f"Symmetry: {sum(analysis.symmetry.values())}/5 axes"
                 ]
                 
+                # Include semantic insights (e.g., hazard detection, reference region)
+                if analysis.insights:
+                    harness_insights.extend([f"Insight: {i.description}" for i in analysis.insights])
+                
                 if analysis.components:
                     largest_comp = max(analysis.components, key=lambda c: c.size)
                     harness_insights.append(f"Largest component: {largest_comp.color} (size {largest_comp.size})")
@@ -585,13 +589,21 @@ Think step by step about what action to take next."""
                 if self.previous_frame and len(self.frame_sequence) >= 2:
                     prev_frame = self.frame_sequence[-2]
                     delta = self.harness.analyze_delta(prev_frame, frame)
+                    delta_insights = self.harness.generate_delta_insights(delta)
                     
                     if delta.pixels_changed > 0:
                         delta_summary = f"{delta.pixels_changed} pixels changed"
                         if delta.component_transformations:
                             delta_summary += f", {len(delta.component_transformations)} components transformed"
-                        self.add_observation(f"Frame delta: {delta_summary}")
+                        
+                        # Add semantic delta insights (e.g., "Object moved significantly")
+                        if delta_insights:
+                            insight_text = "; ".join([i.description for i in delta_insights])
+                            delta_summary += f" ({insight_text})"
+                            self.add_observation(f"Action effect: {insight_text}")
+                        
                         context_parts.append(f"Last Delta: {delta_summary}")
+
                 
             except Exception as e:
                 emit_event("agent.reasoning", {"content": f"Harness analysis failed: {e}, using fallback"})
