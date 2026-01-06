@@ -7,26 +7,15 @@
 - **Difficulty**: Medium
 
 ## Core Mechanics
-- **Emitters**: A source node that produces a stream of purple liquid.
-- **Physics**: The purple liquid falls straight down according to gravity.
-- **Targets**: White U-shaped containers at the bottom of the screen.
-- **Toolbox**: The agent can place (and potentially move) **platforms** to redirect the downward flow.
-- **Goal**: Redirect the entire stream into the white containers. Liquid must not spill outside the U-shapes.
-
-## Advanced Level Complications
-- **Movable Platforms**: Some platforms can be repositioned.
-- **Platform-Emitters**: Later levels feature platforms that also act as emitters.
-- **Multiple Flows**: Managing multiple streams into discrete containers.
+- **Interaction Flow**: Position platforms (ACTION6) first, then initiate the stream (ACTION5).
+- **Execution**: Once ACTION5 is pressed, the game simulates the flow over several frames automatically.
+- **Pass/Fail**: If any purple pixel touches a non-container area, the turn results in failure. Level success requires perfect containment in the white U-shapes.
 
 ## Proven Strategies
-- **Topology Analysis**: Use delta analysis to see where the purple pixels are falling and place platforms diagonally to "slide" the flow horizontally.
-- **Containment Check**: Monitor the boundary of the white U-shaped containers for any purple pixels (spillage).
-
-## Potential Obstacles for Agents
-- **Static vs. Dynamic Flow**: Understanding that the stream is continuous and "painting" the grid over time.
-- **Resource Limits**: Are there a limited number of platforms that can be placed?
+- **Batch Placement**: Agents should not "drip-feed" platforms. They must build the entire skeleton of the pipe system before the first ACTION5.
+- **Simulation**: Since the outcome is binary and irreversible per turn, the harness must simulate the gravity path $(x, y) \to (x, y+1)$ with platform reflections.
 
 ## Questions for Refining Strategy
-1. **Platform Availability**: Does the agent have an "inventory" of platforms to place, or can they draw/create them anywhere?
-2. **Platform Controls**: Is placing a platform an ACTION6 (Click) to toggle a pixel, or a drag-and-drop mechanism?
-3. **Movable Emitters**: For "platforms which also contain an emitter," does moving the platform also shift the source point of the gravity-fed stream immediately?
+1. **Interactive Refinement**: After the stream starts and a spill is detected, are you forced to `RESET` the whole level, or can you just move one platform and try again?
+2. **Platform Weights**: Can the stream "push" or "dislodge" a platform that isn't anchored to a wall, or are platforms static once placed?
+

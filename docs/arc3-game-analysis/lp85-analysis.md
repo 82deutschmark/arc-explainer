@@ -7,25 +7,16 @@
 - **Difficulty**: Hard
 
 ## Core Mechanics
-- **Interaction**: Click-based (ACTION6).
-- **Control Objects**: **Green** objects (Advance/Forward) and **Red** objects (Reverse/Back).
-- **Game Objects**: Loops or sequences of colored blocks.
-- **Goal**: Align the **yellow** colored block with a specific indicated target position.
-
-## Advanced Level Complications
-- **Multiple Loops**: Levels with several independent or interlocking looping sequences.
-- **Multiple Targets**: Aligning multiple colored blocks simultaneously.
-- **Non-Looping Controls**: Buttons that control different mechanics (e.g., shifts, toggles, or gates) rather than simple directional looping.
+- **Target Indicators**: Four small yellow squares act as the designated slots for the alignment of larger yellow blocks.
+- **Controls**: Red and Green buttons. 
+- **Action Logic**: While primary actions involve looping, advanced buttons can trigger **Swaps**, **Pushes**, or **Pulls**.
+- **Goal**: Perfect overlay of large yellow blocks onto all small yellow indicator squares.
 
 ## Proven Strategies
-- **Sequence Matching**: Determine the "length" of the loop (e.g., how many clicks to return to original state).
-- **State Estimation**: Predict the relative position of the yellow block after $n$ clicks on the Green vs. Red controllers.
-
-## Potential Obstacles for Agents
-- **Complexity**: Hard-difficulty levels with non-linear controls will require the agent to build an internal state-transition model.
-- **Visual Occlusion**: Do loops overlap or hide other segments?
+- **Slot Alignment**: Prioritize identifying where the small yellow squares are (these are the "anchors"). Use them as the target coordinates for pathfinding.
+- **Button Experimentation**: On turn 1 of an advanced level, test each unique color/shape button to classify it as a Looper, Swapper, or Pusher.
 
 ## Questions for Refining Strategy
-1. **Loop Sensitivity**: Does clicking a Green object advance *all* loops, or only the specific loop associated with that object's position/cluster?
-2. **Indicated Positions**: How is the "target position" visually distinguished (e.g., a hollow yellow border, a specific gray tile)?
-3. **Button Mechanics**: For "buttons that control different things," can you describe an example of a non-looping effect?
+1. **Swap Range**: When a button triggers a "Swap," does it affect the entire loop (reversing the order) or only a specific pair of blocks adjacent to each other?
+2. **Push/Pull Resolution**: If a "Push" button is clicked and the block hits a target, does it stop, or will it continue through the target until it hits the loop's boundary?
+
