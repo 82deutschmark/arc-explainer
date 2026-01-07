@@ -1,13 +1,14 @@
 /**
- * Author: Cascade
- * Date: 2026-01-07T03:20:00Z
- * PURPOSE: Owner-mandated landing page that spotlights the retro VisitorCounter (scaled up top-of-page)
- *          and adds a nightmare-inducing gallery of ARC puzzle GIFs linking directly to their tasks.
- * SRP/DRY check: Pass — reuses VisitorCounter + static asset list; keeps routing untouched.
+ * Author: Codex (GPT-5)
+ * Date: 2026-01-07T03:47:07Z
+ * PURPOSE: Landing page hero that rotates through existing ARC puzzle GIFs and links directly to
+ *          each puzzle route without introducing new assets or dependencies.
+ * SRP/DRY check: Pass - did you verify existing functionality? Reused the existing GIF list and routing helpers.
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
-import { VisitorCounter } from '@/components/VisitorCounter';
+
+const ROTATION_INTERVAL_MS = 4500;
 
 const PUZZLE_GIF_GALLERY = [
   { id: '2bee17df', file: 'arc_puzzle_2bee17df_fringes.gif', label: 'Fringes' },
@@ -35,59 +36,72 @@ const PUZZLE_GIF_GALLERY = [
 ] as const;
 
 export default function LandingPage() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || PUZZLE_GIF_GALLERY.length < 2) {
+      return;
+    }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (prefersReducedMotion.matches) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % PUZZLE_GIF_GALLERY.length);
+    }, ROTATION_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || PUZZLE_GIF_GALLERY.length === 0) {
+      return;
+    }
+
+    const nextIndex = (activeIndex + 1) % PUZZLE_GIF_GALLERY.length;
+    const nextGif = PUZZLE_GIF_GALLERY[nextIndex];
+    // Prefetch the next GIF to keep transitions smooth.
+    const image = new Image();
+    image.src = `/images/decoration/${nextGif.file}`;
+  }, [activeIndex]);
+
+  const activeGif = PUZZLE_GIF_GALLERY[activeIndex];
+
   return (
-    <main className="min-h-screen bg-[#020617] text-slate-100 flex flex-col">
-      <section className="flex flex-col items-center justify-center gap-6 px-4 pt-16 pb-12 text-center">
-        <p className="text-sm font-mono uppercase tracking-[0.6em] text-slate-500">
-          Visitor Odometer
-        </p>
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-[0.3em] text-lime-200 drop-shadow-[0_0_30px_rgba(190,242,100,0.35)]">
-          OBSERVE THE COUNT
-        </h1>
-        <div className="scale-[1.35] sm:scale-[1.6] md:scale-[1.85] origin-top">
-          <VisitorCounter page="landing" />
-        </div>
-        <p className="max-w-2xl text-lg sm:text-2xl text-slate-400">
-          This is the only sanctioned artifact on the landing page—watch the digits climb and
-          question who else is staring back.
-        </p>
-      </section>
-
-      <section className="mt-auto border-t border-slate-900 bg-gradient-to-b from-slate-950 via-black to-[#01010a]">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-          <div className="text-center space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.5em] text-rose-500/70">
-              Do not linger
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-widest text-rose-200">
-              THE GRID WATCHES
-            </h2>
-            <p className="text-base text-slate-400">
-              Each flickering relic links to its ARC puzzle. Click if you dare.
-            </p>
-          </div>
-
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {PUZZLE_GIF_GALLERY.map((gif) => (
-              <Link key={gif.id} href={`/task/${gif.id}`}>
-                <div className="group relative cursor-pointer overflow-hidden rounded-xl border border-slate-800 bg-black/70 p-3 transition-all duration-300 hover:border-rose-500 hover:shadow-[0_0_35px_rgba(244,63,94,0.35)]">
-                  <div className="relative h-28 w-full overflow-hidden rounded-lg bg-slate-900">
-                    <img
-                      src={`/images/decoration/${gif.file}`}
-                      alt={`Animated ARC preview for puzzle ${gif.id}`}
-                      className="h-full w-full object-cover mix-blend-screen saturate-150 opacity-90 transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/60" />
-                  </div>
-                  <div className="mt-3 flex items-center justify-between text-[11px] font-mono uppercase tracking-wide text-slate-400">
-                    <span>{gif.id}</span>
-                    <span className="text-rose-300 group-hover:text-rose-200">{gif.label}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+    <main className="min-h-screen bg-[#020617] text-slate-100">
+      <section className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+        <div className="w-full max-w-6xl">
+          <Link href={`/task/${activeGif.id}`}>
+            <div className="group relative overflow-hidden rounded-3xl border border-slate-800 bg-black/80 shadow-[0_0_60px_rgba(15,23,42,0.65)]">
+              <div className="relative aspect-[4/3] sm:aspect-[16/9]">
+                {PUZZLE_GIF_GALLERY.map((gif, index) => (
+                  <img
+                    key={gif.id}
+                    src={`/images/decoration/${gif.file}`}
+                    alt={`Animated ARC preview for puzzle ${gif.id}`}
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${
+                      index === activeIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    loading={index === activeIndex ? 'eager' : 'lazy'}
+                  />
+                ))}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/70" />
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 bg-black/70 px-4 py-3 text-xs sm:text-sm">
+                <span className="font-mono uppercase tracking-[0.3em] text-slate-400">
+                  {activeGif.id}
+                </span>
+                <span className="font-semibold uppercase tracking-[0.2em] text-rose-200">
+                  {activeGif.label}
+                </span>
+                <span className="text-slate-500">Click to open puzzle</span>
+              </div>
+            </div>
+          </Link>
         </div>
       </section>
     </main>

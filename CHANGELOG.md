@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.4  Jan 7, 2026
+
+- **FIX: Landing page now rotates the ARC GIF hero instead of the visitor counter** (Author: Codex (GPT-5))
+  - **What**: Replaced the landing page counter hero with a single rotating ARC GIF hero that cycles through the existing gallery and links to each puzzle.
+  - **Why**: Owner requested the landing page be only a rotating selection of the animated ARC GIFs.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`: removed the counter hero and GIF grid in favor of a crossfading rotator built from the existing GIF list and `/task/:id` links.
+    - `docs/2026-01-06-landing-arc-gif-rotation-plan.md`: captured scope and TODOs for the swap.
+
 ### Version 6.35.3  Jan 6, 2026
 
 - **FIX: Landing page now shows enlarged counter + terrifying ARC GIF gallery** (Author: Cascade)
