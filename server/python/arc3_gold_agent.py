@@ -27,22 +27,22 @@ load_dotenv()
 # Constants
 ARC3_API_BASE = "https://three.arcprize.org"
 ARC_PALETTE = [
-    (0, 0, 0),        # 0: black
-    (0, 116, 217),    # 1: blue
-    (255, 65, 54),    # 2: red
-    (46, 204, 64),    # 3: green
-    (255, 220, 0),    # 4: yellow
-    (170, 170, 170),  # 5: gray
-    (240, 18, 190),   # 6: pink
-    (255, 133, 27),   # 7: orange
-    (127, 219, 255),  # 8: cyan
-    (135, 86, 47),    # 9: brown
-    (80, 80, 80),     # 10: wall (dark gray)
-    (255, 255, 255),  # 11: goal (white)
-    (0, 255, 128),    # 12: special 1
-    (128, 0, 255),    # 13: special 2
-    (255, 0, 128),    # 14: special 3
-    (0, 128, 255),    # 15: special 4
+    (255, 255, 255),  # 0: White
+    (204, 204, 204),  # 1: Light Gray
+    (153, 153, 153),  # 2: Gray
+    (102, 102, 102),  # 3: Dark Gray
+    (51, 51, 51),     # 4: Darker Gray
+    (0, 0, 0),        # 5: Black
+    (229, 58, 163),   # 6: Pink
+    (255, 123, 204),  # 7: Light Pink
+    (249, 60, 49),    # 8: Red
+    (30, 147, 255),   # 9: Blue
+    (136, 216, 241),  # 10: Light Blue
+    (255, 220, 0),    # 11: Yellow
+    (255, 133, 27),   # 12: Orange
+    (146, 18, 49),    # 13: Dark Red
+    (79, 204, 48),    # 14: Green
+    (163, 86, 208),   # 15: Purple
 ]
 
 @dataclass
@@ -268,25 +268,32 @@ class GoldAgent:
             x, y = None, None
             reasoning = f"Thought: {reasoning_text}\nReply: {text}"
             
-            # Extract action - prioritize the LAST occurrence to avoid following reasoning hallucinations
-            act_matches = re.findall(r"ACTION:\s*(ACTION[1-7]|RESET)", text, re.I)
+            text = prediction_text
+            action = "ACTION1"
+            x, y = None, None
+            reasoning = f"Thought: {reasoning_text}\nReply: {text}"
+            
+            # Extract action - look for standalone ACTIONx words
+            # We want the LAST valid action mentioned in case the model discusses options
+            act_matches = re.findall(r"(ACTION[1-6]|RESET)\b", text, re.I)
             if act_matches:
                 action = act_matches[-1].upper()
-            else:
-                # Fallback: look for ACTIONx anywhere (last one)
-                act_matches_fallback = re.findall(r"(ACTION[1-7]|RESET)", text, re.I)
-                if act_matches_fallback:
-                    action = act_matches_fallback[-1].upper()
             
-            # Extract coordinates ONLY if the game uses ACTION6
+            # Extract coordinates ONLY if the game uses ACTION6 and it was selected
             base_id = game_id.split("-")[0]
-            if base_id in ["ft09", "vc33", "sp80", "lp85"]:
-                # Look for last coordinates
-                coord_matches = re.findall(r"COORDINATES:\s*(\d+)\s*[,\s]\s*(\d+)", text, re.I)
+            if base_id in ["ft09", "vc33", "sp80", "lp85"] and action == "ACTION6":
+                # Matches: "COORDINATES: 12,34" or "12, 34" or "(12, 34)"
+                # We look at the text AFTER the last action mention to ensure it belongs to it
+                last_act_idx = text.upper().rfind(action)
+                post_action_text = text[last_act_idx:]
+                
+                # Check specifics first
+                coord_matches = re.findall(r"COORDINATES:?\s*\(?(\d+)\s*[,\s]\s*(\d+)\)?", post_action_text, re.I)
                 if coord_matches:
                     x, y = int(coord_matches[-1][0]), int(coord_matches[-1][1])
                 else:
-                    coord_alt = re.findall(r"(\d+)\s*,\s*(\d+)", text)
+                    # Fallback to just pair of numbers
+                    coord_alt = re.findall(r"(\d+)\s*,\s*(\d+)", post_action_text)
                     if coord_alt:
                         x, y = int(coord_alt[-1][0]), int(coord_alt[-1][1])
             
