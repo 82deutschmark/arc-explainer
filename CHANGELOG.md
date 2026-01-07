@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.2  Jan 6, 2026
+
+- **FIX: Landing page reduced to VisitorCounter-only per owner direction** (Author: Cascade)
+  - **What**: Replaced the previously busy landing page with a single centered `VisitorCounter` so `/` only displays real traffic stats.
+  - **Why**: The prior hero, cards, and faux “Project Dispatch” content were hard-coded and misleading; the owner requested that the counter be the only element while other entry points remain elsewhere.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`: removed all marketing markup, kept the component header updated, and now renders `<VisitorCounter page="landing" />` inside a minimal fullscreen container.
+    - `docs/2026-01-07-landing-plan.md`: documented the simplified intent and marked TODOs complete after implementation.
+
 ### Version 6.35.1  Jan 6, 2026
 
 - **FEATURE: Dedicated Landing Page with ARC 1/2 vs ARC 3 Distinction** (Author: Cascade)
