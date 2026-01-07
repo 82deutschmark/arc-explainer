@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.3  Jan 6, 2026
+
+- **FIX: Landing page now shows enlarged counter + terrifying ARC GIF gallery** (Author: Cascade)
+  - **What**: Scaled the VisitorCounter typography so the digits dominate the hero and added a bottom strip of owner-specified animated ARC puzzle GIFs, each linking to its puzzle detail route.
+  - **Why**: Owner feedback requested the visitor counter remain the only “content” while the GIF relics haunt the footer; previous counter-only layout lacked the desired drama.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`: reintroduced a slim layout with the counter-focused hero plus a grid of `/images/decoration/...` GIF tiles that link to `/task/:id`.
+    - `client/src/components/VisitorCounter.tsx`: increased digit/ticker sizing and typography to emphasize the odometer vibe while keeping 90s flair badges.
+    - `docs/2026-01-07-landing-plan.md`: documented the enlarged-counter + terrifying footer requirements and checked off completed TODOs.
+
 ### Version 6.35.2  Jan 6, 2026
 
 - **FIX: Landing page reduced to VisitorCounter-only per owner direction** (Author: Cascade)

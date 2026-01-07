@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-
 /**
- * Author: Antigravity
- * Date: 2026-01-06
- * PURPOSE: Old-school 1990s GeoCities style visitor counter.
+ * Author: Cascade
+ * Date: 2026-01-07T03:45:00Z
+ * PURPOSE: Retro visitor counter component with oversized typography so the landing page can
+ *          spotlight real traffic while preserving the GeoCities flair and clicky badges.
+ * SRP/DRY check: Pass — encapsulates fetch + rendering logic in one component reused by pages.
  */
+import React, { useEffect, useState } from 'react';
 export function VisitorCounter({ page = 'landing' }: { page?: string }) {
     const [count, setCount] = useState<number | null>(null);
 
@@ -35,26 +36,26 @@ export function VisitorCounter({ page = 'landing' }: { page?: string }) {
     const paddedCount = count.toString().padStart(6, '0');
 
     return (
-        <div className="flex flex-col items-center gap-2 py-4">
-            <div className="flex items-center gap-1 font-mono text-xl font-bold bg-black p-2 border-4 border-slate-700 shadow-[inset_2px_2px_0_rgba(255,255,255,0.3),inset_-2px_-2px_0_rgba(0,0,0,0.5)]">
+        <div className="flex flex-col items-center gap-4 py-4">
+            <div className="flex items-center gap-1 font-mono text-2xl sm:text-3xl font-black bg-black p-3 border-4 border-slate-700 shadow-[inset_2px_2px_0_rgba(255,255,255,0.3),inset_-2px_-2px_0_rgba(0,0,0,0.5)]">
                 {paddedCount.split('').map((digit, i) => (
                     <div
                         key={i}
-                        className="w-8 h-10 flex items-center justify-center bg-slate-900 text-lime-400 border border-slate-800 shadow-[inset_1px_1px_3px_rgba(0,0,0,1)]"
+                        className="w-10 h-14 flex items-center justify-center bg-slate-900 text-lime-400 border border-slate-800 shadow-[inset_1px_1px_3px_rgba(0,0,0,1)] text-3xl"
                     >
                         {digit}
                     </div>
                 ))}
             </div>
-            <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+            <div className="text-base sm:text-lg font-black tracking-[0.6em] text-slate-200 uppercase">
                 Visitors since launch
             </div>
             {/* 90s Web Flair */}
-            <div className="flex gap-4 opacity-50 grayscale hover:grayscale-0 transition-all">
-                <div className="border border-slate-700 bg-slate-900 px-2 py-0.5 text-[8px] text-white">
+            <div className="flex gap-4 opacity-70 grayscale hover:grayscale-0 transition-all">
+                <div className="border border-slate-700 bg-slate-900 px-3 py-1 text-[10px] text-white font-bold">
                     MADE WITH <span className="text-sky-400">NOTEPAD</span>
                 </div>
-                <div className="border border-slate-700 bg-slate-900 px-2 py-0.5 text-[8px] text-white font-serif italic">
+                <div className="border border-slate-700 bg-slate-900 px-3 py-1 text-[10px] text-white font-serif italic">
                     Best viewed in <span className="text-orange-400 font-bold">Netscape Navigator 4.0</span>
                 </div>
             </div>
