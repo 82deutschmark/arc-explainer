@@ -177,7 +177,26 @@ class GoldAgent:
         image_b64 = self.render_png_b64(frame)
         system_prompt = get_study_guide(game_id)
         
-        user_content = f"CURRENT STATUS: Level={level}, Score={score}, Turn={turn}\n\nHARNESS ANALYSIS:\n{harness_data}\n\nDECIDE YOUR ACTION. If this is Level 1, stick to the GOLD SOLUTION if provided."
+        # LEVEL/SCORE MAPPING LOGIC
+        # Score 0 = Level 1
+        # Score 1 = Level 2
+        # Score 2 = Level 3, etc.
+        current_level_from_score = score + 1
+        
+        user_content = f"""CURRENT STATUS:
+- Real Level: {current_level_from_score} (Derived from Score: {score})
+- API Reported Level: {level}
+- Current Turn: {turn}
+
+CHEAT SHEET INSTRUCTIONS (Only valid for specific levels!):
+If the cheat sheet provides a solution for Level {current_level_from_score}, FOLLOW IT.
+Use it only as a guide for the first few levels. You may need to IGNORE IT and solve visually.
+
+HARNESS ANALYSIS:
+{harness_data}
+
+DECIDE YOUR ACTION.
+Predict the result of your action first. Then decide."""
         
         url = "https://api.openai.com/v1/responses"
         headers = {
