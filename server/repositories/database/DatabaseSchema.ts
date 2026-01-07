@@ -13,7 +13,7 @@ import { Pool, PoolClient } from 'pg';
 import { logger } from '../../utils/logger.ts';
 
 export class DatabaseSchema {
-  
+
   /**
    * Create all required tables and apply migrations.
    */
@@ -41,6 +41,7 @@ export class DatabaseSchema {
       await this.createWormArenaSessionsTable(client);
       await this.createReArcDatasetsTable(client);
       await this.createReArcSubmissionsTable(client);
+      await this.createVisitorStatsTable(client);
       logger.info('Core tables verified/created.', 'database');
 
       // Phase 2: Apply schema-altering migrations for older database instances.
@@ -238,7 +239,7 @@ export class DatabaseSchema {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
     `);
-    
+
     // Create indexes for ingestion_runs table
     await client.query(`CREATE INDEX IF NOT EXISTS idx_ingestion_runs_dataset ON ingestion_runs(dataset_name)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_ingestion_runs_started ON ingestion_runs(started_at DESC)`);
@@ -520,6 +521,24 @@ export class DatabaseSchema {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_worm_arena_sessions_status ON worm_arena_sessions(status)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_worm_arena_sessions_expires ON worm_arena_sessions(expires_at)`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_worm_arena_sessions_game_id ON worm_arena_sessions(game_id) WHERE game_id IS NOT NULL`);
+  }
+
+  private static async createVisitorStatsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS visitor_stats (
+        id SERIAL PRIMARY KEY,
+        page VARCHAR(255) NOT NULL UNIQUE,
+        count INTEGER NOT NULL DEFAULT 0,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Initialize with landing if not exists
+    await client.query(`
+      INSERT INTO visitor_stats (page, count)
+      VALUES ('landing', 0)
+      ON CONFLICT (page) DO NOTHING
+    `);
   }
 
   /**

@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
+import { VisitorCounter } from '@/components/VisitorCounter';
 
 const ARC1_PATTERN = ['🟥', '🟧', '🟨', '🟩', '🟦', '🟪'];
 const ARC3_PATTERN = ['🎮', '🤖', '🎯', '🏆', '⚡', '🔥'];
@@ -128,7 +129,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 opacity-90" />
-        
+
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <EmojiMosaicAccent
@@ -161,7 +162,7 @@ export default function LandingPage() {
             <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-6xl">
               ARC Explainer
             </h1>
-            
+
             <p className="mb-8 text-lg text-slate-300 sm:text-xl">
               Explore the evolution of ARC reasoning systems
             </p>
@@ -279,7 +280,7 @@ export default function LandingPage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 lg:grid-cols-2">
-            
+
             {/* ARC 1 & 2 Card */}
             <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-8">
               <div className="mb-6 flex items-center gap-3">
@@ -294,11 +295,11 @@ export default function LandingPage() {
 
               <div className="mb-6 space-y-3 text-slate-300">
                 <p>
-                  Explore abstract visual reasoning puzzles that test pattern recognition, 
-                  spatial reasoning, and rule abstraction. These are the classic ARC benchmarks 
+                  Explore abstract visual reasoning puzzles that test pattern recognition,
+                  spatial reasoning, and rule abstraction. These are the classic ARC benchmarks
                   that measure how well AI systems can learn and apply transformation rules.
                 </p>
-                
+
                 <div className="rounded-md border border-slate-700 bg-slate-950/50 p-4">
                   <h3 className="mb-2 font-semibold text-slate-200">What you can do:</h3>
                   <ul className="space-y-1 text-sm text-slate-400">
@@ -352,11 +353,11 @@ export default function LandingPage() {
 
               <div className="mb-6 space-y-3 text-slate-300">
                 <p>
-                  Step into an interactive game environment where AI agents navigate challenges 
-                  in real-time. ARC 3 tests embodied reasoning, strategic planning, and adaptive 
+                  Step into an interactive game environment where AI agents navigate challenges
+                  in real-time. ARC 3 tests embodied reasoning, strategic planning, and adaptive
                   behavior through dynamic gameplay scenarios.
                 </p>
-                
+
                 <div className="rounded-md border border-slate-700 bg-slate-950/50 p-4">
                   <h3 className="mb-2 font-semibold text-slate-200">What you can do:</h3>
                   <ul className="space-y-1 text-sm text-slate-400">
@@ -403,7 +404,7 @@ export default function LandingPage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-8 text-2xl font-bold text-slate-100">Join the Community</h2>
-          
+
           <div className="flex flex-wrap justify-center gap-4">
             <a
               href="https://discord.gg/9b77dPAmcA"
@@ -438,7 +439,11 @@ export default function LandingPage() {
       <footer className="border-t border-slate-800 bg-slate-900/40 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center text-sm text-slate-400">
           <p>ARC Explainer • Understanding AI reasoning through interactive exploration</p>
-          <p className="mt-2">Supporting ARC 1, ARC 2, and ARC 3 research communities</p>
+          <p className="mt-2 text-sm">Supporting ARC 1, ARC 2, and ARC 3 research communities</p>
+
+          <div className="mt-8 border-t border-slate-800/50 pt-8">
+            <VisitorCounter page="landing" />
+          </div>
         </div>
       </footer>
     </div>

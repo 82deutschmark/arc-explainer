@@ -10,6 +10,7 @@ import json
 import base64
 import time
 import requests
+import re
 from io import BytesIO
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass, field
@@ -36,13 +37,22 @@ ARC_PALETTE = [
     (255, 133, 27),   # 7: orange
     (127, 219, 255),  # 8: cyan
     (135, 86, 47),    # 9: brown
+    (80, 80, 80),     # 10: wall (dark gray)
+    (255, 255, 255),  # 11: goal (white)
+    (0, 255, 128),    # 12: special 1
+    (128, 0, 255),    # 13: special 2
+    (255, 0, 128),    # 14: special 3
+    (0, 128, 255),    # 15: special 4
 ]
 
 @dataclass
 class AgentState:
     game_id: str
+    card_id: str = ""
     guid: str = ""
+    last_response_id: str = ""
     turn: int = 0
+    level: int = 1
     score: int = 0
     frames: List[List[List[int]]] = field(default_factory=list)
     actions: List[str] = field(default_factory=list)
@@ -60,7 +70,7 @@ class GoldAgent:
         self.session = requests.Session()
         self.session.headers.update({
             "Content-Type": "application/json",
-            "x-api-key": self.arc3_api_key
+            "X-API-Key": self.arc3_api_key
         })
         
         self.harness = Arc3Harness()
@@ -70,63 +80,88 @@ class GoldAgent:
         print(f"[{time.strftime('%H:%M:%S')}] {msg}")
 
     # --- API Wrappers ---
-    def call_api(self, endpoint: str, payload: Dict = None) -> Dict:
-        url = f"{ARC3_API_BASE}/api/cmd/{endpoint}"
+    def call_api(self, path: str, payload: Dict = None) -> Dict:
+        url = f"{ARC3_API_BASE}{path}"
         resp = self.session.post(url, json=payload or {})
+        if not resp.ok:
+            self.log(f"API Error {resp.status_code}: {resp.text}")
         resp.raise_for_status()
         return resp.json()
 
     def open_scorecard(self, game_id: str):
         self.log(f"Opening scorecard for {game_id}...")
-        resp = self.call_api("OPEN_SCORECARD", {
-            "game_id": game_id,
+        payload = {
             "tags": [game_id, "gold-agent", "gpt-5-nano"],
-            "opaque_metadata": {"agent": "gold-study-guide"}
-        })
-        return resp.get("card_id")
+            "opaque": {"agent": "gold-study-guide"}
+        }
+        data = self.call_api("/api/scorecard/open", payload)
+        card_id = data.get("card_id")
+        self.state = AgentState(game_id=game_id, card_id=card_id)
+        return card_id
 
     def close_scorecard(self):
-        self.log("Closing scorecard.")
+        if not self.state or not self.state.card_id:
+            return
+        self.log(f"Closing scorecard {self.state.card_id}...")
         try:
-            self.call_api("CLOSE_SCORECARD")
+            self.call_api("/api/scorecard/close", {"card_id": self.state.card_id})
         except:
             pass
 
     def start_game(self, game_id: str) -> Dict:
-        self.log(f"Starting game: {game_id}")
-        data = self.call_api("START_GAME", {"game_id": game_id})
-        self.state = AgentState(game_id=game_id, guid=data["guid"], score=data.get("score", 0))
+        self.log(f"Starting game (RESET): {game_id}")
+        # According to Arc3ApiClient.ts, starting a game is a RESET command with card_id
+        payload = {
+            "game_id": game_id,
+            "card_id": self.state.card_id
+        }
+        data = self.call_api("/api/cmd/RESET", payload)
+        self.state.guid = data["guid"]
+        self.state.score = data.get("score", 0)
+        self.state.level = data.get("level", 1)
         self.state.frames.append(data["frame"])
         return data
 
     def submit_action(self, action: str, x: int = None, y: int = None, reasoning: str = "") -> Dict:
         payload = {
+            "game_id": self.state.game_id,
             "guid": self.state.guid,
             "opaque_metadata": {"reasoning": reasoning}
         }
+        
         if action == "ACTION6" and x is not None and y is not None:
             payload["x"] = x
             payload["y"] = y
+        
+        if action == "RESET":
+            payload["card_id"] = self.state.card_id
             
         self.log(f"Executing: {action} {' at '+str(x)+','+str(y) if x is not None else ''}")
-        data = self.call_api(action, payload)
+        data = self.call_api(f"/api/cmd/{action}", payload)
         
         self.state.guid = data["guid"]
         self.state.turn += 1
         self.state.score = data.get("score", 0)
+        self.state.level = data.get("level", self.state.level)
         self.state.frames.append(data["frame"])
         self.state.actions.append(action)
         return data
 
     # --- Visualization ---
     def render_png_b64(self, grid: List[List[int]], scale: int = 20) -> str:
-        height = len(grid)
-        width = len(grid[0])
+        # Handle 3D frames
+        if grid and isinstance(grid[0], list) and grid[0] and isinstance(grid[0][0], list):
+            actual_grid = grid[0]
+        else:
+            actual_grid = grid
+            
+        height = len(actual_grid)
+        width = len(actual_grid[0])
         img = Image.new("RGB", (width * scale, height * scale))
         pix = img.load()
         for y in range(height):
             for x in range(width):
-                c_idx = grid[y][x] if 0 <= grid[y][x] < 10 else 0
+                c_idx = actual_grid[y][x] if 0 <= actual_grid[y][x] < 16 else 0
                 color = ARC_PALETTE[c_idx]
                 for dy in range(scale):
                     for dx in range(scale):
@@ -137,90 +172,176 @@ class GoldAgent:
         return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
     # --- Intelligence ---
-    def get_llm_decision(self, game_id: str, frame: List[List[int]], harness_data: str) -> Tuple[str, Optional[int], Optional[int], str]:
-        """Ask GPT-5-Nano for the next move."""
+    def get_llm_decision(self, game_id: str, frame: List[List[int]], harness_data: str, score: int, turn: int, level: int) -> Tuple[str, Optional[int], Optional[int], str]:
+        """Ask OpenAI Responses API for the next move."""
         image_b64 = self.render_png_b64(frame)
         system_prompt = get_study_guide(game_id)
         
-        user_content = f"HARNESS ANALYSIS:\n{harness_data}\n\nDECIDE YOUR ACTION."
+        user_content = f"CURRENT STATUS: Level={level}, Score={score}, Turn={turn}\n\nHARNESS ANALYSIS:\n{harness_data}\n\nDECIDE YOUR ACTION. If this is Level 1, stick to the GOLD SOLUTION if provided."
+        
+        url = "https://api.openai.com/v1/responses"
+        headers = {
+            "Authorization": f"Bearer {self.openai_api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        # Following user request: effort=high, verbosity=high
+        payload = {
+            "model": "gpt-5-nano-2025-08-07",
+            "input": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "input_text",
+                            "text": user_content
+                        },
+                        {
+                            "type": "input_image",
+                            "image_url": f"data:image/png;base64,{image_b64}"
+                        }
+                    ]
+                }
+            ],
+            "reasoning": { "summary": "auto", "effort": "high" },
+            "text": { "verbosity": "high" },
+            "store": True,
+            "temperature": 1.0,
+            "metadata": {
+                "game_id": str(game_id),
+                "level": str(level),
+                "turn": str(turn),
+                "agent": "GoldAgentV2"
+            }
+        }
+        
+        # Add instructions ONLY if not a continuation
+        if not self.state.last_response_id:
+            payload["instructions"] = system_prompt
+        else:
+            payload["previous_response_id"] = self.state.last_response_id
+            payload["instructions"] = system_prompt
         
         try:
-            import openai
-            client = openai.OpenAI(api_key=self.openai_api_key)
+            resp = requests.post(url, headers=headers, json=payload)
+            if not resp.ok:
+                self.log(f"OpenAI API Error {resp.status_code}: {resp.text}")
+                resp.raise_for_status()
             
-            response = client.chat.completions.create(
-                model=self.openai_model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": user_content},
-                            {
-                                "type": "image_url",
-                                "image_url": {"url": f"data:image/png;base64,{image_b64}"}
-                            }
-                        ]
-                    }
-                ],
-                max_tokens=300
-            )
+            data = resp.json()
+            # Store ID for next turn
+            if "id" in data:
+                self.state.last_response_id = data["id"]
             
-            text = response.choices[0].message.content
+            # Parsing according to observed structure
+            prediction_text = ""
+            reasoning_text = ""
+            
+            if "output" in data:
+                for item in data["output"]:
+                    # Reasoning summary is in 'summary' field
+                    if "summary" in item:
+                        for content in item["summary"]:
+                            if content.get("type") == "summary_text":
+                                reasoning_text += content.get("text", "")
+                    
+                    # Message content is in 'content' field
+                    if "content" in item:
+                        for content in item["content"]:
+                            c_type = content.get("type")
+                            if c_type == "output_text":
+                                prediction_text += content.get("text", "")
+            
+            # Fallbacks
+            if not reasoning_text:
+                reasoning_text = data.get("output_reasoning", {}).get("summary", "")
+            if not reasoning_text:
+                reasoning_text = data.get("reasoning", {}).get("summary", "")
+            if not prediction_text:
+                prediction_text = data.get("output_text", "")
+
+            self.log(f"LLM Reasoning: {reasoning_text}")
+            self.log(f"LLM Reply: {prediction_text}")
+            
+            text = prediction_text
             action = "ACTION1"
             x, y = None, None
-            reasoning = text
+            reasoning = f"Thought: {reasoning_text}\nReply: {text}"
             
-            import re
-            # Extract action
-            act_match = re.search(r"ACTION:\s*(ACTION[1-7]|RESET)", text, re.I)
-            if act_match: 
-                action = act_match.group(1).upper()
+            # Extract action - prioritize the LAST occurrence to avoid following reasoning hallucinations
+            act_matches = re.findall(r"ACTION:\s*(ACTION[1-7]|RESET)", text, re.I)
+            if act_matches:
+                action = act_matches[-1].upper()
+            else:
+                # Fallback: look for ACTIONx anywhere (last one)
+                act_matches_fallback = re.findall(r"(ACTION[1-7]|RESET)", text, re.I)
+                if act_matches_fallback:
+                    action = act_matches_fallback[-1].upper()
             
             # Extract coordinates ONLY if the game uses ACTION6
-            # Games that use ACTION6: ft09, vc33, sp80, lp85
             base_id = game_id.split("-")[0]
             if base_id in ["ft09", "vc33", "sp80", "lp85"]:
-                coord_match = re.search(r"COORDINATES:\s*(\d+)\s*[,\s]\s*(\d+)", text, re.I)
-                if coord_match:
-                    x, y = int(coord_match.group(1)), int(coord_match.group(2))
+                # Look for last coordinates
+                coord_matches = re.findall(r"COORDINATES:\s*(\d+)\s*[,\s]\s*(\d+)", text, re.I)
+                if coord_matches:
+                    x, y = int(coord_matches[-1][0]), int(coord_matches[-1][1])
                 else:
-                    # Fallback to coordinate search in text
-                    coord_alt = re.search(r"(\d+)\s*,\s*(\d+)", text)
+                    coord_alt = re.findall(r"(\d+)\s*,\s*(\d+)", text)
                     if coord_alt:
-                        x, y = int(coord_alt.group(1)), int(coord_alt.group(2))
+                        x, y = int(coord_alt[-1][0]), int(coord_alt[-1][1])
             
             return action, x, y, reasoning
             
         except Exception as e:
-            self.log(f"LLM Call failed: {e}")
-            return "RESET", None, None, "API Error Fallback"
+            self.log(f"Responses API Call failed: {e}")
+            return "RESET", None, None, f"Fallback due to Error: {e}"
 
-    def run(self, game_id: str, max_turns: int = 50):
-        # Determine if we need to open scorecard
-        card_id = self.open_scorecard(game_id)
-        self.log(f"Active Scorecard: {card_id}")
-        
+    def resolve_game_id(self, base_id: str) -> str:
+        """Resolve base game ID (e.g. 'as66') to full API ID."""
+        self.log(f"Resolving game ID for {base_id}...")
         try:
-            data = self.start_game(game_id)
+            url = f"{ARC3_API_BASE}/api/games"
+            resp = self.session.get(url)
+            resp.raise_for_status()
+            games = resp.json()
+            for g in games:
+                if g['game_id'].startswith(base_id):
+                    self.log(f"Resolved {base_id} -> {g['game_id']}")
+                    return g['game_id']
+        except Exception as e:
+            self.log(f"Resolution failed: {e}")
+        return base_id
+
+    def run(self, game_id: str, max_turns: int = 10000):
+        try:
+            # Resolve ID before anything else
+            resolved_id = self.resolve_game_id(game_id)
+            
+            card_id = self.open_scorecard(resolved_id)
+            self.log(f"Active Scorecard: {card_id}")
+            
+            data = self.start_game(resolved_id)
             
             while self.state.turn < max_turns:
                 grid = data["frame"]
                 game_state = data.get("state", "IN_PROGRESS")
                 
-                if game_state in ["WIN", "GAME_OVER"]:
-                    self.log(f"Final Outcome: {game_state}, Total Score: {self.state.score}")
+                if game_state == "GAME_OVER":
+                    self.log(f"Final Outcome: GAME_OVER, Total Score: {self.state.score}")
                     break
+                
+                if game_state == "WIN":
+                    self.log(f"--- Level {self.state.level} WIN! Current Score: {self.state.score} ---")
+                    # We continue to the next level automatically if the API allows, 
+                    # or the LLM will see the new grid and act.
                 
                 # Harness Analysis
                 analysis = self.harness.analyze_grid(grid)
                 harness_text = f"Entropy: {analysis.entropy:.2f}, Components: {len(analysis.components)}\n"
                 
-                # Semantic Insights (Detectors)
                 if analysis.insights:
                     harness_text += "Visual Detections:\n" + "\n".join([f"- {i.description}" for i in analysis.insights])
                 
-                # Delta analysis
                 if len(self.state.frames) >= 2:
                     delta = self.harness.analyze_delta(self.state.frames[-2], grid)
                     delta_insights = self.harness.generate_delta_insights(delta)
@@ -228,7 +349,9 @@ class GoldAgent:
                         harness_text += "\nRecent Changes:\n" + "\n".join([f"- {i.description}" for i in delta_insights])
 
                 # Get decision
-                action, x, y, reasoning = self.get_llm_decision(game_id, grid, harness_text)
+                action, x, y, reasoning = self.get_llm_decision(
+                    game_id, grid, harness_text, self.state.score, self.state.turn, self.state.level
+                )
                 
                 # Execute
                 data = self.submit_action(action, x, y, reasoning)
@@ -242,7 +365,6 @@ class GoldAgent:
 
 if __name__ == "__main__":
     import sys
-    # Example usage: python server/python/arc3_gold_agent.py as66
     target_game = sys.argv[1] if len(sys.argv) > 1 else "as66"
     agent = GoldAgent()
     agent.run(target_game)

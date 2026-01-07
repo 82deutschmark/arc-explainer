@@ -96,10 +96,25 @@ class Arc3Harness:
     def __init__(self):
         self.component_counter = 0
         
-    def analyze_grid(self, grid: List[List[int]]) -> GridAnalysis:
+    def _normalize_grid(self, grid: Any) -> np.ndarray:
+        """Ensure grid is normalized to a 2D numpy array [height, width]."""
+        arr = np.array(grid)
+        # print(f"DEBUG: Input shape {arr.shape}, ndim {arr.ndim}")
+        if arr.ndim == 3:
+            # [layers, height, width] -> take first layer
+            res = arr[0]
+        elif arr.ndim == 4:
+            # [frames, layers, height, width] -> take first frame, first layer
+            res = arr[0, 0]
+        else:
+            res = arr
+        # print(f"DEBUG: Normalized shape {res.shape}")
+        return res
+
+    def analyze_grid(self, grid: List[Any]) -> GridAnalysis:
         """Perform complete analysis of a grid frame."""
-        grid_array = np.array(grid)
-        
+        grid_array = self._normalize_grid(grid)
+            
         # 1. Geometric & Global Analysis
         entropy = self._calculate_entropy(grid_array)
         symmetry = self._analyze_symmetry(grid_array)
@@ -121,14 +136,14 @@ class Arc3Harness:
             insights=insights
         )
     
-    def analyze_delta(self, prev_grid: List[List[int]], curr_grid: List[List[int]]) -> FrameDelta:
+    def analyze_delta(self, prev_grid: List[Any], curr_grid: List[Any]) -> FrameDelta:
         """Analyze changes between two frames."""
-        prev_array = np.array(prev_grid)
-        curr_array = np.array(curr_grid)
+        prev_array = self._normalize_grid(prev_grid)
+        curr_array = self._normalize_grid(curr_grid)
         
         # Pixel-level changes
         diff = prev_array != curr_array
-        pixels_changed = np.sum(diff)
+        pixels_changed = int(np.sum(diff))
         changed_pixels = list(zip(*np.where(diff)))
         
         # Component-level analysis
@@ -342,6 +357,10 @@ class Arc3Harness:
     
     def _detect_components(self, grid: np.ndarray) -> List[Component]:
         """Detect connected components using flood fill."""
+        # Ensure grid is 2D
+        if grid.ndim > 2:
+            grid = self._normalize_grid(grid)
+            
         visited = np.zeros_like(grid, dtype=bool)
         components = []
         
