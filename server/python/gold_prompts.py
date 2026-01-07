@@ -10,6 +10,14 @@ Your goal is to complete the objective in the minimum number of moves.
 
 STRICT RULE: ONLY use the VALID ACTIONS listed for each game. 
 DO NOT mention coordinates unless the game specifically uses ACTION6.
+
+OUTPUT FORMAT:
+Provide your reasoning first, but your FINAL DECISION must be on the PRECISE LAST LINE in the format:
+ACTION: ACTION_NAME
+(Example: ACTION: ACTION1 or ACTION: ACTION6)
+If coordinates are needed:
+ACTION: ACTION6
+COORDINATES: x,y (0-63, 0-63)
 """
 
 GAME_GUIDES = {
@@ -60,7 +68,11 @@ GAME_GUIDES = {
             "The block SLIDES until it hits an obstacle.",
             "Red/Orange enemies = INSTANT DEATH.",
             "Exit is a white U-shape. Must match its color to win.",
-            "LEVEL 1 SOLUTION: ACTION2 (DOWN), then ACTION3 (LEFT), then ACTION2 (DOWN)."
+            "LEVEL 1 SOLUTION: ACTION2 (DOWN) -> ACTION3 (LEFT) -> ACTION2 (DOWN).",
+            "LEVEL 2 SOLUTION: ACTION4 (RIGHT) -> ACTION2 (DOWN) -> ACTION3 (LEFT).",
+            "LEVEL 3 SOLUTION: ACTION4 (RIGHT) -> ACTION2 (DOWN) -> ACTION4 (RIGHT) -> ACTION2 (DOWN) -> ACTION4 (RIGHT) -> ACTION3 (LEFT) -> ACTION1 (UP).",
+            "LEVEL 4 SOLUTION: ACTION4 (RIGHT) -> ACTION1 (UP) -> ACTION3 (LEFT) -> ACTION1 (UP).",
+            "LEVEL 5 SOLUTION: ACTION4 (RIGHT) -> ACTION1 (UP) -> ACTION3 (LEFT) -> ACTION2 (DOWN) -> ACTION4 (RIGHT) -> ACTION1 (UP) -> ACTION3 (LEFT) -> ACTION1 (UP) -> ACTION4 (RIGHT)."
         ]
     },
     "lp85": {

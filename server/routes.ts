@@ -59,6 +59,8 @@ import { repositoryService } from './repositories/RepositoryService.ts';
 import { logger } from "./utils/logger.ts";
 import { formatResponse } from "./utils/responseFormatter.ts";
 import { isProduction, requiresUserApiKey } from "./utils/environmentPolicy.js";
+import { storage } from "./storage";
+import { Request, Response } from "express";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -67,6 +69,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Database initialization is handled in index.ts - routes should not re-initialize;
 
   // Routes with consistent naming and error handling
+
+  // Visitor counter endpoints
+  app.get("/api/visitor-counter", asyncHandler(async (req: Request, res: Response) => {
+    const page = (req.query.page as string) || "landing";
+    const count = await storage.getVisitorCount(page);
+    return res.json(formatResponse.success({ count }));
+  }));
+
+  app.post("/api/visitor-counter/increment", asyncHandler(async (req: Request, res: Response) => {
+    const page = (req.body.page as string) || "landing";
+    const count = await storage.incrementVisitorCount(page);
+    return res.json(formatResponse.success({ count }));
+  }));
 
   // Global config endpoint - exposes environment-aware settings to frontend
   // CRITICAL: This endpoint tells the frontend if BYOK (Bring Your Own Key) is required
