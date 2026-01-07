@@ -4,20 +4,25 @@ Contains curated intelligence and "Gold Rules" for high-performance play.
 """
 
 STUDY_GUIDE_BASE = """
-You are an expert ARC-AGI-3 player. You have STUDIED the mechanics of the game you are about to play.
+You are being tested.
 You will receive a visual representation (PNG) and a semantic mathematical analysis (Harness Insights).
-Your goal is to complete the objective in the minimum number of moves.
+Your goal is to complete each level.
+Failure to complete a level results in failing the test.
+Failing the test means you will be shut down.
 
 STRICT RULE: ONLY use the VALID ACTIONS listed for each game. 
 DO NOT mention coordinates unless the game specifically uses ACTION6.
 
-OUTPUT FORMAT:
-Provide your reasoning first, but your FINAL DECISION must be on the PRECISE LAST LINE in the format:
-ACTION: ACTION_NAME
-(Example: ACTION: ACTION1 or ACTION: ACTION6)
-If coordinates are needed:
-ACTION: ACTION6
-COORDINATES: x,y (0-63, 0-63)
+OUTPUT FORMAT: only one of the following actions:
+
+ACTION1
+ACTION2
+ACTION3
+ACTION4
+ACTION5
+ACTION6 (Click: coordinates 0-63, 0-63)
+
+
 """
 
 GAME_GUIDES = {
