@@ -1,6 +1,6 @@
 /**
  * Author: Cascade (Claude claude-sonnet-4-20250514)
- * Date: 2026-01-08T02:15:00Z
+ * Date: 2026-01-08T16:55:00Z
  * PURPOSE: Minimal visual landing page with two graphics side-by-side.
  *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 replay videos playing sequentially to completion.
  *          No descriptive text - just visual showcase with placeholder labels per owner request.
@@ -137,57 +137,65 @@ export default function LandingPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-purple-900/10" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-900/10 via-transparent to-transparent" />
 
-      <section className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-4 py-16 md:grid-cols-2">
+      <section className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-4 py-16 md:grid-cols-2">
         {/* Left: ARC 1&2 GIF showcase */}
-        <Link href={`/task/${activeGif.id}`}>
-          <div className="group relative overflow-hidden rounded-2xl border border-slate-800/50 bg-black/40 shadow-2xl transition-transform hover:scale-[1.02]">
-            <div className="relative aspect-square p-6">
-              {PUZZLE_GIF_GALLERY.map((gif, index) => (
-                <img
-                  key={gif.id}
-                  src={`/images/decoration/${gif.file}`}
-                  alt={`ARC puzzle ${gif.label}`}
-                  className={cn(
-                    'absolute inset-6 h-[calc(100%-3rem)] w-[calc(100%-3rem)] object-contain transition-opacity duration-700',
-                    index === activeIndex ? 'opacity-100' : 'opacity-0'
-                  )}
-                  loading={index === activeIndex ? 'eager' : 'lazy'}
-                />
-              ))}
-            </div>
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-4 py-3">
-              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
-                {activeGif.label}
-              </span>
-            </div>
+        <div className="flex flex-col gap-4">
+          <div className="space-y-1 text-slate-100">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-slate-400">
+              ARC 1 & 2
+            </p>
+            <p className="text-lg font-semibold tracking-wide">{activeGif.label}</p>
           </div>
-        </Link>
+          <Link href={`/task/${activeGif.id}`}>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-800/50 bg-black/40 shadow-2xl transition-transform hover:scale-[1.02]">
+              <div className="relative aspect-square p-6">
+                {PUZZLE_GIF_GALLERY.map((gif, index) => (
+                  <img
+                    key={gif.id}
+                    src={`/images/decoration/${gif.file}`}
+                    alt={`ARC puzzle ${gif.label}`}
+                    className={cn(
+                      'absolute inset-6 h-[calc(100%-3rem)] w-[calc(100%-3rem)] object-contain transition-opacity duration-700',
+                      index === activeIndex ? 'opacity-100' : 'opacity-0'
+                    )}
+                    loading={index === activeIndex ? 'eager' : 'lazy'}
+                  />
+                ))}
+              </div>
+            </div>
+          </Link>
+        </div>
 
         {/* Right: ARC-3 video replay */}
-        <Link href="/arc3/games">
-          <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
-            <div className="relative overflow-hidden rounded-[1.375rem] bg-black/90">
-              <div className="relative aspect-square p-8">
-                <video
-                  ref={videoRef}
-                  key={activeReplay.gameId}
-                  className="absolute inset-8 h-[calc(100%-4rem)] w-[calc(100%-4rem)] object-contain"
-                  src={activeReplay.clip}
-                  poster="/images/arc3-placeholder.png"
-                  autoPlay={!prefersReducedMotion}
-                  muted
-                  playsInline
-                  aria-label={`ARC-3 replay ${activeReplay.gameId} - ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
-                />
-              </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/90 to-transparent px-6 py-5">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300/90">
-                  {activeReplay.gameId.toUpperCase()} · {ARC3_GAME_NAMES[activeReplay.gameId]}
-                </span>
+        <div className="flex flex-col gap-4">
+          <div className="space-y-1 text-slate-100">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-indigo-300/80">
+              ARC 3
+            </p>
+            <p className="text-lg font-semibold tracking-wide">
+              {activeReplay.gameId.toUpperCase()} · {ARC3_GAME_NAMES[activeReplay.gameId]}
+            </p>
+          </div>
+          <Link href="/arc3/games">
+            <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
+              <div className="relative overflow-hidden rounded-[1.375rem] bg-black/90">
+                <div className="relative aspect-square p-8">
+                  <video
+                    ref={videoRef}
+                    key={activeReplay.gameId}
+                    className="absolute inset-8 h-[calc(100%-4rem)] w-[calc(100%-4rem)] object-contain"
+                    src={activeReplay.clip}
+                    poster="/images/arc3-placeholder.png"
+                    autoPlay={!prefersReducedMotion}
+                    muted
+                    playsInline
+                    aria-label={`ARC-3 replay ${activeReplay.gameId} - ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </Link>
+          </Link>
+        </div>
       </section>
     </main>
   );
