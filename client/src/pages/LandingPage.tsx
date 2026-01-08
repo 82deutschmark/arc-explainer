@@ -1,10 +1,10 @@
 /**
  * Author: Cascade (Claude claude-sonnet-4-20250514)
- * Date: 2026-01-08T01:20:00Z
+ * Date: 2026-01-08T02:05:00Z
  * PURPOSE: Minimal visual landing page with two graphics side-by-side.
- *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 replay video.
- *          No descriptive text - just visual showcase with placeholder labels.
- * SRP/DRY check: Pass — single-page hero composition with minimal UI chrome.
+ *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 replay videos rotating through full set.
+ *          No descriptive text - just visual showcase with placeholder labels per owner request.
+ * SRP/DRY check: Pass — single-page hero composition with minimal UI chrome, rotating data-driven media.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
@@ -38,10 +38,18 @@ const PUZZLE_GIF_GALLERY = [
   { id: '10fcaaa3', file: 'arc_puzzle_10fcaaa3_quadcopter.gif' },
 ] satisfies ReadonlyArray<{ id: string; file: string }>;
 
-const ARC3_REPLAY_CLIP = '/videos/arc3/choose-your-path.mp4';
+const ARC3_REPLAY_GALLERY = [
+  { gameId: 'as66-821a4dcad9c2', clip: '/videos/arc3/as66-821a4dcad9c2.mp4' },
+  { gameId: 'ft09-b8377d4b7815', clip: '/videos/arc3/ft09-b8377d4b7815.mp4' },
+  { gameId: 'lp85-d265526edbaa', clip: '/videos/arc3/lp85-d265526edbaa.mp4' },
+  { gameId: 'ls20-fa137e247ce6', clip: '/videos/arc3/ls20-fa137e247ce6.mp4' },
+  { gameId: 'sp80-0605ab9e5b2a', clip: '/videos/arc3/sp80-0605ab9e5b2a.mp4' },
+  { gameId: 'vc33-6ae7bf49eea5', clip: '/videos/arc3/vc33-6ae7bf49eea5.mp4' },
+] satisfies ReadonlyArray<{ gameId: string; clip: string }>;
 
 export default function LandingPage() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [activeReplayIndex, setActiveReplayIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -63,6 +71,14 @@ export default function LandingPage() {
   }, [prefersReducedMotion]);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || ARC3_REPLAY_GALLERY.length < 2 || prefersReducedMotion) return;
+    const intervalId = window.setInterval(() => {
+      setActiveReplayIndex((prev) => (prev + 1) % ARC3_REPLAY_GALLERY.length);
+    }, ROTATION_INTERVAL_MS);
+    return () => window.clearInterval(intervalId);
+  }, [prefersReducedMotion]);
+
+  useEffect(() => {
     if (typeof window === 'undefined') return;
     const nextIndex = (activeIndex + 1) % PUZZLE_GIF_GALLERY.length;
     const nextGif = PUZZLE_GIF_GALLERY[nextIndex];
@@ -76,7 +92,26 @@ export default function LandingPage() {
     }
   }, [prefersReducedMotion]);
 
+  useEffect(() => {
+    if (!videoRef.current) {
+      return;
+    }
+
+    // Force-load the current clip to ensure seamless rotation
+    videoRef.current.load();
+    if (!prefersReducedMotion) {
+      const playPromise = videoRef.current.play();
+      if (playPromise) {
+        playPromise.catch(() => {
+          /* Ignore autoplay interruptions */
+        });
+      }
+    }
+  }, [activeReplayIndex, prefersReducedMotion]);
+
   const activeGif = PUZZLE_GIF_GALLERY[activeIndex];
+  const activeReplay =
+    ARC3_REPLAY_GALLERY[activeReplayIndex] ?? ARC3_REPLAY_GALLERY[0];
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#010512] via-[#050a1d] to-[#060919]">
@@ -112,8 +147,9 @@ export default function LandingPage() {
             <div className="relative aspect-square">
               <video
                 ref={videoRef}
+                key={activeReplay.gameId}
                 className="h-full w-full object-contain"
-                src={ARC3_REPLAY_CLIP}
+                src={activeReplay.clip}
                 poster="/images/arc3-placeholder.png"
                 autoPlay={!prefersReducedMotion}
                 muted
