@@ -39,12 +39,12 @@ const PUZZLE_GIF_GALLERY = [
 ] satisfies ReadonlyArray<{ id: string; file: string }>;
 
 const ARC3_REPLAY_GALLERY = [
-  { gameId: 'as66-821a4dcad9c2', clip: '/videos/arc3/as66-821a4dcad9c2.mp4' },
-  { gameId: 'ft09-b8377d4b7815', clip: '/videos/arc3/ft09-b8377d4b7815.mp4' },
-  { gameId: 'lp85-d265526edbaa', clip: '/videos/arc3/lp85-d265526edbaa.mp4' },
   { gameId: 'ls20-fa137e247ce6', clip: '/videos/arc3/ls20-fa137e247ce6.mp4' },
   { gameId: 'sp80-0605ab9e5b2a', clip: '/videos/arc3/sp80-0605ab9e5b2a.mp4' },
   { gameId: 'vc33-6ae7bf49eea5', clip: '/videos/arc3/vc33-6ae7bf49eea5.mp4' },
+  { gameId: 'as66-821a4dcad9c2', clip: '/videos/arc3/as66-821a4dcad9c2.mp4' },
+  { gameId: 'ft09-b8377d4b7815', clip: '/videos/arc3/ft09-b8377d4b7815.mp4' },
+  { gameId: 'lp85-d265526edbaa', clip: '/videos/arc3/lp85-d265526edbaa.mp4' },
 ] satisfies ReadonlyArray<{ gameId: string; clip: string }>;
 
 export default function LandingPage() {
@@ -101,21 +101,21 @@ export default function LandingPage() {
     }
   }, [activeReplayIndex, prefersReducedMotion]);
 
+  const handleReplayEnded = React.useCallback(() => {
+    setActiveReplayIndex((prev) => (prev + 1) % ARC3_REPLAY_GALLERY.length);
+  }, []);
+
   useEffect(() => {
     const node = videoRef.current;
     if (!node || ARC3_REPLAY_GALLERY.length < 2) {
       return;
     }
 
-    const handleEnded = () => {
-      setActiveReplayIndex((prev) => (prev + 1) % ARC3_REPLAY_GALLERY.length);
-    };
-
-    node.addEventListener('ended', handleEnded);
+    node.addEventListener('ended', handleReplayEnded);
     return () => {
-      node.removeEventListener('ended', handleEnded);
+      node.removeEventListener('ended', handleReplayEnded);
     };
-  }, [activeReplayIndex]);
+  }, [handleReplayEnded, activeReplayIndex]);
 
   const activeGif = PUZZLE_GIF_GALLERY[activeIndex];
   const activeReplay =
