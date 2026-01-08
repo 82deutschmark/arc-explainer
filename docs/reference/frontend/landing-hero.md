@@ -1,16 +1,17 @@
 # Landing Visual Hero
 **Author:** Cascade (Claude claude-sonnet-4-20250514)  
 **Date:** 2026-01-08  
-**Purpose:** Minimal visual landing page with two graphics side-by-side and the replay asset pipeline.
+**Purpose:** Minimal visual landing page with rotating ARC 1&2 GIFs, ARC-3 canvas replays, and Worm Arena replays.
 
 ---
 
 ## 1. Overview
-- `/` renders a two-column visual showcase:
+- `/` renders a three-column visual showcase:
   - **Left:** Rotating ARC 1&2 GIF previews (clickable, links to puzzle).
-  - **Right:** Looping ARC-3 MP4 replay (clickable, links to arena).
+  - **Middle:** ARC-3 canvas replay (clickable, links to ARC-3 games).
+  - **Right:** Worm Arena replay (clickable, links to replay).
 - No descriptive text, headlines, or CTA buttons - purely visual with placeholder labels.
-- Respects `prefers-reduced-motion`: GIF rotation pauses and video auto-pausing.
+- Respects `prefers-reduced-motion`: GIF rotation pauses and replay autoplay is disabled.
 - Dark gradient background with subtle borders and hover effects.
 
 ---
@@ -24,13 +25,20 @@
 ---
 
 ## 3. ARC-3 Replay
-- Video path: `/videos/arc3/choose-your-path.mp4`.
-- Reduced-motion guard pauses autoplay.
+- Canvas-based replay via `ARC3CanvasPlayer`, loading JSONL replays from `/replays/`.
+- Rotation uses the available non-problem games: `ls20`, `vc33`, `ft09`, `lp85`.
+- SP80 and AS66 are intentionally skipped on the landing page while their replays are being fixed.
+- Reduced-motion guard disables autoplay.
 - Click navigates to `/arc3/games`.
 
 ---
 
-## 4. Replay Generation Pipeline
+## 4. Worm Arena Replay
+- Uses curated greatest-hits data from `/api/snakebench/greatest-hits`.
+- Fetches replay JSON for the active game from `/api/snakebench/games/{gameId}`.
+- Rotation runs every 6 seconds when multiple curated games are available.
+
+## 5. Replay Generation Pipeline
 
 ### 4.1 Script Location
 `scripts/arc3/generate_arc3_video.py`
@@ -40,7 +48,7 @@ Uses canonical ARC3 colors matching `shared/config/arc3Colors.ts`:
 - Values 0-5: Grayscale (white to black)
 - Values 6-15: Pink, Light Pink, Red, Blue, Light Blue, Yellow, Orange, Dark Red, Green, Purple
 
-### 4.3 Single File Encoding
+### 5.3 Single File Encoding
 ```bash
 python scripts/arc3/generate_arc3_video.py \
   arc3/ls20-fa137e247ce6.7405808f-ec5b-4949-a252-a1451b946bae.jsonl \
@@ -49,7 +57,7 @@ python scripts/arc3/generate_arc3_video.py \
   --cell-size 12
 ```
 
-### 4.4 Batch Encoding (All Games)
+### 5.4 Batch Encoding (All Games)
 ```bash
 python scripts/arc3/generate_arc3_video.py --batch
 ```
@@ -61,7 +69,7 @@ Options:
 - `--cell-size N` - Pixel size per cell (default: 12)
 - `--max-frames N` - Cap frame count per video
 
-### 4.5 Available Replays
+### 5.5 Available Replays
 | Game | Source JSONL |
 |------|--------------|
 | as66 | `arc3/as66-821a4dcad9c2.*.jsonl` |
@@ -71,12 +79,12 @@ Options:
 | ms93 | `arc3/ms93-*.jsonl` |
 | ot24 | `arc3/ot24-*.jsonl` |
 
-### 4.6 Dependencies
+### 5.6 Dependencies
 - `imageio`, `imageio-ffmpeg`, `pillow`, `numpy` (see `requirements.txt`)
 
 ---
 
-## 5. Maintenance
+## 6. Maintenance
 - Run `--batch` after adding new JSONL replays.
 - Keep GIF gallery in sync with `/images/decoration/` assets.
 - Update this doc plus `CHANGELOG.md` on changes.
