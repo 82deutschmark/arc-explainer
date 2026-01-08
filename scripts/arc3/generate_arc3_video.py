@@ -109,6 +109,26 @@ def load_frames(jsonl_path: pathlib.Path, max_frames: int | None = None) -> List
     return frames
 
 
+def filter_frame_events(frames_payload: List[dict], file_label: str) -> List[dict]:
+    """Remove entries that do not contain a frame."""
+    filtered: List[dict] = []
+    skipped = 0
+    for payload in frames_payload:
+        data = payload.get("data") or {}
+        if "frame" not in data:
+            skipped += 1
+            continue
+        filtered.append(payload)
+
+    if skipped:
+        print(f"[arc3-video] Skipped {skipped} non-frame events in {file_label}")
+
+    if not filtered:
+        raise ValueError(f"No frame events found in {file_label}")
+
+    return filtered
+
+
 def render_frame(
     frame_payload: dict,
     cell_size: int,
@@ -200,6 +220,7 @@ def encode_single_file(
     """Encode a single JSONL file to MP4."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     frames_payload = load_frames(input_path, max_frames)
+    frames_payload = filter_frame_events(frames_payload, input_path.name)
     font = ImageFont.load_default()
     rendered_frames = [
         render_frame(payload, cell_size, font) for payload in frames_payload
