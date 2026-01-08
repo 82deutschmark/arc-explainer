@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.6  Jan 7, 2026
+
+- **CHORE: Add ARC3 palette JSON and landing refresh plan** (Author: Codex (GPT-5))
+  - **What**: Added a shared ARC3 palette JSON and documented the landing refresh plan.
+  - **Why**: Capture the palette as a cross-language artifact and record the intended landing updates before implementation.
+  - **How**:
+    - `shared/config/arc3Palette.json`: added canonical ARC3 colors with hex, rgb, and names.
+    - `docs/plans/2026-01-07-arc3-landing-refresh-plan.md`: documented scope, goals, and TODOs.
+    - `external/SnakeBench`: advanced submodule pointer to `d7198b0` (Matches).
+
 ### Version 6.35.5  Jan 7, 2026
 
 - **FEATURE: “Choose Your Path” landing hero with ARC-3 replay miniature** (Author: Cascade (OpenAI o4-preview))

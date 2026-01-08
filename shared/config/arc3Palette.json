@@ -1,0 +1,20 @@
+{
+  "colors": [
+    { "value": 0, "hex": "#FFFFFF", "rgb": [255, 255, 255], "name": "White" },
+    { "value": 1, "hex": "#CCCCCC", "rgb": [204, 204, 204], "name": "Light Gray" },
+    { "value": 2, "hex": "#999999", "rgb": [153, 153, 153], "name": "Gray" },
+    { "value": 3, "hex": "#666666", "rgb": [102, 102, 102], "name": "Dark Gray" },
+    { "value": 4, "hex": "#333333", "rgb": [51, 51, 51], "name": "Darker Gray" },
+    { "value": 5, "hex": "#000000", "rgb": [0, 0, 0], "name": "Black" },
+    { "value": 6, "hex": "#E53AA3", "rgb": [229, 58, 163], "name": "Pink" },
+    { "value": 7, "hex": "#FF7BCC", "rgb": [255, 123, 204], "name": "Light Pink" },
+    { "value": 8, "hex": "#F93C31", "rgb": [249, 60, 49], "name": "Red" },
+    { "value": 9, "hex": "#1E93FF", "rgb": [30, 147, 255], "name": "Blue" },
+    { "value": 10, "hex": "#88D8F1", "rgb": [136, 216, 241], "name": "Light Blue" },
+    { "value": 11, "hex": "#FFDC00", "rgb": [255, 220, 0], "name": "Yellow" },
+    { "value": 12, "hex": "#FF851B", "rgb": [255, 133, 27], "name": "Orange" },
+    { "value": 13, "hex": "#921231", "rgb": [146, 18, 49], "name": "Dark Red" },
+    { "value": 14, "hex": "#4FCC30", "rgb": [79, 204, 48], "name": "Green" },
+    { "value": 15, "hex": "#A356D0", "rgb": [163, 86, 208], "name": "Purple" }
+  ]
+}
