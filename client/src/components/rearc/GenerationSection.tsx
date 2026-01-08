@@ -160,10 +160,7 @@ export function GenerationSection({ numTasks, compact = false }: GenerationSecti
               Generating...
             </>
           ) : phase.phase === 'completed' ? (
-            <>
-              <Download className="mr-2 h-4 w-4" />
-              Generate Again
-            </>
+            <CheckCircle2 className="mr-2 h-4 w-4" />
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
