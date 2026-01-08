@@ -97,14 +97,17 @@ function parseReplayLines(text: string): CanvasReplayFrame[] {
         return;
       }
 
+      const timestampMs =
+        typeof parsed.timestamp === 'string'
+          ? Date.parse(parsed.timestamp)
+          : index * BASE_FRAME_DURATION_MS;
+
       frames.push({
         grid,
         state: parsed.data?.state,
         score: parsed.data?.score,
         caption: parsed.data?.caption,
-        timestamp: parsed.timestamp
-          ? Date.parse(parsed.timestamp)
-          : index * BASE_FRAME_DURATION_MS,
+        timestamp: timestampMs,
       });
     } catch (error) {
       // eslint-disable-next-line no-console
