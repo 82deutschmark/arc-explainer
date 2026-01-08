@@ -160,10 +160,11 @@ test('generateDataset: task data structure is valid', async () => {
       }
     }
 
-    // Verify test examples have input (output may be missing - withheld for evaluation)
+    // Verify test examples have input but output is EXCLUDED (withheld for evaluation)
     for (const example of task.test) {
       assert.ok(Array.isArray(example.input), 'Test input should be array');
       assert.ok(example.input.length > 0, 'Test input should not be empty');
+      assert.strictEqual(example.output, undefined, 'Test output should be withheld from generated dataset');
     }
   }
 });
@@ -181,12 +182,18 @@ test('evaluateSubmission: perfect submission scores 1.0', async () => {
     tasks.push(task);
   }
 
-  // Create perfect submission
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
+  // Create perfect submission using cached ground truth
   const submission: ARCSubmission = {};
-  for (const { taskId, task } of tasks) {
-    submission[taskId] = task.test.map((testPair) => ({
-      attempt_1: testPair.output || [],
-      attempt_2: testPair.output || [],
+  for (let i = 0; i < tasks.length; i++) {
+    const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
+    submission[taskId] = task.test.map((_, pairIndex) => ({
+      attempt_1: taskOutputs[pairIndex].output,
+      attempt_2: taskOutputs[pairIndex].output,
     }));
   }
 
@@ -236,17 +243,22 @@ test('evaluateSubmission: partial correctness scores between 0 and 1', async () 
     tasks.push(task);
   }
 
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
   // Create submission with some correct, some wrong
   const wrongGrid = [[9, 9, 9]];
   const submission: ARCSubmission = {};
   for (let i = 0; i < tasks.length; i++) {
     const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
 
     if (i % 2 === 0) {
       // Even index: correct
-      submission[taskId] = task.test.map((testPair) => ({
-        attempt_1: testPair.output || [],
-        attempt_2: testPair.output || [],
+      submission[taskId] = task.test.map((_, pairIndex) => ({
+        attempt_1: taskOutputs[pairIndex].output,
+        attempt_2: taskOutputs[pairIndex].output,
       }));
     } else {
       // Odd index: wrong
@@ -276,6 +288,10 @@ test('evaluateSubmission: either attempt correct solves the pair', async () => {
     tasks.push(task);
   }
 
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
   const wrongGrid = [[0]];
   const submission: ARCSubmission = {};
 
@@ -283,23 +299,25 @@ test('evaluateSubmission: either attempt correct solves the pair', async () => {
   // - attempt_1 correct, attempt_2 wrong (should still solve)
   // - attempt_1 wrong, attempt_2 correct (should still solve)
   // - both wrong (should not solve)
-  let j = 0
+  let j = 0;
   for (let i = 0; i < tasks.length; i++) {
     const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
 
-    submission[taskId] = task.test.map((testPair) => {
-      j++
+    submission[taskId] = task.test.map((_, pairIndex) => {
+      j++;
+      const correctOutput = taskOutputs[pairIndex].output;
       if (j % 3 === 0) {
         // attempt_1 correct, attempt_2 wrong
         return {
-          attempt_1: testPair.output || [],
+          attempt_1: correctOutput,
           attempt_2: wrongGrid,
         };
       } else if (j % 3 === 1) {
         // attempt_1 wrong, attempt_2 correct
         return {
           attempt_1: wrongGrid,
-          attempt_2: testPair.output || [],
+          attempt_2: correctOutput,
         };
       } else {
         // both wrong
@@ -331,12 +349,18 @@ test('evaluateSubmission: order-independent (shuffled submission)', async () => 
     tasks.push(task);
   }
 
-  // Create perfect submission
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
+  // Create perfect submission using cached ground truth
   const submission: ARCSubmission = {};
-  for (const { taskId, task } of tasks) {
-    submission[taskId] = task.test.map((testPair) => ({
-      attempt_1: testPair.output || [],
-      attempt_2: testPair.output || [],
+  for (let i = 0; i < tasks.length; i++) {
+    const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
+    submission[taskId] = task.test.map((_, pairIndex) => ({
+      attempt_1: taskOutputs[pairIndex].output,
+      attempt_2: taskOutputs[pairIndex].output,
     }));
   }
 
@@ -358,14 +382,20 @@ test('evaluateSubmission: progress callback is called', async () => {
     tasks.push(task);
   }
 
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
   const numTasks = tasks.length;
 
-  // Create perfect submission
+  // Create perfect submission using cached ground truth
   const submission: ARCSubmission = {};
-  for (const { taskId, task } of tasks) {
-    submission[taskId] = task.test.map((testPair) => ({
-      attempt_1: testPair.output || [],
-      attempt_2: testPair.output || [],
+  for (let i = 0; i < tasks.length; i++) {
+    const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
+    submission[taskId] = task.test.map((_, pairIndex) => ({
+      attempt_1: taskOutputs[pairIndex].output,
+      attempt_2: taskOutputs[pairIndex].output,
     }));
   }
 
@@ -414,12 +444,18 @@ test('round-trip: generate → submit → evaluate', async () => {
 
   assert.ok(tasks.length > 0, 'Should generate tasks');
 
-  // Step 2: Create perfect submission
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
+  // Step 2: Create perfect submission using cached ground truth
   const submission: ARCSubmission = {};
-  for (const { taskId, task } of tasks) {
-    submission[taskId] = task.test.map((testPair) => ({
-      attempt_1: testPair.output || [],
-      attempt_2: testPair.output || [],
+  for (let i = 0; i < tasks.length; i++) {
+    const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
+    submission[taskId] = task.test.map((_, pairIndex) => ({
+      attempt_1: taskOutputs[pairIndex].output,
+      attempt_2: taskOutputs[pairIndex].output,
     }));
   }
 
@@ -446,22 +482,28 @@ test('evaluateSubmission: returns mismatches when submission has too few test pa
     tasks.push(task);
   }
 
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
   // Create submission with missing test pairs (only 1 pair when task has 2+)
   const submission: ARCSubmission = {};
-  for (const { taskId, task } of tasks) {
+  for (let i = 0; i < tasks.length; i++) {
+    const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
     if (task.test.length > 1) {
       // Only submit first test pair (missing others)
       submission[taskId] = [
         {
-          attempt_1: task.test[0].output || [],
-          attempt_2: task.test[0].output || [],
+          attempt_1: taskOutputs[0].output,
+          attempt_2: taskOutputs[0].output,
         },
       ];
     } else {
       // For tasks with only 1 test pair, submit correctly
-      submission[taskId] = task.test.map((testPair) => ({
-        attempt_1: testPair.output || [],
-        attempt_2: testPair.output || [],
+      submission[taskId] = task.test.map((_, pairIndex) => ({
+        attempt_1: taskOutputs[pairIndex].output,
+        attempt_2: taskOutputs[pairIndex].output,
       }));
     }
   }
@@ -487,15 +529,21 @@ test('evaluateSubmission: returns mismatches when submission has too many test p
     tasks.push(task);
   }
 
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
   // Create submission with extra test pairs
   const wrongGrid = [[0]];
   const submission: ARCSubmission = {};
-  for (const { taskId, task } of tasks) {
+  for (let i = 0; i < tasks.length; i++) {
+    const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
     // Submit correct number + 1 extra pair
     submission[taskId] = [
-      ...task.test.map((testPair) => ({
-        attempt_1: testPair.output || [],
-        attempt_2: testPair.output || [],
+      ...task.test.map((_, pairIndex) => ({
+        attempt_1: taskOutputs[pairIndex].output,
+        attempt_2: taskOutputs[pairIndex].output,
       })),
       // Extra pair
       {
@@ -530,12 +578,18 @@ test('evaluateSubmission: uses cached dataset on second evaluation (same seed)',
     tasks.push(task);
   }
 
-  // Create perfect submission
+  // Get cached test outputs (ground truth)
+  const cachedOutputs = __testOnly_datasetCache.get(seed);
+  assert.ok(cachedOutputs, 'Cached outputs should exist after generation');
+
+  // Create perfect submission using cached ground truth
   const submission: ARCSubmission = {};
-  for (const { taskId, task } of tasks) {
-    submission[taskId] = task.test.map((testPair) => ({
-      attempt_1: testPair.output || [],
-      attempt_2: testPair.output || [],
+  for (let i = 0; i < tasks.length; i++) {
+    const { taskId, task } = tasks[i];
+    const taskOutputs = cachedOutputs[i];
+    submission[taskId] = task.test.map((_, pairIndex) => ({
+      attempt_1: taskOutputs[pairIndex].output,
+      attempt_2: taskOutputs[pairIndex].output,
     }));
   }
 
