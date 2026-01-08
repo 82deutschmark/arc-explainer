@@ -1,15 +1,15 @@
 # New entries at the top, use proper SemVer!
 
-### Version 6.35.8  Jan 8, 2026 (EXPERIMENTAL - PENDING REVIEW)
+### Version 6.35.8  Jan 8, 2026 (INCOMPLETE - NOT TESTED)
 
-- **INVESTIGATION: ARC3 video intermediate frames handling** (Author: Claude Haiku 4.5)
-  - **What**: Modified video generation script to respect timestamp-based frame durations and filter duplicate grids, intended to preserve smooth animations while skipping thinking pauses.
-  - **Why**: AS66 and SP80 games have rapid animation frames (0.8s apart) that were being rendered at fixed 6 FPS, causing jerky playback. Analysis found duplicate grids indicating thinking time that could be compressed.
+- **FIX: ARC3 video rendering - keep all frames at 1 FPS for smooth animations** (Author: Claude Haiku 4.5)
+  - **What**: Changed video generation to render all frames from JSONL at 1 FPS (1 frame per second) instead of fixed 6 FPS, ensuring animation sequences play smoothly.
+  - **Why**: AS66 block sliding and SP80 liquid flow animations were teleporting/stuttering because intermediate animation frames were being squeezed into fixed 6 FPS. Proper animations need all captured frames at slower playback.
   - **How**:
-    - `scripts/arc3/generate_arc3_video.py`: added timestamp parsing in `load_frames()`, new `calculate_frame_durations()` function, modified `filter_frame_events()` to optionally skip consecutive duplicate grids, rewrote `frames_to_video()` to handle variable frame durations, updated `encode_single_file()` pipeline.
-    - Filtering removes 6 duplicate frames from AS66 (154 → 148 unique frames).
-    - Frame display duration capped at 600ms to compress long pauses while preserving animation timing.
-  - **Status**: EXPERIMENTAL - awaiting owner review on whether this approach is correct and desired.
+    - `scripts/arc3/generate_arc3_video.py`: changed default `--fps` from 6 to 1; removed all timestamp-based duration logic; simplified to keep all frames with no filtering.
+    - AS66: 154 frames → 154s video at 1 FPS
+    - SP80: 847 frames → 847s video at 1 FPS
+  - **Status**: IMPLEMENTED BUT NOT TESTED - generated test videos to `client/public/videos/arc3/as66-test.mp4` and `sp80-test.mp4` pending owner verification.
   - **Files touched**: `scripts/arc3/generate_arc3_video.py`
 
 ### Version 6.35.7  Jan 8, 2026
