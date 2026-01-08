@@ -1,5 +1,17 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.8  Jan 8, 2026 (EXPERIMENTAL - PENDING REVIEW)
+
+- **INVESTIGATION: ARC3 video intermediate frames handling** (Author: Claude Haiku 4.5)
+  - **What**: Modified video generation script to respect timestamp-based frame durations and filter duplicate grids, intended to preserve smooth animations while skipping thinking pauses.
+  - **Why**: AS66 and SP80 games have rapid animation frames (0.8s apart) that were being rendered at fixed 6 FPS, causing jerky playback. Analysis found duplicate grids indicating thinking time that could be compressed.
+  - **How**:
+    - `scripts/arc3/generate_arc3_video.py`: added timestamp parsing in `load_frames()`, new `calculate_frame_durations()` function, modified `filter_frame_events()` to optionally skip consecutive duplicate grids, rewrote `frames_to_video()` to handle variable frame durations, updated `encode_single_file()` pipeline.
+    - Filtering removes 6 duplicate frames from AS66 (154 → 148 unique frames).
+    - Frame display duration capped at 600ms to compress long pauses while preserving animation timing.
+  - **Status**: EXPERIMENTAL - awaiting owner review on whether this approach is correct and desired.
+  - **Files touched**: `scripts/arc3/generate_arc3_video.py`
+
 ### Version 6.35.7  Jan 8, 2026
 
 - **FIX: ARC3 video script color palette and landing page redesign** (Author: Cascade (Claude claude-sonnet-4-20250514))
