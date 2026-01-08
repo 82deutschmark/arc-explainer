@@ -6,13 +6,16 @@
  *          No descriptive text - just visual showcase with placeholder labels per owner request.
  * SRP/DRY check: Pass — single-page hero composition utilizing reusable canvas replay component.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 
 import { cn } from '@/lib/utils';
 import ARC3CanvasPlayer from '@/components/ARC3CanvasPlayer';
+import WormArenaLandingReplay from '@/components/WormArenaLandingReplay';
+import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 
 const ROTATION_INTERVAL_MS = 4500;
+const WORM_ROTATION_INTERVAL_MS = 6000;
 
 const PUZZLE_GIF_GALLERY = [
   { id: '2bee17df', file: 'arc_puzzle_2bee17df_fringes.gif', label: 'Fringes' },
@@ -67,8 +70,18 @@ const ARC3_CANVAS_REPLAYS = [
 export default function LandingPage() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeReplayIndex, setActiveReplayIndex] = useState(0);
+  const [activeWormIndex, setActiveWormIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const activeReplay = ARC3_CANVAS_REPLAYS[activeReplayIndex];
+  const {
+    games: wormGreatestHits,
+    isLoading: wormHitsLoading,
+    error: wormHitsError,
+  } = useWormArenaGreatestHits(3);
+  const [wormReplayMap, setWormReplayMap] = useState<Record<string, any>>({});
+  const [wormReplayErrorMap, setWormReplayErrorMap] = useState<Record<string, string>>({});
+  const [wormReplayLoadingMap, setWormReplayLoadingMap] = useState<Record<string, boolean>>({});
+  const activeWormGame = wormGreatestHits[activeWormIndex];
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -100,13 +113,65 @@ export default function LandingPage() {
     setActiveReplayIndex((prev) => (prev + 1) % ARC3_CANVAS_REPLAYS.length);
   }, []);
 
+  useEffect(() => {
+    if (prefersReducedMotion || wormGreatestHits.length < 2) return undefined;
+    const intervalId = window.setInterval(() => {
+      setActiveWormIndex((prev) => (prev + 1) % wormGreatestHits.length);
+    }, WORM_ROTATION_INTERVAL_MS);
+    return () => window.clearInterval(intervalId);
+  }, [prefersReducedMotion, wormGreatestHits.length]);
+
+  useEffect(() => {
+    setActiveWormIndex(0);
+  }, [wormGreatestHits.length]);
+
+  useEffect(() => {
+    const gameId = activeWormGame?.gameId;
+    if (!gameId || wormReplayMap[gameId] || wormReplayLoadingMap[gameId]) {
+      return;
+    }
+
+    setWormReplayLoadingMap((prev) => ({ ...prev, [gameId]: true }));
+    fetch(`/api/snakebench/games/${encodeURIComponent(gameId)}`)
+      .then(async (res) => {
+        const json = await res.json();
+        if (!json?.success || !json?.data) {
+          throw new Error(json?.error || 'Replay unavailable');
+        }
+        setWormReplayMap((prev) => ({ ...prev, [gameId]: json.data }));
+        setWormReplayErrorMap((prev) => ({ ...prev, [gameId]: '' }));
+      })
+      .catch((err: any) => {
+        setWormReplayErrorMap((prev) => ({
+          ...prev,
+          [gameId]: err?.message || 'Failed to load replay',
+        }));
+      })
+      .finally(() => {
+        setWormReplayLoadingMap((prev) => ({ ...prev, [gameId]: false }));
+      });
+  }, [activeWormGame, wormReplayLoadingMap, wormReplayMap]);
+
+  const wormReplayData = activeWormGame ? wormReplayMap[activeWormGame.gameId] : null;
+  const wormReplayLoading = useMemo(() => {
+    if (!activeWormGame) return wormHitsLoading;
+    return (
+      wormHitsLoading ||
+      Boolean(wormReplayLoadingMap[activeWormGame.gameId]) ||
+      (!wormReplayData && !wormReplayErrorMap[activeWormGame.gameId])
+    );
+  }, [activeWormGame, wormHitsLoading, wormReplayData, wormReplayErrorMap, wormReplayLoadingMap]);
+  const wormReplayError = activeWormGame
+    ? wormReplayErrorMap[activeWormGame.gameId] || wormHitsError
+    : wormHitsError;
+
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black">
       {/* Animated background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-purple-900/10" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-900/10 via-transparent to-transparent" />
 
-      <section className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-4 py-16 md:grid-cols-2">
+      <section className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-4 py-16 md:grid-cols-2 lg:grid-cols-3">
         {/* Left: ARC 1&2 GIF showcase */}
         <div className="flex flex-col gap-4">
           <div className="space-y-1 text-slate-100">
@@ -157,6 +222,43 @@ export default function LandingPage() {
               />
             </div>
           </Link>
+        </div>
+
+        {/* Worm Arena replay */}
+        <div className="flex flex-col gap-4">
+          <div className="space-y-1 text-slate-100">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-amber-200/70">
+              Worm Arena
+            </p>
+            <p className="text-lg font-semibold tracking-wide">
+              {activeWormGame
+                ? `${activeWormGame.modelA ?? 'Model A'} vs ${activeWormGame.modelB ?? 'Model B'}`
+                : 'Curated Matches'}
+            </p>
+          </div>
+          {activeWormGame ? (
+            <Link href={`/worm-arena?gameId=${encodeURIComponent(activeWormGame.gameId)}`}>
+              <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-700/60 via-amber-900/60 to-black p-1 shadow-[0_0_40px_rgba(251,191,36,0.3)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(251,191,36,0.45)]">
+                <WormArenaLandingReplay
+                  key={activeWormGame.gameId}
+                  game={activeWormGame}
+                  replayData={wormReplayData}
+                  isLoading={wormReplayLoading}
+                  error={wormReplayError}
+                  autoPlay={!prefersReducedMotion}
+                  onReplayComplete={() => {
+                    if (wormGreatestHits.length > 1) {
+                      setActiveWormIndex((prev) => (prev + 1) % wormGreatestHits.length);
+                    }
+                  }}
+                />
+              </div>
+            </Link>
+          ) : (
+            <div className="min-h-[360px] rounded-3xl border border-amber-100/20 bg-gradient-to-br from-amber-900/40 to-black p-6 text-sm text-amber-100/70">
+              {wormHitsLoading ? 'Loading Worm Arena matches…' : 'No curated Worm Arena matches available yet.'}
+            </div>
+          )}
         </div>
       </section>
     </main>
