@@ -1,4 +1,4 @@
-# Games
+# This is the source of truth for all ARC3 documentation!!!
 
 > Hand crafted environments that test interactive abstraction and reasoning
 

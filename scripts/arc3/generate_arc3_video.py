@@ -13,6 +13,7 @@ import argparse
 import glob
 import json
 import pathlib
+from datetime import datetime
 from typing import Iterable, List
 
 import imageio.v2 as imageio
@@ -94,7 +95,12 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_frames(jsonl_path: pathlib.Path, max_frames: int | None = None) -> List[dict]:
+def load_frames(jsonl_path: pathlib.Path, max_frames: int | None = None) -> tuple[List[dict], List[float]]:
+    """Load frames and calculate durations from timestamps.
+
+    Returns:
+        (frames_list, frame_durations) where durations are seconds between consecutive frames
+    """
     frames: List[dict] = []
     with jsonl_path.open("r", encoding="utf-8") as handle:
         for line in handle:
@@ -106,7 +112,24 @@ def load_frames(jsonl_path: pathlib.Path, max_frames: int | None = None) -> List
                 break
     if not frames:
         raise ValueError(f"No frames parsed from {jsonl_path}")
-    return frames
+
+    # Calculate durations from timestamps
+    durations: List[float] = []
+    for i in range(len(frames)):
+        if i == len(frames) - 1:
+            # Last frame: use 1 second default
+            durations.append(1.0)
+        else:
+            # Duration = time until next frame
+            ts_curr = datetime.fromisoformat(frames[i]["timestamp"].replace("Z", "+00:00"))
+            ts_next = datetime.fromisoformat(frames[i + 1]["timestamp"].replace("Z", "+00:00"))
+            duration = (ts_next - ts_curr).total_seconds()
+            # Clamp to reasonable bounds: minimum 0.05s, maximum 2s
+            # This prevents extreme slowdowns from huge idle periods
+            duration = max(0.05, min(duration, 2.0))
+            durations.append(duration)
+
+    return frames, durations
 
 
 def filter_frame_events(frames_payload: List[dict], file_label: str) -> List[dict]:
@@ -191,12 +214,29 @@ def frames_to_video(
     frames: Iterable[Image.Image],
     output_path: pathlib.Path,
     fps: float,
+    frame_durations: List[float] | None = None,
 ) -> None:
-    with imageio.get_writer(output_path, fps=fps, codec="libx264", quality=7) as writer:
-        for idx, frame in enumerate(frames):
-            writer.append_data(np.array(frame))
-            if (idx + 1) % 25 == 0:
-                print(f"[arc3-video] Encoded {idx + 1} frames…")
+    """Render frames to video, optionally using per-frame durations based on timestamps."""
+    # If durations provided, use variable FPS; otherwise use fixed FPS
+    if frame_durations:
+        # Variable frame durations: write each frame repeated based on duration
+        # Target 24 fps for smooth playback
+        target_fps = 24
+        with imageio.get_writer(output_path, fps=target_fps, codec="libx264", quality=7) as writer:
+            for idx, (frame, duration) in enumerate(zip(frames, frame_durations)):
+                # Calculate how many times to repeat this frame for smooth timing
+                num_repeats = max(1, int(duration * target_fps))
+                for _ in range(num_repeats):
+                    writer.append_data(np.array(frame))
+                if (idx + 1) % 25 == 0:
+                    print(f"[arc3-video] Encoded {idx + 1} frames…")
+    else:
+        # Fixed FPS mode (original behavior)
+        with imageio.get_writer(output_path, fps=fps, codec="libx264", quality=7) as writer:
+            for idx, frame in enumerate(frames):
+                writer.append_data(np.array(frame))
+                if (idx + 1) % 25 == 0:
+                    print(f"[arc3-video] Encoded {idx + 1} frames…")
 
 
 def find_all_jsonl_files() -> List[pathlib.Path]:
@@ -219,18 +259,21 @@ def encode_single_file(
     cell_size: int,
     max_frames: int | None,
 ) -> None:
-    """Encode a single JSONL file to MP4."""
+    """Encode a single JSONL file to MP4, using timestamp-based frame timing."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    frames_payload = load_frames(input_path, max_frames)
+    frames_payload, frame_durations = load_frames(input_path, max_frames)
     frames_payload = filter_frame_events(frames_payload, input_path.name)
+    # Recalculate durations after filtering (durations list must match filtered frames)
+    frame_durations = frame_durations[:len(frames_payload)]
+
     font = ImageFont.load_default()
     rendered_frames = [
         render_frame(payload, cell_size, font) for payload in frames_payload
     ]
-    frames_to_video(rendered_frames, output_path, fps)
-    duration = len(rendered_frames) / fps
+    frames_to_video(rendered_frames, output_path, fps, frame_durations)
+    total_duration = sum(frame_durations)
     print(
-        f"[arc3-video] Wrote {len(rendered_frames)} frames ({duration:.1f}s) to {output_path}"
+        f"[arc3-video] Wrote {len(rendered_frames)} frames ({total_duration:.1f}s) to {output_path}"
     )
 
 
