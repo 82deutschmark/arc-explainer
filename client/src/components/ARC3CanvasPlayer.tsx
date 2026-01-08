@@ -245,7 +245,7 @@ export function ARC3CanvasPlayer({
       setError(null);
 
       try {
-        const text =
+        const text: string =
           inlineData ??
           (await fetch(path).then((response) => {
             if (!response.ok) {
