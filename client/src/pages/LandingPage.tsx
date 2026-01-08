@@ -38,14 +38,24 @@ const PUZZLE_GIF_GALLERY = [
   { id: '10fcaaa3', file: 'arc_puzzle_10fcaaa3_quadcopter.gif', label: 'Quadcopter' },
 ] satisfies ReadonlyArray<{ id: string; file: string; label: string }>;
 
+// Game ID to informal name mapping (e.g., 'ls20' -> 'Locksmith')
+const ARC3_GAME_NAMES: Record<string, string> = {
+  ls20: 'Locksmith',
+  sp80: 'Streaming Purple',
+  vc33: 'Volume Control',
+  as66: 'Always Sliding',
+  ft09: 'Functional Tiles',
+  lp85: 'Loop and Pull',
+};
+
 const ARC3_REPLAY_GALLERY = [
-  { gameId: 'ls20-fa137e247ce6', clip: '/videos/arc3/ls20-fa137e247ce6.mp4' },
-  { gameId: 'sp80-0605ab9e5b2a', clip: '/videos/arc3/sp80-0605ab9e5b2a.mp4' },
-  { gameId: 'vc33-6ae7bf49eea5', clip: '/videos/arc3/vc33-6ae7bf49eea5.mp4' },
-  { gameId: 'as66-821a4dcad9c2', clip: '/videos/arc3/as66-821a4dcad9c2.mp4' },
-  { gameId: 'ft09-b8377d4b7815', clip: '/videos/arc3/ft09-b8377d4b7815.mp4' },
-  { gameId: 'lp85-d265526edbaa', clip: '/videos/arc3/lp85-d265526edbaa.mp4' },
-] satisfies ReadonlyArray<{ gameId: string; clip: string }>;
+  { gameId: 'ls20', shortId: 'ls20-fa137e247ce6', clip: '/videos/arc3/ls20-fa137e247ce6.mp4' },
+  { gameId: 'sp80', shortId: 'sp80-0605ab9e5b2a', clip: '/videos/arc3/sp80-0605ab9e5b2a.mp4' },
+  { gameId: 'vc33', shortId: 'vc33-6ae7bf49eea5', clip: '/videos/arc3/vc33-6ae7bf49eea5.mp4' },
+  { gameId: 'as66', shortId: 'as66-821a4dcad9c2', clip: '/videos/arc3/as66-821a4dcad9c2.mp4' },
+  { gameId: 'ft09', shortId: 'ft09-b8377d4b7815', clip: '/videos/arc3/ft09-b8377d4b7815.mp4' },
+  { gameId: 'lp85', shortId: 'lp85-d265526edbaa', clip: '/videos/arc3/lp85-d265526edbaa.mp4' },
+] satisfies ReadonlyArray<{ gameId: string; shortId: string; clip: string }>;
 
 export default function LandingPage() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -155,23 +165,26 @@ export default function LandingPage() {
 
         {/* Right: ARC-3 video replay */}
         <Link href="/arc3/games">
-          <div className="group relative overflow-hidden rounded-2xl border border-indigo-900/40 bg-black/40 shadow-2xl transition-transform hover:scale-[1.02]">
-            <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-indigo-100/90">
-              <span>Arc 3</span>
-              <span className="tracking-[0.15em] text-indigo-200">{activeReplay.gameId}</span>
-            </div>
-            <div className="relative aspect-square pt-10">
-              <video
-                ref={videoRef}
-                key={activeReplay.gameId}
-                className="h-full w-full object-contain p-6"
-                src={activeReplay.clip}
-                poster="/images/arc3-placeholder.png"
-                autoPlay={!prefersReducedMotion}
-                muted
-                playsInline
-                aria-label={`ARC-3 replay ${activeReplay.gameId}`}
-              />
+          <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
+            <div className="relative overflow-hidden rounded-[1.375rem] bg-black/90">
+              <div className="relative aspect-square p-8">
+                <video
+                  ref={videoRef}
+                  key={activeReplay.gameId}
+                  className="absolute inset-8 h-[calc(100%-4rem)] w-[calc(100%-4rem)] object-contain"
+                  src={activeReplay.clip}
+                  poster="/images/arc3-placeholder.png"
+                  autoPlay={!prefersReducedMotion}
+                  muted
+                  playsInline
+                  aria-label={`ARC-3 replay ${activeReplay.gameId} - ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
+                />
+              </div>
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/90 to-transparent px-6 py-5">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300/90">
+                  {activeReplay.gameId.toUpperCase()} · {ARC3_GAME_NAMES[activeReplay.gameId]}
+                </span>
+              </div>
             </div>
           </div>
         </Link>
