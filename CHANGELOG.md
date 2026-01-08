@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.10  Jan 8, 2026
+
+- **FIX: Align landing hero labels with out-of-frame spec** (Author: Cascade (Claude claude-sonnet-4-20250514))
+  - **What**: Repositioned the ARC 1&2 puzzle names and ARC 3 game titles so they render above each showcase card instead of overlapping the media.
+  - **Why**: Owner direction requires the card chrome to remain clean, with puzzle/game identifiers and section headers sitting outside the framed content.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`:
+      - Added flex column wrappers per card with typographic stack for section label + dynamic puzzle/game title.
+      - Removed the gradient bottom overlays and ensured the cards remain clickable links (`@client/src/pages/LandingPage.tsx#134-200`).
+    - `docs/plans/2026-01-08-landing-label-adjustment-plan.md`: Marked tasks complete and recorded final status (`@docs/plans/2026-01-08-landing-label-adjustment-plan.md#1-21`).
+
 ### Version 6.35.9  Jan 8, 2026
 
 - **FIX: Restore landing page video rendering and add readable ARC-3 game labels** (Author: Claude Haiku 4.5)

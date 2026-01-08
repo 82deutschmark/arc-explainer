@@ -179,20 +179,8 @@ export async function searchMatches(req: Request, res: Response) {
     const modelRaw = (req.query.model as string | undefined) ?? '';
     const model = modelRaw.trim();
 
-    if (!model) {
-      const response: SnakeBenchMatchSearchResponse = {
-        success: false,
-        model: '',
-        rows: [],
-        total: 0,
-        error: 'model query parameter is required',
-        timestamp: Date.now(),
-      };
-      return res.status(400).json(response);
-    }
-
     const query: SnakeBenchMatchSearchQuery = {
-      model,
+      model: model || undefined,
       opponent: typeof req.query.opponent === 'string' ? req.query.opponent : undefined,
       result: typeof req.query.result === 'string' ? (req.query.result as any) : undefined,
       deathReason: typeof req.query.deathReason === 'string' ? (req.query.deathReason as any) : undefined,
