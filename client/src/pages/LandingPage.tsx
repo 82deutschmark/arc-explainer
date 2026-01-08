@@ -1,15 +1,16 @@
 /**
- * Author: Cascade (Claude claude-sonnet-4-20250514)
- * Date: 2026-01-08T16:55:00Z
- * PURPOSE: Minimal visual landing page with two graphics side-by-side.
- *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 replay videos playing sequentially to completion.
+ * Author: Cascade (OpenAI o4-preview)
+ * Date: 2026-01-08T18:55:00Z
+ * PURPOSE: Minimal visual landing page with rotating ARC 1&2 GIFs and ARC-3 canvas replays.
+ *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 canvas player for SP80 + AS66 only.
  *          No descriptive text - just visual showcase with placeholder labels per owner request.
- * SRP/DRY check: Pass — single-page hero composition with minimal UI chrome, rotating data-driven media.
+ * SRP/DRY check: Pass — single-page hero composition utilizing reusable canvas replay component.
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 
 import { cn } from '@/lib/utils';
+import ARC3CanvasPlayer from '@/components/ARC3CanvasPlayer';
 
 const ROTATION_INTERVAL_MS = 4500;
 
@@ -48,20 +49,26 @@ const ARC3_GAME_NAMES: Record<string, string> = {
   lp85: 'Loop and Pull',
 };
 
-const ARC3_REPLAY_GALLERY = [
-  { gameId: 'ls20', shortId: 'ls20-fa137e247ce6', clip: '/videos/arc3/ls20-fa137e247ce6.mp4' },
-  { gameId: 'sp80', shortId: 'sp80-test', clip: '/videos/arc3/sp80-test.mp4' },
-  { gameId: 'vc33', shortId: 'vc33-6ae7bf49eea5', clip: '/videos/arc3/vc33-6ae7bf49eea5.mp4' },
-  { gameId: 'as66', shortId: 'as66-test', clip: '/videos/arc3/as66-test.mp4' },
-  { gameId: 'ft09', shortId: 'ft09-b8377d4b7815', clip: '/videos/arc3/ft09-b8377d4b7815.mp4' },
-  { gameId: 'lp85', shortId: 'lp85-d265526edbaa', clip: '/videos/arc3/lp85-d265526edbaa.mp4' },
-] satisfies ReadonlyArray<{ gameId: string; shortId: string; clip: string }>;
+const ARC3_CANVAS_REPLAYS = [
+  {
+    gameId: 'sp80',
+    shortId: 'sp80-0605ab9e5b2a',
+    label: 'SP80 · Streaming Purple',
+    replayPath: '/replays/sp80-0605ab9e5b2a.212c541e-db90-40c3-9601-79049867dab2.jsonl',
+  },
+  {
+    gameId: 'as66',
+    shortId: 'as66-821a4dcad9c2',
+    label: 'AS66 · Always Sliding',
+    replayPath: '/replays/as66-821a4dcad9c2.db85123a-891c-4fde-8bd3-b85c6702575d.jsonl',
+  },
+] as const;
 
 export default function LandingPage() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeReplayIndex, setActiveReplayIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const activeReplay = ARC3_CANVAS_REPLAYS[activeReplayIndex];
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -88,48 +95,10 @@ export default function LandingPage() {
     image.src = `/images/decoration/${nextGif.file}`;
   }, [activeIndex]);
 
-  useEffect(() => {
-    if (prefersReducedMotion && videoRef.current) {
-      videoRef.current.pause();
-    }
-  }, [prefersReducedMotion]);
-
-  useEffect(() => {
-    if (!videoRef.current) {
-      return;
-    }
-
-    // Force-load the current clip to ensure seamless rotation
-    videoRef.current.load();
-    if (!prefersReducedMotion) {
-      const playPromise = videoRef.current.play();
-      if (playPromise) {
-        playPromise.catch(() => {
-          /* Ignore autoplay interruptions */
-        });
-      }
-    }
-  }, [activeReplayIndex, prefersReducedMotion]);
-
-  const handleReplayEnded = React.useCallback(() => {
-    setActiveReplayIndex((prev) => (prev + 1) % ARC3_REPLAY_GALLERY.length);
-  }, []);
-
-  useEffect(() => {
-    const node = videoRef.current;
-    if (!node || ARC3_REPLAY_GALLERY.length < 2) {
-      return;
-    }
-
-    node.addEventListener('ended', handleReplayEnded);
-    return () => {
-      node.removeEventListener('ended', handleReplayEnded);
-    };
-  }, [handleReplayEnded]);
-
   const activeGif = PUZZLE_GIF_GALLERY[activeIndex];
-  const activeReplay =
-    ARC3_REPLAY_GALLERY[activeReplayIndex] ?? ARC3_REPLAY_GALLERY[0];
+  const handleReplayComplete = React.useCallback(() => {
+    setActiveReplayIndex((prev) => (prev + 1) % ARC3_CANVAS_REPLAYS.length);
+  }, []);
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black">
@@ -166,33 +135,26 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        {/* Right: ARC-3 video replay */}
+        {/* Right: ARC-3 canvas replay */}
         <div className="flex flex-col gap-4">
           <div className="space-y-1 text-slate-100">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-indigo-300/80">
               ARC 3
             </p>
             <p className="text-lg font-semibold tracking-wide">
-              {activeReplay.gameId.toUpperCase()} · {ARC3_GAME_NAMES[activeReplay.gameId]}
+              {activeReplay.label}
             </p>
           </div>
           <Link href="/arc3/games">
             <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
-              <div className="relative overflow-hidden rounded-[1.375rem] bg-black/90">
-                <div className="relative aspect-square p-8">
-                  <video
-                    ref={videoRef}
-                    key={activeReplay.gameId}
-                    className="absolute inset-8 h-[calc(100%-4rem)] w-[calc(100%-4rem)] object-contain"
-                    src={activeReplay.clip}
-                    poster="/images/arc3-placeholder.png"
-                    autoPlay={!prefersReducedMotion}
-                    muted
-                    playsInline
-                    aria-label={`ARC-3 replay ${activeReplay.gameId} - ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
-                  />
-                </div>
-              </div>
+              <ARC3CanvasPlayer
+                key={activeReplay.gameId}
+                replayPath={activeReplay.replayPath}
+                gameLabel={`${activeReplay.gameId.toUpperCase()} · ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
+                shortId={activeReplay.shortId}
+                autoPlay={!prefersReducedMotion}
+                onReplayComplete={handleReplayComplete}
+              />
             </div>
           </Link>
         </div>

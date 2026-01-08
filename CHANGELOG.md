@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.11  Jan 8, 2026
+
+- **FEATURE: SP80/AS66 Canvas Replay Player on Landing Hero** (Author: Cascade (OpenAI o4-preview))
+  - **What**: Added a reusable ARC-3 canvas replay component and wired the landing page to render the problematic SP80 + AS66 replays directly from JSONL sources with interpolation and playback controls.
+  - **Why**: Pre-encoded MP4 clips skipped animation frames for these games; canvas playback solves the missing-frame issue and unlocks interactive controls.
+  - **How**:
+    - `client/src/components/ARC3CanvasPlayer.tsx`: new component that parses JSONL replays, renders canvas frames with interpolation, and exposes controls + rotation callback.
+    - `client/src/pages/LandingPage.tsx`: replaced `<video>` showcase with the canvas player, restricted rotation to SP80/AS66, and updated metadata headers.
+    - `docs/plans/2026-01-08-arc3-canvas-replay-player-plan.md`: marked scope complete with status note.
+
 ### Version 6.35.10  Jan 8, 2026
 
 - **FIX: Align landing hero labels with out-of-frame spec** (Author: Cascade (Claude claude-sonnet-4-20250514))
