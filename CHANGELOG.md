@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.9  Jan 8, 2026
+
+- **FIX: Restore landing page video rendering and add readable ARC-3 game labels** (Author: Claude Haiku 4.5)
+  - **What**: Fixed regression from recent commits that broke ARC-3 video display and labels on the landing page.
+  - **Why**: Previous changes introduced an absolute-positioned overlay header that collapsed the video container, making playback invisible. Game IDs were also shown without readable names (e.g., raw `ls20` instead of `LS20 · Locksmith`).
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`:
+      - Restored proper gradient border styling (`bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60`) with nested container structure
+      - Fixed video positioning with `absolute inset-8` within `aspect-square` container
+      - Added `ARC3_GAME_NAMES` mapping for readable game labels
+      - Moved label to bottom overlay (`absolute inset-x-0 bottom-0`) with gradient fade
+      - Fixed event listener dependency array to include only `handleReplayEnded` (removed unused `activeReplayIndex`)
+      - Split `gameId` into `gameId` (e.g., `ls20`) and `shortId` (full replay ID) for display purposes
+  - **Files touched**: `client/src/pages/LandingPage.tsx` (video structure, styling, labels, and event handler cleanup)
+
 ### Version 6.35.8  Jan 8, 2026 (INCOMPLETE - NOT TESTED)
 
 - **FIX: ARC3 video rendering - keep all frames at 1 FPS for smooth animations** (Author: Claude Haiku 4.5)
