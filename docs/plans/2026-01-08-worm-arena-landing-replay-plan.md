@@ -1,5 +1,7 @@
 ## 2026-01-08 – Worm Arena Landing Replay Plan
 
+**Status:** Completed – 2026-01-08
+
 ### 1. Context & Problem
 - Landing hero currently has two slices (ARC1/2 GIF rotator + ARC3 canvas replays).
 - Worm Arena has rich replay infrastructure (`WormArenaReplayViewer`, `useWormArenaGreatestHits`, `/api/snakebench/greatest-hits`) but none of it is surfaced on the landing page.
