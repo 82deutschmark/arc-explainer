@@ -39,7 +39,6 @@ const PUZZLE_GIF_GALLERY = [
 ] satisfies ReadonlyArray<{ id: string; file: string }>;
 
 const ARC3_REPLAY_GALLERY = [
-  { gameId: 'choose-your-path', clip: '/videos/arc3/choose-your-path.mp4' },
   { gameId: 'ft09-b8377d4b7815', clip: '/videos/arc3/ft09-b8377d4b7815.mp4' },
   { gameId: 'lp85-d265526edbaa', clip: '/videos/arc3/lp85-d265526edbaa.mp4' },
   { gameId: 'ls20-fa137e247ce6', clip: '/videos/arc3/ls20-fa137e247ce6.mp4' },
@@ -158,11 +157,11 @@ export default function LandingPage() {
         <Link href="/arc3/games">
           <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
             <div className="relative overflow-hidden rounded-[1.375rem] bg-black/90">
-              <div className="relative aspect-square p-8">
+              <div className="relative aspect-square">
                 <video
                   ref={videoRef}
                   key={activeReplay.gameId}
-                  className="absolute inset-8 h-[calc(100%-4rem)] w-[calc(100%-4rem)] object-contain"
+                  className="h-full w-full object-contain p-8"
                   src={activeReplay.clip}
                   poster="/images/arc3-placeholder.png"
                   autoPlay={!prefersReducedMotion}
