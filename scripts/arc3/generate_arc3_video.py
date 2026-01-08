@@ -1,14 +1,16 @@
 """
-Author: Cascade (OpenAI o4-preview)
-Date: 2026-01-07T23:45:00Z
+Author: Cascade (Claude claude-sonnet-4-20250514)
+Date: 2026-01-08T01:15:00Z
 PURPOSE: Convert ARC3 JSONL scorecard files into MP4 clips for landing hero and documentation needs.
          Reads streamed frames, renders ARC palette grids with metadata overlay, and stitches them via ffmpeg.
-SRP/DRY check: Pass — dedicated CLI utility; reuses shared color palette constants instead of duplicating landing logic.
+         Supports batch encoding of all available replays in arc3/ and public/replays/ directories.
+SRP/DRY check: Pass — dedicated CLI utility; uses canonical ARC3 color palette matching shared/config/arc3Colors.ts.
 """
 
 from __future__ import annotations
 
 import argparse
+import glob
 import json
 import pathlib
 from typing import Iterable, List
@@ -18,33 +20,42 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 
+# Canonical ARC3 color palette - matches shared/config/arc3Colors.ts (single source of truth)
+# Values 0-5: Grayscale (white to black)
+# Values 6-15: Colors for game objects
 ARC3_COLOR_MAP = {
-    0: (255, 255, 255),
-    1: (0, 102, 204),
-    2: (128, 128, 128),
-    3: (64, 64, 64),
-    4: (32, 32, 32),
-    5: (0, 0, 0),
-    6: (142, 92, 52),
-    7: (192, 192, 192),
-    8: (255, 0, 0),
-    9: (102, 170, 255),
-    10: (0, 153, 0),
-    11: (255, 255, 0),
-    12: (255, 153, 0),
-    13: (255, 0, 255),
-    14: (153, 255, 153),
-    15: (128, 0, 128),
+    0: (255, 255, 255),   # White
+    1: (204, 204, 204),   # Light Gray
+    2: (153, 153, 153),   # Gray
+    3: (102, 102, 102),   # Dark Gray
+    4: (51, 51, 51),      # Darker Gray
+    5: (0, 0, 0),         # Black
+    6: (229, 58, 163),    # Pink (#E53AA3)
+    7: (255, 123, 204),   # Light Pink (#FF7BCC)
+    8: (249, 60, 49),     # Red (#F93C31)
+    9: (30, 147, 255),    # Blue (#1E93FF)
+    10: (136, 216, 241),  # Light Blue (#88D8F1)
+    11: (255, 220, 0),    # Yellow (#FFDC00)
+    12: (255, 133, 27),   # Orange (#FF851B)
+    13: (146, 18, 49),    # Dark Red (#921231)
+    14: (79, 204, 48),    # Green (#4FCC30)
+    15: (163, 86, 208),   # Purple (#A356D0)
 }
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Convert an ARC3 JSONL replay into an MP4 clip suitable for the landing page hero."
+            "Convert ARC3 JSONL replays into MP4 clips. Supports single file or batch mode."
         )
     )
-    parser.add_argument("input_jsonl", type=pathlib.Path, help="Path to the ARC3 JSONL file.")
+    parser.add_argument(
+        "input_jsonl",
+        type=pathlib.Path,
+        nargs="?",
+        default=None,
+        help="Path to a single ARC3 JSONL file (omit for batch mode with --batch).",
+    )
     parser.add_argument(
         "--output",
         "-o",
@@ -68,6 +79,17 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=None,
         help="Optional cap for frames (useful when trimming long sessions).",
+    )
+    parser.add_argument(
+        "--batch",
+        action="store_true",
+        help="Encode all JSONL files in arc3/ and public/replays/ directories.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=pathlib.Path,
+        default=None,
+        help="Output directory for batch mode (default: client/public/videos/arc3/).",
     )
     return parser.parse_args()
 
@@ -155,25 +177,77 @@ def frames_to_video(
                 print(f"[arc3-video] Encoded {idx + 1} frames…")
 
 
-def main() -> None:
-    args = parse_args()
-    input_path = args.input_jsonl
-    if not input_path.exists():
-        raise FileNotFoundError(f"Missing JSONL file: {input_path}")
+def find_all_jsonl_files() -> List[pathlib.Path]:
+    """Discover all JSONL replay files in arc3/ and public/replays/ directories."""
+    repo_root = pathlib.Path(__file__).resolve().parent.parent.parent
+    patterns = [
+        repo_root / "arc3" / "*.jsonl",
+        repo_root / "public" / "replays" / "*.jsonl",
+    ]
+    files: List[pathlib.Path] = []
+    for pattern in patterns:
+        files.extend(pathlib.Path(p) for p in glob.glob(str(pattern)))
+    return sorted(set(files))
 
-    output_path = args.output or input_path.with_suffix(".mp4")
+
+def encode_single_file(
+    input_path: pathlib.Path,
+    output_path: pathlib.Path,
+    fps: float,
+    cell_size: int,
+    max_frames: int | None,
+) -> None:
+    """Encode a single JSONL file to MP4."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    frames_payload = load_frames(input_path, args.max_frames)
+    frames_payload = load_frames(input_path, max_frames)
     font = ImageFont.load_default()
     rendered_frames = [
-        render_frame(payload, args.cell_size, font) for payload in frames_payload
+        render_frame(payload, cell_size, font) for payload in frames_payload
     ]
-    frames_to_video(rendered_frames, output_path, args.fps)
-    duration = len(rendered_frames) / args.fps
+    frames_to_video(rendered_frames, output_path, fps)
+    duration = len(rendered_frames) / fps
     print(
         f"[arc3-video] Wrote {len(rendered_frames)} frames ({duration:.1f}s) to {output_path}"
     )
+
+
+def main() -> None:
+    args = parse_args()
+
+    if args.batch:
+        repo_root = pathlib.Path(__file__).resolve().parent.parent.parent
+        output_dir = args.output_dir or (repo_root / "client" / "public" / "videos" / "arc3")
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        jsonl_files = find_all_jsonl_files()
+        if not jsonl_files:
+            print("[arc3-video] No JSONL files found in arc3/ or public/replays/")
+            return
+
+        print(f"[arc3-video] Batch mode: found {len(jsonl_files)} JSONL files")
+        for jsonl_path in jsonl_files:
+            game_name = jsonl_path.stem.split(".")[0]
+            output_path = output_dir / f"{game_name}.mp4"
+            print(f"[arc3-video] Encoding {jsonl_path.name} -> {output_path.name}")
+            try:
+                encode_single_file(
+                    jsonl_path, output_path, args.fps, args.cell_size, args.max_frames
+                )
+            except Exception as e:
+                print(f"[arc3-video] ERROR encoding {jsonl_path.name}: {e}")
+        print(f"[arc3-video] Batch complete. Output directory: {output_dir}")
+    else:
+        if args.input_jsonl is None:
+            print("[arc3-video] ERROR: Must provide input_jsonl or use --batch mode")
+            return
+        input_path = args.input_jsonl
+        if not input_path.exists():
+            raise FileNotFoundError(f"Missing JSONL file: {input_path}")
+
+        output_path = args.output or input_path.with_suffix(".mp4")
+        encode_single_file(
+            input_path, output_path, args.fps, args.cell_size, args.max_frames
+        )
 
 
 if __name__ == "__main__":

@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.7  Jan 8, 2026
+
+- **FIX: ARC3 video script color palette and landing page redesign** (Author: Cascade (Claude claude-sonnet-4-20250514))
+  - **What**: Fixed incorrect ARC3 color palette in video generator, added batch encoding, and redesigned landing page to be purely visual.
+  - **Why**: Previous developer used wrong colors (e.g., color 1 was blue instead of light gray) and only converted one partial game. Landing page had too much descriptive text per owner feedback.
+  - **How**:
+    - `scripts/arc3/generate_arc3_video.py`: corrected `ARC3_COLOR_MAP` to match canonical `shared/config/arc3Colors.ts`; added `--batch` mode to encode all JSONL replays in `arc3/` and `public/replays/`.
+    - `client/src/pages/LandingPage.tsx`: redesigned to show only two graphics side-by-side with placeholder labels; removed all headlines, paragraphs, CTA buttons, and metadata overlays.
+    - `docs/reference/frontend/landing-hero.md`: updated to document minimal visual design and batch encoding pipeline.
+
 ### Version 6.35.6  Jan 7, 2026
 
 - **CHORE: Add ARC3 palette JSON and landing refresh plan** (Author: Codex (GPT-5))
