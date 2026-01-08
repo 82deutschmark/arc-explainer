@@ -1,4 +1,5 @@
 # This is the source of truth for all ARC3 documentation!!!
+This is the only source of truth for information about ARC3 games and ARC3 documentation. 
 
 > Hand crafted environments that test interactive abstraction and reasoning
 
