@@ -13,7 +13,6 @@ import argparse
 import glob
 import json
 import pathlib
-from datetime import datetime
 from typing import Iterable, List
 
 import imageio.v2 as imageio
@@ -66,8 +65,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--fps",
         type=float,
-        default=6.0,
-        help="Frames per second for the rendered clip (default: 6).",
+        default=1.0,
+        help="Frames per second for the rendered clip (default: 1).",
     )
     parser.add_argument(
         "--cell-size",
@@ -130,51 +129,6 @@ def filter_frame_events(frames_payload: List[dict], file_label: str) -> List[dic
     return filtered
 
 
-def calculate_frame_durations(
-    frames_payload: List[dict],
-) -> List[int]:
-    """
-    Calculate display duration (ms) for each frame based on timestamps.
-    Preserves animation timing but caps long thinking pauses.
-
-    Strategy:
-    - Frames < 2s apart: keep natural timing (animation sequences)
-    - Frames >= 2s apart: cap at 1500ms (skip long thinking/waiting)
-    - Minimum per frame: 150ms (prevents jitter)
-
-    Returns list of durations in milliseconds, one per frame.
-    """
-    durations: List[int] = []
-
-    for i, frame_payload in enumerate(frames_payload):
-        ts_str = frame_payload.get("timestamp", "")
-        try:
-            ts_current = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
-        except (ValueError, AttributeError):
-            durations.append(300)
-            continue
-
-        if i + 1 < len(frames_payload):
-            ts_next_str = frames_payload[i + 1].get("timestamp", "")
-            try:
-                ts_next = datetime.fromisoformat(ts_next_str.replace('Z', '+00:00'))
-                delta_ms = int((ts_next - ts_current).total_seconds() * 1000)
-            except (ValueError, AttributeError):
-                delta_ms = 300
-        else:
-            delta_ms = 500
-
-        # Preserve animation sequences (< 2s), clamp long pauses (>= 2s)
-        if delta_ms < 2000:
-            # Animation or normal gameplay: keep natural timing
-            display_ms = max(delta_ms, 150)
-        else:
-            # Long pause (thinking/waiting): clamp to 1500ms max
-            display_ms = 1500
-
-        durations.append(display_ms)
-
-    return durations
 
 
 def render_frame(
@@ -234,26 +188,15 @@ def render_frame(
 
 
 def frames_to_video(
-    frames_with_durations: Iterable[tuple[Image.Image, int]],
+    frames: Iterable[Image.Image],
     output_path: pathlib.Path,
     fps: float,
 ) -> None:
-    """
-    Write frames to video, respecting per-frame display durations.
-
-    Each frame is rendered for (duration_ms * fps / 1000) output frames.
-    """
     with imageio.get_writer(output_path, fps=fps, codec="libx264", quality=7) as writer:
-        total_encoded = 0
-        for frame_img, duration_ms in frames_with_durations:
-            # Calculate how many video frames to write for this duration at target fps
-            num_frames = max(1, int(round(fps * duration_ms / 1000.0)))
-            frame_array = np.array(frame_img)
-            for _ in range(num_frames):
-                writer.append_data(frame_array)
-                total_encoded += 1
-            if total_encoded % 25 == 0:
-                print(f"[arc3-video] Encoded {total_encoded} frames…")
+        for idx, frame in enumerate(frames):
+            writer.append_data(np.array(frame))
+            if (idx + 1) % 25 == 0:
+                print(f"[arc3-video] Encoded {idx + 1} frames…")
 
 
 def find_all_jsonl_files() -> List[pathlib.Path]:
@@ -281,24 +224,13 @@ def encode_single_file(
     frames_payload = load_frames(input_path, max_frames)
     frames_payload = filter_frame_events(frames_payload, input_path.name)
     font = ImageFont.load_default()
-
-    # Calculate per-frame display durations from timestamps
-    durations_ms = calculate_frame_durations(frames_payload)
-
-    # Render frames and pair with durations
-    rendered_frames_with_durations = [
-        (render_frame(payload, cell_size, font), duration_ms)
-        for payload, duration_ms in zip(frames_payload, durations_ms)
+    rendered_frames = [
+        render_frame(payload, cell_size, font) for payload in frames_payload
     ]
-
-    # Send to video writer
-    frames_to_video(rendered_frames_with_durations, output_path, fps)
-
-    # Calculate and report total duration
-    total_duration_ms = sum(durations_ms)
-    total_duration_s = total_duration_ms / 1000.0
+    frames_to_video(rendered_frames, output_path, fps)
+    duration = len(rendered_frames) / fps
     print(
-        f"[arc3-video] Wrote {len(frames_payload)} frames ({total_duration_s:.1f}s) to {output_path}"
+        f"[arc3-video] Wrote {len(rendered_frames)} frames ({duration:.1f}s) to {output_path}"
     )
 
 
