@@ -14,29 +14,29 @@ import { cn } from '@/lib/utils';
 const ROTATION_INTERVAL_MS = 4500;
 
 const PUZZLE_GIF_GALLERY = [
-  { id: '2bee17df', file: 'arc_puzzle_2bee17df_fringes.gif' },
-  { id: '3de23699', file: 'arc_puzzle_3de23699_invertandzoom.gif' },
-  { id: '3e980e27', file: 'arc_puzzle_3e980e27_spritefulsky.gif' },
-  { id: '3eda0437', file: 'arc_puzzle_3eda0437_biggestgap.gif' },
-  { id: '4be741c5', file: 'arc_puzzle_4be741c5_wetpaint.gif' },
-  { id: '4c5c2cf0', file: 'arc_puzzle_4c5c2cf0_crablegs.gif' },
-  { id: '3f7978a0', file: 'arc_puzzle_3f7978a0_glowsticks.gif' },
-  { id: '6c434453', file: 'arc_puzzle_6c434453_boxtoplus.gif' },
-  { id: '6d0aefbc', file: 'arc_puzzle_6d0aefbc_fliphoriz.gif' },
-  { id: '6d75e8bb', file: 'arc_puzzle_6d75e8bb_velcro.gif' },
-  { id: '6d0160f0', file: 'arc_puzzle_6d0160f0_unoamarillo.gif' },
-  { id: '6e4f6532', file: 'arc_puzzle_6e4f6532.gif' },
-  { id: '6e82a1ae', file: 'arc_puzzle_6e82a1ae_twothreefour.gif' },
-  { id: '6e19193c', file: 'arc_puzzle_6e19193c_arrows.gif' },
-  { id: '7b7f7511', file: 'arc_puzzle_7b7f7511_half.gif' },
-  { id: '7b0280bc', file: 'arc_puzzle_7b0280bc.gif' },
-  { id: '7ddcd7ec', file: 'arc_puzzle_7ddcd7ec_webslinger.gif' },
-  { id: '7e0986d6', file: 'arc_puzzle_7e0986d6_destatic2.gif' },
-  { id: '7fe24cdd', file: 'arc_puzzle_7fe24cdd_pinwheel2.gif' },
-  { id: '8d5021e8', file: 'arc_puzzle_8d5021e8_sixfold.gif' },
-  { id: '8d510a79', file: 'arc_puzzle_8d510a79_groundsky.gif' },
-  { id: '10fcaaa3', file: 'arc_puzzle_10fcaaa3_quadcopter.gif' },
-] satisfies ReadonlyArray<{ id: string; file: string }>;
+  { id: '2bee17df', file: 'arc_puzzle_2bee17df_fringes.gif', label: 'Fringes' },
+  { id: '3de23699', file: 'arc_puzzle_3de23699_invertandzoom.gif', label: 'Invert & Zoom' },
+  { id: '3e980e27', file: 'arc_puzzle_3e980e27_spritefulsky.gif', label: 'Spriteful Sky' },
+  { id: '3eda0437', file: 'arc_puzzle_3eda0437_biggestgap.gif', label: 'Biggest Gap' },
+  { id: '4be741c5', file: 'arc_puzzle_4be741c5_wetpaint.gif', label: 'Wet Paint' },
+  { id: '4c5c2cf0', file: 'arc_puzzle_4c5c2cf0_crablegs.gif', label: 'Crab Legs' },
+  { id: '3f7978a0', file: 'arc_puzzle_3f7978a0_glowsticks.gif', label: 'Glowsticks' },
+  { id: '6c434453', file: 'arc_puzzle_6c434453_boxtoplus.gif', label: 'Box to Plus' },
+  { id: '6d0aefbc', file: 'arc_puzzle_6d0aefbc_fliphoriz.gif', label: 'Flip Horiz' },
+  { id: '6d75e8bb', file: 'arc_puzzle_6d75e8bb_velcro.gif', label: 'Velcro' },
+  { id: '6d0160f0', file: 'arc_puzzle_6d0160f0_unoamarillo.gif', label: 'Uno Amarillo' },
+  { id: '6e4f6532', file: 'arc_puzzle_6e4f6532.gif', label: 'Specter' },
+  { id: '6e82a1ae', file: 'arc_puzzle_6e82a1ae_twothreefour.gif', label: 'Two Three Four' },
+  { id: '6e19193c', file: 'arc_puzzle_6e19193c_arrows.gif', label: 'Arrows' },
+  { id: '7b7f7511', file: 'arc_puzzle_7b7f7511_half.gif', label: 'Half' },
+  { id: '7b0280bc', file: 'arc_puzzle_7b0280bc.gif', label: 'Static Fold' },
+  { id: '7ddcd7ec', file: 'arc_puzzle_7ddcd7ec_webslinger.gif', label: 'Web Slinger' },
+  { id: '7e0986d6', file: 'arc_puzzle_7e0986d6_destatic2.gif', label: 'De-Static' },
+  { id: '7fe24cdd', file: 'arc_puzzle_7fe24cdd_pinwheel2.gif', label: 'Pinwheel' },
+  { id: '8d5021e8', file: 'arc_puzzle_8d5021e8_sixfold.gif', label: 'Sixfold' },
+  { id: '8d510a79', file: 'arc_puzzle_8d510a79_groundsky.gif', label: 'Ground / Sky' },
+  { id: '10fcaaa3', file: 'arc_puzzle_10fcaaa3_quadcopter.gif', label: 'Quadcopter' },
+] satisfies ReadonlyArray<{ id: string; file: string; label: string }>;
 
 const ARC3_REPLAY_GALLERY = [
   { gameId: 'ls20-fa137e247ce6', clip: '/videos/arc3/ls20-fa137e247ce6.mp4' },
@@ -147,8 +147,8 @@ export default function LandingPage() {
                 ))}
               </div>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/90 to-transparent px-6 py-5">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400/90">
-                  Placeholder text
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
+                  {activeGif.label}
                 </span>
               </div>
             </div>
@@ -156,30 +156,31 @@ export default function LandingPage() {
         </Link>
 
         {/* Right: ARC-3 video replay */}
-        <Link href="/arc3/games">
-          <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
-            <div className="relative overflow-hidden rounded-[1.375rem] bg-black/90">
-              <div className="relative aspect-square">
-                <video
-                  ref={videoRef}
-                  key={activeReplay.gameId}
-                  className="h-full w-full object-contain p-8"
-                  src={activeReplay.clip}
-                  poster="/images/arc3-placeholder.png"
-                  autoPlay={!prefersReducedMotion}
-                  muted
-                  playsInline
-                  aria-label="ARC-3 replay"
-                />
-              </div>
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/90 to-transparent px-6 py-5">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300/90">
-                  Placeholder text
-                </span>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-indigo-200/80">
+            <span>Arc 3</span>
+            <span className="tracking-[0.15em] text-indigo-100">{activeReplay.gameId}</span>
+          </div>
+          <Link href="/arc3/games">
+            <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
+              <div className="relative overflow-hidden rounded-[1.375rem] bg-black/90">
+                <div className="relative aspect-square">
+                  <video
+                    ref={videoRef}
+                    key={activeReplay.gameId}
+                    className="h-full w-full object-contain p-8"
+                    src={activeReplay.clip}
+                    poster="/images/arc3-placeholder.png"
+                    autoPlay={!prefersReducedMotion}
+                    muted
+                    playsInline
+                    aria-label={`ARC-3 replay ${activeReplay.gameId}`}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </Link>
+          </Link>
+        </div>
       </section>
     </main>
   );
