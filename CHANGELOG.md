@@ -1,5 +1,24 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.13  Jan 8, 2026
+
+- **FIX: Skip SP80 and AS66 on the landing ARC-3 replay rotation** (Author: Codex (GPT-5))
+  - **What**: Updated the landing ARC-3 replay list to rotate LS20, VC33, FT09, and LP85 instead of SP80/AS66.
+  - **Why**: SP80 and AS66 replays are currently failing on the landing page, so we avoid them until the replay fixes land.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`: Replaced the ARC-3 replay list and normalized labels to ASCII.
+    - `docs/reference/frontend/landing-hero.md`: Documented the three-column hero and ARC-3 replay rotation update.
+
+### Version 6.35.12  Jan 8, 2026
+
+- **FEATURE: Worm Arena replay slice on landing hero** (Author: Cascade (OpenAI o4-preview))
+  - **What**: Added a third landing slice that showcases curated Worm Arena matches with a lightweight emoji board replay preview and rotation controls.
+  - **Why**: Owner requested the landing hero highlight Worm Arena replays alongside ARC 1/2 GIFs and ARC3 canvas clips to reflect all flagship experiences.
+  - **How**:
+    - `client/src/components/WormArenaLandingReplay.tsx`: new component that reuses `WormArenaGameBoard`, fetches trimmed frames, and exposes minimal controls for the hero.
+    - `client/src/pages/LandingPage.tsx`: expanded layout to three columns, wired in `useWormArenaGreatestHits`, fetches replay data by match, and renders the new Worm slice with reduced-motion handling.
+    - `docs/plans/2026-01-08-worm-arena-landing-replay-plan.md`: marked plan complete with status note.
+
 ### Version 6.35.11  Jan 8, 2026
 
 - **FEATURE: SP80/AS66 Canvas Replay Player on Landing Hero** (Author: Cascade (OpenAI o4-preview))

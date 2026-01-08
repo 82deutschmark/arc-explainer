@@ -1,10 +1,10 @@
 /**
- * Author: Cascade (OpenAI o4-preview)
- * Date: 2026-01-08T18:55:00Z
+ * Author: Codex (GPT-5)
+ * Date: 2026-01-08T19:34:00Z
  * PURPOSE: Minimal visual landing page with rotating ARC 1&2 GIFs and ARC-3 canvas replays.
- *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 canvas player for SP80 + AS66 only.
+ *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 canvas player rotating non-problem games.
  *          No descriptive text - just visual showcase with placeholder labels per owner request.
- * SRP/DRY check: Pass — single-page hero composition utilizing reusable canvas replay component.
+ * SRP/DRY check: Pass - single-page hero composition utilizing reusable canvas replay component.
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
@@ -54,16 +54,24 @@ const ARC3_GAME_NAMES: Record<string, string> = {
 
 const ARC3_CANVAS_REPLAYS = [
   {
-    gameId: 'sp80',
-    shortId: 'sp80-0605ab9e5b2a',
-    label: 'SP80 · Streaming Purple',
-    replayPath: '/replays/sp80-0605ab9e5b2a.212c541e-db90-40c3-9601-79049867dab2.jsonl',
+    gameId: 'ls20',
+    shortId: 'ls20-fa137e247ce6',
+    replayPath: '/replays/ls20-fa137e247ce6.7405808f-ec5b-4949-a252-a1451b946bae.jsonl',
   },
   {
-    gameId: 'as66',
-    shortId: 'as66-821a4dcad9c2',
-    label: 'AS66 · Always Sliding',
-    replayPath: '/replays/as66-821a4dcad9c2.db85123a-891c-4fde-8bd3-b85c6702575d.jsonl',
+    gameId: 'vc33',
+    shortId: 'vc33-6ae7bf49eea5',
+    replayPath: '/replays/vc33-6ae7bf49eea5.29409ce8-c164-447e-8810-828b96fa4ceb.jsonl',
+  },
+  {
+    gameId: 'ft09',
+    shortId: 'ft09-b8377d4b7815',
+    replayPath: '/replays/ft09-b8377d4b7815.39b51ef3-b565-43fe-b3a8-7374ca4c5058.jsonl',
+  },
+  {
+    gameId: 'lp85',
+    shortId: 'lp85-d265526edbaa',
+    replayPath: '/replays/lp85-d265526edbaa.dc3d96aa-762b-4c2e-ac68-6418c8f54c74.jsonl',
   },
 ] as const;
 
@@ -207,7 +215,7 @@ export default function LandingPage() {
               ARC 3
             </p>
             <p className="text-lg font-semibold tracking-wide">
-              {activeReplay.label}
+              {`${activeReplay.gameId.toUpperCase()} - ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
             </p>
           </div>
           <Link href="/arc3/games">
@@ -215,7 +223,7 @@ export default function LandingPage() {
               <ARC3CanvasPlayer
                 key={activeReplay.gameId}
                 replayPath={activeReplay.replayPath}
-                gameLabel={`${activeReplay.gameId.toUpperCase()} · ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
+                gameLabel={`${activeReplay.gameId.toUpperCase()} - ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
                 shortId={activeReplay.shortId}
                 autoPlay={!prefersReducedMotion}
                 onReplayComplete={handleReplayComplete}
@@ -256,7 +264,7 @@ export default function LandingPage() {
             </Link>
           ) : (
             <div className="min-h-[360px] rounded-3xl border border-amber-100/20 bg-gradient-to-br from-amber-900/40 to-black p-6 text-sm text-amber-100/70">
-              {wormHitsLoading ? 'Loading Worm Arena matches…' : 'No curated Worm Arena matches available yet.'}
+              {wormHitsLoading ? 'Loading Worm Arena matches...' : 'No curated Worm Arena matches available yet.'}
             </div>
           )}
         </div>
@@ -264,3 +272,6 @@ export default function LandingPage() {
     </main>
   );
 }
+
+
+
