@@ -1,8 +1,8 @@
 /**
  * Author: Cascade (Claude claude-sonnet-4-20250514)
- * Date: 2026-01-08T02:05:00Z
+ * Date: 2026-01-08T02:15:00Z
  * PURPOSE: Minimal visual landing page with two graphics side-by-side.
- *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 replay videos rotating through full set.
+ *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 replay videos playing sequentially to completion.
  *          No descriptive text - just visual showcase with placeholder labels per owner request.
  * SRP/DRY check: Pass — single-page hero composition with minimal UI chrome, rotating data-driven media.
  */
@@ -71,14 +71,6 @@ export default function LandingPage() {
   }, [prefersReducedMotion]);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || ARC3_REPLAY_GALLERY.length < 2 || prefersReducedMotion) return;
-    const intervalId = window.setInterval(() => {
-      setActiveReplayIndex((prev) => (prev + 1) % ARC3_REPLAY_GALLERY.length);
-    }, ROTATION_INTERVAL_MS);
-    return () => window.clearInterval(intervalId);
-  }, [prefersReducedMotion]);
-
-  useEffect(() => {
     if (typeof window === 'undefined') return;
     const nextIndex = (activeIndex + 1) % PUZZLE_GIF_GALLERY.length;
     const nextGif = PUZZLE_GIF_GALLERY[nextIndex];
@@ -108,6 +100,22 @@ export default function LandingPage() {
       }
     }
   }, [activeReplayIndex, prefersReducedMotion]);
+
+  useEffect(() => {
+    const node = videoRef.current;
+    if (!node || ARC3_REPLAY_GALLERY.length < 2) {
+      return;
+    }
+
+    const handleEnded = () => {
+      setActiveReplayIndex((prev) => (prev + 1) % ARC3_REPLAY_GALLERY.length);
+    };
+
+    node.addEventListener('ended', handleEnded);
+    return () => {
+      node.removeEventListener('ended', handleEnded);
+    };
+  }, []);
 
   const activeGif = PUZZLE_GIF_GALLERY[activeIndex];
   const activeReplay =
@@ -154,7 +162,6 @@ export default function LandingPage() {
                 autoPlay={!prefersReducedMotion}
                 muted
                 playsInline
-                loop
                 aria-label="ARC-3 replay"
               />
             </div>
