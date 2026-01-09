@@ -10,7 +10,7 @@
   - **Left:** Rotating ARC 1&2 GIF previews (clickable, links to puzzle).
   - **Middle:** ARC-3 canvas replay (clickable, links to ARC-3 games).
   - **Right:** Worm Arena replay (clickable, links to replay).
-- No descriptive text, headlines, or CTA buttons - purely visual with placeholder labels.
+- A slim hiatus banner reads “On Hiatus – January 2026” centered above the hero to communicate the temporary pause in updates.
 - Respects `prefers-reduced-motion`: GIF rotation pauses and replay autoplay is disabled.
 - Dark gradient background with subtle borders and hover effects.
 

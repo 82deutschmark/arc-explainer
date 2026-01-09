@@ -1,9 +1,9 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-10-17T00:00:00Z
- * PURPOSE: Focused coverage for AnalysisStreamService.startStreaming default behaviours and
- * feature flag overrides to guarantee streaming remains enabled unless explicitly disabled.
- * SRP/DRY check: Pass — scoped to streaming flag interactions only.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Validate AnalysisStreamService streaming defaults, flag overrides,
+ *          and pending-session TTL behavior.
+ * SRP/DRY check: Pass - Scoped to streaming defaults and lifecycle only.
  */
 
 import test from "node:test";
