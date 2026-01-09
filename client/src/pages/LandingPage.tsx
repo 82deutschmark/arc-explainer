@@ -100,7 +100,7 @@ export default function LandingPage() {
   }, [activeReplayIndex, prefersReducedMotion]);
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black">
+    <main className="relative flex min-h-screen flex-col items-center justify-start gap-8 overflow-hidden bg-black px-4 py-12 md:px-0">
       {/* Animated background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-purple-900/10" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-900/10 via-transparent to-transparent" />
@@ -111,7 +111,7 @@ export default function LandingPage() {
       >
         On Hiatus – January 2026
       </p>
-      <section className="relative z-10 mx-auto grid w-full max-w-5xl grid-cols-1 gap-12 px-4 py-10 md:grid-cols-2">
+      <section className="relative z-10 mx-auto grid w-full max-w-5xl grid-cols-1 gap-12 px-0 md:px-4 md:grid-cols-2">
         {/* Left: ARC 1&2 GIF showcase */}
         <div className="flex flex-col gap-4">
           <div className="space-y-1 text-slate-100">
