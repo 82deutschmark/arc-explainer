@@ -1,16 +1,11 @@
 /**
- * RE-ARC Controller Endpoint Tests
- *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-27
- * PURPOSE: Integration tests for RE-ARC HTTP endpoints.
- *          Tests generation streaming download and evaluation SSE streaming.
- * SRP/DRY check: Pass - Focused tests for reArcController endpoints.
- *
- * Note: These tests use RE_ARC_DEV_MODE=true for faster execution with fewer tasks.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Unit tests for RE-ARC controller validation paths and response shaping.
+ * SRP/DRY check: Pass - Focused controller behavior only.
  */
 
-import test from 'node:test';
+import { test } from 'vitest';
 import { strict as assert } from 'node:assert';
 import type { Request, Response } from 'express';
 import { generate, evaluate } from '../server/controllers/reArcController.ts';

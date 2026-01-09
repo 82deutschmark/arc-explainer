@@ -1,13 +1,12 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-02-14T00:00:00Z
- * PURPOSE: Regression tests for OpenAI streaming event handling to ensure emitted SSE chunks mirror provider deltas.
- * SRP/DRY check: Pass — exercises existing streaming aggregation helper without duplicating logic elsewhere.
- * DaisyUI: Pass — backend-focused test with no UI components.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Regression tests for OpenAI streaming aggregation and SSE chunk handling.
+ * SRP/DRY check: Pass - Focused handler behavior only.
  */
 
 import { strict as assert } from "node:assert";
-import test from "node:test";
+import { test } from 'vitest';
 
 import {
   createStreamAggregates,

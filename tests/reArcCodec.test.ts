@@ -1,12 +1,11 @@
 /**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-26
- * PURPOSE: Unit tests for RE-ARC task ID codec (XOR seed recovery and steganographic encoding).
- *          Comprehensive tests for simplified architecture.
- * SRP/DRY check: Pass - Focused tests for reArcCodec utility functions.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Unit tests for RE-ARC codec utilities and deterministic seed recovery.
+ * SRP/DRY check: Pass - Focused codec helper tests only.
  */
 
-import test from 'node:test';
+import { test } from 'vitest';
 import { strict as assert } from 'node:assert';
 
 import {

@@ -35,5 +35,17 @@ export const insertWormArenaSessionSchema = createInsertSchema(wormArenaSessions
   expiresAt: true,
 });
 
-export type InsertWormArenaSession = z.infer<typeof insertWormArenaSessionSchema>;
-export type WormArenaSession = typeof wormArenaSessions.$inferSelect;
+// Visitor stats for landing page
+export const visitorStats = pgTable("visitor_stats", {
+  id: serial("id").primaryKey(),
+  page: varchar("page", { length: 255 }).notNull().unique(),
+  count: integer("count").notNull().default(0),
+});
+
+export const insertVisitorStatsSchema = createInsertSchema(visitorStats).pick({
+  page: true,
+  count: true,
+});
+
+export type InsertVisitorStats = z.infer<typeof insertVisitorStatsSchema>;
+export type VisitorStats = typeof visitorStats.$inferSelect;

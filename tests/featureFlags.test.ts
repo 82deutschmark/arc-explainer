@@ -1,4 +1,11 @@
 /**
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Validate feature flag normalization for shared server and client helpers.
+ * SRP/DRY check: Pass - Focused helper tests only.
+ */
+
+/**
  * Feature Flag Helper Tests
  *
  * Author: gpt-5-codex
@@ -8,7 +15,7 @@
  */
 
 import { strict as assert } from 'node:assert';
-import test from 'node:test';
+import { test } from 'vitest';
 import { isFeatureFlagEnabled } from '../shared/utils/featureFlags.ts';
 
 test('isFeatureFlagEnabled accepts uppercase TRUE', () => {

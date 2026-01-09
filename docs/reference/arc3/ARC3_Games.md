@@ -1,4 +1,5 @@
-# Games
+# This is the source of truth for all ARC3 documentation!!!
+This is the only source of truth for information about ARC3 games and ARC3 documentation. 
 
 > Hand crafted environments that test interactive abstraction and reasoning
 
@@ -11,11 +12,44 @@ ARC-AGI-3 games are turn-based systems where agents interact with 2D grid enviro
 
 To see which games are available, either go to [three.arcprize.org](https://three.arcprize.org) or make an API call to [list games](/api-reference/games/list-available-games).
 
-Example games include
+### Available Games
 
-* [ls20](https://three.arcprize.org/games/ls20) - Agent reasoning
-* [ft09](https://three.arcprize.org/games/ft09) - Elementary Logic
-* [vc33](https://three.arcprize.org/games/vc33) - Orchestration
+To see which games are available, either go to [three.arcprize.org](https://three.arcprize.org) or make an API call to [list games](/api-reference/games/list-available-games).
+
+#### THREE ORIGINAL PREVIEW GAMES:
+
+* **[ls20](https://three.arcprize.org/games/ls20) - Locksmith**
+    * **Objective**: Transform a key to match the lock and reaches the exit.
+    * **Mechanism**: The **key** is a distinct pixel cluster in the **bottom-left**. You must change its **shape, color, and rotation**.
+    * **Strategy**: Navigate over specific tiles to trigger the three types of transformations. No trigger action required at the door.
+
+* **[ft09](https://three.arcprize.org/games/ft09) - Functional Tiles**
+    * **Objective**: Align grid tiles to match a static target.
+    * **Mechanism**: Reference configuration in the top-right is **static**. Colors have a **precedence/ranking**: if requirements overlap, the dominant color (top) wins.
+    * **Strategy**: Clicks toggle or cycle colors. Note the dominance hierarchy from turn 1.
+
+* **[vc33](https://three.arcprize.org/games/vc33) - Volume Control**
+    * **Objective**: Transport players using hydraulics.
+    * **Mechanism**: White columns are part of a **closed liquid system**. They flow between areas like water. Player squares sit on top of the liquid and rise/fall with it.
+    * **Strategy**: No manual player selection; they move automatically when the hydraulic height aligns with a passage.
+
+#### THREE ORIGINAL PRIVATE EVALUATION GAMES:
+
+* **[sp80](https://three.arcprize.org/games/sp80) - Streaming Purple**
+    * **Objective**: Redirect fluid into white U-containers.
+    * **Mechanism**: **ACTION5** starts the stream, which runs over several frames. You must position all platforms perfectly **before** starting the flow.
+    * **Strategy**: Outcome is pass/fail. Gravity falls straight down until reflected by a platform.
+
+* **[as66](https://three.arcprize.org/games/as66) - Always Sliding**
+    * **Objective**: Reach the white U-shaped exit gate.
+    * **Mechanism**: Enemies (orange/red) cause **instant death** on collision. 
+    * **Strategy**: You must change your block's color to match the color expected by the exit gate to register a win.
+
+* **[lp85](https://three.arcprize.org/games/lp85) - Loop & Pull**
+    * **Objective**: Align large yellow blocks with small yellow indicator squares.
+    * **Mechanism**: **Four small yellow squares** act as designated slots. Buttons (Red/Green) can Loop, Swap, Push, or Pull depending on the level difficulty.
+    * **Strategy**: Precise alignment with the small indicator "anchors" is required.
+
 
 ### Game ID
 
