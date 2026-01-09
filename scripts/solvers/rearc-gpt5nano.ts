@@ -265,6 +265,7 @@ function getResponseSchema(numTestCases: number) {
       },
     },
     required: ['grids'],
+    additionalProperties: false,
   };
 }
 
@@ -309,10 +310,8 @@ async function solveAttempt(
       },
       text: {
         verbosity: 'medium',
-      },
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
+        format: {
+          type: 'json_schema',
           name: 'ARC_Output',
           schema,
           strict: true,
