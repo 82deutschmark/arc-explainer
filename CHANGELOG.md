@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.14  Jan 8, 2026
+
+- **FIX: ARC3 canvas replay parsing and landing page simplification** (Author: Cascade (OpenAI o4-preview))
+  - **What**: Fixed ARC3CanvasPlayer to correctly parse 3D JSONL frame arrays; removed all interactive controls from both ARC3 and WormArena landing slices.
+  - **Why**: The extractGrid function failed to detect 3D array depth correctly, causing "Replay contains no frames" errors. Landing pages should be simple visual showcases without buttons/sliders.
+  - **How**:
+    - `client/src/components/ARC3CanvasPlayer.tsx`: rewrote extractGrid to properly detect 2D/3D/4D array structures and extract the 2D grid; removed all Button/Slider controls and unused handler functions.
+    - `client/src/components/WormArenaLandingReplay.tsx`: removed control buttons and unused imports - now just autoplays the replay.
+
 ### Version 6.35.13  Jan 8, 2026
 
 - **FIX: Skip SP80 and AS66 on the landing ARC-3 replay rotation** (Author: Codex (GPT-5))

@@ -10,9 +10,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import type { WormArenaGreatestHitGame } from '@shared/types';
-import { Pause, Play, RotateCw } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import WormArenaGameBoard from '@/components/WormArenaGameBoard';
 
@@ -112,16 +110,6 @@ export const WormArenaLandingReplay: React.FC<WormArenaLandingReplayProps> = ({
     return () => window.clearInterval(handle);
   }, [frames.length, isPlaying, onReplayComplete]);
 
-  const handleTogglePlay = () => {
-    if (frames.length === 0) return;
-    setIsPlaying((prev) => !prev);
-  };
-
-  const handleReset = () => {
-    setFrameIndex(0);
-    setIsPlaying(autoPlay && frames.length > 1);
-  };
-
   const matchupLabel = game
     ? `${game.modelA ?? 'Model A'} vs ${game.modelB ?? 'Model B'}`
     : 'Worm Arena Match';
@@ -188,34 +176,6 @@ export const WormArenaLandingReplay: React.FC<WormArenaLandingReplayProps> = ({
           )}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-amber-100/80">
-          <div className="flex items-center gap-2">
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-8 w-8 border-amber-200/40 text-amber-200"
-              onClick={handleReset}
-              disabled={frames.length === 0}
-            >
-              <RotateCw className="h-4 w-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant="default"
-              className="h-8 w-8 bg-amber-400 text-black hover:bg-amber-300"
-              onClick={handleTogglePlay}
-              disabled={frames.length === 0}
-            >
-              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            </Button>
-          </div>
-
-          {game?.gameId && (
-            <div className="text-[0.6rem] font-mono uppercase tracking-wide text-amber-100/60">
-              Match ID: {game.gameId.slice(0, 8)}…
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
