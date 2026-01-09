@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
 """
-Author: Cascade (ChatGPT)
-Date: 2026-01-09
-PURPOSE: Python-based RE-ARC solver that calls OpenRouter models with explicit
-         completion budgets and writes submission.json incrementally as each
-         attempt finishes. Supports resumable runs, configurable throttling,
-         and structured JSONL logs for external monitoring.
-SRP/DRY check: Pass — solver logic, OpenRouter calls, and disk writing are
-               encapsulated within this module without duplicating other flows.
+Author: Codex (GPT-5)
+Date: 2026-01-09T00:00:00Z
+PURPOSE: RE-ARC OpenRouter solver that issues one request per task, captures an
+         ordered list of output grids for every test case, and writes a live
+         submission snapshot plus JSONL logs for monitoring.
+SRP/DRY check: Pass - Queueing, OpenRouter calls, and persistence are kept in
+               this module without duplicating other solver flows.
 """
 
 from __future__ import annotations
@@ -19,7 +17,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -71,13 +69,12 @@ GRID_PATTERN = re.compile(r"\[\s*\[[\s\S]*?\]\s*\]")
 @dataclass
 class WorkItem:
   task_id: str
-  test_index: int
   attempt_num: int
 
 
 @dataclass
 class AttemptResult:
-  grid: Optional[List[List[int]]]
+  grids: List[List[List[int]]]
   success: bool
   finish_reason: Optional[str]
   error: Optional[str]
@@ -85,6 +82,9 @@ class AttemptResult:
   completion_tokens: Optional[int]
   reasoning_tokens: Optional[int]
   content_sample: str
+  expected_outputs: int
+  parsed_outputs: int
+  missing_outputs: int
 
 
 class LiveSubmissionWriter:
@@ -113,28 +113,29 @@ class LiveSubmissionWriter:
     with open(path, "r", encoding="utf-8") as fh:
       return json.load(fh)
 
-  async def record(
+  async def record_attempts(
     self,
     *,
     task_id: str,
-    test_index: int,
     attempt_num: int,
-    grid: Optional[List[List[int]]],
+    grids: List[Optional[List[List[int]]]],
     metadata: Dict[str, Any],
   ):
     async with self._lock:
       if task_id not in self.state:
         self.state[task_id] = [{"attempt_1": None, "attempt_2": None} for _ in range(len(self.dataset[task_id]["test"]))]
-      entry = self.state[task_id][test_index]
+      entries = self.state[task_id]
       entry_key = f"attempt_{attempt_num}"
-      entry[entry_key] = grid if grid else [[0]]
+      for test_index in range(len(entries)):
+        grid = grids[test_index] if test_index < len(grids) else None
+        entries[test_index][entry_key] = grid if grid is not None else [[0]]
       self._write_snapshot()
       self._append_log_line(metadata)
 
   def _append_log_line(self, metadata: Dict[str, Any]):
     line = {
       **metadata,
-      "timestamp": datetime.utcnow().isoformat() + "Z",
+      "timestamp": datetime.now(timezone.utc).isoformat(),
     }
     with open(self.log_path, "a", encoding="utf-8") as fh:
       fh.write(json.dumps(line) + "\n")
@@ -161,10 +162,10 @@ def grid_to_string(grid: List[List[int]]) -> str:
   return "\n".join(" ".join(str(cell) for cell in row) for row in grid)
 
 
-def build_prompt(task: Dict[str, Any], test_index: int, attempt_num: int) -> str:
+def build_prompt(task: Dict[str, Any], attempt_num: int) -> str:
   lines: List[str] = []
-  lines.append("You are solving an ARC (Abstraction and Reasoning Corpus) test case.")
-  lines.append("Study the training pairs and output ONLY the solved grid for the test input.")
+  lines.append("You are solving an ARC (Abstraction and Reasoning Corpus) task.")
+  lines.append("Study the training pairs and output ONLY the solved grids for the test inputs.")
   lines.append("")
   lines.append("## Training Examples")
   lines.append("")
@@ -175,15 +176,20 @@ def build_prompt(task: Dict[str, Any], test_index: int, attempt_num: int) -> str
     lines.append("Output:")
     lines.append(grid_to_string(pair["output"]))
     lines.append("")
-  lines.append("## Test Input")
-  lines.append(grid_to_string(task["test"][test_index]["input"]))
+  lines.append("## Test Inputs")
+  lines.append("")
+  for idx, test_case in enumerate(task["test"], start=1):
+    lines.append(f"### Test Case {idx}")
+    lines.append(grid_to_string(test_case["input"]))
+    lines.append("")
+  lines.append("## Response Format")
+  lines.append("Return a JSON array of output grids in the same order as the test cases.")
+  lines.append("Example: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]")
   lines.append("")
   if attempt_num == 1:
-    lines.append("Respond with the JSON grid. No narration, no markdown, only the array literal.")
+    lines.append("Respond with only the JSON array. No narration, no markdown.")
   else:
-    lines.append(
-      "Produce an alternative JSON grid without repeating attempt 1 verbatim. Again, respond with just the array literal."
-    )
+    lines.append("Make a second attempt for every test case. Respond with only the JSON array.")
   return "\n".join(lines)
 
 
@@ -203,59 +209,90 @@ def normalize_content(content: Any) -> str:
   return "" if content is None else str(content)
 
 
-def parse_grid_from_response(text: str) -> Optional[List[List[int]]]:
+def is_grid(candidate: Any) -> bool:
+  return (
+    isinstance(candidate, list)
+    and candidate
+    and all(
+      isinstance(row, list) and row and all(isinstance(cell, int) and 0 <= cell <= 9 for cell in row)
+      for row in candidate
+    )
+  )
+
+
+def is_grid_list(candidate: Any) -> bool:
+  return isinstance(candidate, list) and candidate and all(is_grid(grid) for grid in candidate)
+
+
+def parse_grids_from_response(text: str) -> List[List[List[int]]]:
+  stripped = text.strip()
+  if stripped:
+    try:
+      parsed = json.loads(stripped)
+      if is_grid(parsed):
+        return [parsed]
+      if is_grid_list(parsed):
+        return parsed
+    except json.JSONDecodeError:
+      pass
+
+  grids: List[List[List[int]]] = []
   for match in GRID_PATTERN.finditer(text):
     try:
       candidate = json.loads(match.group(0))
-      if (
-        isinstance(candidate, list)
-        and candidate
-        and all(isinstance(row, list) and row and all(isinstance(cell, int) and 0 <= cell <= 9 for cell in row)
-                for row in candidate)
-      ):
-        return candidate
+      if is_grid(candidate):
+        grids.append(candidate)
     except json.JSONDecodeError:
       continue
-  return None
+  return grids
 
 
 def solve_attempt_sync(task: Dict[str, Any], item: WorkItem) -> AttemptResult:
-  prompt = build_prompt(task, item.test_index, item.attempt_num)
+  prompt = build_prompt(task, item.attempt_num)
+  expected_outputs = len(task.get("test", []))
   request = {
     "model": MODEL_KEY,
     "messages": [
       {
         "role": "system",
-        "content": "You solve ARC puzzles. Respond only with the output grid as JSON. Do not add explanations.",
+        "content": "You solve ARC puzzles. Respond only with the JSON array of output grids. Do not add explanations.",
       },
       {"role": "user", "content": prompt},
     ],
     "temperature": 0.0 if item.attempt_num == 1 else 0.35,
-    "max_output_tokens": MAX_OUTPUT_TOKENS,
+    "max_tokens": MAX_OUTPUT_TOKENS,
   }
   if REASONING_EFFORT != "none":
-    request["reasoning"] = {"effort": REASONING_EFFORT, "exclude": True}
+    request["extra_body"] = {"reasoning": {"effort": REASONING_EFFORT, "exclude": True}}
 
   try:
     response = client.chat.completions.create(**request)
     choice = response.choices[0]
     message = choice.message
     content = normalize_content(getattr(message, "content", ""))
-    grid = parse_grid_from_response(content)
+    grids = parse_grids_from_response(content)
+    parsed_outputs = len(grids)
+    missing_outputs = max(0, expected_outputs - parsed_outputs)
+    normalized_grids = grids[:expected_outputs]
+    success = parsed_outputs >= expected_outputs and expected_outputs > 0
     usage = response.usage
+    reasoning_text = getattr(message, "reasoning", "")
     return AttemptResult(
-      grid=grid,
-      success=grid is not None,
+      grids=normalized_grids,
+      success=success,
       finish_reason=getattr(choice, "finish_reason", None),
-      error=None if grid else "Failed to parse grid from response.",
+      error=None if success else f"Expected {expected_outputs} grids, parsed {parsed_outputs}.",
       prompt_tokens=getattr(usage, "prompt_tokens", None),
       completion_tokens=getattr(usage, "completion_tokens", None),
-      reasoning_tokens=len(getattr(message, "reasoning", "") or ""),
+      reasoning_tokens=len(reasoning_text) if isinstance(reasoning_text, str) else 0,
       content_sample=content[:400],
+      expected_outputs=expected_outputs,
+      parsed_outputs=parsed_outputs,
+      missing_outputs=missing_outputs,
     )
   except Exception as exc:  # pragma: no cover - network failures
     return AttemptResult(
-      grid=None,
+      grids=[],
       success=False,
       finish_reason=None,
       error=str(exc),
@@ -263,6 +300,9 @@ def solve_attempt_sync(task: Dict[str, Any], item: WorkItem) -> AttemptResult:
       completion_tokens=None,
       reasoning_tokens=None,
       content_sample="",
+      expected_outputs=expected_outputs,
+      parsed_outputs=0,
+      missing_outputs=expected_outputs,
     )
 
 
@@ -275,13 +315,17 @@ async def process_item(
   semaphore: asyncio.Semaphore,
 ):
   async with semaphore:
+    stats["started"] += 1
+    print(
+      f"[start {stats['started']}/{stats['total']}] {item.task_id} attempt {item.attempt_num} "
+      f"(concurrency {MAX_CONCURRENT})"
+    )
     await asyncio.sleep(throttle_delay)
     task = dataset[item.task_id]
     loop = asyncio.get_running_loop()
     result: AttemptResult = await loop.run_in_executor(None, solve_attempt_sync, task, item)
     metadata = {
       "task_id": item.task_id,
-      "test_index": item.test_index,
       "attempt": item.attempt_num,
       "success": result.success,
       "finish_reason": result.finish_reason,
@@ -289,12 +333,15 @@ async def process_item(
       "prompt_tokens": result.prompt_tokens,
       "completion_tokens": result.completion_tokens,
       "reasoning_tokens": result.reasoning_tokens,
+      "expected_outputs": result.expected_outputs,
+      "parsed_outputs": result.parsed_outputs,
+      "missing_outputs": result.missing_outputs,
+      "content_sample": result.content_sample,
     }
-    await writer.record(
+    await writer.record_attempts(
       task_id=item.task_id,
-      test_index=item.test_index,
       attempt_num=item.attempt_num,
-      grid=result.grid,
+      grids=result.grids,
       metadata=metadata,
     )
     if result.success:
@@ -303,15 +350,19 @@ async def process_item(
       stats["failure"] += 1
     if result.finish_reason == "length":
       stats["length_stops"] += 1
+    stats["completed"] += 1
+    status = "ok" if result.success else "fail"
+    print(
+      f"[done {stats['completed']}/{stats['total']}] {item.task_id} attempt {item.attempt_num} "
+      f"{status} (parsed {result.parsed_outputs}/{result.expected_outputs})"
+    )
 
 
 def build_work_queue(dataset: Dict[str, Any]) -> List[WorkItem]:
   queue: List[WorkItem] = []
   for task_id in sorted(dataset.keys()):
-    task = dataset[task_id]
-    for test_index in range(len(task["test"])):
-      queue.append(WorkItem(task_id, test_index, 1))
-      queue.append(WorkItem(task_id, test_index, 2))
+    queue.append(WorkItem(task_id, 1))
+    queue.append(WorkItem(task_id, 2))
   return queue
 
 
@@ -325,7 +376,7 @@ async def run_solver(args):
   writer = LiveSubmissionWriter(Path(args.output), Path(args.log), dataset, fresh=args.fresh)
   queue = build_work_queue(dataset)
   semaphore = asyncio.Semaphore(MAX_CONCURRENT)
-  stats = {"success": 0, "failure": 0, "length_stops": 0}
+  stats = {"success": 0, "failure": 0, "length_stops": 0, "started": 0, "completed": 0, "total": len(queue)}
   print("=" * 72)
   print("OpenRouter Streaming Solver")
   print("=" * 72)
@@ -336,6 +387,7 @@ async def run_solver(args):
   print(f"Reasoning: {REASONING_EFFORT}")
   print(f"Max output tokens: {MAX_OUTPUT_TOKENS} (provider cap {PROVIDER_LIMIT})")
   print(f"Concurrency: {MAX_CONCURRENT}, Launch delay: {LAUNCH_DELAY_MS} ms")
+  print(f"Total tasks: {len(dataset)}")
   print(f"Total attempts scheduled: {len(queue)}")
   print("=" * 72)
 
