@@ -1,10 +1,11 @@
 /**
  * Author: Cascade (OpenAI o4-preview)
- * Date: 2026-01-08T20:30:00Z
- * PURPOSE: Minimal visual landing page with rotating ARC 1&2 GIFs and ARC-3 MP4 video replays.
+ * Date: 2026-01-08T20:40:00Z
+ * PURPOSE: Minimal visual landing page with rotating ARC 1&2 GIFs, ARC-3 MP4 video replays,
+ *          and a concise hiatus status indicator for January 2026.
  *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 MP4 videos rotating through games.
  *          Two-column layout. No Worm Arena slice. Simple and working.
- * SRP/DRY check: Pass - single-page hero composition with video elements.
+ * SRP/DRY check: Pass - single-page hero composition with video elements and status banner reuse.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
@@ -104,7 +105,13 @@ export default function LandingPage() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-purple-900/10" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-900/10 via-transparent to-transparent" />
 
-      <section className="relative z-10 mx-auto grid w-full max-w-5xl grid-cols-1 gap-12 px-4 py-16 md:grid-cols-2">
+      <p
+        aria-live="polite"
+        className="relative z-10 mb-6 text-center text-xs font-semibold uppercase tracking-[0.6em] text-rose-200/80 md:text-sm"
+      >
+        On Hiatus – January 2026
+      </p>
+      <section className="relative z-10 mx-auto grid w-full max-w-5xl grid-cols-1 gap-12 px-4 py-10 md:grid-cols-2">
         {/* Left: ARC 1&2 GIF showcase */}
         <div className="flex flex-col gap-4">
           <div className="space-y-1 text-slate-100">
