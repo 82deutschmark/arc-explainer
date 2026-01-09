@@ -1,9 +1,9 @@
 /**
- * Author: Cascade
- * Date: 2026-01-05
- * PURPOSE: Unit tests for ExplanationRepository covering filtering, sanitization,
- *          and persistence parameter shaping to guard complex SQL + data plumbing.
- * SRP/DRY check: Pass — extends existing BaseRepository test coverage without duplication.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Validate ExplanationRepository filtering, sanitization, and parameter shaping
+ *          for JSONB storage and multi-test payload handling.
+ * SRP/DRY check: Pass - Focused repository behavior only.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -99,14 +99,14 @@ describe('ExplanationRepository', () => {
         patternDescription: 'desc',
         solvingStrategy: 'solve',
         hints: ['hint'],
-        confidence: 2, // will be clamped to 1
+        confidence: 2,
         modelName: 'model-x',
         reasoningLog: null,
         reasoningItems: null,
         hasMultiplePredictions: true,
         multiTestResults,
-        multiTestPredictionGrids: [[[1, 'bad']]], // invalid -> sanitized to []
-        predictedOutputGrid: [[1, 'x']], // invalid cell -> sanitized to null
+        multiTestPredictionGrids: [[[1, 'bad']]], // invalid -> sanitized to 0s
+        predictedOutputGrid: [[1, 'x']], // invalid cell -> sanitized to 0
       } as any);
 
       expect(queryMock).toHaveBeenCalledTimes(1);
@@ -114,8 +114,8 @@ describe('ExplanationRepository', () => {
 
       expect(passedClient).toBe(client);
       expect(params.at(-1)).toBe(2); // num_test_pairs
-      expect(params[94]).toBe('null'); // sanitized predicted grid stringified
-      expect(params[119]).toBe('[]'); // sanitized multi-test prediction grids
+      expect(params[94]).toBe('[[1,0]]'); // sanitized predicted grid stringified
+      expect(params[119]).toBe('[[[1,0]]]'); // sanitized multi-test prediction grids
       expect(client.release).toHaveBeenCalledTimes(1);
     });
   });

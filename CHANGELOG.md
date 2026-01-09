@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.17  Jan 9, 2026
+
+- **FIX: Align test expectations with current sanitization and truncation behavior** (Author: GPT-5 Codex)
+  - **What**: Updated repository unit tests to match JSONB sanitization outputs and 0-100 confidence normalization, tightened JSON truncation detection, and migrated node:test files to Vitest.
+  - **Why**: Legacy expectations and node:test usage caused false failures under Vitest despite correct runtime behavior.
+  - **How**:
+    - `server/services/base/BaseAIService.ts`: treat unmatched JSON structures as truncation signals.
+    - `tests/unit/repositories/BaseRepository.test.ts`: align expectations for JSON handling, hints processing, and grid sanitization.
+    - `tests/unit/repositories/ExplanationRepository.test.ts`: align sanitized grid expectations for persistence.
+    - `tests/unit/services/BaseAIService.test.ts`: expect truncation for incomplete nested JSON.
+    - `tests/sseUtils.test.ts`: convert to Vitest and add required headers.
+    - `tests/streamingConfig.test.ts`: convert to Vitest and add required headers.
+    - `tests/wormArenaPlacement.test.ts`: convert to Vitest and add required headers.
+
 ### Version 6.35.16  Jan 9, 2026
 
 - **FIX: Revert landing page to working two-column layout with MP4 videos** (Author: Cascade (OpenAI o4-preview))
