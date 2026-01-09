@@ -76,7 +76,7 @@ async function pingModel(client: OpenAI, model: string): Promise<PingResult> {
         },
         {
           role: 'user',
-          content: 'Fuck yeah dawg!  Spit some of that fire!!!',
+          content: 'Fuck yeah dawg!  Tell the peeps out here why you the mothafuckin king in this digital jungle!! Spit some of that fire!!!',
         },
       ],
     });
