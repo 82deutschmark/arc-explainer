@@ -51,9 +51,9 @@ const BACKOFF_MULTIPLIER = 1.8;
 const BACKOFF_RECOVERY = 0.85;
 const BACKOFF_JITTER = 0.15;
 
-// Reasoning effort: 'high' or 'medium' recommended for ARC tasks
+// Reasoning effort: 'low' or 'medium' recommended for ARC tasks
 // Set REARC_REASONING_EFFORT=none to disable reasoning
-const REASONING_EFFORT = (process.env.REARC_REASONING_EFFORT || 'high') as 'high' | 'medium' | 'low' | 'none';
+const REASONING_EFFORT = (process.env.REARC_REASONING_EFFORT || 'low') as 'high' | 'medium' | 'low' | 'none';
 
 const openrouter = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
@@ -557,7 +557,6 @@ async function solveAttempt(
       model: MODEL_KEY,
       messages: [{ role: 'user', content: prompt }],
       temperature: attemptNum === 1 ? 0.0 : 0.3,
-      max_tokens: 8192,
     };
 
     if (REASONING_EFFORT !== 'none') {
