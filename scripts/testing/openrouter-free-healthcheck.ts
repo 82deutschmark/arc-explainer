@@ -59,7 +59,7 @@ async function pingModel(client: OpenAI, model: string): Promise<PingResult> {
   try {
     const response = await client.chat.completions.create({
       model,
-      max_tokens: 32,
+      max_tokens: 3002,
       temperature: 0,
       messages: [
         {
