@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.15  Jan 9, 2026
+
+- **FIX: WormArenaLive starts matches in a new tab** (Author: GPT-5.2)
+  - **What**: Starting a new match from WormArenaLive opens the live session in a brand-new browser tab and now reliably navigates the tab to the live URL.
+  - **Why**: WormArenaLive should stay as a stable launch hub without trapping users in a blank tab.
+  - **How**:
+    - `client/src/pages/WormArenaLive.tsx`: open a blank tab synchronously on click, clear `opener`, then `location.replace` to the live URL with fallbacks when blocked.
+
 ### Version 6.35.14  Jan 8, 2026
 
 - **FIX: ARC3 canvas replay parsing and landing page simplification** (Author: Cascade (OpenAI o4-preview))

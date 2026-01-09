@@ -1,6 +1,6 @@
 /**
- * Author: Cascade / Claude Haiku 4.5 / Claude Sonnet 4
- * Date: 2025-12-19 (updated 2025-12-20)
+ * Author: GPT-5.2
+ * Date: 2026-01-08
  * PURPOSE: Worm Arena Live streaming hub with the apple scoreboard pinned up top,
  *          run controls hidden mid-match, and post-game summaries that stay on the
  *          same page alongside the final board.
@@ -10,6 +10,7 @@
  *          Users can click "Run" on a suggested matchup to instantly start it.
  *          SUPPORTS: Auto-start from query params (modelA, modelB, autoStart) for direct links.
  *          NEW: Console Mirror view toggle - switch between cartoon canvas and raw Python terminal view.
+ *          NEW: Starting a match from this page opens the live session in a new tab.
  * SRP/DRY check: Pass - coordinates child hooks/components without duplicating their logic.
  *                Suggested matchups integrated via onRunMatch callback; state updates isolated.
  */
@@ -282,7 +283,7 @@ export default function WormArenaLive() {
     tryResolve();
   }, [sessionId, status, resolveAttempted, finalSummary]);
 
-  const handleRunMatch = async () => {
+  const handleRunMatch = async ({ openInNewTab }: { openInNewTab: boolean }) => {
     if (!matchupAvailable) {
       setLaunchNotice('Selected models are not available on OpenRouter.');
       return;
@@ -299,9 +300,52 @@ export default function WormArenaLive() {
     };
 
     setLaunchNotice(null);
+
+    const openedTab = (() => {
+      if (!openInNewTab) return null;
+
+      // Pop-up blockers are most permissive when the window is opened directly from the user gesture
+      // (button click), so we open a blank tab first and then navigate it once we have the live URL.
+      // Avoid noopener here so we can safely set location; we null opener immediately after open.
+      try {
+        const tab = window.open('about:blank', '_blank');
+        if (tab) {
+          try {
+            tab.opener = null;
+          } catch {
+            // ignore
+          }
+        }
+        return tab;
+      } catch {
+        return null;
+      }
+    })();
+
     try {
       const prep = await startLiveMatch(payload);
-      if (prep?.liveUrl) window.location.href = prep.liveUrl;
+      if (!prep?.liveUrl) return;
+
+      if (openedTab) {
+        openedTab.location.replace(prep.liveUrl);
+        try {
+          openedTab.focus();
+        } catch {
+          // ignore
+        }
+        return;
+      }
+
+      if (openInNewTab) {
+        try {
+          window.open(prep.liveUrl, '_blank', 'noopener');
+          return;
+        } catch {
+          // ignore; fall through to same-tab
+        }
+      }
+
+      window.location.href = prep.liveUrl;
     } catch (err: any) {
       console.error('[WormArenaLive] Failed to start match', err);
       setLaunchNotice(err?.message || 'Failed to start match');
@@ -318,7 +362,7 @@ export default function WormArenaLive() {
     if (!autoStartParam) return;
 
     setAutoStartAttempted(true);
-    handleRunMatch();
+    handleRunMatch({ openInNewTab: false });
   }, [autoStartAttempted, loadingModels, matchupAvailable, handleRunMatch]);
 
   // Handle running a match from suggested matchups
@@ -618,7 +662,7 @@ export default function WormArenaLive() {
                   byoProvider={byoProvider}
                   onByoApiKeyChange={setByoApiKey}
                   onByoProviderChange={setByoProvider}
-                  onStart={handleRunMatch}
+                  onStart={() => handleRunMatch({ openInNewTab: true })}
                   launchNotice={launchNotice}
                 />
 

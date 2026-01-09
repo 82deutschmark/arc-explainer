@@ -1,11 +1,9 @@
 /**
- * server/controllers/snakeBenchController.ts
- *
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
- * Updated: 2025-12-25 - Environment-aware BYOK: production requires user API keys
- * PURPOSE: HTTP API controller for SnakeBench match runs, replay access, and model insights reporting.
- * SRP/DRY check: Pass - controller-only logic, delegates execution to snakeBenchService.
+ * Author: Cascade (OpenAI o4-preview)
+ * Date: 2026-01-08
+ * PURPOSE: HTTP controller for SnakeBench match runs, replays, stats, and Worm Arena utilities.
+ *          Handles BYOK validation (including the "test" sentinel) before delegating to services.
+ * SRP/DRY check: Pass — routing/controller logic only; execution delegated to services/helpers.
  */
 
 import type { Request, Response } from 'express';
@@ -16,7 +14,7 @@ import { snakeBenchIngestQueue } from '../services/snakeBenchIngestQueue';
 import { loadWormArenaPromptTemplateBundle } from '../services/snakeBench/SnakeBenchLlmPlayerPromptTemplate.ts';
 import { logger } from '../utils/logger';
 import { sseStreamManager } from '../services/streaming/SSEStreamManager';
-import { requiresUserApiKey } from '../utils/environmentPolicy.js';
+import { requiresUserApiKey, resolveSnakeBenchApiKey } from '../utils/environmentPolicy.js';
 import type {
   SnakeBenchRunMatchRequest,
   SnakeBenchRunMatchResponse,
@@ -78,11 +76,11 @@ export async function runMatch(req: Request, res: Response) {
       return res.status(400).json(response);
     }
 
-    // Environment-aware BYOK enforcement: production requires user API key
-    if (requiresUserApiKey() && (!body.apiKey || String(body.apiKey).trim().length === 0)) {
+    const apiKeyResolution = resolveSnakeBenchApiKey(body.apiKey, body.provider, { allowTestSentinel: true });
+    if (apiKeyResolution.error) {
       const response: SnakeBenchRunMatchResponse = {
         success: false,
-        error: 'Production requires your API key. Your key is used for this session only and is never stored.',
+        error: apiKeyResolution.error,
         timestamp: Date.now(),
       };
       return res.status(400).json(response);
@@ -100,8 +98,8 @@ export async function runMatch(req: Request, res: Response) {
       height,
       maxRounds,
       numApples,
-      apiKey: body.apiKey,
-      provider: body.provider,
+      apiKey: apiKeyResolution.apiKey,
+      provider: apiKeyResolution.provider,
     };
 
     const result = await snakeBenchService.runMatch(request);
@@ -371,6 +369,16 @@ export async function runBatch(req: Request, res: Response) {
       return res.status(400).json(response);
     }
 
+    const apiKeyResolution = resolveSnakeBenchApiKey(body.apiKey, body.provider, { allowTestSentinel: true });
+    if (apiKeyResolution.error) {
+      const response: SnakeBenchRunBatchResponse = {
+        success: false,
+        error: apiKeyResolution.error,
+        timestamp: Date.now(),
+      };
+      return res.status(400).json(response);
+    }
+
     const request: SnakeBenchRunBatchRequest = {
       modelA: String(modelA),
       modelB: String(modelB),
@@ -379,8 +387,8 @@ export async function runBatch(req: Request, res: Response) {
       maxRounds: body.maxRounds != null ? Number(body.maxRounds) : undefined,
       numApples: body.numApples != null ? Number(body.numApples) : undefined,
       count: parsedCount,
-      apiKey: body.apiKey,
-      provider: body.provider,
+      apiKey: apiKeyResolution.apiKey,
+      provider: apiKeyResolution.provider,
     };
 
     const batch = await snakeBenchService.runBatch(request);
