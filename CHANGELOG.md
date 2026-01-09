@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.21  Jan 9, 2026
+
+- **FIX: Add OpenRouter max token budget control for RE-ARC free solver** (Author: Codex (GPT-5))
+  - **What**: Added `REARC_MAX_TOKENS` support, enforced a safe minimum when reasoning is enabled, and surfaced the configured budget in run summaries.
+  - **Why**: Prevents premature truncation when OpenRouter reasoning consumes the output budget.
+  - **How**:
+    - `scripts/solvers/rearc-free-solver.ts`: added env-driven `max_tokens` handling with a reasoning-safe floor and config snapshot reporting.
+    - `docs/plans/2026-01-09-openrouter-token-budget-plan.md`: documented the approved plan for the change.
+
 ### Version 6.35.20  Jan 9, 2026
 
 - **FEATURE: Per-task chained GPT-5-mini RE-ARC solver script** (Author: Cascade (ChatGPT))
@@ -8,6 +17,12 @@
   - **How**:
     - `scripts/solvers/rearc-gpt5mini-chained.ts`: New orchestrator with configurable concurrency, throttled dispatch delays, per-task checkpointing, and resume-safe logic.
     - `docs/plans/2026-01-09-per-task-rearc-solver-plan.md`: Documented approach and marked plan as complete post-implementation.
+
+- **FEATURE: Python OpenRouter streaming solver with live submission writes** (Author: Cascade (ChatGPT))
+  - **What**: Added `rearc_openrouter_stream.py`, an asyncio-based solver that caps OpenRouter completions, throttles concurrency, and writes `rearc-submission-live.json` incrementally while logging every attempt to JSONL.
+  - **Why**: We needed a Python workflow that keeps the submission file in sync as responses arrive, avoids provider truncation, and supports resumable runs without TypeScript orchestration.
+  - **How**:
+    - `scripts/solvers/rearc_openrouter_stream.py`: New script featuring configurable dataset/output/log paths, reasoning effort control, `max_output_tokens` budgeting, per-attempt logging, and a live submission writer with async locks.
 
 ### Version 6.35.19  Jan 9, 2026
 
