@@ -1,13 +1,12 @@
 /**
- * Author: Cascade
- * Date: 2025-12-16T00:00:00Z
- * PURPOSE: Unit tests for the public GET /api/accuracy/harness controller.
- *          Validates query parsing and verifies we delegate to AccuracyRepository.
- * SRP/DRY check: Pass - Focused controller tests; avoids DB and HTTP server setup.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Unit tests for GET /api/accuracy/harness query validation and repository
+ *          delegation without spinning up HTTP or database connections.
+ * SRP/DRY check: Pass - Focused controller behavior only.
  */
 
-import test from 'node:test';
-import { strict as assert } from 'node:assert';
+import { test, expect } from 'vitest';
 
 import type { Request, Response } from 'express';
 
@@ -45,14 +44,14 @@ test('GET /api/accuracy/harness returns 400 when baseModelName is missing', asyn
 
   await getHarnessAlignedAccuracy(req, res);
 
-  assert.equal(getStatus(), 400);
-  assert.deepEqual(getJson<{ success: boolean; message: string }>(), {
+  expect(getStatus()).toBe(400);
+  expect(getJson<{ success: boolean; message: string }>()).toEqual({
     success: false,
     message: 'baseModelName required',
   });
 });
 
-test('GET /api/accuracy/harness delegates to AccuracyRepository with default dataset when not provided', async (t) => {
+test('GET /api/accuracy/harness delegates to AccuracyRepository with default dataset when not provided', async () => {
   const originalAccuracy = (repositoryService as any).accuracyRepository;
 
   const calls: Array<{ baseModelName: string; dataset: string }> = [];
@@ -77,36 +76,36 @@ test('GET /api/accuracy/harness delegates to AccuracyRepository with default dat
     },
   };
 
-  t.after(() => {
-    (repositoryService as any).accuracyRepository = originalAccuracy;
-  });
+  try {
+    const { res, getStatus, getJson } = createMockResponse();
 
-  const { res, getStatus, getJson } = createMockResponse();
+    const req = {
+      query: {
+        baseModelName: 'Example_Model',
+      },
+    } as unknown as Request;
 
-  const req = {
-    query: {
+    await getHarnessAlignedAccuracy(req, res);
+
+    expect(getStatus()).toBe(200);
+
+    const payload = getJson<{ success: boolean; data: any }>();
+    expect(payload.success).toBe(true);
+
+    expect(calls.length).toBe(1);
+    expect(calls[0]).toEqual({
       baseModelName: 'Example_Model',
-    },
-  } as unknown as Request;
+      dataset: 'evaluation2',
+    });
 
-  await getHarnessAlignedAccuracy(req, res);
-
-  assert.equal(getStatus(), 200);
-
-  const payload = getJson<{ success: boolean; data: any }>();
-  assert.equal(payload.success, true);
-
-  assert.equal(calls.length, 1);
-  assert.deepEqual(calls[0], {
-    baseModelName: 'Example_Model',
-    dataset: 'evaluation2',
-  });
-
-  assert.equal(payload.data.baseModelName, 'Example_Model');
-  assert.equal(payload.data.dataset, 'evaluation2');
+    expect(payload.data.baseModelName).toBe('Example_Model');
+    expect(payload.data.dataset).toBe('evaluation2');
+  } finally {
+    (repositoryService as any).accuracyRepository = originalAccuracy;
+  }
 });
 
-test('GET /api/accuracy/harness uses explicit dataset when provided', async (t) => {
+test('GET /api/accuracy/harness uses explicit dataset when provided', async () => {
   const originalAccuracy = (repositoryService as any).accuracyRepository;
 
   const calls: Array<{ baseModelName: string; dataset: string }> = [];
@@ -131,31 +130,31 @@ test('GET /api/accuracy/harness uses explicit dataset when provided', async (t) 
     },
   };
 
-  t.after(() => {
-    (repositoryService as any).accuracyRepository = originalAccuracy;
-  });
+  try {
+    const { res, getStatus, getJson } = createMockResponse();
 
-  const { res, getStatus, getJson } = createMockResponse();
+    const req = {
+      query: {
+        baseModelName: 'Example_Model',
+        dataset: 'training2',
+      },
+    } as unknown as Request;
 
-  const req = {
-    query: {
+    await getHarnessAlignedAccuracy(req, res);
+
+    expect(getStatus()).toBe(200);
+
+    const payload = getJson<{ success: boolean; data: any }>();
+    expect(payload.success).toBe(true);
+
+    expect(calls.length).toBe(1);
+    expect(calls[0]).toEqual({
       baseModelName: 'Example_Model',
       dataset: 'training2',
-    },
-  } as unknown as Request;
+    });
 
-  await getHarnessAlignedAccuracy(req, res);
-
-  assert.equal(getStatus(), 200);
-
-  const payload = getJson<{ success: boolean; data: any }>();
-  assert.equal(payload.success, true);
-
-  assert.equal(calls.length, 1);
-  assert.deepEqual(calls[0], {
-    baseModelName: 'Example_Model',
-    dataset: 'training2',
-  });
-
-  assert.equal(payload.data.dataset, 'training2');
+    expect(payload.data.dataset).toBe('training2');
+  } finally {
+    (repositoryService as any).accuracyRepository = originalAccuracy;
+  }
 });
