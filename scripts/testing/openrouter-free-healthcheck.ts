@@ -1,7 +1,7 @@
 /*
 Author: Cascade (ChatGPT)
 Date: 2026-01-10
-PURPOSE: Concurrently ping every OpenRouter catalog model suffixed with `:free` using a tiny chat completion to detect broken slugs and surface responses/errors for pruning decisions.
+PURPOSE: Sequentially ping every OpenRouter `:free` catalog model (minus known retirements) with a playful prompt, throttling requests and persisting a full text log of replies/errors for pruning analysis.
 SRP/DRY check: Pass — single-purpose diagnostic script that reuses catalog data without duplicating solver logic.
 */
 
@@ -17,6 +17,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 const CATALOG_PATH = path.join(PROJECT_ROOT, 'server', 'config', 'openrouter-catalog.json');
+const LOG_DIR = path.join(PROJECT_ROOT, 'logs');
+const RETIRED_FREE_MODELS = new Set<string>(['nex-agi/deepseek-v3.1-nex-n1:free']);
 const DEFAULT_HEADERS = {
   'HTTP-Referer': 'https://arc.markbarney.net',
   'X-Title': 'ARC Explainer Free Model Health Check',
@@ -41,7 +43,9 @@ function loadFreeModelSlugs(): string[] {
   const raw = fs.readFileSync(CATALOG_PATH, 'utf-8');
   const parsed = JSON.parse(raw) as { models?: CatalogModel[] };
   const ids = parsed.models?.map((entry) => entry.id).filter((id): id is string => Boolean(id)) ?? [];
-  const freeIds = Array.from(new Set(ids.filter((id) => id.endsWith(':free'))));
+  const freeIds = Array.from(
+    new Set(ids.filter((id) => id.endsWith(':free') && !RETIRED_FREE_MODELS.has(id)))
+  );
   return freeIds.sort();
 }
 
@@ -53,6 +57,10 @@ function detectErrorText(text: string | undefined): boolean {
 function truncate(text: string, length = 160): string {
   if (text.length <= length) return text;
   return `${text.slice(0, length - 1)}…`;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function pingModel(client: OpenAI, model: string): Promise<PingResult> {
@@ -113,7 +121,16 @@ async function main() {
     return;
   }
 
-  console.log(`Pinging ${freeModels.length} OpenRouter free models concurrently...\n`);
+  fs.mkdirSync(LOG_DIR, { recursive: true });
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const logPath = path.join(LOG_DIR, `openrouter-free-healthcheck-${timestamp}.log`);
+  const logLines: string[] = [];
+  const log = (line = '') => {
+    console.log(line);
+    logLines.push(line);
+  };
+
+  log(`Pinging ${freeModels.length} OpenRouter free models with a 5s throttle...\n`);
 
   const client = new OpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
@@ -122,30 +139,40 @@ async function main() {
     timeout: 5 * 60 * 1000,
   });
 
-  const tasks = freeModels.map((model) => pingModel(client, model));
-  const results = await Promise.all(tasks);
+  const results: PingResult[] = [];
+  for (let index = 0; index < freeModels.length; index += 1) {
+    const model = freeModels[index];
+    const result = await pingModel(client, model);
+    results.push(result);
+
+    if (result.ok) {
+      log(`✅ ${result.model}`);
+      log(`   ↳ Reply: ${result.responseSnippet}`);
+    } else {
+      log(`❌ ${result.model}`);
+      log(`   ↳ Error: ${result.errorMessage ?? 'Unknown error'}`);
+      if (result.responseSnippet) {
+        log(`   ↳ Reply: ${result.responseSnippet}`);
+      }
+    }
+    log();
+
+    if (index < freeModels.length - 1) {
+      await delay(5000);
+    }
+  }
 
   const successes = results.filter((result) => result.ok);
   const failures = results.filter((result) => !result.ok);
 
-  for (const result of results) {
-    if (result.ok) {
-      console.log(`✅ ${result.model}`);
-      console.log(`   ↳ Reply: ${result.responseSnippet}`);
-    } else {
-      console.log(`❌ ${result.model}`);
-      console.log(`   ↳ Error: ${result.errorMessage ?? 'Unknown error'}`);
-      if (result.responseSnippet) {
-        console.log(`   ↳ Reply: ${result.responseSnippet}`);
-      }
-    }
-  }
+  log('\nSummary');
+  log('-------');
+  log(`Total models:   ${results.length}`);
+  log(`Healthy replies: ${successes.length}`);
+  log(`Failures:        ${failures.length}`);
+  log(`Log file:        ${logPath}`);
 
-  console.log('\nSummary');
-  console.log('-------');
-  console.log(`Total models:   ${results.length}`);
-  console.log(`Healthy replies: ${successes.length}`);
-  console.log(`Failures:        ${failures.length}`);
+  fs.writeFileSync(logPath, `${logLines.join('\n')}\n`, 'utf-8');
 
   if (failures.length > 0) {
     process.exitCode = 1;
