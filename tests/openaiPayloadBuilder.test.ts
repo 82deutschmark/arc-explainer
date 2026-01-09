@@ -1,4 +1,11 @@
 /**
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Verify Responses API payload construction for GPT-5 and GPT-4.1 models.
+ * SRP/DRY check: Pass - Focused payload builder coverage only.
+ */
+
+/**
  * Author: gpt-5-codex
  * Date: 2025-10-18T00:00:00Z
  * PURPOSE: Verifies Responses API payload construction omits unsupported parameters
@@ -6,7 +13,7 @@
  * SRP/DRY check: Pass — focused unit coverage for OpenAI payload temperature gating.
  */
 
-import test from "node:test";
+import { test } from 'vitest';
 import assert from "node:assert/strict";
 
 import { buildResponsesPayload } from "../server/services/openai/payloadBuilder.ts";

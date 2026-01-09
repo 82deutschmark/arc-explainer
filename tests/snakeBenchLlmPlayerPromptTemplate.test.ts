@@ -1,13 +1,11 @@
 /**
- * Author: Cascade
- * Date: 2025-12-20
- * PURPOSE: Regression test for Worm Arena transparency endpoint prompt template.
- *          Ensures our TypeScript canonical template (B2) stays aligned with the
- *          upstream SnakeBench Python player prompt (B1).
- * SRP/DRY check: Pass - focused on prompt-template drift detection.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Regression coverage for Worm Arena prompt template alignment.
+ * SRP/DRY check: Pass - Focused prompt bundle checks only.
  */
 
-import test from 'node:test';
+import { test } from 'vitest';
 import { strict as assert } from 'node:assert';
 
 import {
