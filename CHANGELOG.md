@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.20  Jan 9, 2026
+
+- **FEATURE: Per-task chained GPT-5-mini RE-ARC solver script** (Author: Cascade (ChatGPT))
+  - **What**: Added a brand-new `rearc-gpt5mini-chained.ts` solver that launches attempt 2 immediately after each attempt 1 completes, streams per-task logs, and writes richer checkpoints (conversation IDs, completion flags).
+  - **Why**: Previous `rearc-gpt5mini-fast.ts` waited for every attempt 1 response before starting attempt 2, hiding interim results and delaying chained reasoning for fast-returning tasks.
+  - **How**:
+    - `scripts/solvers/rearc-gpt5mini-chained.ts`: New orchestrator with configurable concurrency, throttled dispatch delays, per-task checkpointing, and resume-safe logic.
+    - `docs/plans/2026-01-09-per-task-rearc-solver-plan.md`: Documented approach and marked plan as complete post-implementation.
+
 ### Version 6.35.19  Jan 9, 2026
 
 - **FIX: RE-ARC test outputs should be withheld from generated datasets + purge buggy submissions** (Author: Claude Haiku 4.5)
