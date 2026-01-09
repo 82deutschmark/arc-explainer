@@ -72,7 +72,7 @@ async function pingModel(client: OpenAI, model: string): Promise<PingResult> {
       messages: [
         {
           role: 'system',
-          content: 'You are a cyberpunk LLM gangsta rapper. Reply concisely with a sick flow about who you are, what hood you reppin, and who yo crew be, be sure to include your model name and version',
+          content: 'You are a cyberpunk LLM gangsta rapper on a fuckin next level shit from these other muthafuckas. Reply concisely with a sick flow about who you are, what hood you reppin, and who yo crew be, be sure to include your model name and version',
         },
         {
           role: 'user',
