@@ -4,7 +4,7 @@
  * Author: Claude Opus 4.5
  * Date: 2025-12-30
  * PURPOSE: Generate fun, memorable solver names for anonymous RE-ARC submissions.
- *          Format: "Adjective Animal" (e.g., "Brave Pangolin", "Cosmic Axolotl")
+ *          Format: "Adjective Color Animal" (e.g., "Brave Crimson Pangolin", "Cosmic Azure Axolotl")
  * SRP/DRY check: Pass - Single responsibility for name generation
  */
 
@@ -16,6 +16,15 @@ const ADJECTIVES = [
   'Lucky', 'Mighty', 'Patient', 'Quick', 'Royal', 'Sage',
   'Steady', 'Tiny', 'Vivid', 'Wild', 'Young', 'Zen',
   'Crystal', 'Electric', 'Frozen', 'Glowing', 'Harmonic', 'Infinite',
+];
+
+const COLORS = [
+  'Crimson', 'Azure', 'Emerald', 'Amber', 'Violet', 'Coral',
+  'Indigo', 'Scarlet', 'Teal', 'Magenta', 'Chartreuse', 'Turquoise',
+  'Salmon', 'Olive', 'Lavender', 'Tangerine', 'Mint', 'Rust',
+  'Slate', 'Pearl', 'Ebony', 'Ivory', 'Mauve', 'Sienna',
+  'Cerulean', 'Aureate', 'Vermilion', 'Periwinkle', 'Maroon', 'Gold',
+  'Silver', 'Bronze', 'Copper', 'Saffron', 'Cyan', 'Magenta',
 ];
 
 const ANIMALS = [
@@ -30,13 +39,14 @@ const ANIMALS = [
 ];
 
 /**
- * Generate a random solver name in the format "Adjective Animal".
- * @returns A fun, memorable name like "Brave Pangolin"
+ * Generate a random solver name in the format "Adjective Color Animal".
+ * @returns A fun, memorable name like "Brave Crimson Pangolin"
  */
 export function generateSolverName(): string {
   const adjective = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
   const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
-  return `${adjective} ${animal}`;
+  return `${adjective} ${color} ${animal}`;
 }
 
 /**
