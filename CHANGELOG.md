@@ -1,5 +1,32 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.24  Jan 9, 2026
+
+- **FIX: Send OpenRouter reasoning config via extra_body** (Author: Codex (GPT-5))
+  - **What**: Moved reasoning parameters into `extra_body` for OpenRouter chat completions in the Python streaming solver.
+  - **Why**: Prevents unsupported keyword errors while preserving reasoning effort controls.
+  - **How**:
+    - `scripts/solvers/rearc_openrouter_stream.py`: pass reasoning config through `extra_body`.
+    - `docs/plans/2026-01-09-openrouter-reasoning-extra-body-plan.md`: documented the change plan.
+
+### Version 6.35.23  Jan 9, 2026
+
+- **FIX: Restore OpenRouter streaming solver stability and live logging** (Author: Codex (GPT-5))
+  - **What**: Replaced invalid `max_output_tokens` usage with `max_tokens`, added per-task attempt start/finish logs, and switched to timezone-aware UTC timestamps.
+  - **Why**: Prevents request failures, makes long-running jobs visibly active, and eliminates deprecated timestamp warnings.
+  - **How**:
+    - `scripts/solvers/rearc_openrouter_stream.py`: corrected token parameter, added progress logging, and used timezone-aware timestamps for JSONL.
+    - `docs/plans/2026-01-09-rearc-openrouter-streaming-fixes-plan.md`: documented the fix plan and completion status.
+
+### Version 6.35.22  Jan 9, 2026
+
+- **FIX: One API call per task in OpenRouter RE-ARC streaming solver** (Author: Codex (GPT-5))
+  - **What**: Refactored the Python streaming solver to issue one request per task and parse an ordered list of output grids for all test cases, with attempt 2 as a second task-level call.
+  - **Why**: Aligns solver behavior with the intended "one task, one call, one attempt" workflow and avoids per-test-case explosion.
+  - **How**:
+    - `scripts/solvers/rearc_openrouter_stream.py`: queue per task, prompt for array outputs, parse and map grids to all test cases, and log attempt-level metadata.
+    - `docs/plans/2026-01-09-rearc-openrouter-single-call-plan.md`: documented decisions and completion status.
+
 ### Version 6.35.21  Jan 9, 2026
 
 - **FIX: Add OpenRouter max token budget control for RE-ARC free solver** (Author: Codex (GPT-5))
