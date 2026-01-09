@@ -1,12 +1,13 @@
 /**
- * Author: Claude Haiku 4.5
- * Date: 2025-12-31
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-09
  * PURPOSE: Clean, working RE-ARC solver using OpenAI Responses API with GPT-5-nano.
  *          Processes REARC2026 dataset with proper Responses API patterns:
  *          - Responses API endpoint (/v1/responses), NOT Chat Completions
  *          - No temperature (GPT-5 models don't support it)
  *          - Attempt chaining via previous_response_id for conversation state
  *          - Simple, straightforward execution without complex backoff/retries
+ *          - Enforces ARC grid bounds (≤30x30) when parsing model output
  * SRP/DRY check: Pass — isolated solver logic, reusable grid parsing, clean I/O
  *
  * Usage:
@@ -62,17 +63,20 @@ interface AttemptResult {
   error?: string;
 }
 
+interface SubmissionEntry {
+  attempt_1: Grid | null;
+  attempt_2: Grid | null;
+}
+
 interface Submission {
-  [taskId: string]: Array<{
-    attempt_1: Grid;
-    attempt_2: Grid;
-  }>;
+  [taskId: string]: SubmissionEntry[];
 }
 
 // =============================================================================
 // Configuration
 // =============================================================================
 
+const MAX_GRID_SIZE = 30;
 const CONFIG = {
   apiKey: process.env.OPENAI_API_KEY,
   datasetPath: process.env.REARC_DATASET || path.resolve(process.cwd(), 'REARC2026.json'),
@@ -106,10 +110,12 @@ function isValidGrid(candidate: unknown): candidate is Grid {
   return (
     Array.isArray(candidate) &&
     candidate.length > 0 &&
+    candidate.length <= MAX_GRID_SIZE &&
     candidate.every(
       (row) =>
         Array.isArray(row) &&
         row.length > 0 &&
+        row.length <= MAX_GRID_SIZE &&
         row.every((cell) => typeof cell === 'number' && Number.isInteger(cell) && cell >= 0 && cell <= 9)
     )
   );
@@ -219,6 +225,27 @@ function parseMultipleGrids(text: string, expectedCount: number): Grid[] {
   return grids.slice(0, expectedCount);
 }
 
+function normalizeResponseText(output: unknown): string {
+  if (typeof output === 'string') {
+    return output;
+  }
+  if (Array.isArray(output)) {
+    return output
+      .map((chunk) => {
+        if (typeof chunk === 'string') return chunk;
+        if (typeof chunk === 'object' && chunk && 'text' in chunk && typeof (chunk as any).text === 'string') {
+          return (chunk as any).text as string;
+        }
+        return '';
+      })
+      .join('\n');
+  }
+  if (typeof output === 'object' && output && 'text' in output && typeof (output as any).text === 'string') {
+    return (output as any).text as string;
+  }
+  return output ? JSON.stringify(output) : '';
+}
+
 async function solveAttempt(
   task: Task,
   attemptNum: 1 | 2,
@@ -238,8 +265,7 @@ async function solveAttempt(
       text: CONFIG.reasoningEffort !== 'none' ? { verbosity: 'medium' } : undefined,
     });
 
-    const responseText = response.output_text ?? (Array.isArray(response.output_text) ? response.output_text.join('\n') : '');
-    const rawText = typeof responseText === 'string' ? responseText : JSON.stringify(responseText);
+    const rawText = normalizeResponseText(response.output_text);
 
     const grids = parseMultipleGrids(rawText, numTestCases);
 
@@ -278,7 +304,9 @@ async function solveTasks(dataset: Dataset): Promise<Submission> {
   // Initialize submission structure
   for (const taskId of taskIds) {
     const task = dataset[taskId];
-    submission[taskId] = Array(task.test.length).fill(null).map(() => ({ attempt_1: null, attempt_2: null }));
+    submission[taskId] = Array(task.test.length)
+      .fill(null)
+      .map(() => ({ attempt_1: null, attempt_2: null }));
   }
 
   // Phase 1: Send all tasks (attempt 1) with 2-second spacing
