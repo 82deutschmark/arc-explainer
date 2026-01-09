@@ -6,23 +6,22 @@
  * SRP/DRY check: Pass - Scoped to streaming defaults and lifecycle only.
  */
 
-import test from "node:test";
-import { strict as assert } from "node:assert";
+import { test, expect } from 'vitest';
 
 import {
   analysisStreamService,
   PENDING_SESSION_TTL_SECONDS,
-} from "../server/services/streaming/analysisStreamService.ts";
-import { sseStreamManager } from "../server/services/streaming/SSEStreamManager.ts";
-import { aiServiceFactory } from "../server/services/aiServiceFactory.ts";
-import { puzzleAnalysisService } from "../server/services/puzzleAnalysisService.ts";
+} from '../server/services/streaming/analysisStreamService.ts';
+import { sseStreamManager } from '../server/services/streaming/SSEStreamManager.ts';
+import { aiServiceFactory } from '../server/services/aiServiceFactory.ts';
+import { puzzleAnalysisService } from '../server/services/puzzleAnalysisService.ts';
 
 function prepareSession(taskId: string, modelKey: string) {
   const sessionId = analysisStreamService.savePendingPayload({ taskId, modelKey });
   return sessionId;
 }
 
-test("startStreaming streams by default in production when no overrides are present", async (t) => {
+test('startStreaming streams by default in production when no overrides are present', async () => {
   const previousEnv = {
     streamingEnabled: process.env.STREAMING_ENABLED,
     legacyBackend: process.env.ENABLE_SSE_STREAMING,
@@ -35,9 +34,9 @@ test("startStreaming streams by default in production when no overrides are pres
   delete process.env.ENABLE_SSE_STREAMING;
   delete process.env.VITE_STREAMING_ENABLED;
   delete process.env.VITE_ENABLE_SSE_STREAMING;
-  process.env.NODE_ENV = "production";
+  process.env.NODE_ENV = 'production';
 
-  const sessionId = prepareSession("default-production-task", "openai/gpt-5-2025");
+  const sessionId = prepareSession('default-production-task', 'openai/gpt-5-2025');
 
   const events: Array<{ event: string; payload: any }> = [];
   const errors: Array<{ code: string; message: string }> = [];
@@ -77,12 +76,28 @@ test("startStreaming streams by default in production when no overrides are pres
     _serviceOptions,
   ) => {
     analyzeCalled = true;
-    streamHarness.emit?.({ type: "delta", text: "hello" });
-    streamHarness.emitEvent?.("custom", { detail: "ok" });
-    streamHarness.end?.({ state: "completed" });
+    streamHarness.emit?.({ type: 'delta', text: 'hello' });
+    streamHarness.emitEvent?.('custom', { detail: 'ok' });
+    streamHarness.end?.({ state: 'completed' });
   }) as typeof puzzleAnalysisService.analyzePuzzleStreaming;
 
-  t.after(() => {
+  try {
+    const returnedSessionId = await analysisStreamService.startStreaming({} as any, {
+      taskId: 'default-production-task',
+      modelKey: encodeURIComponent('openai/gpt-5-2025'),
+      sessionId,
+    });
+
+    expect(returnedSessionId).toBe(sessionId);
+    expect(analyzeCalled).toBe(true);
+    expect(supportsChecks.length).toBe(1);
+    expect(errors.find((error) => error.code === 'STREAMING_DISABLED')).toBeUndefined();
+    expect(events.some((event) => event.event === 'stream.status')).toBe(true);
+    expect(events.some((event) => event.event === 'stream.chunk')).toBe(true);
+    expect(events.some((event) => event.event === 'custom')).toBe(true);
+    expect(completions.length).toBeGreaterThan(0);
+    expect(analysisStreamService.getPendingPayload(sessionId)).toBeUndefined();
+  } finally {
     process.env.STREAMING_ENABLED = previousEnv.streamingEnabled;
     process.env.ENABLE_SSE_STREAMING = previousEnv.legacyBackend;
     process.env.VITE_STREAMING_ENABLED = previousEnv.frontend;
@@ -94,45 +109,21 @@ test("startStreaming streams by default in production when no overrides are pres
     sseStreamManager.error = originalError;
     aiServiceFactory.getService = originalGetService;
     puzzleAnalysisService.analyzePuzzleStreaming = originalAnalyze;
-  });
-
-  const returnedSessionId = await analysisStreamService.startStreaming({} as any, {
-    taskId: "default-production-task",
-    modelKey: encodeURIComponent("openai/gpt-5-2025"),
-    sessionId,
-  });
-
-  assert.equal(returnedSessionId, sessionId, "should echo provided session id");
-  assert.equal(analyzeCalled, true, "puzzle analysis should start streaming by default");
-  assert.equal(supportsChecks.length, 1, "expected one service lookup");
-  assert.equal(
-    errors.find((error) => error.code === "STREAMING_DISABLED"),
-    undefined,
-    "Streaming should not emit disabled errors by default",
-  );
-  assert.ok(events.some((event) => event.event === "stream.status"), "status event should be emitted");
-  assert.ok(events.some((event) => event.event === "stream.chunk"), "chunk event should be emitted");
-  assert.ok(events.some((event) => event.event === "custom"), "custom event should bubble through stream harness");
-  assert.ok(completions.length > 0, "completion summary should be emitted");
-  assert.equal(
-    analysisStreamService.getPendingPayload(sessionId),
-    undefined,
-    "Pending payload should be cleared after streaming completes",
-  );
+  }
 });
 
-test("startStreaming emits STREAMING_DISABLED when the feature flag explicitly disables streaming", async (t) => {
+test('startStreaming emits STREAMING_DISABLED when the feature flag explicitly disables streaming', async () => {
   const previousEnv = {
     streamingEnabled: process.env.STREAMING_ENABLED,
     legacyBackend: process.env.ENABLE_SSE_STREAMING,
     nodeEnv: process.env.NODE_ENV,
   };
 
-  process.env.STREAMING_ENABLED = "false";
+  process.env.STREAMING_ENABLED = 'false';
   delete process.env.ENABLE_SSE_STREAMING;
-  process.env.NODE_ENV = "production";
+  process.env.NODE_ENV = 'production';
 
-  const sessionId = prepareSession("disabled-flag-task", "openai/gpt-5-2025");
+  const sessionId = prepareSession('disabled-flag-task', 'openai/gpt-5-2025');
 
   const errors: Array<{ code: string; message: string }> = [];
 
@@ -152,55 +143,46 @@ test("startStreaming emits STREAMING_DISABLED when the feature flag explicitly d
     analyzeCalled = true;
   }) as typeof puzzleAnalysisService.analyzePuzzleStreaming;
 
-  t.after(() => {
+  try {
+    await analysisStreamService.startStreaming({} as any, {
+      taskId: 'disabled-flag-task',
+      modelKey: 'openai/gpt-5-2025',
+      sessionId,
+    });
+
+    expect(errors.some((event) => event.code === 'STREAMING_DISABLED')).toBe(true);
+    expect(analyzeCalled).toBe(false);
+    expect(analysisStreamService.getPendingPayload(sessionId)).toBeUndefined();
+  } finally {
     process.env.STREAMING_ENABLED = previousEnv.streamingEnabled;
     process.env.ENABLE_SSE_STREAMING = previousEnv.legacyBackend;
     process.env.NODE_ENV = previousEnv.nodeEnv;
     sseStreamManager.has = originalHas;
     sseStreamManager.error = originalError;
     puzzleAnalysisService.analyzePuzzleStreaming = originalAnalyze;
-  });
-
-  await analysisStreamService.startStreaming({} as any, {
-    taskId: "disabled-flag-task",
-    modelKey: "openai/gpt-5-2025",
-    sessionId,
-  });
-
-  assert.ok(
-    errors.some((event) => event.code === "STREAMING_DISABLED"),
-    "Expected disabled code when feature flag is explicitly false",
-  );
-  assert.equal(analyzeCalled, false, "Streaming pipeline should not run when disabled explicitly");
-  assert.equal(
-    analysisStreamService.getPendingPayload(sessionId),
-    undefined,
-    "Pending payload should still be cleared",
-  );
+  }
 });
 
-test("startStreaming respects legacy default TTL when cleanup runs", async (t) => {
+test('startStreaming respects legacy default TTL when cleanup runs', async () => {
   const previousEnv = {
     streamingEnabled: process.env.STREAMING_ENABLED,
     nodeEnv: process.env.NODE_ENV,
   };
 
   delete process.env.STREAMING_ENABLED;
-  process.env.NODE_ENV = "production";
+  process.env.NODE_ENV = 'production';
 
-  const sessionId = prepareSession("ttl-cleanup", "openai/gpt-5-2025");
+  const sessionId = prepareSession('ttl-cleanup', 'openai/gpt-5-2025');
   const ttlMs = analysisStreamService.getPendingPayload(sessionId)?.expiresAt ?? 0;
 
-  t.after(() => {
+  try {
+    expect(ttlMs).toBeGreaterThan(0);
+    expect(
+      ttlMs - (analysisStreamService.getPendingPayload(sessionId)?.createdAt ?? 0)
+    ).toBeLessThanOrEqual(PENDING_SESSION_TTL_SECONDS * 1000);
+  } finally {
     process.env.STREAMING_ENABLED = previousEnv.streamingEnabled;
     process.env.NODE_ENV = previousEnv.nodeEnv;
     analysisStreamService.clearPendingPayload(sessionId);
-  });
-
-  assert.ok(ttlMs > 0, "Pending payload should include an expiration timestamp");
-  assert.ok(
-    ttlMs - (analysisStreamService.getPendingPayload(sessionId)?.createdAt ?? 0) <=
-      PENDING_SESSION_TTL_SECONDS * 1000,
-    "TTL should match configured pending session duration",
-  );
+  }
 });
