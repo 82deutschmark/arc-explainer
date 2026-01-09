@@ -1,5 +1,17 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.19  Jan 9, 2026
+
+- **FIX: RE-ARC test outputs should be withheld from generated datasets + purge buggy submissions** (Author: Claude Haiku 4.5)
+  - **What**: Fixed RE-ARC dataset generation to exclude test outputs (only include test inputs), purged all 33 buggy submissions from the leaderboard, and enhanced solver name generator with a colors list for more creative names.
+  - **Why**: Test outputs were incorrectly included in generated datasets, allowing solvers to see the answers during generation. This caused inflated scores (many 100% solutions). All existing submissions are now buggy and cleared.
+  - **How**:
+    - `server/services/reArc/reArcService.ts`: Modified `generateDataset` to strip test outputs from the task object returned to clients—outputs are cached separately for evaluation only.
+    - `client/src/components/rearc/GenerationSection.tsx`: Updated completed state to show a CheckCircle2 icon instead of "Generate Again" button text.
+    - `tests/reArcService.test.ts`: Updated all evaluation tests to use cached ground truth outputs instead of accessing `testPair.output` from generated tasks (which no longer exist).
+    - `scripts/purge-rearc-submissions.ts`: Created cleanup script to delete all 33 buggy submissions from `rearc_submissions` table while preserving dataset metadata.
+    - `server/utils/nameGenerator.ts`: Added 36-color COLORS list (Crimson, Azure, Emerald, Amber, Violet, Coral, Indigo, Scarlet, Teal, Magenta, Chartreuse, Turquoise, Salmon, Olive, Lavender, Tangerine, Mint, Rust, Slate, Pearl, Ebony, Ivory, Mauve, Sienna, Cerulean, Aureate, Vermilion, Periwinkle, Maroon, Gold, Silver, Bronze, Copper, Saffron, Cyan, Magenta). Changed name format from "Adjective Animal" to "Adjective Color Animal" for 58,320 unique combinations.
+
 ### Version 6.35.18  Jan 9, 2026
 
 - **FIX: Surface hiatus status on landing hero** (Author: Cascade (OpenAI o4-preview))
