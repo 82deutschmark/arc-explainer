@@ -1,4 +1,12 @@
 /**
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Shared AI service base class for prompt building, truncation detection,
+ *          response shaping, cost calculation, and streaming harness coordination.
+ * SRP/DRY check: Pass - Verified shared responsibilities and existing integrations.
+ */
+
+/**
  * Base abstract class for all AI service implementations
  * Eliminates 90%+ code duplication across AI providers
  * 
@@ -537,10 +545,11 @@ export abstract class BaseAIService {
         
         const hasUnmatchedStructures = openBraces !== closeBraces || openBrackets !== closeBrackets;
         
-        const isTruncated = hasSubstantialContent && (
-          !endsWithValidJson || 
-          endsAbruptly || 
-          hasUnmatchedStructures
+        const isTruncated = hasUnmatchedStructures || (
+          hasSubstantialContent && (
+            !endsWithValidJson ||
+            endsAbruptly
+          )
         );
         
         if (isTruncated) {

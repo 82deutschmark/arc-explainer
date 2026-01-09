@@ -1,15 +1,12 @@
 /**
- * Author: Cascade
- * Date: 2025-12-10
- * PURPOSE: Tests for Worm Arena placement helper to ensure consistent
- *          classification of placement phases and progress based on
- *          SnakeBenchModelRating snapshots.
- * SRP/DRY check: Pass — focused on pure helper behaviour only.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Validate Worm Arena placement phase classification and progress tracking
+ *          from SnakeBenchModelRating snapshots.
+ * SRP/DRY check: Pass - Focused on placement helper behavior only.
  */
 
-import test from 'node:test';
-import { strict as assert } from 'node:assert';
-
+import { describe, it, expect } from 'vitest';
 import type { SnakeBenchModelRating } from '../shared/types.ts';
 import { summarizeWormArenaPlacement } from '../shared/utils/wormArenaPlacement.ts';
 
@@ -29,34 +26,37 @@ function makeRating(partial: Partial<SnakeBenchModelRating>): SnakeBenchModelRat
   };
 }
 
-test('summarizeWormArenaPlacement handles not-started models', () => {
-  const rating = makeRating({ gamesPlayed: 0 });
-  const summary = summarizeWormArenaPlacement(rating)!;
+describe('summarizeWormArenaPlacement', () => {
+  it('handles not-started models', () => {
+    const rating = makeRating({ gamesPlayed: 0 });
+    const summary = summarizeWormArenaPlacement(rating)!;
 
-  assert.equal(summary.phase, 'not_started');
-  assert.equal(summary.gamesPlayed, 0);
-  assert.equal(summary.progress, 0);
-});
+    expect(summary.phase).toBe('not_started');
+    expect(summary.gamesPlayed).toBe(0);
+    expect(summary.progress).toBe(0);
+  });
 
-test('summarizeWormArenaPlacement marks placement in progress before 9 games with high sigma', () => {
-  const rating = makeRating({ gamesPlayed: 3, sigma: 7 });
-  const summary = summarizeWormArenaPlacement(rating)!;
+  it('marks placement in progress before 9 games with high sigma', () => {
+    const rating = makeRating({ gamesPlayed: 3, sigma: 7 });
+    const summary = summarizeWormArenaPlacement(rating)!;
 
-  assert.equal(summary.phase, 'in_progress');
-  assert.ok(summary.progress > 0 && summary.progress < 1);
-});
+    expect(summary.phase).toBe('in_progress');
+    expect(summary.progress).toBeGreaterThan(0);
+    expect(summary.progress).toBeLessThan(1);
+  });
 
-test('summarizeWormArenaPlacement marks placement effectively complete when sigma is low', () => {
-  const rating = makeRating({ gamesPlayed: 4, sigma: 2.5 });
-  const summary = summarizeWormArenaPlacement(rating)!;
+  it('marks placement effectively complete when sigma is low', () => {
+    const rating = makeRating({ gamesPlayed: 4, sigma: 2.5 });
+    const summary = summarizeWormArenaPlacement(rating)!;
 
-  assert.equal(summary.phase, 'effectively_complete');
-});
+    expect(summary.phase).toBe('effectively_complete');
+  });
 
-test('summarizeWormArenaPlacement marks placement complete at or after 9 games', () => {
-  const rating = makeRating({ gamesPlayed: 9, sigma: 4 });
-  const summary = summarizeWormArenaPlacement(rating)!;
+  it('marks placement complete at or after 9 games', () => {
+    const rating = makeRating({ gamesPlayed: 9, sigma: 4 });
+    const summary = summarizeWormArenaPlacement(rating)!;
 
-  assert.equal(summary.phase, 'complete');
-  assert.equal(summary.progress, 1);
+    expect(summary.phase).toBe('complete');
+    expect(summary.progress).toBe(1);
+  });
 });

@@ -1,64 +1,64 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-10-17T00:00:00Z
- * PURPOSE: Ensures the shared streaming configuration keeps streaming enabled by default
- * even when NODE_ENV is production while still respecting explicit environment overrides.
- * SRP/DRY check: Pass — scoped to resolveStreamingConfig() behaviours only.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Validate streaming config defaults and explicit overrides for production
+ *          behavior shared between backend and frontend.
+ * SRP/DRY check: Pass - Scoped to resolveStreamingConfig behavior only.
  */
 
-import test from "node:test";
-import { strict as assert } from "node:assert";
+import { describe, it, expect } from 'vitest';
+import { resolveStreamingConfig } from '../shared/config/streaming.ts';
 
-import { resolveStreamingConfig } from "../shared/config/streaming.ts";
+describe('resolveStreamingConfig', () => {
+  it('keeps streaming enabled by default in production', () => {
+    const previousEnv = {
+      streamingEnabled: process.env.STREAMING_ENABLED,
+      legacyBackend: process.env.ENABLE_SSE_STREAMING,
+      frontend: process.env.VITE_STREAMING_ENABLED,
+      legacyFrontend: process.env.VITE_ENABLE_SSE_STREAMING,
+      nodeEnv: process.env.NODE_ENV,
+    };
 
-test("resolveStreamingConfig keeps streaming enabled by default in production", (t) => {
-  const previousEnv = {
-    streamingEnabled: process.env.STREAMING_ENABLED,
-    legacyBackend: process.env.ENABLE_SSE_STREAMING,
-    frontend: process.env.VITE_STREAMING_ENABLED,
-    legacyFrontend: process.env.VITE_ENABLE_SSE_STREAMING,
-    nodeEnv: process.env.NODE_ENV,
-  };
+    try {
+      delete process.env.STREAMING_ENABLED;
+      delete process.env.ENABLE_SSE_STREAMING;
+      delete process.env.VITE_STREAMING_ENABLED;
+      delete process.env.VITE_ENABLE_SSE_STREAMING;
+      process.env.NODE_ENV = 'production';
 
-  delete process.env.STREAMING_ENABLED;
-  delete process.env.ENABLE_SSE_STREAMING;
-  delete process.env.VITE_STREAMING_ENABLED;
-  delete process.env.VITE_ENABLE_SSE_STREAMING;
-  process.env.NODE_ENV = "production";
+      const config = resolveStreamingConfig();
 
-  t.after(() => {
-    process.env.STREAMING_ENABLED = previousEnv.streamingEnabled;
-    process.env.ENABLE_SSE_STREAMING = previousEnv.legacyBackend;
-    process.env.VITE_STREAMING_ENABLED = previousEnv.frontend;
-    process.env.VITE_ENABLE_SSE_STREAMING = previousEnv.legacyFrontend;
-    process.env.NODE_ENV = previousEnv.nodeEnv;
+      expect(config.enabled).toBe(true);
+      expect(config.backendSource).toBeUndefined();
+      expect(config.frontendSource).toBeUndefined();
+      expect(config.defaultValue).toBe(true);
+    } finally {
+      process.env.STREAMING_ENABLED = previousEnv.streamingEnabled;
+      process.env.ENABLE_SSE_STREAMING = previousEnv.legacyBackend;
+      process.env.VITE_STREAMING_ENABLED = previousEnv.frontend;
+      process.env.VITE_ENABLE_SSE_STREAMING = previousEnv.legacyFrontend;
+      process.env.NODE_ENV = previousEnv.nodeEnv;
+    }
   });
 
-  const config = resolveStreamingConfig();
+  it('honors explicit false overrides', () => {
+    const previousEnv = {
+      streamingEnabled: process.env.STREAMING_ENABLED,
+      nodeEnv: process.env.NODE_ENV,
+    };
 
-  assert.equal(config.enabled, true, "Streaming should remain enabled by default in production");
-  assert.equal(config.backendSource, undefined, "No backend override should be detected");
-  assert.equal(config.frontendSource, undefined, "No frontend override should be detected");
-  assert.equal(config.defaultValue, true, "Default value should reflect the optimistic streaming fallback");
-});
+    try {
+      process.env.STREAMING_ENABLED = 'false';
+      process.env.NODE_ENV = 'production';
 
-test("resolveStreamingConfig honors explicit false overrides", (t) => {
-  const previousEnv = {
-    streamingEnabled: process.env.STREAMING_ENABLED,
-    nodeEnv: process.env.NODE_ENV,
-  };
+      const config = resolveStreamingConfig();
 
-  process.env.STREAMING_ENABLED = "false";
-  process.env.NODE_ENV = "production";
-
-  t.after(() => {
-    process.env.STREAMING_ENABLED = previousEnv.streamingEnabled;
-    process.env.NODE_ENV = previousEnv.nodeEnv;
+      expect(config.enabled).toBe(false);
+      expect(config.backendSource?.key).toBe('STREAMING_ENABLED');
+      expect(config.backendSource?.value).toBe(false);
+    } finally {
+      process.env.STREAMING_ENABLED = previousEnv.streamingEnabled;
+      process.env.NODE_ENV = previousEnv.nodeEnv;
+    }
   });
-
-  const config = resolveStreamingConfig();
-
-  assert.equal(config.enabled, false, "Explicit false flag should disable streaming");
-  assert.equal(config.backendSource?.key, "STREAMING_ENABLED");
-  assert.equal(config.backendSource?.value, false);
 });

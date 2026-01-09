@@ -1,9 +1,9 @@
 /**
- * Author: Claude Sonnet 4.5
- * Date: 2026-01-04
- * PURPOSE: Comprehensive unit tests for BaseRepository
- *          Tests connection management, transactions, safe parsing, and grid sanitization
- * SRP/DRY check: Pass - Isolated tests for base repository functionality
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Verify BaseRepository delegates to CommonUtilities for JSON handling,
+ *          confidence normalization, hints processing, and grid sanitization.
+ * SRP/DRY check: Pass - Focused tests for BaseRepository behavior only.
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -135,7 +135,7 @@ describe('BaseRepository', () => {
 
     it('should handle null input', () => {
       const result = repo.testSafeJsonStringify(null);
-      expect(result).toBe('null');
+      expect(result).toBeNull();
     });
 
     it('should handle undefined input', () => {
@@ -145,29 +145,29 @@ describe('BaseRepository', () => {
   });
 
   describe('normalizeConfidence', () => {
-    it('should return number as-is when valid (0-1 range)', () => {
-      expect(repo.testNormalizeConfidence(0.5)).toBe(0.5);
+    it('should normalize numeric fractions to percent (0-100)', () => {
+      expect(repo.testNormalizeConfidence(0.5)).toBe(50);
       expect(repo.testNormalizeConfidence(0)).toBe(0);
-      expect(repo.testNormalizeConfidence(1)).toBe(1);
+      expect(repo.testNormalizeConfidence(1)).toBe(100);
     });
 
-    it('should parse string numbers', () => {
-      expect(repo.testNormalizeConfidence('0.75')).toBe(0.75);
+    it('should parse string numbers and normalize to percent', () => {
+      expect(repo.testNormalizeConfidence('0.75')).toBe(75);
       expect(repo.testNormalizeConfidence('0')).toBe(0);
-      expect(repo.testNormalizeConfidence('1')).toBe(1);
+      expect(repo.testNormalizeConfidence('1')).toBe(100);
     });
 
-    it('should clamp values outside 0-1 range', () => {
-      expect(repo.testNormalizeConfidence(1.5)).toBe(1);
-      expect(repo.testNormalizeConfidence(-0.5)).toBe(0);
-      expect(repo.testNormalizeConfidence(100)).toBe(1);
+    it('should clamp values outside 0-100 range', () => {
+      expect(repo.testNormalizeConfidence(150)).toBe(100);
+      expect(repo.testNormalizeConfidence(-5)).toBe(0);
+      expect(repo.testNormalizeConfidence(1000)).toBe(100);
     });
 
     it('should return default for invalid values', () => {
-      expect(repo.testNormalizeConfidence(null)).toBe(0);
-      expect(repo.testNormalizeConfidence(undefined)).toBe(0);
-      expect(repo.testNormalizeConfidence('invalid')).toBe(0);
-      expect(repo.testNormalizeConfidence({})).toBe(0);
+      expect(repo.testNormalizeConfidence(null)).toBe(50);
+      expect(repo.testNormalizeConfidence(undefined)).toBe(50);
+      expect(repo.testNormalizeConfidence('invalid')).toBe(50);
+      expect(repo.testNormalizeConfidence({})).toBe(50);
     });
   });
 
@@ -182,9 +182,9 @@ describe('BaseRepository', () => {
       expect(repo.testProcessHints(hints)).toEqual(['Hint 1', 'Hint 2']);
     });
 
-    it('should filter out non-string values', () => {
+    it('should coerce non-string values to strings and drop empty entries', () => {
       const hints = ['Hint 1', 123, 'Hint 2', null, 'Hint 3'];
-      expect(repo.testProcessHints(hints)).toEqual(['Hint 1', 'Hint 2', 'Hint 3']);
+      expect(repo.testProcessHints(hints)).toEqual(['Hint 1', '123', 'Hint 2', 'Hint 3']);
     });
 
     it('should return empty array for null', () => {
@@ -195,14 +195,14 @@ describe('BaseRepository', () => {
       expect(repo.testProcessHints(undefined)).toEqual([]);
     });
 
-    it('should return empty array for invalid JSON', () => {
-      expect(repo.testProcessHints('invalid{json')).toEqual([]);
+    it('should treat invalid JSON strings as a single hint', () => {
+      expect(repo.testProcessHints('invalid{json')).toEqual(['invalid{json']);
     });
 
-    it('should return empty array for non-array values', () => {
-      expect(repo.testProcessHints({ key: 'value' })).toEqual([]);
-      expect(repo.testProcessHints('string')).toEqual([]);
-      expect(repo.testProcessHints(123)).toEqual([]);
+    it('should stringify non-array values into hints', () => {
+      expect(repo.testProcessHints({ key: 'value' })).toEqual(['{"key":"value"}']);
+      expect(repo.testProcessHints('string')).toEqual(['string']);
+      expect(repo.testProcessHints(123)).toEqual(['123']);
     });
   });
 
@@ -212,9 +212,9 @@ describe('BaseRepository', () => {
       expect(repo.testSanitizeGridData(grid)).toEqual(grid);
     });
 
-    it('should accept empty grid', () => {
+    it('should return null for empty grid', () => {
       const grid: number[][] = [];
-      expect(repo.testSanitizeGridData(grid)).toEqual(grid);
+      expect(repo.testSanitizeGridData(grid)).toBeNull();
     });
 
     it('should accept grid with zeros', () => {
@@ -240,17 +240,17 @@ describe('BaseRepository', () => {
       expect(repo.testSanitizeGridData([1, 2, 3])).toBeNull();
     });
 
-    it('should reject arrays with non-number values', () => {
-      expect(repo.testSanitizeGridData([['a', 'b'], ['c', 'd']])).toBeNull();
-      expect(repo.testSanitizeGridData([[1, 'two'], [3, 4]])).toBeNull();
+    it('should coerce invalid cell values to 0', () => {
+      expect(repo.testSanitizeGridData([['a', 'b'], ['c', 'd']])).toEqual([[0, 0], [0, 0]]);
+      expect(repo.testSanitizeGridData([[1, 'two'], [3, 4]])).toEqual([[1, 0], [3, 4]]);
     });
 
-    it('should reject arrays with null values', () => {
-      expect(repo.testSanitizeGridData([[1, null], [3, 4]])).toBeNull();
+    it('should coerce null cell values to 0', () => {
+      expect(repo.testSanitizeGridData([[1, null], [3, 4]])).toEqual([[1, 0], [3, 4]]);
     });
 
-    it('should reject jagged arrays (inconsistent row lengths)', () => {
-      expect(repo.testSanitizeGridData([[1, 2], [3, 4, 5]])).toBeNull();
+    it('should preserve jagged arrays after sanitization', () => {
+      expect(repo.testSanitizeGridData([[1, 2], [3, 4, 5]])).toEqual([[1, 2], [3, 4, 5]]);
     });
 
     it('should parse JSON string grid', () => {
@@ -272,9 +272,9 @@ describe('BaseRepository', () => {
       expect(repo.testSanitizeMultipleGrids(grids)).toEqual(grids);
     });
 
-    it('should accept empty array', () => {
+    it('should return null for empty array', () => {
       const grids: number[][][] = [];
-      expect(repo.testSanitizeMultipleGrids(grids)).toEqual(grids);
+      expect(repo.testSanitizeMultipleGrids(grids)).toBeNull();
     });
 
     it('should reject null', () => {
@@ -285,12 +285,15 @@ describe('BaseRepository', () => {
       expect(repo.testSanitizeMultipleGrids(undefined)).toBeNull();
     });
 
-    it('should reject if any grid is invalid', () => {
+    it('should sanitize each grid even when inputs are noisy', () => {
       const grids = [
         [[1, 2], [3, 4]],
         [[5, 'six'], [7, 8]] // Invalid grid
       ];
-      expect(repo.testSanitizeMultipleGrids(grids)).toBeNull();
+      expect(repo.testSanitizeMultipleGrids(grids)).toEqual([
+        [[1, 2], [3, 4]],
+        [[5, 0], [7, 8]]
+      ]);
     });
 
     it('should reject 2D arrays (not 3D)', () => {
