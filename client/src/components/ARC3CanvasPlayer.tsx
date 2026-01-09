@@ -15,18 +15,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Pause,
-  Play,
-  RotateCw,
-} from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import { getArc3Color } from '@/utils/arc3Colors';
 
 type RawReplayEvent = {
@@ -53,27 +44,39 @@ const SPEED_PRESETS: readonly number[] = [0.5, 1, 2];
 const BASE_FRAME_DURATION_MS = 200; // 5 fps baseline per spec
 const MAX_CANVAS_WIDTH = 640;
 
-function extractGrid(frameData?: number[][][] | number[][]): number[][] | null {
-  if (!frameData) {
+function extractGrid(frameData?: number[][][] | number[][] | number[][][][]): number[][] | null {
+  if (!frameData || !Array.isArray(frameData) || frameData.length === 0) {
     return null;
   }
 
-  // Already 2D grid
-  if (
-    Array.isArray(frameData) &&
-    Array.isArray(frameData[0]) &&
-    typeof frameData[0]?.[0] === 'number'
-  ) {
+  // Detect depth by checking nested array structure
+  const first = frameData[0];
+  if (!Array.isArray(first)) {
+    return null;
+  }
+
+  const second = first[0];
+  
+  // 2D grid: frameData[row][col] where frameData[0][0] is a number
+  if (typeof second === 'number') {
     return frameData as number[][];
   }
 
-  // 3D: [layer][row][col] → take first layer
-  if (
-    Array.isArray(frameData) &&
-    Array.isArray(frameData[0]) &&
-    Array.isArray((frameData as number[][][])[0][0])
-  ) {
-    return (frameData as number[][][])[0] as number[][];
+  if (!Array.isArray(second)) {
+    return null;
+  }
+
+  const third = second[0];
+
+  // 3D: frameData[layer][row][col] where frameData[0][0][0] is a number
+  // Return first layer
+  if (typeof third === 'number') {
+    return first as number[][];
+  }
+
+  // 4D: frameData[time][layer][row][col] - take first time, first layer
+  if (Array.isArray(third) && typeof third[0] === 'number') {
+    return second as number[][];
   }
 
   return null;
@@ -349,34 +352,6 @@ export function ARC3CanvasPlayer({
 
   const currentFrame = frames[currentFrameIndex];
 
-  const handleTogglePlay = () => {
-    if (!frames.length) return;
-    playbackRef.current.lastTime = 0;
-    setIsPlaying((prev) => !prev);
-  };
-
-  const handleSeek = (value: number) => {
-    playbackRef.current = { frameIndex: value, progress: 0, lastTime: 0 };
-    setCurrentFrameIndex(value);
-    setIsPlaying(false);
-    renderFrame(value, 0);
-  };
-
-  const handleStep = (direction: -1 | 1) => {
-    if (!frames.length) return;
-    const nextIndex = Math.min(
-      Math.max(currentFrameIndex + direction, 0),
-      frames.length - 1,
-    );
-    handleSeek(nextIndex);
-  };
-
-  const handleReset = () => {
-    handleSeek(0);
-  };
-
-  const speedLabel = (value: number) => `${value.toFixed(1)}×`;
-
   return (
     <div
       ref={containerRef}
@@ -430,83 +405,6 @@ export function ARC3CanvasPlayer({
           )}
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleReset}
-              disabled={!frames.length}
-              title="Restart replay"
-            >
-              <RotateCw className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => handleStep(-1)}
-              disabled={!frames.length || currentFrameIndex === 0}
-              title="Previous frame"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="default"
-              size="icon"
-              onClick={handleTogglePlay}
-              disabled={!frames.length}
-              title={isPlaying ? 'Pause' : 'Play'}
-            >
-              {isPlaying ? (
-                <Pause className="h-4 w-4" />
-              ) : (
-                <Play className="h-4 w-4" />
-              )}
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => handleStep(1)}
-              disabled={!frames.length || currentFrameIndex >= frames.length - 1}
-              title="Next frame"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="w-16 text-right text-xs text-slate-400">
-              {frames.length ? currentFrameIndex + 1 : 0}
-            </span>
-            <Slider
-              value={[currentFrameIndex]}
-              max={Math.max(frames.length - 1, 1)}
-              min={0}
-              step={1}
-              disabled={!frames.length}
-              onValueChange={([value]) => handleSeek(value)}
-              className="flex-1"
-            />
-            <span className="w-16 text-xs text-slate-400">
-              {frames.length}
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-300">
-            <span>Speed:</span>
-            {SPEED_PRESETS.map((preset) => (
-              <Button
-                key={preset}
-                variant={speed === preset ? 'default' : 'ghost'}
-                size="sm"
-                className="px-3 py-1"
-                onClick={() => setSpeed(preset)}
-              >
-                {speedLabel(preset)}
-              </Button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
