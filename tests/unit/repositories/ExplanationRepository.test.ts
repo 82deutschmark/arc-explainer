@@ -114,8 +114,8 @@ describe('ExplanationRepository', () => {
 
       expect(passedClient).toBe(client);
       expect(params.at(-1)).toBe(2); // num_test_pairs
-      expect(params[94]).toBe('[[1,0]]'); // sanitized predicted grid stringified
-      expect(params[119]).toBe('[[[1,0]]]'); // sanitized multi-test prediction grids
+      expect(params[19]).toBe('[[1,0]]'); // sanitized predicted grid stringified
+      expect(params[39]).toBe('[[[1,0]]]'); // sanitized multi-test prediction grids
       expect(client.release).toHaveBeenCalledTimes(1);
     });
   });

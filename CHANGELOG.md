@@ -23,6 +23,19 @@
     - `tests/sseUtils.test.ts`: convert to Vitest and add required headers.
     - `tests/streamingConfig.test.ts`: convert to Vitest and add required headers.
     - `tests/wormArenaPlacement.test.ts`: convert to Vitest and add required headers.
+    - `tests/analysisStreamService.test.ts`: convert to Vitest, normalize cleanup, and refresh headers.
+    - `tests/analysisStreamService.streaming.test.ts`: convert to Vitest and refresh headers.
+    - `tests/accuracyHarnessEndpoint.test.ts`: convert to Vitest and refresh headers.
+    - `tests/aiServiceFactory.test.ts`: convert to Vitest and refresh headers.
+    - `tests/featureFlags.test.ts`: convert to Vitest and refresh headers.
+    - `tests/harnessScoring.test.ts`: convert to Vitest and refresh headers.
+    - `tests/metaTagInjector.test.ts`: convert to Vitest and refresh headers.
+    - `tests/openaiPayloadBuilder.test.ts`: convert to Vitest and refresh headers.
+    - `tests/openaiStreamingHandlers.test.ts`: convert to Vitest and refresh headers.
+    - `tests/reArcCodec.test.ts`: convert to Vitest and refresh headers.
+    - `tests/reArcController.test.ts`: convert to Vitest and refresh headers.
+    - `tests/reArcService.test.ts`: convert to Vitest and refresh headers.
+    - `tests/snakeBenchLlmPlayerPromptTemplate.test.ts`: convert to Vitest and refresh headers.
 
 ### Version 6.35.16  Jan 9, 2026
 
