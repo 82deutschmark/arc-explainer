@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.16  Jan 9, 2026
+
+- **FIX: Revert landing page to working two-column layout with MP4 videos** (Author: Cascade (OpenAI o4-preview))
+  - **What**: Removed broken WormArena slice and canvas player; reverted to simple two-column layout with ARC 1&2 GIFs and ARC-3 MP4 videos.
+  - **Why**: Canvas-based frame unpacking wasn't working reliably, and Worm Arena slice added complexity without value on landing page.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`: Complete rewrite to two-column layout using `<video>` elements for ARC-3 replays (ls20, vc33, ft09, lp85 MP4s).
+
 ### Version 6.35.15  Jan 9, 2026
 
 - **FIX: WormArenaLive starts matches in a new tab** (Author: GPT-5.2)
