@@ -1,4 +1,11 @@
 /**
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Unit tests for meta tag injection and route metadata defaults.
+ * SRP/DRY check: Pass - Focused middleware helpers only.
+ */
+
+/**
  * Meta Tag Injector Middleware Tests
  *
  * Author: Claude Code using Sonnet 4.5
@@ -8,7 +15,7 @@
  */
 
 import { strict as assert } from 'node:assert';
-import test from 'node:test';
+import { test } from 'vitest';
 import { generateMetaTags } from '../server/middleware/metaTagInjector.js';
 import { ROUTE_META_TAGS } from '../shared/routes.js';
 

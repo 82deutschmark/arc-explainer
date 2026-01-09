@@ -7,14 +7,18 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getVisitorCount(page: string): Promise<number>;
+  incrementVisitorCount(page: string): Promise<number>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
+  private visitorStats: Map<string, number>;
   currentId: number;
 
   constructor() {
     this.users = new Map();
+    this.visitorStats = new Map();
     this.currentId = 1;
   }
 
@@ -33,6 +37,17 @@ export class MemStorage implements IStorage {
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+
+  async getVisitorCount(page: string): Promise<number> {
+    return this.visitorStats.get(page) || 0;
+  }
+
+  async incrementVisitorCount(page: string): Promise<number> {
+    const current = this.visitorStats.get(page) || 0;
+    const next = current + 1;
+    this.visitorStats.set(page, next);
+    return next;
   }
 }
 

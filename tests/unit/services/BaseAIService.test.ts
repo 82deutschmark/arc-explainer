@@ -1,9 +1,9 @@
 /**
- * Author: Cascade
- * Date: 2026-01-05T18:45:00Z
- * PURPOSE: Comprehensive BaseAIService regression suite covering truncation detection, response shaping,
- *          token accounting, and JSON extraction for provider integrations.
- * SRP/DRY check: Pass — focuses solely on BaseAIService behavior without duplicating provider tests.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Regression coverage for BaseAIService truncation detection, JSON extraction,
+ *          response shaping, and model capability helpers.
+ * SRP/DRY check: Pass - Focused BaseAIService behavior only.
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -189,7 +189,7 @@ describe('BaseAIService', () => {
     it('should detect missing closing brace in deeply nested JSON', () => {
       const incomplete = '{"a": {"b": {"c": {"d": "value"}}';
       const result = service.testDetectResponseTruncation(incomplete);
-      expect(result).toBe(false);
+      expect(result).toBe(true);
     });
   });
 

@@ -1,16 +1,11 @@
 /**
- * RE-ARC Service Integration Tests
- *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-12-27
- * PURPOSE: Integration tests for RE-ARC Python subprocess integration.
- *          Tests dataset generation, evaluation, and scoring logic.
- * SRP/DRY check: Pass - Focused tests for reArcService functions.
- *
- * Note: These tests use RE_ARC_DEV_MODE=true for faster execution with fewer tasks.
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Integration tests for RE-ARC Python subprocess dataset generation and evaluation.
+ * SRP/DRY check: Pass - Focused reArcService coverage only.
  */
 
-import test from 'node:test';
+import { test, beforeEach } from 'vitest';
 import { strict as assert } from 'node:assert';
 import {
   resolvePythonBin,
@@ -29,7 +24,7 @@ process.env.RE_ARC_DEV_MODE = 'true';
 process.env.RE_ARC_SEED_PEPPER = 'test-pepper-service-deterministic-32-chars';
 
 // Clear cache before each test to ensure isolation
-test.beforeEach(() => {
+beforeEach(() => {
   __testOnly_datasetCache.clear();
 });
 

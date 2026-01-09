@@ -44,6 +44,8 @@ type OpenRouterCatalogModel = {
 const OPENROUTER_MODEL_KEYS: string[] = [
   'allenai/olmo-3-32b-think:free',
   'allenai/olmo-3-7b-think',
+  'allenai/olmo-3.1-32b-instruct',
+  'allenai/olmo-3.1-32b-think',
   'allenai/olmo-3.1-32b-think:free',
   'amazon/nova-2-lite-v1:free',
   'amazon/nova-premier-v1',

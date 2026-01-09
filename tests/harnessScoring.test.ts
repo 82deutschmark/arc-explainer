@@ -1,4 +1,11 @@
 /**
+ * Author: GPT-5 Codex
+ * Date: 2026-01-08T20:25:33-05:00
+ * PURPOSE: Unit tests for ARC-AGI harness scoring utilities and dataset aggregation.
+ * SRP/DRY check: Pass - Focused on pure scoring helpers.
+ */
+
+/**
  * Author: Cascade
  * Date: 2025-12-16T00:00:00Z
  * PURPOSE: Unit tests for ARC-AGI harness scoring utilities.
@@ -7,7 +14,7 @@
  * SRP/DRY check: Pass - Focused tests for pure scoring functions.
  */
 
-import test from 'node:test';
+import { test } from 'vitest';
 import { strict as assert } from 'node:assert';
 
 import { computeDatasetUnionScores } from '../server/utils/harnessScoring.ts';
