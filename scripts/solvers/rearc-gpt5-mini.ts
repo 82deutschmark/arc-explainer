@@ -16,9 +16,9 @@
  *   OPENAI_API_KEY - OpenAI API key
  *
  * Optional env:
- *   REARC_DATASET - Path to dataset (default: REARC2026.json)
+ *   REARC_DATASET - Path to dataset (default: 2026RealRearc.json)
  *   REARC_MODEL - Model to use (default: gpt-5-nano)
- *   REARC_REASONING_EFFORT - medium|high|low (default: high)
+ *   REARC_REASONING_EFFORT - medium|high|low (default: LOW)
  */
 
 import OpenAI from 'openai';
@@ -77,7 +77,7 @@ const CONFIG = {
   apiKey: process.env.OPENAI_API_KEY,
   datasetPath: process.env.REARC_DATASET || path.resolve(process.cwd(), 'REARC2026.json'),
   model: process.env.REARC_MODEL || 'gpt-5-nano',
-  reasoningEffort: (process.env.REARC_REASONING_EFFORT || 'high') as ReasoningEffort,
+  reasoningEffort: (process.env.REARC_REASONING_EFFORT || 'low') as ReasoningEffort,
 };
 
 if (!CONFIG.apiKey) {

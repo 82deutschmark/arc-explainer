@@ -1,7 +1,7 @@
 /*
- * Author: Claude
- * Date: 2026-01-04
- * PURPOSE: Game metadata for LP85.
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-09
+ * PURPOSE: Game metadata for LP85, including embedded replay video reference.
  * SRP/DRY check: Pass - Single responsibility for LP85 game data.
  */
 
@@ -45,6 +45,10 @@ export const lp85: Arc3GameMetadata = {
   ],
   tags: ['evaluation-set', 'looping', 'sequencing'],
   thumbnailUrl: '/lp85.png',
+  video: {
+    src: '/videos/arc3/lp85-d265526edbaa.mp4',
+    caption: 'Loop and Pull expert run showing button sequencing',
+  },
   isFullyDocumented: true,
   notes: 'Updated with strategic intel about target indicators and button complexity.',
 };

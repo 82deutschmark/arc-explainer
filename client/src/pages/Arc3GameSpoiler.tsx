@@ -23,6 +23,7 @@ import {
   Keyboard,
   Link2,
   Bot,
+  Download,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -165,6 +166,47 @@ export default function Arc3GameSpoiler() {
           {game.description}
         </p>
       </div>
+
+      {/* Featured Replay */}
+      {game.video && (
+        <Card className="mb-12 shadow-lg border-primary/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Gamepad2 className="h-5 w-5" />
+              Featured Replay
+            </CardTitle>
+            <CardDescription>
+              Captured directly from the ARC-3 streaming pipeline
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <video
+              className="w-full rounded-xl border border-border"
+              controls
+              preload="metadata"
+              poster={game.video.poster}
+            >
+              <source src={game.video.src} type="video/mp4" />
+              Your browser does not support embedded ARC3 replays.{' '}
+              <a href={game.video.src} target="_blank" rel="noopener noreferrer">
+                Download the MP4
+              </a>{' '}
+              to watch locally.
+            </video>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                {game.video.caption || 'Recorded run powered by ARC Explainer agents.'}
+              </p>
+              <Button variant="outline" size="sm" asChild>
+                <a href={game.video.src} download>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download MP4
+                </a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* How It Works - CENTERPIECE */}
       <div className="mb-12 space-y-6">

@@ -1,7 +1,7 @@
 /*
- * Author: Claude
- * Date: 2026-01-04
- * PURPOSE: Game metadata for FT09 (Functional Tiles).
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-09
+ * PURPOSE: Game metadata for FT09 (Functional Tiles) with featured replay clip metadata.
  * SRP/DRY check: Pass - Single responsibility for FT09 game data.
  */
 
@@ -53,6 +53,10 @@ export const ft09: Arc3GameMetadata = {
   ],
   tags: ['preview-set', 'pattern-matching', 'logic'],
   thumbnailUrl: '/ft09.png',
+  video: {
+    src: '/videos/arc3/ft09-b8377d4b7815.mp4',
+    caption: 'Functional Tiles replay showcasing color precedence decisions',
+  },
   isFullyDocumented: true,
   notes: 'Updated with strategic intel about color precedence.',
 };

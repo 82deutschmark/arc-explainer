@@ -1,9 +1,9 @@
 /*
- * Author: Claude Haiku 4.5
- * Date: 2025-12-27
- * PURPOSE: TypeScript interfaces and types for Arc3 game metadata.
- *          Extracted from monolithic arc3Games.ts for modularity.
- * SRP/DRY check: Pass - Single responsibility for type definitions.
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-09
+ * PURPOSE: TypeScript interfaces and types for Arc3 game metadata, including embedded replay videos.
+ *          Extended to describe featured MP4 assets rendered on spoiler pages.
+ * SRP/DRY check: Pass - Centralizes shared typing for ARC3 metadata consumers.
  */
 
 /**
@@ -26,6 +26,18 @@ export interface ActionMapping {
   commonName?: string;
   /** Additional notes about how this action behaves */
   notes?: string;
+}
+
+/**
+ * Featured replay video for a given game
+ */
+export interface GameVideo {
+  /** Public URL (relative to /public) pointing to the MP4 asset */
+  src: string;
+  /** Short caption or credit line displayed under the video */
+  caption?: string;
+  /** Optional poster image shown before playback */
+  poster?: string;
 }
 
 /**
@@ -118,6 +130,9 @@ export interface Arc3GameMetadata {
 
   /** Screenshot or thumbnail URL (relative to public folder) */
   thumbnailUrl?: string;
+
+  /** Featured replay clip embedded on the spoiler page */
+  video?: GameVideo;
 
   /** Whether this game has been fully documented */
   isFullyDocumented: boolean;
