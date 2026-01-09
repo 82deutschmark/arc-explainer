@@ -1,5 +1,22 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.25  Jan 9, 2026
+
+- **FIX: Timestamped submission outputs for RE-ARC free solver** (Author: Cascade (ChatGPT))
+  - **What**: Switched the Python OpenRouter free solver to save results into per-run, model-tagged submission files (with optional `--output` override) instead of the shared `submission.json`.
+  - **Why**: Aligns with the rest of the tooling that expects dated submission artifacts per model run and prevents concurrent jobs from clobbering each other.
+  - **How**:
+    - `scripts/solvers/rearc_free_solver.py`: added timestamped path generation, optional `--output` flag, atomic writes per file, and refreshed metadata header/usage docs.
+
+### Version 6.35.26  Jan 10, 2026
+
+- **FIX: Remove deprecated AllenAI `:free` slugs from OpenRouter config** (Author: Cascade (ChatGPT))
+  - **What**: Deleted the `allenai/olmo-3.1-32b-think:free` catalog entry and removed free AllenAI slugs from `OPENROUTER_MODEL_KEYS`, ensuring only the paid `allenai/olmo-*` variants remain.
+  - **Why**: OpenRouter now returns 404 when hitting the legacy `:free` endpoints; solvers must call the paid slugs (`allenai/olmo-3.1-32b-think`, etc.) to avoid random-move fallbacks mid-game.
+  - **How**:
+    - `server/config/openrouterModels.ts`: refreshed header metadata and pruned AllenAI free slugs.
+    - `server/config/openrouter-catalog.json`: removed the duplicated free catalog entry so downstream configs only ingest the paid slug data.
+
 ### Version 6.35.24  Jan 9, 2026
 
 - **FIX: Send OpenRouter reasoning config via extra_body** (Author: Codex (GPT-5))

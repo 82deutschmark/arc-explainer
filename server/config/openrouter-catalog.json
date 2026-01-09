@@ -441,62 +441,6 @@
       }
     },
     {
-      "id": "allenai/olmo-3.1-32b-think:free",
-      "canonical_slug": "allenai/olmo-3.1-32b-think-20251215",
-      "hugging_face_id": "allenai/Olmo-3.1-32B-Think",
-      "name": "AllenAI: Olmo 3.1 32B Think (free)",
-      "created": 1765907719,
-      "description": "Olmo 3.1 32B Think is a large-scale, 32-billion-parameter model designed for deep reasoning, complex multi-step logic, and advanced instruction following. Building on the Olmo 3 series, version 3.1 delivers refined reasoning behavior and stronger performance across demanding evaluations and nuanced conversational tasks. Developed by Ai2 under the Apache 2.0 license, Olmo 3.1 32B Think continues the Olmo initiative’s commitment to openness, providing full transparency across model weights, code, and training methodology.",
-      "context_length": 65536,
-      "architecture": {
-        "modality": "text->text",
-        "input_modalities": [
-          "text"
-        ],
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other",
-        "instruct_type": null
-      },
-      "pricing": {
-        "prompt": "0",
-        "completion": "0",
-        "request": "0",
-        "image": "0",
-        "web_search": "0",
-        "internal_reasoning": "0"
-      },
-      "top_provider": {
-        "context_length": 65536,
-        "max_completion_tokens": 65536,
-        "is_moderated": false
-      },
-      "per_request_limits": null,
-      "supported_parameters": [
-        "frequency_penalty",
-        "include_reasoning",
-        "logit_bias",
-        "max_tokens",
-        "min_p",
-        "presence_penalty",
-        "reasoning",
-        "repetition_penalty",
-        "response_format",
-        "seed",
-        "stop",
-        "structured_outputs",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "default_parameters": {
-        "temperature": 0.6,
-        "top_p": 0.95,
-        "frequency_penalty": null
-      }
-    },
-    {
       "id": "xiaomi/mimo-v2-flash:free",
       "canonical_slug": "xiaomi/mimo-v2-flash-20251210",
       "hugging_face_id": "XiaomiMiMo/MiMo-V2-Flash",

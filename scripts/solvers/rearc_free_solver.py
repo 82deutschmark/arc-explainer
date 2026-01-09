@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-Author: Claude Haiku 4.5
+Author: Cascade (ChatGPT)
 Date: 2026-01-09
-PURPOSE: RE-ARC solver using OpenRouter with immediate submission.json writes.
+PURPOSE: RE-ARC solver (OpenRouter) that writes each run to a dated, model-tagged submission JSON while streaming results.
 - Fires off API calls in parallel (not sequential per-task)
-- Writes results to submission.json immediately as they arrive
+- Writes results to a timestamped submission file immediately as they arrive
 - Uses threading for true parallelism with blocking API calls
+SRP/DRY check: Pass — output-path generation is centralized and reused across load/save helpers.
 
 Usage:
-    python scripts/solvers/rearc_free_solver.py [--dataset PATH] [--fresh]
+    python scripts/solvers/rearc_free_solver.py [--dataset PATH] [--output PATH] [--fresh]
 
 Environment:
     OPENROUTER_API_KEY - Required
@@ -18,17 +19,17 @@ Environment:
     REARC_MAX_CONCURRENT - Max concurrent threads (default: 4)
 """
 
+import argparse
 import json
 import os
 import sys
-import time
-import argparse
-import re
-import hashlib
-from pathlib import Path
-from typing import Optional, Any
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
+import time
+import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Optional
 
 try:
     from openai import OpenAI
@@ -56,7 +57,7 @@ if not API_KEY:
     sys.exit(1)
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-SUBMISSION_PATH = PROJECT_ROOT / "submission.json"
+DEFAULT_SUBMISSION_DIR = PROJECT_ROOT
 
 # Thread-safe lock for submission writes
 submission_lock = threading.Lock()
@@ -73,25 +74,40 @@ client = OpenAI(
 )
 
 
+def sanitize_model_name(model: str) -> str:
+    """Create filesystem-safe version of the provider model name."""
+    sanitized = model.lower().replace("/", "-").replace(":", "-").replace(".", "-")
+    return re.sub(r"[^a-z0-9\-]+", "-", sanitized).strip("-")
+
+
+def default_submission_path() -> Path:
+    """Generate timestamped submission path based on model name."""
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+    filename = f"submission-{sanitize_model_name(MODEL_KEY)}-{timestamp}.json"
+    return DEFAULT_SUBMISSION_DIR / filename
+
+
 def load_dataset(path: str) -> dict:
     """Load dataset JSON."""
     with open(path, "r") as f:
         return json.load(f)
 
 
-def load_submission() -> dict:
-    """Load existing submission.json or return empty dict."""
-    if SUBMISSION_PATH.exists():
-        with open(SUBMISSION_PATH, "r") as f:
+def load_submission(path: Path) -> dict:
+    """Load existing submission JSON or return empty dict."""
+    if path.exists():
+        with open(path, "r") as f:
             return json.load(f)
     return {}
 
 
-def save_submission_threadsafe(submission: dict) -> None:
-    """Save submission.json to disk (thread-safe)."""
+def save_submission_threadsafe(path: Path, submission: dict) -> None:
+    """Save submission JSON to disk (thread-safe)."""
     with submission_lock:
-        with open(SUBMISSION_PATH, "w") as f:
+        tmp_path = path.with_suffix(path.suffix + ".tmp")
+        with open(tmp_path, "w") as f:
             json.dump(submission, f, indent=2)
+        tmp_path.replace(path)
 
 
 def grid_to_string(grid: list) -> str:
@@ -210,6 +226,7 @@ def run_phase(
     dataset: dict,
     submission: dict,
     attempt_num: int,
+    submission_path: Path,
 ) -> None:
     """
     Run one phase (attempt 1 or 2).
@@ -265,7 +282,7 @@ def run_phase(
                 submission[task_id][test_index][key] = grid or [[0]]
 
                 # Save immediately
-                save_submission_threadsafe(submission)
+                save_submission_threadsafe(submission_path, submission)
 
                 completed += 1
                 if grid:
@@ -283,7 +300,7 @@ def run_phase(
     print("=" * 72)
 
 
-def print_summary(dataset: dict, submission: dict) -> None:
+def print_summary(dataset: dict, submission: dict, submission_path: Path) -> None:
     """Print summary of results."""
     total_tests = sum(len(task["test"]) for task in dataset.values())
     completed = sum(
@@ -298,7 +315,7 @@ def print_summary(dataset: dict, submission: dict) -> None:
     print(f"Dataset: {len(dataset)} tasks, {total_tests} total test cases")
     print(f"Model: {MODEL_KEY}")
     print(f"Reasoning: {REASONING_EFFORT}")
-    print(f"Submission: {SUBMISSION_PATH}")
+    print(f"Submission: {submission_path}")
     print(f"Completed: {completed}/{total_tests} test cases with both attempts")
     print("=" * 72)
 
@@ -306,20 +323,23 @@ def print_summary(dataset: dict, submission: dict) -> None:
 def main():
     parser = argparse.ArgumentParser(description="RE-ARC Solver")
     parser.add_argument("--dataset", default="2026RealRearc.json", help="Dataset JSON path")
-    parser.add_argument("--fresh", action="store_true", help="Start fresh (ignore existing submission.json)")
+    parser.add_argument("--output", help="Submission JSON path (defaults to timestamped name with model)")
+    parser.add_argument("--fresh", action="store_true", help="Start fresh (ignore existing submission file)")
     args = parser.parse_args()
 
     dataset_path = PROJECT_ROOT / args.dataset
+    submission_path = Path(args.output) if args.output else default_submission_path()
 
     if not dataset_path.exists():
         print(f"Error: Dataset not found: {dataset_path}")
         sys.exit(1)
+    submission_path.parent.mkdir(parents=True, exist_ok=True)
 
     print("=" * 72)
     print("RE-ARC FREE SOLVER")
     print("=" * 72)
     print(f"Dataset: {dataset_path}")
-    print(f"Submission: {SUBMISSION_PATH}")
+    print(f"Submission: {submission_path}")
     print(f"Model: {MODEL_KEY}")
     print(f"Reasoning: {REASONING_EFFORT}")
     print(f"Max concurrent: {MAX_CONCURRENT}, Launch delay: {LAUNCH_DELAY_MS}ms")
@@ -332,24 +352,24 @@ def main():
     print()
 
     # Load or create submission
-    if args.fresh or not SUBMISSION_PATH.exists():
+    if args.fresh or not submission_path.exists():
         submission = {}
         print("Starting fresh submission")
     else:
-        submission = load_submission()
+        submission = load_submission(submission_path)
         total_entries = sum(len(entries) for entries in submission.values())
         print(f"Resuming with {len(submission)} tasks, {total_entries} entries")
 
     print()
 
     # Phase 1: Attempt 1
-    run_phase(dataset, submission, 1)
+    run_phase(dataset, submission, 1, submission_path)
 
     # Phase 2: Attempt 2
-    run_phase(dataset, submission, 2)
+    run_phase(dataset, submission, 2, submission_path)
 
     # Summary
-    print_summary(dataset, submission)
+    print_summary(dataset, submission, submission_path)
 
 
 if __name__ == "__main__":

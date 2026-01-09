@@ -37,6 +37,7 @@
     "wormarena:enqueue-openrouter-new": "node --import tsx scripts/openrouter/enqueue-openrouter-new-models.ts",
     "openrouter": "node --import tsx scripts/testing/test-openrouter-models.ts",
     "openrouter-multi": "node --import tsx scripts/testing/test-openrouter-multi-output.ts",
+    "openrouter:free-healthcheck": "node --import tsx scripts/testing/openrouter-free-healthcheck.ts",
     "models": "node --import tsx scripts/manage-models.ts",
     "ingest-hf": "node --import tsx server/scripts/ingest-huggingface-dataset.ts",
     "ingest-johanland": "node --import tsx server/scripts/ingest-johanland-results.ts",

@@ -1,18 +1,9 @@
 /*
-
- * Author: Codex (GPT-5.1 Codex CLI)
-
- * Date: 2025-12-18
-
- * PURPOSE: Build OpenRouter ModelConfig entries from the openrouter-catalog.json source of truth.
-
- *          Keeps OpenRouter model metadata synchronized with the published catalog, including the Gemini 3 Flash Preview release, and applies
-
- *          a small set of overrides for known behavior flags (streaming/structured output).
-
- * SRP/DRY check: Pass - isolates OpenRouter catalog loading and mapping logic.
-
- */
+Author: Cascade (ChatGPT)
+Date: 2026-01-10
+PURPOSE: Build OpenRouter ModelConfig entries from the openrouter-catalog.json source of truth and ensure AllenAI slugs map only to paid variants (no deprecated :free duplicates). Keeps OpenRouter model metadata synchronized with the published catalog, including the Gemini 3 Flash Preview release, and applies a small set of overrides for known behavior flags (streaming/structured output).
+SRP/DRY check: Pass — centralized catalog-to-config mapping updated without duplicating logic elsewhere.
+*/
 
 import fs from 'fs';
 import path from 'path';
@@ -42,11 +33,10 @@ type OpenRouterCatalogModel = {
 };
 
 const OPENROUTER_MODEL_KEYS: string[] = [
-  'allenai/olmo-3-32b-think:free',
+  'allenai/olmo-3-32b-think',
   'allenai/olmo-3-7b-think',
   'allenai/olmo-3.1-32b-instruct',
   'allenai/olmo-3.1-32b-think',
-  'allenai/olmo-3.1-32b-think:free',
   'amazon/nova-2-lite-v1:free',
   'amazon/nova-premier-v1',
   'anthropic/claude-haiku-4.5',
