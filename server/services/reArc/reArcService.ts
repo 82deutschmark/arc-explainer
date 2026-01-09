@@ -445,9 +445,16 @@ export async function* generateDataset(
       testOutputs.push(taskTestOutputs);
 
       // Return with our generated task ID (by sequence order)
+      // Strip test outputs - they're cached separately for evaluation
       return {
         taskId: ourTaskIds[taskIndex],
-        task,
+        task: {
+          train: task.train,
+          test: task.test.map((testPair: { input: number[][]; output: number[][] }) => ({
+            input: testPair.input,
+            // output intentionally excluded - withheld for evaluation
+          })),
+        },
       };
     },
   });
