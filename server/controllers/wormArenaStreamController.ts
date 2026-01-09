@@ -1,15 +1,10 @@
 /**
- * Author: Cascade
- * Date: 2025-12-19
+ * Author: Cascade (OpenAI o4-preview)
+ * Date: 2026-01-08
  * PURPOSE: SSE controller for Worm Arena live matches.
- *          One session = one match. Prepares a session, streams status + frames,
- *          then persists sessionId -> gameId mapping so completed sessions can
- *          redirect to replay pages (durable share links).
- *
- *          Resolve behavior notes:
- *          - resolve() must NOT return "pending" for expired sessions; doing so
- *            causes the client to attempt an SSE connection that will fail.
- * SRP/DRY check: Pass — single-match streaming only, delegates to service layer.
+ *          Handles session prep (with BYOK sentinel resolution), streaming, and
+ *          sessionId -> gameId persistence for durable replay redirects.
+ * SRP/DRY check: Pass — streaming orchestration only; delegates execution to services.
  */
 
 import type { Request, Response } from 'express';
@@ -23,6 +18,7 @@ import type {
   WormArenaStreamStatus,
 } from '../../shared/types';
 import { logger } from '../utils/logger';
+import { resolveSnakeBenchApiKey } from '../utils/environmentPolicy.js';
 
 type PendingSession = {
   payload: SnakeBenchRunMatchRequest;
@@ -98,6 +94,15 @@ export const wormArenaStreamController = {
       res.status(422).json({ success: false, error: error ?? 'Invalid payload' });
       return;
     }
+
+    const apiKeyResolution = resolveSnakeBenchApiKey(payload.apiKey, payload.provider, { allowTestSentinel: true });
+    if (apiKeyResolution.error) {
+      res.status(400).json({ success: false, error: apiKeyResolution.error });
+      return;
+    }
+
+    payload.apiKey = apiKeyResolution.apiKey;
+    payload.provider = apiKeyResolution.provider;
 
     const sessionId = generateSessionId();
     const now = Date.now();

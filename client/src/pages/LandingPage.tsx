@@ -1,21 +1,17 @@
 /**
- * Author: Codex (GPT-5)
- * Date: 2026-01-08T19:34:00Z
- * PURPOSE: Minimal visual landing page with rotating ARC 1&2 GIFs and ARC-3 canvas replays.
- *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 canvas player rotating non-problem games.
- *          No descriptive text - just visual showcase with placeholder labels per owner request.
- * SRP/DRY check: Pass - single-page hero composition utilizing reusable canvas replay component.
+ * Author: Cascade (OpenAI o4-preview)
+ * Date: 2026-01-08T20:30:00Z
+ * PURPOSE: Minimal visual landing page with rotating ARC 1&2 GIFs and ARC-3 MP4 video replays.
+ *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 MP4 videos rotating through games.
+ *          Two-column layout. No Worm Arena slice. Simple and working.
+ * SRP/DRY check: Pass - single-page hero composition with video elements.
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'wouter';
 
 import { cn } from '@/lib/utils';
-import ARC3CanvasPlayer from '@/components/ARC3CanvasPlayer';
-import WormArenaLandingReplay from '@/components/WormArenaLandingReplay';
-import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 
 const ROTATION_INTERVAL_MS = 4500;
-const WORM_ROTATION_INTERVAL_MS = 6000;
 
 const PUZZLE_GIF_GALLERY = [
   { id: '2bee17df', file: 'arc_puzzle_2bee17df_fringes.gif', label: 'Fringes' },
@@ -42,37 +38,20 @@ const PUZZLE_GIF_GALLERY = [
   { id: '10fcaaa3', file: 'arc_puzzle_10fcaaa3_quadcopter.gif', label: 'Quadcopter' },
 ] satisfies ReadonlyArray<{ id: string; file: string; label: string }>;
 
-// Game ID to informal name mapping (e.g., 'ls20' -> 'Locksmith')
+// Game ID to informal name mapping
 const ARC3_GAME_NAMES: Record<string, string> = {
   ls20: 'Locksmith',
-  sp80: 'Streaming Purple',
   vc33: 'Volume Control',
-  as66: 'Always Sliding',
   ft09: 'Functional Tiles',
   lp85: 'Loop and Pull',
 };
 
-const ARC3_CANVAS_REPLAYS = [
-  {
-    gameId: 'ls20',
-    shortId: 'ls20-fa137e247ce6',
-    replayPath: '/replays/ls20-fa137e247ce6.7405808f-ec5b-4949-a252-a1451b946bae.jsonl',
-  },
-  {
-    gameId: 'vc33',
-    shortId: 'vc33-6ae7bf49eea5',
-    replayPath: '/replays/vc33-6ae7bf49eea5.29409ce8-c164-447e-8810-828b96fa4ceb.jsonl',
-  },
-  {
-    gameId: 'ft09',
-    shortId: 'ft09-b8377d4b7815',
-    replayPath: '/replays/ft09-b8377d4b7815.39b51ef3-b565-43fe-b3a8-7374ca4c5058.jsonl',
-  },
-  {
-    gameId: 'lp85',
-    shortId: 'lp85-d265526edbaa',
-    replayPath: '/replays/lp85-d265526edbaa.dc3d96aa-762b-4c2e-ac68-6418c8f54c74.jsonl',
-  },
+// MP4 video replays that work correctly
+const ARC3_VIDEO_REPLAYS = [
+  { gameId: 'ls20', videoPath: '/videos/arc3/ls20-fa137e247ce6.mp4' },
+  { gameId: 'vc33', videoPath: '/videos/arc3/vc33-6ae7bf49eea5.mp4' },
+  { gameId: 'ft09', videoPath: '/videos/arc3/ft09-b8377d4b7815.mp4' },
+  { gameId: 'lp85', videoPath: '/videos/arc3/lp85-d265526edbaa.mp4' },
 ] as const;
 
 export default function LandingPage() {
