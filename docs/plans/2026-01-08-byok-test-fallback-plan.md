@@ -1,6 +1,6 @@
 ## 2026-01-08 – BYOK "test" Fallback Plan
 
-**Status:** Draft – Pending Approval
+**Status:** Completed – 2026-01-08
 
 ### 1. Context & Problem
 - Production Worm Arena endpoints currently require a non-empty API key when `NODE_ENV=production`.
