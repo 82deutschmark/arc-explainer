@@ -24,3 +24,8 @@ The landing page currently shows the ARC 1&2 GIF showcase and ARC3 replay grid w
 - [ ] Visual check on desktop (>=1280px) and mobile (~375px).
 - [ ] Confirm text remains legible against the gradient background.
 - [ ] Ensure no console errors in the browser during interaction.
+
+## 6. Status
+- **Implementation:** Complete — hiatus banner rendered above the landing hero via `LandingPage.tsx`.
+- **Documentation:** This plan updated; `CHANGELOG.md` entry pending with release note.
+- **Testing:** Manual visual verification still pending (no local server run in this session).

@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.18  Jan 9, 2026
+
+- **FIX: Surface hiatus status on landing hero** (Author: Cascade (OpenAI o4-preview))
+  - **What**: Added a centered “On Hiatus – January 2026” banner above the landing showcase and documented the change in the hero reference.
+  - **Why**: Owner requested the landing page clearly communicate the January hiatus to avoid user confusion about new updates.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`: inserted responsive, high-contrast hiatus text and refreshed metadata header.
+    - `docs/plans/2026-01-08-landing-hiatus-banner-plan.md`: marked plan status as implemented and noted outstanding manual testing.
+    - `docs/reference/frontend/landing-hero.md`: captured the new banner requirement in the overview section.
+
 ### Version 6.35.17  Jan 9, 2026
 
 - **FIX: Align test expectations with current sanitization and truncation behavior** (Author: GPT-5 Codex)
