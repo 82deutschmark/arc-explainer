@@ -1,6 +1,60 @@
 {
   "models": [
     {
+      "id": "allenai/molmo-2-8b:free",
+      "canonical_slug": "allenai/molmo-2-8b-20260109",
+      "hugging_face_id": "allenai/Molmo2-8B",
+      "name": "AllenAI: Molmo2 8B (free)",
+      "created": 1767996672,
+      "description": "Molmo2-8B is an open vision-language model developed by the Allen Institute for AI (Ai2) as part of the Molmo2 family, supporting image, video, and multi-image understanding and grounding. It is based on Qwen3-8B and uses SigLIP 2 as its vision backbone, outperforming other open-weight, open-data models on short videos, counting, and captioning, while remaining competitive on long-video tasks.",
+      "context_length": 36864,
+      "architecture": {
+        "modality": "text+image->text",
+        "input_modalities": [
+          "text",
+          "image",
+          "video"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 36864,
+        "max_completion_tokens": 36864,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "frequency_penalty",
+        "logit_bias",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "repetition_penalty",
+        "seed",
+        "stop",
+        "temperature",
+        "top_k",
+        "top_p"
+      ],
+      "default_parameters": {
+        "temperature": null,
+        "top_p": null,
+        "frequency_penalty": null
+      }
+    },
+    {
       "id": "allenai/olmo-3.1-32b-instruct",
       "canonical_slug": "allenai/olmo-3.1-32b-instruct-20251215",
       "hugging_face_id": "allenai/Olmo-3.1-32B-Instruct",
@@ -968,6 +1022,57 @@
       }
     },
     {
+      "id": "nex-agi/deepseek-v3.1-nex-n1",
+      "canonical_slug": "nex-agi/deepseek-v3.1-nex-n1",
+      "hugging_face_id": "nex-agi/DeepSeek-V3.1-Nex-N1",
+      "name": "Nex AGI: DeepSeek V3.1 Nex N1",
+      "created": 1765204393,
+      "description": "DeepSeek V3.1 Nex-N1 is the flagship release of the Nex-N1 series — a post-trained model designed to highlight agent autonomy, tool use, and real-world productivity. \n\nNex-N1 demonstrates competitive performance across all evaluation scenarios, showing particularly strong results in practical coding and HTML generation tasks.",
+      "context_length": 131072,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "DeepSeek",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0.00000027",
+        "completion": "0.000001",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0",
+        "input_cache_read": "0",
+        "input_cache_write": "0"
+      },
+      "top_provider": {
+        "context_length": 131072,
+        "max_completion_tokens": 163840,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "frequency_penalty",
+        "response_format",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_k",
+        "top_p"
+      ],
+      "default_parameters": {
+        "temperature": null,
+        "top_p": null,
+        "frequency_penalty": null
+      }
+    },
+    {
       "id": "nex-agi/deepseek-v3.1-nex-n1:free",
       "canonical_slug": "nex-agi/deepseek-v3.1-nex-n1",
       "hugging_face_id": "nex-agi/DeepSeek-V3.1-Nex-N1",
@@ -1874,6 +1979,63 @@
       ],
       "default_parameters": {
         "temperature": null,
+        "top_p": null,
+        "frequency_penalty": null
+      }
+    },
+    {
+      "id": "allenai/olmo-3-32b-think",
+      "canonical_slug": "allenai/olmo-3-32b-think-20251121",
+      "hugging_face_id": "allenai/Olmo-3-32B-Think",
+      "name": "AllenAI: Olmo 3 32B Think",
+      "created": 1763758276,
+      "description": "Olmo 3 32B Think is a large-scale, 32-billion-parameter model purpose-built for deep reasoning, complex logic chains and advanced instruction-following scenarios. Its capacity enables strong performance on demanding evaluation tasks and highly nuanced conversational reasoning. Developed by Ai2 under the Apache 2.0 license, Olmo 3 32B Think embodies the Olmo initiative’s commitment to openness, offering full transparency across weights, code and training methodology.",
+      "context_length": 65536,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0.00000015",
+        "completion": "0.0000005",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 65536,
+        "max_completion_tokens": 65536,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "frequency_penalty",
+        "include_reasoning",
+        "logit_bias",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "reasoning",
+        "repetition_penalty",
+        "response_format",
+        "seed",
+        "stop",
+        "structured_outputs",
+        "temperature",
+        "top_k",
+        "top_p"
+      ],
+      "default_parameters": {
+        "temperature": 0.6,
+        "top_p": 0.95,
         "frequency_penalty": null
       }
     },
@@ -7946,6 +8108,51 @@
       "default_parameters": {}
     },
     {
+      "id": "google/gemma-3n-e2b-it:free",
+      "canonical_slug": "google/gemma-3n-e2b-it",
+      "hugging_face_id": "google/gemma-3n-E2B-it",
+      "name": "Google: Gemma 3n 2B (free)",
+      "created": 1752074904,
+      "description": "Gemma 3n E2B IT is a multimodal, instruction-tuned model developed by Google DeepMind, designed to operate efficiently at an effective parameter size of 2B while leveraging a 6B architecture. Based on the MatFormer architecture, it supports nested submodels and modular composition via the Mix-and-Match framework. Gemma 3n models are optimized for low-resource deployment, offering 32K context length and strong multilingual and reasoning performance across common benchmarks. This variant is trained on a diverse corpus including code, math, web, and multimodal data.",
+      "context_length": 8192,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 8192,
+        "max_completion_tokens": 2048,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "frequency_penalty",
+        "max_tokens",
+        "presence_penalty",
+        "response_format",
+        "seed",
+        "stop",
+        "temperature",
+        "top_p"
+      ],
+      "default_parameters": {}
+    },
+    {
       "id": "tencent/hunyuan-a13b-instruct",
       "canonical_slug": "tencent/hunyuan-a13b-instruct",
       "hugging_face_id": "tencent/Hunyuan-A13B-Instruct",
@@ -11320,6 +11527,144 @@
       "default_parameters": {}
     },
     {
+      "id": "google/gemma-3-4b-it:free",
+      "canonical_slug": "google/gemma-3-4b-it",
+      "hugging_face_id": "google/gemma-3-4b-it",
+      "name": "Google: Gemma 3 4B (free)",
+      "created": 1741905510,
+      "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling.",
+      "context_length": 32768,
+      "architecture": {
+        "modality": "text+image->text",
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Gemini",
+        "instruct_type": "gemma"
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 32768,
+        "max_completion_tokens": 8192,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "max_tokens",
+        "response_format",
+        "seed",
+        "stop",
+        "temperature",
+        "top_p"
+      ],
+      "default_parameters": {}
+    },
+    {
+      "id": "google/gemma-3-12b-it",
+      "canonical_slug": "google/gemma-3-12b-it",
+      "hugging_face_id": "google/gemma-3-12b-it",
+      "name": "Google: Gemma 3 12B",
+      "created": 1741902625,
+      "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3 12B is the second largest in the family of Gemma 3 models after [Gemma 3 27B](google/gemma-3-27b-it)",
+      "context_length": 131072,
+      "architecture": {
+        "modality": "text+image->text",
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Gemini",
+        "instruct_type": "gemma"
+      },
+      "pricing": {
+        "prompt": "0.00000003",
+        "completion": "0.0000001",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 131072,
+        "max_completion_tokens": 131072,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "frequency_penalty",
+        "logit_bias",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "repetition_penalty",
+        "response_format",
+        "seed",
+        "stop",
+        "structured_outputs",
+        "temperature",
+        "top_k",
+        "top_p"
+      ],
+      "default_parameters": {}
+    },
+    {
+      "id": "google/gemma-3-12b-it:free",
+      "canonical_slug": "google/gemma-3-12b-it",
+      "hugging_face_id": "google/gemma-3-12b-it",
+      "name": "Google: Gemma 3 12B (free)",
+      "created": 1741902625,
+      "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3 12B is the second largest in the family of Gemma 3 models after [Gemma 3 27B](google/gemma-3-27b-it)",
+      "context_length": 32768,
+      "architecture": {
+        "modality": "text+image->text",
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Gemini",
+        "instruct_type": "gemma"
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 32768,
+        "max_completion_tokens": 8192,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "max_tokens",
+        "seed",
+        "stop",
+        "temperature",
+        "top_p"
+      ],
+      "default_parameters": {}
+    },
+    {
       "id": "cohere/command-a",
       "canonical_slug": "cohere/command-a-03-2025",
       "hugging_face_id": "CohereForAI/c4ai-command-a-03-2025",
@@ -11547,7 +11892,6 @@
         "response_format",
         "seed",
         "stop",
-        "structured_outputs",
         "temperature",
         "tool_choice",
         "tools",
@@ -15581,6 +15925,48 @@
         "tools",
         "top_k",
         "top_p"
+      ],
+      "default_parameters": {}
+    },
+    {
+      "id": "meta-llama/llama-3.1-405b-instruct:free",
+      "canonical_slug": "meta-llama/llama-3.1-405b-instruct",
+      "hugging_face_id": "meta-llama/Meta-Llama-3.1-405B-Instruct",
+      "name": "Meta: Llama 3.1 405B Instruct (free)",
+      "created": 1721692800,
+      "description": "The highly anticipated 400B class of Llama3 is here! Clocking in at 128k context with impressive eval scores, the Meta AI team continues to push the frontier of open-source LLMs.\n\nMeta's latest class of model (Llama 3.1) launched with a variety of sizes & flavors. This 405B instruct-tuned version is optimized for high quality dialogue usecases.\n\nIt has demonstrated strong performance compared to leading closed-source models including GPT-4o and Claude 3.5 Sonnet in evaluations.\n\nTo read more about the model release, [click here](https://ai.meta.com/blog/meta-llama-3-1/). Usage of this model is subject to [Meta's Acceptable Use Policy](https://llama.meta.com/llama3/use-policy/).",
+      "context_length": 131072,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Llama3",
+        "instruct_type": "llama3"
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0",
+        "request": "0",
+        "image": "0",
+        "web_search": "0",
+        "internal_reasoning": "0"
+      },
+      "top_provider": {
+        "context_length": 131072,
+        "max_completion_tokens": null,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "frequency_penalty",
+        "max_tokens",
+        "presence_penalty",
+        "repetition_penalty",
+        "temperature"
       ],
       "default_parameters": {}
     },
