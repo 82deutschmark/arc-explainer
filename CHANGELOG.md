@@ -1,5 +1,38 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.30  Jan 10, 2026
+
+- **FIX: Remove Dolphin Mistral Venice free model from tournament list** (Author: Codex (GPT-5))
+  - **What**: Removed `cognitivecomputations/dolphin-mistral-24b-venice-edition:free` from the DeepSeek champions free-model list.
+  - **Why**: The model consistently timed out during match starts.
+  - **How**:
+    - `scripts/worm-arena-tournaments/deepseek-champions-vs-free.py`: pruned the free model list.
+
+### Version 6.35.29  Jan 10, 2026
+
+- **FIX: Improve DeepSeek tournament pairing order and drop Trinity Mini free** (Author: Codex (GPT-5))
+  - **What**: Reordered match scheduling so DeepSeek v3.2 EXP starts from the top of the free list while DeepSeek Chat v3.1 starts from the bottom, then runs reverse directions later; removed `arcee-ai/trinity-mini:free`.
+  - **Why**: Avoids immediate back-to-back rematches after a timeout and skips the model that consistently stalls.
+  - **How**:
+    - `scripts/worm-arena-tournaments/deepseek-champions-vs-free.py`: updated pairing order and free model list.
+
+### Version 6.35.28  Jan 10, 2026
+
+- **FEAT: Improve DeepSeek tournament script logging** (Author: Codex (GPT-5))
+  - **What**: Added timestamped logs, per-request elapsed timing, and periodic summaries to the DeepSeek champions tournament runner.
+  - **Why**: Makes long-running tournament runs easier to monitor and troubleshoot in the terminal.
+  - **How**:
+    - `scripts/worm-arena-tournaments/deepseek-champions-vs-free.py`: added UTC timestamps, duration formatting, and summary cadence controls.
+
+### Version 6.35.27  Jan 10, 2026
+
+- **FEAT: Add DeepSeek champions Worm Arena tournament script** (Author: Codex (GPT-5))
+  - **What**: Added a Python tournament runner that pits DeepSeek v3.2 EXP and DeepSeek Chat v3.1 against a curated list of free OpenRouter models, with two matches total per pairing (both directions), plus a head-to-head between the champions.
+  - **Why**: Provides a repeatable, rate-limited way to run the requested DeepSeek matchup set while honoring the free-model concurrency constraint.
+  - **How**:
+    - `scripts/worm-arena-tournaments/deepseek-champions-vs-free.py`: sequential run-batch calls with defaults, clear logging, and error handling.
+    - `docs/plans/2026-01-10-worm-arena-deepseek-champions-plan.md`: scope and TODOs for the tournament run.
+
 ### Version 6.35.25  Jan 9, 2026
 
 - **FIX: Timestamped submission outputs for RE-ARC free solver** (Author: Cascade (ChatGPT))
