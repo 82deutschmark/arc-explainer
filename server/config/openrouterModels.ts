@@ -33,6 +33,7 @@ type OpenRouterCatalogModel = {
 };
 
 const OPENROUTER_MODEL_KEYS: string[] = [
+  'allenai/molmo-2-8b:free',
   'allenai/olmo-3-32b-think',
   'allenai/olmo-3-7b-think',
   'allenai/olmo-3.1-32b-instruct',
