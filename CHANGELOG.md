@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.31  Jan 10, 2026
+
+- **FIX: Canonicalize OpenRouter slugs and sync DB to curated library** (Author: GPT-5)
+  - **What**: Added OpenRouter slug canonicalization for :free variants, updated model API merging, and introduced a DB sync script to align `public.models` with the curated OpenRouter list.
+  - **Why**: Prevents duplicate model entries (e.g., GPT-OSS variants) and keeps Worm Arena model lists consistent with the library source of truth.
+  - **How**:
+    - `server/utils/openRouterSlugCanonicalizer.ts`: canonical slug mapping for OpenRouter variants.
+    - `server/repositories/GameWriteRepository.ts`: normalize slugs on insert/upsert and add DB deactivation helper.
+    - `server/routes/models.ts`: collapse DB models to canonical slugs during merge.
+    - `server/scripts/sync-openrouter-db.ts`: sync curated OpenRouter models into the DB and deactivate stale slugs.
+
 ### Version 6.35.30  Jan 10, 2026
 
 - **FIX: Remove Dolphin Mistral Venice free model from tournament list** (Author: Codex (GPT-5))
