@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.32  Jan 12, 2026
+
+- **FEAT: Add missing Worm Arena OpenRouter models + fix Kat Coder slug** (Author: Cascade (ChatGPT))
+  - **What**: Expanded `OPENROUTER_MODEL_KEYS` with the nine leaderboard models (Nova 2 Lite, DeepSeek Nex N1, DeepSeek V3.2 EXP, Claude Sonnet 4.5, Gemma 3n E2B, Grok 4 Fast, GPT-4.1 Nano, Gemini 2.0 Flash Experimental, DeepSeek R1 0528) and removed the `:free` suffix from `kwaipilot/kat-coder-pro`. Added catalog aliases so Gemma/Gemini slugs resolve to their `:free` entries when necessary.
+  - **Why**: OpenRouter catalog changes hid several slugs, causing Worm Arena leaderboard participants to disappear from the picker. Aligning with the leaderboard ensures players can schedule matches against the advertised bots.
+  - **How**:
+    - `server/config/openrouterModels.ts`: refreshed metadata header, appended the missing slugs, dropped `:free` from Kat Coder, added catalog aliases for Gemini 2.0 Flash Experimental and Gemma 3n E2B, and documented the purpose.
+    - `docs/plans/2026-01-12-openrouter-model-coverage-plan.md`: marked Phase 2 catalog capture + key updates as completed and left follow-up validation tasks outstanding.
+
 ### Version 6.35.31  Jan 10, 2026
 
 - **FIX: Canonicalize OpenRouter slugs and sync DB to curated library** (Author: GPT-5)
