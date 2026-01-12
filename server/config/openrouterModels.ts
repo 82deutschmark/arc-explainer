@@ -1,8 +1,8 @@
 /*
 Author: Cascade (ChatGPT)
-Date: 2026-01-10
-PURPOSE: Build OpenRouter ModelConfig entries from the openrouter-catalog.json source of truth and ensure AllenAI slugs map only to paid variants (no deprecated :free duplicates). Keeps OpenRouter model metadata synchronized with the published catalog, including the Gemini 3 Flash Preview release, and applies a small set of overrides for known behavior flags (streaming/structured output).
-SRP/DRY check: Pass — centralized catalog-to-config mapping updated without duplicating logic elsewhere.
+Date: 2026-01-12
+PURPOSE: Build OpenRouter ModelConfig entries from the openrouter-catalog.json source of truth, keep leaderboard-required slugs in sync (including newly added DeepSeek, Gemini, Gemma, Nova, and Grok variants), and alias slugs whose catalog IDs differ (e.g., :free-only entries) while enforcing small overrides for known behavior flags.
+SRP/DRY check: Pass — centralized catalog-to-config mapping updated with the latest slugs without duplicating logic elsewhere.
 */
 
 import fs from 'fs';
@@ -38,8 +38,10 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'allenai/olmo-3-7b-think',
   'allenai/olmo-3.1-32b-instruct',
   'allenai/olmo-3.1-32b-think',
+  'amazon/nova-2-lite-v1',
   'amazon/nova-premier-v1',
   'anthropic/claude-haiku-4.5',
+  'anthropic/claude-sonnet-4-5',
   'anthropic/claude-opus-4.5',
   'arcee-ai/trinity-mini:free',
   'bytedance-seed/seed-1.6',
@@ -47,11 +49,16 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'deepseek/deepseek-chat-v3.1',
   'deepseek/deepseek-v3.1-terminus',
   'deepseek/deepseek-v3.2',
+  'deepseek/deepseek-v3.2-exp',
+  'deepseek/deepseek-r1-0528',
+  'nex-agi/deepseek-v3.1-nex-n1',
+  'google/gemini-2.0-flash-exp',
   'google/gemini-2.5-flash-lite-preview-09-2025',
   'google/gemini-2.5-flash-preview-09-2025',
   'google/gemini-3-flash-preview',
   'google/gemini-3-pro-preview',
-  'kwaipilot/kat-coder-pro:free',
+  'google/gemma-3n-e2b-it',
+  'kwaipilot/kat-coder-pro',
   'meta-llama/llama-3.3-70b-instruct',
   'minimax/minimax-m2',
   'minimax/minimax-m2.1',
@@ -69,6 +76,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'nvidia/nemotron-3-nano-30b-a3b:free',
   'nvidia/nemotron-nano-12b-v2-vl:free',
   'nvidia/nemotron-nano-9b-v2',
+  'openai/gpt-4.1-nano',
   'openai/gpt-5-mini',
   'openai/gpt-5-nano',
   'openai/gpt-5.1',
@@ -79,6 +87,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'qwen/qwen3-coder',
   'x-ai/grok-3',
   'x-ai/grok-3-mini',
+  'x-ai/grok-4-fast',
   'x-ai/grok-4.1-fast',
   'x-ai/grok-code-fast-1',
   'xiaomi/mimo-v2-flash:free',
@@ -88,6 +97,8 @@ const OPENROUTER_MODEL_KEYS: string[] = [
 ];
 
 const OPENROUTER_ID_ALIASES: Record<string, string> = {
+  'google/gemini-2.0-flash-exp': 'google/gemini-2.0-flash-exp:free',
+  'google/gemma-3n-e2b-it': 'google/gemma-3n-e2b-it:free',
   'openrouter/gpt-5.1-codex-mini': 'openai/gpt-5.1-codex-mini'
 };
 
