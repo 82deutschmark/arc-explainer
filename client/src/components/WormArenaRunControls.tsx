@@ -334,6 +334,7 @@ export default function WormArenaRunControls({
           <option value="default">Default - Original SnakeBench prompt</option>
           <option value="A">Variant A - Tactical cheat-sheet with decision checklist</option>
           <option value="B">Variant B - Open-ended: rules only, be ruthless</option>
+          <option value="C">Variant C - Minimal: rules only, single-word response only</option>
         </select>
         <div className="text-[10px] text-worm-muted mt-1">
           Controls how the LLM interprets the game and makes decisions.
