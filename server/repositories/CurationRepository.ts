@@ -1,9 +1,10 @@
 /**
  * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Date: 2025-12-27 (updated 2026-01-13 by Cascade)
  * PURPOSE: CurationRepository - Handles curated lists and featured content for Worm Arena.
  *          Primarily manages the "Greatest Hits" logic across multiple dimensions.
  *          INTERCHANGEABLE: "Game" and "Match" refer to the same entity.
+ *          Now filters out culled games (is_culled = FALSE) to exclude low-quality matches.
  * SRP/DRY check: Pass - focused exclusively on curated content retrieval.
  */
 
@@ -53,7 +54,7 @@ export class CurationRepository extends BaseRepository {
         FROM public.games g
         JOIN public.game_participants gp ON gp.game_id = g.id
         JOIN public.models m ON gp.model_id = m.id
-        WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
+        WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false
       `;
 
       const baseHaving = `HAVING MAX(gp.score) > 0 OR g.total_cost > 0`;
