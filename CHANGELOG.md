@@ -9,11 +9,21 @@
     - `server/config/openrouterModels.ts`: refreshed metadata header, appended the missing slugs, dropped `:free` from Kat Coder, added catalog aliases for Gemini 2.0 Flash Experimental and Gemma 3n E2B, and documented the purpose.
     - `docs/plans/2026-01-12-openrouter-model-coverage-plan.md`: marked Phase 2 catalog capture + key updates as completed and left follow-up validation tasks outstanding.
 
-- **FIX: Enforce 30-apple Worm Arena win condition** (Author: Cascade (ChatGPT))
+- **FIX: Enforce 30-apple Worm Arena win condition** (Author: Cascade (ChatGPT 5.1))
   - **What**: Lowered `APPLE_TARGET` to 30 in the SnakeBench domain constants so games terminate as soon as the first snake hits the intended cap.
-  - **Why**: ARC Explainer’s house rules call for automatic victory at 30 apples, but the upstream default of 50 was still in place, allowing games to continue past the limit.
+  - **Why**: ARC Explainer's house rules call for automatic victory at 30 apples, but the upstream default of 50 was still in place, allowing games to continue past the limit.
   - **How**:
     - `external/SnakeBench/backend/domain/constants.py`: refreshed metadata header and set `APPLE_TARGET = 30`, keeping prompts/engine in sync because they both read the constant.
+
+- **FIX: Align SnakeBench replay persistence across Node, Python, and DB** (Author: Cascade (GLM 4.7))
+  - **What**: Created a centralized path resolver for the completed games directory, updated the Python runner to respect the env override with fallbacks, and fixed DB replay_path derivation to preserve the actual directory name (e.g., `completed_games_local`).
+  - **Why**: Node backend, Python runner, and DB persistence were using inconsistent directory assumptions (`completed_games` vs `completed_games_local`), causing DB rows to miss replay files and the replay resolver to fail.
+  - **How**:
+    - `server/services/snakeBench/utils/paths.ts`: new helper module with `resolveCompletedGamesDir`, `getCompletedGamesAbsolutePath`, and `deriveReplayPath` functions; re-exported via `constants.ts`.
+    - `server/python/snakebench_runner.py`: reads `SNAKEBENCH_COMPLETED_GAMES_DIR` env var (defaults to `completed_games_local`), checks that directory first, then falls back to legacy `completed_games` for backwards compatibility.
+    - `server/repositories/GameWriteRepository.ts`: imports `deriveReplayPath` and uses it to compute `replay_path` relative to the backend directory, preserving the actual subdirectory name.
+    - `server/services/snakeBenchService.ts`, `server/services/snakeBench.ts`, `server/services/snakeBench/SnakeBenchReplayResolver.ts`: updated constructors to call `getCompletedGamesAbsolutePath(process.cwd())` instead of hardcoding `completed_games`.
+    - `docs/2026-01-12-snakebench-replay-persistence-plan.md`: marked all plan steps as completed.
 
 ### Version 6.35.31  Jan 10, 2026
 

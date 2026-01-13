@@ -41,7 +41,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'amazon/nova-2-lite-v1',
   'amazon/nova-premier-v1',
   'anthropic/claude-haiku-4.5',
-  'anthropic/claude-sonnet-4-5',
+  'anthropic/claude-sonnet-4.5',
   'anthropic/claude-opus-4.5',
   'arcee-ai/trinity-mini:free',
   'bytedance-seed/seed-1.6',
