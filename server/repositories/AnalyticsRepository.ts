@@ -1,10 +1,11 @@
 /**
  * Author: Cascade
- * Date: 2025-12-29
+ * Date: 2025-12-29 (updated 2026-01-13 by Cascade)
  * PURPOSE: AnalyticsRepository - Handles complex data aggregations, model insights,
  *          and run-length distributions for Worm Arena/SnakeBench.
  *          Calculates detailed performance metrics including quartiles (p25, median, p75),
  *          TrueSkill ratings, and leaderboard rankings.
+ *          Now filters out culled games (is_culled = FALSE) to exclude low-quality matches.
  *          INTERCHANGEABLE: "Game" and "Match" refer to the same entity.
  * SRP/DRY check: Pass - focused exclusively on analytical data processing.
  */
@@ -70,7 +71,7 @@ export class AnalyticsRepository extends BaseRepository {
         JOIN public.models m ON gp.model_id = m.id
         JOIN public.games g ON gp.game_id = g.id
         WHERE ${SQL_NORMALIZE_SLUG('m.model_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
-          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
+          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false
         GROUP BY m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed;
       `;
 
@@ -87,7 +88,7 @@ export class AnalyticsRepository extends BaseRepository {
           FROM public.models m
           JOIN public.game_participants gp ON m.id = gp.model_id
           JOIN public.games g ON gp.game_id = g.id
-          WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
+          WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false
           GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, m.trueskill_exposed, m.trueskill_mu, m.trueskill_sigma
         )
         SELECT
@@ -149,7 +150,7 @@ export class AnalyticsRepository extends BaseRepository {
         JOIN public.models m ON gp.model_id = m.id
         JOIN public.games g ON gp.game_id = g.id
         WHERE ${SQL_NORMALIZE_SLUG('m.model_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
-          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND gp.result = 'lost'
+          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false AND gp.result = 'lost'
         GROUP BY death_reason ORDER BY losses DESC;
       `;
       const failureRes = await this.query(failureSql, [modelSlug], client);
@@ -172,7 +173,7 @@ export class AnalyticsRepository extends BaseRepository {
         LEFT JOIN public.game_participants opp_gp ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
         WHERE ${SQL_NORMALIZE_SLUG('m.model_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
-          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND opp.model_slug IS NOT NULL
+          AND g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false AND opp.model_slug IS NOT NULL
         GROUP BY opponent_slug ORDER BY losses DESC, games_played DESC LIMIT 5;
       `;
       const opponentRes = await this.query(opponentSql, [modelSlug], client);
@@ -210,7 +211,7 @@ export class AnalyticsRepository extends BaseRepository {
         FROM public.game_participants gp
         JOIN public.games g ON gp.game_id = g.id
         JOIN public.models m ON gp.model_id = m.id
-        WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
+        WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false
         GROUP BY model_slug, rounds, gp.result ORDER BY model_slug, rounds;
       `;
 
