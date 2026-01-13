@@ -1,5 +1,227 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.39  Jan 13, 2026
+
+- **FIX: Worm Arena live match completion flow regression** (Author: GLM4.7)
+  - **What**: Fixed three critical bugs introduced in 6.35.38 that broke match completion:
+    1. Clock kept running after match completed
+    2. Post-match results panel didn't display (finalSummary never set)
+    3. Timing metrics (playerTiming, roundTiming) not included in stream.complete SSE event
+  - **Why**: The timing metrics feature inadvertently broke the completion flow by not wiring up all the data correctly through the SSE pipeline.
+  - **How**:
+    - `server/controllers/wormArenaStreamController.ts`: Added `playerTiming` and `roundTiming` from result to the `WormArenaFinalSummary` sent via `stream.complete` event.
+    - `client/src/hooks/useWormArenaStreaming.ts`: 
+      - Added `status` to timer effect dependencies and early-return when `status === 'completed'` or `status === 'failed'` to stop the clock.
+      - Added `setFinalSummary(data)` call in `stream.complete` handler so the results panel displays.
+      - Changed type cast from `SnakeBenchRunMatchResult` to `WormArenaFinalSummary` (correct type).
+
+### Version 6.35.38  Jan 13, 2026
+
+- **FEAT: Worm Arena timing metrics display** (Author: GLM4.7)
+  - **What**: Added live timing metrics showing average time per round, per-player response times, and API latency. Users can now see how fast each model replies and how quickly their API calls return.
+  - **Why**: Users requested visibility into per-player performance and API latency to compare model speed and responsiveness during matches.
+  - **How**:
+    - `shared/types.ts`: added `WormArenaPlayerTiming` and `WormArenaRoundTiming` interfaces with move counts, response times, and API latency metrics.
+    - `server/services/snakeBench/SnakeBenchStreamingRunner.ts`: capture timing events from Python stdout, track per-player and per-round timing state, include timing data in final result.
+    - `client/src/hooks/useWormArenaStreaming.ts`: added state for `playerTiming` and `roundTiming`, parse timing data from `stream.complete` event.
+    - `client/src/components/WormArenaLiveTimingPanel.tsx`: new component displaying average time per round, per-player average/last response times, and average API latency.
+    - `client/src/pages/WormArenaLive.tsx`: integrated timing panel into live view.
+    - `docs/plans/2026-01-13-wormarena-timing-metrics-plan.md`: marked plan as completed.
+
+### Version 6.35.37  Jan 13, 2026
+
+- **FIX: Worm Arena live clock displays authoritative timestamps** (Author: Cascade (GPT-5.2))
+  - **What**: Fixed the live page "Clock" and "Since move" timers to show accurate, continuously ticking values based on backend timestamps instead of client receipt times. The wall clock now shows time since match start, and "since last move" resets when new frames arrive.
+  - **Why**: Previous implementation used `Date.now()` when SSE events arrived, causing identical timestamps for all frames and leaving timers stuck at 0. Users expect a real-time clock and move timer.
+  - **How**:
+    - `server/services/snakeBench/SnakeBenchStreamingRunner.ts`: capture `matchStartedAt` at launch, update `lastMoveAt` on each frame, inject into all status/frame events via `emitStatus`/`emitFrame` helpers.
+    - `shared/types.ts`: extended `WormArenaStreamStatus` and `WormArenaFrameEvent` with `matchStartedAt`, `lastMoveAt`, and `round` fields.
+    - `client/src/hooks/useWormArenaStreaming.ts`: added state for timestamps and derived timers, extract from SSE events, maintain ticking timers via 500ms `setInterval`.
+    - `client/src/lib/wormArena/timerUtils.ts`: created `computeTimerSeconds` helper for timer calculations with null-safe handling.
+    - `client/src/pages/WormArenaLive.tsx`: removed local timer computation, now consumes authoritative timers from hook.
+    - `docs/plans/2026-01-13-wormarena-live-clock-plan.md`: marked plan as completed.
+
+### Version 6.35.36  Jan 13, 2026
+
+- **FEAT: Pin live replay to Worm Arena Greatest Hits** (Author: Cascade)
+  - **What**: Added match `11b4453f-aef9-4387-b60e-28fa934cad0f` (DeepSeek v3.2-exp vs Grok 4.1 Fast) to the top of the pinned Greatest Hits list so viewers can easily rewatch the live replay.
+  - **Why**: Ensure standout live matches remain discoverable from the homepage card even as the API window scrolls.
+  - **How**:
+    - `client/src/components/WormArenaGreatestHits.tsx`: prepended new entry to `PINNED_GAMES` with match metadata and highlight text.
+    - `docs/plans/2026-01-13-wormarena-greatest-hits-pin-plan.md`: marked plan as completed.
+
+### Version 6.35.35  Jan 13, 2026
+
+- **FIX: Default OpenRouter reasoning effort to high** (Author: Cascade (ChatGPT 5.1))
+  - **What**: Raised the OpenRouter service's default reasoning payload effort from medium to high and exposed a helper so explicit overrides still work. Added unit coverage to lock the behavior.
+  - **Why**: Ensures ARC Explainer always requests richer reasoning traces from OpenRouter unless callers intentionally downgrade effort.
+  - **How**:
+    - `server/services/openrouter.ts`: introduced `resolveOpenRouterReasoningOptions`, set the default to `'high'`, and refreshed the metadata header/logging.
+    - `tests/unit/services/OpenRouterService.test.ts`: new tests verifying the helper skips disabled requests, defaults to high, and honors overrides.
+
+### Version 6.35.34  Jan 12, 2026
+
+- **FEAT: Add Player C variant with minimal prompt** (Author: Cascade)
+  - Created LLMPlayerC with minimal prompt containing only rules and requiring single-word response.
+  - Registered Player C in variant registry and added to frontend persona selector.
+  - **How**:
+    - `external/SnakeBench/backend/players/llm_player_c.py`: created new variant with minimal prompt (rules only, single-word response).
+    - `external/SnakeBench/backend/players/variant_registry.py`: registered Player C.
+    - `client/src/components/WormArenaRunControls.tsx`: added "Variant C" option to persona dropdown.
+
+### Version 6.35.33  Jan 12, 2026
+
+- **FEAT: Add LLM player persona selector to Worm Arena** (Author: Cascade (ChatGPT 5.1))
+  - **What**: Added UI dropdown to select LLM player persona variant (default, A, B) when launching Worm Arena matches. Created LLMPlayerB with open-ended prompt focusing on rules and survival.
+  - **Why**: Users want to experiment with different prompting strategies to see how they affect LLM decision-making in the Snake game.
+  - **How**:
+    - `client/src/components/WormArenaRunControls.tsx`: added persona dropdown with three options and description.
+    - `client/src/hooks/useWormArenaSetup.ts`: added `playerPersona` state and `setPlayerPersona` action.
+    - `client/src/pages/WormArenaLive.tsx`: wired persona selector into match payload.
+    - `shared/types.ts`: added `playerPersona?: string` to `SnakeBenchRunMatchRequest`.
+    - `server/controllers/wormArenaStreamController.ts`: validate and include `playerPersona` in payload.
+    - `server/python/snakebench_runner.py`: receive `playerPersona` from payload and pass to `run_simulation`.
+    - `external/SnakeBench/backend/players/llm_player_b.py`: created new variant with open-ended prompt (rules only, be ruthless).
+    - `external/SnakeBench/backend/players/variant_registry.py`: registered Player B with description.
+    - `external/SnakeBench/backend/main.py`: use `get_player_class(player_persona)` to instantiate correct player variant.
+
+### Version 6.35.32  Jan 12, 2026
+
+- **FEAT: Add missing Worm Arena OpenRouter models + fix Kat Coder slug** (Author: Cascade (ChatGPT))
+  - **What**: Expanded `OPENROUTER_MODEL_KEYS` with the nine leaderboard models (Nova 2 Lite, DeepSeek Nex N1, DeepSeek V3.2 EXP, Claude Sonnet 4.5, Gemma 3n E2B, Grok 4 Fast, GPT-4.1 Nano, Gemini 2.0 Flash Experimental, DeepSeek R1 0528) and removed the `:free` suffix from `kwaipilot/kat-coder-pro`. Added catalog aliases so Gemma/Gemini slugs resolve to their `:free` entries when necessary.
+  - **Why**: OpenRouter catalog changes hid several slugs, causing Worm Arena leaderboard participants to disappear from the picker. Aligning with the leaderboard ensures players can schedule matches against the advertised bots.
+  - **How**:
+    - `server/config/openrouterModels.ts`: refreshed metadata header, appended the missing slugs, dropped `:free` from Kat Coder, added catalog aliases for Gemini 2.0 Flash Experimental and Gemma 3n E2B, and documented the purpose.
+    - `docs/plans/2026-01-12-openrouter-model-coverage-plan.md`: marked Phase 2 catalog capture + key updates as completed and left follow-up validation tasks outstanding.
+
+- **FIX: Enforce 30-apple Worm Arena win condition** (Author: Cascade (ChatGPT 5.1))
+  - **What**: Lowered `APPLE_TARGET` to 30 in the SnakeBench domain constants so games terminate as soon as the first snake hits the intended cap.
+  - **Why**: ARC Explainer's house rules call for automatic victory at 30 apples, but the upstream default of 50 was still in place, allowing games to continue past the limit.
+  - **How**:
+    - `external/SnakeBench/backend/domain/constants.py`: refreshed metadata header and set `APPLE_TARGET = 30`, keeping prompts/engine in sync because they both read the constant.
+
+- **FIX: Align SnakeBench replay persistence across Node, Python, and DB** (Author: Cascade (GLM 4.7))
+  - **What**: Created a centralized path resolver for the completed games directory, updated the Python runner to respect the env override with fallbacks, and fixed DB replay_path derivation to preserve the actual directory name (e.g., `completed_games_local`).
+  - **Why**: Node backend, Python runner, and DB persistence were using inconsistent directory assumptions (`completed_games` vs `completed_games_local`), causing DB rows to miss replay files and the replay resolver to fail.
+  - **How**:
+    - `server/services/snakeBench/utils/paths.ts`: new helper module with `resolveCompletedGamesDir`, `getCompletedGamesAbsolutePath`, and `deriveReplayPath` functions; re-exported via `constants.ts`.
+    - `server/python/snakebench_runner.py`: reads `SNAKEBENCH_COMPLETED_GAMES_DIR` env var (defaults to `completed_games_local`), checks that directory first, then falls back to legacy `completed_games` for backwards compatibility.
+    - `server/repositories/GameWriteRepository.ts`: imports `deriveReplayPath` and uses it to compute `replay_path` relative to the backend directory, preserving the actual subdirectory name.
+    - `server/services/snakeBenchService.ts`, `server/services/snakeBench.ts`, `server/services/snakeBench/SnakeBenchReplayResolver.ts`: updated constructors to call `getCompletedGamesAbsolutePath(process.cwd())` instead of hardcoding `completed_games`.
+    - `docs/2026-01-12-snakebench-replay-persistence-plan.md`: marked all plan steps as completed.
+
+### Version 6.35.31  Jan 10, 2026
+
+- **FIX: Canonicalize OpenRouter slugs and sync DB to curated library** (Author: GPT-5)
+  - **What**: Added OpenRouter slug canonicalization for :free variants, updated model API merging, and introduced a DB sync script to align `public.models` with the curated OpenRouter list.
+  - **Why**: Prevents duplicate model entries (e.g., GPT-OSS variants) and keeps Worm Arena model lists consistent with the library source of truth.
+  - **How**:
+    - `server/utils/openRouterSlugCanonicalizer.ts`: canonical slug mapping for OpenRouter variants.
+    - `server/repositories/GameWriteRepository.ts`: normalize slugs on insert/upsert and add DB deactivation helper.
+    - `server/routes/models.ts`: collapse DB models to canonical slugs during merge.
+    - `server/scripts/sync-openrouter-db.ts`: sync curated OpenRouter models into the DB and deactivate stale slugs.
+
+### Version 6.35.30  Jan 10, 2026
+
+- **FIX: Remove Dolphin Mistral Venice free model from tournament list** (Author: Codex (GPT-5))
+  - **What**: Removed `cognitivecomputations/dolphin-mistral-24b-venice-edition:free` from the DeepSeek champions free-model list.
+  - **Why**: The model consistently timed out during match starts.
+  - **How**:
+    - `scripts/worm-arena-tournaments/deepseek-champions-vs-free.py`: pruned the free model list.
+
+### Version 6.35.29  Jan 10, 2026
+
+- **FIX: Improve DeepSeek tournament pairing order and drop Trinity Mini free** (Author: Codex (GPT-5))
+  - **What**: Reordered match scheduling so DeepSeek v3.2 EXP starts from the top of the free list while DeepSeek Chat v3.1 starts from the bottom, then runs reverse directions later; removed `arcee-ai/trinity-mini:free`.
+  - **Why**: Avoids immediate back-to-back rematches after a timeout and skips the model that consistently stalls.
+  - **How**:
+    - `scripts/worm-arena-tournaments/deepseek-champions-vs-free.py`: updated pairing order and free model list.
+
+### Version 6.35.28  Jan 10, 2026
+
+- **FEAT: Improve DeepSeek tournament script logging** (Author: Codex (GPT-5))
+  - **What**: Added timestamped logs, per-request elapsed timing, and periodic summaries to the DeepSeek champions tournament runner.
+  - **Why**: Makes long-running tournament runs easier to monitor and troubleshoot in the terminal.
+  - **How**:
+    - `scripts/worm-arena-tournaments/deepseek-champions-vs-free.py`: added UTC timestamps, duration formatting, and summary cadence controls.
+
+### Version 6.35.27  Jan 10, 2026
+
+- **FEAT: Add DeepSeek champions Worm Arena tournament script** (Author: Codex (GPT-5))
+  - **What**: Added a Python tournament runner that pits DeepSeek v3.2 EXP and DeepSeek Chat v3.1 against a curated list of free OpenRouter models, with two matches total per pairing (both directions), plus a head-to-head between the champions.
+  - **Why**: Provides a repeatable, rate-limited way to run the requested DeepSeek matchup set while honoring the free-model concurrency constraint.
+  - **How**:
+    - `scripts/worm-arena-tournaments/deepseek-champions-vs-free.py`: sequential run-batch calls with defaults, clear logging, and error handling.
+    - `docs/plans/2026-01-10-worm-arena-deepseek-champions-plan.md`: scope and TODOs for the tournament run.
+
+### Version 6.35.25  Jan 9, 2026
+
+- **FIX: Timestamped submission outputs for RE-ARC free solver** (Author: Cascade (ChatGPT))
+  - **What**: Switched the Python OpenRouter free solver to save results into per-run, model-tagged submission files (with optional `--output` override) instead of the shared `submission.json`.
+  - **Why**: Aligns with the rest of the tooling that expects dated submission artifacts per model run and prevents concurrent jobs from clobbering each other.
+  - **How**:
+    - `scripts/solvers/rearc_free_solver.py`: added timestamped path generation, optional `--output` flag, atomic writes per file, and refreshed metadata header/usage docs.
+
+### Version 6.35.26  Jan 10, 2026
+
+- **FIX: Remove deprecated AllenAI `:free` slugs from OpenRouter config** (Author: Cascade (ChatGPT))
+  - **What**: Deleted the `allenai/olmo-3.1-32b-think:free` catalog entry and removed free AllenAI slugs from `OPENROUTER_MODEL_KEYS`, ensuring only the paid `allenai/olmo-*` variants remain.
+  - **Why**: OpenRouter now returns 404 when hitting the legacy `:free` endpoints; solvers must call the paid slugs (`allenai/olmo-3.1-32b-think`, etc.) to avoid random-move fallbacks mid-game.
+  - **How**:
+    - `server/config/openrouterModels.ts`: refreshed header metadata and pruned AllenAI free slugs.
+    - `server/config/openrouter-catalog.json`: removed the duplicated free catalog entry so downstream configs only ingest the paid slug data.
+
+### Version 6.35.24  Jan 9, 2026
+
+- **FIX: Send OpenRouter reasoning config via extra_body** (Author: Codex (GPT-5))
+  - **What**: Moved reasoning parameters into `extra_body` for OpenRouter chat completions in the Python streaming solver.
+  - **Why**: Prevents unsupported keyword errors while preserving reasoning effort controls.
+  - **How**:
+    - `scripts/solvers/rearc_openrouter_stream.py`: pass reasoning config through `extra_body`.
+    - `docs/plans/2026-01-09-openrouter-reasoning-extra-body-plan.md`: documented the change plan.
+
+### Version 6.35.23  Jan 9, 2026
+
+- **FIX: Restore OpenRouter streaming solver stability and live logging** (Author: Codex (GPT-5))
+  - **What**: Replaced invalid `max_output_tokens` usage with `max_tokens`, added per-task attempt start/finish logs, and switched to timezone-aware UTC timestamps.
+  - **Why**: Prevents request failures, makes long-running jobs visibly active, and eliminates deprecated timestamp warnings.
+  - **How**:
+    - `scripts/solvers/rearc_openrouter_stream.py`: corrected token parameter, added progress logging, and used timezone-aware timestamps for JSONL.
+    - `docs/plans/2026-01-09-rearc-openrouter-streaming-fixes-plan.md`: documented the fix plan and completion status.
+
+### Version 6.35.22  Jan 9, 2026
+
+- **FIX: One API call per task in OpenRouter RE-ARC streaming solver** (Author: Codex (GPT-5))
+  - **What**: Refactored the Python streaming solver to issue one request per task and parse an ordered list of output grids for all test cases, with attempt 2 as a second task-level call.
+  - **Why**: Aligns solver behavior with the intended "one task, one call, one attempt" workflow and avoids per-test-case explosion.
+  - **How**:
+    - `scripts/solvers/rearc_openrouter_stream.py`: queue per task, prompt for array outputs, parse and map grids to all test cases, and log attempt-level metadata.
+    - `docs/plans/2026-01-09-rearc-openrouter-single-call-plan.md`: documented decisions and completion status.
+
+### Version 6.35.21  Jan 9, 2026
+
+- **FIX: Add OpenRouter max token budget control for RE-ARC free solver** (Author: Codex (GPT-5))
+  - **What**: Added `REARC_MAX_TOKENS` support, enforced a safe minimum when reasoning is enabled, and surfaced the configured budget in run summaries.
+  - **Why**: Prevents premature truncation when OpenRouter reasoning consumes the output budget.
+  - **How**:
+    - `scripts/solvers/rearc-free-solver.ts`: added env-driven `max_tokens` handling with a reasoning-safe floor and config snapshot reporting.
+    - `docs/plans/2026-01-09-openrouter-token-budget-plan.md`: documented the approved plan for the change.
+
+### Version 6.35.20  Jan 9, 2026
+
+- **FEATURE: Per-task chained GPT-5-mini RE-ARC solver script** (Author: Cascade (ChatGPT))
+  - **What**: Added a brand-new `rearc-gpt5mini-chained.ts` solver that launches attempt 2 immediately after each attempt 1 completes, streams per-task logs, and writes richer checkpoints (conversation IDs, completion flags).
+  - **Why**: Previous `rearc-gpt5mini-fast.ts` waited for every attempt 1 response before starting attempt 2, hiding interim results and delaying chained reasoning for fast-returning tasks.
+  - **How**:
+    - `scripts/solvers/rearc-gpt5mini-chained.ts`: New orchestrator with configurable concurrency, throttled dispatch delays, per-task checkpointing, and resume-safe logic.
+    - `docs/plans/2026-01-09-per-task-rearc-solver-plan.md`: Documented approach and marked plan as complete post-implementation.
+
+- **FEATURE: Python OpenRouter streaming solver with live submission writes** (Author: Cascade (ChatGPT))
+  - **What**: Added `rearc_openrouter_stream.py`, an asyncio-based solver that caps OpenRouter completions, throttles concurrency, and writes `rearc-submission-live.json` incrementally while logging every attempt to JSONL.
+  - **Why**: We needed a Python workflow that keeps the submission file in sync as responses arrive, avoids provider truncation, and supports resumable runs without TypeScript orchestration.
+  - **How**:
+    - `scripts/solvers/rearc_openrouter_stream.py`: New script featuring configurable dataset/output/log paths, reasoning effort control, `max_output_tokens` budgeting, per-attempt logging, and a live submission writer with async locks.
+
 ### Version 6.35.19  Jan 9, 2026
 
 - **FIX: RE-ARC test outputs should be withheld from generated datasets + purge buggy submissions** (Author: Claude Haiku 4.5)

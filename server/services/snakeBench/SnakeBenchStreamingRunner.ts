@@ -12,6 +12,8 @@ import type {
   SnakeBenchRunMatchResult,
   WormArenaStreamStatus,
   WormArenaFrameEvent,
+  WormArenaPlayerTiming,
+  WormArenaRoundTiming,
 } from '../../../shared/types.js';
 import { snakeBenchPythonBridge } from './SnakeBenchPythonBridge.ts';
 import { PersistenceCoordinator } from './persistence/persistenceCoordinator.ts';
@@ -152,9 +154,35 @@ export class SnakeBenchStreamingRunner {
     });
 
     const poller = new LiveFramePoller();
+    const matchStartedAt = Date.now();
+    let lastMoveAt: number | null = null;
+
+    // Timing state
+    const playerTiming: Record<string, WormArenaPlayerTiming> = {};
+    const roundTiming: WormArenaRoundTiming[] = [];
+    let currentRoundStart: number | null = null;
+
+    const emitStatus = (status: WormArenaStreamStatus) => {
+      handlers.onStatus?.({
+        ...status,
+        matchStartedAt,
+        lastMoveAt: lastMoveAt ?? undefined,
+      });
+    };
+
+    const emitFrame = (frame: WormArenaFrameEvent) => {
+      const timestamp = Number.isFinite(frame.timestamp) ? frame.timestamp : Date.now();
+      lastMoveAt = timestamp;
+      handlers.onFrame?.({
+        ...frame,
+        timestamp,
+        matchStartedAt,
+        lastMoveAt,
+      });
+    };
 
     try {
-      handlers.onStatus?.({ state: 'starting', message: 'Launching match...' });
+      emitStatus({ state: 'starting', message: 'Launching match...' });
 
       let discoveredGameId: string | null = null;
       const stdoutEventsEnabled =
@@ -190,8 +218,8 @@ export class SnakeBenchStreamingRunner {
                 prepared.width,
                 prepared.height,
                 prepared.maxRounds,
-                (frame) => handlers.onFrame?.(frame),
-                (status) => handlers.onStatus?.(status)
+                (frame) => emitFrame(frame),
+                (status) => emitStatus(status)
               );
             }
           }
@@ -201,7 +229,20 @@ export class SnakeBenchStreamingRunner {
           if (finishedRound?.[1]) {
             const round = Number(finishedRound[1]);
             if (Number.isFinite(round)) {
-              handlers.onStatus?.({
+              // Record round timing
+              if (currentRoundStart) {
+                const roundCompletedAt = Date.now();
+                const durationMs = roundCompletedAt - currentRoundStart;
+                roundTiming.push({
+                  round,
+                  startedAt: currentRoundStart,
+                  completedAt: roundCompletedAt,
+                  durationMs,
+                });
+              }
+              // Start next round timing
+              currentRoundStart = Date.now();
+              emitStatus({
                 state: 'in_progress',
                 message: line,
                 round,
@@ -215,7 +256,7 @@ export class SnakeBenchStreamingRunner {
             try {
               const evt = JSON.parse(line);
               if (evt?.type === 'frame' && handlers.onFrame) {
-                handlers.onFrame({
+                emitFrame({
                   round: Number(evt.round ?? 0),
                   frame: evt.frame ?? evt,
                   timestamp: Date.now(),
@@ -224,6 +265,33 @@ export class SnakeBenchStreamingRunner {
               }
               if (evt?.type === 'chunk' && handlers.onChunk) {
                 handlers.onChunk(evt.chunk ?? evt);
+                return;
+              }
+              if (evt?.type === 'timing') {
+                // Handle timing events from Python runner
+                if (evt.playerId && evt.responseTimeMs !== undefined) {
+                  const pid = String(evt.playerId);
+                  if (!playerTiming[pid]) {
+                    playerTiming[pid] = {
+                      playerId: pid,
+                      moveCount: 0,
+                      totalResponseTimeMs: 0,
+                      avgResponseTimeMs: 0,
+                      lastResponseTimeMs: 0,
+                      totalApiLatencyMs: 0,
+                      avgApiLatencyMs: 0,
+                    };
+                  }
+                  const timing = playerTiming[pid];
+                  timing.moveCount++;
+                  timing.totalResponseTimeMs += evt.responseTimeMs;
+                  timing.avgResponseTimeMs = timing.totalResponseTimeMs / timing.moveCount;
+                  timing.lastResponseTimeMs = evt.responseTimeMs;
+                  if (evt.apiLatencyMs !== undefined) {
+                    timing.totalApiLatencyMs += evt.apiLatencyMs;
+                    timing.avgApiLatencyMs = timing.totalApiLatencyMs / timing.moveCount;
+                  }
+                }
                 return;
               }
               if (evt?.type === 'game.init') {
@@ -235,14 +303,14 @@ export class SnakeBenchStreamingRunner {
                     prepared.width,
                     prepared.height,
                     prepared.maxRounds,
-                    (frame) => handlers.onFrame?.(frame),
-                    (status) => handlers.onStatus?.(status)
+                    (frame) => emitFrame(frame),
+                    (status) => emitStatus(status)
                   );
                 }
                 return;
               }
               if (evt?.type === 'status') {
-                handlers.onStatus?.({
+                emitStatus({
                   state: 'in_progress',
                   message: evt.message ?? line,
                   round: evt.round,
@@ -255,7 +323,7 @@ export class SnakeBenchStreamingRunner {
           }
 
           // Generic status message
-          handlers.onStatus?.({ state: 'in_progress', message: line });
+          emitStatus({ state: 'in_progress', message: line });
         },
         (line: string) => {
           // Process stderr line (if needed)
@@ -310,6 +378,8 @@ export class SnakeBenchStreamingRunner {
         scores: parsed.scores ?? {},
         results: parsed.results ?? {},
         completedGamePath: parsed.completed_game_path ?? parsed.completedGamePath,
+        playerTiming,
+        roundTiming,
       };
 
       // Fire-and-forget persistence

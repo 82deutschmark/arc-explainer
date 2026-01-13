@@ -22,3 +22,12 @@ export const MAX_HTTP_REDIRECTS = 3;
 // Game index
 export const GAME_INDEX_FILENAME = 'game_index.json';
 export const COMPLETED_GAMES_DIR = 'completed_games';
+
+// Re-export path resolution utilities
+export {
+  resolveCompletedGamesDir,
+  getCompletedGamesAbsolutePath,
+  deriveReplayPath,
+  SNAKEBENCH_COMPLETED_GAMES_DIR_ENV,
+  DEFAULT_COMPLETED_GAMES_DIR,
+} from './paths.ts';

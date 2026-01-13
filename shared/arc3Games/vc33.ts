@@ -1,7 +1,7 @@
 /*
- * Author: Claude
- * Date: 2026-01-04
- * PURPOSE: Game metadata for VC33.
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-09
+ * PURPOSE: Game metadata for VC33 with featured replay video metadata.
  * SRP/DRY check: Pass - Single responsibility for VC33 game data.
  */
 
@@ -45,6 +45,10 @@ export const vc33: Arc3GameMetadata = {
   ],
   tags: ['preview-set', 'hydraulics', 'physics'],
   thumbnailUrl: '/vc33.png',
+  video: {
+    src: '/videos/arc3/vc33-6ae7bf49eea5.mp4',
+    caption: 'Volume Control replay highlighting hydraulic manipulation',
+  },
   isFullyDocumented: true,
   notes: 'Updated with strategic intel about the closed liquid system.',
 };

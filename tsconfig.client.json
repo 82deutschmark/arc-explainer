@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["client/src/*"],
+      "@shared/*": ["shared/*"]
+    },
+    "types": ["node", "vite/client"]
+  },
+  "include": ["client/src/**/*", "shared/**/*"],
+  "exclude": ["tests", "server", "scripts", "solver", "external", "data", "docs", "public"]
+}

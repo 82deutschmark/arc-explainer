@@ -1,7 +1,7 @@
 /*
- * Author: Claude
- * Date: 2026-01-04
- * PURPOSE: Game metadata for SP80.
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-09
+ * PURPOSE: Game metadata for SP80 with embedded streaming replay clip.
  * SRP/DRY check: Pass - Single responsibility for SP80 game data.
  */
 
@@ -46,6 +46,10 @@ export const sp80: Arc3GameMetadata = {
   ],
   tags: ['evaluation-set', 'physics', 'fluid-dynamics'],
   thumbnailUrl: '/sp80.png',
+  video: {
+    src: '/videos/arc3/sp80-test.mp4',
+    caption: 'Streaming Purple capture showing animation when Action 5 triggers flow',
+  },
   isFullyDocumented: true,
   notes: 'Updated with strategic intel about the Action 5 flow trigger.',
 };

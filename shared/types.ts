@@ -1,7 +1,7 @@
 /**
- * Author: Cascade (ChatGPT 5.1 Codex)
- * Date: 2026-01-02
- * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including ARC3 and Codex streaming schemas.
+ * Author: Cascade
+ * Date: 2026-01-12
+ * PURPOSE: Shared TypeScript interfaces and schemas across ARC Explainer (ARC3, Worm Arena, streaming APIs).
  * SRP/DRY check: Pass — centralized type registry only.
  */
 
@@ -582,6 +582,8 @@ export interface SnakeBenchRunMatchRequest {
   apiKey?: string;
   /** Optional provider for BYO key; if omitted, defaults to OpenRouter */
   provider?: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini';
+  /** LLM player persona variant (default, A, B) */
+  playerPersona?: string;
 }
 
 export interface SnakeBenchRunMatchResult {
@@ -597,6 +599,10 @@ export interface SnakeBenchRunMatchResult {
   results: Record<string, SnakeBenchResultLabel>;
   /** Optional on-disk path to the completed game JSON for replay */
   completedGamePath?: string;
+  /** Per-player timing metrics */
+  playerTiming?: Record<string, WormArenaPlayerTiming>;
+  /** Per-round timing metrics */
+  roundTiming?: WormArenaRoundTiming[];
 }
 
 export interface SnakeBenchRunMatchResponse {
@@ -983,6 +989,11 @@ export interface WormArenaModelSummary {
   sigma: number;
   exposed: number;
   gamesPlayed: number;
+  rank: number;
+  displayScore: number;
+  wins?: number;
+  losses?: number;
+  winRate?: number;
 }
 
 export interface WormArenaSuggestedMatchup {
@@ -1009,13 +1020,24 @@ export interface WormArenaStreamStatus {
   state: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
   phase?: string;
   message?: string;
+  taskId?: string;
+  modelKey?: string;
+  timestamp?: number;
+  matchStartedAt?: number;
+  lastMoveAt?: number;
   round?: number;
-  tokenUsage?: {
-    input?: number;
-    output?: number;
-    reasoning?: number;
-  };
 }
+
+export interface WormArenaFrameEvent {
+  round: number;
+  frame: any;
+  timestamp: number;
+  scores?: Record<string, number>;
+  alive?: string[];
+  matchStartedAt?: number;
+  lastMoveAt?: number;
+}
+
 export interface WormArenaStreamChunk {
   type: string;
   delta?: string;
@@ -1026,16 +1048,41 @@ export interface WormArenaStreamChunk {
 }
 
 /**
- * Single frame event for live Worm Arena streaming.
+ * Per-player timing metrics for Worm Arena matches.
  */
-export interface WormArenaFrameEvent {
-  round: number;
-  frame: any;
-  timestamp: number;
+export interface WormArenaPlayerTiming {
+  /** Player ID (snake ID) */
+  playerId: string;
+  /** Total number of moves made */
+  moveCount: number;
+  /** Total response time across all moves (ms) */
+  totalResponseTimeMs: number;
+  /** Average response time per move (ms) */
+  avgResponseTimeMs: number;
+  /** Response time for the most recent move (ms) */
+  lastResponseTimeMs: number;
+  /** Total API latency across all moves (ms) */
+  totalApiLatencyMs: number;
+  /** Average API latency per move (ms) */
+  avgApiLatencyMs: number;
 }
 
 /**
- * Final summary for a live Worm Arena match.
+ * Per-round timing metrics for Worm Arena matches.
+ */
+export interface WormArenaRoundTiming {
+  /** Round number */
+  round: number;
+  /** Timestamp when round started (ms) */
+  startedAt: number;
+  /** Timestamp when round completed (ms) */
+  completedAt: number;
+  /** Round duration in milliseconds */
+  durationMs: number;
+}
+
+/**
+ * Final summary payload emitted when a Worm Arena live match completes.
  */
 export interface WormArenaFinalSummary {
   matchId?: string;
@@ -1051,6 +1098,10 @@ export interface WormArenaFinalSummary {
   durationSeconds?: number;
   /** Average seconds per round (durationSeconds / roundsPlayed) */
   avgSecondsPerRound?: number;
+  /** Per-player timing metrics */
+  playerTiming?: Record<string, WormArenaPlayerTiming>;
+  /** Per-round timing metrics */
+  roundTiming?: WormArenaRoundTiming[];
 }
 
 /**
