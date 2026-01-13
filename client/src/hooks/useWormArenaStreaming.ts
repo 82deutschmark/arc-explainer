@@ -11,10 +11,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   SnakeBenchRunMatchRequest,
+  SnakeBenchRunMatchResult,
   WormArenaFrameEvent,
   WormArenaFinalSummary,
   WormArenaStreamStatus,
   WormArenaStreamChunk,
+  WormArenaPlayerTiming,
+  WormArenaRoundTiming,
 } from '@shared/types';
 import { computeTimerSeconds } from '@/lib/wormArena/timerUtils';
 
@@ -56,6 +59,8 @@ export function useWormArenaStreaming() {
   const [lastMoveAt, setLastMoveAt] = useState<number | null>(null);
   const [wallClockSeconds, setWallClockSeconds] = useState<number | null>(null);
   const [sinceLastMoveSeconds, setSinceLastMoveSeconds] = useState<number | null>(null);
+  const [playerTiming, setPlayerTiming] = useState<Record<string, WormArenaPlayerTiming>>({});
+  const [roundTiming, setRoundTiming] = useState<WormArenaRoundTiming[]>([]);
 
   // Match progress state (kept for UI compatibility but batch mode removed)
   const [currentMatchIndex, setCurrentMatchIndex] = useState<number | null>(null);
@@ -127,6 +132,8 @@ export function useWormArenaStreaming() {
       setLastMoveAt(null);
       setWallClockSeconds(null);
       setSinceLastMoveSeconds(null);
+      setPlayerTiming({});
+      setRoundTiming([]);
     }
   }, [setCurrentMatchIndex, setError, setFinalSummary, setFrames, setMessage, setPhase, setStatus, setTotalMatches]);
 
@@ -258,21 +265,23 @@ export function useWormArenaStreaming() {
 
     es.addEventListener('stream.complete', (event) => {
       try {
-        const data = JSON.parse((event as MessageEvent).data) as WormArenaFinalSummary;
-        setFinalSummary(data);
+        const data = JSON.parse((event as MessageEvent).data) as SnakeBenchRunMatchResult;
+        if (data.playerTiming) {
+          setPlayerTiming(data.playerTiming);
+        }
+        if (data.roundTiming) {
+          setRoundTiming(data.roundTiming);
+        }
         setStatus('completed');
-        setMessage('Match finished');
+        setMessage('Match completed');
         appendEventLog({
           type: 'complete',
           timestamp: Date.now(),
           payload: data,
-          summary: `Match complete: ${data.modelA} vs ${data.modelB} - scores: ${JSON.stringify(data.scores)}`,
+          summary: `Match completed: ${data.gameId}`,
         });
-        es.close();
-        eventSourceRef.current = null;
       } catch (err: any) {
-        setError(err?.message || 'Failed to parse completion event');
-        setStatus('failed');
+        setError(err?.message || 'Failed to parse complete event');
       }
     });
 
@@ -383,6 +392,8 @@ export function useWormArenaStreaming() {
     lastMoveAt,
     wallClockSeconds,
     sinceLastMoveSeconds,
+    playerTiming,
+    roundTiming,
     startMatch,
     connect,
     disconnect,
