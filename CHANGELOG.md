@@ -9,6 +9,12 @@
     - `server/config/openrouterModels.ts`: refreshed metadata header, appended the missing slugs, dropped `:free` from Kat Coder, added catalog aliases for Gemini 2.0 Flash Experimental and Gemma 3n E2B, and documented the purpose.
     - `docs/plans/2026-01-12-openrouter-model-coverage-plan.md`: marked Phase 2 catalog capture + key updates as completed and left follow-up validation tasks outstanding.
 
+- **FIX: Enforce 30-apple Worm Arena win condition** (Author: Cascade (ChatGPT))
+  - **What**: Lowered `APPLE_TARGET` to 30 in the SnakeBench domain constants so games terminate as soon as the first snake hits the intended cap.
+  - **Why**: ARC Explainer’s house rules call for automatic victory at 30 apples, but the upstream default of 50 was still in place, allowing games to continue past the limit.
+  - **How**:
+    - `external/SnakeBench/backend/domain/constants.py`: refreshed metadata header and set `APPLE_TARGET = 30`, keeping prompts/engine in sync because they both read the constant.
+
 ### Version 6.35.31  Jan 10, 2026
 
 - **FIX: Canonicalize OpenRouter slugs and sync DB to curated library** (Author: GPT-5)
