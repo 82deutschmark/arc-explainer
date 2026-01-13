@@ -1,13 +1,12 @@
 /**
- * Author: Claude Code using Haiku 4.5
- * Date: 2025-12-19
- * PURPOSE: Suggest interesting unplayed matchups using ladder or entertainment scoring modes.
- *          Applies variety penalty to ensure model diversity in suggestions. WHAT?!  0 cents. This entire file needs to be audited. 
- * SRP/DRY check: Pass — complex algorithm isolated, single responsibility.
+ * Author: Cascade
+ * Date: 2026-01-12
+ * PURPOSE: Suggest top-tier unplayed matchups with dual scoring modes (ladder vs entertainment),
+ *          now rank-aware to emphasize leaderboard battles while keeping variety guarantees.
+ * SRP/DRY check: Pass — complex algorithm isolated in helper.
  */
 
 import type { SnakeBenchTrueSkillLeaderboardEntry } from '../../../../shared/types.js';
-import { MODELS } from '../../../config/models.ts';
 
 export interface SuggestedMatchup {
   modelA: {
@@ -16,6 +15,11 @@ export interface SuggestedMatchup {
     sigma: number;
     exposed: number;
     gamesPlayed: number;
+    rank: number;
+    displayScore: number;
+    wins?: number;
+    losses?: number;
+    winRate?: number;
   };
   modelB: {
     modelSlug: string;
@@ -23,6 +27,11 @@ export interface SuggestedMatchup {
     sigma: number;
     exposed: number;
     gamesPlayed: number;
+    rank: number;
+    displayScore: number;
+    wins?: number;
+    losses?: number;
+    winRate?: number;
   };
   history: { matchesPlayed: number; lastPlayedAt: string | null };
   score: number;
@@ -54,42 +63,55 @@ export async function suggestMatchups(
 }> {
   const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 50)) : 20;
 
-  // Filter to only approved OpenRouter models from config (avoid expensive/unsupported models)
-  let filtered = leaderboard.filter((entry) => approvedModels.has(entry.modelSlug));
+  const normalizeSlug = (slug: string): string => slug.replace(/:free$/, '');
 
-  if (filtered.length < 2) {
+  // Filter to only models that are currently approved and compute leaderboard rank metadata.
+  const rankedEntriesMap = new Map<
+    string,
+    { entry: SnakeBenchTrueSkillLeaderboardEntry; rank: number }
+  >();
+
+  leaderboard.forEach((entry, index) => {
+    if (!approvedModels.has(entry.modelSlug)) return;
+    const normalizedSlug = normalizeSlug(entry.modelSlug);
+    const candidateRank = index + 1;
+    const existing = rankedEntriesMap.get(normalizedSlug);
+    if (!existing) {
+      rankedEntriesMap.set(normalizedSlug, { entry, rank: candidateRank });
+      return;
+    }
+
+    const currentIsFree = entry.modelSlug.includes(':free');
+    const existingIsFree = existing.entry.modelSlug.includes(':free');
+    const shouldReplace =
+      candidateRank < existing.rank ||
+      (candidateRank === existing.rank && currentIsFree && !existingIsFree) ||
+      (candidateRank === existing.rank &&
+        currentIsFree === existingIsFree &&
+        entry.gamesPlayed > existing.entry.gamesPlayed);
+
+    if (shouldReplace) {
+      rankedEntriesMap.set(normalizedSlug, { entry, rank: candidateRank });
+    }
+  });
+
+  const rankedEntries = Array.from(rankedEntriesMap.entries())
+    .map(([normalizedSlug, info]) => ({
+      normalizedSlug,
+      rank: info.rank,
+      ...info.entry,
+    }))
+    .filter((entry) => entry.rank <= 30)
+    .sort((a, b) => a.rank - b.rank);
+
+  if (rankedEntries.length < 2) {
     return { mode, matchups: [], totalCandidates: 0 };
   }
 
-  // Normalize slugs by removing ':free' suffix and prefer free versions
-  const normalizedMap = new Map<string, SnakeBenchTrueSkillLeaderboardEntry>();
-  for (const entry of filtered) {
-    const normalizedSlug = entry.modelSlug.replace(/:free$/, '');
-    const existing = normalizedMap.get(normalizedSlug);
-    if (!existing) {
-      normalizedMap.set(normalizedSlug, entry);
-    } else {
-      // Prefer free version over paid version
-      const existingIsFree = existing.modelSlug.includes(':free');
-      const currentIsFree = entry.modelSlug.includes(':free');
-      if (currentIsFree && !existingIsFree) {
-        // Replace with free version
-        normalizedMap.set(normalizedSlug, entry);
-      } else if (existingIsFree === currentIsFree) {
-        // Both same type (both free or both paid), keep the one with more games
-        if (entry.gamesPlayed > existing.gamesPlayed) {
-          normalizedMap.set(normalizedSlug, entry);
-        }
-      }
-      // If existing is free and current is paid, keep existing
-    }
-  }
-  filtered = Array.from(normalizedMap.values());
-
   // Helper to get normalized key for a pair (must match database query logic)
   const pairKey = (a: string, b: string): string => {
-    const slugA = a.replace(/:free$/, '');
-    const slugB = b.replace(/:free$/, '');
+    const slugA = normalizeSlug(a);
+    const slugB = normalizeSlug(b);
     // Use same normalization as database query: LEAST/GREATEST
     const normalizedA = slugA < slugB ? slugA : slugB;
     const normalizedB = slugA < slugB ? slugB : slugA;
@@ -97,9 +119,11 @@ export async function suggestMatchups(
   };
 
   // Generate all candidate pairs (only unplayed)
+  type RankedEntry = (typeof rankedEntries)[number];
+
   type Candidate = {
-    modelA: typeof filtered[0];
-    modelB: typeof filtered[0];
+    modelA: RankedEntry;
+    modelB: RankedEntry;
     history: { matchesPlayed: number; lastPlayedAt: string | null };
     score: number;
     reasons: string[];
@@ -108,10 +132,10 @@ export async function suggestMatchups(
   const candidates: Candidate[] = [];
   const modelAppearances = new Map<string, number>();
 
-  for (let i = 0; i < filtered.length; i++) {
-    for (let j = i + 1; j < filtered.length; j++) {
-      const modelA = filtered[i];
-      const modelB = filtered[j];
+  for (let i = 0; i < rankedEntries.length; i++) {
+    for (let j = i + 1; j < rankedEntries.length; j++) {
+      const modelA = rankedEntries[i];
+      const modelB = rankedEntries[j];
       const key = pairKey(modelA.modelSlug, modelB.modelSlug);
       const history = pairingHistory.get(key) ?? { matchesPlayed: 0, lastPlayedAt: null };
 
@@ -142,6 +166,33 @@ export async function suggestMatchups(
     const exposedDiff = Math.abs(c.modelA.exposed - c.modelB.exposed);
     const sigmaSum = c.modelA.sigma + c.modelB.sigma;
     const maxExposed = Math.max(c.modelA.exposed, c.modelB.exposed);
+
+    const rankA = c.modelA.rank;
+    const rankB = c.modelB.rank;
+    const rankGap = Math.abs(rankA - rankB);
+    const top20A = rankA <= 20;
+    const top20B = rankB <= 20;
+    const bothTop20 = top20A && top20B;
+    const eitherTop20 = top20A || top20B;
+
+    if (bothTop20) {
+      score += 60;
+      reasons.push('Top-20 showdown');
+    } else if (eitherTop20) {
+      score += 35;
+      reasons.push('Top-20 challenger');
+    } else {
+      score += 10;
+      reasons.push('Leaderboard fringe (21-30)');
+    }
+
+    if (rankGap <= 3) {
+      score += 15;
+      reasons.push('Adjacent rank duel');
+    } else if (rankGap <= 5) {
+      score += 8;
+      reasons.push('Neighboring ranks');
+    }
 
     if (mode === 'ladder') {
       // LADDER MODE: prioritize info gain
@@ -231,6 +282,11 @@ export async function suggestMatchups(
       sigma: c.modelA.sigma,
       exposed: c.modelA.exposed,
       gamesPlayed: c.modelA.gamesPlayed,
+      rank: c.modelA.rank,
+      displayScore: c.modelA.displayScore,
+      wins: c.modelA.wins,
+      losses: c.modelA.losses,
+      winRate: c.modelA.winRate,
     },
     modelB: {
       modelSlug: c.modelB.modelSlug,
@@ -238,6 +294,11 @@ export async function suggestMatchups(
       sigma: c.modelB.sigma,
       exposed: c.modelB.exposed,
       gamesPlayed: c.modelB.gamesPlayed,
+      rank: c.modelB.rank,
+      displayScore: c.modelB.displayScore,
+      wins: c.modelB.wins,
+      losses: c.modelB.losses,
+      winRate: c.modelB.winRate,
     },
     history: c.history,
     score: c.score,

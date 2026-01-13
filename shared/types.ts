@@ -1,7 +1,7 @@
 /**
- * Author: Cascade (ChatGPT 5.1 Codex)
- * Date: 2026-01-02
- * PURPOSE: Shared TypeScript interfaces and types for ARC Explainer, including ARC3 and Codex streaming schemas.
+ * Author: Cascade
+ * Date: 2026-01-12
+ * PURPOSE: Shared TypeScript interfaces and schemas across ARC Explainer (ARC3, Worm Arena, streaming APIs).
  * SRP/DRY check: Pass — centralized type registry only.
  */
 
@@ -985,6 +985,11 @@ export interface WormArenaModelSummary {
   sigma: number;
   exposed: number;
   gamesPlayed: number;
+  rank: number;
+  displayScore: number;
+  wins?: number;
+  losses?: number;
+  winRate?: number;
 }
 
 export interface WormArenaSuggestedMatchup {
