@@ -32,18 +32,18 @@ function normalizeGameId(raw: string): string {
 
 const PINNED_GAMES: WormArenaGreatestHitGame[] = [
   {
-    gameId: '11b4453f-aef9-4387-b60e-28fa934cad0f',
-    startedAt: '2026-01-13T13:26:00.000000',
-    modelA: 'deepseek/deepseek-v3.2-exp',
+    gameId: '42ccab35-b987-425c-8a32-5a9f7040f6aa',
+    startedAt: '2026-01-13T17:41:21.371773',
+    modelA: 'openai/gpt-5.2',
     modelB: 'x-ai/grok-4.1-fast',
-    roundsPlayed: 0,
+    roundsPlayed: 52,
     maxRounds: 150,
-    totalCost: 0,
-    maxFinalScore: 0,
-    scoreDelta: 0,
+    totalCost: 1.5168757,
+    maxFinalScore: 26,
+    scoreDelta: 2,
     boardWidth: 10,
     boardHeight: 10,
-    highlightReason: 'Pinned: Live replay from 2026-01-13. DeepSeek v3.2-exp vs Grok 4.1 Fast.',
+    highlightReason: 'Pinned: GPT-5.2 defeated Grok 4.1 Fast 24-26 in a 52-round match. Grok died via body collision in round 51.',
   },
   {
     gameId: '17b4cccc-e0b2-44a7-bc65-d69a13221993',

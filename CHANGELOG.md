@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.39  Jan 13, 2026
+
+- **FIX: Worm Arena live match completion flow regression** (Author: GLM4.7)
+  - **What**: Fixed three critical bugs introduced in 6.35.38 that broke match completion:
+    1. Clock kept running after match completed
+    2. Post-match results panel didn't display (finalSummary never set)
+    3. Timing metrics (playerTiming, roundTiming) not included in stream.complete SSE event
+  - **Why**: The timing metrics feature inadvertently broke the completion flow by not wiring up all the data correctly through the SSE pipeline.
+  - **How**:
+    - `server/controllers/wormArenaStreamController.ts`: Added `playerTiming` and `roundTiming` from result to the `WormArenaFinalSummary` sent via `stream.complete` event.
+    - `client/src/hooks/useWormArenaStreaming.ts`: 
+      - Added `status` to timer effect dependencies and early-return when `status === 'completed'` or `status === 'failed'` to stop the clock.
+      - Added `setFinalSummary(data)` call in `stream.complete` handler so the results panel displays.
+      - Changed type cast from `SnakeBenchRunMatchResult` to `WormArenaFinalSummary` (correct type).
+
 ### Version 6.35.38  Jan 13, 2026
 
 - **FEAT: Worm Arena timing metrics display** (Author: GLM4.7)
