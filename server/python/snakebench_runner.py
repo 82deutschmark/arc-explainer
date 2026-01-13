@@ -74,6 +74,13 @@ def main() -> int:
             emit_error(f"SnakeBench backend directory not found at {backend_dir}")
             return 1
 
+        # Resolve completed games directory from env or default
+        completed_games_dir_name = os.getenv("SNAKEBENCH_COMPLETED_GAMES_DIR", "").strip()
+        if not completed_games_dir_name:
+            completed_games_dir_name = "completed_games_local"
+
+        completed_games_dir = backend_dir / completed_games_dir_name
+
         # Make SnakeBench backend importable
         if str(backend_dir) not in sys.path:
             sys.path.insert(0, str(backend_dir))
@@ -147,9 +154,15 @@ def main() -> int:
         completed_game_path = None
         if game_id:
             replay_name = f"snake_game_{game_id}.json"
-            candidate = backend_dir / "completed_games" / replay_name
+            # Try resolved completed games directory first
+            candidate = completed_games_dir / replay_name
             if candidate.exists():
                 completed_game_path = str(candidate)
+            else:
+                # Fallback to legacy 'completed_games' for backwards compatibility
+                legacy_candidate = backend_dir / "completed_games" / replay_name
+                if legacy_candidate.exists():
+                    completed_game_path = str(legacy_candidate)
 
         output = {
             "game_id": game_id,

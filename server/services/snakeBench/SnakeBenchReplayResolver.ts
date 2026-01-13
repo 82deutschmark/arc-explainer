@@ -14,12 +14,13 @@ import { repositoryService } from '../../repositories/RepositoryService.ts';
 import { logger } from '../../utils/logger.ts';
 import { fetchJsonFromUrl } from './utils/httpClient.ts';
 import { GameIndexManager } from './persistence/gameIndexManager.ts';
+import { getCompletedGamesAbsolutePath } from './utils/constants.ts';
 
 export class SnakeBenchReplayResolver {
   private readonly gameIndexManager: GameIndexManager;
 
   constructor(private readonly backendDir: string) {
-    const completedDir = path.join(backendDir, 'completed_games');
+    const completedDir = getCompletedGamesAbsolutePath(process.cwd());
     this.gameIndexManager = new GameIndexManager(completedDir);
   }
 

@@ -43,6 +43,7 @@ import { filterReplayableGames, getWormArenaGreatestHitsFiltered } from './snake
 import { suggestMatchups } from './snakeBench/helpers/matchupSuggestions.ts';
 import path from 'path';
 import fs from 'fs';
+import { getCompletedGamesAbsolutePath } from './snakeBench/utils/constants.ts';
 
 export interface StreamingHandlers {
   onStatus?: (status: WormArenaStreamStatus) => void;
@@ -61,7 +62,7 @@ class SnakeBenchService {
 
   constructor() {
     const backendDir = path.join(process.cwd(), 'external', 'SnakeBench', 'backend');
-    const completedDir = path.join(backendDir, 'completed_games');
+    const completedDir = getCompletedGamesAbsolutePath(process.cwd());
 
     this.gameIndexManager = new GameIndexManager(completedDir);
     this.persistenceCoordinator = new PersistenceCoordinator(this.gameIndexManager);

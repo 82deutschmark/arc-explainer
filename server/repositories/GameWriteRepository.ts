@@ -15,6 +15,7 @@ import { Rating, TrueSkill } from 'ts-trueskill';
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
 import { canonicalizeOpenRouterSlug } from '../utils/openRouterSlugCanonicalizer.ts';
+import { deriveReplayPath, getCompletedGamesAbsolutePath } from '../services/snakeBench/utils/constants.ts';
 import {
   DEFAULT_TRUESKILL_MU,
   DEFAULT_TRUESKILL_SIGMA,
@@ -347,7 +348,12 @@ export class GameWriteRepository extends BaseRepository {
     }
 
     const filename = path.basename(absolutePath);
-    const replayPath = path.join('completed_games', filename);
+
+    // Derive replay_path relative to SnakeBench backend directory
+    // This preserves the actual directory name (e.g., 'completed_games_local/snake_game_abc.json')
+    const repoRoot = process.cwd();
+    const backendDir = path.join(repoRoot, 'external', 'SnakeBench', 'backend');
+    const replayPath = deriveReplayPath(absolutePath, backendDir);
     const gameType = String(opts.gameTypeOverride ?? gameBlock.game_type ?? metadata.game_type ?? 'arc-explainer');
 
     return {
