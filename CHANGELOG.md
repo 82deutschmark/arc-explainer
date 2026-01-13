@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.40  Jan 13, 2026
+
+- **FEAT: Pin Grok Code Fast 1 vs GPT-5.1 Codex Mini match to Worm Arena Greatest Hits** (Author: Cascade)
+  - **What**: Added match `8bca1c80-c63e-4ab5-824b-2a77c5ffee3e` (Grok Code Fast 1 vs GPT-5.1 Codex Mini) to the top of the pinned Greatest Hits list.
+  - **Why**: Ensure standout matches remain discoverable from the homepage card even as the API window scrolls.
+  - **How**:
+    - `client/src/components/WormArenaGreatestHits.tsx`: prepended new entry to `PINNED_GAMES` with match metadata (42 rounds, 21-20 final score, body collision finish) and highlight text.
+
 ### Version 6.35.39  Jan 13, 2026
 
 - **FIX: Worm Arena live match completion flow regression** (Author: GLM4.7)
