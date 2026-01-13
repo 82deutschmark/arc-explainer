@@ -599,6 +599,10 @@ export interface SnakeBenchRunMatchResult {
   results: Record<string, SnakeBenchResultLabel>;
   /** Optional on-disk path to the completed game JSON for replay */
   completedGamePath?: string;
+  /** Per-player timing metrics */
+  playerTiming?: Record<string, WormArenaPlayerTiming>;
+  /** Per-round timing metrics */
+  roundTiming?: WormArenaRoundTiming[];
 }
 
 export interface SnakeBenchRunMatchResponse {
@@ -1044,6 +1048,40 @@ export interface WormArenaStreamChunk {
 }
 
 /**
+ * Per-player timing metrics for Worm Arena matches.
+ */
+export interface WormArenaPlayerTiming {
+  /** Player ID (snake ID) */
+  playerId: string;
+  /** Total number of moves made */
+  moveCount: number;
+  /** Total response time across all moves (ms) */
+  totalResponseTimeMs: number;
+  /** Average response time per move (ms) */
+  avgResponseTimeMs: number;
+  /** Response time for the most recent move (ms) */
+  lastResponseTimeMs: number;
+  /** Total API latency across all moves (ms) */
+  totalApiLatencyMs: number;
+  /** Average API latency per move (ms) */
+  avgApiLatencyMs: number;
+}
+
+/**
+ * Per-round timing metrics for Worm Arena matches.
+ */
+export interface WormArenaRoundTiming {
+  /** Round number */
+  round: number;
+  /** Timestamp when round started (ms) */
+  startedAt: number;
+  /** Timestamp when round completed (ms) */
+  completedAt: number;
+  /** Round duration in milliseconds */
+  durationMs: number;
+}
+
+/**
  * Final summary payload emitted when a Worm Arena live match completes.
  */
 export interface WormArenaFinalSummary {
@@ -1060,6 +1098,10 @@ export interface WormArenaFinalSummary {
   durationSeconds?: number;
   /** Average seconds per round (durationSeconds / roundsPlayed) */
   avgSecondsPerRound?: number;
+  /** Per-player timing metrics */
+  playerTiming?: Record<string, WormArenaPlayerTiming>;
+  /** Per-round timing metrics */
+  roundTiming?: WormArenaRoundTiming[];
 }
 
 /**

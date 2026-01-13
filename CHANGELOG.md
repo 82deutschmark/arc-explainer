@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.38  Jan 13, 2026
+
+- **FEAT: Worm Arena timing metrics display** (Author: GLM4.7)
+  - **What**: Added live timing metrics showing average time per round, per-player response times, and API latency. Users can now see how fast each model replies and how quickly their API calls return.
+  - **Why**: Users requested visibility into per-player performance and API latency to compare model speed and responsiveness during matches.
+  - **How**:
+    - `shared/types.ts`: added `WormArenaPlayerTiming` and `WormArenaRoundTiming` interfaces with move counts, response times, and API latency metrics.
+    - `server/services/snakeBench/SnakeBenchStreamingRunner.ts`: capture timing events from Python stdout, track per-player and per-round timing state, include timing data in final result.
+    - `client/src/hooks/useWormArenaStreaming.ts`: added state for `playerTiming` and `roundTiming`, parse timing data from `stream.complete` event.
+    - `client/src/components/WormArenaLiveTimingPanel.tsx`: new component displaying average time per round, per-player average/last response times, and average API latency.
+    - `client/src/pages/WormArenaLive.tsx`: integrated timing panel into live view.
+    - `docs/plans/2026-01-13-wormarena-timing-metrics-plan.md`: marked plan as completed.
+
 ### Version 6.35.37  Jan 13, 2026
 
 - **FIX: Worm Arena live clock displays authoritative timestamps** (Author: Cascade (GPT-5.2))

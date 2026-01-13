@@ -32,6 +32,7 @@ import WormArenaLiveScoreboard from '@/components/WormArenaLiveScoreboard';
 import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
 import WormArenaConsoleMirror from '@/components/WormArenaConsoleMirror';
 import WormArenaRecentMatchesList from '@/components/WormArenaRecentMatchesList';
+import WormArenaLiveTimingPanel from '@/components/WormArenaLiveTimingPanel';
 import { Button } from '@/components/ui/button';
 
 import type { ModelConfig, SnakeBenchRunMatchRequest, WormArenaSuggestedMatchup } from '@shared/types';
@@ -175,6 +176,8 @@ export default function WormArenaLive() {
     eventLog,
     wallClockSeconds,
     sinceLastMoveSeconds,
+    playerTiming,
+    roundTiming,
   } = useWormArenaStreaming();
 
   // Render mode toggle: cartoon (default) vs console (raw Python view)
@@ -756,6 +759,11 @@ export default function WormArenaLive() {
                       </div>
                     </div>
                   )}
+
+                  <WormArenaLiveTimingPanel
+                    playerTiming={playerTiming}
+                    roundTiming={roundTiming}
+                  />
 
                   {finalSummary && <WormArenaLiveResultsPanel finalSummary={finalSummary} />}
                 </div>
