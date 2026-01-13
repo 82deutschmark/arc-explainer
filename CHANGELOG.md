@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.34  Jan 12, 2026
+
+- **FEAT: Add Player C variant with minimal prompt** (Author: Cascade)
+  - Created LLMPlayerC with minimal prompt containing only rules and requiring single-word response.
+  - Registered Player C in variant registry and added to frontend persona selector.
+  - **How**:
+    - `external/SnakeBench/backend/players/llm_player_c.py`: created new variant with minimal prompt (rules only, single-word response).
+    - `external/SnakeBench/backend/players/variant_registry.py`: registered Player C.
+    - `client/src/components/WormArenaRunControls.tsx`: added "Variant C" option to persona dropdown.
+
 ### Version 6.35.33  Jan 12, 2026
 
 - **FEAT: Add LLM player persona selector to Worm Arena** (Author: Cascade (ChatGPT 5.1))
