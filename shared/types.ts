@@ -582,6 +582,8 @@ export interface SnakeBenchRunMatchRequest {
   apiKey?: string;
   /** Optional provider for BYO key; if omitted, defaults to OpenRouter */
   provider?: 'openrouter' | 'openai' | 'anthropic' | 'xai' | 'gemini';
+  /** LLM player persona variant (default, A, B) */
+  playerPersona?: string;
 }
 
 export interface SnakeBenchRunMatchResult {

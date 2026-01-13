@@ -67,6 +67,9 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; erro
   if (body.provider && typeof body.provider === 'string') {
     req.provider = body.provider as SnakeBenchRunMatchRequest['provider'];
   }
+  if (body.playerPersona && typeof body.playerPersona === 'string') {
+    req.playerPersona = String(body.playerPersona).trim();
+  }
   return { payload: req };
 }
 

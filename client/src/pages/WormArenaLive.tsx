@@ -137,6 +137,7 @@ export default function WormArenaLive() {
     numApples,
     byoApiKey,
     byoProvider,
+    playerPersona,
     setModelA,
     setModelB,
     setWidth,
@@ -145,6 +146,7 @@ export default function WormArenaLive() {
     setNumApples,
     setByoApiKey,
     setByoProvider,
+    setPlayerPersona,
     isValid,
   } = useWormArenaSetup();
 
@@ -297,6 +299,7 @@ export default function WormArenaLive() {
       maxRounds,
       numApples,
       ...(byoApiKey ? { apiKey: byoApiKey, provider: byoProvider } : {}),
+      playerPersona,
     };
 
     setLaunchNotice(null);
@@ -662,6 +665,8 @@ export default function WormArenaLive() {
                   byoProvider={byoProvider}
                   onByoApiKeyChange={setByoApiKey}
                   onByoProviderChange={setByoProvider}
+                  playerPersona={playerPersona}
+                  onPlayerPersonaChange={setPlayerPersona}
                   onStart={() => handleRunMatch({ openInNewTab: true })}
                   launchNotice={launchNotice}
                 />
