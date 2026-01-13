@@ -8,7 +8,7 @@
 ## 2. Current State Recap
 1. **Ingestion pipeline** — `external/SnakeBench/backend/main.py` writes to `public.games` and `public.game_participants` through the repository layer (`data_access/game_persistence.py`, `GameRepository`). No notion of validity; every completed run is inserted.
 2. **Arc server consumption** — repositories such as `server/repositories/GameReadRepository.ts` and `server/repositories/CurationRepository.ts` read from `public.games` for recent lists, stats tiles, model history, and greatest-hits leaderboards. Queries typically filter on `rounds > 0` but otherwise count everything.
-3. **UI filtering hack** — `server/services/snakeBench/helpers/replayFilters.ts` rejects matches under 20 rounds *after* data leaves the DB, but underlying aggregates (total games, model records) are still polluted.
+3. **UI filtering hack** — `server/services/snakeBench/helpers/replayFilters.ts` rejects matches under 10 rounds *after* data leaves the DB, but underlying aggregates (total games, model records) are still polluted.
 4. **Local analysis tooling** — `external/SnakeBench/backend/cli/analyze_local_games.py` (referenced in docs/memory) already computes per-game metrics (rounds, duration, apples, cost) that we can reuse for offline culling sweeps.
 
 ## 3. Requirements & Non-Requirements
