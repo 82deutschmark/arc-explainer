@@ -209,6 +209,8 @@ export const wormArenaStreamController = {
         modelB: result.modelB,
         scores: result.scores ?? {},
         results: result.results ?? {},
+        playerTiming: result.playerTiming,
+        roundTiming: result.roundTiming,
       };
       sendStatus({ state: 'completed', message: 'Match finished.' });
       sseStreamManager.sendEvent(sessionId, 'stream.complete', summary);

@@ -11,7 +11,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   SnakeBenchRunMatchRequest,
-  SnakeBenchRunMatchResult,
   WormArenaFrameEvent,
   WormArenaFinalSummary,
   WormArenaStreamStatus,
@@ -265,13 +264,14 @@ export function useWormArenaStreaming() {
 
     es.addEventListener('stream.complete', (event) => {
       try {
-        const data = JSON.parse((event as MessageEvent).data) as SnakeBenchRunMatchResult;
+        const data = JSON.parse((event as MessageEvent).data) as WormArenaFinalSummary;
         if (data.playerTiming) {
           setPlayerTiming(data.playerTiming);
         }
         if (data.roundTiming) {
           setRoundTiming(data.roundTiming);
         }
+        setFinalSummary(data);
         setStatus('completed');
         setMessage('Match completed');
         appendEventLog({
@@ -356,6 +356,11 @@ export function useWormArenaStreaming() {
       return;
     }
 
+    // Stop ticking when match is completed or failed
+    if (status === 'completed' || status === 'failed') {
+      return;
+    }
+
     const updateTimers = () => {
       const now = Date.now();
       const { wallClockSeconds: wall, sinceLastMoveSeconds: since } = computeTimerSeconds(
@@ -372,7 +377,7 @@ export function useWormArenaStreaming() {
     return () => {
       window.clearInterval(handle);
     };
-  }, [matchStartedAt, lastMoveAt]);
+  }, [matchStartedAt, lastMoveAt, status]);
 
   return {
     status,
