@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.35  Jan 13, 2026
+
+- **FIX: Default OpenRouter reasoning effort to high** (Author: Cascade (ChatGPT 5.1))
+  - **What**: Raised the OpenRouter service's default reasoning payload effort from medium to high and exposed a helper so explicit overrides still work. Added unit coverage to lock the behavior.
+  - **Why**: Ensures ARC Explainer always requests richer reasoning traces from OpenRouter unless callers intentionally downgrade effort.
+  - **How**:
+    - `server/services/openrouter.ts`: introduced `resolveOpenRouterReasoningOptions`, set the default to `'high'`, and refreshed the metadata header/logging.
+    - `tests/unit/services/OpenRouterService.test.ts`: new tests verifying the helper skips disabled requests, defaults to high, and honors overrides.
+
 ### Version 6.35.34  Jan 12, 2026
 
 - **FEAT: Add Player C variant with minimal prompt** (Author: Cascade)
