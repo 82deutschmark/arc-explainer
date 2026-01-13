@@ -32,6 +32,20 @@ function normalizeGameId(raw: string): string {
 
 const PINNED_GAMES: WormArenaGreatestHitGame[] = [
   {
+    gameId: '11b4453f-aef9-4387-b60e-28fa934cad0f',
+    startedAt: '2026-01-13T13:26:00.000000',
+    modelA: 'deepseek/deepseek-v3.2-exp',
+    modelB: 'x-ai/grok-4.1-fast',
+    roundsPlayed: 0,
+    maxRounds: 150,
+    totalCost: 0,
+    maxFinalScore: 0,
+    scoreDelta: 0,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: Live replay from 2026-01-13. DeepSeek v3.2-exp vs Grok 4.1 Fast.',
+  },
+  {
     gameId: '17b4cccc-e0b2-44a7-bc65-d69a13221993',
     startedAt: '2025-12-26T00:44:49.624264',
     modelA: 'google/gemini-2.5-flash-preview-09-2025',

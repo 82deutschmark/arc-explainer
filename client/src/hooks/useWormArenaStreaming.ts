@@ -16,6 +16,7 @@ import type {
   WormArenaStreamStatus,
   WormArenaStreamChunk,
 } from '@shared/types';
+import { computeTimerSeconds } from '@/lib/wormArena/timerUtils';
 
 type StreamState = 'idle' | 'connecting' | 'starting' | 'in_progress' | 'completed' | 'failed';
 
@@ -51,6 +52,10 @@ export function useWormArenaStreaming() {
   const [eventLog, setEventLog] = useState<WormArenaEventLogEntry[]>([]);
   const statusRef = useRef<StreamState>('idle');
   const sawInitRef = useRef(false);
+  const [matchStartedAt, setMatchStartedAt] = useState<number | null>(null);
+  const [lastMoveAt, setLastMoveAt] = useState<number | null>(null);
+  const [wallClockSeconds, setWallClockSeconds] = useState<number | null>(null);
+  const [sinceLastMoveSeconds, setSinceLastMoveSeconds] = useState<number | null>(null);
 
   // Match progress state (kept for UI compatibility but batch mode removed)
   const [currentMatchIndex, setCurrentMatchIndex] = useState<number | null>(null);
@@ -118,6 +123,10 @@ export function useWormArenaStreaming() {
       setEventLog([]);
       setCurrentMatchIndex(null);
       setTotalMatches(null);
+      setMatchStartedAt(null);
+      setLastMoveAt(null);
+      setWallClockSeconds(null);
+      setSinceLastMoveSeconds(null);
     }
   }, [setCurrentMatchIndex, setError, setFinalSummary, setFrames, setMessage, setPhase, setStatus, setTotalMatches]);
 
@@ -168,6 +177,12 @@ export function useWormArenaStreaming() {
         setStatus(mappedState);
         if (data.message) setMessage(data.message);
         if (data.phase) setPhase(data.phase);
+        if (Number.isFinite(data.matchStartedAt)) {
+          setMatchStartedAt((prev) => (prev ?? data.matchStartedAt!) as number);
+        }
+        if (Number.isFinite(data.lastMoveAt)) {
+          setLastMoveAt(data.lastMoveAt!);
+        }
         appendEventLog({
           type: 'status',
           timestamp: Date.now(),
@@ -183,6 +198,14 @@ export function useWormArenaStreaming() {
       try {
         const data = JSON.parse((event as MessageEvent).data) as WormArenaFrameEvent;
         setFrames((prev) => [...prev, data]);
+        if (Number.isFinite(data.matchStartedAt)) {
+          setMatchStartedAt((prev) => (prev ?? data.matchStartedAt!) as number);
+        }
+        if (Number.isFinite(data.lastMoveAt)) {
+          setLastMoveAt(data.lastMoveAt!);
+        } else {
+          setLastMoveAt(Date.now());
+        }
         const round = (data as any)?.round;
         appendEventLog({
           type: 'frame',
@@ -317,6 +340,31 @@ export function useWormArenaStreaming() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!matchStartedAt) {
+      setWallClockSeconds(null);
+      setSinceLastMoveSeconds(null);
+      return;
+    }
+
+    const updateTimers = () => {
+      const now = Date.now();
+      const { wallClockSeconds: wall, sinceLastMoveSeconds: since } = computeTimerSeconds(
+        matchStartedAt,
+        lastMoveAt,
+        now,
+      );
+      setWallClockSeconds(wall);
+      setSinceLastMoveSeconds(since);
+    };
+
+    updateTimers();
+    const handle = window.setInterval(updateTimers, 500);
+    return () => {
+      window.clearInterval(handle);
+    };
+  }, [matchStartedAt, lastMoveAt]);
+
   return {
     status,
     message,
@@ -331,6 +379,10 @@ export function useWormArenaStreaming() {
     currentMatchIndex,
     totalMatches,
     eventLog,
+    matchStartedAt,
+    lastMoveAt,
+    wallClockSeconds,
+    sinceLastMoveSeconds,
     startMatch,
     connect,
     disconnect,
