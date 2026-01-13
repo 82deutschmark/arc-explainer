@@ -1,12 +1,9 @@
 /**
- * Models API routes - serves model configuration to client
- * Centralizes all model metadata on server-side
- * Exposes DB-discovered OpenRouter model timestamps for client sorting.
- *
- * @author Cascade / Claude Haiku 4.5
- * Date: 2025-12-16 / 2025-12-24
- * PURPOSE: Added GET /api/models/openrouter/sync-status endpoint to expose catalog sync metadata
- * SRP/DRY check: Pass - endpoint is isolated, reuses catalog file only
+ * Author: GPT-5
+ * Date: 2026-01-10
+ * PURPOSE: Models API routes that serve client-safe model metadata, now collapsing
+ *          OpenRouter :free variants to their canonical slugs when DB entries are merged.
+ * SRP/DRY check: Pass - endpoint is isolated, reuses catalog file only.
  */
 
 import { Router } from 'express';
@@ -15,6 +12,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { MODELS, getModelConfig, getModelsByProvider } from '../config/models/index.js';
 import { repositoryService } from '../repositories/RepositoryService.js';
+import { canonicalizeOpenRouterSlug } from '../utils/openRouterSlugCanonicalizer.ts';
 import type { OpenRouterSyncStatus } from '../../shared/types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -59,12 +57,17 @@ function toClientSafeModel(model: any): ClientSafeModel {
 async function getDbOpenRouterModels(): Promise<Array<{ key: string; name: string; addedAt?: string }>> {
   if (!repositoryService.isInitialized()) return [];
   const dbModels = await repositoryService.gameRead.listModels();
-  return dbModels
+  const bySlug = new Map<string, { key: string; name: string; addedAt?: string }>();
+
+  dbModels
     .filter((m) => (m.provider || '').toLowerCase() === 'openrouter' && m.is_active)
-    .map((m) => ({
-      key: m.model_slug,
-      name: m.name || m.model_slug,
-      addedAt: (() => {
+    .forEach((m) => {
+      const rawSlug = typeof m.model_slug === 'string' ? m.model_slug.trim() : '';
+      if (!rawSlug) return;
+      const canonicalSlug = canonicalizeOpenRouterSlug(rawSlug);
+      if (!canonicalSlug) return;
+
+      const addedAt = (() => {
         const raw = (m as any).discovered_at ?? (m as any).created_at ?? null;
         if (!raw) return undefined;
         try {
@@ -73,9 +76,30 @@ async function getDbOpenRouterModels(): Promise<Array<{ key: string; name: strin
         } catch {
           return undefined;
         }
-      })(),
-    }))
-    .filter((m) => typeof m.key === 'string' && m.key.trim().length > 0);
+      })();
+
+      const existing = bySlug.get(canonicalSlug);
+      if (!existing) {
+        bySlug.set(canonicalSlug, {
+          key: canonicalSlug,
+          name: m.name || canonicalSlug,
+          addedAt,
+        });
+        return;
+      }
+
+      const existingMs = existing.addedAt ? Date.parse(existing.addedAt) : Number.NEGATIVE_INFINITY;
+      const nextMs = addedAt ? Date.parse(addedAt) : Number.NEGATIVE_INFINITY;
+      if (nextMs > existingMs) {
+        bySlug.set(canonicalSlug, {
+          key: canonicalSlug,
+          name: m.name || canonicalSlug,
+          addedAt,
+        });
+      }
+    });
+
+  return Array.from(bySlug.values());
 }
 
 function buildFallbackOpenRouterClientModel(slug: string, name: string, addedAt?: string): ClientSafeModel {
@@ -103,11 +127,11 @@ function buildFallbackOpenRouterClientModel(slug: string, name: string, addedAt?
 router.get('/', async (req, res) => {
   const configModels = MODELS.map(toClientSafeModel);
 
-  const configKeySet = new Set(configModels.map((m) => m.key));
+  const configKeySet = new Set(configModels.map((m) => canonicalizeOpenRouterSlug(m.key)));
   const dbOpenRouter = await getDbOpenRouterModels();
 
   const dbOnly = dbOpenRouter
-    .filter((m) => !configKeySet.has(m.key))
+    .filter((m) => !configKeySet.has(canonicalizeOpenRouterSlug(m.key)))
     .map((m) => buildFallbackOpenRouterClientModel(m.key, m.name, m.addedAt));
 
   res.json([...configModels, ...dbOnly]);

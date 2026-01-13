@@ -67,6 +67,9 @@ function validatePayload(body: any): { payload?: SnakeBenchRunMatchRequest; erro
   if (body.provider && typeof body.provider === 'string') {
     req.provider = body.provider as SnakeBenchRunMatchRequest['provider'];
   }
+  if (body.playerPersona && typeof body.playerPersona === 'string') {
+    req.playerPersona = String(body.playerPersona).trim();
+  }
   return { payload: req };
 }
 
@@ -206,6 +209,8 @@ export const wormArenaStreamController = {
         modelB: result.modelB,
         scores: result.scores ?? {},
         results: result.results ?? {},
+        playerTiming: result.playerTiming,
+        roundTiming: result.roundTiming,
       };
       sendStatus({ state: 'completed', message: 'Match finished.' });
       sseStreamManager.sendEvent(sessionId, 'stream.complete', summary);

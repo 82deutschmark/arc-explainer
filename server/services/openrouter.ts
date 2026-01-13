@@ -1,9 +1,8 @@
 /**
- * Author: Codex (GPT-5.1 Codex CLI)
- * Date: 2025-12-18T19:00:00Z
- * PURPOSE: Coordinates ARC puzzle analysis via OpenRouter while providing fall-back streaming
- *          support that reuses the proven non-streaming flow so SSE consumers stay live.
- * SRP/DRY check: Pass – maintains single responsibility for OpenRouter integration and defers DTO handling to shared helpers.
+ * Author: Cascade (ChatGPT 5.1)
+ * Date: 2026-01-13T17:05:00Z
+ * PURPOSE: Coordinates ARC puzzle analysis via OpenRouter, ensuring reasoning payloads default to high-effort traces while keeping streaming fallbacks alive.
+ * SRP/DRY check: Pass – Verified shared helpers reuse and reasoning default update.
  */
 
 import dotenv from 'dotenv';
@@ -56,6 +55,23 @@ const openrouter = new OpenAI({
     "X-Title": "ARC Explainer", // Your app name
   }
 });
+
+const DEFAULT_OPENROUTER_REASONING_EFFORT: ServiceOptions['reasoningEffort'] = 'high';
+
+export function resolveOpenRouterReasoningOptions(
+  serviceOpts?: ServiceOptions
+): { enabled: true; effort: NonNullable<ServiceOptions['reasoningEffort']>; exclude: false } | undefined {
+  if (!serviceOpts?.captureReasoning) {
+    return undefined;
+  }
+
+  const effort = serviceOpts.reasoningEffort ?? DEFAULT_OPENROUTER_REASONING_EFFORT;
+  return {
+    enabled: true,
+    effort,
+    exclude: false,
+  };
+}
 
 export class OpenRouterService extends BaseAIService {
   protected provider = "OpenRouter";
@@ -224,16 +240,14 @@ export class OpenRouterService extends BaseAIService {
         };
 
         // Only include reasoning parameter if explicitly requested, formatted per OpenRouter API spec
-        if (serviceOpts.captureReasoning) {
-          payload.reasoning = {
-            enabled: true,
-            effort: 'medium',
-            exclude: false
-          };
-          logger.service('OpenRouter', `Reasoning enabled for ${modelName} with effort: medium`);
+        const reasoningPayload = resolveOpenRouterReasoningOptions(serviceOpts);
+        if (reasoningPayload) {
+          payload.reasoning = reasoningPayload;
+          logger.service('OpenRouter', `Reasoning enabled for ${modelName} with effort: ${reasoningPayload.effort}`);
         }
 
-        logger.service('OpenRouter', `Request payload - stream: ${payload.stream}, reasoning: ${serviceOpts.captureReasoning ? 'enabled' : 'disabled'}, step: ${continuationStep}`);;
+        const reasoningEnabled = Boolean(reasoningPayload);
+        logger.service('OpenRouter', `Request payload - stream: ${payload.stream}, reasoning: ${reasoningEnabled ? 'enabled' : 'disabled'}, step: ${continuationStep}`);;
 
         // Conditionally apply JSON mode based on model configuration
         const modelConfig = getModelConfig(modelKey);

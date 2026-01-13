@@ -22,6 +22,7 @@ export interface WormArenaSetupState {
   numApples: number;
   byoApiKey: string;
   byoProvider: ByoProvider;
+  playerPersona: string;
 }
 
 export interface WormArenaSetupActions {
@@ -33,6 +34,7 @@ export interface WormArenaSetupActions {
   setNumApples: (numApples: number) => void;
   setByoApiKey: (key: string) => void;
   setByoProvider: (provider: ByoProvider) => void;
+  setPlayerPersona: (persona: string) => void;
 }
 
 export interface WormArenaSetupReturn extends WormArenaSetupState, WormArenaSetupActions {
@@ -52,6 +54,7 @@ export function useWormArenaSetup(): WormArenaSetupReturn {
   const [numApples, setNumApples] = useState<number>(5);
   const [byoApiKey, setByoApiKey] = useState<string>('');
   const [byoProvider, setByoProvider] = useState<ByoProvider>('openrouter');
+  const [playerPersona, setPlayerPersona] = useState<string>('default');
 
   /**
    * Validates that both models are selected and available.
@@ -74,6 +77,7 @@ export function useWormArenaSetup(): WormArenaSetupReturn {
     numApples,
     byoApiKey,
     byoProvider,
+    playerPersona,
     setModelA,
     setModelB,
     setWidth,
@@ -82,6 +86,7 @@ export function useWormArenaSetup(): WormArenaSetupReturn {
     setNumApples,
     setByoApiKey,
     setByoProvider,
+    setPlayerPersona,
     isValid,
   };
 }

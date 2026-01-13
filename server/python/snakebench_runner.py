@@ -65,6 +65,9 @@ def main() -> int:
         pricing_input_b = _safe_float(payload.get("pricingInputB"))
         pricing_output_b = _safe_float(payload.get("pricingOutputB"))
 
+        # Player persona variant (default, A, B)
+        player_persona = str(payload.get("playerPersona") or "default").strip()
+
         # Resolve SnakeBench backend path relative to this repo
         script_dir = Path(__file__).resolve().parent
         project_root = script_dir.parent.parent
@@ -74,12 +77,20 @@ def main() -> int:
             emit_error(f"SnakeBench backend directory not found at {backend_dir}")
             return 1
 
+        # Resolve completed games directory from env or default
+        completed_games_dir_name = os.getenv("SNAKEBENCH_COMPLETED_GAMES_DIR", "").strip()
+        if not completed_games_dir_name:
+            completed_games_dir_name = "completed_games_local"
+
+        completed_games_dir = backend_dir / completed_games_dir_name
+
         # Make SnakeBench backend importable
         if str(backend_dir) not in sys.path:
             sys.path.insert(0, str(backend_dir))
 
         try:
             from main import run_simulation  # type: ignore
+            from players.variant_registry import get_player_class  # type: ignore
         except Exception as e:  # noqa: BLE001
             emit_error(f"Failed to import SnakeBench main module: {e}")
             return 1
@@ -124,6 +135,7 @@ def main() -> int:
             num_apples=num_apples,
             game_id=None,
             game_type="arc-explainer",
+            player_persona=player_persona,
         )
 
         # Run the actual SnakeBench simulation
@@ -147,9 +159,15 @@ def main() -> int:
         completed_game_path = None
         if game_id:
             replay_name = f"snake_game_{game_id}.json"
-            candidate = backend_dir / "completed_games" / replay_name
+            # Try resolved completed games directory first
+            candidate = completed_games_dir / replay_name
             if candidate.exists():
                 completed_game_path = str(candidate)
+            else:
+                # Fallback to legacy 'completed_games' for backwards compatibility
+                legacy_candidate = backend_dir / "completed_games" / replay_name
+                if legacy_candidate.exists():
+                    completed_game_path = str(legacy_candidate)
 
         output = {
             "game_id": game_id,

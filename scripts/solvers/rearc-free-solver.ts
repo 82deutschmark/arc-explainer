@@ -1,12 +1,12 @@
 /**
  * rearc-free-solver.ts
  *
- * Author: Cascade (ChatGPT)
- * Date: 2025-12-31
+ * Author: Codex (GPT-5)
+ * Date: 2026-01-09T00:00:00Z
  * PURPOSE: Durable RE-ARC solver using free OpenRouter models with checkpointing,
  *          resumable queues, adaptive backoff, and rich run summaries.
  *          Integrates attempt deduping, retry orchestration, and submission export.
- * SRP/DRY check: Pass — Reviewed prior solver flow and preserved single responsibility.
+ * SRP/DRY check: Pass - Verified solver flow and reused existing orchestration utilities.
  *
  * Usage:
  *   npx tsx scripts/solvers/rearc-free-solver.ts --dataset <path> [--checkpoint <file>] [--fresh|--resume]
@@ -21,12 +21,12 @@
  *   OPENROUTER_API_KEY       - Required. Your OpenRouter API key.
  *   REARC_MODEL              - Model to use (default: xiaomi/mimo-v2-flash:free)
  *   REARC_REASONING_EFFORT   - Reasoning level: high|medium|low|none (default: high)
+ *   REARC_MAX_TOKENS         - Max output tokens for OpenRouter responses (optional).
  *   REARC_LAUNCH_DELAY_MS    - Delay between launching new calls in ms (default: 10000)
  *   REARC_MAX_CONCURRENT     - Max concurrent API calls (default: 4)
  *   REARC_MAX_BACKOFF_MS     - Optional cap for adaptive delay (default: 60000)
  *   REARC_CHECKPOINT_INTERVAL- Attempts between automatic checkpoint saves (default: 10)
  */
-
 import OpenAI from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -51,9 +51,11 @@ const BACKOFF_MULTIPLIER = 1.8;
 const BACKOFF_RECOVERY = 0.85;
 const BACKOFF_JITTER = 0.15;
 
-// Reasoning effort: 'high' or 'medium' recommended for ARC tasks
+// Reasoning effort: 'low' or 'medium' recommended for ARC tasks
 // Set REARC_REASONING_EFFORT=none to disable reasoning
-const REASONING_EFFORT = (process.env.REARC_REASONING_EFFORT || 'high') as 'high' | 'medium' | 'low' | 'none';
+const REASONING_EFFORT = (process.env.REARC_REASONING_EFFORT || 'low') as 'high' | 'medium' | 'low' | 'none';
+const MAX_OUTPUT_TOKENS = Number(process.env.REARC_MAX_TOKENS);
+const MIN_REASONING_OUTPUT_TOKENS = 2048;
 
 const openrouter = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
@@ -155,6 +157,7 @@ interface ConfigSnapshot {
   launchDelayMs: number;
   maxBackoffMs: number;
   maxRetries: number;
+  maxOutputTokens?: number;
 }
 
 interface CheckpointData {
@@ -376,6 +379,7 @@ function createInitialState(datasetPath: string, datasetHash: string, workQueue:
       launchDelayMs: LAUNCH_DELAY_MS,
       maxBackoffMs: MAX_BACKOFF_MS,
       maxRetries: MAX_RETRIES,
+      maxOutputTokens: Number.isFinite(MAX_OUTPUT_TOKENS) && MAX_OUTPUT_TOKENS > 0 ? MAX_OUTPUT_TOKENS : undefined,
     },
   };
 }
@@ -427,6 +431,7 @@ function loadCheckpoint(
       launchDelayMs: LAUNCH_DELAY_MS,
       maxBackoffMs: MAX_BACKOFF_MS,
       maxRetries: MAX_RETRIES,
+      maxOutputTokens: Number.isFinite(MAX_OUTPUT_TOKENS) && MAX_OUTPUT_TOKENS > 0 ? MAX_OUTPUT_TOKENS : undefined,
     },
   };
 
@@ -557,8 +562,21 @@ async function solveAttempt(
       model: MODEL_KEY,
       messages: [{ role: 'user', content: prompt }],
       temperature: attemptNum === 1 ? 0.0 : 0.3,
-      max_tokens: 8192,
     };
+
+    const maxTokens = Number.isFinite(MAX_OUTPUT_TOKENS) && MAX_OUTPUT_TOKENS > 0 ? MAX_OUTPUT_TOKENS : undefined;
+    if (typeof maxTokens === 'number') {
+      const adjustedMaxTokens =
+        REASONING_EFFORT !== 'none' && maxTokens < MIN_REASONING_OUTPUT_TOKENS
+          ? MIN_REASONING_OUTPUT_TOKENS
+          : maxTokens;
+      requestParams.max_tokens = adjustedMaxTokens;
+      if (adjustedMaxTokens !== maxTokens) {
+        console.warn(
+          `    [warn] REARC_MAX_TOKENS=${maxTokens} too low for reasoning. Using ${adjustedMaxTokens} instead.`
+        );
+      }
+    }
 
     if (REASONING_EFFORT !== 'none') {
       requestParams.reasoning = { effort: REASONING_EFFORT };
@@ -732,6 +750,9 @@ function printSummary(
   console.log(`Dataset hash: ${metadata.datasetHash}`);
   console.log(`Model: ${state.config.modelKey}`);
   console.log(`Reasoning effort: ${state.config.reasoningEffort}`);
+  if (state.config.maxOutputTokens) {
+    console.log(`Max output tokens: ${state.config.maxOutputTokens}`);
+  }
   console.log('');
   console.log(`Attempts scheduled: ${state.stats.totalScheduled}`);
   console.log(`Attempts completed: ${state.stats.completedAttempts}`);

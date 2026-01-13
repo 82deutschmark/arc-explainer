@@ -51,6 +51,7 @@ import {
 } from './wormArena/WormArenaReportService.ts';
 import path from 'path';
 import fs from 'fs';
+import { getCompletedGamesAbsolutePath } from './snakeBench/utils/constants.ts';
 
 // Normalize model slugs so ":free" suffixes do not split report data.
 const normalizeModelSlug = (modelSlug: string): string => modelSlug.trim().replace(/:free$/i, '');
@@ -73,7 +74,7 @@ class SnakeBenchService {
 
   constructor() {
     const backendDir = path.join(process.cwd(), 'external', 'SnakeBench', 'backend');
-    const completedDir = path.join(backendDir, 'completed_games');
+    const completedDir = getCompletedGamesAbsolutePath(process.cwd());
 
     this.gameIndexManager = new GameIndexManager(completedDir);
     this.persistenceCoordinator = new PersistenceCoordinator(this.gameIndexManager);

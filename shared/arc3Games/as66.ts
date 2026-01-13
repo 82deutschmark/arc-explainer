@@ -1,7 +1,7 @@
 /*
- * Author: Claude
- * Date: 2026-01-04
- * PURPOSE: Game metadata for AS66 (Always Sliding).
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-09
+ * PURPOSE: Game metadata for AS66 (Always Sliding) plus curated replay video reference.
  * SRP/DRY check: Pass - Single responsibility for AS66 game data.
  */
 
@@ -54,6 +54,10 @@ export const as66: Arc3GameMetadata = {
   ],
   tags: ['preview-set', 'movement', 'sliding'],
   thumbnailUrl: '/as66.png',
+  video: {
+    src: '/videos/arc3/as66-test.mp4',
+    caption: 'Full Always Sliding clear demonstrating Action timing',
+  },
   isFullyDocumented: true,
   notes: 'Updated with strategic intel about enemy lethality and exit conditions.',
 };

@@ -32,6 +32,20 @@ function normalizeGameId(raw: string): string {
 
 const PINNED_GAMES: WormArenaGreatestHitGame[] = [
   {
+    gameId: '42ccab35-b987-425c-8a32-5a9f7040f6aa',
+    startedAt: '2026-01-13T17:41:21.371773',
+    modelA: 'openai/gpt-5.2',
+    modelB: 'x-ai/grok-4.1-fast',
+    roundsPlayed: 52,
+    maxRounds: 150,
+    totalCost: 1.5168757,
+    maxFinalScore: 26,
+    scoreDelta: 2,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: GPT-5.2 defeated Grok 4.1 Fast 24-26 in a 52-round match. Grok died via body collision in round 51.',
+  },
+  {
     gameId: '17b4cccc-e0b2-44a7-bc65-d69a13221993',
     startedAt: '2025-12-26T00:44:49.624264',
     modelA: 'google/gemini-2.5-flash-preview-09-2025',

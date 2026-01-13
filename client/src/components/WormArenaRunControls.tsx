@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Author: Cascade
  * Date: 2025-12-18
  * PURPOSE: Worm Arena run controls panel with searchable model inputs and match queue.
@@ -72,6 +72,9 @@ export interface WormArenaRunControlsProps {
   byoProvider: ByoProvider;
   onByoApiKeyChange: (v: string) => void;
   onByoProviderChange: (v: ByoProvider) => void;
+
+  playerPersona: string;
+  onPlayerPersonaChange: (persona: string) => void;
 
   onStart: () => void;
   // New: support for running multiple queued matchups
@@ -186,6 +189,8 @@ export default function WormArenaRunControls({
   byoProvider,
   onByoApiKeyChange,
   onByoProviderChange,
+  playerPersona,
+  onPlayerPersonaChange,
   onStart,
   onStartQueue,
   launchNotice,
@@ -316,6 +321,25 @@ export default function WormArenaRunControls({
           </div>
         </div>
       )}
+
+      {/* Player Persona Selector */}
+      <div>
+        <label className="text-xs font-semibold text-worm-ink mb-1 block">Player Persona</label>
+        <select
+          value={playerPersona}
+          onChange={(e) => onPlayerPersonaChange(e.target.value)}
+          disabled={isLiveLocked}
+          className="w-full h-10 rounded border px-3 text-xs bg-white/80"
+        >
+          <option value="default">Default - Original SnakeBench prompt</option>
+          <option value="A">Variant A - Tactical cheat-sheet with decision checklist</option>
+          <option value="B">Variant B - Open-ended: rules only, be ruthless</option>
+          <option value="C">Variant C - Minimal: rules only, single-word response only</option>
+        </select>
+        <div className="text-[10px] text-worm-muted mt-1">
+          Controls how the LLM interprets the game and makes decisions.
+        </div>
+      </div>
 
       {/* BYOK Notice - Show prominently in production when key is required but missing */}
       {globalByokRequired && !hasApiKey && (

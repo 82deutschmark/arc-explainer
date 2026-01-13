@@ -1,9 +1,9 @@
 /**
- * Author: Gemini 3 Flash High
- * Date: 2025-12-27
- * PURPOSE: GameWriteRepository - Handles all write operations for SnakeBench/Worm Arena.
- *          Includes match recording, replay ingestion, rating updates (TrueSkill/Elo),
- *          and model upserts. INTERCHANGEABLE: "Game" and "Match" refer to the same entity.
+ * Author: GPT-5
+ * Date: 2026-01-10
+ * PURPOSE: GameWriteRepository - Handles all write operations for SnakeBench/Worm Arena,
+ *          now canonicalizing OpenRouter model slugs so variants like :free collapse into
+ *          a single canonical model entry for storage and analytics.
  * SRP/DRY check: Pass - focused exclusively on data mutation and persistence.
  */
 
@@ -14,6 +14,8 @@ import { Rating, TrueSkill } from 'ts-trueskill';
 
 import { BaseRepository } from './base/BaseRepository.ts';
 import { logger } from '../utils/logger.ts';
+import { canonicalizeOpenRouterSlug } from '../utils/openRouterSlugCanonicalizer.ts';
+import { deriveReplayPath, getCompletedGamesAbsolutePath } from '../services/snakeBench/utils/constants.ts';
 import {
   DEFAULT_TRUESKILL_MU,
   DEFAULT_TRUESKILL_SIGMA,
@@ -57,7 +59,8 @@ export class GameWriteRepository extends BaseRepository {
 
     const execute = async (queryClient: PoolClient) => {
       for (const m of models) {
-        const name = m.name ?? m.modelSlug;
+        const canonicalSlug = canonicalizeOpenRouterSlug(m.modelSlug);
+        const name = m.name ?? canonicalSlug;
         const provider = m.provider ?? 'OpenRouter';
         const isActive = m.isActive ?? true;
         const testStatus = m.testStatus ?? 'untested';
@@ -70,7 +73,7 @@ export class GameWriteRepository extends BaseRepository {
                 is_active = EXCLUDED.is_active
           RETURNING xmax = 0 AS inserted_flag;
         `;
-        const { rows } = await queryClient.query(sql, [name, provider, m.modelSlug, isActive, testStatus]);
+        const { rows } = await queryClient.query(sql, [name, provider, canonicalSlug, isActive, testStatus]);
         const wasInserted = rows?.[0]?.inserted_flag === true;
         if (wasInserted) inserted += 1;
         else updated += 1;
@@ -345,7 +348,12 @@ export class GameWriteRepository extends BaseRepository {
     }
 
     const filename = path.basename(absolutePath);
-    const replayPath = path.join('completed_games', filename);
+
+    // Derive replay_path relative to SnakeBench backend directory
+    // This preserves the actual directory name (e.g., 'completed_games_local/snake_game_abc.json')
+    const repoRoot = process.cwd();
+    const backendDir = path.join(repoRoot, 'external', 'SnakeBench', 'backend');
+    const replayPath = deriveReplayPath(absolutePath, backendDir);
     const gameType = String(opts.gameTypeOverride ?? gameBlock.game_type ?? metadata.game_type ?? 'arc-explainer');
 
     return {
@@ -360,7 +368,8 @@ export class GameWriteRepository extends BaseRepository {
   async getOrCreateModelId(client: PoolClient, modelSlug: string): Promise<number | null> {
     if (!modelSlug) return null;
     const provider = 'OpenRouter';
-    const name = modelSlug;
+    const canonicalSlug = canonicalizeOpenRouterSlug(modelSlug);
+    const name = canonicalSlug;
 
     const insertSql = `
       INSERT INTO public.models (name, provider, model_slug, is_active, test_status, trueskill_mu, trueskill_sigma, trueskill_exposed, trueskill_updated_at)
@@ -372,7 +381,7 @@ export class GameWriteRepository extends BaseRepository {
 
     const exposed = DEFAULT_TRUESKILL_MU - 3 * DEFAULT_TRUESKILL_SIGMA;
     const { rows } = await client.query(insertSql, [
-      name, provider, modelSlug, DEFAULT_TRUESKILL_MU, DEFAULT_TRUESKILL_SIGMA, exposed,
+      name, provider, canonicalSlug, DEFAULT_TRUESKILL_MU, DEFAULT_TRUESKILL_SIGMA, exposed,
     ]);
     if (!rows.length) return null;
     return rows[0].id as number;
@@ -539,6 +548,22 @@ export class GameWriteRepository extends BaseRepository {
       `,
       [DEFAULT_TRUESKILL_MU, DEFAULT_TRUESKILL_SIGMA, exposed, display],
     );
+  }
+
+  /**
+   * Deactivate OpenRouter models not present in the curated slug list.
+   */
+  async deactivateOpenRouterModelsNotIn(allowedSlugs: string[]): Promise<number> {
+    if (!this.isConnected()) return 0;
+    if (!allowedSlugs.length) return 0;
+    const sql = `
+      UPDATE public.models
+      SET is_active = FALSE, updated_at = NOW()
+      WHERE LOWER(provider) = 'openrouter'
+        AND NOT (model_slug = ANY($1::text[]));
+    `;
+    const result = await this.query(sql, [allowedSlugs]);
+    return result.rowCount || 0;
   }
 
   /**

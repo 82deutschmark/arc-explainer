@@ -1,7 +1,7 @@
 /*
- * Author: Claude
- * Date: 2026-01-04
- * PURPOSE: Game metadata for LS20 (Locksmith).
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-01-09
+ * PURPOSE: Game metadata for LS20 (Locksmith), including featured replay video details.
  * SRP/DRY check: Pass - Single responsibility for LS20 game data.
  */
 
@@ -49,6 +49,10 @@ export const ls20: Arc3GameMetadata = {
   ],
   tags: ['preview-set', 'transformation', 'navigation'],
   thumbnailUrl: '/ls20.png',
+  video: {
+    src: '/videos/arc3/ls20-fa137e247ce6.mp4',
+    caption: 'Locksmith walkthrough replay captured Dec 2025',
+  },
   isFullyDocumented: true,
   notes: 'Updated with strategic intel from manual game mastery.',
 };
