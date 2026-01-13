@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.0  Jan 13, 2026
+
+- **FEAT: Game culling - exclude low-quality matches from statistics** (Author: Cascade)
+  - **What**: Implemented game culling system to exclude matches with < 10 rounds from all statistics, leaderboards, and analytics. Games are marked as culled in the database but not deleted, allowing restoration if needed.
+  - **Why**: Many short matches (< 10 rounds) are errors, crashes, or malformed runs that pollute model statistics. A model might show 50 games played but 40 of them ended after round 3 due to errors. This makes win rates, TrueSkill ratings, and other metrics unreliable.
+  - **How**:
+    - `migrations/0004_add_game_culling_columns.sql`: Added `is_culled`, `culled_reason`, `culled_source`, `culled_at` columns to `public.games` table with index and backfill UPDATE marking all games with < 10 rounds as culled.
+    - `server/repositories/GameReadRepository.ts`: All queries now filter `COALESCE(g.is_culled, false) = false` (recent games, search, activity, stats, model history).
+    - `server/repositories/CurationRepository.ts`: Greatest hits baseFrom filter excludes culled games.
+    - `server/repositories/LeaderboardRepository.ts`: TrueSkill leaderboard, basic leaderboard, pairing history all filter culled games.
+    - `server/repositories/AnalyticsRepository.ts`: Model insights and run-length distribution filter culled games.
+    - `server/services/snakeBench/helpers/replayFilters.ts`: MIN_ROUNDS reduced to 10 as secondary defense.
+    - `docs/plans/2026-01-13-snakebench-game-culling-plan.md`: Implementation plan marked as completed.
+
 ### Version 6.35.40  Jan 13, 2026
 
 - **FEAT: Pin Grok Code Fast 1 vs GPT-5.1 Codex Mini match to Worm Arena Greatest Hits** (Author: Cascade)

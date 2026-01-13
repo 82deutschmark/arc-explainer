@@ -1,5 +1,7 @@
 # 2026-01-13 SnakeBench Game Culling Plan
 
+**STATUS: IMPLEMENTED** (2026-01-13)
+
 ## 1. Objective & Motivation
 - Remove low-quality SnakeBench games (very short runs, broken replays, crash-only matches) from downstream stats so ARC Explainer charts remain trustworthy.
 - Keep historical data intact but mark unusable games with explicit reasons and timestamps so we can restore them if heuristics prove too strict.
@@ -73,6 +75,24 @@
 - Ensure downstream analytics (external notebooks, Supabase exports) know about the new column; consider view/backfill to avoid breaking csv consumers.
 - Coordinate deployment order: schema migration must land before runtime code writes to new columns; otherwise provide feature flag.
 
-## 7. Next Steps
-- Await user approval on this plan.
-- After approval, proceed with schema migration & heuristic module implementation, keeping CHANGELOG + docs in sync per AGENTS.md.
+## 7. Implementation Summary (Completed 2026-01-13)
+
+### Files Changed:
+- **`migrations/0004_add_game_culling_columns.sql`** — New migration adding `is_culled`, `culled_reason`, `culled_source`, `culled_at` columns + backfill for games < 10 rounds
+- **`server/repositories/GameReadRepository.ts`** — All queries now filter `COALESCE(g.is_culled, false) = false`
+- **`server/repositories/CurationRepository.ts`** — Greatest hits baseFrom filter updated
+- **`server/repositories/LeaderboardRepository.ts`** — TrueSkill leaderboard, basic leaderboard, pairing history all filter culled games
+- **`server/repositories/AnalyticsRepository.ts`** — Model insights and run-length distribution filter culled games
+- **`server/services/snakeBench/helpers/replayFilters.ts`** — MIN_ROUNDS reduced to 10 (secondary defense after DB filtering)
+
+### To Apply:
+Run the migration `0004_add_game_culling_columns.sql` against the production database. The migration includes:
+1. Schema additions (4 new columns)
+2. Index on `is_culled` for efficient filtering
+3. Backfill UPDATE marking all games with < 10 rounds as culled
+
+### Expected Impact:
+- Models with many short/errored games will show drastically different stats
+- Leaderboard rankings will shift to reflect only quality matches
+- Total games count will decrease
+- Win rates and other aggregates will be more accurate
