@@ -30,6 +30,7 @@ export interface SnakeBenchMatchPayload {
   pricingOutputA: number;
   pricingInputB: number;
   pricingOutputB: number;
+  playerPersona?: string;
 }
 
 export interface PreparedMatchConfig {
@@ -159,6 +160,7 @@ export function prepareRunMatch(
     pricingOutputA,
     pricingInputB,
     pricingOutputB,
+    playerPersona: request.playerPersona,
   };
 
   const pythonBin = options.pythonBin || (process.platform === 'win32' ? 'python' : 'python3');
