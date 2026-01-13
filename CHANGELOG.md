@@ -1,5 +1,21 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.33  Jan 12, 2026
+
+- **FEAT: Add LLM player persona selector to Worm Arena** (Author: Cascade (ChatGPT 5.1))
+  - **What**: Added UI dropdown to select LLM player persona variant (default, A, B) when launching Worm Arena matches. Created LLMPlayerB with open-ended prompt focusing on rules and survival.
+  - **Why**: Users want to experiment with different prompting strategies to see how they affect LLM decision-making in the Snake game.
+  - **How**:
+    - `client/src/components/WormArenaRunControls.tsx`: added persona dropdown with three options and description.
+    - `client/src/hooks/useWormArenaSetup.ts`: added `playerPersona` state and `setPlayerPersona` action.
+    - `client/src/pages/WormArenaLive.tsx`: wired persona selector into match payload.
+    - `shared/types.ts`: added `playerPersona?: string` to `SnakeBenchRunMatchRequest`.
+    - `server/controllers/wormArenaStreamController.ts`: validate and include `playerPersona` in payload.
+    - `server/python/snakebench_runner.py`: receive `playerPersona` from payload and pass to `run_simulation`.
+    - `external/SnakeBench/backend/players/llm_player_b.py`: created new variant with open-ended prompt (rules only, be ruthless).
+    - `external/SnakeBench/backend/players/variant_registry.py`: registered Player B with description.
+    - `external/SnakeBench/backend/main.py`: use `get_player_class(player_persona)` to instantiate correct player variant.
+
 ### Version 6.35.32  Jan 12, 2026
 
 - **FEAT: Add missing Worm Arena OpenRouter models + fix Kat Coder slug** (Author: Cascade (ChatGPT))
