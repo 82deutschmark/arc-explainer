@@ -1,5 +1,27 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.35.37  Jan 13, 2026
+
+- **FIX: Worm Arena live clock displays authoritative timestamps** (Author: Cascade (GPT-5.2))
+  - **What**: Fixed the live page "Clock" and "Since move" timers to show accurate, continuously ticking values based on backend timestamps instead of client receipt times. The wall clock now shows time since match start, and "since last move" resets when new frames arrive.
+  - **Why**: Previous implementation used `Date.now()` when SSE events arrived, causing identical timestamps for all frames and leaving timers stuck at 0. Users expect a real-time clock and move timer.
+  - **How**:
+    - `server/services/snakeBench/SnakeBenchStreamingRunner.ts`: capture `matchStartedAt` at launch, update `lastMoveAt` on each frame, inject into all status/frame events via `emitStatus`/`emitFrame` helpers.
+    - `shared/types.ts`: extended `WormArenaStreamStatus` and `WormArenaFrameEvent` with `matchStartedAt`, `lastMoveAt`, and `round` fields.
+    - `client/src/hooks/useWormArenaStreaming.ts`: added state for timestamps and derived timers, extract from SSE events, maintain ticking timers via 500ms `setInterval`.
+    - `client/src/lib/wormArena/timerUtils.ts`: created `computeTimerSeconds` helper for timer calculations with null-safe handling.
+    - `client/src/pages/WormArenaLive.tsx`: removed local timer computation, now consumes authoritative timers from hook.
+    - `docs/plans/2026-01-13-wormarena-live-clock-plan.md`: marked plan as completed.
+
+### Version 6.35.36  Jan 13, 2026
+
+- **FEAT: Pin live replay to Worm Arena Greatest Hits** (Author: Cascade)
+  - **What**: Added match `11b4453f-aef9-4387-b60e-28fa934cad0f` (DeepSeek v3.2-exp vs Grok 4.1 Fast) to the top of the pinned Greatest Hits list so viewers can easily rewatch the live replay.
+  - **Why**: Ensure standout live matches remain discoverable from the homepage card even as the API window scrolls.
+  - **How**:
+    - `client/src/components/WormArenaGreatestHits.tsx`: prepended new entry to `PINNED_GAMES` with match metadata and highlight text.
+    - `docs/plans/2026-01-13-wormarena-greatest-hits-pin-plan.md`: marked plan as completed.
+
 ### Version 6.35.35  Jan 13, 2026
 
 - **FIX: Default OpenRouter reasoning effort to high** (Author: Cascade (ChatGPT 5.1))

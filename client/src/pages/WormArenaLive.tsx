@@ -173,6 +173,8 @@ export default function WormArenaLive() {
     currentMatchIndex,
     totalMatches,
     eventLog,
+    wallClockSeconds,
+    sinceLastMoveSeconds,
   } = useWormArenaStreaming();
 
   // Render mode toggle: cartoon (default) vs console (raw Python view)
@@ -559,21 +561,9 @@ export default function WormArenaLive() {
   const playerAScore = scoreForSnake(leftSnakeId);
   const playerBScore = scoreForSnake(rightSnakeId);
 
-  const wallClockSeconds = useMemo(() => {
-    if (!frames.length) return null;
-    const first = frames[0]?.timestamp;
-    const last = frames[frames.length - 1]?.timestamp;
-    if (!Number.isFinite(first) || !Number.isFinite(last)) return null;
-    return Math.max(0, (last - first) / 1000);
-  }, [frames]);
-
-  const sinceLastMoveSeconds = useMemo(() => {
-    if (frames.length < 2) return null;
-    const prev = frames[frames.length - 2]?.timestamp;
-    const last = frames[frames.length - 1]?.timestamp;
-    if (!Number.isFinite(prev) || !Number.isFinite(last)) return null;
-    return Math.max(0, (last - prev) / 1000);
-  }, [frames]);
+  // Timers now provided by the hook from authoritative backend timestamps
+  // wallClockSeconds = time since match start (ticking continuously)
+  // sinceLastMoveSeconds = time since most recent frame/move
 
   // Build shareable URL: replay URL if match completed (has gameId), otherwise live URL
   const shareableUrl = React.useMemo(() => {
@@ -738,8 +728,8 @@ export default function WormArenaLive() {
                     maxRounds={maxRoundsValue}
                     phase={phase}
                     aliveSnakes={aliveNames}
-                    wallClockSeconds={wallClockSeconds}
-                    sinceLastMoveSeconds={sinceLastMoveSeconds}
+                    wallClockSeconds={wallClockSeconds ?? undefined}
+                    sinceLastMoveSeconds={sinceLastMoveSeconds ?? undefined}
                   />
 
                   {sessionId && (

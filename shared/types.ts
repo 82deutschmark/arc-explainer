@@ -1016,13 +1016,24 @@ export interface WormArenaStreamStatus {
   state: 'idle' | 'starting' | 'in_progress' | 'completed' | 'failed';
   phase?: string;
   message?: string;
+  taskId?: string;
+  modelKey?: string;
+  timestamp?: number;
+  matchStartedAt?: number;
+  lastMoveAt?: number;
   round?: number;
-  tokenUsage?: {
-    input?: number;
-    output?: number;
-    reasoning?: number;
-  };
 }
+
+export interface WormArenaFrameEvent {
+  round: number;
+  frame: any;
+  timestamp: number;
+  scores?: Record<string, number>;
+  alive?: string[];
+  matchStartedAt?: number;
+  lastMoveAt?: number;
+}
+
 export interface WormArenaStreamChunk {
   type: string;
   delta?: string;
@@ -1033,16 +1044,7 @@ export interface WormArenaStreamChunk {
 }
 
 /**
- * Single frame event for live Worm Arena streaming.
- */
-export interface WormArenaFrameEvent {
-  round: number;
-  frame: any;
-  timestamp: number;
-}
-
-/**
- * Final summary for a live Worm Arena match.
+ * Final summary payload emitted when a Worm Arena live match completes.
  */
 export interface WormArenaFinalSummary {
   matchId?: string;

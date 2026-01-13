@@ -152,9 +152,30 @@ export class SnakeBenchStreamingRunner {
     });
 
     const poller = new LiveFramePoller();
+    const matchStartedAt = Date.now();
+    let lastMoveAt: number | null = null;
+
+    const emitStatus = (status: WormArenaStreamStatus) => {
+      handlers.onStatus?.({
+        ...status,
+        matchStartedAt,
+        lastMoveAt: lastMoveAt ?? undefined,
+      });
+    };
+
+    const emitFrame = (frame: WormArenaFrameEvent) => {
+      const timestamp = Number.isFinite(frame.timestamp) ? frame.timestamp : Date.now();
+      lastMoveAt = timestamp;
+      handlers.onFrame?.({
+        ...frame,
+        timestamp,
+        matchStartedAt,
+        lastMoveAt,
+      });
+    };
 
     try {
-      handlers.onStatus?.({ state: 'starting', message: 'Launching match...' });
+      emitStatus({ state: 'starting', message: 'Launching match...' });
 
       let discoveredGameId: string | null = null;
       const stdoutEventsEnabled =
@@ -190,8 +211,8 @@ export class SnakeBenchStreamingRunner {
                 prepared.width,
                 prepared.height,
                 prepared.maxRounds,
-                (frame) => handlers.onFrame?.(frame),
-                (status) => handlers.onStatus?.(status)
+                (frame) => emitFrame(frame),
+                (status) => emitStatus(status)
               );
             }
           }
@@ -201,7 +222,7 @@ export class SnakeBenchStreamingRunner {
           if (finishedRound?.[1]) {
             const round = Number(finishedRound[1]);
             if (Number.isFinite(round)) {
-              handlers.onStatus?.({
+              emitStatus({
                 state: 'in_progress',
                 message: line,
                 round,
@@ -215,7 +236,7 @@ export class SnakeBenchStreamingRunner {
             try {
               const evt = JSON.parse(line);
               if (evt?.type === 'frame' && handlers.onFrame) {
-                handlers.onFrame({
+                emitFrame({
                   round: Number(evt.round ?? 0),
                   frame: evt.frame ?? evt,
                   timestamp: Date.now(),
@@ -235,14 +256,14 @@ export class SnakeBenchStreamingRunner {
                     prepared.width,
                     prepared.height,
                     prepared.maxRounds,
-                    (frame) => handlers.onFrame?.(frame),
-                    (status) => handlers.onStatus?.(status)
+                    (frame) => emitFrame(frame),
+                    (status) => emitStatus(status)
                   );
                 }
                 return;
               }
               if (evt?.type === 'status') {
-                handlers.onStatus?.({
+                emitStatus({
                   state: 'in_progress',
                   message: evt.message ?? line,
                   round: evt.round,
@@ -255,7 +276,7 @@ export class SnakeBenchStreamingRunner {
           }
 
           // Generic status message
-          handlers.onStatus?.({ state: 'in_progress', message: line });
+          emitStatus({ state: 'in_progress', message: line });
         },
         (line: string) => {
           // Process stderr line (if needed)
