@@ -161,7 +161,7 @@ export function GenerationSection({ numTasks, compact = false }: GenerationSecti
           ) : phase.phase === 'completed' ? (
             <>
               <CheckCircle2 className="mr-2 h-4 w-4" />
-              Dataset ready
+              Dataset downloaded
             </>
           ) : (
             <>
