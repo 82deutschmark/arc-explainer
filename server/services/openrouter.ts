@@ -1,8 +1,8 @@
 /**
- * Author: Cascade (ChatGPT 5.1)
- * Date: 2026-01-13T17:05:00Z
- * PURPOSE: Coordinates ARC puzzle analysis via OpenRouter, ensuring reasoning payloads default to high-effort traces while keeping streaming fallbacks alive.
- * SRP/DRY check: Pass – Verified shared helpers reuse and reasoning default update.
+ * Author: Cascade (OpenAI o4-preview)
+ * Date: 2026-01-13T20:42:00Z
+ * PURPOSE: Coordinates ARC puzzle analysis via OpenRouter, now restoring medium-effort reasoning defaults while keeping override hooks and streaming fallbacks intact.
+ * SRP/DRY check: Pass – validated shared helper reuse and default rollback only.
  */
 
 import dotenv from 'dotenv';
@@ -56,7 +56,7 @@ const openrouter = new OpenAI({
   }
 });
 
-const DEFAULT_OPENROUTER_REASONING_EFFORT: ServiceOptions['reasoningEffort'] = 'high';
+const DEFAULT_OPENROUTER_REASONING_EFFORT: NonNullable<ServiceOptions['reasoningEffort']> = 'medium';
 
 export function resolveOpenRouterReasoningOptions(
   serviceOpts?: ServiceOptions
