@@ -1,13 +1,12 @@
 /**
  * EvaluationSection.tsx
  *
- * Author: Claude Opus 4.5
- * Date: 2025-12-31
- * PURPOSE: Submission evaluation section for RE-ARC page.
- *          Orchestrates file upload, validation, SSE streaming, and result display.
- *          Auto-saves evaluations to backend. Optional label input for user reference.
- *          Supports compact mode for dense layouts.
- * SRP/DRY check: Pass - Single responsibility: submission evaluation orchestration
+ * Author: Cascade (OpenAI Assistant)
+ * Date: 2026-01-14
+ * PURPOSE: Submission evaluation surface for RE-ARC page with SSE progress, upload validation,
+ *          and result presentation including ISO-relative timestamps for dataset provenance.
+ *          Auto-saves successful evaluations for later leaderboard submission.
+ * SRP/DRY check: Pass — verified streaming/upload logic unaffected while extending timestamp UI.
  */
 
 import { useState, useCallback, useRef } from 'react';
@@ -20,6 +19,7 @@ import { validateSubmission } from '@/utils/arcSubmissionValidator';
 import { parseSSEEvents, SSEParseError } from '@/utils/sseParser';
 import { ProgressDisplay } from './ProgressDisplay';
 import { ErrorDisplay, type EvaluationError } from './ErrorDisplay';
+import { formatTimestampWithRelative } from '@/utils/timestampDisplay';
 
 /**
  * Recovers the generation timestamp from XOR-encoded task IDs
@@ -380,7 +380,7 @@ export function EvaluationSection({ numTasks, compact = false }: EvaluationSecti
               </div>
               {phase.result.timestamp && (
                 <div className={compact ? "text-xs mt-0.5 text-muted-foreground" : "text-sm mt-1"}>
-                  Generated: {new Date(phase.result.timestamp * 1000).toLocaleString()}
+                  Generated {formatTimestampWithRelative(phase.result.timestamp * 1000).combined}
                 </div>
               )}
               {phase.result.score === 0 && !compact && (
