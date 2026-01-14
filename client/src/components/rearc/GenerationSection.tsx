@@ -177,17 +177,7 @@ export function GenerationSection({ numTasks, compact = false }: GenerationSecti
           </Button>
         )}
 
-        {phase.phase === 'completed' && (
-          <Button
-            onClick={handleGenerate}
-            variant="outline"
-            size={compact ? "sm" : "default"}
-            className={compact ? "font-mono text-xs" : "ml-2"}
-          >
-            <RefreshCcw className="mr-2 h-4 w-4" />
-            Generate new dataset
-          </Button>
-        )}
+        {/* there is intentionally no button to allow users to generate another dataset after they generated one */}
       </div>
 
     </>
