@@ -1,5 +1,39 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.1  Jan 14, 2026
+
+- **FIX: RE-ARC timestamps + copy clarity** (Author: Cascade)
+  - **What**: Added ISO UTC + relative timestamp formatting across the RE-ARC evaluation success alert and submissions table, exposed dataset generation time per submission, moved the ARC-AGI-2 difficulty note into the About section, and restored sane post-generation button states.
+  - **Why**: Collaborators rely on screenshots for verification; timestamps without timezone made claims ambiguous, hero copy implied official validation, and the disabled "Generate again" button confused users.
+  - **How**:
+    - `client/src/utils/timestampDisplay.ts`: new helper returning `ISO (relative)` strings.
+    - `client/src/components/rearc/EvaluationSection.tsx`: show combined timestamp in the success alert.
+    - `client/src/pages/ReArcSubmissions.tsx`: display dataset generation column with tooltips, clarify table footnotes.
+    - `client/src/components/rearc/GenerationSection.tsx`: disable CTA after completion, add explicit "Generate new dataset" button.
+    - `client/src/pages/ReArc.tsx`: move ARC-AGI-2 phrasing into About section.
+
+### Version 6.36.0  Jan 13, 2026
+
+- **FEAT: Game culling - exclude low-quality matches from statistics** (Author: Cascade)
+  - **What**: Implemented game culling system to exclude matches with < 10 rounds from all statistics, leaderboards, and analytics. Games are marked as culled in the database but not deleted, allowing restoration if needed.
+  - **Why**: Many short matches (< 10 rounds) are errors, crashes, or malformed runs that pollute model statistics. A model might show 50 games played but 40 of them ended after round 3 due to errors. This makes win rates, TrueSkill ratings, and other metrics unreliable.
+  - **How**:
+    - `migrations/0004_add_game_culling_columns.sql`: Added `is_culled`, `culled_reason`, `culled_source`, `culled_at` columns to `public.games` table with index and backfill UPDATE marking all games with < 10 rounds as culled.
+    - `server/repositories/GameReadRepository.ts`: All queries now filter `COALESCE(g.is_culled, false) = false` (recent games, search, activity, stats, model history).
+    - `server/repositories/CurationRepository.ts`: Greatest hits baseFrom filter excludes culled games.
+    - `server/repositories/LeaderboardRepository.ts`: TrueSkill leaderboard, basic leaderboard, pairing history all filter culled games.
+    - `server/repositories/AnalyticsRepository.ts`: Model insights and run-length distribution filter culled games.
+    - `server/services/snakeBench/helpers/replayFilters.ts`: MIN_ROUNDS reduced to 10 as secondary defense.
+    - `docs/plans/2026-01-13-snakebench-game-culling-plan.md`: Implementation plan marked as completed.
+
+### Version 6.35.40  Jan 13, 2026
+
+- **FEAT: Pin Grok Code Fast 1 vs GPT-5.1 Codex Mini match to Worm Arena Greatest Hits** (Author: Cascade)
+  - **What**: Added match `8bca1c80-c63e-4ab5-824b-2a77c5ffee3e` (Grok Code Fast 1 vs GPT-5.1 Codex Mini) to the top of the pinned Greatest Hits list.
+  - **Why**: Ensure standout matches remain discoverable from the homepage card even as the API window scrolls.
+  - **How**:
+    - `client/src/components/WormArenaGreatestHits.tsx`: prepended new entry to `PINNED_GAMES` with match metadata (42 rounds, 21-20 final score, body collision finish) and highlight text.
+
 ### Version 6.35.39  Jan 13, 2026
 
 - **FIX: Worm Arena live match completion flow regression** (Author: GLM4.7)

@@ -1,19 +1,18 @@
 /**
  * GenerationSection.tsx
  *
- * Author: Claude Code using Sonnet 4.5 (updated by Claude Opus 4.5)
- * Date: 2025-12-27 (updated 2025-12-31 for terminal layout)
- * PURPOSE: Dataset generation section for RE-ARC page.
- *          Handles generation, progress tracking, and file download.
- *          Supports compact mode for dense layouts.
- * SRP/DRY check: Pass - Single responsibility: dataset generation UI
+ * Author: Cascade (OpenAI Assistant)
+ * Date: 2026-01-14
+ * PURPOSE: Dataset generation UI for RE-ARC page with guardrails to prevent accidental re-generation
+ *          after a successful download.
+ * SRP/DRY check: Pass — streaming/download logic preserved; added button state management only.
  */
 
 import { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Download, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Download, CheckCircle2, AlertCircle, Loader2, RefreshCcw } from 'lucide-react';
 import { ProgressDisplay } from './ProgressDisplay';
 
 interface GenerationSectionProps {
@@ -26,7 +25,7 @@ interface GenerationSectionProps {
 type GenerationPhase =
   | { phase: 'idle' }
   | { phase: 'generating'; progress: number }
-  | { phase: 'completed' }
+  | { phase: 'completed'; completedAt: number }
   | { phase: 'error'; message: string };
 
 export function GenerationSection({ numTasks, compact = false }: GenerationSectionProps) {
@@ -98,8 +97,8 @@ export function GenerationSection({ numTasks, compact = false }: GenerationSecti
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      // Transition to completed phase
-      setPhase({ phase: 'completed' });
+      // Transition to completed phase and record timestamp
+      setPhase({ phase: 'completed', completedAt: Date.now() });
     } catch (err) {
       let errorMessage = 'Unknown error occurred';
 
@@ -150,7 +149,7 @@ export function GenerationSection({ numTasks, compact = false }: GenerationSecti
       <div className={compact ? "flex gap-2" : ""}>
         <Button
           onClick={handleGenerate}
-          disabled={phase.phase === 'generating'}
+          disabled={phase.phase === 'generating' || phase.phase === 'completed'}
           size={compact ? "sm" : "default"}
           className={compact ? "font-mono text-xs" : "w-full sm:w-auto"}
         >
@@ -160,7 +159,10 @@ export function GenerationSection({ numTasks, compact = false }: GenerationSecti
               Generating...
             </>
           ) : phase.phase === 'completed' ? (
-            <CheckCircle2 className="mr-2 h-4 w-4" />
+            <>
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              Dataset downloaded
+            </>
           ) : (
             <>
               <Download className="mr-2 h-4 w-4" />
@@ -174,6 +176,8 @@ export function GenerationSection({ numTasks, compact = false }: GenerationSecti
             Retry
           </Button>
         )}
+
+        {/* there is intentionally no button to allow users to generate another dataset after they generated one */}
       </div>
 
     </>

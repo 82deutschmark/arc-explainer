@@ -1,8 +1,9 @@
 /**
  * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Date: 2025-12-27 (updated 2026-01-13 by Cascade)
  * PURPOSE: GameReadRepository - Handles all read operations for SnakeBench/Worm Arena matches and models.
  *          Provides search, recent games, activity stats, and history views.
+ *          Now filters out culled games (is_culled = FALSE) to exclude low-quality matches from stats.
  * SRP/DRY check: Pass - focused exclusively on data retrieval.
  */
 
@@ -62,11 +63,12 @@ export class GameReadRepository extends BaseRepository {
       const listSql = `
         SELECT g.id AS game_id, g.start_time, g.total_score, g.rounds, g.replay_path
         FROM public.games g
+        WHERE COALESCE(g.is_culled, false) = false
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC
         LIMIT $1;
       `;
 
-      const countSql = `SELECT COUNT(*) AS total FROM public.games`;
+      const countSql = `SELECT COUNT(*) AS total FROM public.games WHERE COALESCE(is_culled, false) = false`;
 
       const [listResult, countResult] = await Promise.all([
         this.query(listSql, [safeLimit], client),
@@ -129,7 +131,7 @@ export class GameReadRepository extends BaseRepository {
     const sortBy = query.sortBy ?? 'startedAt';
     const sortDir = (query.sortDir ?? 'desc') === 'asc' ? 'asc' : 'desc';
 
-    const where: string[] = [`g.status = 'completed'`, `COALESCE(g.rounds, 0) > 0`];
+    const where: string[] = [`g.status = 'completed'`, `COALESCE(g.rounds, 0) > 0`, `COALESCE(g.is_culled, false) = false`];
     const params: any[] = [];
 
     if (model) {
@@ -265,7 +267,8 @@ export class GameReadRepository extends BaseRepository {
         FROM public.games g
         LEFT JOIN public.game_participants gp ON g.id = gp.game_id
         LEFT JOIN public.models m ON gp.model_id = m.id
-        ${isAllHistory ? '' : `WHERE g.created_at >= NOW() - (INTERVAL '1 day' * $1)`}
+        WHERE COALESCE(g.is_culled, false) = false
+        ${isAllHistory ? '' : `AND g.created_at >= NOW() - (INTERVAL '1 day' * $1)`}
       `;
       const result = await this.query(sql, isAllHistory ? [] : [safeDays], client);
       const row = result.rows[0];
@@ -288,10 +291,10 @@ export class GameReadRepository extends BaseRepository {
     try {
       const sql = `
         SELECT
-          (SELECT COUNT(*) FROM public.games) AS total_games,
-          (SELECT COUNT(DISTINCT model_id) FROM public.game_participants) AS active_models,
-          (SELECT COALESCE(MAX(score), 0) FROM public.game_participants) AS top_apples,
-          (SELECT COALESCE(SUM(cost), 0) FROM public.game_participants) AS total_cost
+          (SELECT COUNT(*) FROM public.games WHERE COALESCE(is_culled, false) = false) AS total_games,
+          (SELECT COUNT(DISTINCT gp.model_id) FROM public.game_participants gp JOIN public.games g ON gp.game_id = g.id WHERE COALESCE(g.is_culled, false) = false) AS active_models,
+          (SELECT COALESCE(MAX(gp.score), 0) FROM public.game_participants gp JOIN public.games g ON gp.game_id = g.id WHERE COALESCE(g.is_culled, false) = false) AS top_apples,
+          (SELECT COALESCE(SUM(gp.cost), 0) FROM public.game_participants gp JOIN public.games g ON gp.game_id = g.id WHERE COALESCE(g.is_culled, false) = false) AS total_cost
       `;
       const result = await this.query(sql, [], client);
       const row = result.rows[0] ?? {};
@@ -323,7 +326,7 @@ export class GameReadRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
-        WHERE COALESCE(g.rounds, 0) > 0
+        WHERE COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false
         GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, m.name
         HAVING COUNT(DISTINCT gp.game_id) > 0
         ORDER BY games_played DESC, model_slug ASC;
@@ -381,6 +384,7 @@ export class GameReadRepository extends BaseRepository {
         LEFT JOIN public.game_participants opp_gp ON opp_gp.game_id = gp.game_id AND opp_gp.player_slot <> gp.player_slot
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
         WHERE ${SQL_NORMALIZE_SLUG('m.model_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
+          AND COALESCE(g.is_culled, false) = false
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC
         LIMIT $2;
       `;
@@ -420,6 +424,7 @@ export class GameReadRepository extends BaseRepository {
         LEFT JOIN public.models opp ON opp_gp.model_id = opp.id
         WHERE ${SQL_NORMALIZE_SLUG('m.model_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
           AND COALESCE(g.rounds, 0) > 0
+          AND COALESCE(g.is_culled, false) = false
         ORDER BY COALESCE(g.start_time, g.created_at, NOW()) DESC;
       `;
       const { rows } = await this.query(sql, [modelSlug], client);

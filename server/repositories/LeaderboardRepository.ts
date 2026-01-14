@@ -1,8 +1,9 @@
 /**
  * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Date: 2025-12-27 (updated 2026-01-13 by Cascade)
  * PURPOSE: LeaderboardRepository - Handles TrueSkill and Elo ranking data, pairing history,
  *          and per-model rating summaries. INTERCHANGEABLE: "Game" and "Match" refer to the same entity.
+ *          Now filters out culled games (is_culled = FALSE) to exclude low-quality matches from stats.
  * SRP/DRY check: Pass - focused exclusively on ranking and pairing data.
  */
 
@@ -39,6 +40,7 @@ export class LeaderboardRepository extends BaseRepository {
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
         WHERE ${SQL_NORMALIZE_SLUG('m.model_slug')} = ${SQL_NORMALIZE_SLUG('$1')}
+          AND COALESCE(g.is_culled, false) = false
         GROUP BY
           m.model_slug, m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed,
           m.wins, m.losses, m.ties, m.apples_eaten, m.games_played, m.is_active
@@ -102,6 +104,7 @@ export class LeaderboardRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
+        WHERE COALESCE(g.is_culled, false) = false
         GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
         HAVING COUNT(gp.game_id) >= $2
         ORDER BY ${SQL_TRUESKILL_EXPOSED('m')} DESC
@@ -166,7 +169,7 @@ export class LeaderboardRepository extends BaseRepository {
         FROM public.models m
         JOIN public.game_participants gp ON m.id = gp.model_id
         JOIN public.games g ON gp.game_id = g.id
-        WHERE COALESCE(g.rounds, 0) > 0
+        WHERE COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false
         GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}
         HAVING COUNT(gp.game_id) > 0
         ORDER BY ${orderSql}
@@ -212,7 +215,7 @@ export class LeaderboardRepository extends BaseRepository {
         JOIN public.models m1 ON gp1.model_id = m1.id
         JOIN public.models m2 ON gp2.model_id = m2.id
         JOIN public.games g ON gp1.game_id = g.id
-        WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0
+        WHERE g.status = 'completed' AND COALESCE(g.rounds, 0) > 0 AND COALESCE(g.is_culled, false) = false
         GROUP BY slug_a, slug_b;
       `;
 

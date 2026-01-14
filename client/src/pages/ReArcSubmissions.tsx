@@ -1,12 +1,11 @@
 /**
  * ReArcSubmissions.tsx
  *
- * Author: Claude Opus 4.5
- * Date: 2025-12-30
- * PURPOSE: Displays RE-ARC evaluation submissions with scores and timestamps.
- *          Supports sorting by score or recency; visualization options (table/efficiency plot).
- *          Not publicly linked - exists for reviewing recorded evaluations.
- * SRP/DRY check: Pass - Single responsibility: RE-ARC submission display
+ * Author: Cascade (OpenAI Assistant)
+ * Date: 2026-01-14
+ * PURPOSE: Displays RE-ARC evaluation submissions with ISO-relative dataset timestamps for provenance.
+ *          Supports sorting by score/recency plus table vs efficiency visualization.
+ * SRP/DRY check: Pass — reused leaderboard query; only enriched presentation logic.
  */
 
 import { useState } from 'react';
@@ -38,6 +37,7 @@ import {
 } from '@/components/ui/tooltip';
 import { ArrowLeft, Clock, Loader2, Table as TableIcon, ScatterChart as ScatterIcon, HelpCircle } from 'lucide-react';
 import { EfficiencyPlot } from '@/components/rearc/EfficiencyPlot';
+import { formatTimestampWithRelative } from '@/utils/timestampDisplay';
 
 interface LeaderboardEntry {
   rank: number;
@@ -68,6 +68,10 @@ function formatDate(dateString: string): string {
     day: 'numeric',
     year: 'numeric',
   });
+}
+
+function renderGeneratedAt(timestamp: string): string {
+  return formatTimestampWithRelative(timestamp).combined;
 }
 
 function formatElapsedTime(ms: number): string {
@@ -230,7 +234,22 @@ export default function ReArcSubmissions() {
                             </Tooltip>
                           </TooltipProvider>
                         </TableHead>
-                        <TableHead className="text-right">Date</TableHead>
+                        <TableHead className="text-right">Evaluated</TableHead>
+                        <TableHead className="text-right">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex items-center gap-1 cursor-help">
+                                  Dataset Generated
+                                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs text-xs">
+                                <p>UTC timestamp derived from the XOR-encoded task IDs. Screenshots of this column prove which dataset a solver used.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -252,6 +271,9 @@ export default function ReArcSubmissions() {
                           </TableCell>
                           <TableCell className="text-right text-muted-foreground text-sm">
                             {formatDate(entry.evaluatedAt)}
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground font-mono text-xs whitespace-pre-wrap">
+                            {renderGeneratedAt(entry.generatedAt)}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -297,9 +319,12 @@ export default function ReArcSubmissions() {
               )}
 
               {/* Elapsed Time Description */}
-              <div className="mt-6 pt-4 border-t border-border">
-                <p className="text-xs text-muted-foreground">
+              <div className="mt-6 pt-4 border-t border-border space-y-1 text-xs text-muted-foreground">
+                <p>
                   <span className="font-semibold">Elapsed time:</span> Time between dataset generation and evaluation. Provides an upper bound on solving time.
+                </p>
+                <p>
+                  <span className="font-semibold">Dataset generated:</span> UTC timestamp recovered from task IDs. Copy this when sharing screenshots so others can re-run the same dataset.
                 </p>
               </div>
             </>
