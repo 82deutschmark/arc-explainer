@@ -1,5 +1,17 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.1  Jan 14, 2026
+
+- **FIX: RE-ARC timestamps + copy clarity** (Author: Cascade)
+  - **What**: Added ISO UTC + relative timestamp formatting across the RE-ARC evaluation success alert and submissions table, exposed dataset generation time per submission, moved the ARC-AGI-2 difficulty note into the About section, and restored sane post-generation button states.
+  - **Why**: Collaborators rely on screenshots for verification; timestamps without timezone made claims ambiguous, hero copy implied official validation, and the disabled "Generate again" button confused users.
+  - **How**:
+    - `client/src/utils/timestampDisplay.ts`: new helper returning `ISO (relative)` strings.
+    - `client/src/components/rearc/EvaluationSection.tsx`: show combined timestamp in the success alert.
+    - `client/src/pages/ReArcSubmissions.tsx`: display dataset generation column with tooltips, clarify table footnotes.
+    - `client/src/components/rearc/GenerationSection.tsx`: disable CTA after completion, add explicit "Generate new dataset" button.
+    - `client/src/pages/ReArc.tsx`: move ARC-AGI-2 phrasing into About section.
+
 ### Version 6.36.0  Jan 13, 2026
 
 - **FEAT: Game culling - exclude low-quality matches from statistics** (Author: Cascade)

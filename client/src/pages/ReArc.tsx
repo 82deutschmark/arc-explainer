@@ -1,12 +1,11 @@
 /**
  * ReArc.tsx
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2026-01-01
- * PURPOSE: Self-service page for generating RE-ARC datasets and evaluating solver predictions.
- *          Users can generate brand-new ARC puzzle sets and evaluate their solver predictions
- *          with proof of dataset authenticity via XOR-encoded timestamps.
- * SRP/DRY check: Pass - Single page orchestrating generation and evaluation sections
+ * Author: Cascade (OpenAI Assistant)
+ * Date: 2026-01-14
+ * PURPOSE: Self-service page for generating RE-ARC datasets and evaluating solver predictions
+ *          with timestamped provenance plus clarified benchmarking guidance.
+ * SRP/DRY check: Pass — hero copy tweak only; existing sections reused.
  */
 
 /* CONTEXT:
@@ -52,7 +51,6 @@ export default function ReArc() {
         <div className="text-sm text-foreground/90 bg-muted/50 p-4 rounded-md">
           <p className="mb-2">
             Click "Generate" to create a brand-new set of ARC puzzles.
-            Difficulty is tuned to roughly match the ARC-AGI-2 evaluation set.
             After your solver processes them, upload the results to calculate
             your score. Share the submission file with others to let them
             confirm your score independently—no trust required.
@@ -88,6 +86,9 @@ export default function ReArc() {
                   permutations and rotation/flip transforms so verifiers no
                   longer trivially solve the tasks (only 1/120 remain solvable
                   by verifiers; 0/120 by icecuber).
+                  Difficulty roughly tracks the ARC-AGI-2 evaluation set, but this
+                  tool is community-run and should not be mistaken for the official
+                  validator.
                 </p>
               </div>
 
