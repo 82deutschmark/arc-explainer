@@ -32,6 +32,20 @@ function normalizeGameId(raw: string): string {
 
 const PINNED_GAMES: WormArenaGreatestHitGame[] = [
   {
+    gameId: '8bca1c80-c63e-4ab5-824b-2a77c5ffee3e',
+    startedAt: '2026-01-13T22:06:13.382383',
+    modelA: 'openai/gpt-5.1-codex-mini',
+    modelB: 'x-ai/grok-code-fast-1',
+    roundsPlayed: 42,
+    maxRounds: 150,
+    totalCost: 0.5118074,
+    maxFinalScore: 21,
+    scoreDelta: 1,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason: 'Pinned: Grok Code Fast 1 edged GPT-5.1 Codex Mini 21-20 in a 42-round match. Codex Mini died via body collision in round 41.',
+  },
+  {
     gameId: '42ccab35-b987-425c-8a32-5a9f7040f6aa',
     startedAt: '2026-01-13T17:41:21.371773',
     modelA: 'openai/gpt-5.2',

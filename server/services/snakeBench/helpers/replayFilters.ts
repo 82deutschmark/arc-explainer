@@ -1,9 +1,11 @@
 /**
  * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Date: 2025-12-27 (updated 2026-01-13 by Cascade)
  * PURPOSE: Filter replays by minimum rounds and availability for UI presentation.
  *          Avoids surfacing short diagnostic matches; ensures greatest hits are playable.
  *          Supports both dynamic DB-driven ranking and fallback to curated list.
+ *          NOTE: Primary filtering now done via is_culled column in DB (games < 10 rounds culled).
+ *          This MIN_ROUNDS filter is a secondary defense for edge cases.
  * SRP/DRY check: Pass — isolated replay filtering logic, single responsibility.
  */
 
@@ -12,11 +14,11 @@ import { CURATED_WORM_ARENA_HALL_OF_FAME } from '../../snakeBenchHallOfFame.ts';
 import { repositoryService } from '../../../repositories/RepositoryService.ts';
 import { logger } from '../../../utils/logger.ts';
 
-const MIN_ROUNDS = 20;
+const MIN_ROUNDS = 10;
 
 /**
  * Apply a conservative minimum-rounds filter for Worm Arena replays.
- * Very short diagnostic matches (< 20 rounds) are still stored, but we avoid surfacing them.
+ * Very short diagnostic matches (< 10 rounds) are culled in DB; this is a secondary filter.
  * If no games meet threshold, returns all games sorted by longest first.
  */
 export function filterReplayableGames(games: SnakeBenchGameSummary[]): SnakeBenchGameSummary[] {

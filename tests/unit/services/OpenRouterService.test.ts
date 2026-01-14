@@ -1,7 +1,7 @@
 /**
- * Author: Cascade (ChatGPT 5.1)
- * Date: 2026-01-13T17:12:00Z
- * PURPOSE: Validate OpenRouter reasoning payload defaults so captureReasoning requests use high effort unless overridden.
+ * Author: Cascade (OpenAI o4-preview)
+ * Date: 2026-01-13T20:44:00Z
+ * PURPOSE: Validate OpenRouter reasoning payload defaults so captureReasoning requests use medium effort unless overridden.
  * SRP/DRY check: Pass – focuses on helper behavior only.
  */
 
@@ -16,11 +16,11 @@ describe('resolveOpenRouterReasoningOptions', () => {
     expect(resolveOpenRouterReasoningOptions(opts)).toBeUndefined();
   });
 
-  it('defaults effort to high when not provided', () => {
+  it('defaults effort to medium when not provided', () => {
     const result = resolveOpenRouterReasoningOptions({ captureReasoning: true });
     expect(result).toEqual({
       enabled: true,
-      effort: 'high',
+      effort: 'medium',
       exclude: false,
     });
   });

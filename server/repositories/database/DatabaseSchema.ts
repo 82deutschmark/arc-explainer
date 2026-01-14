@@ -411,6 +411,15 @@ export class DatabaseSchema {
       );
     `);
 
+    // Ensure culling metadata columns exist for older databases
+    await client.query(`
+      ALTER TABLE public.games
+      ADD COLUMN IF NOT EXISTS is_culled boolean DEFAULT false,
+      ADD COLUMN IF NOT EXISTS culled_reason text,
+      ADD COLUMN IF NOT EXISTS culled_source text,
+      ADD COLUMN IF NOT EXISTS culled_at timestamptz;
+    `);
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_games_status
         ON public.games (status);
@@ -419,6 +428,12 @@ export class DatabaseSchema {
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_games_gametype
         ON public.games (game_type);
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_games_is_culled
+        ON public.games (is_culled)
+        WHERE is_culled = false;
     `);
   }
 
@@ -766,6 +781,18 @@ export class DatabaseSchema {
         ELSE 1
       END
       WHERE num_test_pairs IS NULL;
+    `);
+
+    // Data Migration: Cull short SnakeBench games (< 10 rounds) if culling columns exist
+    await client.query(`
+      UPDATE public.games
+      SET
+        is_culled = true,
+        culled_reason = COALESCE(culled_reason, 'ROUND_SHORT'),
+        culled_source = COALESCE(culled_source, 'schema_init'),
+        culled_at = COALESCE(culled_at, NOW())
+      WHERE COALESCE(rounds, 0) < 10
+        AND COALESCE(is_culled, false) = false;
     `);
   }
 }
