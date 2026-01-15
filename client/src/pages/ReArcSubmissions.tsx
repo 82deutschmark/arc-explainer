@@ -37,7 +37,6 @@ import {
 } from '@/components/ui/tooltip';
 import { ArrowLeft, Clock, Loader2, Table as TableIcon, ScatterChart as ScatterIcon, HelpCircle } from 'lucide-react';
 import { EfficiencyPlot } from '@/components/rearc/EfficiencyPlot';
-import { formatTimestampWithRelative } from '@/utils/timestampDisplay';
 
 interface LeaderboardEntry {
   rank: number;
@@ -68,10 +67,6 @@ function formatDate(dateString: string): string {
     day: 'numeric',
     year: 'numeric',
   });
-}
-
-function renderGeneratedAt(timestamp: string): string {
-  return formatTimestampWithRelative(timestamp).combined;
 }
 
 function formatElapsedTime(ms: number): string {
@@ -273,7 +268,7 @@ export default function ReArcSubmissions() {
                             {formatDate(entry.evaluatedAt)}
                           </TableCell>
                           <TableCell className="text-right text-muted-foreground font-mono text-xs whitespace-pre-wrap">
-                            {renderGeneratedAt(entry.generatedAt)}
+                            {new Date(entry.generatedAt).toISOString()}
                           </TableCell>
                         </TableRow>
                       ))}

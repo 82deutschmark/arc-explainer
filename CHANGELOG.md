@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.3  Jan 14, 2026
+
+- **FIX: RE-ARC dataset timestamps show plain UTC** (Author: Cascade)
+  - **What**: Simplified the RE-ARC submissions table to show the dataset generation time as a plain ISO UTC timestamp (no relative phrasing) to prevent future/past confusion.
+  - **Why**: Relative wording like "in 6 days" misled users about when datasets were created.
+  - **How**: `client/src/pages/ReArcSubmissions.tsx` now renders the stored generation time via `toISOString()` without relative helpers.
+
 ### Version 6.36.2  Jan 14, 2026
 
 - **FIX: SnakeBench DB termination no longer crashes server** (Author: Cascade)
