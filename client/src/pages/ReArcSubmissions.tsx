@@ -2,7 +2,7 @@
  * ReArcSubmissions.tsx
  *
  * Author: Cascade (OpenAI Assistant)
- * Date: 2026-01-14
+ * Date: 2026-01-14T23:32:00Z
  * PURPOSE: Displays RE-ARC evaluation submissions with ISO-relative dataset timestamps for provenance.
  *          Supports sorting by score/recency plus table vs efficiency visualization.
  * SRP/DRY check: Pass — reused leaderboard query; only enriched presentation logic.
@@ -59,15 +59,6 @@ interface LeaderboardResponse {
 }
 
 type SortOption = 'score' | 'latest' | 'verified';
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
 
 function formatElapsedTime(ms: number): string {
   const seconds = Math.floor(ms / 1000);
@@ -264,8 +255,8 @@ export default function ReArcSubmissions() {
                           <TableCell className="text-right text-muted-foreground font-mono text-sm">
                             {formatElapsedTime(entry.elapsedMs)}
                           </TableCell>
-                          <TableCell className="text-right text-muted-foreground text-sm">
-                            {formatDate(entry.evaluatedAt)}
+                          <TableCell className="text-right text-muted-foreground font-mono text-xs whitespace-pre-wrap">
+                            {new Date(entry.evaluatedAt).toISOString()}
                           </TableCell>
                           <TableCell className="text-right text-muted-foreground font-mono text-xs whitespace-pre-wrap">
                             {new Date(entry.generatedAt).toISOString()}
