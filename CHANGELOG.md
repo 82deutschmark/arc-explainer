@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.4  Jan 15, 2026
+
+- **FEAT: Pin GPT-OSS 120B vs DeepSeek V3.2 to Greatest Hits** (Author: Cascade)
+  - **What**: Added match `d8cd9202-5121-448a-a5bb-194ce5095e5e` (GPT-OSS 120B vs DeepSeek V3.2) to the pinned Worm Arena Greatest Hits list so it stays visible even when the API results rotate.
+  - **Why**: Highlight a notable 20-17 duel with dual body collisions and balanced costs for easy replay discovery.
+  - **How**:
+    - `client/src/components/WormArenaGreatestHits.tsx`: prepended a pinned entry with match metadata and highlight reason; refreshed file header metadata.
+
 ### Version 6.36.3  Jan 14, 2026
 
 - **FIX: RE-ARC submission timestamps show plain UTC** (Author: Cascade)
