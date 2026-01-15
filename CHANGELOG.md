@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.3  Jan 14, 2026
+
+- **FIX: RE-ARC dataset timestamps show plain UTC** (Author: Cascade)
+  - **What**: Simplified the RE-ARC submissions table to show the dataset generation time as a plain ISO UTC timestamp (no relative phrasing) to prevent future/past confusion.
+  - **Why**: Relative wording like "in 6 days" misled users about when datasets were created.
+  - **How**: `client/src/pages/ReArcSubmissions.tsx` now renders the stored generation time via `toISOString()` without relative helpers.
+
+### Version 6.36.2  Jan 14, 2026
+
+- **FIX: SnakeBench DB termination no longer crashes server** (Author: Cascade)
+  - **What**: Added per-client PG error listeners and safe release handling so idle/terminated database connections no longer throw unhandled errors that crash the Node process when calling suggest-matchups or greatest-hits.
+  - **Why**: Admin commands or network blips were terminating connections, triggering unhandled `error` events and taking down the server, causing loss of valuable matches.
+  - **How**:
+    - `server/repositories/base/BaseRepository.ts`: attach one-time client error handlers, guard release with try/catch, refresh file header metadata.
+
 ### Version 6.36.1  Jan 14, 2026
 
 - **FIX: RE-ARC timestamps + copy clarity** (Author: Cascade)

@@ -1,11 +1,9 @@
 /**
- * Base Repository Abstract Class
- * 
- * Provides common database connection and transaction management for all repositories.
- * Follows Repository pattern to separate data access logic from business logic.
- * 
- * @author Claude
- * @date 2025-08-27
+ * Author: Cascade (OpenAI o4-preview)
+ * Date: 2026-01-14
+ * PURPOSE: Base Repository utilities for shared PG pool lifecycle, error handling, and transaction helpers.
+ *          Adds resilient client-level error listeners to prevent process crashes when idle connections drop.
+ * SRP/DRY check: Pass — connection lifecycle + helpers only; no domain logic.
  */
 
 import { Pool, PoolClient } from 'pg';
@@ -103,7 +101,21 @@ export abstract class BaseRepository {
     if (!pool) {
       throw new Error('Database not initialized');
     }
-    return await pool.connect();
+
+    const client = await pool.connect();
+
+    // Attach a single error listener per client to avoid unhandled 'error' events when
+    // the server terminates idle connections. Without this, Node will throw and crash.
+    const clientAny = client as any;
+    if (!clientAny.__arcErrorHandlerAttached) {
+      client.on('error', (err) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        logger.error(`Unexpected error on PG client: ${msg}`, 'database');
+      });
+      clientAny.__arcErrorHandlerAttached = true;
+    }
+
+    return client;
   }
 
   /**
@@ -128,7 +140,12 @@ export abstract class BaseRepository {
       throw error;
     } finally {
       if (shouldReleaseClient) {
-        queryClient.release();
+        try {
+          queryClient.release();
+        } catch (releaseErr) {
+          const msg = releaseErr instanceof Error ? releaseErr.message : String(releaseErr);
+          logger.warn(`Failed to release PG client cleanly: ${msg}`, 'database');
+        }
       }
     }
   }
