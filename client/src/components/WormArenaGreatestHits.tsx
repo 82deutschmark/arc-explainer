@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2025-12-30
+ * Date: 2026-01-15
  * PURPOSE: Worm Arena "Greatest Hits" card with Share/Tweet buttons.
  *          Shows a short list of especially interesting matches
  *          (longest, most expensive, highest-scoring) with one-click
@@ -31,6 +31,21 @@ function normalizeGameId(raw: string): string {
 }
 
 const PINNED_GAMES: WormArenaGreatestHitGame[] = [
+  {
+    gameId: 'd8cd9202-5121-448a-a5bb-194ce5095e5e',
+    startedAt: '2026-01-15T04:06:25.629819',
+    modelA: 'openai/gpt-oss-120b',
+    modelB: 'deepseek/deepseek-v3.2',
+    roundsPlayed: 54,
+    maxRounds: 150,
+    totalCost: 0.09303918,
+    maxFinalScore: 20,
+    scoreDelta: 3,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason:
+      'Pinned: GPT-OSS 120B outlasted DeepSeek V3.2, 20-17, after dual body collisions at round 53 on a 10x10 board.',
+  },
   {
     gameId: '8bca1c80-c63e-4ab5-824b-2a77c5ffee3e',
     startedAt: '2026-01-13T22:06:13.382383',
