@@ -1,8 +1,10 @@
 /**
  * Author: Cascade (ChatGPT)
- * Date: 2026-01-01
+ * Date: 2026-01-16
  * PURPOSE: Client-side router for ARC Explainer.
- *          Keeps all route registrations, including the new RE-ARC dataset viewer path, in one place.
+ *          Keeps all route registrations, including the new RE-ARC dataset viewer path, in one place,
+ *          and now preserves backwards-compatible debate deep links by redirecting /debate/:taskId
+ *          to the canonical Puzzle Examiner route.
  * SRP/DRY check: Pass — centralized routing table only.
  */
 
@@ -66,6 +68,7 @@ import ReArcDataset from "@/pages/ReArcDataset";
 import ReArcSubmissions from "@/pages/ReArcSubmissions";
 import TaskEfficiency from "@/pages/TaskEfficiency";
 import Redirect from "@/components/Redirect";
+import DebateTaskRedirect from "@/pages/DebateTaskRedirect";
 
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
 import LandingPage from "@/pages/LandingPage";
@@ -109,7 +112,7 @@ function Router() {
         <Route path="/test-solution" component={PuzzleFeedback} />
         <Route path="/test-solution/:taskId" component={PuzzleFeedback} />
         <Route path="/debate" component={ModelDebate} />
-        <Route path="/debate/:taskId" component={ModelDebate} />
+        <Route path="/debate/:taskId" component={DebateTaskRedirect} />
         <Route path="/council" component={LLMCouncil} />
         <Route path="/council/:taskId" component={LLMCouncil} />
         <Route path="/model-comparison" component={ModelComparisonPage} />
