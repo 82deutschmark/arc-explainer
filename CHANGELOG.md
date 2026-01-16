@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.6  Jan 16, 2026
+
+- **FIX: Preserve shared debate deep links by redirecting to Puzzle Examiner** (Author: Cascade)
+  - **What**: Added a typed redirect page so `/debate/:taskId` URLs now forward to `/puzzle/:taskId` (with query params intact) instead of rendering the debate UI, which currently fails on direct loads.
+  - **Why**: Stakeholders still circulate `/debate/<taskId>` links; until the debate experience is rebuilt, we need those URLs to land on a stable page instead of a blank screen.
+  - **How**:
+    - `client/src/pages/DebateTaskRedirect.tsx`: new redirect bridge preserving task ID + query string.
+    - `client/src/App.tsx`: documented routing change and routed `/debate/:taskId` through the new redirect component.
+
 ### Version 6.36.5  Jan 16, 2026
 
 - **FIX: Worm Arena replay page shows real recent matches** (Author: Cascade)
