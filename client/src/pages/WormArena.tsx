@@ -24,6 +24,7 @@ import WormArenaPlayerRatingCard from '@/components/WormArenaPlayerRatingCard';
 import WormArenaShareButton from '@/components/WormArenaShareButton';
 import { WormArenaReplayViewer, type RenderMode } from '@/components/wormArena/WormArenaReplayViewer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { getDefaultPinnedWormArenaGameId } from '@/constants/wormArenaPinnedGames';
 import { summarizeWormArenaPlacement } from '@shared/utils/wormArenaPlacement.ts';
 import {
   buildFinalSummary,
@@ -37,7 +38,8 @@ export default function WormArena() {
   const isMobile = useIsMobile();
 
   // Local UI state
-  const [selectedMatchId, setSelectedMatchId] = React.useState<string>(initialMatchId ?? '');
+  const defaultPinnedGameId = React.useMemo(() => getDefaultPinnedWormArenaGameId(), []);
+  const [selectedMatchId, setSelectedMatchId] = React.useState<string>(initialMatchId ?? defaultPinnedGameId ?? '');
   const [frameIndex, setFrameIndex] = React.useState<number>(0);
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [showNextMove, setShowNextMove] = React.useState<boolean>(true);
@@ -62,22 +64,24 @@ export default function WormArena() {
 
   // Pick a default game if none selected
   React.useEffect(() => {
-    if (loadingGreatestHits) return;
+    if (selectedMatchId) return;
 
-    if (!selectedMatchId) {
-      let fallbackId = greatestHitsGames[0]?.gameId ?? '';
+    let fallbackId = defaultPinnedGameId;
+
+    if (!fallbackId && !loadingGreatestHits) {
+      fallbackId = greatestHitsGames[0]?.gameId ?? '';
 
       if (!fallbackId && games.length > 0) {
         const longGames = games.filter((g) => (g.roundsPlayed ?? 0) >= 20);
         fallbackId = longGames[0]?.gameId ?? games[0]?.gameId ?? '';
       }
-
-      if (fallbackId) {
-        setSelectedMatchId(fallbackId);
-        setMatchIdInUrl(fallbackId);
-      }
     }
-  }, [greatestHitsGames, loadingGreatestHits, games, selectedMatchId, setMatchIdInUrl]);
+
+    if (fallbackId) {
+      setSelectedMatchId(fallbackId);
+      setMatchIdInUrl(fallbackId);
+    }
+  }, [defaultPinnedGameId, greatestHitsGames, loadingGreatestHits, games, selectedMatchId, setMatchIdInUrl]);
 
   // Fetch game data when selection changes
   React.useEffect(() => {
