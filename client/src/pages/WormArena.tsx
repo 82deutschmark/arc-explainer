@@ -1,17 +1,14 @@
 /**
  * Author: Cascade
- * Date: 2025-12-27
- * PURPOSE: Worm Arena replay viewer page. Allows selecting a match from
- *          the match list, renders the replay board, and shows per-player
- *          ratings / metadata. Includes Share/Tweet button for easy social sharing.
- * SRP/DRY check: Pass - page composition only.
- */
-/**
- *          Refactored to use extracted utilities, hooks, and components for SRP/DRY compliance.
- *          - Utilities: shared/utils/formatters.ts, shared/utils/wormArenaResults.ts
- *          - Hooks: useQueryParamMatchId, useWormArenaReplayData
- *          - Components: WormArenaPlayerRatingCard, WormArenaReplayViewer
- * SRP/DRY check: Pass - Orchestration only, logic extracted to dedicated modules.
+ * Date: 2026-01-16
+ * PURPOSE: Worm Arena replay viewer page that orchestrates match selection,
+ *          replay playback, model rating cards, sharing tools, and highlight lists
+ *          (recent matches + greatest hits). Delegates logic to extracted hooks
+ *          (useQueryParamMatchId, useSnakeBench* hooks) and presentational components
+ *          (WormArenaReplayViewer, WormArenaPlayerRatingCard, WormArenaGreatestHits,
+ *          WormArenaRecentMatchesList) to keep SRP/DRY intact.
+ * SRP/DRY check: Pass — Verified orchestration-only changes; reused existing components
+ *          for the new recent matches card without duplicating data fetching logic.
  */
 
 import React from 'react';
@@ -22,7 +19,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import WormArenaHeader from '@/components/WormArenaHeader';
 import WormArenaStatsPanel from '@/components/WormArenaStatsPanel';
 import WormArenaGreatestHits from '@/components/WormArenaGreatestHits';
-import WormArenaSuggestedMatchups from '@/components/WormArenaSuggestedMatchups';
+import WormArenaRecentMatchesList from '@/components/WormArenaRecentMatchesList';
 import WormArenaPlayerRatingCard from '@/components/WormArenaPlayerRatingCard';
 import WormArenaShareButton from '@/components/WormArenaShareButton';
 import { WormArenaReplayViewer, type RenderMode } from '@/components/wormArena/WormArenaReplayViewer';
@@ -350,9 +347,9 @@ export default function WormArena() {
           </Card>
         )}
 
-        {/* Bottom section: suggested matchups and greatest hits */}
+        {/* Bottom section: recent matches and greatest hits */}
         <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-          <WormArenaSuggestedMatchups limit={8} compact />
+          <WormArenaRecentMatchesList limit={10} />
           <WormArenaGreatestHits />
         </div>
 

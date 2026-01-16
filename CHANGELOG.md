@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.5  Jan 16, 2026
+
+- **FIX: Worm Arena replay page shows real recent matches** (Author: Cascade)
+  - **What**: Replaced the suggested matchups sidebar with the all-model recent matches list next to Greatest Hits and refreshed the page header metadata to capture the combined highlight section.
+  - **Why**: The replay page should help viewers rewatch actual recent games; showing suggested matchups was misleading and duplicated content from the live page.
+  - **How**:
+    - `client/src/pages/WormArena.tsx`: swapped in `WormArenaRecentMatchesList`, removed the suggested matchups import/usage, updated documentation block.
+
 ### Version 6.36.4  Jan 15, 2026
 
 - **FEAT: Pin GPT-OSS 120B vs DeepSeek V3.2 to Greatest Hits** (Author: Cascade)
