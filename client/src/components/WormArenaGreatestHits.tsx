@@ -1,26 +1,20 @@
 /**
  * Author: Cascade
- * Date: 2026-01-15
+ * Date: 2026-01-16
  * PURPOSE: Worm Arena "Greatest Hits" card with Share/Tweet buttons.
- *          Shows a short list of especially interesting matches
- *          (longest, most expensive, highest-scoring) with one-click
- *          replay links into the main Worm Arena viewer.
- *
- *          Layout note: Matchup strings can be long (provider/model IDs).
- *          Updated to ensure full model slugs are visible without truncation
- *          labels (Champion/Challenger).
- *
- *          Note: Uses a simple overflow container instead of Radix ScrollArea.
- *          ScrollArea requires a fixed height and can render a 0-height viewport
- *          when only max-height is applied, causing the list to appear cut off.
- *          Replay links open in a new tab so users can keep the stats page open.
- * SRP/DRY check: Pass — purely presentational; data comes from hook.
+ *          Shows curated epic matches (longest, most expensive, highest-scoring)
+ *          and ensures pinned hall-of-fame entries stay in declared order so
+ *          keystone replays (like the Grok vs GPT-5.1 duel) always surface first.
+ *          Uses overflow container (no Radix ScrollArea) so variable heights render
+ *          reliably; replay links open in new tabs to keep the stats page intact.
+ * SRP/DRY check: Pass — verified presentational-only update w/ ordered pin merge.
  */
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 import WormArenaMatchCard from '@/components/wormArena/WormArenaMatchCard';
+import { PINNED_WORM_ARENA_GAMES } from '@/constants/wormArenaPinnedGames';
 import type { WormArenaGreatestHitGame } from '@shared/types';
 
 function normalizeGameId(raw: string): string {
@@ -30,133 +24,12 @@ function normalizeGameId(raw: string): string {
   return withoutExt.startsWith('snake_game_') ? withoutExt.slice('snake_game_'.length) : withoutExt;
 }
 
-const PINNED_GAMES: WormArenaGreatestHitGame[] = [
-  {
-    gameId: 'd8cd9202-5121-448a-a5bb-194ce5095e5e',
-    startedAt: '2026-01-15T04:06:25.629819',
-    modelA: 'openai/gpt-oss-120b',
-    modelB: 'deepseek/deepseek-v3.2',
-    roundsPlayed: 54,
-    maxRounds: 150,
-    totalCost: 0.09303918,
-    maxFinalScore: 20,
-    scoreDelta: 3,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason:
-      'Pinned: GPT-OSS 120B outlasted DeepSeek V3.2, 20-17, after dual body collisions at round 53 on a 10x10 board.',
-  },
-  {
-    gameId: '8bca1c80-c63e-4ab5-824b-2a77c5ffee3e',
-    startedAt: '2026-01-13T22:06:13.382383',
-    modelA: 'openai/gpt-5.1-codex-mini',
-    modelB: 'x-ai/grok-code-fast-1',
-    roundsPlayed: 42,
-    maxRounds: 150,
-    totalCost: 0.5118074,
-    maxFinalScore: 21,
-    scoreDelta: 1,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Pinned: Grok Code Fast 1 edged GPT-5.1 Codex Mini 21-20 in a 42-round match. Codex Mini died via body collision in round 41.',
-  },
-  {
-    gameId: '42ccab35-b987-425c-8a32-5a9f7040f6aa',
-    startedAt: '2026-01-13T17:41:21.371773',
-    modelA: 'openai/gpt-5.2',
-    modelB: 'x-ai/grok-4.1-fast',
-    roundsPlayed: 52,
-    maxRounds: 150,
-    totalCost: 1.5168757,
-    maxFinalScore: 26,
-    scoreDelta: 2,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Pinned: GPT-5.2 defeated Grok 4.1 Fast 24-26 in a 52-round match. Grok died via body collision in round 51.',
-  },
-  {
-    gameId: '17b4cccc-e0b2-44a7-bc65-d69a13221993',
-    startedAt: '2025-12-26T00:44:49.624264',
-    modelA: 'google/gemini-2.5-flash-preview-09-2025',
-    modelB: 'deepseek/deepseek-v3.2-exp',
-    roundsPlayed: 58,
-    maxRounds: 150,
-    totalCost: 0.7013982,
-    maxFinalScore: 18,
-    scoreDelta: 7,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Pinned: 58-round slugfest, 18-11 finish (Gemini vs DeepSeek).',
-  },
-  {
-    gameId: 'f1b8d1ab-5a62-410d-8e47-d52e27729eb6',
-    startedAt: '2025-12-26T00:45:31.741935',
-    modelA: 'deepseek/deepseek-v3.2-exp',
-    modelB: 'openai/gpt-5-nano',
-    roundsPlayed: 77,
-    maxRounds: 150,
-    totalCost: 0.1382053,
-    maxFinalScore: 15,
-    scoreDelta: 0,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Pinned: 77-round tie, dual head-collision at 15-15 (DeepSeek vs GPT-5 Nano).',
-  },
-  {
-    gameId: 'cbb4bc85-5970-4f9e-9335-914e6e3f1091',
-    startedAt: '2025-12-26T02:10:00.173382',
-    modelA: 'nvidia/nemotron-3-nano-30b-a3b:free',
-    modelB: 'openai/gpt-5.1-codex-mini',
-    roundsPlayed: 53,
-    maxRounds: 150,
-    totalCost: 0.117699,
-    maxFinalScore: 11,
-    scoreDelta: 1,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Pinned: Nemotron 3 Nano edged GPT-5.1 Codex Mini 11-10 after a 53-round duel.',
-  },
-  {
-    gameId: 'a3f0a2ba-7031-432f-87de-b57cab4623f3',
-    startedAt: '2025-12-26T01:59:40.133172',
-    modelA: 'openai/gpt-5.1-codex-mini',
-    modelB: 'openai/gpt-5-nano',
-    roundsPlayed: 90,
-    maxRounds: 150,
-    totalCost: 0.42447545,
-    maxFinalScore: 21,
-    scoreDelta: 1,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Pinned: GPT-5 Nano outlasted GPT-5.1 Codex Mini 21-20 in a 90-round head-collision finish.',
-  },
-  {
-    gameId: '2d061284-49be-44b3-84f1-38339c1f9211',
-    startedAt: '2025-12-25T23:42:12.028394',
-    modelA: 'x-ai/grok-4.1-fast',
-    modelB: 'z-ai/glm-4.7',
-    roundsPlayed: 94,
-    maxRounds: 150,
-    totalCost: 1.7030653,
-    maxFinalScore: 24,
-    scoreDelta: 3,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Pinned: Grok 4.1 Fast thrashed GLM 4.7 in a 24-21, 94-round barnburner.',
-  },
-];
-
 export default function WormArenaGreatestHits() {
   const { games, isLoading, error } = useWormArenaGreatestHits(20);
   const mergedGames = React.useMemo(() => {
     const existingIds = new Set(games.map((g) => g.gameId));
-    const withPinned = [...games];
-    PINNED_GAMES.forEach((pinned) => {
-      if (!existingIds.has(pinned.gameId)) {
-        withPinned.unshift(pinned);
-      }
-    });
-    return withPinned;
+    const pinnedToAdd = PINNED_WORM_ARENA_GAMES.filter((pinned) => !existingIds.has(pinned.gameId));
+    return [...pinnedToAdd, ...games];
   }, [games]);
 
   return (

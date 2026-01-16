@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.7  Jan 16, 2026
+
+- **FIX: Pin Grok vs GPT-5.1 Codex duel + default replay selection** (Author: Cascade)
+  - **What**: Moved the 8bca1c80 (GPT-5.1 Codex Mini vs Grok Code Fast 1) epic to the top of the pinned Greatest Hits list, shared the curated array via a new `wormArenaPinnedGames` constant, and taught the replay page to default to that match when no `matchId` is provided.
+  - **Why**: Stakeholders want that legendary 21-20 body-collision finish showcased first and loaded by default so shared links always highlight it, even if the API rotates other matches in.
+  - **How**:
+    - `client/src/constants/wormArenaPinnedGames.ts`: new shared list helper exposing `PINNED_WORM_ARENA_GAMES` + `getDefaultPinnedWormArenaGameId()`.
+    - `client/src/components/WormArenaGreatestHits.tsx`: reuse shared pins so ordering stays consistent and avoid duplicates.
+    - `client/src/pages/WormArena.tsx`: initialize selection from the pinned default and fall back to it whenever no match is picked.
+
 ### Version 6.36.6  Jan 16, 2026
 
 - **FIX: Preserve shared debate deep links by redirecting to Puzzle Examiner** (Author: Cascade)
