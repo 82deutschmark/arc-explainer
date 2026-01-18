@@ -12,6 +12,7 @@ import argparse
 import json
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from urllib import error, request
 
@@ -84,25 +85,31 @@ def post_run_batch(
         return {"raw": body}
 
 
-def build_pairings(free_models: list[str], cheap_models: list[str]) -> list[tuple[str, str]]:
+def build_pairings(free_models: list[str], cheap_models: list[str]) -> list[tuple[int, str, str]]:
     """
-    Build all pairings: each free model plays each cheap model in both directions.
+    Build all pairings with indices: each free model plays each cheap model in both directions.
     Also includes free vs free head-to-head matches.
+    Returns: [(index, model_a, model_b), ...]
     """
-    pairings: list[tuple[str, str]] = []
+    pairings: list[tuple[int, str, str]] = []
+    index = 1
 
     # Free vs Cheap (both directions)
     for free_model in free_models:
         for cheap_model in cheap_models:
-            pairings.append((free_model, cheap_model))
-            pairings.append((cheap_model, free_model))
+            pairings.append((index, free_model, cheap_model))
+            index += 1
+            pairings.append((index, cheap_model, free_model))
+            index += 1
 
     # Free vs Free head-to-head (both directions)
     if len(free_models) >= 2:
         for i, model_a in enumerate(free_models):
             for model_b in free_models[i + 1:]:
-                pairings.append((model_a, model_b))
-                pairings.append((model_b, model_a))
+                pairings.append((index, model_a, model_b))
+                index += 1
+                pairings.append((index, model_b, model_a))
+                index += 1
 
     return pairings
 
@@ -174,21 +181,16 @@ def main() -> int:
 
     if args.dry_run:
         print("DRY RUN - Match plan:")
-        for i, (model_a, model_b) in enumerate(pairings, start=1):
-            print(f"  {i:2d}. {model_a} vs {model_b} (x{args.count})")
+        for pairing_idx, model_a, model_b in pairings:
+            print(f"  {pairing_idx:2d}. {model_a} vs {model_b} (x{args.count})")
         print("")
         print("No API calls made.")
         return 0
 
-    success_count = 0
-    failure_count = 0
-    start_time = time.time()
-
-    for index, (model_a, model_b) in enumerate(pairings, start=1):
-        label = f"[{index}/{total_pairings}] {model_a} vs {model_b} (x{args.count})"
-        print(f"{utc_timestamp()} {label}")
-
-        request_start = time.time()
+    def run_pairing(pairing_idx: int, model_a: str, model_b: str) -> dict:
+        """Run matches for a single pairing and return result."""
+        label = f"[{pairing_idx}/{total_pairings}] {model_a} vs {model_b}"
+        start = time.time()
         try:
             result = post_run_batch(
                 args.base_url,
@@ -199,21 +201,82 @@ def main() -> int:
                 args.persona,
                 args.timeout_sec,
             )
-            elapsed = time.time() - request_start
-
-            if result.get("success") is False:
-                failure_count += 1
-                print(f"  ERROR ({format_duration(elapsed)}): {result.get('error', 'Unknown')}")
-            else:
-                success_count += 1
-                print(f"  OK ({format_duration(elapsed)})")
-
+            elapsed = time.time() - start
+            return {
+                "pairing_idx": pairing_idx,
+                "label": label,
+                "elapsed": elapsed,
+                "result": result,
+                "error": None,
+            }
         except Exception as exc:
-            elapsed = time.time() - request_start
-            failure_count += 1
-            print(f"  ERROR ({format_duration(elapsed)}): {exc}", file=sys.stderr)
+            elapsed = time.time() - start
+            return {
+                "pairing_idx": pairing_idx,
+                "label": label,
+                "elapsed": elapsed,
+                "result": None,
+                "error": str(exc),
+            }
 
-        time.sleep(max(args.delay_ms, 0) / 1000.0)
+    start_time = time.time()
+    success_count = 0
+    failure_count = 0
+
+    print(f"{utc_timestamp()} Firing {total_pairings} pairings in parallel...")
+    print("(Each pairing will block for ~5-15 minutes while matches run)")
+    print("(Results will print as pairings complete)\n")
+
+    # Use thread pool to run pairings in parallel
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        # Track which pairings are queued
+        futures = {}
+        for idx, model_a, model_b in pairings:
+            label = f"[{idx}/{total_pairings}] {model_a} vs {model_b}"
+            future = executor.submit(run_pairing, idx, model_a, model_b)
+            futures[future] = label
+            print(f"{utc_timestamp()} QUEUED: {label}")
+
+        print("")
+
+        # Print results as they complete
+        completed_count = 0
+        for future in as_completed(futures):
+            result_data = future.result()
+            pairing_idx = result_data["pairing_idx"]
+            label = result_data["label"]
+            elapsed = result_data["elapsed"]
+            completed_count += 1
+
+            if result_data["error"]:
+                failure_count += 1
+                print(f"\n{utc_timestamp()} COMPLETE: {label} [{completed_count}/{total_pairings}]", file=sys.stderr)
+                print(f"  FAILED ({format_duration(elapsed)}): {result_data['error']}", file=sys.stderr)
+            else:
+                result = result_data["result"]
+                if result.get("success") is False:
+                    failure_count += 1
+                    print(f"\n{utc_timestamp()} COMPLETE: {label} [{completed_count}/{total_pairings}]")
+                    print(f"  FAILED ({format_duration(elapsed)}): {result.get('error', 'Unknown')}")
+                else:
+                    success_count += 1
+                    batch = result.get("batch", {})
+                    results = batch.get("results", [])
+                    errors = batch.get("errors", [])
+
+                    print(f"\n{utc_timestamp()} COMPLETE: {label} [{completed_count}/{total_pairings}]")
+                    print(f"  OK in {format_duration(elapsed)}")
+                    print(f"  {len(results)}/{args.count} matches")
+                    if errors:
+                        print(f"  {len(errors)} errors")
+
+                    # Show first 3 game IDs
+                    if results:
+                        game_ids = [r.get("gameId", "unknown") for r in results[:3]]
+                        if len(results) > 3:
+                            print(f"  Games: {', '.join(game_ids)}, ... (+{len(results) - 3} more)")
+                        else:
+                            print(f"  Games: {', '.join(game_ids)}")
 
     total_elapsed = time.time() - start_time
     print("")
