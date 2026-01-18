@@ -90,6 +90,7 @@ export async function runMatch(req: Request, res: Response) {
     const height = body.height != null ? Number(body.height) : undefined;
     const maxRounds = body.maxRounds != null ? Number(body.maxRounds) : undefined;
     const numApples = body.numApples != null ? Number(body.numApples) : undefined;
+    const playerPersona = body.playerPersona != null ? String(body.playerPersona).trim() : undefined;
 
     const request: SnakeBenchRunMatchRequest = {
       modelA: String(modelA),
@@ -98,6 +99,7 @@ export async function runMatch(req: Request, res: Response) {
       height,
       maxRounds,
       numApples,
+      playerPersona,
       apiKey: apiKeyResolution.apiKey,
       provider: apiKeyResolution.provider,
     };
@@ -386,6 +388,7 @@ export async function runBatch(req: Request, res: Response) {
       height: body.height != null ? Number(body.height) : undefined,
       maxRounds: body.maxRounds != null ? Number(body.maxRounds) : undefined,
       numApples: body.numApples != null ? Number(body.numApples) : undefined,
+      playerPersona: body.playerPersona != null ? String(body.playerPersona).trim() : undefined,
       count: parsedCount,
       apiKey: apiKeyResolution.apiKey,
       provider: apiKeyResolution.provider,
