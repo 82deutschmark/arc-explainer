@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.9  Jan 17, 2026
+
+- **FIX: Worm Arena TrueSkill leaderboard collapses provider variants** (Author: Cascade)
+  - **What**: Updated the shared SnakeBench slug normalization helper so both `:free` and `:paid` suffixes are stripped (case-insensitive), ensuring the TrueSkill leaderboard, stats summaries, and any SQL queries using the helper treat billing variants as a single model entry.
+  - **Why**: The stats page was double-listing the same model whenever both paid and free OpenRouter variants played games, confusing users and inflating rank counts.
+  - **How**: `server/repositories/snakebenchSqlHelpers.ts` now uses a reusable regex for both the TypeScript helper and SQL fragment, keeping grouping consistent across repositories and downstream UI hooks.
+
 ### Version 6.36.8  Jan 17, 2026
 
 - **FEAT: Add Puzzle Examiner link button to Puzzle Analyst page** (Author: Claude Haiku 4.5)

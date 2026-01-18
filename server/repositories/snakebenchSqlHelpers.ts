@@ -1,6 +1,6 @@
 /**
  * Author: Gemini 3 Flash High
- * Date: 2025-12-27
+ * Date: 2025-12-27 (updated 2026-01-17 by Cascade)
  * PURPOSE: Shared SQL helpers, constants, and utility functions for SnakeBench repositories.
  *          Provides centralized logic for slug normalization, date parsing, rating math,
  *          and common WHERE fragments to ensure consistency across split repository modules.
@@ -29,19 +29,21 @@ export const RESULT_SCORE: Record<string, [number, number]> = {
 
 // --- Helpers ---
 
+const SLUG_SUFFIX_COLLAPSE_REGEX = /:(free|paid)$/i;
+
 /**
- * Normalizes a model slug by removing the ':free' suffix.
- * This ensures that paid and free versions of the same model are treated as one for analytics.
+ * Normalizes a model slug by removing ':free' or ':paid' suffixes (case-insensitive).
+ * This collapses provider billing variants into a single identity for analytics rollups.
  */
 export const normalizeSlug = (slug: string): string => {
   if (!slug) return '';
-  return slug.replace(/:free$/, '');
+  return slug.trim().replace(SLUG_SUFFIX_COLLAPSE_REGEX, '');
 };
 
 /**
  * SQL fragment for slug normalization to be used in PostgreSQL queries.
  */
-export const SQL_NORMALIZE_SLUG = (col: string) => `regexp_replace(${col}, ':free$', '')`;
+export const SQL_NORMALIZE_SLUG = (col: string) => `regexp_replace(${col}, ':(free|paid)$', '', 'i')`;
 
 /**
  * SQL expression for TrueSkill exposed rating calculation.

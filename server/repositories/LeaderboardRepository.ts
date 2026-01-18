@@ -1,6 +1,6 @@
 /**
  * Author: Gemini 3 Flash High
- * Date: 2025-12-27 (updated 2026-01-13 by Cascade)
+ * Date: 2025-12-27 (updated 2026-01-17 by Cascade)
  * PURPOSE: LeaderboardRepository - Handles TrueSkill and Elo ranking data, pairing history,
  *          and per-model rating summaries. INTERCHANGEABLE: "Game" and "Match" refer to the same entity.
  *          Now filters out culled games (is_culled = FALSE) to exclude low-quality matches from stats.
@@ -91,23 +91,50 @@ export class LeaderboardRepository extends BaseRepository {
 
     try {
       const sql = `
+        WITH aggregated AS (
+          SELECT
+            ${SQL_NORMALIZE_SLUG('m.model_slug')} AS normalized_slug,
+            COUNT(gp.game_id) AS games_played,
+            COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
+            COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
+            COUNT(CASE WHEN gp.result = 'tied' THEN 1 END) AS ties,
+            COALESCE(SUM(gp.score), 0) AS apples_eaten,
+            COALESCE(MAX(gp.score), 0) AS top_score,
+            COALESCE(SUM(gp.cost), 0) AS total_cost
+          FROM public.models m
+          JOIN public.game_participants gp ON m.id = gp.model_id
+          JOIN public.games g ON gp.game_id = g.id
+          WHERE COALESCE(g.is_culled, false) = false
+          GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}
+          HAVING COUNT(gp.game_id) >= $2
+        ), representative AS (
+          SELECT DISTINCT ON (${SQL_NORMALIZE_SLUG('m.model_slug')})
+            ${SQL_NORMALIZE_SLUG('m.model_slug')} AS normalized_slug,
+            m.trueskill_mu,
+            m.trueskill_sigma,
+            m.trueskill_exposed,
+            ${SQL_TRUESKILL_EXPOSED('m')} AS exposed_rating
+          FROM public.models m
+          ORDER BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, COALESCE(m.games_played, 0) DESC
+        )
         SELECT
-          ${SQL_NORMALIZE_SLUG('m.model_slug')} AS normalized_slug,
-          m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed,
-          COUNT(gp.game_id) AS games_played,
-          COUNT(CASE WHEN gp.result = 'won' THEN 1 END) AS wins,
-          COUNT(CASE WHEN gp.result = 'lost' THEN 1 END) AS losses,
-          COUNT(CASE WHEN gp.result = 'tied' THEN 1 END) AS ties,
-          COALESCE(SUM(gp.score), 0) AS apples_eaten,
-          COALESCE(MAX(gp.score), 0) AS top_score,
-          COALESCE(SUM(gp.cost), 0) AS total_cost
-        FROM public.models m
-        JOIN public.game_participants gp ON m.id = gp.model_id
-        JOIN public.games g ON gp.game_id = g.id
-        WHERE COALESCE(g.is_culled, false) = false
-        GROUP BY ${SQL_NORMALIZE_SLUG('m.model_slug')}, m.trueskill_mu, m.trueskill_sigma, m.trueskill_exposed
-        HAVING COUNT(gp.game_id) >= $2
-        ORDER BY ${SQL_TRUESKILL_EXPOSED('m')} DESC
+          agg.normalized_slug,
+          rep.trueskill_mu,
+          rep.trueskill_sigma,
+          rep.trueskill_exposed,
+          rep.exposed_rating,
+          agg.games_played,
+          agg.wins,
+          agg.losses,
+          agg.ties,
+          agg.apples_eaten,
+          agg.top_score,
+          agg.total_cost
+        FROM aggregated agg
+        LEFT JOIN representative rep ON rep.normalized_slug = agg.normalized_slug
+        ORDER BY
+          COALESCE(rep.exposed_rating, rep.trueskill_mu - 3 * rep.trueskill_sigma, ${DEFAULT_TRUESKILL_MU} - 3 * ${DEFAULT_TRUESKILL_SIGMA}) DESC,
+          agg.games_played DESC
         LIMIT $1;
       `;
 
@@ -116,7 +143,9 @@ export class LeaderboardRepository extends BaseRepository {
       return result.rows.map((row: any) => {
         const mu = typeof row.trueskill_mu === 'number' ? row.trueskill_mu : DEFAULT_TRUESKILL_MU;
         const sigma = typeof row.trueskill_sigma === 'number' ? row.trueskill_sigma : DEFAULT_TRUESKILL_SIGMA;
-        const exposed = typeof row.trueskill_exposed === 'number' ? row.trueskill_exposed : mu - 3 * sigma;
+        const exposed = typeof row.trueskill_exposed === 'number'
+          ? row.trueskill_exposed
+          : mu - 3 * sigma;
         const gamesPlayed = parseInt(String(row.games_played), 10);
         const wins = parseInt(String(row.wins), 10);
 
