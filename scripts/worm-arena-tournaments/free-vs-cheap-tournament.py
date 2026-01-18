@@ -150,8 +150,8 @@ def main() -> int:
     parser.add_argument(
         "--timeout-sec",
         type=int,
-        default=600,
-        help="Timeout per match request in seconds (default: 600).",
+        default=28800,
+        help="Timeout per batch request in seconds (default: 28800 = 8 hours).",
     )
     parser.add_argument(
         "--dry-run",

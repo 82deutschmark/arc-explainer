@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.8  Jan 17, 2026
+
+- **FEAT: Add Puzzle Examiner link button to Puzzle Analyst page** (Author: Claude Haiku 4.5)
+  - Quick navigation from task analysis view to the main puzzle examiner (switches `/task/:id` to `/puzzle/:id`).
+
 ### Version 6.36.7  Jan 16, 2026
 
 - **FIX: Pin Grok vs GPT-5.1 Codex duel + default replay selection** (Author: Cascade)
