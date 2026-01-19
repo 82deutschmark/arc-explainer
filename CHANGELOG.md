@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.10  Jan 19, 2026
+
+- **FEAT: Champion vs Field Worm Arena runner** (Author: ChatGPT 5.1 (Cascade))
+  - **What**: Added `scripts/worm-arena-tournaments/champion-vs-field-tournament.py`, a carbon-copy of the free-vs-cheap batch runner that designates `z-ai/glm-4.7-flash` as champion and schedules it both directions against every free and cheap opponent using persona B, 15 apples, and the exact same batching/threading defaults.
+  - **Why**: Stakeholders wanted a single command that stress-tests the new champion model against the full bargain slate without touching any other parameters or match sequencing.
+  - **How**: Reused the shared pairing/build logic with a champion-focused helper, preserved CLI arg surface/dry-run behavior, and refreshed file metadata to document the persona/parameter parity requirements.
+
 ### Version 6.36.9  Jan 17, 2026
 
 - **FIX: Worm Arena TrueSkill leaderboard collapses provider variants** (Author: Cascade)
