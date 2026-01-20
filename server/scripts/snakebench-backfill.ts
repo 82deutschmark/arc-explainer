@@ -1,14 +1,17 @@
 /**
- * SnakeBench backfill script
- *THIS SCRIPT NEEDS DOCUMENTATION!
- * Resets model aggregates/ratings to baseline and re-ingests all
- * completed SnakeBench replay JSONs in chronological order, matching
- * Greg's pipeline (aggregates + TrueSkill/Elo).
+ * Author: Cascade
+ * Date: 2026-01-19
+ * PURPOSE: SnakeBench backfill CLI entrypoint.
+ *          Resets model aggregates/ratings then replays every completed
+ *          local game from the resolved completed-games directory to
+ *          regenerate aggregates and TrueSkill/Elo consistently.
+ * SRP/DRY check: Pass — script only orchestrates repo init + directory backfill.
  */
 
 import path from 'path';
 import { repositoryService } from '../repositories/RepositoryService.ts';
 import { logger } from '../utils/logger.ts';
+import { getCompletedGamesAbsolutePath } from '../services/snakeBench/utils/constants.ts';
 
 async function main() {
   const ok = await repositoryService.initialize();
@@ -16,7 +19,7 @@ async function main() {
     throw new Error('Database not initialized; cannot run SnakeBench backfill.');
   }
 
-  const completedDir = path.join(process.cwd(), 'external', 'SnakeBench', 'backend', 'completed_games');
+  const completedDir = getCompletedGamesAbsolutePath(process.cwd());
 
   logger.info('Resetting SnakeBench model aggregates/ratings to baseline...', 'snakebench-backfill');
   await repositoryService.gameWrite.resetModelRatings();
