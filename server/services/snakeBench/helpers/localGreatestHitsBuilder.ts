@@ -35,6 +35,14 @@ interface LocalReplayMetrics {
   durationSeconds: number;
 }
 
+interface ReplayPlayer {
+  name?: unknown;
+  final_score?: unknown;
+  totals?: {
+    cost?: unknown;
+  } | null;
+}
+
 type DimensionKey =
   | 'rounds'
   | 'cost'
@@ -184,7 +192,7 @@ async function parseReplayMetrics(files: string[]): Promise<LocalReplayMetrics[]
 
 function extractMetrics(filePath: string, payload: any): LocalReplayMetrics | null {
   const game = payload?.game ?? {};
-  const players = payload?.players ?? {};
+  const players = (payload?.players ?? {}) as Record<string, ReplayPlayer>;
   const totals = payload?.totals ?? {};
 
   const gameId: string = toStringOrEmpty(game.id) || deriveGameIdFromFilename(filePath);
@@ -209,8 +217,8 @@ function extractMetrics(filePath: string, payload: any): LocalReplayMetrics | nu
   const boardWidth = Number(game?.board?.width ?? 0);
   const boardHeight = Number(game?.board?.height ?? 0);
 
-  const totalCost = resolveTotalCost(totals, playerEntries);
-  const scores = playerEntries.map(([, player]) => Number(player?.final_score ?? 0));
+  const totalCost = resolveTotalCost(totals, playerEntries as Array<[string, ReplayPlayer]>);
+  const scores = playerEntries.map(([, player]) => Number((player as ReplayPlayer)?.final_score ?? 0));
   const maxFinalScore = Math.max(0, ...scores);
   const sumFinalScores = scores.reduce((acc, val) => acc + (Number.isFinite(val) ? val : 0), 0);
   const scoreDelta = scores.length >= 2 ? Math.abs(scores[0] - scores[1]) : maxFinalScore;
@@ -258,7 +266,7 @@ function resolveRoundsPlayed(game: any, payload: any): number {
 
 function resolveTotalCost(
   totals: Record<string, unknown>,
-  players: Array<[string, any]>
+  players: Array<[string, ReplayPlayer]>
 ): number {
   const aggregate = Number(totals?.cost ?? 0);
   if (aggregate > 0) {
