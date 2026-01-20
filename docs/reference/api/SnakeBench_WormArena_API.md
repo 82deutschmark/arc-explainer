@@ -277,9 +277,12 @@ GET /api/snakebench/greatest-hits?limitPerDimension=5
 
 **Important:**
 
-- This endpoint is generated from the **database** (`public.games`, `public.game_participants`).
-- The service layer filters results so only games with an available replay asset are returned.
-- See `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md` for details.
+- The service now follows a three-tier fallback so Greatest Hits always return playable games:
+  1. **Database ranking** (`public.games`, `public.game_participants`) when DB connectivity is healthy.
+  2. **Local replay builder** that scans `external/SnakeBench/backend/<completed-dir>` and computes the same metrics when the DB returns zero rows.
+  3. **Curated hall-of-fame list** as the last resort.
+- Each stage filters entries to ensure a replay asset actually exists before it is surfaced to clients.
+- See `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md` for local analysis details.
 
 ---
 

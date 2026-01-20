@@ -45,6 +45,14 @@ However, if a corresponding replay JSON was never written to `completed_games/` 
 - Still appear in DB-backed greatest-hits lists.
 - **Not** be available for local replay or MP4 generation on this machine.
 
+### 2.1 Local builder fallback (new)
+
+When the DB returns zero greatest-hits rows (for example, when running locally without a populated database), the API now invokes a **local greatest-hits builder** that scans the resolved completed-games directory.
+
+- The builder reuses the same metrics as the SQL query (rounds played, total cost, max score, total score, duration, close finishes, 25+ apple hauls).
+- Each dimension is ranked locally, deduplicated, and capped to 20 entries before replay availability filtering.
+- Only if both DB and local builder fail does the API fall back to the curated hall-of-fame list.
+
 ---
 
 ## 3. Local-Only Game Analysis Script
