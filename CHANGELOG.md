@@ -1,11 +1,65 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.10  Jan 19, 2026
+
+- **FEAT: Champion vs Field Worm Arena runner** (Author: ChatGPT 5.1 (Cascade))
+  - **What**: Added `scripts/worm-arena-tournaments/champion-vs-field-tournament.py`, a carbon-copy of the free-vs-cheap batch runner that designates `z-ai/glm-4.7-flash` as champion and schedules it both directions against every free and cheap opponent using persona B, 15 apples, and the exact same batching/threading defaults.
+  - **Why**: Stakeholders wanted a single command that stress-tests the new champion model against the full bargain slate without touching any other parameters or match sequencing.
+  - **How**: Reused the shared pairing/build logic with a champion-focused helper, preserved CLI arg surface/dry-run behavior, and refreshed file metadata to document the persona/parameter parity requirements.
+
+### Version 6.36.9  Jan 17, 2026
+
+- **FIX: Worm Arena TrueSkill leaderboard collapses provider variants** (Author: Cascade)
+  - **What**: Updated the shared SnakeBench slug normalization helper so both `:free` and `:paid` suffixes are stripped (case-insensitive), ensuring the TrueSkill leaderboard, stats summaries, and any SQL queries using the helper treat billing variants as a single model entry.
+  - **Why**: The stats page was double-listing the same model whenever both paid and free OpenRouter variants played games, confusing users and inflating rank counts.
+  - **How**: `server/repositories/snakebenchSqlHelpers.ts` now uses a reusable regex for both the TypeScript helper and SQL fragment, keeping grouping consistent across repositories and downstream UI hooks.
+
+### Version 6.36.8  Jan 17, 2026
+
+- **FEAT: Add Puzzle Examiner link button to Puzzle Analyst page** (Author: Claude Haiku 4.5)
+  - Quick navigation from task analysis view to the main puzzle examiner (switches `/task/:id` to `/puzzle/:id`).
+
+### Version 6.36.7  Jan 16, 2026
+
+- **FIX: Pin Grok vs GPT-5.1 Codex duel + default replay selection** (Author: Cascade)
+  - **What**: Moved the 8bca1c80 (GPT-5.1 Codex Mini vs Grok Code Fast 1) epic to the top of the pinned Greatest Hits list, shared the curated array via a new `wormArenaPinnedGames` constant, and taught the replay page to default to that match when no `matchId` is provided.
+  - **Why**: Stakeholders want that legendary 21-20 body-collision finish showcased first and loaded by default so shared links always highlight it, even if the API rotates other matches in.
+  - **How**:
+    - `client/src/constants/wormArenaPinnedGames.ts`: new shared list helper exposing `PINNED_WORM_ARENA_GAMES` + `getDefaultPinnedWormArenaGameId()`.
+    - `client/src/components/WormArenaGreatestHits.tsx`: reuse shared pins so ordering stays consistent and avoid duplicates.
+    - `client/src/pages/WormArena.tsx`: initialize selection from the pinned default and fall back to it whenever no match is picked.
+
+### Version 6.36.6  Jan 16, 2026
+
+- **FIX: Preserve shared debate deep links by redirecting to Puzzle Examiner** (Author: Cascade)
+  - **What**: Added a typed redirect page so `/debate/:taskId` URLs now forward to `/puzzle/:taskId` (with query params intact) instead of rendering the debate UI, which currently fails on direct loads.
+  - **Why**: Stakeholders still circulate `/debate/<taskId>` links; until the debate experience is rebuilt, we need those URLs to land on a stable page instead of a blank screen.
+  - **How**:
+    - `client/src/pages/DebateTaskRedirect.tsx`: new redirect bridge preserving task ID + query string.
+    - `client/src/App.tsx`: documented routing change and routed `/debate/:taskId` through the new redirect component.
+
+### Version 6.36.5  Jan 16, 2026
+
+- **FIX: Worm Arena replay page shows real recent matches** (Author: Cascade)
+  - **What**: Replaced the suggested matchups sidebar with the all-model recent matches list next to Greatest Hits and refreshed the page header metadata to capture the combined highlight section.
+  - **Why**: The replay page should help viewers rewatch actual recent games; showing suggested matchups was misleading and duplicated content from the live page.
+  - **How**:
+    - `client/src/pages/WormArena.tsx`: swapped in `WormArenaRecentMatchesList`, removed the suggested matchups import/usage, updated documentation block.
+
+### Version 6.36.4  Jan 15, 2026
+
+- **FEAT: Pin GPT-OSS 120B vs DeepSeek V3.2 to Greatest Hits** (Author: Cascade)
+  - **What**: Added match `d8cd9202-5121-448a-a5bb-194ce5095e5e` (GPT-OSS 120B vs DeepSeek V3.2) to the pinned Worm Arena Greatest Hits list so it stays visible even when the API results rotate.
+  - **Why**: Highlight a notable 20-17 duel with dual body collisions and balanced costs for easy replay discovery.
+  - **How**:
+    - `client/src/components/WormArenaGreatestHits.tsx`: prepended a pinned entry with match metadata and highlight reason; refreshed file header metadata.
+
 ### Version 6.36.3  Jan 14, 2026
 
-- **FIX: RE-ARC dataset timestamps show plain UTC** (Author: Cascade)
-  - **What**: Simplified the RE-ARC submissions table to show the dataset generation time as a plain ISO UTC timestamp (no relative phrasing) to prevent future/past confusion.
-  - **Why**: Relative wording like "in 6 days" misled users about when datasets were created.
-  - **How**: `client/src/pages/ReArcSubmissions.tsx` now renders the stored generation time via `toISOString()` without relative helpers.
+- **FIX: RE-ARC submission timestamps show plain UTC** (Author: Cascade)
+  - **What**: Simplified the RE-ARC submissions table to show both dataset generation time and evaluation time as plain ISO UTC timestamps (no relative phrasing) to prevent future/past confusion.
+  - **Why**: Relative wording like "in 6 days" misled users about when datasets were created and evaluated.
+  - **How**: `client/src/pages/ReArcSubmissions.tsx` now renders generation and evaluation times via `toISOString()` without relative helpers.
 
 ### Version 6.36.2  Jan 14, 2026
 

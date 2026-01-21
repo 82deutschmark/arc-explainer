@@ -4,9 +4,9 @@
 # PURPOSE: Queue matches against a targeted opponent set:
 #          - GPT-5 Nano (OpenRouter)
 #          - GPT-5 Mini (OpenRouter)
-#          - Claude Haiku 4.5 (OpenRouter)
+#          
 #          - DeepSeek v3.2
-#          - DeepSeek Chat v3.1
+#          
 #          - Grok 4.1 Fast
 #          - Grok Code Fast 1
 #          This script uses the existing SnakeBench batch endpoint and does not wait for games to complete.

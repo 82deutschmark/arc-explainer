@@ -1,18 +1,17 @@
 /**
- * Author: Gemini 3 Flash High
- * Date: 2025-12-27 (updated 2026-01-13 by Cascade)
- * PURPOSE: Filter replays by minimum rounds and availability for UI presentation.
- *          Avoids surfacing short diagnostic matches; ensures greatest hits are playable.
- *          Supports both dynamic DB-driven ranking and fallback to curated list.
- *          NOTE: Primary filtering now done via is_culled column in DB (games < 10 rounds culled).
- *          This MIN_ROUNDS filter is a secondary defense for edge cases.
- * SRP/DRY check: Pass — isolated replay filtering logic, single responsibility.
+ * Author: Cascade
+ * Date: 2026-01-19
+ * PURPOSE: Filter replay candidates and orchestrate Worm Arena greatest-hits fallbacks.
+ *          Ensures only long-enough, replayable games are returned and adds a local
+ *          replay-based fallback between DB results and the curated hall of fame list.
+ * SRP/DRY check: Pass — verified helper remains focused on filtering + fallback wiring.
  */
 
 import type { SnakeBenchGameSummary, WormArenaGreatestHitGame } from '../../../../shared/types.js';
 import { CURATED_WORM_ARENA_HALL_OF_FAME } from '../../snakeBenchHallOfFame.ts';
 import { repositoryService } from '../../../repositories/RepositoryService.ts';
 import { logger } from '../../../utils/logger.ts';
+import { buildLocalGreatestHits } from './localGreatestHitsBuilder.ts';
 
 const MIN_ROUNDS = 10;
 
@@ -72,8 +71,27 @@ export async function getWormArenaGreatestHitsFiltered(
 
   // Strategy 2: Fall back to curated list if DB didn't produce results
   if (candidateGames.length === 0) {
+    try {
+      const localResults = await buildLocalGreatestHits(limitPerDimension);
+      if (localResults.length > 0) {
+        logger.info(
+          `getWormArenaGreatestHitsFiltered: using local completed-games fallback (${localResults.length} results)`,
+          'snakebench-service'
+        );
+        candidateGames = localResults;
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.warn(
+        `getWormArenaGreatestHitsFiltered: local fallback failed (${msg})`,
+        'snakebench-service'
+      );
+    }
+  }
+
+  if (candidateGames.length === 0) {
     logger.info(
-      `getWormArenaGreatestHitsFiltered: no dynamic results, using curated hall of fame`,
+      `getWormArenaGreatestHitsFiltered: no dynamic/local results, using curated hall of fame`,
       'snakebench-service'
     );
     candidateGames = CURATED_WORM_ARENA_HALL_OF_FAME;
