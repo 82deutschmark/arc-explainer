@@ -11,7 +11,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams } from 'wouter';
-import { AlertCircle, CheckCircle, Filter, XCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Filter, XCircle, ArrowUpRight } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { usePaginatedExplanationSummaries } from '@/hooks/useExplanation';
 import { usePuzzle } from '@/hooks/usePuzzle';
@@ -167,11 +167,23 @@ export default function PuzzleAnalyst() {
   return (
     <div className="min-h-screen bg-black text-gray-50">
       <div className="border-b border-gray-800 bg-black">
-        <div className="max-w-7xl mx-auto px-4 py-2">
-          <h1 className="text-3xl font-semibold text-gray-100 leading-tight">
-            {taskId}
-            {puzzleName && ` - ${puzzleName}`}
-          </h1>
+        <div className="max-w-7xl mx-auto px-4 py-2 relative">
+          <div className="flex items-start justify-between gap-4">
+            <h1 className="text-3xl font-semibold text-gray-100 leading-tight">
+              {taskId}
+              {puzzleName && ` - ${puzzleName}`}
+            </h1>
+            <a href={`/puzzle/${taskId}`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-400 hover:text-gray-100 hover:bg-gray-800/50 flex items-center gap-1"
+              >
+                Puzzle Examiner
+                <ArrowUpRight className="h-4 w-4" />
+              </Button>
+            </a>
+          </div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-gray-400 mt-1">
             Analyzing {total} explanation{total !== 1 ? 's' : ''}
           </p>
