@@ -29,6 +29,21 @@ export const PINNED_WORM_ARENA_GAMES: WormArenaGreatestHitGame[] = [
       'Pinned: Grok Code Fast 1 ended GPT-5 Nano 20-16 after a 44-round duel and simultaneous head collision in round 43.',
   },
   {
+    gameId: 'cb60bec2-75b1-4bf9-b868-6fd6ca822956',
+    startedAt: '2026-01-13T19:56:44.809932',
+    modelA: 'x-ai/grok-code-fast-1',
+    modelB: 'openai/gpt-5-mini',
+    roundsPlayed: 42,
+    maxRounds: 150,
+    totalCost: 0.52263015,
+    maxFinalScore: 19,
+    scoreDelta: 5,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason:
+      'Pinned: GPT-5 Mini outlasted Grok Code Fast 1, 19-14, after forcing a body collision in round 41 of a 42-round duel.',
+  },
+  {
     gameId: '8bca1c80-c63e-4ab5-824b-2a77c5ffee3e',
     startedAt: '2026-01-13T22:06:13.382383',
     modelA: 'openai/gpt-5.1-codex-mini',
