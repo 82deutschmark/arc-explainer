@@ -56,7 +56,8 @@ When the DB returns zero greatest-hits rows (for example, when running locally w
 ### 2.2 Pinned hall-of-fame refresh (Jan 21, 2026)
 
 - Added match `c6351f1c-2a3f-4e98-93ab-05e38f06a1c7` (Grok Code Fast 1 vs GPT-5 Nano, 44 rounds, 20-16 finish) as the top curated replay so it always appears even when API results rotate.
-- Frontend merge logic now deduplicates pinned + API games by `gameId` and sorts the combined list by `startedAt` descending, ensuring newer highlights rise to the top while preserving pinned metadata when IDs overlap.
+- Added match `cb60bec2-75b1-4bf9-b868-6fd6ca822956` (GPT-5 Mini forced a Grok Code Fast 1 body collision to win 19-14) to the pinned slate so both duels surface consistently.
+- Frontend merge logic now lives in `client/src/lib/wormArena/mergeWormArenaGreatestHits.ts`, where we deduplicate pinned + API games by `gameId`, sort by `startedAt` descending, and back the behavior with Vitest coverage to prevent regressions.
 
 ---
 

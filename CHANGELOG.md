@@ -7,8 +7,10 @@
   - **Why**: Stakeholders wanted that replay permanently in slot #1 and asked us to avoid duplicate cards when the backend also returns pinned matches, plus ensure recency beats static pin order when new epics land.
   - **How**:
     - `client/src/constants/wormArenaPinnedGames.ts`: refreshed metadata, inserted the new match, and removed the duplicated entry.
-    - `client/src/components/WormArenaGreatestHits.tsx`: switched to Map-based dedupe with newest-first ordering so pinned metadata wins but newer games rise to the top.
-    - `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md`: documented the pin refresh and merge behavior so ops know why the UI order shifted.
+    - `client/src/components/WormArenaGreatestHits.tsx`: now consumes a shared merge helper so pinned metadata wins but newer games rise to the top.
+    - `client/src/lib/wormArena/mergeWormArenaGreatestHits.ts`: new pure helper with Vitest coverage ensuring dedupe + ordering stay locked in.
+    - `client/src/constants/wormArenaPinnedGames.ts`: added the GPT-5 Mini vs Grok Code Fast 1 19-14 comeback (match `cb60bec2-75b1-4bf9-b868-6fd6ca822956`) alongside the Nano duel so both showcase games stay pinned.
+    - `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md`: documented the pin refresh plus the location of the merge helper/tests so ops know why the UI order shifted.
 
 ### Version 6.36.10  Jan 19, 2026
 

@@ -15,7 +15,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 import WormArenaMatchCard from '@/components/wormArena/WormArenaMatchCard';
 import { PINNED_WORM_ARENA_GAMES } from '@/constants/wormArenaPinnedGames';
-import type { WormArenaGreatestHitGame } from '@shared/types';
+import { mergeWormArenaGreatestHits } from '@/lib/wormArena/mergeWormArenaGreatestHits';
 
 function normalizeGameId(raw: string): string {
   const trimmed = (raw ?? '').trim();
@@ -26,30 +26,14 @@ function normalizeGameId(raw: string): string {
 
 export default function WormArenaGreatestHits() {
   const { games, isLoading, error } = useWormArenaGreatestHits(20);
-  const mergedGames = React.useMemo(() => {
-    const deduped = new Map<string, WormArenaGreatestHitGame>();
-
-    // Pinned games go first so their highlight metadata wins when IDs overlap.
-    for (const game of PINNED_WORM_ARENA_GAMES) {
-      if (!deduped.has(game.gameId)) {
-        deduped.set(game.gameId, game);
-      }
-    }
-
-    // Append API games, skipping anything already captured above.
-    for (const game of games) {
-      if (!deduped.has(game.gameId)) {
-        deduped.set(game.gameId, game);
-      }
-    }
-
-    // Sort newest-first so recent highlights surface even if not pinned.
-    return Array.from(deduped.values()).sort((a, b) => {
-      const aTime = a.startedAt ? Date.parse(a.startedAt) : 0;
-      const bTime = b.startedAt ? Date.parse(b.startedAt) : 0;
-      return bTime - aTime;
-    });
-  }, [games]);
+  const mergedGames = React.useMemo(
+    () =>
+      mergeWormArenaGreatestHits({
+        pinnedGames: PINNED_WORM_ARENA_GAMES,
+        apiGames: games,
+      }),
+    [games]
+  );
 
   return (
     <Card className="worm-card">
