@@ -53,6 +53,11 @@ When the DB returns zero greatest-hits rows (for example, when running locally w
 - Each dimension is ranked locally, deduplicated, and capped to 20 entries before replay availability filtering.
 - Only if both DB and local builder fail does the API fall back to the curated hall-of-fame list.
 
+### 2.2 Pinned hall-of-fame refresh (Jan 21, 2026)
+
+- Added match `c6351f1c-2a3f-4e98-93ab-05e38f06a1c7` (Grok Code Fast 1 vs GPT-5 Nano, 44 rounds, 20-16 finish) as the top curated replay so it always appears even when API results rotate.
+- Frontend merge logic now deduplicates pinned + API games by `gameId` and sorts the combined list by `startedAt` descending, ensuring newer highlights rise to the top while preserving pinned metadata when IDs overlap.
+
 ---
 
 ## 3. Local-Only Game Analysis Script

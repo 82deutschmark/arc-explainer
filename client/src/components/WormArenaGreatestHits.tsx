@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2026-01-16
+ * Date: 2026-01-21
  * PURPOSE: Worm Arena "Greatest Hits" card with Share/Tweet buttons.
  *          Shows curated epic matches (longest, most expensive, highest-scoring)
  *          and ensures pinned hall-of-fame entries stay in declared order so
@@ -27,9 +27,28 @@ function normalizeGameId(raw: string): string {
 export default function WormArenaGreatestHits() {
   const { games, isLoading, error } = useWormArenaGreatestHits(20);
   const mergedGames = React.useMemo(() => {
-    const existingIds = new Set(games.map((g) => g.gameId));
-    const pinnedToAdd = PINNED_WORM_ARENA_GAMES.filter((pinned) => !existingIds.has(pinned.gameId));
-    return [...pinnedToAdd, ...games];
+    const deduped = new Map<string, WormArenaGreatestHitGame>();
+
+    // Pinned games go first so their highlight metadata wins when IDs overlap.
+    for (const game of PINNED_WORM_ARENA_GAMES) {
+      if (!deduped.has(game.gameId)) {
+        deduped.set(game.gameId, game);
+      }
+    }
+
+    // Append API games, skipping anything already captured above.
+    for (const game of games) {
+      if (!deduped.has(game.gameId)) {
+        deduped.set(game.gameId, game);
+      }
+    }
+
+    // Sort newest-first so recent highlights surface even if not pinned.
+    return Array.from(deduped.values()).sort((a, b) => {
+      const aTime = a.startedAt ? Date.parse(a.startedAt) : 0;
+      const bTime = b.startedAt ? Date.parse(b.startedAt) : 0;
+      return bTime - aTime;
+    });
   }, [games]);
 
   return (
