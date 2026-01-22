@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2026-01-16
+ * Date: 2026-01-21
  * PURPOSE: Shared Worm Arena pinned "Greatest Hits" list so replay pages,
  *          cards, and default selection logic can keep keystone matches
  *          (like Grok vs GPT-5.1) surfaced regardless of API rotation.
@@ -13,6 +13,36 @@
 import type { WormArenaGreatestHitGame } from '@shared/types';
 
 export const PINNED_WORM_ARENA_GAMES: WormArenaGreatestHitGame[] = [
+  {
+    gameId: 'c6351f1c-2a3f-4e98-93ab-05e38f06a1c7',
+    startedAt: '2026-01-15T01:27:59.164733',
+    modelA: 'openai/gpt-5-nano',
+    modelB: 'x-ai/grok-code-fast-1',
+    roundsPlayed: 44,
+    maxRounds: 150,
+    totalCost: 0.4072954,
+    maxFinalScore: 20,
+    scoreDelta: 4,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason:
+      'Pinned: Grok Code Fast 1 ended GPT-5 Nano 20-16 after a 44-round duel and simultaneous head collision in round 43.',
+  },
+  {
+    gameId: 'cb60bec2-75b1-4bf9-b868-6fd6ca822956',
+    startedAt: '2026-01-13T19:56:44.809932',
+    modelA: 'x-ai/grok-code-fast-1',
+    modelB: 'openai/gpt-5-mini',
+    roundsPlayed: 42,
+    maxRounds: 150,
+    totalCost: 0.52263015,
+    maxFinalScore: 19,
+    scoreDelta: 5,
+    boardWidth: 10,
+    boardHeight: 10,
+    highlightReason:
+      'Pinned: GPT-5 Mini outlasted Grok Code Fast 1, 19-14, after forcing a body collision in round 41 of a 42-round duel.',
+  },
   {
     gameId: '8bca1c80-c63e-4ab5-824b-2a77c5ffee3e',
     startedAt: '2026-01-13T22:06:13.382383',
@@ -56,20 +86,6 @@ export const PINNED_WORM_ARENA_GAMES: WormArenaGreatestHitGame[] = [
     boardWidth: 10,
     boardHeight: 10,
     highlightReason: 'Pinned: Grok Code Fast 1 edged GPT-5.1 Codex Mini 21-20 in a 42-round match. Codex Mini died via body collision in round 41.',
-  },
-  {
-    gameId: '42ccab35-b987-425c-8a32-5a9f7040f6aa',
-    startedAt: '2026-01-13T17:41:21.371773',
-    modelA: 'openai/gpt-5.2',
-    modelB: 'x-ai/grok-4.1-fast',
-    roundsPlayed: 52,
-    maxRounds: 150,
-    totalCost: 1.5168757,
-    maxFinalScore: 26,
-    scoreDelta: 2,
-    boardWidth: 10,
-    boardHeight: 10,
-    highlightReason: 'Pinned: GPT-5.2 defeated Grok 4.1 Fast 24-26 in a 52-round match. Grok died via body collision in round 51.',
   },
   {
     gameId: '17b4cccc-e0b2-44a7-bc65-d69a13221993',

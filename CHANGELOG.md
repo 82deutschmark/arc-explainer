@@ -1,5 +1,17 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.11  Jan 21, 2026
+
+- **FIX: Worm Arena greatest hits surfaces newest pinned replay** (Author: Cascade)
+  - **What**: Added the Grok Code Fast 1 vs GPT-5 Nano duel (match `c6351f1c-2a3f-4e98-93ab-05e38f06a1c7`) to the pinned list, removed duplicate IDs, deduplicated the frontend merge, and now sort the combined list by `startedAt` so the freshest hits sit on top.
+  - **Why**: Stakeholders wanted that replay permanently in slot #1 and asked us to avoid duplicate cards when the backend also returns pinned matches, plus ensure recency beats static pin order when new epics land.
+  - **How**:
+    - `client/src/constants/wormArenaPinnedGames.ts`: refreshed metadata, inserted the new match, and removed the duplicated entry.
+    - `client/src/components/WormArenaGreatestHits.tsx`: now consumes a shared merge helper so pinned metadata wins but newer games rise to the top.
+    - `client/src/lib/wormArena/mergeWormArenaGreatestHits.ts`: new pure helper with Vitest coverage ensuring dedupe + ordering stay locked in.
+    - `client/src/constants/wormArenaPinnedGames.ts`: added the GPT-5 Mini vs Grok Code Fast 1 19-14 comeback (match `cb60bec2-75b1-4bf9-b868-6fd6ca822956`) alongside the Nano duel so both showcase games stay pinned.
+    - `docs/reference/data/WormArena_GreatestHits_Local_Analysis.md`: documented the pin refresh plus the location of the merge helper/tests so ops know why the UI order shifted.
+
 ### Version 6.36.10  Jan 19, 2026
 
 - **FEAT: Champion vs Field Worm Arena runner** (Author: ChatGPT 5.1 (Cascade))

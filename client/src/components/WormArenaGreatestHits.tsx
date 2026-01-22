@@ -1,6 +1,6 @@
 /**
  * Author: Cascade
- * Date: 2026-01-16
+ * Date: 2026-01-21
  * PURPOSE: Worm Arena "Greatest Hits" card with Share/Tweet buttons.
  *          Shows curated epic matches (longest, most expensive, highest-scoring)
  *          and ensures pinned hall-of-fame entries stay in declared order so
@@ -15,7 +15,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useWormArenaGreatestHits } from '@/hooks/useWormArenaGreatestHits';
 import WormArenaMatchCard from '@/components/wormArena/WormArenaMatchCard';
 import { PINNED_WORM_ARENA_GAMES } from '@/constants/wormArenaPinnedGames';
-import type { WormArenaGreatestHitGame } from '@shared/types';
+import { mergeWormArenaGreatestHits } from '@/lib/wormArena/mergeWormArenaGreatestHits';
 
 function normalizeGameId(raw: string): string {
   const trimmed = (raw ?? '').trim();
@@ -26,11 +26,14 @@ function normalizeGameId(raw: string): string {
 
 export default function WormArenaGreatestHits() {
   const { games, isLoading, error } = useWormArenaGreatestHits(20);
-  const mergedGames = React.useMemo(() => {
-    const existingIds = new Set(games.map((g) => g.gameId));
-    const pinnedToAdd = PINNED_WORM_ARENA_GAMES.filter((pinned) => !existingIds.has(pinned.gameId));
-    return [...pinnedToAdd, ...games];
-  }, [games]);
+  const mergedGames = React.useMemo(
+    () =>
+      mergeWormArenaGreatestHits({
+        pinnedGames: PINNED_WORM_ARENA_GAMES,
+        apiGames: games,
+      }),
+    [games]
+  );
 
   return (
     <Card className="worm-card">

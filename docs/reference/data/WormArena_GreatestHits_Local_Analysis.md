@@ -53,6 +53,12 @@ When the DB returns zero greatest-hits rows (for example, when running locally w
 - Each dimension is ranked locally, deduplicated, and capped to 20 entries before replay availability filtering.
 - Only if both DB and local builder fail does the API fall back to the curated hall-of-fame list.
 
+### 2.2 Pinned hall-of-fame refresh (Jan 21, 2026)
+
+- Added match `c6351f1c-2a3f-4e98-93ab-05e38f06a1c7` (Grok Code Fast 1 vs GPT-5 Nano, 44 rounds, 20-16 finish) as the top curated replay so it always appears even when API results rotate.
+- Added match `cb60bec2-75b1-4bf9-b868-6fd6ca822956` (GPT-5 Mini forced a Grok Code Fast 1 body collision to win 19-14) to the pinned slate so both duels surface consistently.
+- Frontend merge logic now lives in `client/src/lib/wormArena/mergeWormArenaGreatestHits.ts`, where we deduplicate pinned + API games by `gameId`, sort by `startedAt` descending, and back the behavior with Vitest coverage to prevent regressions.
+
 ---
 
 ## 3. Local-Only Game Analysis Script
