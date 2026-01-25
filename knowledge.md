@@ -1,102 +1,103 @@
-# ARC-AGI Explainer Knowledge Base
+# ARC-AGI Explainer – Developer Quick Reference
 
-## Project Mission
-Interactive web application for exploring and analyzing ARC-AGI puzzles with AI-powered explanations. Focuses on pattern recognition, reasoning transparency, and educational insights.
+This is the single best starting point for the repo. High-signal synthesis from README/package.json/CLAUDE/AGENTS/CHANGELOG/etc.
+
+## Mission
+ARC-AGI puzzle explorer with AI explanations, ARC1/2/3, RE-ARC benchmarking, Worm Arena (SnakeBench LLMs vs LLMs), multi-provider (OpenAI Responses API, Anthropic, Gemini, xAI/Grok, DeepSeek, OpenRouter BYOK-prod).
+
+Prod: arc.markbarney.net | Staging: arc-explainer-staging.up.railway.app (arc3 branch)
 
 ## Architecture
-- **Frontend**: React + TypeScript + Vite, TanStack Query, shadcn/ui
-- **Backend**: Express + TypeScript, PostgreSQL/Drizzle ORM
-- **AI**: Multi-provider support (OpenAI, Anthropic, Gemini, Grok, DeepSeek, OpenRouter)
-- **Python**: Saturn Visual Solver integration
+```
+client/     React18+TS+Vite+Tailwind+shadcn/DaisyUI+TanStackQuery+Wouter
+server/     Express+TS(ESM)+Drizzle(Postgres/in-mem)
+shared/     types/schema/config/utils
+data/       ARC datasets
+solver/     Python (Saturn/Grover/Poetiq/Beetree)
+external/   SnakeBench/re-arc/grover-arc
+```
+- tsconfig: strict/ES2020/bundler, paths `@/*=client/src`, `@shared=shared`
+- vite.config.ts: root=client, aliases match tsconfig, STREAMING_ENABLED sync, Replit cartographer(dev)
 
-## Key Commands
-- `npm run dev` - Start development server (Vite + Express)
-- `npm run test` - Run build and dev together (wait 20s for output)
-- `npm run db:push` - Push database schema changes
-- `npm run build` - Production build
+## Commands (package.json)
+```
+dev    # Vite+Express
+build  # client+server bundle
+local  # build+dev
+prod   # build+start
+check  # tsc
+test   # vitest watch (20s wait+joke)
+test:* # unit/frontend/int/e2e/all/ui/coverage
+db:push # Drizzle
+*ingest # HF/Johanland
+wormarena:* # tournaments/discover
+snakebench:* # backfill
+```
+Windows: `windows-dev/start`
 
-## Development Patterns
-- ESM modules throughout (use .ts extensions in imports)
-- Repository pattern for data access
-- Prompt templates in `server/services/prompts/`
-- Shared types in `shared/types.ts`
+## Patterns
+- ESM (.ts imports), repo pattern (no direct DB), promptBuilder+templates
+- Headers(TS/Py): Author/Date/PURPOSE/SRP-DRY
+- Workflow: Analyze>Plan(docs/plans/{date}-{goal}.md)>Impl>Verify>CHANGELOG(SemVer top)
+- No mocks/any/placeholders; reuse shadcn/utils; prod BYOK
 
-## Important Files
-- `CLAUDE.md` - Detailed coding guidelines
-- `server/services/promptBuilder.ts` - Centralized prompt system
-- `server/repositories/*` - Data access layer
-- `shared/schema.ts` - Database schema definitions
+## Files
+```
+CLAUDE/AGENTS.md  # rules/workflow/scoring
+CHANGELOG.md      # SemVer history
+shared/types/schema # core
+server/routes.ts  # API wiring
+client/App.tsx    # routes
+promptBuilder.ts  # prompts
+repos/*           # data
+services/*        # logic (AI/REARC/Worm/ARC3)
+docs/*            # plans/ref
+```
 
-## API Endpoints
-- `/api/puzzle/*` - Puzzle data and analysis
-- `/api/feedback/*` - User feedback and stats
-- `/api/metrics/*` - Performance metrics
-- `/api/elo/*` - Model rankings
+## Routes (Key)
+**Frontend (Wouter)**: /task:id(Analyst def), /puzzle:id(Examiner), /re-arc(sub/dataset), /arc3(playground/codex/openrouter/haiku/games:id), /worm-arena(replay/live:id/matches/stats/models/skill/rules)
+**Backend (Express)**: /api/health/models/puzzle/stream/analyze(rearc/snakebench/wormarena/arc3/council/og-image/metrics)
 
-## Environment Variables
-PRESENT IN .env
+Full: README "Routes"
 
-## Best Practices
-- Always check CLAUDE.md for detailed guidelines
-- Use repository pattern, not direct DB queries
-- Maintain SRP and DRY principles
-- Real implementations only, no mocks
-- Git commit after changes with detailed messages
+## Env (.env)
+```
+OPENAI_API_KEY
+OPENROUTER_API_KEY (BYOK-prod)
+DATABASE_URL
+STREAMING_ENABLED
+RE_ARC_SEED_PEPPER (32+)
+SNAKEBENCH_*
+```
 
-## Common Issues
+## Scoring (ARC/RE-ARC)
+**Truth**: arc-agi-benchmarking/scoring.py (score_task L36-125)
+- Test case solved if *any* attempt matches GT
+- Task score = solved_cases/total_cases
+- Sub score = avg task scores (equal weight)
+- JSON: array[test_pairs], each {attempt_1/2: {answer,pair_index,...}}
 
-- WebSocket issues: Saturn solver streaming can conflict
-- Database: Auto-creates tables on startup if PostgreSQL configured
+TS impl: reArcService.scoreTask matches py exactly
 
-## xAI Grok-4 Structured Outputs (Oct 7, 2025)
-- Enabled via Responses API using `response_format.json_schema` (not `text.format`).
-- Minimal schema in `server/services/schemas/grokJsonSchema.ts`:
-  - required: `multiplePredictedOutputs`, `predictedOutput`
-  - optional: `predictedOutput1/2/3`, `confidence`
-  - arrays-of-arrays of integers; shallow nesting; `additionalProperties: false`
-  - Avoid unsupported constraints: no `minLength/maxLength`, no `minItems/maxItems`, no `allOf`.
-- Fallback: on grammar/schema error (400/422/503), auto-retry once without schema; parsing still succeeds via `output_text`.
+## Recent (CHANGELOG top)
+- Worm: live/replay/leaderboard/insights/suggests (TrueSkill,30-apple)
+- ARC3: agents(Codex/OR/Haiku), scorecards, harness py
+- RE-ARC: gen/eval/sub/board (eff-plot,harness-parity)
+- UI: Analyst dense-grid, BYOK enforce, OG-images
 
+## Structured Outputs
+### xAI Grok-4 (Oct7)
+Responses API json_schema (grokJsonSchema.ts): req multiplePredictedOutputs/predictedOutput, opt predictedOutput1-3/conf; int[][] shallow; no min/maxItems/allOf. Fallback: retry no-schema on 400/422/503, parse output_text.
 
-## OPEN AI Structured Outputs (Oct 14, 2025)
-Supported schemas
-Structured Outputs supports a subset of the JSON Schema language.
+### OpenAI (Oct14)
+Types: str/num/bool/int/obj/arr/enum/anyOf
+Str: pattern/format(date-time/..uuid)
+Num: multipleOf/max(min)/excMax(min)
+Arr: min/maxItems
 
-Supported types
-The following types are supported for Structured Outputs:
+## Issues
+- WS: Saturn conflicts
+- DB: db:push verify
+- Win: no && (PS equiv), no cd
 
-String
-Number
-Boolean
-Integer
-Object
-Array
-Enum
-anyOf
-Supported properties
-In addition to specifying the type of a property, you can specify a selection of additional constraints:
-
-Supported string properties:
-
-pattern — A regular expression that the string must match.
-format — Predefined formats for strings. Currently supported:
-date-time
-time
-date
-duration
-email
-hostname
-ipv4
-ipv6
-uuid
-Supported number properties:
-
-multipleOf — The number must be a multiple of this value.
-maximum — The number must be less than or equal to this value.
-exclusiveMaximum — The number must be less than this value.
-minimum — The number must be greater than or equal to this value.
-exclusiveMinimum — The number must be greater than this value.
-Supported array properties:
-
-minItems — The array must have at least this many items.
-maxItems — The array must have at most this many items.
+See CLAUDE/AGENTS/CHANGELOG/docs for deep dives.
