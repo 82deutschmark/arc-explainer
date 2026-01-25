@@ -1,8 +1,8 @@
 /**
  * RE-ARC Dataset Generation and Evaluation Service
  *
- * Author: Claude Code using Sonnet 4.5 (updated by Claude Sonnet 4)
- * Date: 2026-01-01
+ * Author: Cascade (Claude Sonnet 4)
+ * Date: 2026-01-24
  * PURPOSE: Python subprocess integration for RE-ARC dataset generation and evaluation.
  *          Streams tasks from Python lib.py, manages task ID encoding/decoding,
  *          and scores submissions against deterministically regenerated ground truth.
@@ -445,14 +445,15 @@ export async function* generateDataset(
       testOutputs.push(taskTestOutputs);
 
       // Return with our generated task ID (by sequence order)
-      // Strip test outputs - they're cached separately for evaluation
+      // Expose outputs only when explicitly requested for tests (avoids leaking ground truth in prod).
+      const includeOutputs = process.env.RE_ARC_TEST_EXPOSE_OUTPUTS === 'true';
       return {
         taskId: ourTaskIds[taskIndex],
         task: {
           train: task.train,
           test: task.test.map((testPair: { input: number[][]; output: number[][] }) => ({
             input: testPair.input,
-            // output intentionally excluded - withheld for evaluation
+            ...(includeOutputs ? { output: testPair.output } : {}),
           })),
         },
       };

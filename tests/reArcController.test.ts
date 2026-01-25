@@ -14,6 +14,8 @@ import { generateDataset } from '../server/services/reArc/reArcService.ts';
 
 // Enable dev mode for all tests (faster generation with fewer tasks)
 process.env.RE_ARC_DEV_MODE = 'true';
+// Expose outputs for controller SSE tests so we can craft perfect submissions safely in tests only
+process.env.RE_ARC_TEST_EXPOSE_OUTPUTS = 'true';
 
 // Set test pepper for deterministic test behavior
 process.env.RE_ARC_SEED_PEPPER = 'test-pepper-controller-deterministic-32-chars';
