@@ -19,6 +19,8 @@ import type { ARCSubmission } from '../shared/types.ts';
 
 // Enable dev mode for all tests (faster generation with fewer tasks)
 process.env.RE_ARC_DEV_MODE = 'true';
+// Keep outputs withheld in service tests to mirror production behavior
+process.env.RE_ARC_TEST_EXPOSE_OUTPUTS = 'false';
 
 // Set test pepper for deterministic test behavior
 process.env.RE_ARC_SEED_PEPPER = 'test-pepper-service-deterministic-32-chars';
