@@ -17,7 +17,7 @@ const MODELS_KEYS_PATH = path.resolve(__dirname, '../config/openrouterModels.ts'
 const OPENROUTER_API = 'https://openrouter.ai/api/v1/models';
 
 const MAX_INPUT_COST_PER_M = 2.0;
-const MAX_OUTPUT_COST_PER_M = 2.0;
+const MAX_OUTPUT_COST_PER_M = 3.0;
 const TOP_N_MODELS = 10;
 
 type Model = {

@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.12  Jan 28, 2026
+
+- **CONFIG: Increase OpenRouter auto-add output token cost threshold** (Author: Claude Sonnet 4.5)
+  - **What**: Raised the `MAX_OUTPUT_COST_PER_M` threshold from $2.00 to $3.00 per million tokens in the OpenRouter catalog sync script.
+  - **Why**: Models like Kimi K2.5 ($0.60 input / $3.00 output) were being filtered out despite reasonable pricing. The new threshold allows more competitive reasoning models to be auto-added.
+  - **How**: Updated `server/scripts/sync-openrouter-catalog.ts:20` to set `MAX_OUTPUT_COST_PER_M = 3.0`, keeping input threshold at $2.00/M.
+
 ### Version 6.36.11  Jan 21, 2026
 
 - **FIX: Worm Arena greatest hits surfaces newest pinned replay** (Author: Cascade)

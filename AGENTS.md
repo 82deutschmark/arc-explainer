@@ -403,4 +403,4 @@ while (stream.interruptions?.length) {
 
 ---
 
-**Final reminders:** Small hobby project, but quality matters. Think before you code, reuse existing work, keep documentation (especially RE-ARC references) current, and remember that RE-ARC scoring matches ARC-AGI per-pair logic (two attempts, either can solve). Keep the codemap **@RE-ARC: Verifiable ARC Solver Benchmarking System** plus `d:\GitHub\arc-explainer\docs\` handy whenever you touch benchmarking flows. done
+**Final reminders:** Small hobby project, but quality matters. Think before you code, reuse existing work, keep documentation (especially RE-ARC references) current, and remember that RE-ARC scoring matches ARC-AGI per-pair logic (two attempts, either can solve). Keep the codemap **@RE-ARC: Verifiable ARC Solver Benchmarking System** plus `d:\GitHub\arc-explainer\docs\` handy whenever you touch benchmarking flows. 

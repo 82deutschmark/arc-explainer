@@ -20,12 +20,12 @@ from urllib import error, request
 
 # Models to test
 MODELS = [
-    "deepseek/deepseek-v3.2-speciale",
-    "deepseek/deepseek-v3.2",
-    "nvidia/nemotron-nano-12b-v2-vl:free",
+    "openai/gpt-5-nano",
+    "openai/gpt-5-mini",
+    "nvidia/nemotron-3-nano-30b-a3b:free",
 ]
 
-FREE_MODEL = "nvidia/nemotron-nano-12b-v2-vl:free"
+FREE_MODEL = "arcee-ai/trinity-large-preview:free"
 
 
 def utc_timestamp() -> str:
