@@ -17,11 +17,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from urllib import error, request
 
-CHAMPION_MODEL = "z-ai/glm-4.7-flash"
+CHAMPION_MODEL = "arcee-ai/trinity-large-preview:free"
 
 # Free models to test
 FREE_MODELS = [
-    "xiaomi/mimo-v2-flash:free",
+    "upstage/solar-pro-3:free",
     "nvidia/nemotron-3-nano-30b-a3b:free",
 ]
 
