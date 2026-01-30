@@ -74,6 +74,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'mistralai/mistral-large-2512',
   'mistralai/mistral-small-creative',
   'moonshotai/kimi-k2-thinking',
+  'moonshotai/kimi-k2.5',
   'nex-agi/deepseek-v3.1-nex-n1',
   'nousresearch/hermes-4-70b',
   'nvidia/nemotron-3-nano-30b-a3b',
