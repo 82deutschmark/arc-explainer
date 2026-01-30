@@ -1,33 +1,9 @@
-[submodule "arc-agi-benchmarking"]
-	path = arc-agi-benchmarking
-	url = https://github.com/82deutschmark/arc-agi-benchmarking
-[submodule "poetiq-solver"]
-	path = poetiq-solver
-	url = https://github.com/82deutschmark/poetiq-arc-agi-solver
-[submodule "beetreeARC"]
-	path = beetreeARC
-	url = https://github.com/82deutschmark/beetreeARC
 [submodule "SnakeBench"]
 	path = external/SnakeBench
 	url = https://github.com/VoynichLabs/SnakeBench
 [submodule "external/re-arc"]
 	path = external/re-arc
 	url = https://github.com/conundrumer/re-arc
-[submodule "vendor/llm-council"]
-	path = vendor/llm-council
-	url = https://github.com/VoynichLabs/llm-council.git
-[submodule "llm-council"]
-	path = llm-council
-	url = https://github.com/VoynichLabs/llm-council.git
-[submodule "external/ARC-AGI-3-ClaudeCode-SDK"]
-	path = external/ARC-AGI-3-ClaudeCode-SDK
-	url = https://github.com/ThariqS/ARC-AGI-3-ClaudeCode-SDK
-[submodule "external/ARC-AGI-3-Agents2"]
-	path = external/ARC-AGI-3-Agents2
-	url = https://github.com/82deutschmark/ARC-AGI-3-Agents2
-[submodule "external/tomas-engine-arc-agi-3"]
-	path = external/tomas-engine-arc-agi-3
-	url = https://github.com/82deutschmark/tomas-engine-arc-agi-3
-[submodule "external/GuidedRandomAgent"]
-	path = external/GuidedRandomAgent
-	url = https://github.com/82deutschmark/GuidedRandomAgent
+[submodule "external/ARCEngine"]
+	path = external/ARCEngine
+	url = https://github.com/82deutschmark/ARCEngine
