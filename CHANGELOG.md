@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.13  Jan 30, 2026
+
+- **TEST: Expand SnakeBench helper coverage** (Author: Cascade)
+  - **What**: Added unit tests covering slug normalization, SQL fragment emission, limit/offset clamping, date parsing, Elo expected score math, and numeric guards for the shared SnakeBench SQL helpers.
+  - **Why**: Lock regression-prone helper behaviors that feed leaderboard and stats queries, improving CI signal across repositories consuming the helpers.
+  - **How**:
+    - `tests/unit/repositories/snakebenchSqlHelpers.test.ts`: new Vitest suite exercising normalization, clamping, parsing, Elo math, and numeric guards.
+    - `docs/plans/013026-test-coverage-expansion.md`: tracked the targeted coverage expansion scope.
+
 ### Version 6.36.12  Jan 28, 2026
 
 - **CONFIG: Increase OpenRouter auto-add output token cost threshold** (Author: Claude Sonnet 4.5)
