@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 6.36.14  Jan 30, 2026
+
+- **BUILD: Fix Docker crontab copy path** (Author: Cascade)
+  - **What**: Pointed the Dockerfile crontab COPY step to `scripts/crontab` (actual repo location) and refreshed Dockerfile metadata.
+  - **Why**: Railway builds failed with `"/crontab": not found` because the source path was wrong in the image build context.
+  - **How**:
+    - `Dockerfile`: copy crontab from `scripts/crontab`; update header.
+    - `docs/plans/013026-build-fix.md`: recorded scope and steps.
+
 ### Version 6.36.13  Jan 30, 2026
 
 - **TEST: Expand SnakeBench helper coverage** (Author: Cascade)
