@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.0.1  Jan 31, 2026
+
+- **FIX: Chain Reaction game initialization and state detection** (Author: Claude Haiku 4.5)
+  - **What**: Fixed three critical issues preventing Chain Reaction from loading and advancing past level 1: (1) `Level.sprites` attribute error in game code, (2) incorrect winScore metadata causing premature game-over detection, (3) removed cutesy win/loss overlays from frontend.
+  - **Why**: Backend was prematurely ending the game after level 1 because winScore was hardcoded to 1 instead of 6 (total levels). Frontend was blocking gameplay with unnecessary UI overlays that are inappropriate for researcher-focused platform.
+  - **How**:
+    - `external/ARCEngine/games/chain_reaction/game.py` (lines 143, 168): Changed `self.current_level.sprites` to `self.current_level.get_sprites()` - Level class doesn't expose `sprites` property, only `get_sprites()` method.
+    - `server/routes/arc3Community.ts` (lines 62-63): Updated chain_reaction featured game metadata: `levelCount: 1 → 6`, `winScore: 1 → 6`.
+    - `server/services/arc3Community/CommunityGameRunner.ts` (lines 81-82, 219-222): Updated virtual game record and fixed `isGameOver` logic to only trust Python's state (`WIN`, `GAME_OVER`, `LOSE`) instead of checking score against winScore.
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Removed win/loss overlay modal, game-over state tracking, and cutesy UI. Frontend now displays only the game frame from Python without custom overlays.
+
 ### Version 7.0.0  Jan 31, 2026
 
 - **FEAT: ARC3 Community Games Platform** (Author: Cascade)
