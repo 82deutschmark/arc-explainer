@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.1.3  Jan 31, 2026
+
+- **FIX: World Shifter exit positioning + ARC3 documentation** (Author: Claude Sonnet 4)
+  - **What**: Fixed exits auto-colliding with player at level start (causing instant level completion). Added comprehensive ARC3 game development guide based on official ARC Prize Foundation docs.
+  - **Why**: Game was unwinnable because exits were placed within collision distance of player, triggering immediate level completion. Documentation gap caused implementation drift from official patterns.
+  - **How**:
+    - `external/ARCEngine/games/world_shifter/levels.py`: Moved all exit positions 3+ pixels from player center to prevent auto-collision.
+    - `external/ARCEngine/games/__init__.py`: Updated version registry to 0.02.
+    - `external/ARCEngine/docs/ARC3_GAME_DEVELOPMENT_GUIDE.md`: Created comprehensive guide covering sprites, levels, game class, actions, collision, scoring based on https://docs.arcprize.org/.
+
 ### Version 7.1.2  Jan 31, 2026
 
 - **FIX: World Shifter core mechanic and UI** (Author: Claude Sonnet 4)
