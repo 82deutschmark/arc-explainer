@@ -1,4 +1,4 @@
-/**
+/** SINGLE SOURCE OF TRUTH!!!
  * Author: Claude Code using Opus 4.5
  * Date: 2025-12-07
  * PURPOSE: Shared Arc3 color palette for both client and server-side rendering.
