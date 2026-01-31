@@ -7,8 +7,8 @@
  */
 
 import { Link } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -21,33 +21,34 @@ import {
   FileCode,
   CheckCircle,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  Terminal
 } from "lucide-react";
 
 export default function GameCreationDocs() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link href="/arc3">
-            <Button variant="ghost" size="icon" className="text-slate-400">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-2">
-              <BookOpen className="w-8 h-8 text-green-400" />
-              Game Creation Documentation
-            </h1>
-            <p className="text-slate-400">
-              Learn how to create puzzle games with ARCEngine
-            </p>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-mono">
+      {/* Compact header bar */}
+      <header className="border-b border-zinc-800 bg-zinc-900/80">
+        <div className="max-w-5xl mx-auto px-3 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/arc3">
+              <Button variant="ghost" size="sm" className="h-6 px-2 text-zinc-400 hover:text-zinc-100">
+                <ArrowLeft className="w-3 h-3 mr-1" />
+                Back
+              </Button>
+            </Link>
+            <span className="text-zinc-700">|</span>
+            <Terminal className="w-4 h-4 text-emerald-500" />
+            <span className="text-sm font-semibold">Game Creation Docs</span>
           </div>
         </div>
+      </header>
 
-        <Tabs defaultValue="quickstart" className="space-y-6">
-          <TabsList className="bg-slate-800 border-slate-700">
+      <div className="max-w-5xl mx-auto px-3 py-4">
+
+        <Tabs defaultValue="quickstart" className="space-y-4">
+          <TabsList className="bg-zinc-900 border border-zinc-800">
             <TabsTrigger value="quickstart">Quick Start</TabsTrigger>
             <TabsTrigger value="concepts">Core Concepts</TabsTrigger>
             <TabsTrigger value="api">API Reference</TabsTrigger>

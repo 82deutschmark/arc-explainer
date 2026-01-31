@@ -54,15 +54,14 @@ export default function CommunityLanding() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-mono">
-      {/* Compact header bar */}
+      {/* Header bar */}
       <header className="border-b border-zinc-800 bg-zinc-900/80">
-        <div className="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Terminal className="w-4 h-4 text-emerald-500" />
-            <span className="text-sm font-semibold tracking-tight">ARC3 Community Games</span>
-            <span className="text-xs text-zinc-500">by ARC Explainer</span>
+            <span className="text-sm font-semibold tracking-tight">ARC3 Community</span>
           </div>
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-3 text-xs">
             <a 
               href="https://github.com/voynow/ARCEngine" 
               target="_blank" 
@@ -88,7 +87,37 @@ export default function CommunityLanding() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-3 py-4">
+      {/* Hero Section */}
+      <div className="border-b border-zinc-800 bg-gradient-to-b from-zinc-900 to-zinc-950">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded bg-emerald-500/20 flex items-center justify-center">
+              <Zap className="w-4 h-4 text-emerald-400" />
+            </div>
+            <h1 className="text-xl font-bold text-zinc-100">Community Puzzle Games</h1>
+          </div>
+          <p className="text-zinc-400 text-sm max-w-2xl mb-4">
+            Play ARC-style reasoning puzzles created by the community using ARCEngine. 
+            Test your abstract reasoning skills or create and share your own puzzle games.
+          </p>
+          <div className="flex gap-2">
+            <Link href="/arc3/gallery">
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-xs h-8">
+                <Play className="w-3 h-3 mr-1" />
+                Browse Games
+              </Button>
+            </Link>
+            <Link href="/arc3/upload">
+              <Button size="sm" variant="outline" className="border-zinc-700 hover:bg-zinc-800 text-xs h-8">
+                <Upload className="w-3 h-3 mr-1" />
+                Submit Your Game
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-4">
         {/* Two-column layout: Games list + Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           
