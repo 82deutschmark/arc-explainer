@@ -11,7 +11,12 @@ import { spawn, type ChildProcess } from 'child_process';
 import * as path from 'path';
 import * as readline from 'readline';
 import { EventEmitter } from 'events';
+import { fileURLToPath } from 'url';
 import { logger } from '../../utils/logger';
+
+// ESM equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PYTHON_RUNNER_PATH = path.join(__dirname, '..', '..', 'python', 'community_game_runner.py');
 const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds for game operations
