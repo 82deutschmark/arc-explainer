@@ -50,6 +50,12 @@ import Arc3CodexPlayground from "@/pages/Arc3CodexPlayground";
 import Arc3HaikuPlayground from "@/pages/Arc3HaikuPlayground";
 import Arc3GamesBrowser from "@/pages/Arc3GamesBrowser";
 import Arc3GameSpoiler from "@/pages/Arc3GameSpoiler";
+import { 
+  Arc3ArchiveLanding, 
+  Arc3ArchiveGamesBrowser, 
+  Arc3ArchiveGameSpoiler, 
+  Arc3ArchivePlayground 
+} from "@/pages/arc3-archive";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
 import LLMReasoning from "@/pages/LLMReasoning";
@@ -127,6 +133,11 @@ function Router() {
         <Route path="/arc3/haiku-playground" component={Arc3HaikuPlayground} />
         <Route path="/arc3/games" component={Arc3GamesBrowser} />
         <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
+        {/* ARC3 Archive - historical preview content */}
+        <Route path="/arc3/archive" component={Arc3ArchiveLanding} />
+        <Route path="/arc3/archive/games" component={Arc3ArchiveGamesBrowser} />
+        <Route path="/arc3/archive/games/:gameId" component={Arc3ArchiveGameSpoiler} />
+        <Route path="/arc3/archive/playground" component={Arc3ArchivePlayground} />
         {/* RE-ARC - self-service dataset generation and evaluation */}
         <Route path="/re-arc" component={ReArc} />
         <Route path="/re-arc/submissions" component={ReArcSubmissions} />

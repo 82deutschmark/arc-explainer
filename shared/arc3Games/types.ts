@@ -137,6 +137,9 @@ export interface Arc3GameMetadata {
   /** Whether this game has been fully documented */
   isFullyDocumented: boolean;
 
+  /** Whether this game is archived (from the preview period) */
+  isArchived?: boolean;
+
   /** Additional notes */
   notes?: string;
 }
