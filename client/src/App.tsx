@@ -60,8 +60,7 @@ import {
   CommunityLanding,
   CommunityGallery,
   CommunityGamePlay,
-  GameUploadPage,
-  GameCreationDocs
+  GameSubmissionPage,
 } from "@/pages/arc3-community";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
@@ -137,8 +136,7 @@ function Router() {
         <Route path="/arc3" component={CommunityLanding} />
         <Route path="/arc3/gallery" component={CommunityGallery} />
         <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
-        <Route path="/arc3/upload" component={GameUploadPage} />
-        <Route path="/arc3/docs" component={GameCreationDocs} />
+        <Route path="/arc3/upload" component={GameSubmissionPage} />
         {/* ARC3 Archive - historical preview content */}
         <Route path="/arc3/archive" component={Arc3ArchiveLanding} />
         <Route path="/arc3/archive/games" component={Arc3ArchiveGamesBrowser} />

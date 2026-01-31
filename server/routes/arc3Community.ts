@@ -391,6 +391,68 @@ router.get(
 );
 
 // ============================================================================
+// GAME SUBMISSION ENDPOINTS (GitHub repo link approach)
+// ============================================================================
+
+const gameSubmissionSchema = z.object({
+  gameId: z.string()
+    .min(3, 'Game ID must be at least 3 characters')
+    .max(50, 'Game ID must be at most 50 characters')
+    .regex(/^[a-z][a-z0-9_-]*$/, 'Game ID must start with a letter and contain only lowercase letters, numbers, underscores, and dashes'),
+  displayName: z.string()
+    .min(3, 'Display name must be at least 3 characters')
+    .max(100, 'Display name must be at most 100 characters'),
+  description: z.string()
+    .min(10, 'Description must be at least 10 characters')
+    .max(500, 'Description must be at most 500 characters'),
+  authorName: z.string()
+    .min(2, 'Author name must be at least 2 characters')
+    .max(100, 'Author name must be at most 100 characters'),
+  authorEmail: z.string().email('Invalid email format'),
+  githubRepoUrl: z.string()
+    .url('Must be a valid URL')
+    .regex(/^https:\/\/github\.com\/[^/]+\/[^/]+/, 'Must be a valid GitHub repository URL'),
+  notes: z.string().max(1000).optional(),
+});
+
+/**
+ * POST /api/arc3-community/submissions
+ * Submit a GitHub repo for review (new approach - no code pasting)
+ */
+router.post(
+  '/submissions',
+  asyncHandler(async (req: Request, res: Response) => {
+    const payload = gameSubmissionSchema.parse(req.body);
+
+    // Check if game ID already exists
+    const featuredExists = FEATURED_COMMUNITY_GAMES.some(g => g.gameId === payload.gameId);
+    if (featuredExists || await getRepository().gameIdExists(payload.gameId)) {
+      return res.status(409).json(
+        formatResponse.error('GAME_ID_EXISTS', 'A game with this ID already exists')
+      );
+    }
+
+    // Generate a submission ID for tracking
+    const submissionId = `sub_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    // Log the submission for manual review
+    // In production, this would create a database record and potentially notify admins
+    logger.info(
+      `[community-games] New game submission: ${submissionId} | gameId=${payload.gameId} | author=${payload.authorName} | repo=${payload.githubRepoUrl}`,
+      'community-games'
+    );
+
+    // For now, return success - actual review process is manual
+    // Future: Store in database, send notification email, etc.
+    res.status(201).json(formatResponse.success({
+      submissionId,
+      status: 'pending_review',
+      message: 'Your game has been submitted for review. We will clone and validate your repository.',
+    }));
+  }),
+);
+
+// ============================================================================
 // GAME EXECUTION ENDPOINTS
 // ============================================================================
 

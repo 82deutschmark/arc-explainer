@@ -83,10 +83,16 @@ export default function CommunityLanding() {
               ARCEngine
               <ExternalLink className="w-3.5 h-3.5 opacity-80" />
             </a>
-            <PixelButton tone="blue" onClick={() => setLocation('/arc3/docs')}>
+            <a
+              href="https://github.com/arcprize/ARCEngine#readme"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold border-2 border-[var(--arc3-border)] bg-[var(--arc3-c9)] text-[var(--arc3-c0)]"
+            >
               <BookOpen className="w-4 h-4" />
               Creator Docs
-            </PixelButton>
+              <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+            </a>
             <PixelButton tone="green" onClick={() => setLocation('/arc3/upload')}>
               <Upload className="w-4 h-4" />
               Submit Game
@@ -139,10 +145,16 @@ export default function CommunityLanding() {
                   <Upload className="w-4 h-4" />
                   Upload Your Game
                 </PixelButton>
-                <PixelButton tone="blue" onClick={() => setLocation('/arc3/docs')}>
+                <a
+                  href="https://github.com/arcprize/ARCEngine#readme"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold border-2 border-[var(--arc3-border)] bg-[var(--arc3-c9)] text-[var(--arc3-c0)]"
+                >
                   <BookOpen className="w-4 h-4" />
                   Read Creator Docs
-                </PixelButton>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                </a>
               </div>
             </PixelPanel>
 

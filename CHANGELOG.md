@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.1.0  Jan 31, 2026
+
+- **FEAT: ARC3 Community UI overhaul and GitHub-based game submission** (Author: Cascade)
+  - **What**: Complete UI refresh using ARC3 pixel theme across all community pages. Replaced "paste your code" upload with GitHub repository submission approach. Added ARCEngine to Dockerfile for Railway deployment.
+  - **Why**: Previous UI was inconsistent (mixing zinc/terminal theme with pixel theme). Paste-your-code upload doesn't work for multi-file ARCEngine games. ARCEngine wasn't being installed in Docker builds, breaking Railway deployment.
+  - **How**:
+    - `Dockerfile`: Added ARCEngine setup - clones from GitHub if not present, installs as editable package.
+    - `client/src/pages/arc3-community/GameSubmissionPage.tsx`: New GitHub repo submission form with ARC3 pixel UI, validation, clear requirements explanation, and success state.
+    - `client/src/pages/arc3-community/CommunityGallery.tsx`: Rewritten with ARC3 pixel UI theme, card-based grid layout, removed difficulty filtering (per plan).
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Rewritten with ARC3 pixel UI theme, proper win/loss overlays, game state management.
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Updated docs links to point to external ARCEngine GitHub docs.
+    - `server/routes/arc3Community.ts`: Added `POST /api/arc3-community/submissions` endpoint for GitHub repo submissions.
+    - `client/src/App.tsx`: Updated routes to use `GameSubmissionPage`, removed missing `GameCreationDocs` reference.
+    - Deleted obsolete `GameUploadPage.tsx` and `GameCreationDocs.tsx` references.
+
 ### Version 7.0.1  Jan 31, 2026
 
 - **FIX: Chain Reaction game initialization and state detection** (Author: Claude Haiku 4.5)
