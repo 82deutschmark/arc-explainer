@@ -4,7 +4,7 @@ Author: Cascade (Claude)
 Date: 2026-01-31
 PURPOSE: Community Game Runner for ARCEngine games. Reads commands from stdin,
          executes game actions via the ARCEngine library, and outputs NDJSON to stdout.
-         This bridge enables Node.js to run both official games (via registry) and
+         This bridge enables Node.js to run both featured games (via registry) and
          user-uploaded Python games.
 SRP/DRY check: Pass - single-purpose Python subprocess runner for ARCEngine games.
 """
@@ -29,7 +29,7 @@ except ImportError as e:
     }), flush=True)
     sys.exit(1)
 
-# Try to import games registry for official games
+# Try to import games registry for featured community games
 try:
     from games import get_game, list_games
     GAMES_REGISTRY_AVAILABLE = True
@@ -41,7 +41,7 @@ except ImportError:
 
 def load_game_from_registry(game_id: str) -> ARCBaseGame:
     """
-    Load an official game from the ARCEngine games registry.
+    Load a featured game from the ARCEngine games registry.
     """
     if not GAMES_REGISTRY_AVAILABLE:
         raise ImportError("Games registry not available")
@@ -160,7 +160,7 @@ def main():
             emit_error("game_id or game_path is required", "MISSING_GAME_ID")
             return 1
         
-        # Load game from registry (official games) or file (community uploads)
+        # Load game from registry (featured games) or file (community uploads)
         if game_id and GAMES_REGISTRY_AVAILABLE:
             try:
                 game = load_game_from_registry(game_id)

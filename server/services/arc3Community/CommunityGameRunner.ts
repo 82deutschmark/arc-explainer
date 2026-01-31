@@ -12,8 +12,9 @@ import { CommunityGameStorage } from './CommunityGameStorage';
 import { CommunityGameRepository, type CommunityGame } from '../../repositories/CommunityGameRepository';
 import { logger } from '../../utils/logger';
 
-// Official games from ARCEngine registry (not stored as files)
-const OFFICIAL_GAMES = new Set(['world_shifter', 'chain_reaction']);
+// Featured community games from ARCEngine registry (not stored as files)
+// Note: These are NOT official ARC Prize Foundation games - they are community creations
+const FEATURED_COMMUNITY_GAMES = new Set(['world_shifter', 'chain_reaction']);
 
 export interface GameSession {
   sessionGuid: string;
@@ -60,12 +61,12 @@ export class CommunityGameRunner {
    * Start a new game session
    */
   async startGame(gameId: string): Promise<StartGameResult> {
-    const isOfficialGame = OFFICIAL_GAMES.has(gameId);
+    const isFeaturedGame = FEATURED_COMMUNITY_GAMES.has(gameId);
     let game: CommunityGame;
     let bridge: CommunityGamePythonBridge;
 
-    if (isOfficialGame) {
-      // Official game from ARCEngine registry - create virtual game record
+    if (isFeaturedGame) {
+      // Featured community game from ARCEngine registry - create virtual game record
       game = {
         id: 0,
         gameId,
@@ -75,13 +76,13 @@ export class CommunityGameRunner {
           : 'Match colors. Clear the board. Escape.',
         authorName: 'ARCEngine Team',
         authorEmail: null,
-        version: '1.0.0',
+        version: '0.0.1',
         difficulty: 'medium',
         levelCount: gameId === 'world_shifter' ? 3 : 1,
         winScore: 1,
         maxActions: null,
-        tags: ['official', 'puzzle'],
-        sourceFilePath: '',  // No file for official games
+        tags: ['featured', 'puzzle'],
+        sourceFilePath: '',  // No file for featured games (loaded from registry)
         sourceHash: '',
         thumbnailPath: null,
         status: 'approved',
@@ -101,7 +102,7 @@ export class CommunityGameRunner {
       try {
         bridge = await createGameBridgeById(gameId);
       } catch (error) {
-        logger.error(`Failed to start official game ${gameId}: ${error}`, 'game-runner');
+        logger.error(`Failed to start featured game ${gameId}: ${error}`, 'game-runner');
         throw new Error('Failed to initialize game');
       }
     } else {
