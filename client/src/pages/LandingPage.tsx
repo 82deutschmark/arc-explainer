@@ -150,7 +150,7 @@ export default function LandingPage() {
               {`${activeReplay.gameId.toUpperCase()} - ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
             </p>
           </div>
-          <Link href="/arc3/games">
+          <Link href="/arc3">
             <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
               <div className="rounded-[1.25rem] bg-black/90 p-4">
                 <video
