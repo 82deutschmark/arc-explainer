@@ -4,7 +4,8 @@ Author: Cascade (Claude)
 Date: 2026-01-31
 PURPOSE: Community Game Runner for ARCEngine games. Reads commands from stdin,
          executes game actions via the ARCEngine library, and outputs NDJSON to stdout.
-         This bridge enables Node.js to run user-uploaded Python games.
+         This bridge enables Node.js to run both official games (via registry) and
+         user-uploaded Python games.
 SRP/DRY check: Pass - single-purpose Python subprocess runner for ARCEngine games.
 """
 
@@ -27,6 +28,25 @@ except ImportError as e:
         "message": f"Failed to import ARCEngine: {e}"
     }), flush=True)
     sys.exit(1)
+
+# Try to import games registry for official games
+try:
+    from games import get_game, list_games
+    GAMES_REGISTRY_AVAILABLE = True
+except ImportError:
+    GAMES_REGISTRY_AVAILABLE = False
+    get_game = None
+    list_games = None
+
+
+def load_game_from_registry(game_id: str) -> ARCBaseGame:
+    """
+    Load an official game from the ARCEngine games registry.
+    """
+    if not GAMES_REGISTRY_AVAILABLE:
+        raise ImportError("Games registry not available")
+    
+    return get_game(game_id)
 
 
 def load_game_from_file(file_path: str):
@@ -126,22 +146,37 @@ def main():
     game = None
     
     try:
-        # Read initial payload from stdin (game path)
+        # Read initial payload from stdin (game_id or game_path)
         init_line = sys.stdin.readline()
         if not init_line:
             emit_error("No initialization payload received", "NO_PAYLOAD")
             return 1
         
         payload = json.loads(init_line.strip())
+        game_id = payload.get("game_id")
         game_path = payload.get("game_path")
         
-        if not game_path:
-            emit_error("game_path is required", "MISSING_GAME_PATH")
+        if not game_id and not game_path:
+            emit_error("game_id or game_path is required", "MISSING_GAME_ID")
             return 1
         
-        # Load and instantiate the game
-        GameClass = load_game_from_file(game_path)
-        game = GameClass()
+        # Load game from registry (official games) or file (community uploads)
+        if game_id and GAMES_REGISTRY_AVAILABLE:
+            try:
+                game = load_game_from_registry(game_id)
+            except ValueError as e:
+                # Game not in registry, try as file if path provided
+                if game_path:
+                    GameClass = load_game_from_file(game_path)
+                    game = GameClass()
+                else:
+                    raise
+        elif game_path:
+            GameClass = load_game_from_file(game_path)
+            game = GameClass()
+        else:
+            emit_error(f"Game '{game_id}' not found in registry", "GAME_NOT_FOUND")
+            return 1
         
         # Extract metadata
         metadata = {

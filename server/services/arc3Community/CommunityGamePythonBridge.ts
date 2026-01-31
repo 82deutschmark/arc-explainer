@@ -53,18 +53,26 @@ export interface GameAction {
   coordinates?: [number, number];
 }
 
+export interface BridgeConfig {
+  gameId?: string;        // For official games via registry
+  gameFilePath?: string;  // For community uploaded games
+}
+
 export class CommunityGamePythonBridge extends EventEmitter {
   private process: ChildProcess | null = null;
   private readline: readline.Interface | null = null;
-  private gameFilePath: string;
+  private config: BridgeConfig;
   private isReady: boolean = false;
   private isClosed: boolean = false;
   private pendingResolvers: Map<string, { resolve: (data: FrameData) => void; reject: (err: Error) => void }> = new Map();
   private actionCounter: number = 0;
 
-  constructor(gameFilePath: string) {
+  constructor(config: BridgeConfig) {
     super();
-    this.gameFilePath = gameFilePath;
+    this.config = config;
+    if (!config.gameId && !config.gameFilePath) {
+      throw new Error('Either gameId or gameFilePath must be provided');
+    }
   }
 
   /**
@@ -139,7 +147,10 @@ export class CommunityGamePythonBridge extends EventEmitter {
         this.on('bridge_error', errorHandler);
 
         // Send initialization payload
-        const initPayload = JSON.stringify({ game_path: this.gameFilePath }) + '\n';
+        const initPayload = JSON.stringify({ 
+          game_id: this.config.gameId,
+          game_path: this.config.gameFilePath 
+        }) + '\n';
         this.process.stdin?.write(initPayload);
 
       } catch (error) {
@@ -274,10 +285,28 @@ export class CommunityGamePythonBridge extends EventEmitter {
 }
 
 /**
- * Factory function to create and start a bridge
+ * Factory function to create and start a bridge for an official game (by ID)
  */
-export async function createGameBridge(gameFilePath: string): Promise<CommunityGamePythonBridge> {
-  const bridge = new CommunityGamePythonBridge(gameFilePath);
+export async function createGameBridgeById(gameId: string): Promise<CommunityGamePythonBridge> {
+  const bridge = new CommunityGamePythonBridge({ gameId });
+  await bridge.start();
+  return bridge;
+}
+
+/**
+ * Factory function to create and start a bridge for a community game (by file path)
+ */
+export async function createGameBridgeByPath(gameFilePath: string): Promise<CommunityGamePythonBridge> {
+  const bridge = new CommunityGamePythonBridge({ gameFilePath });
+  await bridge.start();
+  return bridge;
+}
+
+/**
+ * Factory function to create and start a bridge with full config
+ */
+export async function createGameBridge(config: BridgeConfig): Promise<CommunityGamePythonBridge> {
+  const bridge = new CommunityGamePythonBridge(config);
   await bridge.start();
   return bridge;
 }

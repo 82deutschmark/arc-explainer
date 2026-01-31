@@ -7,10 +7,13 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { CommunityGamePythonBridge, createGameBridge, type FrameData, type GameAction } from './CommunityGamePythonBridge';
+import { CommunityGamePythonBridge, createGameBridgeById, createGameBridgeByPath, type FrameData, type GameAction } from './CommunityGamePythonBridge';
 import { CommunityGameStorage } from './CommunityGameStorage';
 import { CommunityGameRepository, type CommunityGame } from '../../repositories/CommunityGameRepository';
 import { logger } from '../../utils/logger';
+
+// Official games from ARCEngine registry (not stored as files)
+const OFFICIAL_GAMES = new Set(['world_shifter', 'chain_reaction']);
 
 export interface GameSession {
   sessionGuid: string;
@@ -57,30 +60,77 @@ export class CommunityGameRunner {
    * Start a new game session
    */
   async startGame(gameId: string): Promise<StartGameResult> {
-    // Get game from database
-    const game = await this.repository.getGameByGameId(gameId);
-    if (!game) {
-      throw new Error(`Game not found: ${gameId}`);
-    }
-
-    if (game.status !== 'approved' || !game.isPlayable) {
-      throw new Error(`Game is not available for play: ${gameId}`);
-    }
-
-    // Verify file integrity
-    const isValid = await CommunityGameStorage.verifyFileHash(game.sourceFilePath, game.sourceHash);
-    if (!isValid) {
-      logger.error(`File integrity check failed for game ${gameId}`, 'game-runner');
-      throw new Error('Game file integrity check failed');
-    }
-
-    // Create Python bridge and start game
+    const isOfficialGame = OFFICIAL_GAMES.has(gameId);
+    let game: CommunityGame;
     let bridge: CommunityGamePythonBridge;
-    try {
-      bridge = await createGameBridge(game.sourceFilePath);
-    } catch (error) {
-      logger.error(`Failed to start game ${gameId}: ${error}`, 'game-runner');
-      throw new Error('Failed to initialize game');
+
+    if (isOfficialGame) {
+      // Official game from ARCEngine registry - create virtual game record
+      game = {
+        id: 0,
+        gameId,
+        displayName: gameId === 'world_shifter' ? 'World Shifter' : 'Chain Reaction',
+        description: gameId === 'world_shifter' 
+          ? 'The world moves, not you. Navigate mazes by shifting walls toward your fixed position.'
+          : 'Match colors. Clear the board. Escape.',
+        authorName: 'ARCEngine Team',
+        authorEmail: null,
+        version: '1.0.0',
+        difficulty: 'medium',
+        levelCount: gameId === 'world_shifter' ? 3 : 1,
+        winScore: 1,
+        maxActions: null,
+        tags: ['official', 'puzzle'],
+        sourceFilePath: '',  // No file for official games
+        sourceHash: '',
+        thumbnailPath: null,
+        status: 'approved',
+        isFeatured: true,
+        isPlayable: true,
+        validatedAt: new Date(),
+        validationErrors: null,
+        playCount: 0,
+        totalWins: 0,
+        totalLosses: 0,
+        averageScore: null,
+        uploadedAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // Create Python bridge using game registry
+      try {
+        bridge = await createGameBridgeById(gameId);
+      } catch (error) {
+        logger.error(`Failed to start official game ${gameId}: ${error}`, 'game-runner');
+        throw new Error('Failed to initialize game');
+      }
+    } else {
+      // Community uploaded game - get from database
+      const dbGame = await this.repository.getGameByGameId(gameId);
+      if (!dbGame) {
+        throw new Error(`Game not found: ${gameId}`);
+      }
+
+      if (dbGame.status !== 'approved' || !dbGame.isPlayable) {
+        throw new Error(`Game is not available for play: ${gameId}`);
+      }
+
+      // Verify file integrity
+      const isValid = await CommunityGameStorage.verifyFileHash(dbGame.sourceFilePath, dbGame.sourceHash);
+      if (!isValid) {
+        logger.error(`File integrity check failed for game ${gameId}`, 'game-runner');
+        throw new Error('Game file integrity check failed');
+      }
+
+      game = dbGame;
+
+      // Create Python bridge using file path
+      try {
+        bridge = await createGameBridgeByPath(game.sourceFilePath);
+      } catch (error) {
+        logger.error(`Failed to start game ${gameId}: ${error}`, 'game-runner');
+        throw new Error('Failed to initialize game');
+      }
     }
 
     // Generate session GUID
