@@ -263,26 +263,36 @@ else:
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-3">ARC Color Palette</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <h3 className="text-lg font-semibold text-white mb-3">ARC3 Color Palette (0-15)</h3>
+                  <p className="text-slate-400 text-sm mb-3">
+                    ARC3 uses a 16-color palette. Import from <code className="text-cyan-400">@shared/config/arc3Colors</code> for consistency.
+                  </p>
+                  <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
                     {[
-                      { num: 0, name: 'Black', color: '#000000' },
-                      { num: 1, name: 'Blue', color: '#0074D9' },
-                      { num: 2, name: 'Red', color: '#FF4136' },
-                      { num: 3, name: 'Green', color: '#2ECC40' },
-                      { num: 4, name: 'Yellow', color: '#FFDC00' },
-                      { num: 5, name: 'Gray', color: '#AAAAAA' },
-                      { num: 6, name: 'Magenta', color: '#F012BE' },
-                      { num: 7, name: 'Orange', color: '#FF851B' },
-                      { num: 8, name: 'Cyan', color: '#7FDBFF' },
-                      { num: 9, name: 'Purple', color: '#B10DC9' },
+                      { num: 0, name: 'White', color: '#FFFFFF' },
+                      { num: 1, name: 'Light Gray', color: '#CCCCCC' },
+                      { num: 2, name: 'Gray', color: '#999999' },
+                      { num: 3, name: 'Dark Gray', color: '#666666' },
+                      { num: 4, name: 'Darker Gray', color: '#333333' },
+                      { num: 5, name: 'Black', color: '#000000' },
+                      { num: 6, name: 'Pink', color: '#E53AA3' },
+                      { num: 7, name: 'Light Pink', color: '#FF7BCC' },
+                      { num: 8, name: 'Red', color: '#F93C31' },
+                      { num: 9, name: 'Blue', color: '#1E93FF' },
+                      { num: 10, name: 'Light Blue', color: '#88D8F1' },
+                      { num: 11, name: 'Yellow', color: '#FFDC00' },
+                      { num: 12, name: 'Orange', color: '#FF851B' },
+                      { num: 13, name: 'Dark Red', color: '#921231' },
+                      { num: 14, name: 'Green', color: '#4FCC30' },
+                      { num: 15, name: 'Purple', color: '#A356D0' },
                     ].map(({ num, name, color }) => (
-                      <div key={num} className="flex items-center gap-2 bg-slate-900 px-3 py-2 rounded">
+                      <div key={num} className="flex flex-col items-center bg-slate-900 p-2 rounded">
                         <div 
-                          className="w-6 h-6 rounded border border-slate-600" 
+                          className="w-8 h-8 rounded border border-slate-600 mb-1" 
                           style={{ backgroundColor: color }}
                         />
-                        <span className="text-slate-300 text-sm">{num}: {name}</span>
+                        <span className="text-slate-300 text-xs font-mono">{num}</span>
+                        <span className="text-slate-500 text-[10px] truncate w-full text-center">{name}</span>
                       </div>
                     ))}
                   </div>
