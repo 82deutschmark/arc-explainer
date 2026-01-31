@@ -72,15 +72,15 @@ export class CommunityGameRunner {
         id: 0,
         gameId,
         displayName: gameId === 'world_shifter' ? 'World Shifter' : 'Chain Reaction',
-        description: gameId === 'world_shifter' 
+        description: gameId === 'world_shifter'
           ? 'The world moves, not you. Navigate mazes by shifting walls toward your fixed position.'
           : 'Match colors. Clear the board. Escape.',
         authorName: 'Arc Explainer Team',
         authorEmail: null,
         version: '0.0.1',
         difficulty: 'medium',
-        levelCount: gameId === 'world_shifter' ? 3 : 1,
-        winScore: 1,
+        levelCount: gameId === 'world_shifter' ? 3 : 6,
+        winScore: gameId === 'world_shifter' ? 1 : 6,
         maxActions: null,
         tags: ['featured', 'puzzle'],
         sourceFilePath: '',  // No file for featured games (loaded from registry)
@@ -216,11 +216,11 @@ export class CommunityGameRunner {
       frame,
     });
 
-    // Check game state
-    const isWin = frame.state === 'WIN' || frame.score >= session.game.winScore;
-    const isLoss = frame.state === 'LOSE' || 
-                   (session.game.maxActions && frame.action_counter >= session.game.maxActions);
-    const isGameOver = isWin || isLoss || frame.state === 'GAME_OVER';
+    // Check game state - trust Python's state, don't second-guess it
+    // Level transitions happen automatically in Python and state remains NOT_FINISHED
+    const isWin = frame.state === 'WIN';
+    const isLoss = frame.state === 'GAME_OVER' || frame.state === 'LOSE';
+    const isGameOver = isWin || isLoss;
 
     if (isGameOver) {
       session.state = isWin ? 'won' : 'lost';
