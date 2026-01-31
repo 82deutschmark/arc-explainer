@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.1.1  Jan 31, 2026
+
+- **FEAT: World Shifter visual + level redesign** (Author: Claude Sonnet 4)
+  - **What**: Rebuilt World Shifter with floating platform sprites, refreshed exit/player art, native-res levels (no scaling artifacts), and black void background to emphasize the inverse-movement mechanic.
+  - **Why**: Prior build looked like a bland labyrinth and diverged from the intended "world moves, not you" experience and ARC3 visual quality bar.
+  - **How**:
+    - `external/ARCEngine/games/world_shifter/sprites.py`: Replaced rectangular mazes with six creative platform shapes, updated player/exit visuals, cleaned energy pill UI.
+    - `external/ARCEngine/games/world_shifter/levels.py`: Positioned new platforms natively (no scale factor), fixed player center anchor, tuned bounds per level.
+    - `external/ARCEngine/games/world_shifter/game.py`: Switched to black background/letterbox for floating effect; updated game docstring.
+    - `external/ARCEngine/docs/DESIGN_world_shifter.md`: Documented new palette and level themes.
+
 ### Version 7.1.0  Jan 31, 2026
 
 - **FEAT: ARC3 Community UI overhaul and GitHub-based game submission** (Author: Cascade)
