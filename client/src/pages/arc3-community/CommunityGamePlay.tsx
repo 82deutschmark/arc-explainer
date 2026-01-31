@@ -1,28 +1,30 @@
 /*
- * Author: Cascade (Claude)
- * Date: 2026-01-31
- * PURPOSE: Game play page for community games. Handles game session management,
- *          rendering the game grid, and player input controls.
- * SRP/DRY check: Pass — uses shared ARC3 color config, single-purpose game play interface.
- */
+Author: Cascade (Claude Sonnet 4)
+Date: 2026-01-31
+PURPOSE: Game play page for community games. Handles game session management,
+         rendering the game grid, and player input controls. Uses ARC3 pixel UI theme.
+SRP/DRY check: Pass — uses shared pixel UI primitives and ARC3 grid visualization.
+*/
 
-import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "wouter";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, Link } from 'wouter';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   ArrowLeft,
   RotateCcw,
   Play,
-  Terminal,
   ChevronUp,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Loader2
-} from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { Arc3GridVisualization } from "@/components/arc3/Arc3GridVisualization";
+  Loader2,
+  Trophy,
+  XCircle,
+  Gamepad2,
+} from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
+import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
+import { Arc3PixelPage, PixelButton, PixelPanel } from '@/components/arc3-community/Arc3PixelUI';
 
 interface FrameData {
   frame: number[][][];  // 3D array: list of animation frames, each is a 2D grid
@@ -66,11 +68,14 @@ interface GameDetails {
   authorName: string;
 }
 
+type GameState = 'idle' | 'playing' | 'won' | 'lost';
+
 export default function CommunityGamePlay() {
   const { gameId } = useParams<{ gameId: string }>();
   const [sessionGuid, setSessionGuid] = useState<string | null>(null);
   const [frame, setFrame] = useState<FrameData | null>(null);
   const [gameInfo, setGameInfo] = useState<{ displayName: string; winScore: number; maxActions: number | null } | null>(null);
+  const [gameState, setGameState] = useState<GameState>('idle');
 
   // Fetch game details
   const { data: gameDetails } = useQuery<{ success: boolean; data: GameDetails }>({
@@ -96,13 +101,16 @@ export default function CommunityGamePlay() {
   // Execute action mutation
   const actionMutation = useMutation({
     mutationFn: async (action: string) => {
-      if (!sessionGuid) throw new Error("No active session");
-      const response = await apiRequest("POST", `/api/arc3-community/session/${sessionGuid}/action`, { action });
+      if (!sessionGuid) throw new Error('No active session');
+      const response = await apiRequest('POST', `/api/arc3-community/session/${sessionGuid}/action`, { action });
       return response.json() as Promise<ActionResponse>;
     },
     onSuccess: (data) => {
       if (data.success) {
         setFrame(data.data.frame);
+        if (data.data.isGameOver) {
+          setGameState(data.data.isWin ? 'won' : 'lost');
+        }
       }
     },
   });
@@ -137,197 +145,258 @@ export default function CommunityGamePlay() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Start game on mount
+  // Start game
   const handleStart = () => {
+    setGameState('playing');
     startGameMutation.mutate();
   };
 
   // Reset game
   const handleReset = () => {
     if (sessionGuid) {
+      setGameState('playing');
       actionMutation.mutate('RESET');
     }
   };
 
+  // Play again (full restart)
+  const handlePlayAgain = () => {
+    setSessionGuid(null);
+    setFrame(null);
+    setGameInfo(null);
+    setGameState('idle');
+  };
+
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-mono">
-      {/* Compact header bar */}
-      <header className="border-b border-zinc-800 bg-zinc-900/80">
-        <div className="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/arc3">
-              <Button variant="ghost" size="sm" className="h-6 px-2 text-zinc-400 hover:text-zinc-100">
-                <ArrowLeft className="w-3 h-3 mr-1" />
-                Back
-              </Button>
+    <Arc3PixelPage>
+      {/* Header */}
+      <header className="border-b-2 border-[var(--arc3-border)] bg-[var(--arc3-bg-soft)]">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/arc3/gallery">
+              <PixelButton tone="neutral">
+                <ArrowLeft className="w-4 h-4" />
+                Gallery
+              </PixelButton>
             </Link>
-            <span className="text-zinc-700">|</span>
-            <Terminal className="w-4 h-4 text-emerald-500" />
-            <span className="text-sm font-semibold">
-              {gameInfo?.displayName || gameDetails?.data?.displayName || 'Loading...'}
-            </span>
-            {gameDetails?.data && (
-              <span className="text-xs text-zinc-500">
-                by {gameDetails.data.authorName}
+            <span className="text-[var(--arc3-dim)]">|</span>
+            <Gamepad2 className="w-5 h-5 text-[var(--arc3-c14)]" />
+            <div className="min-w-0">
+              <span className="text-sm font-semibold truncate">
+                {gameInfo?.displayName || gameDetails?.data?.displayName || 'Loading...'}
               </span>
-            )}
+              {gameDetails?.data && (
+                <span className="text-[11px] text-[var(--arc3-dim)] ml-2">
+                  by {gameDetails.data.authorName}
+                </span>
+              )}
+            </div>
           </div>
-          {frame && (
-            <div className="flex items-center gap-4 text-xs">
-              <span className="text-emerald-400">
+
+          {frame && gameState === 'playing' && (
+            <div className="flex items-center gap-3 text-xs shrink-0">
+              <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-c14)] text-[var(--arc3-c0)] px-2 py-1 font-semibold">
                 Score: {frame.score}/{gameInfo?.winScore || frame.win_score}
-              </span>
-              <span className="text-zinc-500">|</span>
-              <span className="text-zinc-400">
+              </div>
+              <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] px-2 py-1">
                 Actions: {frame.action_counter}{gameInfo?.maxActions ? `/${gameInfo.maxActions}` : ''}
-              </span>
+              </div>
             </div>
           )}
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-3 py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <main className="max-w-6xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Game Grid */}
           <div className="lg:col-span-3">
-            <div className="border border-zinc-800 rounded bg-zinc-900/50 p-4">
-              {!sessionGuid ? (
+            {/* Win/Loss overlay */}
+            {gameState === 'won' && (
+              <PixelPanel tone="green" title="Victory!" className="mb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Trophy className="w-8 h-8 text-[var(--arc3-c11)]" />
+                    <div>
+                      <p className="text-sm font-semibold">Congratulations!</p>
+                      <p className="text-[11px] text-[var(--arc3-muted)]">
+                        Final score: {frame?.score} | Actions: {frame?.action_counter}
+                      </p>
+                    </div>
+                  </div>
+                  <PixelButton tone="green" onClick={handlePlayAgain}>
+                    <Play className="w-4 h-4" />
+                    Play Again
+                  </PixelButton>
+                </div>
+              </PixelPanel>
+            )}
+
+            {gameState === 'lost' && (
+              <PixelPanel tone="danger" title="Game Over" className="mb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <XCircle className="w-8 h-8 text-[var(--arc3-c8)]" />
+                    <div>
+                      <p className="text-sm font-semibold">Better luck next time!</p>
+                      <p className="text-[11px] text-[var(--arc3-muted)]">
+                        Final score: {frame?.score} | Actions: {frame?.action_counter}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <PixelButton tone="yellow" onClick={handleReset}>
+                      <RotateCcw className="w-4 h-4" />
+                      Retry Level
+                    </PixelButton>
+                    <PixelButton tone="green" onClick={handlePlayAgain}>
+                      <Play className="w-4 h-4" />
+                      New Game
+                    </PixelButton>
+                  </div>
+                </div>
+              </PixelPanel>
+            )}
+
+            <PixelPanel tone="blue">
+              {gameState === 'idle' ? (
                 <div className="text-center py-12">
-                  <Terminal className="w-10 h-10 text-zinc-600 mx-auto mb-3" />
-                  <p className="text-xs text-zinc-500 mb-4 max-w-md mx-auto">
-                    {gameDetails?.data?.description || 'Initialize game session to begin'}
+                  <Gamepad2 className="w-12 h-12 text-[var(--arc3-dim)] mx-auto mb-4" />
+                  <p className="text-sm font-semibold mb-2">
+                    {gameInfo?.displayName || gameDetails?.data?.displayName || 'Community Game'}
                   </p>
-                  <Button 
-                    onClick={handleStart} 
+                  <p className="text-[11px] text-[var(--arc3-muted)] mb-6 max-w-md mx-auto">
+                    {gameDetails?.data?.description || 'Initialize game session to begin playing'}
+                  </p>
+                  <PixelButton
+                    tone="green"
+                    onClick={handleStart}
                     disabled={startGameMutation.isPending}
-                    size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-xs h-8"
                   >
                     {startGameMutation.isPending ? (
                       <>
-                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                         Initializing...
                       </>
                     ) : (
                       <>
-                        <Play className="w-3 h-3 mr-1" />
+                        <Play className="w-4 h-4" />
                         Start Game
                       </>
                     )}
-                  </Button>
+                  </PixelButton>
                 </div>
-              ) : frame ? (
-                <>
-                  {/* Grid - Canvas-based rendering with visible grid lines like official ARC3 */}
-                  {frame.frame && (
-                    <div className="mx-auto" style={{ maxWidth: '512px' }}>
-                      <Arc3GridVisualization
-                        grid={frame.frame}
-                        frameIndex={0}
-                        cellSize={8}  /* 64 cells * 8px = 512px canvas */
-                        showGrid={true}
-                        showCoordinates={false}
-                        className="w-full"
-                      />
-                    </div>
-                  )}
-                </>
+              ) : frame?.frame ? (
+                <div className="mx-auto" style={{ maxWidth: '512px' }}>
+                  <Arc3GridVisualization
+                    grid={frame.frame}
+                    frameIndex={0}
+                    cellSize={8}
+                    showGrid={true}
+                    showCoordinates={false}
+                    className="w-full"
+                  />
+                </div>
               ) : (
                 <div className="text-center py-12">
-                  <Loader2 className="w-6 h-6 text-emerald-500 animate-spin mx-auto" />
+                  <Loader2 className="w-8 h-8 text-[var(--arc3-c14)] animate-spin mx-auto" />
+                  <p className="text-[11px] text-[var(--arc3-dim)] mt-3">Loading game...</p>
                 </div>
               )}
-            </div>
+            </PixelPanel>
           </div>
 
           {/* Controls Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             {/* D-Pad Controls */}
-            <div className="border border-zinc-800 rounded bg-zinc-900/50 p-3">
-              <h3 className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Controls</h3>
+            <PixelPanel tone="purple" title="Controls">
               <div className="flex flex-col items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="w-10 h-10 border-zinc-700 hover:bg-zinc-800"
+                <PixelButton
+                  tone="neutral"
                   onClick={() => actionMutation.mutate('ACTION1')}
-                  disabled={!sessionGuid || actionMutation.isPending}
+                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  className="w-12 h-12"
                 >
-                  <ChevronUp className="w-5 h-5" />
-                </Button>
+                  <ChevronUp className="w-6 h-6" />
+                </PixelButton>
                 <div className="flex gap-1">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-10 h-10 border-zinc-700 hover:bg-zinc-800"
+                  <PixelButton
+                    tone="neutral"
                     onClick={() => actionMutation.mutate('ACTION3')}
-                    disabled={!sessionGuid || actionMutation.isPending}
+                    disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                    className="w-12 h-12"
                   >
-                    <ChevronLeft className="w-5 h-5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-10 h-10 border-zinc-700 hover:bg-zinc-800 text-emerald-500"
+                    <ChevronLeft className="w-6 h-6" />
+                  </PixelButton>
+                  <PixelButton
+                    tone="green"
                     onClick={() => actionMutation.mutate('ACTION5')}
-                    disabled={!sessionGuid || actionMutation.isPending}
+                    disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                    className="w-12 h-12"
                   >
-                    <Play className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-10 h-10 border-zinc-700 hover:bg-zinc-800"
+                    <Play className="w-5 h-5" />
+                  </PixelButton>
+                  <PixelButton
+                    tone="neutral"
                     onClick={() => actionMutation.mutate('ACTION4')}
-                    disabled={!sessionGuid || actionMutation.isPending}
+                    disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                    className="w-12 h-12"
                   >
-                    <ChevronRight className="w-5 h-5" />
-                  </Button>
+                    <ChevronRight className="w-6 h-6" />
+                  </PixelButton>
                 </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="w-10 h-10 border-zinc-700 hover:bg-zinc-800"
+                <PixelButton
+                  tone="neutral"
                   onClick={() => actionMutation.mutate('ACTION2')}
-                  disabled={!sessionGuid || actionMutation.isPending}
+                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  className="w-12 h-12"
                 >
-                  <ChevronDown className="w-5 h-5" />
-                </Button>
+                  <ChevronDown className="w-6 h-6" />
+                </PixelButton>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full mt-3 h-7 text-xs border-zinc-700 hover:bg-zinc-800"
+
+              <PixelButton
+                tone="yellow"
                 onClick={handleReset}
                 disabled={!sessionGuid || actionMutation.isPending}
+                className="w-full mt-4"
               >
-                <RotateCcw className="w-3 h-3 mr-1" />
+                <RotateCcw className="w-4 h-4" />
                 Reset (R)
-              </Button>
-            </div>
+              </PixelButton>
+            </PixelPanel>
 
             {/* Keyboard Shortcuts */}
-            <div className="border border-zinc-800 rounded bg-zinc-900/50 p-3">
-              <h3 className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Keyboard</h3>
-              <div className="text-xs text-zinc-400 space-y-1">
+            <PixelPanel tone="blue" title="Keyboard">
+              <div className="space-y-2 text-[11px]">
                 <div className="flex justify-between">
-                  <span>Move</span>
-                  <span className="text-zinc-300 font-mono">WASD / Arrows</span>
+                  <span className="text-[var(--arc3-muted)]">Move</span>
+                  <span className="font-mono">WASD / Arrows</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Action</span>
-                  <span className="text-zinc-300 font-mono">Space / Enter</span>
+                  <span className="text-[var(--arc3-muted)]">Action</span>
+                  <span className="font-mono">Space / Enter</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Reset</span>
-                  <span className="text-zinc-300 font-mono">R</span>
+                  <span className="text-[var(--arc3-muted)]">Reset</span>
+                  <span className="font-mono">R</span>
                 </div>
               </div>
-            </div>
+            </PixelPanel>
+
+            {/* Game Info */}
+            {gameInfo && (
+              <PixelPanel tone="green" title="Goal">
+                <p className="text-[11px] text-[var(--arc3-muted)]">
+                  Reach a score of <span className="font-semibold text-[var(--arc3-c14)]">{gameInfo.winScore}</span> to win!
+                  {gameInfo.maxActions && (
+                    <> You have <span className="font-semibold">{gameInfo.maxActions}</span> actions maximum.</>                  )}
+                </p>
+              </PixelPanel>
+            )}
           </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </Arc3PixelPage>
   );
 }
