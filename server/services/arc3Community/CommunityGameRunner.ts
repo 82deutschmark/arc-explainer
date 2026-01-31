@@ -75,7 +75,7 @@ export class CommunityGameRunner {
         description: gameId === 'world_shifter' 
           ? 'The world moves, not you. Navigate mazes by shifting walls toward your fixed position.'
           : 'Match colors. Clear the board. Escape.',
-        authorName: 'ARCEngine Team',
+        authorName: 'Arc Explainer Team',
         authorEmail: null,
         version: '0.0.1',
         difficulty: 'medium',
