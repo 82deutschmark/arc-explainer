@@ -54,7 +54,7 @@ export interface GameAction {
 }
 
 export interface BridgeConfig {
-  gameId?: string;        // For official games via registry
+  gameId?: string;        // For featured games via registry
   gameFilePath?: string;  // For community uploaded games
 }
 
@@ -285,7 +285,7 @@ export class CommunityGamePythonBridge extends EventEmitter {
 }
 
 /**
- * Factory function to create and start a bridge for an official game (by ID)
+ * Factory function to create and start a bridge for a featured game (by ID)
  */
 export async function createGameBridgeById(gameId: string): Promise<CommunityGamePythonBridge> {
   const bridge = new CommunityGamePythonBridge({ gameId });

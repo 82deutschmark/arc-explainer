@@ -1,0 +1,10 @@
+# requirements.txt
+# Root Python dependencies for ARC Explainer (used by Docker build)
+# Author: Cascade (Claude)
+# Updated: 2026-01-31 - Created for Railway deployment
+
+# Include all solver dependencies
+-r solver/requirements.txt
+
+# ARCEngine community games runner dependencies
+# (ARCEngine core is vendored in external/ARCEngine)

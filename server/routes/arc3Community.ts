@@ -19,8 +19,9 @@ import { getPool } from '../repositories/base/BaseRepository';
 
 const router = Router();
 
-// Official games from ARCEngine registry (always available)
-const OFFICIAL_GAMES: CommunityGame[] = [
+// Featured community games from ARCEngine registry (always available)
+// Note: These are NOT official ARC Prize Foundation games - they are community creations
+const FEATURED_COMMUNITY_GAMES: CommunityGame[] = [
   {
     id: -1,
     gameId: 'world_shifter',
@@ -28,12 +29,12 @@ const OFFICIAL_GAMES: CommunityGame[] = [
     description: 'The world moves, not you. A puzzle game where player input moves the entire world in the opposite direction. Navigate mazes by shifting walls, obstacles, and the exit toward your fixed position.',
     authorName: 'ARCEngine Team',
     authorEmail: null,
-    version: '1.0.0',
+    version: '0.0.1',
     difficulty: 'medium',
     levelCount: 3,
     winScore: 1,
     maxActions: null,
-    tags: ['official', 'puzzle', 'maze'],
+    tags: ['featured', 'puzzle', 'maze'],
     sourceFilePath: '',
     sourceHash: '',
     thumbnailPath: null,
@@ -61,7 +62,7 @@ const OFFICIAL_GAMES: CommunityGame[] = [
     levelCount: 1,
     winScore: 1,
     maxActions: null,
-    tags: ['official', 'puzzle', 'match'],
+    tags: ['featured', 'puzzle', 'match'],
     sourceFilePath: '',
     sourceHash: '',
     thumbnailPath: null,
@@ -146,7 +147,7 @@ const listGamesSchema = z.object({
 
 /**
  * GET /api/arc3-community/games
- * List all approved community games with filtering (includes official games)
+ * List all approved community games with filtering (includes featured games)
  */
 router.get(
   '/games',
@@ -161,9 +162,9 @@ router.get(
 
     const { games: dbGames, total: dbTotal } = await getRepository().listGames(options);
 
-    // Merge official games with database games (official first)
-    const allGames = [...OFFICIAL_GAMES, ...dbGames];
-    const total = dbTotal + OFFICIAL_GAMES.length;
+    // Merge featured community games with database games (featured first)
+    const allGames = [...FEATURED_COMMUNITY_GAMES, ...dbGames];
+    const total = dbTotal + FEATURED_COMMUNITY_GAMES.length;
 
     res.json(formatResponse.success({
       games: allGames,
@@ -176,15 +177,15 @@ router.get(
 
 /**
  * GET /api/arc3-community/games/featured
- * Get featured community games (official games always included)
+ * Get featured community games (featured games always included)
  */
 router.get(
   '/games/featured',
   asyncHandler(async (req: Request, res: Response) => {
     const limit = Math.min(parseInt(req.query.limit as string) || 6, 20);
     const dbGames = await getRepository().getFeaturedGames(limit);
-    // Official games first, then featured from DB
-    const games = [...OFFICIAL_GAMES, ...dbGames].slice(0, limit);
+    // Featured community games first, then featured from DB
+    const games = [...FEATURED_COMMUNITY_GAMES, ...dbGames].slice(0, limit);
     res.json(formatResponse.success(games));
   }),
 );
@@ -211,10 +212,10 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const { gameId } = req.params;
     
-    // Check official games first
-    const officialGame = OFFICIAL_GAMES.find(g => g.gameId === gameId);
-    if (officialGame) {
-      return res.json(formatResponse.success(officialGame));
+    // Check featured community games first
+    const featuredGame = FEATURED_COMMUNITY_GAMES.find(g => g.gameId === gameId);
+    if (featuredGame) {
+      return res.json(formatResponse.success(featuredGame));
     }
 
     // Then check database

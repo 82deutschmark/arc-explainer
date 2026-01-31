@@ -376,17 +376,17 @@ else:
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Gamepad2 className="w-5 h-5 text-green-400" />
-                  Official Game Examples
+                  Featured Community Games
                 </CardTitle>
                 <CardDescription>
-                  Study these official games to learn best practices
+                  Study these featured community games to learn best practices
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-slate-900 p-6 rounded-lg">
                     <h3 className="text-xl font-semibold text-white mb-2">World Shifter</h3>
-                    <Badge className="mb-3">v1.0.0</Badge>
+                    <Badge className="mb-3">v0.0.1</Badge>
                     <p className="text-slate-300 text-sm mb-4">
                       The world moves, not you. A puzzle game where player input moves the entire 
                       world in the opposite direction.
@@ -412,7 +412,7 @@ else:
 
                   <div className="bg-slate-900 p-6 rounded-lg">
                     <h3 className="text-xl font-semibold text-white mb-2">Chain Reaction</h3>
-                    <Badge variant="secondary" className="mb-3">v0.0.1 (Preview)</Badge>
+                    <Badge variant="secondary" className="mb-3">v0.0.1</Badge>
                     <p className="text-slate-300 text-sm mb-4">
                       Match colors. Clear the board. Escape. A Sokoban-style puzzle with 
                       color matching mechanics.
@@ -443,17 +443,12 @@ else:
                     View Source Code
                   </h3>
                   <p className="text-slate-300 text-sm mb-4">
-                    The official games are open source and available in the ARCEngine repository. 
-                    Study the code to learn best practices for your own games.
+                    These featured community games are open source. Study the code to learn 
+                    best practices for your own games.
                   </p>
-                  <a 
-                    href="https://github.com/ARCEngine/games" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
-                  >
-                    View on GitHub <ExternalLink className="w-4 h-4" />
-                  </a>
+                  <p className="text-slate-500 text-xs">
+                    Source code available in the external/ARCEngine/games directory.
+                  </p>
                 </div>
               </CardContent>
             </Card>
