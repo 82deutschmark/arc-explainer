@@ -82,24 +82,35 @@ def load_game_from_file(file_path: str):
     return game_class
 
 
-def emit_frame(game, action_name: str, frame_data=None):
+def emit_frame(game, action_name: str, frame_data=None, action_counter: int = 0):
     """Emit frame data as NDJSON to stdout."""
     if frame_data is None:
         # Get initial frame via RESET
         frame_data = game.perform_action(ActionInput(id=GameAction.RESET))
     
-    # Convert frame to list if it's a numpy array
+    # Convert frame to list - frame_data.frame is already list[list[list[int]]] (3D array)
+    # Each element is an animation frame (2D grid). Usually just one frame.
     frame = frame_data.frame
-    if hasattr(frame, 'tolist'):
-        frame = frame.tolist()
+    # Handle case where individual frames might be numpy arrays
+    if isinstance(frame, list):
+        frame = [
+            f.tolist() if hasattr(f, 'tolist') else f 
+            for f in frame
+        ]
+    elif hasattr(frame, 'tolist'):
+        frame = [frame.tolist()]
     
     # FrameData has: game_id, frame, state, levels_completed, win_levels, action_input, guid, full_reset, available_actions
     output = {
         "type": "frame",
         "game_id": getattr(game, 'game_id', 'unknown'),
         "frame": frame,
+        "score": frame_data.levels_completed,  # Score is levels completed
         "levels_completed": frame_data.levels_completed,
+        "win_score": frame_data.win_levels,
         "win_levels": frame_data.win_levels,
+        "action_counter": action_counter,
+        "max_actions": getattr(game, 'max_actions', 100),
         "state": frame_data.state.value if hasattr(frame_data.state, 'value') else str(frame_data.state),
         "available_actions": list(frame_data.available_actions) if frame_data.available_actions else [],
         "last_action": action_name
@@ -188,8 +199,11 @@ def main():
         # Emit ready signal
         emit_ready(metadata["game_id"], metadata)
         
+        # Track action count
+        action_counter = 0
+        
         # Output initial frame
-        emit_frame(game, "INIT")
+        emit_frame(game, "INIT", action_counter=action_counter)
         
         # Action loop - read commands from stdin
         for line in sys.stdin:
@@ -212,9 +226,15 @@ def main():
                         action_input.x = coordinates[0]
                         action_input.y = coordinates[1]
                 
+                # Increment action counter (except for RESET)
+                if action_str.upper() != "RESET":
+                    action_counter += 1
+                else:
+                    action_counter = 0
+                
                 # Execute action
                 frame_data = game.perform_action(action_input)
-                emit_frame(game, action_str, frame_data)
+                emit_frame(game, action_str, frame_data, action_counter=action_counter)
                 
             except json.JSONDecodeError as e:
                 emit_error(f"Invalid JSON command: {e}", "INVALID_JSON")

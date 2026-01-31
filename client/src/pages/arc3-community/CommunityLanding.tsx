@@ -197,19 +197,19 @@ export default function CommunityLanding() {
               <h3 className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Quick Actions</h3>
               <div className="space-y-2">
                 <Link href="/arc3/gallery" className="block">
-                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 hover:bg-zinc-800">
+                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50">
                     <Play className="w-3 h-3 mr-2 text-emerald-500" />
                     Browse All Games
                   </Button>
                 </Link>
                 <Link href="/arc3/upload" className="block">
-                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 hover:bg-zinc-800">
+                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50">
                     <Upload className="w-3 h-3 mr-2 text-blue-500" />
                     Submit Your Game
                   </Button>
                 </Link>
                 <Link href="/arc3/docs" className="block">
-                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 hover:bg-zinc-800">
+                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50">
                     <BookOpen className="w-3 h-3 mr-2 text-amber-500" />
                     Documentation
                   </Button>
