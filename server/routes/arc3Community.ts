@@ -33,6 +33,16 @@ function getRepository(): CommunityGameRepository {
   return repository;
 }
 
+// Lazy initialization of game runner
+let gameRunner: CommunityGameRunner | null = null;
+
+function getGameRunner(): CommunityGameRunner {
+  if (!gameRunner) {
+    gameRunner = new CommunityGameRunner(getRepository());
+  }
+  return gameRunner;
+}
+
 // ============================================================================
 // VALIDATION SCHEMAS
 // ============================================================================
@@ -302,6 +312,125 @@ router.get(
       available: !exists,
       reason: exists ? 'This game ID is already taken' : undefined
     }));
+  }),
+);
+
+// ============================================================================
+// GAME EXECUTION ENDPOINTS
+// ============================================================================
+
+/**
+ * POST /api/arc3-community/session/start
+ * Start a new game session
+ */
+router.post(
+  '/session/start',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { gameId } = req.body;
+    
+    if (!gameId || typeof gameId !== 'string') {
+      return res.status(400).json(formatResponse.error('INVALID_GAME_ID', 'gameId is required'));
+    }
+
+    try {
+      const result = await getGameRunner().startGame(gameId);
+      res.json(formatResponse.success(result));
+    } catch (error) {
+      logger.error(`Failed to start game ${gameId}: ${error}`, 'community-games');
+      return res.status(500).json(
+        formatResponse.error('START_FAILED', error instanceof Error ? error.message : 'Failed to start game')
+      );
+    }
+  }),
+);
+
+/**
+ * POST /api/arc3-community/session/:sessionGuid/action
+ * Execute an action in an active game session
+ */
+router.post(
+  '/session/:sessionGuid/action',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sessionGuid } = req.params;
+    const { action, coordinates } = req.body;
+
+    if (!action || typeof action !== 'string') {
+      return res.status(400).json(formatResponse.error('INVALID_ACTION', 'action is required'));
+    }
+
+    const validActions = ['RESET', 'ACTION1', 'ACTION2', 'ACTION3', 'ACTION4', 'ACTION5', 'ACTION6', 'ACTION7'];
+    if (!validActions.includes(action.toUpperCase())) {
+      return res.status(400).json(formatResponse.error('INVALID_ACTION', `action must be one of: ${validActions.join(', ')}`));
+    }
+
+    try {
+      const result = await getGameRunner().executeAction(sessionGuid, {
+        action: action.toUpperCase() as 'RESET' | 'ACTION1' | 'ACTION2' | 'ACTION3' | 'ACTION4' | 'ACTION5' | 'ACTION6' | 'ACTION7',
+        coordinates: coordinates as [number, number] | undefined,
+      });
+      res.json(formatResponse.success(result));
+    } catch (error) {
+      logger.error(`Action failed for session ${sessionGuid}: ${error}`, 'community-games');
+      return res.status(500).json(
+        formatResponse.error('ACTION_FAILED', error instanceof Error ? error.message : 'Action failed')
+      );
+    }
+  }),
+);
+
+/**
+ * GET /api/arc3-community/session/:sessionGuid
+ * Get current session state
+ */
+router.get(
+  '/session/:sessionGuid',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sessionGuid } = req.params;
+    const session = getGameRunner().getSession(sessionGuid);
+
+    if (!session) {
+      return res.status(404).json(formatResponse.error('SESSION_NOT_FOUND', 'Session not found or expired'));
+    }
+
+    res.json(formatResponse.success({
+      sessionGuid: session.sessionGuid,
+      gameId: session.gameId,
+      state: session.state,
+      currentFrame: session.currentFrame,
+      actionCount: session.actionHistory.length,
+      startedAt: session.startedAt,
+    }));
+  }),
+);
+
+/**
+ * DELETE /api/arc3-community/session/:sessionGuid
+ * Abandon a game session
+ */
+router.delete(
+  '/session/:sessionGuid',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sessionGuid } = req.params;
+    await getGameRunner().abandonSession(sessionGuid);
+    res.json(formatResponse.success({ message: 'Session abandoned' }));
+  }),
+);
+
+/**
+ * POST /api/arc3-community/validate
+ * Validate game source code before upload
+ */
+router.post(
+  '/validate',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sourceCode } = req.body;
+
+    if (!sourceCode || typeof sourceCode !== 'string') {
+      return res.status(400).json(formatResponse.error('INVALID_SOURCE', 'sourceCode is required'));
+    }
+
+    const result = await CommunityGameValidator.validateSource(sourceCode);
+    res.json(formatResponse.success(result));
   }),
 );
 
