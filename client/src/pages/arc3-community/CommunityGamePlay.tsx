@@ -24,7 +24,7 @@ import {
   Loader2
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { ARC3_COLORS_HEX } from "@shared/config/arc3Colors";
+import { Arc3GridVisualization } from "@/components/arc3/Arc3GridVisualization";
 
 interface FrameData {
   frame: number[][][];  // 3D array: list of animation frames, each is a 2D grid
@@ -164,17 +164,6 @@ export default function CommunityGamePlay() {
     }
   };
 
-  // Render grid cell using shared ARC3 color config
-  const renderCell = (value: number, rowIdx: number, colIdx: number) => {
-    const color = ARC3_COLORS_HEX[value] ?? ARC3_COLORS_HEX[0] ?? '#888888';
-    return (
-      <div
-        key={`${rowIdx}-${colIdx}`}
-        className="aspect-square"
-        style={{ backgroundColor: color }}
-      />
-    );
-  };
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-mono">
@@ -270,19 +259,17 @@ export default function CommunityGamePlay() {
                     </div>
                   )}
 
-                  {/* Grid - frame.frame is 3D array [animationFrames][rows][cols], use first frame */}
-                  {frame.frame[0] && (
-                    <div 
-                      className="grid gap-0 mx-auto"
-                      style={{ 
-                        gridTemplateColumns: `repeat(${frame.frame[0][0]?.length || 64}, 1fr)`,
-                        maxWidth: '512px',
-                        aspectRatio: '1 / 1',
-                      }}
-                    >
-                      {frame.frame[0].map((row, rowIdx) =>
-                        row.map((cell, colIdx) => renderCell(cell, rowIdx, colIdx))
-                      )}
+                  {/* Grid - Canvas-based rendering with visible grid lines like official ARC3 */}
+                  {frame.frame && (
+                    <div className="mx-auto" style={{ maxWidth: '512px' }}>
+                      <Arc3GridVisualization
+                        grid={frame.frame}
+                        frameIndex={0}
+                        cellSize={8}  /* 64 cells * 8px = 512px canvas */
+                        showGrid={true}
+                        showCoordinates={false}
+                        className="w-full"
+                      />
                     </div>
                   )}
                 </div>
