@@ -10,12 +10,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { 
-  ArrowLeft, 
-  RotateCcw, 
+import {
+  ArrowLeft,
+  RotateCcw,
   Play,
-  Trophy,
-  XCircle,
   Terminal,
   ChevronUp,
   ChevronDown,
@@ -74,9 +72,6 @@ export default function CommunityGamePlay() {
   const [sessionGuid, setSessionGuid] = useState<string | null>(null);
   const [frame, setFrame] = useState<FrameData | null>(null);
   const [gameInfo, setGameInfo] = useState<{ displayName: string; winScore: number; maxActions: number | null } | null>(null);
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [isWin, setIsWin] = useState(false);
-  const [isStarting, setIsStarting] = useState(false);
 
   // Fetch game details
   const { data: gameDetails } = useQuery<{ success: boolean; data: GameDetails }>({
@@ -95,8 +90,6 @@ export default function CommunityGamePlay() {
         setSessionGuid(data.data.sessionGuid);
         setFrame(data.data.frame);
         setGameInfo(data.data.game);
-        setIsGameOver(false);
-        setIsWin(false);
       }
     },
   });
@@ -121,7 +114,7 @@ export default function CommunityGamePlay() {
 
   // Handle keyboard input
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (isGameOver || actionMutation.isPending || !sessionGuid) return;
+    if (actionMutation.isPending || !sessionGuid) return;
 
     const keyMap: Record<string, string> = {
       'ArrowUp': 'ACTION1',
@@ -142,7 +135,7 @@ export default function CommunityGamePlay() {
       e.preventDefault();
       actionMutation.mutate(action);
     }
-  }, [isGameOver, actionMutation, sessionGuid]);
+  }, [actionMutation, sessionGuid]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -151,7 +144,6 @@ export default function CommunityGamePlay() {
 
   // Start game on mount
   const handleStart = () => {
-    setIsStarting(true);
     startGameMutation.mutate();
   };
 
@@ -159,8 +151,6 @@ export default function CommunityGamePlay() {
   const handleReset = () => {
     if (sessionGuid) {
       actionMutation.mutate('RESET');
-      setIsGameOver(false);
-      setIsWin(false);
     }
   };
 
@@ -233,32 +223,7 @@ export default function CommunityGamePlay() {
                   </Button>
                 </div>
               ) : frame ? (
-                <div className="relative">
-                  {/* Game Over Overlay */}
-                  {isGameOver && (
-                    <div className="absolute inset-0 bg-zinc-950/90 flex items-center justify-center z-10 rounded">
-                      <div className="text-center">
-                        {isWin ? (
-                          <>
-                            <Trophy className="w-10 h-10 text-amber-500 mx-auto mb-2" />
-                            <h3 className="text-lg font-semibold text-zinc-100 mb-1">WIN</h3>
-                            <p className="text-xs text-zinc-400 mb-3">Final Score: {frame.score}</p>
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="w-10 h-10 text-red-500 mx-auto mb-2" />
-                            <h3 className="text-lg font-semibold text-zinc-100 mb-1">GAME OVER</h3>
-                            <p className="text-xs text-zinc-400 mb-3">Score: {frame.score}</p>
-                          </>
-                        )}
-                        <Button onClick={handleReset} size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-xs h-7">
-                          <RotateCcw className="w-3 h-3 mr-1" />
-                          Restart
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
+                <>
                   {/* Grid - Canvas-based rendering with visible grid lines like official ARC3 */}
                   {frame.frame && (
                     <div className="mx-auto" style={{ maxWidth: '512px' }}>
@@ -272,7 +237,7 @@ export default function CommunityGamePlay() {
                       />
                     </div>
                   )}
-                </div>
+                </>
               ) : (
                 <div className="text-center py-12">
                   <Loader2 className="w-6 h-6 text-emerald-500 animate-spin mx-auto" />
