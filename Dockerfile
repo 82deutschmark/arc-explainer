@@ -85,6 +85,21 @@ RUN echo "=== PREPARING RE-ARC LIBRARY ===" && \
     fi && \
     test -f external/re-arc/lib.py && echo "\u2713 re-arc lib.py exists" || (echo "\u2717 re-arc lib.py NOT FOUND after clone" && exit 1)
 
+# Prepare ARCEngine: use existing checkout if present, otherwise clone from GitHub
+# ARCEngine is required for ARC3 community games runtime
+RUN echo "=== PREPARING ARCENGINE LIBRARY ===" && \
+    if [ ! -f external/ARCEngine/arcengine/__init__.py ]; then \
+        echo "\u2717 ARCEngine not present in build context; cloning from GitHub" && \
+        rm -rf external/ARCEngine && \
+        mkdir -p external && \
+        git clone --depth 1 https://github.com/arcprize/ARCEngine external/ARCEngine; \
+    else \
+        echo "\u2713 ARCEngine present in build context; using existing checkout"; \
+    fi && \
+    test -f external/ARCEngine/arcengine/__init__.py && echo "\u2713 ARCEngine __init__.py exists" || (echo "\u2717 ARCEngine __init__.py NOT FOUND after clone" && exit 1) && \
+    echo "=== INSTALLING ARCENGINE AS EDITABLE PACKAGE ===" && \
+    cd external/ARCEngine && python3 -m pip install --no-cache-dir --break-system-packages -e .
+
 # Poetiq solver is now internalized at solver/poetiq/ (copied above)
 # Verify the internalized solver exists
 RUN echo "=== VERIFYING INTERNALIZED POETIQ SOLVER ===" && \
