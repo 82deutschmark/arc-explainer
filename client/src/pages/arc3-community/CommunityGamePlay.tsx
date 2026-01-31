@@ -27,7 +27,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ARC3_COLORS_HEX } from "@shared/config/arc3Colors";
 
 interface FrameData {
-  frame: number[][];
+  frame: number[][][];  // 3D array: list of animation frames, each is a 2D grid
   score: number;
   state: string;
   action_counter: number;
@@ -35,6 +35,7 @@ interface FrameData {
   win_score: number;
   available_actions: string[];
   last_action: string;
+  levels_completed?: number;
 }
 
 interface StartGameResponse {
@@ -269,18 +270,21 @@ export default function CommunityGamePlay() {
                     </div>
                   )}
 
-                  {/* Grid */}
-                  <div 
-                    className="grid gap-px mx-auto bg-zinc-800"
-                    style={{ 
-                      gridTemplateColumns: `repeat(${frame.frame[0]?.length || 10}, 1fr)`,
-                      maxWidth: '400px',
-                    }}
-                  >
-                    {frame.frame.map((row, rowIdx) =>
-                      row.map((cell, colIdx) => renderCell(cell, rowIdx, colIdx))
-                    )}
-                  </div>
+                  {/* Grid - frame.frame is 3D array [animationFrames][rows][cols], use first frame */}
+                  {frame.frame[0] && (
+                    <div 
+                      className="grid gap-0 mx-auto"
+                      style={{ 
+                        gridTemplateColumns: `repeat(${frame.frame[0][0]?.length || 64}, 1fr)`,
+                        maxWidth: '512px',
+                        aspectRatio: '1 / 1',
+                      }}
+                    >
+                      {frame.frame[0].map((row, rowIdx) =>
+                        row.map((cell, colIdx) => renderCell(cell, rowIdx, colIdx))
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-12">

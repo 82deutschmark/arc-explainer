@@ -25,13 +25,15 @@ const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds for game operations
 export interface FrameData {
   type: 'frame';
   game_id: string;
-  frame: number[][][];
+  frame: number[][][];  // 3D array: [animationFrames][rows][cols] - usually just one animation frame
   score: number;
+  levels_completed: number;
   state: string;
   action_counter: number;
   max_actions: number;
   win_score: number;
-  available_actions: string[];
+  win_levels: number;
+  available_actions: number[];
   last_action: string;
 }
 
