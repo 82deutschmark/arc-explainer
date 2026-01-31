@@ -64,7 +64,6 @@ interface GameDetails {
   displayName: string;
   description: string | null;
   authorName: string;
-  difficulty: string;
 }
 
 export default function CommunityGamePlay() {
@@ -104,10 +103,6 @@ export default function CommunityGamePlay() {
     onSuccess: (data) => {
       if (data.success) {
         setFrame(data.data.frame);
-        if (data.data.isGameOver) {
-          setIsGameOver(true);
-          setIsWin(data.data.isWin);
-        }
       }
     },
   });
@@ -257,7 +252,7 @@ export default function CommunityGamePlay() {
                   size="icon"
                   className="w-10 h-10 border-zinc-700 hover:bg-zinc-800"
                   onClick={() => actionMutation.mutate('ACTION1')}
-                  disabled={!sessionGuid || isGameOver || actionMutation.isPending}
+                  disabled={!sessionGuid || actionMutation.isPending}
                 >
                   <ChevronUp className="w-5 h-5" />
                 </Button>
@@ -267,7 +262,7 @@ export default function CommunityGamePlay() {
                     size="icon"
                     className="w-10 h-10 border-zinc-700 hover:bg-zinc-800"
                     onClick={() => actionMutation.mutate('ACTION3')}
-                    disabled={!sessionGuid || isGameOver || actionMutation.isPending}
+                    disabled={!sessionGuid || actionMutation.isPending}
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </Button>
@@ -276,7 +271,7 @@ export default function CommunityGamePlay() {
                     size="icon"
                     className="w-10 h-10 border-zinc-700 hover:bg-zinc-800 text-emerald-500"
                     onClick={() => actionMutation.mutate('ACTION5')}
-                    disabled={!sessionGuid || isGameOver || actionMutation.isPending}
+                    disabled={!sessionGuid || actionMutation.isPending}
                   >
                     <Play className="w-4 h-4" />
                   </Button>
@@ -285,7 +280,7 @@ export default function CommunityGamePlay() {
                     size="icon"
                     className="w-10 h-10 border-zinc-700 hover:bg-zinc-800"
                     onClick={() => actionMutation.mutate('ACTION4')}
-                    disabled={!sessionGuid || isGameOver || actionMutation.isPending}
+                    disabled={!sessionGuid || actionMutation.isPending}
                   >
                     <ChevronRight className="w-5 h-5" />
                   </Button>
@@ -295,7 +290,7 @@ export default function CommunityGamePlay() {
                   size="icon"
                   className="w-10 h-10 border-zinc-700 hover:bg-zinc-800"
                   onClick={() => actionMutation.mutate('ACTION2')}
-                  disabled={!sessionGuid || isGameOver || actionMutation.isPending}
+                  disabled={!sessionGuid || actionMutation.isPending}
                 >
                   <ChevronDown className="w-5 h-5" />
                 </Button>
