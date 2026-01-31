@@ -1,4 +1,3 @@
-<<<<<<< C:/Projects/arc-explainer/server/routes/arc3Community.ts
 /*
  * Author: Cascade (Claude)
  * Date: 2026-01-31
