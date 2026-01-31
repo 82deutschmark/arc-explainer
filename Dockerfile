@@ -6,7 +6,7 @@ FROM node:20-alpine
 # - Poetiq solver is INTERNALIZED at solver/poetiq/ (always available)
 # - BeetreeARC and SnakeBench code are ensured via submodules when present, or shallow git clones during build
 # Author: Cascade (Claude Sonnet 4)
-# Updated: 2025-12-02 - Ensure beetreeARC and SnakeBench are available even when submodules are not pre-initialized
+# Updated: 2026-01-30 - Fix crontab COPY path to scripts/crontab; retain beetreeARC/SnakeBench availability
 
 # Add Python3, git, canvas dependencies, and cron daemon for scheduled tasks
 RUN apk add --no-cache \
@@ -118,7 +118,8 @@ RUN echo "=== CHECKING BUILD OUTPUT ===" && \
 ENV NODE_ENV=production
 
 # Copy crontab and entrypoint script for scheduled sync
-COPY crontab /etc/crontabs/root
+# Source file lives under scripts/ in the repo
+COPY scripts/crontab /etc/crontabs/root
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 

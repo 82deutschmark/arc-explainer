@@ -42,6 +42,8 @@ export class DatabaseSchema {
       await this.createReArcDatasetsTable(client);
       await this.createReArcSubmissionsTable(client);
       await this.createVisitorStatsTable(client);
+      await this.createCommunityGamesTable(client);
+      await this.createCommunityGameSessionsTable(client);
       logger.info('Core tables verified/created.', 'database');
 
       // Phase 2: Apply schema-altering migrations for older database instances.
@@ -554,6 +556,76 @@ export class DatabaseSchema {
       VALUES ('landing', 0)
       ON CONFLICT (page) DO NOTHING
     `);
+  }
+
+  private static async createCommunityGamesTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS community_games (
+        id SERIAL PRIMARY KEY,
+        game_id VARCHAR(100) NOT NULL UNIQUE,
+        display_name VARCHAR(255) NOT NULL,
+        description TEXT,
+        author_name VARCHAR(100) NOT NULL,
+        author_email VARCHAR(255),
+        
+        version VARCHAR(20) DEFAULT '1.0.0',
+        difficulty VARCHAR(20) DEFAULT 'unknown',
+        level_count INTEGER DEFAULT 1,
+        win_score INTEGER DEFAULT 1,
+        max_actions INTEGER,
+        tags TEXT[] DEFAULT '{}',
+        
+        source_file_path TEXT NOT NULL,
+        source_hash VARCHAR(64) NOT NULL,
+        thumbnail_path TEXT,
+        
+        status VARCHAR(20) DEFAULT 'pending',
+        is_featured BOOLEAN DEFAULT FALSE,
+        is_playable BOOLEAN DEFAULT TRUE,
+        
+        validated_at TIMESTAMP WITH TIME ZONE,
+        validation_errors JSONB,
+        
+        play_count INTEGER DEFAULT 0,
+        total_wins INTEGER DEFAULT 0,
+        total_losses INTEGER DEFAULT 0,
+        average_score FLOAT,
+        
+        uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        
+        CONSTRAINT valid_status CHECK (status IN ('pending', 'approved', 'rejected', 'archived')),
+        CONSTRAINT valid_difficulty CHECK (difficulty IN ('easy', 'medium', 'hard', 'very-hard', 'unknown'))
+      )
+    `);
+
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_community_games_status ON community_games(status)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_community_games_game_id ON community_games(game_id)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_community_games_author ON community_games(author_name)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_community_games_featured ON community_games(is_featured) WHERE is_featured = true`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_community_games_play_count ON community_games(play_count DESC)`);
+  }
+
+  private static async createCommunityGameSessionsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS community_game_sessions (
+        id SERIAL PRIMARY KEY,
+        game_id INTEGER NOT NULL REFERENCES community_games(id) ON DELETE CASCADE,
+        session_guid VARCHAR(255) NOT NULL UNIQUE,
+        
+        state VARCHAR(50) NOT NULL DEFAULT 'NOT_PLAYED',
+        final_score INTEGER DEFAULT 0,
+        win_score INTEGER DEFAULT 0,
+        total_frames INTEGER DEFAULT 0,
+        
+        started_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        ended_at TIMESTAMP WITH TIME ZONE
+      )
+    `);
+
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_community_sessions_game ON community_game_sessions(game_id)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_community_sessions_guid ON community_game_sessions(session_guid)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_community_sessions_started ON community_game_sessions(started_at DESC)`);
   }
 
   /**

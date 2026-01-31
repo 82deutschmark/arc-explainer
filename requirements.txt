@@ -1,7 +1,8 @@
 # requirements.txt
-# Python dependencies for ARC Puzzle Explainer Python components
-# Author: Cascade (Claude Sonnet 4)
-# Updated: 2025-11-27 - REMOVED LiteLLM, now uses direct SDK calls
+# Root Python dependencies for ARC Explainer (used by Docker build)
+# Author: Cascade (Claude)
+# Updated: 2026-01-31 - Created for Railway deployment
+# NOTE: Dependencies are inlined here because Docker copies this file before solver/
 
 # ===========================================
 # Core Dependencies (shared across solvers)
@@ -15,25 +16,14 @@ asynciolimiter>=1.2.0
 scipy>=1.10.0
 
 # ===========================================
-# Direct Provider SDKs (NO LiteLLM!)
-# Each provider is called directly using their official SDK
+# Direct Provider SDKs
 # ===========================================
-# OpenAI SDK - for GPT-5.x, o3, o4 models using Responses API
 openai>=1.0.0
-
-# Anthropic SDK - for Claude models using Messages API
 anthropic>=0.40.0
-
-# Google GenAI SDK (new client) - for Gemini models
 google-genai>=1.52.0
-
-# LangChain OpenAI - for LangChain agent/chain workflows with OpenAI
 langchain-openai>=1.1.0
 
-# Note: OpenRouter and xAI use OpenAI SDK with custom base_url
-
 # ===========================================
-# BeetreeARC ensemble solver (python submodule)
-# Keep this include at the bottom so devs only need to run one pip install
+# ARCEngine community games (no extra deps needed)
 # ===========================================
--r beetreeARC/requirements.txt
+# ARCEngine core is vendored in external/ARCEngine

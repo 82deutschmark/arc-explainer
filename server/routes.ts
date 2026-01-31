@@ -44,6 +44,8 @@ import arc3Router from "./routes/arc3";
 import arc3CodexRouter from "./routes/arc3Codex";
 import arc3OpenRouterRouter from "./routes/arc3OpenRouter";
 import arc3HaikuRouter from "./routes/arc3Haiku";
+import arc3ArchiveRouter from "./routes/arc3Archive";
+import arc3CommunityRouter from "./routes/arc3Community";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -107,6 +109,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Haiku 4.5 ARC3 agent playground routes (vision-first, child-like learning)
   app.use("/api/arc3-haiku", arc3HaikuRouter);
+
+  // Archived ARC3 preview-era routes (original 6 official games)
+  app.use("/api/arc3-archive", arc3ArchiveRouter);
+
+  // Community games platform routes (user-uploaded ARCEngine games)
+  app.use("/api/arc3-community", arc3CommunityRouter);
 
   // Contributor trading cards routes
   app.use("/api/contributors", contributorController);
