@@ -56,6 +56,13 @@ import {
   Arc3ArchiveGameSpoiler, 
   Arc3ArchivePlayground 
 } from "@/pages/arc3-archive";
+import {
+  CommunityLanding,
+  CommunityGallery,
+  CommunityGamePlay,
+  GameUploadPage,
+  GameCreationDocs
+} from "@/pages/arc3-community";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
 import LLMReasoning from "@/pages/LLMReasoning";
@@ -126,13 +133,12 @@ function Router() {
         <Route path="/about" component={About} />
         <Route path="/llm-reasoning" component={LLMReasoning} />
         <Route path="/llm-reasoning/advanced" component={LLMReasoningAdvanced} />
-        <Route path="/arc3" component={ARC3Browser} />
-        <Route path="/arc3/playground" component={ARC3AgentPlayground} />
-        <Route path="/arc3/openrouter-playground" component={Arc3OpenRouterPlayground} />
-        <Route path="/arc3/codex-playground" component={Arc3CodexPlayground} />
-        <Route path="/arc3/haiku-playground" component={Arc3HaikuPlayground} />
-        <Route path="/arc3/games" component={Arc3GamesBrowser} />
-        <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
+        {/* ARC3 Community - user-uploaded games platform (new main landing) */}
+        <Route path="/arc3" component={CommunityLanding} />
+        <Route path="/arc3/gallery" component={CommunityGallery} />
+        <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
+        <Route path="/arc3/upload" component={GameUploadPage} />
+        <Route path="/arc3/docs" component={GameCreationDocs} />
         {/* ARC3 Archive - historical preview content */}
         <Route path="/arc3/archive" component={Arc3ArchiveLanding} />
         <Route path="/arc3/archive/games" component={Arc3ArchiveGamesBrowser} />

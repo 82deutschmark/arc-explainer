@@ -1,5 +1,39 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.0.0  Jan 31, 2026
+
+- **FEAT: ARC3 Community Games Platform** (Author: Cascade)
+  - **What**: Major platform transformation - ARC3 is now a community game authoring and sharing platform. Users can browse, play, and upload Python-based ARCEngine games. Launches with two official games: **World Shifter** and **Chain Reaction**.
+  - **Why**: Enable the community to create and share their own ARC-style puzzle games, expanding the platform beyond the original 6 preview games into a collaborative game development ecosystem.
+  - **How**:
+    - **Official Games Integration**: Integrated with ARCEngine `games/` registry for official games.
+      - `games/__init__.py`: Central registry with `get_game()` and `list_games()` API.
+      - **World Shifter** (v1.0.0): Inverse movement puzzle - the world moves, not you.
+      - **Chain Reaction** (v0.0.1): Color-matching Sokoban-style puzzle (preview).
+    - **Phase 1 - Archive**: Moved original preview content under `/arc3/archive/*` routes.
+      - `server/routes/arc3Archive.ts`: New router for archived preview game endpoints.
+      - `client/src/pages/arc3-archive/`: Landing, GamesBrowser, GameSpoiler, Playground pages.
+      - `client/src/components/arc3/Arc3ArchiveBanner.tsx`: Archive notification banner.
+    - **Phase 2 - Backend Storage**: Added PostgreSQL tables and repository for community games.
+      - `server/repositories/database/DatabaseSchema.ts`: Added `community_games` and `community_game_sessions` tables.
+      - `server/repositories/CommunityGameRepository.ts`: CRUD operations for game metadata and sessions.
+      - `server/services/arc3Community/CommunityGameStorage.ts`: File storage for Python game sources.
+      - `server/routes/arc3Community.ts`: REST API for game listing, upload, and session management.
+    - **Phase 3 - Python Bridge**: Created subprocess bridge for running ARCEngine games.
+      - `server/python/community_game_runner.py`: NDJSON-based runner supporting both registry and file-based games.
+      - `server/services/arc3Community/CommunityGamePythonBridge.ts`: Node.js subprocess management with `BridgeConfig`.
+      - `server/services/arc3Community/CommunityGameRunner.ts`: Game session orchestration for official and community games.
+      - `server/services/arc3Community/CommunityGameValidator.ts`: Static and runtime validation for uploaded games.
+    - **Phase 4 - Frontend**: Built community gallery and game play interfaces.
+      - `client/src/pages/arc3-community/CommunityLanding.tsx`: New ARC3 landing page with featured games.
+      - `client/src/pages/arc3-community/CommunityGallery.tsx`: Browse and filter community games.
+      - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Interactive game player with keyboard controls.
+      - `client/src/pages/arc3-community/GameUploadPage.tsx`: Form for uploading new games with validation.
+      - `client/src/pages/arc3-community/GameCreationDocs.tsx`: Comprehensive documentation for game creators.
+    - **Routes**: `/arc3` (community hub), `/arc3/gallery`, `/arc3/play/:gameId`, `/arc3/upload`, `/arc3/docs`, `/arc3/archive/*`.
+    - `shared/arc3Games/types.ts`: Added `isArchived` flag to game metadata.
+  - **Breaking Changes**: `/arc3` route now serves community landing instead of original ARC3Browser. Original content preserved at `/arc3/archive`.
+
 ### Version 6.36.14  Jan 30, 2026
 
 - **BUILD: Fix Docker crontab copy path** (Author: Cascade)

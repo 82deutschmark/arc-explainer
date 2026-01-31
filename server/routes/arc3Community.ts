@@ -11,13 +11,73 @@ import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { formatResponse } from '../utils/responseFormatter';
 import { logger } from '../utils/logger';
-import { CommunityGameRepository, type CreateGameInput, type GameListOptions } from '../repositories/CommunityGameRepository';
+import { CommunityGameRepository, type CreateGameInput, type GameListOptions, type CommunityGame } from '../repositories/CommunityGameRepository';
 import { CommunityGameStorage } from '../services/arc3Community/CommunityGameStorage';
 import { CommunityGameRunner } from '../services/arc3Community/CommunityGameRunner';
 import { CommunityGameValidator } from '../services/arc3Community/CommunityGameValidator';
 import { getPool } from '../repositories/base/BaseRepository';
 
 const router = Router();
+
+// Official games from ARCEngine registry (always available)
+const OFFICIAL_GAMES: CommunityGame[] = [
+  {
+    id: -1,
+    gameId: 'world_shifter',
+    displayName: 'World Shifter',
+    description: 'The world moves, not you. A puzzle game where player input moves the entire world in the opposite direction. Navigate mazes by shifting walls, obstacles, and the exit toward your fixed position.',
+    authorName: 'ARCEngine Team',
+    authorEmail: null,
+    version: '1.0.0',
+    difficulty: 'medium',
+    levelCount: 3,
+    winScore: 1,
+    maxActions: null,
+    tags: ['official', 'puzzle', 'maze'],
+    sourceFilePath: '',
+    sourceHash: '',
+    thumbnailPath: null,
+    status: 'approved',
+    isFeatured: true,
+    isPlayable: true,
+    validatedAt: new Date(),
+    validationErrors: null,
+    playCount: 0,
+    totalWins: 0,
+    totalLosses: 0,
+    averageScore: null,
+    uploadedAt: new Date('2026-01-31'),
+    updatedAt: new Date('2026-01-31'),
+  },
+  {
+    id: -2,
+    gameId: 'chain_reaction',
+    displayName: 'Chain Reaction',
+    description: 'Match colors. Clear the board. Escape. A Sokoban-style puzzle game where pushing colored blocks into matching blocks destroys both. Clear all colored blocks to unlock the exit.',
+    authorName: 'ARCEngine Team',
+    authorEmail: null,
+    version: '0.0.1',
+    difficulty: 'medium',
+    levelCount: 1,
+    winScore: 1,
+    maxActions: null,
+    tags: ['official', 'puzzle', 'match'],
+    sourceFilePath: '',
+    sourceHash: '',
+    thumbnailPath: null,
+    status: 'approved',
+    isFeatured: true,
+    isPlayable: true,
+    validatedAt: new Date(),
+    validationErrors: null,
+    playCount: 0,
+    totalWins: 0,
+    totalLosses: 0,
+    averageScore: null,
+    uploadedAt: new Date('2026-01-31'),
+    updatedAt: new Date('2026-01-31'),
+  },
+];
 
 // Lazy initialization of repository
 let repository: CommunityGameRepository | null = null;
@@ -86,7 +146,7 @@ const listGamesSchema = z.object({
 
 /**
  * GET /api/arc3-community/games
- * List all approved community games with filtering
+ * List all approved community games with filtering (includes official games)
  */
 router.get(
   '/games',
@@ -99,10 +159,14 @@ router.get(
       tags: params.tags ? params.tags.split(',').map(t => t.trim()) : undefined,
     };
 
-    const { games, total } = await getRepository().listGames(options);
+    const { games: dbGames, total: dbTotal } = await getRepository().listGames(options);
+
+    // Merge official games with database games (official first)
+    const allGames = [...OFFICIAL_GAMES, ...dbGames];
+    const total = dbTotal + OFFICIAL_GAMES.length;
 
     res.json(formatResponse.success({
-      games,
+      games: allGames,
       total,
       limit: options.limit || 50,
       offset: options.offset || 0,
@@ -112,13 +176,15 @@ router.get(
 
 /**
  * GET /api/arc3-community/games/featured
- * Get featured community games
+ * Get featured community games (official games always included)
  */
 router.get(
   '/games/featured',
   asyncHandler(async (req: Request, res: Response) => {
     const limit = Math.min(parseInt(req.query.limit as string) || 6, 20);
-    const games = await getRepository().getFeaturedGames(limit);
+    const dbGames = await getRepository().getFeaturedGames(limit);
+    // Official games first, then featured from DB
+    const games = [...OFFICIAL_GAMES, ...dbGames].slice(0, limit);
     res.json(formatResponse.success(games));
   }),
 );
@@ -144,6 +210,14 @@ router.get(
   '/games/:gameId',
   asyncHandler(async (req: Request, res: Response) => {
     const { gameId } = req.params;
+    
+    // Check official games first
+    const officialGame = OFFICIAL_GAMES.find(g => g.gameId === gameId);
+    if (officialGame) {
+      return res.json(formatResponse.success(officialGame));
+    }
+
+    // Then check database
     const game = await getRepository().getGameByGameId(gameId);
 
     if (!game) {
