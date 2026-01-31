@@ -173,7 +173,7 @@ export default function CommunityGallery() {
                       {game.displayName}
                     </span>
                     {game.tags?.includes("featured") && (
-                      <Zap className="w-3 h-3 inline ml-1.5 text-amber-500" title="Featured" />
+                      <span title="Featured"><Zap className="w-3 h-3 inline ml-1.5 text-amber-500" /></span>
                     )}
                   </Link>
                   <p className="text-xs text-zinc-500 truncate mt-0.5" title={game.description || ""}>
