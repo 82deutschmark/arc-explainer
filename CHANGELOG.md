@@ -1,5 +1,65 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.0.0  Jan 31, 2026
+
+- **FEAT: ARC3 Community Games Platform** (Author: Cascade)
+  - **What**: Major platform transformation - ARC3 is now a community game authoring and sharing platform. Users can browse, play, and upload Python-based ARCEngine games. Launches with two featured community games: **World Shifter** and **Chain Reaction**.
+  - **Why**: Enable the community to create and share their own ARC-style puzzle games, expanding the platform beyond the original 6 preview games into a collaborative game development ecosystem.
+  - **How**:
+    - **Featured Community Games**: Integrated with ARCEngine `games/` registry for featured community games.
+      - `games/__init__.py`: Central registry with `get_game()` and `list_games()` API.
+      - **World Shifter** (v0.0.1): Inverse movement puzzle - the world moves, not you.
+      - **Chain Reaction** (v0.0.1): Color-matching Sokoban-style puzzle.
+    - **Phase 1 - Archive**: Moved original preview content under `/arc3/archive/*` routes.
+      - `server/routes/arc3Archive.ts`: New router for archived preview game endpoints.
+      - `client/src/pages/arc3-archive/`: Landing, GamesBrowser, GameSpoiler, Playground pages.
+      - `client/src/components/arc3/Arc3ArchiveBanner.tsx`: Archive notification banner.
+    - **Phase 2 - Backend Storage**: Added PostgreSQL tables and repository for community games.
+      - `server/repositories/database/DatabaseSchema.ts`: Added `community_games` and `community_game_sessions` tables.
+      - `server/repositories/CommunityGameRepository.ts`: CRUD operations for game metadata and sessions.
+      - `server/services/arc3Community/CommunityGameStorage.ts`: File storage for Python game sources.
+      - `server/routes/arc3Community.ts`: REST API for game listing, upload, and session management.
+    - **Phase 3 - Python Bridge**: Created subprocess bridge for running ARCEngine games.
+      - `server/python/community_game_runner.py`: NDJSON-based runner supporting both registry and file-based games.
+    - **Deployment**: Added root `requirements.txt` for Railway Docker builds.
+      - `server/services/arc3Community/CommunityGamePythonBridge.ts`: Node.js subprocess management with `BridgeConfig`.
+      - `server/services/arc3Community/CommunityGameRunner.ts`: Game session orchestration for featured and user-uploaded community games.
+      - `server/services/arc3Community/CommunityGameValidator.ts`: Static and runtime validation for uploaded games.
+    - **Phase 4 - Frontend**: Built community gallery and game play interfaces.
+      - `client/src/pages/arc3-community/CommunityLanding.tsx`: New ARC3 landing page with featured games.
+      - `client/src/pages/arc3-community/CommunityGallery.tsx`: Browse and filter community games.
+      - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Interactive game player with keyboard controls.
+      - `client/src/pages/arc3-community/GameUploadPage.tsx`: Form for uploading new games with validation.
+      - `client/src/pages/arc3-community/GameCreationDocs.tsx`: Comprehensive documentation for game creators.
+    - **Routes**: `/arc3` (community hub), `/arc3/gallery`, `/arc3/play/:gameId`, `/arc3/upload`, `/arc3/docs`, `/arc3/archive/*`.
+    - `shared/arc3Games/types.ts`: Added `isArchived` flag to game metadata.
+  - **Breaking Changes**: `/arc3` route now serves community landing instead of original ARC3Browser. Original content preserved at `/arc3/archive`.
+
+### Version 6.36.14  Jan 30, 2026
+
+- **BUILD: Fix Docker crontab copy path** (Author: Cascade)
+  - **What**: Pointed the Dockerfile crontab COPY step to `scripts/crontab` (actual repo location) and refreshed Dockerfile metadata.
+  - **Why**: Railway builds failed with `"/crontab": not found` because the source path was wrong in the image build context.
+  - **How**:
+    - `Dockerfile`: copy crontab from `scripts/crontab`; update header.
+    - `docs/plans/013026-build-fix.md`: recorded scope and steps.
+
+### Version 6.36.13  Jan 30, 2026
+
+- **TEST: Expand SnakeBench helper coverage** (Author: Cascade)
+  - **What**: Added unit tests covering slug normalization, SQL fragment emission, limit/offset clamping, date parsing, Elo expected score math, and numeric guards for the shared SnakeBench SQL helpers.
+  - **Why**: Lock regression-prone helper behaviors that feed leaderboard and stats queries, improving CI signal across repositories consuming the helpers.
+  - **How**:
+    - `tests/unit/repositories/snakebenchSqlHelpers.test.ts`: new Vitest suite exercising normalization, clamping, parsing, Elo math, and numeric guards.
+    - `docs/plans/013026-test-coverage-expansion.md`: tracked the targeted coverage expansion scope.
+
+### Version 6.36.12  Jan 28, 2026
+
+- **CONFIG: Increase OpenRouter auto-add output token cost threshold** (Author: Claude Sonnet 4.5)
+  - **What**: Raised the `MAX_OUTPUT_COST_PER_M` threshold from $2.00 to $3.00 per million tokens in the OpenRouter catalog sync script.
+  - **Why**: Models like Kimi K2.5 ($0.60 input / $3.00 output) were being filtered out despite reasonable pricing. The new threshold allows more competitive reasoning models to be auto-added.
+  - **How**: Updated `server/scripts/sync-openrouter-catalog.ts:20` to set `MAX_OUTPUT_COST_PER_M = 3.0`, keeping input threshold at $2.00/M.
+
 ### Version 6.36.11  Jan 21, 2026
 
 - **FIX: Worm Arena greatest hits surfaces newest pinned replay** (Author: Cascade)
