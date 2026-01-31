@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.1.2  Jan 31, 2026
+
+- **FIX: World Shifter core mechanic and UI** (Author: Claude Sonnet 4)
+  - **What**: Fixed critical bugs: (1) collision detection now uses pixel-level checks so player isn't always blocked, (2) exit positions corrected to walkable areas, (3) removed wrong "Score/Goal" UI from frontend, (4) disabled grid overlay.
+  - **Why**: Game was unplayable - collision always failed, exits were on walls, and UI displayed incorrect ARC3 concepts (scores instead of levels).
+  - **How**:
+    - `external/ARCEngine/games/world_shifter/game.py`: Rewrote `_can_move_world` to check maze pixel colors instead of bounding-box collision. Added `_get_player_center` and pixel-level wall detection.
+    - `external/ARCEngine/games/world_shifter/levels.py`: Repositioned all exit sprites to be in walkable (-1) pixels, added coordinate comments.
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Removed incorrect "Score: X/Y" and "Goal: Reach a score" UI, changed to "Level: N", disabled grid overlay (`showGrid={false}`).
+
 ### Version 7.1.1  Jan 31, 2026
 
 - **FEAT: World Shifter visual + level redesign** (Author: Claude Sonnet 4)

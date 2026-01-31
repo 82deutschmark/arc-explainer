@@ -197,10 +197,10 @@ export default function CommunityGamePlay() {
           {frame && gameState === 'playing' && (
             <div className="flex items-center gap-3 text-xs shrink-0">
               <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-c14)] text-[var(--arc3-c0)] px-2 py-1 font-semibold">
-                Score: {frame.score}/{gameInfo?.winScore || frame.win_score}
+                Level: {(frame.levels_completed ?? 0) + 1}
               </div>
               <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] px-2 py-1">
-                Actions: {frame.action_counter}{gameInfo?.maxActions ? `/${gameInfo.maxActions}` : ''}
+                Actions: {frame.action_counter}
               </div>
             </div>
           )}
@@ -292,7 +292,7 @@ export default function CommunityGamePlay() {
                     grid={frame.frame}
                     frameIndex={0}
                     cellSize={8}
-                    showGrid={true}
+                    showGrid={false}
                     showCoordinates={false}
                     className="w-full"
                   />
@@ -384,16 +384,6 @@ export default function CommunityGamePlay() {
               </div>
             </PixelPanel>
 
-            {/* Game Info */}
-            {gameInfo && (
-              <PixelPanel tone="green" title="Goal">
-                <p className="text-[11px] text-[var(--arc3-muted)]">
-                  Reach a score of <span className="font-semibold text-[var(--arc3-c14)]">{gameInfo.winScore}</span> to win!
-                  {gameInfo.maxActions && (
-                    <> You have <span className="font-semibold">{gameInfo.maxActions}</span> actions maximum.</>                  )}
-                </p>
-              </PixelPanel>
-            )}
           </div>
         </div>
       </main>
