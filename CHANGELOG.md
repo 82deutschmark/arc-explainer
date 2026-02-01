@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.2.3  Feb 01, 2026
+
+- **FIX: Harden World Shifter palette + rotation indexing** (Author: Cascade (ChatGPT))
+  - **What**: Prevented featured game `ws01` from crashing when ARCEngine levels reference colors or rotations outside the tight `[8, 6, 11, 14]` / `[0,90,180,270]` whitelists.
+  - **Why**: Sessions failed with `Game error: [INVALID_GAME] 9 is not in list` because `list.index` raised `ValueError` during initialization, killing the Python bridge.
+  - **How**:
+    - `external/ARCEngine/games/official/ws01.py`: Added safe `_get_rotation_index` / `_get_color_index` helpers that log and default to zero when encountering unexpected metadata, and reused them everywhere `index()` was previously called.
+
 ### Version 7.2.2  Feb 01, 2026
 
 - **FEAT: Add official ARC Prize preview games (ls20, ft09, vc33)** (Author: Cascade - Claude Sonnet 4)
