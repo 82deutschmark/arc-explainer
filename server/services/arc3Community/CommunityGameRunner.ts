@@ -221,16 +221,17 @@ export class CommunityGameRunner {
     // Store session
     activeSessions.set(sessionGuid, session);
 
-    // Create database session record
-    try {
-      await this.repository.createSession(game.id, sessionGuid, game.winScore);
-    } catch (error) {
-      logger.warn(`Failed to create session record: ${error}`, 'game-runner');
-      // Continue anyway - session can work without DB record
-    }
+    // Create database session record / play-count entries for community uploads only
+    if (!isFeaturedGame) {
+      try {
+        await this.repository.createSession(game.id, sessionGuid, game.winScore);
+      } catch (error) {
+        logger.warn(`Failed to create session record: ${error}`, 'game-runner');
+        // Continue anyway - session can work without DB record
+      }
 
-    // Increment play count
-    await this.repository.incrementPlayCount(gameId);
+      await this.repository.incrementPlayCount(gameId);
+    }
 
     // Set up session timeout
     this.scheduleSessionCleanup(sessionGuid);
