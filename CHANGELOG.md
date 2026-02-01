@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.2.1  Feb 01, 2026
+
+- **FIX: ARC3 community games sync to official ARCEngine game IDs** (Author: Cascade - Claude Sonnet 4)
+  - **What**: Migrated featured community games from legacy IDs (`world_shifter`, `chain_reaction`) to official ARCEngine IDs (`ws01`, `gw01`) from `games.official` module. Fixes import error preventing game playback.
+  - **Why**: ARCEngine registry tried to import `WorldShifter` from `games.world_shifter` which no longer exists. Official games now live in `games.official` with IDs like `ws01` (World Shifter) and `gw01` (Gravity Well).
+  - **How**:
+    - `external/ARCEngine/games/__init__.py`: Updated registry to use `ws01`/`gw01` from `games.official` instead of legacy `world_shifter`/`chain_reaction`.
+    - `server/routes/arc3Community.ts`: Changed `FEATURED_COMMUNITY_GAMES` array to use `ws01` and `gw01` IDs with updated metadata.
+    - `server/services/arc3Community/CommunityGameRunner.ts`: Updated `FEATURED_COMMUNITY_GAMES` set and game metadata logic to use new IDs.
+
 ### Version 7.2.0  Feb 01, 2026
 
 - **FEAT: ARC3 submission page overhaul with single-file upload** (Author: Cascade - Claude Sonnet 4)
