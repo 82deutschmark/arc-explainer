@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.2.2  Feb 01, 2026
+
+- **FEAT: Add official ARC Prize preview games (ls20, ft09, vc33)** (Author: Cascade - Claude Sonnet 4)
+  - **What**: Expanded featured community games from 2 to 5 by adding three official ARC Prize preview games: Light Switch (`ls20`), Fill The Grid (`ft09`), and Vector Chase (`vc33`).
+  - **Why**: These games are part of the official ARCEngine `games.official` module and should be playable via the same interface as `ws01` and `gw01`.
+  - **How**:
+    - `server/routes/arc3Community.ts`: Added `ls20`, `ft09`, `vc33` entries to `FEATURED_COMMUNITY_GAMES` array with metadata (displayName, description, difficulty, levelCount, winScore).
+    - `server/services/arc3Community/CommunityGameRunner.ts`: Updated `FEATURED_COMMUNITY_GAMES` set to include new IDs. Refactored inline conditionals into `FEATURED_GAME_METADATA` lookup table and `getFeaturedGameMetadata()` helper for cleaner code.
+
 ### Version 7.2.1  Feb 01, 2026
 
 - **FIX: ARC3 community games sync to official ARCEngine game IDs** (Author: Cascade - Claude Sonnet 4)

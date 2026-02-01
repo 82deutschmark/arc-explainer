@@ -15,8 +15,69 @@ import { CommunityGameRepository, type CommunityGame } from '../../repositories/
 import { logger } from '../../utils/logger';
 
 // Featured community games from ARCEngine registry (not stored as files)
-// Using official game IDs (ws01, gw01) from games.official module
-const FEATURED_COMMUNITY_GAMES = new Set(['ws01', 'gw01']);
+// Using official game IDs from games.official module
+const FEATURED_COMMUNITY_GAMES = new Set(['ws01', 'gw01', 'ls20', 'ft09', 'vc33']);
+
+// Metadata lookup for featured games (avoids inline conditionals)
+interface FeaturedGameMeta {
+  displayName: string;
+  description: string;
+  authorName: string;
+  difficulty: 'easy' | 'medium' | 'hard' | 'very-hard' | 'unknown';
+  levelCount: number;
+  winScore: number;
+}
+
+const FEATURED_GAME_METADATA: Record<string, FeaturedGameMeta> = {
+  ws01: {
+    displayName: 'World Shifter',
+    description: 'The world moves, not you. Navigate mazes by shifting walls toward your fixed position.',
+    authorName: 'Arc Explainer Team',
+    difficulty: 'medium',
+    levelCount: 3,
+    winScore: 1,
+  },
+  gw01: {
+    displayName: 'Gravity Well',
+    description: 'Control gravity to collect orbs into wells.',
+    authorName: 'Arc Explainer Team',
+    difficulty: 'medium',
+    levelCount: 6,
+    winScore: 6,
+  },
+  ls20: {
+    displayName: 'Light Switch',
+    description: 'Toggle lights in a grid to match a target pattern. Each switch affects adjacent cells.',
+    authorName: 'ARC Prize Team',
+    difficulty: 'medium',
+    levelCount: 5,
+    winScore: 5,
+  },
+  ft09: {
+    displayName: 'Fill The Grid',
+    description: 'Fill an empty grid to match a target pattern using strategic placement.',
+    authorName: 'ARC Prize Team',
+    difficulty: 'medium',
+    levelCount: 5,
+    winScore: 5,
+  },
+  vc33: {
+    displayName: 'Vector Chase',
+    description: 'Navigate a path through a grid following vector rules. Test your spatial reasoning.',
+    authorName: 'ARC Prize Team',
+    difficulty: 'hard',
+    levelCount: 5,
+    winScore: 5,
+  },
+};
+
+function getFeaturedGameMetadata(gameId: string): FeaturedGameMeta {
+  const meta = FEATURED_GAME_METADATA[gameId];
+  if (!meta) {
+    throw new Error(`Unknown featured game: ${gameId}`);
+  }
+  return meta;
+}
 
 export interface GameSession {
   sessionGuid: string;
@@ -69,19 +130,18 @@ export class CommunityGameRunner {
 
     if (isFeaturedGame) {
       // Featured community game from ARCEngine registry - create virtual game record
+      const gameMetadata = getFeaturedGameMetadata(gameId);
       game = {
         id: 0,
         gameId,
-        displayName: gameId === 'ws01' ? 'World Shifter' : 'Gravity Well',
-        description: gameId === 'ws01'
-          ? 'The world moves, not you. Navigate mazes by shifting walls toward your fixed position.'
-          : 'Control gravity to collect orbs into wells.',
-        authorName: 'Arc Explainer Team',
+        displayName: gameMetadata.displayName,
+        description: gameMetadata.description,
+        authorName: gameMetadata.authorName,
         authorEmail: null,
         version: '1.0.0',
-        difficulty: 'medium',
-        levelCount: gameId === 'ws01' ? 3 : 6,
-        winScore: gameId === 'ws01' ? 1 : 6,
+        difficulty: gameMetadata.difficulty,
+        levelCount: gameMetadata.levelCount,
+        winScore: gameMetadata.winScore,
         maxActions: null,
         tags: ['featured', 'puzzle'],
         sourceFilePath: '',  // No file for featured games (loaded from registry)
