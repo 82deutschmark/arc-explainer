@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.2.0  Feb 01, 2026
+
+- **FEAT: ARC3 submission page overhaul with single-file upload** (Author: Cascade - Claude Sonnet 4)
+  - **What**: Complete redesign of game submission flow replacing GitHub repo links with direct Python file upload. Replaced email contact with Discord/Twitter handles for community moderation. Added comprehensive validation UI and improved palette usage.
+  - **Why**: Original GitHub-based flow was confusing (UI mentioned single-file but required repos). Email contact doesn't fit community moderation workflow. Validation requirements were hidden from creators. Palette usage was noisy with random panel colors.
+  - **How**:
+    - `client/src/components/arc3-community/PythonFileUploader.tsx`: New drag-and-drop uploader with client-side validation (file size, line count, basic structure checks). Shows real-time feedback for errors/warnings.
+    - `client/src/components/arc3-community/ValidationGuide.tsx`: New component displaying server-side validation rules, allowed imports, and safety/review process information.
+    - `client/src/pages/arc3-community/GameSubmissionPage.tsx`: Complete redesign with sectioned layout (Upload → Metadata → Contact → Notes). Replaced `authorEmail` + `githubRepoUrl` with `creatorHandle` + `sourceCode`. Added hero section, submission playbook, and sample game links.
+    - `server/routes/arc3Community.ts`: Updated `gameSubmissionSchema` to accept `sourceCode` (string, 50-500KB) and `creatorHandle` (Discord username or Twitter/X URL validated via regex). Removed `authorEmail` (now optional) and `githubRepoUrl` fields. Endpoint now validates source code via `CommunityGameValidator.validateSource()` before accepting submission.
+    - Backend now performs AST-level validation checking for ARCBaseGame subclass, arcengine imports, forbidden modules (os, subprocess, socket, etc.), and dangerous patterns (exec/eval/open) before queueing for manual review.
+    - Contact handle validation: Discord format `^[A-Za-z0-9_.-]{2,32}(#[0-9]{4})?$` or Twitter URL `^https://(twitter|x)\.com\/[A-Za-z0-9_]{1,15}$`.
+
 ### Version 7.1.3  Jan 31, 2026
 
 - **FIX: World Shifter exit positioning + ARC3 documentation** (Author: Claude Sonnet 4)
