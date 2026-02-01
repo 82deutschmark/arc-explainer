@@ -1,8 +1,9 @@
 /*
  * Author: Cascade (Claude)
- * Date: 2026-01-31
+ * Date: 2026-02-01
  * PURPOSE: Express router for community game endpoints. Handles game uploads, listings,
  *          and metadata retrieval for user-created ARCEngine games.
+ *          Updated to use official game IDs (ws01, gw01) from games.official module.
  * SRP/DRY check: Pass — isolates HTTP contract for community game operations.
  */
 
@@ -20,16 +21,16 @@ import { getPool } from '../repositories/base/BaseRepository';
 const router = Router();
 
 // Featured community games from ARCEngine registry (always available)
-// Note: These are NOT official ARC Prize Foundation games - they are community creations
+// Using official game IDs (ws01, gw01) from games.official module
 const FEATURED_COMMUNITY_GAMES: CommunityGame[] = [
   {
     id: -1,
-    gameId: 'world_shifter',
+    gameId: 'ws01',
     displayName: 'World Shifter',
     description: 'The world moves, not you. A puzzle game where player input moves the entire world in the opposite direction. Navigate mazes by shifting walls, obstacles, and the exit toward your fixed position.',
     authorName: 'Arc Explainer Team',
     authorEmail: null,
-    version: '0.0.1',
+    version: '1.0.0',
     difficulty: 'medium',
     levelCount: 3,
     winScore: 1,
@@ -47,22 +48,22 @@ const FEATURED_COMMUNITY_GAMES: CommunityGame[] = [
     totalWins: 0,
     totalLosses: 0,
     averageScore: null,
-    uploadedAt: new Date('2026-01-31'),
-    updatedAt: new Date('2026-01-31'),
+    uploadedAt: new Date('2026-02-01'),
+    updatedAt: new Date('2026-02-01'),
   },
   {
     id: -2,
-    gameId: 'chain_reaction',
-    displayName: 'Chain Reaction',
-    description: 'Match colors. Clear the board. Escape. A Sokoban-style puzzle game where pushing colored blocks into matching blocks destroys both. Clear all colored blocks to unlock the exit.',
+    gameId: 'gw01',
+    displayName: 'Gravity Well',
+    description: 'Control gravity to collect orbs into wells. Yellow and Orange orbs fuse to Green. Wells cycle colors. Green phases through platforms.',
     authorName: 'Arc Explainer Team',
     authorEmail: null,
-    version: '0.0.1',
+    version: '1.0.0',
     difficulty: 'medium',
     levelCount: 6,
     winScore: 6,
     maxActions: null,
-    tags: ['featured', 'puzzle', 'match'],
+    tags: ['featured', 'puzzle', 'gravity'],
     sourceFilePath: '',
     sourceHash: '',
     thumbnailPath: null,
@@ -75,8 +76,8 @@ const FEATURED_COMMUNITY_GAMES: CommunityGame[] = [
     totalWins: 0,
     totalLosses: 0,
     averageScore: null,
-    uploadedAt: new Date('2026-01-31'),
-    updatedAt: new Date('2026-01-31'),
+    uploadedAt: new Date('2026-02-01'),
+    updatedAt: new Date('2026-02-01'),
   },
 ];
 

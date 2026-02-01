@@ -1,4 +1,8 @@
-# 2026-02-01 ARC3 ARCEngine Official Game ID Sync Plan (Updated)
+# 2026-02-01 ARC3 ARCEngine Official Game ID Sync Plan (COMPLETED)
+
+## Status: DONE
+
+All changes implemented in v7.2.1. Games now use official IDs `ws01` and `gw01`.
 
 ## Context
 - Community game playback fails because ARCEngine no longer provides the WorldShifter class at games.world_shifter.

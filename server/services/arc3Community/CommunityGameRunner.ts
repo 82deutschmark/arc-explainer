@@ -1,9 +1,10 @@
 
 /*
  * Author: Cascade (Claude)
- * Date: 2026-01-31
+ * Date: 2026-02-01
  * PURPOSE: High-level service for running community games. Manages game sessions,
  *          coordinates with the Python bridge, and handles state persistence.
+ *          Updated to use official game IDs (ws01, gw01) from games.official module.
  * SRP/DRY check: Pass — single-purpose game session orchestration.
  */
 
@@ -14,8 +15,8 @@ import { CommunityGameRepository, type CommunityGame } from '../../repositories/
 import { logger } from '../../utils/logger';
 
 // Featured community games from ARCEngine registry (not stored as files)
-// Note: These are NOT official ARC Prize Foundation games - they are community creations
-const FEATURED_COMMUNITY_GAMES = new Set(['world_shifter', 'chain_reaction']);
+// Using official game IDs (ws01, gw01) from games.official module
+const FEATURED_COMMUNITY_GAMES = new Set(['ws01', 'gw01']);
 
 export interface GameSession {
   sessionGuid: string;
@@ -71,16 +72,16 @@ export class CommunityGameRunner {
       game = {
         id: 0,
         gameId,
-        displayName: gameId === 'world_shifter' ? 'World Shifter' : 'Chain Reaction',
-        description: gameId === 'world_shifter'
+        displayName: gameId === 'ws01' ? 'World Shifter' : 'Gravity Well',
+        description: gameId === 'ws01'
           ? 'The world moves, not you. Navigate mazes by shifting walls toward your fixed position.'
-          : 'Match colors. Clear the board. Escape.',
+          : 'Control gravity to collect orbs into wells.',
         authorName: 'Arc Explainer Team',
         authorEmail: null,
-        version: '0.0.1',
+        version: '1.0.0',
         difficulty: 'medium',
-        levelCount: gameId === 'world_shifter' ? 3 : 6,
-        winScore: gameId === 'world_shifter' ? 1 : 6,
+        levelCount: gameId === 'ws01' ? 3 : 6,
+        winScore: gameId === 'ws01' ? 1 : 6,
         maxActions: null,
         tags: ['featured', 'puzzle'],
         sourceFilePath: '',  // No file for featured games (loaded from registry)
