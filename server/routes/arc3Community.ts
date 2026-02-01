@@ -407,17 +407,29 @@ const gameSubmissionSchema = z.object({
     .max(500, 'Description must be at most 500 characters'),
   authorName: z.string()
     .min(2, 'Author name must be at least 2 characters')
-    .max(100, 'Author name must be at most 100 characters'),
-  authorEmail: z.string().email('Invalid email format'),
-  githubRepoUrl: z.string()
-    .url('Must be a valid URL')
-    .regex(/^https:\/\/github\.com\/[^/]+\/[^/]+/, 'Must be a valid GitHub repository URL'),
+    .max(100, 'Author name must be at most 100 characters')
+    .optional(),
+  creatorHandle: z.string()
+    .min(1, 'Creator contact handle is required')
+    .refine(
+      (val) => {
+        // Discord handle: username#1234 or new format username
+        const discordPattern = /^[A-Za-z0-9_.-]{2,32}(#[0-9]{4})?$/;
+        // Twitter/X URL: https://twitter.com/handle or https://x.com/handle
+        const twitterPattern = /^https:\/\/(twitter|x)\.com\/[A-Za-z0-9_]{1,15}$/;
+        return discordPattern.test(val) || twitterPattern.test(val);
+      },
+      'Must be a Discord handle (e.g., username#1234) or Twitter/X URL (e.g., https://twitter.com/username)'
+    ),
+  sourceCode: z.string()
+    .min(50, 'Source code must be at least 50 characters')
+    .max(500000, 'Source code must not exceed 500KB'),
   notes: z.string().max(1000).optional(),
 });
 
 /**
  * POST /api/arc3-community/submissions
- * Submit a GitHub repo for review (new approach - no code pasting)
+ * Submit a Python file for review (single-file upload approach)
  */
 router.post(
   '/submissions',
@@ -432,22 +444,39 @@ router.post(
       );
     }
 
+    // Validate the source code
+    const validationResult = await CommunityGameValidator.validateSource(payload.sourceCode);
+    
+    if (!validationResult.isValid) {
+      return res.status(400).json(
+        formatResponse.error('VALIDATION_FAILED', 'Game validation failed', {
+          errors: validationResult.errors,
+          warnings: validationResult.warnings,
+        })
+      );
+    }
+
     // Generate a submission ID for tracking
     const submissionId = `sub_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
     // Log the submission for manual review
-    // In production, this would create a database record and potentially notify admins
     logger.info(
-      `[community-games] New game submission: ${submissionId} | gameId=${payload.gameId} | author=${payload.authorName} | repo=${payload.githubRepoUrl}`,
+      `[community-games] New game submission: ${submissionId} | gameId=${payload.gameId} | author=${payload.authorName || 'Anonymous'} | handle=${payload.creatorHandle} | lines=${payload.sourceCode.split('\n').length}`,
       'community-games'
     );
 
-    // For now, return success - actual review process is manual
-    // Future: Store in database, send notification email, etc.
+    // Store the submission (would be database in production)
+    // For now, just validate and return success
     res.status(201).json(formatResponse.success({
       submissionId,
       status: 'pending_review',
-      message: 'Your game has been submitted for review. We will clone and validate your repository.',
+      message: 'Your game has been submitted for review. Validation passed. A moderator will review and approve your submission.',
+      validation: {
+        hasBaseGameClass: validationResult.metadata?.hasBaseGameClass,
+        className: validationResult.metadata?.className,
+        complexity: validationResult.metadata?.estimatedComplexity,
+        warnings: validationResult.warnings,
+      },
     }));
   }),
 );
