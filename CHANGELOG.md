@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.2.4  Feb 01, 2026
+
+- **FEAT: Auto-discover official ARCEngine games (remove server whitelists)** (Author: GPT-5.2)
+  - **What**: Official games in `external/ARCEngine/games/official/` are now discovered dynamically and exposed via the ARC3 community API. New files like `ws02.py` / `ws03.py` show up without manual edits to server-side lists.
+  - **Why**: The server previously relied on hardcoded featured-game metadata/whitelists, so newly-added ARCEngine official games were invisible until multiple files were updated by hand.
+  - **How**:
+    - `server/services/arc3Community/ArcEngineOfficialGameCatalog.ts`: Added a cached catalog that calls a Python helper to extract runtime metadata, with curated override text for known games.
+    - `server/python/arcengine_official_game_catalog.py`: New helper script to enumerate official game files and extract `(game_id, level_count, win_score)` by importing each module by path.
+    - `server/routes/arc3Community.ts`: Removed the hardcoded `FEATURED_COMMUNITY_GAMES` array; uses the catalog for listing/featured/details, reserves official IDs for uploads, and supports `/games/:gameId/source` for official games.
+    - `server/services/arc3Community/CommunityGameRunner.ts`: Removed featured whitelists/metadata duplication; starts official games via file path from the catalog.
+    - `server/python/community_game_runner.py`: Fixed emitted `level_count` to use ARCBaseGame's internal `_levels` storage.
+    - `external/ARCEngine/games/official/ws02.py`: Fixed initialization order and preview-sprite binding so `ws02` can be discovered and started successfully.
+
 ### Version 7.2.3  Feb 01, 2026
 
 - **FIX: Harden World Shifter palette + rotation indexing** (Author: Cascade (ChatGPT))

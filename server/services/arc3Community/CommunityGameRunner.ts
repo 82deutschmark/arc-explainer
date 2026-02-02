@@ -1,83 +1,19 @@
-
 /*
- * Author: Cascade (Claude)
+ * Author: GPT-5.2
  * Date: 2026-02-01
- * PURPOSE: High-level service for running community games. Manages game sessions,
+ * PURPOSE: High-level service for running ARC3 community games. Manages game sessions,
  *          coordinates with the Python bridge, and handles state persistence.
- *          Updated to use official game IDs (ws01, gw01) from games.official module.
- * SRP/DRY check: Pass — single-purpose game session orchestration.
+ *          Official ARCEngine games are discovered dynamically to avoid hardcoded whitelists
+ *          when new games are added to the ARCEngine submodule.
+ * SRP/DRY check: Pass - single-purpose game session orchestration.
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { CommunityGamePythonBridge, createGameBridgeById, createGameBridgeByPath, type FrameData, type GameAction } from './CommunityGamePythonBridge';
+import { CommunityGamePythonBridge, createGameBridgeByPath, type FrameData, type GameAction } from './CommunityGamePythonBridge';
 import { CommunityGameStorage } from './CommunityGameStorage';
 import { CommunityGameRepository, type CommunityGame } from '../../repositories/CommunityGameRepository';
 import { logger } from '../../utils/logger';
-
-// Featured community games from ARCEngine registry (not stored as files)
-// Using official game IDs from games.official module
-const FEATURED_COMMUNITY_GAMES = new Set(['ws01', 'gw01', 'ls20', 'ft09', 'vc33']);
-
-// Metadata lookup for featured games (avoids inline conditionals)
-interface FeaturedGameMeta {
-  displayName: string;
-  description: string;
-  authorName: string;
-  difficulty: 'easy' | 'medium' | 'hard' | 'very-hard' | 'unknown';
-  levelCount: number;
-  winScore: number;
-}
-
-const FEATURED_GAME_METADATA: Record<string, FeaturedGameMeta> = {
-  ws01: {
-    displayName: 'World Shifter',
-    description: 'The world moves, not you. Navigate mazes by shifting walls toward your fixed position.',
-    authorName: 'Arc Explainer Team',
-    difficulty: 'medium',
-    levelCount: 3,
-    winScore: 1,
-  },
-  gw01: {
-    displayName: 'Gravity Well',
-    description: 'Control gravity to collect orbs into wells.',
-    authorName: 'Arc Explainer Team',
-    difficulty: 'medium',
-    levelCount: 6,
-    winScore: 6,
-  },
-  ls20: {
-    displayName: 'Light Switch',
-    description: 'Toggle lights in a grid to match a target pattern. Each switch affects adjacent cells.',
-    authorName: 'ARC Prize Team',
-    difficulty: 'medium',
-    levelCount: 5,
-    winScore: 5,
-  },
-  ft09: {
-    displayName: 'Fill The Grid',
-    description: 'Fill an empty grid to match a target pattern using strategic placement.',
-    authorName: 'ARC Prize Team',
-    difficulty: 'medium',
-    levelCount: 5,
-    winScore: 5,
-  },
-  vc33: {
-    displayName: 'Vector Chase',
-    description: 'Navigate a path through a grid following vector rules. Test your spatial reasoning.',
-    authorName: 'ARC Prize Team',
-    difficulty: 'hard',
-    levelCount: 5,
-    winScore: 5,
-  },
-};
-
-function getFeaturedGameMetadata(gameId: string): FeaturedGameMeta {
-  const meta = FEATURED_GAME_METADATA[gameId];
-  if (!meta) {
-    throw new Error(`Unknown featured game: ${gameId}`);
-  }
-  return meta;
-}
+import { ArcEngineOfficialGameCatalog } from './ArcEngineOfficialGameCatalog';
 
 export interface GameSession {
   sessionGuid: string;
@@ -124,47 +60,21 @@ export class CommunityGameRunner {
    * Start a new game session
    */
   async startGame(gameId: string): Promise<StartGameResult> {
-    const isFeaturedGame = FEATURED_COMMUNITY_GAMES.has(gameId);
+    const officialGame = await ArcEngineOfficialGameCatalog.getOfficialGame(gameId);
+    const isOfficialGame = officialGame !== null;
     let game: CommunityGame;
     let bridge: CommunityGamePythonBridge;
 
-    if (isFeaturedGame) {
-      // Featured community game from ARCEngine registry - create virtual game record
-      const gameMetadata = getFeaturedGameMetadata(gameId);
-      game = {
-        id: 0,
-        gameId,
-        displayName: gameMetadata.displayName,
-        description: gameMetadata.description,
-        authorName: gameMetadata.authorName,
-        authorEmail: null,
-        version: '1.0.0',
-        difficulty: gameMetadata.difficulty,
-        levelCount: gameMetadata.levelCount,
-        winScore: gameMetadata.winScore,
-        maxActions: null,
-        tags: ['featured', 'puzzle'],
-        sourceFilePath: '',  // No file for featured games (loaded from registry)
-        sourceHash: '',
-        thumbnailPath: null,
-        status: 'approved',
-        isFeatured: true,
-        isPlayable: true,
-        validatedAt: new Date(),
-        validationErrors: null,
-        playCount: 0,
-        totalWins: 0,
-        totalLosses: 0,
-        averageScore: null,
-        uploadedAt: new Date(),
-        updatedAt: new Date(),
-      };
+    if (isOfficialGame && officialGame) {
+      // Built-in official game from the ARCEngine submodule.
+      game = officialGame.game;
 
-      // Create Python bridge using game registry
+      // Create Python bridge using the official file path so new games are playable without any
+      // server-side whitelist updates.
       try {
-        bridge = await createGameBridgeById(gameId);
+        bridge = await createGameBridgeByPath(officialGame.pythonFilePath);
       } catch (error) {
-        logger.error(`Failed to start featured game ${gameId}: ${error}`, 'game-runner');
+        logger.error(`Failed to start official game ${gameId}: ${error}`, 'game-runner');
         throw new Error('Failed to initialize game');
       }
     } else {
@@ -222,7 +132,7 @@ export class CommunityGameRunner {
     activeSessions.set(sessionGuid, session);
 
     // Create database session record / play-count entries for community uploads only
-    if (!isFeaturedGame) {
+    if (!isOfficialGame) {
       try {
         await this.repository.createSession(game.id, sessionGuid, game.winScore);
       } catch (error) {

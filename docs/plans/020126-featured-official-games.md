@@ -15,8 +15,8 @@ SRP/DRY check: Pass — single-source plan status.
 Expose the official ARC Prize preview games (`ls20`, `ft09`, `vc33`) in the ARC3 Community UI so they can be launched just like `ws01` and `gw01`. Ensure backend routing, Python bridge, and metadata honor new IDs and that docs/changelog capture the expansion.
 
 ## Constraints & Notes
-- Featured list lives entirely in server memory (`server/routes/arc3Community.ts`) and mirrored set in the runner.
-- Python bridge already resolves any registry-listed ID; just needs metadata & validation updates.
+- Historical note: this plan originally introduced a hardcoded "featured" list in the server (routes + runner).
+- As of `v7.2.4` (Feb 01, 2026), official games are discovered dynamically via `server/services/arc3Community/ArcEngineOfficialGameCatalog.ts`, so adding new official game files no longer requires updating server-side whitelists.
 - Maintain SRP/DRY: avoid copy/paste, prefer shared helper where sensible.
 
 ## Task List
@@ -28,6 +28,9 @@ Expose the official ARC Prize preview games (`ls20`, `ft09`, `vc33`) in the ARC3
 
 ## Status – Feb 01, 2026
 
-- ✅ Completed steps 1–3: server route metadata, runner whitelist, and ARCEngine registry now include `ls20`, `ft09`, and `vc33`, so the Python bridge can load the official preview games just like `ws01`/`gw01`.
-- ✅ Step 4 covered via CHANGELOG entry `v7.2.2` describing the metadata + registry expansion (this doc notes the change here).
-- ⏳ Step 5 pending manual regression tests on `/api/arc3-community/games/*` endpoints and live gameplay; keep this checklist for the next verification pass.
+- Completed steps 1-3: server route metadata, runner whitelist, and ARCEngine registry now include `ls20`, `ft09`, and `vc33`, so the Python bridge can load the official preview games just like `ws01`/`gw01`.
+- Step 4 covered via CHANGELOG entry `v7.2.2` describing the metadata + registry expansion (this doc notes the change here).
+- Step 5 pending manual regression tests on `/api/arc3-community/games/*` endpoints and live gameplay; keep this checklist for the next verification pass.
+
+## Update – Feb 01, 2026 (v7.2.4)
+- The server no longer relies on the hardcoded featured lists described above; official games are now auto-discovered from the ARCEngine submodule, so new files like `ws02.py`/`ws03.py` appear without server edits.

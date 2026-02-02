@@ -1,12 +1,13 @@
-#!/usr/bin/env python3
 """
-Author: Cascade (Claude)
-Date: 2026-01-31
+Author: GPT-5.2
+Date: 2026-02-01
 PURPOSE: Community Game Runner for ARCEngine games. Reads commands from stdin,
          executes game actions via the ARCEngine library, and outputs NDJSON to stdout.
-         This bridge enables Node.js to run both featured games (via registry) and
-         user-uploaded Python games.
-SRP/DRY check: Pass - single-purpose Python subprocess runner for ARCEngine games.
+         This bridge enables Node.js to run both built-in official games (via file path or
+         registry) and user-uploaded Python games.
+         Also fixes emitted runtime metadata to report correct `level_count` by using
+         ARCBaseGame's internal `_levels` storage.
+SRP/DRY check: Pass - single-purpose Python subprocess runner for ARCEngine game execution.
 """
 
 import sys
@@ -189,9 +190,11 @@ def main():
             return 1
         
         # Extract metadata
+        # ARCBaseGame stores its cloned levels internally as `_levels`; there is no public
+        # `levels` attribute, so use `_levels` to report correct level_count.
         metadata = {
             "game_id": getattr(game, 'game_id', 'unknown'),
-            "level_count": len(getattr(game, 'levels', [])),
+            "level_count": len(getattr(game, '_levels', [])),
             "win_score": getattr(game, 'win_score', 1),
             "max_actions": getattr(game, 'max_actions', 100),
         }
