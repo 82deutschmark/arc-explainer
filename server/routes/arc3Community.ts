@@ -1,10 +1,10 @@
 /*
- * Author: Cascade (Claude)
+ * Author: GPT-5.2
  * Date: 2026-02-01
- * PURPOSE: Express router for community game endpoints. Handles game uploads, listings,
- *          and metadata retrieval for user-created ARCEngine games.
- *          Updated to use official game IDs (ws01, gw01) from games.official module.
- * SRP/DRY check: Pass — isolates HTTP contract for community game operations.
+ * PURPOSE: Express router for ARC3 community game endpoints. Handles game uploads, listings,
+ *          session start/action execution, and source retrieval for user-uploaded games and
+ *          built-in official ARCEngine games (discovered dynamically from the ARCEngine submodule).
+ * SRP/DRY check: Pass - isolates HTTP contract for community game operations.
  */
 
 import { Router, type Request, type Response } from 'express';
@@ -16,154 +16,16 @@ import { CommunityGameRepository, type CreateGameInput, type GameListOptions, ty
 import { CommunityGameStorage } from '../services/arc3Community/CommunityGameStorage';
 import { CommunityGameRunner } from '../services/arc3Community/CommunityGameRunner';
 import { CommunityGameValidator } from '../services/arc3Community/CommunityGameValidator';
+import { ArcEngineOfficialGameCatalog } from '../services/arc3Community/ArcEngineOfficialGameCatalog';
 import { getPool } from '../repositories/base/BaseRepository';
 
 const router = Router();
 
-// Featured community games from ARCEngine registry (always available)
-// Using official game IDs (ws01, gw01) from games.official module
-const FEATURED_COMMUNITY_GAMES: CommunityGame[] = [
-  {
-    id: -1,
-    gameId: 'ws01',
-    displayName: 'World Shifter',
-    description: 'The world moves, not you. A puzzle game where player input moves the entire world in the opposite direction. Navigate mazes by shifting walls, obstacles, and the exit toward your fixed position.',
-    authorName: 'Arc Explainer Team',
-    authorEmail: null,
-    version: '1.0.0',
-    difficulty: 'medium',
-    levelCount: 3,
-    winScore: 1,
-    maxActions: null,
-    tags: ['featured', 'puzzle', 'maze'],
-    sourceFilePath: '',
-    sourceHash: '',
-    thumbnailPath: null,
-    status: 'approved',
-    isFeatured: true,
-    isPlayable: true,
-    validatedAt: new Date(),
-    validationErrors: null,
-    playCount: 0,
-    totalWins: 0,
-    totalLosses: 0,
-    averageScore: null,
-    uploadedAt: new Date('2026-02-01'),
-    updatedAt: new Date('2026-02-01'),
-  },
-  {
-    id: -2,
-    gameId: 'gw01',
-    displayName: 'Gravity Well',
-    description: 'Control gravity to collect orbs into wells. Yellow and Orange orbs fuse to Green. Wells cycle colors. Green phases through platforms.',
-    authorName: 'Arc Explainer Team',
-    authorEmail: null,
-    version: '1.0.0',
-    difficulty: 'medium',
-    levelCount: 6,
-    winScore: 6,
-    maxActions: null,
-    tags: ['featured', 'puzzle', 'gravity'],
-    sourceFilePath: '',
-    sourceHash: '',
-    thumbnailPath: null,
-    status: 'approved',
-    isFeatured: true,
-    isPlayable: true,
-    validatedAt: new Date(),
-    validationErrors: null,
-    playCount: 0,
-    totalWins: 0,
-    totalLosses: 0,
-    averageScore: null,
-    uploadedAt: new Date('2026-02-01'),
-    updatedAt: new Date('2026-02-01'),
-  },
-  {
-    id: -3,
-    gameId: 'ls20',
-    displayName: 'Light Switch',
-    description: 'Toggle lights in a grid to match a target pattern. Each switch affects adjacent cells. A classic puzzle mechanic with ARC-style visual encoding.',
-    authorName: 'ARC Prize Team',
-    authorEmail: null,
-    version: '1.0.0',
-    difficulty: 'medium',
-    levelCount: 5,
-    winScore: 5,
-    maxActions: null,
-    tags: ['featured', 'puzzle', 'logic'],
-    sourceFilePath: '',
-    sourceHash: '',
-    thumbnailPath: null,
-    status: 'approved',
-    isFeatured: true,
-    isPlayable: true,
-    validatedAt: new Date(),
-    validationErrors: null,
-    playCount: 0,
-    totalWins: 0,
-    totalLosses: 0,
-    averageScore: null,
-    uploadedAt: new Date('2026-02-01'),
-    updatedAt: new Date('2026-02-01'),
-  },
-  {
-    id: -4,
-    gameId: 'ft09',
-    displayName: 'Fill The Grid',
-    description: 'Fill an empty grid to match a target pattern using strategic placement. Plan your moves carefully to achieve the goal configuration.',
-    authorName: 'ARC Prize Team',
-    authorEmail: null,
-    version: '1.0.0',
-    difficulty: 'medium',
-    levelCount: 5,
-    winScore: 5,
-    maxActions: null,
-    tags: ['featured', 'puzzle', 'spatial'],
-    sourceFilePath: '',
-    sourceHash: '',
-    thumbnailPath: null,
-    status: 'approved',
-    isFeatured: true,
-    isPlayable: true,
-    validatedAt: new Date(),
-    validationErrors: null,
-    playCount: 0,
-    totalWins: 0,
-    totalLosses: 0,
-    averageScore: null,
-    uploadedAt: new Date('2026-02-01'),
-    updatedAt: new Date('2026-02-01'),
-  },
-  {
-    id: -5,
-    gameId: 'vc33',
-    displayName: 'Vector Chase',
-    description: 'Navigate a path through a grid following vector rules. Each move must follow the pattern established by the puzzle. Test your spatial reasoning.',
-    authorName: 'ARC Prize Team',
-    authorEmail: null,
-    version: '1.0.0',
-    difficulty: 'hard',
-    levelCount: 5,
-    winScore: 5,
-    maxActions: null,
-    tags: ['featured', 'puzzle', 'vectors'],
-    sourceFilePath: '',
-    sourceHash: '',
-    thumbnailPath: null,
-    status: 'approved',
-    isFeatured: true,
-    isPlayable: true,
-    validatedAt: new Date(),
-    validationErrors: null,
-    playCount: 0,
-    totalWins: 0,
-    totalLosses: 0,
-    averageScore: null,
-    uploadedAt: new Date('2026-02-01'),
-    updatedAt: new Date('2026-02-01'),
-  },
-];
+// Built-in official games shipped via the ARCEngine submodule.
+// Discovered dynamically so new official game files appear without server code changes.
+async function getOfficialGames(): Promise<CommunityGame[]> {
+  return (await ArcEngineOfficialGameCatalog.listOfficialGames()).map((item) => item.game);
+}
 
 // Lazy initialization of repository
 let repository: CommunityGameRepository | null = null;
@@ -246,10 +108,25 @@ router.get(
     };
 
     const { games: dbGames, total: dbTotal } = await getRepository().listGames(options);
+    const officialGamesAll = await getOfficialGames();
+
+    const officialGames = officialGamesAll.filter((game) => {
+      if (options.status && options.status !== 'approved') return false;
+      if (options.isFeatured === false) return false;
+      if (options.difficulty && game.difficulty !== options.difficulty) return false;
+      if (options.authorName && !game.authorName.toLowerCase().includes(options.authorName.toLowerCase())) return false;
+      if (options.tags && options.tags.length > 0 && !options.tags.some(t => game.tags.includes(t))) return false;
+      if (options.search) {
+        const q = options.search.toLowerCase();
+        const hay = `${game.displayName} ${game.description || ''}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
 
     // Merge featured community games with database games (featured first)
-    const allGames = [...FEATURED_COMMUNITY_GAMES, ...dbGames];
-    const total = dbTotal + FEATURED_COMMUNITY_GAMES.length;
+    const allGames = [...officialGames, ...dbGames];
+    const total = dbTotal + officialGames.length;
 
     res.json(formatResponse.success({
       games: allGames,
@@ -269,8 +146,9 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const limit = Math.min(parseInt(req.query.limit as string) || 6, 20);
     const dbGames = await getRepository().getFeaturedGames(limit);
+    const officialGames = (await getOfficialGames()).filter(g => g.isFeatured);
     // Featured community games first, then featured from DB
-    const games = [...FEATURED_COMMUNITY_GAMES, ...dbGames].slice(0, limit);
+    const games = [...officialGames, ...dbGames].slice(0, limit);
     res.json(formatResponse.success(games));
   }),
 );
@@ -297,10 +175,10 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const { gameId } = req.params;
     
-    // Check featured community games first
-    const featuredGame = FEATURED_COMMUNITY_GAMES.find(g => g.gameId === gameId);
-    if (featuredGame) {
-      return res.json(formatResponse.success(featuredGame));
+    // Check built-in official games first
+    const officialGame = await ArcEngineOfficialGameCatalog.getOfficialGame(gameId);
+    if (officialGame) {
+      return res.json(formatResponse.success(officialGame.game));
     }
 
     // Then check database
@@ -329,7 +207,8 @@ router.post(
     const payload = uploadGameSchema.parse(req.body);
 
     // Check if game ID already exists
-    if (await getRepository().gameIdExists(payload.gameId)) {
+    const isOfficialId = await ArcEngineOfficialGameCatalog.isOfficialGameId(payload.gameId);
+    if (isOfficialId || await getRepository().gameIdExists(payload.gameId)) {
       return res.status(409).json(
         formatResponse.error('GAME_ID_EXISTS', 'A game with this ID already exists')
       );
@@ -383,6 +262,25 @@ router.get(
   '/games/:gameId/source',
   asyncHandler(async (req: Request, res: Response) => {
     const { gameId } = req.params;
+
+    // Built-in official game source (from ARCEngine submodule)
+    const officialGame = await ArcEngineOfficialGameCatalog.getOfficialGame(gameId);
+    if (officialGame) {
+      const isValid = await CommunityGameStorage.verifyFileHash(officialGame.pythonFilePath, officialGame.game.sourceHash);
+      if (!isValid) {
+        return res.status(500).json(
+          formatResponse.error('FILE_INTEGRITY_ERROR', 'Official game file integrity check failed')
+        );
+      }
+
+      const sourceCode = await CommunityGameStorage.readGameFile(officialGame.pythonFilePath);
+      return res.json(formatResponse.success({
+        gameId: officialGame.game.gameId,
+        sourceCode,
+        hash: officialGame.game.sourceHash,
+      }));
+    }
+
     const game = await getRepository().getGameByGameId(gameId);
 
     if (!game) {
@@ -467,10 +365,11 @@ router.get(
       }));
     }
 
-    const exists = await getRepository().gameIdExists(gameId);
+    const isOfficialId = await ArcEngineOfficialGameCatalog.isOfficialGameId(gameId);
+    const exists = isOfficialId || await getRepository().gameIdExists(gameId);
     res.json(formatResponse.success({ 
       available: !exists,
-      reason: exists ? 'This game ID is already taken' : undefined
+      reason: exists ? (isOfficialId ? 'This game ID is reserved for an official game' : 'This game ID is already taken') : undefined
     }));
   }),
 );
@@ -522,8 +421,8 @@ router.post(
     const payload = gameSubmissionSchema.parse(req.body);
 
     // Check if game ID already exists
-    const featuredExists = FEATURED_COMMUNITY_GAMES.some(g => g.gameId === payload.gameId);
-    if (featuredExists || await getRepository().gameIdExists(payload.gameId)) {
+    const isOfficialId = await ArcEngineOfficialGameCatalog.isOfficialGameId(payload.gameId);
+    if (isOfficialId || await getRepository().gameIdExists(payload.gameId)) {
       return res.status(409).json(
         formatResponse.error('GAME_ID_EXISTS', 'A game with this ID already exists')
       );
