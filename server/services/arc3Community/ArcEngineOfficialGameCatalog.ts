@@ -1,6 +1,6 @@
 /*
  * Author: GPT-5.2
- * Date: 2026-02-01
+ * Date: 2026-02-02
  * PURPOSE: Centralized discovery + metadata for "official" ARCEngine games living in the
  *          `external/ARCEngine` git submodule (external/ARCEngine/games/official/*.py).
  *
@@ -25,6 +25,7 @@ import type { CommunityGame, GameDifficulty } from '../../repositories/Community
 
 const CATALOG_SCRIPT_PATH = path.join(process.cwd(), 'server', 'python', 'arcengine_official_game_catalog.py');
 const OFFICIAL_GAMES_DIR = path.join(process.cwd(), 'external', 'ARCEngine', 'games', 'official');
+const ARCENGINE_CHANGELOG_PATH = path.join(process.cwd(), 'external', 'ARCEngine', 'CHANGELOG.md');
 
 const CACHE_TTL_MS = 5 * 60_000;
 
@@ -67,48 +68,11 @@ type OfficialGameOverride = Partial<{
   tags: string[];
 }>;
 
-const OFFICIAL_GAME_OVERRIDES: Record<string, OfficialGameOverride> = {
-  ws01: {
-    displayName: 'World Shifter',
-    description:
-      'The world moves, not you. A puzzle game where player input moves the entire world in the opposite direction. Navigate mazes by shifting walls, obstacles, and the exit toward your fixed position.',
-    authorName: 'Arc Explainer Team',
-    difficulty: 'medium',
-    tags: ['featured', 'puzzle', 'maze', 'official'],
-  },
-  gw01: {
-    displayName: 'Gravity Well',
-    description:
-      'Control gravity to collect orbs into wells. Yellow and Orange orbs fuse to Green. Wells cycle colors. Green phases through platforms.',
-    authorName: 'Arc Explainer Team',
-    difficulty: 'medium',
-    tags: ['featured', 'puzzle', 'gravity', 'official'],
-  },
-  ls20: {
-    displayName: 'Light Switch',
-    description:
-      'Toggle lights in a grid to match a target pattern. Each switch affects adjacent cells. A classic puzzle mechanic with ARC-style visual encoding.',
-    authorName: 'ARC Prize Team',
-    difficulty: 'medium',
-    tags: ['featured', 'puzzle', 'logic', 'official'],
-  },
-  ft09: {
-    displayName: 'Fill The Grid',
-    description:
-      'Fill an empty grid to match a target pattern using strategic placement. Plan your moves carefully to achieve the goal configuration.',
-    authorName: 'ARC Prize Team',
-    difficulty: 'medium',
-    tags: ['featured', 'puzzle', 'spatial', 'official'],
-  },
-  vc33: {
-    displayName: 'Vector Chase',
-    description:
-      'Navigate a path through a grid following vector rules. Each move must follow the pattern established by the puzzle. Test your spatial reasoning.',
-    authorName: 'ARC Prize Team',
-    difficulty: 'hard',
-    tags: ['featured', 'puzzle', 'vectors', 'official'],
-  },
-};
+// Intentionally avoid narrative descriptions here: earlier versions hard-coded marketing-style copy
+// that drifted away from the actual game mechanics. We now only use:
+// - explicit metadata embedded in the ARCEngine repo (PURPOSE headers / changelog entries), or
+// - null (so the UI doesn't display hallucinated descriptions).
+const OFFICIAL_GAME_OVERRIDES: Record<string, OfficialGameOverride> = {};
 
 function resolvePythonBin(): string {
   if (process.env.PYTHON_BIN) return process.env.PYTHON_BIN;
@@ -125,21 +89,9 @@ function stableNegativeId(input: string): number {
 }
 
 function defaultDisplayNameForGameId(gameId: string): string {
-  const prefix = (gameId.match(/^[a-z]+/)?.[0] || '').toLowerCase();
-  const prefixToBaseName: Record<string, string> = {
-    ws: 'World Shifter',
-    gw: 'Gravity Well',
-    ls: 'Light Switch',
-    ft: 'Fill The Grid',
-    vc: 'Vector Chase',
-  };
-
-  const base = prefixToBaseName[prefix];
-  if (!base) return gameId.toUpperCase();
-
-  // Keep canonical IDs clean; include ID suffix for variants so the UI can distinguish them.
-  const canonicalIds = new Set(['ws01', 'gw01', 'ls20', 'ft09', 'vc33']);
-  return canonicalIds.has(gameId) ? base : `${base} (${gameId})`;
+  // The only stable, non-hallucinated display name we can guarantee is the official ID itself.
+  // If we later have canonical titles embedded in upstream metadata, we can promote them here.
+  return gameId.toUpperCase();
 }
 
 async function readPurposeLineFromPythonFile(pythonFilePath: string): Promise<string | null> {
@@ -153,6 +105,71 @@ async function readPurposeLineFromPythonFile(pythonFilePath: string): Promise<st
     return null;
   } catch {
     return null;
+  }
+}
+
+async function readPurposeLineFromSidecarMarkdown(pythonFilePath: string): Promise<string | null> {
+  try {
+    const mdPath = pythonFilePath.replace(/\.py$/i, '.md');
+    const content = await fs.readFile(mdPath, 'utf8');
+    const lines = content.split(/\r?\n/).slice(0, 40);
+    for (const line of lines) {
+      const match = line.match(/PURPOSE:\s*(.+)\s*$/);
+      if (match?.[1]) return match[1].trim();
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function parseTitleFromPurposeLine(purposeLine: string, gameId: string): string | null {
+  // Common upstream format: "<id> - <Title>. <Description...>"
+  const match = purposeLine.match(/^\s*([a-z0-9]+)\s*-\s*([^\.]+)(?:\.|$)/i);
+  if (!match) return null;
+
+  const idInLine = match[1]?.toLowerCase();
+  if (idInLine && idInLine !== gameId.toLowerCase()) return null;
+
+  const rawTitle = (match[2] || '').trim();
+  if (!rawTitle) return null;
+
+  // Avoid turning "WS02 game - variant of ..." into a weird title.
+  const normalized = rawTitle.toLowerCase();
+  if (normalized.startsWith('game ') || normalized.includes('variant of')) return null;
+
+  // A tiny cleanup for cases like "Gravity Well puzzle".
+  const cleaned = rawTitle.replace(/\s+puzzle\s*$/i, '').trim();
+  return cleaned || null;
+}
+
+let arcEngineChangelogDescriptionsCache: { mtimeMs: number; descriptionsByStem: Record<string, string> } | null = null;
+
+async function readOfficialDescriptionsFromArcEngineChangelog(): Promise<Record<string, string>> {
+  try {
+    const stat = await fs.stat(ARCENGINE_CHANGELOG_PATH);
+    if (arcEngineChangelogDescriptionsCache && arcEngineChangelogDescriptionsCache.mtimeMs === stat.mtimeMs) {
+      return arcEngineChangelogDescriptionsCache.descriptionsByStem;
+    }
+
+    const content = await fs.readFile(ARCENGINE_CHANGELOG_PATH, 'utf8');
+    const lines = content.split(/\r?\n/);
+    const descriptionsByStem: Record<string, string> = {};
+
+    // Parse bullet lines like: "- `ls20.py` - Shape-matching navigation puzzle (7 levels, 4 actions)"
+    for (const line of lines) {
+      const match = line.match(/^\s*-\s+`([a-z0-9_-]+)\.py`\s+-\s+(.+)\s*$/i);
+      if (!match) continue;
+      const stem = match[1]?.toLowerCase();
+      const desc = match[2]?.trim();
+      if (!stem || !desc) continue;
+      descriptionsByStem[stem] = desc;
+    }
+
+    arcEngineChangelogDescriptionsCache = { mtimeMs: stat.mtimeMs, descriptionsByStem };
+    return descriptionsByStem;
+  } catch {
+    return {};
   }
 }
 
@@ -283,6 +300,7 @@ async function refreshCatalog(): Promise<OfficialGameCatalogItem[]> {
   }
 
   const items: OfficialGameCatalogItem[] = [];
+  const changelogDescriptions = await readOfficialDescriptionsFromArcEngineChangelog();
 
   for (const row of response.games) {
     if (!row.ok) {
@@ -300,13 +318,19 @@ async function refreshCatalog(): Promise<OfficialGameCatalogItem[]> {
     const gameId = row.game_id;
     const override = OFFICIAL_GAME_OVERRIDES[gameId];
 
-    const description =
-      override?.description ??
+    const purposeLine =
+      (await readPurposeLineFromSidecarMarkdown(pythonFilePath)) ??
       (await readPurposeLineFromPythonFile(pythonFilePath)) ??
       null;
 
-    const displayName = override?.displayName ?? defaultDisplayNameForGameId(gameId);
-    const authorName = override?.authorName ?? 'ARC Prize Team';
+    const titleFromPurpose = purposeLine ? parseTitleFromPurposeLine(purposeLine, gameId) : null;
+
+    const stem = path.parse(pythonFilePath).name.toLowerCase();
+
+    const description = override?.description ?? purposeLine ?? changelogDescriptions[stem] ?? null;
+
+    const displayName = override?.displayName ?? titleFromPurpose ?? defaultDisplayNameForGameId(gameId);
+    const authorName = override?.authorName ?? 'ARC Prize Foundation';
     const difficulty: GameDifficulty = override?.difficulty ?? 'unknown';
     const tags = normalizeTags(override?.tags);
 
@@ -333,7 +357,8 @@ async function refreshCatalog(): Promise<OfficialGameCatalogItem[]> {
   // with a stable tie-breaker for identical mtimes.
   items.sort((a, b) => {
     const delta = b.game.uploadedAt.getTime() - a.game.uploadedAt.getTime();
-    return delta !== 0 ? delta : a.game.gameId.localeCompare(b.game.gameId);
+    // mtimes in git checkouts are often identical; prefer higher IDs first (e.g., ws03 before ws01).
+    return delta !== 0 ? delta : b.game.gameId.localeCompare(a.game.gameId);
   });
   return items;
 }
