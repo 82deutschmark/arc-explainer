@@ -38,7 +38,7 @@ The platform now spans four major domains:
 
 1. **Database-first rendering** — Every surface (puzzle explanations, SnakeBench stats, ARC3 spoilers) reads from PostgreSQL or curated JSONs. Frontend components never assume temporary responses; they refetch after each mutation. See `docs/reference/api/EXTERNAL_API.md` and `docs/Analysis_Data_Flow_Trace.md` for request/response contracts.
 2. **Strict SRP/DRY** — Repository split ensures each domain (accuracy, trust, cost, SnakeBench stats) owns its SQL. Shared helpers live under `shared/` or `server/utils/`.
-3. **Public APIs** — All endpoints remain unauthenticated (do **not** wire `server/middleware/apiKeyAuth.ts`). Researchers rely on open access.
+3. **Public APIs** — Researcher-facing endpoints remain unauthenticated (do **not** wire `server/middleware/apiKeyAuth.ts`). A small set of ARC3 community submission moderation endpoints is token-gated for safety (see `docs/reference/api/EXTERNAL_API.md`).
 4. **Controlled streaming/state transitions** — Long-running tasks (analysis streaming, Worm Arena live sessions) collapse setup controls once a run starts and surface live telemetry via SSE.
 
 ## Directory Structure

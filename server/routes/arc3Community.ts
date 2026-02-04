@@ -1,11 +1,13 @@
 /*
- * Author: GPT-5.2
- * Date: 2026-02-01
- * PURPOSE: Express router for ARC3 community game endpoints. Handles game uploads, listings,
- *          session start/action execution, and source retrieval for user-uploaded games and
- *          built-in official ARCEngine games (discovered dynamically from the ARCEngine submodule).
- * SRP/DRY check: Pass - isolates HTTP contract for community game operations.
- */
+Author: GPT-5.2
+Date: 2026-02-04
+PURPOSE: Express router for ARC3 community game endpoints. Handles game listing, game play
+         sessions (Node <-> Python bridge), single-file submission persistence, and source
+         retrieval for official ARCEngine games and approved community games.
+         Dependencies: CommunityGameRepository (Postgres), CommunityGameStorage (disk), and
+         ArcEngineOfficialGameCatalog (official game discovery via submodule).
+SRP/DRY check: Pass - kept responsibilities at the HTTP layer and reused existing services.
+*/
 
 import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
@@ -51,6 +53,42 @@ function getGameRunner(): CommunityGameRunner {
   return gameRunner;
 }
 
+function getProvidedArc3AdminToken(req: Request): string | null {
+  const bearer = req.headers.authorization;
+  if (typeof bearer === 'string' && bearer.toLowerCase().startsWith('bearer ')) {
+    return bearer.slice('bearer '.length).trim() || null;
+  }
+
+  const header = req.headers['x-arc3-admin-token'];
+  if (typeof header === 'string') return header.trim() || null;
+  if (Array.isArray(header)) return header[0]?.trim() || null;
+  return null;
+}
+
+function requireArc3AdminToken(req: Request, res: Response): boolean {
+  const required = process.env.ARC3_COMMUNITY_ADMIN_TOKEN;
+  if (!required) {
+    res.status(503).json(
+      formatResponse.error(
+        'ADMIN_NOT_CONFIGURED',
+        'ARC3 community admin token not configured on this server',
+        { envVar: 'ARC3_COMMUNITY_ADMIN_TOKEN' },
+      ),
+    );
+    return false;
+  }
+
+  const provided = getProvidedArc3AdminToken(req);
+  if (!provided || provided !== required) {
+    res.status(401).json(
+      formatResponse.error('ADMIN_AUTH_REQUIRED', 'Admin authorization required'),
+    );
+    return false;
+  }
+
+  return true;
+}
+
 // ============================================================================
 // VALIDATION SCHEMAS
 // ============================================================================
@@ -72,7 +110,7 @@ const uploadGameSchema = z.object({
   tags: z.array(z.string().max(30)).max(10).optional(),
   sourceCode: z.string()
     .min(100, 'Source code must be at least 100 characters')
-    .max(102400, 'Source code must be at most 100KB'),
+    .max(500 * 1024, 'Source code must be at most 500KB'),
 });
 
 const listGamesSchema = z.object({
@@ -103,8 +141,9 @@ router.get(
     
     const options: GameListOptions = {
       ...params,
-      status: params.status || 'approved', // Default to approved games only
-      tags: params.tags ? params.tags.split(',').map(t => t.trim()) : undefined,
+      // Public list endpoint: never expose pending/rejected submissions.
+      status: 'approved',
+      tags: params.tags ? params.tags.split(',').map((t) => t.trim()) : undefined,
     };
 
     const { games: dbGames, total: dbTotal } = await getRepository().listGames(options);
@@ -214,6 +253,17 @@ router.post(
       );
     }
 
+    // Validate the source code (static checks only; do not execute untrusted code here)
+    const validationResult = await CommunityGameValidator.validateSource(payload.sourceCode);
+    if (!validationResult.isValid) {
+      return res.status(400).json(
+        formatResponse.error('VALIDATION_FAILED', 'Game validation failed', {
+          errors: validationResult.errors,
+          warnings: validationResult.warnings,
+        }),
+      );
+    }
+
     // Store the source file
     let storedFile;
     try {
@@ -236,6 +286,13 @@ router.post(
       tags: payload.tags,
       sourceFilePath: storedFile.filePath,
       sourceHash: storedFile.hash,
+      status: 'pending',
+      isPlayable: false,
+      validatedAt: new Date(),
+      validationErrors: {
+        warnings: validationResult.warnings,
+        metadata: validationResult.metadata,
+      },
     };
 
     try {
@@ -244,7 +301,7 @@ router.post(
 
       res.status(201).json(formatResponse.success({
         game,
-        message: 'Game uploaded successfully. It will be available after auto-validation.',
+        message: 'Game uploaded successfully. It is pending review and will become playable once approved.',
       }));
     } catch (error) {
       // Clean up stored file on database error
@@ -285,6 +342,11 @@ router.get(
 
     if (!game) {
       return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game not found'));
+    }
+
+    // Keep submissions private until approved.
+    if (game.status !== 'approved' || !game.isPlayable) {
+      return res.status(404).json(formatResponse.error('GAME_NOT_AVAILABLE', 'Game is not available'));
     }
 
     // Verify file integrity
@@ -375,7 +437,7 @@ router.get(
 );
 
 // ============================================================================
-// GAME SUBMISSION ENDPOINTS (GitHub repo link approach)
+// GAME SUBMISSION ENDPOINTS (single-file review pipeline)
 // ============================================================================
 
 const gameSubmissionSchema = z.object({
@@ -407,7 +469,7 @@ const gameSubmissionSchema = z.object({
     ),
   sourceCode: z.string()
     .min(50, 'Source code must be at least 50 characters')
-    .max(500000, 'Source code must not exceed 500KB'),
+    .max(500 * 1024, 'Source code must not exceed 500KB'),
   notes: z.string().max(1000).optional(),
 });
 
@@ -440,28 +502,198 @@ router.post(
       );
     }
 
-    // Generate a submission ID for tracking
-    const submissionId = `sub_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    // Store the source file (do not execute; store for offline review)
+    let storedFile;
+    try {
+      storedFile = await CommunityGameStorage.storeGameFile(payload.gameId, payload.sourceCode);
+    } catch (error) {
+      logger.error(`Failed to store submitted game file: ${error}`, 'community-games');
+      return res.status(500).json(
+        formatResponse.error('STORAGE_ERROR', 'Failed to store submitted game file'),
+      );
+    }
 
-    // Log the submission for manual review
-    logger.info(
-      `[community-games] New game submission: ${submissionId} | gameId=${payload.gameId} | author=${payload.authorName || 'Anonymous'} | handle=${payload.creatorHandle} | lines=${payload.sourceCode.split('\n').length}`,
-      'community-games'
-    );
+    const authorName = payload.authorName?.trim() ? payload.authorName.trim() : 'Anonymous';
 
-    // Store the submission (would be database in production)
-    // For now, just validate and return success
-    res.status(201).json(formatResponse.success({
-      submissionId,
-      status: 'pending_review',
-      message: 'Your game has been submitted for review. Validation passed. A moderator will review and approve your submission.',
-      validation: {
-        hasBaseGameClass: validationResult.metadata?.hasBaseGameClass,
-        className: validationResult.metadata?.className,
-        complexity: validationResult.metadata?.estimatedComplexity,
+    const createInput: CreateGameInput = {
+      gameId: payload.gameId,
+      displayName: payload.displayName,
+      description: payload.description,
+      authorName,
+      creatorHandle: payload.creatorHandle,
+      submissionNotes: payload.notes,
+      difficulty: 'unknown',
+      tags: [],
+      sourceFilePath: storedFile.filePath,
+      sourceHash: storedFile.hash,
+      status: 'pending',
+      isPlayable: false,
+      validatedAt: new Date(),
+      validationErrors: {
         warnings: validationResult.warnings,
+        metadata: validationResult.metadata,
       },
+    };
+
+    try {
+      const game = await getRepository().createGame(createInput);
+      const submissionId = String(game.id);
+
+      logger.info(
+        `[community-games] New game submission: id=${submissionId} | gameId=${payload.gameId} | author=${authorName} | handle=${payload.creatorHandle} | lines=${payload.sourceCode.split(/\r?\n/).length}`,
+        'community-games',
+      );
+
+      res.status(201).json(formatResponse.success({
+        submissionId,
+        status: game.status,
+        message: 'Your game has been submitted for review. Validation passed. A moderator will review and approve your submission.',
+        validation: {
+          hasBaseGameClass: validationResult.metadata?.hasBaseGameClass,
+          className: validationResult.metadata?.className,
+          complexity: validationResult.metadata?.estimatedComplexity,
+          warnings: validationResult.warnings,
+        },
+      }));
+    } catch (error) {
+      // Clean up stored file on database error
+      await CommunityGameStorage.deleteGameFiles(payload.gameId);
+      throw error;
+    }
+  }),
+);
+
+/**
+ * GET /api/arc3-community/submissions
+ * Admin-only: list stored submissions (pending by default)
+ */
+router.get(
+  '/submissions',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!requireArc3AdminToken(req, res)) return;
+
+    const params = listGamesSchema.parse(req.query);
+    const options: GameListOptions = {
+      ...params,
+      status: params.status || 'pending',
+      tags: params.tags ? params.tags.split(',').map((t) => t.trim()) : undefined,
+    };
+
+    const { games, total } = await getRepository().listGames(options);
+    res.json(formatResponse.success({ games, total }));
+  }),
+);
+
+/**
+ * GET /api/arc3-community/submissions/:submissionId/source
+ * Admin-only: fetch source code for a submission by numeric id (includes pending submissions)
+ */
+router.get(
+  '/submissions/:submissionId/source',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!requireArc3AdminToken(req, res)) return;
+
+    const submissionId = z.coerce.number().int().positive().parse(req.params.submissionId);
+    const game = await getRepository().getGameById(submissionId);
+
+    if (!game) {
+      return res.status(404).json(formatResponse.error('SUBMISSION_NOT_FOUND', 'Submission not found'));
+    }
+
+    const isValid = await CommunityGameStorage.verifyFileHash(game.sourceFilePath, game.sourceHash);
+    if (!isValid) {
+      return res.status(500).json(
+        formatResponse.error('FILE_INTEGRITY_ERROR', 'Submitted game file integrity check failed'),
+      );
+    }
+
+    const sourceCode = await CommunityGameStorage.readGameFile(game.sourceFilePath);
+    return res.json(formatResponse.success({
+      submissionId: String(game.id),
+      gameId: game.gameId,
+      sourceCode,
+      hash: game.sourceHash,
+      status: game.status,
     }));
+  }),
+);
+
+/**
+ * POST /api/arc3-community/submissions/:submissionId/publish
+ * Admin-only: publish a reviewed submission (approve + make playable)
+ */
+router.post(
+  '/submissions/:submissionId/publish',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!requireArc3AdminToken(req, res)) return;
+
+    const submissionId = z.coerce.number().int().positive().parse(req.params.submissionId);
+    const game = await getRepository().getGameById(submissionId);
+
+    if (!game) {
+      return res.status(404).json(formatResponse.error('SUBMISSION_NOT_FOUND', 'Submission not found'));
+    }
+
+    const isValid = await CommunityGameStorage.verifyFileHash(game.sourceFilePath, game.sourceHash);
+    if (!isValid) {
+      return res.status(500).json(
+        formatResponse.error('FILE_INTEGRITY_ERROR', 'Submitted game file integrity check failed'),
+      );
+    }
+
+    const updated = await getRepository().updateGame(game.gameId, {
+      status: 'approved',
+      isPlayable: true,
+      validatedAt: new Date(),
+    });
+
+    if (!updated) {
+      return res.status(500).json(formatResponse.error('PUBLISH_FAILED', 'Failed to publish submission'));
+    }
+
+    res.json(formatResponse.success({ game: updated }));
+  }),
+);
+
+const rejectSubmissionSchema = z.object({
+  reason: z.string().max(2000).optional(),
+});
+
+/**
+ * POST /api/arc3-community/submissions/:submissionId/reject
+ * Admin-only: reject a submission (keep non-playable)
+ */
+router.post(
+  '/submissions/:submissionId/reject',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!requireArc3AdminToken(req, res)) return;
+
+    const submissionId = z.coerce.number().int().positive().parse(req.params.submissionId);
+    const payload = rejectSubmissionSchema.parse(req.body ?? {});
+
+    const game = await getRepository().getGameById(submissionId);
+    if (!game) {
+      return res.status(404).json(formatResponse.error('SUBMISSION_NOT_FOUND', 'Submission not found'));
+    }
+
+    const previous = game.validationErrors && typeof game.validationErrors === 'object' ? game.validationErrors : {};
+    const rejection = {
+      reason: payload.reason || null,
+      rejectedAt: new Date().toISOString(),
+    };
+
+    const updated = await getRepository().updateGame(game.gameId, {
+      status: 'rejected',
+      isPlayable: false,
+      validatedAt: new Date(),
+      validationErrors: { ...previous, rejection },
+    });
+
+    if (!updated) {
+      return res.status(500).json(formatResponse.error('REJECT_FAILED', 'Failed to reject submission'));
+    }
+
+    res.json(formatResponse.success({ game: updated }));
   }),
 );
 

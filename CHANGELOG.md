@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.2.6  Feb 04, 2026
+
+- **FEAT: ARC3 community submissions now persist and can be published via admin review** (Author: GPT-5.2)
+  - **What**: `POST /api/arc3-community/submissions` now stores the submitted `.py` file on disk and creates a real `community_games` DB row as `status='pending'` and `is_playable=false`. Added admin-only review endpoints (list, view source, publish, reject) gated by `ARC3_COMMUNITY_ADMIN_TOKEN`, plus a minimal admin UI at `/admin/arc3-submissions`.
+  - **Why**: The `/arc3/upload` flow previously returned a "success" response but did not persist anything, there was no publish workflow, and pending submissions could be leaked by querying list/source endpoints.
+  - **How**:
+    - `server/routes/arc3Community.ts`: Persist submissions, add admin submission endpoints, and enforce public listing/source privacy (approved only).
+    - `server/repositories/database/DatabaseSchema.ts`: Add `creator_handle` and `submission_notes` columns (create + migration).
+    - `server/repositories/CommunityGameRepository.ts`: Store/map new submission fields and allow setting `status`/`is_playable` on create.
+    - `server/services/arc3Community/CommunityGameStorage.ts` + `CommunityGameValidator.ts`: Align limits (500KB, 2000 lines) with the submission UI.
+    - `client/src/pages/AdminArc3Submissions.tsx`: Admin review UI (token entry, source view, publish/reject).
+    - `client/src/App.tsx` + `client/src/pages/AdminHub.tsx`: Wire admin route + navigation card.
+
 ### Version 7.2.5  Feb 02, 2026
 
 - **FIX: ARC3 landing featured games now show official IDs and upstream descriptions** (Author: GPT-5.2)

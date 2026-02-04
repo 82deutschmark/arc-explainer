@@ -1,20 +1,12 @@
 /*
- * Author: GPT-5.2
- * Date: 2026-02-02
- * PURPOSE: Centralized discovery + metadata for "official" ARCEngine games living in the
- *          `external/ARCEngine` git submodule (external/ARCEngine/games/official/*.py).
- *
- *          This removes hardcoded server-side whitelists so newly-added official games
- *          (e.g., ws02/ws03) become visible and playable automatically.
- *
- *          Implementation notes:
- *          - Discovery + runtime metadata comes from a small Python helper script
- *            (`server/python/arcengine_official_game_catalog.py`) that imports each game
- *            by file path and extracts (game_id, level_count, win_score).
- *          - Presentation metadata (displayName/description/difficulty) supports optional
- *            curated overrides for known games, with sensible fallbacks for new ones.
- * SRP/DRY check: Pass - single responsibility: official game catalog shared by routes + runner.
- */
+Author: GPT-5.2
+Date: 2026-02-04
+PURPOSE: Centralized discovery + metadata for official ARCEngine games living in the
+         `external/ARCEngine` git submodule (external/ARCEngine/games/official/*.py).
+         This removes hardcoded server-side whitelists so newly-added official games
+         become visible and playable automatically in ARC3 Community routes + runner.
+SRP/DRY check: Pass - single responsibility: official game catalog shared by routes + runner.
+*/
 
 import { spawn } from 'child_process';
 import * as crypto from 'crypto';
@@ -260,6 +252,8 @@ function toCommunityGame(params: {
     description: params.description,
     authorName: params.authorName,
     authorEmail: null,
+    creatorHandle: null,
+    submissionNotes: null,
     version: '1.0.0',
     difficulty: params.difficulty,
     levelCount: params.levelCount,
