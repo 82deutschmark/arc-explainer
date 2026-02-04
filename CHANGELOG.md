@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.2.5  Feb 02, 2026
+
+- **FIX: ARC3 landing featured games now show official IDs and upstream descriptions** (Author: GPT-5.2)
+  - **What**: Replaced hard-coded, incorrect game names (e.g., "Light Switch") and fabricated blurbs on the ARC3 landing page with metadata sourced from the ARCEngine repo itself. Newer official games now sort to the top even when git mtimes are identical.
+  - **Why**: The landing page was showing misleading names/descriptions that did not match the actual game mechanics, and "newest" official games could be buried due to unstable ordering.
+  - **How**:
+    - `server/services/arc3Community/ArcEngineOfficialGameCatalog.ts`: Removed curated narrative overrides; derives display names from upstream PURPOSE headers when available, otherwise uses the official ID (e.g., `LS20`). Descriptions come from PURPOSE headers or the ARCEngine `CHANGELOG.md` bullet text. Tie-break sorting now prefers higher IDs first.
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Removed mojibake characters and standardized to ASCII for the featured-games UI strings.
+    - `tests/unit/services/ArcEngineOfficialGameCatalog.metadata.test.ts`: Added focused unit tests to prevent future regressions in metadata parsing.
+
 ### Version 7.2.4  Feb 01, 2026
 
 - **FEAT: Auto-discover official ARCEngine games (remove server whitelists)** (Author: GPT-5.2)

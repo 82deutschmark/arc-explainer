@@ -1,12 +1,12 @@
 /*
 Author: GPT-5.2
-Date: 2026-01-31
+Date: 2026-02-02
 PURPOSE: ARC3 Studio landing page for the ARC Prize / ARC-AGI-3 community track. Presents this
          section as a full-service platform (browse/play/upload) and uses the official ARC3 color
          palette exclusively (client/src/utils/arc3Colors.ts) with a pixel/sprite-inspired UI.
          Also fixes incorrect ARCEngine repository links and removes hard-coded editorial metadata
          (difficulty/levels) from the landing UI.
-SRP/DRY check: Pass — page-only layout; shared “pixel UI” primitives live in Arc3PixelUI.tsx.
+SRP/DRY check: Pass - page-only layout; shared pixel UI primitives live in Arc3PixelUI.tsx.
 */
 
 import { useMemo } from 'react';
@@ -32,7 +32,7 @@ const ARCENGINE_REPO_URL = 'https://github.com/arcprize/ARCEngine';
 
 function truncate(text: string, max: number) {
   if (text.length <= max) return text;
-  return `${text.slice(0, Math.max(0, max - 1)).trimEnd()}…`;
+  return `${text.slice(0, Math.max(0, max - 3)).trimEnd()}...`;
 }
 
 export default function CommunityLanding() {
@@ -47,14 +47,14 @@ export default function CommunityLanding() {
     () => [
       'Build and share ARC-AGI-3 style reasoning games as 2D sprites.',
       'Upload Python source, get validation, then publish after review.',
-      'Play community games in a 64×64 pixel grid runtime.',
+      'Play community games in a 64x64 pixel grid runtime.',
     ],
     [],
   );
 
   return (
     <Arc3PixelPage>
-      {/* Top “HUD” bar */}
+      {/* Top "HUD" bar */}
       <header className="border-b-2 border-[var(--arc3-border)] bg-[var(--arc3-bg-soft)]">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -108,7 +108,7 @@ export default function CommunityLanding() {
             <PixelPanel
               tone="purple"
               title="Full-service community platform"
-              subtitle="Build, upload, validate, play — all inside ARC3."
+              subtitle="Build, upload, validate, play - all inside ARC3."
               rightSlot={
                 <div className="text-[11px] text-[var(--arc3-c0)] opacity-90">
                   Routes: <span className="font-semibold">/arc3</span>
@@ -131,7 +131,7 @@ export default function CommunityLanding() {
                 <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] p-3">
                   <p className="text-xs font-semibold mb-1">Play</p>
                   <p className="text-[11px] text-[var(--arc3-muted)] leading-snug">
-                    The runtime renders a 64×64 grid with crisp pixel edges.
+                    The runtime renders a 64x64 grid with crisp pixel edges.
                   </p>
                 </div>
               </div>
@@ -224,7 +224,7 @@ export default function CommunityLanding() {
             <PixelPanel tone="green" title="Featured games" subtitle="Minimal metadata: name, author, play.">
               <div className="space-y-2">
                 {isLoading && (
-                  <div className="text-[11px] text-[var(--arc3-dim)]">Loading featured games…</div>
+                  <div className="text-[11px] text-[var(--arc3-dim)]">Loading featured games...</div>
                 )}
 
                 {!isLoading && games.length === 0 && (
@@ -272,4 +272,3 @@ export default function CommunityLanding() {
     </Arc3PixelPage>
   );
 }
-

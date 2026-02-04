@@ -34,3 +34,6 @@ Expose the official ARC Prize preview games (`ls20`, `ft09`, `vc33`) in the ARC3
 
 ## Update – Feb 01, 2026 (v7.2.4)
 - The server no longer relies on the hardcoded featured lists described above; official games are now auto-discovered from the ARCEngine submodule, so new files like `ws02.py`/`ws03.py` appear without server edits.
+
+## Update - Feb 02, 2026 (v7.2.5)
+- The ARC3 landing page no longer uses hard-coded names or fabricated descriptions for official games. Featured-game metadata now comes from upstream ARCEngine text (PURPOSE headers and ARCEngine `CHANGELOG.md`) or is omitted when unavailable.

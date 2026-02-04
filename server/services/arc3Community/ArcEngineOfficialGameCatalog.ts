@@ -145,6 +145,23 @@ function parseTitleFromPurposeLine(purposeLine: string, gameId: string): string 
 
 let arcEngineChangelogDescriptionsCache: { mtimeMs: number; descriptionsByStem: Record<string, string> } | null = null;
 
+function parseChangelogDescriptionsFromText(content: string): Record<string, string> {
+  const lines = content.split(/\r?\n/);
+  const descriptionsByStem: Record<string, string> = {};
+
+  // Parse bullet lines like: "- `ls20.py` - Shape-matching navigation puzzle (7 levels, 4 actions)"
+  for (const line of lines) {
+    const match = line.match(/^\s*-\s+`([a-z0-9_-]+)\.py`\s+-\s+(.+)\s*$/i);
+    if (!match) continue;
+    const stem = match[1]?.toLowerCase();
+    const desc = match[2]?.trim();
+    if (!stem || !desc) continue;
+    descriptionsByStem[stem] = desc;
+  }
+
+  return descriptionsByStem;
+}
+
 async function readOfficialDescriptionsFromArcEngineChangelog(): Promise<Record<string, string>> {
   try {
     const stat = await fs.stat(ARCENGINE_CHANGELOG_PATH);
@@ -153,18 +170,7 @@ async function readOfficialDescriptionsFromArcEngineChangelog(): Promise<Record<
     }
 
     const content = await fs.readFile(ARCENGINE_CHANGELOG_PATH, 'utf8');
-    const lines = content.split(/\r?\n/);
-    const descriptionsByStem: Record<string, string> = {};
-
-    // Parse bullet lines like: "- `ls20.py` - Shape-matching navigation puzzle (7 levels, 4 actions)"
-    for (const line of lines) {
-      const match = line.match(/^\s*-\s+`([a-z0-9_-]+)\.py`\s+-\s+(.+)\s*$/i);
-      if (!match) continue;
-      const stem = match[1]?.toLowerCase();
-      const desc = match[2]?.trim();
-      if (!stem || !desc) continue;
-      descriptionsByStem[stem] = desc;
-    }
+    const descriptionsByStem = parseChangelogDescriptionsFromText(content);
 
     arcEngineChangelogDescriptionsCache = { mtimeMs: stat.mtimeMs, descriptionsByStem };
     return descriptionsByStem;
@@ -400,3 +406,8 @@ export class ArcEngineOfficialGameCatalog {
     return (await this.getOfficialGame(gameId)) !== null;
   }
 }
+
+export const __testOnly = {
+  parseTitleFromPurposeLine,
+  parseChangelogDescriptionsFromText,
+};
