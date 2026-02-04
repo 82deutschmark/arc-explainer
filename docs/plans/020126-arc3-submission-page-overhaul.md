@@ -1,5 +1,9 @@
 # 020126-arc3-submission-page-overhaul
 
+## Update (Feb 04, 2026)
+- The single-file submission flow is now wired end-to-end: `POST /api/arc3-community/submissions` persists to DB + disk as `pending` and non-playable, and admin review endpoints exist for publish/reject.
+- Current implementation plan and verification checklist: `docs/plans/020426-arc3-community-submissions-publish-plan.md`
+
 ## Goal
 Capture the redesign requirements for the ARC3 community submission flow so the UI matches the actual workflow (single Python file upload), applies the ARC3 palette in an intentional way, and clarifies validation/safety expectations.
 

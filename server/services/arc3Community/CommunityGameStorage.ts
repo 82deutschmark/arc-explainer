@@ -1,10 +1,13 @@
 /*
- * Author: Cascade (Claude)
- * Date: 2026-01-31
- * PURPOSE: File storage service for community game Python source files.
- *          Handles upload, retrieval, and hash verification of game files.
- * SRP/DRY check: Pass — single-purpose file storage management.
- */
+Author: GPT-5.2
+Date: 2026-02-04
+PURPOSE: File storage service for ARC3 community game Python source files.
+         Stores submitted `.py` files on disk, verifies integrity via SHA-256, and
+         supports safe retrieval for play/review flows.
+         Integration points: used by `server/routes/arc3Community.ts` for submissions
+         and by `CommunityGameRunner` for hash verification before execution.
+SRP/DRY check: Pass - kept storage logic focused and aligned size limits with the submission UI.
+*/
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -13,7 +16,7 @@ import { logger } from '../../utils/logger';
 
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads', 'community-games');
 const THUMBNAIL_DIR = path.join(UPLOAD_DIR, 'thumbnails');
-const MAX_FILE_SIZE = 100 * 1024; // 100KB limit for game files
+const MAX_FILE_SIZE = 500 * 1024; // 500KB limit for game files (matches ARC3 submission requirements)
 
 export interface StoredFile {
   filePath: string;

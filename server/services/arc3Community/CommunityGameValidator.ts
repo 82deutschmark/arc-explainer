@@ -1,14 +1,19 @@
 /*
- * Author: Cascade (Claude)
- * Date: 2026-01-31
- * PURPOSE: Validates uploaded community game Python files for safety and correctness.
- *          Performs AST analysis to detect dangerous imports and validates game structure.
- * SRP/DRY check: Pass — single-purpose validation service for uploaded games.
- */
+Author: GPT-5.2
+Date: 2026-02-04
+PURPOSE: Validates ARC3 community game Python source for baseline safety and structure.
+         Performs lightweight static checks (forbidden imports, disallowed builtins,
+         required ARCBaseGame subclass + arcengine import) without executing the code.
+         Integration points: used by ARC3 community submission/upload routes to reject
+         obviously unsafe or malformed files before persisting them.
+SRP/DRY check: Pass - kept validation single-purpose and aligned rules with UI messaging.
+*/
 
 import { spawn } from 'child_process';
 import * as path from 'path';
 import { logger } from '../../utils/logger';
+
+const MAX_SOURCE_LINES = 2000;
 
 // Forbidden imports that could be dangerous
 const FORBIDDEN_IMPORTS = [
@@ -86,9 +91,13 @@ export class CommunityGameValidator {
     const importedModules: string[] = [];
 
     // Basic syntax check - look for forbidden patterns
-    const lines = sourceCode.split('\n');
+    const lines = sourceCode.split(/\r?\n/);
     let hasBaseGameClass = false;
     let className: string | null = null;
+
+    if (lines.length > MAX_SOURCE_LINES) {
+      errors.push(`File has ${lines.length} lines, exceeding the limit of ${MAX_SOURCE_LINES} lines`);
+    }
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -226,7 +235,8 @@ try:
     print(json.dumps({
         "valid": True,
         "game_id": getattr(game, 'game_id', 'unknown'),
-        "has_levels": len(getattr(game, 'levels', [])) > 0
+        # ARCBaseGame stores cloned levels internally as _levels.
+        "has_levels": len(getattr(game, '_levels', [])) > 0
     }))
 except Exception as e:
     print(json.dumps({"valid": False, "error": str(e)}))
