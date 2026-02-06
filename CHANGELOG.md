@@ -1,5 +1,138 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.2.6  Feb 04, 2026
+
+- **FEAT: ARC3 community submissions now persist and can be published via admin review** (Author: GPT-5.2)
+  - **What**: `POST /api/arc3-community/submissions` now stores the submitted `.py` file on disk and creates a real `community_games` DB row as `status='pending'` and `is_playable=false`. Added admin-only review endpoints (list, view source, publish, reject) gated by `ARC3_COMMUNITY_ADMIN_TOKEN`, plus a minimal admin UI at `/admin/arc3-submissions`.
+  - **Why**: The `/arc3/upload` flow previously returned a "success" response but did not persist anything, there was no publish workflow, and pending submissions could be leaked by querying list/source endpoints.
+  - **How**:
+    - `server/routes/arc3Community.ts`: Persist submissions, add admin submission endpoints, and enforce public listing/source privacy (approved only).
+    - `server/repositories/database/DatabaseSchema.ts`: Add `creator_handle` and `submission_notes` columns (create + migration).
+    - `server/repositories/CommunityGameRepository.ts`: Store/map new submission fields and allow setting `status`/`is_playable` on create.
+    - `server/services/arc3Community/CommunityGameStorage.ts` + `CommunityGameValidator.ts`: Align limits (500KB, 2000 lines) with the submission UI.
+    - `client/src/pages/AdminArc3Submissions.tsx`: Admin review UI (token entry, source view, publish/reject).
+    - `client/src/App.tsx` + `client/src/pages/AdminHub.tsx`: Wire admin route + navigation card.
+
+### Version 7.2.5  Feb 02, 2026
+
+- **FIX: ARC3 landing featured games now show official IDs and upstream descriptions** (Author: GPT-5.2)
+  - **What**: Replaced hard-coded, incorrect game names (e.g., "Light Switch") and fabricated blurbs on the ARC3 landing page with metadata sourced from the ARCEngine repo itself. Newer official games now sort to the top even when git mtimes are identical.
+  - **Why**: The landing page was showing misleading names/descriptions that did not match the actual game mechanics, and "newest" official games could be buried due to unstable ordering.
+  - **How**:
+    - `server/services/arc3Community/ArcEngineOfficialGameCatalog.ts`: Removed curated narrative overrides; derives display names from upstream PURPOSE headers when available, otherwise uses the official ID (e.g., `LS20`). Descriptions come from PURPOSE headers or the ARCEngine `CHANGELOG.md` bullet text. Tie-break sorting now prefers higher IDs first.
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Removed mojibake characters and standardized to ASCII for the featured-games UI strings.
+    - `tests/unit/services/ArcEngineOfficialGameCatalog.metadata.test.ts`: Added focused unit tests to prevent future regressions in metadata parsing.
+
+### Version 7.2.4  Feb 01, 2026
+
+- **FEAT: Auto-discover official ARCEngine games (remove server whitelists)** (Author: GPT-5.2)
+  - **What**: Official games in `external/ARCEngine/games/official/` are now discovered dynamically and exposed via the ARC3 community API. New files like `ws02.py` / `ws03.py` show up without manual edits to server-side lists.
+  - **Why**: The server previously relied on hardcoded featured-game metadata/whitelists, so newly-added ARCEngine official games were invisible until multiple files were updated by hand.
+  - **How**:
+    - `server/services/arc3Community/ArcEngineOfficialGameCatalog.ts`: Added a cached catalog that calls a Python helper to extract runtime metadata, with curated override text for known games.
+    - `server/python/arcengine_official_game_catalog.py`: New helper script to enumerate official game files and extract `(game_id, level_count, win_score)` by importing each module by path.
+    - `server/routes/arc3Community.ts`: Removed the hardcoded `FEATURED_COMMUNITY_GAMES` array; uses the catalog for listing/featured/details, reserves official IDs for uploads, and supports `/games/:gameId/source` for official games.
+    - `server/services/arc3Community/CommunityGameRunner.ts`: Removed featured whitelists/metadata duplication; starts official games via file path from the catalog.
+    - `server/python/community_game_runner.py`: Fixed emitted `level_count` to use ARCBaseGame's internal `_levels` storage.
+    - `external/ARCEngine/games/official/ws02.py`: Fixed initialization order and preview-sprite binding so `ws02` can be discovered and started successfully.
+
+### Version 7.2.3  Feb 01, 2026
+
+- **FIX: Harden World Shifter palette + rotation indexing** (Author: Cascade (ChatGPT))
+  - **What**: Prevented featured game `ws01` from crashing when ARCEngine levels reference colors or rotations outside the tight `[8, 6, 11, 14]` / `[0,90,180,270]` whitelists.
+  - **Why**: Sessions failed with `Game error: [INVALID_GAME] 9 is not in list` because `list.index` raised `ValueError` during initialization, killing the Python bridge.
+  - **How**:
+    - `external/ARCEngine/games/official/ws01.py`: Added safe `_get_rotation_index` / `_get_color_index` helpers that log and default to zero when encountering unexpected metadata, and reused them everywhere `index()` was previously called.
+
+### Version 7.2.2  Feb 01, 2026
+
+- **FEAT: Add official ARC Prize preview games (ls20, ft09, vc33)** (Author: Cascade - Claude Sonnet 4)
+  - **What**: Expanded featured community games from 2 to 5 by adding three official ARC Prize preview games: Light Switch (`ls20`), Fill The Grid (`ft09`), and Vector Chase (`vc33`).
+  - **Why**: These games are part of the official ARCEngine `games.official` module and should be playable via the same interface as `ws01` and `gw01`.
+  - **How**:
+    - `server/routes/arc3Community.ts`: Added `ls20`, `ft09`, `vc33` entries to `FEATURED_COMMUNITY_GAMES` array with metadata (displayName, description, difficulty, levelCount, winScore).
+    - `server/services/arc3Community/CommunityGameRunner.ts`: Updated `FEATURED_COMMUNITY_GAMES` set to include new IDs. Refactored inline conditionals into `FEATURED_GAME_METADATA` lookup table and `getFeaturedGameMetadata()` helper for cleaner code.
+
+### Version 7.2.1  Feb 01, 2026
+
+- **FIX: ARC3 community games sync to official ARCEngine game IDs** (Author: Cascade - Claude Sonnet 4)
+  - **What**: Migrated featured community games from legacy IDs (`world_shifter`, `chain_reaction`) to official ARCEngine IDs (`ws01`, `gw01`) from `games.official` module. Fixes import error preventing game playback.
+  - **Why**: ARCEngine registry tried to import `WorldShifter` from `games.world_shifter` which no longer exists. Official games now live in `games.official` with IDs like `ws01` (World Shifter) and `gw01` (Gravity Well).
+  - **How**:
+    - `external/ARCEngine/games/__init__.py`: Updated registry to use `ws01`/`gw01` from `games.official` instead of legacy `world_shifter`/`chain_reaction`.
+    - `server/routes/arc3Community.ts`: Changed `FEATURED_COMMUNITY_GAMES` array to use `ws01` and `gw01` IDs with updated metadata.
+    - `server/services/arc3Community/CommunityGameRunner.ts`: Updated `FEATURED_COMMUNITY_GAMES` set and game metadata logic to use new IDs.
+
+### Version 7.2.0  Feb 01, 2026
+
+- **FEAT: ARC3 submission page overhaul with single-file upload** (Author: Cascade - Claude Sonnet 4)
+  - **What**: Complete redesign of game submission flow replacing GitHub repo links with direct Python file upload. Replaced email contact with Discord/Twitter handles for community moderation. Added comprehensive validation UI and improved palette usage.
+  - **Why**: Original GitHub-based flow was confusing (UI mentioned single-file but required repos). Email contact doesn't fit community moderation workflow. Validation requirements were hidden from creators. Palette usage was noisy with random panel colors.
+  - **How**:
+    - `client/src/components/arc3-community/PythonFileUploader.tsx`: New drag-and-drop uploader with client-side validation (file size, line count, basic structure checks). Shows real-time feedback for errors/warnings.
+    - `client/src/components/arc3-community/ValidationGuide.tsx`: New component displaying server-side validation rules, allowed imports, and safety/review process information.
+    - `client/src/pages/arc3-community/GameSubmissionPage.tsx`: Complete redesign with sectioned layout (Upload → Metadata → Contact → Notes). Replaced `authorEmail` + `githubRepoUrl` with `creatorHandle` + `sourceCode`. Added hero section, submission playbook, and sample game links.
+    - `server/routes/arc3Community.ts`: Updated `gameSubmissionSchema` to accept `sourceCode` (string, 50-500KB) and `creatorHandle` (Discord username or Twitter/X URL validated via regex). Removed `authorEmail` (now optional) and `githubRepoUrl` fields. Endpoint now validates source code via `CommunityGameValidator.validateSource()` before accepting submission.
+    - Backend now performs AST-level validation checking for ARCBaseGame subclass, arcengine imports, forbidden modules (os, subprocess, socket, etc.), and dangerous patterns (exec/eval/open) before queueing for manual review.
+    - Contact handle validation: Discord format `^[A-Za-z0-9_.-]{2,32}(#[0-9]{4})?$` or Twitter URL `^https://(twitter|x)\.com\/[A-Za-z0-9_]{1,15}$`.
+
+### Version 7.1.3  Jan 31, 2026
+
+- **FIX: World Shifter exit positioning + ARC3 documentation** (Author: Claude Sonnet 4)
+  - **What**: Fixed exits auto-colliding with player at level start (causing instant level completion). Added comprehensive ARC3 game development guide based on official ARC Prize Foundation docs.
+  - **Why**: Game was unwinnable because exits were placed within collision distance of player, triggering immediate level completion. Documentation gap caused implementation drift from official patterns.
+  - **How**:
+    - `external/ARCEngine/games/world_shifter/levels.py`: Moved all exit positions 3+ pixels from player center to prevent auto-collision.
+    - `external/ARCEngine/games/__init__.py`: Updated version registry to 0.02.
+    - `external/ARCEngine/docs/ARC3_GAME_DEVELOPMENT_GUIDE.md`: Created comprehensive guide covering sprites, levels, game class, actions, collision, scoring based on https://docs.arcprize.org/.
+
+### Version 7.1.2  Jan 31, 2026
+
+- **FIX: World Shifter core mechanic and UI** (Author: Claude Sonnet 4)
+  - **What**: Fixed critical bugs: (1) collision detection now uses pixel-level checks so player isn't always blocked, (2) exit positions corrected to walkable areas, (3) removed wrong "Score/Goal" UI from frontend, (4) disabled grid overlay.
+  - **Why**: Game was unplayable - collision always failed, exits were on walls, and UI displayed incorrect ARC3 concepts (scores instead of levels).
+  - **How**:
+    - `external/ARCEngine/games/world_shifter/game.py`: Rewrote `_can_move_world` to check maze pixel colors instead of bounding-box collision. Added `_get_player_center` and pixel-level wall detection.
+    - `external/ARCEngine/games/world_shifter/levels.py`: Repositioned all exit sprites to be in walkable (-1) pixels, added coordinate comments.
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Removed incorrect "Score: X/Y" and "Goal: Reach a score" UI, changed to "Level: N", disabled grid overlay (`showGrid={false}`).
+
+### Version 7.1.1  Jan 31, 2026
+
+- **FEAT: World Shifter visual + level redesign** (Author: Claude Sonnet 4)
+  - **What**: Rebuilt World Shifter with floating platform sprites, refreshed exit/player art, native-res levels (no scaling artifacts), and black void background to emphasize the inverse-movement mechanic.
+  - **Why**: Prior build looked like a bland labyrinth and diverged from the intended "world moves, not you" experience and ARC3 visual quality bar.
+  - **How**:
+    - `external/ARCEngine/games/world_shifter/sprites.py`: Replaced rectangular mazes with six creative platform shapes, updated player/exit visuals, cleaned energy pill UI.
+    - `external/ARCEngine/games/world_shifter/levels.py`: Positioned new platforms natively (no scale factor), fixed player center anchor, tuned bounds per level.
+    - `external/ARCEngine/games/world_shifter/game.py`: Switched to black background/letterbox for floating effect; updated game docstring.
+    - `external/ARCEngine/docs/DESIGN_world_shifter.md`: Documented new palette and level themes.
+
+### Version 7.1.0  Jan 31, 2026
+
+- **FEAT: ARC3 Community UI overhaul and GitHub-based game submission** (Author: Cascade)
+  - **What**: Complete UI refresh using ARC3 pixel theme across all community pages. Replaced "paste your code" upload with GitHub repository submission approach. Added ARCEngine to Dockerfile for Railway deployment.
+  - **Why**: Previous UI was inconsistent (mixing zinc/terminal theme with pixel theme). Paste-your-code upload doesn't work for multi-file ARCEngine games. ARCEngine wasn't being installed in Docker builds, breaking Railway deployment.
+  - **How**:
+    - `Dockerfile`: Added ARCEngine setup - clones from GitHub if not present, installs as editable package.
+    - `client/src/pages/arc3-community/GameSubmissionPage.tsx`: New GitHub repo submission form with ARC3 pixel UI, validation, clear requirements explanation, and success state.
+    - `client/src/pages/arc3-community/CommunityGallery.tsx`: Rewritten with ARC3 pixel UI theme, card-based grid layout, removed difficulty filtering (per plan).
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Rewritten with ARC3 pixel UI theme, proper win/loss overlays, game state management.
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Updated docs links to point to external ARCEngine GitHub docs.
+    - `server/routes/arc3Community.ts`: Added `POST /api/arc3-community/submissions` endpoint for GitHub repo submissions.
+    - `client/src/App.tsx`: Updated routes to use `GameSubmissionPage`, removed missing `GameCreationDocs` reference.
+    - Deleted obsolete `GameUploadPage.tsx` and `GameCreationDocs.tsx` references.
+
+### Version 7.0.1  Jan 31, 2026
+
+- **FIX: Chain Reaction game initialization and state detection** (Author: Claude Haiku 4.5)
+  - **What**: Fixed three critical issues preventing Chain Reaction from loading and advancing past level 1: (1) `Level.sprites` attribute error in game code, (2) incorrect winScore metadata causing premature game-over detection, (3) removed cutesy win/loss overlays from frontend.
+  - **Why**: Backend was prematurely ending the game after level 1 because winScore was hardcoded to 1 instead of 6 (total levels). Frontend was blocking gameplay with unnecessary UI overlays that are inappropriate for researcher-focused platform.
+  - **How**:
+    - `external/ARCEngine/games/chain_reaction/game.py` (lines 143, 168): Changed `self.current_level.sprites` to `self.current_level.get_sprites()` - Level class doesn't expose `sprites` property, only `get_sprites()` method.
+    - `server/routes/arc3Community.ts` (lines 62-63): Updated chain_reaction featured game metadata: `levelCount: 1 → 6`, `winScore: 1 → 6`.
+    - `server/services/arc3Community/CommunityGameRunner.ts` (lines 81-82, 219-222): Updated virtual game record and fixed `isGameOver` logic to only trust Python's state (`WIN`, `GAME_OVER`, `LOSE`) instead of checking score against winScore.
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Removed win/loss overlay modal, game-over state tracking, and cutesy UI. Frontend now displays only the game frame from Python without custom overlays.
+
 ### Version 7.0.0  Jan 31, 2026
 
 - **FEAT: ARC3 Community Games Platform** (Author: Cascade)

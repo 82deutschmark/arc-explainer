@@ -1,21 +1,19 @@
-
 /*
- * Author: Cascade (Claude)
- * Date: 2026-01-31
- * PURPOSE: High-level service for running community games. Manages game sessions,
+ * Author: GPT-5.2
+ * Date: 2026-02-01
+ * PURPOSE: High-level service for running ARC3 community games. Manages game sessions,
  *          coordinates with the Python bridge, and handles state persistence.
- * SRP/DRY check: Pass — single-purpose game session orchestration.
+ *          Official ARCEngine games are discovered dynamically to avoid hardcoded whitelists
+ *          when new games are added to the ARCEngine submodule.
+ * SRP/DRY check: Pass - single-purpose game session orchestration.
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { CommunityGamePythonBridge, createGameBridgeById, createGameBridgeByPath, type FrameData, type GameAction } from './CommunityGamePythonBridge';
+import { CommunityGamePythonBridge, createGameBridgeByPath, type FrameData, type GameAction } from './CommunityGamePythonBridge';
 import { CommunityGameStorage } from './CommunityGameStorage';
 import { CommunityGameRepository, type CommunityGame } from '../../repositories/CommunityGameRepository';
 import { logger } from '../../utils/logger';
-
-// Featured community games from ARCEngine registry (not stored as files)
-// Note: These are NOT official ARC Prize Foundation games - they are community creations
-const FEATURED_COMMUNITY_GAMES = new Set(['world_shifter', 'chain_reaction']);
+import { ArcEngineOfficialGameCatalog } from './ArcEngineOfficialGameCatalog';
 
 export interface GameSession {
   sessionGuid: string;
@@ -62,48 +60,21 @@ export class CommunityGameRunner {
    * Start a new game session
    */
   async startGame(gameId: string): Promise<StartGameResult> {
-    const isFeaturedGame = FEATURED_COMMUNITY_GAMES.has(gameId);
+    const officialGame = await ArcEngineOfficialGameCatalog.getOfficialGame(gameId);
+    const isOfficialGame = officialGame !== null;
     let game: CommunityGame;
     let bridge: CommunityGamePythonBridge;
 
-    if (isFeaturedGame) {
-      // Featured community game from ARCEngine registry - create virtual game record
-      game = {
-        id: 0,
-        gameId,
-        displayName: gameId === 'world_shifter' ? 'World Shifter' : 'Chain Reaction',
-        description: gameId === 'world_shifter' 
-          ? 'The world moves, not you. Navigate mazes by shifting walls toward your fixed position.'
-          : 'Match colors. Clear the board. Escape.',
-        authorName: 'Arc Explainer Team',
-        authorEmail: null,
-        version: '0.0.1',
-        difficulty: 'medium',
-        levelCount: gameId === 'world_shifter' ? 3 : 1,
-        winScore: 1,
-        maxActions: null,
-        tags: ['featured', 'puzzle'],
-        sourceFilePath: '',  // No file for featured games (loaded from registry)
-        sourceHash: '',
-        thumbnailPath: null,
-        status: 'approved',
-        isFeatured: true,
-        isPlayable: true,
-        validatedAt: new Date(),
-        validationErrors: null,
-        playCount: 0,
-        totalWins: 0,
-        totalLosses: 0,
-        averageScore: null,
-        uploadedAt: new Date(),
-        updatedAt: new Date(),
-      };
+    if (isOfficialGame && officialGame) {
+      // Built-in official game from the ARCEngine submodule.
+      game = officialGame.game;
 
-      // Create Python bridge using game registry
+      // Create Python bridge using the official file path so new games are playable without any
+      // server-side whitelist updates.
       try {
-        bridge = await createGameBridgeById(gameId);
+        bridge = await createGameBridgeByPath(officialGame.pythonFilePath);
       } catch (error) {
-        logger.error(`Failed to start featured game ${gameId}: ${error}`, 'game-runner');
+        logger.error(`Failed to start official game ${gameId}: ${error}`, 'game-runner');
         throw new Error('Failed to initialize game');
       }
     } else {
@@ -160,16 +131,17 @@ export class CommunityGameRunner {
     // Store session
     activeSessions.set(sessionGuid, session);
 
-    // Create database session record
-    try {
-      await this.repository.createSession(game.id, sessionGuid, game.winScore);
-    } catch (error) {
-      logger.warn(`Failed to create session record: ${error}`, 'game-runner');
-      // Continue anyway - session can work without DB record
-    }
+    // Create database session record / play-count entries for community uploads only
+    if (!isOfficialGame) {
+      try {
+        await this.repository.createSession(game.id, sessionGuid, game.winScore);
+      } catch (error) {
+        logger.warn(`Failed to create session record: ${error}`, 'game-runner');
+        // Continue anyway - session can work without DB record
+      }
 
-    // Increment play count
-    await this.repository.incrementPlayCount(gameId);
+      await this.repository.incrementPlayCount(gameId);
+    }
 
     // Set up session timeout
     this.scheduleSessionCleanup(sessionGuid);
@@ -216,11 +188,11 @@ export class CommunityGameRunner {
       frame,
     });
 
-    // Check game state
-    const isWin = frame.state === 'WIN' || frame.score >= session.game.winScore;
-    const isLoss = frame.state === 'LOSE' || 
-                   (session.game.maxActions && frame.action_counter >= session.game.maxActions);
-    const isGameOver = isWin || isLoss || frame.state === 'GAME_OVER';
+    // Check game state - trust Python's state, don't second-guess it
+    // Level transitions happen automatically in Python and state remains NOT_FINISHED
+    const isWin = frame.state === 'WIN';
+    const isLoss = frame.state === 'GAME_OVER' || frame.state === 'LOSE';
+    const isGameOver = isWin || isLoss;
 
     if (isGameOver) {
       session.state = isWin ? 'won' : 'lost';

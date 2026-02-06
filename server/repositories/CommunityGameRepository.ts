@@ -1,10 +1,11 @@
 /*
- * Author: Cascade (Claude)
- * Date: 2026-01-31
- * PURPOSE: Repository for community game CRUD operations. Manages game metadata,
- *          session tracking, and statistics for user-uploaded ARCEngine games.
- * SRP/DRY check: Pass — single-purpose data access layer for community games.
- */
+Author: GPT-5.2
+Date: 2026-02-04
+PURPOSE: Data access layer for ARC3 community games (Postgres). Owns CRUD for stored
+         community game metadata, submission contact fields, and gameplay/session stats
+         used by the ARC3 Community UI and the Node-to-Python game runner bridge.
+SRP/DRY check: Pass - changes are additive and reuse existing repository patterns.
+*/
 
 import { Pool, PoolClient } from 'pg';
 import { logger } from '../utils/logger';
@@ -19,6 +20,8 @@ export interface CommunityGame {
   description: string | null;
   authorName: string;
   authorEmail: string | null;
+  creatorHandle: string | null;
+  submissionNotes: string | null;
   version: string;
   difficulty: GameDifficulty;
   levelCount: number;
@@ -59,6 +62,8 @@ export interface CreateGameInput {
   description?: string;
   authorName: string;
   authorEmail?: string;
+  creatorHandle?: string;
+  submissionNotes?: string;
   version?: string;
   difficulty?: GameDifficulty;
   levelCount?: number;
@@ -68,11 +73,18 @@ export interface CreateGameInput {
   sourceFilePath: string;
   sourceHash: string;
   thumbnailPath?: string;
+  status?: GameStatus;
+  isFeatured?: boolean;
+  isPlayable?: boolean;
+  validatedAt?: Date;
+  validationErrors?: Record<string, unknown>;
 }
 
 export interface UpdateGameInput {
   displayName?: string;
   description?: string;
+  creatorHandle?: string | null;
+  submissionNotes?: string | null;
   version?: string;
   difficulty?: GameDifficulty;
   levelCount?: number;
@@ -114,10 +126,13 @@ export class CommunityGameRepository {
     const query = `
       INSERT INTO community_games (
         game_id, display_name, description, author_name, author_email,
+        creator_handle, submission_notes,
         version, difficulty, level_count, win_score, max_actions,
-        tags, source_file_path, source_hash, thumbnail_path
+        tags, source_file_path, source_hash, thumbnail_path,
+        status, is_featured, is_playable, validated_at, validation_errors
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19,
+        $20, $21, $22, $23, $24
       )
       RETURNING *
     `;
@@ -128,6 +143,8 @@ export class CommunityGameRepository {
       input.description || null,
       input.authorName,
       input.authorEmail || null,
+      input.creatorHandle || null,
+      input.submissionNotes || null,
       input.version || '1.0.0',
       input.difficulty || 'unknown',
       input.levelCount || 1,
@@ -137,6 +154,11 @@ export class CommunityGameRepository {
       input.sourceFilePath,
       input.sourceHash,
       input.thumbnailPath || null,
+      input.status || 'pending',
+      input.isFeatured ?? false,
+      input.isPlayable ?? true,
+      input.validatedAt || null,
+      input.validationErrors || null,
     ];
 
     const result = await this.pool.query(query, values);
@@ -241,6 +263,8 @@ export class CommunityGameRepository {
     const fieldMap: Record<string, string> = {
       displayName: 'display_name',
       description: 'description',
+      creatorHandle: 'creator_handle',
+      submissionNotes: 'submission_notes',
       version: 'version',
       difficulty: 'difficulty',
       levelCount: 'level_count',
@@ -417,6 +441,8 @@ export class CommunityGameRepository {
       description: row.description as string | null,
       authorName: row.author_name as string,
       authorEmail: row.author_email as string | null,
+      creatorHandle: (row.creator_handle as string | null) ?? null,
+      submissionNotes: (row.submission_notes as string | null) ?? null,
       version: row.version as string,
       difficulty: row.difficulty as GameDifficulty,
       levelCount: row.level_count as number,

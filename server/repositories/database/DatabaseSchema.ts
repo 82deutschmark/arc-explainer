@@ -1,13 +1,12 @@
-/**
- * Database Schema Management Utilities
- * 
- * Handles database initialization, table creation, and schema migrations.
- * This version is refactored for clarity and robustness, ensuring migrations
- * are separated into schema and data phases to prevent race conditions.
- * 
- * @author Cascade
- * @date 2025-09-03 (updated 2025-12-16)
- */
+/*
+Author: GPT-5.2
+Date: 2026-02-04
+PURPOSE: Database schema initialization and migration utilities for ARC Explainer (PostgreSQL).
+         Creates tables for all feature areas and applies additive migrations on startup so
+         older installs can be upgraded without manual SQL steps.
+         Integration points: called from server startup using the configured pg Pool.
+SRP/DRY check: Pass - verified community-games schema changes are additive and keep existing tables intact.
+*/
 
 import { Pool, PoolClient } from 'pg';
 import { logger } from '../../utils/logger.ts';
@@ -567,6 +566,8 @@ export class DatabaseSchema {
         description TEXT,
         author_name VARCHAR(100) NOT NULL,
         author_email VARCHAR(255),
+        creator_handle TEXT,
+        submission_notes TEXT,
         
         version VARCHAR(20) DEFAULT '1.0.0',
         difficulty VARCHAR(20) DEFAULT 'unknown',
@@ -657,6 +658,14 @@ export class DatabaseSchema {
       ADD COLUMN IF NOT EXISTS provider_response_id TEXT DEFAULT NULL,
       ADD COLUMN IF NOT EXISTS provider_raw_response JSONB DEFAULT NULL,
       ADD COLUMN IF NOT EXISTS reasoning_items JSONB DEFAULT NULL;
+    `);
+
+    // Migration: ARC3 community games - add creator/social contact + submission notes fields
+    // These are additive and keep older deployments compatible.
+    await client.query(`
+      ALTER TABLE community_games
+      ADD COLUMN IF NOT EXISTS creator_handle TEXT DEFAULT NULL,
+      ADD COLUMN IF NOT EXISTS submission_notes TEXT DEFAULT NULL;
     `);
 
     // Migration: Add 'updated_at' to 'batch_analysis_sessions'

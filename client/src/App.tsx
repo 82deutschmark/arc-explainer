@@ -1,12 +1,11 @@
-/**
- * Author: Cascade (ChatGPT)
- * Date: 2026-01-16
- * PURPOSE: Client-side router for ARC Explainer.
- *          Keeps all route registrations, including the new RE-ARC dataset viewer path, in one place,
- *          and now preserves backwards-compatible debate deep links by redirecting /debate/:taskId
- *          to the canonical Puzzle Examiner route.
- * SRP/DRY check: Pass — centralized routing table only.
- */
+/*
+Author: GPT-5.2
+Date: 2026-02-04
+PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
+         feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
+         including ARC3 community submission review tooling under the admin section.
+SRP/DRY check: Pass - kept as a routing table only and verified existing routes remain intact.
+*/
 
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
@@ -32,6 +31,7 @@ import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
 import ModelBrowser from "@/pages/ModelBrowser";
 import ModelManagement from "@/pages/ModelManagement";
 import AdminHub from "@/pages/AdminHub";
+import AdminArc3Submissions from "@/pages/AdminArc3Submissions";
 import HuggingFaceIngestion from "@/pages/HuggingFaceIngestion";
 import AdminOpenRouter from "@/pages/AdminOpenRouter";
 import EloComparison from "@/pages/EloComparison";
@@ -60,8 +60,7 @@ import {
   CommunityLanding,
   CommunityGallery,
   CommunityGamePlay,
-  GameUploadPage,
-  GameCreationDocs
+  GameSubmissionPage,
 } from "@/pages/arc3-community";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
@@ -113,6 +112,7 @@ function Router() {
         {/* Admin routes */}
         <Route path="/admin" component={AdminHub} />
         <Route path="/admin/models" component={ModelManagement} />
+        <Route path="/admin/arc3-submissions" component={AdminArc3Submissions} />
         <Route path="/admin/ingest-hf" component={HuggingFaceIngestion} />
         <Route path="/admin/openrouter" component={AdminOpenRouter} />
 
@@ -137,8 +137,7 @@ function Router() {
         <Route path="/arc3" component={CommunityLanding} />
         <Route path="/arc3/gallery" component={CommunityGallery} />
         <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
-        <Route path="/arc3/upload" component={GameUploadPage} />
-        <Route path="/arc3/docs" component={GameCreationDocs} />
+        <Route path="/arc3/upload" component={GameSubmissionPage} />
         {/* ARC3 Archive - historical preview content */}
         <Route path="/arc3/archive" component={Arc3ArchiveLanding} />
         <Route path="/arc3/archive/games" component={Arc3ArchiveGamesBrowser} />

@@ -1,25 +1,24 @@
 /*
- * Author: Cascade (Claude)
- * Date: 2026-01-31
- * PURPOSE: Gallery page for browsing community games. Terminal-style, information-dense
- *          table layout with filtering and search for researchers.
- * SRP/DRY check: Pass — single-purpose game gallery component.
- */
+Author: Cascade (Claude Sonnet 4)
+Date: 2026-01-31
+PURPOSE: Gallery page for browsing community games. Uses ARC3 pixel UI theme for
+         visual consistency with the rest of ARC3 Studio. Supports search and sorting.
+SRP/DRY check: Pass — single-purpose game gallery; uses shared pixel UI primitives.
+*/
 
-import { useState } from "react";
-import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Search, 
+import { useState } from 'react';
+import { Link, useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Search,
   ArrowLeft,
-  Terminal,
   Play,
   Upload,
-  Zap
-} from "lucide-react";
+  Zap,
+  Users,
+  Gamepad2,
+} from 'lucide-react';
+import { Arc3PixelPage, PixelButton, PixelPanel, SpriteMosaic } from '@/components/arc3-community/Arc3PixelUI';
 
 interface CommunityGame {
   id: number;
@@ -27,10 +26,8 @@ interface CommunityGame {
   displayName: string;
   description: string | null;
   authorName: string;
-  difficulty: string;
   playCount: number;
   tags: string[];
-  levelCount?: number;
   uploadedAt: string;
 }
 
@@ -44,24 +41,21 @@ interface GamesResponse {
   };
 }
 
-const difficultyColor: Record<string, string> = {
-  easy: "text-green-500",
-  medium: "text-amber-500",
-  hard: "text-red-500",
-  "very-hard": "text-red-600",
-};
+function truncate(text: string, max: number): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, Math.max(0, max - 1)).trimEnd()}…`;
+}
 
 export default function CommunityGallery() {
-  const [search, setSearch] = useState("");
-  const [difficulty, setDifficulty] = useState<string>("all");
-  const [orderBy, setOrderBy] = useState<string>("playCount");
+  const [, setLocation] = useLocation();
+  const [search, setSearch] = useState('');
+  const [orderBy, setOrderBy] = useState<string>('playCount');
 
   const queryParams = new URLSearchParams();
-  if (search) queryParams.set("search", search);
-  if (difficulty !== "all") queryParams.set("difficulty", difficulty);
-  queryParams.set("orderBy", orderBy);
-  queryParams.set("orderDir", "DESC");
-  queryParams.set("limit", "50");
+  if (search) queryParams.set('search', search);
+  queryParams.set('orderBy', orderBy);
+  queryParams.set('orderDir', 'DESC');
+  queryParams.set('limit', '50');
 
   const { data, isLoading } = useQuery<GamesResponse>({
     queryKey: [`/api/arc3-community/games?${queryParams.toString()}`],
@@ -71,145 +65,140 @@ export default function CommunityGallery() {
   const total = data?.data?.total || 0;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-mono">
-      {/* Compact header bar */}
-      <header className="border-b border-zinc-800 bg-zinc-900/80">
-        <div className="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+    <Arc3PixelPage>
+      {/* Header */}
+      <header className="border-b-2 border-[var(--arc3-border)] bg-[var(--arc3-bg-soft)]">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <Link href="/arc3">
-              <Button variant="ghost" size="sm" className="h-6 px-2 text-zinc-400 hover:text-zinc-100">
-                <ArrowLeft className="w-3 h-3 mr-1" />
+              <PixelButton tone="neutral">
+                <ArrowLeft className="w-4 h-4" />
                 Back
-              </Button>
+              </PixelButton>
             </Link>
-            <span className="text-zinc-700">|</span>
-            <Terminal className="w-4 h-4 text-emerald-500" />
-            <span className="text-sm font-semibold">Game Gallery</span>
-            <span className="text-xs text-zinc-500">{total} games</span>
+            <span className="text-[var(--arc3-dim)]">|</span>
+            <Gamepad2 className="w-5 h-5 text-[var(--arc3-c14)]" />
+            <div>
+              <span className="text-sm font-semibold">Game Gallery</span>
+              <span className="text-[11px] text-[var(--arc3-dim)] ml-2">{total} games</span>
+            </div>
           </div>
-          <Link href="/arc3/upload">
-            <Button size="sm" variant="outline" className="h-6 px-2 text-xs border-zinc-700 hover:bg-zinc-800">
-              <Upload className="w-3 h-3 mr-1" />
-              Submit Game
-            </Button>
-          </Link>
+
+          <PixelButton tone="green" onClick={() => setLocation('/arc3/upload')}>
+            <Upload className="w-4 h-4" />
+            Submit Game
+          </PixelButton>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-3 py-4">
-        {/* Filters row */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-zinc-500" />
-            <Input
-              placeholder="Search games..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-7 pl-7 text-xs bg-zinc-900 border-zinc-700 text-zinc-100 placeholder:text-zinc-500"
-            />
-          </div>
-          <Select value={difficulty} onValueChange={setDifficulty}>
-            <SelectTrigger className="w-[120px] h-7 text-xs bg-zinc-900 border-zinc-700">
-              <SelectValue placeholder="Difficulty" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="easy">Easy</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="hard">Hard</SelectItem>
-              <SelectItem value="very-hard">Very Hard</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={orderBy} onValueChange={setOrderBy}>
-            <SelectTrigger className="w-[120px] h-7 text-xs bg-zinc-900 border-zinc-700">
-              <SelectValue placeholder="Sort" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="playCount">Most Played</SelectItem>
-              <SelectItem value="uploadedAt">Newest</SelectItem>
-              <SelectItem value="displayName">Name</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Games table */}
-        <div className="border border-zinc-800 rounded bg-zinc-900/50">
-          {/* Table header */}
-          <div className="grid grid-cols-12 gap-2 px-3 py-2 border-b border-zinc-800 text-xs text-zinc-500 uppercase tracking-wider">
-            <div className="col-span-4">Game</div>
-            <div className="col-span-2">Author</div>
-            <div className="col-span-2">Difficulty</div>
-            <div className="col-span-1 text-right">Levels</div>
-            <div className="col-span-1 text-right">Plays</div>
-            <div className="col-span-2 text-right">Actions</div>
-          </div>
-
-          {/* Loading state */}
-          {isLoading ? (
-            <div className="px-3 py-8 text-center text-zinc-500 text-sm">Loading games...</div>
-          ) : games.length === 0 ? (
-            <div className="px-3 py-8 text-center">
-              <p className="text-zinc-500 text-sm mb-3">
-                {search ? "No games match your search" : "No games available"}
-              </p>
-              <Link href="/arc3/upload">
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-xs h-7">
-                  <Upload className="w-3 h-3 mr-1" />
-                  Submit First Game
-                </Button>
-              </Link>
+      <main className="max-w-6xl mx-auto px-4 py-6">
+        {/* Search and filters */}
+        <PixelPanel tone="blue" className="mb-6">
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="relative flex-1 min-w-[200px] max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--arc3-dim)]" />
+              <input
+                type="text"
+                placeholder="Search games..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-xs font-mono border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] text-[var(--arc3-text)] placeholder:text-[var(--arc3-dim)] focus:outline-none focus:border-[var(--arc3-focus)]"
+              />
             </div>
-          ) : (
-            games.map((game, idx) => (
-              <div 
-                key={game.gameId}
-                className={`grid grid-cols-12 gap-2 px-3 py-2 items-center text-sm hover:bg-zinc-800/50 transition-colors ${
-                  idx !== games.length - 1 ? "border-b border-zinc-800/50" : ""
-                }`}
+
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-[var(--arc3-dim)]">Sort:</span>
+              <select
+                value={orderBy}
+                onChange={(e) => setOrderBy(e.target.value)}
+                className="px-2 py-1.5 text-xs font-mono border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] text-[var(--arc3-text)] focus:outline-none focus:border-[var(--arc3-focus)]"
               >
-                <div className="col-span-4">
-                  <Link href={`/arc3/play/${game.gameId}`} className="group">
-                    <span className="text-zinc-100 group-hover:text-emerald-400 transition-colors font-medium">
+                <option value="playCount">Most Played</option>
+                <option value="uploadedAt">Newest</option>
+                <option value="displayName">Name</option>
+              </select>
+            </div>
+          </div>
+        </PixelPanel>
+
+        {/* Games grid */}
+        {isLoading ? (
+          <PixelPanel tone="neutral">
+            <div className="text-center py-8">
+              <div className="text-sm text-[var(--arc3-dim)]">Loading games...</div>
+            </div>
+          </PixelPanel>
+        ) : games.length === 0 ? (
+          <PixelPanel tone="yellow" title="No Games Found">
+            <div className="text-center py-6">
+              <p className="text-[11px] text-[var(--arc3-muted)] mb-4">
+                {search ? 'No games match your search' : 'No community games available yet'}
+              </p>
+              <PixelButton tone="green" onClick={() => setLocation('/arc3/upload')}>
+                <Upload className="w-4 h-4" />
+                Be the First to Submit!
+              </PixelButton>
+            </div>
+          </PixelPanel>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {games.map((game) => (
+              <div
+                key={game.gameId}
+                className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel)] shadow-[4px_4px_0_var(--arc3-c3)] hover:shadow-[6px_6px_0_var(--arc3-c3)] transition-shadow"
+              >
+                {/* Game card header */}
+                <div className="px-3 py-2 border-b-2 border-[var(--arc3-border)] bg-[var(--arc3-c9)] flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex items-center gap-2">
+                    <span className="text-xs font-semibold text-[var(--arc3-c0)] truncate">
                       {game.displayName}
                     </span>
-                    {game.tags?.includes("featured") && (
-                      <span title="Featured"><Zap className="w-3 h-3 inline ml-1.5 text-amber-500" /></span>
+                    {game.tags?.includes('featured') && (
+                      <span title="Featured"><Zap className="w-3.5 h-3.5 text-[var(--arc3-c11)] shrink-0" /></span>
                     )}
-                  </Link>
-                  <p className="text-xs text-zinc-500 truncate mt-0.5" title={game.description || ""}>
-                    {game.description || "No description"}
+                  </div>
+                </div>
+
+                {/* Game card body */}
+                <div className="p-3 space-y-3">
+                  <p className="text-[11px] text-[var(--arc3-muted)] leading-relaxed min-h-[2.5rem]">
+                    {game.description ? truncate(game.description, 120) : 'No description provided'}
                   </p>
-                </div>
-                <div className="col-span-2 text-zinc-400 text-xs truncate">
-                  {game.authorName}
-                </div>
-                <div className={`col-span-2 text-xs ${difficultyColor[game.difficulty] || "text-zinc-400"}`}>
-                  {game.difficulty}
-                </div>
-                <div className="col-span-1 text-right text-zinc-400 text-xs">
-                  {game.levelCount || "?"}
-                </div>
-                <div className="col-span-1 text-right text-zinc-400 text-xs">
-                  {game.playCount}
-                </div>
-                <div className="col-span-2 text-right">
-                  <Link href={`/arc3/play/${game.gameId}`}>
-                    <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-emerald-500 hover:text-emerald-400 hover:bg-emerald-950/30">
-                      <Play className="w-3 h-3 mr-1" />
-                      Play
-                    </Button>
-                  </Link>
+
+                  <div className="flex items-center justify-between text-[11px]">
+                    <div className="flex items-center gap-1 text-[var(--arc3-dim)]">
+                      <Users className="w-3 h-3" />
+                      <span>{game.authorName}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-[var(--arc3-dim)]">
+                      <Play className="w-3 h-3" />
+                      <span>{game.playCount} plays</span>
+                    </div>
+                  </div>
+
+                  <PixelButton
+                    tone="green"
+                    onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                    className="w-full"
+                  >
+                    <Play className="w-4 h-4" />
+                    Play Game
+                  </PixelButton>
                 </div>
               </div>
-            ))
-          )}
-
-          {/* Footer */}
-          <div className="px-3 py-2 border-t border-zinc-800 text-xs text-zinc-500">
-            Showing {games.length} of {total} games
+            ))}
           </div>
-        </div>
-      </div>
-    </div>
+        )}
+
+        {/* Footer stats */}
+        {games.length > 0 && (
+          <div className="mt-6 text-center">
+            <p className="text-[11px] text-[var(--arc3-dim)]">
+              Showing {games.length} of {total} community games
+            </p>
+          </div>
+        )}
+      </main>
+    </Arc3PixelPage>
   );
 }

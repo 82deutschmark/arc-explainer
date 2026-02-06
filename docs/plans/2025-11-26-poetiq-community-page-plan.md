@@ -5,7 +5,7 @@
  *          the solver, shows completion progress, and lets the community contribute
  *          by bringing their own API keys.
  * SRP and DRY check: Pass - Planning document only
- */
+ */  
 
 # Poetiq Community Solver Page - Implementation Plan
 
