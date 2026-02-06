@@ -12,14 +12,12 @@ import { spawn, type ChildProcess } from 'child_process';
 import * as path from 'path';
 import * as readline from 'readline';
 import { EventEmitter } from 'events';
-import { fileURLToPath } from 'url';
 import { logger } from '../../utils/logger';
 
-// ESM equivalent of __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const PYTHON_RUNNER_PATH = path.join(__dirname, '..', '..', 'python', 'community_game_runner.py');
+// Use process.cwd() so the path resolves correctly both in dev (running from
+// source via tsx) and in production (esbuild bundles everything into dist/index.js,
+// making __dirname point to dist/ which breaks relative traversal).
+const PYTHON_RUNNER_PATH = path.join(process.cwd(), 'server', 'python', 'community_game_runner.py');
 const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds for game operations
 
 // Platform-aware Python binary: Alpine Docker only ships python3, Windows uses python
