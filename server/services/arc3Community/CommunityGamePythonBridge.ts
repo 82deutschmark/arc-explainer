@@ -22,6 +22,12 @@ const __dirname = path.dirname(__filename);
 const PYTHON_RUNNER_PATH = path.join(__dirname, '..', '..', 'python', 'community_game_runner.py');
 const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds for game operations
 
+// Platform-aware Python binary: Alpine Docker only ships python3, Windows uses python
+function resolvePythonBin(): string {
+  if (process.env.PYTHON_BIN) return process.env.PYTHON_BIN;
+  return process.platform === 'win32' ? 'python' : 'python3';
+}
+
 export interface FrameData {
   type: 'frame';
   game_id: string;
@@ -99,7 +105,7 @@ export class CommunityGamePythonBridge extends EventEmitter {
 
       try {
         // Spawn Python process
-        this.process = spawn('python', [PYTHON_RUNNER_PATH], {
+        this.process = spawn(resolvePythonBin(), [PYTHON_RUNNER_PATH], {
           stdio: ['pipe', 'pipe', 'pipe'],
           env: { ...process.env, PYTHONUNBUFFERED: '1' },
         });
