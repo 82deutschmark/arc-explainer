@@ -3,8 +3,9 @@ Author: GPT-5 Codex
 Date: 2026-02-06T00:00:00Z
 PURPOSE: ARC3 landing page game gallery. Renders official/community games as card grids with
          accurate runtime metadata from the backend (levels + action-space counts), without
-         speculative teaser descriptions. Uses ARC3 palette-driven visual styling for hero,
-         cards, and separators while reusing shared pixel UI primitives from Arc3PixelUI.
+         speculative teaser descriptions. Uses a bright, high-contrast ARC3 palette direction
+         with solid pixel color bands (no texture overlays) while reusing shared pixel UI
+         primitives from Arc3PixelUI.
 SRP/DRY check: Pass - page-only composition; shared primitives and data fetching reused.
 */
 
@@ -37,6 +38,17 @@ interface GamesListResponse {
 }
 
 const ARCENGINE_REPO = 'https://github.com/arcprize/ARCEngine';
+const COMMUNITY_LANDING_VARS: Record<string, string> = {
+  '--arc3-bg': ARC3_COLORS[0],
+  '--arc3-bg-soft': ARC3_COLORS[1],
+  '--arc3-panel': ARC3_COLORS[0],
+  '--arc3-panel-soft': ARC3_COLORS[1],
+  '--arc3-border': ARC3_COLORS[3],
+  '--arc3-text': ARC3_COLORS[5],
+  '--arc3-muted': ARC3_COLORS[4],
+  '--arc3-dim': ARC3_COLORS[3],
+  '--arc3-focus': ARC3_COLORS[9],
+};
 
 function formatCount(value: number | null | undefined, noun: string): string | null {
   if (value == null || value <= 0) return null;
@@ -65,54 +77,65 @@ export default function CommunityLanding() {
   const teamGames = games.filter((g) => g.authorName !== 'ARC Prize Foundation');
 
   return (
-    <Arc3PixelPage>
+    <Arc3PixelPage vars={COMMUNITY_LANDING_VARS}>
       {/* 16-color palette strip as top visual identity */}
       <PaletteStrip cellHeight={8} />
 
-      {/* Compact hero with layered palette accents instead of a flat gray band */}
-      <div
-        className="relative overflow-hidden border-b-2 border-[var(--arc3-border)]"
-        style={{
-          background: `linear-gradient(130deg, ${ARC3_COLORS[5]} 0%, ${ARC3_COLORS[4]} 42%, ${ARC3_COLORS[3]} 100%)`,
-        }}
-      >
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none opacity-60"
-          style={{
-            background:
-              `repeating-linear-gradient(135deg, ${ARC3_COLORS[9]}33 0 14px, transparent 14px 28px), ` +
-              `repeating-linear-gradient(45deg, ${ARC3_COLORS[14]}22 0 20px, transparent 20px 40px)`,
-          }}
-        />
-        <div className="relative max-w-6xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            {/* Tiny 4x4 pixel grid decoration using palette colors */}
-            <div className="shrink-0 grid grid-cols-4 gap-px w-10 h-10" aria-hidden="true">
+      {/* Pixel-forward hero with solid color blocks (no texture overlays). */}
+      <div className="border-b-2 border-[var(--arc3-border)] bg-[var(--arc3-panel)]">
+        <div className="h-1.5 flex">
+          {[14, 11, 12, 9, 6, 15, 8, 10, 14, 11, 12, 9, 6, 15, 8, 10].map((colorIndex, index) => (
+            <div key={index} className="flex-1" style={{ backgroundColor: ARC3_COLORS[colorIndex] }} />
+          ))}
+        </div>
+        <div className="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <div
+              className="shrink-0 grid grid-cols-4 gap-[2px] p-1 border-2 border-[var(--arc3-border)] bg-[var(--arc3-c0)]"
+              aria-hidden="true"
+            >
               {[9, 14, 11, 6, 8, 15, 12, 10, 7, 13, 9, 14, 11, 6, 8, 15].map((c, i) => (
-                <div key={i} style={{ backgroundColor: ARC3_COLORS[c] }} />
+                <div key={i} className="w-2.5 h-2.5" style={{ backgroundColor: ARC3_COLORS[c] }} />
               ))}
             </div>
             <div className="min-w-0">
               <h1 className="text-base font-bold tracking-tight leading-tight">
-                ARC-AGI-3
+                <span className="text-[var(--arc3-c9)]">ARC-AGI-3</span>
                 <span className="text-[var(--arc3-dim)] font-normal text-xs ml-2">Interactive Reasoning Benchmarks</span>
               </h1>
               <p className="text-[11px] text-[var(--arc3-muted)] leading-snug mt-0.5">
                 Play 2D Python games built on the ARCEngine sprite runtime. 64x64 pixel grids, 16-color palette.
               </p>
+              <div className="mt-2 flex flex-wrap gap-1.5" aria-hidden="true">
+                {[14, 11, 12, 9, 6, 15].map((colorIndex) => (
+                  <span
+                    key={colorIndex}
+                    className="inline-block w-6 h-1.5 border border-[var(--arc3-border)]"
+                    style={{ backgroundColor: ARC3_COLORS[colorIndex] }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden md:grid grid-cols-3 gap-1" aria-hidden="true">
+              {[14, 11, 12, 9, 6, 15].map((colorIndex, idx) => (
+                <span
+                  key={`${colorIndex}-${idx}`}
+                  className="w-2.5 h-2.5 border border-[var(--arc3-border)]"
+                  style={{ backgroundColor: ARC3_COLORS[colorIndex] }}
+                />
+              ))}
+            </div>
             <PixelButton tone="green" onClick={() => setLocation('/arc3/upload')}>
               <Upload className="w-4 h-4" />
               Submit Game
             </PixelButton>
           </div>
         </div>
-        <div className="relative h-1.5 flex">
-          {[14, 11, 12, 9, 6, 15, 8, 10, 14, 11, 12, 9, 6, 15, 8, 10].map((colorIndex, index) => (
+        <div className="h-1.5 flex">
+          {[10, 8, 15, 6, 9, 12, 11, 14, 10, 8, 15, 6, 9, 12, 11, 14].map((colorIndex, index) => (
             <div key={index} className="flex-1" style={{ backgroundColor: ARC3_COLORS[colorIndex] }} />
           ))}
         </div>
