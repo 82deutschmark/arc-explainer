@@ -6,7 +6,7 @@ FROM node:20-alpine
 # - Poetiq solver is INTERNALIZED at solver/poetiq/ (always available)
 # - BeetreeARC and SnakeBench code are ensured via submodules when present, or shallow git clones during build
 # Author: Cascade (Claude Sonnet 4)
-# Updated: 2026-01-30 - Fix crontab COPY path to scripts/crontab; retain beetreeARC/SnakeBench availability
+# Updated: 2026-02-06 - Add ARCEngine clone fallback when submodule contents are absent in CI build contexts
 
 # Add Python3, git, canvas dependencies, and cron daemon for scheduled tasks
 RUN apk add --no-cache \
@@ -85,12 +85,20 @@ RUN echo "=== PREPARING RE-ARC LIBRARY ===" && \
     fi && \
     test -f external/re-arc/lib.py && echo "\u2713 re-arc lib.py exists" || (echo "\u2717 re-arc lib.py NOT FOUND after clone" && exit 1)
 
-# ARCEngine is committed directly to the repo (no longer a submodule)
-# Install it as an editable package for ARC3 community games runtime
-RUN echo "=== INSTALLING ARCENGINE AS EDITABLE PACKAGE ===" && \
-    test -f external/ARCEngine/arcengine/__init__.py && echo "✓ ARCEngine __init__.py exists" || (echo "✗ ARCEngine __init__.py NOT FOUND" && exit 1) && \
+# Prepare ARCEngine: use existing checkout if present, otherwise clone from GitHub
+RUN echo "=== PREPARING ARCENGINE LIBRARY ===" && \
+    if [ ! -f external/ARCEngine/arcengine/__init__.py ]; then \
+        echo "\u2717 ARCEngine not present in build context; cloning from GitHub" && \
+        rm -rf external/ARCEngine && \
+        mkdir -p external && \
+        git clone --depth 1 --branch main https://github.com/82deutschmark/ARCEngine external/ARCEngine; \
+    else \
+        echo "\u2713 ARCEngine present in build context; using existing checkout"; \
+    fi && \
+    test -f external/ARCEngine/arcengine/__init__.py && echo "\u2713 ARCEngine __init__.py exists" || (echo "\u2717 ARCEngine __init__.py NOT FOUND after clone" && exit 1) && \
+    test -f external/ARCEngine/pyproject.toml && echo "\u2713 ARCEngine pyproject.toml exists" || (echo "\u2717 ARCEngine pyproject.toml NOT FOUND after clone" && exit 1) && \
+    echo "=== INSTALLING ARCENGINE AS EDITABLE PACKAGE ===" && \
     cd external/ARCEngine && python3 -m pip install --no-cache-dir --break-system-packages -e .
-
 # Poetiq solver is now internalized at solver/poetiq/ (copied above)
 # Verify the internalized solver exists
 RUN echo "=== VERIFYING INTERNALIZED POETIQ SOLVER ===" && \

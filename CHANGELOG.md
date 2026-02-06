@@ -1,5 +1,22 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.10  Feb 06, 2026
+
+- **FIX: Railway Docker build now restores ARCEngine when submodule contents are missing from build context** (Author: Codex GPT-5)
+  - **What**: Updated Docker build steps to prepare `external/ARCEngine` the same way as other external dependencies: if `external/ARCEngine/arcengine/__init__.py` is missing after `COPY . .`, the build now clones `82deutschmark/ARCEngine` `main` and then installs it editable.
+  - **Why**: After returning ARCEngine to a git submodule, Railway builds could receive a context without populated submodule files; the previous Docker step assumed files were always present and failed at ARCEngine install.
+  - **How**:
+    - `Dockerfile`: Replaced the direct ARCEngine install check with a prepare-or-clone block plus file verification (`arcengine/__init__.py`, `pyproject.toml`) before `pip install -e external/ARCEngine`.
+
+### Version 7.3.9  Feb 06, 2026
+
+- **FIX: ARC3 landing visual direction reset (removed tartan texture, reduced gray-heavy UI)** (Author: GPT-5 Codex)
+  - **What**: Replaced the patterned tartan-like hero background with clean, solid pixel color bands and switched the ARC3 landing page to a bright, high-contrast palette override so the page is no longer dominated by dark gray surfaces.
+  - **Why**: The prior hero treatment and global dark tokens made the page feel muddy and visually noisy, which conflicted with the intended crisp 16-color pixel style.
+  - **How**:
+    - `client/src/components/arc3-community/Arc3PixelUI.tsx`: Added optional `vars` prop to `Arc3PixelPage` to support per-page theme token overrides without duplicating components.
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Applied a light ARC3 token set, removed texture overlays, and rebuilt hero decoration using deliberate solid color pixel bands and block accents.
+
 ### Version 7.3.8  Feb 06, 2026
 
 - **FIX: ARC3 landing cards now show real levels/actions metadata and no teaser descriptions** (Author: GPT-5 Codex)
