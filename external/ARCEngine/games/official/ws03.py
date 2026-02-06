@@ -24,11 +24,11 @@ sprites = {
     "krg": Sprite(pixels=[[8]], name="krg", visible=True, collidable=True, layer=3),
     "lhs": Sprite(pixels=[[6]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
     "lyd": Sprite(pixels=[[-1, 0, -1], [-1, 0, -1], [0, 0, 0]], name="lyd", visible=True, collidable=True),
-    "mgu": Sprite(pixels=[[5, 5, 5, 5] + [-1]*60]*52 + [[13]*12 + [-1]*52] + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [-1]*52]*7 + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [5]*52]*3 + [[13]*12 + [5]*52], name="mgu", visible=True, collidable=True),
+    "mgu": Sprite(pixels=[[6, 6, 6, 6] + [-1]*60]*52 + [[13]*12 + [-1]*52] + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [-1]*52]*7 + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [13]*52]*3 + [[13]*12 + [13]*52], name="mgu", visible=True, collidable=True),
     "nio": Sprite(pixels=[[-1, 0, 0], [0, -1, 0], [-1, 0, -1]], name="nio", visible=True, collidable=True),
     "nlo": Sprite(pixels=[[13]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
     "opw": Sprite(pixels=[[0, 0, -1], [-1, 0, 0], [0, -1, 0]], name="opw", visible=True, collidable=True),
-    "pca": Sprite(pixels=[[9, 6, 9], [6, 9, 6], [9, 6, 9]], name="pca", visible=True, collidable=True, tags=["caf"]),
+    "pca": Sprite(pixels=[[-1, -1, -1, -1, -1], [-1, 9, 6, 9, -1], [-1, 6, 9, 6, -1], [-1, 9, 6, 9, -1], [-1, -1, -1, -1, -1]], name="pca", visible=True, collidable=True, tags=["caf"]),
     "qqv": Sprite(pixels=[[-2]*5, [-2, 15, 8, 8, -2], [-2, 15, 6, 11, -2], [-2, 12, 12, 11, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
     "rzt": Sprite(pixels=[[0, -1, -1], [-1, 0, -1], [-1, -1, 0]], name="rzt", visible=True, collidable=True, tags=["axa"]),
     "snw": Sprite(pixels=[[6]*7, [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
@@ -39,8 +39,8 @@ sprites = {
     "zba": Sprite(pixels=[[12]], name="zba", visible=True, collidable=False, tags=["iri"], layer=-1),
 }
 
-BACKGROUND_COLOR = 5
-PADDING_COLOR = 5
+BACKGROUND_COLOR = 10
+PADDING_COLOR = 15
 
 
 class jvq(RenderableUserDisplay):
@@ -86,7 +86,7 @@ class jvq(RenderableUserDisplay):
                             if hhe == lyd - 1 or hhe == lyd + 6 or w == mgu - 1 or w == mgu + 6:
                                 frame[hhe, w] = 6  # Magenta border
                             else:
-                                frame[hhe, w] = 5  # Gray background
+                                frame[hhe, w] = 15  # Purple background
                 # Draw key sprite on top of background
                 for hhe in range(6):
                     for w in range(6):
@@ -96,13 +96,13 @@ class jvq(RenderableUserDisplay):
         for hhe in range(self.tmx):
             mgu = 13 + hhe
             lyd = 61
-            frame[lyd : lyd + 2, mgu] = 12 if self.tmx - hhe - 1 < self.snw else 5
+            frame[lyd : lyd + 2, mgu] = 12 if self.tmx - hhe - 1 < self.snw else 15
 
         for lhs in range(3):
             mgu = 56 + 3 * lhs
             lyd = 61
             for x in range(2):
-                frame[lyd : lyd + 2, mgu + x] = 14 if self.tuv.lbq > lhs else 5
+                frame[lyd : lyd + 2, mgu + x] = 14 if self.tuv.lbq > lhs else 15
         return frame
 
 

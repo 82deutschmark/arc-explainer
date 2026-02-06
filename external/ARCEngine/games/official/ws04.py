@@ -1,7 +1,7 @@
 # Author: Claude Opus 4.6
 # Date: 2026-02-06
 # PURPOSE: WS04 game - variant with Cyan/Maroon/Yellow color theme and vertical UI
-# Features: Cyan (8) borders, maroon (9) walls, yellow (4) door, gray (5) background
+# Features: Red (8) borders, Blue (9) walls, Darker Gray (4) door, Light Blue (10) background
 #           Vertical energy bar on right side + level progress dots
 # SRP/DRY check: Pass - Faithful adaptation of proven game mechanics with new color palette, layouts, and UI style
 
@@ -13,7 +13,7 @@ import numpy as np
 from arcengine import ARCBaseGame, Camera, Level, RenderableUserDisplay, Sprite
 
 # WS04 color theme: Cyan (8) borders/frames, maroon (9) walls, yellow (4) door body
-# Player: green (3) top + orange (7) bottom -- warm/cool contrast, pops against maroon walls
+# Player: Dark Gray (3) top + Light Pink (7) bottom -- neutral/warm contrast, pops against Blue walls
 # Shape sprites use 0 as base color so color_remap(0, target) works correctly
 sprites = {
     "dcb": Sprite(pixels=[[-1, 0, -1], [0, 0, -1], [-1, 0, 0]], name="dcb", visible=True, collidable=True, layer=1),
@@ -26,7 +26,7 @@ sprites = {
     "krg": Sprite(pixels=[[2]], name="krg", visible=True, collidable=True, layer=3),
     "lhs": Sprite(pixels=[[8]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
     "lyd": Sprite(pixels=[[-1, 0, -1], [-1, 0, -1], [0, 0, 0]], name="lyd", visible=True, collidable=True),
-    "mgu": Sprite(pixels=[[5, 5, 5, 5] + [-1]*60]*24 + [[9]*12 + [-1]*52, [9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [-1]*52]*7 + [[9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [5]*52]*3 + [[9]*12 + [5]*52], name="mgu", visible=True, collidable=True),
+    "mgu": Sprite(pixels=[[8, 8, 8, 8] + [-1]*60]*52 + [[9]*12 + [-1]*52] + [[9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [-1]*52]*7 + [[9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [9]*52]*3 + [[9]*12 + [9]*52], name="mgu", visible=True, collidable=True),
     "nio": Sprite(pixels=[[-1, 0, 0], [0, -1, 0], [-1, 0, -1]], name="nio", visible=True, collidable=True),
     "nlo": Sprite(pixels=[[9]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
     "opw": Sprite(pixels=[[0, 0, -1], [-1, 0, 0], [0, -1, 0]], name="opw", visible=True, collidable=True),
@@ -41,8 +41,8 @@ sprites = {
     "zba": Sprite(pixels=[[4, 4, 4], [4, -1, 4], [4, 4, 4]], name="zba", visible=True, collidable=False, tags=["iri"], layer=-1),
 }
 
-BACKGROUND_COLOR = 5
-PADDING_COLOR = 5
+BACKGROUND_COLOR = 10
+PADDING_COLOR = 15
 
 # Level definitions - 7 all-new levels with unique wall layouts
 levels = [
@@ -367,7 +367,7 @@ class jvq(RenderableUserDisplay):
                             if hhe == lyd - 1 or hhe == lyd + 6 or w == mgu - 1 or w == mgu + 6:
                                 frame[hhe, w] = 8  # Cyan border
                             else:
-                                frame[hhe, w] = 5  # Gray background
+                                frame[hhe, w] = 15  # Purple background
                 # Draw key sprite on top
                 for hhe in range(6):
                     for w in range(6):
@@ -504,7 +504,7 @@ class Ws04(ARCBaseGame):
             return
 
         if self.kbj:
-            self.nlo.color_remap(None, 5)
+            self.nlo.color_remap(None, 8)
             self.kbj = False
             self.complete_action()
             return
