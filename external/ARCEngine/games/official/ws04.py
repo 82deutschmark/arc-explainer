@@ -1,7 +1,7 @@
 # Author: Claude Opus 4.6
-# Date: 2026-02-06
-# PURPOSE: WS04 game - variant with Cyan/Maroon/Yellow color theme and vertical UI
-# Features: Red (8) borders, Blue (9) walls, Darker Gray (4) door, Light Blue (10) background
+# Date: 2026-02-06 (fixed color 0/1 in pickers, removed mgu left bar)
+# PURPOSE: WS04 game - variant with Cyan/Blue/Yellow color theme and vertical UI
+# Features: Cyan (8) borders/frames, Blue (9) walls, Yellow (4) door, Light Blue (10) background
 #           Vertical energy bar on right side + level progress dots
 # SRP/DRY check: Pass - Faithful adaptation of proven game mechanics with new color palette, layouts, and UI style
 
@@ -22,22 +22,22 @@ sprites = {
     "hep": Sprite(pixels=[[8]*10]*10, name="hep", visible=True, collidable=True, tags=["nfq"], layer=1),
     "hul": Sprite(pixels=[[4, 4, -1, -1, -1, -1, -1, 4, 4], [4]*9, [4]*9, [4]*9, [4]*9, [4]*9, [4]*9, [4]*9, [4]*9], name="hul", visible=True, collidable=True, layer=-4),
     "kdj": Sprite(pixels=[[0, -1, 0], [-1, 0, -1], [0, -1, 0]], name="kdj", visible=True, collidable=True, tags=["wex"], layer=10),
-    "kdy": Sprite(pixels=[[-2]*5, [-2, -2, 0, -2, -2], [-2, 1, 0, 0, -2], [-2, -2, 1, -2, -2], [-2]*5], name="kdy", visible=True, collidable=True, tags=["bgt"], layer=-1),
+    "kdy": Sprite(pixels=[[-2]*5, [-2, -2, 8, -2, -2], [-2, 4, 8, 8, -2], [-2, -2, 4, -2, -2], [-2]*5], name="kdy", visible=True, collidable=True, tags=["bgt"], layer=-1),
     "krg": Sprite(pixels=[[2]], name="krg", visible=True, collidable=True, layer=3),
     "lhs": Sprite(pixels=[[8]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
     "lyd": Sprite(pixels=[[-1, 0, -1], [-1, 0, -1], [0, 0, 0]], name="lyd", visible=True, collidable=True),
-    "mgu": Sprite(pixels=[[8, 8, 8, 8] + [-1]*60]*52 + [[9]*12 + [-1]*52] + [[9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [-1]*52]*7 + [[9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [9]*52]*3 + [[9]*12 + [9]*52], name="mgu", visible=True, collidable=True),
+    "mgu": Sprite(pixels=[[-1]*64]*52 + [[9]*12 + [-1]*52] + [[9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [-1]*52]*7 + [[9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [9]*52]*3 + [[9]*12 + [9]*52], name="mgu", visible=True, collidable=True),
     "nio": Sprite(pixels=[[-1, 0, 0], [0, -1, 0], [-1, 0, -1]], name="nio", visible=True, collidable=True),
     "nlo": Sprite(pixels=[[9]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
     "opw": Sprite(pixels=[[0, 0, -1], [-1, 0, 0], [0, -1, 0]], name="opw", visible=True, collidable=True),
     "pca": Sprite(pixels=[[3, 3, 3, 3, 3], [3, 3, 3, 3, 3], [7, 7, 7, 7, 7], [7, 7, 7, 7, 7], [7, 7, 7, 7, 7]], name="pca", visible=True, collidable=True, tags=["caf"]),
-    "qqv": Sprite(pixels=[[-2]*5, [-2, 9, 14, 14, -2], [-2, 9, 0, 8, -2], [-2, 12, 12, 8, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
+    "qqv": Sprite(pixels=[[-2]*5, [-2, 9, 14, 14, -2], [-2, 9, 4, 8, -2], [-2, 12, 12, 8, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
     "rzt": Sprite(pixels=[[0, -1, -1], [-1, 0, -1], [-1, -1, 0]], name="rzt", visible=True, collidable=True, tags=["axa"]),
     "snw": Sprite(pixels=[[8]*7, [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
     "tmx": Sprite(pixels=[[0, -1, 0], [0, -1, 0], [0, 0, 0]], name="tmx", visible=True, collidable=True),
     "tuv": Sprite(pixels=[[8]*10] + [[8] + [-1]*8 + [8]]*8 + [[8]*10], name="tuv", visible=False, collidable=True, tags=["fng"], layer=5),
     "ulq": Sprite(pixels=[[8]*7] + [[8] + [-1]*5 + [8]]*5 + [[8]*7], name="ulq", visible=False, collidable=True, tags=["qex"], layer=-1),
-    "vxy": Sprite(pixels=[[-2]*5, [-2, 0, -2, -2, -2], [-2, -2, 0, 0, -2], [-2, -2, 0, -2, -2], [-2]*5], name="vxy", visible=True, collidable=False, tags=["gsu"], layer=-1),
+    "vxy": Sprite(pixels=[[-2]*5, [-2, 8, -2, -2, -2], [-2, -2, 8, 8, -2], [-2, -2, 8, -2, -2], [-2]*5], name="vxy", visible=True, collidable=False, tags=["gsu"], layer=-1),
     "zba": Sprite(pixels=[[4, 4, 4], [4, -1, 4], [4, 4, 4]], name="zba", visible=True, collidable=False, tags=["iri"], layer=-1),
 }
 

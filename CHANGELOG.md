@@ -1,5 +1,33 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.4  Feb 06, 2026
+
+- **FIX: WS03 pca invisible bounding box replaced with proper 5x5 checkerboard** (Author: Claude Opus 4.6)
+  - **What**: Removed the transparent `-1` padding around the 3x3 player sprite that was faking a 5x5 collision box. Replaced with a proper filled 5x5 blue+magenta checkerboard pattern (9+6), matching how LS20 and WS04 handle their player sprites.
+  - **Why**: The invisible padding approach made the player look like a 3x3 sprite that mysteriously collided with walls 1px away. The game's grid is fundamentally 5px-based -- the correct fix is a real 5x5 sprite, not a transparent hack.
+  - **How**:
+    - `external/ARCEngine/games/official/ws03.py:31`: Changed pca from `[[-1,-1,-1,-1,-1],[-1,9,6,9,-1],...]` to `[[9,6,9,6,9],[6,9,6,9,6],...]` -- full 5x5 checkerboard.
+
+- **FIX: WS04 picker sprites using wrong colors 0 and 1 instead of theme colors** (Author: Claude Opus 4.6)
+  - **What**: Fixed `kdy` (rotation changer), `vxy` (shape changer), and `qqv` (color changer) sprites which used raw colors 0 and 1 in their pixel data. These are NOT remap bases -- they're displayed directly, so 0 (Black) and 1 (Blue) rendered as wrong/invisible pixels.
+  - **Why**: Colors 0 and 1 in picker sprites are almost certainly bugs -- they're reserved for remap base mechanics. The picker sprites should use visible theme-appropriate colors like WS03 does (6+12).
+  - **How**:
+    - `external/ARCEngine/games/official/ws04.py:25`: kdy: `0`->`8` (Cyan), `1`->`4` (Yellow)
+    - `external/ARCEngine/games/official/ws04.py:34`: qqv: `0`->`4` (Yellow)
+    - `external/ARCEngine/games/official/ws04.py:40`: vxy: `0`->`8` (Cyan)
+
+- **FIX: WS04 mgu left bar removed (was a prominent red bar with no purpose)** (Author: Claude Opus 4.6)
+  - **What**: Changed the mgu sprite's left bar (4px wide, 52 rows) from color 8 (Cyan) to transparent (-1). Wall tiles at x=4 already provide the left border.
+  - **Why**: The previous fix changed this from color 5 to 8 (theme border color), making it a large conspicuous bar on the left side of the screen with no gameplay purpose. LS20's equivalent is subtle (dark on dark); WS04's wall tiles handle the actual boundary.
+  - **How**:
+    - `external/ARCEngine/games/official/ws04.py:29`: mgu left bar: `[[8,8,8,8]+[-1]*60]*52` -> `[[-1]*64]*52`
+
+- **DOCS: Created WS-style games reference guide** (Author: Claude Opus 4.6)
+  - **What**: New reference doc documenting how WS-style games work: sprite roles/tags, color slot assignments across LS20/WS03/WS04, mgu sprite structure, level data fields, and key differences between variants.
+  - **Why**: Needed a single place documenting what BACKGROUND_COLOR, PADDING_COLOR, panel_bg, mgu left bar, mgu bottom fill, and all other color slots are for, so future changes don't blindly swap colors.
+  - **How**:
+    - `docs/reference/arc3/WS_Style_Games_Guide.md`: Full reference with tables for every color slot.
+
 ### Version 7.3.3  Feb 06, 2026
 
 - **FIX: ARC3 community games fail to boot in Docker (runner path resolution)** (Author: Cascade / Claude Sonnet 4)
