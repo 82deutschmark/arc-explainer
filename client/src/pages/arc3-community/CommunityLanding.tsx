@@ -1,13 +1,11 @@
 /*
-Author: Cascade (Claude Sonnet 4)
-Date: 2026-02-05
-PURPOSE: ARC3 landing page - game-focused redesign. The hero area is a compact title strip
-         with the 16-color ARC3 palette as visual identity. The main content is a grid of
-         playable official ARCEngine games with prominent Play buttons. Secondary actions
-         (upload, docs, GitHub) are demoted to a footer bar. No instructional text in the UI.
-         All 16 ARC3 palette colors are used as creative design elements (card accents,
-         palette strips, decorative borders) rather than just panel backgrounds.
-SRP/DRY check: Pass - page-only layout; shared pixel UI primitives live in Arc3PixelUI.tsx.
+Author: GPT-5 Codex
+Date: 2026-02-06T00:00:00Z
+PURPOSE: ARC3 landing page game gallery. Renders official/community games as card grids with
+         accurate runtime metadata from the backend (levels + action-space counts), without
+         speculative teaser descriptions. Uses ARC3 palette-driven visual styling for hero,
+         cards, and separators while reusing shared pixel UI primitives from Arc3PixelUI.
+SRP/DRY check: Pass - page-only composition; shared primitives and data fetching reused.
 */
 
 import { useLocation } from 'wouter';
@@ -26,6 +24,7 @@ interface CommunityGame {
   description: string | null;
   authorName: string;
   levelCount?: number;
+  actionCount?: number | null;
   tags?: string[];
 }
 
@@ -39,9 +38,18 @@ interface GamesListResponse {
 
 const ARCENGINE_REPO = 'https://github.com/arcprize/ARCEngine';
 
-function truncate(text: string, max: number) {
-  if (text.length <= max) return text;
-  return `${text.slice(0, Math.max(0, max - 1)).trimEnd()}...`;
+function formatCount(value: number | null | undefined, noun: string): string | null {
+  if (value == null || value <= 0) return null;
+  return `${value} ${noun}${value === 1 ? '' : 's'}`;
+}
+
+function buildGameStats(game: CommunityGame): string {
+  const chunks = [
+    formatCount(game.levelCount, 'level'),
+    formatCount(game.actionCount, 'action'),
+  ].filter((value): value is string => Boolean(value));
+
+  return chunks.join(', ');
 }
 
 export default function CommunityLanding() {
@@ -61,9 +69,23 @@ export default function CommunityLanding() {
       {/* 16-color palette strip as top visual identity */}
       <PaletteStrip cellHeight={8} />
 
-      {/* Compact hero - no redundant sub-header, just a title + CTA */}
-      <div className="bg-[var(--arc3-bg-soft)] border-b-2 border-[var(--arc3-border)]">
-        <div className="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
+      {/* Compact hero with layered palette accents instead of a flat gray band */}
+      <div
+        className="relative overflow-hidden border-b-2 border-[var(--arc3-border)]"
+        style={{
+          background: `linear-gradient(130deg, ${ARC3_COLORS[5]} 0%, ${ARC3_COLORS[4]} 42%, ${ARC3_COLORS[3]} 100%)`,
+        }}
+      >
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none opacity-60"
+          style={{
+            background:
+              `repeating-linear-gradient(135deg, ${ARC3_COLORS[9]}33 0 14px, transparent 14px 28px), ` +
+              `repeating-linear-gradient(45deg, ${ARC3_COLORS[14]}22 0 20px, transparent 20px 40px)`,
+          }}
+        />
+        <div className="relative max-w-6xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             {/* Tiny 4x4 pixel grid decoration using palette colors */}
             <div className="shrink-0 grid grid-cols-4 gap-px w-10 h-10" aria-hidden="true">
@@ -88,6 +110,11 @@ export default function CommunityLanding() {
               Submit Game
             </PixelButton>
           </div>
+        </div>
+        <div className="relative h-1.5 flex">
+          {[14, 11, 12, 9, 6, 15, 8, 10, 14, 11, 12, 9, 6, 15, 8, 10].map((colorIndex, index) => (
+            <div key={index} className="flex-1" style={{ backgroundColor: ARC3_COLORS[colorIndex] }} />
+          ))}
         </div>
       </div>
 
@@ -129,49 +156,45 @@ export default function CommunityLanding() {
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {arcPrizeGames.map((game, idx) => (
-                    <GameCard
-                      key={game.gameId}
-                      accentIndex={ACCENT_CYCLE[idx % ACCENT_CYCLE.length]}
-                      onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                    >
-                      <div className="p-3 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold truncate">{game.displayName}</span>
-                          {game.tags?.includes('official') && (
-                            <span
-                              className="text-[9px] font-bold px-1.5 py-0.5 shrink-0"
-                              style={{ backgroundColor: ARC3_COLORS[11], color: ARC3_COLORS[5] }}
-                            >
-                              OFFICIAL
-                            </span>
-                          )}
-                        </div>
-                        {game.description && (
-                          <p className="text-[11px] text-[var(--arc3-muted)] leading-snug min-h-[2rem]">
-                            {truncate(game.description, 120)}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
-                          <div className="flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            <span>{game.authorName}</span>
+                  {arcPrizeGames.map((game, idx) => {
+                    const stats = buildGameStats(game);
+                    return (
+                      <GameCard
+                        key={game.gameId}
+                        accentIndex={ACCENT_CYCLE[idx % ACCENT_CYCLE.length]}
+                        onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                      >
+                        <div className="p-3 space-y-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold truncate">{game.displayName}</span>
+                            {game.tags?.includes('official') && (
+                              <span
+                                className="text-[9px] font-bold px-1.5 py-0.5 shrink-0"
+                                style={{ backgroundColor: ARC3_COLORS[11], color: ARC3_COLORS[5] }}
+                              >
+                                OFFICIAL
+                              </span>
+                            )}
                           </div>
-                          {game.levelCount != null && game.levelCount > 0 && (
-                            <span>{game.levelCount} levels</span>
-                          )}
+                          <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Users className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{game.authorName}</span>
+                            </div>
+                            {stats && <span className="shrink-0">{stats}</span>}
+                          </div>
+                          <PixelButton
+                            tone="green"
+                            onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                            className="w-full mt-1"
+                          >
+                            <Play className="w-4 h-4" />
+                            Play
+                          </PixelButton>
                         </div>
-                        <PixelButton
-                          tone="green"
-                          onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                          className="w-full mt-1"
-                        >
-                          <Play className="w-4 h-4" />
-                          Play
-                        </PixelButton>
-                      </div>
-                    </GameCard>
-                  ))}
+                      </GameCard>
+                    );
+                  })}
                 </div>
               </section>
             )}
@@ -188,41 +211,37 @@ export default function CommunityLanding() {
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {teamGames.map((game, idx) => (
-                    <GameCard
-                      key={game.gameId}
-                      accentIndex={ACCENT_CYCLE[(arcPrizeGames.length + idx) % ACCENT_CYCLE.length]}
-                      onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                    >
-                      <div className="p-3 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold truncate">{game.displayName}</span>
-                        </div>
-                        {game.description && (
-                          <p className="text-[11px] text-[var(--arc3-muted)] leading-snug min-h-[2rem]">
-                            {truncate(game.description, 120)}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
-                          <div className="flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            <span>{game.authorName}</span>
+                  {teamGames.map((game, idx) => {
+                    const stats = buildGameStats(game);
+                    return (
+                      <GameCard
+                        key={game.gameId}
+                        accentIndex={ACCENT_CYCLE[(arcPrizeGames.length + idx) % ACCENT_CYCLE.length]}
+                        onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                      >
+                        <div className="p-3 space-y-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold truncate">{game.displayName}</span>
                           </div>
-                          {game.levelCount != null && game.levelCount > 0 && (
-                            <span>{game.levelCount} levels</span>
-                          )}
+                          <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Users className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{game.authorName}</span>
+                            </div>
+                            {stats && <span className="shrink-0">{stats}</span>}
+                          </div>
+                          <PixelButton
+                            tone="green"
+                            onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                            className="w-full mt-1"
+                          >
+                            <Play className="w-4 h-4" />
+                            Play
+                          </PixelButton>
                         </div>
-                        <PixelButton
-                          tone="green"
-                          onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                          className="w-full mt-1"
-                        >
-                          <Play className="w-4 h-4" />
-                          Play
-                        </PixelButton>
-                      </div>
-                    </GameCard>
-                  ))}
+                      </GameCard>
+                    );
+                  })}
                 </div>
               </section>
             )}

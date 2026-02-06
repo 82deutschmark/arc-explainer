@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.8  Feb 06, 2026
+
+- **FIX: ARC3 landing cards now show real levels/actions metadata and no teaser descriptions** (Author: GPT-5 Codex)
+  - **What**: Removed descriptive teaser text from ARC3 landing game cards and replaced card metadata with factual counts in the format `N levels, M actions`. Official ARCEngine catalog responses now include `actionCount` derived directly from each game's runtime `available_actions`.
+  - **Why**: The landing cards were displaying narrative blurbs that could mischaracterize games (for example VC33) and were not exposing the action-space count users actually need when choosing a game.
+  - **How**:
+    - `server/python/arcengine_official_game_catalog.py`: Added `action_count` extraction from each loaded game's `_available_actions` and included it in catalog JSON output.
+    - `server/services/arc3Community/ArcEngineOfficialGameCatalog.ts`: Mapped Python `action_count` into API-facing game metadata as `actionCount`.
+    - `server/repositories/CommunityGameRepository.ts`: Extended `CommunityGame` typing to allow optional runtime `actionCount` metadata.
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Removed per-card description rendering, added real `levels/actions` metadata display, and refreshed the hero strip with layered ARC3 palette accents instead of a flat gray bar.
+
 ### Version 7.3.7  Feb 07, 2026
 
 - **FIX: Complete UI/UX redesign of ARC3 community game controls panel** (Author: Cascade Claude Sonnet 4)
