@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.5  Feb 06, 2026
+
+- **CHORE: Restore `external/ARCEngine` as a git submodule and repoint to merged upstream fixes** (Author: Codex GPT-5)
+  - **What**: Reverted the prior “vendored directory” layout and restored `external/ARCEngine` as a true git submodule tracked in `.gitmodules`.
+  - **Why**: Keeping ARCEngine vendored in this repository caused drift, duplicated ownership, and made engine updates harder to reason about versus a pinned submodule commit.
+  - **How**:
+    - Pushed ARC game file updates (`games/official/__init__.py`, `gw01.py`, `ws02.py`, `ws03.py`, `ws04.py`) to `82deutschmark/ARCEngine`, then merged into `main` at `37b5fe83cc11635c9623710bcb1d10e1816dd4cc`.
+    - Replaced tracked `external/ARCEngine/*` files in arc-explainer with a gitlink and updated `.gitmodules` with `branch = main`.
+
 ### Version 7.3.4  Feb 06, 2026
 
 - **FIX: WS03 pca invisible bounding box replaced with proper 5x5 checkerboard** (Author: Claude Opus 4.6)
