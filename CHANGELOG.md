@@ -1,3 +1,4 @@
+<<<<<<< C:/Projects/arc-explainer/CHANGELOG.md
 # New entries at the top, use proper SemVer!
 
 ### Version 7.3.6  Feb 06, 2026
@@ -23,6 +24,41 @@
 ### Version 7.3.4  Feb 06, 2026
 
 - **FIX: WS03 pca invisible bounding box replaced with proper 5x5 checkerboard** (Author: Claude Opus 4.6)
+=======
+# New entries at the top, use proper SemVer!
+
+### Version 7.3.7  Feb 07, 2026
+
+- **FIX: Complete UI/UX redesign of ARC3 community game controls panel** (Author: Cascade Claude Sonnet 4)
+  - **What**: Replaced the confusing, cramped controls sidebar with a unified, larger, and more intuitive control layout. All 7 game actions are now exposed with clear labels, embedded keyboard hints, and proper visual hierarchy.
+  - **Why**: The original controls had multiple UX problems: tiny gray arrow buttons that didn't communicate purpose, a confusing green play button in the d-pad center, a dominant yellow Reset button stealing focus from movement, a redundant separate "Keyboard" panel duplicating information, and missing ACTION5/6/7 buttons entirely.
+  - **How**:
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Replaced the controls sidebar with three distinct sections: (1) **Movement** d-pad with large 56px blue buttons showing both chevron icons and WASD key hints, with a dashed center spacer; (2) **Actions** panel with full-width labeled buttons for Action (Space), Click Grid (Mouse), and Alt Action (Q/E); (3) **Reset** demoted to a small neutral button at the bottom. Removed the separate "Keyboard" panel entirely since all hints are now embedded on the buttons themselves. Added keyboard bindings for ACTION7 (Q/E keys) and number keys 1-7 for direct action access.
+
+### Version 7.3.6  Feb 06, 2026
+
+- **FIX: Landing ARC3 replays load via recording proxy and now support official NDJSON replay endpoints** (Author: GPT-5 Codex)
+  - **What**: Added a same-origin ARC3 recording proxy endpoint and switched the landing page ARC3 panel from MP4-only playback to `ARC3CanvasPlayer` backed by official replay recordings. Added the reported AS66 short replay (`as66-f340c8e5138e / 7408e07e-83ca-4fbb-b9eb-1ed888cd751e-short`) to the landing rotation.
+  - **Why**: Some ARC3 replays were not loading on landing because official `three.arcprize.org` recording endpoints are served as NDJSON and are not reliably fetchable directly from the browser due cross-origin constraints.
+  - **How**:
+    - `server/routes/arc3.ts`: Added `GET /api/arc3/recordings/:gameId/:recordingId` proxy that fetches upstream NDJSON and returns it to the frontend with same-origin headers.
+    - `client/src/pages/LandingPage.tsx`: Replaced ARC3 `<video>` usage with `ARC3CanvasPlayer`, wired replay IDs to the new proxy route, and capped landing playback frames for predictable hero rotation.
+    - `client/src/components/ARC3CanvasPlayer.tsx`: Added optional `maxFrames` and `hideHeader` props for landing usage and cleaned replay status text to ASCII.
+    - `docs/reference/frontend/landing-hero.md`: Updated documentation to reflect the recording-proxy flow and current replay set.
+
+### Version 7.3.5  Feb 06, 2026
+
+- **CHORE: Restore `external/ARCEngine` as a git submodule and repoint to merged upstream fixes** (Author: Codex GPT-5)
+  - **What**: Reverted the prior “vendored directory” layout and restored `external/ARCEngine` as a true git submodule tracked in `.gitmodules`.
+  - **Why**: Keeping ARCEngine vendored in this repository caused drift, duplicated ownership, and made engine updates harder to reason about versus a pinned submodule commit.
+  - **How**:
+    - Pushed ARC game file updates (`games/official/__init__.py`, `gw01.py`, `ws02.py`, `ws03.py`, `ws04.py`) to `82deutschmark/ARCEngine`, then merged into `main` at `37b5fe83cc11635c9623710bcb1d10e1816dd4cc`.
+    - Replaced tracked `external/ARCEngine/*` files in arc-explainer with a gitlink and updated `.gitmodules` with `branch = main`.
+
+### Version 7.3.4  Feb 06, 2026
+
+- **FIX: WS03 pca invisible bounding box replaced with proper 5x5 checkerboard** (Author: Claude Opus 4.6)
+>>>>>>> C:/Users/markb/.windsurf/worktrees/arc-explainer/arc-explainer-56ab7408/CHANGELOG.md
   - **What**: Removed the transparent `-1` padding around the 3x3 player sprite that was faking a 5x5 collision box. Replaced with a proper filled 5x5 blue+magenta checkerboard pattern (9+6), matching how LS20 and WS04 handle their player sprites.
   - **Why**: The invisible padding approach made the player look like a 3x3 sprite that mysteriously collided with walls 1px away. The game's grid is fundamentally 5px-based -- the correct fix is a real 5x5 sprite, not a transparent hack.
   - **How**:

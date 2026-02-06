@@ -1,9 +1,11 @@
 /*
 Author: Cascade (Claude Sonnet 4)
-Date: 2026-02-06
+Date: 2026-02-07
 PURPOSE: Game play page for community games. Handles game session management,
          rendering the game grid, and player input controls. Uses ARC3 pixel UI theme.
          Supports ACTION6 click-on-grid with coordinates passed to backend.
+         All 7 actions exposed with clear labels, embedded keyboard hints on each button,
+         and a dedicated Movement d-pad with WASD overlays.
 SRP/DRY check: Pass — uses shared pixel UI primitives and ARC3 grid visualization.
 */
 
@@ -22,6 +24,9 @@ import {
   Trophy,
   XCircle,
   Gamepad2,
+  Mouse,
+  Zap,
+  Hash,
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
@@ -123,6 +128,7 @@ export default function CommunityGamePlay() {
     if (actionMutation.isPending || !sessionGuid) return;
 
     const keyMap: Record<string, string> = {
+      // Directional: arrows + WASD
       'ArrowUp': 'ACTION1',
       'ArrowDown': 'ACTION2',
       'ArrowLeft': 'ACTION3',
@@ -131,8 +137,20 @@ export default function CommunityGamePlay() {
       's': 'ACTION2',
       'a': 'ACTION3',
       'd': 'ACTION4',
+      // Action / interact
       ' ': 'ACTION5',
       'Enter': 'ACTION5',
+      // Secondary actions
+      'q': 'ACTION7',
+      'e': 'ACTION7',
+      // Number keys map directly to actions
+      '1': 'ACTION1',
+      '2': 'ACTION2',
+      '3': 'ACTION3',
+      '4': 'ACTION4',
+      '5': 'ACTION5',
+      '7': 'ACTION7',
+      // Reset
       'r': 'RESET',
     };
 
@@ -314,87 +332,128 @@ export default function CommunityGamePlay() {
             </PixelPanel>
           </div>
 
-          {/* Controls Sidebar */}
+          {/* Controls Sidebar — unified panel with embedded key hints */}
           <div className="lg:col-span-1 space-y-4">
-            {/* D-Pad Controls */}
-            <PixelPanel tone="purple" title="Controls">
-              <div className="flex flex-col items-center gap-1">
+
+            {/* Movement D-Pad — large buttons with embedded WASD hints */}
+            <PixelPanel tone="blue" title="Movement" subtitle="Arrow keys or WASD">
+              <div className="flex flex-col items-center gap-1.5">
+                {/* Up */}
                 <PixelButton
-                  tone="neutral"
+                  tone="blue"
                   onClick={() => actionMutation.mutate('ACTION1')}
                   disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
-                  className="w-12 h-12"
+                  className="w-14 h-14"
+                  title="Move Up (W / Arrow Up)"
                 >
-                  <ChevronUp className="w-6 h-6" />
+                  <div className="flex flex-col items-center leading-none">
+                    <ChevronUp className="w-6 h-6" />
+                    <span className="text-[9px] opacity-70 mt-0.5">W</span>
+                  </div>
                 </PixelButton>
-                <div className="flex gap-1">
+
+                {/* Left / Center placeholder / Right */}
+                <div className="flex gap-1.5 items-center">
                   <PixelButton
-                    tone="neutral"
+                    tone="blue"
                     onClick={() => actionMutation.mutate('ACTION3')}
                     disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
-                    className="w-12 h-12"
+                    className="w-14 h-14"
+                    title="Move Left (A / Arrow Left)"
                   >
-                    <ChevronLeft className="w-6 h-6" />
+                    <div className="flex flex-col items-center leading-none">
+                      <ChevronLeft className="w-6 h-6" />
+                      <span className="text-[9px] opacity-70 mt-0.5">A</span>
+                    </div>
                   </PixelButton>
+                  {/* Dead center — visual spacer matching button size */}
+                  <div className="w-14 h-14 border-2 border-dashed border-[var(--arc3-border)] opacity-30" />
                   <PixelButton
-                    tone="green"
-                    onClick={() => actionMutation.mutate('ACTION5')}
-                    disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
-                    className="w-12 h-12"
-                  >
-                    <Play className="w-5 h-5" />
-                  </PixelButton>
-                  <PixelButton
-                    tone="neutral"
+                    tone="blue"
                     onClick={() => actionMutation.mutate('ACTION4')}
                     disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
-                    className="w-12 h-12"
+                    className="w-14 h-14"
+                    title="Move Right (D / Arrow Right)"
                   >
-                    <ChevronRight className="w-6 h-6" />
+                    <div className="flex flex-col items-center leading-none">
+                      <ChevronRight className="w-6 h-6" />
+                      <span className="text-[9px] opacity-70 mt-0.5">D</span>
+                    </div>
                   </PixelButton>
                 </div>
+
+                {/* Down */}
                 <PixelButton
-                  tone="neutral"
+                  tone="blue"
                   onClick={() => actionMutation.mutate('ACTION2')}
                   disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
-                  className="w-12 h-12"
+                  className="w-14 h-14"
+                  title="Move Down (S / Arrow Down)"
                 >
-                  <ChevronDown className="w-6 h-6" />
+                  <div className="flex flex-col items-center leading-none">
+                    <ChevronDown className="w-6 h-6" />
+                    <span className="text-[9px] opacity-70 mt-0.5">S</span>
+                  </div>
                 </PixelButton>
               </div>
-
-              <PixelButton
-                tone="yellow"
-                onClick={handleReset}
-                disabled={!sessionGuid || actionMutation.isPending}
-                className="w-full mt-4"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Reset (R)
-              </PixelButton>
             </PixelPanel>
 
-            {/* Keyboard Shortcuts */}
-            <PixelPanel tone="blue" title="Keyboard">
-              <div className="space-y-2 text-[11px]">
-                <div className="flex justify-between">
-                  <span className="text-[var(--arc3-muted)]">Move</span>
-                  <span className="font-mono">WASD / Arrows</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[var(--arc3-muted)]">Action</span>
-                  <span className="font-mono">Space / Enter</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[var(--arc3-muted)]">Reset</span>
-                  <span className="font-mono">R</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[var(--arc3-muted)]">Click</span>
-                  <span className="font-mono">Click Grid</span>
-                </div>
+            {/* Action Buttons — clearly labeled with key bindings */}
+            <PixelPanel tone="green" title="Actions">
+              <div className="space-y-2">
+                {/* Primary interact — ACTION5 */}
+                <PixelButton
+                  tone="green"
+                  onClick={() => actionMutation.mutate('ACTION5')}
+                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  className="w-full h-11"
+                  title="Interact / Confirm (Space / Enter)"
+                >
+                  <Zap className="w-4 h-4" />
+                  <span>Action</span>
+                  <span className="ml-auto text-[9px] opacity-70 font-mono">Space</span>
+                </PixelButton>
+
+                {/* Click on grid — ACTION6 */}
+                <PixelButton
+                  tone="pink"
+                  onClick={() => {/* ACTION6 is grid-click only */}}
+                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  className="w-full h-11"
+                  title="Click on the game grid to interact with a specific cell"
+                >
+                  <Mouse className="w-4 h-4" />
+                  <span>Click Grid</span>
+                  <span className="ml-auto text-[9px] opacity-70 font-mono">Mouse</span>
+                </PixelButton>
+
+                {/* Secondary action — ACTION7 */}
+                <PixelButton
+                  tone="orange"
+                  onClick={() => actionMutation.mutate('ACTION7')}
+                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  className="w-full h-11"
+                  title="Secondary Action (Q / E)"
+                >
+                  <Hash className="w-4 h-4" />
+                  <span>Alt Action</span>
+                  <span className="ml-auto text-[9px] opacity-70 font-mono">Q / E</span>
+                </PixelButton>
               </div>
             </PixelPanel>
+
+            {/* Reset — demoted to small secondary control */}
+            <PixelButton
+              tone="neutral"
+              onClick={handleReset}
+              disabled={!sessionGuid || actionMutation.isPending}
+              className="w-full h-9 text-[11px]"
+              title="Reset current level (R)"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Level</span>
+              <span className="ml-auto text-[9px] opacity-60 font-mono">R</span>
+            </PixelButton>
 
           </div>
         </div>
