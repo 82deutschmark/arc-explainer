@@ -4,6 +4,3 @@
 [submodule "external/re-arc"]
 	path = external/re-arc
 	url = https://github.com/conundrumer/re-arc
-[submodule "external/ARCEngine"]
-	path = external/ARCEngine
-	url = https://github.com/82deutschmark/ARCEngine
