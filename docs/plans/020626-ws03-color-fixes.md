@@ -2,7 +2,7 @@
 
 ## Objective
 Fix systemic color and rendering bugs in WS03 game identified by comparing against LS20 reference.
-
+There is never a background color.
 ## Issues Found & Fixed
 
 ### 1. White Boxes (BACKGROUND_COLOR/PADDING_COLOR)
