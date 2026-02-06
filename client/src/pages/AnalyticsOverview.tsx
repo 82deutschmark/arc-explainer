@@ -183,23 +183,25 @@ export default function AnalyticsOverview() {
     }
   }, [datasetOptions, selectedDataset]);
 
-  // Auto-select gpt-5-2-pro-2025-12-11-high-attempt1 as the model if available, fallback through preferred models
+  // Auto-select claude-opus-4-6 extra high as the default model, fallback through preferred models
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForDataset) {
+      const claudeOpus46 = availableModels.find(m => m === 'claude-opus-4-6-thinking-120K-max-attempt1');
       const geminiFlash = availableModels.find(m => m === 'gemini-3-flash-preview-thinking-high-attempt1');
       const gpt52 = availableModels.find(m => m === 'gpt-5-2-pro-2025-12-11-high-attempt1');
       const geminiPro = availableModels.find(m => m === 'gemini-3-pro-preview-attempt1');
       const geminiDeepThink = availableModels.find(m => m === 'gemini-3-deep-think-preview-attempt1');
       const gpt5 = availableModels.find(m => m === 'gpt-5-1-2025-11-13-thinking-high-attempt2');
-      setSelectedModelForDataset(geminiFlash || gpt52 || geminiPro || geminiDeepThink || gpt5 || availableModels[0]);
+      setSelectedModelForDataset(claudeOpus46 || geminiFlash || gpt52 || geminiPro || geminiDeepThink || gpt5 || availableModels[0]);
     }
   }, [availableModels, selectedModelForDataset]);
 
-  // Auto-select claude-haiku-4-5-20251001-thinking-32k-attempt2 for comparison if available, fallback to first different model
+  // Auto-select claude-opus-4-6 attempt2 for comparison if available, fallback to first different model
   React.useEffect(() => {
     if (availableModels.length > 0 && !selectedModelForComparison && selectedModelForDataset) {
       const availableForComparison = availableModels.filter(m => m !== selectedModelForDataset);
       const preferredOrder = [
+        'claude-opus-4-6-thinking-120K-max-attempt2',
         'gemini-3-flash-preview-thinking-high-attempt1',
         'gemini-3-flash-preview-thinking-high-attempt2',
         'gemini-3-deep-think-preview-attempt1',
