@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.0  Feb 05, 2026
+
+- **FEAT: Complete ARC3 landing page redesign -- game-focused, palette-driven** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Rewrote `/arc3` landing page from scratch. Removed the instructional text dump, double header, and random sprite mosaics. The page now leads with a 16-color palette strip, a compact "ARC-AGI-3 Interactive Reasoning Benchmarks" title bar, and a 3-column game grid showing all 6 official ARCEngine games with prominent Play buttons. Each game card gets a unique accent color from the ARC3 palette (indices 6-15). Secondary actions (upload, docs, GitHub) pushed to a footer. Added `PaletteStrip` and `GameCard` reusable components to `Arc3PixelUI.tsx`.
+  - **Why**: The previous landing page displayed developer instructions as its main content, had a redundant sub-header on top of the app navigation, and buried the actual games in a tiny sidebar panel. This is a research platform for interactive reasoning benchmarks, not a documentation page.
+  - **How**:
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Full rewrite -- queries `/api/arc3-community/games` for all approved games, renders them in a responsive grid with palette-colored accent bars.
+    - `client/src/components/arc3-community/Arc3PixelUI.tsx`: Added `PaletteStrip` (16-color horizontal bar) and `GameCard` (accent-bar card) components.
+
+- **FIX: Games fail to load in Docker deployment (Python binary resolution)** (Author: Cascade / Claude Sonnet 4)
+  - **What**: `CommunityGamePythonBridge` hardcoded `spawn('python', ...)` which doesn't exist on Alpine Linux Docker images (only `python3`). Replaced with `resolvePythonBin()` that checks `PYTHON_BIN` env var, then falls back to `python` on Windows or `python3` on Linux.
+  - **Why**: Official ARCEngine games (ws03, ls20, etc.) worked locally on Windows but failed silently in the Docker deployment, causing the games list to appear empty and play sessions to fail.
+  - **How**:
+    - `server/services/arc3Community/CommunityGamePythonBridge.ts`: Added `resolvePythonBin()` function (matching the pattern already used in `ArcEngineOfficialGameCatalog.ts`) and replaced the hardcoded `'python'` in the `spawn()` call.
+
 ### Version 7.2.6  Feb 04, 2026
 
 - **FEAT: ARC3 community submissions now persist and can be published via admin review** (Author: GPT-5.2)
