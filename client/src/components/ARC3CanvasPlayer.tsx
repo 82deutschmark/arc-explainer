@@ -97,7 +97,7 @@ function parseReplayLines(text: string, maxFrames?: number): CanvasReplayFrame[]
         parsed.data?.frame ?? parsed.data?.frames ?? parsed.data?.observation;
       const grid = extractGrid(rawGrid);
       if (!grid) {
-        return;
+        continue;
       }
 
       const timestampMs =
