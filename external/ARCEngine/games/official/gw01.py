@@ -1,7 +1,9 @@
-# Author: Claude Opus 4
-# Date: 2026-02-01
+# Author: Claude Opus 4.6
+# Date: 2026-02-06
 # PURPOSE: gw01 - Gravity Well puzzle. Control gravity to collect orbs into wells.
 #          Yellow+Orange fuse to Green. Wells cycle colors. Green phases through platforms.
+#          Fixed: Cyrillic key in level data, orb movement ordering, phase-through permanence,
+#          fusion return correctness.
 # SRP/DRY check: Pass
 
 from typing import List, Optional, Tuple
@@ -147,7 +149,7 @@ levels = [
             sprites["obl"].clone().set_position(36, 27),
         ],
         grid_size=(64, 64),
-        data={"nед": 2, "phs": WLA, "cyc": False},
+        data={"ned": 2, "phs": WLA, "cyc": False},
     ),
     Level(
         sprites=[
@@ -322,6 +324,18 @@ class Gw01(ARCBaseGame):
     def sst(self) -> Tuple[bool, bool]:
         mv, fu = False, False
         self.orb = [o for o in self.current_level.get_sprites_by_tag("orb") if o.interaction != InteractionMode.REMOVED]
+
+        # Sort orbs so the leading orb (closest to destination edge) moves first.
+        # This prevents false collisions between orbs moving in the same direction.
+        if self.sdx > 0:
+            self.orb.sort(key=lambda o: -o.x)
+        elif self.sdx < 0:
+            self.orb.sort(key=lambda o: o.x)
+        elif self.sdy > 0:
+            self.orb.sort(key=lambda o: -o.y)
+        elif self.sdy < 0:
+            self.orb.sort(key=lambda o: o.y)
+
         fsl: List[Tuple[Sprite, Sprite]] = []
 
         for o in self.orb:
@@ -341,22 +355,18 @@ class Gw01(ARCBaseGame):
                 fsl.append((o, clo))
                 continue
 
-            can, phd = self.cmv(o, self.sdx, self.sdy, fsd)
+            can, _ = self.cmv(o, self.sdx, self.sdy, fsd)
             if can:
                 o.move(self.sdx, self.sdy)
                 mv = True
                 if hvy:
                     o.mvd = True
-                if phd and fsd:
-                    o.tags = [t for t in o.tags if t != "fsd"]
-                    o.tags.append("lgt")
-                    o.pixels = [[-1, OBF, -1], [OBF, WLC, OBF], [-1, OBF, -1]]
 
         for a, b in fsl:
             if a.interaction == InteractionMode.REMOVED or b.interaction == InteractionMode.REMOVED:
                 continue
-            self.fus(a, b)
-            fu = True
+            if self.fus(a, b):
+                fu = True
 
         return mv, fu
 
@@ -385,17 +395,19 @@ class Gw01(ARCBaseGame):
     def ovl(self, x1: int, y1: int, w1: int, h1: int, x2: int, y2: int, w2: int, h2: int) -> bool:
         return x1 < x2 + w2 and x1 + w1 > x2 and y1 < y2 + h2 and y1 + h1 > y2
 
-    def fus(self, a: Sprite, b: Sprite) -> None:
+    def fus(self, a: Sprite, b: Sprite) -> bool:
         c1 = OBL if "lgt" in a.tags else (OBH if "hvy" in a.tags else OBF)
         c2 = OBL if "lgt" in b.tags else (OBH if "hvy" in b.tags else OBF)
         if (c1, c2) not in FSN:
-            return
+            return False
         rc, rt = FSN[(c1, c2)]
         a.set_interaction(InteractionMode.REMOVED)
         b.set_interaction(InteractionMode.REMOVED)
         mx, my = (a.x + b.x) // 2, (a.y + b.y) // 2
-        nw = sprites[f"ob{rt[0]}"].clone().set_position(mx, my)
+        tag_to_sprite = {"fsd": "obf", "lgt": "obl", "hvy": "obh"}
+        nw = sprites[tag_to_sprite[rt]].clone().set_position(mx, my)
         self.current_level.add_sprite(nw)
+        return True
 
     def chc(self) -> None:
         wx, wy = self.wel.x, self.wel.y
