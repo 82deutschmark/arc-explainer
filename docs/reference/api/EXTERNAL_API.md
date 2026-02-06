@@ -40,7 +40,7 @@ result = contribute_to_arc_explainer(
 
 **⚠️ NO AUTHENTICATION REQUIRED ⚠️**
 
-All API endpoints are publicly accessible and require **NO authentication**. Do not add authentication to any endpoints.
+Most API endpoints are publicly accessible and require **NO authentication**. A small set of ARC3 community submission moderation endpoints is intentionally token-gated for safety (see "ARC3 Community" below).
 
 ## Core Data Endpoints SUPER IMPORTANT!!
 
@@ -740,3 +740,26 @@ The Saturn Visual Solver provides real-time updates via WebSockets:
 - `POST /api/saturn/analyze-with-reasoning/:taskId` - Saturn analysis with reasoning steps
 - `GET /api/saturn/status/:sessionId` - Get Saturn analysis progress
 - **WebSocket**: Real-time Saturn solver progress updates
+
+## ARC3 Community
+
+### Public endpoints (no auth)
+
+- `GET /api/arc3-community/games` - List approved and playable games (includes official ARCEngine games)
+- `GET /api/arc3-community/games/featured` - Featured games for the ARC3 landing page
+- `GET /api/arc3-community/games/:gameId` - Fetch a single approved/playable game by ID
+- `POST /api/arc3-community/session/start` - Start a play session for a game (official or approved community)
+- `POST /api/arc3-community/session/:sessionGuid/action` - Send an action to an active session
+- `POST /api/arc3-community/submissions` - Submit a single `.py` file for review (stored as `status='pending'`, non-playable until approved)
+
+### Admin-only endpoints (token-gated)
+
+These endpoints require a server-configured token:
+- Server env var: `ARC3_COMMUNITY_ADMIN_TOKEN`
+- Request header: `X-ARC3-Admin-Token: <token>` (or `Authorization: Bearer <token>`)
+
+Endpoints:
+- `GET /api/arc3-community/submissions?status=pending|approved|rejected|archived` - List DB submissions (pending by default)
+- `GET /api/arc3-community/submissions/:submissionId/source` - Fetch stored source for a submission (including pending)
+- `POST /api/arc3-community/submissions/:submissionId/publish` - Approve a submission (sets `status='approved'`, `is_playable=true`)
+- `POST /api/arc3-community/submissions/:submissionId/reject` - Reject a submission (sets `status='rejected'`, `is_playable=false`)

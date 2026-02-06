@@ -1,22 +1,20 @@
-/**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-01
- * PURPOSE: Admin hub dashboard providing centralized access to administrative tools
- *          including model management, dataset ingestion, and system health monitoring.
- *          Displays quick stats and recent activity for administrative oversight.
- * SRP/DRY check: Pass - Single responsibility (admin navigation hub), reuses shadcn/ui components
- * shadcn/ui: Pass - Uses Card, Button, Badge, Separator components
- */
+/*
+Author: GPT-5.2
+Date: 2026-02-04
+PURPOSE: Admin hub dashboard providing centralized access to administrative tools
+         including model management, dataset ingestion, OpenRouter catalog operations,
+         and ARC3 community submission review.
+SRP/DRY check: Pass - admin navigation hub only; reused existing shadcn/ui patterns.
+*/
 
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
-import { Database, Settings, Upload, Activity, AlertCircle, CheckCircle } from 'lucide-react';
+import { Database, Settings, Upload, Activity, AlertCircle, CheckCircle, Gamepad2, Globe } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Globe } from 'lucide-react';
 
 interface QuickStats {
   totalModels: number;
@@ -241,6 +239,27 @@ export default function AdminHub() {
             <CardContent>
               <Button variant="outline" className="w-full">
                 Open OpenRouter Manager
+              </Button>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Link href="/admin/arc3-submissions">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Gamepad2 className="h-8 w-8 text-primary" />
+                <div>
+                  <CardTitle>ARC3 Submissions</CardTitle>
+                  <CardDescription>
+                    Review and publish community game uploads
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full">
+                Open ARC3 Submission Review
               </Button>
             </CardContent>
           </Link>

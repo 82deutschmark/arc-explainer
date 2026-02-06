@@ -1,25 +1,19 @@
 /*
- * Author: Cascade (Claude)
- * Date: 2026-01-31
- * PURPOSE: Landing page for the ARC3 Community Games platform. Information-dense,
- *          terminal-style design for researchers. Shows games table, quick actions,
- *          and links to ARCEngine GitHub.
- * SRP/DRY check: Pass — single-purpose landing page component.
- */
+Author: GPT-5.2
+Date: 2026-02-02
+PURPOSE: ARC3 Studio landing page for the ARC Prize / ARC-AGI-3 community track. Presents this
+         section as a full-service platform (browse/play/upload) and uses the official ARC3 color
+         palette exclusively (client/src/utils/arc3Colors.ts) with a pixel/sprite-inspired UI.
+         Also fixes incorrect ARCEngine repository links and removes hard-coded editorial metadata
+         (difficulty/levels) from the landing UI.
+SRP/DRY check: Pass - page-only layout; shared pixel UI primitives live in Arc3PixelUI.tsx.
+*/
 
-import { Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { 
-  ExternalLink,
-  Play,
-  Upload,
-  BookOpen,
-  Github,
-  ChevronRight,
-  Terminal,
-  Zap
-} from "lucide-react";
+import { useMemo } from 'react';
+import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import { ExternalLink, Github, Play, Upload, BookOpen, Archive, Sparkles } from 'lucide-react';
+import { Arc3PixelPage, PixelButton, PixelPanel, SpriteMosaic } from '@/components/arc3-community/Arc3PixelUI';
 
 interface CommunityGame {
   id: number;
@@ -27,10 +21,6 @@ interface CommunityGame {
   displayName: string;
   description: string | null;
   authorName: string;
-  difficulty: string;
-  playCount: number;
-  tags: string[];
-  levelCount?: number;
 }
 
 interface GamesResponse {
@@ -38,229 +28,247 @@ interface GamesResponse {
   data: CommunityGame[];
 }
 
-// Difficulty color mapping - muted, professional
-const difficultyColor: Record<string, string> = {
-  easy: "text-green-500",
-  medium: "text-amber-500",
-  hard: "text-red-500",
-};
+const ARCENGINE_REPO_URL = 'https://github.com/arcprize/ARCEngine';
+
+function truncate(text: string, max: number) {
+  if (text.length <= max) return text;
+  return `${text.slice(0, Math.max(0, max - 3)).trimEnd()}...`;
+}
 
 export default function CommunityLanding() {
+  const [, setLocation] = useLocation();
   const { data: featuredGames, isLoading } = useQuery<GamesResponse>({
-    queryKey: ["/api/arc3-community/games/featured"],
+    queryKey: ['/api/arc3-community/games/featured'],
   });
 
-  const games = featuredGames?.data || [];
+  const games = featuredGames?.data ?? [];
+
+  const summaryLines = useMemo(
+    () => [
+      'Build and share ARC-AGI-3 style reasoning games as 2D sprites.',
+      'Upload Python source, get validation, then publish after review.',
+      'Play community games in a 64x64 pixel grid runtime.',
+    ],
+    [],
+  );
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-mono">
-      {/* Header bar */}
-      <header className="border-b border-zinc-800 bg-zinc-900/80">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Terminal className="w-4 h-4 text-emerald-500" />
-            <span className="text-sm font-semibold tracking-tight">ARC3 Community</span>
+    <Arc3PixelPage>
+      {/* Top "HUD" bar */}
+      <header className="border-b-2 border-[var(--arc3-border)] bg-[var(--arc3-bg-soft)]">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <SpriteMosaic seed={3} width={10} height={3} className="w-20 shrink-0" />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[var(--arc3-c11)]" />
+                <span className="text-sm font-semibold tracking-tight">ARC3 Studio</span>
+                <span className="text-[11px] text-[var(--arc3-dim)]">ARC Prize / ARC-AGI-3</span>
+              </div>
+              <p className="text-[11px] text-[var(--arc3-dim)] leading-snug">
+                Community-built games powered by ARCEngine (Python 2D sprite engine).
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-3 text-xs">
-            <a 
-              href="https://github.com/voynow/ARCEngine" 
-              target="_blank" 
+
+          <nav className="flex items-center gap-2 shrink-0">
+            <a
+              href={ARCENGINE_REPO_URL}
+              target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-zinc-400 hover:text-zinc-100 transition-colors"
+              className="hidden sm:inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold border-2 border-[var(--arc3-border)] bg-[var(--arc3-c3)] text-[var(--arc3-c0)]"
+              title="Open ARCEngine repository"
             >
-              <Github className="w-3.5 h-3.5" />
+              <Github className="w-4 h-4" />
               ARCEngine
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3.5 h-3.5 opacity-80" />
             </a>
-            <span className="text-zinc-700">|</span>
-            <Link href="/arc3/docs" className="text-zinc-400 hover:text-zinc-100 transition-colors">
-              Docs
-            </Link>
-            <span className="text-zinc-700">|</span>
-            <Link href="/arc3/upload">
-              <Button size="sm" variant="outline" className="h-6 px-2 text-xs border-zinc-700 hover:bg-zinc-800">
-                <Upload className="w-3 h-3 mr-1" />
-                Submit Game
-              </Button>
-            </Link>
-          </div>
+            <a
+              href="https://github.com/arcprize/ARCEngine#readme"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold border-2 border-[var(--arc3-border)] bg-[var(--arc3-c9)] text-[var(--arc3-c0)]"
+            >
+              <BookOpen className="w-4 h-4" />
+              Creator Docs
+              <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+            </a>
+            <PixelButton tone="green" onClick={() => setLocation('/arc3/upload')}>
+              <Upload className="w-4 h-4" />
+              Submit Game
+            </PixelButton>
+          </nav>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <div className="border-b border-zinc-800 bg-gradient-to-b from-zinc-900 to-zinc-950">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded bg-emerald-500/20 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-emerald-400" />
-            </div>
-            <h1 className="text-xl font-bold text-zinc-100">Community Puzzle Games</h1>
-          </div>
-          <p className="text-zinc-400 text-sm max-w-2xl mb-4">
-            Play ARC-style reasoning puzzles created by the community using ARCEngine. 
-            Test your abstract reasoning skills or create and share your own puzzle games.
-          </p>
-          <div className="flex gap-2">
-            <Link href="/arc3/gallery">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-xs h-8">
-                <Play className="w-3 h-3 mr-1" />
-                Browse Games
-              </Button>
-            </Link>
-            <Link href="/arc3/upload">
-              <Button size="sm" variant="outline" className="border-zinc-700 hover:bg-zinc-800 text-xs h-8">
-                <Upload className="w-3 h-3 mr-1" />
-                Submit Your Game
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Two-column layout: Games list + Sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          
-          {/* Main content: Games table */}
-          <div className="lg:col-span-3">
-            <div className="border border-zinc-800 rounded bg-zinc-900/50">
-              {/* Table header */}
-              <div className="grid grid-cols-12 gap-2 px-3 py-2 border-b border-zinc-800 text-xs text-zinc-500 uppercase tracking-wider">
-                <div className="col-span-4">Game</div>
-                <div className="col-span-3">Author</div>
-                <div className="col-span-2">Difficulty</div>
-                <div className="col-span-1 text-right">Levels</div>
-                <div className="col-span-2 text-right">Actions</div>
+      {/* Hero */}
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-7 space-y-4">
+            <PixelPanel
+              tone="purple"
+              title="Full-service community platform"
+              subtitle="Build, upload, validate, play - all inside ARC3."
+              rightSlot={
+                <div className="text-[11px] text-[var(--arc3-c0)] opacity-90">
+                  Routes: <span className="font-semibold">/arc3</span>
+                </div>
+              }
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] p-3">
+                  <p className="text-xs font-semibold mb-1">Browse</p>
+                  <p className="text-[11px] text-[var(--arc3-muted)] leading-snug">
+                    Find community games and jump straight into play.
+                  </p>
+                </div>
+                <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] p-3">
+                  <p className="text-xs font-semibold mb-1">Upload</p>
+                  <p className="text-[11px] text-[var(--arc3-muted)] leading-snug">
+                    Paste Python source for an ARCEngine game; we validate it before review.
+                  </p>
+                </div>
+                <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] p-3">
+                  <p className="text-xs font-semibold mb-1">Play</p>
+                  <p className="text-[11px] text-[var(--arc3-muted)] leading-snug">
+                    The runtime renders a 64x64 grid with crisp pixel edges.
+                  </p>
+                </div>
               </div>
-              
-              {/* Game rows */}
-              {isLoading ? (
-                <div className="px-3 py-8 text-center text-zinc-500 text-sm">Loading games...</div>
-              ) : games.length === 0 ? (
-                <div className="px-3 py-8 text-center text-zinc-500 text-sm">No games available</div>
-              ) : (
-                games.map((game, idx) => (
-                  <div 
-                    key={game.gameId}
-                    className={`grid grid-cols-12 gap-2 px-3 py-2 items-center text-sm hover:bg-zinc-800/50 transition-colors ${
-                      idx !== games.length - 1 ? "border-b border-zinc-800/50" : ""
-                    }`}
-                  >
-                    <div className="col-span-4">
-                      <Link href={`/arc3/play/${game.gameId}`} className="group">
-                        <span className="text-zinc-100 group-hover:text-emerald-400 transition-colors font-medium">
-                          {game.displayName}
-                        </span>
-                        {game.tags?.includes("featured") && (
-                          <span title="Featured"><Zap className="w-3 h-3 inline ml-1.5 text-amber-500" /></span>
-                        )}
-                      </Link>
-                      <p className="text-xs text-zinc-500 truncate mt-0.5" title={game.description || ""}>
-                        {game.description || "No description"}
-                      </p>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <PixelButton tone="green" onClick={() => setLocation('/arc3/gallery')}>
+                  <Play className="w-4 h-4" />
+                  Browse Games
+                </PixelButton>
+                <PixelButton tone="pink" onClick={() => setLocation('/arc3/upload')}>
+                  <Upload className="w-4 h-4" />
+                  Upload Your Game
+                </PixelButton>
+                <a
+                  href="https://github.com/arcprize/ARCEngine#readme"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold border-2 border-[var(--arc3-border)] bg-[var(--arc3-c9)] text-[var(--arc3-c0)]"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Read Creator Docs
+                  <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                </a>
+              </div>
+            </PixelPanel>
+
+            <PixelPanel
+              tone="yellow"
+              title="Submitting your ARCEngine game (Python)"
+              subtitle="Clear expectations, no marketing fluff."
+            >
+              <div className="space-y-3">
+                <div className="text-[11px] text-[var(--arc3-muted)] leading-snug">
+                  {summaryLines.map((line) => (
+                    <div key={line} className="flex gap-2">
+                      <span className="text-[var(--arc3-c11)] font-semibold">-</span>
+                      <span>{line}</span>
                     </div>
-                    <div className="col-span-3 text-zinc-400 text-xs">
-                      {game.authorName}
-                    </div>
-                    <div className={`col-span-2 text-xs ${difficultyColor[game.difficulty] || "text-zinc-400"}`}>
-                      {game.difficulty}
-                    </div>
-                    <div className="col-span-1 text-right text-zinc-400 text-xs">
-                      {game.levelCount || "?"}
-                    </div>
-                    <div className="col-span-2 text-right">
-                      <Link href={`/arc3/play/${game.gameId}`}>
-                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-emerald-500 hover:text-emerald-400 hover:bg-emerald-950/30">
-                          <Play className="w-3 h-3 mr-1" />
-                          Play
-                        </Button>
-                      </Link>
-                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] p-3">
+                    <p className="text-xs font-semibold mb-1">What to upload</p>
+                    <p className="text-[11px] text-[var(--arc3-muted)] leading-snug">
+                      A Python class that subclasses <span className="font-semibold">ARCBaseGame</span> and implements{' '}
+                      <span className="font-semibold">step()</span>.
+                    </p>
                   </div>
-                ))
-              )}
-              
-              {/* Footer with view all */}
-              <div className="px-3 py-2 border-t border-zinc-800 flex justify-between items-center">
-                <span className="text-xs text-zinc-500">{games.length} games loaded</span>
-                <Link href="/arc3/gallery" className="text-xs text-zinc-400 hover:text-zinc-100 flex items-center gap-1">
-                  View all games <ChevronRight className="w-3 h-3" />
-                </Link>
+                  <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] p-3">
+                    <p className="text-xs font-semibold mb-1">What happens next</p>
+                    <p className="text-[11px] text-[var(--arc3-muted)] leading-snug">
+                      Uploads are validated, then reviewed before they become publicly visible.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <PixelButton tone="green" onClick={() => setLocation('/arc3/upload')}>
+                    <Upload className="w-4 h-4" />
+                    Go to Upload
+                  </PixelButton>
+                  <a
+                    href={ARCENGINE_REPO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold border-2 border-[var(--arc3-border)] bg-[var(--arc3-c3)] text-[var(--arc3-c0)]"
+                    title="Open ARCEngine repository"
+                  >
+                    <Github className="w-4 h-4" />
+                    ARCEngine on GitHub
+                    <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+                  </a>
+                </div>
               </div>
-            </div>
+            </PixelPanel>
           </div>
 
-          {/* Sidebar: Quick info + Create your own */}
-          <div className="lg:col-span-1 space-y-4">
-            {/* Quick actions */}
-            <div className="border border-zinc-800 rounded bg-zinc-900/50 p-3">
-              <h3 className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Quick Actions</h3>
-              <div className="space-y-2">
-                <Link href="/arc3/gallery" className="block">
-                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50">
-                    <Play className="w-3 h-3 mr-2 text-emerald-500" />
-                    Browse All Games
-                  </Button>
-                </Link>
-                <Link href="/arc3/upload" className="block">
-                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50">
-                    <Upload className="w-3 h-3 mr-2 text-blue-500" />
-                    Submit Your Game
-                  </Button>
-                </Link>
-                <Link href="/arc3/docs" className="block">
-                  <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:text-zinc-50">
-                    <BookOpen className="w-3 h-3 mr-2 text-amber-500" />
-                    Documentation
-                  </Button>
-                </Link>
+          <div className="lg:col-span-5 space-y-4">
+            <PixelPanel tone="blue" title="Sprite sheet (ARC3 palette)">
+              <div className="grid grid-cols-2 gap-3">
+                <SpriteMosaic seed={31} width={14} height={10} className="w-full" />
+                <SpriteMosaic seed={73} width={14} height={10} className="w-full" />
               </div>
-            </div>
-
-            {/* Create your own game */}
-            <div className="border border-zinc-800 rounded bg-zinc-900/50 p-3">
-              <h3 className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Create Your Own</h3>
-              <p className="text-xs text-zinc-400 mb-3">
-                Build puzzle games with ARCEngine - a Python framework for creating ARC-style reasoning challenges.
+              <p className="mt-3 text-[11px] text-[var(--arc3-dim)] leading-snug">
+                This section intentionally uses only the official ARC3 palette to keep pixels crisp and readable.
               </p>
-              <div className="space-y-1.5 text-xs">
-                <a 
-                  href="https://github.com/voynow/ARCEngine"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors"
-                >
-                  <Github className="w-3 h-3" />
-                  <span>ARCEngine Repository</span>
-                  <ExternalLink className="w-3 h-3 ml-auto" />
-                </a>
-                <a 
-                  href="https://pypi.org/project/arcengine/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors"
-                >
-                  <Terminal className="w-3 h-3" />
-                  <span>pip install arcengine</span>
-                  <ExternalLink className="w-3 h-3 ml-auto" />
-                </a>
-              </div>
-              <div className="mt-3 p-2 bg-zinc-950 rounded border border-zinc-800">
-                <code className="text-[10px] text-emerald-400 block">
-                  from arcengine import ARCBaseGame
-                </code>
-              </div>
-            </div>
+            </PixelPanel>
 
-            {/* Archive link */}
-            <div className="border border-zinc-800 rounded bg-zinc-900/50 p-3">
-              <Link href="/arc3/archive" className="text-xs text-zinc-500 hover:text-zinc-300 flex items-center gap-1">
-                View legacy ARC3 preview games <ChevronRight className="w-3 h-3" />
-              </Link>
-            </div>
+            <PixelPanel tone="green" title="Featured games" subtitle="Minimal metadata: name, author, play.">
+              <div className="space-y-2">
+                {isLoading && (
+                  <div className="text-[11px] text-[var(--arc3-dim)]">Loading featured games...</div>
+                )}
+
+                {!isLoading && games.length === 0 && (
+                  <div className="text-[11px] text-[var(--arc3-dim)]">No featured games available.</div>
+                )}
+
+                {games.map((game) => (
+                  <div
+                    key={game.gameId}
+                    className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] p-3 flex items-start justify-between gap-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-semibold truncate">{game.displayName}</span>
+                        <span className="text-[11px] text-[var(--arc3-dim)]">by {game.authorName}</span>
+                      </div>
+                      {game.description && (
+                        <p className="mt-1 text-[11px] text-[var(--arc3-muted)] leading-snug">
+                          {truncate(game.description, 140)}
+                        </p>
+                      )}
+                    </div>
+                    <PixelButton tone="green" onClick={() => setLocation(`/arc3/play/${game.gameId}`)}>
+                      <Play className="w-4 h-4" />
+                      Play
+                    </PixelButton>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                <PixelButton tone="blue" onClick={() => setLocation('/arc3/gallery')}>
+                  <Play className="w-4 h-4" />
+                  Browse All Games
+                </PixelButton>
+                <PixelButton tone="purple" onClick={() => setLocation('/arc3/archive')}>
+                  <Archive className="w-4 h-4" />
+                  Legacy Preview Archive
+                </PixelButton>
+              </div>
+            </PixelPanel>
           </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </Arc3PixelPage>
   );
 }
