@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.2  Feb 06, 2026
+
+- **FIX: GW01 Gravity Well -- four bugs causing broken orb movement, false fusions, and corrupted level data** (Author: Claude Opus 4.6)
+  - **What**: Fixed Cyrillic characters in level 0 data key (`"ned"` spelled with Cyrillic chars), sequential orb processing causing order-dependent false collisions/fusions, one-time phase-through mechanic that broke green orbs (stripping their type after one platform), and fusion incorrectly reporting success on incompatible orb types.
+  - **Why**: The game was fundamentally broken -- orbs moving in the same direction would falsely fuse instead of sliding freely; green orbs lost their phasing ability after one use (contradicting the game design "Green phases through platforms"); and the simulation could waste ticks on phantom fusions.
+  - **How**:
+    - `external/ARCEngine/games/official/gw01.py`: Fixed Cyrillic `"ned"` key (L150), added directional sorting in `sst()` so leading orbs move first, removed phase-through tag/pixel stripping (green orbs now permanently phase through platforms), changed `fus()` to return `bool` and only set `fu=True` on actual fusions, replaced fragile `f"ob{rt[0]}"` sprite lookup with explicit `tag_to_sprite` mapping.
+    - `docs/plans/2026-02-06-gw01-bugfix-plan.md`: Full diagnosis and fix plan.
+
 ### Version 7.3.1  Feb 06, 2026
 
 - **FIX: WS02 "step is still running" hang on goal mismatch and death/respawn** (Author: Claude Opus 4.6)
