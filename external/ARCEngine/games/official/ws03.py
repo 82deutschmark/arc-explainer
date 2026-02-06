@@ -1,5 +1,5 @@
 # Author: Cascade (Claude Sonnet 4)
-# Date: 2026-02-05
+# Date: 2026-02-06
 # PURPOSE: WS03 game - variant of WS01 with permanent fog of war + seeded randomness
 # Features: Magenta border, dark red walls, permanent tight fog of war, extra energy pickups
 # SRP/DRY check: Pass - Reuses proven game mechanics from WS01, shape sprites use 0 base for remap
@@ -11,7 +11,7 @@ from typing import List, Tuple
 import numpy as np
 from arcengine import ARCBaseGame, Camera, Level, RenderableUserDisplay, Sprite
 
-# WS03 uses distinctive colors: Magenta borders (6), dark red walls (13), orange energy (12), green+light blue player (14+10)
+# WS03 uses distinctive colors: Magenta borders (6), dark red walls (13), orange energy (12), green+magenta checkerboard player (3+6)
 # Shape sprites (dcb, fij, lyd, nio, opw, tmx) use 0 as base color so color_remap(0, target) works
 sprites = {
     "dcb": Sprite(pixels=[[-1, 0, -1], [0, 0, -1], [-1, 0, 0]], name="dcb", visible=True, collidable=True, layer=1),
@@ -28,7 +28,7 @@ sprites = {
     "nio": Sprite(pixels=[[-1, 0, 0], [0, -1, 0], [-1, 0, -1]], name="nio", visible=True, collidable=True),
     "nlo": Sprite(pixels=[[13]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
     "opw": Sprite(pixels=[[0, 0, -1], [-1, 0, 0], [0, -1, 0]], name="opw", visible=True, collidable=True),
-    "pca": Sprite(pixels=[[14, 14, 14], [14, 14, 14], [10, 10, 10], [10, 10, 10]], name="pca", visible=True, collidable=True, tags=["caf"]),
+    "pca": Sprite(pixels=[[3, 6, 3], [6, 3, 6], [3, 6, 3]], name="pca", visible=True, collidable=True, tags=["caf"]),
     "qqv": Sprite(pixels=[[-2]*5, [-2, 15, 8, 8, -2], [-2, 15, 6, 11, -2], [-2, 12, 12, 11, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
     "rzt": Sprite(pixels=[[0, -1, -1], [-1, 0, -1], [-1, -1, 0]], name="rzt", visible=True, collidable=True, tags=["axa"]),
     "snw": Sprite(pixels=[[6]*7, [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
@@ -107,23 +107,27 @@ class jvq(RenderableUserDisplay):
 
 
 levels = [
-    # Level 1: krg - Tutorial level, 0 base energy + 2 fog compensation
+    # Level 1: puq - 3 base energy + 2 fog compensation = 5 total (was Level 3)
     Level(
         sprites=[
-            sprites["hep"].clone().set_position(1, 53), sprites["hul"].clone().set_position(32, 8).set_rotation(180),
-            sprites["kdj"].clone().set_position(3, 55).set_scale(2), sprites["kdy"].clone().set_position(19, 30),
-            sprites["lhs"].clone().set_position(34, 10), sprites["mgu"].clone(),
-        ] + [sprites["nlo"].clone().set_position(x, y) for x, y in [(4,0),(9,0),(4,5),(14,0),(19,0),(24,0),(29,0),(39,0),(44,0),(49,0),(54,0),(59,0),(4,10),(4,15),(4,20),(4,25),(59,15),(59,20),(59,25),(59,30),(59,35),(59,40),(59,45),(59,50),(59,55),(54,55),(49,55),(44,55),(39,55),(34,55),(29,55),(24,55),(19,55),(4,40),(4,45),(4,50),(9,50),(4,55),(9,55),(14,55),(54,25),(54,20),(34,0),(59,10),(59,5),(54,15),(54,10),(44,5),(39,5),(34,5),(29,5),(54,50),(54,45),(24,5),(19,5),(9,35),(9,45),(19,50),(9,40),(49,5),(54,5),(49,50),(14,50),(14,5),(9,5),(9,30),(9,25),(9,20),(9,15),(9,10),(49,10),(44,20),(39,10),(44,10),(49,15),(29,10),(29,15),(39,15),(44,15),(49,20),(14,15),(19,15),(24,15),(24,10),(19,10),(14,10),(29,20),(39,20),(24,20),(29,40),(19,20),(14,20),(54,30),(24,40),(14,45),(29,35),(4,30),(4,35),(54,35),(54,40),(14,40),(24,50),(29,50),(39,50),(44,50),(34,50),(29,30)]] + [
-            sprites["pca"].clone().set_position(39, 45), sprites["rzt"].clone().set_position(35, 11),
-            sprites["snw"].clone().set_position(33, 9), sprites["tuv"].clone().set_position(1, 53),
-            sprites["ulq"].clone().set_position(33, 9),
+            sprites["hep"].clone().set_position(1, 53), sprites["hul"].clone().set_position(52, 48),
+            sprites["kdj"].clone().set_position(3, 55).set_scale(2), sprites["kdy"].clone().set_position(49, 10),
+            sprites["lhs"].clone().set_position(54, 50), sprites["mgu"].clone(),
+        ] + [sprites["nlo"].clone().set_position(x, y) for x, y in [(4,0),(9,0),(4,5),(14,0),(19,0),(24,0),(29,0),(39,0),(44,0),(49,0),(54,0),(59,0),(4,10),(4,15),(4,20),(4,25),(4,30),(4,35),(59,15),(59,20),(59,25),(59,30),(59,35),(59,40),(59,45),(59,50),(59,55),(54,55),(49,55),(44,55),(39,55),(34,55),(29,55),(24,55),(19,55),(4,40),(4,45),(4,50),(9,50),(4,55),(9,55),(14,55),(34,0),(59,10),(59,5),(39,10),(14,25),(19,40),(19,45),(19,35),(49,50),(39,35),(39,40),(39,45),(14,30),(49,45),(49,40),(14,20),(14,50),(39,5),(39,50),(44,45),(19,50),(44,40),(44,50),(44,20),(49,20),(39,20),(19,10),(14,35),(39,15),(34,35),(14,10),(14,15),(44,35),(24,35),(34,10),(24,10)]] + [
+            sprites["pca"].clone().set_position(9, 45), sprites["qqv"].clone().set_position(29, 45),
+            sprites["rzt"].clone().set_position(55, 51), sprites["snw"].clone().set_position(53, 49),
+            sprites["tuv"].clone().set_position(1, 53), sprites["ulq"].clone().set_position(53, 49),
+            # LS20 base energy
+            sprites["zba"].clone().set_position(20, 31),
+            sprites["zba"].clone().set_position(30, 16),
+            sprites["zba"].clone().set_position(50, 36),
             # Fog compensation: 2 pickups in accessible corridors
-            sprites["zba"].clone().set_position(35, 21),
-            sprites["zba"].clone().set_position(30, 26),
+            sprites["zba"].clone().set_position(50, 11),
+            sprites["zba"].clone().set_position(10, 41),
         ],
         grid_size=(64, 64),
-        data={"vxy": 42, "tuv": 5, "nlo": 9, "opw": 0, "qqv": 5, "ggk": 9, "fij": 270, "kdy": True},
-        name="krg",
+        data={"vxy": 42, "tuv": 5, "nlo": 9, "opw": 270, "qqv": 5, "ggk": 12, "fij": 0, "kdy": True},
+        name="puq",
     ),
     # Level 2: mgu - 2 base energy + 2 fog compensation = 4 total
     Level(
@@ -146,27 +150,23 @@ levels = [
         data={"vxy": 42, "tuv": 5, "nlo": 9, "opw": 270, "qqv": 5, "ggk": 9, "fij": 0, "kdy": True},
         name="mgu",
     ),
-    # Level 3: puq - 3 base energy + 2 fog compensation = 5 total
+    # Level 3: krg - Tutorial level, 0 base energy + 2 fog compensation (was Level 1)
     Level(
         sprites=[
-            sprites["hep"].clone().set_position(1, 53), sprites["hul"].clone().set_position(52, 48),
-            sprites["kdj"].clone().set_position(3, 55).set_scale(2), sprites["kdy"].clone().set_position(49, 10),
-            sprites["lhs"].clone().set_position(54, 50), sprites["mgu"].clone(),
-        ] + [sprites["nlo"].clone().set_position(x, y) for x, y in [(4,0),(9,0),(4,5),(14,0),(19,0),(24,0),(29,0),(39,0),(44,0),(49,0),(54,0),(59,0),(4,10),(4,15),(4,20),(4,25),(4,30),(4,35),(59,15),(59,20),(59,25),(59,30),(59,35),(59,40),(59,45),(59,50),(59,55),(54,55),(49,55),(44,55),(39,55),(34,55),(29,55),(24,55),(19,55),(4,40),(4,45),(4,50),(9,50),(4,55),(9,55),(14,55),(34,0),(59,10),(59,5),(39,10),(14,25),(19,40),(19,45),(19,35),(49,50),(39,35),(39,40),(39,45),(14,30),(49,45),(49,40),(14,20),(14,50),(39,5),(39,50),(44,45),(19,50),(44,40),(44,50),(44,20),(49,20),(39,20),(19,10),(14,35),(39,15),(34,35),(14,10),(14,15),(44,35),(24,35),(34,10),(24,10)]] + [
-            sprites["pca"].clone().set_position(9, 45), sprites["qqv"].clone().set_position(29, 45),
-            sprites["rzt"].clone().set_position(55, 51), sprites["snw"].clone().set_position(53, 49),
-            sprites["tuv"].clone().set_position(1, 53), sprites["ulq"].clone().set_position(53, 49),
-            # LS20 base energy
-            sprites["zba"].clone().set_position(20, 31),
-            sprites["zba"].clone().set_position(30, 16),
-            sprites["zba"].clone().set_position(50, 36),
+            sprites["hep"].clone().set_position(1, 53), sprites["hul"].clone().set_position(32, 8).set_rotation(180),
+            sprites["kdj"].clone().set_position(3, 55).set_scale(2), sprites["kdy"].clone().set_position(19, 30),
+            sprites["lhs"].clone().set_position(34, 10), sprites["mgu"].clone(),
+        ] + [sprites["nlo"].clone().set_position(x, y) for x, y in [(4,0),(9,0),(4,5),(14,0),(19,0),(24,0),(29,0),(39,0),(44,0),(49,0),(54,0),(59,0),(4,10),(4,15),(4,20),(4,25),(59,15),(59,20),(59,25),(59,30),(59,35),(59,40),(59,45),(59,50),(59,55),(54,55),(49,55),(44,55),(39,55),(34,55),(29,55),(24,55),(19,55),(4,40),(4,45),(4,50),(9,50),(4,55),(9,55),(14,55),(54,25),(54,20),(34,0),(59,10),(59,5),(54,15),(54,10),(44,5),(39,5),(34,5),(29,5),(54,50),(54,45),(24,5),(19,5),(9,35),(9,45),(19,50),(9,40),(49,5),(54,5),(49,50),(14,50),(14,5),(9,5),(9,30),(9,25),(9,20),(9,15),(9,10),(49,10),(44,20),(39,10),(44,10),(49,15),(29,10),(29,15),(39,15),(44,15),(49,20),(14,15),(19,15),(24,15),(24,10),(19,10),(14,10),(29,20),(39,20),(24,20),(29,40),(19,20),(14,20),(54,30),(24,40),(14,45),(29,35),(4,30),(4,35),(54,35),(54,40),(14,40),(24,50),(29,50),(39,50),(44,50),(34,50),(29,30)]] + [
+            sprites["pca"].clone().set_position(39, 45), sprites["rzt"].clone().set_position(35, 11),
+            sprites["snw"].clone().set_position(33, 9), sprites["tuv"].clone().set_position(1, 53),
+            sprites["ulq"].clone().set_position(33, 9),
             # Fog compensation: 2 pickups in accessible corridors
-            sprites["zba"].clone().set_position(50, 11),
-            sprites["zba"].clone().set_position(10, 41),
+            sprites["zba"].clone().set_position(35, 21),
+            sprites["zba"].clone().set_position(30, 26),
         ],
         grid_size=(64, 64),
-        data={"vxy": 42, "tuv": 5, "nlo": 9, "opw": 270, "qqv": 5, "ggk": 12, "fij": 0, "kdy": True},
-        name="puq",
+        data={"vxy": 42, "tuv": 5, "nlo": 9, "opw": 0, "qqv": 5, "ggk": 9, "fij": 270, "kdy": True},
+        name="krg",
     ),
     # Level 4: tmx - 4 base energy + 2 fog compensation = 6 total
     Level(
