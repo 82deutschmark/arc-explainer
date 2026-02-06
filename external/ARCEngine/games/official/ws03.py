@@ -1,8 +1,8 @@
-# Author: Claude Opus 4.5
-# Date: 2026-02-01
-# PURPOSE: WS03 game - variant of LS20/WS02 with jarring color palette and permanent fog of war
-# Features: Pink/Red/Yellow/Orange/Purple clashing colors, always-on fog of war, extra energy pickups
-# SRP/DRY check: Pass - Reuses proven game mechanics from LS20/WS01/WS02
+# Author: Claude Opus 4.5 / Claude Haiku 4.5
+# Date: 2026-02-05
+# PURPOSE: WS03 game - variant of WS01 with permanent fog of war + seeded randomness
+# Features: Magenta border, improved color hierarchy, permanent fog of war, extra energy pickups
+# SRP/DRY check: Pass - Reuses proven game mechanics from WS01
 
 import logging
 import math
@@ -11,35 +11,35 @@ from typing import List, Tuple
 import numpy as np
 from arcengine import ARCBaseGame, Camera, Level, RenderableUserDisplay, Sprite
 
-# WS03 uses jarring clashing colors: Pink (6), Red (8), Yellow (11), Orange (12), Purple (15), Green (14)
+# WS03 uses distinctive colors: Magenta borders (6), dark red walls (13), orange energy (12), green+light blue player (14+10)
 sprites = {
     "dcb": Sprite(pixels=[[-1, 6, -1], [6, 6, -1], [-1, 6, 6]], name="dcb", visible=True, collidable=True, layer=1),
     "fij": Sprite(pixels=[[6, 6, 6], [-1, -1, 6], [6, -1, 6]], name="fij", visible=True, collidable=False, layer=-2),
-    "ggk": Sprite(pixels=[[5, 5, 5, 5, 5, 5, 5], [5, -1, -1, -1, -1, -1, 5], [5, -1, -1, -1, -1, -1, 5], [5, -1, -1, -1, -1, -1, 5], [5, -1, -1, -1, -1, -1, 5], [5, -1, -1, -1, -1, -1, 5], [5, 5, 5, 5, 5, 5, 5]], name="ggk", visible=True, collidable=True, tags=["yar", "vdr"], layer=-3),
-    "hep": Sprite(pixels=[[5]*10]*10, name="hep", visible=True, collidable=True, tags=["nfq"], layer=1),
+    "ggk": Sprite(pixels=[[6, 6, 6, 6, 6, 6, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, 6, 6, 6, 6, 6, 6]], name="ggk", visible=True, collidable=True, tags=["yar", "vdr"], layer=-3),
+    "hep": Sprite(pixels=[[6]*10]*10, name="hep", visible=True, collidable=True, tags=["nfq"], layer=1),
     "hul": Sprite(pixels=[[13, 13, -1, -1, -1, -1, -1, 13, 13], [13]*9, [13]*9, [13]*9, [13]*9, [13]*9, [13]*9, [13]*9, [13]*9], name="hul", visible=True, collidable=True, layer=-4),
     "kdj": Sprite(pixels=[[6, -1, 6], [-1, 6, -1], [6, -1, 6]], name="kdj", visible=True, collidable=True, tags=["wex"], layer=10),
-    "kdy": Sprite(pixels=[[-2]*5, [-2, -2, 6, -2, -2], [-2, 1, 6, 6, -2], [-2, -2, 1, -2, -2], [-2]*5], name="kdy", visible=True, collidable=True, tags=["bgt"], layer=-1),
+    "kdy": Sprite(pixels=[[-2]*5, [-2, -2, 6, -2, -2], [-2, 12, 6, 6, -2], [-2, -2, 12, -2, -2], [-2]*5], name="kdy", visible=True, collidable=True, tags=["bgt"], layer=-1),
     "krg": Sprite(pixels=[[8]], name="krg", visible=True, collidable=True, layer=3),
-    "lhs": Sprite(pixels=[[5]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
+    "lhs": Sprite(pixels=[[6]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
     "lyd": Sprite(pixels=[[-1, 6, -1], [-1, 6, -1], [6, 6, 6]], name="lyd", visible=True, collidable=True),
-    "mgu": Sprite(pixels=[[5, 5, 5, 5] + [-1]*60]*24 + [[4]*12 + [-1]*52, [4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4] + [-1]*52]*7 + [[4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4] + [5]*52]*3 + [[4]*12 + [5]*52], name="mgu", visible=True, collidable=True),
+    "mgu": Sprite(pixels=[[6, 6, 6, 6] + [-1]*60]*24 + [[13]*12 + [-1]*52, [13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [-1]*52]*7 + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [6]*52]*3 + [[13]*12 + [6]*52], name="mgu", visible=True, collidable=True),
     "nio": Sprite(pixels=[[-1, 6, 6], [6, -1, 6], [-1, 6, -1]], name="nio", visible=True, collidable=True),
-    "nlo": Sprite(pixels=[[4]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
+    "nlo": Sprite(pixels=[[13]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
     "opw": Sprite(pixels=[[6, 6, -1], [-1, 6, 6], [6, -1, 6]], name="opw", visible=True, collidable=True),
-    "pca": Sprite(pixels=[[12]*5, [12]*5, [15]*5, [15]*5, [15]*5], name="pca", visible=True, collidable=True, tags=["caf"]),
+    "pca": Sprite(pixels=[[14, 14, 14], [14, 14, 14], [10, 10, 10], [10, 10, 10]], name="pca", visible=True, collidable=True, tags=["caf"]),
     "qqv": Sprite(pixels=[[-2]*5, [-2, 15, 8, 8, -2], [-2, 15, 6, 11, -2], [-2, 12, 12, 11, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
     "rzt": Sprite(pixels=[[6, -1, -1], [-1, 6, -1], [-1, -1, 6]], name="rzt", visible=True, collidable=True, tags=["axa"]),
-    "snw": Sprite(pixels=[[5]*7, [5, -1, -1, -1, -1, -1, 5], [5, -1, -1, -1, -1, -1, 5], [5, -1, -1, -1, -1, -1, 5], [5, -1, -1, -1, -1, -1, 5], [5, -1, -1, -1, -1, -1, 5], [5]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
+    "snw": Sprite(pixels=[[6]*7, [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
     "tmx": Sprite(pixels=[[6, -1, 6], [6, -1, 6], [6, 6, 6]], name="tmx", visible=True, collidable=True),
     "tuv": Sprite(pixels=[[6]*10] + [[6] + [-1]*8 + [6]]*8 + [[6]*10], name="tuv", visible=False, collidable=True, tags=["fng"], layer=5),
     "ulq": Sprite(pixels=[[6]*7] + [[6] + [-1]*5 + [6]]*5 + [[6]*7], name="ulq", visible=False, collidable=True, tags=["qex"], layer=-1),
     "vxy": Sprite(pixels=[[-2]*5, [-2, 6, -2, -2, -2], [-2, -2, 6, 6, -2], [-2, -2, 6, -2, -2], [-2]*5], name="vxy", visible=True, collidable=False, tags=["gsu"], layer=-1),
-    "zba": Sprite(pixels=[[11, 11, 11], [11, -1, 11], [11, 11, 11]], name="zba", visible=True, collidable=False, tags=["iri"], layer=-1),
+    "zba": Sprite(pixels=[[12]], name="zba", visible=True, collidable=False, tags=["iri"], layer=-1),
 }
 
-BACKGROUND_COLOR = 5
-PADDING_COLOR = 5
+BACKGROUND_COLOR = 0
+PADDING_COLOR = 0
 
 
 class jvq(RenderableUserDisplay):
@@ -86,13 +86,13 @@ class jvq(RenderableUserDisplay):
         for hhe in range(self.tmx):
             mgu = 13 + hhe
             lyd = 61
-            frame[lyd : lyd + 2, mgu] = 11 if self.tmx - hhe - 1 < self.snw else 5
+            frame[lyd : lyd + 2, mgu] = 12 if self.tmx - hhe - 1 < self.snw else 0
 
         for lhs in range(3):
             mgu = 56 + 3 * lhs
             lyd = 61
             for x in range(2):
-                frame[lyd : lyd + 2, mgu + x] = 8 if self.tuv.lbq > lhs else 5
+                frame[lyd : lyd + 2, mgu + x] = 14 if self.tuv.lbq > lhs else 0
         return frame
 
 
@@ -107,8 +107,8 @@ levels = [
             sprites["pca"].clone().set_position(39, 45), sprites["rzt"].clone().set_position(35, 11),
             sprites["snw"].clone().set_position(33, 9), sprites["tuv"].clone().set_position(1, 53),
             sprites["ulq"].clone().set_position(33, 9),
-            # Fog compensation: 2 pickups near start and mid-path
-            sprites["zba"].clone().set_position(15, 16),
+            # Fog compensation: 2 pickups in accessible corridors
+            sprites["zba"].clone().set_position(35, 21),
             sprites["zba"].clone().set_position(30, 26),
         ],
         grid_size=(64, 64),
@@ -126,10 +126,10 @@ levels = [
             sprites["snw"].clone().set_position(13, 39), sprites["tuv"].clone().set_position(1, 53),
             sprites["ulq"].clone().set_position(13, 39),
             # LS20 base energy
-            sprites["zba"].clone().set_position(15, 16),
+            sprites["zba"].clone().set_position(35, 16),
             sprites["zba"].clone().set_position(30, 51),
-            # Fog compensation: 2 pickups near decision points
-            sprites["zba"].clone().set_position(45, 26),
+            # Fog compensation: 2 pickups in accessible corridors
+            sprites["zba"].clone().set_position(50, 16),
             sprites["zba"].clone().set_position(20, 36),
         ],
         grid_size=(64, 64),
@@ -148,11 +148,11 @@ levels = [
             sprites["tuv"].clone().set_position(1, 53), sprites["ulq"].clone().set_position(53, 49),
             # LS20 base energy
             sprites["zba"].clone().set_position(20, 31),
-            sprites["zba"].clone().set_position(35, 6),
+            sprites["zba"].clone().set_position(30, 16),
             sprites["zba"].clone().set_position(50, 36),
-            # Fog compensation: 2 pickups near corridors
-            sprites["zba"].clone().set_position(15, 16),
-            sprites["zba"].clone().set_position(45, 21),
+            # Fog compensation: 2 pickups in accessible corridors
+            sprites["zba"].clone().set_position(50, 11),
+            sprites["zba"].clone().set_position(10, 41),
         ],
         grid_size=(64, 64),
         data={"vxy": 42, "tuv": 5, "nlo": 9, "opw": 270, "qqv": 5, "ggk": 12, "fij": 0, "kdy": True},
@@ -172,10 +172,10 @@ levels = [
             # LS20 base energy
             sprites["zba"].clone().set_position(35, 41),
             sprites["zba"].clone().set_position(15, 46),
-            sprites["zba"].clone().set_position(25, 21),
+            sprites["zba"].clone().set_position(35, 16),
             sprites["zba"].clone().set_position(55, 51),
-            # Fog compensation: 2 pickups near start and mid-map
-            sprites["zba"].clone().set_position(20, 16),
+            # Fog compensation: 2 pickups in accessible corridors
+            sprites["zba"].clone().set_position(50, 26),
             sprites["zba"].clone().set_position(45, 26),
         ],
         grid_size=(64, 64),
@@ -197,9 +197,9 @@ levels = [
             sprites["zba"].clone().set_position(40, 6),
             sprites["zba"].clone().set_position(10, 6),
             sprites["zba"].clone().set_position(40, 51),
-            # Fog compensation: 2 pickups along traversal path
+            # Fog compensation: 2 pickups in accessible corridors
             sprites["zba"].clone().set_position(20, 26),
-            sprites["zba"].clone().set_position(35, 36),
+            sprites["zba"].clone().set_position(35, 11),
         ],
         grid_size=(64, 64),
         data={"vxy": 42, "tuv": 5, "nlo": 9, "opw": 90, "qqv": 4, "ggk": 12, "fij": 0, "kdy": True},
@@ -221,14 +221,14 @@ levels = [
             sprites["ulq"].clone().set_position(53, 34), sprites["ulq"].clone().set_position(53, 49),
             sprites["vxy"].clone().set_position(29, 25),
             # LS20 base energy
-            sprites["zba"].clone().set_position(45, 26),
+            sprites["zba"].clone().set_position(40, 16),
             sprites["zba"].clone().set_position(10, 41),
             sprites["zba"].clone().set_position(55, 16),
-            sprites["zba"].clone().set_position(45, 6),
-            sprites["zba"].clone().set_position(20, 16),
-            # Fog compensation: 2 pickups near dual targets
-            sprites["zba"].clone().set_position(35, 46),
-            sprites["zba"].clone().set_position(15, 31),
+            sprites["zba"].clone().set_position(55, 21),
+            sprites["zba"].clone().set_position(10, 6),
+            # Fog compensation: 2 pickups in accessible corridors
+            sprites["zba"].clone().set_position(30, 41),
+            sprites["zba"].clone().set_position(10, 21),
         ],
         grid_size=(64, 64),
         data={"vxy": 42, "tuv": [5, 0], "nlo": [9, 8], "opw": [90, 90], "qqv": 0, "ggk": 14, "fij": 0, "kdy": True},
@@ -251,7 +251,7 @@ levels = [
             sprites["zba"].clone().set_position(55, 51),
             sprites["zba"].clone().set_position(15, 46),
             sprites["zba"].clone().set_position(15, 21),
-            sprites["zba"].clone().set_position(45, 6),
+            sprites["zba"].clone().set_position(45, 11),
         ],
         grid_size=(64, 64),
         data={"vxy": 42, "tuv": 0, "nlo": 8, "opw": 180, "qqv": 1, "ggk": 12, "fij": 0, "kdy": True},
