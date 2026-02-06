@@ -1,8 +1,8 @@
 # Author: Cascade (Claude Sonnet 4)
-# Date: 2026-02-06
-# PURPOSE: WS03 game - variant of WS01 with permanent fog of war + seeded randomness
-# Features: Magenta border, dark red walls, permanent tight fog of war, extra energy pickups
-# SRP/DRY check: Pass - Reuses proven game mechanics from WS01, shape sprites use 0 base for remap
+# Date: 2026-02-06 (color/rendering fixes applied)
+# PURPOSE: WS03 game - variant of LS20 with permanent fog of war + seeded randomness
+# Features: Magenta borders (6), dark red walls (13), gray fog of war (2), blue+pink player (9+6)
+# SRP/DRY check: Pass - Reuses proven game mechanics from LS20, shape sprites use 0 base for remap
 
 import logging
 import math
@@ -11,7 +11,7 @@ from typing import List, Tuple
 import numpy as np
 from arcengine import ARCBaseGame, Camera, Level, RenderableUserDisplay, Sprite
 
-# WS03 uses distinctive colors: Magenta borders (6), dark red walls (13), orange energy (12), green+magenta checkerboard player (3+6)
+# WS03 uses distinctive colors: Magenta borders (6), dark red walls (13), orange energy (12), blue+magenta checkerboard player (9+6)
 # Shape sprites (dcb, fij, lyd, nio, opw, tmx) use 0 as base color so color_remap(0, target) works
 sprites = {
     "dcb": Sprite(pixels=[[-1, 0, -1], [0, 0, -1], [-1, 0, 0]], name="dcb", visible=True, collidable=True, layer=1),
@@ -24,11 +24,11 @@ sprites = {
     "krg": Sprite(pixels=[[8]], name="krg", visible=True, collidable=True, layer=3),
     "lhs": Sprite(pixels=[[6]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
     "lyd": Sprite(pixels=[[-1, 0, -1], [-1, 0, -1], [0, 0, 0]], name="lyd", visible=True, collidable=True),
-    "mgu": Sprite(pixels=[[0, 0, 0, 0] + [-1]*60]*24 + [[13]*12 + [-1]*52, [13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [-1]*52]*7 + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [0]*52]*3 + [[13]*12 + [0]*52], name="mgu", visible=True, collidable=True),
+    "mgu": Sprite(pixels=[[5, 5, 5, 5] + [-1]*60]*52 + [[13]*12 + [-1]*52] + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [-1]*52]*7 + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [5]*52]*3 + [[13]*12 + [5]*52], name="mgu", visible=True, collidable=True),
     "nio": Sprite(pixels=[[-1, 0, 0], [0, -1, 0], [-1, 0, -1]], name="nio", visible=True, collidable=True),
     "nlo": Sprite(pixels=[[13]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
     "opw": Sprite(pixels=[[0, 0, -1], [-1, 0, 0], [0, -1, 0]], name="opw", visible=True, collidable=True),
-    "pca": Sprite(pixels=[[3, 6, 3], [6, 3, 6], [3, 6, 3]], name="pca", visible=True, collidable=True, tags=["caf"]),
+    "pca": Sprite(pixels=[[9, 6, 9], [6, 9, 6], [9, 6, 9]], name="pca", visible=True, collidable=True, tags=["caf"]),
     "qqv": Sprite(pixels=[[-2]*5, [-2, 15, 8, 8, -2], [-2, 15, 6, 11, -2], [-2, 12, 12, 11, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
     "rzt": Sprite(pixels=[[0, -1, -1], [-1, 0, -1], [-1, -1, 0]], name="rzt", visible=True, collidable=True, tags=["axa"]),
     "snw": Sprite(pixels=[[6]*7, [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
@@ -39,8 +39,8 @@ sprites = {
     "zba": Sprite(pixels=[[12]], name="zba", visible=True, collidable=False, tags=["iri"], layer=-1),
 }
 
-BACKGROUND_COLOR = 0
-PADDING_COLOR = 0
+BACKGROUND_COLOR = 5
+PADDING_COLOR = 5
 
 
 class jvq(RenderableUserDisplay):
@@ -73,7 +73,7 @@ class jvq(RenderableUserDisplay):
             for hhe in range(64):
                 for dcv in range(64):
                     if math.dist((hhe, dcv), (self.tuv.mgu.y + nlo, self.tuv.mgu.x + nlo)) > 10.0:
-                        frame[hhe, dcv] = 5
+                        frame[hhe, dcv] = 2
 
             if self.tuv.nio and self.tuv.nio.is_visible:
                 nio = self.tuv.nio.render()
@@ -96,13 +96,13 @@ class jvq(RenderableUserDisplay):
         for hhe in range(self.tmx):
             mgu = 13 + hhe
             lyd = 61
-            frame[lyd : lyd + 2, mgu] = 12 if self.tmx - hhe - 1 < self.snw else 0
+            frame[lyd : lyd + 2, mgu] = 12 if self.tmx - hhe - 1 < self.snw else 5
 
         for lhs in range(3):
             mgu = 56 + 3 * lhs
             lyd = 61
             for x in range(2):
-                frame[lyd : lyd + 2, mgu + x] = 14 if self.tuv.lbq > lhs else 0
+                frame[lyd : lyd + 2, mgu + x] = 14 if self.tuv.lbq > lhs else 5
         return frame
 
 
@@ -373,7 +373,7 @@ class Ws03(ARCBaseGame):
             self.complete_action()
             return
         if self.kbj:
-            self.nlo.color_remap(None, 5)
+            self.nlo.color_remap(None, 6)
             self.kbj = False
             self.complete_action()
             return
