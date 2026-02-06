@@ -1,16 +1,17 @@
 """
-Author: GPT-5.2
-Date: 2026-02-01
+Author: GPT-5 Codex
+Date: 2026-02-06T00:00:00Z
 PURPOSE: Generate a JSON catalog of ARCEngine "official" games shipped in the repo's
          `external/ARCEngine` git submodule. This is used by the Node.js server to
          dynamically discover newly-added official game files (e.g., ws02/ws03)
          without hardcoded whitelists.
-         
+
          The catalog is computed by:
          - Adding `external/ARCEngine` to `sys.path`
          - Scanning `external/ARCEngine/games/official/*.py` (excluding __init__.py)
          - Importing each file by path, finding the ARCBaseGame subclass, instantiating it
-         - Extracting runtime metadata needed by the app (game_id, level_count, win_score)
+         - Extracting runtime metadata needed by the app (game_id, level_count, win_score,
+           max_actions, action_count from available_actions)
 SRP/DRY check: Pass - single responsibility: catalog generation for official games.
 """
 
@@ -35,6 +36,7 @@ class OfficialGameRuntimeMeta:
     level_count: int
     win_score: int
     max_actions: Optional[int]
+    action_count: int
 
 
 def _get_repo_root() -> Path:
@@ -93,6 +95,29 @@ def _extract_runtime_meta_from_game(game, file_stem: str, python_file: Path) -> 
     max_actions_raw = getattr(game, "max_actions", None)
     max_actions = _safe_int(max_actions_raw, 0) if max_actions_raw is not None else None
 
+    available_actions = getattr(game, "_available_actions", None)
+    if isinstance(available_actions, list):
+        # Count unique runtime actions exposed by the game (e.g., [1,2,3,4,5,6] -> 6).
+        normalized_actions: set[int] = set()
+        for action in available_actions:
+            try:
+                normalized_actions.add(int(action))
+                continue
+            except Exception:
+                pass
+
+            # Some games may store enum entries rather than raw ints.
+            value = getattr(action, "value", None)
+            if value is not None:
+                try:
+                    normalized_actions.add(int(value))
+                except Exception:
+                    pass
+
+        action_count = len(normalized_actions)
+    else:
+        action_count = 0
+
     return OfficialGameRuntimeMeta(
         file_stem=file_stem,
         python_file_path=str(python_file),
@@ -100,6 +125,7 @@ def _extract_runtime_meta_from_game(game, file_stem: str, python_file: Path) -> 
         level_count=int(level_count),
         win_score=win_score,
         max_actions=max_actions,
+        action_count=action_count,
     )
 
 
@@ -163,6 +189,7 @@ def main() -> int:
                     "level_count": meta.level_count,
                     "win_score": meta.win_score,
                     "max_actions": meta.max_actions,
+                    "action_count": meta.action_count,
                 }
             )
         except Exception as e:
