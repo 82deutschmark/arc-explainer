@@ -265,6 +265,55 @@ export function PixelLink(props: {
   );
 }
 
+/**
+ * Decorative horizontal strip displaying all 16 ARC3 palette colors.
+ * Used as visual identity / section divider on ARC3 pages.
+ */
+export function PaletteStrip(props: { className?: string; cellHeight?: number }) {
+  const h = props.cellHeight ?? 6;
+  return (
+    <div
+      className={cn('w-full flex', props.className)}
+      aria-hidden="true"
+      style={{ height: `${h}px` }}
+    >
+      {Array.from({ length: 16 }, (_, i) => (
+        <div key={i} className="flex-1" style={{ backgroundColor: arc3Color(i) }} />
+      ))}
+    </div>
+  );
+}
+
+/**
+ * A single game card with a colored left accent bar derived from the game index.
+ * Designed for the landing page game grid.
+ */
+export function GameCard(props: {
+  children: React.ReactNode;
+  className?: string;
+  accentIndex?: number;
+  onClick?: () => void;
+}) {
+  const accent = arc3Color(props.accentIndex ?? 9);
+  return (
+    <div
+      className={cn(
+        'border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel)]',
+        'shadow-[3px_3px_0_var(--arc3-c3)]',
+        'hover:shadow-[5px_5px_0_var(--arc3-c3)] transition-shadow',
+        'flex overflow-hidden',
+        props.onClick && 'cursor-pointer',
+        props.className,
+      )}
+      onClick={props.onClick}
+    >
+      {/* Colored left accent bar */}
+      <div className="w-1.5 shrink-0" style={{ backgroundColor: accent }} />
+      <div className="flex-1 min-w-0">{props.children}</div>
+    </div>
+  );
+}
+
 function mulberry32(seed: number) {
   return function () {
     // Deterministic tiny PRNG for “sprite sheet” mosaics.
