@@ -60,6 +60,10 @@ type OfficialGameOverride = Partial<{
   tags: string[];
 }>;
 
+// Games originally created by the ARC Prize Foundation (MIT-licensed).
+// All other games in the official directory are by the ARC Explainer team.
+const ARC_PRIZE_FOUNDATION_GAME_IDS = new Set(['vc33', 'ft09', 'ls20']);
+
 // Intentionally avoid narrative descriptions here: earlier versions hard-coded marketing-style copy
 // that drifted away from the actual game mechanics. We now only use:
 // - explicit metadata embedded in the ARCEngine repo (PURPOSE headers / changelog entries), or
@@ -330,7 +334,7 @@ async function refreshCatalog(): Promise<OfficialGameCatalogItem[]> {
     const description = override?.description ?? purposeLine ?? changelogDescriptions[stem] ?? null;
 
     const displayName = override?.displayName ?? titleFromPurpose ?? defaultDisplayNameForGameId(gameId);
-    const authorName = override?.authorName ?? 'ARC Prize Foundation';
+    const authorName = override?.authorName ?? (ARC_PRIZE_FOUNDATION_GAME_IDS.has(gameId) ? 'ARC Prize Foundation' : 'ARC Explainer');
     const difficulty: GameDifficulty = override?.difficulty ?? 'unknown';
     const tags = normalizeTags(override?.tags);
 

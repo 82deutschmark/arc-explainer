@@ -53,6 +53,8 @@ export default function CommunityLanding() {
   });
 
   const games = gamesData?.data?.games ?? [];
+  const arcPrizeGames = games.filter((g) => g.authorName === 'ARC Prize Foundation');
+  const teamGames = games.filter((g) => g.authorName !== 'ARC Prize Foundation');
 
   return (
     <Arc3PixelPage>
@@ -114,57 +116,116 @@ export default function CommunityLanding() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {games.map((game, idx) => (
-              <GameCard
-                key={game.gameId}
-                accentIndex={ACCENT_CYCLE[idx % ACCENT_CYCLE.length]}
-                onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-              >
-                <div className="p-3 space-y-2">
-                  {/* Game name + official badge */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold truncate">{game.displayName}</span>
-                    {game.tags?.includes('official') && (
-                      <span
-                        className="text-[9px] font-bold px-1.5 py-0.5 shrink-0"
-                        style={{ backgroundColor: ARC3_COLORS[11], color: ARC3_COLORS[5] }}
-                      >
-                        OFFICIAL
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Description */}
-                  {game.description && (
-                    <p className="text-[11px] text-[var(--arc3-muted)] leading-snug min-h-[2rem]">
-                      {truncate(game.description, 120)}
-                    </p>
-                  )}
-
-                  {/* Author + metadata row */}
-                  <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
-                    <div className="flex items-center gap-1">
-                      <Users className="w-3 h-3" />
-                      <span>{game.authorName}</span>
-                    </div>
-                    {game.levelCount != null && game.levelCount > 0 && (
-                      <span>{game.levelCount} levels</span>
-                    )}
-                  </div>
-
-                  {/* Play button - big and obvious */}
-                  <PixelButton
-                    tone="green"
-                    onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                    className="w-full mt-1"
-                  >
-                    <Play className="w-4 h-4" />
-                    Play
-                  </PixelButton>
+          <div className="space-y-8">
+            {/* ARC Prize Foundation games */}
+            {arcPrizeGames.length > 0 && (
+              <section>
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--arc3-c11)]">
+                    ARC Prize Foundation
+                  </h3>
+                  <span className="text-[10px] text-[var(--arc3-dim)]">
+                    {arcPrizeGames.length} {arcPrizeGames.length === 1 ? 'game' : 'games'}
+                  </span>
                 </div>
-              </GameCard>
-            ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {arcPrizeGames.map((game, idx) => (
+                    <GameCard
+                      key={game.gameId}
+                      accentIndex={ACCENT_CYCLE[idx % ACCENT_CYCLE.length]}
+                      onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                    >
+                      <div className="p-3 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold truncate">{game.displayName}</span>
+                          {game.tags?.includes('official') && (
+                            <span
+                              className="text-[9px] font-bold px-1.5 py-0.5 shrink-0"
+                              style={{ backgroundColor: ARC3_COLORS[11], color: ARC3_COLORS[5] }}
+                            >
+                              OFFICIAL
+                            </span>
+                          )}
+                        </div>
+                        {game.description && (
+                          <p className="text-[11px] text-[var(--arc3-muted)] leading-snug min-h-[2rem]">
+                            {truncate(game.description, 120)}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
+                          <div className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            <span>{game.authorName}</span>
+                          </div>
+                          {game.levelCount != null && game.levelCount > 0 && (
+                            <span>{game.levelCount} levels</span>
+                          )}
+                        </div>
+                        <PixelButton
+                          tone="green"
+                          onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                          className="w-full mt-1"
+                        >
+                          <Play className="w-4 h-4" />
+                          Play
+                        </PixelButton>
+                      </div>
+                    </GameCard>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* ARC Explainer team games */}
+            {teamGames.length > 0 && (
+              <section>
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--arc3-c14)]">
+                    ARC Explainer
+                  </h3>
+                  <span className="text-[10px] text-[var(--arc3-dim)]">
+                    {teamGames.length} {teamGames.length === 1 ? 'game' : 'games'}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {teamGames.map((game, idx) => (
+                    <GameCard
+                      key={game.gameId}
+                      accentIndex={ACCENT_CYCLE[(arcPrizeGames.length + idx) % ACCENT_CYCLE.length]}
+                      onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                    >
+                      <div className="p-3 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold truncate">{game.displayName}</span>
+                        </div>
+                        {game.description && (
+                          <p className="text-[11px] text-[var(--arc3-muted)] leading-snug min-h-[2rem]">
+                            {truncate(game.description, 120)}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
+                          <div className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            <span>{game.authorName}</span>
+                          </div>
+                          {game.levelCount != null && game.levelCount > 0 && (
+                            <span>{game.levelCount} levels</span>
+                          )}
+                        </div>
+                        <PixelButton
+                          tone="green"
+                          onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                          className="w-full mt-1"
+                        >
+                          <Play className="w-4 h-4" />
+                          Play
+                        </PixelButton>
+                      </div>
+                    </GameCard>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         )}
 
