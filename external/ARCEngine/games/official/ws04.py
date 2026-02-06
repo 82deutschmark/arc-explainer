@@ -1,7 +1,8 @@
 # Author: Claude Opus 4.6
 # Date: 2026-02-06
-# PURPOSE: WS04 game - new variant with Red/Blue/Orange color theme and vertical UI
-# Features: Red (2) borders, blue (1) walls, orange (7) door, vertical energy bar + level progress dots
+# PURPOSE: WS04 game - variant with Cyan/Maroon/Yellow color theme and vertical UI
+# Features: Cyan (8) borders, maroon (9) walls, yellow (4) door, gray (5) background
+#           Vertical energy bar on right side + level progress dots
 # SRP/DRY check: Pass - Faithful adaptation of proven game mechanics with new color palette, layouts, and UI style
 
 import logging
@@ -11,36 +12,37 @@ from typing import List, Tuple
 import numpy as np
 from arcengine import ARCBaseGame, Camera, Level, RenderableUserDisplay, Sprite
 
-# WS04 color theme: Red (2) borders, blue (1) walls, orange (7) door body
+# WS04 color theme: Cyan (8) borders/frames, maroon (9) walls, yellow (4) door body
+# Player: green (3) top + orange (7) bottom -- warm/cool contrast, pops against maroon walls
 # Shape sprites use 0 as base color so color_remap(0, target) works correctly
 sprites = {
     "dcb": Sprite(pixels=[[-1, 0, -1], [0, 0, -1], [-1, 0, 0]], name="dcb", visible=True, collidable=True, layer=1),
     "fij": Sprite(pixels=[[0, 0, 0], [-1, -1, 0], [0, -1, 0]], name="fij", visible=True, collidable=False, layer=-2),
-    "ggk": Sprite(pixels=[[2, 2, 2, 2, 2, 2, 2], [2, -1, -1, -1, -1, -1, 2], [2, -1, -1, -1, -1, -1, 2], [2, -1, -1, -1, -1, -1, 2], [2, -1, -1, -1, -1, -1, 2], [2, -1, -1, -1, -1, -1, 2], [2, 2, 2, 2, 2, 2, 2]], name="ggk", visible=True, collidable=True, tags=["yar", "vdr"], layer=-3),
-    "hep": Sprite(pixels=[[2]*10]*10, name="hep", visible=True, collidable=True, tags=["nfq"], layer=1),
-    "hul": Sprite(pixels=[[7, 7, -1, -1, -1, -1, -1, 7, 7], [7]*9, [7]*9, [7]*9, [7]*9, [7]*9, [7]*9, [7]*9, [7]*9], name="hul", visible=True, collidable=True, layer=-4),
+    "ggk": Sprite(pixels=[[8, 8, 8, 8, 8, 8, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, 8, 8, 8, 8, 8, 8]], name="ggk", visible=True, collidable=True, tags=["yar", "vdr"], layer=-3),
+    "hep": Sprite(pixels=[[8]*10]*10, name="hep", visible=True, collidable=True, tags=["nfq"], layer=1),
+    "hul": Sprite(pixels=[[4, 4, -1, -1, -1, -1, -1, 4, 4], [4]*9, [4]*9, [4]*9, [4]*9, [4]*9, [4]*9, [4]*9, [4]*9], name="hul", visible=True, collidable=True, layer=-4),
     "kdj": Sprite(pixels=[[0, -1, 0], [-1, 0, -1], [0, -1, 0]], name="kdj", visible=True, collidable=True, tags=["wex"], layer=10),
     "kdy": Sprite(pixels=[[-2]*5, [-2, -2, 0, -2, -2], [-2, 1, 0, 0, -2], [-2, -2, 1, -2, -2], [-2]*5], name="kdy", visible=True, collidable=True, tags=["bgt"], layer=-1),
     "krg": Sprite(pixels=[[2]], name="krg", visible=True, collidable=True, layer=3),
-    "lhs": Sprite(pixels=[[2]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
+    "lhs": Sprite(pixels=[[8]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
     "lyd": Sprite(pixels=[[-1, 0, -1], [-1, 0, -1], [0, 0, 0]], name="lyd", visible=True, collidable=True),
-    "mgu": Sprite(pixels=[[0, 0, 0, 0] + [-1]*60]*24 + [[1]*12 + [-1]*52, [1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1] + [-1]*52]*7 + [[1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1] + [0]*52]*3 + [[1]*12 + [0]*52], name="mgu", visible=True, collidable=True),
+    "mgu": Sprite(pixels=[[5, 5, 5, 5] + [-1]*60]*24 + [[9]*12 + [-1]*52, [9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [-1]*52]*7 + [[9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 9] + [5]*52]*3 + [[9]*12 + [5]*52], name="mgu", visible=True, collidable=True),
     "nio": Sprite(pixels=[[-1, 0, 0], [0, -1, 0], [-1, 0, -1]], name="nio", visible=True, collidable=True),
-    "nlo": Sprite(pixels=[[1]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
+    "nlo": Sprite(pixels=[[9]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
     "opw": Sprite(pixels=[[0, 0, -1], [-1, 0, 0], [0, -1, 0]], name="opw", visible=True, collidable=True),
-    "pca": Sprite(pixels=[[7, 7, 7, 7, 7], [7, 7, 7, 7, 7], [2, 2, 2, 2, 2], [2, 2, 2, 2, 2], [2, 2, 2, 2, 2]], name="pca", visible=True, collidable=True, tags=["caf"]),
-    "qqv": Sprite(pixels=[[-2]*5, [-2, 9, 2, 2, -2], [-2, 9, 0, 7, -2], [-2, 1, 1, 7, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
+    "pca": Sprite(pixels=[[3, 3, 3, 3, 3], [3, 3, 3, 3, 3], [7, 7, 7, 7, 7], [7, 7, 7, 7, 7], [7, 7, 7, 7, 7]], name="pca", visible=True, collidable=True, tags=["caf"]),
+    "qqv": Sprite(pixels=[[-2]*5, [-2, 9, 14, 14, -2], [-2, 9, 0, 8, -2], [-2, 12, 12, 8, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
     "rzt": Sprite(pixels=[[0, -1, -1], [-1, 0, -1], [-1, -1, 0]], name="rzt", visible=True, collidable=True, tags=["axa"]),
-    "snw": Sprite(pixels=[[2]*7, [2, -1, -1, -1, -1, -1, 2], [2, -1, -1, -1, -1, -1, 2], [2, -1, -1, -1, -1, -1, 2], [2, -1, -1, -1, -1, -1, 2], [2, -1, -1, -1, -1, -1, 2], [2]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
+    "snw": Sprite(pixels=[[8]*7, [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8, -1, -1, -1, -1, -1, 8], [8]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
     "tmx": Sprite(pixels=[[0, -1, 0], [0, -1, 0], [0, 0, 0]], name="tmx", visible=True, collidable=True),
-    "tuv": Sprite(pixels=[[2]*10] + [[2] + [-1]*8 + [2]]*8 + [[2]*10], name="tuv", visible=False, collidable=True, tags=["fng"], layer=5),
-    "ulq": Sprite(pixels=[[2]*7] + [[2] + [-1]*5 + [2]]*5 + [[2]*7], name="ulq", visible=False, collidable=True, tags=["qex"], layer=-1),
+    "tuv": Sprite(pixels=[[8]*10] + [[8] + [-1]*8 + [8]]*8 + [[8]*10], name="tuv", visible=False, collidable=True, tags=["fng"], layer=5),
+    "ulq": Sprite(pixels=[[8]*7] + [[8] + [-1]*5 + [8]]*5 + [[8]*7], name="ulq", visible=False, collidable=True, tags=["qex"], layer=-1),
     "vxy": Sprite(pixels=[[-2]*5, [-2, 0, -2, -2, -2], [-2, -2, 0, 0, -2], [-2, -2, 0, -2, -2], [-2]*5], name="vxy", visible=True, collidable=False, tags=["gsu"], layer=-1),
-    "zba": Sprite(pixels=[[7, 7, 7], [7, -1, 7], [7, 7, 7]], name="zba", visible=True, collidable=False, tags=["iri"], layer=-1),
+    "zba": Sprite(pixels=[[4, 4, 4], [4, -1, 4], [4, 4, 4]], name="zba", visible=True, collidable=False, tags=["iri"], layer=-1),
 }
 
-BACKGROUND_COLOR = 0
-PADDING_COLOR = 0
+BACKGROUND_COLOR = 5
+PADDING_COLOR = 5
 
 # Level definitions - 7 all-new levels with unique wall layouts
 levels = [
@@ -351,13 +353,22 @@ class jvq(RenderableUserDisplay):
             for hhe in range(64):
                 for dcv in range(64):
                     if math.dist((hhe, dcv), (self.tuv.mgu.y + nlo, self.tuv.mgu.x + nlo)) > 15.0:
-                        frame[hhe, dcv] = 1
+                        frame[hhe, dcv] = 9
 
-            # Key indicator in corner when fog active
+            # Key indicator in corner when fog active - bordered panel
             if self.tuv.nio and self.tuv.nio.is_visible:
                 nio = self.tuv.nio.render()
                 mgu = 3
                 lyd = 55
+                # Draw bordered panel: 1px cyan border + gray background
+                for hhe in range(lyd - 1, lyd + 7):
+                    for w in range(mgu - 1, mgu + 7):
+                        if 0 <= hhe < 64 and 0 <= w < 64:
+                            if hhe == lyd - 1 or hhe == lyd + 6 or w == mgu - 1 or w == mgu + 6:
+                                frame[hhe, w] = 8  # Cyan border
+                            else:
+                                frame[hhe, w] = 5  # Gray background
+                # Draw key sprite on top
                 for hhe in range(6):
                     for w in range(6):
                         if nio[hhe][w] != -1:
@@ -366,14 +377,14 @@ class jvq(RenderableUserDisplay):
         # Vertical energy bar on right side (column 61-62, rows from bottom up)
         for hhe in range(self.tmx):
             row = 58 - hhe
-            frame[row, 61] = 7 if self.tmx - hhe - 1 < self.snw else 2
-            frame[row, 62] = 7 if self.tmx - hhe - 1 < self.snw else 2
+            frame[row, 61] = 4 if self.tmx - hhe - 1 < self.snw else 9
+            frame[row, 62] = 4 if self.tmx - hhe - 1 < self.snw else 9
 
         # Lives display (bottom-right, stacked vertically)
         for lhs in range(3):
             row = 61 - lhs * 3
-            frame[row, 61] = 9 if self.tuv.lbq > lhs else 2
-            frame[row, 62] = 9 if self.tuv.lbq > lhs else 2
+            frame[row, 61] = 3 if self.tuv.lbq > lhs else 9
+            frame[row, 62] = 3 if self.tuv.lbq > lhs else 9
 
         # Level progress dots (top-right corner, row 2, cols 55-61)
         total_levels = len(levels)
@@ -381,7 +392,7 @@ class jvq(RenderableUserDisplay):
         for lvl in range(total_levels):
             col = 55 + lvl
             if col < 63:
-                frame[2, col] = 7 if lvl < current_idx else (3 if lvl == current_idx else 2)
+                frame[2, col] = 4 if lvl < current_idx else (3 if lvl == current_idx else 8)
 
         return frame
 
@@ -493,7 +504,7 @@ class Ws04(ARCBaseGame):
             return
 
         if self.kbj:
-            self.nlo.color_remap(None, 0)
+            self.nlo.color_remap(None, 5)
             self.kbj = False
             self.complete_action()
             return
