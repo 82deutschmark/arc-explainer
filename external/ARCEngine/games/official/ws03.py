@@ -1,7 +1,7 @@
-# Author: Cascade (Claude Sonnet 4)
-# Date: 2026-02-06 (color/rendering fixes applied)
+# Author: Claude Opus 4.6
+# Date: 2026-02-06 (pca invisible-padding removed, proper 5x5 checkerboard)
 # PURPOSE: WS03 game - variant of LS20 with permanent fog of war + seeded randomness
-# Features: Magenta borders (6), dark red walls (13), gray fog of war (2), blue+pink player (9+6)
+# Features: Magenta borders (6), dark red walls (13), gray fog of war (2), blue+magenta player (9+6)
 # SRP/DRY check: Pass - Reuses proven game mechanics from LS20, shape sprites use 0 base for remap
 
 import logging
@@ -28,7 +28,7 @@ sprites = {
     "nio": Sprite(pixels=[[-1, 0, 0], [0, -1, 0], [-1, 0, -1]], name="nio", visible=True, collidable=True),
     "nlo": Sprite(pixels=[[13]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
     "opw": Sprite(pixels=[[0, 0, -1], [-1, 0, 0], [0, -1, 0]], name="opw", visible=True, collidable=True),
-    "pca": Sprite(pixels=[[-1, -1, -1, -1, -1], [-1, 9, 6, 9, -1], [-1, 6, 9, 6, -1], [-1, 9, 6, 9, -1], [-1, -1, -1, -1, -1]], name="pca", visible=True, collidable=True, tags=["caf"]),
+    "pca": Sprite(pixels=[[9, 6, 9, 6, 9], [6, 9, 6, 9, 6], [9, 6, 9, 6, 9], [6, 9, 6, 9, 6], [9, 6, 9, 6, 9]], name="pca", visible=True, collidable=True, tags=["caf"]),
     "qqv": Sprite(pixels=[[-2]*5, [-2, 15, 8, 8, -2], [-2, 15, 6, 11, -2], [-2, 12, 12, 11, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
     "rzt": Sprite(pixels=[[0, -1, -1], [-1, 0, -1], [-1, -1, 0]], name="rzt", visible=True, collidable=True, tags=["axa"]),
     "snw": Sprite(pixels=[[6]*7, [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
