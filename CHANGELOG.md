@@ -1,5 +1,53 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.3  Feb 06, 2026
+
+- **FIX: ARC3 community games fail to boot in Docker (runner path resolution)** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Updated `CommunityGamePythonBridge` to resolve `community_game_runner.py` via `process.cwd()` instead of `__dirname` (`import.meta.url`).
+  - **Why**: esbuild bundles the server into `dist/index.js`, so `__dirname` becomes `/app/dist/` in production. The previous `../../python/` traversal pointed to `/python/community_game_runner.py`, which does not exist in the container. Python spawned, crashed immediately, and the bridge timed out after 30 seconds.
+  - **How**:
+    - `server/services/arc3Community/CommunityGamePythonBridge.ts`: Define `PYTHON_RUNNER_PATH` with `path.join(process.cwd(), 'server', 'python', 'community_game_runner.py')`, matching the pattern used across other Python bridges (e.g., `ArcEngineOfficialGameCatalog`).
+
+### Version 7.3.2  Feb 06, 2026
+
+- **FIX: GW01 Gravity Well -- four bugs causing broken orb movement, false fusions, and corrupted level data** (Author: Claude Opus 4.6)
+  - **What**: Fixed Cyrillic characters in level 0 data key (`"ned"` spelled with Cyrillic chars), sequential orb processing causing order-dependent false collisions/fusions, one-time phase-through mechanic that broke green orbs (stripping their type after one platform), and fusion incorrectly reporting success on incompatible orb types.
+  - **Why**: The game was fundamentally broken -- orbs moving in the same direction would falsely fuse instead of sliding freely; green orbs lost their phasing ability after one use (contradicting the game design "Green phases through platforms"); and the simulation could waste ticks on phantom fusions.
+  - **How**:
+    - `external/ARCEngine/games/official/gw01.py`: Fixed Cyrillic `"ned"` key (L150), added directional sorting in `sst()` so leading orbs move first, removed phase-through tag/pixel stripping (green orbs now permanently phase through platforms), changed `fus()` to return `bool` and only set `fu=True` on actual fusions, replaced fragile `f"ob{rt[0]}"` sprite lookup with explicit `tag_to_sprite` mapping.
+    - `docs/plans/2026-02-06-gw01-bugfix-plan.md`: Full diagnosis and fix plan.
+
+### Version 7.3.1  Feb 06, 2026
+
+- **FIX: WS02 "step is still running" hang on goal mismatch and death/respawn** (Author: Claude Opus 4.6)
+  - **What**: Added missing `complete_action()` calls to two code paths in `ws02.py` that returned without completing the action, causing the ARCEngine to stall waiting for action completion.
+  - **Why**: When a player hit a goal with the wrong shape/color/rotation, or when energy ran out with lives remaining, the step method returned without signaling completion. The engine hung until the next input event triggered a deferred completion.
+  - **How**:
+    - `external/ARCEngine/games/official/ws02.py`: Added `self.complete_action()` before `return` in the goal-mismatch path (line ~514) and the death/respawn path (line ~573).
+    - `docs/plans/020526-ws02-step-plan.md`: Completed diagnosis with root cause analysis and proposed fix.
+
+- **FEAT: WS04 game -- new Red/Blue/Orange variant with vertical UI and all-new levels** (Author: Claude Opus 4.6)
+  - **What**: Created WS04, a new ARCEngine game variant with a distinctive Red (2) / Blue (1) / Orange (7) color scheme, 7 all-new level layouts (tutorial, corridor maze, diamond, split arena, spiral, dual targets, fog gauntlet), and a redesigned UI featuring a vertical energy bar on the right side plus level progress dots in the top-right corner.
+  - **Why**: Expands the ARC3 game library with a visually distinct variant that tests different spatial reasoning through unique wall configurations while introducing UI differentiation (vertical energy bar, progress dots) to distinguish it from WS02/WS03.
+  - **How**:
+    - `external/ARCEngine/games/official/ws04.py`: New game file with custom sprites, 7 levels, `jvq` interface with vertical energy bar + progress dots, and `Ws04` game class. All `step()` paths include `complete_action()` (learned from WS02 fix).
+    - `external/ARCEngine/games/official/__init__.py`: Registered `Ws04` in the official game package.
+
+### Version 7.3.0  Feb 05, 2026
+
+- **FEAT: Complete ARC3 landing page redesign -- game-focused, palette-driven** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Rewrote `/arc3` landing page from scratch. Removed the instructional text dump, double header, and random sprite mosaics. The page now leads with a 16-color palette strip, a compact "ARC-AGI-3 Interactive Reasoning Benchmarks" title bar, and a 3-column game grid showing all 6 official ARCEngine games with prominent Play buttons. Each game card gets a unique accent color from the ARC3 palette (indices 6-15). Secondary actions (upload, docs, GitHub) pushed to a footer. Added `PaletteStrip` and `GameCard` reusable components to `Arc3PixelUI.tsx`.
+  - **Why**: The previous landing page displayed developer instructions as its main content, had a redundant sub-header on top of the app navigation, and buried the actual games in a tiny sidebar panel. This is a research platform for interactive reasoning benchmarks, not a documentation page.
+  - **How**:
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Full rewrite -- queries `/api/arc3-community/games` for all approved games, renders them in a responsive grid with palette-colored accent bars.
+    - `client/src/components/arc3-community/Arc3PixelUI.tsx`: Added `PaletteStrip` (16-color horizontal bar) and `GameCard` (accent-bar card) components.
+
+- **FIX: Games fail to load in Docker deployment (Python binary resolution)** (Author: Cascade / Claude Sonnet 4)
+  - **What**: `CommunityGamePythonBridge` hardcoded `spawn('python', ...)` which doesn't exist on Alpine Linux Docker images (only `python3`). Replaced with `resolvePythonBin()` that checks `PYTHON_BIN` env var, then falls back to `python` on Windows or `python3` on Linux.
+  - **Why**: Official ARCEngine games (ws03, ls20, etc.) worked locally on Windows but failed silently in the Docker deployment, causing the games list to appear empty and play sessions to fail.
+  - **How**:
+    - `server/services/arc3Community/CommunityGamePythonBridge.ts`: Added `resolvePythonBin()` function (matching the pattern already used in `ArcEngineOfficialGameCatalog.ts`) and replaced the hardcoded `'python'` in the `spawn()` call.
+
 ### Version 7.2.6  Feb 04, 2026
 
 - **FEAT: ARC3 community submissions now persist and can be published via admin review** (Author: GPT-5.2)

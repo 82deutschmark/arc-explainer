@@ -1,8 +1,9 @@
 /*
 Author: Cascade (Claude Sonnet 4)
-Date: 2026-01-31
+Date: 2026-02-06
 PURPOSE: Game play page for community games. Handles game session management,
          rendering the game grid, and player input controls. Uses ARC3 pixel UI theme.
+         Supports ACTION6 click-on-grid with coordinates passed to backend.
 SRP/DRY check: Pass — uses shared pixel UI primitives and ARC3 grid visualization.
 */
 
@@ -98,11 +99,13 @@ export default function CommunityGamePlay() {
     },
   });
 
-  // Execute action mutation
+  // Execute action mutation — accepts string or object with coordinates for ACTION6
   const actionMutation = useMutation({
-    mutationFn: async (action: string) => {
+    mutationFn: async (payload: string | { action: string; coordinates?: [number, number] }) => {
       if (!sessionGuid) throw new Error('No active session');
-      const response = await apiRequest('POST', `/api/arc3-community/session/${sessionGuid}/action`, { action });
+      // Normalize: plain string becomes { action } object
+      const body = typeof payload === 'string' ? { action: payload } : payload;
+      const response = await apiRequest('POST', `/api/arc3-community/session/${sessionGuid}/action`, body);
       return response.json() as Promise<ActionResponse>;
     },
     onSuccess: (data) => {
@@ -295,6 +298,11 @@ export default function CommunityGamePlay() {
                     showGrid={false}
                     showCoordinates={false}
                     className="w-full"
+                    onCellClick={(x, y) => {
+                      if (gameState === 'playing' && !actionMutation.isPending) {
+                        actionMutation.mutate({ action: 'ACTION6', coordinates: [x, y] });
+                      }
+                    }}
                   />
                 </div>
               ) : (
@@ -380,6 +388,10 @@ export default function CommunityGamePlay() {
                 <div className="flex justify-between">
                   <span className="text-[var(--arc3-muted)]">Reset</span>
                   <span className="font-mono">R</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[var(--arc3-muted)]">Click</span>
+                  <span className="font-mono">Click Grid</span>
                 </div>
               </div>
             </PixelPanel>
