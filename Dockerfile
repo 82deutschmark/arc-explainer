@@ -92,7 +92,7 @@ RUN echo "=== PREPARING ARCENGINE LIBRARY ===" && \
         echo "\u2717 ARCEngine not present in build context; cloning from GitHub" && \
         rm -rf external/ARCEngine && \
         mkdir -p external && \
-        git clone --depth 1 https://github.com/arcprize/ARCEngine external/ARCEngine; \
+        git clone --depth 1 https://github.com/82deutschmark/ARCEngine external/ARCEngine; \
     else \
         echo "\u2713 ARCEngine present in build context; using existing checkout"; \
     fi && \
