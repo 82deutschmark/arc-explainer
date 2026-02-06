@@ -55,11 +55,12 @@ levels = [
 
 class Ws02(ARCBaseGame):
     def __init__(self, seed: int = 0) -> None:
-        camera = Camera(width=64, height=64, background=5, letter_box=5, interfaces=[])
-        super().__init__(game_id="ws02", levels=levels, camera=camera, seed=seed)
-        self.hep = [sprites["dcb"], sprites["nio"], sprites["opw"], sprites["lyd"], sprites["tmx"]]
+        # Initialize before super().__init__ since on_set_level is called during init
+        self.hep = [sprites["dcb"], sprites["nio"], sprites["opw"], sprites["lyd"], sprites["tmx"], sprites["fij"]]
         self.hul = [10, 14, 11, 8, 6, 7, 1, 2, 3, 4]
         self.kdj = [0, 90, 180, 270]
+        camera = Camera(width=64, height=64, background=5, letter_box=5, interfaces=[])
+        super().__init__(game_id="ws02", levels=levels, camera=camera, seed=seed)
 
     def _get_rotation_index(self, value) -> int:
         try:
@@ -77,7 +78,7 @@ class Ws02(ARCBaseGame):
 
     def on_set_level(self, level: Level) -> None:
         self.mgu = level.get_sprites_by_name("mgu")[0]
-        self.nio = level.get_sprites_by_name("nio")[0]
+        self.nio = level.get_sprites_by_tag("wex")[0]
         self.nlo = level.get_sprites_by_name("nlo")[0]
         self.opw = sprites["opw"].clone()
         self.current_level.add_sprite(self.opw)
