@@ -78,7 +78,7 @@ class Ws02(ARCBaseGame):
 
     def on_set_level(self, level: Level) -> None:
         self.mgu = level.get_sprites_by_name("mgu")[0]
-        self.nio = level.get_sprites_by_name("nio")[0]
+        self.nio = level.get_sprites_by_tag("wex")[0]
         self.nlo = level.get_sprites_by_name("nlo")[0]
         self.opw = sprites["opw"].clone()
         self.current_level.add_sprite(self.opw)
