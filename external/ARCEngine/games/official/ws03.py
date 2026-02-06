@@ -1,8 +1,8 @@
-# Author: Claude Opus 4.5 / Claude Haiku 4.5
+# Author: Cascade (Claude Sonnet 4)
 # Date: 2026-02-05
 # PURPOSE: WS03 game - variant of WS01 with permanent fog of war + seeded randomness
-# Features: Magenta border, improved color hierarchy, permanent fog of war, extra energy pickups
-# SRP/DRY check: Pass - Reuses proven game mechanics from WS01
+# Features: Magenta border, dark red walls, permanent tight fog of war, extra energy pickups
+# SRP/DRY check: Pass - Reuses proven game mechanics from WS01, shape sprites use 0 base for remap
 
 import logging
 import math
@@ -12,26 +12,27 @@ import numpy as np
 from arcengine import ARCBaseGame, Camera, Level, RenderableUserDisplay, Sprite
 
 # WS03 uses distinctive colors: Magenta borders (6), dark red walls (13), orange energy (12), green+light blue player (14+10)
+# Shape sprites (dcb, fij, lyd, nio, opw, tmx) use 0 as base color so color_remap(0, target) works
 sprites = {
-    "dcb": Sprite(pixels=[[-1, 6, -1], [6, 6, -1], [-1, 6, 6]], name="dcb", visible=True, collidable=True, layer=1),
-    "fij": Sprite(pixels=[[6, 6, 6], [-1, -1, 6], [6, -1, 6]], name="fij", visible=True, collidable=False, layer=-2),
+    "dcb": Sprite(pixels=[[-1, 0, -1], [0, 0, -1], [-1, 0, 0]], name="dcb", visible=True, collidable=True, layer=1),
+    "fij": Sprite(pixels=[[0, 0, 0], [-1, -1, 0], [0, -1, 0]], name="fij", visible=True, collidable=False, layer=-2),
     "ggk": Sprite(pixels=[[6, 6, 6, 6, 6, 6, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, 6, 6, 6, 6, 6, 6]], name="ggk", visible=True, collidable=True, tags=["yar", "vdr"], layer=-3),
     "hep": Sprite(pixels=[[6]*10]*10, name="hep", visible=True, collidable=True, tags=["nfq"], layer=1),
     "hul": Sprite(pixels=[[13, 13, -1, -1, -1, -1, -1, 13, 13], [13]*9, [13]*9, [13]*9, [13]*9, [13]*9, [13]*9, [13]*9, [13]*9], name="hul", visible=True, collidable=True, layer=-4),
-    "kdj": Sprite(pixels=[[6, -1, 6], [-1, 6, -1], [6, -1, 6]], name="kdj", visible=True, collidable=True, tags=["wex"], layer=10),
+    "kdj": Sprite(pixels=[[0, -1, 0], [-1, 0, -1], [0, -1, 0]], name="kdj", visible=True, collidable=True, tags=["wex"], layer=10),
     "kdy": Sprite(pixels=[[-2]*5, [-2, -2, 6, -2, -2], [-2, 12, 6, 6, -2], [-2, -2, 12, -2, -2], [-2]*5], name="kdy", visible=True, collidable=True, tags=["bgt"], layer=-1),
     "krg": Sprite(pixels=[[8]], name="krg", visible=True, collidable=True, layer=3),
     "lhs": Sprite(pixels=[[6]*5]*5, name="lhs", visible=True, collidable=False, tags=["mae"], layer=-3),
-    "lyd": Sprite(pixels=[[-1, 6, -1], [-1, 6, -1], [6, 6, 6]], name="lyd", visible=True, collidable=True),
-    "mgu": Sprite(pixels=[[6, 6, 6, 6] + [-1]*60]*24 + [[13]*12 + [-1]*52, [13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [-1]*52]*7 + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [6]*52]*3 + [[13]*12 + [6]*52], name="mgu", visible=True, collidable=True),
-    "nio": Sprite(pixels=[[-1, 6, 6], [6, -1, 6], [-1, 6, -1]], name="nio", visible=True, collidable=True),
+    "lyd": Sprite(pixels=[[-1, 0, -1], [-1, 0, -1], [0, 0, 0]], name="lyd", visible=True, collidable=True),
+    "mgu": Sprite(pixels=[[0, 0, 0, 0] + [-1]*60]*24 + [[13]*12 + [-1]*52, [13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [-1]*52]*7 + [[13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13] + [0]*52]*3 + [[13]*12 + [0]*52], name="mgu", visible=True, collidable=True),
+    "nio": Sprite(pixels=[[-1, 0, 0], [0, -1, 0], [-1, 0, -1]], name="nio", visible=True, collidable=True),
     "nlo": Sprite(pixels=[[13]*5]*5, name="nlo", visible=True, collidable=True, tags=["jdd"], layer=-5),
-    "opw": Sprite(pixels=[[6, 6, -1], [-1, 6, 6], [6, -1, 6]], name="opw", visible=True, collidable=True),
+    "opw": Sprite(pixels=[[0, 0, -1], [-1, 0, 0], [0, -1, 0]], name="opw", visible=True, collidable=True),
     "pca": Sprite(pixels=[[14, 14, 14], [14, 14, 14], [10, 10, 10], [10, 10, 10]], name="pca", visible=True, collidable=True, tags=["caf"]),
     "qqv": Sprite(pixels=[[-2]*5, [-2, 15, 8, 8, -2], [-2, 15, 6, 11, -2], [-2, 12, 12, 11, -2], [-2]*5], name="qqv", visible=True, collidable=False, tags=["gic"], layer=-1),
-    "rzt": Sprite(pixels=[[6, -1, -1], [-1, 6, -1], [-1, -1, 6]], name="rzt", visible=True, collidable=True, tags=["axa"]),
+    "rzt": Sprite(pixels=[[0, -1, -1], [-1, 0, -1], [-1, -1, 0]], name="rzt", visible=True, collidable=True, tags=["axa"]),
     "snw": Sprite(pixels=[[6]*7, [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6, -1, -1, -1, -1, -1, 6], [6]*7], name="snw", visible=True, collidable=True, tags=["yar"], layer=-3),
-    "tmx": Sprite(pixels=[[6, -1, 6], [6, -1, 6], [6, 6, 6]], name="tmx", visible=True, collidable=True),
+    "tmx": Sprite(pixels=[[0, -1, 0], [0, -1, 0], [0, 0, 0]], name="tmx", visible=True, collidable=True),
     "tuv": Sprite(pixels=[[6]*10] + [[6] + [-1]*8 + [6]]*8 + [[6]*10], name="tuv", visible=False, collidable=True, tags=["fng"], layer=5),
     "ulq": Sprite(pixels=[[6]*7] + [[6] + [-1]*5 + [6]]*5 + [[6]*7], name="ulq", visible=False, collidable=True, tags=["qex"], layer=-1),
     "vxy": Sprite(pixels=[[-2]*5, [-2, 6, -2, -2, -2], [-2, -2, 6, 6, -2], [-2, -2, 6, -2, -2], [-2]*5], name="vxy", visible=True, collidable=False, tags=["gsu"], layer=-1),
@@ -71,7 +72,7 @@ class jvq(RenderableUserDisplay):
         if self.tuv.qee:
             for hhe in range(64):
                 for dcv in range(64):
-                    if math.dist((hhe, dcv), (self.tuv.mgu.y + nlo, self.tuv.mgu.x + nlo)) > 20.0:
+                    if math.dist((hhe, dcv), (self.tuv.mgu.y + nlo, self.tuv.mgu.x + nlo)) > 10.0:
                         frame[hhe, dcv] = 5
 
             if self.tuv.nio and self.tuv.nio.is_visible:
