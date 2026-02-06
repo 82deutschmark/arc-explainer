@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.3  Feb 06, 2026
+
+- **FIX: ARC3 community games fail to boot in Docker (runner path resolution)** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Updated `CommunityGamePythonBridge` to resolve `community_game_runner.py` via `process.cwd()` instead of `__dirname` (`import.meta.url`).
+  - **Why**: esbuild bundles the server into `dist/index.js`, so `__dirname` becomes `/app/dist/` in production. The previous `../../python/` traversal pointed to `/python/community_game_runner.py`, which does not exist in the container. Python spawned, crashed immediately, and the bridge timed out after 30 seconds.
+  - **How**:
+    - `server/services/arc3Community/CommunityGamePythonBridge.ts`: Define `PYTHON_RUNNER_PATH` with `path.join(process.cwd(), 'server', 'python', 'community_game_runner.py')`, matching the pattern used across other Python bridges (e.g., `ArcEngineOfficialGameCatalog`).
+
 ### Version 7.3.2  Feb 06, 2026
 
 - **FIX: GW01 Gravity Well -- four bugs causing broken orb movement, false fusions, and corrupted level data** (Author: Claude Opus 4.6)
