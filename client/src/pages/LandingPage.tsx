@@ -1,18 +1,19 @@
 /**
- * Author: Cascade (OpenAI o4-preview)
- * Date: 2026-01-08T20:40:00Z
- * PURPOSE: Minimal visual landing page with rotating ARC 1&2 GIFs, ARC-3 MP4 video replays,
- *          and a concise hiatus status indicator for January 2026.
- *          Left: rotating ARC 1&2 puzzle GIFs. Right: ARC-3 MP4 videos rotating through games.
- *          Two-column layout. No Worm Arena slice. Simple and working.
- * SRP/DRY check: Pass - single-page hero composition with video elements and status banner reuse.
- */
-import React, { useEffect, useRef, useState } from 'react';
+Author: GPT-5 Codex
+Date: 2026-02-06T19:45:00Z
+PURPOSE: Minimal landing page with rotating ARC 1/2 GIFs and ARC3 replay data visualization.
+The ARC3 panel uses a canvas replay player backed by a same-origin proxy for official NDJSON recordings,
+including support for curated recording IDs that fail with direct browser fetch because of CORS.
+SRP/DRY check: Pass - page stays focused on hero composition while reusing ARC3CanvasPlayer.
+*/
+import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 
+import { ARC3CanvasPlayer } from '@/components/ARC3CanvasPlayer';
 import { cn } from '@/lib/utils';
 
 const ROTATION_INTERVAL_MS = 4500;
+const LANDING_REPLAY_MAX_FRAMES = 200;
 
 const PUZZLE_GIF_GALLERY = [
   { id: '2bee17df', file: 'arc_puzzle_2bee17df_fringes.gif', label: 'Fringes' },
@@ -39,28 +40,57 @@ const PUZZLE_GIF_GALLERY = [
   { id: '10fcaaa3', file: 'arc_puzzle_10fcaaa3_quadcopter.gif', label: 'Quadcopter' },
 ] satisfies ReadonlyArray<{ id: string; file: string; label: string }>;
 
-// Game ID to informal name mapping
-const ARC3_GAME_NAMES: Record<string, string> = {
-  ls20: 'Locksmith',
-  vc33: 'Volume Control',
-  ft09: 'Functional Tiles',
-  lp85: 'Loop and Pull',
+type LandingArc3Replay = {
+  gameId: string;
+  gameName: string;
+  upstreamGameId: string;
+  recordingId: string;
 };
 
-// MP4 video replays that work correctly
-const ARC3_VIDEO_REPLAYS = [
-  { gameId: 'ls20', videoPath: '/videos/arc3/ls20-fa137e247ce6.mp4' },
-  { gameId: 'vc33', videoPath: '/videos/arc3/vc33-6ae7bf49eea5.mp4' },
-  { gameId: 'ft09', videoPath: '/videos/arc3/ft09-b8377d4b7815.mp4' },
-  { gameId: 'lp85', videoPath: '/videos/arc3/lp85-d265526edbaa.mp4' },
+const ARC3_RECORDING_REPLAYS: readonly LandingArc3Replay[] = [
+  {
+    gameId: 'ls20',
+    gameName: 'Locksmith',
+    upstreamGameId: 'ls20-fa137e247ce6',
+    recordingId: '7405808f-ec5b-4949-a252-a1451b946bae',
+  },
+  {
+    gameId: 'vc33',
+    gameName: 'Volume Control',
+    upstreamGameId: 'vc33-6ae7bf49eea5',
+    recordingId: '29409ce8-c164-447e-8810-828b96fa4ceb',
+  },
+  {
+    gameId: 'ft09',
+    gameName: 'Functional Tiles',
+    upstreamGameId: 'ft09-b8377d4b7815',
+    recordingId: '39b51ef3-b565-43fe-b3a8-7374ca4c5058',
+  },
+  {
+    gameId: 'lp85',
+    gameName: 'Loop and Pull',
+    upstreamGameId: 'lp85-d265526edbaa',
+    recordingId: 'dc3d96aa-762b-4c2e-ac68-6418c8f54c74',
+  },
+  {
+    gameId: 'as66',
+    gameName: 'Always Sliding (Short)',
+    upstreamGameId: 'as66-f340c8e5138e',
+    recordingId: '7408e07e-83ca-4fbb-b9eb-1ed888cd751e-short',
+  },
 ] as const;
+
+function buildRecordingProxyPath(replay: LandingArc3Replay): string {
+  return `/api/arc3/recordings/${encodeURIComponent(replay.upstreamGameId)}/${encodeURIComponent(replay.recordingId)}`;
+}
 
 export default function LandingPage() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeReplayIndex, setActiveReplayIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const activeReplay = ARC3_VIDEO_REPLAYS[activeReplayIndex];
+
+  const activeReplay = ARC3_RECORDING_REPLAYS[activeReplayIndex];
+  const activeReplayPath = buildRecordingProxyPath(activeReplay);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -89,19 +119,13 @@ export default function LandingPage() {
 
   const activeGif = PUZZLE_GIF_GALLERY[activeIndex];
 
-  const handleVideoEnded = () => {
-    setActiveReplayIndex((prev) => (prev + 1) % ARC3_VIDEO_REPLAYS.length);
+  const handleReplayComplete = () => {
+    if (prefersReducedMotion || ARC3_RECORDING_REPLAYS.length < 2) return;
+    setActiveReplayIndex((prev) => (prev + 1) % ARC3_RECORDING_REPLAYS.length);
   };
-
-  useEffect(() => {
-    if (videoRef.current && !prefersReducedMotion) {
-      videoRef.current.play().catch(() => {});
-    }
-  }, [activeReplayIndex, prefersReducedMotion]);
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-start gap-8 overflow-hidden bg-black px-4 py-12 md:px-0">
-      {/* Animated background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-purple-900/10" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-900/10 via-transparent to-transparent" />
 
@@ -109,10 +133,9 @@ export default function LandingPage() {
         aria-live="polite"
         className="relative z-10 mb-6 text-center text-xs font-semibold uppercase tracking-[0.6em] text-rose-200/80 md:text-sm"
       >
-        On Hiatus – January 2026
+        On Hiatus - January 2026
       </p>
-      <section className="relative z-10 mx-auto grid w-full max-w-5xl grid-cols-1 gap-12 px-0 md:px-4 md:grid-cols-2">
-        {/* Left: ARC 1&2 GIF showcase */}
+      <section className="relative z-10 mx-auto grid w-full max-w-5xl grid-cols-1 gap-12 px-0 md:grid-cols-2 md:px-4">
         <div className="flex flex-col gap-4">
           <div className="space-y-1 text-slate-100">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-slate-400">
@@ -140,29 +163,27 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        {/* Right: ARC-3 video replay */}
         <div className="flex flex-col gap-4">
           <div className="space-y-1 text-slate-100">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-indigo-300/80">
               ARC 3
             </p>
             <p className="text-lg font-semibold tracking-wide">
-              {`${activeReplay.gameId.toUpperCase()} - ${ARC3_GAME_NAMES[activeReplay.gameId]}`}
+              {`${activeReplay.gameId.toUpperCase()} - ${activeReplay.gameName}`}
             </p>
           </div>
           <Link href="/arc3">
             <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
               <div className="rounded-[1.25rem] bg-black/90 p-4">
-                <video
-                  ref={videoRef}
-                  key={activeReplay.gameId}
-                  src={activeReplay.videoPath}
-                  className="w-full rounded-xl"
+                <ARC3CanvasPlayer
+                  replayPath={activeReplayPath}
+                  gameLabel={`${activeReplay.gameId.toUpperCase()} - ${activeReplay.gameName}`}
+                  shortId={activeReplay.recordingId}
                   autoPlay={!prefersReducedMotion}
-                  muted
-                  playsInline
-                  onEnded={handleVideoEnded}
-                  style={{ imageRendering: 'pixelated' }}
+                  maxFrames={LANDING_REPLAY_MAX_FRAMES}
+                  hideHeader
+                  onReplayComplete={handleReplayComplete}
+                  className="min-h-[22rem] border border-slate-800/40"
                 />
               </div>
             </div>

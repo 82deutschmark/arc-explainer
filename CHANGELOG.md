@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.6  Feb 06, 2026
+
+- **FIX: Landing ARC3 replays load via recording proxy and now support official NDJSON replay endpoints** (Author: GPT-5 Codex)
+  - **What**: Added a same-origin ARC3 recording proxy endpoint and switched the landing page ARC3 panel from MP4-only playback to `ARC3CanvasPlayer` backed by official replay recordings. Added the reported AS66 short replay (`as66-f340c8e5138e / 7408e07e-83ca-4fbb-b9eb-1ed888cd751e-short`) to the landing rotation.
+  - **Why**: Some ARC3 replays were not loading on landing because official `three.arcprize.org` recording endpoints are served as NDJSON and are not reliably fetchable directly from the browser due cross-origin constraints.
+  - **How**:
+    - `server/routes/arc3.ts`: Added `GET /api/arc3/recordings/:gameId/:recordingId` proxy that fetches upstream NDJSON and returns it to the frontend with same-origin headers.
+    - `client/src/pages/LandingPage.tsx`: Replaced ARC3 `<video>` usage with `ARC3CanvasPlayer`, wired replay IDs to the new proxy route, and capped landing playback frames for predictable hero rotation.
+    - `client/src/components/ARC3CanvasPlayer.tsx`: Added optional `maxFrames` and `hideHeader` props for landing usage and cleaned replay status text to ASCII.
+    - `docs/reference/frontend/landing-hero.md`: Updated documentation to reflect the recording-proxy flow and current replay set.
+
 ### Version 7.3.5  Feb 06, 2026
 
 - **CHORE: Restore `external/ARCEngine` as a git submodule and repoint to merged upstream fixes** (Author: Codex GPT-5)

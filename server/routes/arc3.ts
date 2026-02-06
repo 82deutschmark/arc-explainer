@@ -1,11 +1,10 @@
 /*
-Author: Claude Code using Sonnet 4.5
-Date: 2025-11-06
-Updated: 2026-01-01 - Added BYOK enforcement for production environment
-PURPOSE: Express router exposing the ARC3 agent playground API backed by the OpenAI Agents SDK runner.
-Manages scorecard lifecycle for the real ARC3 API integration.
-BYOK enforcement: Production requires user API key in stream/prepare and real-game/run endpoints.
-SRP/DRY check: Pass — isolates HTTP contract and validation for ARC3 playground endpoints.
+Author: GPT-5 Codex
+Date: 2026-02-06T19:45:00Z
+PURPOSE: Express router exposing ARC3 gameplay, streaming, metadata, and recording proxy endpoints.
+Includes scorecard lifecycle integration, environment-aware BYOK checks, and a same-origin
+recording proxy so the frontend can load official ARC3 NDJSON replays without browser CORS failures.
+SRP/DRY check: Pass - route layer remains focused on HTTP contracts while delegating game logic to services.
 */
 
 import { Router, type Request, type Response } from 'express';
@@ -25,6 +24,7 @@ import { requiresUserApiKey } from '../utils/environmentPolicy.js';
 import { openScorecard, getActiveScorecard } from '../services/arc3/scorecardService';
 
 const router = Router();
+const ARC3_RECORDINGS_BASE_URL = 'https://three.arcprize.org/api/recordings';
 
 // Real ARC3 API client and runner
 const arc3ApiClient = new Arc3ApiClient(process.env.ARC3_API_KEY || '');
@@ -48,6 +48,21 @@ const runSchema = z.object({
   systemPromptPresetId: z.enum(['twitch', 'playbook', 'none']).optional(),
   skipDefaultSystemPrompt: z.boolean().optional(),
   apiKey: z.string().trim().optional(),
+});
+
+const recordingParamsSchema = z.object({
+  gameId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(120)
+    .regex(/^[A-Za-z0-9-]+$/, 'gameId contains unsupported characters'),
+  recordingId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(160)
+    .regex(/^[A-Za-z0-9-]+$/, 'recordingId contains unsupported characters'),
 });
 
 // NEW: Real ARC3 API endpoints
@@ -121,6 +136,57 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const games = await arc3ApiClient.listGames();
     res.json(formatResponse.success(games));
+  }),
+);
+
+/**
+ * GET /api/arc3/recordings/:gameId/:recordingId
+ * Proxy ARC3 replay recordings (NDJSON) through same-origin backend to avoid browser CORS failures.
+ */
+router.get(
+  '/recordings/:gameId/:recordingId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { gameId, recordingId } = recordingParamsSchema.parse(req.params);
+    const upstreamUrl = `${ARC3_RECORDINGS_BASE_URL}/${encodeURIComponent(gameId)}/${encodeURIComponent(recordingId)}`;
+
+    const upstream = await fetch(upstreamUrl, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/x-ndjson, application/json;q=0.9, text/plain;q=0.8',
+      },
+    });
+
+    if (!upstream.ok) {
+      const errorText = await upstream.text();
+      return res.status(upstream.status).json(
+        formatResponse.error(
+          'ARC3_RECORDING_FETCH_FAILED',
+          `Failed to fetch ARC3 recording (${upstream.status}).`,
+          {
+            gameId,
+            recordingId,
+            upstreamStatus: upstream.status,
+            upstreamBody: errorText.slice(0, 240),
+          },
+        ),
+      );
+    }
+
+    const payload = await upstream.text();
+    if (!payload.trim()) {
+      return res.status(502).json(
+        formatResponse.error(
+          'ARC3_RECORDING_EMPTY',
+          'ARC3 recording endpoint returned an empty payload.',
+          { gameId, recordingId },
+        ),
+      );
+    }
+
+    const contentType = upstream.headers.get('content-type') || 'application/x-ndjson; charset=utf-8';
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.send(payload);
   }),
 );
 
@@ -518,3 +584,4 @@ router.get(
 );
 
 export default router;
+
