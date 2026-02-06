@@ -79,6 +79,15 @@ class jvq(RenderableUserDisplay):
                 nio = self.tuv.nio.render()
                 mgu = 3
                 lyd = 55
+                # Draw bordered panel: 1px magenta border + gray background
+                for hhe in range(lyd - 1, lyd + 7):
+                    for w in range(mgu - 1, mgu + 7):
+                        if 0 <= hhe < 64 and 0 <= w < 64:
+                            if hhe == lyd - 1 or hhe == lyd + 6 or w == mgu - 1 or w == mgu + 6:
+                                frame[hhe, w] = 6  # Magenta border
+                            else:
+                                frame[hhe, w] = 5  # Gray background
+                # Draw key sprite on top of background
                 for hhe in range(6):
                     for w in range(6):
                         if nio[hhe][w] != -1:
