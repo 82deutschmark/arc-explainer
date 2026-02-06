@@ -1,5 +1,21 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.1  Feb 06, 2026
+
+- **FIX: WS02 "step is still running" hang on goal mismatch and death/respawn** (Author: Claude Opus 4.6)
+  - **What**: Added missing `complete_action()` calls to two code paths in `ws02.py` that returned without completing the action, causing the ARCEngine to stall waiting for action completion.
+  - **Why**: When a player hit a goal with the wrong shape/color/rotation, or when energy ran out with lives remaining, the step method returned without signaling completion. The engine hung until the next input event triggered a deferred completion.
+  - **How**:
+    - `external/ARCEngine/games/official/ws02.py`: Added `self.complete_action()` before `return` in the goal-mismatch path (line ~514) and the death/respawn path (line ~573).
+    - `docs/plans/020526-ws02-step-plan.md`: Completed diagnosis with root cause analysis and proposed fix.
+
+- **FEAT: WS04 game -- new Red/Blue/Orange variant with vertical UI and all-new levels** (Author: Claude Opus 4.6)
+  - **What**: Created WS04, a new ARCEngine game variant with a distinctive Red (2) / Blue (1) / Orange (7) color scheme, 7 all-new level layouts (tutorial, corridor maze, diamond, split arena, spiral, dual targets, fog gauntlet), and a redesigned UI featuring a vertical energy bar on the right side plus level progress dots in the top-right corner.
+  - **Why**: Expands the ARC3 game library with a visually distinct variant that tests different spatial reasoning through unique wall configurations while introducing UI differentiation (vertical energy bar, progress dots) to distinguish it from WS02/WS03.
+  - **How**:
+    - `external/ARCEngine/games/official/ws04.py`: New game file with custom sprites, 7 levels, `jvq` interface with vertical energy bar + progress dots, and `Ws04` game class. All `step()` paths include `complete_action()` (learned from WS02 fix).
+    - `external/ARCEngine/games/official/__init__.py`: Registered `Ws04` in the official game package.
+
 ### Version 7.3.0  Feb 05, 2026
 
 - **FEAT: Complete ARC3 landing page redesign -- game-focused, palette-driven** (Author: Cascade / Claude Sonnet 4)

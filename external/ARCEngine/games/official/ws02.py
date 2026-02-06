@@ -511,6 +511,7 @@ class Ws02(ARCBaseGame):
                 if not self.qhg(qzq):
                     self.nlo.color_remap(None, 0)
                     self.kbj = True
+                    self.complete_action()
                     return
             elif "iri" in oib.tags:
                 xpb = True
@@ -570,6 +571,7 @@ class Ws02(ARCBaseGame):
                 sfs.set_visible(False)
             for pqv in self.current_level.get_sprites_by_tag("yar"):
                 pqv.set_visible(True)
+            self.complete_action()
             return
         self.complete_action()
 
