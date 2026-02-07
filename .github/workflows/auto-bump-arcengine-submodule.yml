@@ -1,0 +1,95 @@
+name: Auto Bump ARCEngine Submodule
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: "Branch to update"
+        required: false
+        default: "arc3"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-bump-arcengine-submodule
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve target branch
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="${{ github.event.inputs.target_branch || 'arc3' }}"
+          echo "branch=${branch}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.branch }}
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Configure git identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update ARCEngine submodule pointer
+        id: bump
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          before="$(git ls-tree HEAD external/ARCEngine | awk '{print $3}')"
+          if [ -z "$before" ]; then
+            echo "external/ARCEngine gitlink not found in HEAD"
+            exit 1
+          fi
+
+          git submodule sync -- external/ARCEngine
+          git submodule update --init -- external/ARCEngine
+          git -C external/ARCEngine fetch origin main
+          git submodule update --remote -- external/ARCEngine
+
+          after="$(git -C external/ARCEngine rev-parse HEAD)"
+          echo "before=${before}" >> "$GITHUB_OUTPUT"
+          echo "after=${after}" >> "$GITHUB_OUTPUT"
+
+          if [ "$before" = "$after" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git add external/ARCEngine
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "chore(external): auto-bump ARCEngine submodule to ${after:0:7}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Push submodule bump
+        if: steps.bump.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:${{ steps.target.outputs.branch }}"
+
+      - name: Summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Before: ${{ steps.bump.outputs.before }}"
+          echo "After: ${{ steps.bump.outputs.after }}"
+          echo "Changed: ${{ steps.bump.outputs.changed }}"
