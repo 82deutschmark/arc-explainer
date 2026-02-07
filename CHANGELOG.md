@@ -1,5 +1,26 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.13  Feb 07, 2026
+
+- **CHORE: Sync `beetreeARC` fork to upstream `beetree/ARC-AGI` and harden wrapper compatibility** (Author: Codex GPT-5)
+  - **What**: Synced fork `82deutschmark/beetreeARC` `main` to upstream `beetree/ARC-AGI` `main` at `3279bdd`, archived prior fork head on `archive/pre-upstream-sync-2026-02-07`, and updated `server/python/beetree_wrapper.py` to support both legacy and upstream BeeTree API shapes.
+  - **Why**: The fork had diverged (`4` commits ahead, `354` behind), and direct upstream sync would break our wrapper because upstream changed solver signatures, return values, and removed `ProgressReporter` exports.
+  - **How**:
+    - `beetreeARC`: Added `upstream` remote (`https://github.com/beetree/ARC-AGI.git`), pushed archival branch for old fork state, then force-updated fork `main` to match upstream.
+    - `server/python/beetree_wrapper.py`: Added compatibility helpers for task path resolution across `data/evaluation*` and `data/training*`, dynamic `run_solver_mode` kwargs based on runtime signature inspection, mixed result-shape normalization, and optional `ProgressReporter` monkeypatch fallback when upstream class is absent.
+
+### Version 7.3.12  Feb 07, 2026
+
+- **FEAT: Reusable new-model evaluation pipeline + openrouter/pony-alpha registration** (Author: Cascade)
+  - **What**: Added `openrouter/pony-alpha` (cloaked free model) to model config, plus two reusable Python scripts for evaluating any new OpenRouter model against established baselines.
+  - **Why**: New cloaked/free models appear on OpenRouter regularly and need rapid testing in both Worm Arena (snake games) and ARC puzzle solving. Previously required writing a new script each time.
+  - **How**:
+    - `server/config/openrouterModels.ts`: Added `openrouter/pony-alpha` to `OPENROUTER_MODEL_KEYS`.
+    - `server/config/openrouter-catalog.json`: Added minimal catalog entry for the cloaked model.
+    - `scripts/worm-arena-tournaments/new-model-eval.py`: NEW reusable Python tournament script. Tests new model vs baselines (GPT-5 Nano/Mini, Nemotron 3, Grok 4.1 Fast) in both directions. Supports `--model`, `--baselines`, `--dry-run`, `--count` CLI args.
+    - `scripts/analysis/analyze-new-model.py`: NEW reusable Python ARC puzzle analysis script. Sends ARC1/ARC2-Eval puzzles to a model via the server API, saves results, skips already-analyzed puzzles. Supports `--model`, `--sources`, `--limit`, `--dry-run` CLI args.
+    - `docs/plans/020726-pony-alpha-new-model-testing.md`: Plan document.
+
 ### Version 7.3.11  Feb 07, 2026
 
 - **FEAT: Automatic ARCEngine submodule bump workflow for arc3 branch** (Author: Codex GPT-5)

@@ -88,6 +88,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'openai/gpt-5.2',
   'openai/gpt-oss-120b',
   'openrouter/gpt-5.1-codex-mini',
+  'openrouter/pony-alpha',
   'qwen/qwen-plus-2025-07-28:thinking',
   'qwen/qwen3-coder',
   'upstage/solar-pro-3:free',
