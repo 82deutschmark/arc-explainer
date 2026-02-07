@@ -2,7 +2,7 @@ name: Auto Bump ARCEngine Submodule
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
     inputs:
       target_branch:
@@ -59,7 +59,8 @@ jobs:
           git submodule sync -- external/ARCEngine
           git submodule update --init -- external/ARCEngine
           git -C external/ARCEngine fetch origin main
-          git submodule update --remote -- external/ARCEngine
+          latest="$(git -C external/ARCEngine rev-parse origin/main)"
+          git -C external/ARCEngine checkout --detach "$latest"
 
           after="$(git -C external/ARCEngine rev-parse HEAD)"
           echo "before=${before}" >> "$GITHUB_OUTPUT"

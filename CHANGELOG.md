@@ -6,7 +6,7 @@
   - **What**: Added a GitHub Actions workflow that auto-updates `external/ARCEngine` in this repository and pushes the updated gitlink commit to `arc3`.
   - **Why**: Submodule pointers are pinned by design; without automation, new ARCEngine commits require manual bump commits in ARC Explainer.
   - **How**:
-    - `.github/workflows/auto-bump-arcengine-submodule.yml`: Added scheduled + manual workflow to fetch `external/ARCEngine` `main`, run `git submodule update --remote`, commit pointer changes, and push to `arc3` when updates exist.
+    - `.github/workflows/auto-bump-arcengine-submodule.yml`: Added scheduled (every 5 minutes) + manual workflow to fetch `external/ARCEngine` `origin/main`, set the submodule to the latest fetched commit, commit pointer changes, and push to `arc3` when updates exist.
 
 ### Version 7.3.10  Feb 06, 2026
 
