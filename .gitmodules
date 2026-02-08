@@ -4,9 +4,6 @@
 [submodule "external/re-arc"]
 	path = external/re-arc
 	url = https://github.com/conundrumer/re-arc
-[submodule "beetreeARC"]
-	path = beetreeARC
-	url = https://github.com/82deutschmark/beetreeARC
 [submodule "llm-council"]
 	path = llm-council
 	url = https://github.com/VoynichLabs/llm-council.git
