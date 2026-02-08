@@ -1,11 +1,10 @@
 /*
-Author: GPT-5.2
-Date: 2026-01-31
-PURPOSE: ARC3-only “pixel UI” primitives for the ARC3 community pages (landing + upload). Provides a
-         palette-locked theme (CSS variables sourced from client/src/utils/arc3Colors.ts) and small,
-         reusable components (panels, buttons, sprite mosaics) so the ARC3 section can look like a
-         2D sprite game while staying information-dense and legible.
-SRP/DRY check: Pass — centralizes ARC3 palette usage so pages do not re-implement styling or colors.
+Author: GPT-5 Codex
+Date: 2026-02-06T00:00:00Z
+PURPOSE: ARC3-only pixel UI primitives for ARC3 community pages (landing + upload). Provides
+         palette-locked theme tokens and reusable components (panels, buttons, strips, cards)
+         while allowing optional per-page CSS variable overrides for bright or dark directions.
+SRP/DRY check: Pass - centralizes ARC3 palette logic and avoids duplicated page styling.
 */
 
 import React from 'react';
@@ -74,7 +73,16 @@ export function buildArc3StudioVars(): Arc3CssVars {
   return vars;
 }
 
-export function Arc3PixelPage(props: { children: React.ReactNode; className?: string }) {
+export function Arc3PixelPage(props: {
+  children: React.ReactNode;
+  className?: string;
+  vars?: Record<string, string>;
+}) {
+  const mergedVars: Arc3CssVars = {
+    ...buildArc3StudioVars(),
+    ...(props.vars ?? {}),
+  };
+
   return (
     <div
       className={cn(
@@ -82,7 +90,7 @@ export function Arc3PixelPage(props: { children: React.ReactNode; className?: st
         'bg-[var(--arc3-bg)] text-[var(--arc3-text)]',
         props.className,
       )}
-      style={buildArc3StudioVars()}
+      style={mergedVars}
     >
       {props.children}
     </div>
@@ -141,7 +149,7 @@ export function PixelButton(props: {
   const fg = getContrastColor(bg);
   const disabled = Boolean(props.disabled);
 
-  // Keep hover/active within the palette: shift “tone” to a nearby palette color.
+  // Keep hover/active within the palette: shift "tone" to a nearby palette color.
   const hoverBg =
     tone === 'green'
       ? arc3Color(10)
@@ -316,7 +324,7 @@ export function GameCard(props: {
 
 function mulberry32(seed: number) {
   return function () {
-    // Deterministic tiny PRNG for “sprite sheet” mosaics.
+    // Deterministic tiny PRNG for "sprite sheet" mosaics.
     let t = (seed += 0x6d2b79f5);
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);

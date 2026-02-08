@@ -8,6 +8,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'wouter';
 import { useArcContributors } from '@/hooks/useArcContributors';
 import { useFirstVisit } from '@/hooks/useFirstVisit';
 import { HumanTradingCard } from '@/components/human/HumanTradingCard';
@@ -240,6 +241,30 @@ export default function HumanTradingCards() {
             <ExternalLink className="h-3 w-3" />
           </a>
         </div>
+
+        {/* Johan Land SOTA spotlight banner */}
+        <Link href="/hall-of-fame/johan-land">
+          <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-cyan-400/5 to-zinc-900/60 px-4 py-3 text-cyan-100 shadow-lg shadow-cyan-900/30 hover:border-cyan-400/50 transition-all cursor-pointer group">
+            <div className="flex flex-wrap items-center gap-2">
+              <Sparkles className="h-4 w-4 text-cyan-400" />
+              <span className="text-xs uppercase tracking-widest text-cyan-300">New SOTA Public Submission - Feb 2026</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 mt-1">
+              <div>
+                <p className="text-base font-semibold text-cyan-50">
+                  Johan Land (@beetree) &mdash; 94.5% V1, 72.9% V2
+                </p>
+                <p className="text-[13px] text-cyan-200">
+                  GPT-5.2 bespoke refinement multi-model ensemble &middot; Verified by ARC Prize
+                </p>
+              </div>
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-cyan-100 group-hover:text-cyan-50">
+                View Full Profile
+                <ExternalLink className="h-3 w-3" />
+              </span>
+            </div>
+          </div>
+        </Link>
 
         {isLoading ? (
           <div className="py-20 text-center">

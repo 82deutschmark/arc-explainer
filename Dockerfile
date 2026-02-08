@@ -4,9 +4,9 @@ FROM node:20-alpine
 # - Builds the client and server
 # - Adds Python 3 for Saturn Visual Solver and Poetiq Meta-System Solver
 # - Poetiq solver is INTERNALIZED at solver/poetiq/ (always available)
-# - BeetreeARC and SnakeBench code are ensured via submodules when present, or shallow git clones during build
+# - SnakeBench code is ensured via submodule when present, or shallow git clone during build
 # Author: Cascade (Claude Sonnet 4)
-# Updated: 2026-01-30 - Fix crontab COPY path to scripts/crontab; retain beetreeARC/SnakeBench availability
+# Updated: 2026-02-06 - Add ARCEngine clone fallback when submodule contents are absent in CI build contexts
 
 # Add Python3, git, canvas dependencies, and cron daemon for scheduled tasks
 RUN apk add --no-cache \
@@ -29,34 +29,15 @@ WORKDIR /app
 COPY package*.json ./
 COPY client/package*.json ./client/
 
-# Copy Python requirements for Saturn, Poetiq, and BeetreeARC and install them
+# Copy Python requirements for Saturn and Poetiq and install them
 COPY requirements.txt ./
-# Ensure beetreeARC requirements placeholder exists so pip include succeeds even before submodule clone
-RUN mkdir -p beetreeARC && \
-    if [ ! -f beetreeARC/requirements.txt ]; then \
-        echo "# placeholder for beetreeARC requirements (real file copied later)" > beetreeARC/requirements.txt; \
-    fi && \
-    python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
+RUN python3 -m pip install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Install dependencies
 RUN npm ci
 
 # Copy all source code (submodules may or may not be present in build context)
 COPY . .
-
-# Prepare beetreeARC: use existing checkout if present, otherwise clone from GitHub
-RUN echo "=== PREPARING BEETREEARC SUBMODULE ===" && \
-    if [ ! -f beetreeARC/src/solver_engine.py ]; then \
-        echo "\u2717 beetreeARC not present in build context; cloning from GitHub" && \
-        rm -rf beetreeARC && \
-        git clone --depth 1 https://github.com/82deutschmark/beetreeARC beetreeARC; \
-    else \
-        echo "\u2713 beetreeARC present in build context; using existing checkout"; \
-    fi && \
-    test -f beetreeARC/src/solver_engine.py && echo "\u2713 beetreeARC solver_engine.py exists" || (echo "\u2717 beetreeARC solver_engine.py NOT FOUND after clone" && exit 1) && \
-    test -f beetreeARC/requirements.txt && echo "\u2713 beetreeARC requirements.txt exists" || (echo "\u2717 beetreeARC requirements.txt NOT FOUND after clone" && exit 1) && \
-    echo "=== INSTALLING BEETREEARC DEPENDENCIES ===" && \
-    python3 -m pip install --no-cache-dir --break-system-packages -r beetreeARC/requirements.txt
 
 # Prepare SnakeBench backend: use existing checkout if present, otherwise clone from GitHub
 RUN echo "=== PREPARING SNAKEBENCH BACKEND ===" && \
@@ -85,12 +66,20 @@ RUN echo "=== PREPARING RE-ARC LIBRARY ===" && \
     fi && \
     test -f external/re-arc/lib.py && echo "\u2713 re-arc lib.py exists" || (echo "\u2717 re-arc lib.py NOT FOUND after clone" && exit 1)
 
-# ARCEngine is committed directly to the repo (no longer a submodule)
-# Install it as an editable package for ARC3 community games runtime
-RUN echo "=== INSTALLING ARCENGINE AS EDITABLE PACKAGE ===" && \
-    test -f external/ARCEngine/arcengine/__init__.py && echo "✓ ARCEngine __init__.py exists" || (echo "✗ ARCEngine __init__.py NOT FOUND" && exit 1) && \
+# Prepare ARCEngine: use existing checkout if present, otherwise clone from GitHub
+RUN echo "=== PREPARING ARCENGINE LIBRARY ===" && \
+    if [ ! -f external/ARCEngine/arcengine/__init__.py ]; then \
+        echo "\u2717 ARCEngine not present in build context; cloning from GitHub" && \
+        rm -rf external/ARCEngine && \
+        mkdir -p external && \
+        git clone --depth 1 --branch main https://github.com/82deutschmark/ARCEngine external/ARCEngine; \
+    else \
+        echo "\u2713 ARCEngine present in build context; using existing checkout"; \
+    fi && \
+    test -f external/ARCEngine/arcengine/__init__.py && echo "\u2713 ARCEngine __init__.py exists" || (echo "\u2717 ARCEngine __init__.py NOT FOUND after clone" && exit 1) && \
+    test -f external/ARCEngine/pyproject.toml && echo "\u2713 ARCEngine pyproject.toml exists" || (echo "\u2717 ARCEngine pyproject.toml NOT FOUND after clone" && exit 1) && \
+    echo "=== INSTALLING ARCENGINE AS EDITABLE PACKAGE ===" && \
     cd external/ARCEngine && python3 -m pip install --no-cache-dir --break-system-packages -e .
-
 # Poetiq solver is now internalized at solver/poetiq/ (copied above)
 # Verify the internalized solver exists
 RUN echo "=== VERIFYING INTERNALIZED POETIQ SOLVER ===" && \

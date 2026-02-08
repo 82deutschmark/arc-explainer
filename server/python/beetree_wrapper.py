@@ -9,10 +9,10 @@ Wrapper around beetreeARC solver that:
 - Includes real-time cost and token data in events
 - Redirects beetreeARC's native stdout to stderr to keep NDJSON clean
 
-Author: Cascade (model: Cascade GPT-5 medium reasoning)
-Date: 2025-12-01
-PURPOSE: Bridge beetreeARC multi-model ensemble solver into arc-explainer via NDJSON protocol
-SRP/DRY check: Pass - Reuses saturn_wrapper.py patterns and NDJSON event structure
+Author: Codex GPT-5
+Date: 2026-02-07
+PURPOSE: Bridge beetreeARC multi-model ensemble solver into arc-explainer via NDJSON protocol, including compatibility with both legacy fork and upstream BeeTree APIs
+SRP/DRY check: Pass - Reuses saturn_wrapper.py patterns and NDJSON event structure while centralizing compatibility logic in small helpers
 """
 
 import sys
@@ -23,6 +23,7 @@ import io
 import contextlib
 import threading
 import types
+import inspect
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 
@@ -49,7 +50,7 @@ if os.name == 'nt' and 'fcntl' not in sys.modules:
 try:
     from src.solver_engine import run_solver_mode
     from src.tasks import load_task
-    from src.run_utils import find_task_path
+    from src.run_utils import find_task_path as beetree_find_task_path
 except Exception as e:
     print(json.dumps({"type": "error", "message": f"Failed to import beetreeARC: {e}"}))
     sys.exit(1)
@@ -61,6 +62,89 @@ def emit(obj: Dict[str, Any]):
     """
     sys.__stdout__.write(json.dumps(obj, ensure_ascii=False) + "\n")
     sys.__stdout__.flush()
+
+
+def resolve_task_path(task_id: str) -> Path:
+    """Resolve task files across both upstream BeeTree defaults and arc-explainer layout."""
+    # Allow explicit file path input.
+    if task_id.endswith(".json"):
+        direct_candidate = Path(task_id)
+        if direct_candidate.exists():
+            return direct_candidate
+        task_id = direct_candidate.stem
+
+    # First try BeeTree's native resolver.
+    try:
+        return beetree_find_task_path(task_id)
+    except FileNotFoundError:
+        pass
+
+    # Fallback to arc-explainer dataset directories.
+    data_candidates = [
+        Path(PROJECT_ROOT) / "data" / "evaluation" / f"{task_id}.json",
+        Path(PROJECT_ROOT) / "data" / "evaluation2" / f"{task_id}.json",
+        Path(PROJECT_ROOT) / "data" / "training" / f"{task_id}.json",
+        Path(PROJECT_ROOT) / "data" / "training2" / f"{task_id}.json",
+        Path(PROJECT_ROOT) / "data" / "arc-agi-2-evaluation" / f"{task_id}.json",
+        Path(PROJECT_ROOT) / "data" / "arc-agi-2-training" / f"{task_id}.json",
+    ]
+
+    for candidate in data_candidates:
+        if candidate.exists():
+            return candidate
+
+    raise FileNotFoundError(
+        f"Task file for '{task_id}' not found in BeeTree defaults or local data directories."
+    )
+
+
+def build_solver_kwargs(
+    task_id: str,
+    test_index: int,
+    mode: str,
+    run_timestamp: str,
+    task_path: Path,
+) -> Dict[str, Any]:
+    """Build keyword args compatible with whichever BeeTree run_solver_mode signature exists."""
+    signature = inspect.signature(run_solver_mode)
+    accepted = set(signature.parameters.keys())
+
+    candidate_kwargs: Dict[str, Any] = {
+        "task_id": task_id,
+        "test_index": test_index,
+        "verbose": True,
+        "is_testing": (mode == "testing"),
+        "run_timestamp": run_timestamp,
+        "task_path": task_path,
+        "progress_queue": None,  # Legacy fork only.
+        "answer_path": None,
+    }
+
+    return {key: value for key, value in candidate_kwargs.items() if key in accepted}
+
+
+def normalize_solver_result(raw_result: Any) -> List[List[List[int]]]:
+    """Extract predicted grids from both legacy and upstream BeeTree result shapes."""
+    solver_output = raw_result
+
+    # Upstream solver returns (picked_solutions, usage_stats).
+    if isinstance(raw_result, tuple) and len(raw_result) >= 1:
+        solver_output = raw_result[0]
+
+    predictions: List[List[List[int]]] = []
+    if not isinstance(solver_output, list):
+        return predictions
+
+    for candidate in solver_output:
+        if isinstance(candidate, dict):
+            grid = candidate.get("grid") or candidate.get("answer")
+            if isinstance(grid, list):
+                predictions.append(grid)
+        elif isinstance(candidate, list):
+            # Some variants may return list-of-grids directly.
+            predictions.append(candidate)
+
+    return predictions
 
 
 class ProgressReporter:
@@ -239,8 +323,8 @@ def run():
         
         # Find task path
         try:
-            task_path = find_task_path(task_id)
-        except FileNotFoundError as e:
+            task_path = resolve_task_path(task_id)
+        except FileNotFoundError:
             emit({"type": "error", "message": f"Task not found: {task_id}"})
             return 1
         
@@ -248,18 +332,26 @@ def run():
         logs_dir = Path(PROJECT_ROOT) / "logs"
         logs_dir.mkdir(exist_ok=True)
         
-        # Override beetreeARC's ProgressReporter to capture events
-        from src.solver_engine import ProgressReporter as BeetreeProgressReporter
-        original_emit = BeetreeProgressReporter.emit
-        
-        def tracking_emit(self, status, step, outcome=None, event=None, predictions=None):
-            # Call original emit first
-            original_emit(self, status, step, outcome, event, predictions)
-            
-            # Then emit our NDJSON event
-            reporter.emit(status, step, outcome, event, predictions, cost_tracker.total_cost)
-        
-        BeetreeProgressReporter.emit = tracking_emit
+        # Override beetreeARC's ProgressReporter to capture structured step events when available.
+        beetree_progress_reporter_class = None
+        original_emit = None
+        try:
+            from src.solver_engine import ProgressReporter as BeetreeProgressReporter
+            if hasattr(BeetreeProgressReporter, "emit"):
+                beetree_progress_reporter_class = BeetreeProgressReporter
+                original_emit = BeetreeProgressReporter.emit
+
+                def tracking_emit(self, status, step, outcome=None, event=None, predictions=None):
+                    # Call original emit first.
+                    original_emit(self, status, step, outcome, event, predictions)
+                    # Then emit our NDJSON event.
+                    reporter.emit(status, step, outcome, event, predictions, cost_tracker.total_cost)
+
+                BeetreeProgressReporter.emit = tracking_emit
+        except Exception:
+            # Upstream BeeTree no longer exposes ProgressReporter in solver_engine.
+            # We still stream logs and final output through wrapper events.
+            reporter.emit("RUNNING", "Solver running", event="STEP_CHANGE")
         
         # Capture beetreeARC's stdout to stderr to keep NDJSON clean
         verbose_output = io.StringIO()
@@ -271,26 +363,19 @@ def run():
         with contextlib.redirect_stdout(sys.stderr):  # Send beetree prints to stderr
             with contextlib.redirect_stderr(StreamEmitter(verbose_output, 'info', reporter.start_time)):
                 try:
-                    # Call beetreeARC's run_solver_mode
-                    result = run_solver_mode(
+                    # Call beetreeARC's run_solver_mode using signature-compatible kwargs.
+                    solver_kwargs = build_solver_kwargs(
                         task_id=task_id,
                         test_index=test_index,
-                        verbose=True,
-                        is_testing=(mode == 'testing'),
+                        mode=mode,
                         run_timestamp=run_timestamp,
                         task_path=Path(task_path),
-                        progress_queue=None,  # We use our custom reporter
-                        answer_path=None
                     )
-                    
-                    # Normalize beetreeARC picked_solutions list into pure grid predictions
-                    predictions = []
-                    if result and isinstance(result, list):
-                        for candidate in result:
-                            if isinstance(candidate, dict):
-                                grid = candidate.get('grid')
-                                if grid is not None:
-                                    predictions.append(grid)
+                    result = run_solver_mode(**solver_kwargs)
+
+                    # Normalize beetreeARC result into pure grid predictions.
+                    predictions = normalize_solver_result(result)
+                    if predictions:
                         
                         # Extract real cost/token information from step logs
                         consensus_data = {
@@ -439,6 +524,10 @@ def run():
                         "message": f"beetreeARC solver error: {solver_err}"
                     })
                     return 1
+                finally:
+                    # Restore patched class method to avoid leaking state across runs.
+                    if beetree_progress_reporter_class is not None and original_emit is not None:
+                        beetree_progress_reporter_class.emit = original_emit
         
         return 0
         

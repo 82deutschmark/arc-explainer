@@ -20,6 +20,11 @@ const SYSTEM_PROMPT_SOURCES = [
     url: 'https://raw.githubusercontent.com/elder-plinius/CL4R1T4S/main/ANTHROPIC/Claude_Sonnet-4.5_Sep-29-2025.txt',
   },
   {
+    key: 'anthropic-opus',
+    label: 'Claude Opus 4.6',
+    url: 'https://raw.githubusercontent.com/elder-plinius/CL4R1T4S/main/ANTHROPIC/Claude_Opus_4.6.txt',
+  },
+  {
     key: 'openai',
     label: 'OpenAI ChatGPT5 (Aug 7, 2025)',
     url: 'https://raw.githubusercontent.com/elder-plinius/CL4R1T4S/main/OPENAI/ChatGPT5-08-07-2025.mkd',

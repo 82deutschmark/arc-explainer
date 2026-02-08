@@ -1,9 +1,9 @@
 /**
  * Author: Cascade (OpenAI)
- * Date: 2026-01-01
+ * Date: 2026-02-07
  * PURPOSE: Hierarchical navigation with grouped dropdown menus, emoji dividers, and aligned iconography.
  * Organizes navigation items into regular links and dropdown groups for better scannability.
- * Groups: ARC-3 (games + playground), Misc (leaderboards, puzzle DB, test, discussion, LLM reasoning, kaggle readiness).
+ * Groups: ARC-3 (landing + active playground), Misc (leaderboards, puzzle DB, test, discussion, LLM reasoning, kaggle readiness).
  * Uses shadcn/ui NavigationMenu with triggers, content, and viewport for dropdown functionality.
  * CRITICAL: NavigationMenuViewport is required for dropdown content to render properly!
  * Emoji dividers are rendered INSIDE each menu item to maintain proper Radix UI hierarchy.
@@ -122,27 +122,6 @@ const navigationItems: NavItem[] = [
         href: '/arc3/playground',
         icon: FlaskConical,
         description: 'Experiment with ARC-3 games'
-      },
-      {
-        type: 'link',
-        title: 'OpenRouter Agent Laboratory',
-        href: '/arc3/openrouter-playground',
-        icon: FlaskConical,
-        description: 'Experiment with OpenRouter models on ARC-3 games'
-      },
-      {
-        type: 'link',
-        title: 'Codex Playground',
-        href: '/arc3/codex-playground',
-        icon: Code,
-        description: "OpenAI's GPT-5.1 Codex models for agentic coding tasks"
-      },
-      {
-        type: 'link',
-        title: 'Haiku Playground',
-        href: '/arc3/haiku-playground',
-        icon: FlaskConical,
-        description: 'Experiment with Anthropic Claude Haiku model on ARC-3 games'
       }
     ]
   },

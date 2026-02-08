@@ -1,5 +1,143 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.15  Feb 07, 2026
+
+- **FIX: Navigation to ARC3 playground works again from main menu** (Author: Cascade)
+  - **What**: Re-added the missing client route for `/arc3/playground` so the navigation menu link resolves to the ARC3 Agent Playground page.
+  - **Why**: The nav link was pointing to a page without a registered route, producing a 404 on staging.
+  - **How**:
+    - `client/src/App.tsx`: Restored the `/arc3/playground` route pointing at `ARC3AgentPlayground`.
+
+- **CHORE: Pruned ARC3 nav to only active entries** (Author: Cascade)
+  - **What**: Removed outdated ARC3 dropdown items (OpenRouter, Codex, Haiku) so only ARC-AGI-3 landing and Playground remain.
+  - **Why**: ARC3 redesign deprecated those playground variants; nav should reflect current surface area.
+  - **How**:
+    - `client/src/components/layout/AppNavigation.tsx`: Trimmed ARC3 dropdown children to `/arc3` and `/arc3/playground`.
+
+### Version 7.3.14  Feb 07, 2026
+
+- **FEAT: Johan Land (@beetree) dedicated tribute page at /hall-of-fame/johan-land** (Author: Cascade)
+  - **What**: Created a full tribute page for Johan Land celebrating his new SOTA public submission to ARC-AGI (V1: 94.5%, V2: 72.9%). Hosts his research paper PDF, embeds official ARC Prize verification tweets, links to his GitHub solver and in-project Beetree Ensemble Solver, and shows his score progression history.
+  - **Why**: Johan is a longtime friend of the project whose Beetree solver is already integrated. His paper PDF was difficult to host elsewhere, and his achievement deserves a dedicated profile page.
+  - **How**:
+    - `client/src/pages/JohanLandTribute.tsx`: NEW full tribute page with hero banner (johanLandwide.png), score badges, methodology breakdown, paper PDF hosting, embedded tweets from @arcprize, score progression timeline, and links to GitHub/Twitter/Kaggle/Beetree solver.
+    - `client/src/App.tsx`: Added route `/hall-of-fame/johan-land` and imported JohanLandTribute component.
+    - `client/src/pages/HumanTradingCards.tsx`: Added featured cyan spotlight banner linking to Johan's tribute page from the Hall of Fame, with import of `Link` from wouter.
+    - Assets: Uses existing `client/public/johanLandwide.png` and `client/public/paper.pdf`.
+
+### Version 7.3.13  Feb 07, 2026
+
+- **CHORE: Sync `beetreeARC` fork to upstream `beetree/ARC-AGI` and harden wrapper compatibility** (Author: Codex GPT-5)
+  - **What**: Synced fork `82deutschmark/beetreeARC` `main` to upstream `beetree/ARC-AGI` `main` at `3279bdd`, archived prior fork head on `archive/pre-upstream-sync-2026-02-07`, and updated `server/python/beetree_wrapper.py` to support both legacy and upstream BeeTree API shapes.
+  - **Why**: The fork had diverged (`4` commits ahead, `354` behind), and direct upstream sync would break our wrapper because upstream changed solver signatures, return values, and removed `ProgressReporter` exports.
+  - **How**:
+    - `beetreeARC`: Added `upstream` remote (`https://github.com/beetree/ARC-AGI.git`), pushed archival branch for old fork state, then force-updated fork `main` to match upstream.
+    - `server/python/beetree_wrapper.py`: Added compatibility helpers for task path resolution across `data/evaluation*` and `data/training*`, dynamic `run_solver_mode` kwargs based on runtime signature inspection, mixed result-shape normalization, and optional `ProgressReporter` monkeypatch fallback when upstream class is absent.
+
+### Version 7.3.12  Feb 07, 2026
+
+- **FEAT: Reusable new-model evaluation pipeline + openrouter/pony-alpha registration** (Author: Cascade)
+  - **What**: Added `openrouter/pony-alpha` (cloaked free model) to model config, plus two reusable Python scripts for evaluating any new OpenRouter model against established baselines.
+  - **Why**: New cloaked/free models appear on OpenRouter regularly and need rapid testing in both Worm Arena (snake games) and ARC puzzle solving. Previously required writing a new script each time.
+  - **How**:
+    - `server/config/openrouterModels.ts`: Added `openrouter/pony-alpha` to `OPENROUTER_MODEL_KEYS`.
+    - `server/config/openrouter-catalog.json`: Added minimal catalog entry for the cloaked model.
+    - `scripts/worm-arena-tournaments/new-model-eval.py`: NEW reusable Python tournament script. Tests new model vs baselines (GPT-5 Nano/Mini, Nemotron 3, Grok 4.1 Fast) in both directions. Supports `--model`, `--baselines`, `--dry-run`, `--count` CLI args.
+    - `scripts/analysis/analyze-new-model.py`: NEW reusable Python ARC puzzle analysis script. Sends ARC1/ARC2-Eval puzzles to a model via the server API, saves results, skips already-analyzed puzzles. Supports `--model`, `--sources`, `--limit`, `--dry-run` CLI args.
+    - `docs/plans/020726-pony-alpha-new-model-testing.md`: Plan document.
+
+### Version 7.3.11  Feb 07, 2026
+
+- **FEAT: Automatic ARCEngine submodule bump workflow for arc3 branch** (Author: Codex GPT-5)
+  - **What**: Added a GitHub Actions workflow that auto-updates `external/ARCEngine` in this repository and pushes the updated gitlink commit to `arc3`.
+  - **Why**: Submodule pointers are pinned by design; without automation, new ARCEngine commits require manual bump commits in ARC Explainer.
+  - **How**:
+    - `.github/workflows/auto-bump-arcengine-submodule.yml`: Added scheduled (every 5 minutes) + manual workflow to fetch `external/ARCEngine` `origin/main`, set the submodule to the latest fetched commit, commit pointer changes, and push to `arc3` when updates exist.
+
+### Version 7.3.10  Feb 06, 2026
+
+- **FIX: Railway Docker build now restores ARCEngine when submodule contents are missing from build context** (Author: Codex GPT-5)
+  - **What**: Updated Docker build steps to prepare `external/ARCEngine` the same way as other external dependencies: if `external/ARCEngine/arcengine/__init__.py` is missing after `COPY . .`, the build now clones `82deutschmark/ARCEngine` `main` and then installs it editable.
+  - **Why**: After returning ARCEngine to a git submodule, Railway builds could receive a context without populated submodule files; the previous Docker step assumed files were always present and failed at ARCEngine install.
+  - **How**:
+    - `Dockerfile`: Replaced the direct ARCEngine install check with a prepare-or-clone block plus file verification (`arcengine/__init__.py`, `pyproject.toml`) before `pip install -e external/ARCEngine`.
+
+### Version 7.3.9  Feb 06, 2026
+
+- **FIX: ARC3 landing visual direction reset (removed tartan texture, reduced gray-heavy UI)** (Author: GPT-5 Codex)
+  - **What**: Replaced the patterned tartan-like hero background with clean, solid pixel color bands and switched the ARC3 landing page to a bright, high-contrast palette override so the page is no longer dominated by dark gray surfaces.
+  - **Why**: The prior hero treatment and global dark tokens made the page feel muddy and visually noisy, which conflicted with the intended crisp 16-color pixel style.
+  - **How**:
+    - `client/src/components/arc3-community/Arc3PixelUI.tsx`: Added optional `vars` prop to `Arc3PixelPage` to support per-page theme token overrides without duplicating components.
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Applied a light ARC3 token set, removed texture overlays, and rebuilt hero decoration using deliberate solid color pixel bands and block accents.
+
+### Version 7.3.8  Feb 06, 2026
+
+- **FIX: ARC3 landing cards now show real levels/actions metadata and no teaser descriptions** (Author: GPT-5 Codex)
+  - **What**: Removed descriptive teaser text from ARC3 landing game cards and replaced card metadata with factual counts in the format `N levels, M actions`. Official ARCEngine catalog responses now include `actionCount` derived directly from each game's runtime `available_actions`.
+  - **Why**: The landing cards were displaying narrative blurbs that could mischaracterize games (for example VC33) and were not exposing the action-space count users actually need when choosing a game.
+  - **How**:
+    - `server/python/arcengine_official_game_catalog.py`: Added `action_count` extraction from each loaded game's `_available_actions` and included it in catalog JSON output.
+    - `server/services/arc3Community/ArcEngineOfficialGameCatalog.ts`: Mapped Python `action_count` into API-facing game metadata as `actionCount`.
+    - `server/repositories/CommunityGameRepository.ts`: Extended `CommunityGame` typing to allow optional runtime `actionCount` metadata.
+    - `client/src/pages/arc3-community/CommunityLanding.tsx`: Removed per-card description rendering, added real `levels/actions` metadata display, and refreshed the hero strip with layered ARC3 palette accents instead of a flat gray bar.
+
+### Version 7.3.7  Feb 07, 2026
+
+- **FIX: Complete UI/UX redesign of ARC3 community game controls panel** (Author: Cascade Claude Sonnet 4)
+  - **What**: Replaced the confusing, cramped controls sidebar with a unified, larger, and more intuitive control layout. All 7 game actions are now exposed with clear labels, embedded keyboard hints, and proper visual hierarchy.
+  - **Why**: The original controls had multiple UX problems: tiny gray arrow buttons that didn't communicate purpose, a confusing green play button in the d-pad center, a dominant yellow Reset button stealing focus from movement, a redundant separate "Keyboard" panel duplicating information, and missing ACTION5/6/7 buttons entirely.
+  - **How**:
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx`: Replaced the controls sidebar with three distinct sections: (1) **Movement** d-pad with large 56px blue buttons showing both chevron icons and WASD key hints, with a dashed center spacer; (2) **Actions** panel with full-width labeled buttons for Action (Space), Click Grid (Mouse), and Alt Action (Q/E); (3) **Reset** demoted to a small neutral button at the bottom. Removed the separate "Keyboard" panel entirely since all hints are now embedded on the buttons themselves. Added keyboard bindings for ACTION7 (Q/E keys) and number keys 1-7 for direct action access.
+
+### Version 7.3.6  Feb 06, 2026
+
+- **FIX: Landing ARC3 replays load via recording proxy and now support official NDJSON replay endpoints** (Author: GPT-5 Codex)
+  - **What**: Added a same-origin ARC3 recording proxy endpoint and switched the landing page ARC3 panel from MP4-only playback to `ARC3CanvasPlayer` backed by official replay recordings. Added the reported AS66 short replay (`as66-f340c8e5138e / 7408e07e-83ca-4fbb-b9eb-1ed888cd751e-short`) to the landing rotation.
+  - **Why**: Some ARC3 replays were not loading on landing because official `three.arcprize.org` recording endpoints are served as NDJSON and are not reliably fetchable directly from the browser due cross-origin constraints.
+  - **How**:
+    - `server/routes/arc3.ts`: Added `GET /api/arc3/recordings/:gameId/:recordingId` proxy that fetches upstream NDJSON and returns it to the frontend with same-origin headers.
+    - `client/src/pages/LandingPage.tsx`: Replaced ARC3 `<video>` usage with `ARC3CanvasPlayer`, wired replay IDs to the new proxy route, and capped landing playback frames for predictable hero rotation.
+    - `client/src/components/ARC3CanvasPlayer.tsx`: Added optional `maxFrames` and `hideHeader` props for landing usage and cleaned replay status text to ASCII.
+    - `docs/reference/frontend/landing-hero.md`: Updated documentation to reflect the recording-proxy flow and current replay set.
+
+### Version 7.3.5  Feb 06, 2026
+
+- **CHORE: Restore `external/ARCEngine` as a git submodule and repoint to merged upstream fixes** (Author: Codex GPT-5)
+  - **What**: Reverted the prior “vendored directory” layout and restored `external/ARCEngine` as a true git submodule tracked in `.gitmodules`.
+  - **Why**: Keeping ARCEngine vendored in this repository caused drift, duplicated ownership, and made engine updates harder to reason about versus a pinned submodule commit.
+  - **How**:
+    - Pushed ARC game file updates (`games/official/__init__.py`, `gw01.py`, `ws02.py`, `ws03.py`, `ws04.py`) to `82deutschmark/ARCEngine`, then merged into `main` at `37b5fe83cc11635c9623710bcb1d10e1816dd4cc`.
+    - Replaced tracked `external/ARCEngine/*` files in arc-explainer with a gitlink and updated `.gitmodules` with `branch = main`.
+
+### Version 7.3.4  Feb 06, 2026
+
+- **FIX: WS03 pca invisible bounding box replaced with proper 5x5 checkerboard** (Author: Claude Opus 4.6)
+  - **What**: Removed the transparent `-1` padding around the 3x3 player sprite that was faking a 5x5 collision box. Replaced with a proper filled 5x5 blue+magenta checkerboard pattern (9+6), matching how LS20 and WS04 handle their player sprites.
+  - **Why**: The invisible padding approach made the player look like a 3x3 sprite that mysteriously collided with walls 1px away. The game's grid is fundamentally 5px-based -- the correct fix is a real 5x5 sprite, not a transparent hack.
+  - **How**:
+    - `external/ARCEngine/games/official/ws03.py:31`: Changed pca from `[[-1,-1,-1,-1,-1],[-1,9,6,9,-1],...]` to `[[9,6,9,6,9],[6,9,6,9,6],...]` -- full 5x5 checkerboard.
+
+- **FIX: WS04 picker sprites using wrong colors 0 and 1 instead of theme colors** (Author: Claude Opus 4.6)
+  - **What**: Fixed `kdy` (rotation changer), `vxy` (shape changer), and `qqv` (color changer) sprites which used raw colors 0 and 1 in their pixel data. These are NOT remap bases -- they're displayed directly, so 0 (Black) and 1 (Blue) rendered as wrong/invisible pixels.
+  - **Why**: Colors 0 and 1 in picker sprites are almost certainly bugs -- they're reserved for remap base mechanics. The picker sprites should use visible theme-appropriate colors like WS03 does (6+12).
+  - **How**:
+    - `external/ARCEngine/games/official/ws04.py:25`: kdy: `0`->`8` (Cyan), `1`->`4` (Yellow)
+    - `external/ARCEngine/games/official/ws04.py:34`: qqv: `0`->`4` (Yellow)
+    - `external/ARCEngine/games/official/ws04.py:40`: vxy: `0`->`8` (Cyan)
+
+- **FIX: WS04 mgu left bar removed (was a prominent red bar with no purpose)** (Author: Claude Opus 4.6)
+  - **What**: Changed the mgu sprite's left bar (4px wide, 52 rows) from color 8 (Cyan) to transparent (-1). Wall tiles at x=4 already provide the left border.
+  - **Why**: The previous fix changed this from color 5 to 8 (theme border color), making it a large conspicuous bar on the left side of the screen with no gameplay purpose. LS20's equivalent is subtle (dark on dark); WS04's wall tiles handle the actual boundary.
+  - **How**:
+    - `external/ARCEngine/games/official/ws04.py:29`: mgu left bar: `[[8,8,8,8]+[-1]*60]*52` -> `[[-1]*64]*52`
+
+- **DOCS: Created WS-style games reference guide** (Author: Claude Opus 4.6)
+  - **What**: New reference doc documenting how WS-style games work: sprite roles/tags, color slot assignments across LS20/WS03/WS04, mgu sprite structure, level data fields, and key differences between variants.
+  - **Why**: Needed a single place documenting what BACKGROUND_COLOR, PADDING_COLOR, panel_bg, mgu left bar, mgu bottom fill, and all other color slots are for, so future changes don't blindly swap colors.
+  - **How**:
+    - `docs/reference/arc3/WS_Style_Games_Guide.md`: Full reference with tables for every color slot.
+
 ### Version 7.3.3  Feb 06, 2026
 
 - **FIX: ARC3 community games fail to boot in Docker (runner path resolution)** (Author: Cascade / Claude Sonnet 4)

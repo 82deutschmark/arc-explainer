@@ -1,90 +1,41 @@
 # Landing Visual Hero
-**Author:** Cascade (Claude claude-sonnet-4-20250514)  
-**Date:** 2026-01-08  
-**Purpose:** Minimal visual landing page with rotating ARC 1&2 GIFs, ARC-3 canvas replays, and Worm Arena replays.
+**Author:** GPT-5 Codex  
+**Date:** 2026-02-06  
+**Purpose:** Document the current `/` landing hero behavior after restoring ARC3 replay-data playback via a server proxy.
 
 ---
 
 ## 1. Overview
-- `/` renders a three-column visual showcase:
-  - **Left:** Rotating ARC 1&2 GIF previews (clickable, links to puzzle).
-  - **Middle:** ARC-3 canvas replay (clickable, links to ARC-3 games).
-  - **Right:** Worm Arena replay (clickable, links to replay).
-- A slim hiatus banner reads “On Hiatus – January 2026” centered above the hero to communicate the temporary pause in updates.
-- Respects `prefers-reduced-motion`: GIF rotation pauses and replay autoplay is disabled.
-- Dark gradient background with subtle borders and hover effects.
+- `/` renders a two-column visual hero:
+  - Left: rotating ARC 1 and ARC 2 puzzle GIF previews.
+  - Right: ARC3 replay rendered from NDJSON recording data in a canvas player.
+- A status banner displays: `On Hiatus - January 2026`.
+- `prefers-reduced-motion` disables autoplay and GIF rotation.
 
----
+## 2. ARC3 Replay Data Path
+- Landing now uses `ARC3CanvasPlayer` instead of MP4-only playback.
+- Replay source URL pattern (same-origin proxy):
+  - `/api/arc3/recordings/:gameId/:recordingId`
+- Backend proxy target:
+  - `https://three.arcprize.org/api/recordings/:gameId/:recordingId`
+- Reason for proxy:
+  - Official recording endpoints are served as `application/x-ndjson` and are not consistently browser-CORS-friendly for direct client fetches.
 
-## 2. ARC 1&2 GIF Showcase
-- Source assets: `/images/decoration/arc_puzzle_*.gif`.
-- State: `activeIndex` cycles through `PUZZLE_GIF_GALLERY` every 4.5s.
-- Accessibility: `prefers-reduced-motion` stops rotation; descriptive `alt` on images.
-- Click navigates to `/task/{puzzleId}`.
+## 3. Curated Landing Replay Set
+The landing rotation currently uses:
+- `ls20-fa137e247ce6 / 7405808f-ec5b-4949-a252-a1451b946bae`
+- `vc33-6ae7bf49eea5 / 29409ce8-c164-447e-8810-828b96fa4ceb`
+- `ft09-b8377d4b7815 / 39b51ef3-b565-43fe-b3a8-7374ca4c5058`
+- `lp85-d265526edbaa / dc3d96aa-762b-4c2e-ac68-6418c8f54c74`
+- `as66-f340c8e5138e / 7408e07e-83ca-4fbb-b9eb-1ed888cd751e-short`
 
----
+The AS66 entry above is the replay endpoint reported during debugging.
 
-## 3. ARC-3 Replay
-- Canvas-based replay via `ARC3CanvasPlayer`, loading JSONL replays from `/replays/`.
-- Rotation uses the available non-problem games: `ls20`, `vc33`, `ft09`, `lp85`.
-- SP80 and AS66 are intentionally skipped on the landing page while their replays are being fixed.
-- Reduced-motion guard disables autoplay.
-- Click navigates to `/arc3/games`.
+## 4. Rendering Notes
+- `ARC3CanvasPlayer` parses NDJSON lines and extracts frame grids from `data.frame`.
+- Landing limits replay playback to an initial frame window (`maxFrames`) for predictable hero rotation timing.
+- Replay completion advances the landing replay index when reduced-motion is not enabled.
 
----
-
-## 4. Worm Arena Replay
-- Uses curated greatest-hits data from `/api/snakebench/greatest-hits`.
-- Fetches replay JSON for the active game from `/api/snakebench/games/{gameId}`.
-- Rotation runs every 6 seconds when multiple curated games are available.
-
-## 5. Replay Generation Pipeline
-
-### 4.1 Script Location
-`scripts/arc3/generate_arc3_video.py`
-
-### 4.2 Color Palette
-Uses canonical ARC3 colors matching `shared/config/arc3Colors.ts`:
-- Values 0-5: Grayscale (white to black)
-- Values 6-15: Pink, Light Pink, Red, Blue, Light Blue, Yellow, Orange, Dark Red, Green, Purple
-
-### 5.3 Single File Encoding
-```bash
-python scripts/arc3/generate_arc3_video.py \
-  arc3/ls20-fa137e247ce6.7405808f-ec5b-4949-a252-a1451b946bae.jsonl \
-  --output client/public/videos/arc3/ls20.mp4 \
-  --fps 6 \
-  --cell-size 12
-```
-
-### 5.4 Batch Encoding (All Games)
-```bash
-python scripts/arc3/generate_arc3_video.py --batch
-```
-This encodes all JSONL files in `arc3/` and `public/replays/` to `client/public/videos/arc3/`.
-
-Options:
-- `--output-dir PATH` - Custom output directory
-- `--fps N` - Frames per second (default: 6)
-- `--cell-size N` - Pixel size per cell (default: 12)
-- `--max-frames N` - Cap frame count per video
-
-### 5.5 Available Replays
-| Game | Source JSONL |
-|------|--------------|
-| as66 | `arc3/as66-821a4dcad9c2.*.jsonl` |
-| ft09 | `arc3/ft09-b8377d4b7815.*.jsonl` |
-| lp85 | `arc3/lp85-d265526edbaa.*.jsonl` |
-| ls20 | `arc3/ls20-fa137e247ce6.*.jsonl` |
-| ms93 | `arc3/ms93-*.jsonl` |
-| ot24 | `arc3/ot24-*.jsonl` |
-
-### 5.6 Dependencies
-- `imageio`, `imageio-ffmpeg`, `pillow`, `numpy` (see `requirements.txt`)
-
----
-
-## 6. Maintenance
-- Run `--batch` after adding new JSONL replays.
-- Keep GIF gallery in sync with `/images/decoration/` assets.
-- Update this doc plus `CHANGELOG.md` on changes.
+## 5. Maintenance
+- When adding new ARC3 landing replays, verify the recording endpoint returns valid NDJSON and test via the proxy route first.
+- Keep this document and `CHANGELOG.md` aligned with landing behavior changes.
