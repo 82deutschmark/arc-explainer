@@ -159,12 +159,15 @@ export default function JohanLandTribute() {
                   approaches to abstract reasoning.
                 </p>
                 <p>
-                  His solver, which we've integrated directly into ARC Explainer as the{' '}
-                  <Link href="/puzzle/beetree/0a938d79">
-                  <span className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2 cursor-pointer">
+                  His solver, the{' '}
+                  <a
+                    href="https://github.com/beetree/ARC-AGI"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                  >
                     Beetree Ensemble Solver
-                  </span>
-                  </Link>, uses what he calls <strong className="text-zinc-100">Multi-Model Reflective Reasoning</strong> - 
+                  </a>, uses what he calls <strong className="text-zinc-100">Multi-Model Reflective Reasoning</strong> -
                   a sophisticated pipeline that orchestrates GPT-5.2, Gemini-3, and Opus 4.5 through multiple 
                   search stages with a council of judges to evaluate and refine solutions.
                 </p>
@@ -391,17 +394,6 @@ export default function JohanLandTribute() {
                 </a>
 
                 <Separator className="bg-zinc-800" />
-
-                {/* In-project link to Beetree solver */}
-                <Link href="/puzzle/beetree/0a938d79">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-900/20 hover:bg-emerald-900/30 border border-emerald-500/30 hover:border-emerald-500/50 transition-all cursor-pointer group">
-                    <Trees className="w-5 h-5 text-emerald-400" />
-                    <div>
-                      <div className="text-sm font-medium text-emerald-200">Try the Beetree Solver</div>
-                      <div className="text-xs text-emerald-400/60">Run it now on sample puzzle 0a938d79</div>
-                    </div>
-                  </div>
-                </Link>
               </CardContent>
             </Card>
 
@@ -489,11 +481,6 @@ export default function JohanLandTribute() {
             <Link href="/hall-of-fame">
               <span className="hover:text-zinc-300 transition-colors cursor-pointer flex items-center gap-1">
                 <Crown className="w-3 h-3" /> Back to Hall of Fame
-              </span>
-            </Link>
-            <Link href="/puzzle/beetree/0a938d79">
-              <span className="hover:text-zinc-300 transition-colors cursor-pointer flex items-center gap-1">
-                <Trees className="w-3 h-3" /> Try Beetree Solver
               </span>
             </Link>
             <a
