@@ -55,6 +55,12 @@ const ARC3_RECORDING_REPLAYS: readonly LandingArc3Replay[] = [
     recordingId: '7405808f-ec5b-4949-a252-a1451b946bae',
   },
   {
+    gameId: 'ls20',
+    gameName: 'Locksmith (Victory replay)',
+    upstreamGameId: 'ls20-cb3b57cc',
+    recordingId: '6184a865-6ee3-409d-a712-17c9608245a1',
+  },
+  {
     gameId: 'vc33',
     gameName: 'Volume Control',
     upstreamGameId: 'vc33-6ae7bf49eea5',
