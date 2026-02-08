@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.14  Feb 07, 2026
+
+- **FEAT: Johan Land (@beetree) dedicated tribute page at /hall-of-fame/johan-land** (Author: Cascade)
+  - **What**: Created a full tribute page for Johan Land celebrating his new SOTA public submission to ARC-AGI (V1: 94.5%, V2: 72.9%). Hosts his research paper PDF, embeds official ARC Prize verification tweets, links to his GitHub solver and in-project Beetree Ensemble Solver, and shows his score progression history.
+  - **Why**: Johan is a longtime friend of the project whose Beetree solver is already integrated. His paper PDF was difficult to host elsewhere, and his achievement deserves a dedicated profile page.
+  - **How**:
+    - `client/src/pages/JohanLandTribute.tsx`: NEW full tribute page with hero banner (johanLandwide.png), score badges, methodology breakdown, paper PDF hosting, embedded tweets from @arcprize, score progression timeline, and links to GitHub/Twitter/Kaggle/Beetree solver.
+    - `client/src/App.tsx`: Added route `/hall-of-fame/johan-land` and imported JohanLandTribute component.
+    - `client/src/pages/HumanTradingCards.tsx`: Added featured cyan spotlight banner linking to Johan's tribute page from the Hall of Fame, with import of `Link` from wouter.
+    - Assets: Uses existing `client/public/johanLandwide.png` and `client/public/paper.pdf`.
+
 ### Version 7.3.13  Feb 07, 2026
 
 - **CHORE: Sync `beetreeARC` fork to upstream `beetree/ARC-AGI` and harden wrapper compatibility** (Author: Codex GPT-5)
