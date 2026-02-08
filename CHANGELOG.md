@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.15  Feb 07, 2026
+
+- **FIX: Navigation to ARC3 playground works again from main menu** (Author: Cascade)
+  - **What**: Re-added the missing client route for `/arc3/playground` so the navigation menu link resolves to the ARC3 Agent Playground page.
+  - **Why**: The nav link was pointing to a page without a registered route, producing a 404 on staging.
+  - **How**:
+    - `client/src/App.tsx`: Restored the `/arc3/playground` route pointing at `ARC3AgentPlayground`.
+
 ### Version 7.3.14  Feb 07, 2026
 
 - **FEAT: Johan Land (@beetree) dedicated tribute page at /hall-of-fame/johan-land** (Author: Cascade)
