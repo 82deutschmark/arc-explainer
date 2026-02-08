@@ -168,9 +168,19 @@ export default function LandingPage() {
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-indigo-300/80">
               ARC 3
             </p>
-            <p className="text-lg font-semibold tracking-wide">
-              {`${activeReplay.gameId.toUpperCase()} - ${activeReplay.gameName}`}
-            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-lg font-semibold tracking-wide">
+                {`${activeReplay.gameId.toUpperCase()} - ${activeReplay.gameName}`}
+              </p>
+              <a
+                href="https://three.arcprize.org/leaderboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-md border border-indigo-400/50 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-indigo-100 bg-indigo-900/30 hover:bg-indigo-800/40 transition-colors"
+              >
+                ARC3 Leaderboard
+              </a>
+            </div>
           </div>
           <Link href="/arc3">
             <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900/60 via-indigo-900/50 to-purple-900/60 p-1 shadow-[0_0_40px_rgba(99,102,241,0.2)] backdrop-blur-sm transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_60px_rgba(99,102,241,0.4)]">
