@@ -1,9 +1,11 @@
 /*
-Author: GPT-5.2
-Date: 2026-02-04
+Author: GPT-5 Codex
+Date: 2026-02-06T00:00:00Z
 PURPOSE: Data access layer for ARC3 community games (Postgres). Owns CRUD for stored
          community game metadata, submission contact fields, and gameplay/session stats
          used by the ARC3 Community UI and the Node-to-Python game runner bridge.
+         This type also permits optional runtime-only metadata (e.g., actionCount)
+         supplied by the official ARCEngine catalog and returned by list/detail APIs.
 SRP/DRY check: Pass - changes are additive and reuse existing repository patterns.
 */
 
@@ -27,6 +29,7 @@ export interface CommunityGame {
   levelCount: number;
   winScore: number;
   maxActions: number | null;
+  actionCount?: number | null;
   tags: string[];
   sourceFilePath: string;
   sourceHash: string;

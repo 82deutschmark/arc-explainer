@@ -64,6 +64,7 @@ import {
 } from "@/pages/arc3-community";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
+import JohanLandTribute from "@/pages/JohanLandTribute";
 import LLMReasoning from "@/pages/LLMReasoning";
 import LLMReasoningAdvanced from "@/pages/LLMReasoningAdvanced";
 import SnakeBenchEmbed from "@/pages/SnakeBenchEmbed";
@@ -93,6 +94,7 @@ function Router() {
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />
         <Route path="/hall-of-fame" component={HumanTradingCards} />
+        <Route path="/hall-of-fame/johan-land" component={JohanLandTribute} />
         <Route path="/human-cards" component={() => <Redirect to="/hall-of-fame" />} />
         <Route path="/discussion" component={PuzzleDiscussion} />
         <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
@@ -135,6 +137,7 @@ function Router() {
         <Route path="/llm-reasoning/advanced" component={LLMReasoningAdvanced} />
         {/* ARC3 Community - user-uploaded games platform (new main landing) */}
         <Route path="/arc3" component={CommunityLanding} />
+        <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/arc3/gallery" component={CommunityGallery} />
         <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
         <Route path="/arc3/upload" component={GameSubmissionPage} />

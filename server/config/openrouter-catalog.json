@@ -17937,6 +17937,38 @@
       ],
       "default_parameters": {},
       "expiration_date": null
+    },
+    {
+      "id": "openrouter/pony-alpha",
+      "canonical_slug": "openrouter/pony-alpha",
+      "name": "Pony Alpha (Cloaked)",
+      "created": 1738972800,
+      "description": "Cloaked frontier model on OpenRouter Arena. Identity TBD - likely a major Frontier Lab release. Free during evaluation period.",
+      "context_length": 131072,
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": ["text"],
+        "output_modalities": ["text"],
+        "tokenizer": "Other",
+        "instruct_type": null
+      },
+      "pricing": {
+        "prompt": "0",
+        "completion": "0"
+      },
+      "top_provider": {
+        "context_length": 131072,
+        "max_completion_tokens": null,
+        "is_moderated": false
+      },
+      "per_request_limits": null,
+      "supported_parameters": [
+        "max_tokens",
+        "temperature",
+        "top_p"
+      ],
+      "default_parameters": {},
+      "expiration_date": null
     }
   ]
 }

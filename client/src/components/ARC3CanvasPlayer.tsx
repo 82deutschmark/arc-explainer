@@ -1,11 +1,10 @@
 /**
- * Author: Cascade (OpenAI o4-preview)
- * Date: 2026-01-08T18:55:00Z
- * PURPOSE: Canvas-based ARC-3 replay player with frame interpolation, playback controls,
- *          and metadata overlays for showcasing JSONL recordings (initially SP80/AS66).
- *          Handles JSONL parsing, rendering, and rotation callbacks for landing hero usage.
- * SRP/DRY check: Pass — encapsulates replay parsing + canvas playback without duplicating
- *                existing grid visualization components or landing layout logic.
+ * Author: GPT-5 Codex
+ * Date: 2026-02-06T19:45:00Z
+ * PURPOSE: Canvas-based ARC3 replay player for NDJSON/JSONL recordings.
+ *          Supports responsive grid rendering, optional frame caps for landing previews,
+ *          and completion callbacks for replay rotation.
+ * SRP/DRY check: Pass - encapsulates replay parsing/rendering without duplicating landing layout logic.
  */
 
 import React, {
@@ -82,7 +81,7 @@ function extractGrid(frameData?: number[][][] | number[][] | number[][][][]): nu
   return null;
 }
 
-function parseReplayLines(text: string): CanvasReplayFrame[] {
+function parseReplayLines(text: string, maxFrames?: number): CanvasReplayFrame[] {
   const lines = text
     .split('\n')
     .map((line) => line.trim())
@@ -90,14 +89,15 @@ function parseReplayLines(text: string): CanvasReplayFrame[] {
 
   const frames: CanvasReplayFrame[] = [];
 
-  lines.forEach((line, index) => {
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
     try {
       const parsed = JSON.parse(line) as RawReplayEvent;
       const rawGrid =
         parsed.data?.frame ?? parsed.data?.frames ?? parsed.data?.observation;
       const grid = extractGrid(rawGrid);
       if (!grid) {
-        return;
+        continue;
       }
 
       const timestampMs =
@@ -112,11 +112,15 @@ function parseReplayLines(text: string): CanvasReplayFrame[] {
         caption: parsed.data?.caption,
         timestamp: timestampMs,
       });
+
+      if (maxFrames && frames.length >= maxFrames) {
+        break;
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.warn('[ARC3CanvasPlayer] Failed to parse replay line', error);
     }
-  });
+  }
 
   return frames;
 }
@@ -128,6 +132,8 @@ interface ARC3CanvasPlayerProps {
   shortId: string;
   className?: string;
   autoPlay?: boolean;
+  maxFrames?: number;
+  hideHeader?: boolean;
   onReplayComplete?: () => void;
 }
 
@@ -138,6 +144,8 @@ export function ARC3CanvasPlayer({
   shortId,
   className,
   autoPlay = true,
+  maxFrames,
+  hideHeader = false,
   onReplayComplete,
 }: ARC3CanvasPlayerProps) {
   const [frames, setFrames] = useState<CanvasReplayFrame[]>([]);
@@ -257,7 +265,7 @@ export function ARC3CanvasPlayer({
             return response.text();
           }));
 
-        const parsedFrames = parseReplayLines(text);
+        const parsedFrames = parseReplayLines(text, maxFrames);
         if (!parsedFrames.length) {
           throw new Error('Replay contains no frames');
         }
@@ -275,7 +283,7 @@ export function ARC3CanvasPlayer({
         );
       }
     },
-    [],
+    [maxFrames],
   );
 
   // Load replay when path or preloaded data changes
@@ -360,20 +368,22 @@ export function ARC3CanvasPlayer({
         className,
       )}
     >
-      <div className="flex flex-col gap-1">
-        <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200/70">
-          ARC 3 Replay
-        </p>
-        <p className="text-lg font-semibold">{gameLabel}</p>
-        <p className="text-sm text-slate-400">{shortId}</p>
-      </div>
+      {!hideHeader && (
+        <div className="flex flex-col gap-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200/70">
+            ARC 3 Replay
+          </p>
+          <p className="text-lg font-semibold">{gameLabel}</p>
+          <p className="text-sm text-slate-400">{shortId}</p>
+        </div>
+      )}
 
-      <div className="mt-6 flex flex-1 flex-col gap-4">
+      <div className={cn('flex flex-1 flex-col gap-4', hideHeader ? 'mt-0' : 'mt-6')}>
         <div className="relative flex flex-1 items-center justify-center rounded-2xl bg-slate-900/50 p-4">
           {status === 'loading' && (
             <div className="flex flex-col items-center gap-2 text-sm text-slate-300">
               <Loader2 className="h-8 w-8 animate-spin text-indigo-300" />
-              <span>Loading replay…</span>
+              <span>Loading replay...</span>
             </div>
           )}
           {status === 'error' && (
@@ -395,7 +405,7 @@ export function ARC3CanvasPlayer({
               </div>
               {currentFrame && (
                 <div className="pointer-events-none absolute right-4 top-4 rounded-lg bg-black/70 px-3 py-2 text-right text-xs font-medium text-white">
-                  <div>Score: {currentFrame.score ?? '—'}</div>
+                  <div>Score: {currentFrame.score ?? 'N/A'}</div>
                   <div className="text-indigo-200">
                     {currentFrame.state ?? 'IN_PROGRESS'}
                   </div>
@@ -411,3 +421,5 @@ export function ARC3CanvasPlayer({
 }
 
 export default ARC3CanvasPlayer;
+
+

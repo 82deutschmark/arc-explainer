@@ -1,10 +1,12 @@
 /*
-Author: GPT-5.2
-Date: 2026-02-04
+Author: GPT-5 Codex
+Date: 2026-02-06T00:00:00Z
 PURPOSE: Centralized discovery + metadata for official ARCEngine games living in the
          `external/ARCEngine` git submodule (external/ARCEngine/games/official/*.py).
          This removes hardcoded server-side whitelists so newly-added official games
          become visible and playable automatically in ARC3 Community routes + runner.
+         Also surfaces runtime-derived actionCount metadata from ARCEngine so UI cards
+         can show real action-space counts without hardcoded descriptions.
 SRP/DRY check: Pass - single responsibility: official game catalog shared by routes + runner.
 */
 
@@ -30,6 +32,7 @@ type PythonCatalogRow =
       level_count: number;
       win_score: number;
       max_actions: number | null;
+      action_count?: number;
     }
   | {
       ok: false;
@@ -247,6 +250,7 @@ function toCommunityGame(params: {
   levelCount: number;
   winScore: number;
   maxActions: number | null;
+  actionCount: number | null;
   tags: string[];
 }): CommunityGame {
   return {
@@ -263,6 +267,7 @@ function toCommunityGame(params: {
     levelCount: params.levelCount,
     winScore: params.winScore,
     maxActions: params.maxActions,
+    actionCount: params.actionCount,
     tags: params.tags,
     sourceFilePath: params.pythonFilePath,
     sourceHash: params.sourceHash,
@@ -352,6 +357,7 @@ async function refreshCatalog(): Promise<OfficialGameCatalogItem[]> {
         levelCount: row.level_count,
         winScore: row.win_score,
         maxActions: row.max_actions,
+        actionCount: typeof row.action_count === 'number' ? row.action_count : null,
         tags,
       }),
     });

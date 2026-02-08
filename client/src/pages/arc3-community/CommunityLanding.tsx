@@ -1,13 +1,12 @@
 /*
-Author: Cascade (Claude Sonnet 4)
-Date: 2026-02-05
-PURPOSE: ARC3 landing page - game-focused redesign. The hero area is a compact title strip
-         with the 16-color ARC3 palette as visual identity. The main content is a grid of
-         playable official ARCEngine games with prominent Play buttons. Secondary actions
-         (upload, docs, GitHub) are demoted to a footer bar. No instructional text in the UI.
-         All 16 ARC3 palette colors are used as creative design elements (card accents,
-         palette strips, decorative borders) rather than just panel backgrounds.
-SRP/DRY check: Pass - page-only layout; shared pixel UI primitives live in Arc3PixelUI.tsx.
+Author: GPT-5 Codex
+Date: 2026-02-06T00:00:00Z
+PURPOSE: ARC3 landing page game gallery. Renders official/community games as card grids with
+         accurate runtime metadata from the backend (levels + action-space counts), without
+         speculative teaser descriptions. Uses a bright, high-contrast ARC3 palette direction
+         with solid pixel color bands (no texture overlays) while reusing shared pixel UI
+         primitives from Arc3PixelUI.
+SRP/DRY check: Pass - page-only composition; shared primitives and data fetching reused.
 */
 
 import { useLocation } from 'wouter';
@@ -26,6 +25,7 @@ interface CommunityGame {
   description: string | null;
   authorName: string;
   levelCount?: number;
+  actionCount?: number | null;
   tags?: string[];
 }
 
@@ -38,10 +38,30 @@ interface GamesListResponse {
 }
 
 const ARCENGINE_REPO = 'https://github.com/arcprize/ARCEngine';
+const COMMUNITY_LANDING_VARS: Record<string, string> = {
+  '--arc3-bg': ARC3_COLORS[0],
+  '--arc3-bg-soft': ARC3_COLORS[1],
+  '--arc3-panel': ARC3_COLORS[0],
+  '--arc3-panel-soft': ARC3_COLORS[1],
+  '--arc3-border': ARC3_COLORS[3],
+  '--arc3-text': ARC3_COLORS[5],
+  '--arc3-muted': ARC3_COLORS[4],
+  '--arc3-dim': ARC3_COLORS[3],
+  '--arc3-focus': ARC3_COLORS[9],
+};
 
-function truncate(text: string, max: number) {
-  if (text.length <= max) return text;
-  return `${text.slice(0, Math.max(0, max - 1)).trimEnd()}...`;
+function formatCount(value: number | null | undefined, noun: string): string | null {
+  if (value == null || value <= 0) return null;
+  return `${value} ${noun}${value === 1 ? '' : 's'}`;
+}
+
+function buildGameStats(game: CommunityGame): string {
+  const chunks = [
+    formatCount(game.levelCount, 'level'),
+    formatCount(game.actionCount, 'action'),
+  ].filter((value): value is string => Boolean(value));
+
+  return chunks.join(', ');
 }
 
 export default function CommunityLanding() {
@@ -57,37 +77,67 @@ export default function CommunityLanding() {
   const teamGames = games.filter((g) => g.authorName !== 'ARC Prize Foundation');
 
   return (
-    <Arc3PixelPage>
+    <Arc3PixelPage vars={COMMUNITY_LANDING_VARS}>
       {/* 16-color palette strip as top visual identity */}
       <PaletteStrip cellHeight={8} />
 
-      {/* Compact hero - no redundant sub-header, just a title + CTA */}
-      <div className="bg-[var(--arc3-bg-soft)] border-b-2 border-[var(--arc3-border)]">
+      {/* Pixel-forward hero with solid color blocks (no texture overlays). */}
+      <div className="border-b-2 border-[var(--arc3-border)] bg-[var(--arc3-panel)]">
+        <div className="h-1.5 flex">
+          {[14, 11, 12, 9, 6, 15, 8, 10, 14, 11, 12, 9, 6, 15, 8, 10].map((colorIndex, index) => (
+            <div key={index} className="flex-1" style={{ backgroundColor: ARC3_COLORS[colorIndex] }} />
+          ))}
+        </div>
         <div className="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            {/* Tiny 4x4 pixel grid decoration using palette colors */}
-            <div className="shrink-0 grid grid-cols-4 gap-px w-10 h-10" aria-hidden="true">
+          <div className="flex items-center gap-4 min-w-0">
+            <div
+              className="shrink-0 grid grid-cols-4 gap-[2px] p-1 border-2 border-[var(--arc3-border)] bg-[var(--arc3-c0)]"
+              aria-hidden="true"
+            >
               {[9, 14, 11, 6, 8, 15, 12, 10, 7, 13, 9, 14, 11, 6, 8, 15].map((c, i) => (
-                <div key={i} style={{ backgroundColor: ARC3_COLORS[c] }} />
+                <div key={i} className="w-2.5 h-2.5" style={{ backgroundColor: ARC3_COLORS[c] }} />
               ))}
             </div>
             <div className="min-w-0">
               <h1 className="text-base font-bold tracking-tight leading-tight">
-                ARC-AGI-3
+                <span className="text-[var(--arc3-c9)]">ARC-AGI-3</span>
                 <span className="text-[var(--arc3-dim)] font-normal text-xs ml-2">Interactive Reasoning Benchmarks</span>
               </h1>
               <p className="text-[11px] text-[var(--arc3-muted)] leading-snug mt-0.5">
                 Play 2D Python games built on the ARCEngine sprite runtime. 64x64 pixel grids, 16-color palette.
               </p>
+              <div className="mt-2 flex flex-wrap gap-1.5" aria-hidden="true">
+                {[14, 11, 12, 9, 6, 15].map((colorIndex) => (
+                  <span
+                    key={colorIndex}
+                    className="inline-block w-6 h-1.5 border border-[var(--arc3-border)]"
+                    style={{ backgroundColor: ARC3_COLORS[colorIndex] }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden md:grid grid-cols-3 gap-1" aria-hidden="true">
+              {[14, 11, 12, 9, 6, 15].map((colorIndex, idx) => (
+                <span
+                  key={`${colorIndex}-${idx}`}
+                  className="w-2.5 h-2.5 border border-[var(--arc3-border)]"
+                  style={{ backgroundColor: ARC3_COLORS[colorIndex] }}
+                />
+              ))}
+            </div>
             <PixelButton tone="green" onClick={() => setLocation('/arc3/upload')}>
               <Upload className="w-4 h-4" />
               Submit Game
             </PixelButton>
           </div>
+        </div>
+        <div className="h-1.5 flex">
+          {[10, 8, 15, 6, 9, 12, 11, 14, 10, 8, 15, 6, 9, 12, 11, 14].map((colorIndex, index) => (
+            <div key={index} className="flex-1" style={{ backgroundColor: ARC3_COLORS[colorIndex] }} />
+          ))}
         </div>
       </div>
 
@@ -129,49 +179,45 @@ export default function CommunityLanding() {
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {arcPrizeGames.map((game, idx) => (
-                    <GameCard
-                      key={game.gameId}
-                      accentIndex={ACCENT_CYCLE[idx % ACCENT_CYCLE.length]}
-                      onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                    >
-                      <div className="p-3 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold truncate">{game.displayName}</span>
-                          {game.tags?.includes('official') && (
-                            <span
-                              className="text-[9px] font-bold px-1.5 py-0.5 shrink-0"
-                              style={{ backgroundColor: ARC3_COLORS[11], color: ARC3_COLORS[5] }}
-                            >
-                              OFFICIAL
-                            </span>
-                          )}
-                        </div>
-                        {game.description && (
-                          <p className="text-[11px] text-[var(--arc3-muted)] leading-snug min-h-[2rem]">
-                            {truncate(game.description, 120)}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
-                          <div className="flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            <span>{game.authorName}</span>
+                  {arcPrizeGames.map((game, idx) => {
+                    const stats = buildGameStats(game);
+                    return (
+                      <GameCard
+                        key={game.gameId}
+                        accentIndex={ACCENT_CYCLE[idx % ACCENT_CYCLE.length]}
+                        onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                      >
+                        <div className="p-3 space-y-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold truncate">{game.displayName}</span>
+                            {game.tags?.includes('official') && (
+                              <span
+                                className="text-[9px] font-bold px-1.5 py-0.5 shrink-0"
+                                style={{ backgroundColor: ARC3_COLORS[11], color: ARC3_COLORS[5] }}
+                              >
+                                OFFICIAL
+                              </span>
+                            )}
                           </div>
-                          {game.levelCount != null && game.levelCount > 0 && (
-                            <span>{game.levelCount} levels</span>
-                          )}
+                          <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Users className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{game.authorName}</span>
+                            </div>
+                            {stats && <span className="shrink-0">{stats}</span>}
+                          </div>
+                          <PixelButton
+                            tone="green"
+                            onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                            className="w-full mt-1"
+                          >
+                            <Play className="w-4 h-4" />
+                            Play
+                          </PixelButton>
                         </div>
-                        <PixelButton
-                          tone="green"
-                          onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                          className="w-full mt-1"
-                        >
-                          <Play className="w-4 h-4" />
-                          Play
-                        </PixelButton>
-                      </div>
-                    </GameCard>
-                  ))}
+                      </GameCard>
+                    );
+                  })}
                 </div>
               </section>
             )}
@@ -188,41 +234,37 @@ export default function CommunityLanding() {
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {teamGames.map((game, idx) => (
-                    <GameCard
-                      key={game.gameId}
-                      accentIndex={ACCENT_CYCLE[(arcPrizeGames.length + idx) % ACCENT_CYCLE.length]}
-                      onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                    >
-                      <div className="p-3 space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold truncate">{game.displayName}</span>
-                        </div>
-                        {game.description && (
-                          <p className="text-[11px] text-[var(--arc3-muted)] leading-snug min-h-[2rem]">
-                            {truncate(game.description, 120)}
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
-                          <div className="flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            <span>{game.authorName}</span>
+                  {teamGames.map((game, idx) => {
+                    const stats = buildGameStats(game);
+                    return (
+                      <GameCard
+                        key={game.gameId}
+                        accentIndex={ACCENT_CYCLE[(arcPrizeGames.length + idx) % ACCENT_CYCLE.length]}
+                        onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                      >
+                        <div className="p-3 space-y-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold truncate">{game.displayName}</span>
                           </div>
-                          {game.levelCount != null && game.levelCount > 0 && (
-                            <span>{game.levelCount} levels</span>
-                          )}
+                          <div className="flex items-center justify-between text-[10px] text-[var(--arc3-dim)]">
+                            <div className="flex items-center gap-1 min-w-0">
+                              <Users className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{game.authorName}</span>
+                            </div>
+                            {stats && <span className="shrink-0">{stats}</span>}
+                          </div>
+                          <PixelButton
+                            tone="green"
+                            onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
+                            className="w-full mt-1"
+                          >
+                            <Play className="w-4 h-4" />
+                            Play
+                          </PixelButton>
                         </div>
-                        <PixelButton
-                          tone="green"
-                          onClick={() => setLocation(`/arc3/play/${game.gameId}`)}
-                          className="w-full mt-1"
-                        >
-                          <Play className="w-4 h-4" />
-                          Play
-                        </PixelButton>
-                      </div>
-                    </GameCard>
-                  ))}
+                      </GameCard>
+                    );
+                  })}
                 </div>
               </section>
             )}
