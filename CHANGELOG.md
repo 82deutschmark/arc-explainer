@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.16  Feb 08, 2026
+
+- **FEAT: Added victory ARC3 replay to landing rotation** (Author: Cascade)
+  - **What**: Included the official Locksmith victory replay link (`ls20-cb3b57cc / 6184a865-6ee3-409d-a712-17c9608245a1`) in the landing page ARC3 hero rotation.
+  - **Why**: Highlight our winning replay alongside existing featured ARC3 recordings.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`: Added the new replay metadata to `ARC3_RECORDING_REPLAYS` for the landing hero player.
+
 ### Version 7.3.15  Feb 07, 2026
 
 - **FIX: Navigation to ARC3 playground works again from main menu** (Author: Cascade)
