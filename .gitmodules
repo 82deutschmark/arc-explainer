@@ -10,3 +10,4 @@
 [submodule "external/ARCEngine"]
 	path = external/ARCEngine
 	url = https://github.com/82deutschmark/ARCEngine
+	branch = main
