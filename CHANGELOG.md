@@ -14,6 +14,13 @@
   - **How**:
     - `client/src/components/layout/AppNavigation.tsx`: Trimmed ARC3 dropdown children to `/arc3` and `/arc3/playground`.
 
+- **FEAT: Johan tribute social preview + landing news card** (Author: Cascade)
+  - **What**: Added February 2026 news block on the landing page linking to Johan's tribute, and injected Open Graph/Twitter meta tags so social previews show the wide banner.
+  - **Why**: Ensure the new SOTA announcement is visible from the home page and that shared links render the correct hero image on social platforms.
+  - **How**:
+    - `client/src/pages/LandingPage.tsx`: Added news section with Johan banner and badges linking to `/hall-of-fame/johan-land`.
+    - `client/src/pages/JohanLandTribute.tsx`: Injects OG/Twitter meta tags pointing to `https://arc.markbarney.net/johanLandwide.png` and the tribute URL for rich previews.
+
 ### Version 7.3.14  Feb 07, 2026
 
 - **FEAT: Johan Land (@beetree) dedicated tribute page at /hall-of-fame/johan-land** (Author: Cascade)
