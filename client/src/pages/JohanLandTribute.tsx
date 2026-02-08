@@ -69,40 +69,39 @@ export default function JohanLandTribute() {
             alt="Johan Land (@beetree) - ARC Raiders trading card art showing a figure relaxing among walls of ARC puzzle monitors"
             className="w-full h-auto object-cover"
           />
-          {/* Gradient overlay for text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent" />
+          {/* Gradient overlay for text readability at top */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/35 to-transparent" />
 
-          {/* Title overlay */}
-          <div className="absolute bottom-0 inset-x-0 p-6 md:p-8">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Crown className="w-5 h-5 text-amber-400" />
-                  <span className="text-xs uppercase tracking-widest text-amber-300 font-bold">
-                    New SOTA Public Submission
-                  </span>
-                </div>
-                <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight">
-                  Johan Land
-                </h1>
-                <p className="text-cyan-300 font-mono text-sm mt-1">
-                  @LandJohan &middot; @beetree
-                </p>
+          {/* Title + score overlay pinned to top-left */}
+          <div className="absolute inset-0 flex flex-col items-start gap-3 p-4 md:p-6 lg:p-8">
+            <div className="flex flex-wrap items-center gap-3">
+              {/* V1 score badge */}
+              <div className="bg-emerald-500/25 border border-emerald-500/50 rounded-lg px-3 py-2 text-center backdrop-blur-sm shadow-lg shadow-emerald-900/30">
+                <div className="text-[10px] uppercase tracking-wider text-emerald-200 font-semibold">V1 Score</div>
+                <div className="text-xl md:text-2xl font-black text-emerald-100">94.5%</div>
+                <div className="text-[10px] text-emerald-200/80">$11.4/task</div>
               </div>
-              <div className="flex gap-3">
-                {/* V1 score badge */}
-                <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-xl px-4 py-2 text-center backdrop-blur-sm">
-                  <div className="text-[10px] uppercase tracking-wider text-emerald-300 font-semibold">V1 Score</div>
-                  <div className="text-2xl md:text-3xl font-black text-emerald-400">94.5%</div>
-                  <div className="text-[10px] text-emerald-300/70">$11.4/task</div>
-                </div>
-                {/* V2 score badge */}
-                <div className="bg-sky-500/20 border border-sky-500/40 rounded-xl px-4 py-2 text-center backdrop-blur-sm">
-                  <div className="text-[10px] uppercase tracking-wider text-sky-300 font-semibold">V2 Score</div>
-                  <div className="text-2xl md:text-3xl font-black text-sky-400">72.9%</div>
-                  <div className="text-[10px] text-sky-300/70">$38.9/task</div>
-                </div>
+              {/* V2 score badge */}
+              <div className="bg-sky-500/25 border border-sky-500/50 rounded-lg px-3 py-2 text-center backdrop-blur-sm shadow-lg shadow-sky-900/30">
+                <div className="text-[10px] uppercase tracking-wider text-sky-200 font-semibold">V2 Score</div>
+                <div className="text-xl md:text-2xl font-black text-sky-100">72.9%</div>
+                <div className="text-[10px] text-sky-200/80">$38.9/task</div>
               </div>
+            </div>
+
+            <div className="flex flex-col items-start gap-1">
+              <div className="flex items-center gap-2">
+                <Crown className="w-5 h-5 text-amber-300" />
+                <span className="text-xs uppercase tracking-widest text-amber-200 font-bold">
+                  New SOTA Public Submission
+                </span>
+              </div>
+              <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight drop-shadow-xl">
+                Johan Land
+              </h1>
+              <p className="text-cyan-100 font-mono text-sm drop-shadow">
+                @LandJohan &middot; @beetree
+              </p>
             </div>
           </div>
         </header>
