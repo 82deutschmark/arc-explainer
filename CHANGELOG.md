@@ -8,6 +8,12 @@
   - **How**:
     - `client/src/App.tsx`: Restored the `/arc3/playground` route pointing at `ARC3AgentPlayground`.
 
+- **CHORE: Pruned ARC3 nav to only active entries** (Author: Cascade)
+  - **What**: Removed outdated ARC3 dropdown items (OpenRouter, Codex, Haiku) so only ARC-AGI-3 landing and Playground remain.
+  - **Why**: ARC3 redesign deprecated those playground variants; nav should reflect current surface area.
+  - **How**:
+    - `client/src/components/layout/AppNavigation.tsx`: Trimmed ARC3 dropdown children to `/arc3` and `/arc3/playground`.
+
 ### Version 7.3.14  Feb 07, 2026
 
 - **FEAT: Johan Land (@beetree) dedicated tribute page at /hall-of-fame/johan-land** (Author: Cascade)
