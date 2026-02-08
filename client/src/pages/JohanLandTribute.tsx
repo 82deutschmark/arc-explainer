@@ -42,6 +42,27 @@ export default function JohanLandTribute() {
 
   useEffect(() => {
     document.title = 'Johan Land - ARC-AGI Grand Master | ARC Explainer';
+    const meta = [
+      ['property', 'og:title', 'Johan Land - ARC-AGI Grand Master | ARC Explainer'],
+      ['property', 'og:description', 'New SOTA public submission: 94.5% V1, 72.9% V2. Bespoke GPT-5.2 ensemble verified by ARC Prize.'],
+      ['property', 'og:image', 'https://arc.markbarney.net/johanLandwide.png'],
+      ['property', 'og:url', 'https://arc.markbarney.net/hall-of-fame/johan-land'],
+      ['name', 'twitter:card', 'summary_large_image'],
+      ['name', 'twitter:title', 'Johan Land - ARC-AGI Grand Master | ARC Explainer'],
+      ['name', 'twitter:description', 'New SOTA public submission: 94.5% V1, 72.9% V2. Bespoke GPT-5.2 ensemble verified by ARC Prize.'],
+      ['name', 'twitter:image', 'https://arc.markbarney.net/johanLandwide.png'],
+    ] as const;
+
+    meta.forEach(([attr, key, value]) => {
+      const selector = `meta[${attr}="${key}"]`;
+      let tag = document.head.querySelector(selector) as HTMLMetaElement | null;
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attr, key);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', value);
+    });
   }, []);
 
   return (
