@@ -190,6 +190,60 @@ export default function LandingPage() {
           </Link>
         </div>
       </section>
+
+      {/* February 2026 News */}
+      <section className="relative z-10 w-full max-w-5xl px-0 md:px-4">
+        <div className="mb-3 flex items-center justify-between gap-2 text-slate-200">
+          <div>
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-cyan-300/80">News</p>
+            <h2 className="text-xl font-bold tracking-tight text-white">February 2026 — New SOTA Public Submission</h2>
+            <p className="text-sm text-slate-400">Johan Land (@beetree) hits 94.5% V1 / 72.9% V2 on ARC-AGI. Verified by ARC Prize.</p>
+          </div>
+          <Link
+            href="/hall-of-fame/johan-land"
+            className="hidden shrink-0 rounded-lg border border-cyan-500/50 bg-cyan-500/10 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-cyan-100 transition-colors hover:bg-cyan-500/20 md:inline-flex"
+          >
+            View Profile
+          </Link>
+        </div>
+
+        <Link href="/hall-of-fame/johan-land" className="group block overflow-hidden rounded-2xl border border-cyan-500/40 bg-gradient-to-br from-cyan-500/10 via-cyan-500/5 to-black shadow-xl shadow-cyan-900/30 transition-transform hover:scale-[1.01]">
+          <div className="relative">
+            <img
+              src="/johanLandwide.png"
+              alt="Johan Land (@beetree) ARC Raiders banner"
+              className="w-full h-auto object-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-transparent" />
+            <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 text-white">
+              <div className="space-y-1">
+                <span className="inline-flex items-center gap-2 rounded-full bg-amber-500/80 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-50 shadow-lg">
+                  New SOTA Public Submission
+                </span>
+                <h3 className="text-2xl md:text-3xl font-bold drop-shadow-lg">Johan Land (@beetree)</h3>
+                <p className="text-sm text-cyan-100/90">94.5% V1 · 72.9% V2 · GPT-5.2 Ensemble · Verified by ARC Prize</p>
+              </div>
+              <div className="flex gap-2">
+                <div className="rounded-lg bg-emerald-500/25 px-3 py-2 text-center border border-emerald-400/50 shadow shadow-emerald-900/30">
+                  <div className="text-[10px] uppercase tracking-wider text-emerald-100 font-semibold">V1 Score</div>
+                  <div className="text-xl font-black text-emerald-50">94.5%</div>
+                  <div className="text-[10px] text-emerald-100/80">$11.4/task</div>
+                </div>
+                <div className="rounded-lg bg-sky-500/25 px-3 py-2 text-center border border-sky-400/50 shadow shadow-sky-900/30">
+                  <div className="text-[10px] uppercase tracking-wider text-sky-100 font-semibold">V2 Score</div>
+                  <div className="text-xl font-black text-sky-50">72.9%</div>
+                  <div className="text-[10px] text-sky-100/80">$38.9/task</div>
+                </div>
+              </div>
+            </div>
+            <div className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-lg border border-cyan-400/60 bg-black/50 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-cyan-100 shadow-lg">
+              View Johan's profile
+              <span aria-hidden>→</span>
+            </div>
+          </div>
+        </Link>
+      </section>
     </main>
   );
 }
