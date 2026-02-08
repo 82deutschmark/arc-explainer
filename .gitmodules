@@ -10,3 +10,6 @@
 [submodule "llm-council"]
 	path = llm-council
 	url = https://github.com/VoynichLabs/llm-council.git
+[submodule "external/ARCEngine"]
+	path = external/ARCEngine
+	url = https://github.com/82deutschmark/ARCEngine
