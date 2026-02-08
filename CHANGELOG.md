@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.17  Feb 08, 2026
+
+- **CHORE: Update ARCEngine submodule to include ws03/ws04 game registry fix** (Author: Claude Opus 4.6)
+  - **What**: Updated ARCEngine submodule from `96e3cd5` to `49fcaa0`, which includes upstream ws04 improvements and a critical registry fix enabling ws03 and ws04 game loading.
+  - **Why**: ws03 (fog-of-war World Shifter variant) and ws04 (energy management variant) Python files existed in `games/official/` but were not registered in `games/__init__.py`, causing `"ActionInput" object has no field "x"` errors when trying to play them.
+  - **How**:
+    - `external/ARCEngine`: Updated submodule pointer to `49fcaa0` (rebased local registry fix on top of latest upstream).
+    - `external/ARCEngine/games/__init__.py` (within submodule): Added ws03 and ws04 to `_GAME_REGISTRY` dict and added instantiation cases in `get_game()` function.
+    - `.gitmodules`: Already configured to track `main` branch for easier future updates.
+  - **Upstream changes included**:
+    - `6134057`: fix(ws04): correct player sprite visor color from black to blue
+    - `1655e24`: fix(ws04): redesign level 5 spiral maze with clearer path and relocated collectibles
+
 ### Version 7.3.16  Feb 08, 2026
 
 - **FEAT: Added victory ARC3 replay to landing rotation** (Author: Cascade)
