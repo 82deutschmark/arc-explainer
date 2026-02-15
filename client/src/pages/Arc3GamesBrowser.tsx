@@ -1,6 +1,6 @@
 /*
- * Author: Claude (Windsurf Cascade)
- * Date: 2025-12-05
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-02-10
  * PURPOSE: Browse all ARC-AGI-3 games with metadata, difficulty ratings, and documentation status.
  *          Entry point to individual game spoiler pages. Shows preview vs evaluation categorization.
  * SRP/DRY check: Pass - Single responsibility (games listing), reuses shared game metadata.
@@ -187,7 +187,7 @@ export default function Arc3GamesBrowser() {
     title: 'ARC Explainer – ARC-AGI-3 Games Browser',
     description:
       'Browse the six revealed ARC-AGI-3 games and the documentation this site has collected so far.',
-    canonicalPath: '/arc3/games',
+    canonicalPath: '/arc3/archive/games',
   });
 
   const allGames = getAllGames();
@@ -202,7 +202,7 @@ export default function Arc3GamesBrowser() {
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/arc3">
+          <Link href="/arc3/archive">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to ARC-AGI-3
           </Link>

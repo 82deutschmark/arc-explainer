@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.18  Feb 10, 2026
+
+- **FIX: Restore legacy ARC3 games pages under archive + add redirects** (Author: Cascade (ChatGPT))
+  - **What**: Mounted the original ARC3 Games Browser and spoiler pages under `/arc3/archive/games*`, updated their canonical metadata/back-links, and added client + server redirects so `/arc3/games` URLs route to the archive.
+  - **Why**: The ARC3 revamp repointed `/arc3` to the community surface, leaving historical preview links like `/arc3/games/vc33` broken. We need the old pages exactly intact for legacy references.
+  - **How**:
+    - `client/src/App.tsx`: Rewired archive routes to reuse `Arc3GamesBrowser` and `Arc3GameSpoiler`, added redirect helpers for `/arc3/games*`, and refreshed file header metadata.
+    - `client/src/pages/Arc3GamesBrowser.tsx`, `client/src/pages/Arc3GameSpoiler.tsx`: Updated authorship metadata, canonical paths, and back-links to the archive root without altering page layouts/content.
+    - `server/routes.ts`: Added 301 redirects from `/arc3/games` + `/arc3/games/:gameId` to the archive equivalents, and updated header metadata.
+
+
 ### Version 7.3.17  Feb 08, 2026
 
 - **CHORE: Update ARCEngine submodule to include ws03/ws04 game registry fix** (Author: Claude Opus 4.6)

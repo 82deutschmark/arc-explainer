@@ -1,8 +1,8 @@
 /**
  * routes.ts
  *
- * Author: Codex (GPT-5)
- * Date: 2025-12-20
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-02-10
  * PURPOSE: Main routes configuration file for the API, including SnakeBench model insights routing.
  * SRP/DRY check: Pass - route registration only.
  */
@@ -353,6 +353,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/council/puzzle/:taskId/explanations", asyncHandler(councilController.getExplanationsForAssessment));
   app.post("/api/council/assess", asyncHandler(councilController.assessPuzzle));
   app.post("/api/council/assess/stream", asyncHandler(councilController.streamAssessment));
+
+  // Legacy ARC3 frontend routes -> archive
+  app.get("/arc3/games", (_req, res) => {
+    res.redirect(301, "/arc3/archive/games");
+  });
+
+  app.get("/arc3/games/:gameId", (req, res) => {
+    const { gameId } = req.params;
+    res.redirect(301, `/arc3/archive/games/${gameId}`);
+  });
 
   // RE-ARC dataset generation and verification routes
   // Rate limiting: 5 generations per 5min, 50 verifications per 5min per IP
