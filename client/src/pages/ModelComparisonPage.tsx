@@ -360,6 +360,17 @@ export default function ModelComparisonPage() {
     const nextModels = [...selectedModels, modelToAdd].slice(0, MAX_MODELS);
     const success = await requestComparisonData(nextModels, dataset, 'update');
     if (success) {
+      // Update URL to include the new model
+      const params = new URLSearchParams();
+      nextModels.forEach((model, index) => {
+        params.set(`model${index + 1}`, model);
+      });
+      params.set('dataset', dataset);
+      window.history.replaceState(
+        window.history.state,
+        document.title,
+        `?${params.toString()}`
+      );
       setModelToAdd('');
     }
   };
@@ -375,7 +386,20 @@ export default function ModelComparisonPage() {
       return;
     }
 
-    await requestComparisonData(nextModels, dataset, 'update');
+    const success = await requestComparisonData(nextModels, dataset, 'update');
+    if (success) {
+      // Update URL to reflect removed model
+      const params = new URLSearchParams();
+      nextModels.forEach((model, index) => {
+        params.set(`model${index + 1}`, model);
+      });
+      params.set('dataset', dataset);
+      window.history.replaceState(
+        window.history.state,
+        document.title,
+        `?${params.toString()}`
+      );
+    }
   };
 
   const formatTime = (ms: number | undefined) => {

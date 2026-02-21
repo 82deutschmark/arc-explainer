@@ -1,6 +1,6 @@
 /*
- * Author: Claude Haiku 4.5
- * Date: 2025-12-21
+ * Author: Cascade (ChatGPT)
+ * Date: 2026-02-10
  * PURPOSE: Individual game spoiler page for ARC-AGI-3 games.
  *          Displays all known information on a single page: game mechanics (centerpiece),
  *          action mappings, level screenshots, and external resources.
@@ -63,10 +63,10 @@ function getDifficultyBadge(difficulty: DifficultyRating) {
 function GameNotFound({ gameId }: { gameId: string }) {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Button variant="ghost" size="sm" asChild className="mb-6">
-        <Link href="/arc3/games">
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back to Games
+      <Button variant="ghost" size="sm" className="mb-4">
+        <Link href="/arc3/archive/games">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Archived Games
         </Link>
       </Button>
       <Card className="text-center py-12">
@@ -91,7 +91,7 @@ function GameNotFound({ gameId }: { gameId: string }) {
               </a>
             </Button>
             <Button asChild>
-              <Link href="/arc3/games">
+              <Link href="/arc3/archive/games">
                 Browse Known Games
               </Link>
             </Button>
@@ -114,7 +114,7 @@ export default function Arc3GameSpoiler() {
     description: game
       ? `Spoilers, mechanics, and any hints or resources we've documented so far for ARC-AGI-3 game ${game.gameId}${game.informalName ? ` (${game.informalName})` : ''}. ${game.description}`
       : `Game not found in the ARC-AGI-3 database.`,
-    canonicalPath: `/arc3/games/${gameId}`,
+    canonicalPath: `/arc3/archive/games/${gameId}`,
   });
 
   if (!game) {
