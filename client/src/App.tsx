@@ -1,13 +1,13 @@
 /*
-Author: GPT-5.2
-Date: 2026-02-04
+Author: Cascade (ChatGPT)
+Date: 2026-02-10
 PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
          including ARC3 community submission review tooling under the admin section.
 SRP/DRY check: Pass - kept as a routing table only and verified existing routes remain intact.
 */
 
-import { Switch, Route } from "wouter";
+import { Switch, Route, useParams } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -52,8 +52,6 @@ import Arc3GamesBrowser from "@/pages/Arc3GamesBrowser";
 import Arc3GameSpoiler from "@/pages/Arc3GameSpoiler";
 import { 
   Arc3ArchiveLanding, 
-  Arc3ArchiveGamesBrowser, 
-  Arc3ArchiveGameSpoiler, 
   Arc3ArchivePlayground 
 } from "@/pages/arc3-archive";
 import {
@@ -85,6 +83,12 @@ import DebateTaskRedirect from "@/pages/DebateTaskRedirect";
 
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
 import LandingPage from "@/pages/LandingPage";
+
+function LegacyArc3GameRedirect() {
+  const params = useParams<{ gameId: string }>();
+  const gameId = params.gameId ?? "";
+  return <Redirect to={`/arc3/archive/games/${gameId}`} />;
+}
 
 function Router() {
   return (
@@ -141,11 +145,14 @@ function Router() {
         <Route path="/arc3/gallery" component={CommunityGallery} />
         <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
         <Route path="/arc3/upload" component={GameSubmissionPage} />
-        {/* ARC3 Archive - historical preview content */}
+        {/* Legacy ARC3 games now hosted under archive root */}
         <Route path="/arc3/archive" component={Arc3ArchiveLanding} />
-        <Route path="/arc3/archive/games" component={Arc3ArchiveGamesBrowser} />
-        <Route path="/arc3/archive/games/:gameId" component={Arc3ArchiveGameSpoiler} />
+        <Route path="/arc3/archive/games" component={Arc3GamesBrowser} />
+        <Route path="/arc3/archive/games/:gameId" component={Arc3GameSpoiler} />
         <Route path="/arc3/archive/playground" component={Arc3ArchivePlayground} />
+        {/* Legacy path redirects */}
+        <Route path="/arc3/games" component={() => <Redirect to="/arc3/archive/games" />} />
+        <Route path="/arc3/games/:gameId" component={LegacyArc3GameRedirect} />
         {/* RE-ARC - self-service dataset generation and evaluation */}
         <Route path="/re-arc" component={ReArc} />
         <Route path="/re-arc/submissions" component={ReArcSubmissions} />

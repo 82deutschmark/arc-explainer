@@ -44,7 +44,7 @@ This document summarizes the generally applicable engineering expectations for t
 - Comments: explain non-obvious logic and integration boundaries inline (especially streaming and external API glue).
 - Reuse: prefer shared helpers and `shadcn/ui` components over custom one-offs.
 - Architecture discipline: prefer repositories/services patterns over raw SQL or one-off DB calls.
-- Pragmatism: fix root causes; avoid unrelated refactors and avoid over-engineering (small hobby project).
+- Pragmatism: fix root causes; avoid unrelated refactors and avoid over-engineering and under engineering.
 
 ## UI/UX expectations (especially streaming)
 - State transitions must be clear: when an action starts, collapse/disable prior controls and reveal live streaming states.
