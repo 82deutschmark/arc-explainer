@@ -1,11 +1,10 @@
 /*
-Author: GPT-5 Codex
-Date: 2026-02-06T00:00:00Z
+Author: Claude Haiku 4.5
+Date: 2026-02-22T00:00:00Z
 PURPOSE: ARC3 landing page game gallery. Renders official/community games as card grids with
-         accurate runtime metadata from the backend (levels + action-space counts), without
-         speculative teaser descriptions. Uses a bright, high-contrast ARC3 palette direction
-         with solid pixel color bands (no texture overlays) while reusing shared pixel UI
-         primitives from Arc3PixelUI.
+         accurate runtime metadata from the backend (levels + action-space counts). Includes
+         a Community Spotlight section featuring Son Pham's arc3.sonpham.net and a featured replay.
+         Uses bright, high-contrast ARC3 palette with solid pixel color bands via Arc3PixelUI.
 SRP/DRY check: Pass - page-only composition; shared primitives and data fetching reused.
 */
 
@@ -143,6 +142,78 @@ export default function CommunityLanding() {
 
       {/* Main content: game grid */}
       <main className="max-w-6xl mx-auto px-4 py-6">
+        {/* Community Spotlight */}
+        <div className="mb-8 border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel)]">
+          <div
+            className="px-3 py-1.5 border-b-2 border-[var(--arc3-border)] flex items-center gap-2"
+            style={{ backgroundColor: ARC3_COLORS[9] }}
+          >
+            <ExternalLink className="w-3.5 h-3.5" style={{ color: ARC3_COLORS[0] }} />
+            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: ARC3_COLORS[0] }}>
+              Community Spotlight
+            </span>
+          </div>
+          <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold">arc3.sonpham.net</span>
+                <span
+                  className="text-[9px] font-bold px-1.5 py-0.5"
+                  style={{ backgroundColor: ARC3_COLORS[14], color: ARC3_COLORS[5] }}
+                >
+                  FEATURED
+                </span>
+              </div>
+              <p className="text-[11px] text-[var(--arc3-muted)] max-w-md">
+                Son Pham built a full AI-assisted ARC-AGI-3 player — multi-provider LLM reasoning,
+                Python sandbox execution, context compression, BYOK support, and replay sharing.
+                Serious independent work from someone who also builds ARC solvers and task generators.
+                Check out his{' '}
+                <a
+                  href="https://github.com/sonpham-org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-[var(--arc3-text)]"
+                >
+                  GitHub
+                </a>.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href="https://arc3.sonpham.net/share/77c39fa5-63d2-47bd-be83-0eb1b20e5d71"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <PixelButton tone="green">
+                  <Play className="w-4 h-4" />
+                  Featured Replay
+                </PixelButton>
+              </a>
+              <a
+                href="https://arc3.sonpham.net"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <PixelButton tone="blue">
+                  <ExternalLink className="w-4 h-4" />
+                  Visit Site
+                </PixelButton>
+              </a>
+              <a
+                href="https://github.com/sonpham-org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <PixelButton tone="purple">
+                  <Github className="w-4 h-4" />
+                  GitHub
+                </PixelButton>
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Section label */}
         <div className="flex items-center gap-2 mb-4">
           <Gamepad2 className="w-5 h-5 text-[var(--arc3-c14)]" />
