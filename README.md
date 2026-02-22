@@ -1,9 +1,22 @@
-# ARC-AGI Explainer Platform
+# ARC-AGI Explainer
 
-Hobby platform for analyzing ARC puzzles with multi-provider LLMs, reasoning capture, conversation chaining, and performance analytics.
+[![Live](https://img.shields.io/badge/live-arc.markbarney.net-4f8ef7?style=flat-square)](https://arc.markbarney.net)
+[![ARC Prize](https://img.shields.io/badge/ARC%20Prize-Community%20Recognition%202025-f97316?style=flat-square)](https://arcprize.org/blog/arc-prize-2025-results-analysis)
+[![X / Twitter](https://img.shields.io/badge/X-%4082deutschmark-000000?style=flat-square&logo=x)](https://x.com/82deutschmark)
+[![Discord](https://img.shields.io/badge/Discord-Weekly%20Event-5865F2?style=flat-square&logo=discord)](https://t.co/byuWsVrqhm)
 
-**Production:** https://arc.markbarney.net  
-**Staging:** https://arc-explainer-staging.up.railway.app/ (branch `ARC3`)  
+> A personal research platform for ARC-AGI — built by a veteran game producer who isn't trying to solve the benchmark, just trying to understand it and make it easier for the people who are.
+
+---
+
+## Background
+
+I'm a video game producer, not an engineer. I work with engineers. I'm not going to solve ARC-AGI — I just find it fascinating and wanted to build something that might be useful to the people who are actually working on it. Started in July 2025 as a curiosity project, grown into a full research suite. In late 2025, ARC Prize [recognized the effort](https://arcprize.org/blog/arc-prize-2025-results-analysis) — that meant a lot. As of February 22, 2026 I'm on a bit of a hiatus from active development, but the platform is live and maintained.
+
+---
+
+**Production:** https://arc.markbarney.net
+**Staging:** https://arc-explainer-staging.up.railway.app/ (branch `ARC3`)
 **Docs:** [CLAUDE.md](./CLAUDE.md) • [API Reference](./docs/EXTERNAL_API.md) • [Changelog](./CHANGELOG.md)
 
 ---
@@ -43,6 +56,8 @@ More detail: [CLAUDE.md](./CLAUDE.md) and [docs/reference/architecture/DEVELOPER
 - **RE-ARC Bench:** `/re-arc` — generate unique evaluation datasets and validate solver submissions.
 - **Worm Arena:** `/worm-arena` (replays), `/worm-arena/live/:sessionId` (live), `/worm-arena/stats` (leaderboard).
 - **ARC3 playground:** `/arc3/playground` — watch agents solve real ARC-AGI-3 games.
+  - External ARC3 site: [arc3.sonpham.net](https://arc3.sonpham.net)
+  - Featured replay: [Locksmith run](https://arc3.sonpham.net/share/77c39fa5-63d2-47bd-be83-0eb1b20e5d71)
 - **APIs:** start with `/api/health`, then `/api/puzzle/overview`; see EXTERNAL_API.md for the full surface area.
 
 ## Working in This Repo
@@ -386,5 +401,10 @@ data/
 
 ## Contributing
 
-Contributions welcome. Start with [CLAUDE.md](./CLAUDE.md) for coding standards, SRP/DRY expectations, and streaming requirements. Release notes live in [CHANGELOG.md](./CHANGELOG.md); feature history previously in README now lives there.
+Contributions welcome. Start with [CLAUDE.md](./CLAUDE.md) for coding standards, SRP/DRY expectations, and streaming requirements. Release notes live in [CHANGELOG.md](./CHANGELOG.md).
+
+---
+
+**Built by [Mark Barney](https://x.com/82deutschmark)** — video game producer, ARC Prize community member.
+Join the weekly community discussion: [Discord event](https://t.co/byuWsVrqhm)
 
