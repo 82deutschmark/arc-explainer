@@ -12,7 +12,7 @@
 9. [Appendices & Common Issues](#9-appendices--common-issues)
 
 ## 1. Critical Warnings & Immediate Instructions
-- THE SYMBOLS ✗ and ✔ are forbidden!!! WE ARE ON WINDOWS AND NEED PROPER UTF-8!!!
+
 - Understand state transitions!!!!! ALL controls should elegantly collapse/disappear once an action starts, revealing live streaming. Never build static lists or bloated components; never do everything at once in one cluttered view.
 - When using any unfamiliar or recently updated library/framework, ASK the user for docs or locate them yourself. NEVER guess—verify with documentation.
 - File annotation template (mandatory at the top of every edited/created file):
