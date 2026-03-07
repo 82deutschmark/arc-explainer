@@ -2,17 +2,16 @@
 
 ### Version 7.3.19  Mar 07, 2026
 
-- **FIX: Audit and repair all ARCEngine official games - broken imports, missing seed params, sprite overlaps** (Author: Cascade / Claude Sonnet 4)
-  - **What**: Comprehensive audit and fix of the entire ARCEngine `games/` directory: 9 game files touched, 2 broken `__init__.py` files repaired, registry fully aligned with actual files on disk.
-  - **Why**: Multiple games were non-functional: `games/official/__init__.py` imported `ws01`/`ws02` (deleted upstream), registry referenced `gw01_deprecated` (file is `gw01.py`), `ws03`/`ws04` were missing from the registry, CT01/CT03 had constraint sprites overlapping tiles making them unplayable, and 7 of 9 games lacked the `seed` parameter.
+- **FIX: Audit and repair ARCEngine custom games + register all in environment_files** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Fixed broken imports/registry in `games/__init__.py` and `games/official/__init__.py`, added `seed` param to 4 custom games, registered all 6 custom games in `environment_files/` for the `arc_agi.Arcade` API.
+  - **Why**: `games/official/__init__.py` imported non-existent `ws01`/`ws02`, registry referenced `gw01_deprecated` (file is `gw01.py`), `ws03`/`ws04` were missing from registry, custom games lacked `seed` parameter, and no custom games were registered in `environment_files/` so `arc_agi.Arcade` couldn't discover them.
   - **How**:
     - `games/official/__init__.py`: Removed broken `ws01`/`ws02` imports, added missing `ct01`/`ct03`/`gw02`.
-    - `games/__init__.py`: Removed `ws01` entry, fixed `gw01` path (was `gw01_deprecated`), added `ws03`/`ws04` entries and import branches.
-    - `ct01.py`: Added `seed` param, passed `available_actions=[6]` via `super()`, made constraint sprites invisible, added minimap.
-    - `ct03.py`: Added `seed` param, passed `available_actions=[6]` via `super()`, kept constraint sprites off-level (were hiding all 9 tiles).
-    - `gw01.py`, `gw02.py`, `ls20.py`, `ft09.py`, `vc33.py`: Added `seed` param, forwarded to `super()`.
-    - Cleaned stale `__pycache__` for ws01/ws02.
-  - **Verification**: All 9 games pass: import, instantiate, seed param, RESET render, action execution, package import, and registry lookup.
+    - `games/__init__.py`: Removed `ws01` entry, fixed `gw01` path, added `ws03`/`ws04` entries.
+    - `ct01.py`, `ct03.py`, `gw01.py`, `gw02.py`: Added `seed` param, forwarded to `super()`.
+    - `environment_files/`: Created entries (metadata.json + .py) for ct01, ct03, gw01, gw02; copied missing ws03.py and ws04.py into existing entries.
+    - Official ARC Prize games (ls20, ft09, vc33) were **not modified**.
+  - **Verification**: All 6 custom games render and respond to actions via `arc_agi.Arcade(operation_mode=OFFLINE)`, verified with correct ARC palette.
 
 ### Version 7.3.18  Feb 10, 2026
 
