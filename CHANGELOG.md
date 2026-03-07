@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.19  Mar 07, 2026
+
+- **FIX: Audit and repair all ARCEngine official games - broken imports, missing seed params, sprite overlaps** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Comprehensive audit and fix of the entire ARCEngine `games/` directory: 9 game files touched, 2 broken `__init__.py` files repaired, registry fully aligned with actual files on disk.
+  - **Why**: Multiple games were non-functional: `games/official/__init__.py` imported `ws01`/`ws02` (deleted upstream), registry referenced `gw01_deprecated` (file is `gw01.py`), `ws03`/`ws04` were missing from the registry, CT01/CT03 had constraint sprites overlapping tiles making them unplayable, and 7 of 9 games lacked the `seed` parameter.
+  - **How**:
+    - `games/official/__init__.py`: Removed broken `ws01`/`ws02` imports, added missing `ct01`/`ct03`/`gw02`.
+    - `games/__init__.py`: Removed `ws01` entry, fixed `gw01` path (was `gw01_deprecated`), added `ws03`/`ws04` entries and import branches.
+    - `ct01.py`: Added `seed` param, passed `available_actions=[6]` via `super()`, made constraint sprites invisible, added minimap.
+    - `ct03.py`: Added `seed` param, passed `available_actions=[6]` via `super()`, kept constraint sprites off-level (were hiding all 9 tiles).
+    - `gw01.py`, `gw02.py`, `ls20.py`, `ft09.py`, `vc33.py`: Added `seed` param, forwarded to `super()`.
+    - Cleaned stale `__pycache__` for ws01/ws02.
+  - **Verification**: All 9 games pass: import, instantiate, seed param, RESET render, action execution, package import, and registry lookup.
+
 ### Version 7.3.18  Feb 10, 2026
 
 - **FIX: Restore legacy ARC3 games pages under archive + add redirects** (Author: Cascade (ChatGPT))
