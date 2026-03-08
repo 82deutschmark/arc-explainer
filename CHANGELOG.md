@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.20  Mar 07, 2026
+
+- **FIX: ARC3 Community Game Submission Flow audit — 9 fixes across 6 files** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Comprehensive audit of the submission → validation → publish → play pipeline found critical coordinate-passing bug, dead links, validation gaps, a Zod schema issue, and an incorrect community spotlight link.
+  - **Why**: Click-based games (ct01, ct03, ft09) were unplayable via web sessions because coordinates were set as direct attributes on `ActionInput` instead of using the `data` dict. Sample game link pointed to deleted `ws01.py`. `__future__` imports triggered false warnings. Submission failed with 500 when author name was left blank. Son Pham link missing `#human` anchor.
+  - **How**:
+    - `community_game_runner.py` **(C3)**: Pass coordinates via `ActionInput(data={"x": ..., "y": ...})` instead of `.x`/`.y` attributes. Added `seed` passthrough via `inspect.signature` **(M4)**.
+    - `GameSubmissionPage.tsx` **(C1)**: Fixed dead sample link from `ws01.py` to `ws03.py`.
+    - `CommunityGameValidator.ts` **(C2, L1)**: Added `__future__` to `ALLOWED_IMPORTS`, removed dead `open` from `FORBIDDEN_IMPORTS`.
+    - `PythonFileUploader.tsx` **(L2)**: Made `ARCBaseGame` check case-sensitive.
+    - `arc3Community.ts` **(M1)**: Added runtime validation (subprocess instantiation check) after file storage, before DB persist. Fixed `authorName` Zod schema: empty string now transforms to `undefined` so `.optional()` works correctly.
+    - `CommunityLanding.tsx`: Updated Son Pham spotlight "Visit Site" link to `https://arc3.sonpham.net/#human`.
+  - **Audit doc**: `docs/audits/2026-03-07-community-game-submission-audit.md`
+
 ### Version 7.3.19  Mar 07, 2026
 
 - **FIX: Audit and repair ARCEngine custom games + register all in environment_files** (Author: Cascade / Claude Sonnet 4)

@@ -191,7 +191,7 @@ export default function CommunityLanding() {
                 </PixelButton>
               </a>
               <a
-                href="https://arc3.sonpham.net"
+                href="https://arc3.sonpham.net/#human"
                 target="_blank"
                 rel="noopener noreferrer"
               >

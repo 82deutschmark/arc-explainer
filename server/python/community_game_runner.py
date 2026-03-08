@@ -12,6 +12,7 @@ SRP/DRY check: Pass - single-purpose Python subprocess runner for ARCEngine game
 
 import sys
 import json
+import inspect
 import importlib.util
 import traceback
 from pathlib import Path
@@ -166,6 +167,7 @@ def main():
         payload = json.loads(init_line.strip())
         game_id = payload.get("game_id")
         game_path = payload.get("game_path")
+        seed = payload.get("seed", 0)
         
         if not game_id and not game_path:
             emit_error("game_id or game_path is required", "MISSING_GAME_ID")
@@ -179,12 +181,22 @@ def main():
                 # Game not in registry, try as file if path provided
                 if game_path:
                     GameClass = load_game_from_file(game_path)
-                    game = GameClass()
+                    # Pass seed if the constructor accepts it (same pattern as arc_agi)
+                    sig = inspect.signature(GameClass.__init__)
+                    if 'seed' in sig.parameters:
+                        game = GameClass(seed=seed)
+                    else:
+                        game = GameClass()
                 else:
                     raise
         elif game_path:
             GameClass = load_game_from_file(game_path)
-            game = GameClass()
+            # Pass seed if the constructor accepts it
+            sig = inspect.signature(GameClass.__init__)
+            if 'seed' in sig.parameters:
+                game = GameClass(seed=seed)
+            else:
+                game = GameClass()
         else:
             emit_error(f"Game '{game_id}' not found in registry", "GAME_NOT_FOUND")
             return 1
@@ -219,15 +231,17 @@ def main():
                 action_str = cmd.get("action", "ACTION1")
                 coordinates = cmd.get("coordinates")
                 
-                # Build action input
+                # Build action input with coordinates in the data dict
+                # Games read click position from self.action.data.get("x", 0)
                 action_id = get_action_from_string(action_str)
-                action_input = ActionInput(id=action_id)
+                action_data = {}
                 
-                # Handle coordinates for ACTION6 (click/select)
-                if coordinates and action_str.upper() == "ACTION6":
-                    if len(coordinates) >= 2:
-                        action_input.x = coordinates[0]
-                        action_input.y = coordinates[1]
+                # Pass coordinates via data dict for click/select actions
+                if coordinates and len(coordinates) >= 2:
+                    action_data["x"] = coordinates[0]
+                    action_data["y"] = coordinates[1]
+                
+                action_input = ActionInput(id=action_id, data=action_data)
                 
                 # Increment action counter (except for RESET)
                 if action_str.upper() != "RESET":
