@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.21  Mar 07, 2026
+
+- **FIX: ARC3 game naming, multi-frame level transitions, and Son Pham spotlight links** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Differentiated Cascade Tiles games, fixed invisible level transitions (root cause: `frameIndex={0}` discarded engine's transition frames), added celebration overlay, fixed broken Community Spotlight links.
+  - **Why**: Both ct01 and ct03 displayed as "Cascade Tiles" with no way to tell them apart. ARCEngine's `is_action_complete()` returns `not _next_level and _action_complete` — so a winning action produces multiple frames (winning state + new level). Our player hardcoded `frameIndex={0}`, discarding the new-level frame entirely, making users press another key to see the level change. Featured Replay link pointed to a broken share URL.
+  - **How**:
+    - `ArcEngineOfficialGameCatalog.ts`: Added `OFFICIAL_GAME_OVERRIDES` for ct01 ("Cascade Tiles 1") and ct03 ("Cascade Tiles 3").
+    - `CommunityGamePlay.tsx`: **(Critical)** Added `displayFrameIndex` state + `setTimeout`-based animation that steps through all frames at 200ms intervals when the engine returns multi-frame responses (level transitions, loss animations). Also added level-completion celebration banner (auto-dismisses after 1.5s).
+    - `CommunityLanding.tsx`: Replaced broken Featured Replay share link with `https://arc3.sonpham.net/#leaderboards`; updated button text to "Leaderboards".
+
 ### Version 7.3.20  Mar 07, 2026
 
 - **FIX: ARC3 Community Game Submission Flow audit — 9 fixes across 6 files** (Author: Cascade / Claude Sonnet 4)

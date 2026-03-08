@@ -71,7 +71,10 @@ const ARC_PRIZE_FOUNDATION_GAME_IDS = new Set(['vc33', 'ft09', 'ls20']);
 // that drifted away from the actual game mechanics. We now only use:
 // - explicit metadata embedded in the ARCEngine repo (PURPOSE headers / changelog entries), or
 // - null (so the UI doesn't display hallucinated descriptions).
-const OFFICIAL_GAME_OVERRIDES: Record<string, OfficialGameOverride> = {};
+const OFFICIAL_GAME_OVERRIDES: Record<string, OfficialGameOverride> = {
+  ct01: { displayName: 'Cascade Tiles 1' },
+  ct03: { displayName: 'Cascade Tiles 3' },
+};
 
 function resolvePythonBin(): string {
   if (process.env.PYTHON_BIN) return process.env.PYTHON_BIN;
