@@ -452,9 +452,9 @@ const gameSubmissionSchema = z.object({
     .min(10, 'Description must be at least 10 characters')
     .max(500, 'Description must be at most 500 characters'),
   authorName: z.string()
-    .min(2, 'Author name must be at least 2 characters')
     .max(100, 'Author name must be at most 100 characters')
-    .optional(),
+    .transform(val => val?.trim() || undefined)
+    .pipe(z.string().min(2, 'Author name must be at least 2 characters').optional()),
   creatorHandle: z.string()
     .min(1, 'Creator contact handle is required')
     .refine(
@@ -490,7 +490,7 @@ router.post(
       );
     }
 
-    // Validate the source code
+    // Static analysis first (fast reject for obvious issues)
     const validationResult = await CommunityGameValidator.validateSource(payload.sourceCode);
     
     if (!validationResult.isValid) {
@@ -502,7 +502,7 @@ router.post(
       );
     }
 
-    // Store the source file (do not execute; store for offline review)
+    // Store the source file (needed on disk for runtime validation)
     let storedFile;
     try {
       storedFile = await CommunityGameStorage.storeGameFile(payload.gameId, payload.sourceCode);
@@ -511,6 +511,27 @@ router.post(
       return res.status(500).json(
         formatResponse.error('STORAGE_ERROR', 'Failed to store submitted game file'),
       );
+    }
+
+    // Runtime validation: try to actually load and instantiate the game in a sandbox subprocess
+    try {
+      const runtimeResult = await CommunityGameValidator.validateRuntime(storedFile.filePath);
+      if (!runtimeResult.isValid) {
+        // Clean up stored file on runtime validation failure
+        await CommunityGameStorage.deleteGameFiles(payload.gameId);
+        return res.status(400).json(
+          formatResponse.error('VALIDATION_FAILED', 'Game runtime validation failed', {
+            errors: runtimeResult.errors,
+            warnings: [...validationResult.warnings, ...runtimeResult.warnings],
+          })
+        );
+      }
+      // Merge runtime warnings into static result
+      validationResult.warnings.push(...runtimeResult.warnings);
+    } catch (runtimeError) {
+      logger.warn(`Runtime validation skipped (non-fatal): ${runtimeError}`, 'community-games');
+      // Non-fatal: if Python isn't available, fall through to static-only validation
+      validationResult.warnings.push('Runtime validation was skipped - game will be tested manually during review');
     }
 
     const authorName = payload.authorName?.trim() ? payload.authorName.trim() : 'Anonymous';

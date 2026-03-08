@@ -181,17 +181,17 @@ export default function CommunityLanding() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <a
-                href="https://arc3.sonpham.net/share/77c39fa5-63d2-47bd-be83-0eb1b20e5d71"
+                href="https://arc3.sonpham.net/#leaderboards"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <PixelButton tone="green">
                   <Play className="w-4 h-4" />
-                  Featured Replay
+                  Leaderboards
                 </PixelButton>
               </a>
               <a
-                href="https://arc3.sonpham.net"
+                href="https://arc3.sonpham.net/#human"
                 target="_blank"
                 rel="noopener noreferrer"
               >

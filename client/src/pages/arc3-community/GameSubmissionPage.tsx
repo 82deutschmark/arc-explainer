@@ -40,7 +40,7 @@ interface SubmissionResponse {
 
 const ARCENGINE_REPO_URL = 'https://github.com/arcprize/ARCEngine';
 const ARCENGINE_DOCS_URL = 'https://github.com/arcprize/ARCEngine#readme';
-const SAMPLE_GAME_URL = 'https://github.com/arcprize/ARCEngine/blob/main/games/official/ws01.py';
+const SAMPLE_GAME_URL = 'https://github.com/arcprize/ARCEngine/blob/main/games/official/ws03.py';
 const DISCORD_URL = 'https://discord.gg/arcprize';
 
 // Validate game ID format
@@ -442,7 +442,7 @@ export default function GameSubmissionPage() {
                   className="flex items-center gap-2 text-xs font-semibold text-[var(--arc3-c14)] hover:underline"
                 >
                   <BookOpen className="w-4 h-4" />
-                  Sample Game (ws01.py)
+                  Sample Game (ws03.py)
                   <ExternalLink className="w-3 h-3 opacity-80" />
                 </a>
                 <a

@@ -1,5 +1,42 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.3.21  Mar 07, 2026
+
+- **FIX: ARC3 game naming, multi-frame level transitions, and Son Pham spotlight links** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Differentiated Cascade Tiles games, fixed invisible level transitions (root cause: `frameIndex={0}` discarded engine's transition frames), added celebration overlay, fixed broken Community Spotlight links.
+  - **Why**: Both ct01 and ct03 displayed as "Cascade Tiles" with no way to tell them apart. ARCEngine's `is_action_complete()` returns `not _next_level and _action_complete` — so a winning action produces multiple frames (winning state + new level). Our player hardcoded `frameIndex={0}`, discarding the new-level frame entirely, making users press another key to see the level change. Featured Replay link pointed to a broken share URL.
+  - **How**:
+    - `ArcEngineOfficialGameCatalog.ts`: Added `OFFICIAL_GAME_OVERRIDES` for ct01 ("Cascade Tiles 1") and ct03 ("Cascade Tiles 3").
+    - `CommunityGamePlay.tsx`: **(Critical)** Added `displayFrameIndex` state + `setTimeout`-based animation that steps through all frames at 200ms intervals when the engine returns multi-frame responses (level transitions, loss animations). Also added level-completion celebration banner (auto-dismisses after 1.5s).
+    - `CommunityLanding.tsx`: Replaced broken Featured Replay share link with `https://arc3.sonpham.net/#leaderboards`; updated button text to "Leaderboards".
+
+### Version 7.3.20  Mar 07, 2026
+
+- **FIX: ARC3 Community Game Submission Flow audit — 9 fixes across 6 files** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Comprehensive audit of the submission → validation → publish → play pipeline found critical coordinate-passing bug, dead links, validation gaps, a Zod schema issue, and an incorrect community spotlight link.
+  - **Why**: Click-based games (ct01, ct03, ft09) were unplayable via web sessions because coordinates were set as direct attributes on `ActionInput` instead of using the `data` dict. Sample game link pointed to deleted `ws01.py`. `__future__` imports triggered false warnings. Submission failed with 500 when author name was left blank. Son Pham link missing `#human` anchor.
+  - **How**:
+    - `community_game_runner.py` **(C3)**: Pass coordinates via `ActionInput(data={"x": ..., "y": ...})` instead of `.x`/`.y` attributes. Added `seed` passthrough via `inspect.signature` **(M4)**.
+    - `GameSubmissionPage.tsx` **(C1)**: Fixed dead sample link from `ws01.py` to `ws03.py`.
+    - `CommunityGameValidator.ts` **(C2, L1)**: Added `__future__` to `ALLOWED_IMPORTS`, removed dead `open` from `FORBIDDEN_IMPORTS`.
+    - `PythonFileUploader.tsx` **(L2)**: Made `ARCBaseGame` check case-sensitive.
+    - `arc3Community.ts` **(M1)**: Added runtime validation (subprocess instantiation check) after file storage, before DB persist. Fixed `authorName` Zod schema: empty string now transforms to `undefined` so `.optional()` works correctly.
+    - `CommunityLanding.tsx`: Updated Son Pham spotlight "Visit Site" link to `https://arc3.sonpham.net/#human`.
+  - **Audit doc**: `docs/audits/2026-03-07-community-game-submission-audit.md`
+
+### Version 7.3.19  Mar 07, 2026
+
+- **FIX: Audit and repair ARCEngine custom games + register all in environment_files** (Author: Cascade / Claude Sonnet 4)
+  - **What**: Fixed broken imports/registry in `games/__init__.py` and `games/official/__init__.py`, added `seed` param to 4 custom games, registered all 6 custom games in `environment_files/` for the `arc_agi.Arcade` API.
+  - **Why**: `games/official/__init__.py` imported non-existent `ws01`/`ws02`, registry referenced `gw01_deprecated` (file is `gw01.py`), `ws03`/`ws04` were missing from registry, custom games lacked `seed` parameter, and no custom games were registered in `environment_files/` so `arc_agi.Arcade` couldn't discover them.
+  - **How**:
+    - `games/official/__init__.py`: Removed broken `ws01`/`ws02` imports, added missing `ct01`/`ct03`/`gw02`.
+    - `games/__init__.py`: Removed `ws01` entry, fixed `gw01` path, added `ws03`/`ws04` entries.
+    - `ct01.py`, `ct03.py`, `gw01.py`, `gw02.py`: Added `seed` param, forwarded to `super()`.
+    - `environment_files/`: Created entries (metadata.json + .py) for ct01, ct03, gw01, gw02; copied missing ws03.py and ws04.py into existing entries.
+    - Official ARC Prize games (ls20, ft09, vc33) were **not modified**.
+  - **Verification**: All 6 custom games render and respond to actions via `arc_agi.Arcade(operation_mode=OFFLINE)`, verified with correct ARC palette.
+
 ### Version 7.3.18  Feb 10, 2026
 
 - **FIX: Restore legacy ARC3 games pages under archive + add redirects** (Author: Cascade (ChatGPT))

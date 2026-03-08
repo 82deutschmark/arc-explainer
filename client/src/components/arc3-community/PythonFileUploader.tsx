@@ -53,7 +53,7 @@ export function PythonFileUploader({ onFileChange, className }: PythonFileUpload
     // Basic structure checks
     const hasImport = content.includes('import') || content.includes('from');
     const hasClass = /class\s+\w+/i.test(content);
-    const hasARCBaseGame = /ARCBaseGame/i.test(content);
+    const hasARCBaseGame = /ARCBaseGame/.test(content);
 
     if (!hasImport) {
       warnings.push('No import statements detected');

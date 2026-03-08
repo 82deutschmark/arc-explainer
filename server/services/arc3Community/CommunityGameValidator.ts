@@ -47,7 +47,6 @@ const FORBIDDEN_IMPORTS = [
   'compile',
   'exec',
   'eval',
-  'open',  // File operations
   'file',
   'input',
   'raw_input',
@@ -67,6 +66,7 @@ const ALLOWED_IMPORTS = [
   'enum',
   'copy',
   're',
+  '__future__',
 ];
 
 export interface ValidationResult {

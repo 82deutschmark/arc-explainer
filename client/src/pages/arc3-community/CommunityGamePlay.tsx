@@ -9,7 +9,7 @@ PURPOSE: Game play page for community games. Handles game session management,
 SRP/DRY check: Pass — uses shared pixel UI primitives and ARC3 grid visualization.
 */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import {
@@ -82,6 +82,12 @@ export default function CommunityGamePlay() {
   const [frame, setFrame] = useState<FrameData | null>(null);
   const [gameInfo, setGameInfo] = useState<{ displayName: string; winScore: number; maxActions: number | null } | null>(null);
   const [gameState, setGameState] = useState<GameState>('idle');
+  // Track level completion for celebration overlay
+  const prevLevelsCompleted = useRef<number>(0);
+  const [levelCelebration, setLevelCelebration] = useState<number | null>(null);
+  // Animate through multi-frame action responses (level transitions, loss animations)
+  const [displayFrameIndex, setDisplayFrameIndex] = useState<number>(0);
+  const frameAnimationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Fetch game details
   const { data: gameDetails } = useQuery<{ success: boolean; data: GameDetails }>({
@@ -115,7 +121,35 @@ export default function CommunityGamePlay() {
     },
     onSuccess: (data) => {
       if (data.success) {
-        setFrame(data.data.frame);
+        const newFrame = data.data.frame;
+        // Detect level completion: levels_completed increased but game not over
+        const newLevels = newFrame.levels_completed ?? newFrame.score ?? 0;
+        if (newLevels > prevLevelsCompleted.current && !data.data.isGameOver) {
+          setLevelCelebration(newLevels);
+          // Auto-dismiss after 1.5 seconds
+          setTimeout(() => setLevelCelebration(null), 1500);
+        }
+        prevLevelsCompleted.current = newLevels;
+        setFrame(newFrame);
+        // Start frame animation if multiple frames returned (level transitions, etc.)
+        const totalFrames = newFrame.frame?.length ?? 1;
+        if (totalFrames > 1) {
+          setDisplayFrameIndex(0);
+          // Clear any existing animation timer
+          if (frameAnimationRef.current) clearTimeout(frameAnimationRef.current);
+          // Step through frames at 200ms intervals, settling on the last
+          let idx = 0;
+          const stepFrame = () => {
+            idx++;
+            if (idx < totalFrames) {
+              setDisplayFrameIndex(idx);
+              frameAnimationRef.current = setTimeout(stepFrame, 200);
+            }
+          };
+          frameAnimationRef.current = setTimeout(stepFrame, 200);
+        } else {
+          setDisplayFrameIndex(0);
+        }
         if (data.data.isGameOver) {
           setGameState(data.data.isWin ? 'won' : 'lost');
         }
@@ -169,6 +203,8 @@ export default function CommunityGamePlay() {
   // Start game
   const handleStart = () => {
     setGameState('playing');
+    prevLevelsCompleted.current = 0;
+    setLevelCelebration(null);
     startGameMutation.mutate();
   };
 
@@ -186,6 +222,8 @@ export default function CommunityGamePlay() {
     setFrame(null);
     setGameInfo(null);
     setGameState('idle');
+    prevLevelsCompleted.current = 0;
+    setLevelCelebration(null);
   };
 
 
@@ -279,6 +317,20 @@ export default function CommunityGamePlay() {
               </PixelPanel>
             )}
 
+            {/* Level completion celebration overlay */}
+            {levelCelebration !== null && (
+              <div
+                className="mb-4 border-2 border-[var(--arc3-border)] px-4 py-3 flex items-center gap-3 animate-pulse"
+                style={{ backgroundColor: 'var(--arc3-c14)', color: 'var(--arc3-c0)' }}
+              >
+                <Trophy className="w-6 h-6" />
+                <div>
+                  <p className="text-sm font-bold">Level Complete!</p>
+                  <p className="text-[11px] opacity-80">Advancing to level {levelCelebration + 1}...</p>
+                </div>
+              </div>
+            )}
+
             <PixelPanel tone="blue">
               {gameState === 'idle' ? (
                 <div className="text-center py-12">
@@ -311,7 +363,7 @@ export default function CommunityGamePlay() {
                 <div className="mx-auto" style={{ maxWidth: '512px' }}>
                   <Arc3GridVisualization
                     grid={frame.frame}
-                    frameIndex={0}
+                    frameIndex={displayFrameIndex}
                     cellSize={8}
                     showGrid={false}
                     showCoordinates={false}
