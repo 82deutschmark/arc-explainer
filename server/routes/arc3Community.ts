@@ -1,11 +1,13 @@
 /*
-Author: GPT-5.2
-Date: 2026-02-04
+Author: GPT-5.2 / Claude Sonnet 4.6
+Date: 2026-03-12
 PURPOSE: Express router for ARC3 community game endpoints. Handles game listing, game play
          sessions (Node <-> Python bridge), single-file submission persistence, and source
          retrieval for official ARCEngine games and approved community games.
-         Dependencies: CommunityGameRepository (Postgres), CommunityGameStorage (disk), and
-         ArcEngineOfficialGameCatalog (official game discovery via submodule).
+         The /games/:gameId/source endpoint now returns `className` so the Pyodide client-side
+         game worker can instantiate the correct ARCBaseGame subclass without server execution.
+         Dependencies: CommunityGameRepository (Postgres), CommunityGameStorage (disk),
+         CommunityGameValidator (static analysis), and ArcEngineOfficialGameCatalog (submodule).
 SRP/DRY check: Pass - kept responsibilities at the HTTP layer and reused existing services.
 */
 
@@ -331,10 +333,12 @@ router.get(
       }
 
       const sourceCode = await CommunityGameStorage.readGameFile(officialGame.pythonFilePath);
+      const officialValidation = await CommunityGameValidator.validateSource(sourceCode);
       return res.json(formatResponse.success({
         gameId: officialGame.game.gameId,
         sourceCode,
         hash: officialGame.game.sourceHash,
+        className: officialValidation.metadata?.className ?? null,
       }));
     }
 
@@ -358,11 +362,13 @@ router.get(
     }
 
     const sourceCode = await CommunityGameStorage.readGameFile(game.sourceFilePath);
-    
+    const validation = await CommunityGameValidator.validateSource(sourceCode);
+
     res.json(formatResponse.success({
       gameId: game.gameId,
       sourceCode,
       hash: game.sourceHash,
+      className: validation.metadata?.className ?? null,
     }));
   }),
 );
