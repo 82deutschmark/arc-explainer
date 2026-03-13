@@ -38,6 +38,7 @@ import {
   Zap,
   Hash,
   AlertTriangle,
+  ExternalLink,
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
@@ -344,6 +345,17 @@ export default function CommunityGamePlay() {
               )}
             </div>
           </div>
+
+          {/* Son Pham's official site link */}
+          <a
+            href="https://arc3.sonpham.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1 text-[11px] text-[var(--arc3-dim)] hover:text-[var(--arc3-c14)] transition-colors shrink-0"
+          >
+            <ExternalLink className="w-3 h-3" />
+            arc3.sonpham.net
+          </a>
 
           {frame && gameState === 'playing' && (
             <div className="flex items-center gap-3 text-xs shrink-0">
