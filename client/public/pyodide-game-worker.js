@@ -191,7 +191,8 @@ function extractFrameJson() {
 import json
 
 # Thin frame sequence to ≤120 animation frames to keep postMessage payload small
-_all_frames = [f.tolist() for f in _frame_data.frame]
+# Frames may be numpy arrays (.tolist()) or already plain lists — handle both
+_all_frames = [f.tolist() if hasattr(f, 'tolist') else f for f in _frame_data.frame]
 _step_size = max(1, len(_all_frames) // 120)
 _frames_out = _all_frames[::_step_size]
 
