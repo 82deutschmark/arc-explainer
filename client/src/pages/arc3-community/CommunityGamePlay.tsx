@@ -1,12 +1,22 @@
 /*
-Author: Cascade (Claude Sonnet 4)
-Date: 2026-02-07
-PURPOSE: Game play page for community games. Handles game session management,
-         rendering the game grid, and player input controls. Uses ARC3 pixel UI theme.
-         Supports ACTION6 click-on-grid with coordinates passed to backend.
-         All 7 actions exposed with clear labels, embedded keyboard hints on each button,
-         and a dedicated Movement d-pad with WASD overlays.
-SRP/DRY check: Pass — uses shared pixel UI primitives and ARC3 grid visualization.
+Author: Cascade (Claude Sonnet 4) / Claude Sonnet 4.6
+Date: 2026-03-12
+PURPOSE: Game play page for community games. Game logic runs client-side via Pyodide
+         (Python in WebAssembly) using the usePyodideGame hook, which drives the
+         pyodide-game-worker.js Web Worker. This eliminates all server-side Python
+         subprocesses and per-action network round-trips — actions are now instant.
+
+         If Pyodide fails to load (e.g. CDN blocked, no WASM support), the page falls
+         back to the server-side session API (POST /session/start + /session/:guid/action)
+         so the game still works.
+
+         Play-count tracking remains a fire-and-forget POST to /games/:gameId/play.
+
+         Supports ACTION6 click-on-grid with coordinates. All 7 actions exposed with
+         keyboard bindings + a d-pad sidebar. Multi-frame animations step through at
+         200ms intervals.
+
+SRP/DRY check: Pass — uses usePyodideGame hook for execution, shared pixel UI primitives.
 */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -27,13 +37,19 @@ import {
   Mouse,
   Zap,
   Hash,
+  AlertTriangle,
+  ExternalLink,
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
 import { Arc3PixelPage, PixelButton, PixelPanel } from '@/components/arc3-community/Arc3PixelUI';
+import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 
-interface FrameData {
-  frame: number[][][];  // 3D array: list of animation frames, each is a 2D grid
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+// Server-session FrameData shape (fallback mode only)
+interface ServerFrameData {
+  frame: number[][][];
   score: number;
   state: string;
   action_counter: number;
@@ -48,23 +64,14 @@ interface StartGameResponse {
   success: boolean;
   data: {
     sessionGuid: string;
-    frame: FrameData;
-    game: {
-      gameId: string;
-      displayName: string;
-      winScore: number;
-      maxActions: number | null;
-    };
+    frame: ServerFrameData;
+    game: { gameId: string; displayName: string; winScore: number; maxActions: number | null };
   };
 }
 
 interface ActionResponse {
   success: boolean;
-  data: {
-    frame: FrameData;
-    isGameOver: boolean;
-    isWin: boolean;
-  };
+  data: { frame: ServerFrameData; isGameOver: boolean; isWin: boolean };
 }
 
 interface GameDetails {
@@ -72,161 +79,247 @@ interface GameDetails {
   displayName: string;
   description: string | null;
   authorName: string;
+  winScore?: number;
+  maxActions?: number | null;
 }
 
 type GameState = 'idle' | 'playing' | 'won' | 'lost';
 
+// Unified frame shape accepted by the render layer
+type AnyFrameData = PyodideFrameData | ServerFrameData;
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export default function CommunityGamePlay() {
   const { gameId } = useParams<{ gameId: string }>();
+
+  // ── Pyodide hook (primary path) ──────────────────────────────────────────────
+  const pyodide = usePyodideGame();
+
+  // ── Server-session fallback state ────────────────────────────────────────────
   const [sessionGuid, setSessionGuid] = useState<string | null>(null);
-  const [frame, setFrame] = useState<FrameData | null>(null);
+  const [useFallback, setUseFallback] = useState(false);
+
+  // ── Shared display state ─────────────────────────────────────────────────────
+  const [frame, setFrame] = useState<AnyFrameData | null>(null);
   const [gameInfo, setGameInfo] = useState<{ displayName: string; winScore: number; maxActions: number | null } | null>(null);
   const [gameState, setGameState] = useState<GameState>('idle');
-  // Track level completion for celebration overlay
   const prevLevelsCompleted = useRef<number>(0);
   const [levelCelebration, setLevelCelebration] = useState<number | null>(null);
-  // Animate through multi-frame action responses (level transitions, loss animations)
   const [displayFrameIndex, setDisplayFrameIndex] = useState<number>(0);
   const frameAnimationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Fetch game details
+  // Keep frame in sync with Pyodide hook when in primary mode
+  useEffect(() => {
+    if (!useFallback && pyodide.frame) {
+      setFrame(pyodide.frame);
+    }
+  }, [pyodide.frame, useFallback]);
+
+  // Detect Pyodide failure → switch to fallback
+  useEffect(() => {
+    if (pyodide.pyodideFailed && !useFallback) {
+      setUseFallback(true);
+    }
+  }, [pyodide.pyodideFailed, useFallback]);
+
+  // ── Game metadata query ──────────────────────────────────────────────────────
   const { data: gameDetails } = useQuery<{ success: boolean; data: GameDetails }>({
     queryKey: [`/api/arc3-community/games/${gameId}`],
     enabled: !!gameId,
   });
 
-  // Start game mutation
+  // ── Server-session fallback mutations ────────────────────────────────────────
   const startGameMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/arc3-community/session/start", { gameId });
+      const response = await apiRequest('POST', '/api/arc3-community/session/start', { gameId });
       return response.json() as Promise<StartGameResponse>;
     },
     onSuccess: (data) => {
       if (data.success) {
         setSessionGuid(data.data.sessionGuid);
-        setFrame(data.data.frame);
+        applyFrame(data.data.frame, false, false);
         setGameInfo(data.data.game);
+        setGameState('playing');
       }
     },
   });
 
-  // Execute action mutation — accepts string or object with coordinates for ACTION6
   const actionMutation = useMutation({
     mutationFn: async (payload: string | { action: string; coordinates?: [number, number] }) => {
       if (!sessionGuid) throw new Error('No active session');
-      // Normalize: plain string becomes { action } object
       const body = typeof payload === 'string' ? { action: payload } : payload;
       const response = await apiRequest('POST', `/api/arc3-community/session/${sessionGuid}/action`, body);
       return response.json() as Promise<ActionResponse>;
     },
     onSuccess: (data) => {
       if (data.success) {
-        const newFrame = data.data.frame;
-        // Detect level completion: levels_completed increased but game not over
-        const newLevels = newFrame.levels_completed ?? newFrame.score ?? 0;
-        if (newLevels > prevLevelsCompleted.current && !data.data.isGameOver) {
-          setLevelCelebration(newLevels);
-          // Auto-dismiss after 1.5 seconds
-          setTimeout(() => setLevelCelebration(null), 1500);
-        }
-        prevLevelsCompleted.current = newLevels;
-        setFrame(newFrame);
-        // Start frame animation if multiple frames returned (level transitions, etc.)
-        const totalFrames = newFrame.frame?.length ?? 1;
-        if (totalFrames > 1) {
-          setDisplayFrameIndex(0);
-          // Clear any existing animation timer
-          if (frameAnimationRef.current) clearTimeout(frameAnimationRef.current);
-          // Step through frames at 200ms intervals, settling on the last
-          let idx = 0;
-          const stepFrame = () => {
-            idx++;
-            if (idx < totalFrames) {
-              setDisplayFrameIndex(idx);
-              frameAnimationRef.current = setTimeout(stepFrame, 200);
-            }
-          };
-          frameAnimationRef.current = setTimeout(stepFrame, 200);
-        } else {
-          setDisplayFrameIndex(0);
-        }
-        if (data.data.isGameOver) {
-          setGameState(data.data.isWin ? 'won' : 'lost');
-        }
+        applyFrame(data.data.frame, data.data.isGameOver, data.data.isWin);
       }
     },
   });
 
-  // Handle keyboard input
+  // ── Frame application (shared between Pyodide + fallback paths) ──────────────
+  const applyFrame = useCallback((
+    newFrame: AnyFrameData,
+    isGameOver: boolean,
+    isWin: boolean,
+  ) => {
+    const newLevels = ('levels_completed' in newFrame ? newFrame.levels_completed : undefined) ?? newFrame.score ?? 0;
+
+    if (newLevels > prevLevelsCompleted.current && !isGameOver) {
+      setLevelCelebration(newLevels);
+      setTimeout(() => setLevelCelebration(null), 1500);
+    }
+    prevLevelsCompleted.current = newLevels;
+    setFrame(newFrame);
+
+    // Step through animation frames at 200ms each
+    const totalFrames = newFrame.frame?.length ?? 1;
+    if (totalFrames > 1) {
+      setDisplayFrameIndex(0);
+      if (frameAnimationRef.current) clearTimeout(frameAnimationRef.current);
+      let idx = 0;
+      const stepFrame = () => {
+        idx++;
+        if (idx < totalFrames) {
+          setDisplayFrameIndex(idx);
+          frameAnimationRef.current = setTimeout(stepFrame, 200);
+        }
+      };
+      frameAnimationRef.current = setTimeout(stepFrame, 200);
+    } else {
+      setDisplayFrameIndex(0);
+    }
+
+    if (isGameOver) {
+      setGameState(isWin ? 'won' : 'lost');
+    }
+  }, []);
+
+  // Detect win/loss from Pyodide frame state string
+  const detectGameOver = useCallback((f: PyodideFrameData) => {
+    const s = f.state?.toUpperCase?.() ?? '';
+    const isWin = s === 'WIN' || s === 'WON';
+    const isLoss = s === 'GAME_OVER' || s === 'LOSE' || s === 'LOST';
+    return { isGameOver: isWin || isLoss, isWin };
+  }, []);
+
+  // ── Keyboard handler ─────────────────────────────────────────────────────────
+  const isActing = useFallback ? actionMutation.isPending : pyodide.isActing;
+
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (actionMutation.isPending || !sessionGuid) return;
+    if (isActing || gameState !== 'playing') return;
 
     const keyMap: Record<string, string> = {
-      // Directional: arrows + WASD
-      'ArrowUp': 'ACTION1',
-      'ArrowDown': 'ACTION2',
-      'ArrowLeft': 'ACTION3',
-      'ArrowRight': 'ACTION4',
-      'w': 'ACTION1',
-      's': 'ACTION2',
-      'a': 'ACTION3',
-      'd': 'ACTION4',
-      // Action / interact
-      ' ': 'ACTION5',
-      'Enter': 'ACTION5',
-      // Secondary actions
-      'q': 'ACTION7',
-      'e': 'ACTION7',
-      // Number keys map directly to actions
-      '1': 'ACTION1',
-      '2': 'ACTION2',
-      '3': 'ACTION3',
-      '4': 'ACTION4',
-      '5': 'ACTION5',
-      '7': 'ACTION7',
-      // Reset
-      'r': 'RESET',
+      ArrowUp: 'ACTION1', ArrowDown: 'ACTION2', ArrowLeft: 'ACTION3', ArrowRight: 'ACTION4',
+      w: 'ACTION1', s: 'ACTION2', a: 'ACTION3', d: 'ACTION4',
+      ' ': 'ACTION5', Enter: 'ACTION5',
+      q: 'ACTION7', e: 'ACTION7',
+      '1': 'ACTION1', '2': 'ACTION2', '3': 'ACTION3', '4': 'ACTION4',
+      '5': 'ACTION5', '7': 'ACTION7',
+      r: 'RESET',
     };
 
     const action = keyMap[e.key];
     if (action) {
       e.preventDefault();
-      actionMutation.mutate(action);
+      void handleAction(action);
     }
-  }, [actionMutation, sessionGuid]);
+  }, [isActing, gameState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Start game
-  const handleStart = () => {
+  // ── Action dispatcher (Pyodide primary, server fallback) ─────────────────────
+  const handleAction = useCallback(async (
+    actionStr: string,
+    coordinates?: [number, number],
+  ) => {
+    if (useFallback) {
+      if (actionStr === 'RESET') {
+        actionMutation.mutate('RESET');
+      } else if (coordinates) {
+        actionMutation.mutate({ action: actionStr, coordinates });
+      } else {
+        actionMutation.mutate(actionStr);
+      }
+      return;
+    }
+
+    try {
+      const data = coordinates
+        ? await pyodide.step(actionStr, { x: coordinates[0], y: coordinates[1] })
+        : actionStr === 'RESET'
+          ? await pyodide.reset()
+          : await pyodide.step(actionStr);
+
+      const { isGameOver, isWin } = detectGameOver(data);
+      applyFrame(data, isGameOver, isWin);
+    } catch {
+      // Worker error — already reflected in pyodide.error state
+    }
+  }, [useFallback, pyodide, actionMutation, applyFrame, detectGameOver]);
+
+  // ── Start game ───────────────────────────────────────────────────────────────
+  const handleStart = useCallback(async () => {
     setGameState('playing');
     prevLevelsCompleted.current = 0;
     setLevelCelebration(null);
-    startGameMutation.mutate();
-  };
+    setDisplayFrameIndex(0);
 
-  // Reset game
-  const handleReset = () => {
-    if (sessionGuid) {
-      setGameState('playing');
-      actionMutation.mutate('RESET');
+    if (useFallback) {
+      startGameMutation.mutate();
+      return;
     }
-  };
 
-  // Play again (full restart)
-  const handlePlayAgain = () => {
+    try {
+      // Lazy-init Pyodide + load game in one call
+      const initialFrame = await pyodide.initGame(gameId!);
+      const details = gameDetails?.data;
+      setGameInfo({
+        displayName: details?.displayName ?? gameId ?? '',
+        winScore: details?.winScore ?? initialFrame.win_score,
+        maxActions: details?.maxActions ?? initialFrame.max_actions,
+      });
+      applyFrame(initialFrame, false, false);
+
+      // Fire-and-forget play count
+      fetch(`/api/arc3-community/games/${gameId}/play`, { method: 'POST' }).catch(() => {});
+    } catch {
+      // pyodide.pyodideFailed will be set → useFallback effect triggers
+    }
+  }, [useFallback, pyodide, gameId, gameDetails, startGameMutation, applyFrame]);
+
+  // Reset current level
+  const handleReset = useCallback(() => {
+    if (gameState !== 'playing' && gameState !== 'lost') return;
+    setGameState('playing');
+    void handleAction('RESET');
+  }, [gameState, handleAction]);
+
+  // Full restart from idle
+  const handlePlayAgain = useCallback(() => {
     setSessionGuid(null);
     setFrame(null);
     setGameInfo(null);
     setGameState('idle');
     prevLevelsCompleted.current = 0;
     setLevelCelebration(null);
-  };
+  }, []);
 
+  // ── Loading state derivation ─────────────────────────────────────────────────
+  const isStarting = useFallback
+    ? startGameMutation.isPending
+    : pyodide.status === 'loading';
 
+  const loadingMessage = useFallback
+    ? 'Connecting to server...'
+    : (pyodide.loadingMessage ?? 'Initialising...');
+
+  // ─── Render ─────────────────────────────────────────────────────────────────
   return (
     <Arc3PixelPage>
       {/* Header */}
@@ -253,14 +346,31 @@ export default function CommunityGamePlay() {
             </div>
           </div>
 
+          {/* Son Pham's official site link */}
+          <a
+            href="https://arc3.sonpham.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1 text-[11px] text-[var(--arc3-dim)] hover:text-[var(--arc3-c14)] transition-colors shrink-0"
+          >
+            <ExternalLink className="w-3 h-3" />
+            arc3.sonpham.net
+          </a>
+
           {frame && gameState === 'playing' && (
             <div className="flex items-center gap-3 text-xs shrink-0">
               <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-c14)] text-[var(--arc3-c0)] px-2 py-1 font-semibold">
-                Level: {(frame.levels_completed ?? 0) + 1}
+                Level: {(('levels_completed' in frame ? frame.levels_completed : frame.score) ?? 0) + 1}
               </div>
               <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] px-2 py-1">
                 Actions: {frame.action_counter}
               </div>
+              {useFallback && (
+                <div className="border-2 border-[var(--arc3-border)] border-yellow-500 bg-yellow-900/30 text-yellow-400 px-2 py-1 text-[10px] flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" />
+                  Server mode
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -270,7 +380,15 @@ export default function CommunityGamePlay() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Game Grid */}
           <div className="lg:col-span-3">
-            {/* Win/Loss overlay */}
+            {/* Pyodide error notice (non-fatal if fallback kicked in) */}
+            {pyodide.error && useFallback && (
+              <div className="mb-4 border-2 border-yellow-600 bg-yellow-900/20 px-4 py-2 flex items-center gap-2 text-[11px] text-yellow-300">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                In-browser mode unavailable ({pyodide.error}). Running on server instead.
+              </div>
+            )}
+
+            {/* Win overlay */}
             {gameState === 'won' && (
               <PixelPanel tone="green" title="Victory!" className="mb-4">
                 <div className="flex items-center justify-between">
@@ -291,6 +409,7 @@ export default function CommunityGamePlay() {
               </PixelPanel>
             )}
 
+            {/* Loss overlay */}
             {gameState === 'lost' && (
               <PixelPanel tone="danger" title="Game Over" className="mb-4">
                 <div className="flex items-center justify-between">
@@ -306,7 +425,7 @@ export default function CommunityGamePlay() {
                   <div className="flex gap-2">
                     <PixelButton tone="yellow" onClick={handleReset}>
                       <RotateCcw className="w-4 h-4" />
-                      Retry Level
+                      Retry
                     </PixelButton>
                     <PixelButton tone="green" onClick={handlePlayAgain}>
                       <Play className="w-4 h-4" />
@@ -317,7 +436,7 @@ export default function CommunityGamePlay() {
               </PixelPanel>
             )}
 
-            {/* Level completion celebration overlay */}
+            {/* Level celebration */}
             {levelCelebration !== null && (
               <div
                 className="mb-4 border-2 border-[var(--arc3-border)] px-4 py-3 flex items-center gap-3 animate-pulse"
@@ -336,20 +455,20 @@ export default function CommunityGamePlay() {
                 <div className="text-center py-12">
                   <Gamepad2 className="w-12 h-12 text-[var(--arc3-dim)] mx-auto mb-4" />
                   <p className="text-sm font-semibold mb-2">
-                    {gameInfo?.displayName || gameDetails?.data?.displayName || 'Community Game'}
+                    {gameDetails?.data?.displayName || 'Community Game'}
                   </p>
                   <p className="text-[11px] text-[var(--arc3-muted)] mb-6 max-w-md mx-auto">
-                    {gameDetails?.data?.description || 'Initialize game session to begin playing'}
+                    {gameDetails?.data?.description || 'Start the game to begin playing'}
                   </p>
                   <PixelButton
                     tone="green"
-                    onClick={handleStart}
-                    disabled={startGameMutation.isPending}
+                    onClick={() => void handleStart()}
+                    disabled={isStarting}
                   >
-                    {startGameMutation.isPending ? (
+                    {isStarting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Initializing...
+                        {loadingMessage}
                       </>
                     ) : (
                       <>
@@ -369,8 +488,8 @@ export default function CommunityGamePlay() {
                     showCoordinates={false}
                     className="w-full"
                     onCellClick={(x, y) => {
-                      if (gameState === 'playing' && !actionMutation.isPending) {
-                        actionMutation.mutate({ action: 'ACTION6', coordinates: [x, y] });
+                      if (gameState === 'playing' && !isActing) {
+                        void handleAction('ACTION6', [x, y]);
                       }
                     }}
                   />
@@ -378,23 +497,21 @@ export default function CommunityGamePlay() {
               ) : (
                 <div className="text-center py-12">
                   <Loader2 className="w-8 h-8 text-[var(--arc3-c14)] animate-spin mx-auto" />
-                  <p className="text-[11px] text-[var(--arc3-dim)] mt-3">Loading game...</p>
+                  <p className="text-[11px] text-[var(--arc3-dim)] mt-3">{loadingMessage}</p>
                 </div>
               )}
             </PixelPanel>
           </div>
 
-          {/* Controls Sidebar — unified panel with embedded key hints */}
+          {/* Controls Sidebar */}
           <div className="lg:col-span-1 space-y-4">
-
-            {/* Movement D-Pad — large buttons with embedded WASD hints */}
+            {/* D-Pad */}
             <PixelPanel tone="blue" title="Movement" subtitle="Arrow keys or WASD">
               <div className="flex flex-col items-center gap-1.5">
-                {/* Up */}
                 <PixelButton
                   tone="blue"
-                  onClick={() => actionMutation.mutate('ACTION1')}
-                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  onClick={() => void handleAction('ACTION1')}
+                  disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-14 h-14"
                   title="Move Up (W / Arrow Up)"
                 >
@@ -404,12 +521,11 @@ export default function CommunityGamePlay() {
                   </div>
                 </PixelButton>
 
-                {/* Left / Center placeholder / Right */}
                 <div className="flex gap-1.5 items-center">
                   <PixelButton
                     tone="blue"
-                    onClick={() => actionMutation.mutate('ACTION3')}
-                    disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                    onClick={() => void handleAction('ACTION3')}
+                    disabled={!frame || isActing || gameState !== 'playing'}
                     className="w-14 h-14"
                     title="Move Left (A / Arrow Left)"
                   >
@@ -418,12 +534,11 @@ export default function CommunityGamePlay() {
                       <span className="text-[9px] opacity-70 mt-0.5">A</span>
                     </div>
                   </PixelButton>
-                  {/* Dead center — visual spacer matching button size */}
                   <div className="w-14 h-14 border-2 border-dashed border-[var(--arc3-border)] opacity-30" />
                   <PixelButton
                     tone="blue"
-                    onClick={() => actionMutation.mutate('ACTION4')}
-                    disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                    onClick={() => void handleAction('ACTION4')}
+                    disabled={!frame || isActing || gameState !== 'playing'}
                     className="w-14 h-14"
                     title="Move Right (D / Arrow Right)"
                   >
@@ -434,11 +549,10 @@ export default function CommunityGamePlay() {
                   </PixelButton>
                 </div>
 
-                {/* Down */}
                 <PixelButton
                   tone="blue"
-                  onClick={() => actionMutation.mutate('ACTION2')}
-                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  onClick={() => void handleAction('ACTION2')}
+                  disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-14 h-14"
                   title="Move Down (S / Arrow Down)"
                 >
@@ -450,14 +564,13 @@ export default function CommunityGamePlay() {
               </div>
             </PixelPanel>
 
-            {/* Action Buttons — clearly labeled with key bindings */}
+            {/* Action Buttons */}
             <PixelPanel tone="green" title="Actions">
               <div className="space-y-2">
-                {/* Primary interact — ACTION5 */}
                 <PixelButton
                   tone="green"
-                  onClick={() => actionMutation.mutate('ACTION5')}
-                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  onClick={() => void handleAction('ACTION5')}
+                  disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-full h-11"
                   title="Interact / Confirm (Space / Enter)"
                 >
@@ -466,11 +579,10 @@ export default function CommunityGamePlay() {
                   <span className="ml-auto text-[9px] opacity-70 font-mono">Space</span>
                 </PixelButton>
 
-                {/* Click on grid — ACTION6 */}
                 <PixelButton
                   tone="pink"
                   onClick={() => {/* ACTION6 is grid-click only */}}
-                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-full h-11"
                   title="Click on the game grid to interact with a specific cell"
                 >
@@ -479,11 +591,10 @@ export default function CommunityGamePlay() {
                   <span className="ml-auto text-[9px] opacity-70 font-mono">Mouse</span>
                 </PixelButton>
 
-                {/* Secondary action — ACTION7 */}
                 <PixelButton
                   tone="orange"
-                  onClick={() => actionMutation.mutate('ACTION7')}
-                  disabled={!sessionGuid || actionMutation.isPending || gameState !== 'playing'}
+                  onClick={() => void handleAction('ACTION7')}
+                  disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-full h-11"
                   title="Secondary Action (Q / E)"
                 >
@@ -494,11 +605,11 @@ export default function CommunityGamePlay() {
               </div>
             </PixelPanel>
 
-            {/* Reset — demoted to small secondary control */}
+            {/* Reset */}
             <PixelButton
               tone="neutral"
               onClick={handleReset}
-              disabled={!sessionGuid || actionMutation.isPending}
+              disabled={!frame || isActing}
               className="w-full h-9 text-[11px]"
               title="Reset current level (R)"
             >
@@ -506,7 +617,6 @@ export default function CommunityGamePlay() {
               <span>Reset Level</span>
               <span className="ml-auto text-[9px] opacity-60 font-mono">R</span>
             </PixelButton>
-
           </div>
         </div>
       </main>

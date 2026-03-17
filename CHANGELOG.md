@@ -1,5 +1,19 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.4.0  Mar 12, 2026
+
+- **FEAT: Community games now run client-side via Pyodide (Python in WebAssembly)** (Author: Claude Sonnet 4.6)
+  - **What**: Community game sessions are now executed entirely in the browser using Pyodide 0.27.4 running in a Web Worker. Actions are instantaneous — no server round-trip per button press. The server-side Python subprocess stack (`CommunityGamePythonBridge`, `CommunityGameRunner`) is retained as a fallback if Pyodide fails to initialise (e.g. CDN blocked, no WASM support).
+  - **Why**: Each action previously spawned or communicated with a server-side Python process, adding latency and consuming server resources proportional to concurrent players. Pyodide runs ARCEngine in the browser, eliminating both. Architecture validated against Son Pham's reference implementation (`docs/sonpham-arc3-pyodide-architecture.md`).
+  - **How**:
+    - `client/public/pyodide-game-worker.js` **(new)**: Web Worker that loads Pyodide 0.27.4, installs `numpy` + `pydantic` via `pyodide.loadPackage` (pre-compiled Pyodide wheels), then manually extracts the `arcengine` `py3-none-any.whl` from PyPI (micropip cannot install `arcengine` because `pydantic-core` is a C-extension dep — loading pydantic first then extracting arcengine's wheel directly solves this). Handles `init`, `load_game`, `step`, `reset` messages. Emits `progress` events for loading-stage UX. Thins animation frames to ≤120 before postMessage.
+    - `client/src/hooks/usePyodideGame.ts` **(new)**: React hook wrapping the worker lifecycle. Lazy-creates the worker on first `initGame()` call, promise-wraps every postMessage with a 60s timeout, exposes `initGame()`, `step()`, `reset()`, `isActing`, `status`, `loadingStage`, `loadingMessage`, `error`, and `pyodideFailed`. Sets `pyodideFailed = true` on init error so the component can transparently fall back.
+    - `client/src/pages/arc3-community/CommunityGamePlay.tsx` **(updated)**: Replaced `useMutation`-based server calls with `usePyodideGame` hook. Detects win/loss from Python `GameState` enum string values. Retains server-session mutations as fallback path (triggered when `pyodide.pyodideFailed`). Shows "Server mode" badge in header when running fallback. Play-count POST remains fire-and-forget on game start.
+    - `server/routes/arc3Community.ts` **(updated)**: `GET /games/:gameId/source` now returns `className` (the ARCBaseGame subclass name, extracted via `CommunityGameValidator.validateSource()`) for both official and community games. This lets the worker instantiate the correct class without server-side execution.
+  - **Note on cold start**: First load downloads ~30MB (Pyodide runtime + packages) from jsDelivr CDN. Subsequent games in the same browser session reuse the already-loaded worker — instant startup. This is expected and acceptable.
+  - **Files**: `client/public/pyodide-game-worker.js` (new), `client/src/hooks/usePyodideGame.ts` (new), `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `server/routes/arc3Community.ts`
+  - **Ref**: `docs/plans/2026-03-12-community-games-pyodide-migration.md`, `docs/sonpham-arc3-pyodide-architecture.md`
+
 ### Version 7.3.21  Mar 07, 2026
 
 - **FIX: ARC3 game naming, multi-frame level transitions, and Son Pham spotlight links** (Author: Cascade / Claude Sonnet 4)
