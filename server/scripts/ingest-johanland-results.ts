@@ -648,7 +648,7 @@ async function processPuzzle(
       totalTokens: agg.totalTokens,
 
       estimatedCost: agg.totalCost,
-      apiProcessingTimeMs: agg.totalProcessingTimeMs,
+      apiProcessingTimeMs: agg.totalProcessingTimeMs ?? 0,
 
       predictedOutputGrid: null,
       isPredictionCorrect: null,
