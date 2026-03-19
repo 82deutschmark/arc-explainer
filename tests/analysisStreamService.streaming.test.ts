@@ -76,9 +76,9 @@ test('startStreaming streams by default in production when no overrides are pres
     _serviceOptions,
   ) => {
     analyzeCalled = true;
-    streamHarness.emit?.({ type: 'delta', text: 'hello' });
+    streamHarness.emit?.({ type: 'delta', content: 'hello' });
     streamHarness.emitEvent?.('custom', { detail: 'ok' });
-    streamHarness.end?.({ state: 'completed' });
+    streamHarness.end?.({ status: 'success' });
   }) as typeof puzzleAnalysisService.analyzePuzzleStreaming;
 
   try {

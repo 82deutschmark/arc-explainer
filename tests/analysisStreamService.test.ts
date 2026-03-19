@@ -175,7 +175,7 @@ test('startStreaming streams when OpenAI-prefixed GPT-5 model is requested', asy
     puzzleCalls.push({ taskId, model });
     streamHarness?.emit?.({ type: 'output_text_delta', delta: 'hello' });
     streamHarness?.emitEvent?.('stream.status', { state: 'completed' });
-    streamHarness?.end?.({ status: 'done' });
+    streamHarness?.end?.({ status: 'success' });
   }) as typeof puzzleAnalysisService.analyzePuzzleStreaming;
 
   try {
