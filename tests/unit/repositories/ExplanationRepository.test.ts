@@ -110,7 +110,7 @@ describe('ExplanationRepository', () => {
       } as any);
 
       expect(queryMock).toHaveBeenCalledTimes(1);
-      const [, params, passedClient] = queryMock.mock.calls[0];
+      const [, params, passedClient] = queryMock.mock.calls[0] as [unknown, any[], any];
 
       expect(passedClient).toBe(client);
       expect(params.at(-1)).toBe(2); // num_test_pairs

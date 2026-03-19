@@ -140,6 +140,10 @@ export interface ExplanationResponse {
   councilAssessedExplanationIds: number[] | null;
   councilAggregateRankings: any | null;
   councilPromptUsed: string | null;
+  // Beetree multi-model fields
+  beetreeModelResults?: any | null;
+  beetreeCostBreakdown?: any | null;
+  beetreeTokenUsage?: any | null;
   createdAt: string;
   helpfulVotes?: number;
   notHelpfulVotes?: number;
