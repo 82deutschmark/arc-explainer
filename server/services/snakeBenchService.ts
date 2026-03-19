@@ -404,8 +404,8 @@ class SnakeBenchService {
   ): Promise<{
     mode: 'ladder' | 'entertainment';
     matchups: Array<{
-      modelA: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number };
-      modelB: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number };
+      modelA: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number; rank: number; displayScore: number };
+      modelB: { modelSlug: string; mu: number; sigma: number; exposed: number; gamesPlayed: number; rank: number; displayScore: number };
       history: { matchesPlayed: number; lastPlayedAt: string | null };
       score: number;
       reasons: string[];
