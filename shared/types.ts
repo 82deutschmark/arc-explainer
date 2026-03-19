@@ -785,7 +785,7 @@ export interface SnakeBenchModelRating {
   ties: number;
   applesEaten: number;
   gamesPlayed: number;
-  totalCost: number;
+  totalCost?: number;
   isActive?: boolean;
 }
 

@@ -212,7 +212,7 @@ export default function WormArenaModelSnapshotCard({
                   </Tooltip>
                 </div>
                 <span className="worm-pill-neutral px-2.5 py-0.5 text-sm">
-                  ${rating.totalCost.toFixed(4)}
+                  ${(rating.totalCost ?? 0).toFixed(4)}
                 </span>
               </div>
             </div>
