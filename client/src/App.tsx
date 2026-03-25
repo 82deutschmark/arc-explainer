@@ -43,6 +43,7 @@ import LLMCouncil from "@/pages/LLMCouncil";
 import ModelComparisonPage from "@/pages/ModelComparisonPage";
 import HuggingFaceUnionAccuracy from "@/pages/HuggingFaceUnionAccuracy";
 import About from "@/pages/About";
+import ClaudeCodeGuide from "@/pages/ClaudeCodeGuide";
 import ARC3Browser from "@/pages/ARC3Browser";
 import ARC3AgentPlayground from "@/pages/ARC3AgentPlayground";
 import Arc3OpenRouterPlayground from "@/pages/Arc3OpenRouterPlayground";
@@ -137,6 +138,7 @@ function Router() {
         <Route path="/model-comparison" component={ModelComparisonPage} />
         <Route path="/scoring" component={HuggingFaceUnionAccuracy} />
         <Route path="/about" component={About} />
+        <Route path="/cc" component={ClaudeCodeGuide} />
         <Route path="/llm-reasoning" component={LLMReasoning} />
         <Route path="/llm-reasoning/advanced" component={LLMReasoningAdvanced} />
         {/* ARC3 Community - user-uploaded games platform (new main landing) */}
