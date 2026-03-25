@@ -33,6 +33,9 @@ import { executeGridAnalysis } from './helpers/gridAnalyzer.ts';
 import { logger } from '../../utils/logger.ts';
 import { buildCombinedInstructions, buildRunSummary } from './helpers/runHelpers.ts';
 import { callLLM } from './llmCaller.ts';
+import { LinearScaffold } from './scaffolding/LinearScaffold.ts';
+import { ThreeSystemScaffold } from './scaffolding/ThreeSystemScaffold.ts';
+import type { ScaffoldStrategy } from './scaffolding/types.ts';
 
 export interface Arc3StreamHarness {
   sessionId: string;
@@ -232,28 +235,30 @@ export class Arc3RealGameRunner {
       }
     };
 
-    // --- Direct LLM call loop (replaces @openai/agents Agent/run) ---
-    const systemPrompt = buildCombinedInstructions(config);
+    // --- Direct LLM call loop with scaffold strategy ---
+    const scaffoldType = config.scaffold ?? 'linear';
+    const scaffold: ScaffoldStrategy = scaffoldType === 'three-system'
+      ? new ThreeSystemScaffold({ model: config.model ?? DEFAULT_MODEL, apiKey: (config as any).anthropicApiKey })
+      : new LinearScaffold();
+
     const history: Arc3RunTimelineEntry[] = [];
     let finalOutput = '';
     let totalInputTokens = 0;
     let totalOutputTokens = 0;
     let totalRequests = 0;
 
+    // Fallback system prompt used when scaffold doesn't provide one
+    const fallbackSystem = buildCombinedInstructions(config);
+
     for (let turn = 0; turn < maxTurns; turn++) {
-      const userMessage =
-        `Current game state:\n${JSON.stringify(currentFrame, null, 2)}\n\n` +
-        `You are playing ARC-AGI-3 game "${gameId}". ` +
-        `Reply with ONLY a JSON object on a single line: {"action": "ACTION1"} or {"action": "ACTION3", "x": 5, "y": 3}. ` +
-        `Valid actions: RESET, ACTION1, ACTION2, ACTION3, ACTION4, ACTION5, ACTION6, ACTION7. ` +
-        `ACTION3-ACTION7 may require x and y coordinates (integers 0-63).`;
+      const { system, user } = scaffold.buildPrompt(currentFrame!, history);
 
       let llmResult;
       try {
         llmResult = await callLLM({
           model: config.model ?? DEFAULT_MODEL,
-          system: systemPrompt,
-          user: userMessage,
+          system: system || fallbackSystem,
+          user,
           apiKey: (config as any).anthropicApiKey,
           maxTokens: 512,
         });
@@ -266,13 +271,12 @@ export class Arc3RealGameRunner {
       totalOutputTokens += llmResult.outputTokens;
       totalRequests += 1;
 
-      // Parse action from LLM response (expect JSON like {"action": "ACTION1"} or {"action": "ACTION3", "x": 5, "y": 3})
+      // Parse action via scaffold strategy
       let action: GameAction;
       try {
-        const match = llmResult.text.match(/\{[^}]+\}/);
-        const parsed = JSON.parse(match?.[0] || '{}') as { action?: string; x?: number; y?: number };
+        const parsed = scaffold.parseAction(llmResult.text);
         action = {
-          action: (parsed.action || 'ACTION1') as GameAction['action'],
+          action: parsed.action as GameAction['action'],
           ...(parsed.x !== undefined ? { x: parsed.x } : {}),
           ...(parsed.y !== undefined ? { y: parsed.y } : {}),
         };
@@ -482,12 +486,19 @@ export class Arc3RealGameRunner {
       timestamp: Date.now(),
     });
 
+    // --- Scaffold strategy selection ---
+    const scaffoldTypeStreaming = config.scaffold ?? 'linear';
+    const scaffoldStreaming: ScaffoldStrategy = scaffoldTypeStreaming === 'three-system'
+      ? new ThreeSystemScaffold({ model: config.model ?? DEFAULT_MODEL, apiKey: (config as any).anthropicApiKey })
+      : new LinearScaffold();
+
+    const fallbackSystemStreaming = buildCombinedInstructions(config);
+
     // Emit agent ready event
-    const systemPrompt = buildCombinedInstructions(config);
     streamHarness.emitEvent("agent.ready", {
       agentName,
       model: config.model ?? DEFAULT_MODEL,
-      instructions: systemPrompt,
+      scaffold: scaffoldTypeStreaming,
       timestamp: Date.now(),
     });
 
@@ -499,12 +510,7 @@ export class Arc3RealGameRunner {
     let totalRequests = 0;
 
     for (let turn = 0; turn < maxTurns; turn++) {
-      const userMessage =
-        `Current game state:\n${JSON.stringify(currentFrame, null, 2)}\n\n` +
-        `You are playing ARC-AGI-3 game "${gameId}". ` +
-        `Reply with ONLY a JSON object on a single line: {"action": "ACTION1"} or {"action": "ACTION3", "x": 5, "y": 3}. ` +
-        `Valid actions: RESET, ACTION1, ACTION2, ACTION3, ACTION4, ACTION5, ACTION6, ACTION7. ` +
-        `ACTION3-ACTION7 may require x and y coordinates (integers 0-63).`;
+      const { system: scaffoldSystem, user: userMessage } = scaffoldStreaming.buildPrompt(currentFrame!, history);
 
       // Emit per-turn thinking event
       streamHarness.emitEvent("agent.turn_start", {
@@ -519,7 +525,7 @@ export class Arc3RealGameRunner {
       try {
         llmResult = await callLLM({
           model: config.model ?? DEFAULT_MODEL,
-          system: systemPrompt,
+          system: scaffoldSystem || fallbackSystemStreaming,
           user: userMessage,
           apiKey: (config as any).anthropicApiKey,
           maxTokens: 512,
@@ -546,13 +552,12 @@ export class Arc3RealGameRunner {
         timestamp: Date.now(),
       });
 
-      // Parse action from LLM response
+      // Parse action via scaffold strategy
       let action: GameAction;
       try {
-        const match = llmResult.text.match(/\{[^}]+\}/);
-        const parsed = JSON.parse(match?.[0] || '{}') as { action?: string; x?: number; y?: number };
+        const parsed = scaffoldStreaming.parseAction(llmResult.text);
         action = {
-          action: (parsed.action || 'ACTION1') as GameAction['action'],
+          action: parsed.action as GameAction['action'],
           ...(parsed.x !== undefined ? { x: parsed.x } : {}),
           ...(parsed.y !== undefined ? { y: parsed.y } : {}),
         };
