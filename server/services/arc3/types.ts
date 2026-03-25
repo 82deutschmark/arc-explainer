@@ -61,4 +61,6 @@ export interface Arc3AgentRunConfig {
   systemPromptPresetId?: Arc3PromptPresetId; // One-word preset id: 'twitch' | 'playbook' | 'none'
   skipDefaultSystemPrompt?: boolean; // When true, never fall back to any default system prompt
   harnessMode?: 'default' | 'cascade'; // Optional qualitative harness toggle (defaults to existing math harness)
+  scaffold?: 'linear' | 'three-system' | 'world-model'; // Scaffolding strategy for arc3 agent loop (default: 'linear')
+  anthropicApiKey?: string; // BYOK OAuth or API key for ARC3 Haiku runner (supports sk-ant-oat01- prefix)
 }
