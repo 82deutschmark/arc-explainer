@@ -1,52 +1,38 @@
 /*
-Author: Claude Haiku 4.5 → Cascade (Claude Opus 4.5)
-Date: 2025-12-20 (CRITICAL FIX: Multi-frame animation unpacking) → 2026-01-03 (DRY refactor: tool factory + helpers)
-PURPOSE: Runs OpenAI Agents SDK workflows against the real ARC-AGI-3 API with PostgreSQL frame persistence.
+Author: Claude Sonnet 4.6 (Bubba)
+Date: 25-March-2026
+PURPOSE: Runs a direct LLM call loop against the real ARC-AGI-3 API with PostgreSQL frame persistence.
+         Removed @openai/agents SDK dependency (Step 4 of ARC3 modernization). LLM calls now go through
+         llmCaller.ts which routes by model prefix. Tools are no longer needed — LLM reads game state
+         from the prompt and returns JSON actions directly.
+SRP/DRY check: Pass — runner orchestrates the game loop; LLM routing is in llmCaller.ts; prompt building in runHelpers.ts; frame persistence in sessionManager/framePersistence.
 
-CRITICAL CHANGES (2025-12-20):
-- Integrated frameUnpacker.ts to detect and unpack multi-frame animation responses from ARC-AGI-3 API
-- When an action returns 4D frame data [frameIdx][layerIdx][height][width], unpacks into individual 3D frames
-- Each unpacked frame is persisted separately to database for complete frame history
-- Streaming mode emits each animation frame individually with metadata (animationFrame, animationTotalFrames, isLastAnimationFrame)
-- Prevents data loss from lossy frame storage and ensures accurate action efficiency scoring
-
-PREV VERSION ISSUES (FIXED):
-- Treated 4D multi-frame responses as single frames
-- Lost animation data (e.g., 3-frame movement sequence collapsed to 1)
-- Incomplete database history (missing intermediate frames)
-- Inaccurate replay data (animations not visible)
-- Potential scoring errors (didn't count intermediate frames)
-
-Architecture:
-- Delegates to frameUnpacker for dimensionality detection
-- Uses persistUnpackedFrames() helper for consistent frame persistence
-- Both sync (run) and async (runWithStreaming) methods fully support unpacking
-- All action tools (RESET, ACTION1-5, ACTION6) unpack before processing
-- Agent always reasons about final "settled" frame, but database has complete history
-
-SRP/DRY check: Pass — frame unpacking separated into dedicated module, reusable across both methods.
-         Tools extracted to Arc3ToolFactory.ts, shared helpers in runHelpers.ts.
+CHANGES FROM PREVIOUS VERSION (Step 4 — 2026-03-25):
+- Removed: import { Agent, run, extractAllTextOutput } from '@openai/agents'
+- Removed: Arc3ToolFactory / createArc3Tools usage (tools no longer needed)
+- Removed: processRunItems / processRunItemsWithReasoning (timeline built directly in loop)
+- Added: callLLM() from llmCaller.ts — direct prompt→response loop
+- Added: anthropicApiKey?: string on Arc3AgentRunConfig (BYOK support)
+- Both run() and runWithStreaming() now use the same direct LLM loop
+- runWithStreaming() SSE emission logic preserved; emits per-turn events during loop
 */
 
 import { randomUUID, createHash } from 'node:crypto';
-import { Agent, run, extractAllTextOutput } from '@openai/agents';
 import { Arc3ApiClient, type FrameData, type GameAction } from './Arc3ApiClient.ts';
 import type { Arc3AgentRunConfig, Arc3AgentRunResult, Arc3RunTimelineEntry, Arc3RunSummary, Arc3GameState } from './types.ts';
 import { buildArc3DefaultPrompt } from './prompts.ts';
 import { DEFAULT_MODEL, DEFAULT_MAX_TURNS, DEFAULT_GAME_ID } from './utils/constants.ts';
-import { processRunItems, processRunItemsWithReasoning } from './utils/timelineProcessor.ts';
-import { generateActionCaption, generateInspectCaption } from './helpers/captionGenerator.ts';
-import { countChangedPixels, analyzeFrameChanges, extractGrid, extractLayerStack } from './helpers/frameAnalysis.ts';
-import { calculateColorDistribution } from './helpers/colorAnalysis.ts';
+import { generateActionCaption } from './helpers/captionGenerator.ts';
+import { countChangedPixels, extractLayerStack } from './helpers/frameAnalysis.ts';
 import { unpackFrames, summarizeFrameStructure } from './helpers/frameUnpacker.ts';
-import { createSession, getSessionByGuid, endSession, type SessionMetadata } from './persistence/sessionManager';
+import { createSession, endSession, type SessionMetadata } from './persistence/sessionManager';
 import { saveFrame, type SavedFrame } from './persistence/framePersistence';
 import { openScorecard, closeScorecard, getScorecard } from './scorecardService.ts';
 import { renderArc3FrameToPng } from './arc3GridImageService.ts';
 import { executeGridAnalysis } from './helpers/gridAnalyzer.ts';
 import { logger } from '../../utils/logger.ts';
-import { createArc3Tools, type Arc3ToolContext, type Arc3StreamHarness as FactoryStreamHarness } from './tools/Arc3ToolFactory.ts';
 import { buildCombinedInstructions, buildRunSummary } from './helpers/runHelpers.ts';
+import { callLLM } from './llmCaller.ts';
 
 export interface Arc3StreamHarness {
   sessionId: string;
@@ -246,113 +232,109 @@ export class Arc3RealGameRunner {
       }
     };
 
-    // Create tool context for factory (mutable state accessed by tools via closure)
-    const toolContext: Arc3ToolContext = {
-      currentFrame,
-      prevFrame,
-      gameGuid,
-      frames,
-      currentFrameNumber,
-      gameId,
-      scorecardId,
-      dbSessionId,
-      apiClient: this.apiClient,
-      updateNoScoreProgress,
-    };
+    // --- Direct LLM call loop (replaces @openai/agents Agent/run) ---
+    const systemPrompt = buildCombinedInstructions(config);
+    const history: Arc3RunTimelineEntry[] = [];
+    let finalOutput = '';
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+    let totalRequests = 0;
 
-    // Create tools via factory (DRY: eliminates ~240 lines of duplication)
-    const tools = createArc3Tools(toolContext, true); // includeResetTool=true for non-streaming
+    for (let turn = 0; turn < maxTurns; turn++) {
+      const userMessage =
+        `Current game state:\n${JSON.stringify(currentFrame, null, 2)}\n\n` +
+        `You are playing ARC-AGI-3 game "${gameId}". ` +
+        `Reply with ONLY a JSON object on a single line: {"action": "ACTION1"} or {"action": "ACTION3", "x": 5, "y": 3}. ` +
+        `Valid actions: RESET, ACTION1, ACTION2, ACTION3, ACTION4, ACTION5, ACTION6, ACTION7. ` +
+        `ACTION3-ACTION7 may require x and y coordinates (integers 0-63).`;
 
-    // Use shared helper for system prompt + operator guidance
-    const combinedInstructions = buildCombinedInstructions(config);
-    const storeResponse = config.storeResponse ?? true;
-    const frameHash = currentFrame ? this.computeFrameHash(extractLayerStack(currentFrame)) : undefined;
-    const metadata = {
-      sessionId: config.sessionId,
-      gameGuid: gameGuid || undefined,
-      frameHash,
-      frameIndex: String(frames.length - 1),
-      previousResponseId: config.previousResponseId ?? null,
-      systemPromptPresetId: config.systemPromptPresetId ?? null,
-      skipDefaultSystemPrompt: String(config.skipDefaultSystemPrompt ?? false),
-    };
+      let llmResult;
+      try {
+        llmResult = await callLLM({
+          model: config.model ?? DEFAULT_MODEL,
+          system: systemPrompt,
+          user: userMessage,
+          apiKey: (config as any).anthropicApiKey,
+          maxTokens: 512,
+        });
+      } catch (err) {
+        logger.warn(`[ARC3] LLM call failed on turn ${turn}: ${err instanceof Error ? err.message : String(err)}`, 'arc3');
+        break;
+      }
 
-    const agent = new Agent({
-      name: agentName,
-      instructions: combinedInstructions,
-      handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
-      model: config.model ?? DEFAULT_MODEL,
-      modelSettings: {
-        reasoning: {
-          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
-          summary: 'detailed',
-        },
-        text: { verbosity: 'medium' },
-        store: storeResponse,
-        providerData: {
-          metadata,
-        },
-      },
-      tools,
-    });
+      totalInputTokens += llmResult.inputTokens;
+      totalOutputTokens += llmResult.outputTokens;
+      totalRequests += 1;
 
-    const result = await run(
-      agent,
-      `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
-      {
-        maxTurns,
-        previousResponseId: config.previousResponseId,
-      },
-    );
+      // Parse action from LLM response (expect JSON like {"action": "ACTION1"} or {"action": "ACTION3", "x": 5, "y": 3})
+      let action: GameAction;
+      try {
+        const match = llmResult.text.match(/\{[^}]+\}/);
+        const parsed = JSON.parse(match?.[0] || '{}') as { action?: string; x?: number; y?: number };
+        action = {
+          action: (parsed.action || 'ACTION1') as GameAction['action'],
+          ...(parsed.x !== undefined ? { x: parsed.x } : {}),
+          ...(parsed.y !== undefined ? { y: parsed.y } : {}),
+        };
+      } catch {
+        action = { action: 'ACTION1' };
+      }
 
-    // Process timeline entries using extracted utility (eliminates duplication)
-    const timeline = processRunItems(result.newItems, agentName);
+      history.push({
+        index: turn,
+        type: 'assistant_message',
+        label: `Turn ${turn + 1}`,
+        content: llmResult.text,
+      });
 
-    // Get final frame from context (tools mutate context during run)
-    const finalFrame = toolContext.currentFrame;
-    const finalGameGuid = toolContext.gameGuid;
+      const nextFrameRaw = await this.apiClient.executeAction(gameId, gameGuid!, action, undefined);
+      const unpackedFrames = unpackFrames(nextFrameRaw);
+      prevFrame = currentFrame;
+      currentFrame = unpackedFrames[unpackedFrames.length - 1];
+      frames.push(...unpackedFrames);
+      updateNoScoreProgress(prevFrame, currentFrame);
+
+      if (dbSessionId) {
+        currentFrameNumber = await this.persistUnpackedFrames(dbSessionId, unpackedFrames, action, prevFrame, currentFrameNumber);
+      }
+
+      if (currentFrame.state === 'WIN' || currentFrame.state === 'GAME_OVER') {
+        finalOutput = `Game ended: ${currentFrame.state}`;
+        break;
+      }
+    }
 
     // Close scorecard when game reaches terminal state (per audit: must close after WIN/GAME_OVER)
-    // Sessions remain open for continuations ONLY if game is still in progress
-    if (finalFrame && (finalFrame.state === 'WIN' || finalFrame.state === 'GAME_OVER')) {
+    if (currentFrame && (currentFrame.state === 'WIN' || currentFrame.state === 'GAME_OVER')) {
       try {
         await this.apiClient.closeScorecard(scorecardId);
-        logger.info(`[ARC3] Closed scorecard ${scorecardId} - game ended with ${finalFrame.state}`, 'arc3');
+        logger.info(`[ARC3] Closed scorecard ${scorecardId} - game ended with ${currentFrame.state}`, 'arc3');
       } catch (error) {
         logger.warn(`[ARC3] Failed to close scorecard ${scorecardId}: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
       }
     }
 
-    const usage = result.state._context.usage;
-    const providerResponseId = result.lastResponseId ?? null;
-    const finalOutputCandidate = result.finalOutput;
-    const finalOutput = typeof finalOutputCandidate === 'string'
-      ? finalOutputCandidate
-      : extractAllTextOutput(result.newItems);
-
-    // Create summary from the last frame (should always exist since we start the game before agent runs)
-    // Use shared helper for summary building (DRY: eliminates duplicated mapState + summary construction)
-    if (finalFrame === null) {
+    if (currentFrame === null) {
       throw new Error('No frame data available - game did not start properly');
     }
 
-    const summary = buildRunSummary(finalFrame, gameId, toolContext.frames.length);
+    const summary = buildRunSummary(currentFrame, gameId, frames.length);
 
     return {
       runId: randomUUID(),
-      gameGuid: finalGameGuid || 'unknown',
-      scorecardId,  // CRITICAL: Return scorecard ID for session continuation
-      finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
-      timeline,
-      frames: frames as any[],  // Arc3AgentRunResult accepts any[] for frames
+      gameGuid: gameGuid || 'unknown',
+      scorecardId,
+      finalOutput: finalOutput.trim() || undefined,
+      timeline: history,
+      frames: frames as any[],
       summary,
       usage: {
-        requests: usage.requests,
-        inputTokens: usage.inputTokens,
-        outputTokens: usage.outputTokens,
-        totalTokens: usage.totalTokens,
+        requests: totalRequests,
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+        totalTokens: totalInputTokens + totalOutputTokens,
       },
-      providerResponseId,
+      providerResponseId: null,
     };
   }
 
@@ -371,10 +353,10 @@ export class Arc3RealGameRunner {
       // Fresh start: open new scorecard with educational metadata tags
       const scorecardTags = [
         'arc-explainer',
-        'educational-playground',  // Mark as educational, not official competition entry
-        'interactive-agent',         // User can interrupt/guide mid-game
+        'educational-playground',
+        'interactive-agent',
         `model:${config.model ?? DEFAULT_MODEL}`,
-        `reasoning:${config.reasoningEffort ?? 'low'}`,
+        `reasoning:${(config as any).reasoningEffort ?? 'low'}`,
       ];
 
       scorecardId = await this.apiClient.openScorecard(
@@ -386,7 +368,7 @@ export class Arc3RealGameRunner {
           game_id: gameId,
           agentName,
           userInterruptible: true,
-          reasoningLevel: config.reasoningEffort ?? 'low',
+          reasoningLevel: (config as any).reasoningEffort ?? 'low',
         }
       );
       logger.info(`[ARC3 STREAMING] Opened new scorecard ${scorecardId} for fresh game`, 'arc3');
@@ -473,11 +455,6 @@ export class Arc3RealGameRunner {
       });
     }
 
-    // Add reasoning accumulator to track incremental reasoning content
-    const streamState = {
-      accumulatedReasoning: "",
-      reasoningSequence: 0,
-    };
     let noScoreProgressStreak = 0;
     const updateNoScoreProgress = (prev: FrameData | null, curr: FrameData | null) => {
       if (!prev || !curr) return;
@@ -505,199 +482,138 @@ export class Arc3RealGameRunner {
       timestamp: Date.now(),
     });
 
-    // Create tool context for factory (mutable state accessed by tools via closure)
-    // Streaming context includes harness and reasoning accumulator
-    const toolContext: Arc3ToolContext = {
-      currentFrame,
-      prevFrame,
-      gameGuid,
-      frames,
-      currentFrameNumber,
-      gameId,
-      scorecardId,
-      dbSessionId,
-      apiClient: this.apiClient,
-      updateNoScoreProgress,
-      streaming: {
-        harness: streamHarness as FactoryStreamHarness,
-        state: streamState,
-        agentName,
-      },
-    };
-
-    // Create tools via factory (DRY: eliminates ~285 lines of duplication)
-    // No reset tool for streaming mode
-    const tools = createArc3Tools(toolContext, false);
-
-    // Use shared helper for system prompt + operator guidance
-    const combinedInstructions = buildCombinedInstructions(config);
-    const storeResponse = config.storeResponse ?? true;
-    const frameHash = currentFrame ? this.computeFrameHash(extractLayerStack(currentFrame)) : undefined;
-    const metadata = {
-      sessionId: config.sessionId,
-      gameGuid: gameGuid || undefined,
-      frameHash,
-      frameIndex: String(frames.length - 1),
-      previousResponseId: config.previousResponseId ?? null,
-      systemPromptPresetId: config.systemPromptPresetId ?? null,
-      skipDefaultSystemPrompt: String(config.skipDefaultSystemPrompt ?? false),
-    };
-
-    const agent = new Agent({
-      name: agentName,
-      instructions: combinedInstructions,
-      handoffDescription: 'Operates the ARC-AGI-3 real game interface.',
-      model: config.model ?? DEFAULT_MODEL,
-      modelSettings: {
-        reasoning: {
-          effort: (config.reasoningEffort ?? 'high') as 'minimal' | 'low' | 'medium' | 'high',
-          summary: 'detailed',
-        },
-        text: { verbosity: 'medium' },
-        store: storeResponse,
-        providerData: {
-          metadata,
-        },
-      },
-      tools,
-    });
-
     // Emit agent ready event
+    const systemPrompt = buildCombinedInstructions(config);
     streamHarness.emitEvent("agent.ready", {
       agentName,
       model: config.model ?? DEFAULT_MODEL,
-      instructions: combinedInstructions,
+      instructions: systemPrompt,
       timestamp: Date.now(),
     });
 
-    // Use streaming mode for the agent run
-    const result = await run(
-      agent,
-      `Start playing the ARC-AGI-3 game "${gameId}". Narrate before every tool call, then execute it. Keep using the What I see / What it means / Next move format until you deliver the Final Report.`,
-      {
-        maxTurns,
-        stream: true,
-        previousResponseId: config.previousResponseId,
-      },
-    );
+    // --- Direct LLM call loop (replaces @openai/agents Agent/run + stream loop) ---
+    const history: Arc3RunTimelineEntry[] = [];
+    let finalOutput = '';
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+    let totalRequests = 0;
 
-    // Process streaming events
-    for await (const event of result) {
-      switch (event.type) {
-        case 'raw_model_stream_event':
-          {
-            const eventData = event.data;
+    for (let turn = 0; turn < maxTurns; turn++) {
+      const userMessage =
+        `Current game state:\n${JSON.stringify(currentFrame, null, 2)}\n\n` +
+        `You are playing ARC-AGI-3 game "${gameId}". ` +
+        `Reply with ONLY a JSON object on a single line: {"action": "ACTION1"} or {"action": "ACTION3", "x": 5, "y": 3}. ` +
+        `Valid actions: RESET, ACTION1, ACTION2, ACTION3, ACTION4, ACTION5, ACTION6, ACTION7. ` +
+        `ACTION3-ACTION7 may require x and y coordinates (integers 0-63).`;
 
-            // The Agents SDK wraps Responses API events in event.data.event
-            // when event.data.type === 'model'
-            if (eventData.type === 'model') {
-              const modelEvent = (eventData as any).event;
+      // Emit per-turn thinking event
+      streamHarness.emitEvent("agent.turn_start", {
+        turn,
+        score: currentFrame?.score,
+        state: currentFrame?.state,
+        action_counter: currentFrame?.action_counter,
+        timestamp: Date.now(),
+      });
 
-              // Handle reasoning deltas - extract from nested event structure
-              if (modelEvent?.type === 'response.reasoning_text.delta') {
-                const delta = modelEvent.delta ?? "";
-                streamState.accumulatedReasoning += delta;
-                streamState.reasoningSequence++;
+      let llmResult;
+      try {
+        llmResult = await callLLM({
+          model: config.model ?? DEFAULT_MODEL,
+          system: systemPrompt,
+          user: userMessage,
+          apiKey: (config as any).anthropicApiKey,
+          maxTokens: 512,
+        });
+      } catch (err) {
+        logger.warn(`[ARC3 STREAMING] LLM call failed on turn ${turn}: ${err instanceof Error ? err.message : String(err)}`, 'arc3');
+        streamHarness.emitEvent("agent.error", {
+          turn,
+          error: err instanceof Error ? err.message : String(err),
+          timestamp: Date.now(),
+        });
+        break;
+      }
 
-                streamHarness.emitEvent("agent.reasoning", {
-                  delta,
-                  content: streamState.accumulatedReasoning,
-                  sequence: streamState.reasoningSequence,
-                  contentIndex: modelEvent.content_index,
-                  timestamp: Date.now(),
-                });
-              }
+      totalInputTokens += llmResult.inputTokens;
+      totalOutputTokens += llmResult.outputTokens;
+      totalRequests += 1;
 
-              // Handle reasoning completion
-              if (modelEvent?.type === 'response.reasoning_text.done') {
-                const finalContent = modelEvent.text ?? streamState.accumulatedReasoning;
-                streamState.accumulatedReasoning = finalContent;
+      // Emit agent message
+      streamHarness.emitEvent("agent.message", {
+        agentName,
+        content: llmResult.text,
+        turn,
+        timestamp: Date.now(),
+      });
 
-                streamHarness.emitEvent("agent.reasoning_complete", {
-                  finalContent,
-                  timestamp: Date.now(),
-                });
-              }
-            }
+      // Parse action from LLM response
+      let action: GameAction;
+      try {
+        const match = llmResult.text.match(/\{[^}]+\}/);
+        const parsed = JSON.parse(match?.[0] || '{}') as { action?: string; x?: number; y?: number };
+        action = {
+          action: (parsed.action || 'ACTION1') as GameAction['action'],
+          ...(parsed.x !== undefined ? { x: parsed.x } : {}),
+          ...(parsed.y !== undefined ? { y: parsed.y } : {}),
+        };
+      } catch {
+        action = { action: 'ACTION1' };
+      }
 
-            // Forward raw model events (for debugging/logging)
-            streamHarness.emitEvent("model.stream_event", {
-              eventType: event.data.type,
-              data: event.data,
-              timestamp: Date.now(),
-            });
-          }
-          break;
-        case 'run_item_stream_event':
-          {
-            const { item } = event;
-            const timestamp = Date.now();
+      // Emit tool call event (for UI parity with old agent SDK events)
+      streamHarness.emitEvent("agent.tool_call", {
+        tool: action.action,
+        arguments: action,
+        turn,
+        timestamp: Date.now(),
+      });
 
-            switch (item.type) {
-              case 'message_output_item':
-                streamHarness.emitEvent('agent.message', {
-                  agentName: item.agent.name,
-                  content: item.content,
-                  timestamp,
-                });
-                break;
-              case 'reasoning_item':
-                // Reasoning deltas already handled via raw_model_stream_event; keep UI updated with latest aggregate
-                streamHarness.emitEvent('agent.reasoning', {
-                  content: streamState.accumulatedReasoning,
-                  timestamp,
-                });
-                break;
-              case 'tool_call_item':
-                streamHarness.emitEvent('agent.tool_call', {
-                  tool: 'name' in item.rawItem ? item.rawItem.name : item.rawItem.type,
-                  arguments: 'arguments' in item.rawItem ? item.rawItem.arguments : undefined,
-                  timestamp,
-                });
-                break;
-              case 'tool_call_output_item':
-                streamHarness.emitEvent('agent.tool_result', {
-                  tool: item.rawItem.type,
-                  result: item.output ?? item.rawItem.output ?? item.rawItem,
-                  timestamp,
-                });
-                break;
-              default:
-                streamHarness.emitEvent('agent.run_item', {
-                  itemName: event.name,
-                  item,
-                  timestamp,
-                });
-                break;
-            }
-          }
-          break;
-        case 'agent_updated_stream_event':
-          // Forward agent updates
-          streamHarness.emitEvent("agent.updated", {
-            agent: event.agent,
-            timestamp: Date.now(),
-          });
-          break;
+      history.push({
+        index: turn,
+        type: 'assistant_message',
+        label: `Turn ${turn + 1}`,
+        content: llmResult.text,
+      });
+
+      const nextFrameRaw = await this.apiClient.executeAction(gameId, gameGuid!, action, undefined);
+      const unpackedFrames = unpackFrames(nextFrameRaw);
+      prevFrame = currentFrame;
+      currentFrame = unpackedFrames[unpackedFrames.length - 1];
+      frames.push(...unpackedFrames);
+      updateNoScoreProgress(prevFrame, currentFrame);
+
+      if (dbSessionId) {
+        currentFrameNumber = await this.persistUnpackedFrames(dbSessionId, unpackedFrames, action, prevFrame, currentFrameNumber);
+      }
+
+      // Emit frame update for each unpacked animation frame
+      for (let fi = 0; fi < unpackedFrames.length; fi++) {
+        const isLastFrame = fi === unpackedFrames.length - 1;
+        streamHarness.emitEvent("agent.tool_result", {
+          tool: action.action,
+          result: unpackedFrames[fi],
+          animationFrame: fi,
+          animationTotalFrames: unpackedFrames.length,
+          isLastAnimationFrame: isLastFrame,
+          turn,
+          timestamp: Date.now(),
+        });
+      }
+
+      if (currentFrame.state === 'WIN' || currentFrame.state === 'GAME_OVER') {
+        finalOutput = `Game ended: ${currentFrame.state}`;
+        break;
       }
     }
 
-    // Process final timeline entries using extracted utility (eliminates duplication)
-    const timeline = processRunItemsWithReasoning(result.newItems, agentName, streamState.accumulatedReasoning);
-
-    // Get final frame from context (tools mutate context during run)
-    const finalFrame = toolContext.currentFrame;
-    const finalGameGuid = toolContext.gameGuid;
-
     // Close scorecard when game reaches terminal state (per audit: must close after WIN/GAME_OVER)
-    // Sessions remain open for continuations ONLY if game is still in progress
-    if (finalFrame && (finalFrame.state === 'WIN' || finalFrame.state === 'GAME_OVER')) {
+    if (currentFrame && (currentFrame.state === 'WIN' || currentFrame.state === 'GAME_OVER')) {
       try {
         await this.apiClient.closeScorecard(scorecardId);
-        logger.info(`[ARC3 STREAMING] Closed scorecard ${scorecardId} - game ended with ${finalFrame.state}`, 'arc3');
+        logger.info(`[ARC3 STREAMING] Closed scorecard ${scorecardId} - game ended with ${currentFrame.state}`, 'arc3');
         streamHarness.emitEvent("scorecard.closed", {
           scorecardId,
-          finalState: finalFrame.state,
+          finalState: currentFrame.state,
           timestamp: Date.now(),
         });
       } catch (error) {
@@ -705,57 +621,47 @@ export class Arc3RealGameRunner {
       }
     }
 
-    const usage = result.state._context.usage;
-    const finalOutputCandidate = result.finalOutput;
-    const finalOutput = typeof finalOutputCandidate === 'string'
-      ? finalOutputCandidate
-      : extractAllTextOutput(result.newItems);
-
-    // Create summary from the last frame (should always exist since we start the game before agent runs)
-    // Use shared helper for summary building (DRY: eliminates duplicated mapState + summary construction)
-    if (finalFrame === null) {
+    if (currentFrame === null) {
       throw new Error('No frame data available - game did not start properly');
     }
 
-    const summary = buildRunSummary(finalFrame, gameId, toolContext.frames.length);
-
+    const summary = buildRunSummary(currentFrame, gameId, frames.length);
     const generatedRunId = randomUUID();
-    const providerResponseId = result.lastResponseId ?? null;
 
     // Emit completion event with scorecard ID for session continuation
     streamHarness.emitEvent("agent.completed", {
       runId: generatedRunId,
-      gameGuid: finalGameGuid || 'unknown',  // Include game session guid for continuation
-      scorecardId,  // CRITICAL: Include scorecard ID for continuation requests
+      gameGuid: gameGuid || 'unknown',
+      scorecardId,
       finalOutput,
       summary,
       usage: {
-        requests: usage.requests,
-        inputTokens: usage.inputTokens,
-        outputTokens: usage.outputTokens,
-        totalTokens: usage.totalTokens,
+        requests: totalRequests,
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+        totalTokens: totalInputTokens + totalOutputTokens,
       },
-      timelineLength: timeline.length,
-      frameCount: toolContext.frames.length,
-      providerResponseId,
+      timelineLength: history.length,
+      frameCount: frames.length,
+      providerResponseId: null,
       timestamp: Date.now(),
     });
 
     return {
       runId: generatedRunId,
-      gameGuid: finalGameGuid || 'unknown',
-      scorecardId,  // CRITICAL: Return scorecard ID for session continuation
-      finalOutput: finalOutput?.trim() ? finalOutput.trim() : undefined,
-      timeline,
-      frames: toolContext.frames as any[],  // Arc3AgentRunResult accepts any[] for frames
+      gameGuid: gameGuid || 'unknown',
+      scorecardId,
+      finalOutput: finalOutput.trim() || undefined,
+      timeline: history,
+      frames: frames as any[],
       summary,
       usage: {
-        requests: usage.requests,
-        inputTokens: usage.inputTokens,
-        outputTokens: usage.outputTokens,
-        totalTokens: usage.totalTokens,
+        requests: totalRequests,
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+        totalTokens: totalInputTokens + totalOutputTokens,
       },
-      providerResponseId,
+      providerResponseId: null,
     };
   }
 }
