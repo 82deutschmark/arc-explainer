@@ -1,8 +1,10 @@
 /**
+ * Author: Claude Sonnet 4.6 (Bubba) — OAuth support added 25-March-2026
  * Anthropic Claude service for analyzing ARC puzzles using Claude models
  * Refactored to extend BaseAIService for code consolidation
  * 
  * @author Cascade / Gemini Pro 2.5 (original), Claude (refactor)
+ * SRP/DRY check: Pass — OAuth detection helper added; existing analysis logic unchanged.
  */
 
 import Anthropic from "@anthropic-ai/sdk";
@@ -18,6 +20,35 @@ function modelSupportsTemperature(modelKey: string): boolean {
   const modelConfig = MODEL_CONFIGS.find(m => m.key === modelKey);
   return modelConfig?.supportsTemperature ?? false;
 }
+
+/**
+ * Build an Anthropic client that supports both standard API keys and Claude Code OAuth tokens.
+ * 
+ * OAuth tokens (sk-ant-oat01- prefix) require:
+ *   - anthropic-beta: oauth-2025-04-20 header
+ *   - System preamble: "You are Claude Code, Anthropic's official CLI for Claude."
+ * 
+ * Reference: sonpham-arc3/llm_providers_anthropic.py:20-55
+ */
+function buildAnthropicClient(apiKey?: string): { client: Anthropic; isOAuth: boolean } {
+  const key = apiKey || process.env.ANTHROPIC_API_KEY || '';
+  const isOAuth = key.startsWith('sk-ant-oat01-') || key.startsWith('sk-ant-oat-');
+
+  if (isOAuth) {
+    const client = new Anthropic({
+      apiKey: key,
+      defaultHeaders: {
+        'anthropic-beta': 'oauth-2025-04-20',
+      },
+    });
+    return { client, isOAuth: true };
+  }
+
+  return { client: new Anthropic({ apiKey: key }), isOAuth: false };
+}
+
+/** Claude Code system preamble injected when using OAuth tokens */
+const OAUTH_SYSTEM_PREAMBLE = "You are Claude Code, Anthropic's official CLI for Claude.";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -270,8 +301,19 @@ export class AnthropicService extends BaseAIService {
       ...(supportsTemp && { temperature }),
     };
 
+    // OAuth support: detect OAuth token and inject preamble + use OAuth-aware client
+    const { client: anthropicClient, isOAuth } = buildAnthropicClient(process.env.ANTHROPIC_API_KEY);
+    if (isOAuth && requestBody.system) {
+      requestBody.system = `${OAUTH_SYSTEM_PREAMBLE}\n\n${requestBody.system}`;
+    } else if (isOAuth && !requestBody.system) {
+      requestBody.system = OAUTH_SYSTEM_PREAMBLE;
+    }
+
     this.logAnalysisStart(modelKey, temperature, userPrompt.length, serviceOpts);
     console.log(`[${this.provider}] Using Tool Use API to enforce structured output with required reasoningItems`);
+    if (isOAuth) {
+      console.log(`[${this.provider}] OAuth token detected — beta header + system preamble injected`);
+    }
 
     const startTime = Date.now();
     
@@ -285,7 +327,7 @@ export class AnthropicService extends BaseAIService {
         console.log(`[${this.provider}] Using streaming for model ${modelKey}`);
 
         // Create a streaming request
-        const stream = anthropic.messages.stream({
+        const stream = anthropicClient.messages.stream({
           ...requestBody,
           stream: true
         });
@@ -307,7 +349,7 @@ export class AnthropicService extends BaseAIService {
     } else {
       // Standard non-streaming request
       console.log(`[${this.provider}] Using standard request for model ${modelKey}`);
-      response = await anthropic.messages.create({
+      response = await anthropicClient.messages.create({
         ...requestBody,
         stream: false
       });
