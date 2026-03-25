@@ -252,6 +252,40 @@ const STATIC_MODELS: ModelConfig[] = [
 
   // Anthropic Models
   {
+    key: 'claude-sonnet-4-6',
+    name: 'Claude Sonnet 4.6',
+    color: 'bg-indigo-600',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
+    isReasoning: true,
+    apiModelName: 'claude-sonnet-4-6',
+    modelType: 'claude',
+    contextWindow: 200000,
+    maxOutputTokens: 64000,
+    releaseDate: "2026-03",
+    notes: 'Current production Sonnet. Recommended for ARC-AGI-3 benchmarking.'
+  },
+  {
+    key: 'claude-haiku-4-6',
+    name: 'Claude Haiku 4.6',
+    color: 'bg-indigo-300',
+    premium: false,
+    cost: { input: '$1.00', output: '$5.00' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: false,
+    apiModelName: 'claude-haiku-4-6',
+    modelType: 'claude',
+    contextWindow: 200000,
+    maxOutputTokens: 16000,
+    releaseDate: "2026-03",
+    notes: 'Current production Haiku. Recommended default for ARC-AGI-3 high-volume runs.'
+  },
+  {
     key: 'claude-sonnet-4-20250514',
     name: 'Claude Sonnet 4',
     color: 'bg-indigo-500',

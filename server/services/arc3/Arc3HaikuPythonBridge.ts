@@ -14,7 +14,7 @@ import { logger } from '../../utils/logger.ts';
 
 export interface Arc3HaikuPayload {
   game_id: string;
-  model?: string;                // Default: claude-3-5-haiku-20241022
+  model?: string;                // Default: claude-haiku-4-6
   max_turns?: number;
   anthropic_api_key?: string;    // Anthropic API key (BYOK)
   arc3_api_key?: string;         // ARC3 API key
@@ -99,7 +99,7 @@ export class Arc3HaikuPythonBridge {
         'arc3-haiku'
       );
       logger.info(
-        `[Arc3Haiku] Game: ${payload.game_id}, Model: ${payload.model || 'claude-3-5-haiku-20241022'}`,
+        `[Arc3Haiku] Game: ${payload.game_id}, Model: ${payload.model || 'claude-haiku-4-6'}`,
         'arc3-haiku'
       );
 
