@@ -252,6 +252,23 @@ const STATIC_MODELS: ModelConfig[] = [
 
   // Anthropic Models
   {
+    key: 'claude-opus-4-6',
+    name: 'Claude Opus 4.6',
+    color: 'bg-indigo-900',
+    premium: true,
+    cost: { input: '$5.00', output: '$25.00' },
+    supportsTemperature: true,
+    provider: 'Anthropic',
+    responseTime: { speed: 'slow', estimate: '2-5 min' },
+    isReasoning: true,
+    apiModelName: 'claude-opus-4-6',
+    modelType: 'claude',
+    contextWindow: 200000,
+    maxOutputTokens: 32000,
+    releaseDate: "2026-03",
+    notes: 'EXPENSIVE: $5/M input, $25/M output. Use sparingly for benchmarking only.'
+  },
+  {
     key: 'claude-sonnet-4-6',
     name: 'Claude Sonnet 4.6',
     color: 'bg-indigo-600',
@@ -1120,6 +1137,55 @@ const STATIC_MODELS: ModelConfig[] = [
   },
 
   // Anthropic Models (via OpenRouter)
+  {
+    key: 'anthropic/claude-opus-4-6',
+    name: 'Claude Opus 4.6 (OpenRouter)',
+    color: 'bg-indigo-900',
+    premium: true,
+    cost: { input: '$5.00', output: '$25.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'slow', estimate: '2-5 min' },
+    isReasoning: true,
+    apiModelName: 'anthropic/claude-opus-4-6',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 32000,
+    releaseDate: "2026-03",
+    notes: 'EXPENSIVE: $5/M input, $25/M output. Use sparingly for benchmarking only.'
+  },
+  {
+    key: 'anthropic/claude-sonnet-4-6',
+    name: 'Claude Sonnet 4.6 (OpenRouter)',
+    color: 'bg-indigo-600',
+    premium: true,
+    cost: { input: '$3.00', output: '$15.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'moderate', estimate: '1-3 min' },
+    isReasoning: true,
+    apiModelName: 'anthropic/claude-sonnet-4-6',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 64000,
+    releaseDate: "2026-03"
+  },
+  {
+    key: 'anthropic/claude-haiku-4-6',
+    name: 'Claude Haiku 4.6 (OpenRouter)',
+    color: 'bg-indigo-300',
+    premium: false,
+    cost: { input: '$1.00', output: '$5.00' },
+    supportsTemperature: true,
+    provider: 'OpenRouter',
+    responseTime: { speed: 'fast', estimate: '<30 sec' },
+    isReasoning: false,
+    apiModelName: 'anthropic/claude-haiku-4-6',
+    modelType: 'openrouter',
+    contextWindow: 200000,
+    maxOutputTokens: 16000,
+    releaseDate: "2026-03"
+  },
   {
     key: 'anthropic/claude-opus-4.5',
     name: 'Claude Opus 4.5 (OpenRouter)',
