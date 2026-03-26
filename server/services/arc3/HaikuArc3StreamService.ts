@@ -19,7 +19,7 @@ import {
 
 export interface HaikuStreamPayload {
   game_id: string;
-  model?: string;                // Default: claude-3-5-haiku-20241022
+  model?: string;                // Default: claude-haiku-4-6
   max_turns?: number;
   anthropic_api_key?: string;    // Anthropic API key (BYOK)
   arc3_api_key?: string;         // ARC3 API key (optional BYOK)
@@ -119,7 +119,7 @@ export class HaikuArc3StreamService {
     sseStreamManager.sendEvent(sessionId, 'stream.init', {
       state: 'starting',
       game_id,
-      model: model || 'claude-3-5-haiku-20241022',
+      model: model || 'claude-haiku-4-6',
       provider: 'anthropic',
       agentName: agent_name || 'Haiku 4.5 Agent',
     });
@@ -133,7 +133,7 @@ export class HaikuArc3StreamService {
     // Build payload for Python runner
     const pythonPayload: Arc3HaikuPayload = {
       game_id,
-      model: model || 'claude-3-5-haiku-20241022',
+      model: model || 'claude-haiku-4-6',
       max_turns: max_turns ?? 80,
       anthropic_api_key: anthropic_api_key,
       arc3_api_key: arc3_api_key || process.env.ARC3_API_KEY,

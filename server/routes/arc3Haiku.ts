@@ -18,7 +18,7 @@ const router = Router();
 // Validation schema for stream prepare request
 const prepareSchema = z.object({
   game_id: z.string().min(1, 'game_id is required'),
-  model: z.string().default('claude-3-5-haiku-20241022'),
+  model: z.string().default('claude-haiku-4-6'),
   max_turns: z.number().int().min(1).max(500).optional().default(80),
   anthropic_api_key: z.string().optional(),   // Anthropic BYOK
   arc3_api_key: z.string().optional(),        // ARC3 API key BYOK
@@ -125,7 +125,7 @@ router.get(
     res.json(formatResponse.success({
       status: 'healthy',
       provider: 'anthropic',
-      model: 'claude-3-5-haiku-20241022',
+      model: 'claude-haiku-4-6',
       hasAnthropicKey,
       hasArc3Key,
       timestamp: Date.now(),

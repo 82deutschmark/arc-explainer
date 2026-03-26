@@ -40,8 +40,11 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'allenai/olmo-3.1-32b-think',
   'amazon/nova-2-lite-v1',
   'amazon/nova-premier-v1',
+  // anthropic/claude-haiku-4-6 — not in OpenRouter catalog yet (added to models.ts as direct Anthropic)
   'anthropic/claude-haiku-4.5',
+  // anthropic/claude-opus-4-6 — not in OpenRouter catalog yet (added to models.ts as direct Anthropic)
   'anthropic/claude-opus-4.5',
+  // anthropic/claude-sonnet-4-6 — not in OpenRouter catalog yet (added to models.ts as direct Anthropic)
   'anthropic/claude-sonnet-4.5',
   'arcee-ai/trinity-large-preview:free',
   'arcee-ai/trinity-mini:free',
