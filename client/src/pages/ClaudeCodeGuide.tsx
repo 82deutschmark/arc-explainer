@@ -278,6 +278,45 @@ const response = await client.messages.create({
           </pre>
         </section>
 
+        {/* Quota Structure */}
+        <section className="mb-10 rounded-lg border border-slate-800 bg-slate-900/60 p-6">
+          <h2 className="text-xl font-semibold text-slate-100 mb-4">Quota Structure</h2>
+          <p className="text-slate-300 text-sm mb-5">
+            Claude Max / Claude Code subscriptions track usage in three independent rolling windows:
+          </p>
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-700">
+                  <th className="text-left py-2 pr-6 font-semibold text-slate-400">Window</th>
+                  <th className="text-left py-2 font-semibold text-slate-400">Description</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800">
+                <tr>
+                  <td className="py-2.5 pr-6"><code className="font-mono text-xs text-amber-400">5h</code></td>
+                  <td className="py-2.5 text-slate-400 text-sm">5-hour rolling window. Resets 5 hours from the first request in the window.</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 pr-6"><code className="font-mono text-xs text-amber-400">7d</code></td>
+                  <td className="py-2.5 text-slate-400 text-sm">7-day rolling window across all models. Resets 7 days from the start of the window.</td>
+                </tr>
+                <tr>
+                  <td className="py-2.5 pr-6"><code className="font-mono text-xs text-amber-400">7d_sonnet</code></td>
+                  <td className="py-2.5 text-slate-400 text-sm">Sonnet-specific 7-day window. Only increments on Sonnet calls that include the required system prompt prefix.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="text-slate-400 text-sm mb-3">All three values are returned as percentages (0.0–1.0) on every response, including errors:</p>
+          <pre className="bg-slate-800 rounded p-4 text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed">
+            <code>{`anthropic-ratelimit-unified-5h-utilization: 0.12
+anthropic-ratelimit-unified-7d-utilization: 0.45
+anthropic-ratelimit-unified-7d_sonnet-utilization: 0.67`}</code>
+          </pre>
+          <p className="text-slate-400 text-sm mt-4">The corresponding <code className="bg-slate-800 px-1 py-0.5 rounded font-mono text-xs">-remaining</code> headers return absolute token counts remaining in each window.</p>
+        </section>
+
         {/* Footer */}
         <div className="border-t border-slate-800 pt-8 mt-4">
           <Link
