@@ -64,9 +64,9 @@ function GameNotFound({ gameId }: { gameId: string }) {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <Button variant="ghost" size="sm" className="mb-4">
-        <Link href="/arc3/archive/games">
+        <Link href="/arc3">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Archived Games
+          Back to ARC-AGI-3
         </Link>
       </Button>
       <Card className="text-center py-12">
@@ -114,7 +114,7 @@ export default function Arc3GameSpoiler() {
     description: game
       ? `Spoilers, mechanics, and any hints or resources we've documented so far for ARC-AGI-3 game ${game.gameId}${game.informalName ? ` (${game.informalName})` : ''}. ${game.description}`
       : `Game not found in the ARC-AGI-3 database.`,
-    canonicalPath: `/arc3/archive/games/${gameId}`,
+    canonicalPath: `/arc3/games/${gameId}`,
   });
 
   if (!game) {
@@ -437,9 +437,9 @@ export default function Arc3GameSpoiler() {
         <CardContent className="py-4">
           <div className="flex flex-wrap gap-3 justify-center">
             <Button asChild variant="outline" size="sm">
-              <Link href="/arc3/games">
+              <Link href="/arc3">
                 <ArrowLeft className="h-4 w-4 mr-1" />
-                All Games
+                ARC-AGI-3
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm">
