@@ -15,7 +15,6 @@ import { ExternalLink, BookOpen, Gamepad2, Trophy, ArrowRight } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { Arc3Timeline, type TimelineEntry } from '@/components/arc3/Arc3Timeline';
-import { getAllGames } from '../../../shared/arc3Games';
 
 /* ------------------------------------------------------------------ */
 /*  Timeline data                                                      */
@@ -23,15 +22,15 @@ import { getAllGames } from '../../../shared/arc3Games';
 
 const TIMELINE_ENTRIES: TimelineEntry[] = [
   {
-    date: 'July 2025',
-    title: 'The Preview Competition Launches',
+    date: 'Late July 2025',
+    title: 'Three Preview Games Drop',
     emphasis: 'past',
     description: (
       <>
         <p className="mb-2">
-          ARC Prize announced ARC-AGI-3 with a preview agent competition and released six games
-          to the public: <strong>ls20</strong> (Locksmith), <strong>as66</strong>, <strong>ft09</strong>,{' '}
-          <strong>lp85</strong>, <strong>sp80</strong>, and <strong>vc33</strong>.
+          ARC Prize announced ARC-AGI-3 and launched a preview agent competition. Three games
+          were released publicly: <strong>ls20</strong> (Locksmith), <strong>as66</strong> (Always
+          Sliding), and <strong>ft09</strong> (Functional Tiles).
         </p>
         <p>
           These were the first interactive reasoning benchmarks anyone had seen. No instructions,
@@ -42,24 +41,39 @@ const TIMELINE_ENTRIES: TimelineEntry[] = [
     ),
   },
   {
-    date: 'August – December 2025',
-    title: 'The Community Digs In',
+    date: 'August 2025',
+    title: 'The Evaluation Set Is Revealed',
     emphasis: 'past',
     description: (
       <>
         <p className="mb-2">
-          Researchers and hobbyists built agents, documented game mechanics, and shared strategies.
-          This site published detailed breakdowns of each preview game — action mappings, level
-          screenshots, and mechanic explanations written in plain language.
+          Three more games were released as the <strong>evaluation set</strong> from the preview:{' '}
+          <strong>lp85</strong> (Loop and Pull), <strong>sp80</strong> (Streaming Purple),
+          and <strong>vc33</strong> (Volume Control). Agents were scored against these held-back
+          games — games they hadn't been able to practice on.
         </p>
+        <p>
+          With six games now public, this site began publishing detailed breakdowns: action
+          mappings, level screenshots, and mechanic explanations written in plain language.
+        </p>
+      </>
+    ),
+  },
+  {
+    date: 'Late 2025',
+    title: 'StochasticGoose Wins the Preview',
+    emphasis: 'past',
+    description: (
+      <>
         <p className="mb-2">
           Dries Smit's <strong>StochasticGoose</strong> agent won the preview competition,
           demonstrating that systematic exploration combined with reasoning could crack games
           that stumped most AI systems.
         </p>
         <p>
-          During this period, the public game set was adjusted — some games were updated or
-          rotated as the ARC Prize team iterated on the benchmark design.
+          Researchers and hobbyists continued building agents and sharing strategies. The
+          preview period proved that interactive game-playing was a viable — and difficult —
+          benchmark for AI.
         </p>
       </>
     ),
@@ -72,10 +86,16 @@ const TIMELINE_ENTRIES: TimelineEntry[] = [
       <>
         <p className="mb-2">
           The full ARC Prize game engine (<strong>ARCEngine</strong>) was released as open source.
-          The game catalog expanded from 6 to over 40 titles, all playable in the browser via
-          Pyodide (Python running in WebAssembly).
+          The game catalog expanded to over 40 titles, all playable in the browser via Pyodide
+          (Python running in WebAssembly).
         </p>
         <p className="mb-2">
+          One notable absence: <strong>as66</strong> (Always Sliding) did not appear in the new
+          catalog. This may indicate it's part of the held-back evaluation set for the 2026
+          competition, or that it was retired. Either way, it makes our documentation of that game
+          especially interesting — we may have research on a game that's no longer publicly available.
+        </p>
+        <p>
           Son Pham built{' '}
           <a
             href="https://arc3.sonpham.net"
@@ -85,12 +105,8 @@ const TIMELINE_ENTRIES: TimelineEntry[] = [
           >
             arc3.sonpham.net
           </a>
-          {' '}— the reference harness for playing ARC-AGI-3 games and running AI agents against
+          {' '}— an open-source harness for playing ARC-AGI-3 games and running AI agents against
           them, with multi-provider LLM support, a Python sandbox, and replay sharing.
-        </p>
-        <p>
-          The benchmark was now wide open. The question shifted from "can AI solve these six games?"
-          to "can AI generalize across dozens of novel, diverse games it has never seen before?"
         </p>
       </>
     ),
@@ -102,13 +118,14 @@ const TIMELINE_ENTRIES: TimelineEntry[] = [
     description: (
       <>
         <p className="mb-2">
-          ARC-AGI-3 is an active benchmark with an expanding game catalog. The ARC Prize 2026
-          competition is underway, and the community is building increasingly sophisticated agents.
+          ARC-AGI-3 is an active benchmark with a growing game catalog. The ARC Prize 2026
+          competition is underway, and the question has shifted from "can AI solve these six games?"
+          to "can AI generalize across dozens of novel, diverse games it has never seen before?"
         </p>
         <p>
-          AI performance varies widely across games — some games are nearly solved, others remain
-          beyond the reach of current systems. The gap between human and AI performance on novel
-          games remains the central question ARC Prize is trying to measure.
+          AI performance varies widely — some games are nearly solved, others remain beyond the
+          reach of current systems. The gap between human and AI performance on novel games is
+          the central thing ARC Prize is trying to measure.
         </p>
       </>
     ),
@@ -119,18 +136,55 @@ const TIMELINE_ENTRIES: TimelineEntry[] = [
 /*  Preview game data (the 6 original games)                           */
 /* ------------------------------------------------------------------ */
 
-const PREVIEW_GAME_SUMMARIES: Array<{
+interface GameSummary {
   gameId: string;
   name: string;
   oneLiner: string;
-}> = [
+  note?: string;
+}
+
+const PREVIEW_GAMES: GameSummary[] = [
   { gameId: 'ls20', name: 'Locksmith', oneLiner: 'Navigate a maze, transform a key to match the door\'s lock, and escape.' },
-  { gameId: 'ft09', name: 'FT09', oneLiner: 'Fog-of-war puzzle with hidden mechanics and multi-step reasoning.' },
-  { gameId: 'as66', name: 'AS66', oneLiner: 'Pattern recognition under ambiguity — early community favorite.' },
-  { gameId: 'lp85', name: 'LP85', oneLiner: 'Spatial reasoning challenge with layered puzzle mechanics.' },
-  { gameId: 'sp80', name: 'SP80', oneLiner: 'Complex multi-level game that proved difficult for early agents.' },
-  { gameId: 'vc33', name: 'VC33', oneLiner: 'Visual correspondence game testing object tracking and memory.' },
+  { gameId: 'as66', name: 'Always Sliding', oneLiner: 'Slide a block to the exit while matching colors and dodging enemies.', note: 'Missing from the March 2026 catalog — possibly held back for evaluation.' },
+  { gameId: 'ft09', name: 'Functional Tiles', oneLiner: 'Click tiles to match a reference pattern. Colors have a dominance hierarchy.' },
 ];
+
+const EVALUATION_GAMES: GameSummary[] = [
+  { gameId: 'lp85', name: 'Loop and Pull', oneLiner: 'Align blocks to target positions by toggling loop controls. Gets complex fast.' },
+  { gameId: 'sp80', name: 'Streaming Purple', oneLiner: 'Position platforms to guide a falling purple stream into containers without spilling.' },
+  { gameId: 'vc33', name: 'Volume Control', oneLiner: 'Manage a hydraulic system — shift liquid between columns to transport player blocks.' },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Shared sub-components                                              */
+/* ------------------------------------------------------------------ */
+
+function GameRow({ game }: { game: GameSummary }) {
+  return (
+    <Link
+      href={`/arc3/games/${game.gameId}`}
+      className="group flex items-start gap-4 p-4 -mx-4 rounded-lg hover:bg-muted/50 transition-colors"
+    >
+      <code className="text-sm font-mono font-bold text-foreground bg-muted px-2 py-1 rounded shrink-0 mt-0.5">
+        {game.gameId}
+      </code>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-foreground group-hover:underline">
+          {game.name}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {game.oneLiner}
+        </p>
+        {game.note && (
+          <p className="text-xs text-muted-foreground/70 italic mt-1">
+            {game.note}
+          </p>
+        )}
+      </div>
+      <ArrowRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-foreground shrink-0 mt-1.5 transition-colors" />
+    </Link>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  Page component                                                     */
@@ -198,32 +252,28 @@ export default function Arc3Story() {
 
       {/* ── The Preview Games ────────────────────────────────── */}
       <section className="mb-16">
-        <h2 className="text-2xl font-bold mb-2">The Six Preview Games</h2>
+        <h2 className="text-2xl font-bold mb-2">The Six Preview-Era Games</h2>
         <p className="text-sm text-muted-foreground mb-6">
-          These are the games released during the preview competition in mid-2025. We documented
-          their mechanics extensively at the time. The games have since been updated — screenshots
+          These are the games from the preview competition in mid-2025. We documented their
+          mechanics extensively at the time. The games have since been updated — screenshots
           and details from this period may not match current versions.
         </p>
-        <div className="grid gap-3">
-          {PREVIEW_GAME_SUMMARIES.map((game) => (
-            <Link
-              key={game.gameId}
-              href={`/arc3/games/${game.gameId}`}
-              className="group flex items-start gap-4 p-4 -mx-4 rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <code className="text-sm font-mono font-bold text-foreground bg-muted px-2 py-1 rounded shrink-0 mt-0.5">
-                {game.gameId}
-              </code>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-foreground group-hover:underline">
-                  {game.name}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {game.oneLiner}
-                </p>
-              </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-foreground shrink-0 mt-1.5 transition-colors" />
-            </Link>
+
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+          Preview Set (public from the start)
+        </h3>
+        <div className="grid gap-1 mb-8">
+          {PREVIEW_GAMES.map((game) => (
+            <GameRow key={game.gameId} game={game} />
+          ))}
+        </div>
+
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+          Evaluation Set (revealed later)
+        </h3>
+        <div className="grid gap-1">
+          {EVALUATION_GAMES.map((game) => (
+            <GameRow key={game.gameId} game={game} />
           ))}
         </div>
       </section>
