@@ -51,6 +51,7 @@ import Arc3CodexPlayground from "@/pages/Arc3CodexPlayground";
 import Arc3HaikuPlayground from "@/pages/Arc3HaikuPlayground";
 import Arc3GamesBrowser from "@/pages/Arc3GamesBrowser";
 import Arc3GameSpoiler from "@/pages/Arc3GameSpoiler";
+import Arc3Story from "@/pages/Arc3Story";
 import { 
   Arc3ArchiveLanding, 
   Arc3ArchivePlayground 
@@ -88,7 +89,7 @@ import LandingPage from "@/pages/LandingPage";
 function LegacyArc3GameRedirect() {
   const params = useParams<{ gameId: string }>();
   const gameId = params.gameId ?? "";
-  return <Redirect to={`/arc3/archive/games/${gameId}`} />;
+  return <Redirect to={`/arc3/games/${gameId}`} />;
 }
 
 function Router() {
@@ -141,20 +142,19 @@ function Router() {
         <Route path="/cc" component={ClaudeCodeGuide} />
         <Route path="/llm-reasoning" component={LLMReasoning} />
         <Route path="/llm-reasoning/advanced" component={LLMReasoningAdvanced} />
-        {/* ARC3 Community - user-uploaded games platform (new main landing) */}
-        <Route path="/arc3" component={CommunityLanding} />
+        {/* ARC3 - Story & explainer page (primary landing) */}
+        <Route path="/arc3" component={Arc3Story} />
+        <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
+        {/* ARC3 Community - game play, gallery, uploads (secondary) */}
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/arc3/gallery" component={CommunityGallery} />
         <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
         <Route path="/arc3/upload" component={GameSubmissionPage} />
-        {/* Legacy ARC3 games now hosted under archive root */}
-        <Route path="/arc3/archive" component={Arc3ArchiveLanding} />
-        <Route path="/arc3/archive/games" component={Arc3GamesBrowser} />
-        <Route path="/arc3/archive/games/:gameId" component={Arc3GameSpoiler} />
+        {/* Legacy archive routes - redirect to new structure */}
+        <Route path="/arc3/archive" component={() => <Redirect to="/arc3" />} />
+        <Route path="/arc3/archive/games" component={() => <Redirect to="/arc3" />} />
+        <Route path="/arc3/archive/games/:gameId" component={LegacyArc3GameRedirect} />
         <Route path="/arc3/archive/playground" component={Arc3ArchivePlayground} />
-        {/* Legacy path redirects */}
-        <Route path="/arc3/games" component={() => <Redirect to="/arc3/archive/games" />} />
-        <Route path="/arc3/games/:gameId" component={LegacyArc3GameRedirect} />
         {/* RE-ARC - self-service dataset generation and evaluation */}
         <Route path="/re-arc" component={ReArc} />
         <Route path="/re-arc/submissions" component={ReArcSubmissions} />

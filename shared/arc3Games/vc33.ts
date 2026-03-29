@@ -13,7 +13,7 @@ export const vc33: Arc3GameMetadata = {
   informalName: 'Volume Control',
   description: 'Manage white columns as a liquid system to transport player squares to objectives.',
   mechanicsExplanation: 'The white columns function like liquid or water within a closed system. Clicking red or blue controller squares causes the "liquid" to flow from one contained area to another. Large player squares (yellow, green, purple) cannot be manually selected; instead, they automatically move when the path is cleared. If a player square is sitting on a white column, it will rise or fall with the column height, similar to a person sitting on top of a tube of liquid.',
-  category: 'preview',
+  category: 'evaluation',
   difficulty: 'medium',
   actionMappings: [
     { action: 'ACTION6', description: 'Click controller (Red/Blue) to shift liquid/height', commonName: 'Click' },

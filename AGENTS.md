@@ -24,7 +24,7 @@
 ---
 
 ## 1. Mission & Critical Warnings
-- THE SYMBOLS ✗ and ✔ (and ✅☑ variants) are forbidden. We are on Windows—ensure proper UTF-8 everywhere.
+
 - Always understand state transitions: as soon as an action begins, collapse/disable prior controls and reveal live streaming states. Never leave static or bloated UI stuck on screen.
 - Every TypeScript or Python file you create or edit must start with this header (update it whenever you touch the file):
   ```
