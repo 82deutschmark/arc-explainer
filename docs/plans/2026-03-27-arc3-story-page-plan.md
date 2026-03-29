@@ -1,70 +1,147 @@
-# ARC3 Story Page Redesign Plan
+# ARC3 Explainer Page Redesign
 
-**Author:** Cascade (Claude Sonnet 4)
-**Date:** 2026-03-27
+**Author:** Cascade (Claude Opus 4.6 thinking)
+**Date:** 2026-03-29
 **Branch:** arc3
-**Status:** In progress
+**Status:** Awaiting approval
 
 ---
 
-## Goal
+## Context
 
-Replace the current ARC3 landing page (game launcher UI) with an editorial, timeline-focused story page that explains what ARC-AGI-3 is, how it evolved, and how it works. Direct users to arc3.sonpham.net for playing games and running agents.
+The `/arc3` route currently renders `CommunityLanding.tsx` — a pixel-art themed game launcher with "Play" buttons, game upload, and palette legends. This was appropriate when ARC Explainer hosted its own game harness, but Son Pham's [arc3.sonpham.net](https://arc3.sonpham.net) now handles game play and agent testing far better than we can. Our role is the **explainer**: what ARC-AGI-3 is, how it evolved, what we documented, and where to go next.
 
-## Editorial Direction
+The first attempt at this page (committed 2026-03-27) produced a marketing-style landing page with big hero text, lots of whitespace, and a decorative vertical timeline component. That was the wrong vibe. The user wants something closer to the `/cc` page (ClaudeCodeGuide.tsx) — dense, dark, bordered sections, tables for structured data, technical blog-post energy.
 
-The frame is: **"We've been watching this since the beginning. Here's what we learned."**
+### Design reference: `/cc` (ClaudeCodeGuide.tsx)
+- Dark: `bg-slate-950 text-slate-100`
+- Sections: `rounded-lg border border-slate-800 bg-slate-900/60 p-6` with `h2` headings
+- Tables: `w-full text-sm` with `divide-y divide-slate-800` rows
+- Code: `bg-slate-800 rounded p-4 text-xs font-mono text-green-400`
+- Max width: `max-w-4xl`
+- No hero, no CTAs, no gradient text, no cards
 
-Target audience: smart non-technical people who want to understand ARC-AGI-3.
+---
 
-## New Page Structure: `/arc3` (Arc3Story.tsx)
+## Scope
 
-1. **Hero** — Title, one-sentence hook, single striking visual (replay canvas or screenshot)
-2. **What is ARC-AGI-3?** — 3-4 paragraphs, no jargon. Interactive games, no instructions, figure it out.
-3. **Timeline** — Vertical timeline component:
-   - Jul-Aug 2025: Preview competition launches (6 games)
-   - Late 2025: Game set reduced, community analysis
-   - Mar 2026: Full ARCEngine released (40+ games)
-   - Current: Where things stand
-4. **The Preview Games** — Compact cards for the 6 original games linking to spoiler pages
-5. **How Scoring Works** — Brief section (needs research to fill in accurately)
-6. **Play & Explore** — CTA section directing to arc3.sonpham.net and three.arcprize.org
-7. **External Resources** — Compact links section (official platform, docs, StochasticGoose writeup)
+**In scope:**
+- Rewrite `Arc3Story.tsx` with dense, `/cc`-style layout
+- Present useful links and navigation at the top (not buried at the bottom)
+- Compact timeline as a table, not a vertical dot-and-line component
+- Game reference table with the 6 preview-era games, linking to spoiler pages
+- Brief "what is this" section — 2-3 short paragraphs, not a marketing pitch
+- Brief scoring section (honest about gaps in our knowledge)
+- AS66's notable absence from the March 2026 catalog
 
-## Route Changes
+**Out of scope (this pass):**
+- Restyling `Arc3GameSpoiler.tsx` (separate task)
+- Removing/archiving old pages (`CommunityLanding`, `ARC3Browser`, etc.)
+- Playground redirect changes
+- Researching competition scoring details (flagged as a content gap, filled in later)
 
-| Route | Before | After |
-|-------|--------|-------|
-| `/arc3` | CommunityLanding (game launcher) | **Arc3Story** (new story page) |
-| `/arc3/games/:gameId` | Redirect to archive | **Arc3GameSpoiler** (direct, no archive prefix) |
-| `/arc3/archive/*` | Keep for now | Redirect to `/arc3` (consolidate later) |
-| `/arc3/playground` | ARC3AgentPlayground | Redirect to arc3.sonpham.net (later) |
+---
 
-## What NOT to build
+## Architecture
 
-- No game player/launcher on the story page
-- No playground (Son Pham handles this)
-- No "Submit Game" or "Upload" flows on the story page
-- No gradient text, no pixel-art UI, no card-grid-of-everything layouts
+### Existing assets to reuse
+- `usePageMeta` hook for meta tags
+- `shared/arc3Games/` for game metadata (gameId, names, categories, difficulty)
+- `docs/arc3-game-analysis/*.md` — content source for game descriptions (not rendered dynamically, but referenced for accuracy)
 
-## Content Gaps (need research)
+### What gets deleted
+- `client/src/components/arc3/Arc3Timeline.tsx` — the vertical timeline component created 2026-03-27. Replaced by an inline table. No external consumers.
 
-- Exact scoring mechanism for ARC-AGI-3 (per-game scoring, aggregate scoring)
-- Exact dates of preview competition start/end
-- Prize amounts and competition structure for 2026
-- Current state of AI performance on the benchmark
+### Files to modify
+| File | Change |
+|------|--------|
+| `client/src/pages/Arc3Story.tsx` | Full rewrite — dense dark layout |
+| `client/src/App.tsx` | No changes needed (routes already correct from prior pass) |
 
-## Files to Create
+---
 
-- `client/src/pages/Arc3Story.tsx` — the new story page
-- `client/src/components/arc3/Arc3Timeline.tsx` — reusable timeline component
+## Page Structure
 
-## Files to Modify
+The page is a single-column dark document (`bg-slate-950`) with bordered sections. No hero. No CTA buttons. Information density is the priority.
 
-- `client/src/App.tsx` — route `/arc3` to Arc3Story, update game spoiler route
+### 1. Header (compact)
+- Title: **ARC-AGI-3** in `text-3xl font-bold`, no subtitle bloat
+- One line underneath: what this page is ("Reference and history of ARC-AGI-3 interactive reasoning benchmarks")
+- Separator line
 
-## Files Eventually to Archive (not in this pass)
+### 2. Quick Links (prominent, top of page)
+A small bordered section with the 3-4 links people actually need:
+| Destination | URL |
+|---|---|
+| Play games / run agents | arc3.sonpham.net |
+| Official ARC-AGI-3 platform | three.arcprize.org |
+| ARCEngine source | github.com/arcprize/ARCEngine |
+| ARC Prize overview | arcprize.org/arc-agi/3/ |
 
-- `Arc3ArchiveLanding.tsx`
-- `ARC3Browser.tsx`
-- `CommunityLanding.tsx`
+Rendered as a compact list or small table — not big buttons.
+
+### 3. What Is ARC-AGI-3? (2-3 paragraphs)
+Dense prose, no jargon. Key points:
+- ARC 1 & 2 = static grid puzzles with examples. ARC 3 = interactive games, no instructions.
+- 64×64 grid, 16 colors, up to 7 actions. Figure out the rules by experimenting.
+- The question: can AI learn a new game the way a person does?
+
+### 4. Timeline (table, not a vertical component)
+A compact table with 4-5 rows:
+
+| When | What |
+|------|------|
+| Late July 2025 | Preview competition launches. Three games public: ls20, as66, ft09 |
+| August 2025 | Evaluation set revealed: lp85, sp80, vc33. Six total games documented |
+| Late 2025 | StochasticGoose (Dries Smit) wins preview competition |
+| March 2026 | ARCEngine open-sourced. 40+ games. as66 notably absent from new catalog |
+| Current | ARC Prize 2026 competition underway. Community building agents at scale |
+
+### 5. The Six Preview-Era Games (reference table)
+Two sub-tables: Preview Set and Evaluation Set.
+
+Columns: `ID` | `Name` | `Input` | `Difficulty` | `Notes`
+
+Each row links to `/arc3/games/{gameId}`. The as66 row gets a note about its absence from the current catalog.
+
+### 6. How Scoring Works (brief, honest)
+Short section with what we know:
+- Games have multiple levels, agents aim to complete as many as possible
+- Interaction via numbered actions (1-7) plus reset
+- No text or reward signal — visual feedback only
+
+Ends with an honest note that we're still filling in 2026 competition scoring details.
+
+### 7. External Resources (compact list)
+Simple `<a>` list with short descriptions, no icons:
+- ARC Prize blog: 30-day learnings
+- StochasticGoose writeup (Dries Smit)
+- Son Pham's GitHub
+- ARCEngine docs
+
+---
+
+## Content Gaps (to be researched separately)
+
+- Exact competition scoring for 2026 (prize structure, aggregate scoring, evaluation protocol)
+- Exact dates of preview period start/end (verify against arcprize.org)
+- Why as66 is missing from the March 2026 catalog (eval holdback? retired?)
+- Current AI performance numbers on the benchmark
+
+---
+
+## TODOs (ordered)
+
+1. Get plan approval from user
+2. Rewrite `Arc3Story.tsx` — dense dark layout per spec above
+3. Delete `Arc3Timeline.tsx` (unused after rewrite)
+4. Verify build compiles clean
+5. Commit, push to `arc3` for Railway deploy
+6. Update `CHANGELOG.md`
+
+---
+
+## Docs / Changelog Touchpoints
+
+- `CHANGELOG.md` — entry for the `/arc3` page redesign (what/why/how)
+- `docs/plans/2026-03-27-arc3-story-page-plan.md` — this file (mark as complete when done)
