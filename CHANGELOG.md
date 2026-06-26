@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.4.1  Jun 26, 2026
+
+- **DOCS: Full codebase quality assessment — architecture, testing, hygiene** (Author: Claude Sonnet 4.6)
+  - **What**: Top-to-bottom read-only audit of the arc-explainer codebase covering security posture, architecture patterns, test quality, and code hygiene. No code changes — findings only.
+  - **Why**: External review preparation. Assessing how justified a "swiss cheese brain" critique would be for a vibe-coded hobby project before sharing with a skeptical senior engineer.
+  - **How**: Read server entrypoint, routes, all middleware, BaseRepository, DatabaseSchema, 6 AI provider services, AIServiceFactory, adminController, snakeBenchController, poetiqController, streamController, promptBuilder, shared types, 28 test files, CHANGELOG, and tsconfig. Specific findings documented with file/line references.
+  - **Verdict**: Not swiss cheese. The critical holes (SQL injection, no types, no error handling, no migrations) are all absent. Real gaps: admin endpoints unprotected, no rate limit on streaming, `any` types throughout BaseAIService, structured output hardcoded to `false` in promptBuilder, missing error-path test coverage, backup files in git.
+  - **Files**: `docs/plans/062626-code-quality-assessment.md` (new)
+
 ### Version 7.4.0  Mar 12, 2026
 
 - **FEAT: Community games now run client-side via Pyodide (Python in WebAssembly)** (Author: Claude Sonnet 4.6)
