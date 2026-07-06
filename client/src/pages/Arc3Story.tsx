@@ -1,12 +1,13 @@
 /*
- * Author: Cascade (Claude Opus 4.6 thinking)
- * Date: 2026-03-29
+ * Author: Cascade (Claude Opus 4.6 thinking); updated by Claude Fable 5
+ * Date: 2026-03-29 (updated 2026-07-06)
  * PURPOSE: ARC-AGI-3 reference and history page. Dense, dark-themed layout modeled on
  *          ClaudeCodeGuide.tsx (/cc). Presents useful links up top, brief explainer prose,
- *          compact timeline table, preview-era game reference tables, and external resources.
- *          Replaces the marketing-style story page from 2026-03-27.
+ *          compact timeline table, preview-era game reference tables, duck harness section,
+ *          and external resources. Replaces the marketing-style story page from 2026-03-27.
  *          Content is restricted to facts documented in this repo's own analysis files,
- *          game metadata (shared/arc3Games/), and the ARC3-HISTORY-PAGE-BRIEF.md.
+ *          game metadata (shared/arc3Games/), the ARC3-HISTORY-PAGE-BRIEF.md, and the
+ *          Tufa Labs duck harness publication (tufalabs.ai/research/duck-harness, July 2026).
  * SRP/DRY check: Pass — single-purpose reference page, reuses usePageMeta hook and shared game data types.
  */
 
@@ -32,6 +33,7 @@ const TIMELINE = [
   { when: 'August 2025', what: 'Evaluation set revealed: lp85 (Loop and Pull), sp80 (Streaming Purple), vc33 (Volume Control). Six games total now documented on this site.' },
   { when: 'Late 2025', what: 'Dries Smit\u2019s StochasticGoose agent wins the preview competition.' },
   { when: 'March 2026', what: 'ARCEngine open-sourced with 40+ games. as66 is notably absent from the new catalog. Son Pham launches arc3.sonpham.net as the community play/agent harness.' },
+  { when: 'July 2026', what: 'Tufa Labs publishes the duck harness — a minimal REPL-based coding harness for the ARC-AGI-3 Kaggle competition, open-sourced on GitHub.' },
   { when: 'Now', what: 'ARC Prize 2026 competition underway. Game catalog continues to expand.' },
 ];
 
@@ -58,6 +60,9 @@ const EVAL_SET: PreviewGame[] = [
 ];
 
 const RESOURCES = [
+  { title: 'Duck Harness — Tufa Labs', url: 'https://tufalabs.ai/research/duck-harness/', desc: 'Research post on the REPL-based coding harness for the 2026 Kaggle competition.' },
+  { title: 'duck-harness on GitHub', url: 'https://github.com/Tufalabs/duck-harness', desc: 'Open-source code for the duck harness, including diagnostic tools.' },
+  { title: 'Duck Harness — Kaggle technical write-up', url: 'https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/717133', desc: 'Technical details on the Kaggle competition forum.' },
   { title: 'ARC-AGI-3 Preview: 30-Day Learnings', url: 'https://arcprize.org/blog/arc-agi-3-preview-30-day-learnings', desc: 'ARC Prize blog post on preview-period findings.' },
   { title: 'StochasticGoose \u2014 1st Place Preview Agent', url: 'https://medium.com/@dries.epos/1st-place-in-the-arc-agi-3-agent-preview-competition-49263f6287db', desc: 'Dries Smit\u2019s writeup on winning the preview competition.' },
   { title: 'Son Pham\u2019s ARC-AGI-3 Harness', url: 'https://arc3.sonpham.net', desc: 'Play games and run agents in-browser. Multi-provider LLM support, Python sandbox, replay sharing.' },
@@ -238,6 +243,34 @@ export default function Arc3Story() {
             <p className="text-xs text-slate-500 border-l-2 border-slate-700 pl-3">
               Competition scoring details for 2026 (prize structure, aggregate scoring protocol) are still being
               confirmed. This section will be updated as official information is published.
+            </p>
+          </div>
+        </section>
+
+        {/* Duck Harness */}
+        <section className="mb-10 rounded-lg border border-slate-800 bg-slate-900/60 p-6">
+          <h2 className="text-xl font-semibold text-slate-100 mb-4">The Duck Harness</h2>
+          <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
+            <p>
+              In July 2026, Tufa Labs published the{' '}
+              <ExtLink href="https://tufalabs.ai/research/duck-harness/">duck harness</ExtLink> — an
+              open-source agent harness for the ARC-AGI-3 competition on Kaggle. Rather than a bespoke
+              agent architecture, it is a minimal coding harness: the model works inside a Python REPL
+              where every game observation is encoded as Python variables. It inspects state with tool
+              calls, evaluates pre-built helper functions, and takes game actions from within that loop.
+            </p>
+            <p>
+              The published system is built around <strong className="text-slate-100">Qwen 3.6 27B FP8</strong>,
+              feeds the model both image and text representations of the grid, and keeps context short by
+              automatically evicting the oldest messages. Across the 25 public games (20 attempts each)
+              it reports a mean score of <strong className="text-slate-100">1.6002 &plusmn; 0.4475</strong>.
+              Evaluated with GPT 5.4, it solves a similar set of games to the Executable World Models
+              approach while being an order of magnitude cheaper per game.
+            </p>
+            <p className="text-xs text-slate-500 border-l-2 border-slate-700 pl-3">
+              Performance is uneven: some games are solved consistently for over 40% of their levels,
+              while on others the harness never clears the first level. The authors note they are
+              ultimately limited by the constraints of the Kaggle environment.
             </p>
           </div>
         </section>
