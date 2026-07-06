@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.4.2  Jul 6, 2026
+
+- **DOCS: Add Tufa Labs duck harness to the /arc3 reference page** (Author: Claude Fable 5)
+  - **What**: New "The Duck Harness" section on the ARC-AGI-3 reference page, plus a July 2026 timeline row and three resource links (Tufa Labs research post, GitHub repo, Kaggle technical write-up).
+  - **Why**: Tufa Labs published the duck harness on July 1, 2026 — a minimal Python-REPL coding harness for the ARC-AGI-3 Kaggle competition (Qwen 3.6 27B FP8, dual image/text grid representation, mean 1.6002 ± 0.4475 over 25 public games, ~10× cheaper than Executable World Models). It belongs alongside the other harness/agent documentation on /arc3.
+  - **How**: Facts sourced from https://tufalabs.ai/research/duck-harness/ (fetched 2026-07-06). Reused the page's existing section, timeline-row, and resource-list patterns — no new components.
+  - **Files**: `client/src/pages/Arc3Story.tsx` (updated), `docs/plans/2026-07-06-duck-harness-arc3-page-plan.md` (new)
+
 ### Version 7.4.1  Jun 26, 2026
 
 - **DOCS: Full codebase quality assessment — architecture, testing, hygiene** (Author: Claude Sonnet 4.6)
