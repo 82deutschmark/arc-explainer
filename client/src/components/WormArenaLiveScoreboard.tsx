@@ -1,9 +1,12 @@
 /**
- * Author: Cascade (GPT-4.1)
- * Date: 2025-12-27
+ * Author: Cascade (GPT-4.1); updated by Claude Opus 5
+ * Date: 2025-12-27 (updated 2026-07-30)
  * PURPOSE: Compact Worm Arena scoreboard with TrueSkill stats integration.
  *          Shows model names, adjacent apple scores, and key TrueSkill metrics (mu, sigma, exposed).
  *          Adds live timing context (wall clock + since-last-move) in-band with the strip.
+ *          2026-07-30: the sigma suffix was written as a \\uXXXX escape in JSX text, where such
+ *          escapes are not interpreted, so the strip rendered a literal backslash-u sequence
+ *          instead of the sigma glyph. Replaced with the character itself.
  * SRP/DRY check: Pass - presentational only; all streaming/state logic passed via props.
  */
 
@@ -91,7 +94,7 @@ export default function WormArenaLiveScoreboard({
                 )}
                 {stats.mu !== undefined && stats.sigma !== undefined && (
                   <span className="opacity-60" title={`mu=${stats.mu.toFixed(1)}, sigma=${stats.sigma.toFixed(1)}`}>
-                    ({stats.sigma.toFixed(1)}\u03C3)
+                    ({stats.sigma.toFixed(1)}σ)
                   </span>
                 )}
                 {stats.gamesPlayed !== undefined && (
