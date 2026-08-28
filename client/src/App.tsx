@@ -1,10 +1,15 @@
 /*
-Author: Cascade (ChatGPT)
-Date: 2026-02-10
+Author: Cascade (ChatGPT) / Claude Opus 5
+Date: 2026-02-10 / 2026-08-28
 PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
          including ARC3 community submission review tooling under the admin section.
-SRP/DRY check: Pass - kept as a routing table only and verified existing routes remain intact.
+         2026-08-28: "/" now redirects to the ARC-AGI-3 community game gallery, which is
+         the front door for the synthetic-game playtest programme (see
+         docs/28-Aug-2026-synthetic-games-arc3-integration-plan.md). The previous resource-hub
+         landing page is preserved verbatim at "/home" and is still linked from the header.
+SRP/DRY check: Pass - kept as a routing table only; reuses the existing wouter Redirect
+         component already used by the legacy /arc3/archive routes.
 */
 
 import { Switch, Route, useParams } from "wouter";
@@ -96,7 +101,11 @@ function Router() {
   return (
     <PageLayout>
       <Switch>
-        <Route path="/" component={LandingPage} />
+        {/* The game gallery is the front door: playtesting the synthetic ARC-AGI-3 set
+            is the active programme, so "/" leads there rather than to the resource hub.
+            The hub itself is unchanged and still served at /home. */}
+        <Route path="/" component={() => <Redirect to="/arc3/gallery" />} />
+        <Route path="/home" component={LandingPage} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />
         <Route path="/hall-of-fame" component={HumanTradingCards} />

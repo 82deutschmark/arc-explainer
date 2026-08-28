@@ -22,6 +22,46 @@ import { CommunityGameRunner } from '../services/arc3Community/CommunityGameRunn
 import { CommunityGameValidator } from '../services/arc3Community/CommunityGameValidator';
 import { ArcEngineOfficialGameCatalog } from '../services/arc3Community/ArcEngineOfficialGameCatalog';
 import { getPool } from '../repositories/base/BaseRepository';
+import { spawn } from 'child_process';
+import path from 'path';
+
+// Alpine Docker only ships python3; Windows uses python. Mirrors the resolution in
+// services/arc3Community/CommunityGamePythonBridge.ts.
+function resolvePythonBin(): string {
+  if (process.env.PYTHON_BIN) return process.env.PYTHON_BIN;
+  return process.platform === 'win32' ? 'python' : 'python3';
+}
+
+const THUMBNAIL_SCRIPT = path.join(process.cwd(), 'server', 'python', 'community_game_thumbnail.py');
+const THUMBNAIL_TIMEOUT_MS = 20_000;
+
+/** Render one game's opening frame to `outPath`. Rejects on non-zero exit or timeout. */
+function renderGameThumbnail(sourceFilePath: string, outPath: string, size: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      resolvePythonBin(),
+      [THUMBNAIL_SCRIPT, '--file', sourceFilePath, outPath, String(size)],
+      { env: { ...process.env, PYTHONPATH: [path.join(process.cwd(), 'external', 'ARCEngine'), process.env.PYTHONPATH].filter(Boolean).join(path.delimiter) } },
+    );
+
+    let stderr = '';
+    child.stderr.on('data', (chunk) => { stderr += String(chunk); });
+
+    // A game whose reset loops would otherwise hold a request open indefinitely.
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      reject(new Error('thumbnail render timed out'));
+    }, THUMBNAIL_TIMEOUT_MS);
+
+    child.on('error', (error) => { clearTimeout(timer); reject(error); });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      if (code === 0) resolve();
+      else reject(new Error(`renderer exited ${code}: ${stderr.trim().slice(-300)}`));
+    });
+  });
+}
+
 
 const router = Router();
 
@@ -370,6 +410,76 @@ router.get(
       hash: game.sourceHash,
       className: validation.metadata?.className ?? null,
     }));
+  }),
+);
+
+/**
+ * GET /api/arc3-community/games/:gameId/thumbnail
+ * Render the game's opening frame as a PNG.
+ *
+ * The gallery is the site's landing page and shows one tile per task; a tile has to be
+ * the task, the way arcprize.org shows a frame per task. Rendering is done by
+ * server/python/community_game_thumbnail.py, which issues a single RESET and paints the
+ * resulting 64x64 grid with the canonical ARC-3 palette — no session is created and no
+ * play count is touched, so thumbnails never pollute the telemetry.
+ *
+ * Cached on disk under the storage thumbnail directory keyed by gameId AND sourceHash,
+ * so a rebuilt game gets a new thumbnail automatically and a new game needs no manual
+ * step. Failures answer 404 and the client falls back to a placeholder.
+ */
+router.get(
+  '/games/:gameId/thumbnail',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { gameId } = req.params;
+    if (!/^[A-Za-z0-9_.-]{1,64}$/.test(gameId)) {
+      return res.status(400).json(formatResponse.error('BAD_GAME_ID', 'Invalid game id'));
+    }
+
+    let sourceFilePath: string | null = null;
+    let sourceHash = '';
+
+    const officialGame = await ArcEngineOfficialGameCatalog.getOfficialGame(gameId);
+    if (officialGame) {
+      sourceFilePath = officialGame.pythonFilePath;
+      sourceHash = officialGame.game.sourceHash;
+    } else {
+      const game = await getRepository().getGameByGameId(gameId);
+      if (!game || game.status !== 'approved' || !game.isPlayable) {
+        return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game not found'));
+      }
+      sourceFilePath = game.sourceFilePath;
+      sourceHash = game.sourceHash;
+    }
+
+    if (!sourceFilePath) {
+      return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game has no source file'));
+    }
+
+    const size = Math.min(512, Math.max(64, Number(req.query.size) || 256));
+    const cachePath = CommunityGameStorage.thumbnailCachePath(gameId, sourceHash, size);
+
+    const sendPng = () => {
+      // Keyed by content hash, so a long cache is safe: a changed game changes the URL.
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.sendFile(cachePath);
+    };
+
+    if (await CommunityGameStorage.fileExists(cachePath)) {
+      return sendPng();
+    }
+
+    try {
+      await renderGameThumbnail(sourceFilePath, cachePath, size);
+    } catch (error) {
+      logger.warn(
+        `Thumbnail render failed for ${gameId}: ${error instanceof Error ? error.message : String(error)}`,
+        'arc3-community',
+      );
+      return res.status(404).json(formatResponse.error('THUMBNAIL_UNAVAILABLE', 'Could not render thumbnail'));
+    }
+
+    return sendPng();
   }),
 );
 

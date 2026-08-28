@@ -9,6 +9,7 @@
  * Single responsibility: Component coordination and routing only.
  * SRP/DRY check: Pass - Pure orchestration, delegates all concerns to focused components
  * shadcn/ui: Pass - Uses shadcn/ui components throughout focused child components
+ * Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
  */
 
 import React, { useEffect, useState, useMemo } from 'react';
@@ -419,7 +420,7 @@ export default function ModelDebate() {
                 <div className="text-center py-12">
                   <AlertCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                   <p className="text-gray-500 mb-4">No puzzles found</p>
-                  <Link href="/">
+                  <Link href="/home">
                     <Button>Browse All Puzzles</Button>
                   </Link>
                 </div>
@@ -439,7 +440,7 @@ export default function ModelDebate() {
               
               <div className="mt-6 pt-6 border-t">
                 <div className="grid sm:grid-cols-3 gap-3">
-                  <Link href="/">
+                  <Link href="/home">
                     <Button variant="outline" className="w-full justify-start">
                       <Grid3X3 className="h-4 w-4 mr-2" />
                       Browse All Puzzles

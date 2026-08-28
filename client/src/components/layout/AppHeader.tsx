@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Sonnet 4.5 / Claude Haiku 4.5
- * Date: 2025-11-11 / 2025-12-24
+ * Author: Claude Code using Sonnet 4.5 / Claude Haiku 4.5 / Claude Opus 5
+ * Date: 2025-11-11 / 2025-12-24 / 2026-08-28
  * PURPOSE: Compact app header with ARC-inspired colorful branding and colorful emoji dividers.
  * Zero margins for edge-to-edge layout. Includes full AppNavigation component.
  * Updated to include OpenRouter sync status banner above header.
@@ -17,7 +17,9 @@ export function AppHeader() {
       <OpenRouterSyncBanner />
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-12 items-center justify-between gap-4 px-4">
-        <Link href="/">
+        {/* "/" now redirects to the game gallery, so the brand mark points at the
+            resource hub itself, which lives at /home. */}
+        <Link href="/home">
           <div className="flex items-center gap-3 cursor-pointer group min-w-fit">
             {/* ARC-inspired colorful logo */}
             <div className="flex flex-col gap-0.5 group-hover:scale-110 transition-transform">

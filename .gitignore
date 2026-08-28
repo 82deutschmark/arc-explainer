@@ -19,3 +19,7 @@ jBudd1.mp4
 jBudd2.mp3
 jBudd2.mp4
 /coverage
+
+# Rendered ARC-3 task thumbnails and uploaded game files are runtime artifacts,
+# regenerated on demand and keyed by source hash.
+uploads/

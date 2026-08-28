@@ -13,6 +13,7 @@
  * SRP/DRY check: Pass — single-purpose reference page. Reuses usePageMeta, shared game data
  *          types, and a local RefTable helper for all non-game reference tables rather than
  *          repeating <table> markup per section.
+ Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
  */
 
 import React from 'react';
@@ -707,7 +708,7 @@ export default function Arc3Story() {
 
         {/* Footer */}
         <div className="border-t border-slate-800 pt-8 mt-4">
-          <Link href="/" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+          <Link href="/home" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
             ← Back to ARC Explainer
           </Link>
         </div>

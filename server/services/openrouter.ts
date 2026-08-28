@@ -1,8 +1,17 @@
 /**
- * Author: Cascade (OpenAI o4-preview)
- * Date: 2026-01-13T20:42:00Z
+ * Author: Cascade (OpenAI o4-preview) / Claude Opus 5
+ * Date: 2026-01-13T20:42:00Z / 2026-08-28
  * PURPOSE: Coordinates ARC puzzle analysis via OpenRouter, now restoring medium-effort reasoning defaults while keeping override hooks and streaming fallbacks intact.
- * SRP/DRY check: Pass – validated shared helper reuse and default rollback only.
+ *          2026-08-28: the SDK client was constructed at module load, so with no
+ *          OPENROUTER_API_KEY the OpenAI SDK threw "Missing credentials" during
+ *          AIServiceFactory.initialize() and the entire server failed to boot — every
+ *          route, including the ones that never call a model. Construction is now
+ *          deferred to first use via the same lazy-proxy pattern as
+ *          services/openai/client.ts, so a missing key can only fail a request that
+ *          actually needs a model.
+ * SRP/DRY check: Pass – validated shared helper reuse and default rollback only; the
+ *          lazy proxy mirrors services/openai/client.ts and leaves both call sites
+ *          (`openrouter.chat...`) untouched.
  */
 
 import dotenv from 'dotenv';
@@ -46,14 +55,39 @@ const getRefererUrl = () => {
   return "https://arc.markbarney.net";
 };
 
-const openrouter = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
-  timeout: 45 * 60 * 1000, // 45 minutes timeout for very long responses
-  defaultHeaders: {
-    "HTTP-Referer": getRefererUrl(), // Dynamic referer based on environment
-    "X-Title": "ARC Explainer", // Your app name
+let openrouterClient: OpenAI | null = null;
+
+function resolveOpenrouter(): OpenAI {
+  if (openrouterClient) return openrouterClient;
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "OPENROUTER_API_KEY is not set. It is required only for routes that call a " +
+      "model through OpenRouter; the rest of the server runs without it."
+    );
   }
+  openrouterClient = new OpenAI({
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey,
+    timeout: 45 * 60 * 1000, // 45 minutes timeout for very long responses
+    defaultHeaders: {
+      "HTTP-Referer": getRefererUrl(), // Dynamic referer based on environment
+      "X-Title": "ARC Explainer", // Your app name
+    }
+  });
+  return openrouterClient;
+}
+
+// Lazy proxy: importing this module must never require credentials. Property access
+// builds the real client on first touch, so call sites stay `openrouter.chat...`.
+const openrouter = new Proxy({} as OpenAI, {
+  get(_target, prop, receiver) {
+    const value = Reflect.get(resolveOpenrouter(), prop, receiver);
+    return typeof value === "function" ? value.bind(resolveOpenrouter()) : value;
+  },
+  has(_target, prop) {
+    return Reflect.has(resolveOpenrouter(), prop);
+  },
 });
 
 const DEFAULT_OPENROUTER_REASONING_EFFORT: NonNullable<ServiceOptions['reasoningEffort']> = 'medium';
