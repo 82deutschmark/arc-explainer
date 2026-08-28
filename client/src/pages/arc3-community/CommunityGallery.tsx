@@ -175,9 +175,11 @@ export default function CommunityGallery() {
   if (search) queryParams.set('search', search);
   queryParams.set('orderBy', orderBy);
   queryParams.set('orderDir', 'DESC');
-  // The set is already larger than the old 50 cap, and this page is the site's front
-  // door — a silently truncated list reads as "that is all of them".
-  queryParams.set('limit', '250');
+  // The set is already larger than the old 50 cap and this page is the site's front
+  // door, so a silently truncated list reads as "that is all of them". 100 is the
+  // server-side maximum (the games route rejects anything higher), not a taste call —
+  // past ~100 tasks this page needs real pagination.
+  queryParams.set('limit', '100');
 
   const { data, isLoading } = useQuery<GamesResponse>({
     queryKey: [`/api/arc3-community/games?${queryParams.toString()}`],
