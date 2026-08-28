@@ -102,6 +102,30 @@ export class CommunityGameStorage {
   }
 
   /**
+   * Absolute path for a rendered opening-frame thumbnail.
+   *
+   * Keyed by gameId, source hash and size: a rebuilt game produces a different hash and
+   * therefore a different file, so a stale frame can never be served for new source, and
+   * the route can cache aggressively without an invalidation step.
+   */
+  static thumbnailCachePath(gameId: string, sourceHash: string, size: number): string {
+    const sanitizedId = this.sanitizeGameId(gameId);
+    const hashPart = (sourceHash || 'nohash').replace(/[^a-f0-9]/gi, '').slice(0, 16);
+    return path.join(THUMBNAIL_DIR, `${sanitizedId}-${hashPart}-${size}.png`);
+  }
+
+  /** True when a path exists and is readable. Used to decide cache hit vs render. */
+  static async fileExists(filePath: string): Promise<boolean> {
+    await this.initialize();
+    try {
+      await fs.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Store a thumbnail image
    */
   static async storeThumbnail(gameId: string, imageBuffer: Buffer, mimeType: string): Promise<string> {

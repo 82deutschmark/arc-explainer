@@ -8,6 +8,7 @@
  *
  * SRP/DRY check: Pass - Main page orchestration
  * DaisyUI: Pass - Uses project's standard components
+ * Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
  */
 
 import React from 'react';
@@ -293,7 +294,7 @@ export default function SaturnVisualSolver() {
       {/* Compact Header - Always visible */}
       <header className="bg-white border-b border-gray-300 px-2 py-1.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <a href="/" className="btn btn-ghost btn-xs gap-1">
+          <a href="/home" className="btn btn-ghost btn-xs gap-1">
             <ArrowLeft className="h-3 w-3" />
             Back
           </a>

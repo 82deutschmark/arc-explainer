@@ -27,7 +27,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Log environment variables status for debugging
-logger.info('Environment variables loaded: ' + (process.env.OPENAI_API_KEY ? 'OPENAI_API_KEY is set' : 'OPENAI_API_KEY is NOT set'), 'startup');
+// Model credentials are optional at boot; only routes that call a model need them.
+logger.info('Environment variables loaded: ' + (process.env.OPENROUTER_API_KEY ? 'OPENROUTER_API_KEY is set' : (process.env.OPENAI_API_KEY ? 'OPENAI_API_KEY is set' : 'no model API key set (model routes will error, server runs)')), 'startup');
 logger.info('DeepSeek API key status: ' + (process.env.DEEPSEEK_API_KEY ? 'DEEPSEEK_API_KEY is set' : 'DEEPSEEK_API_KEY is NOT set'), 'startup');
 logger.info('OpenRouter API key status: ' + (process.env.OPENROUTER_API_KEY ? 'OPENROUTER_API_KEY is set' : 'OPENROUTER_API_KEY is NOT set'), 'startup');
 logger.debug('Current working directory: ' + process.cwd(), 'startup');

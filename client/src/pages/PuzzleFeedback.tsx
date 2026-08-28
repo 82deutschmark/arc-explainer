@@ -17,6 +17,7 @@
  * 
  * SRP and DRY check: Pass - Reuses existing validation logic, grid visualization, and puzzle lookup patterns.
  * shadcn/ui: Pass - Uses existing shadcn/ui components throughout.
+ * Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
  */
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -1286,7 +1287,7 @@ export default function PuzzleFeedback() {
             <h3 className="text-lg font-semibold mb-2">Get Started</h3>
             <p className="mb-4">Enter a puzzle ID above to load an ARC puzzle and test your solution</p>
             <p className="text-sm">
-              You can find puzzle IDs by browsing the <a href="/" className="text-blue-600 hover:underline">puzzle browser</a>
+              You can find puzzle IDs by browsing the <a href="/home" className="text-blue-600 hover:underline">puzzle browser</a>
             </p>
           </CardContent>
         </Card>

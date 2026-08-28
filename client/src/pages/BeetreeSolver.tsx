@@ -134,7 +134,7 @@ export default function BeetreeSolver() {
             {!taskId ? 'No puzzle ID provided' : taskError?.message || 'Failed to load puzzle'}
           </AlertDescription>
         </Alert>
-        <Link href="/">
+        <Link href="/home">
           <Button variant="outline" className="mt-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home

@@ -3,6 +3,7 @@ Author: Claude Sonnet 4.6 (Bubba)
 Date: 25-March-2026
 PURPOSE: /cc route — Claude Code OAuth technical reference for developers. Facts only, no project references.
 SRP/DRY check: Pass — static content page, no state/effects needed.
+ Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
 */
 
 import React from 'react';
@@ -320,7 +321,7 @@ anthropic-ratelimit-unified-7d_sonnet-utilization: 0.67`}</code>
         {/* Footer */}
         <div className="border-t border-slate-800 pt-8 mt-4">
           <Link
-            href="/"
+            href="/home"
             className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
           >
             ← Back to ARC Explainer

@@ -7,6 +7,7 @@
  * Single responsibility: Page header with puzzle navigation only.
  * SRP/DRY check: Pass - Focused only on header/navigation concerns
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
+ * Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
  */
 
 import React, { useState } from 'react';
@@ -98,7 +99,7 @@ export const PuzzleDebateHeader: React.FC<PuzzleDebateHeaderProps> = ({
 
       <div className="flex items-center gap-2">
         {showBackButton && (
-          <Link href="/">
+          <Link href="/home">
             <Button variant="outline" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Browser

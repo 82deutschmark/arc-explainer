@@ -8,6 +8,7 @@
  * CRITICAL: NavigationMenuViewport is required for dropdown content to render properly!
  * Emoji dividers are rendered INSIDE each menu item to maintain proper Radix UI hierarchy.
  * SRP/DRY check: Pass - Single responsibility (navigation structure), reuses shadcn components
+ * Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
  */
 import React from 'react';
 import { Link, useLocation } from 'wouter';
@@ -71,7 +72,7 @@ const navigationItems: NavItem[] = [
   {
     type: 'link',
     title: 'Home',
-    href: '/',
+    href: '/home',
     icon: Grid3X3,
     description: 'Browse ARC puzzles and start analysis'
   },
