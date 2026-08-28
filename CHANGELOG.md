@@ -9,7 +9,7 @@
     - New `GET /api/arc3-community/games/:gameId/thumbnail` renders the opening frame server-side via new `server/python/community_game_thumbnail.py`, which issues a **single RESET** and paints the resulting 64×64 grid with the canonical ARC-3 palette from `client/src/utils/arc3Colors.ts`, nearest-neighbour upscaled. No session is created and no play count is touched, so thumbnails never pollute telemetry.
     - Cached on disk keyed by `gameId` + `sourceHash` + size (`CommunityGameStorage.thumbnailCachePath`), so a rebuilt game gets a fresh thumbnail with no invalidation step and a new game needs no manual work. Measured: 1.2 ms on a cache hit. Render is killed after 20 s so a looping reset cannot hold a request open.
     - Client falls back to the existing deterministic `SpriteMosaic` if a thumbnail 404s, so the grid never shows a hole.
-    - Page list limit raised 50 → 250; the set is already 59 and a silently truncated landing page reads as "that is all of them".
+    - Page list limit raised 50 → **100**, which is the server-side maximum (`limit` is `z.coerce.number().int().min(1).max(100)` in the games route). The set is already 59 and a silently truncated landing page reads as "that is all of them"; past ~100 tasks this page will need real pagination.
   - **Verified**: `ls20`, `ft09`, `vc33` all return `image/png` 200 and render as recognisable frames; repeat request served from cache in 1.2 ms; gallery renders 27 tiles in the new grid.
   - **Note for local dev**: this needs the ARCEngine submodule present — `git submodule update --init --recursive`. Without it the official-game catalog cannot resolve source paths.
 
