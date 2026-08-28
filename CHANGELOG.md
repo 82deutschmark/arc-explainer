@@ -2,6 +2,12 @@
 
 ### Version 7.6.0  Aug 28, 2026
 
+- **FIX: community game uploads were impossible — `createGame` INSERT arity was wrong** (Author: Claude Opus 5)
+  - **What**: `POST /api/arc3-community/games` returned 500 for every submission. Postgres was rejecting the statement with `INSERT has more expressions than target columns`, so the public upload page and the whole submission workflow were non-functional.
+  - **Why it happened**: `CommunityGameRepository.createGame` lists **21** columns and binds **21** values, but its `VALUES` clause enumerated `$1 … $24`. The three extra placeholders had no matching column.
+  - **How**: Corrected to `$1 … $21`. Verified by parsing the method back out of the source and counting all three: columns = 21, distinct placeholders = 21, bound values = 21.
+  - **Impact**: this is why `pendingGames` has sat at 0 — nothing could ever be submitted. Every game in the set today arrived through the official-catalog path, not the upload path.
+
 - **FEAT: task gallery rebuilt in the official ARC-AGI-3 style, with real frame thumbnails** (Author: Claude Opus 5)
   - **What**: The gallery is now a dense grid of square task tiles — each one the game's actual opening frame — with a magenta id tag and level count beneath, on the near-black ARC ground. Replaces the previous wide cards with blue headers, green "Play Game" buttons and printed descriptions. Colour and geometry are taken from arcprize.org's computed styles, and match the sibling catalog in `sonpham-org/autoresearch-arena` so the two surfaces read as one system.
   - **Why**: Two reasons. The cards looked nothing like the benchmark they present, and — more seriously — they printed each game's description on the tile: "Rail-switching train routing", "Shape-matching navigation puzzle", "Color-cycling constraint satisfaction". ARC-AGI-3's premise is that the mechanic is discovered from the frame, so a player who reads the tile has been handed the answer and their run is worthless as a human baseline. Tiles now carry an id, a frame and a level count — nothing that describes play. (`displayName` remains as a hover title; the description is never rendered.)
