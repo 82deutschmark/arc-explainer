@@ -135,7 +135,17 @@ export default function SyntheticLanding() {
     return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
   }, [games]);
 
-  const heroTiles = useMemo(() => games.slice(0, 4), [games]);
+  // A dozen real frames read as a body of work; four read as a sample. This is the
+  // first thing a visitor sees, so it should look like the set it is.
+  const heroTiles = useMemo(() => games.slice(0, 12), [games]);
+
+  // Who actually made these. The set is overwhelmingly community-contributed and the
+  // page said nothing about that, which undersold the thing it is asking people to join.
+  const byAuthor = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const g of games) counts.set(g.authorName, (counts.get(g.authorName) ?? 0) + 1);
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  }, [games]);
   const synthetic = games.filter((g) => (g.tags ?? []).includes('synthetic'));
   const rest = games.filter((g) => !(g.tags ?? []).includes('synthetic'));
   const unplayed = games.filter((g) => (g.playCount ?? 0) === 0).length;
@@ -182,14 +192,17 @@ export default function SyntheticLanding() {
 
             {/* Real opening frames — the fastest way to convey what a task even is. */}
             {heroTiles.length > 0 && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {heroTiles.map((g) => (
-                  <div key={g.gameId} className="relative aspect-square overflow-hidden"
+                  <Link key={g.gameId} href={`/arc3/play/${g.gameId}`}>
+                    <a className="relative aspect-square overflow-hidden block group"
                        style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
-                    <img src={thumb(g.gameId)} alt="" loading="lazy"
-                         className="w-full h-full" style={{ imageRendering: 'pixelated', display: 'block' }} />
-                    <Scanlines />
-                  </div>
+                      <img src={thumb(g.gameId, 128)} alt="" loading="lazy"
+                           className="w-full h-full opacity-85 group-hover:opacity-100 transition-opacity"
+                           style={{ imageRendering: 'pixelated', display: 'block' }} />
+                      <Scanlines />
+                    </a>
+                  </Link>
                 ))}
               </div>
             )}
@@ -266,10 +279,31 @@ export default function SyntheticLanding() {
         )}
 
         {rest.length > 0 && (
-          <Section title="The wider set" note={`${rest.length} tasks`}>
+          <Section title="Community tasks" note={`${rest.length} contributed`}>
+            <p className="text-[14px] leading-[1.75] mb-4 max-w-[70ch]" style={{ color: ARC.dim }}>
+              Most of what is playable here was contributed by other people. Every one is a
+              real ARC-AGI-3 environment running on the official engine — the same thing an
+              agent is given.
+            </p>
+            {byAuthor.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-5">
+                {byAuthor.map(([name, n]) => (
+                  <span key={name} className="text-[11px] px-2 py-1"
+                        style={{ background: ARC.cell, border: `1px solid ${ARC.border}`,
+                                 color: ARC.dim, fontFamily: MONO }}>
+                    {name} <span style={{ color: ARC.pink }}>{n}</span>
+                  </span>
+                ))}
+              </div>
+            )}
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
               {rest.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
             </div>
+            <p className="text-[13px] mt-5">
+              <Link href="/arc3/gallery"><a className="underline" style={{ color: ARC.dim }}>
+                Browse every task →
+              </a></Link>
+            </p>
           </Section>
         )}
 
