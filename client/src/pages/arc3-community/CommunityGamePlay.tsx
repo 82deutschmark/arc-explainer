@@ -44,6 +44,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
 import { Arc3PixelPage, PixelButton, PixelPanel } from '@/components/arc3-community/Arc3PixelUI';
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
+import { humanPlay } from '@/lib/humanPlayTelemetry';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -257,6 +258,12 @@ export default function CommunityGamePlay() {
           : await pyodide.step(actionStr);
 
       const { isGameOver, isWin } = detectGameOver(data);
+      // Record after the action resolves so the level and state are the ones it produced.
+      humanPlay.record(
+        actionStr,
+        typeof data?.score === 'number' ? data.score : null,
+        isWin ? 'WIN' : isGameOver ? 'GAME_OVER' : 'NOT_FINISHED',
+      );
       applyFrame(data, isGameOver, isWin);
     } catch {
       // Worker error — already reflected in pyodide.error state
@@ -266,6 +273,8 @@ export default function CommunityGamePlay() {
   // ── Start game ───────────────────────────────────────────────────────────────
   const handleStart = useCallback(async () => {
     setGameState('playing');
+    // Starts the anonymous run. Nothing is written until the first action.
+    humanPlay.start(gameId ?? '');
     prevLevelsCompleted.current = 0;
     setLevelCelebration(null);
     setDisplayFrameIndex(0);
@@ -459,6 +468,9 @@ export default function CommunityGamePlay() {
                   </p>
                   <p className="text-[11px] text-[var(--arc3-muted)] mb-6 max-w-md mx-auto">
                     {'No instructions. Work out what it does.'}
+                  </p>
+                  <p className="text-[10px] text-[var(--arc3-dim)] mt-3 max-w-[46ch] mx-auto leading-relaxed">
+                    {'Anonymous gameplay events are recorded \u2014 inputs, timings, progress \u2014 so human play can be compared to AI play. No account, no personal data.'}
                   </p>
                   <PixelButton
                     tone="green"
