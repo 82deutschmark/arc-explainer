@@ -90,6 +90,7 @@ import DebateTaskRedirect from "@/pages/DebateTaskRedirect";
 
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
 import LandingPage from "@/pages/LandingPage";
+import SyntheticLanding from "@/pages/arc3-community/SyntheticLanding";
 
 function LegacyArc3GameRedirect() {
   const params = useParams<{ gameId: string }>();
@@ -97,14 +98,34 @@ function LegacyArc3GameRedirect() {
   return <Redirect to={`/arc3/games/${gameId}`} />;
 }
 
+/** Hosts that lead with the synthetic-programme landing rather than the task grid. */
+const SYNTHETIC_HOSTS = new Set(["arc3.markbarney.net", "arc3.localhost"]);
+
+function RootLanding() {
+  // Read at render rather than module load so a dev preview reflects the real hostname.
+  const host = typeof window === "undefined" ? "" : window.location.hostname.toLowerCase();
+  if (SYNTHETIC_HOSTS.has(host) || new URLSearchParams(window.location.search).has("synthetic")) {
+    return <SyntheticLanding />;
+  }
+  return <Redirect to="/arc3/gallery" />;
+}
+
 function Router() {
   return (
     <PageLayout>
       <Switch>
-        {/* The game gallery is the front door: playtesting the synthetic ARC-AGI-3 set
-            is the active programme, so "/" leads there rather than to the resource hub.
-            The hub itself is unchanged and still served at /home. */}
-        <Route path="/" component={() => <Redirect to="/arc3/gallery" />} />
+        {/* Root depends on which host asked.
+
+            arc3.markbarney.net is the public face of the synthetic-task programme, so it
+            gets a real landing page -- what this is in plain language, a task that needs
+            coverage, the methodology, and how researchers contribute -- rather than being
+            bounced straight into a grid with no context.
+
+            On the main host the gallery is the front door, because a visitor there has
+            already arrived somewhere that explains itself. The resource hub is unchanged
+            at /home in both cases. */}
+        <Route path="/" component={RootLanding} />
+        <Route path="/synthetic" component={SyntheticLanding} />
         <Route path="/home" component={LandingPage} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />
