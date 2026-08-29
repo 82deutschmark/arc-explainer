@@ -43,9 +43,9 @@ import {
   Code,
   Database,
   ExternalLink,
-  FileCheck,
   Gamepad2,
   Github,
+  GraduationCap,
   Grid3X3,
   Info,
   Layers,
@@ -189,13 +189,6 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
             icon: Database,
             description: 'Open or drop any dataset to inspect contents and metadata',
           },
-          {
-            type: 'link',
-            title: 'Kaggle Readiness',
-            href: '/kaggle-readiness',
-            icon: FileCheck,
-            description: 'Validate your ARC Kaggle competition readiness',
-          },
         ],
       },
       {
@@ -268,6 +261,13 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
             href: '/about',
             icon: Info,
             description: 'Learn about this project and acknowledgments',
+          },
+          {
+            type: 'link',
+            title: 'ML & Kaggle',
+            href: '/kaggle-readiness',
+            icon: GraduationCap,
+            description: 'Plain-language explainer: what machine learning is, and what Kaggle is',
           },
           {
             type: 'link',
