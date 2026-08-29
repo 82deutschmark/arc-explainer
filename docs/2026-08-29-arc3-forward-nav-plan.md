@@ -109,3 +109,19 @@ trigger padding to `px-3`, and moving the scroll container from `AppHeader` into
 with `min-w-0` so the right rail stays pinned rather than being pushed off-screen. Clean at 1440px
 and 1280px; at 1024px only the two archive dropdowns scroll out, which is the intended order of
 sacrifice. See the CHANGELOG 7.7.0 entry for the measured results.
+
+
+## Follow-up, same day
+
+Two changes after the first push, both from user direction:
+
+- **Playground link removed.** `/arc3/playground` was early, basic agent experimentation — dead in
+  practice. Link gone, route left registered. The ARC-3 primary row is now Play · Submit ·
+  About ARC-3.
+- **Kaggle page repurposed.** The scored readiness form became a static plain-language explainer of
+  machine learning and Kaggle, aimed at someone with no maths background. Route and filename kept
+  (`/kaggle-readiness`, `KaggleReadinessValidation.tsx`) so nothing pointing at it breaks; the nav
+  entry moved from "Datasets & Scoring" to "Reading & Collections" and was relabelled **ML & Kaggle**.
+  This deletes the page's `containsConcerningLanguage` screening, which was its original purpose.
+
+See the CHANGELOG 7.8.0 entry.

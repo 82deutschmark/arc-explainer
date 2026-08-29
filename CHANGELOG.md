@@ -2,6 +2,18 @@
 
 ### Version 7.8.0  Aug 29, 2026
 
+- **Dropped the dead ARC-3 Playground link; the Kaggle page is now a plain explainer instead of an assessment** (Author: Claude Opus 5)
+  - **Playground**: removed `/arc3/playground` from the nav. It pointed at `ARC3AgentPlayground`, early basic agent experimentation the user confirmed is dead. The route is left registered — only the link is gone, so anything already pointing there still resolves.
+  - **Kaggle page rewritten**: `KaggleReadinessValidation.tsx` was a scored form. It asked which framework you used, how you validated, which metric you optimised, then graded the answers and told you whether you were "ready". Its educational sections were wall-to-wall gradient descent, backpropagation, loss functions and epochs. It is now a static, plain-language explainer covering two things: what machine learning is, and what Kaggle is — no form, no score, no state, and no maths.
+  - **Written for someone with no background**: ordinary software vs. learning from examples; "guess, check, adjust" repeated a great many times; a model as a pile of numbers nobody can read; memorising vs. learning, and why the held-back examples are the only honest test; then Kaggle as a contest built around exactly that, with hidden answers as the point. Closes on why ARC runs there. Jargon deliberately absent — no framework name-drops, no RMSE/AUC/F1, no formulas.
+  - **Gatekeeping removed, deliberately**: the old page carried a `containsConcerningLanguage` check that scanned free-text answers for "chosen", "consciousness", "telepathic", "divine", "psychic" and similar, and withheld a passing score when it matched. That screening was the page's original reason to exist. The user described it as built for a different purpose, so it is gone.
+  - **Route and filename unchanged**: still `/kaggle-readiness`, still `KaggleReadinessValidation.tsx`. Renaming would have meant touching `App.tsx` and adding a redirect for no user-visible gain — the nav label is what people actually read, and that changed independently.
+  - **Nav placement**: moved out of "Datasets & Scoring" (it is no longer a tool) into "Reading & Collections" beside LLM Reasoning, which it now matches in register. Relabelled "Kaggle Readiness" → **ML & Kaggle**; icon `FileCheck` → `GraduationCap`.
+  - **Style**: follows the sibling explainer at `/llm-reasoning` — `usePageMeta`, `EmojiMosaicAccent`, dark slate sections — but with a plain `text-slate-100` heading rather than that page's blue/purple/pink clip-text gradient, which CLAUDE.md rules out.
+  - **Files**: `client/src/pages/KaggleReadinessValidation.tsx` (rewritten, 488 → 181 lines), `client/src/components/layout/AppNavigation.tsx`.
+
+### Version 7.8.0  Aug 29, 2026
+
 - **A published game could not be tagged, so it vanished from the landing page that lists it** (Author: Claude Opus 5)
   - **What**: New admin-gated `PATCH /api/arc3-community/games/:gameId/curation`, setting `tags`, `difficulty` and `isFeatured` on an existing game. Used it to tag **g007 Tumble Block** and **g008 Two Skins** `['synthetic','autoresearch']`, matching g001/g005/g006.
   - **Why**: `SyntheticLanding.tsx:149` picks the synthetic set with `games.filter(g => g.tags.includes('synthetic'))`. Tags could only ever be set at creation, and only through `POST /games`; the public `POST /submissions` path hardcodes `tags: []` and nothing could set them afterwards. g007 and g008 were published through the public path, so both came out **playable, approved, thumbnailed — and absent from the arc3.markbarney.net synthetic list**. Every future game published that way would have had the same hole.

@@ -1,488 +1,181 @@
 /**
- * KaggleReadinessValidation.tsx
- * 
- * @author Cascade sonnet-3-5-20241022
- * @description A comprehensive form-based validation system to assess technical readiness 
- * for Kaggle machine learning challenges. Provides educational guidance and gentle assessment
- * of ML fundamentals including frameworks, validation strategies, metrics, and model approaches.
- * Uses a scoring system to provide personalized feedback and learning resources.
+ * Author: Claude Opus 5
+ * Date: 2026-08-29
+ * PURPOSE: Plain-language explainer covering two things a visitor keeps running into around
+ * ARC and never gets told outright: what machine learning actually is, and what Kaggle is.
+ * Written for someone with no maths background -- no gradient descent, no loss functions, no
+ * framework name-drops, no formulas. Deliberately dull and factual rather than persuasive.
+ * Replaces the former "Kaggle Challenge Readiness Validation" form, which scored a visitor's
+ * technical answers and gated them on the result; that page was built for a different purpose
+ * (screening people who arrived claiming mystical insight into AI) and is no longer wanted.
+ * Route stays /kaggle-readiness so nothing that already points here breaks.
+ * SRP/DRY check: Pass - static content page only, no state and no assessment logic. Reuses
+ * usePageMeta and EmojiMosaicAccent, matching the sibling explainer at /llm-reasoning.
  */
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  BookOpen, 
-  CheckCircle, 
-  AlertCircle, 
-  Lightbulb, 
-  Rocket, 
-  GraduationCap,
-  Brain,
-  Target,
-  TrendingUp
-} from 'lucide-react';
-
-interface FormData {
-  framework: string;
-  validation: string;
-  metric: string;
-  approach: string;
-}
-
-interface AssessmentResult {
-  score: number;
-  ready: boolean;
-  feedback: string[];
-  nextSteps: string[];
-  level: 'ready' | 'nearly' | 'foundations';
-}
+import React from 'react';
+import { Link } from 'wouter';
+import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 export default function KaggleReadinessValidation() {
-  const [formData, setFormData] = useState<FormData>({
-    framework: '',
-    validation: '',
-    metric: '',
-    approach: ''
+  usePageMeta({
+    title: 'What Are Machine Learning and Kaggle? – ARC Explainer',
+    description:
+      'A plain-language explanation of what machine learning is and what Kaggle is, written for people without a maths or programming background.',
+    canonicalPath: '/kaggle-readiness',
   });
 
-  const [assessment, setAssessment] = useState<AssessmentResult | null>(null);
-  const [showEducationalContent, setShowEducationalContent] = useState(false);
-
-  React.useEffect(() => {
-    document.title = 'Kaggle Challenge Readiness Validation';
-  }, []);
-
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const containsTechnicalTerms = (text: string): boolean => {
-    const technicalTerms = [
-      'feature', 'parameter', 'hyperparameter', 'epoch', 'batch',
-      'learning_rate', 'regularization', 'overfitting', 'gradient',
-      'loss_function', 'optimizer', 'preprocessing', 'encoding',
-      'neural', 'model', 'algorithm', 'training', 'validation'
-    ];
-    return technicalTerms.some(term => text.toLowerCase().includes(term));
-  };
-
-  const containsConcerningLanguage = (text: string): boolean => {
-    const concerningPatterns = [
-      'ai communication', 'chosen', 'special abilities', 'consciousness',
-      'sentient', 'magical', 'divine', 'telepathic', 'psychic'
-    ];
-    return concerningPatterns.some(pattern => text.toLowerCase().includes(pattern));
-  };
-
-  const assessTechnicalReadiness = (responses: FormData): AssessmentResult => {
-    let score = 0;
-    const feedback: string[] = [];
-
-    // Framework validation
-    const legitimateFrameworks = [
-      'sklearn', 'scikit-learn', 'pytorch', 'tensorflow', 'keras',
-      'xgboost', 'lightgbm', 'catboost', 'randomforest', 'svm',
-      'pandas', 'numpy', 'scipy', 'jupyter'
-    ];
-
-    if (legitimateFrameworks.some(framework => 
-      responses.framework.toLowerCase().includes(framework))) {
-      score += 1;
-      feedback.push("✅ Using established ML framework");
-    } else {
-      feedback.push("📚 Consider using scikit-learn, PyTorch, or TensorFlow");
-    }
-
-    // Validation methodology
-    const validationMethods = [
-      'train_test_split', 'cross_validation', 'k-fold', 'holdout',
-      'validation_curve', 'learning_curve', 'stratified', 'split',
-      'cv', 'fold'
-    ];
-
-    if (validationMethods.some(method => 
-      responses.validation.toLowerCase().includes(method))) {
-      score += 1;
-      feedback.push("✅ Proper validation strategy identified");
-    } else {
-      feedback.push("📚 Learn about train/test splits and cross-validation");
-    }
-
-    // Metric understanding
-    const standardMetrics = [
-      'rmse', 'mae', 'mse', 'r2', 'accuracy', 'precision', 'recall',
-      'f1', 'auc', 'roc', 'log_loss', 'cross_entropy', 'confusion_matrix'
-    ];
-
-    if (standardMetrics.some(metric => 
-      responses.metric.toLowerCase().includes(metric))) {
-      score += 1;
-      feedback.push("✅ Using appropriate evaluation metrics");
-    } else {
-      feedback.push("📚 Review evaluation metrics for your problem type");
-    }
-
-    // Technical coherence
-    if (responses.approach.length > 30 && 
-        containsTechnicalTerms(responses.approach) && 
-        !containsConcerningLanguage(responses.approach)) {
-      score += 1;
-      feedback.push("✅ Clear technical approach described");
-    } else {
-      feedback.push("📚 Provide more technical detail about your approach");
-    }
-
-    // Determine readiness level and next steps
-    let level: 'ready' | 'nearly' | 'foundations';
-    let nextSteps: string[] = [];
-
-    if (score >= 3) {
-      level = 'ready';
-      nextSteps = [
-        "Double-check submission format requirements",
-        "Verify file sizes meet competition limits", 
-        "Test your pipeline end-to-end",
-        "Good luck! 🚀"
-      ];
-    } else if (score >= 2) {
-      level = 'nearly';
-      nextSteps = [
-        "Complete Kaggle Learn courses: https://kaggle.com/learn",
-        "Review scikit-learn documentation: https://scikit-learn.org", 
-        "Practice cross-validation techniques",
-        "Strengthen weak areas and resubmit"
-      ];
-    } else {
-      level = 'foundations';
-      nextSteps = [
-        "Complete 'Intro to Machine Learning' on Kaggle Learn",
-        "Practice with small datasets using scikit-learn",
-        "Understand train/test splits thoroughly",
-        "Return when you feel more confident"
-      ];
-    }
-
-    return {
-      score,
-      ready: score >= 3,
-      feedback,
-      nextSteps,
-      level
-    };
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = assessTechnicalReadiness(formData);
-    setAssessment(result);
-  };
-
-  const resetForm = () => {
-    setFormData({
-      framework: '',
-      validation: '',
-      metric: '',
-      approach: ''
-    });
-    setAssessment(null);
-  };
-
-  const getScoreColor = (score: number) => {
-    if (score >= 3) return 'text-green-600';
-    if (score >= 2) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const getScoreIcon = (level: string) => {
-    switch (level) {
-      case 'ready': return <CheckCircle className="w-6 h-6 text-green-600" />;
-      case 'nearly': return <AlertCircle className="w-6 h-6 text-yellow-600" />;
-      default: return <GraduationCap className="w-6 h-6 text-blue-600" />;
-    }
-  };
-
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4 flex items-center gap-2">
-          <Target className="w-8 h-8 text-blue-600" />
-          Kaggle Challenge Readiness Validation
-        </h1>
-        <p className="text-lg text-gray-600 mb-4">
-          A gentle, educational approach to validating technical preparedness for machine learning competitions.
-        </p>
-        
-        <Button 
-          variant="outline" 
-          onClick={() => setShowEducationalContent(!showEducationalContent)}
-          className="mb-6"
-        >
-          <BookOpen className="w-4 h-4 mr-2" />
-          {showEducationalContent ? 'Hide' : 'Show'} Educational Content
-        </Button>
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-10">
+        <header className="space-y-6">
+          <div className="flex items-center justify-between mb-2">
+            <EmojiMosaicAccent pattern="rainbow" width={10} height={2} size="sm" framed />
+            <EmojiMosaicAccent pattern="pattern" width={8} height={2} size="sm" framed />
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Plain-language explainer</p>
+            <h1 className="text-3xl sm:text-4xl font-bold leading-tight text-slate-100">
+              What Are Machine Learning and Kaggle?
+            </h1>
+            <p className="text-sm sm:text-base text-slate-400 max-w-2xl">
+              Two words that come up constantly around ARC, explained without any maths. If you already build
+              models for a living, there is nothing here for you.
+            </p>
+          </div>
+        </header>
+
+        <section className="space-y-4 bg-slate-900/60 border border-slate-800 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-slate-100">Ordinary Software vs. Machine Learning</h2>
+          <p className="text-slate-300 leading-relaxed">
+            Normally, a computer only does what somebody told it to do, step by step. If you want a program that
+            spots junk mail, a person has to sit down and write out the rules: if the subject line shouts in capital
+            letters, if the sender is unknown, if the message mentions a lottery win, then call it junk.
+          </p>
+          <p className="text-slate-300 leading-relaxed">
+            That works until it doesn&apos;t. Junk mail keeps changing, real mail sometimes shouts in capital letters,
+            and the rule list grows into something nobody can maintain. Writing down every rule by hand turns out to
+            be impossible for most interesting problems.
+          </p>
+          <p className="text-slate-300 leading-relaxed">
+            Machine learning flips the job around. Instead of writing the rules, you collect{' '}
+            <strong>examples where you already know the answer</strong> — here are fifty thousand messages, and here
+            is which ones were junk — and you let the computer work out the rules for itself. Nobody tells it what
+            to look for. It finds whatever happens to separate one pile from the other.
+          </p>
+        </section>
+
+        <section className="space-y-4 bg-slate-900/60 border border-slate-800 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-slate-100">How the Learning Part Works</h2>
+          <p className="text-slate-300 leading-relaxed">
+            The process is less mysterious than it sounds. The computer makes a guess about an example, checks its
+            guess against the known answer, and nudges itself slightly in whatever direction would have been less
+            wrong. Then it does that again with the next example. And again, millions of times.
+          </p>
+          <p className="text-slate-300 leading-relaxed">
+            No single nudge matters. The pattern comes out of doing it an enormous number of times — the same way
+            you got better at a game by playing badly for a while rather than by reading the manual. There is
+            mathematics underneath all this, but the mathematics is just bookkeeping for &quot;guess, check, adjust.&quot;
+          </p>
+          <p className="text-slate-300 leading-relaxed">
+            What you end up with is called a <strong>model</strong>. It is not a program someone wrote and not a
+            database of stored answers. It is a very large pile of numbers that happens to produce useful guesses,
+            and generally nobody — including the people who built it — can read those numbers and say why it decides
+            what it decides.
+          </p>
+        </section>
+
+        <section className="space-y-4 bg-slate-900/60 border border-slate-800 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-slate-100">The Catch: Memorising Isn&apos;t Learning</h2>
+          <p className="text-slate-300 leading-relaxed">
+            There is one failure that shows up everywhere, and it is worth understanding because it explains how
+            machine learning is judged.
+          </p>
+          <p className="text-slate-300 leading-relaxed">
+            A model can get every practice example right by memorising them, the way a student can memorise the
+            answers to last year&apos;s exam without learning the subject. That student scores brilliantly on last
+            year&apos;s paper and falls apart on this year&apos;s.
+          </p>
+          <p className="text-slate-300 leading-relaxed">
+            So the honest test is always the same: hold back some examples, never let the model see them while it is
+            learning, and check it on those at the end. Performance on questions it has already seen tells you
+            nothing. Performance on questions it has never seen is the only number worth quoting. Nearly every
+            argument about whether some AI system is genuinely impressive comes down to this distinction.
+          </p>
+        </section>
+
+        <section className="space-y-4 bg-slate-900/60 border border-slate-800 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-slate-100">So What Is Kaggle?</h2>
+          <p className="text-slate-300 leading-relaxed">
+            Kaggle is a website where people compete at exactly that task. An organisation with a prediction problem
+            posts their data publicly, and anyone in the world can try to build the model that predicts best.
+          </p>
+          <p className="text-slate-300 leading-relaxed">A competition runs roughly like this:</p>
+          <ul className="list-disc pl-5 space-y-2 text-slate-300">
+            <li>Someone posts a dataset and a question — predict which customers will cancel, read the handwriting on these forms, work out what this puzzle is doing.</li>
+            <li>You download the data, including a set of examples with the answers attached.</li>
+            <li>You build something that makes predictions, using whatever approach you like.</li>
+            <li>You upload your predictions for a second batch of questions whose answers are kept hidden.</li>
+            <li>Kaggle scores you against those hidden answers and puts you on a public leaderboard.</li>
+            <li>At the deadline, the best scores win — often real prize money, sometimes a substantial amount.</li>
+          </ul>
+          <p className="text-slate-300 leading-relaxed">
+            The hidden answers are the whole point. You cannot memorise your way up the leaderboard, because you
+            never get to see what you are being marked on. It is the memorisation problem from the previous section,
+            turned into the rules of a contest.
+          </p>
+        </section>
+
+        <section className="space-y-4 bg-slate-900/60 border border-slate-800 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-slate-100">Why Any of This Matters Here</h2>
+          <p className="text-slate-300 leading-relaxed">
+            ARC is a set of puzzles built to be easy for people and hard for machines. Each one shows you a few
+            examples of a grid changing, and asks you to apply the same idea to a new grid. Most people work them
+            out without being told the rule. Computers, historically, have not.
+          </p>
+          <p className="text-slate-300 leading-relaxed">
+            ARC runs its competition on Kaggle, and the structure above is the reason it is taken seriously. The
+            puzzles that decide the winner are ones nobody has published, so a system cannot score well by having
+            encountered them before. It has to work out an unfamiliar rule from a handful of examples — which is
+            what the whole benchmark is trying to measure.
+          </p>
+          <p className="text-slate-300 leading-relaxed">
+            That is also what the rest of this site is for: watching various AI models attempt these puzzles, and
+            being fairly blunt about how often they fail.
+          </p>
+        </section>
+
+        <section className="space-y-3 bg-slate-900/60 border border-slate-800 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-slate-100">Where to Go Next</h2>
+          <ul className="space-y-2 text-slate-300">
+            <li>
+              <Link href="/llm-reasoning" className="text-blue-300 hover:text-blue-200 underline-offset-4 hover:underline">
+                Do AI language models really think?
+              </Link>{' '}
+              — the companion explainer, on why chatbots sound cleverer than they are.
+            </li>
+            <li>
+              <Link href="/arc3/gallery" className="text-blue-300 hover:text-blue-200 underline-offset-4 hover:underline">
+                Try an ARC-AGI-3 task yourself
+              </Link>{' '}
+              — you get no instructions, which is the experiment.
+            </li>
+            <li>
+              <a
+                href="https://www.kaggle.com/learn"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-300 hover:text-blue-200 underline-offset-4 hover:underline"
+              >
+                Kaggle&apos;s own free courses
+              </a>{' '}
+              — if you want to actually build one of these rather than read about it.
+            </li>
+          </ul>
+        </section>
       </div>
-
-      {showEducationalContent && (
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="w-5 h-5" />
-              Understanding What Makes Real Machine Learning
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-yellow-500" />
-                Training Data Reality Check
-              </h3>
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="mb-3 font-medium">Data only becomes training data if you:</p>
-                <ul className="list-disc list-inside space-y-1 text-sm">
-                  <li><strong>Clean and label it</strong> - Raw data needs preprocessing, missing value handling, and proper labels</li>
-                  <li><strong>Convert it into a supervised dataset</strong> - For supervised learning or RLHF (Reinforcement Learning from Human Feedback)</li>
-                  <li><strong>Actually run an optimization procedure</strong> - Gradient descent, backpropagation, or other algorithms that update model weights</li>
-                </ul>
-                <p className="mt-3 text-sm italic">Without these steps, nothing in the model changes. Just having data files doesn't train anything.</p>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-500" />
-                How Models Actually Learn
-              </h3>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <p className="mb-3">Models learn through mathematical optimization:</p>
-                <ul className="list-disc list-inside space-y-1 text-sm">
-                  <li><strong>Gradient Descent:</strong> Iteratively adjusting weights to minimize loss</li>
-                  <li><strong>Backpropagation:</strong> Computing gradients through the computational graph</li>
-                  <li><strong>Loss Functions:</strong> Mathematical measures of prediction error (MSE, cross-entropy, etc.)</li>
-                  <li><strong>Epochs:</strong> Complete passes through the training dataset</li>
-                </ul>
-                <p className="mt-3 text-sm italic">Key Point: Models don't "understand" or "think" - they optimize mathematical functions through calculus and linear algebra.</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {!assessment ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Rocket className="w-5 h-5" />
-              Technical Readiness Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <Label htmlFor="framework" className="text-base font-medium">
-                  1. Framework & Tools
-                </Label>
-                <p className="text-sm text-gray-600 mb-3">
-                  What machine learning framework and tools are you using?
-                </p>
-                <Input
-                  id="framework"
-                  value={formData.framework}
-                  onChange={(e) => handleInputChange('framework', e.target.value)}
-                  placeholder="e.g., scikit-learn, PyTorch, TensorFlow, XGBoost..."
-                  className="w-full"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Real ML work requires actual software libraries with documented APIs and mathematical implementations.
-                </p>
-              </div>
-
-              <Separator />
-
-              <div>
-                <Label htmlFor="validation" className="text-base font-medium">
-                  2. Data Validation Strategy
-                </Label>
-                <p className="text-sm text-gray-600 mb-3">
-                  How are you validating your model's performance?
-                </p>
-                <Textarea
-                  id="validation"
-                  value={formData.validation}
-                  onChange={(e) => handleInputChange('validation', e.target.value)}
-                  placeholder="e.g., train_test_split with 80/20 ratio, 5-fold cross-validation, holdout test set..."
-                  className="w-full min-h-[80px]"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Without proper validation, you can't trust your results. This is fundamental to the scientific method in ML.
-                </p>
-              </div>
-
-              <Separator />
-
-              <div>
-                <Label htmlFor="metric" className="text-base font-medium">
-                  3. Evaluation Metrics
-                </Label>
-                <p className="text-sm text-gray-600 mb-3">
-                  What evaluation metric are you optimizing for?
-                </p>
-                <Input
-                  id="metric"
-                  value={formData.metric}
-                  onChange={(e) => handleInputChange('metric', e.target.value)}
-                  placeholder="e.g., RMSE, accuracy, F1-score, AUC-ROC..."
-                  className="w-full"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Different problems require different mathematical measures of success.
-                </p>
-              </div>
-
-              <Separator />
-
-              <div>
-                <Label htmlFor="approach" className="text-base font-medium">
-                  4. Model Architecture or Approach
-                </Label>
-                <p className="text-sm text-gray-600 mb-3">
-                  Describe your modeling approach or architecture.
-                </p>
-                <Textarea
-                  id="approach"
-                  value={formData.approach}
-                  onChange={(e) => handleInputChange('approach', e.target.value)}
-                  placeholder="e.g., Random Forest with feature engineering, CNN for image classification, ensemble of gradient boosting models..."
-                  className="w-full min-h-[100px]"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Real ML involves deliberate choices about algorithms, features, and model complexity.
-                </p>
-              </div>
-
-              <div className="flex gap-4 pt-4">
-                <Button type="submit" className="flex-1">
-                  Assess My Readiness
-                </Button>
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  Clear Form
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {getScoreIcon(assessment.level)}
-                Assessment Results: {assessment.score}/4
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className={`text-2xl font-bold ${getScoreColor(assessment.score)}`}>
-                    Score: {assessment.score}/4
-                  </span>
-                  <Badge variant={assessment.ready ? "default" : "secondary"}>
-                    {assessment.level === 'ready' ? 'Ready to Submit ✅' : 
-                     assessment.level === 'nearly' ? 'Nearly Ready 📚' : 
-                     'Build Foundations First 🌱'}
-                  </Badge>
-                </div>
-
-                <div className="space-y-3">
-                  {assessment.feedback.map((item, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      {item.startsWith('✅') ? 
-                        <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" /> :
-                        <BookOpen className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                      }
-                      <span className="text-sm">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-3">Next Steps:</h3>
-                <ul className="space-y-2">
-                  {assessment.nextSteps.map((step, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
-                      <span className="text-sm">{step}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {assessment.level === 'foundations' && (
-                <Alert className="mt-6">
-                  <Lightbulb className="w-4 h-4" />
-                  <AlertDescription>
-                    <strong>Remember:</strong> Real ML expertise comes from understanding the mathematics
-                    and implementing algorithms step by step. There are no shortcuts,
-                    but that's what makes it rewarding! 💪
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
-
-          <div className="flex gap-4">
-            <Button onClick={resetForm} className="flex-1">
-              Take Assessment Again
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5" />
-            Educational Resources
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div>
-              <h4 className="font-semibold mb-2">Absolute Beginners</h4>
-              <ul className="text-sm space-y-1">
-                <li>• Kaggle Learn: Free, hands-on courses</li>
-                <li>• 3Blue1Brown Neural Networks</li>
-                <li>• Andrew Ng's Course: Stanford CS229</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Intermediate</h4>
-              <ul className="text-sm space-y-1">
-                <li>• Hands-On Machine Learning (Géron)</li>
-                <li>• Fast.ai: Top-down learning</li>
-                <li>• Papers with Code implementations</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Advanced</h4>
-              <ul className="text-sm space-y-1">
-                <li>• Elements of Statistical Learning</li>
-                <li>• Deep Learning Book (Goodfellow)</li>
-                <li>• Research papers: arXiv.org</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
