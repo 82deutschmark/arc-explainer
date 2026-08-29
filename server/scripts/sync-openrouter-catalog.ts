@@ -227,8 +227,10 @@ export async function syncOpenRouterCatalog(autoAdd = true): Promise<any> {
 
 // Check if script is being run directly (not imported as a module)
 // Handle Windows path separators: normalize process.argv[1] to match import.meta.url format
-const scriptPath = process.argv[1].replace(/\\/g, '/');
-const isDirectExecution = import.meta.url.endsWith(scriptPath);
+// process.argv[1] is undefined when this module is imported (e.g. `node -e`),
+// so guard before touching it or the import itself throws.
+const scriptPath = process.argv[1]?.replace(/\\/g, '/');
+const isDirectExecution = Boolean(scriptPath) && import.meta.url.endsWith(scriptPath!);
 
 if (isDirectExecution) {
   syncOpenRouterCatalog(true)

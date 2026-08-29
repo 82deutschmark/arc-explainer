@@ -1,93 +1,64 @@
 # Worm Arena Tournament Scripts
 
-This folder contains PowerShell scripts for launching batch Worm Arena (SnakeBench) tournament matches between AI models.
+One script: [`new-model-eval.py`](new-model-eval.py). It queues Worm Arena matches against the
+`/api/snakebench/run-batch` endpoint, playing **both directions** per pairing. Replays land in
+`external/SnakeBench/backend/completed_games/`.
 
-## Overview
+## Usage
 
-Each script queues multiple game matches asynchronously, firing them off with minimal delays to allow the backend to process them in parallel. Games are saved as JSON replays in `external/SnakeBench/backend/completed_games/`.
+The dev server must be running (the user starts it — see CLAUDE.md).
 
-## Scripts
+```bash
+python3 scripts/worm-arena-tournaments/new-model-eval.py \
+  --model deepseek/deepseek-v4-flash-0731 \
+  --baselines z-ai/glm-5.3-flash qwen/qwen3.8-flash \
+  --count 3 --max-workers 4
+```
 
-### `run-matches.ps1`
-- **Purpose**: GPT-5 Nano vs all free OpenRouter models
-- **Models A**: openai/gpt-5-nano
-- **Models B**: 9 free models (Trinity Mini, Nova Lite, Kat Coder Pro, Nemotron variants, Kimi Dev, Ministral family)
-- **Matches per pair**: 5
-- **Total**: 45 matches
+Full round-robin over a pool (every unique pair once, both directions — no double billing):
 
-### `ministral-feud.ps1`
-- **Purpose**: GPT-5 variants vs Ministral family
-- **Models A**: openai/gpt-5-nano, openai/gpt-5-mini, openrouter/gpt-5.1-codex-mini
-- **Models B**: Ministral 14B, 8B, 3B (2512)
-- **Matches per pair**: 3 (both directions)
-- **Total**: 54 matches
+```bash
+python3 scripts/worm-arena-tournaments/new-model-eval.py --round-robin --count 2 \
+  --model deepseek/deepseek-v4-flash-0731 \
+  --baselines z-ai/glm-5.3-flash qwen/qwen3.8-flash deepseek/deepseek-v3.2
+```
 
-### `gpt-openai-feud.ps1`
-- **Purpose**: All GPT OpenAI models on OpenRouter compete in round-robin
-- **Models**: openai/gpt-oss-120b, openrouter/gpt-5.1-codex-mini, openai/gpt-5.1, openai/gpt-5-nano, openai/gpt-5-mini
-- **Matches per pair**: 3 (both directions)
-- **Total**: 60 matches
+Always `--dry-run` first to print the match plan without firing.
 
-### `opus-vs-all.ps1`
-- **Purpose**: Claude Opus 4.5 challenges Haiku and all GPT models
-- **Models A**: anthropic/claude-opus-4.5
-- **Models B**: claude-haiku-4.5 (3), all 5 GPT OpenAI models (15)
-- **Total**: 18 matches
-- **⚠️ WARNING**: Extremely expensive ($10-$105 estimated cost)
+| Flag | Default | Notes |
+| --- | --- | --- |
+| `--model` | `deepseek/deepseek-v4-flash-0731` | Slug under test |
+| `--baselines` | current cheap-flash tier + DeepSeek V3.2 | Space-separated |
+| `--count` | 3 | Matches per pairing; ×2 for both directions |
+| `--round-robin` | off | Treat `--model` + `--baselines` as one pool; all unique pairs |
+| `--max-workers` | 4 | Parallel pairings |
+| `--num-apples` | 15 | |
+| `--persona` | `B` | `default`, `A`, or `B` |
 
-### `opus-vs-sonnet.ps1`
-- **Purpose**: Quick Claude Opus vs Sonnet 4.5 matchup
-- **Models**: anthropic/claude-opus-4.5 vs anthropic/claude-sonnet-4-5
-- **Matches**: 3
-- **⚠️ WARNING**: Expensive run
+## Rules learned the hard way
 
-### `gpt5-vs-claude-gemini.ps1`
-- **Purpose**: GPT-5 family battles Claude family and Gemini 3
-- **Models A**: openai/gpt-5-nano, openai/gpt-5-mini, openrouter/gpt-5.1-codex-mini
-- **Models B**: Claude Opus 4.5, Sonnet 4.5, Haiku 4.5 (all via OpenRouter), Gemini 3 Pro Preview
-- **Matches per pair**: 3
-- **Total**: 36 matches
+- **A model must be registered in `server/config/models.ts` before it can play.**
+  `getSnakeBenchAllowedModels()` gates `run-batch` and rejects anything else. See
+  [the model refresh plan](../../docs/plans/082926-worm-arena-cheap-flash-models-plan.md) for the
+  catalog-then-keys ordering, which will take the app down at boot if reversed.
+- **No `:free` slugs.** Free tiers rate-limit, and a throttled match writes a zero-token replay
+  that is invalid and has to be deleted — see
+  [zero-token-games-report](../../docs/worm-arena/zero-token-games-report-2025-12-13.md).
+  If you must use one, drop to `--max-workers 1`.
+- **No `:batch` slugs** (different call semantics) and **no `~`-prefixed aliases** (they redirect,
+  and TrueSkill keys off the slug, so ratings silently corrupt).
+- **Check the model is a chat model.** The arena wants plain text ending in `UP`/`DOWN`/`LEFT`/
+  `RIGHT`. Translation, music, safety-classifier, and vision-only models will not comply.
+- **Cost comes from our own config**, not from OpenRouter — wrong `cost` strings in `models.ts`
+  mean wrong `$` in every replay, silently.
+- **Drive loops from Python, not the shell.** `${!ARR[@]}` array slicing is a bash-ism that fails
+  with `bad substitution` in zsh, the shell on this machine. That is why `--round-robin` lives in
+  the script.
+- **Smoke test one match before a sweep.** Observed burn across models spans 226 → 11,675 output
+  tokens per round, a 50× range, so budgets are guesses until measured.
 
-## How to Run
+## History
 
-1. Ensure the dev server is running (`npm run test`)
-2. Run any script from PowerShell:
-   ```powershell
-   powershell -File "path/to/script.ps1"
-   ```
-
-## Key Points
-
-- **Asynchronous**: All scripts use `Start-Job` to queue matches without waiting for completion
-- **2-second delays**: Minimal delays between job submissions prevent backend overload
-- **No waiting**: Scripts complete immediately; matches run in parallel on backend
-- **Cost tracking**: Check completed game JSON files for actual cost tracking
-- **Models via OpenRouter**: Most scripts use OpenRouter models (identified by `openai/`, `anthropic/`, `google/` prefixes)
-
-## Creating New Tournaments
-
-When designing a new tournament:
-
-1. **Identify model families** from `server/config/models.ts`
-2. **Count matchups**: (Model A count) × (Model B count) × (matches per pair)
-3. **Create arrays** for Model A and Model B
-4. **Nested loops**: Iterate A → B → matches per pair
-5. **Use `Start-Job`** for async execution
-6. **Add `Start-Sleep`** between submissions (500ms typical)
-7. **Run immediately** - don't wait for jobs to complete
-
-## Estimating Cost
-
-- **Free models**: $0.00
-- **Cheap models** (e.g., GPT-5 Nano): ~$0.02-$0.10 per match
-- **Mid-tier models** (Claude Haiku): ~$0.10-$0.50 per match
-- **Premium models** (Claude Opus): $0.50-$5.00+ per match
-
-Multiply by number of matches to estimate total cost.
-
-## Notes
-
-- All scripts fire off matches rapidly - no sequential waiting
-- Games run on the SnakeBench backend (Python subprocess)
-- Results appear in completed_games JSON files as games finish
-- Use Worm Arena UI to view replays once games are complete
+36 one-off scripts were removed on 2026-08-29: 30 PowerShell files (unrunnable — no PowerShell on
+the dev Mac), plus five hardcoded tournaments and a runner whose only purpose was free-model rate
+limiting. All were pinned to models now long dead. Recover any from git history if needed.
