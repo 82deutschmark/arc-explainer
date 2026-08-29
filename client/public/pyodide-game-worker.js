@@ -3,9 +3,16 @@ Author: Claude Sonnet 4.6
 Date: 2026-03-12
 PURPOSE: Web Worker for running ARCEngine community games client-side via Pyodide 0.27.4.
          Eliminates server-side Python subprocesses and per-action network round-trips.
-         Loads numpy + pydantic via Pyodide's pre-compiled package system, then manually
-         extracts the arcengine wheel from PyPI (micropip cannot handle pydantic-core C
-         extensions as a transitive dep, so we load pydantic first then extract arcengine).
+         Loads numpy + pydantic via Pyodide's pre-compiled package system, then installs
+         arcengine with micropip.
+
+         (Until 29-Aug-2026 this hand-fetched the arcengine wheel from PyPI and unzipped
+         it into site.getsitepackages()[0], on the stated grounds that "micropip cannot
+         handle pydantic-core C extensions as a transitive dep". That premise is wrong:
+         pydantic-core 2.27.2 is a first-class package in the Pyodide 0.27.4 lockfile, so
+         micropip resolves it from there and never builds anything. The workaround was
+         working around a problem that does not exist, and it was the part that broke --
+         players got a rendered board with dead controls and no error.)
          Architecture ref: docs/sonpham-arc3-pyodide-architecture.md
 
          Message protocol (main thread → worker):
@@ -82,36 +89,18 @@ async function handleInit(id) {
   self.postMessage({ type: 'progress', id, stage: 'packages', message: 'Loading packages...' });
   await pyodide.loadPackage(['numpy', 'pydantic']);
 
-  // Stage 3: arcengine — manual wheel extraction from PyPI.
-  // We cannot use micropip.install('arcengine') because micropip would try to
-  // install pydantic-core (C extension) as a dep and fail. Instead, fetch the
-  // pure-Python py3-none-any.whl directly and extract it after pydantic is loaded.
+  // Stage 3: arcengine via micropip, the supported path. numpy/pydantic/pydantic-core
+  // are already satisfied from the lockfile above, so this resolves a single pure-Python
+  // wheel and compiles nothing.
   initStage = 'arcengine';
   self.postMessage({ type: 'progress', id, stage: 'arcengine', message: 'Installing game engine...' });
+  await pyodide.loadPackage('micropip');
   await pyodide.runPythonAsync(`
-import json, zipfile, io, importlib, site
-from pyodide.http import pyfetch
+import micropip
+await micropip.install("arcengine")
 
-# Fetch arcengine metadata from PyPI
-resp = await pyfetch("https://pypi.org/pypi/arcengine/json")
-meta = json.loads(await resp.string())
-
-# Find the pure-Python wheel (py3-none-any)
-whl_url = next(
-    u["url"] for u in meta["urls"]
-    if u["filename"].endswith("py3-none-any.whl")
-)
-
-# Download and extract into site-packages
-whl_resp = await pyfetch(whl_url)
-whl_bytes = bytes(await whl_resp.bytes())
-sp = site.getsitepackages()[0]
-with zipfile.ZipFile(io.BytesIO(whl_bytes)) as zf:
-    zf.extractall(sp)
-
-importlib.invalidate_caches()
-
-# Verify the import works
+# Fail loudly here rather than leaving a half-initialised runtime: the caller turns
+# this into an 'error' message, which is what trips the fallback to the server session.
 from arcengine import ARCBaseGame, ActionInput, GameAction, GameState
 `);
 

@@ -498,19 +498,27 @@ export default function CommunityGamePlay() {
               </PixelPanel>
             )}
 
-            {/* Level celebration */}
-            {levelCelebration !== null && (
-              <div
-                className="mb-4 border-2 border-[var(--arc3-border)] px-4 py-3 flex items-center gap-3 animate-pulse"
-                style={{ backgroundColor: 'var(--arc3-c14)', color: 'var(--arc3-c0)' }}
-              >
-                <Trophy className="w-6 h-6" />
-                <div>
-                  <p className="text-sm font-bold">Level Complete!</p>
-                  <p className="text-[11px] opacity-80">Advancing to level {levelCelebration + 1}...</p>
+            {/* Level clear.
+                Overlaid on the board rather than inserted above it: as a block in the
+                flow it pushed the whole game down the moment it appeared and pulled it
+                back up 1.5s later, so the board visibly jumped twice per level. It is
+                also no longer `animate-pulse` -- a flashing panel over a game reads as
+                an error, and it flashed for the entire time it was mounted. */}
+            <div className="relative">
+              {levelCelebration !== null && (
+                <div
+                  className="arc3-level-clear absolute inset-x-0 top-0 z-20 flex items-center gap-3 px-4 py-3
+                             border-b-2 border-[var(--arc3-border)] pointer-events-none"
+                  style={{ backgroundColor: 'var(--arc3-c14)', color: 'var(--arc3-c5)' }}
+                  role="status"
+                  aria-live="polite"
+                >
+                  <Trophy className="w-5 h-5 shrink-0" />
+                  <p className="text-sm font-bold tracking-wide">
+                    Level {levelCelebration} clear
+                  </p>
                 </div>
-              </div>
-            )}
+              )}
 
             <PixelPanel tone="blue">
               {gameState === 'idle' ? (
@@ -566,6 +574,7 @@ export default function CommunityGamePlay() {
                 </div>
               )}
             </PixelPanel>
+            </div>
           </div>
 
           {/* Controls Sidebar */}

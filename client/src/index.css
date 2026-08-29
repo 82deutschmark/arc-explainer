@@ -347,3 +347,19 @@
   background-size: 200% 100%;
   animation: pack-shimmer 3s ease-in-out infinite;
 }
+/* ARC3 level-clear banner.
+   Deliberately not `animate-pulse`: a flashing block over a game board reads as an
+   error state, and it repeated for the whole 1.5s the banner was mounted. This runs
+   once -- a quick rise and settle, then a hold -- and is inert for anyone who has asked
+   for reduced motion. */
+@keyframes arc3-level-clear {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.98); }
+  55%  { opacity: 1; transform: translateY(0)   scale(1.015); }
+  100% { opacity: 1; transform: translateY(0)   scale(1); }
+}
+.arc3-level-clear {
+  animation: arc3-level-clear 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arc3-level-clear { animation: none; }
+}
