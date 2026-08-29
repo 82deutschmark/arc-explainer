@@ -458,7 +458,7 @@ export default function CommunityGamePlay() {
                     {gameDetails?.data?.displayName || 'Community Game'}
                   </p>
                   <p className="text-[11px] text-[var(--arc3-muted)] mb-6 max-w-md mx-auto">
-                    {gameDetails?.data?.description || 'Start the game to begin playing'}
+                    {'No instructions. Work out what it does.'}
                   </p>
                   <PixelButton
                     tone="green"
@@ -506,14 +506,14 @@ export default function CommunityGamePlay() {
           {/* Controls Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             {/* D-Pad */}
-            <PixelPanel tone="blue" title="Movement" subtitle="Arrow keys or WASD">
+            <PixelPanel tone="blue" title="D-PAD" subtitle="Arrows / WASD">
               <div className="flex flex-col items-center gap-1.5">
                 <PixelButton
                   tone="blue"
                   onClick={() => void handleAction('ACTION1')}
                   disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-14 h-14"
-                  title="Move Up (W / Arrow Up)"
+                  title="W / Arrow Up"
                 >
                   <div className="flex flex-col items-center leading-none">
                     <ChevronUp className="w-6 h-6" />
@@ -527,7 +527,7 @@ export default function CommunityGamePlay() {
                     onClick={() => void handleAction('ACTION3')}
                     disabled={!frame || isActing || gameState !== 'playing'}
                     className="w-14 h-14"
-                    title="Move Left (A / Arrow Left)"
+                    title="A / Arrow Left"
                   >
                     <div className="flex flex-col items-center leading-none">
                       <ChevronLeft className="w-6 h-6" />
@@ -540,7 +540,7 @@ export default function CommunityGamePlay() {
                     onClick={() => void handleAction('ACTION4')}
                     disabled={!frame || isActing || gameState !== 'playing'}
                     className="w-14 h-14"
-                    title="Move Right (D / Arrow Right)"
+                    title="D / Arrow Right"
                   >
                     <div className="flex flex-col items-center leading-none">
                       <ChevronRight className="w-6 h-6" />
@@ -554,7 +554,7 @@ export default function CommunityGamePlay() {
                   onClick={() => void handleAction('ACTION2')}
                   disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-14 h-14"
-                  title="Move Down (S / Arrow Down)"
+                  title="S / Arrow Down"
                 >
                   <div className="flex flex-col items-center leading-none">
                     <ChevronDown className="w-6 h-6" />
@@ -565,18 +565,17 @@ export default function CommunityGamePlay() {
             </PixelPanel>
 
             {/* Action Buttons */}
-            <PixelPanel tone="green" title="Actions">
+            <PixelPanel tone="green" title="BUTTONS">
               <div className="space-y-2">
                 <PixelButton
                   tone="green"
                   onClick={() => void handleAction('ACTION5')}
                   disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-full h-11"
-                  title="Interact / Confirm (Space / Enter)"
+                  title="Space / Enter"
                 >
                   <Zap className="w-4 h-4" />
-                  <span>Action</span>
-                  <span className="ml-auto text-[9px] opacity-70 font-mono">Space</span>
+                  <span>SPACEBAR</span>
                 </PixelButton>
 
                 <PixelButton
@@ -584,11 +583,10 @@ export default function CommunityGamePlay() {
                   onClick={() => {/* ACTION6 is grid-click only */}}
                   disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-full h-11"
-                  title="Click on the game grid to interact with a specific cell"
+                  title="Click the grid"
                 >
                   <Mouse className="w-4 h-4" />
-                  <span>Click Grid</span>
-                  <span className="ml-auto text-[9px] opacity-70 font-mono">Mouse</span>
+                  <span>CLICK</span>
                 </PixelButton>
 
                 <PixelButton
@@ -596,11 +594,11 @@ export default function CommunityGamePlay() {
                   onClick={() => void handleAction('ACTION7')}
                   disabled={!frame || isActing || gameState !== 'playing'}
                   className="w-full h-11"
-                  title="Secondary Action (Q / E)"
+                  title="Q / E"
                 >
                   <Hash className="w-4 h-4" />
-                  <span>Alt Action</span>
-                  <span className="ml-auto text-[9px] opacity-70 font-mono">Q / E</span>
+                  <span>UNDO</span>
+                  <span className="ml-auto text-[9px] opacity-70 font-mono">Z</span>
                 </PixelButton>
               </div>
             </PixelPanel>
@@ -611,10 +609,10 @@ export default function CommunityGamePlay() {
               onClick={handleReset}
               disabled={!frame || isActing}
               className="w-full h-9 text-[11px]"
-              title="Reset current level (R)"
+              title="R"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Level</span>
+              <span>RESET</span>
               <span className="ml-auto text-[9px] opacity-60 font-mono">R</span>
             </PixelButton>
           </div>
