@@ -9,12 +9,15 @@
 import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { ROUTE_META_TAGS, RouteMetaTags } from '../../shared/routes.js';
+import { ROUTE_META_TAGS, ROOT_META_BY_HOST, RouteMetaTags } from '../../shared/routes.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
 import { logger } from '../utils/logger.js';
 
 // Pattern for matching puzzle routes: /puzzle/:taskId or /puzzle/:taskId/...
 const PUZZLE_ROUTE_PATTERN = /^\/puzzle\/([a-f0-9]{8})(?:\/.*)?$/i;
+
+// ARC-AGI-3 community task pages: /arc3/play/:gameId
+const ARC3_PLAY_PATTERN = /^\/arc3\/play\/([A-Za-z0-9_.-]{1,64})$/;
 
 // Base URL for generating absolute URLs
 const BASE_URL = process.env.BASE_URL || 'https://arc.markbarney.net';
@@ -113,9 +116,33 @@ export async function metaTagInjector(
   }
 
   const requestPath = req.path;
+  const host = (req.hostname || '').toLowerCase();
 
-  // First, check for static route meta tags
-  let routeMetaTags: RouteMetaTags | null | undefined = ROUTE_META_TAGS[requestPath];
+  // "/" renders a different page per host, so it cannot be described by a single entry:
+  // arc3.markbarney.net is the synthetic-programme landing, arc.markbarney.net leads
+  // with the task gallery. Without this, sharing either host unfurled as the other.
+  let routeMetaTags: RouteMetaTags | null | undefined =
+    requestPath === '/' ? ROOT_META_BY_HOST[host] : undefined;
+
+  // Then static route meta tags
+  if (!routeMetaTags) routeMetaTags = ROUTE_META_TAGS[requestPath];
+
+  // Then a community task, which unfurls with its own opening frame.
+  if (!routeMetaTags) {
+    const playMatch = requestPath.match(ARC3_PLAY_PATTERN);
+    if (playMatch) {
+      const gameId = playMatch[1];
+      routeMetaTags = {
+        title: `${gameId.toUpperCase()} — an ARC-AGI-3 task`,
+        description:
+          'No instructions, no goal, no controls listed. Work out what it does. '
+          + 'Humans solve these; the best AI scores 0.50%.',
+        url: `https://${host || 'arc.markbarney.net'}/arc3/play/${gameId}`,
+        image: `${BASE_URL}/api/arc3-community/games/${encodeURIComponent(gameId)}/thumbnail?size=512`,
+        type: 'article',
+      };
+    }
+  }
 
   // If no static route, check for dynamic puzzle route
   if (!routeMetaTags) {
