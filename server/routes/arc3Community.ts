@@ -1,11 +1,17 @@
 /*
-Author: GPT-5.2 / Claude Sonnet 4.6
-Date: 2026-03-12
+Author: GPT-5.2 / Claude Sonnet 4.6 / Claude Opus 5
+Date: 2026-08-29
 PURPOSE: Express router for ARC3 community game endpoints. Handles game listing, game play
          sessions (Node <-> Python bridge), single-file submission persistence, and source
          retrieval for official ARCEngine games and approved community games.
          The /games/:gameId/source endpoint now returns `className` so the Pyodide client-side
          game worker can instantiate the correct ARCBaseGame subclass without server execution.
+         PATCH /games/:gameId/curation sets tags, difficulty and the featured flag on a
+         game that is already published. Curation fields are otherwise settable only at
+         creation and only through POST /games; the public POST /submissions path stores
+         `tags: []` by design, so a game published that way was invisible to every surface
+         that selects by tag -- including the synthetic set on the arc3 landing page --
+         with no route able to repair it.
          Dependencies: CommunityGameRepository (Postgres), CommunityGameStorage (disk),
          CommunityGameValidator (static analysis), and ArcEngineOfficialGameCatalog (submodule).
 SRP/DRY check: Pass - kept responsibilities at the HTTP layer and reused existing services.

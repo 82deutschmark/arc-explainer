@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.8.1  Aug 29, 2026
+
+- **The synthetic set is complete at seven tasks, and none of them could be scored 100% until now** (Author: Claude Opus 5)
+  - **What**: Published **g007 Tumble Block** (8 levels), **g008 Two Skins** (7), **g009 Prism Run** (7) and **g010 Lantern Ledger** (8), joining g001/g005/g006. All seven are `approved`, `isPlayable`, tagged `['synthetic','autoresearch']`, with `levelCount` derived by running the file at publish time rather than declared by the submitter. Fixed sources for all live games pushed via `PUT /games/:gameId/source`.
+  - **Why the games changed**: six of the seven finished a level with `if is_last_level(): win() else: next_level()`. ARCEngine's `next_level()` already handles the last level and is what performs `_score += 1`, so calling `win()` directly skipped it — **a flawless run ended in state `WIN` reporting `win_score - 1`.** g001 7/8, g005 5/6, g006 5/6, g007 7/8, g008 6/7, g009 6/7. That number is the human-vs-agent metric the telemetry work exists to collect.
+  - **How it was found**: by playing g008 to completion through the production HTTP session after publishing it, rather than checking that actions returned `200`. The final frame came back `state=WIN score=6 win_score=7`. `CommunityGameValidator` cannot catch this and never could — static analysis does not execute, and runtime validation proves the game *instantiates*. The game loads, runs, advances, and reports `WIN`; only the number is wrong.
+  - **Verified, not assumed**: each published game replayed to completion against production, asserting the final frame reports `WIN` **and** a full score — g008 7/7 in 170 actions, g009 7/7 in 63, g010 8/8 in 950. Thumbnail and `/arc3/play/<id>` return 200 for all seven.
+  - **Fixed upstream**: `82deutschmark/autoresearch-arena` commits `efd5631` and `243e8d1`. The write-up of why six independent verifiers all passed a broken game is at `arc3games/SCORING_BUG_FINDINGS.md` there; the short version is that a model of the rules has no score to check, and the terminal level is the only place the two code paths differ, so a replay that stops at level 1 is structurally blind to it.
+  - **Known gap, not fixed here**: `POST /session/:guid/action` returns **500** when `coordinates` arrives as `{x, y}` instead of the expected `[x, y]` tuple. A malformed payload should be a 400 from the route rather than an unhandled error out of the Python bridge.
+  - **Files**: `server/routes/arc3Community.ts` (annotation header only — documents the curation route added in 7.8.0), `docs/2026-08-29-synthetic-set-publish-and-scoring-plan.md` (new).
+
 ### Version 7.8.0  Aug 29, 2026
 
 - **Dropped the dead ARC-3 Playground link; the Kaggle page is now a plain explainer instead of an assessment** (Author: Claude Opus 5)
