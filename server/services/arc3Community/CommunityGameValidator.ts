@@ -78,6 +78,9 @@ export interface ValidationResult {
     className: string | null;
     importedModules: string[];
     estimatedComplexity: 'simple' | 'moderate' | 'complex';
+    /** Derived by running the game, not declared by the uploader. */
+    levelCount?: number | null;
+    winScore?: number | null;
   };
 }
 
@@ -236,7 +239,12 @@ try:
         "valid": True,
         "game_id": getattr(game, 'game_id', 'unknown'),
         # ARCBaseGame stores cloned levels internally as _levels.
-        "has_levels": len(getattr(game, '_levels', [])) > 0
+        "has_levels": len(getattr(game, '_levels', [])) > 0,
+        # Report the real numbers rather than only a boolean: the uploader should not
+        # have to hand-declare how many levels their own game has, and a wrong count
+        # misreports progress and win score for every session played.
+        "level_count": len(getattr(game, '_levels', [])),
+        "win_score": getattr(frame, 'win_levels', None) or getattr(game, 'win_score', None)
     }))
 except Exception as e:
     print(json.dumps({"valid": False, "error": str(e)}))
@@ -275,6 +283,8 @@ except Exception as e:
                 className: result.game_id,
                 importedModules: [],
                 estimatedComplexity: 'simple',
+                levelCount: typeof result.level_count === 'number' ? result.level_count : null,
+                winScore: typeof result.win_score === 'number' ? result.win_score : null,
               },
             });
           } else {

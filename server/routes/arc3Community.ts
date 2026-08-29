@@ -328,6 +328,13 @@ router.post(
       tags: payload.tags,
       sourceFilePath: storedFile.filePath,
       sourceHash: storedFile.hash,
+      // Derived by running the game during validation rather than declared by the
+      // uploader. A wrong level count misreports progress and win score for every
+      // session played against the task.
+      levelCount: validationResult.metadata?.levelCount ?? undefined,
+      winScore: validationResult.metadata?.winScore
+        ?? validationResult.metadata?.levelCount
+        ?? undefined,
       status: 'pending',
       isPlayable: false,
       validatedAt: new Date(),
