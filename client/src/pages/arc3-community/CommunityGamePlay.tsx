@@ -103,7 +103,24 @@ export default function CommunityGamePlay() {
 
   // ── Server-session fallback state ────────────────────────────────────────────
   const [sessionGuid, setSessionGuid] = useState<string | null>(null);
-  const [useFallback, setUseFallback] = useState(false);
+  // Default to the SERVER session.
+  //
+  // The in-browser Pyodide path is the faster design, but it has not been working:
+  // players report a board that renders with controls that do nothing, and the failure
+  // is silent -- init never rejects, so the existing pyodideFailed fallback never fires.
+  // The server path is verified working end to end (POST /session/start returns a frame,
+  // /session/:guid/action advances it), so it is what players get until the worker is
+  // fixed. At current traffic a Python subprocess per session costs nothing, and a game
+  // that runs beats a game that is theoretically faster.
+  //
+  // Opt back into the local engine with ?engine=pyodide to debug it against a live page.
+  const [useFallback, setUseFallback] = useState(() => {
+    try {
+      return new URLSearchParams(window.location.search).get('engine') !== 'pyodide';
+    } catch {
+      return true;
+    }
+  });
 
   // ── Shared display state ─────────────────────────────────────────────────────
   const [frame, setFrame] = useState<AnyFrameData | null>(null);
