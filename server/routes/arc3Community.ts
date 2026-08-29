@@ -952,6 +952,59 @@ router.post(
   }),
 );
 
+const curateGameSchema = z.object({
+  tags: z.array(z.string().max(30)).max(10).optional(),
+  difficulty: z.enum(['easy', 'medium', 'hard', 'very-hard', 'unknown']).optional(),
+  isFeatured: z.boolean().optional(),
+}).refine(
+  (v) => Object.keys(v).length > 0,
+  'Provide at least one of tags, difficulty, isFeatured',
+);
+
+/**
+ * PATCH /api/arc3-community/games/:gameId/curation
+ * Admin-only: set curation fields (tags, difficulty, featured flag) on an existing game.
+ *
+ * Curation fields can only be set at creation time, and only through POST /games. A game
+ * arriving on the public POST /submissions path is stored with `tags: []`, and until now
+ * no route could set them afterwards. That default is right -- a submitter must not be
+ * able to tag their own game into a curated collection -- but it left an operator who
+ * has reviewed a game with no way to file it, and an untagged game is invisible to every
+ * surface that selects by tag. The synthetic set on the arc3 landing page is exactly such
+ * a filter, so a game published this way is playable but absent from the page that is
+ * supposed to list it. This is the admin-gated way in. It never touches source, status,
+ * playability or level counts.
+ */
+router.patch(
+  '/games/:gameId/curation',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!requireArc3AdminToken(req, res)) return;
+
+    const { gameId } = req.params;
+    const updates = curateGameSchema.parse(req.body);
+
+    const game = await getRepository().getGameByGameId(gameId);
+    if (!game) {
+      return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game not found'));
+    }
+
+    const updated = await getRepository().updateGame(gameId, updates);
+    if (!updated) {
+      return res.status(500).json(
+        formatResponse.error('UPDATE_FAILED', 'Failed to update curation fields'),
+      );
+    }
+
+    logger.info(`Curated ${gameId}: ${JSON.stringify(updates)}`, 'community-games');
+    return res.json(formatResponse.success({
+      gameId,
+      before: { tags: game.tags, difficulty: game.difficulty, isFeatured: game.isFeatured },
+      after: { tags: updated.tags, difficulty: updated.difficulty, isFeatured: updated.isFeatured },
+      game: updated,
+    }));
+  }),
+);
+
 /**
  * POST /api/arc3-community/submissions/:submissionId/publish
  * Admin-only: publish a reviewed submission (approve + make playable)
