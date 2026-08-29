@@ -46,6 +46,10 @@ import { Arc3PixelPage, PixelButton, PixelPanel } from '@/components/arc3-commun
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 
+/** How long to wait for the in-browser Python runtime before using the server session.
+ *  Generous: a cold Pyodide boot plus an arcengine install is genuinely slow. */
+const PYODIDE_BOOT_GRACE_MS = 25_000;
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 // Server-session FrameData shape (fallback mode only)
@@ -123,6 +127,29 @@ export default function CommunityGamePlay() {
       setUseFallback(true);
     }
   }, [pyodide.pyodideFailed, useFallback]);
+
+  // Watchdog: the UI switches to 'playing' as soon as Start is pressed, but the board
+  // only appears once Pyodide has booted from its CDN and installed arcengine. On a
+  // network that blocks either, init never rejects -- it simply never resolves -- so
+  // pyodideFailed is never set, the player sees a live-looking board with working
+  // buttons and a dead game, and nothing ever says why. That also silently produces a
+  // zero-action abandoned session, poisoning the baseline we are collecting.
+  // If no frame has arrived a while after starting, fall back to the server session.
+  useEffect(() => {
+    if (gameState !== 'playing' || frame || useFallback) return;
+    const timer = setTimeout(() => setUseFallback(true), PYODIDE_BOOT_GRACE_MS);
+    return () => clearTimeout(timer);
+  }, [gameState, frame, useFallback]);
+
+  // Once we have fallen back, actually start the server-side session.
+  useEffect(() => {
+    if (useFallback && gameState === 'playing' && !frame && !startGameMutation.isPending) {
+      startGameMutation.mutate();
+    }
+    // startGameMutation is stable enough for this guard; re-running on every render
+    // would restart the session.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useFallback, gameState, frame]);
 
   // ── Game metadata query ──────────────────────────────────────────────────────
   const { data: gameDetails } = useQuery<{ success: boolean; data: GameDetails }>({
