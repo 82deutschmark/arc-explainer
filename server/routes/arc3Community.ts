@@ -763,6 +763,56 @@ router.get(
 );
 
 /**
+ * PUT /api/arc3-community/games/:gameId/source
+ * Admin-only: re-store the source file for an existing game and re-derive its metadata.
+ *
+ * Recovery path for a row whose file is gone. Until a persistent volume was mounted at
+ * /app/uploads, an uploaded game's source lived on the container filesystem and was
+ * destroyed by the next deploy, leaving the database pointing at a file that no longer
+ * existed and the task unplayable. This restores the file, updates sourceHash, and
+ * re-derives levelCount/winScore from the restored source in one step.
+ */
+router.put(
+  '/games/:gameId/source',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!requireArc3AdminToken(req, res)) return;
+
+    const { gameId } = req.params;
+    const sourceCode = z.string().min(100).parse(req.body?.sourceCode);
+
+    const game = await getRepository().getGameByGameId(gameId);
+    if (!game) {
+      return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game not found'));
+    }
+
+    const validation = await CommunityGameValidator.validateSource(sourceCode);
+    if (!validation.isValid) {
+      return res.status(400).json(
+        formatResponse.error('VALIDATION_FAILED', 'Source failed validation', {
+          errors: validation.errors,
+        }),
+      );
+    }
+
+    const stored = await CommunityGameStorage.storeGameFile(gameId, sourceCode);
+    const levelCount = validation.metadata?.levelCount ?? undefined;
+    const winScore = validation.metadata?.winScore ?? levelCount;
+
+    const updated = await getRepository().updateGame(gameId, {
+      sourceFilePath: stored.filePath,
+      sourceHash: stored.hash,
+      ...(typeof levelCount === 'number' ? { levelCount } : {}),
+      ...(typeof winScore === 'number' ? { winScore } : {}),
+    });
+
+    logger.info(`Restored source for ${gameId} (levels ${levelCount})`, 'community-games');
+    return res.json(formatResponse.success({
+      gameId, levelCount, winScore, sourceHash: stored.hash, game: updated,
+    }));
+  }),
+);
+
+/**
  * POST /api/arc3-community/games/:gameId/rederive
  * Admin-only: re-derive levelCount and winScore for an existing game by running its
  * stored source through the validator.

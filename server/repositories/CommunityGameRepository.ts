@@ -95,6 +95,10 @@ export interface UpdateGameInput {
   maxActions?: number;
   tags?: string[];
   thumbnailPath?: string;
+  /** Set together when a game's stored source is replaced; the pair must stay in sync
+   *  or verifyFileHash rejects the file on the next read. */
+  sourceFilePath?: string;
+  sourceHash?: string;
   status?: GameStatus;
   isFeatured?: boolean;
   isPlayable?: boolean;
@@ -275,6 +279,8 @@ export class CommunityGameRepository {
       maxActions: 'max_actions',
       tags: 'tags',
       thumbnailPath: 'thumbnail_path',
+      sourceFilePath: 'source_file_path',
+      sourceHash: 'source_hash',
       status: 'status',
       isFeatured: 'is_featured',
       isPlayable: 'is_playable',
