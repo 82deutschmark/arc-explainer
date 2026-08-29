@@ -844,8 +844,14 @@ router.post(
     const levelCount = validation.metadata?.levelCount ?? null;
     const winScore = validation.metadata?.winScore ?? levelCount;
     if (levelCount === null) {
+      // Surface what the probe actually said; a bare NOT_DERIVABLE gives an operator
+      // nothing to act on.
       return res.status(422).json(
-        formatResponse.error('NOT_DERIVABLE', 'Validator did not report a level count'),
+        formatResponse.error('NOT_DERIVABLE', 'Validator did not report a level count', {
+          errors: validation.errors,
+          warnings: validation.warnings,
+          metadata: validation.metadata,
+        }),
       );
     }
 
