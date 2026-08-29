@@ -792,8 +792,11 @@ router.put(
     }
 
     const stored = await CommunityGameStorage.storeGameFile(gameId, sourceCode);
-    const levelCount = validation.metadata?.levelCount ?? undefined;
-    const winScore = validation.metadata?.winScore ?? levelCount;
+    // Static validation above gates the write; the level count needs the game actually
+    // running, so derive it from the file we just stored.
+    const runtime = await CommunityGameValidator.validateRuntime(stored.filePath);
+    const levelCount = runtime.metadata?.levelCount ?? undefined;
+    const winScore = runtime.metadata?.winScore ?? levelCount;
 
     const updated = await getRepository().updateGame(gameId, {
       sourceFilePath: stored.filePath,
@@ -831,8 +834,11 @@ router.post(
       return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game not found'));
     }
 
-    const sourceCode = await CommunityGameStorage.readGameFile(game.sourceFilePath);
-    const validation = await CommunityGameValidator.validateSource(sourceCode);
+    // validateSource is static analysis and deliberately never executes the file, so it
+    // cannot report a level count -- the count only exists once the game is instantiated,
+    // which is what validateRuntime does. Executing here is legitimate: this route is
+    // admin-gated and the file is already playable.
+    const validation = await CommunityGameValidator.validateRuntime(game.sourceFilePath);
     if (!validation.isValid) {
       return res.status(422).json(
         formatResponse.error('VALIDATION_FAILED', 'Stored source no longer validates', {
