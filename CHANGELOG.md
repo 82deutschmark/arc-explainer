@@ -1,5 +1,20 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.6.1  Aug 29, 2026
+
+- **FIX: ws04 levels 5 and 7 were unwinnable — nobody could finish World Shifter** (Author: Claude Opus 5)
+  - **What**: `ws04` could not be completed by a human or an agent. Level 5 sealed the player into a 3-cell pocket; level 7 let the player reach the lock but never configure the key to open it. Both levels now have a verified winning line, and the chained lines drive the engine to WIN in 251 actions.
+  - **Why it happened**: `CommunityGameValidator` proves a submitted game **loads** — it instantiates the class and checks RESET returns a frame. It does not prove any level can be **won**, and both of these levels passed it happily, static and runtime. The two faults were invisible in a diff and obvious on screen.
+    - **L5 "spiral"**: 133 wall sprites over 156 lattice cells (every other level in either World Shifter game sits between 68 and 107), leaving 23 open cells in 5 disconnected islands. The player spawned in one; the lock was in another; the rotation changer at `(54,10)` was buried inside a wall, so it could be triggered from no cell at all and the key was frozen at rotation 0 while the slot required 1. Either fault alone made the level impossible. `1655e24` ("redesign level 5 spiral maze with clearer path") was an attempted repair that did not land — measured against the engine it added six walls rather than removing any, and at its parent commit the player could not move at all.
+    - **L7 "fogrun"**: one wall at `(14,20)` plugged the only join between the half of the maze holding the player and the lock and the half holding all three changers.
+  - **How**:
+    - **L5 rebuilt, not patched.** No gap-cutting fix existed: the four rings were drawn at *consecutive* lattice steps (x=9/54, 14/49, 19/44, 24/39), so there was no corridor between any two rings for a gap to open into, and the entry gaps the old comments named could never have functioned. The ring *spacing* was the bug. Rebuilt as the spiral those comments describe — wall rings at alternating lattice steps with a corridor between each pair, one gap per ring at `(29,45)` and `(24,30)`, 82 walls total. The player, both outer-corridor changers, the rotation changer and the lock keep their positions; one energy pickup sat inside a wall ring, so all three were respread to `(55,31)`, `(40,16)`, `(15,51)`.
+    - **L7**: removed the single wall at `(14,20)`. Six other single removals also work; this one gives the longest route (44 moves, 11 energy spare) and also reconnects the energy pickup that was sealed alone at `(9,20)`.
+  - **Verified**: `arc3games/verify_ws_reskins.py` in `sonpham-org/autoresearch-arena` — it differentially tests a model of the movement branch of `step()` against the real engine (5,587 random-walk steps, zero divergences), BFSes each level for a winning line on **one life**, replays that line through a fresh engine instance, then chains all seven. Both games now pass 7/7 and reach WIN. `CommunityGameValidator` still passes both, static and runtime. Level 5's energy headroom is 19 of 36, in the same band as the rest of the set.
+  - **Impact**: any `ws04` human session recorded before today was played on a game that could not be finished, so those rows are not usable as a human baseline. The database was not checked for such rows — no `DATABASE_URL` in the working environment — so that is a post-deploy step.
+  - **Not changed**: an energy pickup at `(54,40)` in L7 is still unreachable, sealed in a one-cell decorative pocket that mirrors a column of identical pockets on that side. Freeing it would change the level's energy economy for no correctness gain.
+  - **Note**: `ws03` was verified alongside and needed no changes — 7/7, unchanged at 282 actions.
+
 ### Version 7.6.0  Aug 28, 2026
 
 - **FIX: community game uploads were impossible — `createGame` INSERT arity was wrong** (Author: Claude Opus 5)
