@@ -250,7 +250,12 @@ except Exception as e:
     print(json.dumps({"valid": False, "error": str(e)}))
 `;
 
-      childProcess = spawn('python', ['-c', validatorScript], {
+      // Alpine (this image) ships python3 only; 'python' does not exist, so every
+      // runtime validation silently failed to spawn. Mirrors the resolution already
+      // used by CommunityGamePythonBridge.
+      const pythonBin = globalThis.process.env.PYTHON_BIN
+        || (globalThis.process.platform === 'win32' ? 'python' : 'python3');
+      childProcess = spawn(pythonBin, ['-c', validatorScript], {
         timeout: timeoutMs,
         env: { ...globalThis.process.env, PYTHONUNBUFFERED: '1' },
       });
@@ -311,7 +316,7 @@ except Exception as e:
 
       childProcess.on('error', (err: Error) => {
         clearTimeout(timeout);
-        errors.push(`Validation process error: ${err.message}`);
+        errors.push(`Validation process error (${pythonBin}): ${err.message}`);
         resolve({
           isValid: false,
           errors,
