@@ -22,6 +22,7 @@ import { CommunityGameRunner } from '../services/arc3Community/CommunityGameRunn
 import { CommunityGameValidator } from '../services/arc3Community/CommunityGameValidator';
 import { ArcEngineOfficialGameCatalog } from '../services/arc3Community/ArcEngineOfficialGameCatalog';
 import { getPool } from '../repositories/base/BaseRepository';
+import { HumanPlayRepository } from '../repositories/HumanPlayRepository.js';
 import { spawn } from 'child_process';
 import path from 'path';
 
@@ -414,6 +415,78 @@ router.get(
       hash: game.sourceHash,
       className: validation.metadata?.className ?? null,
     }));
+  }),
+);
+
+/**
+ * POST /api/arc3-community/human-events
+ * Public, unauthenticated: a batch of anonymous play events.
+ *
+ * The play page runs the game client-side in Pyodide, so actions never reach the server
+ * -- per-action logging on /session/:guid/action would record almost nothing. Events are
+ * batched in the browser and posted here instead. Public because a login wall would kill
+ * the sample, which is the whole point of collecting a human baseline.
+ */
+router.post(
+  '/human-events',
+  asyncHandler(async (req: Request, res: Response) => {
+    const sessionGuid = String(req.body?.sessionGuid ?? '');
+    if (!/^[A-Za-z0-9_-]{8,64}$/.test(sessionGuid)) {
+      return res.status(400).json(formatResponse.error('BAD_SESSION', 'Invalid sessionGuid'));
+    }
+    const gameId = String(req.body?.gameId ?? '');
+    if (!/^[A-Za-z0-9_.-]{1,64}$/.test(gameId)) {
+      return res.status(400).json(formatResponse.error('BAD_GAME_ID', 'Invalid gameId'));
+    }
+    const events = Array.isArray(req.body?.events) ? req.body.events.slice(0, 500) : [];
+    if (events.length === 0) {
+      return res.json(formatResponse.success({ written: 0 }));
+    }
+
+    // The session is created from the batch: the browser mints the GUID because it runs
+    // the game, and it is the only party that knows whether this is a blind first play.
+    await HumanPlayRepository.ensureSession(
+      sessionGuid, gameId,
+      req.body?.isFirstSession === true,
+      typeof req.body?.uaFamily === 'string' ? req.body.uaFamily : '',
+      typeof req.body?.viewport === 'string' ? req.body.viewport : '',
+    );
+
+    let written = 0;
+    for (const raw of events) {
+      if (!raw || typeof raw !== 'object') continue;
+      const action = String(raw.action ?? '').slice(0, 16);
+      if (!action) continue;
+      await HumanPlayRepository.recordEvent({
+        sessionGuid,
+        seq: Number.isFinite(raw.seq) ? Number(raw.seq) : written,
+        action,
+        actionInt: HumanPlayRepository.actionInt(action),
+        level: Number.isFinite(raw.level) ? Number(raw.level) : null,
+        levelActions: Number.isFinite(raw.level_actions) ? Number(raw.level_actions) : null,
+        score: Number.isFinite(raw.level) ? Number(raw.level) : null,
+        state: typeof raw.state === 'string' ? raw.state.slice(0, 32) : null,
+        tMs: Number.isFinite(raw.t_ms) ? Number(raw.t_ms) : null,
+      });
+      written += 1;
+    }
+    return res.json(formatResponse.success({ written }));
+  }),
+);
+
+/**
+ * GET /api/arc3-community/human-stats
+ * Public: first-blind-attempt aggregates, the human half of the human-vs-agent gap.
+ * Aggregates only -- never raw event streams.
+ */
+router.get(
+  '/human-stats',
+  asyncHandler(async (req: Request, res: Response) => {
+    const gameId = typeof req.query.game === 'string' ? req.query.game : undefined;
+    if (gameId && !/^[A-Za-z0-9_.-]{1,64}$/.test(gameId)) {
+      return res.status(400).json(formatResponse.error('BAD_GAME_ID', 'Invalid game id'));
+    }
+    return res.json(formatResponse.success(await HumanPlayRepository.stats(gameId)));
   }),
 );
 
@@ -987,6 +1060,7 @@ router.post(
 
     try {
       const result = await getGameRunner().startGame(gameId);
+
       res.json(formatResponse.success(result));
     } catch (error) {
       logger.error(`Failed to start game ${gameId}: ${error}`, 'community-games');
@@ -1021,6 +1095,7 @@ router.post(
         action: action.toUpperCase() as 'RESET' | 'ACTION1' | 'ACTION2' | 'ACTION3' | 'ACTION4' | 'ACTION5' | 'ACTION6' | 'ACTION7',
         coordinates: coordinates as [number, number] | undefined,
       });
+
       res.json(formatResponse.success(result));
     } catch (error) {
       logger.error(`Action failed for session ${sessionGuid}: ${error}`, 'community-games');
