@@ -3,8 +3,10 @@
 # Date: 2026-02-07T22:35:00Z
 # PURPOSE: Reusable Worm Arena tournament script for evaluating a new OpenRouter model
 #          against established baseline models. Designed to be run whenever a new model
-#          appears on OpenRouter (especially cloaked/free models). Sends batch match
-#          requests to the /api/snakebench/run-batch endpoint with both directions per pairing.
+#          appears on OpenRouter. Sends batch match requests to the
+#          /api/snakebench/run-batch endpoint with both directions per pairing.
+#          Baselines default to the current cheap-flash tier; avoid `:free` slugs,
+#          which rate-limit and yield zero-token (invalid) replays.
 # SRP/DRY check: Pass - single-purpose tournament runner, parameterized for reuse.
 
 from __future__ import annotations
@@ -18,14 +20,16 @@ from datetime import datetime, timezone
 from urllib import error, request
 
 # Default new model to test (override with --model CLI arg)
-DEFAULT_NEW_MODEL = "openrouter/pony-alpha"
+DEFAULT_NEW_MODEL = "deepseek/deepseek-v4-flash-0731"
 
-# Baseline opponents for standard evaluation
+# Baseline opponents. Deliberately the 2026 cheap-flash tier plus one legacy
+# anchor (DeepSeek V3.2) so results are comparable to the Dec-2025 era.
+# No `:free` slugs — free tiers rate-limit and produce corrupt replays.
 BASELINE_MODELS = [
-    "openai/gpt-5-nano",
-    "openai/gpt-5-mini",
-    "nvidia/nemotron-3-nano-30b-a3b:free",
-    "x-ai/grok-4.1-fast",
+    "z-ai/glm-5.3-flash",
+    "qwen/qwen3.8-flash",
+    "nvidia/nemotron-3.5-lightning",
+    "deepseek/deepseek-v3.2",
 ]
 
 
@@ -107,6 +111,28 @@ def build_pairings(
     return pairings
 
 
+def build_round_robin_pairings(pool: list[str]) -> list[tuple[int, str, str]]:
+    """
+    Build a full round-robin over `pool`: every unique pair, each played in both
+    directions. Pairs are generated once (i < j), so no matchup is billed twice.
+    Returns: [(index, model_a, model_b), ...]
+    """
+    seen: list[str] = []
+    for slug in pool:
+        if slug and slug not in seen:
+            seen.append(slug)
+
+    pairings: list[tuple[int, str, str]] = []
+    index = 1
+    for i in range(len(seen)):
+        for j in range(i + 1, len(seen)):
+            pairings.append((index, seen[i], seen[j]))
+            index += 1
+            pairings.append((index, seen[j], seen[i]))
+            index += 1
+    return pairings
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Evaluate a new OpenRouter model against Worm Arena baselines."
@@ -158,6 +184,15 @@ def main() -> int:
         help="Timeout per batch request in seconds (default: 28800 = 8 hours).",
     )
     parser.add_argument(
+        "--round-robin",
+        action="store_true",
+        help=(
+            "Treat --model plus --baselines as a single pool and play a full "
+            "round-robin (every unique pair, both directions). Avoids the "
+            "double-billing a naive all-vs-all shell loop causes."
+        ),
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print match plan without executing API calls.",
@@ -167,17 +202,23 @@ def main() -> int:
     new_model = args.model
     baselines = args.baselines if args.baselines else BASELINE_MODELS
 
-    pairings = build_pairings(new_model, baselines)
+    if args.round_robin:
+        pairings = build_round_robin_pairings([new_model, *baselines])
+    else:
+        pairings = build_pairings(new_model, baselines)
     total_pairings = len(pairings)
     total_matches = total_pairings * args.count
 
     # Banner
     print("")
     print("=" * 68)
-    print("Worm Arena: New Model Evaluation")
+    print("Worm Arena: " + ("Round-Robin Tournament" if args.round_robin else "New Model Evaluation"))
     print("=" * 68)
-    print(f"New model:   {new_model}")
-    print(f"Baselines:   {', '.join(baselines)}")
+    if args.round_robin:
+        print(f"Pool:        {', '.join([new_model, *baselines])}")
+    else:
+        print(f"New model:   {new_model}")
+        print(f"Baselines:   {', '.join(baselines)}")
     print(f"Pairings:    {total_pairings} (both directions)")
     print(f"Matches/pair: {args.count}")
     print(f"Total matches: {total_matches}")
