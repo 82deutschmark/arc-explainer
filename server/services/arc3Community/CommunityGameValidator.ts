@@ -204,10 +204,18 @@ export class CommunityGameValidator {
         });
       }, timeoutMs);
 
+      // The server is bundled as ESM (esbuild --format=esm), where __dirname does not
+      // exist -- referencing it threw "__dirname is not defined" and killed every
+      // runtime validation before it could spawn anything. The Dockerfile installs
+      // ARCEngine at <cwd>/external/ARCEngine, which is how the thumbnail route
+      // resolves it too.
+      const arcEnginePath = globalThis.process.env.ARCENGINE_PATH
+        || path.join(globalThis.process.cwd(), 'external', 'ARCEngine');
+
       const validatorScript = `
 import sys
 import json
-sys.path.insert(0, '${path.join(__dirname, '..', '..', '..', 'external', 'ARCEngine').replace(/\\/g, '\\\\')}')
+sys.path.insert(0, '${arcEnginePath.replace(/\\/g, '\\\\')}')
 
 try:
     import importlib.util
