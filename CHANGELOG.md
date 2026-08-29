@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.8.0  Aug 29, 2026
+
+- **A published game could not be tagged, so it vanished from the landing page that lists it** (Author: Claude Opus 5)
+  - **What**: New admin-gated `PATCH /api/arc3-community/games/:gameId/curation`, setting `tags`, `difficulty` and `isFeatured` on an existing game. Used it to tag **g007 Tumble Block** and **g008 Two Skins** `['synthetic','autoresearch']`, matching g001/g005/g006.
+  - **Why**: `SyntheticLanding.tsx:149` picks the synthetic set with `games.filter(g => g.tags.includes('synthetic'))`. Tags could only ever be set at creation, and only through `POST /games`; the public `POST /submissions` path hardcodes `tags: []` and nothing could set them afterwards. g007 and g008 were published through the public path, so both came out **playable, approved, thumbnailed — and absent from the arc3.markbarney.net synthetic list**. Every future game published that way would have had the same hole.
+  - **The default is right, the dead end was not**: a submitter must not be able to tag their own game into a curated collection, so `tags: []` on public submission stays. What was missing is a way for a reviewer who has *already* approved a game to file it. This route is that, and only that: it never touches source, status, playability or level counts, so it cannot be used to publish anything.
+  - **Verified**: `g007` levels 8, `g008` levels 7 — both derived by actually running the game at publish time, both matching their offline verifiers exactly. Thumbnail and `/arc3/play/<id>` both 200 for each.
+  - **Files**: `server/routes/arc3Community.ts` (+53).
+
 ### Version 7.7.0  Aug 29, 2026
 
 - **The nav bar is now ARC-3-forward; ARC-1/2 tooling collapses into one archive dropdown** (Author: Claude Opus 5)

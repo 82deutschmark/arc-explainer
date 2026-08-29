@@ -2,7 +2,7 @@
  * Author: Claude Opus 5
  * Date: 2026-08-29
  * PURPOSE: ARC-3-forward top navigation. The primary row is the ARC-AGI-3 flow a visitor
- * actually walks -- Play, Playground, Submit, About ARC-3 -- matching the root redirect in
+ * actually walks -- Play, Submit, About ARC-3 -- matching the root redirect in
  * App.tsx, which already sends "/" to /arc3/gallery. Everything ARC-1/2 collapses into a single
  * sectioned "ARC 1 & 2" dropdown, and SnakeBench/Worm Arena keeps its own "Arena" dropdown
  * because it belongs to neither generation. The right rail carries the two outbound ARC-3 sites
@@ -56,7 +56,6 @@ import {
   Wallet,
   Worm,
   Zap,
-  FlaskConical,
   BookOpen,
 } from 'lucide-react';
 
@@ -70,7 +69,7 @@ interface NavLink {
   /**
    * Match the location exactly instead of by prefix. Needed wherever a parent route is a
    * sibling of its own children in the nav: without this, /arc3 ("About ARC-3") highlights
-   * on /arc3/gallery, /arc3/playground and /arc3/upload too, so two entries look active at once.
+   * on /arc3/gallery and /arc3/upload too, so two entries look active at once.
    */
   exact?: boolean;
 }
@@ -110,13 +109,6 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
     href: '/arc3/gallery',
     icon: Gamepad2,
     description: 'The ARC-AGI-3 game gallery -- official, custom, and community tasks',
-  },
-  {
-    type: 'link',
-    title: 'Playground',
-    href: '/arc3/playground',
-    icon: FlaskConical,
-    description: 'Point an AI agent at an ARC-3 game and watch it play',
   },
   {
     type: 'link',
