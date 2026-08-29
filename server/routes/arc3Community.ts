@@ -763,6 +763,64 @@ router.get(
 );
 
 /**
+ * POST /api/arc3-community/games/:gameId/rederive
+ * Admin-only: re-derive levelCount and winScore for an existing game by running its
+ * stored source through the validator.
+ *
+ * Uploads used to take those numbers from the submitter's payload and default to 1 when
+ * absent, so any game submitted before that changed can be carrying a wrong level count
+ * -- which misreports progress and win score for every session played against it. The
+ * upload path now derives them; this repairs rows created before it did. Read-only with
+ * respect to the game file: it validates, it does not rewrite source.
+ */
+router.post(
+  '/games/:gameId/rederive',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!requireArc3AdminToken(req, res)) return;
+
+    const { gameId } = req.params;
+    const game = await getRepository().getGameByGameId(gameId);
+    if (!game) {
+      return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game not found'));
+    }
+
+    const sourceCode = await CommunityGameStorage.readGameFile(game.sourceFilePath);
+    const validation = await CommunityGameValidator.validateSource(sourceCode);
+    if (!validation.isValid) {
+      return res.status(422).json(
+        formatResponse.error('VALIDATION_FAILED', 'Stored source no longer validates', {
+          errors: validation.errors,
+        }),
+      );
+    }
+
+    const levelCount = validation.metadata?.levelCount ?? null;
+    const winScore = validation.metadata?.winScore ?? levelCount;
+    if (levelCount === null) {
+      return res.status(422).json(
+        formatResponse.error('NOT_DERIVABLE', 'Validator did not report a level count'),
+      );
+    }
+
+    const updated = await getRepository().updateGame(gameId, {
+      levelCount,
+      ...(typeof winScore === 'number' ? { winScore } : {}),
+    });
+
+    logger.info(
+      `Re-derived ${gameId}: levelCount ${game.levelCount} -> ${levelCount}`,
+      'community-games',
+    );
+    return res.json(formatResponse.success({
+      gameId,
+      before: { levelCount: game.levelCount, winScore: game.winScore },
+      after: { levelCount, winScore },
+      game: updated,
+    }));
+  }),
+);
+
+/**
  * POST /api/arc3-community/submissions/:submissionId/publish
  * Admin-only: publish a reviewed submission (approve + make playable)
  */
