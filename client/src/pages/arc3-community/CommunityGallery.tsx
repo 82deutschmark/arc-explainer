@@ -135,11 +135,12 @@ function TaskCell({ game, index, onPlay }: {
   );
 }
 
-function TaskSection({ title, games, startIndex, onPlay }: {
+function TaskSection({ title, games, startIndex, onPlay, subhead }: {
   title: string;
   games: CommunityGame[];
   startIndex: number;
   onPlay: (gameId: string) => void;
+  subhead?: React.ReactNode;
 }) {
   if (games.length === 0) return null;
   return (
@@ -152,6 +153,7 @@ function TaskSection({ title, games, startIndex, onPlay }: {
           {games.length} {games.length === 1 ? 'task' : 'tasks'}
         </span>
       </div>
+      {subhead}
       <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
         {games.map((game, i) => (
           <TaskCell
@@ -190,6 +192,14 @@ export default function CommunityGallery() {
 
   const arcPrizeGames = games.filter((g) => g.authorName === 'ARC Prize Foundation');
   const teamGames = games.filter((g) => g.authorName !== 'ARC Prize Foundation');
+
+  // Most of this set is contributed, and lumping it under one "Community" heading hid
+  // that entirely. Credit each contributor with their count.
+  const contributors = (() => {
+    const counts = new Map<string, number>();
+    for (const g of teamGames) counts.set(g.authorName, (counts.get(g.authorName) ?? 0) + 1);
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  })();
 
   return (
     <Arc3PixelPage>
@@ -272,6 +282,17 @@ export default function CommunityGallery() {
                 games={teamGames}
                 startIndex={arcPrizeGames.length}
                 onPlay={(id) => setLocation(`/arc3/play/${id}`)}
+                subhead={contributors.length > 0 ? (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {contributors.map(([name, n]) => (
+                      <span key={name} className="text-[11px] px-2 py-1"
+                            style={{ background: ARC.cell, border: `1px solid ${ARC.cellBorder}`,
+                                     color: ARC.dim }}>
+                        {name} <span style={{ color: ARC.pink }}>{n}</span>
+                      </span>
+                    ))}
+                  </div>
+                ) : undefined}
               />
             </>
           )}
