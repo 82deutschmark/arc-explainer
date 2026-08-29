@@ -2,15 +2,17 @@
 Author: Claude Opus 5
 Date: 2026-08-28
 PURPOSE: Landing page for the synthetic ARC-AGI-3 programme, served as the root of
-         arc3.markbarney.net. Three audiences on one page, in this order: a visitor who
-         has never heard of ARC and needs the idea in plain language plus one game to
-         try; a researcher who wants to contribute or reuse the set; and us, keeping the
-         methodology and the Boston poster ambition stated honestly.
-         Deliberately steers play toward ZERO-PLAY tasks -- 55 of 59 currently have no
-         plays at all, so the scarce resource is coverage, not games.
-         Visual language matches CommunityGallery and the official ARC-AGI-3 task pages.
-SRP/DRY check: Pass - reuses the community games API and the thumbnail endpoint added
-         for the gallery; no new data plumbing. Routing lives in App.tsx as usual.
+         arc3.markbarney.net. Two audiences, one page: someone with no background who
+         needs the idea in plain language and one game to try, and a researcher deciding
+         whether the set and its data are worth their time.
+         Numbers are cited from the ARC-AGI-3 technical report (22-Apr-2026) rather than
+         asserted -- humans 100%, best frontier model 0.50% (Table 2). An earlier draft
+         said models "score zero", which is wrong and would not survive a poster session.
+         Prose is set in a sans stack for readability; monospace is kept for chrome, ids
+         and code, matching CommunityGallery and the official ARC-AGI-3 task pages.
+         Steers play toward ZERO-PLAY tasks: coverage is the scarce resource, not tasks.
+SRP/DRY check: Pass - reuses the community games API and the thumbnail endpoint added for
+         the gallery; no new data plumbing. Routing stays in App.tsx.
 */
 
 import { useMemo } from 'react';
@@ -31,20 +33,44 @@ interface GamesResponse {
 }
 
 const ARC = {
-  ground: '#0E0C0C', text: '#E3E1DF', dim: '#9A9694', faint: '#6E6A68',
+  ground: '#0E0C0C', text: '#E3E1DF', dim: '#A7A3A1', faint: '#6E6A68',
   cell: '#191919', border: '#262626', pink: '#E53AA3', pinkAlt: '#C42F89',
-  control: '#393736', green: '#4FCC30',
+  control: '#393736', green: '#4FCC30', yellow: '#FFDC00',
 };
+const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif";
+const MONO = "'SF Mono', Menlo, Consolas, 'Courier New', monospace";
 
 const LUMA = 'https://luma.com/z1h24dqe?tk=kddwGm';
+const REPORT = 'https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf';
 const ARENA_REPO = 'https://github.com/sonpham-org/autoresearch-arena';
 const ARENA_SITE = 'https://arc3.sonpham.net';
+
+/* ARC-AGI-3 technical report, Table 2 — semi-private leaderboard at release. */
+const RELEASE_SCORES: [string, string][] = [
+  ['Claude Opus 4.6 (Max)', '0.50%'],
+  ['Gemini 3.1 Pro Preview', '0.40%'],
+  ['GPT 5.4 (High)', '0.20%'],
+  ['Grok-4.20 (Reasoning)', '0.10%'],
+];
+
 const RELATED = [
-  { href: 'https://arc3.sonpham.net', label: 'arc3.sonpham.net', note: 'The research arena — agents, evolution loops, leaderboards' },
+  { href: ARENA_SITE, label: 'arc3.sonpham.net', note: 'The research arena — agent harness, evolution loops, leaderboards' },
   { href: 'https://markbarney.net', label: 'markbarney.net', note: 'Everything else' },
   { href: 'https://farm.markbarney.net', label: 'farm.markbarney.net', note: 'Kaggriculture — a farming-economy agent arena' },
   { href: 'https://voynichlabs.org', label: 'voynichlabs.org', note: 'Voynich Labs' },
 ];
+
+function thumb(gameId: string, size = 256) {
+  return `/api/arc3-community/games/${encodeURIComponent(gameId)}/thumbnail?size=${size}`;
+}
+
+function Scanlines() {
+  return (
+    <div className="absolute inset-0 pointer-events-none" style={{
+      backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.38) 2px 4px)',
+    }} />
+  );
+}
 
 function Tile({ game, alt }: { game: Game; alt: boolean }) {
   return (
@@ -52,19 +78,13 @@ function Tile({ game, alt }: { game: Game; alt: boolean }) {
       <a className="group block">
         <div className="relative aspect-square overflow-hidden"
              style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
-          <img
-            src={`/api/arc3-community/games/${encodeURIComponent(game.gameId)}/thumbnail?size=256`}
-            alt="" loading="lazy" decoding="async"
-            className="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity"
-            style={{ imageRendering: 'pixelated', display: 'block' }}
-          />
-          <div className="absolute inset-0 pointer-events-none" style={{
-            backgroundImage:
-              'repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.38) 2px 4px)',
-          }} />
+          <img src={thumb(game.gameId)} alt="" loading="lazy" decoding="async"
+               className="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity"
+               style={{ imageRendering: 'pixelated', display: 'block' }} />
+          <Scanlines />
         </div>
         <div className="flex items-center justify-between gap-2 px-2 py-1"
-             style={{ background: alt ? ARC.pinkAlt : ARC.pink }}>
+             style={{ background: alt ? ARC.pinkAlt : ARC.pink, fontFamily: MONO }}>
           <span className="text-[11px] tracking-[.55px] text-white truncate">{game.gameId}</span>
           {game.levelCount ? (
             <span className="text-[10px] text-white/75 shrink-0">{game.levelCount}L</span>
@@ -79,13 +99,24 @@ function Section({ title, note, children }: {
   title: string; note?: string; children: React.ReactNode;
 }) {
   return (
-    <section className="mb-14">
-      <div className="flex items-baseline gap-3 mb-4">
-        <h2 className="text-[12px] tracking-[2px] uppercase" style={{ color: ARC.text }}>{title}</h2>
-        {note && <span className="text-[11px]" style={{ color: ARC.faint }}>{note}</span>}
+    <section className="mb-16">
+      <div className="flex items-baseline gap-3 mb-5 pb-2"
+           style={{ borderBottom: `1px solid ${ARC.border}` }}>
+        <h2 className="text-[11px] tracking-[2.5px] uppercase"
+            style={{ color: ARC.text, fontFamily: MONO }}>{title}</h2>
+        {note && <span className="text-[11px]" style={{ color: ARC.faint, fontFamily: MONO }}>{note}</span>}
       </div>
       {children}
     </section>
+  );
+}
+
+function Stat({ value, label, tone }: { value: string; label: string; tone: string }) {
+  return (
+    <div className="p-4" style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
+      <div className="text-[26px] leading-none mb-2" style={{ color: tone, fontFamily: MONO }}>{value}</div>
+      <div className="text-[12px] leading-[1.6]" style={{ color: ARC.dim }}>{label}</div>
+    </div>
   );
 }
 
@@ -96,111 +127,137 @@ export default function SyntheticLanding() {
 
   const games = data?.data?.games ?? [];
 
-  // Coverage is the scarce resource, not games: point first-time players at a task
-  // nobody has played. Rotates per visit so we do not pile every visitor onto one task.
+  // Coverage, not supply, is the bottleneck: point first-time players at a task nobody
+  // has played, rotating per visit so we do not pile every visitor onto one task.
   const needsCoverage = useMemo(() => {
     const unplayed = games.filter((g) => (g.playCount ?? 0) === 0);
     const pool = unplayed.length ? unplayed : games;
-    if (!pool.length) return null;
-    return pool[Math.floor(Math.random() * pool.length)];
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
   }, [games]);
 
+  const heroTiles = useMemo(() => games.slice(0, 4), [games]);
   const synthetic = games.filter((g) => (g.tags ?? []).includes('synthetic'));
   const rest = games.filter((g) => !(g.tags ?? []).includes('synthetic'));
-  const unplayedCount = games.filter((g) => (g.playCount ?? 0) === 0).length;
+  const unplayed = games.filter((g) => (g.playCount ?? 0) === 0).length;
 
   return (
-    <div style={{ background: ARC.ground, color: ARC.text, minHeight: '100vh' }} className="font-mono">
-      <div className="max-w-[1100px] mx-auto px-5 py-10">
+    <div style={{ background: ARC.ground, color: ARC.text, minHeight: '100vh', fontFamily: SANS }}>
+      <div className="max-w-[1080px] mx-auto px-5 py-12">
 
-        {/* ── for someone who has never heard of any of this ─────────────── */}
+        {/* ── hero ─────────────────────────────────────────────────────────── */}
         <header className="mb-12">
-          <p className="text-[11px] tracking-[3px] uppercase mb-4" style={{ color: ARC.pink }}>
+          <p className="text-[11px] tracking-[3px] uppercase mb-5"
+             style={{ color: ARC.pink, fontFamily: MONO }}>
             Synthetic ARC-AGI-3 tasks
           </p>
-          <h1 className="text-[26px] sm:text-[34px] leading-[1.22] font-bold max-w-[22ch] mb-6">
-            AI can pass the bar exam. It cannot beat these.
-          </h1>
-          <div className="text-[13px] leading-[2] max-w-[68ch] space-y-4" style={{ color: ARC.dim }}>
-            <p>
-              Click a task below and you get a screen, a few buttons, and no instructions.
-              Nobody tells you the goal, what the buttons do, or what the colours mean. You
-              press things, watch what changes, and figure it out.{' '}
-              <strong style={{ color: ARC.text }}>Most people manage in about two minutes.</strong>
-            </p>
-            <p>
-              The most advanced AI systems in the world — the ones that pass medical exams
-              and write working software — mostly{' '}
-              <strong style={{ color: ARC.text }}>score zero</strong>. Not "do badly". Zero.
-              They have read more than any human alive, and they cannot work out a small
-              game a child masters in a couple of minutes.
-            </p>
-            <p>
-              That sounds like a joke, and it is actually the most useful fact we have about
-              what these systems are. Exams reward recall. This rewards something else:
-              looking at a thing you have never seen, guessing how it works, and{' '}
-              <em style={{ color: ARC.text }}>throwing the guess away</em> the moment it
-              stops fitting. Humans do that constantly and barely notice. Machines are
-              strikingly bad at it, and nobody fully knows why.
-            </p>
-            <p>
-              To measure that gap honestly you need both halves. We have the machine half —
-              agents play these tasks and we log every move. The human half is missing, and
-              it can only come from people. That is the entire ask:{' '}
-              <strong style={{ color: ARC.text }}>play one game, once, without being told
-              anything.</strong> Five minutes. No account, no sign-up, nothing to install.
-              Your fumbling around is the data.
-            </p>
+
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start">
+            <div>
+              <h1 className="text-[30px] sm:text-[40px] leading-[1.15] font-bold mb-6 tracking-[-0.5px]">
+                Humans solve these. The best AI in the world scores half a percent.
+              </h1>
+              <div className="text-[15px] leading-[1.75] space-y-4" style={{ color: ARC.dim }}>
+                <p>
+                  Open one and you get a screen, a few buttons, and no instructions. Nobody
+                  tells you the goal, what the buttons do, or what the colours mean. You
+                  press things, watch what changes, and work it out.{' '}
+                  <strong style={{ color: ARC.text }}>Most people manage in a couple of minutes.</strong>
+                </p>
+                <p>
+                  The systems that pass medical exams and write working software{' '}
+                  <strong style={{ color: ARC.text }}>almost entirely cannot.</strong> On the
+                  official benchmark humans clear 100% of these environments. The best model
+                  anyone has tested scores <strong style={{ color: ARC.text }}>0.50%</strong>.
+                </p>
+                <p>
+                  That gap is not a gimmick — it is the most useful thing we know about what
+                  these systems are. Exams reward recall. This rewards something else:
+                  looking at a thing you have never seen, guessing how it works, and
+                  throwing the guess away the moment it stops fitting. You do that all day
+                  without noticing. Machines are remarkably bad at it, and nobody fully
+                  knows why.
+                </p>
+              </div>
+            </div>
+
+            {/* Real opening frames — the fastest way to convey what a task even is. */}
+            {heroTiles.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {heroTiles.map((g) => (
+                  <div key={g.gameId} className="relative aspect-square overflow-hidden"
+                       style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
+                    <img src={thumb(g.gameId)} alt="" loading="lazy"
+                         className="w-full h-full" style={{ imageRendering: 'pixelated', display: 'block' }} />
+                    <Scanlines />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </header>
 
-        {/* ── the one CTA that matters ────────────────────────────────────── */}
+        {/* ── the numbers, cited ───────────────────────────────────────────── */}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+          <Stat value="100%" label="of these environments solved by humans" tone={ARC.green} />
+          <Stat value="0.50%" label="best frontier model, at benchmark release" tone={ARC.pink} />
+          <Stat value={games.length ? String(games.length) : '—'} label="tasks playable here, right now" tone={ARC.text} />
+          <Stat value={games.length ? String(unplayed) : '—'} label="with no human attempt on record" tone={ARC.yellow} />
+        </div>
+        <p className="text-[12px] mb-14" style={{ color: ARC.faint }}>
+          Human and model figures from the{' '}
+          <a href={REPORT} target="_blank" rel="noreferrer" className="underline">
+            ARC-AGI-3 technical report
+          </a>{' '}
+          (22 April 2026), Table 2. Best-of-four at release: Opus 4.6 0.50%, Gemini 3.1 Pro
+          0.40%, GPT 5.4 0.20%, Grok-4.20 0.10%.
+        </p>
+
+        {/* ── the one ask ──────────────────────────────────────────────────── */}
         {needsCoverage && (
-          <div className="mb-14 flex flex-col sm:flex-row gap-6 items-start p-5"
-               style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
+          <div className="mb-16 flex flex-col sm:flex-row gap-6 items-start p-6"
+               style={{ background: ARC.cell, border: `1px solid ${ARC.pink}` }}>
             <Link href={`/arc3/play/${needsCoverage.gameId}`}>
-              <a className="shrink-0 w-[136px] group">
+              <a className="shrink-0 w-[150px] group">
                 <div className="relative aspect-square overflow-hidden"
                      style={{ border: `1px solid ${ARC.border}` }}>
-                  <img
-                    src={`/api/arc3-community/games/${encodeURIComponent(needsCoverage.gameId)}/thumbnail?size=256`}
-                    alt="" className="w-full h-full" style={{ imageRendering: 'pixelated', display: 'block' }}
-                  />
+                  <img src={thumb(needsCoverage.gameId)} alt=""
+                       className="w-full h-full" style={{ imageRendering: 'pixelated', display: 'block' }} />
+                  <Scanlines />
                 </div>
                 <div className="px-2 py-1 text-[11px] tracking-[.55px] text-white"
-                     style={{ background: ARC.pink }}>{needsCoverage.gameId}</div>
+                     style={{ background: ARC.pink, fontFamily: MONO }}>{needsCoverage.gameId}</div>
               </a>
             </Link>
             <div className="min-w-0">
-              <h2 className="text-[15px] mb-2" style={{ color: ARC.green }}>
-                This one has never been played
-              </h2>
-              <p className="text-[12px] leading-[1.9] mb-4" style={{ color: ARC.dim }}>
-                {unplayedCount} of {games.length} tasks have no human attempt on record —
-                not one, ever. Until somebody tries, we genuinely cannot say whether this
-                one is easy for a person or quietly impossible, which means we cannot say
-                anything about how the machines did on it either. You would be the first.
-                It takes about five minutes and you need to know nothing at all.
+              <h2 className="text-[20px] font-bold mb-3">Nobody has ever played this one.</h2>
+              <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
+                {unplayed} of {games.length} tasks here have no human attempt on record — not
+                one, ever. Until somebody tries, we cannot say whether this one is easy for a
+                person or quietly impossible, which means the model's score on it means
+                nothing either. You would be the first.
               </p>
-              <Link href={`/arc3/play/${needsCoverage.gameId}`}>
-                <a className="inline-block px-5 h-[36px] leading-[36px] text-[12px] tracking-[1px] rounded-[4px]"
-                   style={{ background: ARC.pink, color: '#fff' }}>PLAY IT →</a>
-              </Link>
-              <Link href="/arc3/gallery">
-                <a className="inline-block ml-3 text-[12px] underline" style={{ color: ARC.faint }}>
-                  or pick your own
-                </a>
-              </Link>
+              <div className="flex flex-wrap items-center gap-4">
+                <Link href={`/arc3/play/${needsCoverage.gameId}`}>
+                  <a className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
+                     style={{ background: ARC.pink, color: '#fff' }}>Play it →</a>
+                </Link>
+                <Link href="/arc3/gallery">
+                  <a className="text-[13px] underline" style={{ color: ARC.dim }}>or pick your own</a>
+                </Link>
+              </div>
+              <p className="text-[12px] mt-4" style={{ color: ARC.faint }}>
+                About five minutes. No account, nothing to install, no experience needed.
+              </p>
             </div>
           </div>
         )}
 
-        {/* ── the games ───────────────────────────────────────────────────── */}
+        {/* ── the tasks ────────────────────────────────────────────────────── */}
         {synthetic.length > 0 && (
           <Section title="Our synthetic set" note={`${synthetic.length} generated`}>
-            <p className="text-[12px] leading-[1.9] mb-4 max-w-[68ch]" style={{ color: ARC.dim }}>
-              Generated from a mechanic-axis ledger, built against the real ARC-AGI-3
-              engine, and verified solvable before shipping.
+            <p className="text-[14px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.dim }}>
+              Generated from a mechanic-axis ledger, built against the real ARC-AGI-3 engine,
+              and proven solvable before shipping.
             </p>
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
               {synthetic.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
@@ -216,131 +273,124 @@ export default function SyntheticLanding() {
           </Section>
         )}
 
-        {/* ── methodology ─────────────────────────────────────────────────── */}
+        {/* ── method ───────────────────────────────────────────────────────── */}
         <Section title="How the set is made">
-          <div className="grid gap-6 sm:grid-cols-2 text-[12px] leading-[1.9]" style={{ color: ARC.dim }}>
-            <div>
-              <h3 className="text-[12px] mb-2" style={{ color: ARC.text }}>1 · An idea ledger, not a pile</h3>
-              <p>
-                Every candidate names a <em>mechanic axis</em> — what the puzzle is actually
-                about — and the <em>failure mode</em> it targets in an agent. A new idea has
-                to be novel on that axis against every existing entry. That dedup rule is
-                what stops the set filling up with twenty reskins of "infer the hidden rule".
-              </p>
-            </div>
-            <div>
-              <h3 className="text-[12px] mb-2" style={{ color: ARC.text }}>2 · Built on the real engine</h3>
-              <p>
-                Tasks are authored as ARCEngine games — the same 64×64 frame, 16-colour
-                palette and action space the benchmark uses. Humans and agents therefore
-                play the identical environment, so comparing them is a subtraction rather
-                than an argument.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-[12px] mb-2" style={{ color: ARC.text }}>3 · Nothing is explained</h3>
-              <p>
-                No control legend, no goal statement, no tutorial text, no descriptive level
-                names, no rule readouts — and no explanatory docstring, since task source is
-                public. A player who is told the mechanic has been handed the answer the
-                agent had to infer, and their run is worthless as a baseline. A conformance
-                check enforces this; it caught real leaks on its first run.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-[12px] mb-2" style={{ color: ARC.text }}>4 · Verified winnable</h3>
-              <p>
-                Loading is not enough. Each task ships a verifier that proves every level is
-                actually solvable from its start state — an exhaustive search over the real
-                state space. Porting the first task, that check caught five boards that were
-                unsolvable and two doors sealed behind walls. All of them loaded fine.
-              </p>
-            </div>
+          <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 text-[14px] leading-[1.75]"
+               style={{ color: ARC.dim }}>
+            {[
+              ['An idea ledger, not a pile',
+               'Every candidate names a mechanic axis — what the puzzle is actually about — and the failure mode it targets in an agent. A new idea must be novel on that axis against every existing entry. That dedup rule is what stops the set filling up with twenty reskins of "infer the hidden rule".'],
+              ['Built on the real engine',
+               'Tasks are authored as ARCEngine games: the same 64×64 frame, 16-colour palette and action space the benchmark uses. Humans and agents therefore play the identical environment, so comparing them is a subtraction rather than an argument.'],
+              ['Nothing is explained',
+               'No control legend, no goal statement, no tutorial text, no descriptive level names, no rule readouts — and no explanatory docstring, since task source is public. A player who is told the mechanic has been handed the answer the agent had to infer. A conformance check enforces this, and it caught real leaks on its first run.'],
+              ['Proven winnable, not just loadable',
+               'Loading is a low bar. Each task ships a verifier that proves every level is solvable from its start state by exhaustive search over the real state space. Porting the first task, that check caught five boards that were unsolvable and two doors sealed behind walls — all of which loaded perfectly.'],
+            ].map(([title, body], i) => (
+              <div key={title}>
+                <h3 className="text-[15px] font-semibold mb-2" style={{ color: ARC.text }}>
+                  <span style={{ color: ARC.pink, fontFamily: MONO }}>{i + 1}</span> · {title}
+                </h3>
+                <p>{body}</p>
+              </div>
+            ))}
           </div>
         </Section>
 
-        {/* ── researchers ─────────────────────────────────────────────────── */}
-        <Section title="For researchers"
-                 note="ARC-AGI-3 · interactive reasoning · human baselines">
-          <div className="grid gap-6 sm:grid-cols-2 text-[12px] leading-[1.9]" style={{ color: ARC.dim }}>
+        {/* ── researchers ──────────────────────────────────────────────────── */}
+        <Section title="For researchers" note="contribute · reuse · replicate">
+          <div className="grid gap-x-10 gap-y-8 lg:grid-cols-3 text-[14px] leading-[1.75]"
+               style={{ color: ARC.dim }}>
             <div>
-              <h3 className="text-[12px] mb-2" style={{ color: ARC.text }}>Contribute a task</h3>
-              <p className="mb-3">
-                A task is one Python file: a class inheriting <code>ARCBaseGame</code>,
-                importing from <code>arcengine</code>, on a 32×32 logical grid rendered to
-                the 64×64 frame. Submissions go through a review queue.
+              <h3 className="text-[15px] font-semibold mb-2" style={{ color: ARC.text }}>Contribute a task</h3>
+              <p className="mb-4">
+                One Python file: a class inheriting <code style={{ fontFamily: MONO, color: ARC.text }}>ARCBaseGame</code>,
+                importing from <code style={{ fontFamily: MONO, color: ARC.text }}>arcengine</code>,
+                rendering to the 64×64 frame. Submissions go through a review queue.
               </p>
               <Link href="/arc3/upload">
-                <a className="inline-block px-4 h-[32px] leading-[32px] text-[11px] tracking-[.5px] rounded-[4px]"
-                   style={{ background: ARC.control, color: ARC.text }}>SUBMIT A TASK →</a>
+                <a className="inline-block px-4 h-[36px] leading-[36px] text-[12px] rounded-[4px]"
+                   style={{ background: ARC.control, color: ARC.text }}>Submit a task →</a>
               </Link>
             </div>
             <div>
-              <h3 className="text-[12px] mb-2" style={{ color: ARC.text }}>Use the set and the data</h3>
+              <h3 className="text-[15px] font-semibold mb-2" style={{ color: ARC.text }}>Use the data</h3>
               <p>
-                Tasks and their source are public over the community API. Play telemetry is
-                anonymous and aggregate-only: first-play completion rate per level, actions
-                to solve, restarts before a first clear, and where people give up — recorded
-                in the benchmark's own action space (<code>1=Up 2=Down 3=Left 4=Right
-                5=Action 6=Click 7=Undo</code>) so a human row joins a harness row directly
-                rather than through a translation layer.
+                Play telemetry is anonymous and aggregate-only: first-play completion rate
+                per level, actions to solve, restarts before a first clear, and where people
+                give up. It is recorded in the harness's own action space —{' '}
+                <code style={{ fontFamily: MONO, color: ARC.text }}>1=Up 2=Down 3=Left 4=Right 5=Action 6=Click 7=Undo</code>{' '}
+                — so a human row joins an agent row directly instead of through a translation
+                layer. Only a first blind attempt answers "is this easy for a human", so
+                first sessions are flagged and kept separate from repeat plays.
               </p>
-              <p className="mt-2">
-                Only a first blind attempt answers "is this easy for a human", so first
-                sessions are flagged and separated rather than pooled with repeat plays.
+            </div>
+            <div>
+              <h3 className="text-[15px] font-semibold mb-2" style={{ color: ARC.text }}>Release scores</h3>
+              <table className="w-full text-[12px]" style={{ fontFamily: MONO }}>
+                <tbody>
+                  {RELEASE_SCORES.map(([model, score]) => (
+                    <tr key={model} style={{ borderBottom: `1px solid ${ARC.border}` }}>
+                      <td className="py-1.5 pr-2" style={{ color: ARC.dim }}>{model}</td>
+                      <td className="py-1.5 text-right" style={{ color: ARC.pink }}>{score}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="text-[12px] mt-3" style={{ color: ARC.faint }}>
+                Technical report Table 2. Humans: 100%.
               </p>
-              <p className="mt-3">
-                <a href="/api/arc3-community/games" className="underline">community API</a>
+              <p className="text-[13px] mt-4">
+                <a href="/api/arc3-community/games" className="underline">API</a>
                 {' · '}
-                <a href={ARENA_REPO} target="_blank" rel="noreferrer" className="underline">
-                  generator + harness
-                </a>
+                <a href={ARENA_REPO} target="_blank" rel="noreferrer" className="underline">generator + harness</a>
                 {' · '}
-                <a href={ARENA_SITE} target="_blank" rel="noreferrer" className="underline">
-                  the research arena
-                </a>
+                <a href={ARENA_SITE} target="_blank" rel="noreferrer" className="underline">research arena</a>
               </p>
             </div>
           </div>
         </Section>
 
-        {/* ── the ask ─────────────────────────────────────────────────────── */}
+        {/* ── the ask ──────────────────────────────────────────────────────── */}
         <Section title="Where this is going">
-          <div className="p-5 text-[12px] leading-[1.9] max-w-[72ch]"
+          <div className="p-6 text-[14px] leading-[1.8] max-w-[76ch]"
                style={{ background: ARC.cell, border: `1px solid ${ARC.border}`, color: ARC.dim }}>
-            <p className="mb-3">
+            <p className="mb-4">
               We are aiming to present a poster at the{' '}
               <a href={LUMA} target="_blank" rel="noreferrer" className="underline"
                  style={{ color: ARC.text }}>ARC-AGI-3 event in Boston</a>.
             </p>
-            <p className="mb-3">
+            <p className="mb-4">
               The poster is one chart: human first-play completion on one axis, agent
-              completion on the other, per level, on the same tasks. Right now the agent
-              half is measured and the human half is an assertion — which is exactly why
-              every play here counts, and why we would rather you played something nobody
-              has touched than the one at the top of the list.
+              completion on the other, per level, on the same tasks. The agent half is
+              measured. The human half is currently an assertion — which is exactly why
+              every play counts, and why we would rather you played something nobody has
+              touched than whatever sits at the top of the list.
             </p>
             <p style={{ color: ARC.faint }}>
-              Anonymous gameplay events are recorded — inputs, timings, progress. No
-              account, no personal data.
+              Anonymous gameplay events are recorded — inputs, timings, progress. No account,
+              no personal data.
             </p>
           </div>
         </Section>
 
+        {/* ── related ──────────────────────────────────────────────────────── */}
         <Section title="Related work">
           <div className="grid gap-3 sm:grid-cols-2">
             {RELATED.map((r) => (
               <a key={r.href} href={r.href} target="_blank" rel="noreferrer"
-                 className="block p-4 transition-colors hover:border-[#E53AA3]"
+                 className="block p-4 transition-colors"
                  style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
-                <div className="text-[12px] mb-1" style={{ color: ARC.pink }}>{r.label} ↗</div>
-                <div className="text-[11px] leading-[1.8]" style={{ color: ARC.dim }}>{r.note}</div>
+                <div className="text-[13px] mb-1" style={{ color: ARC.pink, fontFamily: MONO }}>
+                  {r.label} ↗
+                </div>
+                <div className="text-[13px] leading-[1.7]" style={{ color: ARC.dim }}>{r.note}</div>
               </a>
             ))}
           </div>
         </Section>
 
-        <footer className="pt-2 text-[11px] leading-[2]" style={{ color: ARC.faint }}>
+        <footer className="pt-2 text-[12px] leading-[2]" style={{ color: ARC.faint }}>
           <Link href="/arc3/gallery"><a className="underline">All tasks</a></Link>
           <span className="mx-2 opacity-50">·</span>
           <Link href="/arc3"><a className="underline">ARC-AGI-3 reference</a></Link>
