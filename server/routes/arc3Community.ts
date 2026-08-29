@@ -328,13 +328,10 @@ router.post(
       tags: payload.tags,
       sourceFilePath: storedFile.filePath,
       sourceHash: storedFile.hash,
-      // Derived by running the game during validation rather than declared by the
-      // uploader. A wrong level count misreports progress and win score for every
-      // session played against the task.
-      levelCount: validationResult.metadata?.levelCount ?? undefined,
-      winScore: validationResult.metadata?.winScore
-        ?? validationResult.metadata?.levelCount
-        ?? undefined,
+      // levelCount/winScore are deliberately NOT taken from the payload: a submitter
+      // should not declare facts about their own game. They cannot be derived here
+      // either, because validateSource is static and never executes the file. They are
+      // derived at publish time, where the game is run anyway.
       status: 'pending',
       isPlayable: false,
       validatedAt: new Date(),
@@ -893,10 +890,20 @@ router.post(
       );
     }
 
+    // Derive levelCount/winScore by actually running the game. This is the right place
+    // for it: publishing is admin-gated and the task is about to become playable, so
+    // executing it here changes no security posture -- whereas upload deliberately does
+    // static analysis only. A submitter never declares these numbers.
+    const runtime = await CommunityGameValidator.validateRuntime(game.sourceFilePath);
+    const levelCount = runtime.metadata?.levelCount ?? undefined;
+    const winScore = runtime.metadata?.winScore ?? levelCount;
+
     const updated = await getRepository().updateGame(game.gameId, {
       status: 'approved',
       isPlayable: true,
       validatedAt: new Date(),
+      ...(typeof levelCount === 'number' ? { levelCount } : {}),
+      ...(typeof winScore === 'number' ? { winScore } : {}),
     });
 
     if (!updated) {
