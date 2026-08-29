@@ -1,9 +1,19 @@
-# Author: Claude Opus 4.6
-# Date: 2026-02-07 (fixed energy bar colors, redesigned player sprite)
+# Author: Claude Opus 4.6; levels 5 and 7 repaired by Claude Opus 5, 29-August-2026
+# Date: 2026-08-29 (levels 5 and 7 were unwinnable; see below)
 # PURPOSE: WS04 game - variant with Cyan/Blue/Yellow color theme and vertical UI
 # Features: Cyan (8) borders/frames, Blue (9) walls, Yellow (4) door, Light Blue (10) background
 #           Vertical energy bar on right side + level progress dots
 # SRP/DRY check: Pass - Faithful adaptation of proven game mechanics with new color palette, layouts, and UI style
+# 2026-08-29 repair (arc3games/verify_ws_reskins.py in autoresearch-arena proves each level winnable):
+#   L5 "spiral" was 133 walls over 156 cells -- 23 open cells in 5 disconnected islands, the
+#      player sealed in 3 of them and the rotation changer buried inside a wall. The four rings
+#      were drawn at consecutive lattice steps (x=9/54, 14/49, 19/44, 24/39) with no corridor
+#      between them, so the "entry" gaps the old comments named could never have worked. Rebuilt
+#      as an actual spiral: wall rings at alternating lattice steps with one gap each, corridors
+#      between. One energy pickup sat inside a wall ring; all three were respread.
+#   L7 a single wall at (14,20) plugged the only join between the half holding the player and
+#      the lock and the half holding all three changers, so the key could never be configured.
+#      Removed; that also reconnects the energy pickup stranded at (9,20).
 
 import logging
 import math
@@ -198,31 +208,17 @@ levels = [
             sprites["lhs"].clone().set_position(29, 25),
             sprites["mgu"].clone(),
         ] + [sprites["nlo"].clone().set_position(x, y) for x, y in [
-            # Perimeter walls
+            # Perimeter
             (4,0),(9,0),(14,0),(19,0),(24,0),(29,0),(34,0),(39,0),(44,0),(49,0),(54,0),(59,0),
-            (4,5),(59,5),(4,10),(59,10),(4,15),(59,15),(4,20),(59,20),
-            (4,25),(59,25),(4,30),(59,30),(4,35),(59,35),(4,40),(59,40),
-            (4,45),(59,45),(4,50),(59,50),(4,55),(9,55),(14,55),(19,55),
-            (24,55),(29,55),(34,55),(39,55),(44,55),(49,55),(54,55),(59,55),
-            # Spiral walls - outer ring (entry from top-left at y=5)
-            (24,5),(29,5),(34,5),(39,5),(44,5),(49,5),(54,5),
-            (54,10),(54,15),(54,20),(54,25),(54,30),(54,35),(54,40),(54,45),(54,50),
-            (9,50),(14,50),(19,50),(24,50),(29,50),(34,50),(39,50),(44,50),(49,50),
-            (9,10),(9,15),(9,20),(9,25),(9,30),(9,35),(9,40),(9,45),
-            # Second ring (entry from left at x=9, y between 10-15)
-            (14,10),(19,10),(24,10),(29,10),(34,10),(39,10),(44,10),(49,10),
-            (49,15),(49,20),(49,25),(49,30),(49,35),(49,40),(49,45),
-            (14,45),(19,45),(24,45),(29,45),(34,45),(39,45),(44,45),
-            (14,20),(14,25),(14,30),(14,35),(14,40),
-            # Third ring (entry from bottom at y=45)
-            (19,15),(24,15),(29,15),(34,15),(39,15),(44,15),
-            (44,20),(44,25),(44,30),(44,35),(44,40),
-            (19,40),(24,40),(34,40),(39,40),
-            (19,20),(19,25),(19,30),(19,35),
-            # Inner walls (entry from right at x=44, y between 20-25)
-            (24,20),(29,20),(34,20),(39,20),
-            (24,35),(29,35),(34,35),(39,35),
-            (24,25),(24,30),
+            (4,55),(9,55),(14,55),(19,55),(24,55),(29,55),(34,55),(39,55),(44,55),(49,55),(54,55),(59,55),
+            (4,5),(4,10),(4,15),(4,20),(4,25),(4,30),(4,35),(4,40),(4,45),(4,50),(59,5),(59,10),
+            (59,15),(59,20),(59,25),(59,30),(59,35),(59,40),(59,45),(59,50),
+            # Outer wall ring -- one gap at (29,45) leads into the middle corridor
+            (14,10),(19,10),(24,10),(29,10),(34,10),(39,10),(44,10),(49,10),(14,15),(49,15),(14,20),(49,20),
+            (14,25),(49,25),(14,30),(49,30),(14,35),(49,35),(14,40),(49,40),(14,45),(19,45),(24,45),(34,45),
+            (39,45),(44,45),(49,45),
+            # Inner wall ring -- one gap at (24,30) leads into the centre
+            (24,20),(29,20),(34,20),(39,20),(24,25),(39,25),(39,30),(24,35),(29,35),(34,35),(39,35),
         ]] + [
             sprites["pca"].clone().set_position(14, 5),
             sprites["qqv"].clone().set_position(9, 6),
@@ -231,9 +227,9 @@ levels = [
             sprites["tuv"].clone().set_position(1, 53),
             sprites["ulq"].clone().set_position(28, 24),
             sprites["vxy"].clone().set_position(19, 6),
-            sprites["zba"].clone().set_position(35, 36),
-            sprites["zba"].clone().set_position(29, 41),
+            sprites["zba"].clone().set_position(55, 31),
             sprites["zba"].clone().set_position(40, 16),
+            sprites["zba"].clone().set_position(15, 51),
         ],
         grid_size=(64, 64),
         data={"max_energy": 36, "slot_shapes": 2, "slot_colors": 8, "slot_rotations": 90, "initial_shape": 1, "initial_color": 9, "initial_rotation": 0, "enable_fog": False},
@@ -305,7 +301,7 @@ levels = [
             (34,15),(39,15),(34,25),(39,25),(34,35),(39,35),
             (49,20),(49,30),(49,40),(49,50),
             (9,15),(9,25),(9,35),(9,45),(9,50),
-            (14,10),(14,20),(14,30),(14,40),(14,50),
+            (14,10),(14,30),(14,40),(14,50),
             (29,20),(29,40),(44,25),(44,35),(44,45),
             (54,15),(54,25),(54,35),(54,45),(54,50),
         ]] + [
