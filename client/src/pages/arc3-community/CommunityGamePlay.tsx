@@ -195,10 +195,19 @@ export default function CommunityGamePlay() {
       if (!sessionGuid) throw new Error('No active session');
       const body = typeof payload === 'string' ? { action: payload } : payload;
       const response = await apiRequest('POST', `/api/arc3-community/session/${sessionGuid}/action`, body);
-      return response.json() as Promise<ActionResponse>;
+      const json = await response.json() as ActionResponse;
+      // Remember which action produced this frame; the mutation result does not carry it.
+      return { ...json, __action: typeof payload === 'string' ? payload : payload.action };
     },
     onSuccess: (data) => {
       if (data.success) {
+        // The server path is the default, so recording only in the Pyodide branch
+        // captured nothing at all.
+        humanPlay.record(
+          data.__action,
+          typeof data.data.frame?.score === 'number' ? data.data.frame.score : null,
+          data.data.isWin ? 'WIN' : data.data.isGameOver ? 'GAME_OVER' : 'NOT_FINISHED',
+        );
         applyFrame(data.data.frame, data.data.isGameOver, data.data.isWin);
       }
     },
