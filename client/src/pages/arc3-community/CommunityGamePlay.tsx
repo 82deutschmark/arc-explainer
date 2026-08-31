@@ -22,11 +22,24 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
             construction; without undo the only recovery is restarting the run. And the
             handful of real-time tasks (`isLive`) cannot be played turn-by-turn at all.
 
-         Ported from arc3.sonpham.net's games-play.js: canvas render at ~512px, status /
-         level / step readout, level strip, end overlay, reset + undo, and a live tick
-         driven by a held action. Deliberately NOT ported — the tile-skin and frame-filter
-         bars (researcher instrumentation, Son's side), and the game title, which this
-         site must never show.
+         31-Aug, second pass: the shell is now Arc3Console, a reproduction of the
+         arcprize.org task console, because the flat layout was still wrong in a way that
+         mattered. It told the player to "click the board to act" — but ACTION6 is not a
+         spatial click in every game. In q598-v1 it is a SUBMIT: you build a command with
+         the arrows and ACTION6 declares you are finished, so pressing it early calls
+         lose(). A player clicking the board to see what happens is dead on move one,
+         which is precisely the "clicking anything results in game over" report. On the
+         official console ACTION6 is a labelled CLICK button — a control you press
+         deliberately. The canvas is no longer clickable for that reason.
+
+         The same task also explains "nothing appears to do anything": q598-v1 buffers
+         arrow presses and the board does not visibly change on every one (measured: the
+         second press changes no pixels). The console's step readout and button feedback
+         are the only signal that an action registered, so they are not decoration.
+
+         Deliberately NOT ported — the tile-skin and frame-filter bars (researcher
+         instrumentation, Son's side), and the game title, which this site must never
+         show.
 
          TELEMETRY. humanPlay.record() fires on every deliberate action and is the reason
          this site exists. Live ticks are NOT recorded: at 10-30fps they would swamp the
@@ -39,7 +52,8 @@ SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodi
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, RotateCcw, Undo2, Play, Pause, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Play, Loader2, AlertTriangle } from 'lucide-react';
+import { Arc3Console, type ConsoleButton } from '@/components/arc3-community/Arc3Console';
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 import { ARC3_COLORS } from '@/utils/arc3Colors';
@@ -76,18 +90,7 @@ const ARC = {
 
 const MONO = "'SF Mono', Menlo, Consolas, 'Courier New', monospace";
 
-const DPAD = [
-  { action: 'ACTION1', label: 'W', glyph: '▲' },
-  { action: 'ACTION3', label: 'A', glyph: '◀' },
-  { action: 'ACTION4', label: 'D', glyph: '▶' },
-  { action: 'ACTION2', label: 'S', glyph: '▼' },
-];
 
-/** ACTION5/7 have no arrow glyph; the official player labels them by key. */
-const EXTRAS = [
-  { action: 'ACTION5', hint: 'Space / Z' },
-  { action: 'ACTION7', hint: 'X / C' },
-];
 
 export default function CommunityGamePlay() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -97,6 +100,9 @@ export default function CommunityGamePlay() {
   const [gameState, setGameState] = useState<GameState>('idle');
   const [displayFrameIndex, setDisplayFrameIndex] = useState(0);
   const [live, setLive] = useState(false);
+  // HELP is a control on the official deck. It explains the CONTROLS only -- never the
+  // task -- so it cannot leak the mechanic.
+  const [showHelp, setShowHelp] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -120,7 +126,6 @@ export default function CommunityGamePlay() {
     [frame],
   );
   const known = available.size > 0;
-  const acceptsClick = available.has(6);
 
   /**
    * RESET is action id 0 and never appears in available_actions — it is not a move. It
@@ -246,18 +251,6 @@ export default function CommunityGamePlay() {
     }
   }, [frame, displayFrameIndex]);
 
-  const onCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!acceptsClick || gameState !== 'playing') return;
-    const canvas = canvasRef.current;
-    const grid = frame?.frame?.[0];
-    if (!canvas || !grid?.length) return;
-    const rect = canvas.getBoundingClientRect();
-    const cols = grid[0].length;
-    const rows = grid.length;
-    const x = Math.max(0, Math.min(cols - 1, Math.floor(((e.clientX - rect.left) / rect.width) * cols)));
-    const y = Math.max(0, Math.min(rows - 1, Math.floor(((e.clientY - rect.top) / rect.height) * rows)));
-    void act('ACTION6', { x, y });
-  }, [acceptsClick, gameState, frame, act]);
 
   const start = useCallback(async () => {
     humanPlay.start(gameId ?? '');
@@ -266,31 +259,51 @@ export default function CommunityGamePlay() {
     catch { /* pyodide.error is rendered */ }
   }, [pyodide, gameId, applyFrame]);
 
+  const statusLabel = gameState === 'won' ? 'WIN'
+    : gameState === 'lost' ? 'GAME OVER'
+    : gameState === 'playing' ? 'IN PROGRESS' : '';
+  const statusColor = gameState === 'won' ? ARC.green : gameState === 'lost' ? ARC.red : ARC.dim;
+
   const levelsDone = frame?.levels_completed ?? frame?.score ?? 0;
   const winLevels = frame?.win_levels ?? 0;
-  const status = gameState === 'won' ? 'WIN' : gameState === 'lost' ? 'GAME OVER' : gameState === 'playing' ? 'IN PROGRESS' : '';
-  const statusColor = gameState === 'won' ? ARC.green : gameState === 'lost' ? ARC.red : ARC.dim;
-  const hasDpad = known && DPAD.some((b) => canSend(b.action));
-  const extras = EXTRAS.filter((b) => known && canSend(b.action));
+  const levelLabel = gameState === 'idle'
+    ? 'ARC-AGI-3'
+    : `Level ${Math.min(levelsDone + 1, winLevels || levelsDone + 1)} / ${winLevels || '?'}`;
+
+  /** A console control. `unavailable` dims it in place rather than removing it: the
+   *  official console keeps the same deck on every task, so the panel never reflows,
+   *  and a greyed control still tells the player this game does not use it. */
+  const ctl = (action: string, label: string): ConsoleButton => ({
+    label,
+    onPress: () => void act(action),
+    unavailable: !canSend(action),
+    disabled: pyodide.isActing || gameState !== 'playing',
+  });
 
   return (
-    <div className="min-h-screen w-full" style={{ background: ARC.ground, color: ARC.text, fontFamily: MONO }}>
-      {/* One bar, not two. This route sits outside PageLayout precisely so the site nav
-          is not stacked on top of the game. */}
-      <div className="flex items-center gap-4 px-4 h-11" style={{ borderBottom: `1px solid ${ARC.border}` }}>
+    <div
+      className="min-h-screen w-full flex flex-col"
+      style={{ background: ARC.ground, color: ARC.text, fontFamily: MONO }}
+    >
+      {/* One slim bar. This route sits outside PageLayout precisely so the site nav is
+          not stacked on top of the console. */}
+      <div className="flex items-center gap-4 px-4 h-11 shrink-0" style={{ borderBottom: `1px solid ${ARC.border}` }}>
         <Link href="/arc3/gallery">
           <a className="flex items-center gap-1.5 text-[12px]" style={{ color: ARC.dim }}>
             <ArrowLeft className="w-3.5 h-3.5" /> All tasks
           </a>
         </Link>
-        {/* The id, and only the id. A name here hands the player the answer. */}
-        <span className="text-[12px]" style={{ color: ARC.pink }}>{gameId}</span>
-        {status && <span className="ml-auto text-[11px]" style={{ color: statusColor }}>{status}</span>}
+        <span className="text-[11px]" style={{ color: ARC.faint }}>
+          {gameState === 'idle' ? '' : `Step ${frame?.action_counter ?? 0}`}
+        </span>
+        {statusLabel && (
+          <span className="ml-auto text-[11px]" style={{ color: statusColor }}>{statusLabel}</span>
+        )}
       </div>
 
-      <div className="max-w-[1000px] mx-auto px-4 py-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 gap-3">
         {pyodide.error && (
-          <div className="mb-4 px-4 py-2 flex items-center gap-2 text-[12px]"
+          <div className="w-full max-w-[500px] px-4 py-2 flex items-center gap-2 text-[12px]"
                style={{ border: `1px solid ${ARC.red}`, color: ARC.red }}>
             <AlertTriangle className="w-4 h-4 shrink-0" />
             This task could not start in your browser ({pyodide.error}). It needs
@@ -298,70 +311,96 @@ export default function CommunityGamePlay() {
           </div>
         )}
 
-        {gameState !== 'idle' && (
-          <>
-            <div className="flex items-center gap-5 mb-2 text-[11px]" style={{ color: ARC.dim }}>
-              <span>Level {levelsDone}{winLevels ? `/${winLevels}` : ''}</span>
-              <span>Step {frame?.action_counter ?? 0}</span>
-              {frame?.max_actions ? <span style={{ color: ARC.faint }}>Max {frame.max_actions}</span> : null}
-            </div>
-            {winLevels > 1 && (
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: winLevels }, (_, i) => (
-                  <div key={i} className="h-1.5 flex-1"
-                       style={{ background: i < levelsDone ? ARC.green : i === levelsDone ? ARC.pink : ARC.control }} />
-                ))}
-              </div>
-            )}
-          </>
-        )}
-
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_170px] items-start">
-          <div className="relative" style={{ border: `1px solid ${ARC.border}`, background: '#000' }}>
-            {gameState === 'idle' ? (
-              <div className="aspect-square flex flex-col items-center justify-center gap-5 px-6 text-center">
-                <p className="text-[13px]" style={{ color: ARC.text }}>{gameId}</p>
-                <p className="text-[12px] max-w-[38ch] leading-relaxed" style={{ color: ARC.dim }}>
-                  No instructions. Work out what it does.
-                </p>
+        <Arc3Console
+          gameId={gameId ?? ''}
+          levelLabel={levelLabel}
+          up={ctl('ACTION1', '')}
+          down={ctl('ACTION2', '')}
+          left={ctl('ACTION3', '')}
+          right={ctl('ACTION4', '')}
+          spacebar={ctl('ACTION5', 'Spacebar')}
+          click={ctl('ACTION6', 'Click')}
+          undo={{
+            label: 'Undo (Z)',
+            onPress: () => void undo(),
+            disabled: !frame?.undo_depth || pyodide.isActing,
+          }}
+          reset={{
+            label: 'Reset',
+            onPress: () => void act('RESET'),
+            disabled: gameState === 'idle' || pyodide.isActing,
+          }}
+          help={{
+            label: 'Help',
+            onPress: () => setShowHelp((v) => !v),
+            active: showHelp,
+          }}
+          select={{
+            label: meta?.isLive ? 'Live' : 'Select',
+            onPress: () => { if (meta?.isLive) setLive((v) => !v); },
+            unavailable: !meta?.isLive,
+            active: live,
+          }}
+          screen={
+            gameState === 'idle' ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 text-center">
+                <p className="text-[15px] tracking-[3px]" style={{ color: '#EDEDED' }}>ARC-AGI-3</p>
                 <button
                   onClick={() => void start()}
                   disabled={pyodide.status === 'loading'}
-                  className="px-5 h-9 text-[12px] disabled:opacity-50 flex items-center gap-2"
-                  style={{ background: ARC.pink, color: '#fff' }}
+                  className="px-9 h-[52px] rounded-[6px] text-[19px] tracking-[2px] disabled:opacity-60 flex items-center gap-2"
+                  style={{
+                    background: 'repeating-linear-gradient(0deg,#FFF 0 2px,#D8D8D8 2px 4px)',
+                    color: '#111',
+                    boxShadow: '0 0 26px rgba(255,255,255,.45)',
+                  }}
                 >
                   {pyodide.status === 'loading'
-                    ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />{pyodide.loadingMessage ?? 'Starting…'}</>
-                    : <><Play className="w-3.5 h-3.5" />Start</>}
+                    ? <><Loader2 className="w-4 h-4 animate-spin" /><span className="text-[13px]">{pyodide.loadingMessage ?? 'LOADING'}</span></>
+                    : <><Play className="w-4 h-4" />START</>}
                 </button>
-                <p className="text-[10px] max-w-[42ch] leading-relaxed" style={{ color: ARC.faint }}>
-                  Anonymous gameplay events are recorded — inputs, timings, progress — so
-                  human play can be compared to AI play. No account, no personal data.
+                <p className="text-[11px]" style={{ color: 'rgba(255,255,255,.55)' }}>
+                  {pyodide.status === 'loading' ? 'One-time engine load…' : 'Press Start to Play'}
+                </p>
+                <p className="text-[9.5px] max-w-[36ch] leading-relaxed" style={{ color: 'rgba(255,255,255,.32)' }}>
+                  No instructions — that is the experiment. Anonymous gameplay events are
+                  recorded so human play can be compared to AI play. No account.
                 </p>
               </div>
             ) : (
               <>
-                <canvas
-                  ref={canvasRef}
-                  onClick={onCanvasClick}
-                  className="block w-full h-auto"
-                  style={{ imageRendering: 'pixelated', cursor: acceptsClick ? 'crosshair' : 'default' }}
-                />
+                {/* Not clickable. ACTION6 is a button on the deck, because in some tasks
+                    it is a submit and poking the board is instant death. */}
+                <canvas ref={canvasRef} className="block w-full h-full" style={{ imageRendering: 'pixelated' }} />
+                {showHelp && (
+                  <div className="absolute inset-0 p-5 flex flex-col justify-center gap-2 text-[10.5px] leading-relaxed"
+                       style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
+                    <p style={{ color: '#FFF' }}>Controls</p>
+                    <p>Arrows or WASD — the d-pad.</p>
+                    <p>Spacebar or Z — the Spacebar button.</p>
+                    <p>The Click button is an action, not a place on the screen.</p>
+                    <p>R resets. Undo steps back one move.</p>
+                    <p style={{ color: 'rgba(255,255,255,.5)' }}>
+                      Greyed controls are ones this task does not use. What any of them do
+                      is for you to find out — that part is the experiment.
+                    </p>
+                  </div>
+                )}
                 {(gameState === 'won' || gameState === 'lost') && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-4"
-                       style={{ background: 'rgba(0,0,0,.72)' }}>
-                    <p className="text-[20px] font-bold"
+                       style={{ background: 'rgba(0,0,0,.78)' }}>
+                    <p className="text-[22px] tracking-[2px]"
                        style={{ color: gameState === 'won' ? ARC.green : ARC.red }}>
                       {gameState === 'won' ? 'YOU WIN' : 'GAME OVER'}
                     </p>
                     <div className="flex gap-2">
                       {!!frame?.undo_depth && (
-                        <button onClick={() => void undo()} className="px-4 h-8 text-[12px]"
-                                style={{ border: `1px solid ${ARC.control}`, color: ARC.text }}>
+                        <button onClick={() => void undo()} className="px-4 h-8 text-[11px] rounded-[4px]"
+                                style={{ border: '1px solid rgba(255,255,255,.35)', color: '#FFF' }}>
                           Undo last move
                         </button>
                       )}
-                      <button onClick={() => void act('RESET')} className="px-4 h-8 text-[12px]"
+                      <button onClick={() => void act('RESET')} className="px-4 h-8 text-[11px] rounded-[4px]"
                               style={{ background: ARC.pink, color: '#fff' }}>
                         Try again
                       </button>
@@ -369,84 +408,10 @@ export default function CommunityGamePlay() {
                   </div>
                 )}
               </>
-            )}
-          </div>
-
-          {/* Controls, built from what this game actually accepts. */}
-          {gameState !== 'idle' && (
-            <div className="flex flex-col gap-3">
-              {hasDpad && (
-                <div className="grid grid-cols-3 gap-1">
-                  <span />
-                  <Ctl b={DPAD[0]} disabled={!canSend('ACTION1') || pyodide.isActing} onPress={act} />
-                  <span />
-                  <Ctl b={DPAD[1]} disabled={!canSend('ACTION3') || pyodide.isActing} onPress={act} />
-                  <span />
-                  <Ctl b={DPAD[2]} disabled={!canSend('ACTION4') || pyodide.isActing} onPress={act} />
-                  <span />
-                  <Ctl b={DPAD[3]} disabled={!canSend('ACTION2') || pyodide.isActing} onPress={act} />
-                  <span />
-                </div>
-              )}
-
-              {extras.map((b) => (
-                <button key={b.action} onClick={() => void act(b.action)} disabled={pyodide.isActing}
-                        className="h-9 text-[11px] disabled:opacity-40"
-                        style={{ border: `1px solid ${ARC.control}`, color: ARC.text }}>
-                  {b.hint}
-                </button>
-              ))}
-
-              <p className="text-[10px] leading-relaxed" style={{ color: ARC.faint }}>
-                {acceptsClick
-                  ? hasDpad ? 'Click the board to act. Arrow keys or WASD also work.' : 'Click the board to act.'
-                  : 'Arrow keys or WASD to act.'}
-              </p>
-
-              <button onClick={() => void undo()} disabled={!frame?.undo_depth || pyodide.isActing}
-                      className="h-8 text-[11px] flex items-center justify-center gap-1.5 disabled:opacity-30"
-                      style={{ border: `1px solid ${ARC.control}`, color: ARC.dim }}>
-                <Undo2 className="w-3.5 h-3.5" /> Undo
-              </button>
-              <button onClick={() => void act('RESET')} disabled={pyodide.isActing}
-                      className="h-8 text-[11px] flex items-center justify-center gap-1.5 disabled:opacity-30"
-                      style={{ border: `1px solid ${ARC.control}`, color: ARC.dim }}>
-                <RotateCcw className="w-3.5 h-3.5" /> Reset
-              </button>
-              {meta?.isLive && (
-                <button onClick={() => setLive((v) => !v)}
-                        className="h-8 text-[11px] flex items-center justify-center gap-1.5"
-                        style={{
-                          border: `1px solid ${live ? ARC.pink : ARC.control}`,
-                          background: live ? ARC.pink : 'transparent',
-                          color: live ? '#fff' : ARC.dim,
-                        }}>
-                  {live ? <><Pause className="w-3.5 h-3.5" /> Stop</> : <><Play className="w-3.5 h-3.5" /> Live</>}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+            )
+          }
+        />
       </div>
     </div>
-  );
-}
-
-function Ctl({ b, disabled, onPress }: {
-  b: { action: string; label: string; glyph: string };
-  disabled: boolean;
-  onPress: (a: string) => void;
-}) {
-  return (
-    <button
-      onClick={() => void onPress(b.action)}
-      disabled={disabled}
-      className="h-12 flex flex-col items-center justify-center leading-none disabled:opacity-20"
-      style={{ border: `1px solid ${ARC.control}`, color: ARC.text }}
-      title={b.label}
-    >
-      <span className="text-[15px]">{b.glyph}</span>
-      <span className="text-[9px] mt-0.5" style={{ color: ARC.faint }}>{b.label}</span>
-    </button>
   );
 }
