@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.12.0  Aug 31, 2026
+
+- **Got all 25 official ARC-AGI-3 games as source, and they say our whole set is built wrong** (Author: Claude Opus 5)
+  - **In plain language**: we have been building our own puzzle games to compare people against AI, and measuring them against seven official games that happened to be sitting on this machine. It turns out the real set is 25, they are all downloadable, and six of the seven we were comparing against are not even in it. Reading the actual 25 says our games differ from the real ones in ways nobody had noticed — and one change made earlier the same day made it worse rather than better.
+  - **The three things the real set shows**: every single one of the 25 ends your run when you fail — not one restarts a level, and not one is impossible to lose. What varies between them is how many *different* ways there are to fail: one game has nine, eleven games have exactly one. And they are far bigger than ours — their middle game is about 2,100 lines against our 440, with the largest at 41,000. We are shipping roughly a fifth of a game, fifty times over.
+  - **A change from earlier today made it worse**: four of our games ended the run on a single mistake, which looked obviously too harsh, so they were changed to restart the level instead. Reading the real set afterwards showed that ending the run is the only convention it uses, and restarting a level is used by none of them. The four were closer to correct before. That is recorded rather than quietly reverted, because the audit needs to decide it rather than inherit another guess.
+  - **How to get them, since it took most of a session**: the games are not on GitHub — the official engine repository ships the engine and no games at all. They come down as Python source through the official toolkit, which fetches an anonymous key by itself, so no registration is needed. A raw request to the games endpoint returns "unauthorized" and sends you off down the wrong path, which is what happened here. All 25 are now stored locally.
+  - **Written up for whoever picks this up**: `arc3games/AUDIT_HANDOFF.md` in the arena repo, which leads with the shipped regression and includes the three separate times this session reached a wrong conclusion. Every one of them came from reasoning off a small sample instead of checking a reference that was already on disk — worth reading before repeating it.
+  - **Not done**: no plan proposed. Three were drafted during the session and all three were wrong. The audit starts fresh in its own session.
+
 ### Version 7.11.0  Aug 31, 2026
 
 - **Half the game set was broken at one end or the other, and the tests were holding it that way** (Author: Claude Opus 5)
