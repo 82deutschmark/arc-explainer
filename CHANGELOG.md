@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.11.0  Aug 31, 2026
+
+- **Half the game set was broken at one end or the other, and the tests were holding it that way** (Author: Claude Opus 5)
+  - **In plain language**: these games only earn their keep if they tell us something about people versus AI. Looked at all fifty and half of them cannot. Twenty cannot be lost at all — nothing goes wrong, ever — which means the winning strategy is to try every action in turn until something works, and trying everything is the one thing a machine is better at than a person. At the other end, four ended the entire run on a single wrong step, and they were the exact four where that step is the move the game is *asking* you to make: a wrong guess in a guessing game, a wrong probe in a probing game, walking onto a hazard that is invisible until you walk onto it. A person cannot reason those out either — they die, start over, and memorise the board, which measures stubbornness rather than understanding and makes the human play exactly like the brute-forcer we are trying to compare them against.
+  - **The part worth remembering**: all four of those games had a test that *required* the punishing behaviour. One failed with "spending every pulse without finding the exit is survivable" — the test was demanding the run end. They had been written to prove the hair trigger fires, so the checks were holding the flaw in place, which is why nothing ever caught it. A test that asserts the current behaviour is not a test, it is a photograph.
+  - **What**: the four now restart the level instead of ending the run. The mistake still costs something; it stops costing the whole session. Their tests now check the stronger thing — that the mistake bites, the level comes back clean, and everything already earned survives. One test turned out to be wrong rather than the game.
+  - **Fixed at the source too**: the instructions the game generator works from never asked what a wrong move costs, so it was never asked to make one survivable and shipped whichever extreme fell out of the mechanic. Every new idea must now state what a mistake costs and what it teaches, judged against two rules — a wrong move has to be affordable, and it has to narrow the puzzle rather than just cross off one square. A failed guess in Minesweeper tells you about squares you have not touched; stepping on a hidden pit tells you about that one square, and a game built on the second kind is tedious rather than hard.
+  - **Not done, deliberately**: the twenty games with no stakes are untouched pending a decision on whether that is a defect or a legitimate no-stakes puzzle. The generator is paused until Thursday, and its live copy of the instructions is held outside the repo — it needs the same edit before it next runs.
+  - **Verified**: 50 games x 2 lanes green. No game in the set calls the hard game-over any more.
+
 ### Version 9.2.0  Aug 31, 2026
 
 - **Feedback: six checkboxes, a scratchpad, and a Next button** (Author: Claude Opus 5)
