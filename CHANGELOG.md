@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 8.1.0  Aug 31, 2026
+
+- **The gallery now leads with the games we are making — and it turned out it was hiding 571 of them** (Author: Claude Opus 5)
+  - **In plain language**: the ask was to stop leading with the 25 official ARC Prize games and put our own pipeline output first. Checking that turned up something worse: Son's catalog had grown from 300 games to **877** overnight, and every one of the 571 new ones was **invisible on our site**. The page cheerfully said "1–60 of 877" while refusing to draw any of them. Searching for one returned neither results nor a "nothing found" message — just an empty page.
+  - **Why**: the gallery had the three category names written into it by hand — official, in-house, community. Son's pipeline publishes under a fourth, `ai-generated`, which did not exist when I wrote the page yesterday. Anything not on the hardcoded list was silently skipped. Fixed so an unrecognised category still renders, under its own name, rather than vanishing — a missing label is a cosmetic gap, not a reason to hide 571 playable games.
+  - **The actual ask**: sections are reordered so **Fresh off the pipeline** (571) leads, then Built in-house (29), Community catalog (252), and ARC Prize Foundation (25) last.
+  - **Kept reachable**: with 877 games shown 60 to a page, putting the official set last would have buried it ten pages deep. Added filter chips along the top — All / Fresh off the pipeline / Built in-house / Community catalog / ARC Prize Foundation — so every section is one click away.
+  - **Verified**: gallery leads with `q001-v1`, 877 total, real opening frames render for the new games, the "ARC Prize Foundation" chip shows exactly 25, and `q001-v1` plays — action counter 1→2 through the engine. The new games work on the same runtime as everything else.
+  - **Files**: `client/src/pages/arc3-community/CommunityGallery.tsx`, `server/services/arc3Mirror/Arc3MirrorCatalog.ts` (category is now an open string, so the next new category upstream is data rather than a breakage).
+
 ### Version 8.0.1  Aug 31, 2026
 
 - **Swept the rest of the arc3 side: dead pages gone, and the one page that gives games away is now labelled as such** (Author: Claude Opus 5)

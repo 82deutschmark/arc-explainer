@@ -54,7 +54,10 @@ interface UpstreamEntry {
   tags?: string[];        // STRIPPED - names the mechanic
   class_name: string;
   src_file: string;
-  category: 'official' | 'custom' | 'redbluepill';
+  /** Open string, not a union: upstream adds categories (`ai-generated` appeared with
+   *  571 games the day after this shipped) and a closed set here turns that into a
+   *  breakage rather than data. */
+  category: string;
   official?: boolean;
   default_fps?: number;
   tile_scale?: number;
@@ -64,7 +67,8 @@ interface UpstreamEntry {
 export interface MirroredGame {
   gameId: string;
   className: string;
-  category: 'official' | 'custom' | 'redbluepill';
+  /** Upstream's own category slug. Open by design -- see UpstreamEntry.category. */
+  category: string;
   official: boolean;
   defaultFps: number;
   tileScale: number;
