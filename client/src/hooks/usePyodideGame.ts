@@ -215,7 +215,7 @@ export function usePyodideGame(): UsePyodideGameReturn {
       // Step 1: fetch source + class name from server
       setLoadingStage('game');
       setLoadingMessage('Fetching game source...');
-      const res = await fetch(`/api/arc3-community/games/${gameId}/source`);
+      const res = await fetch(`/api/arc3-mirror/games/${gameId}/source`);
       if (!res.ok) throw new Error(`Failed to fetch game source: ${res.statusText}`);
       const json = await res.json();
       const { sourceCode, className } = json.data as { sourceCode: string; className: string | null };

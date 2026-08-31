@@ -6,7 +6,7 @@
  *          The play page executes the game CLIENT-side in Pyodide, so actions never
  *          reach the server and server-side per-action logging would record almost
  *          nothing. Events are therefore batched here and POSTed to
- *          /api/arc3-community/human-events every 10s and on pagehide.
+ *          /api/arc3-play/human-events every 10s and on pagehide.
  *
  *          Records the harness's own action integers (1=Up 2=Down 3=Left 4=Right
  *          5=Action 6=Click 7=Undo) so a human row joins an agent row directly. RESET is
@@ -23,7 +23,7 @@
  *          transport, batching or identity code.
  */
 
-const ENDPOINT = '/api/arc3-community/human-events';
+const ENDPOINT = '/api/arc3-play/human-events';
 const FLUSH_MS = 10_000;
 const MAX_QUEUE = 2000;
 

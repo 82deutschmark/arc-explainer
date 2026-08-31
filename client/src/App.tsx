@@ -36,7 +36,6 @@ import PuzzleDBViewer from "@/pages/PuzzleDBViewer";
 import ModelBrowser from "@/pages/ModelBrowser";
 import ModelManagement from "@/pages/ModelManagement";
 import AdminHub from "@/pages/AdminHub";
-import AdminArc3Submissions from "@/pages/AdminArc3Submissions";
 import HuggingFaceIngestion from "@/pages/HuggingFaceIngestion";
 import AdminOpenRouter from "@/pages/AdminOpenRouter";
 import EloComparison from "@/pages/EloComparison";
@@ -62,10 +61,8 @@ import {
   Arc3ArchivePlayground 
 } from "@/pages/arc3-archive";
 import {
-  CommunityLanding,
   CommunityGallery,
   CommunityGamePlay,
-  GameSubmissionPage,
 } from "@/pages/arc3-community";
 import PuzzleTradingCards from "@/pages/PuzzleTradingCards";
 import HumanTradingCards from "@/pages/HumanTradingCards";
@@ -150,7 +147,6 @@ function Router() {
         {/* Admin routes */}
         <Route path="/admin" component={AdminHub} />
         <Route path="/admin/models" component={ModelManagement} />
-        <Route path="/admin/arc3-submissions" component={AdminArc3Submissions} />
         <Route path="/admin/ingest-hf" component={HuggingFaceIngestion} />
         <Route path="/admin/openrouter" component={AdminOpenRouter} />
 
@@ -179,7 +175,8 @@ function Router() {
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/arc3/gallery" component={CommunityGallery} />
         <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
-        <Route path="/arc3/upload" component={GameSubmissionPage} />
+        {/* /arc3/upload removed 2026-08-30: task submissions belong to
+            arc3.sonpham.net, the source of truth for the synthetic set. */}
         {/* Legacy archive routes - redirect to new structure */}
         <Route path="/arc3/archive" component={() => <Redirect to="/arc3" />} />
         <Route path="/arc3/archive/games" component={() => <Redirect to="/arc3" />} />

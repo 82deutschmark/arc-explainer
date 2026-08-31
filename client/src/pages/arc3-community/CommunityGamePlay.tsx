@@ -1,16 +1,22 @@
 /*
-Author: Cascade (Claude Sonnet 4) / Claude Sonnet 4.6
-Date: 2026-03-12
-PURPOSE: Game play page for community games. Game logic runs client-side via Pyodide
-         (Python in WebAssembly) using the usePyodideGame hook, which drives the
-         pyodide-game-worker.js Web Worker. This eliminates all server-side Python
-         subprocesses and per-action network round-trips — actions are now instant.
+Author: Cascade (Claude Sonnet 4) / Claude Sonnet 4.6 / Claude Opus 5
+Date: 2026-03-12 / 2026-08-30
+PURPOSE: Blind play page for one mirrored ARC-AGI-3 task. Game logic runs client-side via
+         Pyodide (Python in WebAssembly) using the usePyodideGame hook, which drives the
+         pyodide-game-worker.js Web Worker. No server-side Python, no per-action round
+         trips, and no account — which is what lets this be a public, anonymous surface.
 
-         If Pyodide fails to load (e.g. CDN blocked, no WASM support), the page falls
-         back to the server-side session API (POST /session/start + /session/:guid/action)
-         so the game still works.
+         2026-08-30: the server-side session fallback (POST /session/start,
+         /session/:guid/action) is gone. It existed because the Pyodide worker had been
+         switched to micropip and broke; the worker is now back on arc3.sonpham.net's
+         proven wheel-fetch recipe, and the endpoints the fallback called were removed
+         with the DB-backed catalog. Pyodide is the only path, so its failures are now
+         surfaced to the player instead of being silently papered over.
 
-         Play-count tracking remains a fire-and-forget POST to /games/:gameId/play.
+         NO-SPOILER RULE. This page shows the task id and the frame. It does NOT show the
+         task's name, description, tags or author: a player is meant to infer the rules,
+         the controls and the goal from the frame, and a header reading "Light Bender"
+         destroys the baseline datum this page exists to collect.
 
          Supports ACTION6 click-on-grid with coordinates. All 7 actions exposed with
          keyboard bindings + a d-pad sidebar. Multi-frame animations step through at
@@ -21,7 +27,6 @@ SRP/DRY check: Pass — uses usePyodideGame hook for execution, shared pixel UI 
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link } from 'wouter';
-import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   ArrowLeft,
   RotateCcw,
@@ -40,58 +45,17 @@ import {
   AlertTriangle,
   ExternalLink,
 } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
 import { Arc3GridVisualization } from '@/components/arc3/Arc3GridVisualization';
 import { Arc3PixelPage, PixelButton, PixelPanel } from '@/components/arc3-community/Arc3PixelUI';
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 
-/** How long to wait for the in-browser Python runtime before using the server session.
- *  Generous: a cold Pyodide boot plus an arcengine install is genuinely slow. */
-const PYODIDE_BOOT_GRACE_MS = 25_000;
-
 // ─── Types ────────────────────────────────────────────────────────────────────
-
-// Server-session FrameData shape (fallback mode only)
-interface ServerFrameData {
-  frame: number[][][];
-  score: number;
-  state: string;
-  action_counter: number;
-  max_actions: number;
-  win_score: number;
-  available_actions: string[];
-  last_action: string;
-  levels_completed?: number;
-}
-
-interface StartGameResponse {
-  success: boolean;
-  data: {
-    sessionGuid: string;
-    frame: ServerFrameData;
-    game: { gameId: string; displayName: string; winScore: number; maxActions: number | null };
-  };
-}
-
-interface ActionResponse {
-  success: boolean;
-  data: { frame: ServerFrameData; isGameOver: boolean; isWin: boolean };
-}
-
-interface GameDetails {
-  gameId: string;
-  displayName: string;
-  description: string | null;
-  authorName: string;
-  winScore?: number;
-  maxActions?: number | null;
-}
 
 type GameState = 'idle' | 'playing' | 'won' | 'lost';
 
-// Unified frame shape accepted by the render layer
-type AnyFrameData = PyodideFrameData | ServerFrameData;
+// Frames come only from the Pyodide worker now that the server session path is gone.
+type AnyFrameData = PyodideFrameData;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -101,125 +65,27 @@ export default function CommunityGamePlay() {
   // ── Pyodide hook (primary path) ──────────────────────────────────────────────
   const pyodide = usePyodideGame();
 
-  // ── Server-session fallback state ────────────────────────────────────────────
-  const [sessionGuid, setSessionGuid] = useState<string | null>(null);
-  // Default to the SERVER session.
-  //
-  // The in-browser Pyodide path is the faster design, but it has not been working:
-  // players report a board that renders with controls that do nothing, and the failure
-  // is silent -- init never rejects, so the existing pyodideFailed fallback never fires.
-  // The server path is verified working end to end (POST /session/start returns a frame,
-  // /session/:guid/action advances it), so it is what players get until the worker is
-  // fixed. At current traffic a Python subprocess per session costs nothing, and a game
-  // that runs beats a game that is theoretically faster.
-  //
-  // Opt back into the local engine with ?engine=pyodide to debug it against a live page.
-  const [useFallback, setUseFallback] = useState(() => {
-    try {
-      return new URLSearchParams(window.location.search).get('engine') !== 'pyodide';
-    } catch {
-      return true;
-    }
-  });
-
   // ── Shared display state ─────────────────────────────────────────────────────
   const [frame, setFrame] = useState<AnyFrameData | null>(null);
-  const [gameInfo, setGameInfo] = useState<{ displayName: string; winScore: number; maxActions: number | null } | null>(null);
+  const [gameInfo, setGameInfo] = useState<{ winScore: number; maxActions: number | null } | null>(null);
   const [gameState, setGameState] = useState<GameState>('idle');
   const prevLevelsCompleted = useRef<number>(0);
   const [levelCelebration, setLevelCelebration] = useState<number | null>(null);
   const [displayFrameIndex, setDisplayFrameIndex] = useState<number>(0);
   const frameAnimationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Keep frame in sync with Pyodide hook when in primary mode
+  // Keep frame in sync with the Pyodide hook.
   useEffect(() => {
-    if (!useFallback && pyodide.frame) {
-      setFrame(pyodide.frame);
-    }
-  }, [pyodide.frame, useFallback]);
+    if (pyodide.frame) setFrame(pyodide.frame);
+  }, [pyodide.frame]);
 
-  // Detect Pyodide failure → switch to fallback
-  useEffect(() => {
-    if (pyodide.pyodideFailed && !useFallback) {
-      setUseFallback(true);
-    }
-  }, [pyodide.pyodideFailed, useFallback]);
-
-  // Watchdog: the UI switches to 'playing' as soon as Start is pressed, but the board
-  // only appears once Pyodide has booted from its CDN and installed arcengine. On a
-  // network that blocks either, init never rejects -- it simply never resolves -- so
-  // pyodideFailed is never set, the player sees a live-looking board with working
-  // buttons and a dead game, and nothing ever says why. That also silently produces a
-  // zero-action abandoned session, poisoning the baseline we are collecting.
-  // If no frame has arrived a while after starting, fall back to the server session.
-  useEffect(() => {
-    if (gameState !== 'playing' || frame || useFallback) return;
-    const timer = setTimeout(() => setUseFallback(true), PYODIDE_BOOT_GRACE_MS);
-    return () => clearTimeout(timer);
-  }, [gameState, frame, useFallback]);
-
-  // Once we have fallen back, actually start the server-side session.
-  useEffect(() => {
-    if (useFallback && gameState === 'playing' && !frame && !startGameMutation.isPending) {
-      startGameMutation.mutate();
-    }
-    // startGameMutation is stable enough for this guard; re-running on every render
-    // would restart the session.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [useFallback, gameState, frame]);
-
-  // ── Game metadata query ──────────────────────────────────────────────────────
-  const { data: gameDetails } = useQuery<{ success: boolean; data: GameDetails }>({
-    queryKey: [`/api/arc3-community/games/${gameId}`],
-    enabled: !!gameId,
-  });
-
-  // ── Server-session fallback mutations ────────────────────────────────────────
-  const startGameMutation = useMutation({
-    mutationFn: async () => {
-      const response = await apiRequest('POST', '/api/arc3-community/session/start', { gameId });
-      return response.json() as Promise<StartGameResponse>;
-    },
-    onSuccess: (data) => {
-      if (data.success) {
-        setSessionGuid(data.data.sessionGuid);
-        applyFrame(data.data.frame, false, false);
-        setGameInfo(data.data.game);
-        setGameState('playing');
-      }
-    },
-  });
-
-  const actionMutation = useMutation({
-    mutationFn: async (payload: string | { action: string; coordinates?: [number, number] }) => {
-      if (!sessionGuid) throw new Error('No active session');
-      const body = typeof payload === 'string' ? { action: payload } : payload;
-      const response = await apiRequest('POST', `/api/arc3-community/session/${sessionGuid}/action`, body);
-      const json = await response.json() as ActionResponse;
-      // Remember which action produced this frame; the mutation result does not carry it.
-      return { ...json, __action: typeof payload === 'string' ? payload : payload.action };
-    },
-    onSuccess: (data) => {
-      if (data.success) {
-        // The server path is the default, so recording only in the Pyodide branch
-        // captured nothing at all.
-        humanPlay.record(
-          data.__action,
-          typeof data.data.frame?.score === 'number' ? data.data.frame.score : null,
-          data.data.isWin ? 'WIN' : data.data.isGameOver ? 'GAME_OVER' : 'NOT_FINISHED',
-        );
-        applyFrame(data.data.frame, data.data.isGameOver, data.data.isWin);
-      }
-    },
-  });
-
-  // ── Frame application (shared between Pyodide + fallback paths) ──────────────
+  // ── Frame application ────────────────────────────────────────────────────────
   const applyFrame = useCallback((
     newFrame: AnyFrameData,
     isGameOver: boolean,
     isWin: boolean,
   ) => {
-    const newLevels = ('levels_completed' in newFrame ? newFrame.levels_completed : undefined) ?? newFrame.score ?? 0;
+    const newLevels = newFrame.levels_completed ?? newFrame.score ?? 0;
 
     if (newLevels > prevLevelsCompleted.current && !isGameOver) {
       setLevelCelebration(newLevels);
@@ -260,7 +126,7 @@ export default function CommunityGamePlay() {
   }, []);
 
   // ── Keyboard handler ─────────────────────────────────────────────────────────
-  const isActing = useFallback ? actionMutation.isPending : pyodide.isActing;
+  const isActing = pyodide.isActing;
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (isActing || gameState !== 'playing') return;
@@ -287,22 +153,11 @@ export default function CommunityGamePlay() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // ── Action dispatcher (Pyodide primary, server fallback) ─────────────────────
+  // ── Action dispatcher ────────────────────────────────────────────────────────
   const handleAction = useCallback(async (
     actionStr: string,
     coordinates?: [number, number],
   ) => {
-    if (useFallback) {
-      if (actionStr === 'RESET') {
-        actionMutation.mutate('RESET');
-      } else if (coordinates) {
-        actionMutation.mutate({ action: actionStr, coordinates });
-      } else {
-        actionMutation.mutate(actionStr);
-      }
-      return;
-    }
-
     try {
       const data = coordinates
         ? await pyodide.step(actionStr, { x: coordinates[0], y: coordinates[1] })
@@ -321,7 +176,7 @@ export default function CommunityGamePlay() {
     } catch {
       // Worker error — already reflected in pyodide.error state
     }
-  }, [useFallback, pyodide, actionMutation, applyFrame, detectGameOver]);
+  }, [pyodide, applyFrame, detectGameOver]);
 
   // ── Start game ───────────────────────────────────────────────────────────────
   const handleStart = useCallback(async () => {
@@ -332,28 +187,20 @@ export default function CommunityGamePlay() {
     setLevelCelebration(null);
     setDisplayFrameIndex(0);
 
-    if (useFallback) {
-      startGameMutation.mutate();
-      return;
-    }
-
     try {
-      // Lazy-init Pyodide + load game in one call
+      // Lazy-init Pyodide + load game in one call. Win score and action cap come from
+      // the frame itself -- the mirrored catalog deliberately carries no per-game
+      // metadata beyond what is needed to run it.
       const initialFrame = await pyodide.initGame(gameId!);
-      const details = gameDetails?.data;
       setGameInfo({
-        displayName: details?.displayName ?? gameId ?? '',
-        winScore: details?.winScore ?? initialFrame.win_score,
-        maxActions: details?.maxActions ?? initialFrame.max_actions,
+        winScore: initialFrame.win_score,
+        maxActions: initialFrame.max_actions,
       });
       applyFrame(initialFrame, false, false);
-
-      // Fire-and-forget play count
-      fetch(`/api/arc3-community/games/${gameId}/play`, { method: 'POST' }).catch(() => {});
     } catch {
-      // pyodide.pyodideFailed will be set → useFallback effect triggers
+      // pyodide.error is set and rendered; there is no second path to try.
     }
-  }, [useFallback, pyodide, gameId, gameDetails, startGameMutation, applyFrame]);
+  }, [pyodide, gameId, applyFrame]);
 
   // Reset current level
   const handleReset = useCallback(() => {
@@ -364,7 +211,6 @@ export default function CommunityGamePlay() {
 
   // Full restart from idle
   const handlePlayAgain = useCallback(() => {
-    setSessionGuid(null);
     setFrame(null);
     setGameInfo(null);
     setGameState('idle');
@@ -373,13 +219,8 @@ export default function CommunityGamePlay() {
   }, []);
 
   // ── Loading state derivation ─────────────────────────────────────────────────
-  const isStarting = useFallback
-    ? startGameMutation.isPending
-    : pyodide.status === 'loading';
-
-  const loadingMessage = useFallback
-    ? 'Connecting to server...'
-    : (pyodide.loadingMessage ?? 'Initialising...');
+  const isStarting = pyodide.status === 'loading';
+  const loadingMessage = pyodide.loadingMessage ?? 'Initialising...';
 
   // ─── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -396,15 +237,9 @@ export default function CommunityGamePlay() {
             </Link>
             <span className="text-[var(--arc3-dim)]">|</span>
             <Gamepad2 className="w-5 h-5 text-[var(--arc3-c14)]" />
+            {/* The id, and only the id. A name here would hand the player the answer. */}
             <div className="min-w-0">
-              <span className="text-sm font-semibold truncate">
-                {gameInfo?.displayName || gameDetails?.data?.displayName || 'Loading...'}
-              </span>
-              {gameDetails?.data && (
-                <span className="text-[11px] text-[var(--arc3-dim)] ml-2">
-                  by {gameDetails.data.authorName}
-                </span>
-              )}
+              <span className="text-sm font-semibold truncate">{gameId}</span>
             </div>
           </div>
 
@@ -422,17 +257,11 @@ export default function CommunityGamePlay() {
           {frame && gameState === 'playing' && (
             <div className="flex items-center gap-3 text-xs shrink-0">
               <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-c14)] text-[var(--arc3-c0)] px-2 py-1 font-semibold">
-                Level: {(('levels_completed' in frame ? frame.levels_completed : frame.score) ?? 0) + 1}
+                Level: {(frame.levels_completed ?? frame.score ?? 0) + 1}
               </div>
               <div className="border-2 border-[var(--arc3-border)] bg-[var(--arc3-panel-soft)] px-2 py-1">
                 Actions: {frame.action_counter}
               </div>
-              {useFallback && (
-                <div className="border-2 border-[var(--arc3-border)] border-yellow-500 bg-yellow-900/30 text-yellow-400 px-2 py-1 text-[10px] flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3" />
-                  Server mode
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -442,11 +271,12 @@ export default function CommunityGamePlay() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Game Grid */}
           <div className="lg:col-span-3">
-            {/* Pyodide error notice (non-fatal if fallback kicked in) */}
-            {pyodide.error && useFallback && (
+            {/* Pyodide is the only path now, so a failure here is fatal and must say so. */}
+            {pyodide.error && (
               <div className="mb-4 border-2 border-yellow-600 bg-yellow-900/20 px-4 py-2 flex items-center gap-2 text-[11px] text-yellow-300">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
-                In-browser mode unavailable ({pyodide.error}). Running on server instead.
+                This task could not start in your browser ({pyodide.error}). It needs
+                WebAssembly and access to the Pyodide CDN.
               </div>
             )}
 
@@ -524,9 +354,7 @@ export default function CommunityGamePlay() {
               {gameState === 'idle' ? (
                 <div className="text-center py-12">
                   <Gamepad2 className="w-12 h-12 text-[var(--arc3-dim)] mx-auto mb-4" />
-                  <p className="text-sm font-semibold mb-2">
-                    {gameDetails?.data?.displayName || 'Community Game'}
-                  </p>
+                  <p className="text-sm font-semibold mb-2">{gameId}</p>
                   <p className="text-[11px] text-[var(--arc3-muted)] mb-6 max-w-md mx-auto">
                     {'No instructions. Work out what it does.'}
                   </p>

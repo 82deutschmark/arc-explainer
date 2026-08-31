@@ -28,7 +28,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
       'Interactive reasoning tasks that explain nothing. Humans solve these; the best AI '
       + 'scores 0.50%. Pick one and work out what it does.',
     url: 'https://arc.markbarney.net/arc3/gallery',
-    image: 'https://arc.markbarney.net/api/arc3-community/games/ls20/thumbnail?size=512',
+    image: 'https://arc.markbarney.net/api/arc3-mirror/games/ls20-9607627b/thumbnail?size=512',
     type: 'website',
   },
 
@@ -76,7 +76,7 @@ export const ROOT_META_BY_HOST: Record<string, RouteMetaTags> = {
       'Synthetic ARC-AGI-3 tasks: little games that explain nothing. No instructions, no '
       + 'goal, no controls listed — work it out. Five minutes, no account.',
     url: 'https://arc3.markbarney.net/',
-    image: 'https://arc.markbarney.net/api/arc3-community/games/ls20/thumbnail?size=512',
+    image: 'https://arc.markbarney.net/api/arc3-mirror/games/ls20-9607627b/thumbnail?size=512',
     type: 'website',
   },
 };

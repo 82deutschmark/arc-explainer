@@ -23,3 +23,6 @@ jBudd2.mp4
 # Rendered ARC-3 task thumbnails and uploaded game files are runtime artifacts,
 # regenerated on demand and keyed by source hash.
 uploads/
+
+# Generated opening-frame thumbnails, rendered on demand from the mirrored catalog.
+data/arc3-mirror-thumbnails/

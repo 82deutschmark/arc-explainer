@@ -4,15 +4,21 @@ Date: 2026-03-12
 PURPOSE: Web Worker for running ARCEngine community games client-side via Pyodide 0.27.4.
          Eliminates server-side Python subprocesses and per-action network round-trips.
          Loads numpy + pydantic via Pyodide's pre-compiled package system, then installs
-         arcengine with micropip.
+         arcengine by fetching its wheel from PyPI and extracting it into site-packages.
 
-         (Until 29-Aug-2026 this hand-fetched the arcengine wheel from PyPI and unzipped
-         it into site.getsitepackages()[0], on the stated grounds that "micropip cannot
-         handle pydantic-core C extensions as a transitive dep". That premise is wrong:
-         pydantic-core 2.27.2 is a first-class package in the Pyodide 0.27.4 lockfile, so
-         micropip resolves it from there and never builds anything. The workaround was
-         working around a problem that does not exist, and it was the part that broke --
-         players got a rendered board with dead controls and no error.)
+         30-Aug-2026: reverted to the wheel-fetch. On 29-Aug it was replaced with
+         `micropip.install("arcengine")` on the argument that pydantic-core is already in
+         the Pyodide 0.27.4 lockfile so micropip would never build anything. Pyodide then
+         stopped working -- a board that rendered with controls that did nothing, and no
+         error -- and rather than reverting, the play page was switched to a server-side
+         session path. That server path has since been removed along with the DB-backed
+         catalog, and this is now the only way a game runs.
+
+         The wheel-fetch is not a workaround for a problem that does not exist: it is the
+         recipe running in production at arc3.sonpham.net (static/js/games-engine.js),
+         which serves all 300 games this site mirrors. Matching the source of truth beats
+         re-deriving what micropip ought to be able to do. Do not swap it back without a
+         game actually loading in a browser first.
          Architecture ref: docs/sonpham-arc3-pyodide-architecture.md
 
          Message protocol (main thread → worker):
@@ -89,18 +95,29 @@ async function handleInit(id) {
   self.postMessage({ type: 'progress', id, stage: 'packages', message: 'Loading packages...' });
   await pyodide.loadPackage(['numpy', 'pydantic']);
 
-  // Stage 3: arcengine via micropip, the supported path. numpy/pydantic/pydantic-core
-  // are already satisfied from the lockfile above, so this resolves a single pure-Python
-  // wheel and compiles nothing.
+  // Stage 3: arcengine, fetched as a wheel from PyPI and extracted into site-packages.
+  // This mirrors arc3.sonpham.net's games-engine.js exactly. micropip is deliberately
+  // not used here -- see the header note.
   initStage = 'arcengine';
   self.postMessage({ type: 'progress', id, stage: 'arcengine', message: 'Installing game engine...' });
-  await pyodide.loadPackage('micropip');
   await pyodide.runPythonAsync(`
-import micropip
-await micropip.install("arcengine")
+import json, zipfile, io, importlib, site
+from pyodide.http import pyfetch
+
+resp = await pyfetch("https://pypi.org/pypi/arcengine/json")
+meta = json.loads(await resp.string())
+whl_url = next(u["url"] for u in meta["urls"] if u["filename"].endswith("py3-none-any.whl"))
+
+whl_resp = await pyfetch(whl_url)
+whl_bytes = bytes(await whl_resp.bytes())
+
+sp = site.getsitepackages()[0]
+with zipfile.ZipFile(io.BytesIO(whl_bytes)) as zf:
+    zf.extractall(sp)
+importlib.invalidate_caches()
 
 # Fail loudly here rather than leaving a half-initialised runtime: the caller turns
-# this into an 'error' message, which is what trips the fallback to the server session.
+# this into an 'error' message, which the play page surfaces to the player.
 from arcengine import ARCBaseGame, ActionInput, GameAction, GameState
 `);
 
@@ -153,7 +170,15 @@ async function handleStep(id, actionStr, actionData) {
   await pyodide.runPythonAsync(`
 from arcengine import ActionInput, GameAction
 
-_action_enum = GameAction(int(_step_action_id))
+# GameAction.from_id(), NOT GameAction(int). In the published arcengine wheel each member
+# is declared as a tuple -- ACTION2 = (2, SimpleAction) -- so the enum's by-value lookup
+# does not accept a bare action id and GameAction(2) raises "2 is not a valid GameAction".
+# The vendored external/ARCEngine sets _value_ = action_id in __init__, so the constructor
+# works there and the bug is invisible outside the browser. This is what made the board
+# render with dead controls: load_game and RESET never hit this path, so only stepping
+# failed, and it failed inside the worker where nothing surfaced it.
+# arc3.sonpham.net's games-engine.js uses from_id for the same reason.
+_action_enum = GameAction.from_id(int(_step_action_id))
 _data = dict(_step_action_data) if _step_action_data is not None else {}
 _action_input = ActionInput(id=_action_enum, data=_data)
 _frame_data = _game_instance.perform_action(_action_input)

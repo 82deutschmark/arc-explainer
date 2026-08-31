@@ -45,7 +45,8 @@ import arc3CodexRouter from "./routes/arc3Codex";
 import arc3OpenRouterRouter from "./routes/arc3OpenRouter";
 import arc3HaikuRouter from "./routes/arc3Haiku";
 import arc3ArchiveRouter from "./routes/arc3Archive";
-import arc3CommunityRouter from "./routes/arc3Community";
+import arc3MirrorRouter from "./routes/arc3Mirror";
+import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -114,7 +115,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/arc3-archive", arc3ArchiveRouter);
 
   // Community games platform routes (user-uploaded ARCEngine games)
-  app.use("/api/arc3-community", arc3CommunityRouter);
+  // Mirrored catalog from arc3.sonpham.net (source of truth) + anonymous play telemetry.
+  // Replaces the removed DB-backed community catalog and its submission pipeline.
+  app.use("/api/arc3-mirror", arc3MirrorRouter);
+  app.use("/api/arc3-play", arc3HumanPlayRouter);
 
   // Contributor trading cards routes
   app.use("/api/contributors", contributorController);

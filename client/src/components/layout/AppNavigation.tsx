@@ -69,7 +69,7 @@ interface NavLink {
   /**
    * Match the location exactly instead of by prefix. Needed wherever a parent route is a
    * sibling of its own children in the nav: without this, /arc3 ("About ARC-3") highlights
-   * on /arc3/gallery and /arc3/upload too, so two entries look active at once.
+   * on /arc3/gallery too, so two entries look active at once.
    */
   exact?: boolean;
 }
@@ -108,14 +108,7 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
     title: 'Play',
     href: '/arc3/gallery',
     icon: Gamepad2,
-    description: 'The ARC-AGI-3 game gallery -- official, custom, and community tasks',
-  },
-  {
-    type: 'link',
-    title: 'Submit',
-    href: '/arc3/upload',
-    icon: Upload,
-    description: 'Contribute your own ARC-3 game to the community catalog',
+    description: 'Play an ARC-AGI-3 task blind -- no title, no rules, no instructions',
   },
   {
     type: 'link',

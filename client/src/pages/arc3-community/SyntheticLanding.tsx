@@ -1,35 +1,45 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-28
-PURPOSE: Landing page for the synthetic ARC-AGI-3 programme, served as the root of
-         arc3.markbarney.net. Two audiences, one page: someone with no background who
-         needs the idea in plain language and one game to try, and a researcher deciding
-         whether the set and its data are worth their time.
+Date: 2026-08-28 / 2026-08-30
+PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: someone
+         with no background who needs the idea in plain language and one game to try.
+
+         2026-08-30: the researcher half of this page was removed. arc3.sonpham.net is
+         now the source of truth for the synthetic programme -- it owns the catalog, the
+         submissions, the harness and the run data -- and this site is the public,
+         no-account play surface that mirrors it to collect a human baseline. Sections on
+         how the set is generated, how to contribute a task, and how to consume the data
+         belonged to the research side and were duplicating it here, months out of date.
+         What remains is the pitch to a human being and the shortest path to playing.
          Numbers are cited from the ARC-AGI-3 technical report (22-Apr-2026) rather than
          asserted -- humans 100%, best frontier model 0.50% (Table 2). An earlier draft
          said models "score zero", which is wrong and would not survive a poster session.
          Prose is set in a sans stack for readability; monospace is kept for chrome, ids
          and code, matching CommunityGallery and the official ARC-AGI-3 task pages.
          Steers play toward ZERO-PLAY tasks: coverage is the scarce resource, not tasks.
-SRP/DRY check: Pass - reuses the community games API and the thumbnail endpoint added for
-         the gallery; no new data plumbing. Routing stays in App.tsx.
+SRP/DRY check: Pass - reuses the mirror catalog + thumbnail endpoints that back the
+         gallery, and the existing human-stats aggregate; no new data plumbing. Routing
+         stays in App.tsx.
 */
 
 import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 
+/** Mirrors MirroredGame in server/services/arc3Mirror/Arc3MirrorCatalog.ts.
+ *  No title, description or tags by design -- see the gallery's no-spoiler note. */
 interface Game {
   gameId: string;
-  displayName: string;
-  authorName: string;
-  playCount: number;
-  levelCount: number | null;
-  tags: string[];
+  category: 'official' | 'custom' | 'redbluepill';
 }
 interface GamesResponse {
   success: boolean;
   data: { games: Game[]; total: number };
+}
+/** Aggregate first-blind-attempt rows, one per task that has ever been played. */
+interface HumanStatsResponse {
+  success: boolean;
+  data: { games: { game_id: string; first_sessions: number }[] };
 }
 
 const ARC = {
@@ -54,14 +64,14 @@ const RELEASE_SCORES: [string, string][] = [
 ];
 
 const RELATED = [
-  { href: ARENA_SITE, label: 'arc3.sonpham.net', note: 'The research arena — agent harness, evolution loops, leaderboards' },
+  { href: ARENA_SITE, label: 'arc3.sonpham.net', note: 'The research side — the task set itself, the agent harness, leaderboards' },
   { href: 'https://markbarney.net', label: 'markbarney.net', note: 'Everything else' },
   { href: 'https://farm.markbarney.net', label: 'farm.markbarney.net', note: 'Kaggriculture — a farming-economy agent arena' },
   { href: 'https://voynichlabs.org', label: 'voynichlabs.org', note: 'Voynich Labs' },
 ];
 
 function thumb(gameId: string, size = 256) {
-  return `/api/arc3-community/games/${encodeURIComponent(gameId)}/thumbnail?size=${size}`;
+  return `/api/arc3-mirror/games/${encodeURIComponent(gameId)}/thumbnail?size=${size}`;
 }
 
 function Scanlines() {
@@ -73,6 +83,7 @@ function Scanlines() {
 }
 
 function Tile({ game, alt }: { game: Game; alt: boolean }) {
+  /* Id only. The mirror strips names before they reach the browser. */
   return (
     <Link href={`/arc3/play/${game.gameId}`}>
       <a className="group block">
@@ -86,9 +97,6 @@ function Tile({ game, alt }: { game: Game; alt: boolean }) {
         <div className="flex items-center justify-between gap-2 px-2 py-1"
              style={{ background: alt ? ARC.pinkAlt : ARC.pink, fontFamily: MONO }}>
           <span className="text-[11px] tracking-[.55px] text-white truncate">{game.gameId}</span>
-          {game.levelCount ? (
-            <span className="text-[10px] text-white/75 shrink-0">{game.levelCount}L</span>
-          ) : null}
         </div>
       </a>
     </Link>
@@ -122,33 +130,37 @@ function Stat({ value, label, tone }: { value: string; label: string; tone: stri
 
 export default function SyntheticLanding() {
   const { data } = useQuery<GamesResponse>({
-    queryKey: ['/api/arc3-community/games?orderBy=playCount&orderDir=DESC&limit=100'],
+    queryKey: ['/api/arc3-mirror/games'],
+    staleTime: 5 * 60 * 1000,
+  });
+  // Coverage now comes from the telemetry aggregate rather than a play_count column on
+  // a catalog row: the catalog is mirrored and read-only, so it cannot carry our counts.
+  const { data: stats } = useQuery<HumanStatsResponse>({
+    queryKey: ['/api/arc3-play/human-stats'],
+    staleTime: 60 * 1000,
   });
 
-  const games = data?.data?.games ?? [];
+  const games = useMemo(() => data?.data?.games ?? [], [data]);
+  const playedIds = useMemo(
+    () => new Set((stats?.data?.games ?? []).map((g) => g.game_id)),
+    [stats],
+  );
 
   // Coverage, not supply, is the bottleneck: point first-time players at a task nobody
   // has played, rotating per visit so we do not pile every visitor onto one task.
   const needsCoverage = useMemo(() => {
-    const unplayed = games.filter((g) => (g.playCount ?? 0) === 0);
-    const pool = unplayed.length ? unplayed : games;
+    const never = games.filter((g) => !playedIds.has(g.gameId));
+    const pool = never.length ? never : games;
     return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
-  }, [games]);
+  }, [games, playedIds]);
 
   // A dozen real frames read as a body of work; four read as a sample. This is the
   // first thing a visitor sees, so it should look like the set it is.
   const heroTiles = useMemo(() => games.slice(0, 12), [games]);
 
-  // Who actually made these. The set is overwhelmingly community-contributed and the
-  // page said nothing about that, which undersold the thing it is asking people to join.
-  const byAuthor = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const g of games) counts.set(g.authorName, (counts.get(g.authorName) ?? 0) + 1);
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  }, [games]);
-  const synthetic = games.filter((g) => (g.tags ?? []).includes('synthetic'));
-  const rest = games.filter((g) => !(g.tags ?? []).includes('synthetic'));
-  const unplayed = games.filter((g) => (g.playCount ?? 0) === 0).length;
+  const unplayed = games.filter((g) => !playedIds.has(g.gameId)).length;
+  // A strip of real frames, not a full catalog dump -- browsing lives in the gallery.
+  const previewTiles = useMemo(() => games.slice(0, 24), [games]);
 
   return (
     <div style={{ background: ARC.ground, color: ARC.text, minHeight: '100vh', fontFamily: SANS }}>
@@ -265,39 +277,16 @@ export default function SyntheticLanding() {
           </div>
         )}
 
-        {/* ── the tasks ────────────────────────────────────────────────────── */}
-        {synthetic.length > 0 && (
-          <Section title="Our synthetic set" note={`${synthetic.length} generated`}>
+        {/* ── a look at the set ───────────────────────────────────────────── */}
+        {previewTiles.length > 0 && (
+          <Section title="What they look like" note={`${games.length} playable`}>
             <p className="text-[14px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.dim }}>
-              Generated from a mechanic-axis ledger, built against the real ARC-AGI-3 engine,
-              and proven solvable before shipping.
+              Every one of these is a real ARC-AGI-3 environment running on the official
+              engine — the same thing an AI agent is given, with the same screen and the
+              same buttons. These are their opening frames. That is all you get.
             </p>
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
-              {synthetic.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
-            </div>
-          </Section>
-        )}
-
-        {rest.length > 0 && (
-          <Section title="Community tasks" note={`${rest.length} contributed`}>
-            <p className="text-[14px] leading-[1.75] mb-4 max-w-[70ch]" style={{ color: ARC.dim }}>
-              Most of what is playable here was contributed by other people. Every one is a
-              real ARC-AGI-3 environment running on the official engine — the same thing an
-              agent is given.
-            </p>
-            {byAuthor.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-5">
-                {byAuthor.map(([name, n]) => (
-                  <span key={name} className="text-[11px] px-2 py-1"
-                        style={{ background: ARC.cell, border: `1px solid ${ARC.border}`,
-                                 color: ARC.dim, fontFamily: MONO }}>
-                    {name} <span style={{ color: ARC.pink }}>{n}</span>
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
-              {rest.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
+              {previewTiles.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
             </div>
             <p className="text-[13px] mt-5">
               <Link href="/arc3/gallery"><a className="underline" style={{ color: ARC.dim }}>
@@ -306,84 +295,6 @@ export default function SyntheticLanding() {
             </p>
           </Section>
         )}
-
-        {/* ── method ───────────────────────────────────────────────────────── */}
-        <Section title="How the set is made">
-          <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 text-[14px] leading-[1.75]"
-               style={{ color: ARC.dim }}>
-            {[
-              ['An idea ledger, not a pile',
-               'Every candidate names a mechanic axis — what the puzzle is actually about — and the failure mode it targets in an agent. A new idea must be novel on that axis against every existing entry. That dedup rule is what stops the set filling up with twenty reskins of "infer the hidden rule".'],
-              ['Built on the real engine',
-               'Tasks are authored as ARCEngine games: the same 64×64 frame, 16-colour palette and action space the benchmark uses. Humans and agents therefore play the identical environment, so comparing them is a subtraction rather than an argument.'],
-              ['Nothing is explained',
-               'No control legend, no goal statement, no tutorial text, no descriptive level names, no rule readouts — and no explanatory docstring, since task source is public. A player who is told the mechanic has been handed the answer the agent had to infer. A conformance check enforces this, and it caught real leaks on its first run.'],
-              ['Proven winnable, not just loadable',
-               'Loading is a low bar. Each task ships a verifier that proves every level is solvable from its start state by exhaustive search over the real state space. Porting the first task, that check caught five boards that were unsolvable and two doors sealed behind walls — all of which loaded perfectly.'],
-            ].map(([title, body], i) => (
-              <div key={title}>
-                <h3 className="text-[15px] font-semibold mb-2" style={{ color: ARC.text }}>
-                  <span style={{ color: ARC.pink, fontFamily: MONO }}>{i + 1}</span> · {title}
-                </h3>
-                <p>{body}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        {/* ── researchers ──────────────────────────────────────────────────── */}
-        <Section title="For researchers" note="contribute · reuse · replicate">
-          <div className="grid gap-x-10 gap-y-8 lg:grid-cols-3 text-[14px] leading-[1.75]"
-               style={{ color: ARC.dim }}>
-            <div>
-              <h3 className="text-[15px] font-semibold mb-2" style={{ color: ARC.text }}>Contribute a task</h3>
-              <p className="mb-4">
-                One Python file: a class inheriting <code style={{ fontFamily: MONO, color: ARC.text }}>ARCBaseGame</code>,
-                importing from <code style={{ fontFamily: MONO, color: ARC.text }}>arcengine</code>,
-                rendering to the 64×64 frame. Submissions go through a review queue.
-              </p>
-              <Link href="/arc3/upload">
-                <a className="inline-block px-4 h-[36px] leading-[36px] text-[12px] rounded-[4px]"
-                   style={{ background: ARC.control, color: ARC.text }}>Submit a task →</a>
-              </Link>
-            </div>
-            <div>
-              <h3 className="text-[15px] font-semibold mb-2" style={{ color: ARC.text }}>Use the data</h3>
-              <p>
-                Play telemetry is anonymous and aggregate-only: first-play completion rate
-                per level, actions to solve, restarts before a first clear, and where people
-                give up. It is recorded in the harness's own action space —{' '}
-                <code style={{ fontFamily: MONO, color: ARC.text }}>1=Up 2=Down 3=Left 4=Right 5=Action 6=Click 7=Undo</code>{' '}
-                — so a human row joins an agent row directly instead of through a translation
-                layer. Only a first blind attempt answers "is this easy for a human", so
-                first sessions are flagged and kept separate from repeat plays.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-[15px] font-semibold mb-2" style={{ color: ARC.text }}>Release scores</h3>
-              <table className="w-full text-[12px]" style={{ fontFamily: MONO }}>
-                <tbody>
-                  {RELEASE_SCORES.map(([model, score]) => (
-                    <tr key={model} style={{ borderBottom: `1px solid ${ARC.border}` }}>
-                      <td className="py-1.5 pr-2" style={{ color: ARC.dim }}>{model}</td>
-                      <td className="py-1.5 text-right" style={{ color: ARC.pink }}>{score}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <p className="text-[12px] mt-3" style={{ color: ARC.faint }}>
-                Technical report Table 2. Humans: 100%.
-              </p>
-              <p className="text-[13px] mt-4">
-                <a href="/api/arc3-community/games" className="underline">API</a>
-                {' · '}
-                <a href={ARENA_REPO} target="_blank" rel="noreferrer" className="underline">generator + harness</a>
-                {' · '}
-                <a href={ARENA_SITE} target="_blank" rel="noreferrer" className="underline">research arena</a>
-              </p>
-            </div>
-          </div>
-        </Section>
 
         {/* ── the ask ──────────────────────────────────────────────────────── */}
         <Section title="Where this is going">
@@ -395,11 +306,18 @@ export default function SyntheticLanding() {
                  style={{ color: ARC.text }}>ARC-AGI-3 event in Boston</a>.
             </p>
             <p className="mb-4">
-              The poster is one chart: human first-play completion on one axis, agent
-              completion on the other, per level, on the same tasks. The agent half is
-              measured. The human half is currently an assertion — which is exactly why
-              every play counts, and why we would rather you played something nobody has
-              touched than whatever sits at the top of the list.
+              The poster is one chart: how far people get on these tasks, against how far
+              the best AI agents get, on exactly the same tasks. The AI half is measured
+              already. The human half is you. That is the entire reason this site exists,
+              and it is why we would rather you played something nobody has touched than
+              whatever happens to be at the top of the list.
+            </p>
+            <p className="mb-4">
+              If you want the research side — how the tasks are generated, the agent
+              harness, the run data, or how to contribute a task — that all lives at{' '}
+              <a href={ARENA_SITE} target="_blank" rel="noreferrer" className="underline"
+                 style={{ color: ARC.text }}>arc3.sonpham.net</a>, which is the source of
+              truth for the programme. This site just lets people play them.
             </p>
             <p style={{ color: ARC.faint }}>
               Anonymous gameplay events are recorded — inputs, timings, progress. No account,
