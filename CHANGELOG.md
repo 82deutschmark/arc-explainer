@@ -1,5 +1,18 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.2.0  Aug 31, 2026
+
+- **Feedback: six checkboxes, a scratchpad, and a Next button** (Author: Claude Opus 5)
+  - **In plain language**: we already know how far each player gets — that has been recorded all along. What we could not know is *why* they stopped, and that is the thing that decides whether a generated task gets kept, fixed or thrown away. So at the end of a run (and any time during one) a player can tick what applies and leave a note, then move straight to the next task.
+  - **The six boxes**: worked out what to do / never worked out what to do / **nothing I pressed seemed to matter** / it felt broken / it felt unfair or impossible / I enjoyed this one. Each one implies a different decision about the task, which is the only reason for it to exist.
+  - **Why the third one is there**: it is the exact signature of the four separate faults that made every game unplayable earlier today, all of which we only found because you hit them by hand. If it shows up spread across many tasks at once, the **site** is broken. On one task, that **task** is broken. Nothing else we collect can tell those apart.
+  - **The notes are never shown to anybody.** A note is written by someone who has just worked a task out, so it is a spoiler by nature — someone will eventually write down the answer. It is stored and readable by us in the database, and it is never returned by any public endpoint or displayed on the site. The summary endpoint deliberately returns counts only.
+  - **Next task**: in the top bar and on the game-over screen. It prefers a pipeline task **nobody has played yet**, then any unplayed task — the same coverage-first logic the landing page uses — so the loop becomes play, react, next.
+  - **No Undo on game over.** The real ARC Prize console offers the level again and nothing else, so ours does too. Undo stays on the control deck during play, where the official console also has it.
+  - **Layout**: the form sits beside the console on a wide screen rather than inside the little CRT — it was clipping in there, and you need to still see the board while writing about it. On a narrow screen it drops below.
+  - **Not verified**: whether feedback actually saves. There is no local database here, so the endpoint validates correctly and returns 200 while storing nothing. Same caveat as the play telemetry — needs one real check after deploy.
+  - **Files**: `server/repositories/Arc3FeedbackRepository.ts` (new), `server/routes/arc3HumanPlay.ts`, `client/src/components/arc3-community/Arc3FeedbackPanel.tsx` (new), `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/lib/humanPlayTelemetry.ts`.
+
 ### Version 9.1.2  Aug 31, 2026
 
 - **The Windows machine was running a year-old cached copy of the game engine, and no deploy could ever reach it** (Author: Claude Opus 5)

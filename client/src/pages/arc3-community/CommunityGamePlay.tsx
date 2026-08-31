@@ -52,8 +52,9 @@ SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodi
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Play, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Play, Loader2, AlertTriangle, MessageSquare } from 'lucide-react';
 import { Arc3Console, type ConsoleButton } from '@/components/arc3-community/Arc3Console';
+import { Arc3FeedbackPanel } from '@/components/arc3-community/Arc3FeedbackPanel';
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 import { ARC3_COLORS } from '@/utils/arc3Colors';
@@ -64,7 +65,12 @@ interface MirroredGame {
   gameId: string;
   isLive: boolean;
   defaultFps: number;
+  category: string;
 }
+
+/** Our own generation pipeline — what Next reaches for first, matching both public
+ *  surfaces. Mirrors PIPELINE_CATEGORY on the gallery and landing pages. */
+const PIPELINE_CATEGORY = 'ai-generated';
 
 /** Keyboard bindings, matching the official player. */
 const KEY_MAP: Record<string, string> = {
@@ -103,9 +109,13 @@ export default function CommunityGamePlay() {
   // HELP is a control on the official deck. It explains the CONTROLS only -- never the
   // task -- so it cannot leak the mechanic.
   const [showHelp, setShowHelp] = useState(false);
+  // Feedback is the qualitative half of the cull decision, so it is reachable mid-run
+  // (a scratchpad for what you are trying) and offered again when the run ends.
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const feedbackRef = useRef<HTMLDivElement | null>(null);
   const heldRef = useRef<string | null>(null);
 
   /** Only isLive + defaultFps are read here. The catalog names nothing. */
@@ -117,6 +127,36 @@ export default function CommunityGamePlay() {
     () => catalog?.data?.games?.find((g) => g.gameId === gameId) ?? null,
     [catalog, gameId],
   );
+
+  /** Which tasks anyone has ever played, so Next can prefer one nobody has touched. */
+  const { data: stats } = useQuery<{ data: { games: { game_id: string }[] } }>({
+    queryKey: ['/api/arc3-play/human-stats'],
+    staleTime: 60 * 1000,
+  });
+
+  /**
+   * The next task to offer. Coverage is the bottleneck, not supply, so this prefers an
+   * unplayed PIPELINE task, then any unplayed task, then anything at all — the same
+   * ordering the landing page uses. Deterministic per game id rather than random, so
+   * pressing Next twice from the same task does not loop back on itself.
+   */
+  const nextGameId = useMemo(() => {
+    const games = catalog?.data?.games ?? [];
+    if (games.length === 0) return null;
+    const played = new Set((stats?.data?.games ?? []).map((g) => g.game_id));
+    const pools = [
+      games.filter((g) => g.category === PIPELINE_CATEGORY && !played.has(g.gameId)),
+      games.filter((g) => !played.has(g.gameId)),
+      games,
+    ];
+    const pool = pools.find((p) => p.some((g) => g.gameId !== gameId));
+    if (!pool) return null;
+    const candidates = pool.filter((g) => g.gameId !== gameId);
+    // Offset by the current id so consecutive Nexts walk the set instead of repeating.
+    let hash = 0;
+    for (let i = 0; i < (gameId ?? '').length; i++) hash = (hash * 31 + gameId!.charCodeAt(i)) >>> 0;
+    return candidates[hash % candidates.length].gameId;
+  }, [catalog, stats, gameId]);
 
   useEffect(() => { if (pyodide.frame) setFrame(pyodide.frame); }, [pyodide.frame]);
 
@@ -229,6 +269,20 @@ export default function CommunityGamePlay() {
 
   useEffect(() => () => { if (animRef.current) clearTimeout(animRef.current); }, []);
 
+  const showFeedbackPanel =
+    gameState !== 'idle' && (showFeedback || gameState === 'won' || gameState === 'lost');
+
+  // The console alone fills a laptop viewport, so a panel appended below it opens
+  // off-screen and is never seen. Bring it into view when it appears.
+  useEffect(() => {
+    if (!showFeedbackPanel) return;
+    const t = setTimeout(
+      () => feedbackRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+      120,
+    );
+    return () => clearTimeout(t);
+  }, [showFeedbackPanel]);
+
   // ── Canvas ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -299,6 +353,16 @@ export default function CommunityGamePlay() {
         {statusLabel && (
           <span className="ml-auto text-[11px]" style={{ color: statusColor }}>{statusLabel}</span>
         )}
+        {/* Always available: most players will not finish most tasks, and the loop that
+            produces volume is play -> react -> next, not play -> finish -> next. */}
+        {nextGameId && (
+          <Link href={`/arc3/play/${nextGameId}`}>
+            <a className={`flex items-center gap-1 text-[12px] ${statusLabel ? '' : 'ml-auto'}`}
+               style={{ color: ARC.pink }}>
+              Next task <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </Link>
+        )}
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 gap-3">
@@ -311,6 +375,9 @@ export default function CommunityGamePlay() {
           </div>
         )}
 
+        <div className={`w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-5 ${
+          showFeedbackPanel ? 'lg:max-w-[880px]' : ''
+        }`}>
         <Arc3Console
           gameId={gameId ?? ''}
           levelLabel={levelLabel}
@@ -336,10 +403,16 @@ export default function CommunityGamePlay() {
             active: showHelp,
           }}
           select={{
-            label: meta?.isLive ? 'Live' : 'Select',
-            onPress: () => { if (meta?.isLive) setLive((v) => !v); },
-            unavailable: !meta?.isLive,
-            active: live,
+            // On the official deck this is SELECT. A real-time task needs the live
+            // toggle there; every other task uses it for the notes scratchpad, so the
+            // control is never dead weight.
+            label: meta?.isLive ? 'Live' : 'Notes',
+            onPress: () => {
+              if (meta?.isLive) setLive((v) => !v);
+              else setShowFeedback((v) => !v);
+            },
+            disabled: gameState === 'idle',
+            active: meta?.isLive ? live : showFeedback,
           }}
           screen={
             gameState === 'idle' ? (
@@ -391,6 +464,7 @@ export default function CommunityGamePlay() {
                     <p>Spacebar or Z — the Spacebar button.</p>
                     <p>The Click button is an action, not a place on the screen.</p>
                     <p>R resets. Undo steps back one move.</p>
+                    <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
                     <p style={{ color: 'rgba(255,255,255,.5)' }}>
                       Greyed controls are ones this task does not use. What any of them do
                       is for you to find out — that part is the experiment.
@@ -398,23 +472,29 @@ export default function CommunityGamePlay() {
                   </div>
                 )}
                 {(gameState === 'won' || gameState === 'lost') && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4"
-                       style={{ background: 'rgba(0,0,0,.78)' }}>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4"
+                       style={{ background: 'rgba(0,0,0,.82)' }}>
                     <p className="text-[22px] tracking-[2px]"
                        style={{ color: gameState === 'won' ? ARC.green : ARC.red }}>
                       {gameState === 'won' ? 'YOU WIN' : 'GAME OVER'}
                     </p>
-                    <div className="flex gap-2">
-                      {!!frame?.undo_depth && (
-                        <button onClick={() => void undo()} className="px-4 h-8 text-[11px] rounded-[4px]"
-                                style={{ border: '1px solid rgba(255,255,255,.35)', color: '#FFF' }}>
-                          Undo last move
-                        </button>
-                      )}
+                    {/* No Undo here, deliberately. The official console does not let you
+                        rewind out of a loss -- it offers the level again, and nothing
+                        else. Undo stays on the deck DURING play, where the real console
+                        also has it, but a game over is a game over. */}
+                    <div className="flex flex-wrap gap-2 justify-center pt-1">
                       <button onClick={() => void act('RESET')} className="px-4 h-8 text-[11px] rounded-[4px]"
-                              style={{ background: ARC.pink, color: '#fff' }}>
-                        Try again
+                              style={{ border: '1px solid rgba(255,255,255,.35)', color: '#FFF' }}>
+                        Try the level again
                       </button>
+                      {nextGameId && (
+                        <Link href={`/arc3/play/${nextGameId}`}>
+                          <a className="px-4 h-8 text-[11px] rounded-[4px] inline-flex items-center gap-1.5"
+                             style={{ background: ARC.pink, color: '#fff' }}>
+                            Next task <ArrowRight className="w-3.5 h-3.5" />
+                          </a>
+                        </Link>
+                      )}
                     </div>
                   </div>
                 )}
@@ -422,6 +502,25 @@ export default function CommunityGamePlay() {
             )
           }
         />
+
+        {/* Feedback sits BELOW the console, never inside the screen. Two reasons: the CRT
+            is a fixed square and the form clipped inside it, and while writing about a
+            task you need to still see the task. The console stays authentic -- its screen
+            shows only what the official one shows. */}
+        {showFeedbackPanel && (
+          <div ref={feedbackRef} className="w-full max-w-[500px] lg:max-w-[340px] lg:mt-8 p-4 shrink-0"
+               style={{ border: `1px solid ${ARC.border}`, background: '#111010' }}>
+            <Arc3FeedbackPanel
+              compact
+              key={gameId}
+              gameId={gameId ?? ''}
+              reachedLevel={levelsDone}
+              outcome={gameState === 'won' ? 'completed' : gameState === 'lost' ? 'lost' : 'in_progress'}
+              onDone={showFeedback ? () => setShowFeedback(false) : undefined}
+            />
+          </div>
+        )}
+        </div>
       </div>
     </div>
   );

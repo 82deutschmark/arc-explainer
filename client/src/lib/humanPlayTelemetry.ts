@@ -100,6 +100,12 @@ class Telemetry {
     }
   }
 
+  /** The current run's anonymous id, so feedback can be joined to the keystroke stream
+   *  it belongs to. Null before start() — feedback without a run is not collected. */
+  currentSessionGuid(): string | null {
+    return this.sessionGuid;
+  }
+
   record(action: string, level: number | null, state: string | null): void {
     try {
       if (!this.sessionGuid || this.queue.length >= MAX_QUEUE) return;
