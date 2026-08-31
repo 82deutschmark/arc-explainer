@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.0.0  Aug 31, 2026
+
+- **Rebuilt the game player to match the official ARC-AGI-3 one, and fixed the two bugs that made games unplayable** (Author: Claude Opus 5)
+  - **In plain language**: two real reports — "none of the buttons worked" on Windows, "it said Game Over immediately" on Mac. Same cause. Every game declares which of the seven buttons it accepts, and most accept only some: one is click-only, another is arrows-only, another accepts everything except Down. The old page showed all seven buttons on every game. On a click-only game that meant a d-pad that did nothing. And on at least one of the new pipeline games, pressing a button it does not accept does not politely do nothing — it **ends the game instantly**. First keypress, Game Over. Both reports, one bug.
+  - **Why this matters beyond annoyance**: every player who pressed a wrong key on one of those games produced a **fake loss** in the data, and it looks identical to a real one. If there are already rows in the production database from before this fix, they cannot be trusted — worth wiping before treating any of it as a human baseline.
+  - **Also rebuilt, not patched**: the page rendered its own header *inside* the site layout, which already renders one — hence the double nav bar. The play page is now routed outside the site layout entirely and owns the whole screen, the way a game should. Ported from Son's player at arc3.sonpham.net: canvas board, status / level / step readout, level progress strip, end overlay, and controls built from what the game actually accepts.
+  - **New: Undo.** A blind player's first move is a guess by definition. Without undo, one wrong guess costs the whole run — which is both miserable and bad for the data. The engine now keeps a 50-step history and there is an Undo button, including on the Game Over screen.
+  - **New: live mode** for the handful of real-time games, which simply could not be played turn-by-turn before. Held keys drive a tick loop at the game's own frame rate. **Live ticks are deliberately not recorded** as player actions — at 10–30 per second they would drown the real data and make human move counts meaningless next to AI ones.
+  - **Not ported on purpose**: the tile-skin and frame-filter controls (researcher tools, Son's side), and the game's title, which this site must never show.
+  - **Files**: `client/src/pages/arc3-community/CommunityGamePlay.tsx` (full rewrite), `client/public/pyodide-game-worker.js` (undo stack), `client/src/hooks/usePyodideGame.ts` (undo), `client/src/App.tsx` (routing), `server/services/arc3Mirror/Arc3MirrorCatalog.ts` (exposes whether a game is real-time).
+
 ### Version 8.1.2  Aug 31, 2026
 
 - **Pre-render the tiles a visitor sees first, so the front page is never blank squares** (Author: Claude Opus 5)

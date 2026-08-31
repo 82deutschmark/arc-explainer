@@ -34,6 +34,8 @@ export interface PyodideFrameData {
   max_actions: number;
   available_actions: number[];
   last_action: string;
+  /** How many steps can still be rewound. 0 disables the Undo control. */
+  undo_depth?: number;
 }
 
 export type PyodideInitStage = 'pyodide' | 'packages' | 'arcengine' | 'game';
@@ -57,6 +59,8 @@ export interface UsePyodideGameReturn extends PyodideGameState {
   step: (action: string, data?: Record<string, number>) => Promise<PyodideFrameData>;
   /** Reset the current game. */
   reset: () => Promise<PyodideFrameData>;
+  /** Rewind one step. Resolves to the restored frame; a no-op at depth 0. */
+  undo: () => Promise<PyodideFrameData>;
   /** True while a step/reset message is awaiting a response. */
   isActing: boolean;
 }
@@ -268,6 +272,20 @@ export function usePyodideGame(): UsePyodideGameReturn {
     }
   }, [sendToWorker]);
 
+  // ── Public: undo ─────────────────────────────────────────────────────────────
+  // A blind player's first move is a guess by construction, so taking it back has to be
+  // cheaper than restarting -- otherwise a wrong guess costs the whole run.
+  const undo = useCallback(async (): Promise<PyodideFrameData> => {
+    setIsActing(true);
+    try {
+      const newFrame = await sendToWorker<PyodideFrameData>({ type: 'undo' }, true);
+      setFrame(newFrame);
+      return newFrame;
+    } finally {
+      setIsActing(false);
+    }
+  }, [sendToWorker]);
+
   // ── Public: reset ────────────────────────────────────────────────────────────
   const reset = useCallback(async (): Promise<PyodideFrameData> => {
     setIsActing(true);
@@ -294,5 +312,6 @@ export function usePyodideGame(): UsePyodideGameReturn {
     initGame,
     step,
     reset,
+    undo,
   };
 }

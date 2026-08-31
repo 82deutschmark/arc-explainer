@@ -104,8 +104,15 @@ function RootLanding() {
 
 function Router() {
   return (
-    <PageLayout>
-      <Switch>
+    <Switch>
+      {/* The play surface is deliberately OUTSIDE PageLayout. PageLayout renders
+          AppHeader on every route, and the play page has its own minimal bar, so
+          routing it inside stacked two nav bars on top of every game. A task should
+          own the whole viewport the way the official ARC-AGI-3 player does. */}
+      <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
+      <Route>
+        <PageLayout>
+          <Switch>
         {/* Root depends on which host asked.
 
             arc3.markbarney.net is the public face of the synthetic-task programme, so it
@@ -169,7 +176,6 @@ function Router() {
         {/* ARC3 Community - game play, gallery, uploads (secondary) */}
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/arc3/gallery" component={CommunityGallery} />
-        <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
         {/* /arc3/upload removed 2026-08-30: task submissions belong to
             arc3.sonpham.net, the source of truth for the synthetic set. */}
         {/* Legacy archive routes - redirect to new structure */}
@@ -208,9 +214,11 @@ function Router() {
           </>
         )}
 
-        <Route component={NotFound} />
-      </Switch>
-    </PageLayout>
+            <Route component={NotFound} />
+          </Switch>
+        </PageLayout>
+      </Route>
+    </Switch>
   );
 }
 
