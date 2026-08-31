@@ -115,7 +115,9 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
     title: 'About ARC-3',
     href: '/arc3',
     icon: BookOpen,
-    description: 'Why interactive games test reasoning differently than static puzzles',
+    // Says "spoilers" because it is one: the page names the mechanic of six official
+    // games, five of which are playable blind at /arc3/gallery.
+    description: 'Reference and history — contains spoilers for six official games',
     exact: true,
     dividerAfter: '🟦',
   },

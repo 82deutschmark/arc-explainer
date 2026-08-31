@@ -48,12 +48,7 @@ import ModelComparisonPage from "@/pages/ModelComparisonPage";
 import HuggingFaceUnionAccuracy from "@/pages/HuggingFaceUnionAccuracy";
 import About from "@/pages/About";
 import ClaudeCodeGuide from "@/pages/ClaudeCodeGuide";
-import ARC3Browser from "@/pages/ARC3Browser";
 import ARC3AgentPlayground from "@/pages/ARC3AgentPlayground";
-import Arc3OpenRouterPlayground from "@/pages/Arc3OpenRouterPlayground";
-import Arc3CodexPlayground from "@/pages/Arc3CodexPlayground";
-import Arc3HaikuPlayground from "@/pages/Arc3HaikuPlayground";
-import Arc3GamesBrowser from "@/pages/Arc3GamesBrowser";
 import Arc3GameSpoiler from "@/pages/Arc3GameSpoiler";
 import Arc3Story from "@/pages/Arc3Story";
 import { 

@@ -345,7 +345,10 @@ export default function SyntheticLanding() {
         <footer className="pt-2 text-[12px] leading-[2]" style={{ color: ARC.faint }}>
           <Link href="/arc3/gallery"><a className="underline">All tasks</a></Link>
           <span className="mx-2 opacity-50">·</span>
-          <Link href="/arc3"><a className="underline">ARC-AGI-3 reference</a></Link>
+          {/* Labelled as spoilers on purpose. /arc3 names the mechanic of six official
+              games and links to full write-ups, and five of those six are playable here.
+              A blind player must not be able to wander into it from a bare "reference". */}
+          <Link href="/arc3"><a className="underline">Reference (spoilers)</a></Link>
           <span className="mx-2 opacity-50">·</span>
           <Link href="/home"><a className="underline">ARC Explainer</a></Link>
         </footer>
