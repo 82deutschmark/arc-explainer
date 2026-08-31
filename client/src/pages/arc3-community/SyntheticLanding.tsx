@@ -27,10 +27,25 @@ import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 
 /** Mirrors MirroredGame in server/services/arc3Mirror/Arc3MirrorCatalog.ts.
- *  No title, description or tags by design -- see the gallery's no-spoiler note. */
+ *  No title, description or tags by design -- see the gallery's no-spoiler note.
+ *  `category` is an open string: upstream adds them (`ai-generated` arrived with 571
+ *  games) and a closed union here turns growth into breakage. */
 interface Game {
   gameId: string;
-  category: 'official' | 'custom' | 'redbluepill';
+  category: string;
+}
+
+/** Our own generation pipeline. This is the set actively growing, and the reason the
+ *  programme exists -- so it leads here the same way it leads the gallery, rather than
+ *  the page opening on the 25 famous tasks we did not make. */
+const PIPELINE_CATEGORY = 'ai-generated';
+
+/** Pipeline tasks first, everything else after, original order preserved within each. */
+function pipelineFirst(games: Game[]): Game[] {
+  return [
+    ...games.filter((g) => g.category === PIPELINE_CATEGORY),
+    ...games.filter((g) => g.category !== PIPELINE_CATEGORY),
+  ];
 }
 interface GamesResponse {
   success: boolean;
@@ -146,21 +161,28 @@ export default function SyntheticLanding() {
     [stats],
   );
 
+  const ordered = useMemo(() => pipelineFirst(games), [games]);
+
   // Coverage, not supply, is the bottleneck: point first-time players at a task nobody
   // has played, rotating per visit so we do not pile every visitor onto one task.
+  // Prefers an unplayed PIPELINE task -- those are the ones we are producing and the ones
+  // with no baseline at all -- and falls back through unplayed-anything to anything.
   const needsCoverage = useMemo(() => {
-    const never = games.filter((g) => !playedIds.has(g.gameId));
-    const pool = never.length ? never : games;
+    const never = ordered.filter((g) => !playedIds.has(g.gameId));
+    const neverPipeline = never.filter((g) => g.category === PIPELINE_CATEGORY);
+    const pool = neverPipeline.length ? neverPipeline : never.length ? never : ordered;
     return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
-  }, [games, playedIds]);
+  }, [ordered, playedIds]);
 
   // A dozen real frames read as a body of work; four read as a sample. This is the
-  // first thing a visitor sees, so it should look like the set it is.
-  const heroTiles = useMemo(() => games.slice(0, 12), [games]);
+  // first thing a visitor sees, so it should look like the set it is -- and it should be
+  // our set, not the official 25.
+  const heroTiles = useMemo(() => ordered.slice(0, 12), [ordered]);
 
   const unplayed = games.filter((g) => !playedIds.has(g.gameId)).length;
+  const pipelineCount = games.filter((g) => g.category === PIPELINE_CATEGORY).length;
   // A strip of real frames, not a full catalog dump -- browsing lives in the gallery.
-  const previewTiles = useMemo(() => games.slice(0, 24), [games]);
+  const previewTiles = useMemo(() => ordered.slice(0, 24), [ordered]);
 
   return (
     <div style={{ background: ARC.ground, color: ARC.text, minHeight: '100vh', fontFamily: SANS }}>
@@ -257,9 +279,10 @@ export default function SyntheticLanding() {
               <h2 className="text-[20px] font-bold mb-3">Nobody has ever played this one.</h2>
               <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
                 {unplayed} of {games.length} tasks here have no human attempt on record — not
-                one, ever. Until somebody tries, we cannot say whether this one is easy for a
-                person or quietly impossible, which means the model's score on it means
-                nothing either. You would be the first.
+                one, ever. Most of them came off our generator in the last few days and no
+                person has seen them at all. Until somebody tries, we cannot say whether this
+                one is easy for a person or quietly impossible, which means a model's score on
+                it means nothing either. You would be the first.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link href={`/arc3/play/${needsCoverage.gameId}`}>
@@ -285,6 +308,15 @@ export default function SyntheticLanding() {
               engine — the same thing an AI agent is given, with the same screen and the
               same buttons. These are their opening frames. That is all you get.
             </p>
+            {pipelineCount > 0 && (
+              <p className="text-[13px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.faint }}>
+                Shown newest first, so these are mostly the{' '}
+                <strong style={{ color: ARC.text }}>{pipelineCount}</strong> tasks our own
+                generator has produced — the set that is still growing. The 25 official ARC
+                Prize tasks are in there too, further down{' '}
+                <Link href="/arc3/gallery"><a className="underline">the gallery</a></Link>.
+              </p>
+            )}
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
               {previewTiles.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
             </div>
