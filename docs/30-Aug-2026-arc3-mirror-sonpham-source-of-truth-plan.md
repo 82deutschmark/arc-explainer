@@ -1,7 +1,13 @@
-# 30 Aug 2026 — arc3.markbarney.net becomes a blind play surface mirroring arc3.sonpham.net
+# 30–31 Aug 2026 — arc3.markbarney.net becomes a blind play surface mirroring arc3.sonpham.net
 
 **Author:** Claude Opus 5
-**Status:** Implemented (this pass), pending items listed at the bottom.
+**Status:** Shipped, 30–31 Aug 2026, across nine commits (`6a3b679`…`c0e6025`),
+CHANGELOG 8.0.0 → 9.1.2. Open items at the bottom.
+
+**Read this first if you are picking the work up:** the mirror (below) was the easy half.
+The hard half was that the play surface did not actually work, for four independent
+reasons, three of which were invisible to any test that did not run a real browser
+against a real game. They are documented in "The four reasons games were unplayable".
 
 ## The split
 
@@ -59,9 +65,11 @@ Opaque metadata raises the bar from "visible on the tile" to "read the Python". 
 obfuscation layer is attempted, and this should be stated rather than claimed as
 complete.
 
-## Two regressions found and fixed
+## Two regressions found and fixed (30 Aug)
 
-Both were pre-existing and had made the play surface non-functional.
+Both were pre-existing and had made the play surface non-functional. The second of these
+turned out to be only the first of four independent causes — see "The four reasons games
+were unplayable" below, written after the remaining three surfaced.
 
 **1. Pyodide was loading arcengine with micropip.** On 29-Aug the wheel-fetch was
 replaced with `micropip.install("arcengine")`, arguing pydantic-core is in the Pyodide
@@ -178,34 +186,128 @@ arcprize.org, and the page is legitimate reference. Instead:
 against a game is research-side and arguably Son's, but it is a live working page and
 removing it is beyond "how we serve games to the public". Flagged, not touched.
 
-## Pending
+## The four reasons games were unplayable
 
-1. **Sync with Son** — confirm this split, and whether he wants a CORS header on
-   `/static/` as a lighter-weight alternative to the mirror (recommend keeping the mirror
-   regardless).
-2. **Verify telemetry writes in prod** — the one unverified link in the chain.
-3. **Slug collisions are not a safe join key.** Son's manifest has 6: `cr01` is both
-   *Crumbling Route* (custom) and *Creek Crossing* (community); `pt01` is both *Pirate
-   Seas* and *Pattern Rotation*. We key on the full upstream id and are fine — but any
-   future "match on the slug" ingestion will silently merge unrelated games.
-4. **Some opening frames are near-blank** (e.g. `ar25`) because that genuinely is the
-   game's first frame. Honest, but a poor tile. Consider rendering frame N>0 for those.
-5. ~~`/arc3/games/:gameId` is a spoiler page two clicks from the play grid.~~ **Handled
-   31-Aug** — see the second-pass section above. Content kept, every entrance labelled.
-   Original note retained for context:
-   `Arc3GameSpoiler.tsx` documents 6 official games in full — mechanics, action mappings,
-   level screenshots — and `Arc3Story` (`/arc3`, linked from the new landing footer as
-   "ARC-AGI-3 reference") links straight into it. 5 of those 6 (`ft09`, `lp85`, `ls20`,
-   `sp80`, `vc33`) are in the mirrored catalog and offered for blind play. These are the
-   official ARC Prize games and are publicly documented on arcprize.org anyway, so this
-   may be a deliberate reference section rather than a leak — but on a site whose entire
-   thesis is that nothing names the mechanic, it should be a decision. Left untouched:
-   it predates this work and is not part of the catalog rip.
-6. **`server/routes/arc3OpenAI.ts`** (120 lines) is not mounted in `server/routes.ts` and
-   never was. Dead, but left alone this pass since it was not orphaned by these deletions.
-7. **`/arc3/playground` is agent tooling on the human-play site.** Works, left in place.
+All four were live simultaneously. Each masked the next, which is why this took four
+passes to bottom out — and why the field reports ("none of the buttons work", "Game Over
+immediately") stayed identical after fixes that were genuinely correct.
+
+**1. `GameAction(int(id))` instead of `GameAction.from_id(int(id))`** — commit `6a3b679`.
+In the published arcengine wheel each member is a tuple, `ACTION2 = (2, SimpleAction)`, so
+by-value lookup rejects a bare action id: `ValueError: 2 is not a valid GameAction`. The
+vendored `external/ARCEngine` sets `_value_ = action_id`, so the constructor works there
+and the bug is invisible to anything not running the published wheel. `load_game` and
+`RESET` never hit that path, so only *stepping* failed — inside a worker, where the error
+was swallowed. Board renders, controls dead.
+
+**2. Controls were offered that the game rejects** — commit `a6f1e99`. Every game declares
+`available_actions` and most accept a subset: `ac02` is click-only (`[6]`), `ar02` is
+d-pad-only (`[1,2,3,4]`), `q004-v1` omits ACTION2. The page showed all seven. On a
+click-only game the d-pad did nothing; on `q004-v1` one press of Down went straight to
+GAME_OVER, measured `NOT_FINISHED -> GAME_OVER` at counter 1. Controls are now built from
+`available_actions`, and the dispatcher refuses an unavailable action even if a keypress
+evades the UI. RESET is id 0, never appears in `available_actions`, and deliberately
+bypasses the gate.
+
+**3. "Click the board" is the wrong affordance for ACTION6** — commit `0e25b34`. Not every
+game treats ACTION6 as a spatial click. In `q598-v1` it is a *submit*: arrows build a
+command, ACTION5 banks a subgoal, and ACTION6 declares you are finished —
+`if progress == len(cmd) and ... else: self.lose()`. A player clicking the board to see
+what happens submits an empty answer and dies on move one. Note that fix 2 could not catch
+this: `q598` declares `[1,2,3,4,5,6]`, so ACTION6 *is* available. It is available and
+fatal. The board is no longer clickable at all; ACTION6 is a labelled CLICK button on the
+console deck, as on arcprize.org.
+
+`q598-v1` also explains the other half of that report: it buffers arrow presses without
+repainting every time (measured — the second press changes no pixels), so a working game
+looked dead. The step readout and button feedback are the only signal an action landed.
+
+**4. The worker was pinned in browser cache for a year** — commit `c0e6025`. THE ONE THAT
+MATTERED MOST, and the reason fixes 1–3 appeared not to work. `express.static` set
+`max-age=31536000` on every `.js`. Correct for Vite's `/assets/` output, whose filenames
+carry a content hash; catastrophic for anything copied verbatim out of `client/public`.
+`pyodide-game-worker.js` has a fixed name, so once a browser had a copy **no deploy could
+ever reach it**. A Windows machine was still running a worker predating fix 1 — every
+button throwing, silently — and would have kept doing so for a year.
+
+Diagnosed from a network trace: it showed the browser fetching the engine from
+`pypi.org`/`files.pythonhosted.org` while prod was serving the same-origin version
+correctly. The page was current; the worker was not.
+
+Now: the immutable year applies only to `/assets/`; other js/css gets
+`max-age=300, must-revalidate`; and the worker URL carries `__BUILD_ID__`, stamped by
+Vite `define`, so every deploy requests a URL no cache has seen.
+
+**Lesson worth keeping:** an unhashed asset served with an immutable cache header is not a
+performance detail, it is a permanent deploy blocker, and it presents as "your fix did not
+work" rather than as a caching problem.
+
+## The player
+
+`CommunityGamePlay.tsx` was rewritten twice on 31-Aug and now renders `Arc3Console`, a
+reproduction of the arcprize.org task console: moulded body, inset screen with scanlines,
+d-pad, two columns of labelled pills, task id + `LEVEL x / y` chips, START screen.
+
+- Routed **outside** `PageLayout`, which renders `AppHeader` on every route — the page had
+  been stacking its own header under the site nav ("double nav bar").
+- **Undo**: 50-step stack in the worker (deepcopy of game object and frame, matching Son's
+  engine), surfaced as `undo_depth`. A blind player's first move is a guess by
+  construction, so one wrong guess should not cost the run.
+- **Live mode** for `isLive` tasks, which could not be played turn-based at all. Ticks are
+  **not** recorded as actions — at 10–30fps they would swamp the event table and make
+  human counts incomparable to agent ones, the same reasoning `HumanPlayRepository`
+  applies to RESET.
+- **HELP** explains the controls only, never the task, so it cannot leak a mechanic.
+- Unavailable controls are dimmed in place rather than removed, so the deck does not
+  reflow between tasks.
+
+Not ported from Son's player: the tile-skin and frame-filter bars (researcher
+instrumentation), and the game title, which this site must never show.
+
+## Catalog growth, and a bug it exposed
+
+Upstream went from 300 games to **877** overnight, publishing 571 under a new category,
+`ai-generated` — the Discord agent pipeline. The gallery had its three categories
+hardcoded and silently skipped every one of them: it rendered "1–60 of 877" while drawing
+none, and a search for `q00` returned neither tiles nor an empty state.
+
+Fixed in `e8d8f34`: unknown categories render under their own slug, and `category` is an
+open string end to end. Both public surfaces now lead with the pipeline set — gallery
+sections ordered Fresh off the pipeline → Built in-house → Community catalog → ARC Prize
+Foundation, with filter chips so the official 25 stay one click away rather than ten pages
+deep; landing hero, preview strip and the "nobody has played this one" callout all prefer
+unplayed pipeline tasks.
+
+## Open
+
+1. **Verify telemetry actually writes in prod.** Still the one unverified link, and it is
+   the reason the site exists. There is no local `DATABASE_URL`, so
+   `POST /api/arc3-play/human-events` returns 200 and stores nothing here. Play one game,
+   then check `/api/arc3-play/human-stats` is not `{"games":[],"levels":[]}`.
+2. **Existing telemetry rows are not trustworthy.** Two independent reasons to discard
+   anything collected before 31-Aug: a player who pressed an unavailable key on a game
+   like `q004-v1` recorded a **fabricated loss**, and machines on a stale cached worker
+   recorded sessions that started and never moved. Both are indistinguishable from real
+   rows.
+3. **Sync with Son** — confirm the split, and whether he wants a CORS header on `/static/`
+   as a lighter alternative to the mirror (recommend keeping the mirror regardless: it is
+   where stripping happens).
+4. **There is still no feedback mechanism** on the play surface — nothing asks whether a
+   task was fun, broken, or impossible. Half of "get the games played and get feedback".
+5. **Slug collisions are not a safe join key.** Son's manifest has 6: `cr01` is both
+   *Crumbling Route* and *Creek Crossing*; `pt01` is both *Pirate Seas* and *Pattern
+   Rotation*. We key on the full upstream id and are fine — any future "match on the slug"
+   ingestion will silently merge unrelated games.
+6. **Some opening frames are near-blank** (e.g. `ar25`) because that genuinely is the first
+   frame. Honest, but a poor tile. Consider rendering frame N>0 for those.
+7. **`server/routes/arc3OpenAI.ts`** (120 lines) is not mounted and never was. Dead.
+8. **`/arc3/playground` is agent tooling on the human-play site.** Works, left in place.
    Belongs on Son's side if the split is taken literally. **Needs a call.**
-8. **The two sites still share a visual identity.** The gallery was deliberately styled to
-   match `sonpham-org/autoresearch-arena` so the surfaces read as one system. Now that one
-   is research and one is a public front door, that is worth revisiting — a near-black
-   monospace researcher grid is not aimed at the audience this site is for.
+9. **The two sites still share a visual identity** outside the play page. The gallery was
+   styled to match `sonpham-org/autoresearch-arena` so the surfaces read as one system.
+   Now that one is research and one is a public front door, a near-black monospace
+   researcher grid is not aimed at the audience this site is for.
+10. ~~`/arc3/games/:gameId` is a spoiler page two clicks from the play grid.~~ **Handled
+    31-Aug** (`37ff253`): content kept — these are official ARC Prize games documented on
+    arcprize.org — but every entrance is labelled, and `/arc3` carries a warning above the
+    tables.
