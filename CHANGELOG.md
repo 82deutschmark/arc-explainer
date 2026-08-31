@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.1.1  Aug 31, 2026
+
+- **Why the games were dead on Windows: the engine download, and a failure the page could never recover from** (Author: Claude Opus 5)
+  - **In plain language**: two problems stacked, and together they produce exactly "none of the buttons do anything" with no error on screen.
+  - **First — where the game engine came from.** Every time someone opened a game, their browser downloaded the Python game engine directly from PyPI: one request to `pypi.org`, another to `files.pythonhosted.org`, both made from inside a background thread. Corporate proxies, TLS-inspecting antivirus and DNS filters — overwhelmingly a Windows-machine story — quietly swallow that kind of traffic. And when it is swallowed the request does not fail, it **hangs**. Nothing errors, nothing loads, the console sits there and every control stays disabled. The engine is a 37KB file, so it is now served from our own server instead. Same-origin, identical for everyone, and cached — 0.8ms on a repeat hit. PyPI is kept only as a fallback, and both paths now have a 30-second deadline so a hang becomes a visible error instead of a dead page.
+  - **Second — the failure was permanent.** The startup attempt was cached, *including when it failed*. So once boot failed once, every later attempt — pressing Start again, clicking anything — replayed that same stored failure instantly. The page was dead until a full browser reload, which is why this read as "the buttons don't work" rather than "it didn't load". A failed start now discards the dead worker and genuinely retries.
+  - **Third — it never said anything.** A failed boot left the console looking idle. The error now appears on the console screen itself, and the prompt changes to "Press Start to try again".
+  - **Also**: cold-boot gets its own 3-minute budget rather than sharing the 60-second per-move one. A slow laptop behind a proxy legitimately takes longer than a minute, and timing out early turned "slow" into "broken".
+  - **Files**: `server/routes/arc3Mirror.ts` (new `/arcengine-wheel`), `client/public/pyodide-game-worker.js`, `client/src/hooks/usePyodideGame.ts`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
+
 ### Version 9.1.0  Aug 31, 2026
 
 - **Rebuilt the player as the actual ARC Prize handheld console — and the two "bugs" turned out to be the game working correctly** (Author: Claude Opus 5)

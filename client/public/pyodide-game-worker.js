@@ -78,6 +78,40 @@ self.onmessage = async (e) => {
   }
 };
 
+/** One fetch with a hard deadline. A hang is the failure mode we are guarding against,
+ *  and fetch has no timeout of its own. */
+async function fetchWithTimeout(url, ms) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`${url} responded ${res.status}`);
+    return new Uint8Array(await res.arrayBuffer());
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Same-origin first, PyPI second, and a real error if both fail — never a hang. */
+async function fetchArcengineWheel() {
+  try {
+    return await fetchWithTimeout('/api/arc3-mirror/arcengine-wheel', 30_000);
+  } catch (localErr) {
+    try {
+      const metaRes = await fetch('https://pypi.org/pypi/arcengine/json');
+      if (!metaRes.ok) throw new Error(`PyPI metadata ${metaRes.status}`);
+      const meta = await metaRes.json();
+      const entry = meta.urls.find((u) => u.filename.endsWith('py3-none-any.whl'));
+      if (!entry) throw new Error('no py3-none-any wheel on PyPI');
+      return await fetchWithTimeout(entry.url, 30_000);
+    } catch (pypiErr) {
+      throw new Error(
+        `Could not download the game engine. Same-origin: ${localErr.message}. PyPI: ${pypiErr.message}`,
+      );
+    }
+  }
+}
+
 // ─── Init: load Pyodide + numpy + pydantic + arcengine ───────────────────────
 async function handleInit(id) {
   if (initStage === 'ready') {
@@ -103,19 +137,21 @@ async function handleInit(id) {
   // not used here -- see the header note.
   initStage = 'arcengine';
   self.postMessage({ type: 'progress', id, stage: 'arcengine', message: 'Installing game engine...' });
+  // Fetch the wheel from OUR origin. It used to be pulled straight from pypi.org +
+  // files.pythonhosted.org, two cross-origin requests from inside a Worker on every cold
+  // start -- the kind of traffic a corporate proxy, TLS-inspecting antivirus or DNS
+  // filter silently drops. When that happens pyfetch hangs rather than raising, so the
+  // console sits on a loading state forever with dead controls, which is the reported
+  // Windows symptom. Same-origin removes the whole class. PyPI stays as a fallback for
+  // anyone running this without the server.
+  const wheelBytes = await fetchArcengineWheel();
+  pyodide.globals.set('_whl_bytes', wheelBytes);
+
   await pyodide.runPythonAsync(`
-import json, zipfile, io, importlib, site
-from pyodide.http import pyfetch
-
-resp = await pyfetch("https://pypi.org/pypi/arcengine/json")
-meta = json.loads(await resp.string())
-whl_url = next(u["url"] for u in meta["urls"] if u["filename"].endswith("py3-none-any.whl"))
-
-whl_resp = await pyfetch(whl_url)
-whl_bytes = bytes(await whl_resp.bytes())
+import zipfile, io, importlib, site
 
 sp = site.getsitepackages()[0]
-with zipfile.ZipFile(io.BytesIO(whl_bytes)) as zf:
+with zipfile.ZipFile(io.BytesIO(bytes(_whl_bytes.to_py()))) as zf:
     zf.extractall(sp)
 importlib.invalidate_caches()
 

@@ -78,6 +78,43 @@ router.get(
   }),
 );
 
+/**
+ * GET /api/arc3-mirror/arcengine-wheel - the arcengine wheel, from OUR origin.
+ *
+ * The Pyodide worker used to fetch this itself: pypi.org/pypi/arcengine/json for the
+ * metadata, then files.pythonhosted.org for the wheel. Two cross-origin requests from
+ * inside a Web Worker on every cold start, which is exactly the kind of traffic a
+ * corporate proxy, a TLS-inspecting antivirus or a strict DNS filter eats -- and when it
+ * is eaten the failure is a hang, not an error, so the console just sits there with dead
+ * controls. That is the reported Windows symptom.
+ *
+ * Serving it here makes the request same-origin and identical for every visitor. The
+ * wheel is 37KB and pure Python, cached in memory after the first hit.
+ */
+let wheelCache: { bytes: Buffer; fetchedAt: number } | null = null;
+const WHEEL_TTL_MS = 24 * 60 * 60 * 1000;
+
+router.get(
+  '/arcengine-wheel',
+  asyncHandler(async (_req: Request, res: Response) => {
+    if (!wheelCache || Date.now() - wheelCache.fetchedAt > WHEEL_TTL_MS) {
+      const meta = await fetch('https://pypi.org/pypi/arcengine/json');
+      if (!meta.ok) throw new Error(`PyPI metadata responded ${meta.status}`);
+      const json = (await meta.json()) as { urls: { filename: string; url: string }[] };
+      const entry = json.urls.find((u) => u.filename.endsWith('py3-none-any.whl'));
+      if (!entry) throw new Error('no py3-none-any wheel published for arcengine');
+
+      const wheel = await fetch(entry.url);
+      if (!wheel.ok) throw new Error(`wheel download responded ${wheel.status}`);
+      wheelCache = { bytes: Buffer.from(await wheel.arrayBuffer()), fetchedAt: Date.now() };
+    }
+
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(wheelCache.bytes);
+  }),
+);
+
 /** GET /api/arc3-mirror/mirror-status - is the mirror live, and how stale is it? */
 router.get(
   '/mirror-status',
