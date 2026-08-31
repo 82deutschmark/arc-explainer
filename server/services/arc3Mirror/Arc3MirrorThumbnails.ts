@@ -43,6 +43,23 @@ const RENDER_TIMEOUT_MS = 20_000;
  */
 const MAX_CONCURRENT_RENDERS = 3;
 
+/**
+ * What to pre-render on boot, and at which size. These are exactly the tiles a visitor
+ * sees before scrolling:
+ *   256 -> gallery page 1 (60 tiles) and the landing's preview row (24 tiles)
+ *   128 -> the landing's hero strip (12 tiles)
+ * Railway's filesystem is ephemeral, so the cache is empty after every redeploy and the
+ * first visitor would otherwise watch blank squares fill in over ~15s on the front page.
+ */
+const WARM_UP_PLAN: { size: number; count: number }[] = [
+  { size: 256, count: 60 },
+  { size: 128, count: 12 },
+];
+
+/** Our own generation pipeline -- the category both public pages lead with, so it is
+ *  also what warms first. Mirrors PIPELINE_CATEGORY in the client pages. */
+const PIPELINE_CATEGORY = 'ai-generated';
+
 let activeRenders = 0;
 const renderQueue: (() => void)[] = [];
 
@@ -97,6 +114,46 @@ function render(sourceFilePath: string, outPath: string, size: number): Promise<
 const pending = new Map<string, Promise<string | null>>();
 
 export class Arc3MirrorThumbnails {
+  /**
+   * Pre-render the above-the-fold tiles in the background. Fire-and-forget: never blocks
+   * boot, never rejects into the caller, and renders through the same semaphore as live
+   * requests so a warm-up cannot starve a real visitor. Already-cached sizes are skipped,
+   * so re-running it is cheap.
+   */
+  static warmUp(): void {
+    if (process.env.ARC3_SKIP_THUMBNAIL_WARMUP === '1' || process.env.NODE_ENV === 'test') {
+      return;
+    }
+
+    void (async () => {
+      const startedAt = Date.now();
+      try {
+        const games = await Arc3MirrorCatalog.listGames();
+        // Same order the pages render in, so we warm what is actually shown first.
+        const ordered = [
+          ...games.filter((g) => g.category === PIPELINE_CATEGORY),
+          ...games.filter((g) => g.category !== PIPELINE_CATEGORY),
+        ];
+
+        let rendered = 0;
+        let failed = 0;
+        for (const { size, count } of WARM_UP_PLAN) {
+          for (const game of ordered.slice(0, count)) {
+            const path = await this.getThumbnailPath(game.gameId, size).catch(() => null);
+            if (path) rendered += 1;
+            else failed += 1;
+          }
+        }
+
+        const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
+        logger.info(`arc3Mirror: thumbnail warm-up done - ${rendered} ready, ${failed} failed, ${seconds}s`);
+      } catch (error) {
+        // A cold cache is a slow first paint, not an outage. Never escalate.
+        logger.warn(`arc3Mirror: thumbnail warm-up aborted - ${error instanceof Error ? error.message : String(error)}`);
+      }
+    })();
+  }
+
   /** Absolute path to a cached PNG, rendering it first if needed. Null if unrenderable. */
   static async getThumbnailPath(gameId: string, size: number): Promise<string | null> {
     const game = await Arc3MirrorCatalog.getGame(gameId);

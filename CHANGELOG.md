@@ -1,5 +1,13 @@
 # New entries at the top, use proper SemVer!
 
+### Version 8.1.2  Aug 31, 2026
+
+- **Pre-render the tiles a visitor sees first, so the front page is never blank squares** (Author: Claude Opus 5)
+  - **In plain language**: game tiles are real screenshots rendered on demand, and Railway wipes its disk on every deploy — so the first person to visit after a push watched empty boxes fill in for about fifteen seconds. Now the server renders the above-the-fold tiles in the background as soon as it boots.
+  - **What**: `Arc3MirrorThumbnails.warmUp()`, called after `server.listen`. Renders the first 60 tiles at 256px (gallery page one + the landing's preview row) and the first 12 at 128px (the landing hero) — pipeline games first, the same order the pages display. Fire-and-forget: never blocks boot, never throws into the caller, skips anything already cached, and shares the same 3-slot render limit as live requests so warming cannot starve a real visitor. `ARC3_SKIP_THUMBNAIL_WARMUP=1` disables it.
+  - **Measured on a genuinely cold cache** (deleted the directory first): 72 tiles ready, 0 failed, 9.0s.
+  - **Files**: `server/services/arc3Mirror/Arc3MirrorThumbnails.ts`, `server/index.ts`.
+
 ### Version 8.1.1  Aug 31, 2026
 
 - **The landing page leads with our own games too** (Author: Claude Opus 5)
