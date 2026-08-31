@@ -64,6 +64,12 @@ export default defineConfig(async ({ mode }): Promise<import('vite').UserConfig>
     plugins,
     define: {
       'import.meta.env.VITE_STREAMING_ENABLED': JSON.stringify(streamingFlag),
+      // Stamped at build time and appended to the Pyodide worker URL. Files copied out
+      // of client/public keep a stable filename forever, so without this a browser that
+      // cached the worker once keeps running it across every future deploy -- which is
+      // exactly how machines ended up stuck on a worker predating the
+      // GameAction.from_id fix, with every button silently throwing.
+      __BUILD_ID__: JSON.stringify(Date.now().toString(36)),
     },
     resolve: {
       alias: {

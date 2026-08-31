@@ -1,5 +1,16 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.1.2  Aug 31, 2026
+
+- **The Windows machine was running a year-old cached copy of the game engine, and no deploy could ever reach it** (Author: Claude Opus 5)
+  - **In plain language**: the network trace from the Windows machine gave it away. It showed the browser downloading the engine from PyPI — the exact thing I had *already* changed to come from our own server, and which the live site was serving correctly at that moment. So the browser was not running the current code. It was running a copy it had saved earlier.
+  - **Why it saved it forever**: the server told browsers to cache every `.js` file for **one year**. That is the correct instruction for most of our files, because their names contain a content fingerprint that changes whenever the file does. But `pyodide-game-worker.js` — the file that actually runs the games — has a fixed name that never changes. So the one-year rule pinned it. Once a browser had it, it kept it, and every fix I shipped afterwards was invisible to that machine.
+  - **What that machine was actually running**: a version from before the `GameAction.from_id` fix. On that version every button press throws an error inside the background thread, where nothing surfaces it. Press a button, nothing happens. Press another, nothing happens. Precisely the report — and it would have kept happening for a year.
+  - **Two fixes**: the one-year cache now applies only to files with a fingerprint in the name (`/assets/`); everything else revalidates every 5 minutes. And the worker URL now carries a build stamp that changes on every deploy, so even a stale copy somewhere in between cannot be served.
+  - **What this means for you**: this is the first fix that can actually reach a machine already stuck. It should work on the next load, but a hard refresh (Ctrl+Shift+R) guarantees it.
+  - **Note**: the network trace also showed the engine downloading *successfully* on that machine, so the corporate-proxy theory from the previous fix was not the cause here. That change is still worth keeping — it removes two cross-origin requests and is faster — but the actual culprit was caching.
+  - **Files**: `server/index.ts`, `vite.config.ts`, `client/src/hooks/usePyodideGame.ts`.
+
 ### Version 9.1.1  Aug 31, 2026
 
 - **Why the games were dead on Windows: the engine download, and a failure the page could never recover from** (Author: Claude Opus 5)
