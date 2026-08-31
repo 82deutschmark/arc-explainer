@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 8.1.1  Aug 31, 2026
+
+- **The landing page leads with our own games too** (Author: Claude Opus 5)
+  - **In plain language**: same change as the gallery, applied to the front page. It was opening on the 25 official ARC Prize games, which are the famous ones but not the ones we make. Now the big strip of screens at the top, the row further down, and the "nobody has ever played this one" callout all pull from our generator's output first.
+  - **What**: `pipelineFirst()` orders `ai-generated` tasks ahead of everything else, and the three places the landing shows tasks all read from that order. The "needs coverage" pick now prefers an **unplayed pipeline task** specifically — those are both the ones we are producing and the ones with no human baseline whatsoever — falling back to any unplayed task, then to any task at all.
+  - **Copy**: the preview section now says plainly that these are mostly the 571 tasks our generator produced and that the official 25 are further down the gallery, so nobody assumes they are looking at ARC Prize's set. The coverage paragraph says most of these came off the generator in the last few days and no person has seen them.
+  - **Verified**: front page opens on `q001-v1` through `q009-v1` with real opening frames, the stat row reads 877, and the callout picked `q197-v1`.
+  - **Files**: `client/src/pages/arc3-community/SyntheticLanding.tsx`.
+
 ### Version 8.1.0  Aug 31, 2026
 
 - **The gallery now leads with the games we are making — and it turned out it was hiding 571 of them** (Author: Claude Opus 5)
