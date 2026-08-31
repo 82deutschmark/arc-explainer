@@ -1,50 +1,49 @@
 /*
-Author: Cascade (Claude Sonnet 4) / Claude Opus 5
-Date: 2026-01-31 / 2026-08-28
-PURPOSE: Task gallery for the ARC-AGI-3 community set, and the site's landing page.
-         2026-08-28 rewrite: presentation now follows the official ARC-AGI-3 task list at
-         arcprize.org — near-black ground, dense grid of square task cells, magenta id
-         labels, monospace throughout. Colour and geometry are taken from that site's
-         computed styles rather than eyeballed, and match the sibling catalog in
-         sonpham-org/autoresearch-arena so the two surfaces read as one system.
-         The previous card layout printed each game's description on the tile
-         ("Rail-switching train routing", "Shape-matching navigation puzzle"), which
-         states the mechanic. ARC-AGI-3's premise is that the mechanic is discovered from
-         the frame, so a player who reads the tile has been handed the answer and their
-         run is worthless as a human baseline. Tiles now carry an id, a deterministic
-         sprite and the level count — nothing that describes play.
-         Data flow, search, sort, author grouping and navigation are unchanged.
-SRP/DRY check: Pass — presentation-only rewrite of this page; reuses Arc3PixelPage and
-         SpriteMosaic from components/arc3-community/Arc3PixelUI rather than adding
-         new primitives, and the query/// routing behaviour is untouched.
+Author: Claude Opus 5
+Date: 2026-08-30
+PURPOSE: The blind task grid — arc3.markbarney.net's play surface. Every tile is one
+         ARC-AGI-3 task, shown as its own opening frame and nothing else.
+
+         2026-08-30 rewrite: the catalog now comes from /api/arc3-mirror/games, which
+         mirrors arc3.sonpham.net (the source of truth for the synthetic programme) and
+         strips every mechanic-naming field upstream of this component. The page it
+         replaces read a DB-backed community catalog that had drifted months stale — 66
+         rows covering ~40 games, against 300 upstream, with 13 duplicate rows for one
+         game and a "ARC Prize Foundation — 3 tasks" section over 3 of 25.
+
+         NO-SPOILER RULE. A player is meant to infer the rules, the controls and the goal
+         from the frame; anything that names the mechanic turns their run into worthless
+         baseline data. This page therefore renders no title, no description and no tags.
+         The previous version passed `title={game.displayName}` as a hover tooltip, which
+         handed "Light Bender" to anyone who rested a cursor on a tile — that is removed
+         and must not come back. Category headings ("Official", "Community") stay: they
+         name provenance, not play.
+
+         The frame itself is safe and is the point: it is exactly what a player sees on
+         starting, rendered server-side from a single RESET.
+SRP/DRY check: Pass — presentation only; fetching/stripping lives in Arc3MirrorCatalog,
+         and this reuses Arc3PixelPage + SpriteMosaic rather than adding new primitives.
 */
 
-import { useState } from 'react';
-import { Link, useLocation } from 'wouter';
+import { useMemo, useState } from 'react';
+import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Upload } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Arc3PixelPage, SpriteMosaic } from '@/components/arc3-community/Arc3PixelUI';
 
-interface CommunityGame {
-  id: number;
+/** Mirrors MirroredGame in server/services/arc3Mirror/Arc3MirrorCatalog.ts. */
+interface MirroredGame {
   gameId: string;
-  displayName: string;
-  description: string | null;
-  authorName: string;
-  playCount: number;
-  levelCount: number | null;
-  tags: string[];
-  uploadedAt: string;
+  className: string;
+  category: 'official' | 'custom' | 'redbluepill';
+  official: boolean;
+  defaultFps: number;
+  tileScale: number;
 }
 
 interface GamesResponse {
   success: boolean;
-  data: {
-    games: CommunityGame[];
-    total: number;
-    limit: number;
-    offset: number;
-  };
+  data: { games: MirroredGame[]; total: number };
 }
 
 /* Official ARC-AGI-3 task-page palette (measured from arcprize.org computed styles). */
@@ -60,7 +59,19 @@ const ARC = {
   control: '#393736',
 };
 
-/** Stable per-game seed so a task's sprite never changes between visits. */
+/**
+ * Section headings name where a task came from, never what it does. Upstream's own
+ * category slugs leak nothing, but "redbluepill" is a repo name rather than English.
+ */
+const SECTIONS: { key: MirroredGame['category']; label: string; note: string }[] = [
+  { key: 'official', label: 'ARC Prize Foundation', note: 'The official ARC-AGI-3 set.' },
+  { key: 'custom', label: 'Built in-house', note: 'Made by us and by Son Pham.' },
+  { key: 'redbluepill', label: 'Community catalog', note: 'Contributed tasks.' },
+];
+
+const PAGE_SIZE = 60;
+
+/** Stable per-game seed so a task's fallback sprite never changes between visits. */
 function seedFor(gameId: string): number {
   let hash = 2166136261;
   for (let i = 0; i < gameId.length; i++) {
@@ -71,7 +82,7 @@ function seedFor(gameId: string): number {
 }
 
 function TaskCell({ game, index, onPlay }: {
-  game: CommunityGame;
+  game: MirroredGame;
   index: number;
   onPlay: () => void;
 }) {
@@ -80,18 +91,15 @@ function TaskCell({ game, index, onPlay }: {
     <button
       onClick={onPlay}
       className="group block text-left w-full"
-      /* displayName is a name, not a rule, so it is safe as a tooltip. The description
-         is not, and is deliberately never rendered here. */
-      title={game.displayName}
+      /* No `title` attribute. A tooltip is a spoiler surface like any other. */
+      aria-label={`Play task ${game.gameId}`}
     >
       <div
         className="relative aspect-square overflow-hidden transition-colors"
         style={{ background: ARC.cell, border: `1px solid ${ARC.cellBorder}` }}
       >
-        {/* The tile is the task's own opening frame, rendered server-side from a single
-            RESET. A frame is not a spoiler — it is exactly what a player sees on
-            starting, and it is what makes the grid readable at a glance. If rendering
-            fails the deterministic sprite stands in so the grid never shows a hole. */}
+        {/* The task's own opening frame, rendered server-side from a single RESET. If
+            rendering fails the deterministic sprite stands in so the grid never holes. */}
         {broken ? (
           <SpriteMosaic
             seed={seedFor(game.gameId)}
@@ -101,7 +109,7 @@ function TaskCell({ game, index, onPlay }: {
           />
         ) : (
           <img
-            src={`/api/arc3-community/games/${encodeURIComponent(game.gameId)}/thumbnail?size=256`}
+            src={`/api/arc3-mirror/games/${encodeURIComponent(game.gameId)}/thumbnail?size=256`}
             alt=""
             loading="lazy"
             decoding="async"
@@ -121,188 +129,158 @@ function TaskCell({ game, index, onPlay }: {
         />
       </div>
       <div
-        className="flex items-center justify-between gap-2 px-2 py-1"
+        className="flex items-center px-2 py-1"
         style={{ background: index % 2 === 0 ? ARC.pink : ARC.pinkAlt }}
       >
         <span className="text-[11px] tracking-[.55px] text-white truncate">
           {game.gameId}
         </span>
-        {game.levelCount ? (
-          <span className="text-[10px] text-white/75 shrink-0">{game.levelCount}L</span>
-        ) : null}
       </div>
     </button>
-  );
-}
-
-function TaskSection({ title, games, startIndex, onPlay, subhead }: {
-  title: string;
-  games: CommunityGame[];
-  startIndex: number;
-  onPlay: (gameId: string) => void;
-  subhead?: React.ReactNode;
-}) {
-  if (games.length === 0) return null;
-  return (
-    <section className="mb-10">
-      <div className="flex items-baseline gap-3 mb-3">
-        <h2 className="text-[12px] tracking-[2px] uppercase" style={{ color: ARC.text }}>
-          {title}
-        </h2>
-        <span className="text-[11px]" style={{ color: ARC.faint }}>
-          {games.length} {games.length === 1 ? 'task' : 'tasks'}
-        </span>
-      </div>
-      {subhead}
-      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
-        {games.map((game, i) => (
-          <TaskCell
-            key={game.gameId}
-            game={game}
-            index={startIndex + i}
-            onPlay={() => onPlay(game.gameId)}
-          />
-        ))}
-      </div>
-    </section>
   );
 }
 
 export default function CommunityGallery() {
   const [, setLocation] = useLocation();
   const [search, setSearch] = useState('');
-  const [orderBy, setOrderBy] = useState<string>('playCount');
+  const [page, setPage] = useState(0);
 
-  const queryParams = new URLSearchParams();
-  if (search) queryParams.set('search', search);
-  queryParams.set('orderBy', orderBy);
-  queryParams.set('orderDir', 'DESC');
-  // The set is already larger than the old 50 cap and this page is the site's front
-  // door, so a silently truncated list reads as "that is all of them". 100 is the
-  // server-side maximum (the games route rejects anything higher), not a taste call —
-  // past ~100 tasks this page needs real pagination.
-  queryParams.set('limit', '100');
-
-  const { data, isLoading } = useQuery<GamesResponse>({
-    queryKey: [`/api/arc3-community/games?${queryParams.toString()}`],
+  const { data, isLoading, isError } = useQuery<GamesResponse>({
+    queryKey: ['/api/arc3-mirror/games'],
+    // The catalog is one upstream fetch behind a 5-minute server cache; re-fetching it
+    // on every window focus buys nothing and costs a round trip on a page that is mostly
+    // images.
+    staleTime: 5 * 60 * 1000,
   });
 
-  const games = data?.data?.games || [];
-  const total = data?.data?.total || 0;
+  const games = useMemo(() => data?.data?.games ?? [], [data]);
 
-  const arcPrizeGames = games.filter((g) => g.authorName === 'ARC Prize Foundation');
-  const teamGames = games.filter((g) => g.authorName !== 'ARC Prize Foundation');
+  /* Search matches the id only. There is nothing else to match on, by design. */
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return games;
+    return games.filter((g) => g.gameId.toLowerCase().includes(q));
+  }, [games, search]);
 
-  // Most of this set is contributed, and lumping it under one "Community" heading hid
-  // that entirely. Credit each contributor with their count.
-  const contributors = (() => {
-    const counts = new Map<string, number>();
-    for (const g of teamGames) counts.set(g.authorName, (counts.get(g.authorName) ?? 0) + 1);
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  })();
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount - 1);
+  const visible = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
+
+  // Counts come from `filtered`, not `visible`. Sectioning the current page and then
+  // counting it reports "how many of this category landed on page 1" -- which is how the
+  // old page came to announce "ARC Prize Foundation - 3 tasks" over a set of 25.
+  const sections = SECTIONS
+    .map((s) => ({
+      ...s,
+      games: visible.filter((g) => g.category === s.key),
+      total: filtered.filter((g) => g.category === s.key).length,
+    }))
+    .filter((s) => s.games.length > 0);
 
   return (
-    <Arc3PixelPage>
-      <div style={{ background: ARC.ground, color: ARC.text, minHeight: '100vh' }}
-           className="font-mono">
-        <div className="max-w-[1180px] mx-auto px-5 py-6">
+    <Arc3PixelPage vars={{ '--arc3-bg': ARC.ground }}>
+      <div className="max-w-[1100px] mx-auto px-4 py-8">
+        <header className="mb-8">
+          <h1 className="text-[13px] tracking-[3px] uppercase mb-2" style={{ color: ARC.text }}>
+            ARC-AGI-3 tasks
+          </h1>
+          <p className="text-[13px] leading-relaxed max-w-[64ch]" style={{ color: ARC.dim }}>
+            Pick one and work out what it does. You are not told the rules, the controls or
+            the goal — that is the experiment. Nothing here is timed and there is no score
+            to beat.
+          </p>
+        </header>
 
-          {/* Breadcrumb, matching the official task page furniture. */}
-          <div className="flex items-start justify-between gap-5 mb-8">
-            <div className="text-[13px] leading-[1.7] tracking-[.4px]">
-              <div>
-                <span className="underline">ALL TASKS</span>
-                <span className="mx-2 opacity-50">|</span>
-                {total} TASK{total === 1 ? '' : 'S'}
-              </div>
-              <div>DATASET: ARC-AGI-3 COMMUNITY SET</div>
+        <div className="flex items-center gap-2 mb-8 max-w-[360px]">
+          <div className="relative flex-1">
+            <Search
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+              style={{ color: ARC.faint }}
+            />
+            <input
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+              placeholder="Filter by task id…"
+              className="w-full bg-transparent pl-7 pr-2 py-1.5 text-[12px] outline-none"
+              style={{ border: `1px solid ${ARC.control}`, color: ARC.text }}
+            />
+          </div>
+          <span className="text-[11px] shrink-0" style={{ color: ARC.faint }}>
+            {filtered.length}
+          </span>
+        </div>
+
+        {isLoading && (
+          <p className="text-[12px]" style={{ color: ARC.faint }}>Loading tasks…</p>
+        )}
+
+        {isError && (
+          <p className="text-[12px]" style={{ color: ARC.pink }}>
+            The task catalog is unreachable right now. Try again in a moment.
+          </p>
+        )}
+
+        {!isLoading && !isError && filtered.length === 0 && (
+          <p className="text-[12px]" style={{ color: ARC.faint }}>No task ids match that filter.</p>
+        )}
+
+        {sections.map((section) => (
+          <section key={section.key} className="mb-10">
+            <div className="flex items-baseline gap-3 mb-1">
+              <h2 className="text-[12px] tracking-[2px] uppercase" style={{ color: ARC.text }}>
+                {section.label}
+              </h2>
+              <span className="text-[11px]" style={{ color: ARC.faint }}>
+                {section.games.length < section.total
+                  ? `${section.games.length} of ${section.total}`
+                  : section.total}
+              </span>
             </div>
+            <p className="text-[11px] mb-3" style={{ color: ARC.faint }}>{section.note}</p>
+            <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
+              {section.games.map((game, i) => (
+                <TaskCell
+                  key={game.gameId}
+                  game={game}
+                  index={i}
+                  onPlay={() => setLocation(`/arc3/play/${game.gameId}`)}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
+
+        {pageCount > 1 && (
+          <div className="flex items-center gap-4 text-[11px]" style={{ color: ARC.dim }}>
             <button
-              onClick={() => setLocation('/arc3/upload')}
-              className="flex items-center gap-2 px-4 h-[34px] text-[11px] tracking-[.5px] rounded-[4px] shrink-0"
-              style={{ background: ARC.control, color: ARC.text }}
+              disabled={safePage === 0}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              className="disabled:opacity-30 px-2 py-1"
+              style={{ border: `1px solid ${ARC.control}` }}
             >
-              <Upload className="w-3.5 h-3.5" />
-              Submit
+              ‹ Prev
+            </button>
+            <span>
+              {safePage * PAGE_SIZE + 1}–{Math.min((safePage + 1) * PAGE_SIZE, filtered.length)} of {filtered.length}
+            </span>
+            <button
+              disabled={safePage >= pageCount - 1}
+              onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
+              className="disabled:opacity-30 px-2 py-1"
+              style={{ border: `1px solid ${ARC.control}` }}
+            >
+              Next ›
             </button>
           </div>
+        )}
 
-          <p className="text-[12px] leading-[1.9] max-w-[62ch] mb-6" style={{ color: ARC.dim }}>
-            Pick a task and work out what it does. You are not told the rules, the controls
-            or the goal — that is the experiment.
-          </p>
-
-          {/* Controls */}
-          <div className="flex flex-wrap items-center gap-3 mb-8">
-            <div className="relative flex-1 min-w-[200px] max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-                      style={{ color: ARC.faint }} />
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 h-[34px] text-[12px] rounded-[4px] focus:outline-none"
-                style={{ background: ARC.cell, color: ARC.text, border: `1px solid ${ARC.cellBorder}` }}
-              />
-            </div>
-            <select
-              value={orderBy}
-              onChange={(e) => setOrderBy(e.target.value)}
-              className="h-[34px] px-2 text-[12px] rounded-[4px] focus:outline-none"
-              style={{ background: ARC.cell, color: ARC.text, border: `1px solid ${ARC.cellBorder}` }}
-            >
-              <option value="playCount">Most played</option>
-              <option value="uploadedAt">Newest</option>
-              <option value="displayName">Name</option>
-            </select>
-          </div>
-
-          {isLoading ? (
-            <p className="text-[12px] py-10" style={{ color: ARC.faint }}>Loading tasks…</p>
-          ) : games.length === 0 ? (
-            <div className="py-10">
-              <p className="text-[13px] mb-4" style={{ color: ARC.faint }}>
-                {search ? 'No tasks match that search.' : 'No tasks available yet.'}
-              </p>
-              <Link href="/arc3/upload">
-                <span className="text-[12px] underline cursor-pointer">Submit the first one</span>
-              </Link>
-            </div>
-          ) : (
-            <>
-              <TaskSection
-                title="ARC Prize Foundation"
-                games={arcPrizeGames}
-                startIndex={0}
-                onPlay={(id) => setLocation(`/arc3/play/${id}`)}
-              />
-              <TaskSection
-                title="Community"
-                games={teamGames}
-                startIndex={arcPrizeGames.length}
-                onPlay={(id) => setLocation(`/arc3/play/${id}`)}
-                subhead={contributors.length > 0 ? (
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {contributors.map(([name, n]) => (
-                      <span key={name} className="text-[11px] px-2 py-1"
-                            style={{ background: ARC.cell, border: `1px solid ${ARC.cellBorder}`,
-                                     color: ARC.dim }}>
-                        {name} <span style={{ color: ARC.pink }}>{n}</span>
-                      </span>
-                    ))}
-                  </div>
-                ) : undefined}
-              />
-            </>
-          )}
-
-          <footer className="pt-4 text-[11px] leading-[1.9]" style={{ color: ARC.faint }}>
-            <Link href="/arc3"><span className="underline cursor-pointer">ARC-AGI-3 reference</span></Link>
-            <span className="mx-2 opacity-50">·</span>
-            <Link href="/home"><span className="underline cursor-pointer">ARC Explainer</span></Link>
-          </footer>
-        </div>
+        <footer className="mt-12 pt-6 text-[11px]" style={{ borderTop: `1px solid ${ARC.cellBorder}`, color: ARC.faint }}>
+          Tasks mirrored from{' '}
+          <a href="https://arc3.sonpham.net" className="underline" style={{ color: ARC.dim }}>
+            arc3.sonpham.net
+          </a>
+          , the source of truth for the synthetic ARC-AGI-3 programme.
+        </footer>
       </div>
     </Arc3PixelPage>
   );

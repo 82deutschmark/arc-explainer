@@ -138,7 +138,7 @@ export async function metaTagInjector(
           'No instructions, no goal, no controls listed. Work out what it does. '
           + 'Humans solve these; the best AI scores 0.50%.',
         url: `https://${host || 'arc.markbarney.net'}/arc3/play/${gameId}`,
-        image: `${BASE_URL}/api/arc3-community/games/${encodeURIComponent(gameId)}/thumbnail?size=512`,
+        image: `${BASE_URL}/api/arc3-mirror/games/${encodeURIComponent(gameId)}/thumbnail?size=512`,
         type: 'article',
       };
     }

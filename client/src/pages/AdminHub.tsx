@@ -244,26 +244,6 @@ export default function AdminHub() {
           </Link>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-          <Link href="/admin/arc3-submissions">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Gamepad2 className="h-8 w-8 text-primary" />
-                <div>
-                  <CardTitle>ARC3 Submissions</CardTitle>
-                  <CardDescription>
-                    Review and publish community game uploads
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full">
-                Open ARC3 Submission Review
-              </Button>
-            </CardContent>
-          </Link>
-        </Card>
       </div>
 
       {/* Recent Activity Feed */}
