@@ -9,6 +9,7 @@ import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import cors from 'cors';
 import { registerRoutes } from "./routes";
+import { Arc3MirrorThumbnails } from "./services/arc3Mirror/Arc3MirrorThumbnails";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import fs from "fs";
@@ -235,6 +236,13 @@ const initServer = async () => {
   
   server.listen(port, () => {
     log(`Server running in ${app.get("env")} mode at http://${host}:${port}`);
+
+    // Pre-render the ARC-AGI-3 tiles a visitor sees before scrolling. Railway's disk is
+    // ephemeral, so the thumbnail cache is empty after every redeploy and the first
+    // person to hit the landing page would watch blank squares fill in. Fire-and-forget,
+    // runs through the same 3-slot render semaphore as live requests, and skips anything
+    // already cached. Set ARC3_SKIP_THUMBNAIL_WARMUP=1 to disable.
+    Arc3MirrorThumbnails.warmUp();
   });
 };
 
