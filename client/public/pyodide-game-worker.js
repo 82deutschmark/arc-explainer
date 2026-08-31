@@ -67,6 +67,9 @@ self.onmessage = async (e) => {
     } else if (type === 'reset') {
       const frame = await handleReset(id);
       self.postMessage({ type: 'frame', id, frame });
+    } else if (type === 'undo') {
+      const frame = await handleUndo(id);
+      self.postMessage({ type: 'frame', id, frame });
     } else {
       self.postMessage({ type: 'error', id, message: `Unknown message type: ${type}` });
     }
@@ -148,6 +151,12 @@ _game_instance = eval(_game_class_name + "()")
 _action_counter = 0
 _last_action = "INIT"
 
+# Undo stack. A blind player's first move is a guess by construction, so being able to
+# take it back is the difference between exploring and restarting -- arc3.sonpham.net's
+# engine keeps one for the same reason. Deep copies of the game object AND its frame,
+# because perform_action mutates the instance in place.
+_undo_stack = []
+
 # Get initial frame via RESET
 _reset_input = ActionInput(id=GameAction.RESET)
 _frame_data = _game_instance.perform_action(_reset_input)
@@ -169,6 +178,12 @@ async function handleStep(id, actionStr, actionData) {
 
   await pyodide.runPythonAsync(`
 from arcengine import ActionInput, GameAction
+
+# Snapshot BEFORE mutating. Capped so a long session cannot grow WASM memory without
+# bound; 50 steps back is far more than a player reaches for.
+_undo_stack.append((copy.deepcopy(_game_instance), copy.deepcopy(_frame_data), _action_counter, _last_action))
+if len(_undo_stack) > 50:
+    _undo_stack.pop(0)
 
 # GameAction.from_id(), NOT GameAction(int). In the published arcengine wheel each member
 # is declared as a tuple -- ACTION2 = (2, SimpleAction) -- so the enum's by-value lookup
@@ -227,10 +242,25 @@ json.dumps({
     "max_actions": getattr(_game_instance, 'max_actions', 100),
     "available_actions": list(_frame_data.available_actions),
     "last_action": _last_action,
+    "undo_depth": len(_undo_stack),
 })
 `);
 
   return JSON.parse(result);
+}
+
+// ─── Undo: rewind one step ────────────────────────────────────────────────────
+async function handleUndo(id) {
+  ensureReady();
+
+  const depth = pyodide.runPython('len(_undo_stack)');
+  if (!depth) return extractFrameJson();
+
+  await pyodide.runPythonAsync(`
+_game_instance, _frame_data, _action_counter, _last_action = _undo_stack.pop()
+`);
+
+  return extractFrameJson();
 }
 
 // ─── Guard ────────────────────────────────────────────────────────────────────

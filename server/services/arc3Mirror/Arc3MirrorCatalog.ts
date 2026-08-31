@@ -72,6 +72,13 @@ export interface MirroredGame {
   official: boolean;
   defaultFps: number;
   tileScale: number;
+  /**
+   * Real-time game: it ticks on a clock instead of waiting for input, and is unplayable
+   * without a tick loop. Derived from upstream's `live` tag rather than shipping the tag
+   * itself -- the raw tag list is stripped as spoilers, but "this one moves on its own"
+   * is apparent within a second of play and withholding it just breaks the game.
+   */
+  isLive: boolean;
 }
 
 interface CacheEntry<T> { value: T; fetchedAt: number; }
@@ -107,6 +114,7 @@ function strip(entry: UpstreamEntry): MirroredGame {
     // Upstream omits these on some entries; the player-facing defaults must still be sane.
     defaultFps: entry.default_fps ?? 10,
     tileScale: entry.tile_scale ?? 4,
+    isLive: (entry.tags ?? []).includes('live'),
   };
 }
 
