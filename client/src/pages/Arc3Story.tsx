@@ -371,6 +371,21 @@ export default function Arc3Story() {
         {/* Preview-Era Games */}
         <section className="mb-10 rounded-lg border border-slate-800 bg-slate-900/60 p-6">
           <h2 className="text-xl font-semibold text-slate-100 mb-2">Preview-Era Games (2025)</h2>
+          {/* This table is the one place on the site that names a mechanic. Five of these
+              six (ls20, ft09, lp85, sp80, vc33) are playable blind at /arc3/gallery, and
+              reading "Locksmith" or "Volume Control" before playing makes that attempt
+              useless as human-baseline data. The warning is not decoration. */}
+          <div className="mb-5 rounded border border-amber-700/60 bg-amber-950/30 px-4 py-3">
+            <p className="text-sm font-semibold text-amber-300 mb-1">Spoilers below</p>
+            <p className="text-xs text-amber-200/80 leading-relaxed">
+              This section names what each game is about, and links to full write-ups of
+              their mechanics. Five of the six are playable at{' '}
+              <Link href="/arc3/gallery" className="underline">the task gallery</Link>, where
+              the whole point is working the rules out yourself. If you intend to play one,
+              play it first — reading this makes your attempt useless as human baseline data,
+              which is the thing this site collects.
+            </p>
+          </div>
           <p className="text-xs text-slate-500 mb-5">
             The six games documented during the preview competition. Click a game ID for mechanics, screenshots, and analysis.
             Games have been updated since this period — our documentation reflects the preview-era versions.

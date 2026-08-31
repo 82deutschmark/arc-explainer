@@ -41,9 +41,6 @@ import modelsRouter from "./routes/models.js";
 import scorecardRoutes from './routes/scorecard.ts';
 import metricsRouter from './routes/metricsRoutes.ts';
 import arc3Router from "./routes/arc3";
-import arc3CodexRouter from "./routes/arc3Codex";
-import arc3OpenRouterRouter from "./routes/arc3OpenRouter";
-import arc3HaikuRouter from "./routes/arc3Haiku";
 import arc3ArchiveRouter from "./routes/arc3Archive";
 import arc3MirrorRouter from "./routes/arc3Mirror";
 import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
@@ -103,13 +100,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/arc3", arc3Router);
 
   // Codex ARC3 interactive playground routes
-  app.use("/api/arc3-codex", arc3CodexRouter);
 
   // OpenRouter ARC3 agent playground routes (LangGraph + xiaomi/mimo-v2-flash:free)
-  app.use("/api/arc3-openrouter", arc3OpenRouterRouter);
 
   // Haiku 4.5 ARC3 agent playground routes (vision-first, child-like learning)
-  app.use("/api/arc3-haiku", arc3HaikuRouter);
 
   // Archived ARC3 preview-era routes (original 6 official games)
   app.use("/api/arc3-archive", arc3ArchiveRouter);

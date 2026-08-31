@@ -150,6 +150,34 @@ Railway DB after deploy.
   fails, and the thumbnail disk key is hashed off the **source** rather than the id, so an
   edited game re-renders.
 
+## Second pass — 31 Aug 2026, full arc-explainer sweep
+
+**Dead pages removed.** Five arc3 pages were imported into `App.tsx` but never routed —
+unreachable code shipping in every bundle: `Arc3GamesBrowser`, `ARC3Browser`,
+`Arc3CodexPlayground`, `Arc3HaikuPlayground`, `Arc3OpenRouterPlayground`. Deleting them
+orphaned three backend routers with no remaining client or script reference, removed too:
+`arc3Codex`, `arc3Haiku`, `arc3OpenRouter` (796 lines). `server/routes/arc3OpenAI.ts` was
+already never mounted — left in place, flagged below.
+
+**The spoiler leak path is now labelled at every entrance.** `/arc3` (`Arc3Story`)
+publishes a table naming the mechanic of six official games — *Locksmith*, *Functional
+Tiles*, *Volume Control*, *Loop and Pull*, *Streaming Purple* — with input scheme,
+difficulty, and links into full write-ups at `/arc3/games/:id`. **Five of those six
+(`ls20`, `ft09`, `lp85`, `sp80`, `vc33`) are in the mirrored catalog and offered for blind
+play.** The new landing footer linked to it as a bare "ARC-AGI-3 reference", so the play
+funnel walked people into it.
+
+Not deleted — these are the official ARC Prize preview games, documented publicly on
+arcprize.org, and the page is legitimate reference. Instead:
+- landing footer link relabelled "Reference (spoilers)"
+- nav description now reads "contains spoilers for six official games"
+- a prominent amber warning above the game tables on `/arc3`, naming the stakes: play
+  first, because reading it makes your attempt useless as baseline data
+
+**Kept deliberately:** `/arc3/playground` (`ARC3AgentPlayground`) — running an LLM agent
+against a game is research-side and arguably Son's, but it is a live working page and
+removing it is beyond "how we serve games to the public". Flagged, not touched.
+
 ## Pending
 
 1. **Sync with Son** — confirm this split, and whether he wants a CORS header on
@@ -162,7 +190,9 @@ Railway DB after deploy.
    future "match on the slug" ingestion will silently merge unrelated games.
 4. **Some opening frames are near-blank** (e.g. `ar25`) because that genuinely is the
    game's first frame. Honest, but a poor tile. Consider rendering frame N>0 for those.
-5. **`/arc3/games/:gameId` is a spoiler page, and it is two clicks from the play grid.**
+5. ~~`/arc3/games/:gameId` is a spoiler page two clicks from the play grid.~~ **Handled
+   31-Aug** — see the second-pass section above. Content kept, every entrance labelled.
+   Original note retained for context:
    `Arc3GameSpoiler.tsx` documents 6 official games in full — mechanics, action mappings,
    level screenshots — and `Arc3Story` (`/arc3`, linked from the new landing footer as
    "ARC-AGI-3 reference") links straight into it. 5 of those 6 (`ft09`, `lp85`, `ls20`,
@@ -170,8 +200,12 @@ Railway DB after deploy.
    official ARC Prize games and are publicly documented on arcprize.org anyway, so this
    may be a deliberate reference section rather than a leak — but on a site whose entire
    thesis is that nothing names the mechanic, it should be a decision. Left untouched:
-   it predates this work and is not part of the catalog rip. **Needs a call.**
-6. **The two sites still share a visual identity.** The gallery was deliberately styled to
+   it predates this work and is not part of the catalog rip.
+6. **`server/routes/arc3OpenAI.ts`** (120 lines) is not mounted in `server/routes.ts` and
+   never was. Dead, but left alone this pass since it was not orphaned by these deletions.
+7. **`/arc3/playground` is agent tooling on the human-play site.** Works, left in place.
+   Belongs on Son's side if the split is taken literally. **Needs a call.**
+8. **The two sites still share a visual identity.** The gallery was deliberately styled to
    match `sonpham-org/autoresearch-arena` so the surfaces read as one system. Now that one
    is research and one is a public front door, that is worth revisiting — a near-black
    monospace researcher grid is not aimed at the audience this site is for.

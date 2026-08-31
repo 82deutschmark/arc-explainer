@@ -1,5 +1,14 @@
 # New entries at the top, use proper SemVer!
 
+### Version 8.0.1  Aug 31, 2026
+
+- **Swept the rest of the arc3 side: dead pages gone, and the one page that gives games away is now labelled as such** (Author: Claude Opus 5)
+  - **In plain language**: two things. First, five game-related pages were still being bundled into the site even though nothing linked to them and no address reached them — leftovers. They are gone, along with three backend services that existed only to feed them. Second, and more important: there is a reference page on the site that tells you what six of the official games actually are — it calls one "Locksmith" and another "Volume Control" — and links to full write-ups of how they work. Five of those six are in the set we ask the public to play blind. The footer of the new landing page linked to it as plain "reference", so someone could wander from "work it out yourself" into the answers in two clicks.
+  - **What was NOT done**: the reference page stays. These are the official ARC Prize preview games and they are documented publicly on arcprize.org anyway — hiding our version achieves nothing. What changed is that every door into it now says what is behind it: the landing footer reads "Reference (spoilers)", the nav description says it contains spoilers for six official games, and the page itself carries a warning above the tables explaining that reading it first makes your attempt useless as data.
+  - **Removed**: `Arc3GamesBrowser`, `ARC3Browser`, `Arc3CodexPlayground`, `Arc3HaikuPlayground`, `Arc3OpenRouterPlayground` — all imported into the router but never given an address — plus the `arc3Codex`, `arc3Haiku` and `arc3OpenRouter` backend routes, which had no remaining caller anywhere once those pages went. 796 lines of backend, five dead pages.
+  - **Left alone on purpose**: `/arc3/playground`, which runs an AI agent against a game. It works, and it is research-side rather than part of how we serve games to people — worth a decision, but not something to delete quietly. Same for `server/routes/arc3OpenAI.ts`, which turns out to have never been wired up at all.
+  - **Files**: `client/src/App.tsx`, `client/src/pages/Arc3Story.tsx`, `client/src/pages/arc3-community/SyntheticLanding.tsx`, `client/src/components/layout/AppNavigation.tsx`, `server/routes.ts`, plan doc updated.
+
 ### Version 8.0.0  Aug 30, 2026
 
 - **The games list on my site was months out of date, and now it just mirrors Son's** (Author: Claude Opus 5)
