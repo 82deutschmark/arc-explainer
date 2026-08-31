@@ -76,7 +76,11 @@ interface WorkerOutMessage {
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 const WORKER_PATH = '/pyodide-game-worker.js';
-const CALL_TIMEOUT_MS = 60_000; // generous — arcengine CDN fetch can be slow
+const CALL_TIMEOUT_MS = 60_000; // generous — a step should never take this long
+/** Cold boot is Pyodide + numpy + pydantic + the engine wheel. On a slow Windows laptop
+ *  behind a proxy that legitimately exceeds the per-call budget, and timing out early
+ *  turns a slow start into a dead page. */
+const INIT_TIMEOUT_MS = 180_000;
 
 export function usePyodideGame(): UsePyodideGameReturn {
   const workerRef = useRef<Worker | null>(null);
@@ -192,9 +196,9 @@ export function usePyodideGame(): UsePyodideGameReturn {
       const initId = ++callIdRef.current;
       const timer = setTimeout(() => {
         pendingRef.current.delete(initId);
-        const e = new Error(`Pyodide init timed out after ${CALL_TIMEOUT_MS / 1000}s`);
+        const e = new Error(`the Python runtime did not finish loading after ${INIT_TIMEOUT_MS / 1000}s`);
         reject(e);
-      }, CALL_TIMEOUT_MS);
+      }, INIT_TIMEOUT_MS);
 
       pendingRef.current.set(initId, {
         resolve: () => { clearTimeout(timer); resolve(); },
@@ -204,7 +208,20 @@ export function usePyodideGame(): UsePyodideGameReturn {
       worker.postMessage({ type: 'init', id: initId });
     });
 
+    // A FAILED init must not be cached. This ref used to hold the rejected promise
+    // forever, so once boot failed on a machine, every later attempt -- including
+    // pressing Start again -- returned that same rejection instantly and the page was
+    // dead until a full reload. That is why "none of the buttons do anything" was
+    // permanent rather than transient. On failure, drop the worker and the ref so the
+    // next attempt genuinely retries.
     workerReadyRef.current = promise;
+    promise.catch(() => {
+      if (workerReadyRef.current === promise) workerReadyRef.current = null;
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
+      }
+    });
     return promise;
   }, []);
 

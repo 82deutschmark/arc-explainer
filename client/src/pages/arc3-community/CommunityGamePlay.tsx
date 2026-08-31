@@ -360,8 +360,19 @@ export default function CommunityGamePlay() {
                     : <><Play className="w-4 h-4" />START</>}
                 </button>
                 <p className="text-[11px]" style={{ color: 'rgba(255,255,255,.55)' }}>
-                  {pyodide.status === 'loading' ? 'One-time engine load…' : 'Press Start to Play'}
+                  {pyodide.status === 'loading'
+                    ? 'One-time engine load — this can take a minute'
+                    : pyodide.error
+                      ? 'Press Start to try again'
+                      : 'Press Start to Play'}
                 </p>
+                {/* A failed boot used to leave the console looking idle with every control
+                    dead and nothing on screen to say why. Say it on the screen itself. */}
+                {pyodide.error && (
+                  <p className="text-[9.5px] max-w-[38ch] leading-relaxed" style={{ color: '#F98A82' }}>
+                    {pyodide.error}
+                  </p>
+                )}
                 <p className="text-[9.5px] max-w-[36ch] leading-relaxed" style={{ color: 'rgba(255,255,255,.32)' }}>
                   No instructions — that is the experiment. Anonymous gameplay events are
                   recorded so human play can be compared to AI play. No account.
