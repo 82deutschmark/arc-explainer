@@ -186,10 +186,22 @@ const initServer = async () => {
     // when the URL path is to a directory
     app.use(express.static(staticPath, {
       index: false,  // Don't automatically serve index.html for directory requests
-      setHeaders: (res, path) => {
-        // Add cache headers for static assets
-        if (path.endsWith('.css') || path.endsWith('.js')) {
-          res.setHeader('Cache-Control', 'public, max-age=31536000');
+      setHeaders: (res, filePath) => {
+        // A year is only safe for CONTENT-HASHED filenames. Vite emits those into
+        // /assets/, where a change means a new name. Everything copied verbatim out of
+        // client/public keeps a stable name forever, so the same rule pins it in every
+        // visitor's browser for a year.
+        //
+        // That is not hypothetical: pyodide-game-worker.js was pinned this way, and
+        // machines kept running a worker from before the GameAction.from_id fix. Every
+        // button press threw inside the worker, the error was swallowed, and the game
+        // looked dead -- for a year, with no way for a deploy to reach them. Unhashed
+        // files now revalidate.
+        const isHashed = filePath.includes(`${path.sep}assets${path.sep}`);
+        if (isHashed) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+          res.setHeader('Cache-Control', 'public, max-age=300, must-revalidate');
         }
       }
     }));

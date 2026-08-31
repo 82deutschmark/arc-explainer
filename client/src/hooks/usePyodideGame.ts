@@ -75,7 +75,13 @@ interface WorkerOutMessage {
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
-const WORKER_PATH = '/pyodide-game-worker.js';
+/**
+ * Cache-busted per build. client/public files are copied verbatim with a stable name, so
+ * a browser that cached this worker once would keep it forever and no deploy could ever
+ * reach it -- see the note in vite.config.ts. __BUILD_ID__ is stamped at build time.
+ */
+declare const __BUILD_ID__: string;
+const WORKER_PATH = `/pyodide-game-worker.js?v=${typeof __BUILD_ID__ === 'string' ? __BUILD_ID__ : 'dev'}`;
 const CALL_TIMEOUT_MS = 60_000; // generous — a step should never take this long
 /** Cold boot is Pyodide + numpy + pydantic + the engine wheel. On a slow Windows laptop
  *  behind a proxy that legitimately exceeds the per-call budget, and timing out early
