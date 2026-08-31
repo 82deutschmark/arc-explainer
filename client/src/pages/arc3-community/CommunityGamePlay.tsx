@@ -68,8 +68,24 @@ interface MirroredGame {
   category: string;
 }
 
-/** Our own generation pipeline — what Next reaches for first, matching both public
- *  surfaces. Mirrors PIPELINE_CATEGORY on the gallery and landing pages. */
+/** One row of the ranked review queue. Culled tasks carry why, and are only returned
+ *  when the endpoint is asked for them. */
+interface ReviewEntry {
+  gameId: string;
+  status: 'queued' | 'duplicate' | 'weak';
+  duplicateOf: string | null;
+  rank?: number;
+}
+
+interface ReviewTotals {
+  probed: number;
+  queued: number;
+  duplicate: number;
+  weak: number;
+}
+
+/** Our own generation pipeline — the fallback ordering when the review queue is
+ *  unavailable. Mirrors PIPELINE_CATEGORY on the gallery and landing pages. */
 const PIPELINE_CATEGORY = 'ai-generated';
 
 /** Keyboard bindings, matching the official player. */
@@ -134,16 +150,51 @@ export default function CommunityGamePlay() {
     staleTime: 60 * 1000,
   });
 
+  /** The ranked review queue: generated tasks that are neither duplicates nor pushovers. */
+  const { data: review } = useQuery<{ data: { games: ReviewEntry[]; totals: ReviewTotals } }>({
+    queryKey: ['/api/arc3-mirror/review-queue'],
+    staleTime: 60 * 60 * 1000,
+  });
+
+  /** Where this task sits in the queue, for the "17 / 328" readout. */
+  const queuePosition = useMemo(() => {
+    const q = review?.data?.games ?? [];
+    if (q.length === 0 || !gameId) return null;
+    const i = q.findIndex((g) => g.gameId === gameId);
+    return i < 0 ? null : { at: i + 1, of: q.length };
+  }, [review, gameId]);
+
   /**
-   * The next task to offer. Coverage is the bottleneck, not supply, so this prefers an
-   * unplayed PIPELINE task, then any unplayed task, then anything at all — the same
-   * ordering the landing page uses. Deterministic per game id rather than random, so
-   * pressing Next twice from the same task does not loop back on itself.
+   * The next task to offer.
+   *
+   * Walks the RANKED queue rather than the raw catalog. The catalog is 877 entries of
+   * which 571 are generated, and stepping through those in hash order spends a
+   * reviewer's attention on the 66 near-duplicates and 177 tasks that fall over to
+   * random input — the two defects nobody can see one task at a time. Position comes
+   * from the queue, so finishing a task advances one place instead of jumping to
+   * wherever the first unplayed gap happens to be.
+   *
+   * Falls back to the old catalog walk when the queue is unavailable or when this task
+   * is not in it (an official or community task, or a culled one reached by direct
+   * link) — Next must never dead-end.
    */
   const nextGameId = useMemo(() => {
+    const queue = review?.data?.games ?? [];
+    const played = new Set((stats?.data?.games ?? []).map((g) => g.game_id));
+
+    if (queue.length > 0) {
+      const at = queue.findIndex((g) => g.gameId === gameId);
+      for (let i = 1; i <= queue.length; i++) {
+        const cand = queue[(at + i + queue.length) % queue.length];
+        if (cand.gameId !== gameId && !played.has(cand.gameId)) return cand.gameId;
+      }
+      // Whole queue played: keep moving rather than stranding the reviewer.
+      const fallback = queue[(at + 1 + queue.length) % queue.length];
+      if (fallback && fallback.gameId !== gameId) return fallback.gameId;
+    }
+
     const games = catalog?.data?.games ?? [];
     if (games.length === 0) return null;
-    const played = new Set((stats?.data?.games ?? []).map((g) => g.game_id));
     const pools = [
       games.filter((g) => g.category === PIPELINE_CATEGORY && !played.has(g.gameId)),
       games.filter((g) => !played.has(g.gameId)),
@@ -152,11 +203,10 @@ export default function CommunityGamePlay() {
     const pool = pools.find((p) => p.some((g) => g.gameId !== gameId));
     if (!pool) return null;
     const candidates = pool.filter((g) => g.gameId !== gameId);
-    // Offset by the current id so consecutive Nexts walk the set instead of repeating.
     let hash = 0;
     for (let i = 0; i < (gameId ?? '').length; i++) hash = (hash * 31 + gameId!.charCodeAt(i)) >>> 0;
     return candidates[hash % candidates.length].gameId;
-  }, [catalog, stats, gameId]);
+  }, [review, catalog, stats, gameId]);
 
   useEffect(() => { if (pyodide.frame) setFrame(pyodide.frame); }, [pyodide.frame]);
 
@@ -350,6 +400,14 @@ export default function CommunityGamePlay() {
         <span className="text-[11px]" style={{ color: ARC.faint }}>
           {gameState === 'idle' ? '' : `Step ${frame?.action_counter ?? 0}`}
         </span>
+        {/* Where this sits in the review run. A reviewer working a 328-long queue needs to
+            see progress, and it marks the difference between the ranked walk and the
+            catalog fallback. */}
+        {queuePosition && (
+          <span className="text-[11px]" style={{ color: ARC.faint }}>
+            Review {queuePosition.at} / {queuePosition.of}
+          </span>
+        )}
         {statusLabel && (
           <span className="ml-auto text-[11px]" style={{ color: statusColor }}>{statusLabel}</span>
         )}
