@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.1.0  Aug 31, 2026
+
+- **Rebuilt the player as the actual ARC Prize handheld console — and the two "bugs" turned out to be the game working correctly** (Author: Claude Opus 5)
+  - **In plain language**: reports were "clicking anything results in Game Over" on Mac and "nothing does anything" on Windows, both on `q598-v1`. Neither was a crash. I read that game's source. It is a **command game**: you press arrows to spell out a sequence, and the CLICK action means *"I'm finished, check my answer."* Pressing it before you have entered anything is a wrong answer, and the game ends you — correctly. Our page told players to "click the board to act", so the very first natural thing anyone did was submit an empty answer and lose. The other report is the same game from the other side: it stores your arrow presses without redrawing the board every time (measured — the second press changes no pixels), so it looked dead when it was working.
+  - **The real fix is the interface**. On arcprize.org the board is *not* clickable. CLICK is a labelled button on a control deck, next to SPACEBAR and UNDO — something you press on purpose, once you have a reason to. So the player is now that console: pink moulded body, inset screen with scanlines, d-pad, and two columns of labelled controls. The board no longer responds to clicks at all.
+  - **Also matches the reference**: task id and LEVEL x / y chips above the screen, a START screen, and a HELP button that explains **the controls only** — never the task, so it cannot give anything away. Controls a task does not use are greyed in place rather than removed, so the deck never reflows between games.
+  - **Sizing**: the console is a fixed-width device centred on the page rather than a full-bleed layout, which was the "slightly too large" complaint.
+  - **Verified**: `q598-v1` now starts, takes two arrow presses to Step 2 and stays IN PROGRESS instead of dying on the first interaction; the canvas has no click handler; CLICK exists as a real button.
+  - **Files**: `client/src/components/arc3-community/Arc3Console.tsx` (new), `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
+
 ### Version 9.0.0  Aug 31, 2026
 
 - **Rebuilt the game player to match the official ARC-AGI-3 one, and fixed the two bugs that made games unplayable** (Author: Claude Opus 5)
