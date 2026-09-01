@@ -33,17 +33,23 @@ PURPOSE: The review ordering for the 621 probed tasks — which are worth a huma
          from the UI is a cull nobody can overrule, and "duplicate of q239-v1" is exactly
          what a reviewer needs in order to disagree.
 
-         IDS. A row's `gameId` is used directly as a catalog id, so for a source the
-         mirror renames it must be the PUBLISHED id, not the source's own. The arena rows
-         are therefore `t<8 hex>`, from `opaque('t', 'arena', manifestId)` in
-         Arc3MirrorCatalog — where `manifestId` is the id in the arena manifest, currently
-         its `gNNN` prefix. Rows keyed by the real slug would type-check, sort, and address
-         nothing. This couples the file to the arena manifest's id shape: change that shape
-         and all 50 rows below silently stop matching a game.
+         IDS. A row's `gameId` is used directly as a catalog id, so it must be the
+         PUBLISHED id, not the id the task was authored under. The arena rows are therefore
+         `t<8 hex>`.
 
-         Regenerate with arc3games/{probe_one,funnel}.py in the autoresearch-arena repo
-         after a new batch lands, and arc3games/tools/build_triage_entries.py for the arena
-         rows; this file is data, not logic.
+         That id used to be derived at request time by `opaque('t', 'arena', manifestId)`
+         in Arc3MirrorCatalog. It is not any more: since 01-Sep-2026 the 50 tasks live in
+         this repository at server/data/arc3-games/<gameId>.py and the id is FROZEN INTO
+         THE FILENAME, so nothing renames anything at serve time and looking for the
+         rename in the catalog service will find nothing. The derivation
+         (`"t" + sha256("arena:" + <authored id>)[:8]`) now lives in exactly one place,
+         scripts/arc3/import_authored_games.py, and every one of the 50 rows below is
+         addressed by its output. Change the prefix, the `arena` key or the hash there and
+         these rows type-check, sort, and address nothing.
+
+         Regenerate with probe_one.py / funnel.py in the authoring repo after a new batch
+         lands, and its build_triage_entries.py for the arena rows, keyed by the ids in
+         server/data/arc3-games/manifest.json; this file is data, not logic.
 SRP/DRY check: Pass — owns the ordering only. Catalog fetching stays in
          Arc3MirrorCatalog, which this never calls: triage is about the generated set and
          must not fail if the upstream mirror is down.
