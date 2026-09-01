@@ -7,6 +7,16 @@
 # reference the old numbers.
 
 
+### Version 9.11.0  Sep 1, 2026
+
+- **Credit for the 252 community games we have been serving anonymously, and one front door instead of three** (Author: Mark Barney / Claude Opus 5)
+  - **The attribution, which was an obligation rather than a courtesy**: a quarter of the gallery comes from `theredbluepill/arc-interactive`, which is MIT-licensed — and MIT requires the copyright and licence notice to travel with the work. We credited nobody. The Community catalog section now names the repository and the licence, and every one of those games links to its own source directory.
+  - **The links are worked out, not listed.** A game's id splits into a name and a version, which is exactly where its source lives, so a new game gets a working link the day it appears instead of the day someone updates a table. Checked all 252 against the repository's own file listing: every one resolves, both id styles.
+  - **A note on where those links appear**: the linked folder holds the title and description the site deliberately hides, so the link sits in the gallery and never beside a game somebody is still working out. Same accepted trade as "the code is readable if you go looking".
+  - **One front door.** There were three, and they disagreed: the Play button in the menu opened the browsing grid, the landing page picked a game at random, and the queue picked the newest — so the same visitor could be handed three different "start here"s and lose the one they had just decided to try. All three now go to the same place, which is the queue. Browsing is still there, under Browse.
+  - **A shorter link to hand out**: `/play`. The old `/arc3/review` still works — it has been shared already and it is the same page, not a redirect.
+  - **Files**: `client/src/utils/arc3Attribution.ts`, `client/src/pages/arc3-community/CommunityGallery.tsx`, `client/src/pages/arc3-community/SyntheticLanding.tsx`, `client/src/components/layout/AppNavigation.tsx`, `client/src/App.tsx`.
+
 ### Version 9.10.0  Sep 1, 2026
 
 - **Our own 50 games are in the review queue, at the front of it** (Author: Mark Barney / Claude Opus 5)

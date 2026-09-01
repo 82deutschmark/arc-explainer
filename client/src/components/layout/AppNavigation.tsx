@@ -44,6 +44,7 @@ import {
   Database,
   ExternalLink,
   Gamepad2,
+  LayoutGrid,
   Github,
   GraduationCap,
   Grid3X3,
@@ -106,9 +107,20 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
   {
     type: 'link',
     title: 'Play',
-    href: '/arc3/gallery',
+    // /play, not the gallery. Playing the queue is the one thing this site asks of a
+    // visitor, and the gallery is a browsing surface that made them choose first -- three
+    // entry points (nav, landing CTA, gallery) each picked a different task, which is how
+    // the same visitor could be handed three different "start here"s.
+    href: '/play',
     icon: Gamepad2,
     description: 'Play an ARC-AGI-3 task blind -- no title, no rules, no instructions',
+  },
+  {
+    type: 'link',
+    title: 'Browse',
+    href: '/arc3/gallery',
+    icon: LayoutGrid,
+    description: 'Every task on the site, as its opening frame and nothing else',
   },
   {
     type: 'link',
