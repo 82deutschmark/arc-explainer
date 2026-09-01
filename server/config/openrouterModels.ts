@@ -62,6 +62,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'google/gemini-3-flash-preview',
   'google/gemini-3-pro-preview',
   'google/gemma-3n-e2b-it',
+  'inclusionai/ling-3.0-flash',
   'kwaipilot/kat-coder-pro',
   'liquid/lfm-2.5-1.2b-instruct:free',
   'liquid/lfm-2.5-1.2b-thinking:free',
@@ -96,7 +97,10 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'openrouter/pony-alpha',
   'qwen/qwen-plus-2025-07-28:thinking',
   'qwen/qwen3-coder',
+  'qwen/qwen3.7-flash',
+  'qwen/qwen3.8-flash',
   'upstage/solar-pro-3:free',
+  'upstage/solar-pro4',
   'x-ai/grok-3',
   'x-ai/grok-3-mini',
   'x-ai/grok-4-fast',
@@ -107,6 +111,7 @@ const OPENROUTER_MODEL_KEYS: string[] = [
   'z-ai/glm-4.6v',
   'z-ai/glm-4.7',
   'z-ai/glm-4.7-flash',
+  'z-ai/glm-5.3-flash',
 ];
 
 const OPENROUTER_ID_ALIASES: Record<string, string> = {

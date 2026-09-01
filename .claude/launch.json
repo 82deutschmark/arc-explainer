@@ -4,9 +4,29 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 5000,
       "autoPort": true
+    },
+    {
+      "name": "dev-railway",
+      "runtimeExecutable": "railway",
+      "runtimeArgs": [
+        "run",
+        "npx",
+        "cross-env",
+        "NODE_ENV=development",
+        "PORT=5055",
+        "node",
+        "--import",
+        "tsx",
+        "server/index.ts"
+      ],
+      "port": 5055,
+      "autoPort": false
     }
   ]
 }
