@@ -7,6 +7,17 @@
 # reference the old numbers.
 
 
+### Version 9.12.0  Sep 1, 2026
+
+- **Our 50 games now live in this repository, so they can actually be played** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: the site was asking a private repository for our own 50 games. A private repository answers "not found" to anyone without a key, so in production that source served nothing — the 36 of them sitting at the front of the review queue were pointing at games the site could not fetch. The games are now files in this repository, read off the disk the site is already running from. No fetch, no token, no way for it to be down.
+  - **Their names never come with them.** Our filenames say what each game is, and this repository is public and permanent — a name in a filename is a name forever. Each game is stored under a meaningless id (`t8dbff678.py`), the class inside it is renamed to match, and the descriptive name is never written down here at all: not in a filename, not in the manifest, not in a comment, and not in the history, because the original name is never committed in the first place. The table mapping one to the other is deliberately kept outside this repository.
+  - **The ids had to match ids that already exist**, or the review queue's 50 entries would have quietly addressed nothing. They are derived the same way the site used to derive them on the fly, so all 50 came out identical to what is already in the queue file — checked by regenerating them and comparing, not by assuming.
+  - **The catalog list is generated from the directory**, so publishing a new batch is dropping files in and re-running one script. A hand-kept list drifts from the files it describes, and the drift only ever shows up as a broken game in somebody's browser.
+  - **Where they are put matters more than it looks**: the production host mounts a storage volume over the `data/` folder, so games committed there would be invisible in production while working perfectly on a laptop. They live under `server/data/` instead.
+  - **Checked, not assumed**: all 50 load under the engine and produce an opening frame; the catalog serves 927 games (877 from Son Pham's site plus our 50); the queue still returns 364 with our 36 at positions 1–36 and every one of those 36 now returns real Python whose class matches what the catalog published; with Son's site made unreachable on purpose the site still serves our 50. `tsc` produces no error that was not already on `main`, and the build is clean.
+  - **Files**: `server/data/arc3-games/` (50 games + manifest), `scripts/arc3/import_authored_games.py`, `scripts/arc3/build_authored_manifest.py`, `server/services/arc3Mirror/Arc3MirrorCatalog.ts`, `server/services/arc3Mirror/Arc3Triage.ts`, `docs/plans/2026-09-01-arc3-catalog-flip.md`.
+
 ### Version 9.11.0  Sep 1, 2026
 
 - **Credit for the 252 community games we have been serving anonymously, and one front door instead of three** (Author: Mark Barney / Claude Opus 5)
