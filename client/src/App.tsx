@@ -83,6 +83,7 @@ import DebateTaskRedirect from "@/pages/DebateTaskRedirect";
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
 import LandingPage from "@/pages/LandingPage";
 import SyntheticLanding from "@/pages/arc3-community/SyntheticLanding";
+import Arc3Review from "@/pages/arc3-community/Arc3Review";
 
 function LegacyArc3GameRedirect() {
   const params = useParams<{ gameId: string }>();
@@ -110,6 +111,9 @@ function Router() {
           routing it inside stacked two nav bars on top of every game. A task should
           own the whole viewport the way the official ARC-AGI-3 player does. */}
       <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
+      {/* Outside PageLayout for the same reason: it resolves straight into a task, and a
+          nav bar flashing on the way through is noise. */}
+      <Route path="/arc3/review" component={Arc3Review} />
       <Route>
         <PageLayout>
           <Switch>

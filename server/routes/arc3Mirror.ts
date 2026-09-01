@@ -24,6 +24,7 @@ import { asyncHandler } from '../middleware/asyncHandler';
 import { formatResponse } from '../utils/responseFormatter';
 import { Arc3MirrorCatalog } from '../services/arc3Mirror/Arc3MirrorCatalog';
 import { Arc3MirrorThumbnails } from '../services/arc3Mirror/Arc3MirrorThumbnails';
+import { Arc3Triage } from '../services/arc3Mirror/Arc3Triage';
 
 const router = Router();
 
@@ -121,6 +122,31 @@ router.get(
   asyncHandler(async (_req: Request, res: Response) => {
     await Arc3MirrorCatalog.listGames().catch(() => undefined);
     res.json(formatResponse.success(Arc3MirrorCatalog.status()));
+  }),
+);
+
+/**
+ * GET /api/arc3-mirror/review-queue - the generated tasks in the order worth playing.
+ *
+ * `?all=1` includes the culled tasks with their reason, for a reviewer who wants to check
+ * the cull rather than trust it. The default is the queue alone: the common case is "give
+ * me the next thing to play" and that should not ship 571 rows.
+ *
+ * Static, so it is cacheable and never touches the upstream mirror — the review order has
+ * to survive arc3.sonpham.net being unreachable.
+ */
+router.get(
+  '/review-queue',
+  asyncHandler(async (req: Request, res: Response) => {
+    const includeAll = req.query.all === '1' || req.query.all === 'true';
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json(
+      formatResponse.success({
+        method: Arc3Triage.method(),
+        totals: Arc3Triage.totals(),
+        games: includeAll ? Arc3Triage.all() : Arc3Triage.queue(),
+      }),
+    );
   }),
 );
 
