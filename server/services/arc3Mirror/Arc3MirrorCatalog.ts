@@ -1,6 +1,6 @@
 /*
 Author: Claude Opus 5
-Date: 2026-09-01 (second pass: the arena rename)
+Date: 2026-09-01 (third pass: our own catalog moved in-repo)
 PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, from TWO
          independent sources.
 
@@ -12,36 +12,41 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          Access-Control-Allow-Origin, so the browser cannot read them cross-origin -- this
          service pulls them server-to-server and re-serves them from our own origin.
 
-         SOURCE 2 (`arena`, ARC3_ARENA_UPSTREAM) is OUR OWN authored catalog, the 50 gNNN
-         tasks in sonpham-org/autoresearch-arena under arc3games/dist, published by
-         arc3games/tools/build_dist_manifest.py in the same entry shape. It is a SECOND
-         source rather than rows pushed into Son's manifest, deliberately: the two
-         programmes are competing and each side's catalog stays its own.
+         SOURCE 2 (`arena`) is OUR OWN authored catalog, the 50 tasks in
+         server/data/arc3-games/ IN THIS REPOSITORY. It is a SECOND source rather than
+         rows pushed into Son's manifest, deliberately: the two programmes are competing
+         and each side's catalog stays its own.
 
-         The two sources fail INDEPENDENTLY. Each keeps its own manifest cache, source-path
-         index and in-flight refresh, and each falls back to its own last good copy; the
-         merge tolerates one side being unreachable and serves the other. Only when every
-         source fails with no cache at all does this throw. One upstream going down must
-         never take the play surface down -- and one of them being down is the expected
-         case, not the exotic one (see the ARENA_UPSTREAM note below).
+         Source 2 used to be fetched over HTTP from sonpham-org/autoresearch-arena
+         (ARC3_ARENA_UPSTREAM / ARC3_ARENA_TOKEN). That repository is private and is
+         staying private, so the fetch could never resolve in production and the source
+         served zero games. The games were moved here instead, on 01-Sep-2026, and read
+         from disk: no fetch, no cache, no TTL, no independent-failure path, because a
+         local read cannot go stale or fall over. See
+         docs/plans/2026-09-01-arc3-catalog-flip.md.
+
+         The sources still fail INDEPENDENTLY. Each keeps its own manifest cache,
+         source-path index and in-flight refresh, and each falls back to its own last good
+         copy; the merge tolerates one side being unreachable and serves the other. Only
+         when every source fails does this throw. Upstream going down must never take the
+         play surface down, and our own 50 now stay up when it does.
 
          Ids are assumed disjoint but not trusted to be: on a collision the `upstream`
          entry wins and the loser is logged, because silently overwriting one programme's
          task with another's would corrupt the human-vs-agent comparison at the root.
 
-         The mirror RENAMES our own catalog, and strips both.
+         NOTHING IS RENAMED AT RUNTIME ANY MORE. The previous version derived opaque
+         ids and class names on the way out, because the authoring repo names each task
+         for what it does (`gNNN_<mechanic>.py`, `class <Mechanic>`) and the play surface
+         prints the game id to the player -- a spoiler before the first move. Now that the
+         catalog lives here, the rename happens ONCE, at import, and the descriptive name
+         never enters this public repository at all: files are stored as `<gameId>.py` and
+         the class they declare is already the published one. See
+         scripts/arc3/import_authored_games.py, which owns that derivation
+         (`"t" + sha256("arena:" + <authored id>)[:8]`) and which must keep producing the
+         same ids -- server/services/arc3Mirror/arc3Triage.json addresses all 50 by them.
 
-         01-Sep: the strip alone is not enough for source 2. The audit below cleared
-         `id`/`src_file`/`class_name` against UPSTREAM entries, which are opaque -- `gh14`
-         / `gh14.py` / `Gh14`. Our own games are named for what they do
-         (`g001_toll_gate.py`, `g013_rot_garden.py`, `g021_weigh_station.py`), and the play
-         surface prints the game id in the console header, so a player would be handed the
-         mechanic before their first move. A source flagged `rename` therefore publishes
-         derived ids and class names (`te6fdae3a`, `G098a5907`), and the Python is rewritten
-         on the way out so the worker can still instantiate it. The map back lives in
-         `srcPathIndex` and never leaves this process.
-
-         This is the split between the two sites, in one flag. arc-explainer runs the human
+         This is still the split between the two sites. arc-explainer runs the human
          experiment, where a name is a spoiler; arc3.sonpham.net is the researcher surface,
          where naming the game is the point. Upstream ids pass through untouched because
          they are the vocabulary the two sites share.
@@ -53,53 +58,48 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          point. Audited 2026-08-30: `id`, `src_file` and `class_name` are all slug-derived
          across all upstream entries (`gh14` / `gh14.py` / `Gh14`), so they are safe to keep
          and are required -- the Pyodide worker cannot instantiate a game without
-         `class_name`. The arena manifest emits no title/description/tags at all.
+         `class_name`. Our own manifest emits no title/description/tags at all, and its
+         ids and class names are opaque by construction.
 
          Known and accepted limit: `sourceCode` executes in the browser and is readable in
          devtools. Opaque metadata raises the bar from "visible on the tile" to "read the
          Python"; it is not a guarantee, and no obfuscation layer is attempted. The rename
-         above moves the identifiers only -- a docstring or comment inside a renamed file
-         still says what the game is, and deliberately so: mangling our own source to hide
-         it from a player who has opened devtools would cost more than it buys.
+         at import moves the identifiers only -- a constant or helper inside a published
+         file still hints at what the game is, and deliberately so: mangling our own source
+         to hide it from a player who has opened devtools would break the games for no
+         gain.
 
-         Dependencies: none beyond global fetch (Node 18+). Deliberately no DB -- neither
-         catalog is ours to persist, and a stored copy would recreate the stale-mirror
-         problem this service exists to remove.
-SRP/DRY check: Pass -- fetching/caching/stripping only, now parameterised per source
-         instead of duplicated: one fetch path, one strip, one refresh, one cache policy,
-         applied to a list of source descriptors. Serving stays in routes/arc3Mirror.ts and
+         Dependencies: global fetch (Node 18+) for the upstream source, fs/path for ours.
+         Deliberately no DB -- Son's catalog is not ours to persist, and ours is already
+         files under version control, so a stored copy would only recreate the
+         stale-mirror problem this service exists to remove.
+SRP/DRY check: Pass -- reading/caching/stripping only, parameterised per source
+         instead of duplicated: one read path, one strip, one refresh, one cache policy,
+         applied to a list of source descriptors. Publishing our catalog belongs to
+         scripts/arc3/, not here. Serving stays in routes/arc3Mirror.ts and
          play execution stays in the Pyodide client hook, whose {sourceCode, className}
          contract is unchanged.
 */
 
-import { createHash } from 'crypto';
+import fs from 'fs/promises';
+import path from 'path';
 import { logger } from '../../utils/logger';
 
 /** Source of truth. Override for a staging mirror or a local checkout on :8776. */
 const UPSTREAM = (process.env.ARC3_UPSTREAM ?? 'https://arc3.sonpham.net').replace(/\/+$/, '');
 
 /**
- * Our own catalog's base. Manifest at `<base>/manifest.json`, source at
- * `<base>/<src_file>`.
+ * Our own authored catalog, on disk in this repository.
  *
- * NOTE, and this is load-bearing for anyone reading a mirror-status that shows zero arena
- * games: sonpham-org/autoresearch-arena is a PRIVATE repository, and raw.githubusercontent
- * answers 404 unauthenticated on a private repo. The default below therefore fetches
- * nothing until the repo is made public. That is contained -- the source fails on its own
- * and the upstream catalog serves normally -- and it is fixed either by publishing the
- * repo or by pointing ARC3_ARENA_UPSTREAM at a reachable base. For a private repo that
- * base is the contents API, which does serve raw bytes to a token:
- *   ARC3_ARENA_UPSTREAM=https://api.github.com/repos/sonpham-org/autoresearch-arena/contents/arc3games/dist?ref=master
- * is not usable as-is (the query string breaks path joining); use a raw proxy or publish.
- * ARC3_ARENA_TOKEN, when set, is sent as a bearer token on arena fetches so an
- * authenticating base works without further code changes.
+ * Absolute from process.cwd() rather than from import.meta.url, because the server ships
+ * as a single esbuild bundle at dist/index.js and a path relative to the bundle points at
+ * dist/, not at the source tree. cwd is /app in the container and the repo root in dev.
+ *
+ * Under server/ and NOT under the root data/ directory: Railway mounts a persistent
+ * volume at /app/data, so a repo-tracked file there is shadowed by the mount at runtime
+ * and the catalog would be empty in production while looking fine locally.
  */
-const ARENA_UPSTREAM = (
-  process.env.ARC3_ARENA_UPSTREAM
-  ?? 'https://raw.githubusercontent.com/sonpham-org/autoresearch-arena/master/arc3games/dist'
-).replace(/\/+$/, '');
-
-const ARENA_TOKEN = process.env.ARC3_ARENA_TOKEN ?? '';
+const AUTHORED_DIR = path.join(process.cwd(), 'server', 'data', 'arc3-games');
 
 /** Son's Caddy sets max-age=300 on /static/. Matching it keeps us no staler than his CDN. */
 const MANIFEST_TTL_MS = 5 * 60 * 1000;
@@ -107,40 +107,12 @@ const MANIFEST_TTL_MS = 5 * 60 * 1000;
  * Source TTL. An earlier version cached source forever, reasoning that upstream ids
  * encode a content hash so a changed game arrives under a new id. That is true of the
  * hashed ids (`ab01-63be02fb`) but NOT of the 23 custom games, which use bare slugs
- * (`ac02`, `gh14`, `ws03-v1`) that upstream can edit in place -- nor of the arena games,
- * whose ids are permanent and whose files are edited in place by design. Caching those
- * forever would reproduce, in memory, exactly the staleness this mirror exists to remove.
+ * (`ac02`, `gh14`, `ws03-v1`) that upstream can edit in place. Caching those forever
+ * would reproduce, in memory, exactly the staleness this mirror exists to remove. Applies
+ * to HTTP sources only: our own files are read from disk on demand and never cached.
  */
 const SOURCE_TTL_MS = 60 * 60 * 1000;
 const FETCH_TIMEOUT_MS = 20_000;
-
-/**
- * A published id/class name, rewritten to something that names nothing.
- *
- * WHY THIS EXISTS. The strip below drops title/description/tags, and the 2026-08-30 audit
- * cleared `id`/`src_file`/`class_name` as safe to pass through. That audit was run against
- * UPSTREAM ids, which are opaque -- `gh14` / `gh14.py` / `Gh14`. It does not hold for our
- * own catalog, whose files are named for what they do: `g001_toll_gate.py`,
- * `g013_rot_garden.py`, `g021_weigh_station.py`. The play surface prints the game id in
- * the console header, so a player of `g001_toll_gate` is told the mechanic before their
- * first move. That is the exact data point this site exists to collect, destroyed by a
- * filename.
- *
- * So a source that publishes descriptive names is renamed here rather than trusted. It is
- * done uniformly for such a source instead of by guessing which individual names give
- * something away -- "does this word name a mechanic" is not a judgement worth betting the
- * dataset on.
- *
- * Derived from the raw id, so it is stable across restarts and deploys: the same game
- * keeps the same id, which is what lets telemetry rows and shared URLs survive. The
- * source key is mixed in so two catalogs cannot collide into one hash.
- */
-function opaque(prefix: string, sourceKey: string, raw: string): string {
-  const digest = createHash('sha256').update(`${sourceKey}:${raw}`).digest('hex').slice(0, 8);
-  return `${prefix}${digest}`;
-}
-
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** Manifest entry, as published by both sources. Fields we deliberately drop are typed so
  *  the strip is explicit. The arena manifest simply never emits the stripped three. */
@@ -191,28 +163,23 @@ interface CacheEntry<T> { value: T; fetchedAt: number; }
 interface MirrorSource {
   /** Stable key, reported by status() and used to route a game id back to its origin. */
   key: string;
+  /**
+   * Where this catalog is read from, and how. `http` is an origin fetched over the
+   * network and cached against a TTL; `local` is a directory in this repository, read on
+   * demand -- a file on our own disk cannot go stale between reads, so caching it would
+   * add a way to serve something the repository does not contain.
+   */
+  kind: 'http' | 'local';
   base: string;
-  /** Manifest URL, relative to `base`. */
+  /** Manifest location, relative to `base`. */
   manifestPath: string;
   /** Where this source keeps one game's Python, relative to `base`. */
   srcPath: (entry: UpstreamEntry) => string;
-  /**
-   * This catalog names its games after what they do, so its ids and class names are
-   * replaced with derived ones before anything reaches a player. See `opaque`. Upstream
-   * is false: its ids are already meaningless and they are the vocabulary we share with
-   * Son's site, where naming the game is the point.
-   */
-  rename: boolean;
-  /** Extra request headers -- an auth token for a private arena base, when configured. */
+  /** Extra request headers, for an `http` source that needs them. */
   headers: Record<string, string>;
   manifestCache: CacheEntry<MirroredGame[]> | null;
-  /**
-   * Served gameId -> everything needed to fetch and serve that game, none of which may
-   * ship to the client: the source path (the filename names the mechanic) and the class
-   * name the file actually declares (so the served source can be rewritten to match the
-   * opaque one we published).
-   */
-  srcPathIndex: Map<string, { path: string; rawClassName: string }>;
+  /** Served gameId -> the path its Python lives at, which never ships to the client. */
+  srcPathIndex: Map<string, string>;
   /** Coalesces concurrent refreshes so a cold start does not fan out N fetches. */
   inFlight: Promise<MirroredGame[]> | null;
 }
@@ -224,22 +191,25 @@ interface MirrorSource {
 const SOURCES: MirrorSource[] = [
   {
     key: 'upstream',
+    kind: 'http',
     base: UPSTREAM,
     manifestPath: '/static/games/manifest.json',
     srcPath: (entry) => `/static/games/src/${entry.id}/${entry.src_file}`,
-    rename: false,
     headers: {},
     manifestCache: null,
     srcPathIndex: new Map(),
     inFlight: null,
   },
   {
+    // Key kept as `arena` after the games moved in-repo: it is mixed into the published
+    // ids (see import_authored_games.py) and it is the value arc3Triage.json's 50 rows
+    // and any shared URL already carry. Renaming it would orphan every one of them.
     key: 'arena',
-    base: ARENA_UPSTREAM,
-    manifestPath: '/manifest.json',
-    srcPath: (entry) => `/${entry.src_file}`,
-    rename: true,
-    headers: ARENA_TOKEN ? { Authorization: `Bearer ${ARENA_TOKEN}` } : {},
+    kind: 'local',
+    base: AUTHORED_DIR,
+    manifestPath: 'manifest.json',
+    srcPath: (entry) => entry.src_file,
+    headers: {},
     manifestCache: null,
     srcPathIndex: new Map(),
     inFlight: null,
@@ -255,16 +225,32 @@ const sourceCache = new Map<string, CacheEntry<string>>();
  *  would have to guess which base to fetch a game's Python from. */
 let ownerIndex = new Map<string, MirrorSource>();
 
-async function fetchFrom(source: MirrorSource, path: string): Promise<Response> {
+/**
+ * One file from a source, as text, whichever kind of source it is.
+ *
+ * The `local` branch resolves and then checks containment rather than trusting the
+ * relative path: those paths come from a manifest, and a manifest is a file -- an entry
+ * whose `src_file` walked out of the directory would read anything the process can read
+ * and hand it to a browser.
+ */
+async function readFrom(source: MirrorSource, relPath: string): Promise<string> {
+  if (source.kind === 'local') {
+    const resolved = path.resolve(source.base, relPath);
+    if (resolved !== source.base && !resolved.startsWith(source.base + path.sep)) {
+      throw new Error(`${source.key} path ${relPath} escapes ${source.base}`);
+    }
+    return fs.readFile(resolved, 'utf-8');
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const res = await fetch(`${source.base}${path}`, {
+    const res = await fetch(`${source.base}${relPath}`, {
       signal: controller.signal,
       headers: source.headers,
     });
-    if (!res.ok) throw new Error(`${source.key} ${path} responded ${res.status}`);
-    return res;
+    if (!res.ok) throw new Error(`${source.key} ${relPath} responded ${res.status}`);
+    return res.text();
   } finally {
     clearTimeout(timer);
   }
@@ -274,8 +260,8 @@ async function fetchFrom(source: MirrorSource, path: string): Promise<Response> 
  *  for both sources. */
 function strip(entry: UpstreamEntry, source: MirrorSource): MirroredGame {
   return {
-    gameId: source.rename ? opaque('t', source.key, entry.id) : entry.id,
-    className: source.rename ? opaque('G', source.key, entry.class_name) : entry.class_name,
+    gameId: entry.id,
+    className: entry.class_name,
     source: source.key,
     category: entry.category,
     official: entry.official ?? entry.category === 'official',
@@ -287,14 +273,13 @@ function strip(entry: UpstreamEntry, source: MirrorSource): MirroredGame {
 }
 
 async function refresh(source: MirrorSource): Promise<MirroredGame[]> {
-  const res = await fetchFrom(source, source.manifestPath);
-  const raw = (await res.json()) as UpstreamEntry[];
+  const raw = JSON.parse(await readFrom(source, source.manifestPath)) as UpstreamEntry[];
   if (!Array.isArray(raw) || raw.length === 0) {
     throw new Error(`${source.key} manifest empty or malformed`);
   }
 
   const games: MirroredGame[] = [];
-  const paths = new Map<string, { path: string; rawClassName: string }>();
+  const paths = new Map<string, string>();
   for (const entry of raw) {
     if (!entry?.id || !entry.class_name || !entry.src_file) {
       logger.warn(`arc3Mirror: skipping malformed ${source.key} manifest entry ${entry?.id ?? '(no id)'}`);
@@ -302,12 +287,19 @@ async function refresh(source: MirrorSource): Promise<MirroredGame[]> {
     }
     const game = strip(entry, source);
     games.push(game);
-    paths.set(game.gameId, { path: source.srcPath(entry), rawClassName: entry.class_name });
+    paths.set(game.gameId, source.srcPath(entry));
   }
 
   source.srcPathIndex = paths;
+  const changed = source.manifestCache?.value.length !== games.length;
   source.manifestCache = { value: games, fetchedAt: Date.now() };
-  logger.info(`arc3Mirror: ${source.key} catalog refreshed from ${source.base} (${games.length} games)`);
+
+  // Local sources re-read on every call by design, so an info line per read would drown
+  // the log; what matters for them is the first read and any change to what the directory
+  // holds, so the steady state drops to debug.
+  const line = `arc3Mirror: ${source.key} catalog refreshed from ${source.base} (${games.length} games)`;
+  if (source.kind !== 'local' || changed) logger.info(line);
+  else logger.debug(line);
   return games;
 }
 
@@ -320,7 +312,12 @@ async function refresh(source: MirrorSource): Promise<MirroredGame[]> {
  * what lets the caller drop it from the merge.
  */
 async function ensure(source: MirrorSource): Promise<MirroredGame[]> {
-  const fresh = source.manifestCache && Date.now() - source.manifestCache.fetchedAt < MANIFEST_TTL_MS;
+  // A local source is re-read every time. The read is a few KB off the same disk the
+  // process was started from, and skipping the cache means the catalog is exactly what
+  // the repository contains rather than what it contained at boot.
+  const fresh = source.kind !== 'local'
+    && source.manifestCache
+    && Date.now() - source.manifestCache.fetchedAt < MANIFEST_TTL_MS;
   if (fresh) return source.manifestCache!.value;
 
   if (!source.inFlight) {
@@ -389,36 +386,27 @@ export class Arc3MirrorCatalog {
     return games.find((g) => g.gameId === gameId) ?? null;
   }
 
-  /** Python source for one game, fetched from the source that published it. Cached for
-   *  SOURCE_TTL_MS -- see the note there on why this is not cached indefinitely. */
+  /** Python source for one game, read from the source that published it. An `http`
+   *  source is cached for SOURCE_TTL_MS -- see the note there on why that is not
+   *  indefinite; a local file is read every time and never cached. */
   static async getSource(gameId: string): Promise<{ sourceCode: string; className: string } | null> {
     const game = await this.getGame(gameId);
     if (!game) return null;
 
-    const cached = sourceCache.get(gameId);
+    // getGame() ran listGames(), so ownerIndex describes the catalog this game came from.
+    const owner = ownerIndex.get(gameId);
+    const srcPath = owner?.srcPathIndex.get(gameId);
+    if (!owner || !srcPath) return null;
+
+    const cached = owner.kind === 'local' ? undefined : sourceCache.get(gameId);
     if (cached && Date.now() - cached.fetchedAt < SOURCE_TTL_MS) {
       return { sourceCode: cached.value, className: game.className };
     }
 
-    // getGame() ran listGames(), so ownerIndex describes the catalog this game came from.
-    const owner = ownerIndex.get(gameId);
-    const entry = owner?.srcPathIndex.get(gameId);
-    if (!owner || !entry) return null;
-
     let sourceCode: string;
     try {
-      const res = await fetchFrom(owner, entry.path);
-      sourceCode = await res.text();
+      sourceCode = await readFrom(owner, srcPath);
       if (!sourceCode.trim()) throw new Error(`${owner.key} source was empty`);
-      // The worker instantiates the class we published, so a renamed source has to declare
-      // that name. Whole-word replace rather than editing the `class` line alone: the file
-      // may refer to itself further down, and a half-renamed module does not import.
-      if (owner.rename && entry.rawClassName !== game.className) {
-        sourceCode = sourceCode.replace(
-          new RegExp(`\\b${escapeRegExp(entry.rawClassName)}\\b`, 'g'),
-          game.className,
-        );
-      }
     } catch (error) {
       // An expired entry still runs the game; refusing to serve it because the refresh
       // failed would take a playable task offline for no gain.
@@ -429,7 +417,7 @@ export class Arc3MirrorCatalog {
       throw error;
     }
 
-    sourceCache.set(gameId, { value: sourceCode, fetchedAt: Date.now() });
+    if (owner.kind !== 'local') sourceCache.set(gameId, { value: sourceCode, fetchedAt: Date.now() });
     return { sourceCode, className: game.className };
   }
 
@@ -448,10 +436,15 @@ export class Arc3MirrorCatalog {
       sourcesCached: sourceCache.size,
       sources: SOURCES.map((s) => ({
         key: s.key,
+        // Ops reads this to tell a source that is DOWN from one that simply has no clock.
+        // A local source has no fetchedAt because it is never fetched, and a null age on
+        // an `http` row means it has never succeeded -- two different things that looked
+        // identical before `kind` was reported.
+        kind: s.kind,
         base: s.base,
         gameCount: s.manifestCache?.value.length ?? 0,
-        fetchedAt: s.manifestCache ? new Date(s.manifestCache.fetchedAt).toISOString() : null,
-        ageSeconds: s.manifestCache ? Math.round((Date.now() - s.manifestCache.fetchedAt) / 1000) : null,
+        fetchedAt: s.manifestCache && s.kind !== 'local' ? new Date(s.manifestCache.fetchedAt).toISOString() : null,
+        ageSeconds: s.manifestCache && s.kind !== 'local' ? Math.round((Date.now() - s.manifestCache.fetchedAt) / 1000) : null,
       })),
     };
   }
