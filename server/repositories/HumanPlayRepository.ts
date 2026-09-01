@@ -1,6 +1,6 @@
 /**
  * Author: Claude Opus 5
- * Date: 2026-08-29
+ * Date: 2026-09-01
  * PURPOSE: Per-action human play telemetry for ARC-AGI-3 community tasks, and the
  *          aggregates the human-vs-agent comparison needs.
  *
@@ -16,11 +16,25 @@
  *          5=Action 6=Click 7=Undo) so a human row joins an agent row from
  *          arc3/runner/eval_runner.py directly instead of through a translation layer.
  *
+ *          ACTION6 is a CLICK and carries an (x, y). Those coordinates were being dropped
+ *          on the floor -- the table had nowhere to put them -- which threw away the only
+ *          spatial signal in the whole action space. x_coord/y_coord are added additively
+ *          so a deployed table migrates without data loss.
+ *
+ *          IDLE MARKERS. A 40-second gap between events is either deep thinking or the
+ *          player walking away, and until now those were indistinguishable -- which
+ *          defeats the think-time signal t_ms exists to provide. The client now emits
+ *          BLUR/FOCUS markers from the browser's visibility events. Like RESET they sit
+ *          OUTSIDE the harness action space, so they can never be counted as moves.
+ *
  *          Anonymous by construction: a random client-minted GUID, coarse desktop/mobile
- *          only, no account, no IP, no PII.
+ *          only, no account, no IP, no PII. A visibility marker records only that
+ *          attention left and returned -- not where it went.
  * SRP/DRY check: Pass - searched repositories/; CommunityGameRepository owns games and
  *          session outcomes and is left alone. This owns the event stream and its
- *          aggregates only, and reuses the shared pool via BaseRepository.
+ *          aggregates only, and reuses the shared pool via BaseRepository. The action
+ *          space (ACTION_INTS) is defined once here and mirrored client-side in
+ *          lib/humanPlayTelemetry.ts, which cannot import server code.
  */
 
 import { getPool } from './base/BaseRepository.js';
@@ -36,6 +50,9 @@ export interface HumanPlayEvent {
   state: string | null;
   levelActions: number | null;
   tMs: number | null;
+  /** ACTION6 click target in grid cells. Null for every non-click action. */
+  x: number | null;
+  y: number | null;
 }
 
 let schemaReady = false;
@@ -57,9 +74,16 @@ async function ensureSchema(): Promise<void> {
       score INTEGER,
       state TEXT,
       t_ms BIGINT,
+      x_coord SMALLINT,
+      y_coord SMALLINT,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+  // Additive, for the table already deployed without them. IF NOT EXISTS makes this a
+  // no-op on a fresh CREATE above and a lossless migration on an existing one; there is
+  // no backfill because the coordinates of past clicks were never transmitted.
+  await pool.query(`ALTER TABLE community_game_events ADD COLUMN IF NOT EXISTS x_coord SMALLINT`);
+  await pool.query(`ALTER TABLE community_game_events ADD COLUMN IF NOT EXISTS y_coord SMALLINT`);
   // A retried POST must not double-count an action.
   await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_cge_session_seq
@@ -92,8 +116,13 @@ async function ensureSchema(): Promise<void> {
   schemaReady = true;
 }
 
-/** The harness action space. RESET is deliberately outside it: a reset is not a move,
- *  and folding it in would make human and agent action counts incomparable. */
+/**
+ * The harness action space. RESET is deliberately outside it: a reset is not a move, and
+ * folding it in would make human and agent action counts incomparable. The BLUR/FOCUS
+ * idle markers are outside it for the same reason and by the same precedent -- they are
+ * recorded in the event stream, with an action_int of null, and are invisible to every
+ * count of moves.
+ */
 const ACTION_INTS: Record<string, number> = {
   ACTION1: 1, ACTION2: 2, ACTION3: 3, ACTION4: 4, ACTION5: 5, ACTION6: 6, ACTION7: 7,
 };
@@ -112,22 +141,30 @@ export class HumanPlayRepository {
       if (!pool) return;
       await pool.query(
         `INSERT INTO community_game_events
-           (session_guid, seq, action, action_int, level, level_actions, score, state, t_ms)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+           (session_guid, seq, action, action_int, level, level_actions, score, state,
+            t_ms, x_coord, y_coord)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
          ON CONFLICT (session_guid, seq) DO NOTHING`,
         [event.sessionGuid, event.seq, event.action, event.actionInt, event.level,
-         event.levelActions, event.score, event.state, event.tMs],
+         event.levelActions, event.score, event.state, event.tMs, event.x, event.y],
       );
+      // action_count counts MOVES, and only rows inside the harness action space are
+      // moves. It previously incremented on every row, which silently included RESET --
+      // so a player who reset ten times had ten phantom actions in the average this
+      // site's whole human-vs-agent comparison rests on. The idle markers added here
+      // would have made that worse (a player tabbing away 20 times, 20x inflated), so
+      // the increment is now gated on action_int rather than left to the caller.
+      const isMove = event.actionInt !== null;
       await pool.query(
         `UPDATE community_human_sessions
-            SET action_count = action_count + 1,
+            SET action_count = action_count + $4,
                 max_level = GREATEST(max_level, COALESCE($2, 0)),
                 outcome = CASE WHEN $3 = 'WIN' THEN 'completed'
                                WHEN $3 = 'GAME_OVER' THEN 'lost'
                                ELSE outcome END,
                 updated_at = NOW()
           WHERE session_guid = $1`,
-        [event.sessionGuid, event.level ?? 0, event.state ?? ''],
+        [event.sessionGuid, event.level ?? 0, event.state ?? '', isMove ? 1 : 0],
       );
     } catch (error) {
       logger.warn(
