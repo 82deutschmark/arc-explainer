@@ -4,6 +4,13 @@ Date: 2026-08-31
 PURPOSE: The review ordering for the 571 generated tasks — which are worth a human's
          time, which are duplicates of another, and which fall over to random input.
 
+         ORDER IS BY RECENCY, NEWEST FIRST (01-Sep). This site is the slop filter for our
+         own generator, not a shop window. The official 25, the 252 community tasks and
+         the in-house set are known good and need nobody's opinion; what needs a human is
+         the batch we generated last, because it is the work we have the least evidence
+         about. Quality gates entry to the queue rather than position within it — see
+         QUEUE below.
+
          WHY THIS EXISTS. The play page's "Next task" walked the raw 877-entry catalog in
          hash order. Reviewing that way serves duplicates and pushovers at random, which
          is why going through the set by hand felt like work with no yield: 99.5% of the
@@ -58,16 +65,38 @@ interface TriageFile {
 const DATA = triage as unknown as TriageFile;
 const BY_ID = new Map<string, TriageEntry>(DATA.games.map((g) => [g.gameId, g]));
 
-/** Ranked, best first. Only tasks that survived both filters. */
+/**
+ * Generation order, newest first. `q800-v1` before `q246-v1`.
+ *
+ * This is the only recency signal there is: the manifest carries no timestamp, every
+ * generated id is `qNNN-vN`, and the generator emits sequentially -- the duplicate
+ * clusters landing on consecutive ids (q239-245, q425-431) is what shows the numbering
+ * follows the batches. An id that does not parse sorts last rather than throwing.
+ *
+ * WHY NEWEST AND NOT BEST. `rank` orders these by how built out a task is, and ordering
+ * the review by it was wrong: this site is a filter for slop, not a showcase. The tasks
+ * that need a human are the ones we have the least evidence about, and that is the batch
+ * we generated most recently -- an older task has already been seen. Quality still gates
+ * ENTRY to the queue (duplicates and the random-mashable never reach it), so a reviewer
+ * meets recent work without meeting known junk. `rank` breaks ties inside a batch and is
+ * still published for anyone who wants to sort on it.
+ */
+const generationIndex = (gameId: string): number => {
+  const n = /^q(\d+)-/.exec(gameId);
+  return n ? Number(n[1]) : -1;
+};
+
 const QUEUE: TriageEntry[] = DATA.games
   .filter((g) => g.status === 'queued')
-  .sort((a, b) => (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));
+  .sort((a, b) =>
+    generationIndex(b.gameId) - generationIndex(a.gameId)
+    || (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));
 
 export const Arc3Triage = {
   totals: () => DATA.totals,
   method: () => DATA.generatedFrom,
 
-  /** The review queue, best first. */
+  /** The review queue: newest generated work first, culled tasks never in it. */
   queue: (): TriageEntry[] => QUEUE,
 
   /** Every verdict, including culled tasks, so the UI can explain a drop. */

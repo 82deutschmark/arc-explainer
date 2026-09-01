@@ -198,11 +198,12 @@ export default function CommunityGamePlay() {
   /**
    * The next task to offer.
    *
-   * Walks the RANKED queue rather than the raw catalog. The catalog is 877 entries of
-   * which 571 are generated, and stepping through those in hash order spends a
-   * reviewer's attention on the 66 near-duplicates and 177 tasks that fall over to
-   * random input — the two defects nobody can see one task at a time. Position comes
-   * from the queue, so finishing a task advances one place instead of jumping to
+   * Walks the review queue rather than the raw catalog. The catalog is 877 entries, and
+   * most of them are not what this site is for: the official 25, the 252 community tasks
+   * and the in-house set are known good and need nobody's verdict. What needs a human is
+   * our own generator's most recent output, which is what the queue holds — newest first,
+   * with the 66 near-duplicates and 177 random-mashable tasks already held back. Position
+   * comes from the queue, so finishing a task advances one place instead of jumping to
    * wherever the first unplayed gap happens to be.
    *
    * Falls back to the old catalog walk when the queue is unavailable or when this task
@@ -497,7 +498,7 @@ export default function CommunityGamePlay() {
           {gameState === 'idle' ? '' : `Step ${frame?.action_counter ?? 0}`}
         </span>
         {/* Where this sits in the review run. A reviewer working a 328-long queue needs to
-            see progress, and it marks the difference between the ranked walk and the
+            see progress, and it marks the difference between the queue walk and the
             catalog fallback. */}
         {queuePosition && (
           <span className="text-[11px]" style={{ color: ARC.faint }}>
