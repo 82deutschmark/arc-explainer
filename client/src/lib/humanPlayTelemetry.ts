@@ -1,6 +1,6 @@
 /**
  * Author: Claude Opus 5
- * Date: 2026-08-29
+ * Date: 2026-09-01
  * PURPOSE: Anonymous human-play telemetry for ARC-AGI-3 community tasks.
  *
  *          The play page executes the game CLIENT-side in Pyodide, so actions never
@@ -12,6 +12,18 @@
  *          5=Action 6=Click 7=Undo) so a human row joins an agent row directly. RESET is
  *          deliberately outside that space: it is not a move, and counting it would make
  *          human and agent action counts incomparable.
+ *
+ *          IDLE MARKERS. Inter-move think time is t_ms deltas, but a long gap is
+ *          ambiguous: 40 seconds is either someone reasoning hard or someone who left the
+ *          room, and treating the second as the first poisons exactly the deep-thinking
+ *          signal the timing is collected for. BLUR and FOCUS are emitted from the
+ *          browser's own visibility events to bracket the away time. They follow the
+ *          RESET precedent and sit OUTSIDE the harness action space, so no marker can
+ *          ever be counted as a move. They say attention left and came back; nothing
+ *          about where it went, which is not observable here and is not wanted.
+ *
+ *          ACTION6 is a click and carries an (x, y). Coordinates ride along on the event
+ *          when the caller supplies them -- the only spatial signal the action space has.
  *
  *          isFirstPlay() is read-only at load and burned on the FIRST ACTION, not on
  *          page load: opening a task and closing it must not spend the one blind run
@@ -27,18 +39,30 @@ const ENDPOINT = '/api/arc3-play/human-events';
 const FLUSH_MS = 10_000;
 const MAX_QUEUE = 2000;
 
+/** Mirrors ACTION_INTS in server/repositories/HumanPlayRepository.ts, which this cannot
+ *  import. Anything absent from this map records with a null action_int and is excluded
+ *  from every move count, server-side and client-side. */
 const ACTION_INTS: Record<string, number> = {
   ACTION1: 1, ACTION2: 2, ACTION3: 3, ACTION4: 4, ACTION5: 5, ACTION6: 6, ACTION7: 7,
 };
+
+/** Attention left the page / came back. Outside ACTION_INTS on purpose -- see the header. */
+const BLUR = 'BLUR';
+const FOCUS = 'FOCUS';
 
 interface QueuedEvent {
   seq: number;
   action: string;
   action_int: number | null;
   level: number | null;
+  /** The engine's score. Distinct from level -- see record(). */
+  score: number | null;
   level_actions: number | null;
   state: string | null;
   t_ms: number;
+  /** Click target, ACTION6 only. */
+  x: number | null;
+  y: number | null;
 }
 
 function playedKey(gameId: string) { return `arc3_played_${gameId}`; }
@@ -69,6 +93,8 @@ class Telemetry {
   private timer: ReturnType<typeof setInterval> | null = null;
   private markedPlayed = false;
   private isFirst = false;
+  /** Whether the page currently has the player's attention. Seeded true by start(). */
+  private attentionPresent = true;
 
   /** Begin a run. The GUID is minted here because the browser runs the game -- the
    *  server never sees a Pyodide session. Random, derived from nothing about the user. */
@@ -89,13 +115,22 @@ class Telemetry {
     this.lastLevel = null;
     this.startedAt = Date.now();
     this.markedPlayed = false;
+    this.attentionPresent = true;
     if (this.timer === null) {
       this.timer = setInterval(() => this.flush(false), FLUSH_MS);
       try {
         addEventListener('pagehide', () => this.flush(true));
+        // visibilitychange covers tab switches and phone lock; blur/focus additionally
+        // cover a window that stays visible but loses focus, which is the common desktop
+        // case of turning to something else. Both feed one deduped marker.
         addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'hidden') this.flush(true);
+          const hidden = document.visibilityState === 'hidden';
+          this.markAttention(!hidden);
+          // The marker has to be on the wire before the tab is frozen or discarded.
+          if (hidden) this.flush(true);
         });
+        addEventListener('blur', () => this.markAttention(false));
+        addEventListener('focus', () => this.markAttention(true));
       } catch { /* no-op */ }
     }
   }
@@ -106,7 +141,23 @@ class Telemetry {
     return this.sessionGuid;
   }
 
-  record(action: string, level: number | null, state: string | null): void {
+  /**
+   * One event.
+   *
+   * `level` and `score` are SEPARATE and must be passed separately. The caller used to
+   * pass the score into the level slot, so both columns held the score and the level the
+   * player had actually reached was never recorded at all. Pass null for level when the
+   * engine does not report one -- do NOT fall back to the score, which recreates the bug.
+   *
+   * `coords` is the ACTION6 click target and is null on every other action.
+   */
+  record(
+    action: string,
+    level: number | null,
+    state: string | null,
+    score: number | null = null,
+    coords?: { x: number; y: number } | null,
+  ): void {
     try {
       if (!this.sessionGuid || this.queue.length >= MAX_QUEUE) return;
       const upper = action.toUpperCase();
@@ -117,8 +168,8 @@ class Telemetry {
         try { localStorage.setItem(playedKey(this.gameId), '1'); } catch { /* no-op */ }
       }
 
-      // Level boundaries come from the score advancing, which is how the engine reports
-      // a level clear. Per-level action counts are what "actions to solve" is made of.
+      // Per-level action counts are what "actions to solve" is made of, so the counter
+      // resets when the level does.
       if (level !== this.lastLevel) { this.levelActions = 0; this.lastLevel = level; }
       if (actionInt !== null) this.levelActions += 1;
 
@@ -127,11 +178,31 @@ class Telemetry {
         action: upper,
         action_int: actionInt,
         level,
+        score,
         level_actions: actionInt !== null ? this.levelActions : null,
         state,
         t_ms: Date.now() - this.startedAt,
+        x: coords ? Math.trunc(coords.x) : null,
+        y: coords ? Math.trunc(coords.y) : null,
       });
     } catch { /* telemetry must never break the game */ }
+  }
+
+  /**
+   * Bracket an away-from-keyboard gap.
+   *
+   * Recorded through record() so a marker is an ordinary row on the same stream with the
+   * same t_ms clock -- which is the whole point, since the gap being disambiguated is a
+   * t_ms delta. BLUR/FOCUS are outside ACTION_INTS, so they carry a null action_int and
+   * no move count on either side of the wire can see them.
+   *
+   * Repeats are suppressed: browsers fire blur and visibilitychange together on a tab
+   * switch, and two BLURs in a row would read as a gap that never happened.
+   */
+  private markAttention(present: boolean): void {
+    if (!this.sessionGuid || this.attentionPresent === present) return;
+    this.attentionPresent = present;
+    this.record(present ? FOCUS : BLUR, this.lastLevel, null);
   }
 
   flush(useBeacon: boolean): void {
