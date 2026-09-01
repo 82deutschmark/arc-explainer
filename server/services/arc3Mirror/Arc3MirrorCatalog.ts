@@ -1,6 +1,6 @@
 /*
 Author: Claude Opus 5
-Date: 2026-09-01
+Date: 2026-09-01 (second pass: the arena rename)
 PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, from TWO
          independent sources.
 
@@ -29,6 +29,23 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          entry wins and the loser is logged, because silently overwriting one programme's
          task with another's would corrupt the human-vs-agent comparison at the root.
 
+         The mirror RENAMES our own catalog, and strips both.
+
+         01-Sep: the strip alone is not enough for source 2. The audit below cleared
+         `id`/`src_file`/`class_name` against UPSTREAM entries, which are opaque -- `gh14`
+         / `gh14.py` / `Gh14`. Our own games are named for what they do
+         (`g001_toll_gate.py`, `g013_rot_garden.py`, `g021_weigh_station.py`), and the play
+         surface prints the game id in the console header, so a player would be handed the
+         mechanic before their first move. A source flagged `rename` therefore publishes
+         derived ids and class names (`te6fdae3a`, `G098a5907`), and the Python is rewritten
+         on the way out so the worker can still instantiate it. The map back lives in
+         `srcPathIndex` and never leaves this process.
+
+         This is the split between the two sites, in one flag. arc-explainer runs the human
+         experiment, where a name is a spoiler; arc3.sonpham.net is the researcher surface,
+         where naming the game is the point. Upstream ids pass through untouched because
+         they are the vocabulary the two sites share.
+
          The mirror STRIPS every field that names the mechanic, for both sources.
          arc-explainer's job is human-baseline collection: a player is meant to infer the
          rules from the frame, so a tile or payload carrying `title` ("Light Bender"),
@@ -40,7 +57,10 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
 
          Known and accepted limit: `sourceCode` executes in the browser and is readable in
          devtools. Opaque metadata raises the bar from "visible on the tile" to "read the
-         Python"; it is not a guarantee, and no obfuscation layer is attempted.
+         Python"; it is not a guarantee, and no obfuscation layer is attempted. The rename
+         above moves the identifiers only -- a docstring or comment inside a renamed file
+         still says what the game is, and deliberately so: mangling our own source to hide
+         it from a player who has opened devtools would cost more than it buys.
 
          Dependencies: none beyond global fetch (Node 18+). Deliberately no DB -- neither
          catalog is ours to persist, and a stored copy would recreate the stale-mirror
@@ -52,6 +72,7 @@ SRP/DRY check: Pass -- fetching/caching/stripping only, now parameterised per so
          contract is unchanged.
 */
 
+import { createHash } from 'crypto';
 import { logger } from '../../utils/logger';
 
 /** Source of truth. Override for a staging mirror or a local checkout on :8776. */
@@ -92,6 +113,34 @@ const MANIFEST_TTL_MS = 5 * 60 * 1000;
  */
 const SOURCE_TTL_MS = 60 * 60 * 1000;
 const FETCH_TIMEOUT_MS = 20_000;
+
+/**
+ * A published id/class name, rewritten to something that names nothing.
+ *
+ * WHY THIS EXISTS. The strip below drops title/description/tags, and the 2026-08-30 audit
+ * cleared `id`/`src_file`/`class_name` as safe to pass through. That audit was run against
+ * UPSTREAM ids, which are opaque -- `gh14` / `gh14.py` / `Gh14`. It does not hold for our
+ * own catalog, whose files are named for what they do: `g001_toll_gate.py`,
+ * `g013_rot_garden.py`, `g021_weigh_station.py`. The play surface prints the game id in
+ * the console header, so a player of `g001_toll_gate` is told the mechanic before their
+ * first move. That is the exact data point this site exists to collect, destroyed by a
+ * filename.
+ *
+ * So a source that publishes descriptive names is renamed here rather than trusted. It is
+ * done uniformly for such a source instead of by guessing which individual names give
+ * something away -- "does this word name a mechanic" is not a judgement worth betting the
+ * dataset on.
+ *
+ * Derived from the raw id, so it is stable across restarts and deploys: the same game
+ * keeps the same id, which is what lets telemetry rows and shared URLs survive. The
+ * source key is mixed in so two catalogs cannot collide into one hash.
+ */
+function opaque(prefix: string, sourceKey: string, raw: string): string {
+  const digest = createHash('sha256').update(`${sourceKey}:${raw}`).digest('hex').slice(0, 8);
+  return `${prefix}${digest}`;
+}
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** Manifest entry, as published by both sources. Fields we deliberately drop are typed so
  *  the strip is explicit. The arena manifest simply never emits the stripped three. */
@@ -147,11 +196,23 @@ interface MirrorSource {
   manifestPath: string;
   /** Where this source keeps one game's Python, relative to `base`. */
   srcPath: (entry: UpstreamEntry) => string;
+  /**
+   * This catalog names its games after what they do, so its ids and class names are
+   * replaced with derived ones before anything reaches a player. See `opaque`. Upstream
+   * is false: its ids are already meaningless and they are the vocabulary we share with
+   * Son's site, where naming the game is the point.
+   */
+  rename: boolean;
   /** Extra request headers -- an auth token for a private arena base, when configured. */
   headers: Record<string, string>;
   manifestCache: CacheEntry<MirroredGame[]> | null;
-  /** gameId -> src path. Kept out of MirroredGame so the filename never ships. */
-  srcPathIndex: Map<string, string>;
+  /**
+   * Served gameId -> everything needed to fetch and serve that game, none of which may
+   * ship to the client: the source path (the filename names the mechanic) and the class
+   * name the file actually declares (so the served source can be rewritten to match the
+   * opaque one we published).
+   */
+  srcPathIndex: Map<string, { path: string; rawClassName: string }>;
   /** Coalesces concurrent refreshes so a cold start does not fan out N fetches. */
   inFlight: Promise<MirroredGame[]> | null;
 }
@@ -166,6 +227,7 @@ const SOURCES: MirrorSource[] = [
     base: UPSTREAM,
     manifestPath: '/static/games/manifest.json',
     srcPath: (entry) => `/static/games/src/${entry.id}/${entry.src_file}`,
+    rename: false,
     headers: {},
     manifestCache: null,
     srcPathIndex: new Map(),
@@ -176,6 +238,7 @@ const SOURCES: MirrorSource[] = [
     base: ARENA_UPSTREAM,
     manifestPath: '/manifest.json',
     srcPath: (entry) => `/${entry.src_file}`,
+    rename: true,
     headers: ARENA_TOKEN ? { Authorization: `Bearer ${ARENA_TOKEN}` } : {},
     manifestCache: null,
     srcPathIndex: new Map(),
@@ -211,8 +274,8 @@ async function fetchFrom(source: MirrorSource, path: string): Promise<Response> 
  *  for both sources. */
 function strip(entry: UpstreamEntry, source: MirrorSource): MirroredGame {
   return {
-    gameId: entry.id,
-    className: entry.class_name,
+    gameId: source.rename ? opaque('t', source.key, entry.id) : entry.id,
+    className: source.rename ? opaque('G', source.key, entry.class_name) : entry.class_name,
     source: source.key,
     category: entry.category,
     official: entry.official ?? entry.category === 'official',
@@ -231,14 +294,15 @@ async function refresh(source: MirrorSource): Promise<MirroredGame[]> {
   }
 
   const games: MirroredGame[] = [];
-  const paths = new Map<string, string>();
+  const paths = new Map<string, { path: string; rawClassName: string }>();
   for (const entry of raw) {
     if (!entry?.id || !entry.class_name || !entry.src_file) {
       logger.warn(`arc3Mirror: skipping malformed ${source.key} manifest entry ${entry?.id ?? '(no id)'}`);
       continue;
     }
-    games.push(strip(entry, source));
-    paths.set(entry.id, source.srcPath(entry));
+    const game = strip(entry, source);
+    games.push(game);
+    paths.set(game.gameId, { path: source.srcPath(entry), rawClassName: entry.class_name });
   }
 
   source.srcPathIndex = paths;
@@ -338,14 +402,23 @@ export class Arc3MirrorCatalog {
 
     // getGame() ran listGames(), so ownerIndex describes the catalog this game came from.
     const owner = ownerIndex.get(gameId);
-    const path = owner?.srcPathIndex.get(gameId);
-    if (!owner || !path) return null;
+    const entry = owner?.srcPathIndex.get(gameId);
+    if (!owner || !entry) return null;
 
     let sourceCode: string;
     try {
-      const res = await fetchFrom(owner, path);
+      const res = await fetchFrom(owner, entry.path);
       sourceCode = await res.text();
       if (!sourceCode.trim()) throw new Error(`${owner.key} source was empty`);
+      // The worker instantiates the class we published, so a renamed source has to declare
+      // that name. Whole-word replace rather than editing the `class` line alone: the file
+      // may refer to itself further down, and a half-renamed module does not import.
+      if (owner.rename && entry.rawClassName !== game.className) {
+        sourceCode = sourceCode.replace(
+          new RegExp(`\\b${escapeRegExp(entry.rawClassName)}\\b`, 'g'),
+          game.className,
+        );
+      }
     } catch (error) {
       // An expired entry still runs the game; refusing to serve it because the refresh
       // failed would take a playable task offline for no gain.
