@@ -7,6 +7,18 @@
 # reference the old numbers.
 
 
+### Version 9.10.0  Sep 1, 2026
+
+- **Our own 50 games are in the review queue, at the front of it** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: "Next task" walks a review queue, and until now that queue held only the 571 machine-generated tasks. Our 50 hand-authored ones were not in it, so no matter how many people reviewed, none of them would ever have been offered one. All 50 were probed by running them against the engine, and the 36 that survive the same entry gate the generated set faces are now in the queue, ahead of everything else — they are the newest work and the work we have the least evidence about.
+  - **14 of our 50 did not get in, and that is the honest result**: random button-mashing clears at least one level of them, which is the same test that culled 177 generated tasks. They are marked `weak`, they are still served with their reason so anyone can disagree, and they are not in the rotation. Every one of the 50 loads and responds to input; none of them is broken, they are just beatable by accident.
+  - **The bug that would have made this do nothing**: the queue decided how new a task was by reading the number out of its id (`q800-v1` → 800). Our games do not have ids of that shape, so they scored −1, and since the sort is newest-first they would have landed behind all 328 existing entries — present in the file, counted in the totals, and never reached. How new a task is is now a number written down in the data rather than something guessed from the shape of its name.
+  - **Why the ids in the file look like nothing**: our filenames say what the game is, so the site renames them on the way out and a review entry has to be keyed by the renamed id, not the real one. The real names never appear here.
+  - **The provenance is stated per batch rather than in one sentence for both**, because the two batches were not measured the same way. The generated set was checked for near-copies of itself; our 50 were not, because that comparison is only meaningful within one generator's output. "No duplicate found" and "never looked" now read differently in the file instead of looking identical.
+  - **Checked**: driven end to end against a local copy of the arena catalog — the queue returns 364 with our 36 at positions 1–36, the first one resolves to real Python that loads and instantiates under the engine, and no game's real name appears in anything committed here. `tsc` and `npm run build` are clean apart from the 12 errors already on `main`.
+  - **Before this is merged, read this**: the arena catalog still 404s in production (private repo, see `docs/plans/2026-09-01-arc3-catalog-flip.md`). `/arc3/review` redirects straight to whatever is first in the queue without checking it exists, so with this merged and that unfixed, the review page sends every reviewer to a game that 404s. The fetch path has to resolve first.
+  - **Files**: `server/services/arc3Mirror/arc3Triage.json`, `server/services/arc3Mirror/Arc3Triage.ts`, `server/routes/arc3Mirror.ts`.
+
 ### Version 9.9.0  Sep 1, 2026
 
 - **Show people the games we are unsure about, not the games we are proud of** (Author: Mark Barney / Claude Opus 5)
