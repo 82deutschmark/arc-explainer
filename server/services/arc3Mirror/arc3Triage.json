@@ -17,14 +17,15 @@
  ],
  "totals": {
   "probed": 621,
-  "queued": 364,
+  "queued": 341,
   "duplicate": 66,
-  "weak": 191
+  "weak": 191,
+  "illegible": 23
  },
  "games": [
   {
    "gameId": "q246-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 246,
    "levels": 6,
@@ -33,7 +34,20 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 1
+   "rank": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q225-v1",
@@ -297,7 +311,7 @@
   },
   {
    "gameId": "q280-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 280,
    "levels": 6,
@@ -306,7 +320,20 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 22
+   "rank": 22,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q411-v1",
@@ -401,7 +428,7 @@
   },
   {
    "gameId": "q742-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 742,
    "levels": 6,
@@ -410,7 +437,20 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 30
+   "rank": 30,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q438-v1",
@@ -492,7 +532,7 @@
   },
   {
    "gameId": "q249-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 249,
    "levels": 6,
@@ -501,7 +541,20 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 37
+   "rank": 37,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q499-v1",
@@ -531,7 +584,7 @@
   },
   {
    "gameId": "q279-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 279,
    "levels": 6,
@@ -540,11 +593,23 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 40
+   "rank": 40,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q464-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 464,
    "levels": 6,
@@ -553,7 +618,20 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 41
+   "rank": 41,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q509-v1",
@@ -583,7 +661,7 @@
   },
   {
    "gameId": "q269-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 269,
    "levels": 6,
@@ -592,7 +670,20 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 44
+   "rank": 44,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q407-v1",
@@ -830,7 +921,7 @@
   },
   {
    "gameId": "q271-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 271,
    "levels": 6,
@@ -839,7 +930,20 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 63
+   "rank": 63,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q529-v1",
@@ -882,7 +986,7 @@
   },
   {
    "gameId": "q270-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 270,
    "levels": 6,
@@ -891,11 +995,24 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 67
+   "rank": 67,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q434-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 434,
    "levels": 6,
@@ -904,7 +1021,18 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 68
+   "rank": 68,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == plan",
+    "hiddenTerms": [
+     "history"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q355-v1",
@@ -1142,7 +1270,7 @@
   },
   {
    "gameId": "q291-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 291,
    "levels": 6,
@@ -1151,7 +1279,19 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 87
+   "rank": 87,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "(self.stock, self.control, self.direction, self.history) == self.target",
+    "hiddenTerms": [
+     "history",
+     "target"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q302-v1",
@@ -1194,7 +1334,7 @@
   },
   {
    "gameId": "q393-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 393,
    "levels": 6,
@@ -1203,7 +1343,19 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 91
+   "rank": 91,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['flow']",
+    "hiddenTerms": [
+     "flow",
+     "history"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q289-v1",
@@ -1298,7 +1450,7 @@
   },
   {
    "gameId": "q649-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 649,
    "levels": 6,
@@ -1307,11 +1459,22 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 99
+   "rank": 99,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "(self.p2, self.p3) == (x['steps'] % 2, x['steps'] % 3)",
+    "hiddenTerms": [
+     "steps"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q392-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 392,
    "levels": 6,
@@ -1320,7 +1483,19 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 100
+   "rank": 100,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == tuple(x['flow'])",
+    "hiddenTerms": [
+     "flow",
+     "history"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q170-v1",
@@ -1545,7 +1720,7 @@
   },
   {
    "gameId": "q342-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 342,
    "levels": 6,
@@ -1554,7 +1729,20 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 118
+   "rank": 118,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q378-v1",
@@ -2052,7 +2240,7 @@
   },
   {
    "gameId": "q718-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 718,
    "levels": 6,
@@ -2061,7 +2249,18 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 157
+   "rank": 157,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.amounts == l['target']",
+    "hiddenTerms": [
+     "target"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q058-v1",
@@ -2377,7 +2576,7 @@
   },
   {
    "gameId": "q722-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 722,
    "levels": 6,
@@ -2386,7 +2585,18 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 182
+   "rank": 182,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.v == x['target']",
+    "hiddenTerms": [
+     "target"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q099-v1",
@@ -2416,7 +2626,7 @@
   },
   {
    "gameId": "q784-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 784,
    "levels": 6,
@@ -2425,7 +2635,18 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 185
+   "rank": 185,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.phase == x['target']",
+    "hiddenTerms": [
+     "target"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q088-v1",
@@ -2520,7 +2741,7 @@
   },
   {
    "gameId": "q783-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 783,
    "levels": 6,
@@ -2529,7 +2750,18 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 193
+   "rank": 193,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.phase == x['target']",
+    "hiddenTerms": [
+     "target"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q165-v1",
@@ -2767,7 +2999,7 @@
   },
   {
    "gameId": "q328-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 328,
    "levels": 6,
@@ -2776,7 +3008,19 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 212
+   "rank": 212,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.first == x['solution'][0]",
+    "hiddenTerms": [
+     "first",
+     "solution"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q077-v1",
@@ -2819,7 +3063,7 @@
   },
   {
    "gameId": "q721-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 721,
    "levels": 6,
@@ -2828,7 +3072,18 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 216
+   "rank": 216,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.v == x['target']",
+    "hiddenTerms": [
+     "target"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q357-v1",
@@ -3144,7 +3399,7 @@
   },
   {
    "gameId": "q484-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 484,
    "levels": 6,
@@ -3153,7 +3408,19 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 241
+   "rank": 241,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.token == checksum(x['order'], x['mod'])",
+    "hiddenTerms": [
+     "mod",
+     "order"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q485-v1",
@@ -3261,7 +3528,7 @@
   },
   {
    "gameId": "q297-v1",
-   "status": "queued",
+   "status": "illegible",
    "duplicateOf": null,
    "generation": 297,
    "levels": 6,
@@ -3270,7 +3537,18 @@
    "deaths": 25,
    "randomWin": false,
    "randomClearedLevel": 0,
-   "rank": 250
+   "rank": 250,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.v == x['target']",
+    "hiddenTerms": [
+     "target"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "queued"
+   }
   },
   {
    "gameId": "q418-v1",
@@ -5832,7 +6110,18 @@
    "responsive": 138,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['invites']",
+    "hiddenTerms": [
+     "invites"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "weak"
+   }
   },
   {
    "gameId": "q239-v1",
@@ -5844,7 +6133,19 @@
    "responsive": 152,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['need']",
+    "hiddenTerms": [
+     "history",
+     "need"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "weak"
+   }
   },
   {
    "gameId": "q240-v1",
@@ -5856,7 +6157,19 @@
    "responsive": 152,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['need']",
+    "hiddenTerms": [
+     "history",
+     "need"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q241-v1",
@@ -5868,7 +6181,19 @@
    "responsive": 151,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['need']",
+    "hiddenTerms": [
+     "history",
+     "need"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q242-v1",
@@ -5880,7 +6205,19 @@
    "responsive": 152,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['need']",
+    "hiddenTerms": [
+     "history",
+     "need"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q243-v1",
@@ -5904,7 +6241,19 @@
    "responsive": 148,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['need']",
+    "hiddenTerms": [
+     "history",
+     "need"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q245-v1",
@@ -5916,7 +6265,19 @@
    "responsive": 152,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['need']",
+    "hiddenTerms": [
+     "history",
+     "need"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q253-v1",
@@ -6024,7 +6385,20 @@
    "responsive": 145,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 0
+   "randomClearedLevel": 0,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q273-v1",
@@ -6036,7 +6410,20 @@
    "responsive": 145,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 0
+   "randomClearedLevel": 0,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q275-v1",
@@ -6048,7 +6435,20 @@
    "responsive": 145,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 0
+   "randomClearedLevel": 0,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q276-v1",
@@ -6060,7 +6460,20 @@
    "responsive": 144,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 0
+   "randomClearedLevel": 0,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q277-v1",
@@ -6108,7 +6521,18 @@
    "responsive": 63,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "self.amounts == LEVELS[self.level_index]['target']",
+    "hiddenTerms": [
+     "target"
+    ],
+    "why": [
+     "named solution key"
+    ],
+    "previousStatus": "weak"
+   }
   },
   {
    "gameId": "q299-v1",
@@ -6360,7 +6784,20 @@
    "responsive": 141,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "weak"
+   }
   },
   {
    "gameId": "q340-v1",
@@ -6384,7 +6821,20 @@
    "responsive": 139,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "weak"
+   }
   },
   {
    "gameId": "q361-v1",
@@ -6528,7 +6978,19 @@
    "responsive": 104,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 0
+   "randomClearedLevel": 0,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['flow']",
+    "hiddenTerms": [
+     "flow",
+     "history"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q395-v1",
@@ -6540,7 +7002,19 @@
    "responsive": 104,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 0
+   "randomClearedLevel": 0,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['flow']",
+    "hiddenTerms": [
+     "flow",
+     "history"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "duplicate"
+   }
   },
   {
    "gameId": "q397-v1",
@@ -7128,7 +7602,18 @@
    "responsive": 150,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['demo']",
+    "hiddenTerms": [
+     "demo"
+    ],
+    "why": [
+     "move-history accumulator"
+    ],
+    "previousStatus": "weak"
+   }
   },
   {
    "gameId": "q573-v1",
@@ -7200,7 +7685,20 @@
    "responsive": 130,
    "deaths": 25,
    "randomWin": false,
-   "randomClearedLevel": 1
+   "randomClearedLevel": 1,
+   "illegibility": {
+    "signal": "commit-only death + win gate on a term the renderer never draws",
+    "comparison": "tuple(self.history) == x['plan']",
+    "hiddenTerms": [
+     "history",
+     "plan"
+    ],
+    "why": [
+     "named solution key",
+     "move-history accumulator"
+    ],
+    "previousStatus": "weak"
+   }
   },
   {
    "gameId": "t00810611",

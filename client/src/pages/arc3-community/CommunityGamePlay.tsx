@@ -90,7 +90,7 @@ interface MirroredGame {
  *  when the endpoint is asked for them. */
 interface ReviewEntry {
   gameId: string;
-  status: 'queued' | 'duplicate' | 'weak';
+  status: 'queued' | 'duplicate' | 'weak' | 'illegible';
   duplicateOf: string | null;
   rank?: number;
 }
@@ -100,6 +100,8 @@ interface ReviewTotals {
   queued: number;
   duplicate: number;
   weak: number;
+  /** Unwinnable by construction: the win condition names something never drawn. */
+  illegible: number;
 }
 
 /** Our own generation pipeline — the fallback ordering when the review queue is

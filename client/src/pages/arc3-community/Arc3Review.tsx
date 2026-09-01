@@ -1,6 +1,6 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-31
+Date: 2026-08-31 (revised 2026-09-01: the illegible count)
 PURPOSE: /arc3/review — the front door for working through the generated set. Picks the
          highest-ranked task nobody has played and sends you straight into it.
 
@@ -28,7 +28,9 @@ const ARC = {
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
 
 interface ReviewEntry { gameId: string; status: string; rank?: number }
-interface ReviewTotals { probed: number; queued: number; duplicate: number; weak: number }
+interface ReviewTotals {
+  probed: number; queued: number; duplicate: number; weak: number; illegible: number;
+}
 
 export default function Arc3Review() {
   const [, setLocation] = useLocation();
@@ -102,8 +104,9 @@ export default function Arc3Review() {
       {totals && (
         <p className="text-[11px] text-center max-w-[420px]" style={{ color: ARC.faint }}>
           {totals.queued} of {totals.probed} generated tasks are worth playing.
-          {' '}{totals.duplicate} are near-copies of another and {totals.weak} fall over to
-          random input, so neither is in the queue.
+          {' '}{totals.duplicate} are near-copies of another, {totals.weak} fall over to
+          random input, and {totals.illegible} cannot be won by anyone — their goal is
+          never drawn on screen — so none of those are in the queue.
         </p>
       )}
     </div>
