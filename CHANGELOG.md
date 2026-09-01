@@ -1,6 +1,23 @@
 # New entries at the top, use proper SemVer!
+#
+# One line, one file, two people: check the version at the top before adding an entry.
+# On 31-Aug two branches numbered in parallel — one continued 7.10.0 -> 7.11.0 while the
+# other had already gone to 8.0.0 -> 9.2.0 — and the merge left 7.x entries sitting above
+# 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
+# reference the old numbers.
 
-### Version 7.12.0  Aug 31, 2026
+
+### Version 9.5.0  Aug 31, 2026
+
+- **A ranked review queue, so going through the generated games stops being busywork** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: reviewing the generated set by hand was producing nothing, and the reason turned out to be the order rather than the games. "Next task" stepped through all 877 entries in an arbitrary order, so a reviewer met duplicates and pushovers at random. Every one of the 571 generated games was then actually played by a script — reset, then up to 1200 random button presses, restarting on death. 568 of them load, have levels and respond to input. That is 99.5%, which means every question a person could settle by looking was already answered before they opened one. Hence the empty feeling.
+  - **The two real defects are ones you cannot see one game at a time**: **66 games are near-copies of another** — and the copies sit on consecutive numbers, q239–245, q425–431, q488–494, so the generator was producing batches of variations on a template. And **177 more can have a level beaten by random button-mashing**, which you only discover by playing badly on purpose, many times over.
+  - **What changed for a reviewer**: Next now walks the ranked 328 that are worth someone's time, and the top bar shows where you are — "Review 17 / 328". There is a new page at `/arc3/review` listing the queue. If the queue is unavailable, or you arrive at an official or community game by direct link, Next quietly falls back to the old behaviour so it can never dead-end.
+  - **Culled games are still served, and they say why** — `?all=1` returns all 571, each duplicate naming the game it copies. The reasoning is that a cull you cannot inspect is a cull nobody can argue with.
+  - **Maintenance note**: the verdicts are stored in a file rather than recalculated, because measuring them needs Python, the engine and about twenty minutes. When a new batch of games lands it will have no verdict and will fall through to the fallback ordering **silently** — regenerate with `arc3games/{probe_one,funnel}.py` in the arena repo. Coverage is complete as of today: 571 triaged, 571 generated.
+  - **Files**: `server/services/arc3Mirror/Arc3Triage.ts`, `server/services/arc3Mirror/arc3Triage.json`, `server/routes/arc3Mirror.ts`, `client/src/pages/arc3-community/Arc3Review.tsx`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/App.tsx`. Shipped in PR #447 without a changelog entry; written up afterwards.
+
+### Version 9.4.0  Aug 31, 2026
 
 - **Got all 25 official ARC-AGI-3 games as source, and they say our whole set is built wrong** (Author: Claude Opus 5)
   - **In plain language**: we have been building our own puzzle games to compare people against AI, and measuring them against seven official games that happened to be sitting on this machine. It turns out the real set is 25, they are all downloadable, and six of the seven we were comparing against are not even in it. Reading the actual 25 says our games differ from the real ones in ways nobody had noticed — and one change made earlier the same day made it worse rather than better.
@@ -10,7 +27,7 @@
   - **Written up for whoever picks this up**: `arc3games/AUDIT_HANDOFF.md` in the arena repo, which leads with the shipped regression and includes the three separate times this session reached a wrong conclusion. Every one of them came from reasoning off a small sample instead of checking a reference that was already on disk — worth reading before repeating it.
   - **Not done**: no plan proposed. Three were drafted during the session and all three were wrong. The audit starts fresh in its own session.
 
-### Version 7.11.0  Aug 31, 2026
+### Version 9.3.0  Aug 31, 2026
 
 - **Half the game set was broken at one end or the other, and the tests were holding it that way** (Author: Claude Opus 5)
   - **In plain language**: these games only earn their keep if they tell us something about people versus AI. Looked at all fifty and half of them cannot. Twenty cannot be lost at all — nothing goes wrong, ever — which means the winning strategy is to try every action in turn until something works, and trying everything is the one thing a machine is better at than a person. At the other end, four ended the entire run on a single wrong step, and they were the exact four where that step is the move the game is *asking* you to make: a wrong guess in a guessing game, a wrong probe in a probing game, walking onto a hazard that is invisible until you walk onto it. A person cannot reason those out either — they die, start over, and memorise the board, which measures stubbornness rather than understanding and makes the human play exactly like the brute-forcer we are trying to compare them against.
