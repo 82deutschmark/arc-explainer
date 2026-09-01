@@ -7,6 +7,17 @@
 # reference the old numbers.
 
 
+### Version 9.13.0  Sep 1, 2026
+
+- **The console is not pink any more; it is a different colour every game** (Author: Mark Barney / Claude Opus 5)
+  - **What changed**: the handheld shell on `/arc3/play/<id>` drew the same pink body for all 364 tasks. It now draws one of nine colourways -- rose, teal, indigo, moss, clay, plum, sand, slate, seafoam -- picked when a game loads, and it will not hand out the same colour twice in a row while you walk the queue with Next task.
+  - **Why the colours are the ones they are**: the shell has to be unmistakably not a cell of the board, and hue alone does not achieve that -- the old pink sat at 328 degrees, between ARC pink and light pink, and read as "not the board" only because it was muted plastic next to vivid paint. So every colourway is capped at S 52 and all six of its surfaces were measured in CIELab against all 16 board colours: the closest approach anything makes is dE 15, and that is rose's pill against light pink, which is the pairing that was already on screen. Nothing new gets closer to a board colour than what shipped.
+  - **One hue in, six surfaces out**: body, highlight, shadow, bezel and both pill tones come from fixed lightness offsets off a single hue/saturation pair, read back off the original pink so `rose` reproduces the old console to a rounding step. Adding a colourway is two numbers.
+  - **It does not change under you**: the pick is held in a ref keyed on the game id, not recomputed per render, so the shell cannot change colour when the level readout ticks or a move lands -- only when the game does. The play route keeps the component mounted across Next task, which is why the key is needed at all.
+  - **Left alone on purpose**: the page chrome around the device (the pink Next task link) still uses the ARC pink token. It is the page, not the device.
+  - **Checked**: driven in the browser -- six loads gave sand, slate, plum, indigo, sand, seafoam; Next task walked seafoam to clay to plum without a reload; a game played through Start with the board rendering normally inside a seafoam shell. `tsc` clean for this file.
+  - **Files**: `client/src/components/arc3-community/Arc3Console.tsx`.
+
 ### Version 9.12.0  Sep 1, 2026
 
 - **Our 50 games now live in this repository, so they can actually be played** (Author: Mark Barney / Claude Opus 5)
