@@ -154,6 +154,11 @@ export default function SyntheticLanding() {
     queryKey: ['/api/arc3-play/human-stats'],
     staleTime: 60 * 1000,
   });
+  /** The review queue, so the task shown here is the task /play actually hands over. */
+  const { data: review } = useQuery<{ data: { games: { gameId: string }[] } }>({
+    queryKey: ['/api/arc3-mirror/review-queue'],
+    staleTime: 60 * 60 * 1000,
+  });
 
   const games = useMemo(() => data?.data?.games ?? [], [data]);
   const playedIds = useMemo(
@@ -163,16 +168,29 @@ export default function SyntheticLanding() {
 
   const ordered = useMemo(() => pipelineFirst(games), [games]);
 
-  // Coverage, not supply, is the bottleneck: point first-time players at a task nobody
-  // has played, rotating per visit so we do not pile every visitor onto one task.
-  // Prefers an unplayed PIPELINE task -- those are the ones we are producing and the ones
-  // with no baseline at all -- and falls back through unplayed-anything to anything.
+  /**
+   * The task this page offers — which must be the SAME task /play hands over, resolved by
+   * the same rule: first in the review queue that nobody has played.
+   *
+   * It used to pick at random from the unplayed pipeline set, which made this page a third
+   * competing opinion about where to start, alongside the nav and the gallery. A visitor
+   * could see one task here, click Play in the nav and be given another, and the tile they
+   * had just decided to try was gone. One queue, one answer, everywhere.
+   *
+   * Falls back to the old random pick only when the queue is unavailable, so the ask never
+   * disappears from the page.
+   */
   const needsCoverage = useMemo(() => {
+    const byId = new Map(games.map((g) => [g.gameId, g]));
+    const queued = (review?.data?.games ?? []).map((g) => byId.get(g.gameId)).filter(Boolean);
+    const front = queued.find((g) => !playedIds.has(g!.gameId)) ?? queued[0];
+    if (front) return front;
+
     const never = ordered.filter((g) => !playedIds.has(g.gameId));
     const neverPipeline = never.filter((g) => g.category === PIPELINE_CATEGORY);
     const pool = neverPipeline.length ? neverPipeline : never.length ? never : ordered;
     return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
-  }, [ordered, playedIds]);
+  }, [games, review, ordered, playedIds]);
 
   // A dozen real frames read as a body of work; four read as a sample. This is the
   // first thing a visitor sees, so it should look like the set it is -- and it should be
@@ -263,8 +281,7 @@ export default function SyntheticLanding() {
         {needsCoverage && (
           <div className="mb-16 flex flex-col sm:flex-row gap-6 items-start p-6"
                style={{ background: ARC.cell, border: `1px solid ${ARC.pink}` }}>
-            <Link href={`/arc3/play/${needsCoverage.gameId}`}>
-              <a className="shrink-0 w-[150px] group">
+            <Link href="/play" className="shrink-0 w-[150px] group">
                 <div className="relative aspect-square overflow-hidden"
                      style={{ border: `1px solid ${ARC.border}` }}>
                   <img src={thumb(needsCoverage.gameId)} alt=""
@@ -273,7 +290,6 @@ export default function SyntheticLanding() {
                 </div>
                 <div className="px-2 py-1 text-[11px] tracking-[.55px] text-white"
                      style={{ background: ARC.pink, fontFamily: MONO }}>{needsCoverage.gameId}</div>
-              </a>
             </Link>
             <div className="min-w-0">
               <h2 className="text-[20px] font-bold mb-3">Nobody has ever played this one.</h2>
@@ -285,9 +301,12 @@ export default function SyntheticLanding() {
                 it means nothing either. You would be the first.
               </p>
               <div className="flex flex-wrap items-center gap-4">
-                <Link href={`/arc3/play/${needsCoverage.gameId}`}>
-                  <a className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
-                     style={{ background: ARC.pink, color: '#fff' }}>Play it →</a>
+                <Link
+                  href="/play"
+                  className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
+                  style={{ background: ARC.pink, color: '#fff' }}
+                >
+                  Play it →
                 </Link>
                 <Link href="/arc3/gallery">
                   <a className="text-[13px] underline" style={{ color: ARC.dim }}>or pick your own</a>

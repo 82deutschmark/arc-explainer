@@ -112,7 +112,13 @@ function Router() {
           own the whole viewport the way the official ARC-AGI-3 player does. */}
       <Route path="/arc3/play/:gameId" component={CommunityGamePlay} />
       {/* Outside PageLayout for the same reason: it resolves straight into a task, and a
-          nav bar flashing on the way through is noise. */}
+          nav bar flashing on the way through is noise.
+
+          /play is the short one and the one to hand to a person -- it is the whole point of
+          the site, so it should not be three segments deep. /arc3/review is kept as an
+          alias because it has been shared and bookmarked; it is the same component, not a
+          redirect, so neither URL is second-class. */}
+      <Route path="/play" component={Arc3Review} />
       <Route path="/arc3/review" component={Arc3Review} />
       <Route>
         <PageLayout>
