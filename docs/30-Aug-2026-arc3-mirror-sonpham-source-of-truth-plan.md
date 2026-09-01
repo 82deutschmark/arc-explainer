@@ -278,6 +278,25 @@ Foundation, with filter chips so the official 25 stay one click away rather than
 deep; landing hero, preview strip and the "nobody has played this one" callout all prefer
 unplayed pipeline tasks.
 
+## Landed since, from the other branch (PR #447, 31-Aug)
+
+Recorded here so this doc stays the single handoff. Full detail in CHANGELOG 9.3.0–9.5.0.
+
+- **Half the generated set is broken at one end or the other.** 20 of 50 audited games
+  cannot be lost, which makes brute-forcing every action the winning strategy — the one
+  thing machines beat people at. Four ended the run on a single mistake. All four had
+  tests *requiring* that behaviour, which is why nothing caught it.
+- **The official 25 were obtained as Python source** (via the official toolkit, not
+  GitHub) and contradict a fix shipped hours earlier: every one of the 25 ends the run on
+  failure and none restarts a level, so changing four of ours to restart was a regression.
+  It is recorded rather than reverted so the audit decides. **It does not reach our
+  players** — `g010`/`g020`/`g021`/`g023` are arena-repo only and are not in the mirrored
+  catalog (checked 01-Sep). Their median game is ~2,100 lines against our 440.
+- **A ranked review queue** at `/arc3/review`, with `Next` walking the 328 worth a human's
+  time instead of the raw catalog, and a "Review 17 / 328" readout. 66 of the 571
+  generated tasks are near-duplicates on consecutive ids; 177 more lose a level to random
+  input. Culled tasks are still served with their reason so a cull can be overruled.
+
 ## Open
 
 1. **Verify telemetry actually writes in prod.** Still the one unverified link, and it is
@@ -292,22 +311,29 @@ unplayed pipeline tasks.
 3. **Sync with Son** — confirm the split, and whether he wants a CORS header on `/static/`
    as a lighter alternative to the mirror (recommend keeping the mirror regardless: it is
    where stripping happens).
-4. **There is still no feedback mechanism** on the play surface — nothing asks whether a
-   task was fun, broken, or impossible. Half of "get the games played and get feedback".
-5. **Slug collisions are not a safe join key.** Son's manifest has 6: `cr01` is both
+4. ~~There is still no feedback mechanism on the play surface.~~ **Shipped 31-Aug**
+   (CHANGELOG 9.2.0): six checkboxes, a notes scratchpad and Next, on the game-over screen
+   and on the console's NOTES control. Whether it *writes* is covered by item 1 — it has
+   the same unverified-persistence caveat as the event stream.
+5. **Triage goes stale silently.** `arc3Triage.json` covers exactly the 571 generated
+   tasks that exist today (verified complete, 01-Sep). The next pipeline batch will have
+   no verdict and will fall through to the fallback ordering with nothing saying so.
+   Regenerate with `arc3games/{probe_one,funnel}.py` in the arena repo when a batch lands,
+   or teach the endpoint to report untriaged tasks so the gap is visible.
+6. **Slug collisions are not a safe join key.** Son's manifest has 6: `cr01` is both
    *Crumbling Route* and *Creek Crossing*; `pt01` is both *Pirate Seas* and *Pattern
    Rotation*. We key on the full upstream id and are fine — any future "match on the slug"
    ingestion will silently merge unrelated games.
-6. **Some opening frames are near-blank** (e.g. `ar25`) because that genuinely is the first
+7. **Some opening frames are near-blank** (e.g. `ar25`) because that genuinely is the first
    frame. Honest, but a poor tile. Consider rendering frame N>0 for those.
-7. **`server/routes/arc3OpenAI.ts`** (120 lines) is not mounted and never was. Dead.
-8. **`/arc3/playground` is agent tooling on the human-play site.** Works, left in place.
+8. **`server/routes/arc3OpenAI.ts`** (120 lines) is not mounted and never was. Dead.
+9. **`/arc3/playground` is agent tooling on the human-play site.** Works, left in place.
    Belongs on Son's side if the split is taken literally. **Needs a call.**
-9. **The two sites still share a visual identity** outside the play page. The gallery was
+10. **The two sites still share a visual identity** outside the play page. The gallery was
    styled to match `sonpham-org/autoresearch-arena` so the surfaces read as one system.
    Now that one is research and one is a public front door, a near-black monospace
    researcher grid is not aimed at the audience this site is for.
-10. ~~`/arc3/games/:gameId` is a spoiler page two clicks from the play grid.~~ **Handled
+11. ~~`/arc3/games/:gameId` is a spoiler page two clicks from the play grid.~~ **Handled
     31-Aug** (`37ff253`): content kept — these are official ARC Prize games documented on
     arcprize.org — but every entrance is labelled, and `/arc3` carries a warning above the
     tables.
