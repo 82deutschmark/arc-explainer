@@ -1,8 +1,10 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-31
-PURPOSE: The review ordering for the 571 generated tasks — which are worth a human's
+Date: 2026-08-31 (revised 2026-09-01: second batch, and generation as a field)
+PURPOSE: The review ordering for the 621 probed tasks — which are worth a human's
          time, which are duplicates of another, and which fall over to random input.
+         571 are the qNNN-v1 generated set; 50 are the hand-authored set the arena
+         catalog publishes, added 01-Sep and keyed by their PUBLISHED ids (see IDS below).
 
          ORDER IS BY RECENCY, NEWEST FIRST (01-Sep). This site is the slop filter for our
          own generator, not a shop window. The official 25, the 252 community tasks and
@@ -20,7 +22,8 @@ PURPOSE: The review ordering for the 571 generated tasks — which are worth a h
          The two defects that DO matter are invisible one task at a time. 66 tasks are
          structural near-copies of another (clusters land on consecutive ids — q239-245,
          q425-431, q488-494 — the generator emitted batches of variations on a template),
-         and 177 more surrender a level to random button-mashing. Neither is visible
+         and 191 across both batches surrender a level to random button-mashing (177 of
+         the generated set, 14 of the 50 hand-authored). Neither is visible
          without comparing tasks against each other, or playing badly on purpose many
          times. Both were measured by executing every task against the engine; the
          verdicts are baked here rather than recomputed, because the measurement needs
@@ -30,8 +33,17 @@ PURPOSE: The review ordering for the 571 generated tasks — which are worth a h
          from the UI is a cull nobody can overrule, and "duplicate of q239-v1" is exactly
          what a reviewer needs in order to disagree.
 
+         IDS. A row's `gameId` is used directly as a catalog id, so for a source the
+         mirror renames it must be the PUBLISHED id, not the source's own. The arena rows
+         are therefore `t<8 hex>`, from `opaque('t', 'arena', manifestId)` in
+         Arc3MirrorCatalog — where `manifestId` is the id in the arena manifest, currently
+         its `gNNN` prefix. Rows keyed by the real slug would type-check, sort, and address
+         nothing. This couples the file to the arena manifest's id shape: change that shape
+         and all 50 rows below silently stop matching a game.
+
          Regenerate with arc3games/{probe_one,funnel}.py in the autoresearch-arena repo
-         after a new batch lands; this file is data, not logic.
+         after a new batch lands, and arc3games/tools/build_triage_entries.py for the arena
+         rows; this file is data, not logic.
 SRP/DRY check: Pass — owns the ordering only. Catalog fetching stays in
          Arc3MirrorCatalog, which this never calls: triage is about the generated set and
          must not fail if the upstream mirror is down.
@@ -44,8 +56,29 @@ export type TriageStatus = 'queued' | 'duplicate' | 'weak';
 export interface TriageEntry {
   gameId: string;
   status: TriageStatus;
-  /** Set when status is 'duplicate': the task this one is a near-copy of. */
+  /**
+   * Set when status is 'duplicate': the task this one is a near-copy of.
+   *
+   * Null means one of two different things, which is why `generations` records the method
+   * per batch: for the qNNN set it means clustering ran and found no near-copy, and for
+   * the arena set it means clustering was never run against it at all.
+   */
   duplicateOf: string | null;
+  /**
+   * Which batch this task came from. Higher is newer; the queue sorts on it descending.
+   *
+   * Stored rather than parsed out of `gameId`, which is what it used to be. That worked
+   * only while every id was `qNNN-vN`, and broke silently the moment a second source
+   * arrived: an id that did not match sorted to -1, so an entire batch landed behind
+   * every existing row and `next()` never reached it. An ordering key that a new id shape
+   * can quietly opt out of is not an ordering key.
+   */
+  generation: number;
+  /**
+   * How built out a task is: position when its own batch's queued rows are sorted by
+   * `frames` descending, then `responsive`. Numbered WITHIN a generation, so `rank: 1`
+   * appears once per batch — it only ever breaks ties between rows of equal generation.
+   */
   rank?: number;
   levels: number | null;
   frames: number;
@@ -55,9 +88,23 @@ export interface TriageEntry {
   randomClearedLevel: number;
 }
 
+/** What was measured for one batch, and what was not. */
+export interface TriageGeneration {
+  /** The `generation` values this covers, for display: '1000' or '1-800'. */
+  generationRange: string;
+  count: number;
+  /** Names the batch, never a mechanic — this is served to the play surface. */
+  label: string;
+  method: string;
+}
+
 interface TriageFile {
   generatedFrom: string;
   duplicateThreshold: number;
+  /** Per-batch provenance. Exists because the two batches were NOT measured the same way
+   *  and a single `generatedFrom` string made the weaker measurement look like the
+   *  stronger one. */
+  generations: TriageGeneration[];
   totals: { probed: number; queued: number; duplicate: number; weak: number };
   games: TriageEntry[];
 }
@@ -66,37 +113,42 @@ const DATA = triage as unknown as TriageFile;
 const BY_ID = new Map<string, TriageEntry>(DATA.games.map((g) => [g.gameId, g]));
 
 /**
- * Generation order, newest first. `q800-v1` before `q246-v1`.
+ * The review queue: newest batch first, `rank` breaking ties inside a batch.
  *
- * This is the only recency signal there is: the manifest carries no timestamp, every
- * generated id is `qNNN-vN`, and the generator emits sequentially -- the duplicate
- * clusters landing on consecutive ids (q239-245, q425-431) is what shows the numbering
- * follows the batches. An id that does not parse sorts last rather than throwing.
- *
- * WHY NEWEST AND NOT BEST. `rank` orders these by how built out a task is, and ordering
- * the review by it was wrong: this site is a filter for slop, not a showcase. The tasks
- * that need a human are the ones we have the least evidence about, and that is the batch
- * we generated most recently -- an older task has already been seen. Quality still gates
+ * WHY NEWEST AND NOT BEST. `rank` orders tasks by how built out they are, and ordering the
+ * review by it was wrong: this site is a filter for slop, not a showcase. The tasks that
+ * need a human are the ones we have the least evidence about, and that is the batch
+ * generated most recently -- an older task has already been seen. Quality still gates
  * ENTRY to the queue (duplicates and the random-mashable never reach it), so a reviewer
- * meets recent work without meeting known junk. `rank` breaks ties inside a batch and is
- * still published for anyone who wants to sort on it.
+ * meets recent work without meeting known junk.
+ *
+ * WHY `generation` IS A FIELD. It was `/^q(\d+)-/` over the id, which is the only recency
+ * signal the manifest carries -- no timestamp exists, and the duplicate clusters landing on
+ * consecutive ids (q239-245, q425-431) is what shows the numbering follows the batches.
+ * Parsing it was fine while every id was `qNNN-vN` and wrong the moment a second source
+ * arrived: the arena set publishes under renamed `t<hex>` ids, which do not match, so they
+ * scored -1 and sorted behind all 571 -- present in the file, in the totals, and
+ * unreachable from `next()`. Reading a batch number out of an id shape is a coupling that
+ * fails quietly, so the number is written down instead.
+ *
+ * The arena batch is 1000, above the highest generated id (800) because it is the newest
+ * work and the least evidenced. The gap is deliberate: at 801 it would tie with the
+ * generator's next batch and interleave two sets that were measured differently.
  */
-const generationIndex = (gameId: string): number => {
-  const n = /^q(\d+)-/.exec(gameId);
-  return n ? Number(n[1]) : -1;
-};
-
 const QUEUE: TriageEntry[] = DATA.games
   .filter((g) => g.status === 'queued')
   .sort((a, b) =>
-    generationIndex(b.gameId) - generationIndex(a.gameId)
+    b.generation - a.generation
     || (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));
 
 export const Arc3Triage = {
   totals: () => DATA.totals,
   method: () => DATA.generatedFrom,
 
-  /** The review queue: newest generated work first, culled tasks never in it. */
+  /** How each batch was measured — and, for the arena batch, what was not measured. */
+  generations: (): TriageGeneration[] => DATA.generations,
+
+  /** The review queue: newest batch first, culled tasks never in it. */
   queue: (): TriageEntry[] => QUEUE,
 
   /** Every verdict, including culled tasks, so the UI can explain a drop. */
