@@ -1,6 +1,6 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-31
+Date: 2026-09-01
 PURPOSE: The feedback form on the play surface — six checkboxes and a scratchpad.
 
          WHAT IT IS FOR. Telemetry already records how far each player got. This records
@@ -26,6 +26,9 @@ PURPOSE: The feedback form on the play surface — six checkboxes and a scratchp
          The note is written by someone who has just worked the task out, so it is a
          spoiler by nature. It is submitted and never displayed — not here, not to another
          player, nowhere on the play surface. See Arc3FeedbackRepository.
+         01-Sep: `onDone` is the form's exit and the caller chooses where it leads —
+         closing the scratchpad mid-run, or the next task once the run is over. The panel
+         does not know which, and `doneLabel` exists so the bypass button can say so.
 SRP/DRY check: Pass — presentation and submit only. Storage is the repository's, the
          session identity is humanPlayTelemetry's, and the panel holds no game state.
 */
@@ -56,12 +59,17 @@ const C = {
 };
 
 export function Arc3FeedbackPanel({
-  gameId, reachedLevel, outcome, onDone, compact,
+  gameId, reachedLevel, outcome, onDone, doneLabel, compact,
 }: {
   gameId: string;
   reachedLevel: number | null;
   outcome: string | null;
+  /** Where the form leads once it is done with — closing the scratchpad mid-run, or the
+   *  next task when the run is over. The caller decides; the panel only calls it. */
   onDone?: () => void;
+  /** What the bypass button says, because "Skip" means two different things depending on
+   *  where onDone goes. */
+  doneLabel?: string;
   compact?: boolean;
 }) {
   const [flags, setFlags] = useState<Set<string>>(new Set());
@@ -175,7 +183,7 @@ export function Arc3FeedbackPanel({
         </button>
         {onDone && (
           <button type="button" onClick={onDone} className="px-3 h-8 text-[11.5px]" style={{ color: C.faint }}>
-            Skip
+            {doneLabel ?? 'Skip'}
           </button>
         )}
       </div>

@@ -7,6 +7,19 @@
 # reference the old numbers.
 
 
+### Version 9.6.0  Sep 1, 2026
+
+- **The play surface let you finish a task and then stranded you on it** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: three separate faults, all on the stretch between finishing one task and starting the next — which is the only part of this site that decides whether anyone reviews more than one game in a sitting.
+  - **"Next task" did nothing.** Every game lives at the same address with a different name on the end, so moving from one to the next never rebuilt the page — the address changed and the screen did not. You were still looking at the game you had just finished, GAME OVER and all. The page now notices the change and loads the new task, keeping the Python engine that is already running rather than restarting it, so the next task appears in a moment instead of the minute a cold start costs.
+  - **Sending feedback led nowhere.** The form said thank you and left you parked on the task you had just played. It now hands you the next one, which is the whole point of asking at that moment. There is also a "Skip → next task" button for people who would rather just keep playing.
+  - **Z did the opposite of what the button said.** The console read "Undo (Z)" while Z was actually wired to the Spacebar action, so the key a stuck player reaches for spent a move instead of taking one back. Z is Undo. The spacebar is the Spacebar action. Nothing means both, and the Help panel says so.
+  - **One thing fixed on the way past**: with Next working, a run's last few actions would have been thrown away as the next task started, because the page no longer reloads between them. They are sent first now.
+  - **Also tidied**: each link on this page was a link inside a link, which browsers accept and the HTML standard does not. Unwrapped.
+  - **Checked by playing it**: started q246-v1, moved, pressed Z and watched the step counter go back, pressed the spacebar and watched it go forward, took Next twice, then lost q225-v1 on purpose, sent feedback and landed on the next task. Feedback and gameplay both recorded.
+  - **Development rule changed**: `CLAUDE.md` used to forbid starting the dev server without being asked — a leftover from the Windows setup. Work is on a Mac Mini now, and previewable changes are expected to be verified in the running app before being called done.
+  - **Files**: `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/components/arc3-community/Arc3FeedbackPanel.tsx`, `CLAUDE.md`, `docs/2026-09-01-arc3-play-loop-fixes-plan.md`.
+
 ### Version 9.5.0  Aug 31, 2026
 
 - **A ranked review queue, so going through the generated games stops being busywork** (Author: Mark Barney / Claude Opus 5)
