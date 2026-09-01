@@ -295,10 +295,19 @@ export default function CommunityGamePlay() {
       const next = action === 'RESET' ? await pyodide.reset() : await pyodide.step(action, coords);
       if (!silent) {
         const s = next.state?.toUpperCase?.() ?? '';
+        // level and score are DIFFERENT numbers and are sent separately. The score used
+        // to be passed in the level slot, so telemetry recorded the score twice and the
+        // level never. No `levels_completed ?? score` fallback here, deliberately -- that
+        // is the display fallback used for the level label, and reusing it would put the
+        // score back in the level column under a different name.
         humanPlay.record(
           action,
-          typeof next.score === 'number' ? next.score : null,
+          typeof next.levels_completed === 'number' ? next.levels_completed : null,
           s === 'WIN' ? 'WIN' : s === 'GAME_OVER' ? 'GAME_OVER' : 'NOT_FINISHED',
+          typeof next.score === 'number' ? next.score : null,
+          // Present only when the action carried a click target; ACTION6 on this console
+          // is a deck button with no coordinates, so today this is null in practice.
+          action === 'ACTION6' && coords ? coords : null,
         );
       }
       applyFrame(next);

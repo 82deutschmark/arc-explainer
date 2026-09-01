@@ -1,12 +1,17 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-30
+Date: 2026-09-01
 PURPOSE: Anonymous human-play telemetry for the ARC-AGI-3 play surface -- the reason
          arc3.markbarney.net exists. Extracted verbatim (behaviour unchanged) from
          routes/arc3Community.ts when the DB-backed community catalog was removed in
          favour of mirroring arc3.sonpham.net: the catalog was months stale and is no
          longer ours to own, but the telemetry pipeline is this site's whole job and
          had no reason to die with it.
+
+         Accepts, per event, the harness action plus its click coordinates (ACTION6
+         only), the level, the score, and t_ms. Browser visibility markers arrive on the
+         same stream with an action outside the harness action space, so an idle gap can
+         be told apart from a long think without either one counting as a move.
 
          Both routes are deliberately public and unauthenticated. A login wall would
          kill the sample, and we collect no identifying data -- a browser-minted session
@@ -31,6 +36,17 @@ const router = Router();
 
 const SESSION_GUID = /^[A-Za-z0-9_-]{8,64}$/;
 const GAME_ID = /^[A-Za-z0-9_.-]{1,64}$/;
+
+/**
+ * A click coordinate, or null. Grids are small, but this is a public unauthenticated
+ * write: a value outside SMALLINT would throw from the driver and lose the entire batch,
+ * so out-of-range is stored as null rather than allowed to reach the insert.
+ */
+function clampCoord(value: unknown): number | null {
+  if (!Number.isFinite(value)) return null;
+  const n = Math.trunc(Number(value));
+  return n >= -32768 && n <= 32767 ? n : null;
+}
 
 /**
  * POST /api/arc3-play/human-events
@@ -77,9 +93,15 @@ router.post(
         actionInt: HumanPlayRepository.actionInt(action),
         level: Number.isFinite(raw.level) ? Number(raw.level) : null,
         levelActions: Number.isFinite(raw.level_actions) ? Number(raw.level_actions) : null,
-        score: Number.isFinite(raw.level) ? Number(raw.level) : null,
+        // Was `raw.level`, which stored a second copy of the level under the name
+        // `score` and left the real score unrecorded. The client now sends both.
+        score: Number.isFinite(raw.score) ? Number(raw.score) : null,
         state: typeof raw.state === 'string' ? raw.state.slice(0, 32) : null,
         tMs: Number.isFinite(raw.t_ms) ? Number(raw.t_ms) : null,
+        // Click target, present on ACTION6 only. Clamped to SMALLINT range so a client
+        // sending nonsense cannot fail the insert for the whole batch.
+        x: clampCoord(raw.x),
+        y: clampCoord(raw.y),
       });
       written += 1;
     }
