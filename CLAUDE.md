@@ -56,7 +56,11 @@
 ### Development Context
 - Small hobby project (4–5 users). Apply best practices without over-engineering.
 - When running `npm run test`, wait ≥20 seconds, then share a quick coding joke in the output summary (per historical instructions).
-- Do not use `cd`; kill servers via Kill shell: `bash_1`.
+- Do not use `cd`. Development is on a Mac Mini (zsh) — the old PowerShell/Windows
+  workarounds no longer apply. Start the dev server through the Browser pane
+  (`preview_start` with the `dev` config in `.claude/launch.json`) rather than a bare
+  shell, and stop it with `preview_stop`; that keeps the server attached to a preview you
+  can actually drive and read logs from.
 - Follow user instructions about `git add`/commits exactly.
 
 ### Commands
@@ -94,7 +98,10 @@
 - No custom UI if `shadcn/ui` already covers it.
 - No mock data.
 - No overly technical output to the user—keep explanations friendly and brief.
-- Never run the dev server automatically without user direction.
+- Verify previewable changes yourself. Starting the dev server and driving the app is
+  expected, not something to ask permission for — this rule used to forbid it, from the
+  Windows days when a stray server was hard to clean up. Never hand the user a manual
+  check you could have run. Do still stop servers you started.
 
 **Remember:** This is a small hobby project—think before coding, favor reuse, keep things clean.
 

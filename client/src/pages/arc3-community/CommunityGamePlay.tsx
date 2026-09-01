@@ -1,6 +1,6 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-31
+Date: 2026-09-01
 PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the way the
          official ARC-AGI-3 player does it. Full rewrite of the previous page, replaced
          rather than patched for three reasons:
@@ -45,12 +45,30 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
          this site exists. Live ticks are NOT recorded: at 10-30fps they would swamp the
          event table and make human action counts incomparable to agent ones — the same
          reasoning HumanPlayRepository already applies to RESET.
+         01-Sep, third pass — three faults on the loop that carries a reviewer from one
+         task to the next, all reported together:
+
+         4. NEXT DID NOTHING. /arc3/play/A -> /arc3/play/B is the same route with a new
+            param, so React kept this component mounted and nothing read the change. The
+            URL moved and the screen did not. Fixed by resetting in place on `gameId` —
+            see the effect below `start`, which also explains why not `key={gameId}`.
+
+         5. FEEDBACK LED NOWHERE. The panel's onDone was wired only for the mid-run
+            scratchpad, so sending feedback at game over ended on a thank-you with the
+            finished task still on screen. It now hands the player the next task, which
+            is what closes the play -> react -> next loop this page exists to run.
+
+         6. Z DID THE OPPOSITE OF WHAT IT SAID. It was bound to ACTION5 next to the
+            spacebar while the deck read "Undo (Z)", so the key a stuck player reaches
+            for spent a move instead of taking one back. Z is Undo. The spacebar is
+            ACTION5. See KEY_MAP.
+
 SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodideGame,
          telemetry in humanPlayTelemetry, colours in utils/arc3Colors.
 */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useParams, Link } from 'wouter';
+import { useParams, useLocation, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, ArrowRight, Play, Loader2, AlertTriangle, MessageSquare } from 'lucide-react';
 import { Arc3Console, type ConsoleButton } from '@/components/arc3-community/Arc3Console';
@@ -88,13 +106,22 @@ interface ReviewTotals {
  *  unavailable. Mirrors PIPELINE_CATEGORY on the gallery and landing pages. */
 const PIPELINE_CATEGORY = 'ai-generated';
 
-/** Keyboard bindings, matching the official player. */
+/**
+ * Keyboard bindings, matching the official player.
+ *
+ * Z IS NOT HERE, DELIBERATELY. It used to be a second binding for ACTION5 alongside the
+ * spacebar, while the deck's Undo control was labelled "Undo (Z)" and the Help overlay
+ * said "Spacebar or Z". So the one key a stuck player reaches for spent a MOVE instead
+ * of taking one back -- the worst direction for that mistake to go on a surface where a
+ * single wrong action can end the level. Z is Undo (see the keydown handler); the
+ * spacebar is ACTION5. They are different things and no key means both.
+ */
 const KEY_MAP: Record<string, string> = {
   ArrowUp: 'ACTION1', w: 'ACTION1', W: 'ACTION1',
   ArrowDown: 'ACTION2', s: 'ACTION2', S: 'ACTION2',
   ArrowLeft: 'ACTION3', a: 'ACTION3', A: 'ACTION3',
   ArrowRight: 'ACTION4', d: 'ACTION4', D: 'ACTION4',
-  ' ': 'ACTION5', z: 'ACTION5', Z: 'ACTION5',
+  ' ': 'ACTION5',
   x: 'ACTION7', X: 'ACTION7', c: 'ACTION7', C: 'ACTION7',
 };
 
@@ -116,6 +143,7 @@ const MONO = "'SF Mono', Menlo, Consolas, 'Courier New', monospace";
 
 export default function CommunityGamePlay() {
   const { gameId } = useParams<{ gameId: string }>();
+  const [, navigate] = useLocation();
   const pyodide = usePyodideGame();
 
   const [frame, setFrame] = useState<PyodideFrameData | null>(null);
@@ -133,6 +161,9 @@ export default function CommunityGamePlay() {
   const animRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const feedbackRef = useRef<HTMLDivElement | null>(null);
   const heldRef = useRef<string | null>(null);
+  /** The task this component is currently showing, so a same-route param change can be
+   *  told apart from a re-render. See the task-change effect below `start`. */
+  const shownGameRef = useRef(gameId);
 
   /** Only isLive + defaultFps are read here. The catalog names nothing. */
   const { data: catalog } = useQuery<{ data: { games: MirroredGame[] } }>({
@@ -275,7 +306,7 @@ export default function CommunityGamePlay() {
   }, [pyodide, canSend, applyFrame, gameState]);
 
   const undo = useCallback(async () => {
-    if (!frame?.undo_depth) return;
+    if (!frame?.undo_depth || pyodide.isActing) return;
     try { applyFrame(await pyodide.undo()); } catch { /* surfaced through pyodide.error */ }
   }, [pyodide, frame, applyFrame]);
 
@@ -286,6 +317,11 @@ export default function CommunityGamePlay() {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (e.key === 'r' || e.key === 'R') { e.preventDefault(); void act('RESET'); return; }
+      // Z is Undo. It returns before KEY_MAP is consulted so it can never also be read as
+      // a move -- see the note on KEY_MAP. Held down it repeats, which is what rewinding
+      // out of a blind guess actually looks like; undo() itself refuses at depth 0 and
+      // while a step is in flight, so the repeat cannot outrun the engine.
+      if (e.key === 'z' || e.key === 'Z') { e.preventDefault(); void undo(); return; }
       const action = KEY_MAP[e.key];
       if (!action || !canSend(action)) return;
       e.preventDefault();
@@ -300,7 +336,7 @@ export default function CommunityGamePlay() {
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
-  }, [act, canSend, gameState, live]);
+  }, [act, undo, canSend, gameState, live]);
 
   // ── Live tick ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -319,8 +355,10 @@ export default function CommunityGamePlay() {
 
   useEffect(() => () => { if (animRef.current) clearTimeout(animRef.current); }, []);
 
-  const showFeedbackPanel =
-    gameState !== 'idle' && (showFeedback || gameState === 'won' || gameState === 'lost');
+  /** The run is over — won or lost. Both ends offer feedback and both ends move on. */
+  const runOver = gameState === 'won' || gameState === 'lost';
+
+  const showFeedbackPanel = gameState !== 'idle' && (showFeedback || runOver);
 
   // The console alone fills a laptop viewport, so a panel appended below it opens
   // off-screen and is never seen. Bring it into view when it appears.
@@ -357,11 +395,62 @@ export default function CommunityGamePlay() {
 
 
   const start = useCallback(async () => {
-    humanPlay.start(gameId ?? '');
+    const target = gameId;
+    humanPlay.start(target ?? '');
     setDisplayFrameIndex(0);
-    try { applyFrame(await pyodide.initGame(gameId!)); }
-    catch { /* pyodide.error is rendered */ }
+    try {
+      const first = await pyodide.initGame(target!);
+      // A cold boot is a minute long and Next is reachable for the whole of it. If the
+      // player moved on while this was in flight, the frame belongs to a task they are no
+      // longer looking at — drop it rather than dealing it onto the new task's screen.
+      if (shownGameRef.current !== target) return;
+      applyFrame(first);
+    } catch { /* pyodide.error is rendered */ }
   }, [pyodide, gameId, applyFrame]);
+
+  /**
+   * SAME ROUTE, DIFFERENT TASK.
+   *
+   * Next goes from /arc3/play/A to /arc3/play/B — one route, one param. wouter swaps
+   * `gameId` and React keeps this component mounted, and nothing here used to read that:
+   * the old frame, the old GAME OVER overlay and the old game inside the Pyodide worker
+   * all survived the navigation. The URL changed and the screen did not, which is the
+   * whole of the "clicking Next Task does nothing" report.
+   *
+   * Reset in place rather than remounting on `key={gameId}`. A remount tears down
+   * usePyodideGame, whose unmount terminates the worker, so every Next would pay a full
+   * cold boot — Pyodide, numpy, pydantic and the engine wheel, up to a minute — on a
+   * queue meant to be walked hundreds of times. The worker's `load_game` accepts a new
+   * game into a warm runtime, so we keep the runtime and re-init.
+   *
+   * A warm worker starts the next task immediately; a cold or broken one falls back to
+   * the START screen, because that first minute is one the player should choose to spend.
+   */
+  useEffect(() => {
+    if (shownGameRef.current === gameId) return;
+    shownGameRef.current = gameId;
+
+    // The finished run's tail events, before humanPlay.start() drops the queue. This page
+    // never unmounts on a Next, so pagehide will not do it for us.
+    try { humanPlay.flush(false); } catch { /* fire and forget */ }
+
+    if (animRef.current) { clearTimeout(animRef.current); animRef.current = null; }
+    heldRef.current = null;
+    setFrame(null);
+    setGameState('idle');
+    setDisplayFrameIndex(0);
+    setShowFeedback(false);
+    setShowHelp(false);
+    setLive(false);
+
+    if (pyodide.status === 'ready') void start();
+  }, [gameId, start, pyodide.status]);
+
+  /** Feedback's exit, and the game-over Skip. Nowhere to go is a no-op, never a dead end
+   *  on the queue's last task. */
+  const goNext = useCallback(() => {
+    if (nextGameId) navigate(`/arc3/play/${nextGameId}`);
+  }, [navigate, nextGameId]);
 
   const statusLabel = gameState === 'won' ? 'WIN'
     : gameState === 'lost' ? 'GAME OVER'
@@ -392,10 +481,8 @@ export default function CommunityGamePlay() {
       {/* One slim bar. This route sits outside PageLayout precisely so the site nav is
           not stacked on top of the console. */}
       <div className="flex items-center gap-4 px-4 h-11 shrink-0" style={{ borderBottom: `1px solid ${ARC.border}` }}>
-        <Link href="/arc3/gallery">
-          <a className="flex items-center gap-1.5 text-[12px]" style={{ color: ARC.dim }}>
-            <ArrowLeft className="w-3.5 h-3.5" /> All tasks
-          </a>
+        <Link href="/arc3/gallery" className="flex items-center gap-1.5 text-[12px]" style={{ color: ARC.dim }}>
+          <ArrowLeft className="w-3.5 h-3.5" /> All tasks
         </Link>
         <span className="text-[11px]" style={{ color: ARC.faint }}>
           {gameState === 'idle' ? '' : `Step ${frame?.action_counter ?? 0}`}
@@ -414,11 +501,12 @@ export default function CommunityGamePlay() {
         {/* Always available: most players will not finish most tasks, and the loop that
             produces volume is play -> react -> next, not play -> finish -> next. */}
         {nextGameId && (
-          <Link href={`/arc3/play/${nextGameId}`}>
-            <a className={`flex items-center gap-1 text-[12px] ${statusLabel ? '' : 'ml-auto'}`}
-               style={{ color: ARC.pink }}>
-              Next task <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+          <Link
+            href={`/arc3/play/${nextGameId}`}
+            className={`flex items-center gap-1 text-[12px] ${statusLabel ? '' : 'ml-auto'}`}
+            style={{ color: ARC.pink }}
+          >
+            Next task <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         )}
       </div>
@@ -492,7 +580,9 @@ export default function CommunityGamePlay() {
                 </button>
                 <p className="text-[11px]" style={{ color: 'rgba(255,255,255,.55)' }}>
                   {pyodide.status === 'loading'
-                    ? 'One-time engine load — this can take a minute'
+                    ? pyodide.loadingStage === 'game'
+                      ? 'Loading this task'
+                      : 'One-time engine load — this can take a minute'
                     : pyodide.error
                       ? 'Press Start to try again'
                       : 'Press Start to Play'}
@@ -519,9 +609,9 @@ export default function CommunityGamePlay() {
                        style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
                     <p style={{ color: '#FFF' }}>Controls</p>
                     <p>Arrows or WASD — the d-pad.</p>
-                    <p>Spacebar or Z — the Spacebar button.</p>
+                    <p>Spacebar — the Spacebar button.</p>
                     <p>The Click button is an action, not a place on the screen.</p>
-                    <p>R resets. Undo steps back one move.</p>
+                    <p>Z undoes one move. R resets the level.</p>
                     <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
                     <p style={{ color: 'rgba(255,255,255,.5)' }}>
                       Greyed controls are ones this task does not use. What any of them do
@@ -546,11 +636,12 @@ export default function CommunityGamePlay() {
                         Try the level again
                       </button>
                       {nextGameId && (
-                        <Link href={`/arc3/play/${nextGameId}`}>
-                          <a className="px-4 h-8 text-[11px] rounded-[4px] inline-flex items-center gap-1.5"
-                             style={{ background: ARC.pink, color: '#fff' }}>
-                            Next task <ArrowRight className="w-3.5 h-3.5" />
-                          </a>
+                        <Link
+                          href={`/arc3/play/${nextGameId}`}
+                          className="px-4 h-8 text-[11px] rounded-[4px] inline-flex items-center gap-1.5"
+                          style={{ background: ARC.pink, color: '#fff' }}
+                        >
+                          Next task <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
                       )}
                     </div>
@@ -568,13 +659,23 @@ export default function CommunityGamePlay() {
         {showFeedbackPanel && (
           <div ref={feedbackRef} className="w-full max-w-[500px] lg:max-w-[340px] lg:mt-8 p-4 shrink-0"
                style={{ border: `1px solid ${ARC.border}`, background: '#111010' }}>
+            {/* onDone was undefined at game over — the panel opens off `gameState` there,
+                not off `showFeedback` — so sending feedback ended at "Thanks" and left the
+                player parked on a task they had finished. Finishing the form IS the end of
+                the run, so it hands them the next task. Mid-run it is still just a
+                scratchpad and closing it returns you to the game you are playing. */}
             <Arc3FeedbackPanel
               compact
               key={gameId}
               gameId={gameId ?? ''}
               reachedLevel={levelsDone}
               outcome={gameState === 'won' ? 'completed' : gameState === 'lost' ? 'lost' : 'in_progress'}
-              onDone={showFeedback ? () => setShowFeedback(false) : undefined}
+              doneLabel={runOver ? 'Skip \u2192 next task' : 'Skip'}
+              onDone={
+                runOver
+                  ? (nextGameId ? goNext : undefined)
+                  : () => setShowFeedback(false)
+              }
             />
           </div>
         )}
