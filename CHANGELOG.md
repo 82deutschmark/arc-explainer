@@ -7,6 +7,27 @@
 # reference the old numbers.
 
 
+### Version 9.9.0  Sep 1, 2026
+
+- **Show people the games we are unsure about, not the games we are proud of** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: this site is a filter for our own generator's output. The official 25, the 252 community games and the in-house ones are known good — nobody needs to tell us that. What needs a human is whatever our generator produced most recently, because that is the work we have the least evidence about. The review order was sorted by how built out a game is, which is a showcase, not a filter. It is now newest first: `q800-v1` before `q246-v1`.
+  - **Quality still decides who gets in, not who goes first**: the 66 near-copies and the 177 games a random button-masher can beat never enter the queue at all. So a reviewer meets recent work without meeting known junk.
+  - **The gallery and "Next task" were showing two different orders.** Next walked the queue; the gallery listed whatever order the catalog happened to return, so the first thing a visitor saw was an arbitrary game. Both now read the same order from one place on the server, so they cannot drift apart again.
+  - **How "newest" is decided, since it is worth knowing**: there is no date on these games anywhere. The number in the id is the only signal, and the generator emits them in order — the batches of near-copies landing on consecutive numbers is what shows it. If that ever stops being true, this ordering silently stops meaning what it says.
+  - **Checked**: queue and gallery both open on q800-v1, the queue holds 328 with no culled game in it, and Next from q800-v1 goes to q790-v1.
+  - **Files**: `server/services/arc3Mirror/Arc3Triage.ts`, `client/src/pages/arc3-community/CommunityGallery.tsx`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
+
+### Version 9.8.0  Sep 1, 2026
+
+- **Our own games would have told the player what they were** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: the site hides a game's name, description and tags on purpose — working out what a game is *is* the experiment, and a label at the top of the screen ends it. That hiding was checked against Son's games, whose names are meaningless (`gh14`). Ours are not. They are called things like `g001_toll_gate` and `g013_rot_garden`, and the play screen prints the game's name in its header, so the first thing a player of our own games would have read is the answer.
+  - **What changed**: our catalog is now renamed on the way out — `g001_toll_gate` is served as `te6fdae3a`, and the code inside is rewritten to match so it still runs. The real names stay on the server and are never sent. Son's games are untouched: his names are already meaningless and they are the shared vocabulary between the two sites.
+  - **Which is the point of the split**: this site runs the human experiment, where a name is a spoiler. `arc3.sonpham.net` is the researchers' site, where naming the game is the whole idea. Same games, opposite requirements, and now that difference is one setting per catalog rather than an assumption.
+  - **Still true, and accepted**: anyone who opens their browser's developer tools can read the game's code, and a comment inside it may say what it does. Hiding it from someone who has gone looking would cost more than it is worth; this is about what a player is *shown*.
+  - **Checked**: Son's 877 games serve exactly as before, ids and all. The rename was driven end-to-end against a stand-in catalog — the renamed game came back playable with no trace of the original name, and one catalog being unreachable still served the other.
+  - **Note for whoever wires up our 50 games**: they still cannot load (the arena repo is private and the file the mirror asks for is not there — see `docs/plans/2026-09-01-arc3-catalog-flip.md`). The rename is ready for them when they land.
+  - **Files**: `server/services/arc3Mirror/Arc3MirrorCatalog.ts`.
+
 ### Version 9.7.0  Sep 1, 2026
 
 - **Our own 50 games can now appear on the play surface, and the telemetry stopped throwing away half of what it was asked to collect** (Author: Mark Barney / Claude Opus 5)
@@ -20,17 +41,6 @@
   - **One fault found on the way past and fixed**: the count of a player's moves was being incremented for every recorded row, which quietly included pressing reset — so someone who reset ten times carried ten moves they never made into the averages this site's human-versus-AI comparison is built on. It now counts moves only. The attention marks above would have made the same fault considerably worse.
   - **Checked against a real database**: created the table in its currently deployed shape with a row already in it, ran the code against it, and confirmed the new columns were added without disturbing the existing row. Confirmed a click stores its position, that the level and the score store different numbers, and that reset and the attention marks are recorded but not counted as moves. Confirmed that pulling the database out from under the site still answers the player normally instead of failing their move. The catalog merge was exercised against the live upstream with our manifest served locally, in all four combinations of one, other, both and neither being reachable.
   - **Files**: `server/services/arc3Mirror/Arc3MirrorCatalog.ts`, `server/routes/arc3HumanPlay.ts`, `server/repositories/HumanPlayRepository.ts`, `client/src/lib/humanPlayTelemetry.ts`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`. Companion change in the arena repo: `arc3games/tools/build_dist_manifest.py`, `arc3games/dist/manifest.json`.
-
-### Version 9.7.0  Sep 1, 2026
-
-- **Our own games would have told the player what they were** (Author: Mark Barney / Claude Opus 5)
-  - **In plain language**: the site hides a game's name, description and tags on purpose — working out what a game is *is* the experiment, and a label at the top of the screen ends it. That hiding was checked against Son's games, whose names are meaningless (`gh14`). Ours are not. They are called things like `g001_toll_gate` and `g013_rot_garden`, and the play screen prints the game's name in its header, so the first thing a player of our own games would have read is the answer.
-  - **What changed**: our catalog is now renamed on the way out — `g001_toll_gate` is served as `te6fdae3a`, and the code inside is rewritten to match so it still runs. The real names stay on the server and are never sent. Son's games are untouched: his names are already meaningless and they are the shared vocabulary between the two sites.
-  - **Which is the point of the split**: this site runs the human experiment, where a name is a spoiler. `arc3.sonpham.net` is the researchers' site, where naming the game is the whole idea. Same games, opposite requirements, and now that difference is one setting per catalog rather than an assumption.
-  - **Still true, and accepted**: anyone who opens their browser's developer tools can read the game's code, and a comment inside it may say what it does. Hiding it from someone who has gone looking would cost more than it is worth; this is about what a player is *shown*.
-  - **Checked**: Son's 877 games serve exactly as before, ids and all. The rename was driven end-to-end against a stand-in catalog — the renamed game came back playable with no trace of the original name, and one catalog being unreachable still served the other.
-  - **Note for whoever wires up our 50 games**: they still cannot load (the arena repo is private and the file the mirror asks for is not there — see `docs/plans/2026-09-01-arc3-catalog-flip.md`). The rename is ready for them when they land.
-  - **Files**: `server/services/arc3Mirror/Arc3MirrorCatalog.ts`.
 
 ### Version 9.6.0  Sep 1, 2026
 
