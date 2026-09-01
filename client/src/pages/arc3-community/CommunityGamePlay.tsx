@@ -211,8 +211,15 @@ export default function CommunityGamePlay() {
    * link) — Next must never dead-end.
    */
   const nextGameId = useMemo(() => {
-    const queue = review?.data?.games ?? [];
+    const allQueued = review?.data?.games ?? [];
     const played = new Set((stats?.data?.games ?? []).map((g) => g.game_id));
+    const games = catalog?.data?.games ?? [];
+
+    // A queued task the catalog cannot serve is not a next task. The queue is static
+    // triage and lists tasks independently of whether any source can currently fetch them
+    // -- as of 01-Sep the arena set is triaged but unservable -- so Next must check.
+    const servable = new Set(games.map((g) => g.gameId));
+    const queue = allQueued.filter((g) => servable.has(g.gameId));
 
     if (queue.length > 0) {
       const at = queue.findIndex((g) => g.gameId === gameId);
@@ -225,7 +232,6 @@ export default function CommunityGamePlay() {
       if (fallback && fallback.gameId !== gameId) return fallback.gameId;
     }
 
-    const games = catalog?.data?.games ?? [];
     if (games.length === 0) return null;
     const pools = [
       games.filter((g) => g.category === PIPELINE_CATEGORY && !played.has(g.gameId)),

@@ -43,19 +43,38 @@ export default function Arc3Review() {
     data: { games: { game_id: string }[] };
   }>({ queryKey: ['/api/arc3-play/human-stats'], staleTime: 60 * 1000 });
 
+  /**
+   * The catalog, because being in the queue does not mean being playable.
+   *
+   * The queue is static triage and is deliberately independent of the mirror, so it lists
+   * tasks whether or not a catalog source can currently serve them. Those two facts met on
+   * 01-Sep: the 50 arena tasks were triaged into the front of the queue while the arena
+   * source still cannot load (private repo, and the manifest it fetches has never been
+   * built), so the front 36 entries address tasks that do not exist. Unfiltered, this
+   * route -- the one URL we hand to a person -- would have opened a dead task for every
+   * visitor.
+   */
+  const { data: catalog, isLoading: catalogLoading } = useQuery<{
+    data: { games: { gameId: string }[] };
+  }>({ queryKey: ['/api/arc3-mirror/games'], staleTime: 5 * 60 * 1000 });
+
   const target = useMemo(() => {
-    const queue = review?.data?.games ?? [];
+    const servable = new Set((catalog?.data?.games ?? []).map((g) => g.gameId));
+    // Before the catalog answers, every task looks unservable; waiting is right, because
+    // sending someone to a dead task is worse than a moment of "finding you a task".
+    if (servable.size === 0) return null;
+    const queue = (review?.data?.games ?? []).filter((g) => servable.has(g.gameId));
     if (queue.length === 0) return null;
     const played = new Set((stats?.data?.games ?? []).map((g) => g.game_id));
     return (queue.find((g) => !played.has(g.gameId)) ?? queue[0]).gameId;
-  }, [review, stats]);
+  }, [review, stats, catalog]);
 
   useEffect(() => {
     if (target) setLocation(`/arc3/play/${target}`, { replace: true });
   }, [target, setLocation]);
 
   const totals = review?.data?.totals;
-  const waiting = isLoading || statsLoading;
+  const waiting = isLoading || statsLoading || catalogLoading;
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center gap-3 px-6"
