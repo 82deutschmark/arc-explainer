@@ -143,6 +143,10 @@ router.get(
     res.json(
       formatResponse.success({
         method: Arc3Triage.method(),
+        // Per-batch, because the two batches were not measured the same way: the arena
+        // batch was never duplicate-clustered, and a caller reading `duplicateOf: null`
+        // off those rows would otherwise take a measurement that never ran for a pass.
+        generations: Arc3Triage.generations(),
         totals: Arc3Triage.totals(),
         games: includeAll ? Arc3Triage.all() : Arc3Triage.queue(),
       }),
