@@ -27,6 +27,7 @@ import argparse
 import json
 import re
 import statistics
+import unicodedata
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -64,8 +65,11 @@ STOPWORDS = {
 
 def cell_label(row: dict) -> str:
     """Human-readable identity of a sampler cell, used as the grouping key."""
+    # Keyed on reasoning_effort, not on the derived thinking on/off: low, medium and xhigh are
+    # all "on" but render three different system prompts, so collapsing them into one cell
+    # would silently pool three different treatments.
     return (
-        f"think={row.get('thinking')} temp={row.get('temperature')} "
+        f"effort={row.get('reasoning_effort')} temp={row.get('temperature')} "
         f"top_k={row.get('top_k')} top_p={row.get('top_p')} "
         f"min_p={row.get('min_p')} prompt={row.get('prompt_variant')}"
     )
@@ -127,26 +131,63 @@ def distinct_count(labels: list[str], threshold: float = 0.6) -> int:
     return len(clusters)
 
 
+# Characters that are just typography, not symptoms. A model writing well uses en dashes,
+# non-breaking hyphens, curly quotes and ellipses freely, and an earlier version of this
+# heuristic counted them and flagged a perfectly coherent answer on its very first outing.
+TYPOGRAPHIC = set("‐‑‒–—―‘’‚“”„"
+                  "…′″ ­​→←×°·•")
+
+
+def exotic_char_count(text: str) -> int:
+    """
+    Count characters that signal symbol salad rather than ordinary prose.
+
+    Maths operators, stray Greek, subscripts, dingbats - the vocabulary of the glossolalic
+    answer (`H≈MathOx(hd8±₁^η ζᵥ)`). Typographic punctuation is excluded, as are the arrows and
+    degree signs a model legitimately reaches for when describing a grid.
+    """
+    count = 0
+    for char in text:
+        if ord(char) < 0x80 or char in TYPOGRAPHIC:
+            continue
+        category = unicodedata.category(char)
+        # Sm/Sk/So: maths, modifier and other symbols. No: subscript/superscript numerals.
+        if category in ("Sm", "Sk", "So", "No"):
+            count += 1
+        elif category == "Ll" or category == "Lu":
+            # A non-Latin letter loose in English prose - Greek variables and the like.
+            name = unicodedata.name(char, "")
+            if not name.startswith("LATIN"):
+                count += 1
+    return count
+
+
 def collapse_hint(content: str) -> tuple[bool, str]:
     """
     Cheap flag for the glossolalic failure mode seen on 01-Sep-2026.
 
-    It looks for a high ratio of non-alphabetic characters, which is what that output had
-    (`H≈MathOx(hd8±₁^η ζᵥ)`). This is a HINT ONLY. It was tuned by eye on a single example from
-    a single model and it will be wrong on another model without announcing it - it will miss a
-    fluent-but-nonsensical answer entirely, which is the more dangerous failure. The evidence
-    string is returned with it so a human can confirm or reject every flag.
+    A HINT ONLY, and a narrow one. It fires on symbol density, which is what that output had,
+    and it is checked against both of the texts we actually possess: the known-bad hand run
+    (which scores ~40 exotic characters) and a known-good structured answer that merely uses
+    non-breaking hyphens (which scores 0 and used to be flagged). Two examples is not a tuning
+    set, so treat every flag as a question.
+
+    What it will NOT catch, and this is the more dangerous failure: an answer that is fluent,
+    correctly punctuated and complete nonsense. Nothing cheap catches that. Hand-label before
+    citing any rate.
     """
     text = (content or "").strip()
     if not text:
         return False, ""
-    letters = sum(c.isalpha() or c.isspace() for c in text)
-    ratio = 1 - (letters / len(text))
-    non_ascii = sum(ord(c) > 0x2000 for c in text)
-    if ratio > 0.18 or non_ascii > 12:
+    exotic = exotic_char_count(text)
+    # Markdown emphasis and table pipes inflate the punctuation ratio in perfectly good answers,
+    # so the ratio is a weak secondary signal with a high bar, not the primary one.
+    prose = sum(c.isalnum() or c.isspace() for c in text)
+    ratio = 1 - (prose / len(text))
+    if exotic >= 8 or ratio > 0.30:
         worst = max(
             (line for line in text.splitlines() if line.strip()),
-            key=lambda line: sum(ord(c) > 0x2000 or not (c.isalnum() or c.isspace()) for c in line),
+            key=lambda line: exotic_char_count(line),
             default="",
         )
         return True, worst.strip()[:160]
