@@ -1,0 +1,352 @@
+{
+  "t00810611": {
+    "backgroundColour": 5,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.1475,
+    "width": 64
+  },
+  "t027cce33": {
+    "backgroundColour": 1,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.0918,
+    "width": 64
+  },
+  "t056a6b16": {
+    "backgroundColour": 4,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.3057,
+    "width": 64
+  },
+  "t088853a8": {
+    "backgroundColour": 2,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.5039,
+    "width": 64
+  },
+  "t0bf293c2": {
+    "backgroundColour": 5,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.2969,
+    "width": 64
+  },
+  "t18586acc": {
+    "backgroundColour": 4,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.3584,
+    "width": 64
+  },
+  "t18c1e5f2": {
+    "backgroundColour": 13,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.5,
+    "width": 64
+  },
+  "t2774d7a8": {
+    "backgroundColour": 4,
+    "distinctColours": 5,
+    "height": 64,
+    "inkFraction": 0.2412,
+    "width": 64
+  },
+  "t33bdec30": {
+    "backgroundColour": 10,
+    "distinctColours": 4,
+    "height": 64,
+    "inkFraction": 0.2559,
+    "width": 64
+  },
+  "t35352a03": {
+    "backgroundColour": 13,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.1667,
+    "width": 64
+  },
+  "t3722717c": {
+    "backgroundColour": 1,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.4058,
+    "width": 64
+  },
+  "t3d56da2d": {
+    "backgroundColour": 3,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.2168,
+    "width": 64
+  },
+  "t4049adae": {
+    "backgroundColour": 0,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.2559,
+    "width": 64
+  },
+  "t4409a16e": {
+    "backgroundColour": 5,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.375,
+    "width": 64
+  },
+  "t521bcd1b": {
+    "backgroundColour": 5,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.3071,
+    "width": 64
+  },
+  "t562e07f7": {
+    "backgroundColour": 0,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.2314,
+    "width": 64
+  },
+  "t61247d23": {
+    "backgroundColour": 4,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.3506,
+    "width": 64
+  },
+  "t61abcaed": {
+    "backgroundColour": 1,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.0947,
+    "width": 64
+  },
+  "t6381e4da": {
+    "backgroundColour": 4,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.2695,
+    "width": 64
+  },
+  "t63b03ddb": {
+    "backgroundColour": 1,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.1465,
+    "width": 64
+  },
+  "t643da6ee": {
+    "backgroundColour": 0,
+    "distinctColours": 4,
+    "height": 64,
+    "inkFraction": 0.0791,
+    "width": 64
+  },
+  "t64b427c7": {
+    "backgroundColour": 5,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.4038,
+    "width": 64
+  },
+  "t6acac767": {
+    "backgroundColour": 1,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.2285,
+    "width": 64
+  },
+  "t6d44af56": {
+    "backgroundColour": 5,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.0308,
+    "width": 64
+  },
+  "t7114b1e1": {
+    "backgroundColour": 1,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.04,
+    "width": 64
+  },
+  "t715ea045": {
+    "backgroundColour": 2,
+    "distinctColours": 4,
+    "height": 64,
+    "inkFraction": 0.1233,
+    "width": 64
+  },
+  "t74db26e1": {
+    "backgroundColour": 5,
+    "distinctColours": 3,
+    "height": 64,
+    "inkFraction": 0.0117,
+    "width": 64
+  },
+  "t7725dccf": {
+    "backgroundColour": 4,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.2522,
+    "width": 64
+  },
+  "t77f54ade": {
+    "backgroundColour": 4,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.157,
+    "width": 64
+  },
+  "t80d5b02c": {
+    "backgroundColour": 5,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.375,
+    "width": 64
+  },
+  "t89a4dc45": {
+    "backgroundColour": 4,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.332,
+    "width": 64
+  },
+  "t8dbff678": {
+    "backgroundColour": 4,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.2969,
+    "width": 64
+  },
+  "t98b12bb2": {
+    "backgroundColour": 1,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.1133,
+    "width": 64
+  },
+  "t999ce20d": {
+    "backgroundColour": 1,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.1602,
+    "width": 64
+  },
+  "t99e8274e": {
+    "backgroundColour": 5,
+    "distinctColours": 5,
+    "height": 64,
+    "inkFraction": 0.2852,
+    "width": 64
+  },
+  "ta3597a87": {
+    "backgroundColour": 4,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.2988,
+    "width": 64
+  },
+  "ta6acc86e": {
+    "backgroundColour": 4,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.2061,
+    "width": 64
+  },
+  "ta6b3b4a0": {
+    "backgroundColour": 4,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.4961,
+    "width": 64
+  },
+  "taa5fdde0": {
+    "backgroundColour": 4,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.248,
+    "width": 64
+  },
+  "tb4f43900": {
+    "backgroundColour": 5,
+    "distinctColours": 4,
+    "height": 64,
+    "inkFraction": 0.0195,
+    "width": 64
+  },
+  "tc6f8ee4c": {
+    "backgroundColour": 1,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.5635,
+    "width": 64
+  },
+  "tca5096fc": {
+    "backgroundColour": 4,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.2461,
+    "width": 64
+  },
+  "tcd57bacb": {
+    "backgroundColour": 5,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.2383,
+    "width": 64
+  },
+  "td1047401": {
+    "backgroundColour": 4,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.2422,
+    "width": 64
+  },
+  "td6b934b7": {
+    "backgroundColour": 4,
+    "distinctColours": 5,
+    "height": 64,
+    "inkFraction": 0.251,
+    "width": 64
+  },
+  "tdbd4af05": {
+    "backgroundColour": 9,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.2891,
+    "width": 64
+  },
+  "te5f94dfe": {
+    "backgroundColour": 4,
+    "distinctColours": 5,
+    "height": 64,
+    "inkFraction": 0.3125,
+    "width": 64
+  },
+  "tf17bd2df": {
+    "backgroundColour": 4,
+    "distinctColours": 6,
+    "height": 64,
+    "inkFraction": 0.3516,
+    "width": 64
+  },
+  "tfd14806f": {
+    "backgroundColour": 13,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.7656,
+    "width": 64
+  },
+  "tfdb1fc6f": {
+    "backgroundColour": 4,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.3516,
+    "width": 64
+  }
+}

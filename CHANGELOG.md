@@ -12,6 +12,17 @@
 # reference the old numbers.
 
 
+### Version 9.29.0  Sep 2, 2026
+
+- **The mechanic guide now shows each task instead of only describing it** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: every card on `/arc3/mechanics` now carries a picture of level 1. The page was a reference for fifty *visual* puzzles that contained no images, which is the first item on its remediation plan and the reason two of the notes players left could not be acted on.
+  - **Why it mattered**: "Seemed weird. Could definitely use more garnish. Is a big empty screen." is a note about something you can only see. So is "formulaic". Neither is checkable from a paragraph of prose, and until now looking at fifty tasks meant opening and playing fifty tasks.
+  - **It is not a spoiler, and that is deliberate.** The frame is taken after RESET and before any move -- the same pixels the play surface opens with. It is served without the `noindex` the answer-key routes carry, because it gives away nothing the player is not shown anyway.
+  - **The palette was not copied a fourth time.** `shared/config/arc3Colors.ts` says it is the single source of truth; the renderer parses the sixteen triples out of it and refuses to run if that parse fails, rather than falling back to a default that would produce fifty plausible images that are quietly wrong. `generate_arc3_video.py` made that copy once already, which is why changing a colour today means changing three files.
+  - **The id is checked against an allowlist rather than escaped.** A game id that reaches the filesystem is how a read of `../../.env` gets written; the route answers only for the fifty ids in the digest and 404s everything else, verified against a traversal attempt.
+  - **A side effect worth having**: `frames.json` records how many colours each opening frame uses and what share of the board is not the background. Descriptive only, nothing gates on it, and it is crude -- a surrounding border counts as ink -- but `t74db26e1` opens on 1.2% of the board in three colours, and that is a prompt to go and look.
+  - **Files**: `scripts/arc3/render_authored_frames.py`, `server/data/arc3-games/frames/*.png`, `server/data/arc3-games/frames.json`, `server/routes/arc3Mirror.ts`, `client/src/pages/arc3-community/Arc3MechanicGuide.tsx`.
+
 ### Version 9.28.0  Sep 2, 2026
 
 - **A remediation plan for `/arc3/mechanics`, which is incomplete and reads as self-report** (Author: Mark Barney / Claude Opus 5)

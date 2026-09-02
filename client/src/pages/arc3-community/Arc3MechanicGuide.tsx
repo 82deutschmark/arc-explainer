@@ -2,10 +2,18 @@
 Author: Claude Opus 5
 Date: 2026-09-02
 PURPOSE: The unlisted answer key for the 50 hand-authored ARC-AGI-3 tasks. One row per
-         task: what it actually is, what each control does, what wins it, and the
-         structural facts derived from its source -- the action list it advertises, whether
-         its ACTION6 is a spatial click or a plain button, its board geometry, its level
-         count and its triage verdict.
+         task: a picture of level 1, what it actually is, what each control does, what
+         wins it, and the structural facts derived from its source -- the action list it
+         advertises, whether its ACTION6 is a spatial click or a plain button, its board
+         geometry, its level count and its triage verdict.
+
+         THE PICTURE IS THE PART THAT WAS MISSING. This is a reference for a set of
+         VISUAL puzzles and it shipped without a single image, so the two complaints
+         players actually left -- "a big empty screen", "formulaic" -- could not be
+         checked from it at all. Frames come from scripts/arc3/render_authored_frames.py,
+         are committed rather than rendered per request, and show the board after RESET
+         and before any move: the same pixels the play surface opens with, and therefore
+         the one part of this page that gives nothing away.
 
          WHY IT EXISTS. Auditing the synthetic set previously meant playing a task blind
          until you worked out what it was, or asking the person who wrote it. Neither
@@ -189,10 +197,28 @@ export default function Arc3MechanicGuide() {
                 </span>
               </div>
 
-              <p className="text-[13.5px] leading-relaxed">{g.mechanic}</p>
-              <div className="grid sm:grid-cols-2 gap-2 text-[12.5px] leading-relaxed text-muted-foreground">
-                <p><span className="font-medium text-foreground">Controls. </span>{g.controls}</p>
-                <p><span className="font-medium text-foreground">Wins when. </span>{g.goal}</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* Level 1 before any move -- the same pixels the play surface opens with,
+                    so this is the one part of the card that is not a spoiler. A page about
+                    visual puzzles that shows none of them cannot answer "is this one a big
+                    empty screen", which is a note a player actually left. */}
+                <img
+                  src={`/api/arc3-mirror/frames/${g.gameId}.png`}
+                  alt={`Opening frame of ${g.gameId}`}
+                  loading="lazy"
+                  width={256}
+                  height={256}
+                  className="w-full sm:w-[168px] h-auto shrink-0 self-start rounded border bg-muted"
+                  style={{ imageRendering: 'pixelated' }}
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+                <div className="space-y-2 min-w-0">
+                  <p className="text-[13.5px] leading-relaxed">{g.mechanic}</p>
+                  <div className="grid sm:grid-cols-2 gap-2 text-[12.5px] leading-relaxed text-muted-foreground">
+                    <p><span className="font-medium text-foreground">Controls. </span>{g.controls}</p>
+                    <p><span className="font-medium text-foreground">Wins when. </span>{g.goal}</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
