@@ -12,6 +12,18 @@
 # reference the old numbers.
 
 
+### Version 9.28.0  Sep 2, 2026
+
+- **A remediation plan for `/arc3/mechanics`, which is incomplete and reads as self-report** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: the mechanic guide was reviewed by a second engineer and did not survive it. The verdict was that it is a wall of prose about engine internals rather than a tool anyone can review a game with, and the plan says what to do about that in six small steps.
+  - **The prose is the model marking its own homework.** All fifty notes were written by reading the sources; the cross-check added the same day caught three wrong notes on first run, one of them a wrong *mechanic*. There is no reason to believe the other forty-seven, and a reviewer will trust that field instead of playing. Until a human confirms a note it should be rendered as unverified and labelled as model-written.
+  - **It is text-only, for a set of visual puzzles.** Not one frame of one level appears on the page, so the two complaints players actually left -- "a big empty screen", "formulaic" -- cannot be judged from it at all.
+  - **It foregrounds the wrong numbers and hides the right ones.** The four hero tiles count ACTION6 plumbing, which is a bug tracker's view. Meanwhile thirty-six recorded feedback responses sit in the database where only a SQL query can reach them, and the page that is meant to be the reviewer's reference shows none of them.
+  - **The prose is measurably samey**: fourteen of fifty `controls` fields are the literal string "D-pad only.", fifteen mechanics open "D-pad walks", eleven goals open "Reach the exit/goal". A note that could describe ten games describes none.
+  - **Reveal-on-feedback poisons the next play.** Sessions are not tied to people, so one submit puts the answer key in front of someone who may open the same task again, and nothing can tell.
+  - **What is explicitly kept**: `mechanic_digest.py` and its self-test. The derived facts are the trustworthy half; the problem is what was built on top of them.
+  - **Files**: `docs/2026-09-02-arc3-mechanics-page-remediation.md`.
+
 ### Version 9.27.0  Sep 2, 2026
 
 - **The crosshair was lying on 26 of the 50 tasks. Fixed.** (Author: Mark Barney / Claude Opus 5)
