@@ -1,0 +1,253 @@
+{
+ "_README": "Human prose, one entry per game, merged into mechanics.json by scripts/arc3/mechanic_digest.py. This file is the ONLY part of the digest a machine does not derive, so re-running the extractor never overwrites it. Written by reading each game's source: `mechanic` is what the task is, `controls` is what each action does, `goal` is the win condition. SPOILERS by construction -- that is the point.",
+ "t00810611": {
+  "mechanic": "Bloxorz. A 1x2 block that stands upright or lies flat, rolled around a 16x16 floor with holes in it. Which cells it occupies depends on how it is lying, so the same move is safe standing and fatal lying down.",
+  "controls": "D-pad rolls the block. Nothing else is used.",
+  "goal": "Drop into the goal pit while UPRIGHT -- lying across it does not count. Broad plates need the block's weight spread flat; point plates need it standing. Rolling off the floor resets the level."
+ },
+ "t027cce33": {
+  "mechanic": "A ghost recorder. Your last five moves are kept on a tape; one press releases a ghost that replays them from where you started. The ghost is a second body that can stand on a pressure plate or trip a latch while you are somewhere else.",
+  "controls": "D-pad walks. ACTION5 releases the ghost, once per level -- the tape stops recording the moment you use it.",
+  "goal": "Reach the goal cell. Doors that need a plate held cannot be crossed alone, so the puzzle is choosing which five moves to leave on the tape."
+ },
+ "t056a6b16": {
+  "mechanic": "A size gate. You carry a girth set by how many pips you have collected, and apertures in the walls only admit a body narrow enough to fit. Growing is what opens the exit and what closes the shortcuts.",
+  "controls": "D-pad only.",
+  "goal": "Reach the exit once it is live. Pips are matched in coloured pairs, so which ones you take -- and in what order -- decides which apertures stay passable."
+ },
+ "t088853a8": {
+  "mechanic": "A metronome maze. Gates open and shut on a fixed period and the board's whole state cycles with the tick, so a cell is safe on some beats and lethal on others. Every move costs one beat, including a move into a wall.",
+  "controls": "D-pad only.",
+  "goal": "Reach the goal without standing on a sealed cell when it closes. Waiting is a real move and usually the point."
+ },
+ "t0bf293c2": {
+  "mechanic": "Rope laying. You pay out a cord behind you along a track, and the cord itself becomes terrain -- it can cross under itself at junctions, and it can be pulled taut. Retracting takes the last segment back.",
+  "controls": "D-pad lays cord in that direction. ACTION5 pulls the cord taut. ACTION7 retracts one segment. No click.",
+  "goal": "Reach the end marker with a cord that holds when pulled -- a knot that does not hold undoes the run."
+ },
+ "t18586acc": {
+  "mechanic": "A wardrobe puzzle. Four hazard types are scattered about (fire, cold, water, spikes) and each is survivable only while wearing the matching garment. You have four slots and garments are picked up where they lie.",
+  "controls": "D-pad walks. ACTION5 puts on the garment you are standing on.",
+  "goal": "Reach the exit alive. The route is decided by which garments you can reach before the hazard that needs them, not by the shortest path."
+ },
+ "t18c1e5f2": {
+  "mechanic": "A rotating maze. The board is a wheel whose mouths are linked in pairs; entering one puts you out at its partner and turns the whole frame by a recorded number of quarter-turns. Your controls rotate with it, so Up stops meaning up.",
+  "controls": "D-pad only. The direction you press is mapped through the current rotation.",
+  "goal": "Reach the goal. Tracking which way is which after two or three transits is the puzzle."
+ },
+ "t2774d7a8": {
+  "mechanic": "A running total. Every tile you step on adds or subtracts a value; the board shows the total as a colour (hot above zero, cold below). Go past twelve either way and the level resets.",
+  "controls": "D-pad only.",
+  "goal": "Reach the exit with the total EXACTLY equal to the level's target. Standing on the exit with the wrong total does nothing at all -- no message, no death."
+ },
+ "t33bdec30": {
+  "mechanic": "Sokoban on ice, with parity. Rocks slide until they hit something, pits swallow a rock and become floor, and a switch flips gates. A parity counter changes what is passable, so the same board alternates between two shapes.",
+  "controls": "D-pad pushes. ACTION7 undoes one move -- the game has its own undo on top of the console's.",
+  "goal": "Reach the goal. Filling a pit is permanent, so a rock spent in the wrong hole is a dead run, which is why the undo is there."
+ },
+ "t35352a03": {
+  "mechanic": "Cuttings. You walk a small board and can plant a limited number of cuttings by CLICKING a cell; each bloom spreads on a period and dies after a fixed lifespan, and blooms are what let you cross sockets.",
+  "controls": "D-pad walks, ACTION5 waits. CLICK A CELL to plant a cutting there -- this is one of the seven tasks where the click carries coordinates.",
+  "goal": "Reach the goal. Cuttings are finite and blooms are temporary, so it is a timing puzzle: plant early and it has withered, plant late and you are standing still while it grows."
+ },
+ "t3722717c": {
+  "mechanic": "A dispatch yard. Walking into a dispatcher launches a packet down its belt lane, and lanes have different lengths so packets travel for different numbers of turns. Packets must ARRIVE in numbered order; one that lands out of turn is dead and cannot be resent.",
+  "controls": "D-pad walks. Every move is also a tick, so walking is how time passes. No click.",
+  "goal": "Deliver every lane in order, then reach the exit. The board scrolls sideways, so part of the yard is off screen."
+ },
+ "t3d56da2d": {
+  "mechanic": "Sokoban with a crafting bench. You carry two parts at a time and the PAIR decides what you are holding -- cart, drill, winch, grapple or plank -- so the same two pickups in a different combination give a different tool.",
+  "controls": "D-pad walks and faces. ACTION5 uses the held tool in the faced direction. ACTION6 returns both parts to their slots, as a plain button with NO coordinates -- one of the two tasks in the set where clicking a cell is meaningless.",
+  "goal": "Get a crate onto the goal cell. The puzzle is which pair to be holding when you reach the obstacle."
+ },
+ "t4049adae": {
+  "mechanic": "A height map you have to read off the shading. Every cell has a height, drawn only as a tone cast by a light coming from one side, so the board looks like a picture and is actually a contour map.",
+  "controls": "D-pad only.",
+  "goal": "Reach the exit. You may climb one step up, but a drop of two or more resets the level -- so the route is decided by heights you can only infer from how dark each cell is."
+ },
+ "t4409a16e": {
+  "mechanic": "Four searchlights. The board is dark except for four straight strips cast from fixed anchors, and walls stop a strip dead. Standing next to an anchor picks it up; one press turns it a quarter.",
+  "controls": "D-pad walks. ACTION5 rotates whichever anchor you are standing beside.",
+  "goal": "Stand on the exit WHILE the exit is lit. Reaching it in the dark does nothing, so the puzzle is aiming a strip at the exit and then walking to it blind."
+ },
+ "t521bcd1b": {
+  "mechanic": "An optics bench, 16x16. An emitter fires a beam that reflects off mirrors, splits, and is coloured by filters on its way to the sinks. You build the path by placing parts on pads.",
+  "controls": "ACTION5 steps a cursor through the parts bin to choose what to place. CLICK A PAD to place the selected part there -- one of the seven tasks where the click carries coordinates.",
+  "goal": "Light every sink with the colour it asks for. The trace is recomputed and redrawn after every placement, so the beam is live feedback rather than a submission."
+ },
+ "t562e07f7": {
+  "mechanic": "Cut and let fall. Blocks obey gravity and settle when what is under them goes; you face a direction and cut the cell in front, and everything above comes down. Heavy and light blocks fall differently.",
+  "controls": "Left and Right walk and face. Up and Down only change facing -- they do not move you. ACTION5 cuts the faced cell.",
+  "goal": "Clear every marker without losing one. A marker crushed or dropped out of reach is unrecoverable, so a cut in the wrong order ends the level quietly."
+ },
+ "t61247d23": {
+  "mechanic": "Sokoban with coloured portals and pressure plates. Crates travel through portals as you do, plates held by a crate open gates, and the two interact -- a crate pushed into a portal comes out somewhere it can no longer be reached.",
+  "controls": "D-pad only.",
+  "goal": "Reach the exit once the gates it needs are held open."
+ },
+ "t61abcaed": {
+  "mechanic": "Mirrored sowing. Planting a seed plants a second one at the mirrored column, so every action you take happens twice, once on each side of an axis you are not shown. Plants age on a period and die.",
+  "controls": "D-pad walks. ACTION5 sows a seed where you stand. Walking onto a plant destroys it AND its mirror twin.",
+  "goal": "Reach the goal. Seeds are limited and the mirror means a plant you needed can be destroyed by walking somewhere unrelated on the other side."
+ },
+ "t6381e4da": {
+  "mechanic": "A delivery round with a fixed sequence. Coloured crates go to bed stops down one side of the board, and the stops must be served in a REVERSE order set by the level -- the last one listed is the first one due.",
+  "controls": "D-pad walks and pushes. You carry one crate at a time.",
+  "goal": "Serve every stop in the required order. Serving the right crate at the wrong time is what loses the round, not dropping it."
+ },
+ "t63b03ddb": {
+  "mechanic": "Damming a flood. You have a fixed number of dams and a fixed volume of water. Water spreads outward from the source one ring per turn and stops at walls and dams, and it runs out.",
+  "controls": "D-pad moves a CURSOR, not a character. ACTION5 places or removes a dam under the cursor -- and, on the source cell, starts the pour, which cannot be taken back.",
+  "goal": "Flood every basin before the water runs out. Dams are for steering the flow away from dead ends, not for holding it back."
+ },
+ "t643da6ee": {
+  "mechanic": "Tiles on loan. Standing on a fresh tile starts a countdown on it; ten turns later it has turned to stone, and being on it then resets the level. The whole board is a shrinking floor recording where you have been.",
+  "controls": "D-pad only.",
+  "goal": "Lift every bead, which opens the exit, and get there. The route has to be planned so you never need a tile you spent early."
+ },
+ "t64b427c7": {
+  "mechanic": "Shape fitting. Nine shapes sit in a bin and you drop them onto a 12-wide canvas to reproduce a target picture. A shape that does not fit where you aimed is simply not placed.",
+  "controls": "ACTION5 cycles which shape is selected. CLICK A CELL to drop the selected shape there -- one of the seven tasks where the click carries coordinates. ACTION7 undoes the last placement.",
+  "goal": "Match the target. Undo is built in, so this one is meant to be explored rather than solved first try."
+ },
+ "t6acac767": {
+  "mechanic": "Tools from pairs, again -- the larger sibling of t3d56da2d. Six parts (magnet, rod, lens, torch, hook, bell) combine two at a time into abilities that burn vines, melt ice, grapple across gaps or ring a shutter open.",
+  "controls": "D-pad walks and faces. ACTION5 fires the held pair in the faced direction. ACTION6 drops what you hold, as a plain button with NO coordinates -- the other of the two tasks where clicking a cell is meaningless.",
+  "goal": "Reach the exit. Which two parts you are carrying decides which obstacle you can pass, and there is only one pair of hands."
+ },
+ "t6d44af56": {
+  "mechanic": "A dark room on a budget. You see a small radius around yourself and nothing else, and every move spends from a step allowance that is smaller than a careless search needs.",
+  "controls": "D-pad only. The board is drawn at half the usual cell size, so it is larger than it looks.",
+  "goal": "Collect all three tokens and then reach the sink. Running the allowance out is the loss, so the puzzle is searching efficiently in the dark rather than avoiding a hazard."
+ },
+ "t7114b1e1": {
+  "mechanic": "Folding paper. The board is a sheet you can fold along a crease; folding brings distant cells on top of each other and merges them, so a key on one ply lands on a lock on another.",
+  "controls": "D-pad walks. ACTION5 arms a fold; while armed the d-pad aims the crease and ACTION5 again commits it. ACTION7 cancels an armed fold.",
+  "goal": "Reach the exit on the folded sheet. Folds are the whole game -- walking alone never gets there."
+ },
+ "t715ea045": {
+  "mechanic": "A dark 20x20 room with a flare. You cannot see the layout; one press lights everything within five cells for that moment. Fire kills on contact.",
+  "controls": "D-pad walks. ACTION5 fires the flare.",
+  "goal": "Reach the gate. Flares are the only information, so the game is about spending them where the map is ambiguous rather than where it is merely dark."
+ },
+ "t74db26e1": {
+  "mechanic": "A chain reaction on a 32x32 field. Dots drift continuously on a wrapping field, each on its own heading. One detonation pops the nearest dot and chains outward to whatever is close enough to catch.",
+  "controls": "ACTION5 lets time pass -- the dots drift one step. CLICK A CELL to detonate at that point, and it only catches if a dot is within three cells -- one of the seven tasks where the click carries coordinates.",
+  "goal": "Set off a chain of at least the level's target size. You get one detonation, so this is a waiting game: let the drift bring the dots into a cluster, then click it."
+ },
+ "t7725dccf": {
+  "mechanic": "Sokoban with twins. Crates are paired by colour and move together -- push one and its twin moves the same way somewhere else on the board, into whatever is there.",
+  "controls": "D-pad only.",
+  "goal": "Hold every pressure plate down with crates AND stand on the exit at the same time. A pair that solves one plate usually breaks another, which is the whole difficulty."
+ },
+ "t77f54ade": {
+  "mechanic": "A plugboard. Four sockets around the room carry cords between terminals, and pressing a socket advances its plug through a fixed cycle -- so one press rewires the room, not just that socket.",
+  "controls": "D-pad walks. ACTION5 presses the socket you are standing on.",
+  "goal": "Collect the keys, which lights the exit, and get there. Cords block or bridge depending on how they are patched, so the route is something you rewire rather than walk."
+ },
+ "t80d5b02c": {
+  "mechanic": "A cube unfolded. The board is a net of six faces and you walk on the SURFACE, so stepping off the edge of one face continues on the face it is joined to -- which is drawn somewhere else entirely on screen.",
+  "controls": "D-pad only. Your heading is re-mapped every time you cross onto a new face.",
+  "goal": "Collect every key and reach the exit. The difficulty is entirely that adjacency on screen is not adjacency on the cube."
+ },
+ "t89a4dc45": {
+  "mechanic": "Shoving with momentum. A press shoves blocks in a direction and they keep going, up to four cells, until something stops them. Pits swallow what falls in, and the payload is the piece you cannot afford to lose.",
+  "controls": "D-pad shoves. ACTION5 lets a turn pass without shoving.",
+  "goal": "Land every payload block in its socket. A payload in a pit ends the attempt -- speed is the thing to control."
+ },
+ "t8dbff678": {
+  "mechanic": "A charge economy. Doors cost charges to open and the exit costs charges to use, out of one pool that does not refill. Every door you open is one you might not be able to afford to leave through.",
+  "controls": "D-pad walks and faces. ACTION5 spends charges on whatever you are facing -- a door, or the exit.",
+  "goal": "Leave through the exit with enough left to pay for it. The board shows each door's price, so this is a budgeting puzzle rather than a maze."
+ },
+ "t98b12bb2": {
+  "mechanic": "Sliding with a backpack. You slide until something stops you, sweeping up tokens on the way, and you can only carry four. Tokens are drawn as distinct pip patterns rather than by colour alone.",
+  "controls": "D-pad starts a slide. ACTION5 drops the top token on a pad you are standing on.",
+  "goal": "Reach the exit carrying at least the number the level asks for. Pads are for putting a token down to make room, so the puzzle is what to carry and what to park."
+ },
+ "t999ce20d": {
+  "mechanic": "A click that means two things. Clicking YOUR OWN cell fires a plate; clicking any OTHER cell marks it. Same action, same button, entirely different effect depending on where it lands.",
+  "controls": "D-pad walks. ACTION5 fires a rod along the line you face. CLICK YOUR OWN SQUARE to fire a plate, CLICK ELSEWHERE to mark that cell -- one of the seven tasks where the click carries coordinates, and the only one where the target's identity changes what happens.",
+  "goal": "Open the exit and reach it. Discovering that the click is overloaded is most of the task."
+ },
+ "ta3597a87": {
+  "mechanic": "Patrols on a timetable. Guards walk fixed routes on an eight-turn cycle and leave a short trail behind them that is also lethal, so the danger is where a guard was as well as where it is.",
+  "controls": "D-pad walks. ACTION5 waits in place, which is a real move and advances the patrol.",
+  "goal": "Collect the coins to open the exit and get out. Waiting for a patrol to pass is usually better than outrunning it."
+ },
+ "ta6acc86e": {
+  "mechanic": "Portals that re-pair themselves. Four mouths are linked in pairs, and the pairing advances through a cycle as turns pass -- the mouth that took you somewhere last turn goes somewhere else this turn. Shutters open and close on the same clock.",
+  "controls": "D-pad only. Every move advances the clock.",
+  "goal": "Collect the keys and reach the exit. Timing which turn you enter a mouth on is the puzzle; the geometry alone never solves it."
+ },
+ "taa5fdde0": {
+  "mechanic": "Two bodies, one d-pad. You move both at once; the second one's direction is your direction reflected through a mirror axis, so pressing Left sends one body left and the other somewhere else. Neither moves unless BOTH have somewhere to go.",
+  "controls": "D-pad only. Pylons mark the axis and are spent as you pass them, which changes the reflection mid-level.",
+  "goal": "Get both bodies where they belong. A wall in front of one body freezes the pair, which is the lever you use to separate them."
+ },
+ "ta6b3b4a0": {
+  "mechanic": "A circuit you walk. Wires carry a pulse from an emitter through junctions to sinks; standing on a junction flips how its arms conduct, standing on the emitter fires. Fires are limited and a sink needs one or two hits depending on its type.",
+  "controls": "D-pad walks. ACTION5 fires the emitter, or flips the junction you are standing on.",
+  "goal": "Latch every sink before the fires run out. Running out with a sink unlatched resets the level, so the routing has to be right before you fire, not after."
+ },
+ "tb4f43900": {
+  "mechanic": "The floor burns behind you. Every cell you leave turns to ash and cannot be re-entered, and the room is dark until you walk into it. You are exploring and destroying at the same time.",
+  "controls": "D-pad only.",
+  "goal": "Reach the exit. Walking into a pocket with no unburnt way out resets the level immediately -- the game tells you that you are stuck rather than letting you wander."
+ },
+ "tc6f8ee4c": {
+  "mechanic": "Guards that come to the noise. A bell on a plate draws guards towards wherever the sound came from, so the way past a patrol is to make it look somewhere else.",
+  "controls": "D-pad only. Guards take a step for every step you take.",
+  "goal": "Open the exit and leave. Guards chase a target that you set by ringing, which makes this a misdirection puzzle rather than a chase."
+ },
+ "tca5096fc": {
+  "mechanic": "What you remember versus what is there. Movers patrol on periods, but you only see cells in your line of sight -- everything else is drawn from MEMORY, showing where a mover was when you last saw it, not where it is now.",
+  "controls": "D-pad walks. ACTION5 waits in place, which lets a mover come back into view.",
+  "goal": "Reach the exit. The board is drawing you a stale picture on purpose; stale markers are drawn differently from live ones, and telling them apart is the task."
+ },
+ "tcd57bacb": {
+  "mechanic": "A barge on a chart. You steer a boat through a waterway of coloured locks, picking up cargo; a lock only lets you through once you are carrying what it is waiting for.",
+  "controls": "D-pad steers the barge.",
+  "goal": "Lift all the cargo and pass the final lock. Locks are one-way in practice, so collecting in the wrong order strands you."
+ },
+ "td1047401": {
+  "mechanic": "Stamping a key. You carry a shape that you can turn a quarter at a time, and mirrors on the board flip your handedness -- after passing one, Left moves you right and your shape is the mirror image. Sockets demand a specific handedness AND rotation.",
+  "controls": "D-pad walks (reversed while mirrored). ACTION5 turns your shape one quarter.",
+  "goal": "Fill every socket with the orientation it asks for, then leave. The mirrors are the only way to reach half the demands."
+ },
+ "td6b934b7": {
+  "mechanic": "Points on a line, 16x16. A walker runs down a single path column and gates along it send it one way or the other; you set the gates before releasing it, and then it is out of your hands.",
+  "controls": "CLICK A GATE on the path column to flip it -- one of the seven tasks where the click carries coordinates, and only the path column responds. ACTION5 releases the walker.",
+  "goal": "Route the walker to the exit. Clicking anywhere off the path column does nothing at all, which reads as a broken click until you notice which cells respond."
+ },
+ "tdbd4af05": {
+  "mechanic": "Two-phase floor. You are red or blue, and cells of the other colour are solid to you. Swapping phase makes half the board appear and the other half vanish, and it cannot be done again for four turns.",
+  "controls": "D-pad walks. ACTION5 swaps your phase, subject to the cooldown.",
+  "goal": "Reach the exit. The cooldown is the puzzle -- swapping early strands you on the wrong colour for four moves."
+ },
+ "te5f94dfe": {
+  "mechanic": "Eating your way through. Doors are keyed to classes and you open one by BITING the right thing; the room is dark beyond a small radius, and holes are permanent.",
+  "controls": "D-pad walks. ACTION5 bites whatever you are next to.",
+  "goal": "Reach the exit. Biting is irreversible and the game resets the level as soon as it detects you can no longer get anywhere, so a wrong bite ends things immediately rather than later."
+ },
+ "tf17bd2df": {
+  "mechanic": "Noise and hunters. Some tiles are loud and stepping on one gives away where you are; hunters walk towards the last noise they heard, and staying quiet for four turns lets them lose you.",
+  "controls": "D-pad only.",
+  "goal": "Reach the exit. Loud tiles are often the direct route, so this is about choosing when to be heard and where you will be by the time they arrive."
+ },
+ "tfd14806f": {
+  "mechanic": "A rising flood. The board is a height map and the water level rises every time you take a flag -- by how many damp tiles you have touched, so the tiles you walked over decide how fast the sea comes up.",
+  "controls": "D-pad only. You cannot enter a cell already under water.",
+  "goal": "Take every flag and stand on the summit. Taking a flag while standing somewhere the new water level covers drowns you, so the order of the flags is the whole puzzle."
+ },
+ "tfdb1fc6f": {
+  "mechanic": "A balance scale. Crates go on the left and right pans, the beam tilts to show which side is heavier, and one press weighs the left pan against a hidden target.",
+  "controls": "D-pad moves a cursor and places crates. ACTION5 WEIGHS -- and this is a commit: right and you advance, wrong and the scale locks and the level resets.",
+  "goal": "Get the left pan to the target total. Note that the punishing commit in this set is on ACTION5, not ACTION6 -- see the note on the deck CLICK button in docs/2026-09-02-arc3-canvas-click-plan.md."
+ },
+ "t99e8274e": {
+  "mechanic": "A nonogram. An 8x8 board with a number beside every row and column; you fill cells until the counts work out. The purest click task in the set -- there is no character, no movement, nothing but the grid.",
+  "controls": "CLICK A CELL to fill or unfill it -- one of the seven tasks where the click carries coordinates, and the one with no alternative: it declares available_actions [5, 6, 7], so there is no d-pad at all. ACTION7 clears the board. ACTION5 checks your answer.",
+  "goal": "Satisfy every row and column clue. ACTION5 only advances you when the board is actually solved -- a wrong check costs nothing, so it is a check and not a commit."
+ }
+}

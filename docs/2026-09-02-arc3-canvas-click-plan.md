@@ -104,7 +104,7 @@ document is what the code comments point at. The header of `CommunityGamePlay.ts
 (point 7) and the comment above `ctl` both say so, so a future reader tidying up an
 apparently redundant control hits the note first.
 
-## 3. The mechanic guide (TODO)
+## 3. The mechanic guide (done)
 
 ### Objective
 
@@ -136,11 +136,12 @@ per game:
 - which branches `step()` has and what each calls
 - the win condition's source expression
 
-**Acceptance test before any prose is written**: the ACTION6 rule must select exactly
+**Acceptance test before any prose was written**: the ACTION6 rule had to select exactly
 `t99e8274e`, `t64b427c7`, `t521bcd1b`, `td6b934b7`, `t999ce20d`, `t35352a03`, `t74db26e1`
-as xy-click, and exactly two others as plain-button. That is the independent
-classification we already have. If the rule disagrees, the rule is wrong, and every prose
-note built on it would inherit the error.
+as xy-click, and exactly two others as plain-button — the independent classification we
+already had. It does, on the rule as written (`--selftest`), which is what made the prose
+pass worth doing. It is a permanent test, not a one-off: `EXPECTED_ACTION6` is in the
+script, so a rule change that breaks the classification fails loudly.
 
 Prose is then one human sentence per game written against extracted facts, in a checked-in
 JSON — not a reverse-engineering job per file.
@@ -150,3 +151,69 @@ JSON — not a reverse-engineering job per file.
 The page is **unlisted, not private**: no nav link, no sitemap entry, `noindex`. The route
 and the API behind it are public, like every other route on the site. Anyone with the URL
 can read it. This is stated here so nobody later mistakes it for an access control.
+
+### What the digest turned up
+
+Three facts about the set that are invisible from inside any single task, and that no
+amount of playing would surface:
+
+1. **26 of the 50 advertise ACTION6 and read nothing from it.** Only 18 games declare
+   `available_actions` at all; the other 32 inherit arcengine's default of `[1,2,3,4,5,6]`
+   (`base_game.py:54`). So the console offers a click, the engine accepts it, the game
+   ignores it, and the step counter goes up. That is the engine's behaviour rather than
+   ours, and the play surface should not override it — but a reviewer needs telling,
+   because "this task ignores your click" and "you clicked the wrong cell" look identical
+   from the player's chair. The guide flags them.
+
+2. **No game in the 50 ever calls `lose()`.** There is no GAME OVER in our set; the only
+   end is winning every level. This is what forced the reveal to fire on any feedback
+   submit rather than at the end of a run — see below.
+
+3. **The commit-or-die ACTION6 that made the canvas inert does not exist here.** Both
+   plain-button games use ACTION6 as an ordinary extra verb (`t3d56da2d` returns held
+   parts, `t6acac767` drops what you carry) and neither punishes it. The one genuinely
+   punishing commit in the set is `tfdb1fc6f`'s balance scale — and it is on **ACTION5**,
+   not ACTION6. That is a data point for the open question in section 2: the option of
+   "give the commit tasks a different action id" is already what our own set does.
+
+### What was built
+
+- **`scripts/arc3/mechanic_digest.py`** — the extractor. `--selftest` checks the
+  classification, `--write` emits `server/data/arc3-games/mechanics.json`.
+- **`server/data/arc3-games/mechanics-notes.json`** — the human half, one entry per game.
+  Kept in a separate file so re-running the extractor never overwrites prose.
+- **`shared/arc3Mechanics.ts`** — the row type, shared by both consumers.
+- **`GET /api/arc3-mirror/mechanics`** — serves it, with an `X-Robots-Tag: noindex` header.
+- **`/arc3/mechanics`** — the guide. Searchable, filterable by ACTION6 behaviour, one card
+  per task showing the prose plus the derived facts, with each action drawn as offered-and-
+  used, offered-but-never-read, or not offered.
+- **The reveal**, in the feedback panel on the play page.
+
+### Two decisions worth knowing about
+
+**The reveal fires on ANY feedback submit, not only at the end of a run.** The obvious
+reading of "after I hit submit I get shown the mechanic" was to gate it on a finished run,
+which is what was built first. It is nearly unreachable: with no `lose()` anywhere in the
+set, a run ends only by winning every level, on a page whose own Next-task logic is
+written around most people not finishing most tasks. So the reveal now follows the submit
+wherever it happens. Mid-run it still costs a deliberate act — open Notes, write
+something, press send — and the reviewer's reading is recorded before they are told.
+
+**The answer key is not fetched until it is earned.** `/api/arc3-mirror/mechanics` is
+requested only once feedback has been sent. Fetching it on page load would put the
+solution to a task in progress in the browser's own network log, one devtools tab away
+from the person whose blind first contact is the entire point of the surface. Verified in
+the running app: zero requests to that endpoint while playing.
+
+### Verified in the running app
+
+- `GET /api/arc3-mirror/mechanics` returns 50 rows, all 50 with prose, `X-Robots-Tag:
+  noindex, nofollow`, and the xy-click/button split matching the expected lists.
+- `/arc3/mechanics` renders 50 cards with working search and filters.
+- The page sets `noindex` by MUTATING the existing `<meta name="robots">` from index.html
+  rather than appending a second one — two contradictory tags would have handed the
+  decision to whichever crawler read it. Confirmed exactly one tag on the guide, and the
+  site-wide directive restored after navigating away within the SPA.
+- On `t99e8274e`: no request to the answer key during play; after sending a note the
+  reveal appears in place of the thank-you, showing that task's own entry, with a link to
+  the full guide and a way back to the task.

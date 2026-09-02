@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
-Disallow:
+# The ARC-AGI-3 mechanic guide is a full answer key to tasks the play surface needs
+# people to meet blind. It is unlisted, not private -- this keeps it out of search
+# results, and is not access control.
+Disallow: /arc3/mechanics
+Disallow: /api/arc3-mirror/mechanics
 Sitemap: https://arc.markbarney.net/sitemap.xml
