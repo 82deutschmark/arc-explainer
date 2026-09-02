@@ -100,12 +100,18 @@ interface ExternalNavLink {
 
 /**
  * Primary row. ARC-3 first, in use order, then the two collapsed groups.
- * `dividerAfter` marks a group boundary -- the ARC palette squares now separate clusters
- * rather than sitting between every single item, which at 11 top-level entries read as noise.
+ *
+ * `markerBefore` opens a cluster with its ARC palette square, replacing a single trailing
+ * 🟦 that sat after the ARC-3 group and nowhere else. One square used once reads as a
+ * stray character; the same square opening every cluster reads as a system, and it is the
+ * same palette as the brand mark two inches to its left. Squares are per cluster, never
+ * per item -- at eleven top-level entries one on each was noise, which is what the lone
+ * survivor was left over from.
  */
-const navigationItems: (NavItem & { dividerAfter?: string })[] = [
+const navigationItems: (NavItem & { markerBefore?: string })[] = [
   {
     type: 'link',
+    markerBefore: '🟦',
     title: 'Play',
     // /play, not the gallery. Playing the queue is the one thing this site asks of a
     // visitor, and the gallery is a browsing surface that made them choose first -- three
@@ -134,7 +140,6 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
     title: 'ARC-3',
     icon: BookOpen,
     description: 'Reference, research and the agent tooling behind the ARC-AGI-3 work',
-    dividerAfter: '🟦',
     sections: [
       {
         label: 'Reference',
@@ -181,6 +186,7 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
   },
   {
     type: 'dropdown',
+    markerBefore: '🟥🟨',
     title: 'ARC 1 & 2',
     icon: Archive,
     description: 'Puzzle-era analysis, scoring, and datasets',
@@ -349,6 +355,7 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
   },
   {
     type: 'dropdown',
+    markerBefore: '🟩',
     title: 'Arena',
     icon: Worm,
     description: 'SnakeBench and Worm Arena -- LLMs playing snake against each other',
@@ -493,6 +500,13 @@ export function AppNavigation() {
 
             return (
               <NavigationMenuItem key={key} className="flex items-center">
+                {/* The cluster's palette square, opening the group it belongs to. */}
+                {item.markerBefore && (
+                  <span className="text-[10px] leading-none mr-1 ml-2 select-none tracking-[-1px]"
+                        aria-hidden="true">
+                    {item.markerBefore}
+                  </span>
+                )}
                 {/* Dropdowns are secondary by design: lighter weight than the ARC-3 row, so
                     the primary flow reads as primary without resorting to decoration. */}
                 {item.type === 'link' ? (
@@ -562,11 +576,6 @@ export function AppNavigation() {
                       ))}
                     </DropdownMenuContent>
                   </DropdownMenu>
-                )}
-                {item.dividerAfter && (
-                  <span className="text-xs mx-1.5 select-none" aria-hidden="true">
-                    {item.dividerAfter}
-                  </span>
                 )}
               </NavigationMenuItem>
             );

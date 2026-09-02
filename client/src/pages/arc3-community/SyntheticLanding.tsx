@@ -35,17 +35,29 @@ interface Game {
   category: string;
 }
 
-/** Our own generation pipeline. This is the set actively growing, and the reason the
- *  programme exists -- so it leads here the same way it leads the gallery, rather than
- *  the page opening on the 25 famous tasks we did not make. */
+/** Our own generation pipeline: 571 tasks, unreviewed, and the weakest thing on the site. */
 const PIPELINE_CATEGORY = 'ai-generated';
 
-/** Pipeline tasks first, everything else after, original order preserved within each. */
-function pipelineFirst(games: Game[]): Game[] {
-  return [
-    ...games.filter((g) => g.category === PIPELINE_CATEGORY),
-    ...games.filter((g) => g.category !== PIPELINE_CATEGORY),
-  ];
+/** The 50 hand-authored tasks -- built level by level and reviewed one at a time. */
+const AUTHORED_CATEGORY = 'arena';
+
+/**
+ * Display order for every strip of tiles on this page.
+ *
+ * It used to be pipeline-first, on the reasoning that the generator's output is the set
+ * actively growing and therefore the set to show. That was wrong twice over: it is also
+ * the set we have the least confidence in, and this page is the first thing a visitor
+ * sees. A landing page opening on 571 unreviewed tasks is advertising the slop.
+ *
+ * Hand-authored leads now, matching the gallery's section order and /play's review queue.
+ * Three surfaces, one answer about what is worth someone's time -- which is the whole
+ * point, because a visitor who sees one task here and is handed a different one by Play
+ * has been told the site does not know its own mind.
+ */
+function authoredFirst(games: Game[]): Game[] {
+  const rank = (g: Game) =>
+    g.category === AUTHORED_CATEGORY ? 0 : g.category === PIPELINE_CATEGORY ? 2 : 1;
+  return [...games].sort((a, b) => rank(a) - rank(b));
 }
 interface GamesResponse {
   success: boolean;
@@ -80,6 +92,9 @@ const RELEASE_SCORES: [string, string][] = [
 
 const RELATED = [
   { href: ARENA_SITE, label: 'arc3.sonpham.net', note: 'The research side — the task set itself, the agent harness, leaderboards' },
+  // 252 of the tasks on this site are his, mirrored under MIT. The gallery carries the
+  // licence notice; this is the human version of the same credit.
+  { href: 'https://github.com/theredbluepill/arc-interactive', label: 'ARC-Interactive', note: "theredbluepill's community game repo — 252 of the tasks here are his, and it has 200+ more, tutorials and a local human-play mode" },
   { href: 'https://markbarney.net', label: 'markbarney.net', note: 'Everything else' },
   { href: 'https://farm.markbarney.net', label: 'farm.markbarney.net', note: 'Kaggriculture — a farming-economy agent arena' },
   { href: 'https://voynichlabs.org', label: 'voynichlabs.org', note: 'Voynich Labs' },
@@ -134,15 +149,6 @@ function Section({ title, note, children }: {
   );
 }
 
-function Stat({ value, label, tone }: { value: string; label: string; tone: string }) {
-  return (
-    <div className="p-4" style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
-      <div className="text-[26px] leading-none mb-2" style={{ color: tone, fontFamily: MONO }}>{value}</div>
-      <div className="text-[12px] leading-[1.6]" style={{ color: ARC.dim }}>{label}</div>
-    </div>
-  );
-}
-
 export default function SyntheticLanding() {
   const { data } = useQuery<GamesResponse>({
     queryKey: ['/api/arc3-mirror/games'],
@@ -166,7 +172,7 @@ export default function SyntheticLanding() {
     [stats],
   );
 
-  const ordered = useMemo(() => pipelineFirst(games), [games]);
+  const ordered = useMemo(() => authoredFirst(games), [games]);
 
   /**
    * The task this page offers — which must be the SAME task /play hands over, resolved by
@@ -199,6 +205,7 @@ export default function SyntheticLanding() {
 
   const unplayed = games.filter((g) => !playedIds.has(g.gameId)).length;
   const pipelineCount = games.filter((g) => g.category === PIPELINE_CATEGORY).length;
+  const authoredCount = games.filter((g) => g.category === AUTHORED_CATEGORY).length;
   // A strip of real frames, not a full catalog dump -- browsing lives in the gallery.
   const previewTiles = useMemo(() => ordered.slice(0, 24), [ordered]);
 
@@ -261,14 +268,18 @@ export default function SyntheticLanding() {
           </div>
         </header>
 
-        {/* ── the numbers, cited ───────────────────────────────────────────── */}
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-          <Stat value="100%" label="of these environments solved by humans" tone={ARC.green} />
-          <Stat value="0.50%" label="best frontier model, at benchmark release" tone={ARC.pink} />
-          <Stat value={games.length ? String(games.length) : '—'} label="tasks playable here, right now" tone={ARC.text} />
-          <Stat value={games.length ? String(unplayed) : '—'} label="with no human attempt on record" tone={ARC.yellow} />
-        </div>
-        <p className="text-[12px] mb-14" style={{ color: ARC.faint }}>
+        {/*
+          THE FOUR STAT CARDS THAT USED TO SIT HERE ARE GONE, AND SHOULD NOT COME BACK.
+          They showed 100%, 0.50%, the task count and the unplayed count. Every one of the
+          four restated a number from prose immediately above or below it: the first two
+          are in the hero's second paragraph, in the same words, and the second two are the
+          opening line of the ask directly beneath. A number is worth a card when it is the
+          first place the reader meets it. Repeated a paragraph later in a bigger font it
+          is decoration, and four of them in a row read as a dashboard bolted onto an
+          argument. The citation stays, because that is load-bearing -- it is what makes
+          the hero's claim checkable rather than asserted.
+        */}
+        <p className="text-[12px] mb-14 max-w-[76ch]" style={{ color: ARC.faint }}>
           Human and model figures from the{' '}
           <a href={REPORT} target="_blank" rel="noreferrer" className="underline">
             ARC-AGI-3 technical report
@@ -314,6 +325,8 @@ export default function SyntheticLanding() {
               </div>
               <p className="text-[12px] mt-4" style={{ color: ARC.faint }}>
                 About five minutes. No account, nothing to install, no experience needed.
+                When you stop, the game asks what you made of it — that note is the most
+                useful thing you can leave us, and it tells you what the task actually was.
               </p>
             </div>
           </div>
@@ -327,15 +340,14 @@ export default function SyntheticLanding() {
               engine — the same thing an AI agent is given, with the same screen and the
               same buttons. These are their opening frames. That is all you get.
             </p>
-            {pipelineCount > 0 && (
-              <p className="text-[13px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.faint }}>
-                Shown newest first, so these are mostly the{' '}
-                <strong style={{ color: ARC.text }}>{pipelineCount}</strong> tasks our own
-                generator has produced — the set that is still growing. The 25 official ARC
-                Prize tasks are in there too, further down{' '}
-                <Link href="/arc3/gallery"><a className="underline">the gallery</a></Link>.
-              </p>
-            )}
+            <p className="text-[13px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.faint }}>
+              These are the <strong style={{ color: ARC.text }}>{authoredCount}</strong>{' '}
+              hand-authored ones — built one at a time, six to eight levels each, and the
+              most finished tasks here. Behind them sit the 25 official ARC Prize tasks, a
+              contributed community catalog, and{' '}
+              <strong style={{ color: ARC.text }}>{pipelineCount}</strong> straight off our
+              generator that nobody has judged yet.
+            </p>
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
               {previewTiles.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
             </div>
@@ -393,8 +405,12 @@ export default function SyntheticLanding() {
           </div>
         </Section>
 
+        {/* NOT a third link to the gallery. The ask above offers "or pick your own" and the
+            preview section ends with "Browse every task", both of which go there; a footer
+            repeat made three on one page, plus Browse in the nav. A footer earns its place
+            by reaching what the body does not. */}
         <footer className="pt-2 text-[12px] leading-[2]" style={{ color: ARC.faint }}>
-          <Link href="/arc3/gallery"><a className="underline">All tasks</a></Link>
+          <Link href="/arc3/hypotheses"><a className="underline">Research: what a model guesses from one frame</a></Link>
           <span className="mx-2 opacity-50">·</span>
           {/* Labelled as spoilers on purpose. /arc3 names the mechanic of six official
               games and links to full write-ups, and five of those six are playable here.

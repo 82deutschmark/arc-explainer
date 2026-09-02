@@ -46,7 +46,17 @@ export function AppHeader() {
             </div>
             <div className="flex flex-col">
               <div className="font-bold text-base leading-tight whitespace-nowrap">ARC Explainer</div>
-              <div className="text-[9px] text-muted-foreground leading-none whitespace-nowrap">🟦 ARC 3 &middot; archive: ARC 1 🟥 ARC 2 🟨</div>
+              {/* Three labels, one square each, in order. It used to read
+                  "🟦 ARC 3 · archive: ARC 1 🟥 ARC 2 🟨" -- squares on the wrong side of two
+                  of the three, an "archive:" nobody needs in a nine-pixel subtitle, and the
+                  numbers out of order. It is a wordmark, not a sentence. */}
+              <div className="text-[9px] text-muted-foreground leading-none whitespace-nowrap flex items-center gap-1">
+                <span>🟥 ARC 1</span>
+                <span className="opacity-40">·</span>
+                <span>🟨 ARC 2</span>
+                <span className="opacity-40">·</span>
+                <span>🟦 ARC 3</span>
+              </div>
             </div>
           </div>
         </Link>
