@@ -7,6 +7,17 @@
 # reference the old numbers.
 
 
+### Version 9.15.0  Sep 2, 2026
+
+- **Three revised ARC-3 tasks catch up with their authored versions** (Author: Claude Opus 5 / Bubba sub-agent)
+  - **What changed**: three of the 50 hand-authored tasks this repo serves had been rewritten upstream since the migration and were still serving their pre-rewrite versions. Their published files are re-imported from the authoring repo's stripped publish artifacts. Content only.
+  - **No ids moved, and that is the point**: a published id is `"t" + sha256("arena:" + <authoring id>)[:8]`, keyed on the leading `gNNN` token of the authoring filename and on nothing else -- not content, not the mechanic suffix. So a task can be rewritten from scratch and keep its id, which is what lets a re-sync be a content-only diff. `manifest.json` is byte-identical across this change. Had it moved, the triage rows, human-play sessions and feedback rows keyed to those ids would address games that no longer exist.
+  - **The drift was one boundary earlier than it looked**: there are three copies, not two -- authoring source, the arena's stripped `dist/` artifact, and the published copy here. Nothing rebuilds `dist/` as part of authoring, so a revision updates the source and stops. One of the four revised tasks had a stale `dist/` entry, and this repo's own `--check` could not see it: `--check` compares the published copy against an import of `dist/`, and the published copy matched the stale artifact exactly. The upstream artifact was rebuilt first; only then did the third file appear.
+  - **A fourth revised task correctly moved nothing.** Its change was confined to the authoring docstring, which the upstream packager strips. Prose-only revisions are real work upstream and a no-op here.
+  - **Checked**: all 50 games rebuild through the upstream packager and pass the legibility gate; all 50 published ids remain covered by `arc3Triage.json` (50/50); all 50 parse and declare the class their manifest entry names; all 50 instantiate against ARCEngine. Not checked: the site was not driven in a browser and no revised game was played -- that verdict is what the human-baseline pipeline is for.
+  - **Note for the next re-sync**: ARCEngine uses `match`, so verification needs Python 3.10+. The Mini's system 3.9 fails inside the engine with a `SyntaxError` that reads like a broken game and is not.
+  - **Files**: added `docs/plans/2026-09-02-arc3-polish-resync.md` (why the copies drift, the id-stability constraint, the exact commands, what is automated vs manual, and what is left undone -- including the arena-side CI check that would close the gap this pass found). Modified three files under `server/data/arc3-games/`.
+
 ### Version 9.14.0  Sep 1, 2026
 
 - **23 tasks nobody could win have left the review queue** (Author: Claude Opus 5 / Bubba sub-agent)
