@@ -1,6 +1,7 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-31 (revised 2026-09-01: second batch, and generation as a field)
+Date: 2026-08-31 (revised 2026-09-01: second batch, generation as a field, and the
+      illegible verdict)
 PURPOSE: The review ordering for the 621 probed tasks — which are worth a human's
          time, which are duplicates of another, and which fall over to random input.
          571 are the qNNN-v1 generated set; 50 are the hand-authored set the arena
@@ -33,6 +34,23 @@ PURPOSE: The review ordering for the 621 probed tasks — which are worth a huma
          from the UI is a cull nobody can overrule, and "duplicate of q239-v1" is exactly
          what a reviewer needs in order to disagree.
 
+         THE THIRD DEFECT, added 01-Sep: 41 of these tasks cannot be won by anybody.
+         ACTION6 is a commit button that compares the player's entire action history
+         against a hidden literal plan baked into the level table and never drawn on
+         screen; any mismatch calls lose(), and that is the only way to die. One blind
+         guess at an invisible seven-symbol sequence, no feedback either way. 23 were in
+         this queue, three of them in the first fifty tasks a reviewer meets.
+
+         THE PROBE COULD NOT HAVE CAUGHT THEM. It culls what random play can BEAT, and
+         these cannot be beaten, so they look like legitimately hard games on every
+         metric it records -- and better than most: a commit-or-die game with five safe
+         explorable actions produces plenty of distinct frames and reacts to every input.
+         The flagged tasks sit ABOVE the median queued task on `frames` and `responsive`,
+         which is what `rank` sorts on. q246-v1 carried rank 1. Random play is a lower
+         bound on difficulty; this needed an upper bound, and it is a static one:
+         scripts/arc3/legibility_gate.py, applied by scripts/arc3/apply_legibility_gate.py.
+         See docs/2026-09-01-arc3-junk-game-audit.md.
+
          IDS. A row's `gameId` is used directly as a catalog id, so it must be the
          PUBLISHED id, not the id the task was authored under. The arena rows are therefore
          `t<8 hex>`.
@@ -49,7 +67,10 @@ PURPOSE: The review ordering for the 621 probed tasks — which are worth a huma
 
          Regenerate with probe_one.py / funnel.py in the authoring repo after a new batch
          lands, and its build_triage_entries.py for the arena rows, keyed by the ids in
-         server/data/arc3-games/manifest.json; this file is data, not logic.
+         server/data/arc3-games/manifest.json; this file is data, not logic. Then run
+         scripts/arc3/apply_legibility_gate.py --write over the result: the legibility
+         verdict is derived from each task's source and has to be re-derived whenever the
+         rows are, or a new batch enters the queue ungated.
 SRP/DRY check: Pass — owns the ordering only. Catalog fetching stays in
          Arc3MirrorCatalog, which this never calls: triage is about the generated set and
          must not fail if the upstream mirror is down.
@@ -57,7 +78,29 @@ SRP/DRY check: Pass — owns the ordering only. Catalog fetching stays in
 
 import triage from './arc3Triage.json';
 
-export type TriageStatus = 'queued' | 'duplicate' | 'weak';
+export type TriageStatus = 'queued' | 'duplicate' | 'weak' | 'illegible';
+
+/**
+ * Why a task was ruled unplayable, carried on the row so the cull is auditable.
+ *
+ * `previousStatus` is what the row held before the gate ran, and it is what a re-run
+ * restores if the gate stops flagging the task -- so this verdict is reversible rather
+ * than a one-way edit to measured data. A task that was already `weak` or `duplicate`
+ * keeps that status and still carries this: it was already out of the queue, and
+ * overwriting a measurement to gain nothing would lose the clustering's own record.
+ * Which is why the totals still sum to `probed`.
+ */
+export interface Illegibility {
+  /** Which combination fired, in words. */
+  signal: string;
+  /** The offending comparison, quoted from the task's own source. */
+  comparison: string;
+  /** The terms in it that no render method reads. */
+  hiddenTerms: string[];
+  /** What made the comparison a hidden ANSWER rather than an unrendered intermediate. */
+  why: string[];
+  previousStatus: TriageStatus;
+}
 
 export interface TriageEntry {
   gameId: string;
@@ -70,6 +113,8 @@ export interface TriageEntry {
    * the arena set it means clustering was never run against it at all.
    */
   duplicateOf: string | null;
+  /** Set when the legibility gate fired, whatever the status. See Illegibility. */
+  illegibility?: Illegibility;
   /**
    * Which batch this task came from. Higher is newer; the queue sorts on it descending.
    *
@@ -111,7 +156,7 @@ interface TriageFile {
    *  and a single `generatedFrom` string made the weaker measurement look like the
    *  stronger one. */
   generations: TriageGeneration[];
-  totals: { probed: number; queued: number; duplicate: number; weak: number };
+  totals: { probed: number; queued: number; duplicate: number; weak: number; illegible: number };
   games: TriageEntry[];
 }
 
@@ -126,7 +171,15 @@ const BY_ID = new Map<string, TriageEntry>(DATA.games.map((g) => [g.gameId, g]))
  * need a human are the ones we have the least evidence about, and that is the batch
  * generated most recently -- an older task has already been seen. Quality still gates
  * ENTRY to the queue (duplicates and the random-mashable never reach it), so a reviewer
- * meets recent work without meeting known junk.
+ * meets recent work without meeting known junk. As of 01-Sep that gate includes the
+ * legibility verdict: `illegible` is not `queued`, so the 23 unwinnable tasks leave the
+ * queue by the same mechanism duplicates and pushovers do, and stay addressable and
+ * explicable through all().
+ *
+ * A CAVEAT ON `rank`, worth knowing before anyone leans on it: it sorts by `frames` then
+ * `responsive`, and the illegible class scores well on both -- it was rank 1 in its batch.
+ * Ordering by rank alone would promote exactly the tasks that most need excluding. It
+ * only breaks ties within a generation here, so this is a warning rather than a bug.
  *
  * WHY `generation` IS A FIELD. It was `/^q(\d+)-/` over the id, which is the only recency
  * signal the manifest carries -- no timestamp exists, and the duplicate clusters landing on
