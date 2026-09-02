@@ -12,6 +12,23 @@
 # reference the old numbers.
 
 
+### Version 9.31.0  Sep 2, 2026
+
+- **Landing page: light theme, half the prose, and an invitation instead of a plan** (Author: Mark Barney / Claude Opus 5)
+  - **Light.** The page ran on the console's near-black palette, inherited from the play surface where dark is right — it is a game screen and the frames are saturated pixel art. A landing page is not a game screen; it is an argument and an ask, and dark chrome made it read as a research console for people already inside the project. The task thumbnails keep their own dark cells, so the frames still sit on the ground they were drawn for and the only saturated colour on the page is the work itself.
+  - **The prose was too long and partly presumptuous.** Cut roughly in half. The paragraph explaining why the human/AI gap matters is gone — it told the reader what to think before they had played anything.
+  - **"Where this is going" is gone.** Three paragraphs explaining our plans to a reader who had not been given a reason to care about them. In its place: who we are, and how to reach us.
+  - **The Discord is on the page, prominently**, with the weekly Sunday call named. Same official ARC Prize invite the rest of the site already uses. The point of this site is to find people to talk to, and it had no door.
+  - **The framing is now the true one**: two people doing this in their spare time, currently fifth on the ARC-AGI-3 leaderboard, and the reason to say so is that anyone reading can do the same — the tasks are open, the harness is open, and the gap between a hobbyist and a frontier lab on this problem is smaller than it looks from outside. The Boston poster is one line inside that rather than a section of its own.
+  - **Related work is two links now**, both other people's work on the same problem: arc3.sonpham.net and ARC-Interactive. Removed markbarney.net, voynichlabs.org, and farm.markbarney.net — the last of which was captioned "Kaggriculture, a farming-economy agent arena" and is in fact a hobby farm. A related-work section that sends people to the author's chickens is not related work.
+  - **Files**: `client/src/pages/arc3-community/SyntheticLanding.tsx`.
+
+- **A retrospective, at the leaderboard** (Author: Mark Barney / Claude Opus 5)
+  - `docs/2026-09-02-retrospective-chicken-farmer-to-top-five.md`. Not a plan or a spec — a record of what this project is, written the week the ARC Prize account posted that @82deutschmark and Son Pham had joined the ARC-AGI-3 leaderboard.
+  - **The finding it argues**: the repository is called `arc-explainer` because it was built to explain ARC to the person writing it, and nothing since has been a pivot away from that. Explaining a benchmark properly requires a harness; comparing models requires exact scoring; understanding why models fail is the same activity as competing. There is no moment where this became a competition entry.
+  - **It is honest about scale rather than flattering**: humans clear 100%, the leader scores 7.51, this entry scores 4.52. Fifth place does not mean nearly solved. It means that on this particular problem the frontier is low enough that care beats scale — which is a data point for ARC-AGI-3's whole argument, and a better result than the placement itself.
+  - **It records that the project is older than its own memory**: the visible history opens on 18-Dec-2025 already at version 6.6.5 and already merging PR #391, so the origin was lost in a rewrite. And that April and May 2026 are empty — the project stopped for a quarter and came back.
+
 ### Version 9.30.0  Sep 2, 2026
 
 - **Landing page: four slop stat cards gone, hand-authored tasks lead, nav made to look deliberate** (Author: Mark Barney / Claude Opus 5)
