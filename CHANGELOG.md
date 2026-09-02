@@ -12,6 +12,18 @@
 # reference the old numbers.
 
 
+### Version 9.32.0  Sep 2, 2026
+
+- **Corrections: the Kaggle competition is not the ARC-AGI-3 report, and the duck harness gets named** (Author: Mark Barney / Claude Opus 5)
+  - **The retrospective conflated two different measurements** and has been rewritten. The ARC-AGI-3 technical report figures (humans 100%, best frontier model 0.50% at release) measure models with essentially unlimited resources. The **ARC Prize 2026 competition on Kaggle** is the benchmark *under constraints* — fixed GPUs, bounded notebook runtime, no internet, and therefore open-weights models carried in rather than an API call. The 4.52 placing is that, and the constraint is most of the difficulty. Putting the two on one scale made the achievement unreadable in both directions.
+  - **The placing now names the harness it runs on, in the same breath, on the landing page.** The entry is built on [Tufa Labs' duck harness](https://github.com/Tufalabs/duck-harness) (published 1 July 2026, already documented on `/arc3`), and Tufa Labs sit **fourth — one place ahead, on their own harness**. Citing the placing without citing them would be taking credit for their work; same rule as the ARC-Interactive attribution.
+  - **Dries Smit is named**, and is in this repo's history long before this: he led StochasticGoose, which won the ARC-AGI-3 agent preview competition in late 2025 with 12.58% and 18 levels.
+  - **Son Pham is credited properly.** Recorded because it is not visible from the code: this is largely Mark project-managing Son's work, and the leaderboard line's order is not an accident.
+  - **The origin was not lost.** The previous draft said the git history's start at v6.6.5 meant a rewrite ate the beginning. It did not: the record runs back to **v2.0.1** in `docs/oldPlans/CHANGELOG-SEPT2025.md`, pointing at a doc dated **24 August 2025**, with **19,898 lines** of changelog across `docs/archives/`, `docs/oldPlans/` and the live file.
+  - **Why it is split across five files is the better story**: the changelog kept being archived because it outgrew the assistants of the day — Sonnet 3.5, Haiku 3.5 and Haiku 4 could not hold a file that size and keep working. The archive boundaries record model context limits, not project phases, which means the current file's long "what this got wrong and why" entries are a document that could not have existed here eighteen months ago.
+  - **A near-miss worth recording**: `2024-07-18` is the most common date-shaped string in the archives and it is not a date. It is `gpt-4o-mini-2024-07-18`.
+  - **Files**: `docs/2026-09-02-retrospective-chicken-farmer-to-top-five.md`, `client/src/pages/arc3-community/SyntheticLanding.tsx`.
+
 ### Version 9.31.0  Sep 2, 2026
 
 - **Landing page: light theme, half the prose, and an invitation instead of a plan** (Author: Mark Barney / Claude Opus 5)
