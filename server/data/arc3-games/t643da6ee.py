@@ -9,278 +9,235 @@ from arcengine import (
     GameAction,
     InteractionMode,
     Level,
-    RenderableUserDisplay,
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-COIN = 11
-FUSE_BG = 5
-FUSE_PIP = 8
-SEALED = 13
-EXIT_LOCKED = 15
-EXIT_OPEN = 14
-PLAYER = 12
-PIP_ON = 11
-PIP_OFF = 3
+VOID_BG = 0
+SPAN_FLOOR = 9
+BEAD_MARK = 0
+FRAY_BG = 13
+FRAY_PIP = 0
+COLLAPSED_TILE = 13
+EXIT_SHUT = 15
+EXIT_OPEN = 10
+PLAYER = 6
 
-N = 16
+SPAN = 13
 CELL = 4
+ORIGIN = (64 - SPAN * CELL) // 2
 
-MAX_FUSE = 12
+LOAN = 10
 
-LEVELS_SPEC = [
-    {"fuse": 10, "greedy_dies": False, "rows": [
-        "################",
-        "#......#.......#",
-        "#.P....#.......#",
-        "#......#.......#",
-        "#......#.......#",
-        "#......#.......#",
-        "#......#.......#",
-        "#......c.......#",
-        "#......#.......#",
-        "#......#.......#",
-        "#......#...X...#",
-        "#......#.......#",
-        "#......#.......#",
-        "#......#.......#",
-        "#......#.......#",
-        "################",
-    ]},
-    {"fuse": 8, "greedy_dies": True, "rows": [
-        "################",
-        "#c......#......#",
-        "#.......#......#",
-        "#.......#..X...#",
-        "#.......#......#",
-        "#.......#......#",
-        "#.......#......#",
-        "#.......#......#",
-        "#.......c......#",
-        "#.......#......#",
-        "#.......#......#",
-        "#.......#......#",
-        "#.......#......#",
-        "#.....P.#......#",
-        "#.......#.....c#",
-        "################",
-    ]},
-    {"fuse": 8, "greedy_dies": True, "rows": [
-        "################",
-        "#....#....#....#",
-        "#....#....#..X.#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#.c..c....c....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#..P.#....#",
-        "#....#....#....#",
-        "################",
-    ]},
-    {"fuse": 8, "greedy_dies": True, "rows": [
-        "################",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#.c..c....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#...P#....#",
-        "#....##c#.c..X.#",
-        "#....#...#.....#",
-        "#....#.c.#.....#",
-        "################",
-    ]},
-    {"fuse": 7, "greedy_dies": True, "rows": [
-        "################",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#.c..c....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "######..P.c..X.#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#.c..c....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "################",
-    ]},
-    {"fuse": 6, "greedy_dies": True, "rows": [
-        "################",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#..c.c....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "######....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#....#....#....#",
-        "#..c.c...Pc....#",
-        "#....#....#....#",
-        "#....#....#..X.#",
-        "#....#....#....#",
-        "################",
-    ]},
-    {"fuse": 6, "greedy_dies": False, "rows": [
-        "################",
-        "################",
-        "##.....P......##",
-        "##.##.#######.##",
-        "##.##.#######.##",
-        "##c##c#######.##",
-        "##.##########.##",
-        "##.##########.##",
-        "##...X#######c##",
-        "##.##########.##",
-        "##.#######c##.##",
-        "##.#######.##.##",
-        "##.#######.##.##",
-        "##............##",
-        "################",
-        "################",
-    ]},
-    {"fuse": 6, "greedy_dies": True, "rows": [
-        "################",
-        "################",
-        "##............##",
-        "##P##.#######.##",
-        "##.##.#######.##",
-        "##c##c#######.##",
-        "##.##########.##",
-        "##.##########.##",
-        "##.c.X#######c##",
-        "##.##########.##",
-        "##.#######c##.##",
-        "##.#######.##.##",
-        "##.#######.##.##",
-        "##............##",
-        "################",
-        "################",
-    ]},
+BOARDS = [
+    [
+        ".............",
+        ".@-----*----.",
+        "...........-.",
+        "...........-.",
+        "...........-.",
+        "...........-.",
+        "...........-.",
+        "...........-.",
+        "...........-.",
+        "...........-.",
+        "...........-.",
+        "...........O.",
+        ".............",
+    ],
+    [
+        ".............",
+        ".............",
+        ".............",
+        ".O--*----*-..",
+        "......-......",
+        "......-......",
+        "......-......",
+        "......-......",
+        "......-......",
+        "......-----..",
+        "..........-..",
+        "..........@..",
+        ".............",
+    ],
+    [
+        ".............",
+        ".............",
+        ".............",
+        "..O..........",
+        "..-..........",
+        "..-..........",
+        "..--------*..",
+        "......*......",
+        "......-......",
+        "......-......",
+        ".-*---@......",
+        ".............",
+        ".............",
+    ],
+    [
+        ".............",
+        ".............",
+        "......O......",
+        "......-......",
+        "......-......",
+        "......-......",
+        "......*......",
+        ".-*-------*-.",
+        "......-......",
+        "......-......",
+        "......-......",
+        "......@......",
+        ".............",
+    ],
+    [
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "......O......",
+        "......-......",
+        "......-......",
+        ".....--......",
+        ".....**......",
+        ".-----@-----.",
+        ".*.........*.",
+        ".............",
+        ".............",
+    ],
+    [
+        ".............",
+        ".............",
+        ".............",
+        ".............",
+        "....--*--....",
+        "....-...-....",
+        "....*...*....",
+        "....-...-....",
+        "....-@*--....",
+        "......-......",
+        "......O......",
+        ".............",
+        ".............",
+    ],
+    [
+        ".............",
+        ".*----------.",
+        ".-....-....-.",
+        ".-....*....-.",
+        ".-....-....-.",
+        ".-...---...-.",
+        ".--*--O--*--.",
+        ".-...---...-.",
+        ".-.........-.",
+        ".-.........-.",
+        ".-.........-.",
+        ".-----@----*.",
+        ".............",
+    ],
 ]
 
+WALKABLE = "-*@O"
+UNLIFTED = -1
+STONE = 0
 
-def find_char(rows, ch):
+
+def cell_of(rows: list[str], mark: str) -> tuple[int, int]:
     for y, row in enumerate(rows):
-        for x, c in enumerate(row):
-            if c == ch:
+        for x, char in enumerate(row):
+            if char == mark:
                 return x, y
-    raise AssertionError(f"level has no {ch!r}")
+    raise AssertionError(f"board has no {mark!r}")
 
 
-def coin_cells(rows):
-    return [(x, y) for y, r in enumerate(rows) for x, c in enumerate(r) if c == "c"]
+def bead_cells(rows: list[str]) -> list[tuple[int, int]]:
+    return [(x, y) for y, row in enumerate(rows)
+            for x, char in enumerate(row) if char == "*"]
 
 
-def _solid(colour: int) -> list[list[int]]:
+def is_span(rows: list[str], cell: tuple[int, int]) -> bool:
+    x, y = cell
+    if not (0 <= x < SPAN and 0 <= y < SPAN):
+        return False
+    return rows[y][x] in WALKABLE
+
+
+def _flat(colour: int) -> list[list[int]]:
     return [[colour] * CELL for _ in range(CELL)]
 
 
-def _coin_pixels() -> list[list[int]]:
+def _bead_face() -> list[list[int]]:
     return [
-        [FLOOR, COIN, COIN, FLOOR],
-        [COIN, COIN, COIN, COIN],
-        [COIN, COIN, COIN, COIN],
-        [FLOOR, COIN, COIN, FLOOR],
+        [SPAN_FLOOR, BEAD_MARK, BEAD_MARK, SPAN_FLOOR],
+        [BEAD_MARK, BEAD_MARK, BEAD_MARK, BEAD_MARK],
+        [BEAD_MARK, BEAD_MARK, BEAD_MARK, BEAD_MARK],
+        [SPAN_FLOOR, BEAD_MARK, BEAD_MARK, SPAN_FLOOR],
     ]
 
 
-def _fuse_pixels(remaining: int) -> list[list[int]]:
-    px = [[FUSE_BG] * CELL for _ in range(CELL)]
-    for i in range(min(remaining, CELL * CELL)):
-        px[i // CELL][i % CELL] = FUSE_PIP
-    return px
+def _fray_face(left: int) -> list[list[int]]:
+    face = [[FRAY_BG] * CELL for _ in range(CELL)]
+    for i in range(min(left, CELL * CELL)):
+        face[CELL - 1 - (i // CELL)][i % CELL] = FRAY_PIP
+    return face
+
+
+def _wearing(face: list[list[int]]) -> list[list[int]]:
+    worn = [row[:] for row in face]
+    for y in (1, 2):
+        for x in (1, 2):
+            worn[y][x] = PLAYER
+    return worn
 
 
 def build_levels() -> list[Level]:
     levels: list[Level] = []
-    for spec in LEVELS_SPEC:
-        sprites: list[Sprite] = []
-        for y, row in enumerate(spec["rows"]):
+    for rows in BOARDS:
+        pieces: list[Sprite] = []
+        for y, row in enumerate(rows):
             for x, char in enumerate(row):
-                px, py = x * CELL, y * CELL
-                if char == "#":
-                    sprites.append(Sprite(
-                        pixels=_solid(WALL), name=f"wall_{x}_{y}",
-                        blocking=BlockingMode.BOUNDING_BOX,
-                        interaction=InteractionMode.TANGIBLE, layer=-1,
-                    ).set_position(px, py))
-                elif char == "c":
-                    sprites.append(Sprite(
-                        pixels=_coin_pixels(), name=f"coin_{x}_{y}",
-                        blocking=BlockingMode.NOT_BLOCKED,
-                        interaction=InteractionMode.TANGIBLE, layer=0,
-                        tags=["coin"],
-                    ).set_position(px, py))
-                elif char == "X":
-                    sprites.append(Sprite(
-                        pixels=_solid(EXIT_LOCKED), name="exit",
-                        blocking=BlockingMode.BOUNDING_BOX,
-                        interaction=InteractionMode.TANGIBLE, layer=0, tags=["exit"],
-                    ).set_position(px, py))
-                elif char == "P":
-                    sprites.append(Sprite(
-                        pixels=_solid(PLAYER), name="player",
-                        blocking=BlockingMode.BOUNDING_BOX,
-                        interaction=InteractionMode.TANGIBLE, layer=1,
-                    ).set_position(px, py))
-        levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
+                if char not in WALKABLE:
+                    continue
+                px, py = ORIGIN + x * CELL, ORIGIN + y * CELL
+                if char == "*":
+                    face, tag, name = _bead_face(), "bead", f"bead_{x}_{y}"
+                elif char == "O":
+                    face, tag, name = _flat(EXIT_SHUT), "mouth", "mouth"
+                else:
+                    face, tag, name = _flat(SPAN_FLOOR), "span", f"span_{x}_{y}"
+                pieces.append(Sprite(
+                    pixels=face, name=name, blocking=BlockingMode.NOT_BLOCKED,
+                    interaction=InteractionMode.TANGIBLE, layer=0, tags=[tag],
+                ).set_position(px, py))
+        start = cell_of(rows, "@")
+        pieces.append(Sprite(
+            pixels=_wearing(_flat(SPAN_FLOOR)), name="wader",
+            blocking=BlockingMode.NOT_BLOCKED,
+            interaction=InteractionMode.TANGIBLE, layer=1,
+        ).set_position(ORIGIN + start[0] * CELL, ORIGIN + start[1] * CELL))
+        levels.append(Level(sprites=pieces, grid_size=(64, 64)))
     return levels
-
-
-class G49fbd3f6(RenderableUserDisplay):
-
-    def __init__(self, game: "G8d6b057c") -> None:
-        super().__init__()
-        self._game = game
-
-    def render_interface(self, frame: np.ndarray) -> np.ndarray:
-        cells = self._game.coin_order
-        for i, cell in enumerate(cells):
-            x = 1 + i * 3
-            if x + 2 > frame.shape[1]:
-                break
-            lit = self._game.status.get(cell, 0) == -1
-            frame[1:3, x:x + 2] = PIP_ON if lit else PIP_OFF
-        return frame
 
 
 class G8d6b057c(ARCBaseGame):
 
     def __init__(self) -> None:
-        self.status: dict[tuple[int, int], int] = {}
-        self.coin_order: list[tuple[int, int]] = []
-        camera = Camera(
-            width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=5,
-            interfaces=[G49fbd3f6(self)],
+        self.ledger: dict[tuple[int, int], int] = {}
+        self.here: tuple[int, int] = (0, 0)
+        super().__init__(
+            game_id="t643da6ee", levels=build_levels(),
+            camera=Camera(width=64, height=64,
+                          background=VOID_BG, letter_box=VOID_BG),
         )
-        super().__init__(game_id="t643da6ee", levels=build_levels(), camera=camera)
         self.on_set_level(self.current_level)
 
+    @property
+    def rows(self) -> list[str]:
+        return BOARDS[self.level_index]
+
     def on_set_level(self, level: Level) -> None:
-        rows = LEVELS_SPEC[self.level_index]["rows"]
-        self.coin_order = coin_cells(rows)
-        self.status = {cell: -1 for cell in self.coin_order}
-        self._sync_sprites()
+        self.ledger = {cell: UNLIFTED for cell in bead_cells(self.rows)}
+        self.here = cell_of(self.rows, "@")
+        self._repaint()
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -290,80 +247,76 @@ class G8d6b057c(ARCBaseGame):
         super().full_reset()
         self.on_set_level(self.current_level)
 
-    def _sprite(self, name: str) -> Sprite | None:
+    def _piece(self, name: str) -> Sprite | None:
         found = self.current_level.get_sprites_by_name(name)
         return found[0] if found else None
 
-    def _paint(self, sprite: Sprite, pixels: list[list[int]]) -> None:
-        sprite.pixels[:, :] = np.array(pixels, dtype=np.int8)
+    def _face_of(self, cell: tuple[int, int]) -> list[list[int]]:
+        state = self.ledger.get(cell)
+        if state == UNLIFTED:
+            return _bead_face()
+        if state is not None and state > STONE:
+            return _fray_face(state)
+        if state == STONE:
+            return _flat(COLLAPSED_TILE)
+        if self.rows[cell[1]][cell[0]] == "O":
+            return _flat(EXIT_OPEN if self.all_lifted() else EXIT_SHUT)
+        return _flat(SPAN_FLOOR)
 
-    def _sync_sprites(self) -> None:
-        for cell, st in self.status.items():
-            sprite = self._sprite(f"coin_{cell[0]}_{cell[1]}")
-            if sprite is None:
-                continue
-            if st == -1:
-                self._paint(sprite, _coin_pixels())
-                sprite.set_blocking(BlockingMode.NOT_BLOCKED)
-            elif st > 0:
-                self._paint(sprite, _fuse_pixels(st))
-                sprite.set_blocking(BlockingMode.NOT_BLOCKED)
-            else:
-                self._paint(sprite, _solid(SEALED))
-                sprite.set_blocking(BlockingMode.BOUNDING_BOX)
-        exit_sprite = self._sprite("exit")
-        if exit_sprite is not None:
-            if self.all_collected():
-                self._paint(exit_sprite, _solid(EXIT_OPEN))
-                exit_sprite.set_blocking(BlockingMode.NOT_BLOCKED)
-            else:
-                self._paint(exit_sprite, _solid(EXIT_LOCKED))
-                exit_sprite.set_blocking(BlockingMode.BOUNDING_BOX)
+    def _dress(self, piece: Sprite | None, face: list[list[int]]) -> None:
+        if piece is not None:
+            piece.pixels[:, :] = np.array(face, dtype=np.int8)
 
-    def all_collected(self) -> bool:
-        return all(st != -1 for st in self.status.values())
+    def _repaint(self) -> None:
+        for cell in self.ledger:
+            self._dress(self._piece(f"bead_{cell[0]}_{cell[1]}"), self._face_of(cell))
+        mouth = self._piece("mouth")
+        if mouth is not None:
+            self._dress(mouth, _flat(EXIT_OPEN if self.all_lifted() else EXIT_SHUT))
+        wader = self._piece("wader")
+        if wader is not None:
+            self._dress(wader, _wearing(self._face_of(self.here)))
+            wader.set_position(ORIGIN + self.here[0] * CELL, ORIGIN + self.here[1] * CELL)
 
-    def player_cell(self) -> tuple[int, int]:
-        player = self._sprite("player")
-        if player is None:
-            return -1, -1
-        return player.x // CELL, player.y // CELL
+    def all_lifted(self) -> bool:
+        return all(state != UNLIFTED for state in self.ledger.values())
+
+    def underfoot(self) -> tuple[int, int]:
+        return self.here
+
+    def passable(self, cell: tuple[int, int]) -> bool:
+        if not is_span(self.rows, cell):
+            return False
+        if self.ledger.get(cell) == STONE:
+            return False
+        if self.rows[cell[1]][cell[0]] == "O" and not self.all_lifted():
+            return False
+        return True
 
     def step(self) -> None:
-        dx = dy = 0
-        if self.action.id == GameAction.ACTION1:
-            dy = -1
-        elif self.action.id == GameAction.ACTION2:
-            dy = 1
-        elif self.action.id == GameAction.ACTION3:
-            dx = -1
-        elif self.action.id == GameAction.ACTION4:
-            dx = 1
+        moves = {GameAction.ACTION1: (0, -1), GameAction.ACTION2: (0, 1),
+                 GameAction.ACTION3: (-1, 0), GameAction.ACTION4: (1, 0)}
+        step = moves.get(self.action.id)
+        if step is not None:
+            ahead = (self.here[0] + step[0], self.here[1] + step[1])
+            if self.passable(ahead):
+                self.here = ahead
 
-        if dx or dy:
-            self.try_move("player", dx * CELL, dy * CELL)
+        if self.ledger.get(self.here) == UNLIFTED:
+            self.ledger[self.here] = LOAN + 1
+        for cell, state in list(self.ledger.items()):
+            if state > STONE:
+                self.ledger[cell] = state - 1
 
-        cell = self.player_cell()
-        fuse = LEVELS_SPEC[self.level_index]["fuse"]
-
-        if self.status.get(cell, 0) == -1:
-            self.status[cell] = min(fuse, MAX_FUSE) + 1
-
-        for burning, st in list(self.status.items()):
-            if st > 0:
-                self.status[burning] = st - 1
-
-        if self.status.get(cell, -1) == 0:
-            self._sync_sprites()
+        if self.ledger.get(self.here, UNLIFTED) == STONE:
+            self._repaint()
             self.level_reset()
             self.complete_action()
             return
 
-        self._sync_sprites()
+        self._repaint()
 
-        exit_sprite = self._sprite("exit")
-        if exit_sprite is not None and self.all_collected():
-            if (exit_sprite.x // CELL, exit_sprite.y // CELL) == cell:
-                self.next_level()
+        if self.all_lifted() and self.here == cell_of(self.rows, "O"):
+            self.next_level()
 
         self.complete_action()
