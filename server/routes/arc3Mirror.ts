@@ -19,6 +19,8 @@ SRP/DRY check: Pass -- HTTP layer only; all catalog behaviour lives in the servi
          responses use the shared formatResponse helper.
 */
 
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { Router, type Request, type Response } from 'express';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { formatResponse } from '../utils/responseFormatter';
@@ -151,6 +153,34 @@ router.get(
         games: includeAll ? Arc3Triage.all() : Arc3Triage.queue(),
       }),
     );
+  }),
+);
+
+/**
+ * GET /api/arc3-mirror/mechanics - the spoiler guide's data.
+ *
+ * FULL SPOILERS for the 50 hand-authored tasks: what each one is, what each control does,
+ * and what wins it. Unauthenticated like the rest of this router, and deliberately NOT
+ * linked from anywhere a player would find it -- the play surface exists to collect blind
+ * first contact and a discoverable answer key would destroy the sample it collects.
+ * `noindex` on the page and no nav link is the whole of the protection; anyone with the
+ * URL can read this, and it must not be mistaken for access control.
+ *
+ * Read from disk on first request and held: the file is a build artefact of
+ * scripts/arc3/mechanic_digest.py, committed to the repo, and changes only when that is
+ * re-run against a new batch.
+ */
+let mechanicsCache: unknown = null;
+router.get(
+  '/mechanics',
+  asyncHandler(async (_req: Request, res: Response) => {
+    if (mechanicsCache === null) {
+      const file = path.join(process.cwd(), 'server', 'data', 'arc3-games', 'mechanics.json');
+      mechanicsCache = JSON.parse(await readFile(file, 'utf-8'));
+    }
+    const games = mechanicsCache as unknown[];
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.json(formatResponse.success({ games, total: games.length }));
   }),
 );
 

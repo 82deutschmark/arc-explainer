@@ -33,7 +33,7 @@ SRP/DRY check: Pass — presentation and submit only. Storage is the repository'
          session identity is humanPlayTelemetry's, and the panel holds no game state.
 */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Loader2, Check } from 'lucide-react';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 
@@ -59,7 +59,7 @@ const C = {
 };
 
 export function Arc3FeedbackPanel({
-  gameId, reachedLevel, outcome, onDone, doneLabel, compact,
+  gameId, reachedLevel, outcome, onDone, doneLabel, compact, afterSent, onSent,
 }: {
   gameId: string;
   reachedLevel: number | null;
@@ -67,6 +67,15 @@ export function Arc3FeedbackPanel({
   /** Where the form leads once it is done with — closing the scratchpad mid-run, or the
    *  next task when the run is over. The caller decides; the panel only calls it. */
   onDone?: () => void;
+  /** Shown in place of the thank-you once the form is sent. The play page puts the task's
+   *  intended mechanic here -- the reveal a reviewer has earned by giving their reading
+   *  first. When it is supplied the panel does NOT auto-advance: something worth reading
+   *  is on screen and yanking it away after 900ms would be worse than not showing it. */
+  afterSent?: React.ReactNode;
+  /** Fired the moment the form is sent, before `afterSent` renders. The play page uses it
+   *  to start fetching the answer key -- which it deliberately does not fetch any earlier,
+   *  so a task in progress never has its solution sitting in the network log. */
+  onSent?: () => void;
   /** What the bypass button says, because "Skip" means two different things depending on
    *  where onDone goes. */
   doneLabel?: string;
@@ -112,11 +121,12 @@ export function Arc3FeedbackPanel({
     }
     setSending(false);
     setSent(true);
-    setTimeout(() => onDone?.(), 900);
+    onSent?.();
+    if (!afterSent) setTimeout(() => onDone?.(), 900);
   };
 
   if (sent) {
-    return (
+    return afterSent ? <>{afterSent}</> : (
       <div className="flex items-center justify-center gap-2 py-4 text-[12px]" style={{ color: C.green }}>
         <Check className="w-4 h-4" /> Thanks — that helps.
       </div>

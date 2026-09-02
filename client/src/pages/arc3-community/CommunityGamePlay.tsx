@@ -99,6 +99,7 @@ import { Arc3FeedbackPanel } from '@/components/arc3-community/Arc3FeedbackPanel
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 import { ARC3_COLORS } from '@/utils/arc3Colors';
+import type { Arc3MechanicEntry } from '@shared/arc3Mechanics';
 
 type GameState = 'idle' | 'playing' | 'won' | 'lost';
 
@@ -166,6 +167,69 @@ const MONO = "'SF Mono', Menlo, Consolas, 'Courier New', monospace";
 
 
 
+/**
+ * What the task was, shown after the player has said what they thought it was.
+ *
+ * Deliberately plain and inside the feedback panel rather than over the console: the
+ * console's screen shows only what the official one shows, and this is our own apparatus.
+ * A missing entry renders nothing at all -- a reveal that says "no description available"
+ * is worse than the thank-you it replaced.
+ */
+function MechanicReveal({ entry, onNext, onBack }: {
+  entry: Arc3MechanicEntry | null;
+  onNext?: () => void;
+  onBack?: () => void;
+}) {
+  if (!entry?.mechanic) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-4 text-[12px]" style={{ color: ARC.green }}>
+        Thanks — that helps.
+        {onNext && (
+          <button onClick={onNext} className="underline" style={{ color: ARC.pink }}>Next task</button>
+        )}
+        {onBack && (
+          <button onClick={onBack} className="underline" style={{ color: ARC.faint }}>Close</button>
+        )}
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-2.5 py-1">
+      <p className="text-[10px] tracking-[1.5px] uppercase" style={{ color: ARC.green }}>
+        Thanks — here is what it was
+      </p>
+      <p className="text-[12.5px] leading-relaxed" style={{ color: ARC.text }}>{entry.mechanic}</p>
+      {entry.controls && (
+        <p className="text-[11.5px] leading-relaxed" style={{ color: ARC.dim }}>
+          <span style={{ color: ARC.text }}>Controls. </span>{entry.controls}
+        </p>
+      )}
+      {entry.goal && (
+        <p className="text-[11.5px] leading-relaxed" style={{ color: ARC.dim }}>
+          <span style={{ color: ARC.text }}>Wins when. </span>{entry.goal}
+        </p>
+      )}
+      <div className="flex items-center gap-3 pt-1">
+        {onNext && (
+          <button onClick={onNext} className="px-3 h-8 text-[11.5px] rounded-[4px]"
+                  style={{ background: ARC.pink, color: '#fff' }}>
+            Next task →
+          </button>
+        )}
+        {onBack && (
+          <button onClick={onBack} className="px-3 h-8 text-[11.5px] rounded-[4px]"
+                  style={{ border: `1px solid ${ARC.border}`, color: ARC.text }}>
+            Back to the task
+          </button>
+        )}
+        <Link href="/arc3/mechanics" className="text-[11px] underline" style={{ color: ARC.faint }}>
+          All 50, with spoilers
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function CommunityGamePlay() {
   const { gameId } = useParams<{ gameId: string }>();
   const [, navigate] = useLocation();
@@ -184,6 +248,9 @@ export default function CommunityGamePlay() {
   /** The frame cell under the pointer, so the board can show where a click would land.
    *  Null whenever the pointer is off the board or ACTION6 is not a spatial click here. */
   const [hoverCell, setHoverCell] = useState<{ x: number; y: number } | null>(null);
+  /** Set when feedback is sent. Gates the answer-key fetch, so the solution to a task in
+   *  progress is never sitting in the page's network log for a player to find. */
+  const [revealEarned, setRevealEarned] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -207,6 +274,19 @@ export default function CommunityGamePlay() {
   const { data: stats } = useQuery<{ data: { games: { game_id: string }[] } }>({
     queryKey: ['/api/arc3-play/human-stats'],
     staleTime: 60 * 1000,
+  });
+
+  /**
+   * The mechanic guide, for the reveal after feedback is sent.
+   *
+   * Fetched only once this run is OVER. It is a complete answer key and pulling it while
+   * the task is still being played would put the solution in the page's own network log,
+   * one devtools tab away from the person the blind-play sample depends on.
+   */
+  const { data: mechanics } = useQuery<{ data: { games: Arc3MechanicEntry[] } }>({
+    queryKey: ['/api/arc3-mirror/mechanics'],
+    staleTime: 60 * 60 * 1000,
+    enabled: revealEarned,
   });
 
   /** The ranked review queue: generated tasks that are neither duplicates nor pushovers. */
@@ -563,9 +643,17 @@ export default function CommunityGamePlay() {
     setShowFeedback(false);
     setShowHelp(false);
     setLive(false);
+    setRevealEarned(false);
+    setHoverCell(null);
 
     if (pyodide.status === 'ready') void start();
   }, [gameId, start, pyodide.status]);
+
+  /** This task's entry in the mechanic guide, once the run is over and it has loaded. */
+  const reveal = useMemo(
+    () => mechanics?.data?.games?.find((g) => g.gameId === gameId) ?? null,
+    [mechanics, gameId],
+  );
 
   /** Feedback's exit, and the game-over Skip. Nowhere to go is a no-op, never a dead end
    *  on the queue's last task. */
@@ -807,6 +895,27 @@ export default function CommunityGamePlay() {
             <Arc3FeedbackPanel
               compact
               key={gameId}
+              /* THE REVEAL. Sending feedback is what earns it: the reviewer's reading of
+                 the task is recorded BEFORE they are told what it was, which is the only
+                 order in which their reading is worth anything. Supplying this also stops
+                 the panel auto-advancing, so the reveal stays until they leave it.
+
+                 ON ANY SUBMIT, NOT ONLY AT THE END, because the end is not reachable.
+                 None of the fifty tasks calls lose() -- verified across the set by
+                 scripts/arc3/mechanic_digest.py, which reports callsLose false for all of
+                 them -- so there is no GAME OVER and the only finish is winning every
+                 level. Gating the reveal on a finished run would have hidden it from
+                 almost every reviewer, on a page whose own Next-task logic is written
+                 around most people not finishing most tasks. Mid-run it costs a deliberate
+                 act: open Notes, write something, press send. */
+              onSent={() => setRevealEarned(true)}
+              afterSent={
+                <MechanicReveal
+                  entry={reveal}
+                  onNext={runOver && nextGameId ? goNext : undefined}
+                  onBack={runOver ? undefined : () => setShowFeedback(false)}
+                />
+              }
               gameId={gameId ?? ''}
               reachedLevel={levelsDone}
               outcome={gameState === 'won' ? 'completed' : gameState === 'lost' ? 'lost' : 'in_progress'}
