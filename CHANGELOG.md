@@ -12,6 +12,20 @@
 # reference the old numbers.
 
 
+### Version 9.24.0  Sep 2, 2026
+
+- **The click games can be played: the board is the ACTION6 target** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: seven of our fifty tasks are played by clicking cells on the board. You could not click the board. The only way to send a click was a deck button that sent no coordinates, so the game received "click at (-1, -1)", rejected it, and did nothing -- every press, every time. Those seven tasks were unplayable, not difficult.
+  - **`t99e8274e` is the clearest case**: it declares `available_actions=[5, 6, 7]`. There is no d-pad. Clicking cells to fill them *is* the game, and clicking was the one thing the page would not let you do.
+  - **Why it was like that**: the canvas was deliberately made inert in an earlier pass, because in the commit-style tasks (`q598-v1` and kin) ACTION6 means "I am finished" and pressing it early ends the level. That protected the smaller group of tasks and broke the larger one. Both halves are now served: the board takes spatial clicks, the deck button still sends a bare ACTION6.
+  - **The coordinate space was confirmed, not guessed**: `external/ARCEngine/arcengine/base_game.py:517` builds ACTION6 as `data={"x": x * scale + x_offset, ...}` -- rendered frame cells, which is exactly what our canvas draws.
+  - **Nothing server-side changed.** The whole coordinate path already existed and had never been exercised: the worker forwards a data dict, and `HumanPlayRepository` has carried `x_coord`/`y_coord` columns whose own comment notes no backfill was possible "because the coordinates of past clicks were never transmitted". This is the first time those columns receive a value.
+  - **The mapping is proportional against the element's box**, not against a cell size derived from `canvas.width`. The console screen is a fixed square and the canvas is stretched to fill it, so drawn pixels (512) and displayed pixels (454) are different numbers; the existing mapping in `Arc3GridVisualization` is correct there and would be wrong here. Dimensions come from the frame currently displayed, so a click during a multi-frame animation maps against the grid the player is looking at.
+  - **The cursor is followed**: a crosshair and an outline on the cell under the pointer, drawn into the canvas in the same pass as the grid. On a task that does not take ACTION6 the board has no crosshair, no outline, and ignores clicks -- an inert board has to look inert.
+  - **The deck CLICK button is kept, and flagged as an open question.** It is the only way to send a coordinate-free ACTION6. Whether a submit button should share an action id with a spatial click is undecided -- it is why this page has now been wrong in both directions -- so the control is deliberately not removed, and the header, the code comment and the plan document all say so rather than leaving it looking redundant.
+  - **Checked in the running app**: on `t99e8274e`, clicking a cell fills it and clicking it again returns the canvas to a byte-identical state, with the step counter advancing each time; the posted telemetry event carries `{action: "ACTION6", x: 25, y: 17}`; the deck button posts the same action with `x: null, y: null`; and on `t0bf293c2` (`[1,2,3,4,5,7]`) the board stays inert.
+  - **Files**: `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `docs/2026-09-02-arc3-canvas-click-plan.md`.
+
 ### Version 9.23.0  Sep 2, 2026
 
 - **The hypothesis traces are readable at `/arc3/hypotheses`** (Author: Mark Barney / Claude Opus 5)

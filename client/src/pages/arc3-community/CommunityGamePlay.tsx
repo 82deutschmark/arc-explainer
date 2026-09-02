@@ -29,8 +29,8 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
          the arrows and ACTION6 declares you are finished, so pressing it early calls
          lose(). A player clicking the board to see what happens is dead on move one,
          which is precisely the "clicking anything results in game over" report. On the
-         official console ACTION6 is a labelled CLICK button — a control you press
-         deliberately. The canvas is no longer clickable for that reason.
+         official console ACTION6 is also a labelled CLICK button, so the deck grew one
+         and the canvas was made inert. See point 7 — half of that was wrong.
 
          The same task also explains "nothing appears to do anything": q598-v1 buffers
          arrow presses and the board does not visibly change on every one (measured: the
@@ -62,6 +62,29 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
             spacebar while the deck read "Undo (Z)", so the key a stuck player reaches
             for spent a move instead of taking one back. Z is Undo. The spacebar is
             ACTION5. See KEY_MAP.
+
+         02-Sep, fourth pass:
+
+         7. THE CLICK GAMES COULD NOT BE PLAYED AT ALL. Making the canvas inert (see the
+            second pass above) protected the tasks where ACTION6 is a submit and broke
+            every task where it is a real click, which is the larger group: seven of the
+            fifty read data["x"]/data["y"] off the action. t99e8274e is the clearest —
+            available_actions is [5,6,7], so the d-pad is not merely unused, it does not
+            exist, and the whole game is clicking cells to fill them. The deck's CLICK
+            button sent ACTION6 with NO coordinates, so the game read the -1 default and
+            _toggle returned early: not an unresponsive control, a guaranteed no-op. The
+            board is clickable again, and a click carries the cell under the cursor.
+            Coordinates are frame cells, matching arcengine's own
+            ActionInput(id=ACTION6, data={"x","y"}) in base_game.py:517.
+
+            THE DECK CLICK BUTTON STAYS, AND IS AN OPEN QUESTION. It is how you send a
+            coordinate-free ACTION6, which is what q598-v1 and the other commit-style
+            tasks actually want — press to declare "I am finished". Whether that
+            mechanic belongs in our synthetic set at all is undecided: a submit button
+            sharing an action id with a spatial click is why this page has now been wrong
+            twice in opposite directions. It is deliberately NOT removed pending that
+            decision, so do not tidy it away — see
+            docs/2026-09-02-arc3-canvas-click-plan.md.
 
 SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodideGame,
          telemetry in humanPlayTelemetry, colours in utils/arc3Colors.
@@ -158,6 +181,9 @@ export default function CommunityGamePlay() {
   // Feedback is the qualitative half of the cull decision, so it is reachable mid-run
   // (a scratchpad for what you are trying) and offered again when the run ends.
   const [showFeedback, setShowFeedback] = useState(false);
+  /** The frame cell under the pointer, so the board can show where a click would land.
+   *  Null whenever the pointer is off the board or ACTION6 is not a spatial click here. */
+  const [hoverCell, setHoverCell] = useState<{ x: number; y: number } | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -258,6 +284,20 @@ export default function CommunityGamePlay() {
   const known = available.size > 0;
 
   /**
+   * The grid currently on screen, and the single source of its dimensions.
+   *
+   * Read from `displayFrameIndex` rather than frame[0] because applyFrame walks
+   * multi-frame responses on a 200ms timer: a click landing mid-animation must map
+   * against the grid the player is actually looking at, and a game whose frames differ
+   * in size would otherwise map against the wrong one.
+   */
+  const displayedGrid = useMemo(() => {
+    const frames = frame?.frame;
+    if (!frames?.length) return null;
+    return frames[Math.min(displayFrameIndex, frames.length - 1)] ?? null;
+  }, [frame, displayFrameIndex]);
+
+  /**
    * RESET is action id 0 and never appears in available_actions — it is not a move. It
    * routes through pyodide.reset(), so it must bypass this gate rather than be blocked.
    */
@@ -314,8 +354,9 @@ export default function CommunityGamePlay() {
           typeof next.levels_completed === 'number' ? next.levels_completed : null,
           s === 'WIN' ? 'WIN' : s === 'GAME_OVER' ? 'GAME_OVER' : 'NOT_FINISHED',
           typeof next.score === 'number' ? next.score : null,
-          // Present only when the action carried a click target; ACTION6 on this console
-          // is a deck button with no coordinates, so today this is null in practice.
+          // Present when the action carried a click target -- a click on the board.
+          // Null for a deck CLICK press, which sends ACTION6 with no coordinates on
+          // purpose; the two are different moves and the column tells them apart.
           action === 'ACTION6' && coords ? coords : null,
         );
       }
@@ -327,6 +368,52 @@ export default function CommunityGamePlay() {
     if (!frame?.undo_depth || pyodide.isActing) return;
     try { applyFrame(await pyodide.undo()); } catch { /* surfaced through pyodide.error */ }
   }, [pyodide, frame, applyFrame]);
+
+  // ── The board as a click target ─────────────────────────────────────────────
+  /** Whether a click on the board means anything right now. Games that do not offer
+   *  ACTION6 leave the board inert, and it must LOOK inert -- no crosshair, no hover
+   *  cell -- or it invites a move the dispatcher will refuse. */
+  const boardClickable = gameState === 'playing' && canSend('ACTION6');
+
+  /**
+   * Pointer position -> frame cell.
+   *
+   * Proportional against the element's own box, NOT against a cell size derived from
+   * canvas.width. The console screen is a fixed square and the canvas is stretched to
+   * fill it (`w-full h-full`), so the drawn pixel size and the displayed pixel size are
+   * different numbers; dividing by the drawn one lands on the wrong cell on any grid
+   * that is not square. Clamped because a click exactly on the right or bottom edge
+   * computes one past the last index.
+   */
+  const cellFromPointer = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const grid = displayedGrid;
+    const canvas = canvasRef.current;
+    if (!grid?.length || !canvas) return null;
+    const h = grid.length;
+    const w = grid[0]?.length ?? 0;
+    if (!w) return null;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return null;
+    const x = Math.floor(((e.clientX - rect.left) / rect.width) * w);
+    const y = Math.floor(((e.clientY - rect.top) / rect.height) * h);
+    if (x < 0 || y < 0 || x > w || y > h) return null;
+    // Clamp rather than reject: a click on the last pixel of the last column computes
+    // exactly `w`, and dropping it would make the board's right and bottom edges dead.
+    return { x: Math.min(x, w - 1), y: Math.min(y, h - 1) };
+  }, [displayedGrid]);
+
+  /**
+   * A click on the board IS ACTION6. No arming, no deck button first -- the click games
+   * are unplayable any other way (see point 7 in the header). Guarded exactly as the deck
+   * controls are: an unavailable action is refused, and a click while a step is in flight
+   * is dropped rather than queued, so a fast clicker cannot outrun the worker.
+   */
+  const clickBoard = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!boardClickable || pyodide.isActing) return;
+    const cell = cellFromPointer(e);
+    if (!cell) return;
+    void act('ACTION6', cell);
+  }, [boardClickable, pyodide.isActing, cellFromPointer, act]);
 
   // ── Keyboard ────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -392,8 +479,7 @@ export default function CommunityGamePlay() {
   // ── Canvas ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
-    const frames = frame?.frame;
-    const grid = frames?.[Math.min(displayFrameIndex, (frames?.length ?? 1) - 1)];
+    const grid = displayedGrid;
     if (!canvas || !grid?.length) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -409,7 +495,24 @@ export default function CommunityGamePlay() {
         ctx.fillRect(x * scale, y * scale, scale, scale);
       }
     }
-  }, [frame, displayFrameIndex]);
+    // The cell a click would land on. Drawn INTO the canvas rather than positioned as an
+    // overlay div: the canvas is stretched to the square screen, so an overlay would need
+    // the same proportional maths a second time and would drift from it. Two strokes,
+    // dark under light, so it reads on any ARC3 colour.
+    if (hoverCell && hoverCell.y < h && hoverCell.x < w) {
+      const px = hoverCell.x * scale;
+      const py = hoverCell.y * scale;
+      ctx.lineWidth = Math.max(1, Math.round(scale / 8));
+      ctx.strokeStyle = 'rgba(0,0,0,.75)';
+      ctx.strokeRect(px + ctx.lineWidth / 2, py + ctx.lineWidth / 2, scale - ctx.lineWidth, scale - ctx.lineWidth);
+      ctx.strokeStyle = 'rgba(255,255,255,.95)';
+      ctx.strokeRect(px + ctx.lineWidth * 1.5, py + ctx.lineWidth * 1.5, scale - ctx.lineWidth * 3, scale - ctx.lineWidth * 3);
+    }
+  }, [displayedGrid, hoverCell]);
+
+  /** Nothing to hover when the board is not a click target -- a stale outline left over
+   *  from a clickable task would say the next one takes clicks when it does not. */
+  useEffect(() => { if (!boardClickable) setHoverCell(null); }, [boardClickable]);
 
 
   const start = useCallback(async () => {
@@ -490,6 +593,15 @@ export default function CommunityGamePlay() {
     unavailable: !canSend(action),
     disabled: pyodide.isActing || gameState !== 'playing',
   });
+
+  /*
+   * THE DECK CLICK BUTTON. This sends ACTION6 with NO coordinates, which is a different
+   * move from clicking the board and is kept on purpose -- the commit-style tasks read
+   * ACTION6 as "I am finished" and never look at data. Whether that mechanic should exist
+   * in our synthetic set is an open question (see point 7 in the header); until it is
+   * settled this control stays. Removing it would silently delete the only way to send
+   * a bare ACTION6.
+   */
 
   return (
     <div
@@ -619,16 +731,26 @@ export default function CommunityGamePlay() {
               </div>
             ) : (
               <>
-                {/* Not clickable. ACTION6 is a button on the deck, because in some tasks
-                    it is a submit and poking the board is instant death. */}
-                <canvas ref={canvasRef} className="block w-full h-full" style={{ imageRendering: 'pixelated' }} />
+                {/* The board IS the ACTION6 target. Clicking a cell sends ACTION6 with
+                    that cell's coordinates -- no deck button first. The crosshair and the
+                    hover outline appear only when this task actually takes ACTION6. */}
+                <canvas
+                  ref={canvasRef}
+                  className={`block w-full h-full ${boardClickable ? 'cursor-crosshair' : ''}`}
+                  style={{ imageRendering: 'pixelated' }}
+                  onClick={clickBoard}
+                  onMouseMove={(e) => { if (boardClickable) setHoverCell(cellFromPointer(e)); }}
+                  onMouseLeave={() => setHoverCell(null)}
+                />
                 {showHelp && (
                   <div className="absolute inset-0 p-5 flex flex-col justify-center gap-2 text-[10.5px] leading-relaxed"
                        style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
                     <p style={{ color: '#FFF' }}>Controls</p>
                     <p>Arrows or WASD — the d-pad.</p>
                     <p>Spacebar — the Spacebar button.</p>
-                    <p>The Click button is an action, not a place on the screen.</p>
+                    <p>Click the board — that is ACTION6, sent at the cell you clicked.</p>
+                    <p>The Click button sends the same action with no coordinates, for the
+                       tasks that use it as a plain button.</p>
                     <p>Z undoes one move. R resets the level.</p>
                     <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
                     <p style={{ color: 'rgba(255,255,255,.5)' }}>
