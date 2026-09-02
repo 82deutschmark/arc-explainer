@@ -127,6 +127,18 @@ PLANS = {
 # abort is the entire point.
 DEFAULT_MAX_PROMPT_TOKENS = 1000
 
+# Budget for each --calibrate probe. This was 1, which made the reasoning half of the gate
+# unsound: a model given one token has no room to emit a think block, so `reasoning_content`
+# comes back empty however hard the server was told to think. On the Katana that happened to
+# pass, because its build reports reasoning_content even at max_tokens=1. On the Mini
+# (qwen3.8-27b, LM Studio, 01-Sep-2026) it does not, and EVERY level — none, low, medium,
+# high, xhigh — measured empty, so the gate failed a lever that a real generation proves is
+# working. Measured at this budget on the same box: `none` alone returns no reasoning and
+# every other level returns ~200 chars, which is the distinction the gate exists to draw.
+# prompt_tokens is unchanged by the larger budget, so the injection check is unaffected.
+# 48 is enough for a think block to open and still costs a couple of seconds per probe.
+CALIBRATION_MAX_TOKENS = 48
+
 
 # ---------------------------------------------------------------------------
 # Server discovery. Nothing about the server is assumed; all of it is recorded.
@@ -721,7 +733,7 @@ def calibrate(base_url, model_id, prompts, args, image, cells) -> int:
         if effort is not None:
             cell["reasoning_effort"] = effort
             cell["thinking"] = "off" if effort == "none" else "on"
-        body = build_body(model_id, prompts, image, cell, max_tokens=1)
+        body = build_body(model_id, prompts, image, cell, max_tokens=CALIBRATION_MAX_TOKENS)
         if effort is None:
             body.pop("reasoning_effort", None)
         payload, elapsed_ms = call_model(base_url, body)
