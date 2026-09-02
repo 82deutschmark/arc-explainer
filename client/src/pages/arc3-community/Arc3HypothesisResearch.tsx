@@ -278,14 +278,35 @@ export default function Arc3HypothesisResearch() {
             </Section>
 
             <Section title="How it was run">
-              <p style={{ fontFamily: SERIF, fontSize: 17, lineHeight: 1.7 }}>
-                One game, <code style={{ fontFamily: MONO, fontSize: 14 }}>{data.summary.games[0]}</code>,
-                rendered straight from the game engine as a 512-pixel frame — no console, no
-                buttons, no labels. Thirty-two runs across four settings: thinking off and on,
-                at temperature 0.7 and 1.0, eight replicates each. Model{' '}
-                <code style={{ fontFamily: MONO, fontSize: 14 }}>{data.summary.models[0]}</code>{' '}
-                served locally. Every run records the hash of the exact image it was shown, so
-                all thirty-two provably saw one picture.
+              <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                <figure style={{ margin: 0, flex: '0 0 auto' }}>
+                  <img
+                    src="/data/arc3-hypothesis-frame-t088853a8.png"
+                    alt="The 64x64 opening frame shown to the model: coloured squares on dark bands, divided by a black horizontal strip."
+                    width={240}
+                    height={240}
+                    style={{ imageRendering: 'pixelated', border: `1px solid ${ARC.line}`, display: 'block' }}
+                  />
+                  <figcaption style={{ fontFamily: MONO, fontSize: 11, color: ARC.faint, marginTop: 8, maxWidth: 240, lineHeight: 1.5 }}>
+                    Everything the model was given. 64×64 cells, no text, no controls.
+                  </figcaption>
+                </figure>
+                <p style={{ fontFamily: SERIF, fontSize: 17, lineHeight: 1.7, flex: '1 1 320px', margin: 0 }}>
+                  One game, <code style={{ fontFamily: MONO, fontSize: 14 }}>{data.summary.games[0]}</code>,
+                  rendered straight from the game engine — no console, no buttons, no labels.
+                  Thirty-two runs across four settings: thinking off and on, at temperature 0.7
+                  and 1.0, eight replicates each. Model{' '}
+                  <code style={{ fontFamily: MONO, fontSize: 14 }}>{data.summary.models[0]}</code>{' '}
+                  served locally.
+                </p>
+              </div>
+              <p style={{ fontFamily: SERIF, fontSize: 17, lineHeight: 1.7, marginTop: 18 }}>
+                Every run records a hash of the exact bytes it was shown, so all thirty-two
+                provably saw this one picture. That turned out to matter: the task was rewritten
+                the following day and now opens on a different frame entirely. The image above is
+                the one these traces are about, recovered from history and checked against the
+                hash in the run log — without which the drift would have gone unnoticed and this
+                page would be describing readings of a picture nobody could see any more.
               </p>
               <p style={{ fontFamily: SERIF, fontSize: 17, lineHeight: 1.7, marginTop: 16 }}>
                 The system prompt was deliberately wide — it names the domain and asks for
