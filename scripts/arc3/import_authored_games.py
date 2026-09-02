@@ -31,6 +31,19 @@ PURPOSE: Publish OUR hand-authored ARC-AGI-3 candidate tasks INTO this repo, und
          refuses to write inside the repository: a committed slug->id table would undo
          everything above in one file.
 
+         RE-RUNNING IS THE POINT, NOT AN EDGE CASE. A published id is a pure function of
+         the authoring id, so importing an updated batch rewrites each game's bytes UNDER
+         THE SAME id. That is what makes this the resync path as well as the first-import
+         path: ids must not churn, because arc3Triage.json's rows, the human-play
+         telemetry and the feedback rows are all keyed by them. Re-running with an
+         unchanged source is a no-op that rewrites identical bytes.
+
+         ORPHANS ARE REPORTED, NEVER DELETED. A game withdrawn upstream leaves a
+         published file this import no longer produces. Deleting it is NOT this script's
+         call -- the id still keys triage and telemetry rows, so retiring one is a
+         decision with consequences outside this repository. Both modes print orphans and
+         neither removes them; the exit code is unaffected.
+
          Dependencies: stdlib only (ast, argparse, hashlib, json, pathlib, re).
          Usage (source dir is required; no path to a private repo is baked in):
              python3 scripts/arc3/import_authored_games.py \
@@ -208,6 +221,29 @@ def build(source: Path) -> list[dict[str, str]]:
     return published
 
 
+def orphans(out_dir: Path, published: list[dict[str, str]]) -> list[str]:
+    """Published modules in `out_dir` that this import does not produce, sorted.
+
+    A game withdrawn upstream stops appearing in the source manifest but its published
+    file stays on disk, where build_authored_manifest.py keeps enumerating it into the
+    catalog and the play surface keeps serving it. Detected here because this is the only
+    step that knows the full set the source SHOULD produce.
+
+    Reported and not deleted, deliberately: the id keys triage rows, feedback rows and
+    human-play telemetry, none of which live in this repository, so retiring one is a
+    decision that has to be made with those in view rather than as a side effect of a
+    sync. The manifest builder will also refuse a filename that is not a published id, so
+    a stray file cannot masquerade as a game.
+    """
+    if not out_dir.is_dir():
+        return []
+    expected = {item["gameId"] for item in published}
+    return sorted(
+        path.stem for path in out_dir.glob("*.py")
+        if not path.name.startswith("__") and path.stem not in expected
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Publish authored ARC-AGI-3 tasks into this repo under opaque names.")
     parser.add_argument("--source", type=Path, required=True, help="directory of authored task modules")
@@ -226,6 +262,15 @@ def main() -> int:
         return 1
 
     published = build(args.source)
+
+    stray = orphans(args.out, published)
+    if stray:
+        print(
+            f"note: {len(stray)} published file(s) are no longer produced by this source: "
+            f"{stray}. Nothing was deleted -- these ids key triage and telemetry rows; "
+            "retiring one is a deliberate decision, not a side effect of a sync.",
+            file=sys.stderr,
+        )
 
     if args.check:
         stale = []
