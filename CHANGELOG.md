@@ -7,6 +7,17 @@
 # reference the old numbers.
 
 
+### Version 9.17.0  Sep 2, 2026
+
+- **One more polished task reaches the play surface** (Author: Claude Opus 5 / Bubba sub-agent)
+  - **In plain language**: the 50 first-party tasks under `server/data/arc3-games/` are authored and polished in a private repository, and only reach this repo when someone runs the publish step in `docs/2026-09-02-arc3-authored-resync.md`. One task had been rewritten upstream and this repo was still serving its previous build. It is re-imported here: `t088853a8`. Nothing else in the catalog moved.
+  - **Published from upstream's merged state, not a branch.** The runbook is explicit that importing from an unmerged branch puts bytes in this public repository that do not yet exist in the source of truth. The upstream rewrite merged first; this import is taken from the default branch afterwards, and the round-trip `--check` therefore passes against what upstream actually contains rather than against a branch that could still change.
+  - **No id churned.** A published id is a pure function of its upstream id, so a rewritten task is republished under the id it already had. Verified rather than assumed: the authored-id -> published-id -> class-name triples were dumped before and after the import and compared as sorted sets — all 50 identical, no additions, no removals. That matters because the 50 rows in `arc3Triage.json`, the feedback rows and the human-play telemetry are all keyed by these ids, and none of those live in this repository; an id change would type-check, sort, render, and address nothing.
+  - **The import stayed minimal, which is the evidence it was idempotent.** Re-importing all 50 tasks rewrote exactly one file and left `manifest.json` byte-identical. A second file changing would have meant something drifted that nobody had accounted for.
+  - **Upstream gates ran before anything was published here.** Upstream now carries a staleness detector that compares packaged builds against their sources by content rather than mtime; it reports all 50 packaged builds current. The rewritten task passes its verifier on both the source and the packaged lane, and passes the legibility gate on both. A task whose packaged lane fails does not get published, because nothing downstream would catch it — a broken build still imports and still renders.
+  - **Checked**: both `import_authored_games.py --check` and `build_authored_manifest.py --check` exit 0. Every added line in the diff, plus this entry and the pull request text, were grepped against the private name map for upstream filenames, class names and bare ids — no hits. `npx tsc --noEmit` reports the same 19-line pre-existing error set as an unmodified checkout of `main` in this same worktree, compared as a sorted diff rather than a count — no new errors. `npm run build` exits 0. Booted the server and confirmed the bytes are actually served, not merely committed: `/api/arc3-mirror/games` returns 927 tasks with 50 from the first-party source, and the task's `/source` endpoint serves the newly imported build (10,752 bytes) rather than the build this repo had been serving (12,850 bytes).
+  - **Files**: modified `CHANGELOG.md` and `server/data/arc3-games/t088853a8.py`.
+
 ### Version 9.15.0  Sep 2, 2026
 
 - **Polished tasks now actually reach the play surface** (Author: Claude Opus 5 / Bubba sub-agent)
