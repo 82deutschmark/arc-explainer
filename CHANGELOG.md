@@ -15,9 +15,10 @@
     budget. A model given one token has no room to open a think block, so it always came back
     with no reasoning, and the check was reading the budget rather than the lever. On the Mac Mini
     it failed a lever that a real generation proves is working, and refused a valid night.
-  - **Why the Katana never saw it**: that build reports `reasoning_content` even at one token, so
-    the check passed there by luck. On the Mini every level measured empty — `none`, `low`,
-    `medium`, `high`, `xhigh` alike.
+  - **Why the Katana never saw it is not established**: its calibrate printed PASS, which fits that
+    build reporting `reasoning_content` even at one token, but nothing was tested from this machine
+    and other explanations fit equally. What is established is that on the Mini every level measured
+    empty — `none`, `low`, `medium`, `high`, `xhigh` alike — so the check cannot pass here.
   - **The fix**: probes run at 48 tokens. At that budget `none` alone returns no reasoning and
     every other level returns ~200 characters, which is the distinction the gate exists to draw.
     The companion "THINKING NOT DISABLED" check was equally vacuous — nothing could ever be
