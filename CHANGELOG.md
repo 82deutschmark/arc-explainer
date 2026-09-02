@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.33.0  Sep 2, 2026
+
+- **A generated registry of the 50 authored games, in the shape of the one the Boss likes** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: `docs/arc3-games-registry.md` is one row per game — id, category, board size, levels, a one-line description, a picture, and what each button does. Modelled on `theredbluepill/arc-interactive`'s `GAMES.md`, which the Boss pointed at as the thing he wants arc-explainer to consume.
+  - **Generated, not typed.** Theirs is hand-edited and drifts; their similarity tooling exists partly to catch rows that stopped describing their game. Ours is assembled from `mechanics.json`, `frames.json` and the rendered frames, so re-running one script after a batch is the entire maintenance story. `--check` fails if the committed file no longer matches the data, which is the CI hook when someone wants one.
+  - **One column is deliberately human.** Nothing derivable knows that a game is "Memory / Hidden State" rather than "Coverage / Path", and guessing from prose produces exactly the vague labels that make a registry unskimmable. `categories.json` carries it, a first pass covers all 50, and a game missing from it prints "Unclassified" rather than a made-up label. The vocabulary is kept close to theirs so the two registries read side by side.
+  - **The Grid column admits what it does not know.** 16 of the 50 do not name their board size in a form the digest can read. The obvious fallback is the frame dimensions from `frames.json`, which would print "64x64" for a 12x12 board — confidently wrong. Those rows print `?` with the cell size instead.
+  - **Not yet**: their preview column is an animated GIF per game and ours is a still frame. A GIF worth having has to show a later level and a failure, per their own GIF skill, and random play produces neither. That is a real piece of work, not a flag flip.
+  - **Files**: added `scripts/arc3/build_games_registry.py`, `server/data/arc3-games/categories.json`, `docs/arc3-games-registry.md`.
+
 ### Version 9.32.0  Sep 2, 2026
 
 - **Corrections: the Kaggle competition is not the ARC-AGI-3 report, and the duck harness gets named** (Author: Mark Barney / Claude Opus 5)
