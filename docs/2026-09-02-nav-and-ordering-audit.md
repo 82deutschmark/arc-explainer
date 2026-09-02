@@ -77,6 +77,46 @@ site is three things when it is eight.
 `/arc3/mechanics` stays out, deliberately — it is the unlisted spoiler guide, and putting
 it in the nav would defeat it. See `docs/2026-09-02-arc3-canvas-click-plan.md`.
 
+## 5. Second pass: the landing page, the play bar, and the nav's own look
+
+**Four stat cards that repeated the prose around them.** The landing page carried a row of
+100% / 0.50% / task count / unplayed count. The first two appear verbatim in the hero
+paragraph directly above; the second two are the opening line of the ask directly below.
+All four were restatements set in a bigger font, and in a row they read as a dashboard
+bolted onto an argument. Deleted. The citation stays — it is what makes the hero's claim
+checkable rather than asserted.
+
+A number earns a card when the card is the first place the reader meets it. That is the
+rule; the comment where they used to be says so, so they do not grow back.
+
+**The landing page opened on the slop.** Its tile strips used `pipelineFirst` — the 571
+unreviewed generated tasks led every strip on the first page a visitor sees. Now
+`authoredFirst`, matching the gallery and the review queue. Three surfaces, one answer
+about what is worth someone's time; a visitor shown one task here and handed a different
+one by Play has been told the site does not know its own mind.
+
+**Three links to the gallery on one page**, plus Browse in the nav. The footer's was the
+third and is now a link to the research page instead, which nothing else on the page
+reached.
+
+**The play page stranded you.** It renders its own slim bar rather than the site header —
+correctly, because stacking `AppHeader` over the console is the double-chrome bug in point
+1 of that file's header, and a dropdown menu over a game someone is concentrating on is
+worse than useless. But the bar held only "All tasks", so from a task there was no route to
+the landing page or anything else, and the one control every site puts in that corner was
+missing. The brand mark is now there and goes home. Two links, both distinct, still no menu.
+
+**The nav's own look.** The wordmark subtitle read `🟦 ARC 3 · archive: ARC 1 🟥 ARC 2 🟨` —
+squares on the wrong side of two of the three labels, the numbers out of order, and an
+"archive:" nobody needs in a nine-pixel line. It is a wordmark, not a sentence: now
+`🟥 ARC 1 · 🟨 ARC 2 · 🟦 ARC 3`.
+
+In the row itself a single 🟦 sat after the ARC-3 group and nowhere else, left over from a
+pass that removed a square from between every item. One square used once reads as a stray
+character. Each cluster now opens with its own palette square — 🟦 for the ARC-3 row, 🟥🟨
+for ARC 1 & 2, 🟩 for Arena — which is the same palette as the brand mark beside it, and
+reads as a system rather than as decoration.
+
 ## The pattern, again
 
 Every one of these is the same shape as the control bugs in

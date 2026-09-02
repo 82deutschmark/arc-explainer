@@ -762,6 +762,28 @@ export default function CommunityGamePlay() {
       {/* One slim bar. This route sits outside PageLayout precisely so the site nav is
           not stacked on top of the console. */}
       <div className="flex items-center gap-4 px-4 h-11 shrink-0" style={{ borderBottom: `1px solid ${ARC.border}` }}>
+        {/*
+          THE BRAND MARK IS HERE AND THE SITE NAV IS NOT, deliberately.
+          This route sits outside PageLayout so the console owns the viewport the way the
+          official player does -- stacking AppHeader on top of it is the double-chrome bug
+          in point 1 of this file's header, and a dropdown menu over a game someone is
+          concentrating on is worse than useless.
+          But a slim bar with only "All tasks" on it stranded the player: from a task there
+          was no route to the landing page, the research pages or anything else, and the
+          one control every site puts in this corner was missing. The mark goes home; the
+          gallery link stays because it is the other thing you want from here. Two links,
+          both distinct, no menu.
+        */}
+        <Link href="/" className="flex items-center gap-1.5 shrink-0" title="ARC Explainer">
+          <span className="flex flex-col gap-[1px] leading-none">
+            <span className="flex gap-[1px] text-[6px] leading-none">
+              <span>🟥</span><span>🟧</span><span>🟨</span>
+            </span>
+            <span className="flex gap-[1px] text-[6px] leading-none">
+              <span>🟩</span><span>🟦</span><span>🟪</span>
+            </span>
+          </span>
+        </Link>
         <Link href="/arc3/gallery" className="flex items-center gap-1.5 text-[12px]" style={{ color: ARC.dim }}>
           <ArrowLeft className="w-3.5 h-3.5" /> All tasks
         </Link>

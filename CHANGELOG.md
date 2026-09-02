@@ -12,6 +12,20 @@
 # reference the old numbers.
 
 
+### Version 9.30.0  Sep 2, 2026
+
+- **Landing page: four slop stat cards gone, hand-authored tasks lead, nav made to look deliberate** (Author: Mark Barney / Claude Opus 5)
+  - **The four stat cards were worse than meaningless — they were repeats.** 100% and 0.50% appear verbatim in the hero paragraph directly above them; the task count and unplayed count are the opening line of the ask directly below. All four restated adjacent prose in a bigger font, and in a row read as a dashboard bolted onto an argument. Deleted, with the rule written where they used to be: a number earns a card when the card is the first place the reader meets it. The citation stays — it makes the hero's claim checkable rather than asserted.
+  - **The landing page opened on the slop.** Its tile strips used `pipelineFirst`, so the 571 unreviewed generated tasks led the first page a visitor sees. Now `authoredFirst`, matching the gallery and the review queue — three surfaces, one answer about what is worth someone's time.
+  - **The ask now says what we actually want back**: not just a play, but the note at the end — and that leaving it is what reveals the task's mechanic.
+  - **The play page stranded you.** Its slim bar held only "All tasks", so from a task there was no route to the landing page or anything else. The brand mark is now there and goes home. Still no site nav on that route, deliberately: stacking `AppHeader` over the console is the double-chrome bug, and a dropdown over a game someone is concentrating on is worse than useless.
+  - **Three links to the gallery on one page** plus Browse in the nav; the footer's third is now the research page, which nothing else on the page reached.
+  - **The nav wordmark read `🟦 ARC 3 · archive: ARC 1 🟥 ARC 2 🟨`** — squares on the wrong side of two of three labels, numbers out of order, and an "archive:" nobody needs in a nine-pixel line. Now `🟥 ARC 1 · 🟨 ARC 2 · 🟦 ARC 3`.
+  - **One lone 🟦 sat in the nav row** after the ARC-3 group and nowhere else, left over from a pass that stripped squares from between every item. Each cluster now opens with its own palette square — 🟦 ARC-3 row, 🟥🟨 ARC 1 & 2, 🟩 Arena — the same palette as the brand mark beside it, so it reads as a system rather than decoration.
+  - **ARC-Interactive added to the landing page's Related work** as well as the chrome, with what it actually is: 252 of our tasks, plus 200+ more, tutorials and a local human-play mode.
+  - **Checked in the running app**: stat cards gone; flow reads hero → citation → call to action → preview → footer; hero tiles are hand-authored; nav renders the cluster markers and the corrected wordmark.
+  - **Files**: `client/src/pages/arc3-community/SyntheticLanding.tsx`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/components/layout/AppNavigation.tsx`, `client/src/components/layout/AppHeader.tsx`, `docs/2026-09-02-nav-and-ordering-audit.md`.
+
 ### Version 9.29.0  Sep 2, 2026
 
 - **The mechanic guide now shows each task instead of only describing it** (Author: Mark Barney / Claude Opus 5)
