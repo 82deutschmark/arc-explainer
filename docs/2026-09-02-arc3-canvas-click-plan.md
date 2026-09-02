@@ -205,6 +205,26 @@ solution to a task in progress in the browser's own network log, one devtools ta
 from the person whose blind first contact is the entire point of the surface. Verified in
 the running app: zero requests to that endpoint while playing.
 
+### The prose is checked too, and the check found two wrong notes
+
+The derived facts are validated against an independent classification; the prose was
+initially validated against nothing, and it is the half a reviewer acts on. `--selftest`
+now cross-checks every note's CONTROL claims against `actionsReferenced`: a note saying
+"d-pad only" on a game whose source reads ACTION5 fails, as does a note naming an action
+the game never reads, or one telling the player to click a cell on a game whose ACTION6
+carries no coordinates.
+
+It failed on first run, on `t088853a8` and `tc6f8ee4c` — both map ACTION5 to `(0, 0)`, a
+wait, and both notes said d-pad only. `t088853a8`'s own goal line said "waiting is a real
+move and usually the point" while its controls line denied the control existed. Re-reading
+`tc6f8ee4c` to fix it turned up a wrong MECHANIC as well: the win is not reaching the exit,
+it is standing on the exit with a guard parked on every plate — you are herding the patrol
+onto the switches, not evading it.
+
+Wrong mechanic prose is not mechanically catchable and this check does not claim to catch
+it. Wrong CONTROLS is both catchable and the more damaging of the two, because a reviewer
+has no reason to doubt it and will spend the run down a blind alley.
+
 ### Verified in the running app
 
 - `GET /api/arc3-mirror/mechanics` returns 50 rows, all 50 with prose, `X-Robots-Tag:
