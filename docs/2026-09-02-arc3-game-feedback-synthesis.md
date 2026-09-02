@@ -43,8 +43,12 @@ means the feedback here is real rather than a checkbox reflex.
 | Felt broken | 2 |
 | Inputs did nothing | 0 |
 
-People got somewhere in these. Levels reached ranged from 1 to 8, and one task was
-finished outright. Sessions ran from 59 to 646 moves.
+8 of the 15 reached level 1 or higher, topping out at level 8, and one task was finished
+outright. The other 7 never cleared level 1 — so these are not uniformly working either.
+
+The sharper line is how the sessions *ended*. Not one authored session was recorded as a
+loss: 14 were still in progress when the player stopped, and 1 was completed. People walk
+away from these. They do not die in them.
 
 ### The generated catalog — people bounce off these immediately
 
@@ -60,14 +64,18 @@ finished outright. Sessions ran from 59 to 646 moves.
 | Solved it | 0 |
 
 **Every single one of these ended at level 0 as a loss.** Not one person cleared a level,
-enjoyed one, or solved one.
+enjoyed one, or solved one. That is the contrast with the authored set: every generated
+session ended in a death, and no authored session did.
 
 ### The one number that matters most
 
-How long people stuck with a task before giving up:
+How long people stuck with a task before giving up. Both figures cover only the tasks that
+someone actually left feedback on, which is the like-for-like comparison:
 
-- **Generated tasks:** 1 to 16 moves. Most gave up in under a dozen.
-- **Authored tasks:** 59 to 646 moves. Several ran into the hundreds.
+- **Generated tasks (20 of them):** a median of **5 moves**, ranging from 1 to 16.
+- **Authored tasks (14 of them):** a median of about **190 moves**, ranging from 19 to 646.
+
+Roughly forty times the patience, for the same person on the same afternoon.
 
 That is the case for polishing the authored set rather than starting over. People are
 already willing to sit with these for hundreds of moves. The generated ones they abandon
@@ -180,8 +188,8 @@ choices helped.
 **4. Move the meters and change their shape.** Cheap once item 3 exists.
 Take the health/energy indicator out of the corner people expect. Make it a pie, a wedge,
 a lopsided pyramid — something that drains in a way you have to watch to understand. The
-Boss named `t088853a8`'s energy bar specifically, and the player note on that task asked
-for the same thing independently.
+Boss named `t088853a8`'s energy bar specifically, and the written note left on that task
+that same afternoon asks for exactly the same thing.
 *Applies to:* `t088853a8` first, then `t7725dccf` and `t643da6ee`.
 *Done looks like:* you cannot tell what the meter is from a single screenshot.
 
