@@ -2,11 +2,74 @@
 #
 # One line, one file, two people: check the version at the top before adding an entry.
 # On 31-Aug two branches numbered in parallel — one continued 7.10.0 -> 7.11.0 while the
+# 02-Sep: collided again. Two branches both used 9.14.0 and 9.15.0 for unrelated work.
+# main's entries kept those numbers; the hypothesis-sweep branch's moved, twice, as main kept
+# taking the number underneath it. They ended at 9.21.0/9.22.0/9.23.0.
+# The commits that introduced them still reference the old numbers.
+#
 # other had already gone to 8.0.0 -> 9.2.0 — and the merge left 7.x entries sitting above
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
 
+### Version 9.23.0  Sep 2, 2026
+
+- **The hypothesis traces are readable at `/arc3/hypotheses`** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: we showed a local vision model one opening frame of a game nobody outside this project has seen, thirty-two times over, and asked what the rules might be. This publishes what came back, for handing to somebody who has none of our context.
+  - **The result worth reading**: 160 hypotheses, and **159 of them carry a name the model used nowhere else**. It almost never repeats itself on an unchanged image. But novel names are not novel ideas -- reduced to content words, a small set of framings keeps resurfacing (colour, gravity, gate, state, mirror), so it is reaching for a handful of explanations and dressing each one differently. Both halves of that are on the page, because the first without the second reads as far more impressive than it is.
+  - **Why the traces are browsable and not summarised**: a table of counts hides the only thing worth looking at. The page lists every run and every hypothesis, filterable by setting.
+  - **The LM Studio finding is published alongside it**, because it came out of the same work and is more broadly useful than the experiment: "reasoning effort" is not a thinking budget, it is a sentence injected into the system prompt, and the token count shows it happening. A real budget exists at `llm.prediction.reasoning.budgetTokens` but is reachable from neither HTTP API -- six spellings were tried on the OpenAI-compatible endpoint and silently ignored, and the native endpoint rejects a budget object outright while its error message is the only written record of the six valid levels. Four places control thinking and they disagree; the page lays them out.
+  - **What is committed and what is not**: the raw run log carries full prompts and reasoning traces and stays gitignored machine-local research data. `scripts/arc3/build_hypothesis_dataset.py` extracts only what a reader needs into `client/public/data/`. It parses all 32 runs, including one that numbered its hypotheses inside the bold markers and was being silently dropped by the first version.
+  - **The frame itself is published, and finding out why is the best argument for the whole design.** The page discusses 160 readings of a picture, so it now shows the picture. While merging, `main` turned out to have rewritten this very task -- it opens on a completely different frame today (`2d9aede7...` against the `fa1723f4...` the model actually saw). Because every row records a hash of the exact bytes sent, the drift was caught rather than published: the original was recovered from git history, re-rendered, and checked against the hash in the run log before being committed. Without that hash this page would now be describing readings of an image nobody could reproduce, and nothing would have said so.
+  - **Stated on the page rather than buried**: one game and one model; the "zero incoherent answers" count is a crude heuristic spot-checked by hand, not a labelled rate; and nothing is scored against the real rules, because grading after reading the answers is how you talk yourself into a result.
+  - **Checked in the running app**: the route serves, the data loads, 32 run cards render, no page errors.
+  - **Files**: `client/src/pages/arc3-community/Arc3HypothesisResearch.tsx`, `client/src/App.tsx`, `client/public/data/arc3-hypothesis-traces.json`, `scripts/arc3/build_hypothesis_dataset.py`.
+
+### Version 9.22.0  Sep 1, 2026
+
+- **The sweep's calibration gate was blind to the thing it gated on** (Author: Claude Opus 5)
+  - **In plain language**: `--calibrate` refuses to start a batch if the thinking lever is not
+    connected, because the whole `confound` plan varies that lever. It probed with a one-token
+    budget. A model given one token has no room to open a think block, so it always came back
+    with no reasoning, and the check was reading the budget rather than the lever. On the Mac Mini
+    it failed a lever that a real generation proves is working, and refused a valid night.
+  - **Why the Katana never saw it is not established**: its calibrate printed PASS, which fits that
+    build reporting `reasoning_content` even at one token, but nothing was tested from this machine
+    and other explanations fit equally. What is established is that on the Mini every level measured
+    empty — `none`, `low`, `medium`, `high`, `xhigh` alike — so the check cannot pass here.
+  - **The fix**: probes run at 48 tokens. At that budget `none` alone returns no reasoning and
+    every other level returns ~200 characters, which is the distinction the gate exists to draw.
+    The companion "THINKING NOT DISABLED" check was equally vacuous — nothing could ever be
+    non-empty — and now works too. `prompt_tokens` does not move with the larger budget, so the
+    injection ceiling and the anti-#988 prompt-rendering check are untouched. Costs seconds, once.
+  - **Measured on the Mini, and it confirms the plan's main design choice from a second machine**:
+    `none` renders 92 prompt tokens, `medium` 90, and unset/`minimal`/`low`/`high`/`xhigh` all
+    render 116. `medium` is the only thinking-on level that injects no instruction text, which is
+    exactly why the plan picked it as the honest comparison against `none`.
+  - **First night's results are recorded** in `docs/2026-09-01-arc3-sweep-mini-results.md`: both
+    plans ran on the Mini, 60 rows, every run a natural stop, no truncation, no empty content, and
+    zero collapses — the failure mode that started the experiment did not reproduce. Concurrency,
+    left open by the plan and the runbook, was measured on the idle box at **1.76x** against the
+    Katana's 1.18x; a future night here should run parallel.
+  - **Files**: modified `scripts/arc3/hypothesis_sweep.py`, `CHANGELOG.md`. Added
+    `docs/2026-09-01-arc3-sweep-mini-results.md`.
+
+### Version 9.21.0  Sep 1, 2026
+
+- **A harness for asking a local model what it thinks our games are** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: we have 50 games nobody outside this project has seen. Shown one opening frame and asked only to guess the rules, a model produces a description -- and the interesting question is not whether any single guess is right, but how much the *spread* of guesses moves when you change the decoding settings. Until now this was done by hand, pasting screenshots into a chat window one at a time. It is now a script that can run all night, on either machine, and write down everything needed to reconstruct each answer.
+  - **What started it, and the correction that reframes it**: two hand runs on 01-Sep looked like proof that thinking mode rescues the model from producing word salad. It is not. The conversation that produced the salad has a second turn where nothing was changed except pressing "try again", and it produced an excellent answer -- same settings, thinking still off. So the collapse is a low-probability failure mode, not a property of those settings, and the quantity worth measuring is a **rate**, which needs repeats per cell. A one-shot-per-setting grid would have produced a confident and wrong story. (Honest caveat: the salad turn never recorded its own configuration, so this is probable rather than certain.)
+  - **The frames come out of the engine, not off the screen.** The existing thumbnail renderer is reused unchanged: it loads a game, issues one RESET, and paints the first frame. All 50 render. It never advances a game, so it cannot pollute human-play telemetry. **What that removes is worth stating**: the hand runs used screenshots of the whole console, and the model's single sharpest inference came from seeing an undo button and concluding that moves must be discrete and reversible -- which is nowhere in the board. Bare frame versus full console is therefore treated as an experimental variable to be decided later, not as a rendering convenience already decided.
+  - **Three things about the local server that would each have silently ruined a night's data.** It answers on port 9099, not the 1234 every document says. A thinking run capped at 1200 tokens spends every one of them reasoning and returns **empty content**, which in a log is indistinguishable from a refusal. And the thinking controls are not what they appear to be, which is the big one --
+  - **"Reasoning effort" on this model is a sentence added to your system prompt, not a thinking budget.** Probed against a fixed prompt so that only the template rendering could move the token count: `medium` injects nothing at all, `low` injects "keep your thinking brief and focused", the default `xhigh` injects "think carefully, validate key assumptions", and `none` switches thinking off outright. Every other control -- `chat_template_kwargs` at any nesting, a top-level `enable_thinking`, a `reasoning` object, a `/no_think` suffix -- is accepted and ignored. **So comparing "thinking off" against effort `low`, which is what an earlier draft of this defaulted to, crosses a thinking switch with a prompt edit and cannot tell them apart.** The comparison now runs `none` against `medium`, the only pair that changes one thing. This was found by reading LM Studio's own bug tracker rather than trusting recall, and it would not have been visible in any result -- both settings produce fluent answers.
+  - **The known bug where the app's own settings override the API does not apply to this build, and it is re-checked per machine anyway.** Sending no effort field renders the template's default rather than the value configured in the app, which is the disproof. Because that could differ on the Mini or after an update, `--calibrate` now confirms that different effort levels actually produce different prompts, and refuses to start if they do not: an inert main axis would otherwise produce a full night of data showing "thinking makes no difference" for entirely the wrong reason. The run also aborts if reasoning appears when it was switched off **or is missing when it was switched on** -- the second being the failure that looks like a fast, well-behaved run.
+  - **It aborts rather than warns.** A prompt larger than expected means the server has injected a system prompt of its own -- that cost real time on a previous project -- so the run stops instead of quietly producing confounded rows. Same for the prompt size drifting mid-batch. A confounded batch is worse than a short one.
+  - **Runs are scheduled replicate-major**, so a night that only gets 60% through leaves every cell with roughly equal samples instead of three finished cells and one never started. It resumes where it stopped, and a failed run is recorded with its full configuration rather than vanishing.
+  - **The system prompt is the Boss's, verbatim, and two better-behaved drafts were deleted to get there.** The first explained ARC-AGI-3 back to the model -- grid worlds, a fixed set of discrete actions, learning by experiment -- which is steering rather than context, and pre-answers things we would rather watch it work out. The second imposed a rigid output format. That went too: a format strict enough to guarantee clean parsing would also prevent the malformed answers the experiment exists to measure. The looseness was moved into the reader instead, which accepts several numbering styles and keeps the raw text either way. **A malformed answer is data, not an error.**
+  - **Found and fixed while testing**: the Windows console is cp1252 and threw on printing model output, so the reader would have crashed on exactly the symbol-dense runs it exists to display. Both scripts now force UTF-8 on stdout.
+  - **Two named nights, so starting one is a single command.** `--plan confound` holds one game fixed and crosses thinking against temperature (32 runs, ~3.4h) to settle what started this. `--plan breadth` runs eight different games at one setting (32 runs, ~2h) to see the range of readings across boards rather than the variance on one. Results are written per hostname, so both machines can run at once and the reports pool without collision.
+  - **Checked against the live model, not asserted**: calibration reports 347 (thinking off) / 345 (medium) / 383 (unset) prompt tokens, confirms reasoning is genuinely off when asked and genuinely present when asked, and confirms the effort parameter is reaching the template at all; real runs complete and parse at both settings; resuming skips completed work; an unreachable server exits cleanly; the prompt guard was tripped on purpose and aborted. Not yet run: anything on the Mac Mini. Results are gitignored -- they are machine-local research data, not something the site serves.
+  - **Files**: `scripts/arc3/hypothesis_prompts.py`, `scripts/arc3/hypothesis_sweep.py`, `scripts/arc3/hypothesis_report.py`, `docs/plans/2026-09-01-arc3-hypothesis-sweep-plan.md`, `.gitignore`.
 ### Version 9.18.0  Sep 2, 2026
 
 - **All the player feedback on the ARC-3 games, collected into one readable page** (Author: Claude Opus 5 / Bubba sub-agent)
