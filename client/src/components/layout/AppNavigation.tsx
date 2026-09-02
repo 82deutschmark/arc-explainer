@@ -123,15 +123,61 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
     description: 'Every task on the site, as its opening frame and nothing else',
   },
   {
-    type: 'link',
-    title: 'About ARC-3',
-    href: '/arc3',
+    /*
+     * WHY THIS BECAME A DROPDOWN. It was a single "About ARC-3" link, and everything else
+     * this programme has built had no entry point in the chrome at all: the hypothesis
+     * traces (shipped 02-Sep and linked from nowhere), the agent playground, the archive.
+     * Pages reachable only by typing the URL are pages nobody visits, and the nav was
+     * quietly asserting that the site is three things when it is eight.
+     */
+    type: 'dropdown',
+    title: 'ARC-3',
     icon: BookOpen,
-    // Says "spoilers" because it is one: the page names the mechanic of six official
-    // games, five of which are playable blind at /arc3/gallery.
-    description: 'Reference and history — contains spoilers for six official games',
-    exact: true,
+    description: 'Reference, research and the agent tooling behind the ARC-AGI-3 work',
     dividerAfter: '🟦',
+    sections: [
+      {
+        label: 'Reference',
+        items: [
+          {
+            type: 'link',
+            title: 'About ARC-3',
+            href: '/arc3',
+            icon: BookOpen,
+            // Says "spoilers" because it is one: the page names the mechanic of six
+            // official games, five of which are playable blind at /arc3/gallery.
+            description: 'Reference and history — contains spoilers for six official games',
+            exact: true,
+          },
+          {
+            type: 'link',
+            title: 'Archive',
+            href: '/arc3/archive/games',
+            icon: Archive,
+            description: 'Retired ARC-AGI-3 games and their replays',
+          },
+        ],
+      },
+      {
+        label: 'Research',
+        items: [
+          {
+            type: 'link',
+            title: 'Hypothesis traces',
+            href: '/arc3/hypotheses',
+            icon: BookOpen,
+            description: 'What a vision model guesses from one opening frame, 32 times over',
+          },
+          {
+            type: 'link',
+            title: 'Agent playground',
+            href: '/arc3/playground',
+            icon: Gamepad2,
+            description: 'Run an LLM agent against a task and watch it reason',
+          },
+        ],
+      },
+    ],
   },
   {
     type: 'dropdown',
@@ -386,11 +432,23 @@ const navigationItems: (NavItem & { dividerAfter?: string })[] = [
 ];
 
 /**
- * The two ARC-3 sites worth leaving for. arc3.sonpham.net is Son Pham's sibling catalog,
- * built on the same Pyodide/ARCEngine architecture this repo runs -- see
- * docs/sonpham-arc3-pyodide-architecture.md. Labelled by hostname so it is self-describing.
+ * The ARC-3 projects worth leaving for.
+ *
+ * ARC-Interactive is here first among the community ones because we are the ones in its
+ * debt: 252 of the tasks in our gallery are theredbluepill's, mirrored under the MIT
+ * licence, and until 01-Sep the site credited nobody. The gallery section carries the
+ * licence notice, but a credit that only appears once you scroll to the right section of
+ * one page is not the credit a quarter of our catalog has earned. It goes in the chrome.
+ *
+ * arc3.sonpham.net is Son Pham's sibling catalog, built on the same Pyodide/ARCEngine
+ * architecture this repo runs -- see docs/sonpham-arc3-pyodide-architecture.md.
  */
 const externalLinks: ExternalNavLink[] = [
+  {
+    title: 'ARC-Interactive',
+    href: 'https://github.com/theredbluepill/arc-interactive',
+    description: "theredbluepill's community game repo — 252 of our tasks are his, under MIT",
+  },
   {
     title: 'ARC Prize',
     href: 'https://arcprize.org/arc-agi/3/',
