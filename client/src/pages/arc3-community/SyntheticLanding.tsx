@@ -69,15 +69,30 @@ interface HumanStatsResponse {
   data: { games: { game_id: string; first_sessions: number }[] };
 }
 
+/**
+ * LIGHT. This page ran on the console's near-black palette, inherited from the play
+ * surface where a dark ground is the right call -- it is a game screen and the frames are
+ * saturated pixel art that needs somewhere quiet to sit. A landing page is not a game
+ * screen. It is three paragraphs of argument and an ask, and dark chrome made it read as
+ * a research console for people already inside the project rather than an invitation to
+ * someone who has never heard of any of this.
+ *
+ * The task thumbnails keep their own dark cells, so the frames still sit on the ground
+ * they were drawn for and the page's only saturated colour is the work itself.
+ */
 const ARC = {
-  ground: '#0E0C0C', text: '#E3E1DF', dim: '#A7A3A1', faint: '#6E6A68',
-  cell: '#191919', border: '#262626', pink: '#E53AA3', pinkAlt: '#C42F89',
-  control: '#393736', green: '#4FCC30', yellow: '#FFDC00',
+  ground: '#FFFFFF', text: '#111111', dim: '#4A4A4A', faint: '#767676',
+  cell: '#F6F5F4', border: '#E2E0DE', pink: '#C42F89', pinkAlt: '#A8256F',
+  control: '#393736', green: '#2E8B1F', yellow: '#B8860B',
+  /** The dark ground a task frame is drawn against, kept inside the tiles. */
+  tile: '#141414',
 };
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif";
 const MONO = "'SF Mono', Menlo, Consolas, 'Courier New', monospace";
 
 const LUMA = 'https://luma.com/z1h24dqe?tk=kddwGm';
+/** The official ARC Prize server. Same invite the rest of this site already uses. */
+const DISCORD = 'https://discord.gg/9b77dPAmcA';
 const REPORT = 'https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf';
 const ARENA_REPO = 'https://github.com/sonpham-org/autoresearch-arena';
 const ARENA_SITE = 'https://arc3.sonpham.net';
@@ -90,14 +105,17 @@ const RELEASE_SCORES: [string, string][] = [
   ['Grok-4.20 (Reasoning)', '0.10%'],
 ];
 
+/**
+ * Two links, both of which are other people's work on the same problem.
+ *
+ * What was here before: markbarney.net, voynichlabs.org and farm.markbarney.net, none of
+ * which a visitor to an ARC-AGI-3 page has any use for -- and the farm one was captioned
+ * "Kaggriculture, a farming-economy agent arena", which it is not. It is a hobby farm.
+ * A related-work section that sends people to the author's chickens is not related work.
+ */
 const RELATED = [
-  { href: ARENA_SITE, label: 'arc3.sonpham.net', note: 'The research side — the task set itself, the agent harness, leaderboards' },
-  // 252 of the tasks on this site are his, mirrored under MIT. The gallery carries the
-  // licence notice; this is the human version of the same credit.
-  { href: 'https://github.com/theredbluepill/arc-interactive', label: 'ARC-Interactive', note: "theredbluepill's community game repo — 252 of the tasks here are his, and it has 200+ more, tutorials and a local human-play mode" },
-  { href: 'https://markbarney.net', label: 'markbarney.net', note: 'Everything else' },
-  { href: 'https://farm.markbarney.net', label: 'farm.markbarney.net', note: 'Kaggriculture — a farming-economy agent arena' },
-  { href: 'https://voynichlabs.org', label: 'voynichlabs.org', note: 'Voynich Labs' },
+  { href: ARENA_SITE, label: 'arc3.sonpham.net', note: "Son Pham's site — the research half of this programme: the task set, the agent harness, the run data" },
+  { href: 'https://github.com/theredbluepill/arc-interactive', label: 'ARC-Interactive', note: "theredbluepill's community game repo — 252 of the tasks here are his, and it has 200+ more, tutorials, and a local human-play mode" },
 ];
 
 function thumb(gameId: string, size = 256) {
@@ -118,7 +136,7 @@ function Tile({ game, alt }: { game: Game; alt: boolean }) {
     <Link href={`/arc3/play/${game.gameId}`}>
       <a className="group block">
         <div className="relative aspect-square overflow-hidden"
-             style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
+             style={{ background: ARC.tile, border: `1px solid ${ARC.border}` }}>
           <img src={thumb(game.gameId)} alt="" loading="lazy" decoding="async"
                className="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity"
                style={{ imageRendering: 'pixelated', display: 'block' }} />
@@ -225,6 +243,10 @@ export default function SyntheticLanding() {
               <h1 className="text-[30px] sm:text-[40px] leading-[1.15] font-bold mb-6 tracking-[-0.5px]">
                 Humans solve these. The best AI in the world scores half a percent.
               </h1>
+              {/* Three paragraphs, and it was four longer ones. The cut version said the
+                  same things at half the length; the paragraph explaining why the gap
+                  matters was the page telling the reader what to think before they had
+                  played anything. */}
               <div className="text-[15px] leading-[1.75] space-y-4" style={{ color: ARC.dim }}>
                 <p>
                   Open one and you get a screen, a few buttons, and no instructions. Nobody
@@ -234,17 +256,14 @@ export default function SyntheticLanding() {
                 </p>
                 <p>
                   The systems that pass medical exams and write working software{' '}
-                  <strong style={{ color: ARC.text }}>almost entirely cannot.</strong> On the
-                  official benchmark humans clear 100% of these environments. The best model
-                  anyone has tested scores <strong style={{ color: ARC.text }}>0.50%</strong>.
+                  <strong style={{ color: ARC.text }}>almost entirely cannot.</strong> Humans
+                  clear 100% of these environments. The best model anyone has tested scores{' '}
+                  <strong style={{ color: ARC.text }}>0.50%</strong>.
                 </p>
                 <p>
-                  That gap is not a gimmick — it is the most useful thing we know about what
-                  these systems are. Exams reward recall. This rewards something else:
-                  looking at a thing you have never seen, guessing how it works, and
-                  throwing the guess away the moment it stops fitting. You do that all day
-                  without noticing. Machines are remarkably bad at it, and nobody fully
-                  knows why.
+                  Exams reward recall. This rewards something else — looking at a thing you
+                  have never seen and working out how it behaves. Nobody fully knows why
+                  machines are so bad at it.
                 </p>
               </div>
             </div>
@@ -255,7 +274,7 @@ export default function SyntheticLanding() {
                 {heroTiles.map((g) => (
                   <Link key={g.gameId} href={`/arc3/play/${g.gameId}`}>
                     <a className="relative aspect-square overflow-hidden block group"
-                       style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
+                       style={{ background: ARC.tile, border: `1px solid ${ARC.border}` }}>
                       <img src={thumb(g.gameId, 128)} alt="" loading="lazy"
                            className="w-full h-full opacity-85 group-hover:opacity-100 transition-opacity"
                            style={{ imageRendering: 'pixelated', display: 'block' }} />
@@ -305,11 +324,10 @@ export default function SyntheticLanding() {
             <div className="min-w-0">
               <h2 className="text-[20px] font-bold mb-3">Nobody has ever played this one.</h2>
               <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
-                {unplayed} of {games.length} tasks here have no human attempt on record — not
-                one, ever. Most of them came off our generator in the last few days and no
-                person has seen them at all. Until somebody tries, we cannot say whether this
-                one is easy for a person or quietly impossible, which means a model's score on
-                it means nothing either. You would be the first.
+                {unplayed} of {games.length} tasks here have no human attempt on record —
+                not one, ever. Until somebody tries, we cannot say whether this one is easy
+                for a person or quietly impossible, and a model's score on it means nothing
+                either way. You would be the first.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <Link
@@ -336,9 +354,9 @@ export default function SyntheticLanding() {
         {previewTiles.length > 0 && (
           <Section title="What they look like" note={`${games.length} playable`}>
             <p className="text-[14px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.dim }}>
-              Every one of these is a real ARC-AGI-3 environment running on the official
-              engine — the same thing an AI agent is given, with the same screen and the
-              same buttons. These are their opening frames. That is all you get.
+              Real ARC-AGI-3 environments on the official engine — the same screen and the
+              same buttons an agent is given. These are their opening frames. That is all
+              you get.
             </p>
             <p className="text-[13px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.faint }}>
               These are the <strong style={{ color: ARC.text }}>{authoredCount}</strong>{' '}
@@ -359,34 +377,60 @@ export default function SyntheticLanding() {
           </Section>
         )}
 
-        {/* ── the ask ──────────────────────────────────────────────────────── */}
-        <Section title="Where this is going">
-          <div className="p-6 text-[14px] leading-[1.8] max-w-[76ch]"
-               style={{ background: ARC.cell, border: `1px solid ${ARC.border}`, color: ARC.dim }}>
-            <p className="mb-4">
-              We are aiming to present a poster at the{' '}
-              <a href={LUMA} target="_blank" rel="noreferrer" className="underline"
-                 style={{ color: ARC.text }}>ARC-AGI-3 event in Boston</a>.
-            </p>
-            <p className="mb-4">
-              The poster is one chart: how far people get on these tasks, against how far
-              the best AI agents get, on exactly the same tasks. The AI half is measured
-              already. The human half is you. That is the entire reason this site exists,
-              and it is why we would rather you played something nobody has touched than
-              whatever happens to be at the top of the list.
-            </p>
-            <p className="mb-4">
-              If you want the research side — how the tasks are generated, the agent
-              harness, the run data, or how to contribute a task — that all lives at{' '}
-              <a href={ARENA_SITE} target="_blank" rel="noreferrer" className="underline"
-                 style={{ color: ARC.text }}>arc3.sonpham.net</a>, which is the source of
-              truth for the programme. This site just lets people play them.
-            </p>
-            <p style={{ color: ARC.faint }}>
-              Anonymous gameplay events are recorded — inputs, timings, progress. No account,
-              no personal data.
-            </p>
+        {/* ── come and talk to us ──────────────────────────────────────────── */}
+        {/*
+          THIS REPLACED A SECTION CALLED "WHERE THIS IS GOING", which was three paragraphs
+          about a poster, a link to the research site, and a privacy note. It explained our
+          plans to a reader who had not yet been given a reason to care about them.
+          What this page actually wants is people to talk to. So: who we are, where we are
+          on Sundays, and the door in. The poster is one line inside it rather than the
+          reason for the section.
+        */}
+        <Section title="Come and talk to us">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-start">
+            <div className="p-6 text-[14px] leading-[1.8]"
+                 style={{ background: ARC.cell, border: `1px solid ${ARC.border}`, color: ARC.dim }}>
+              <p className="mb-4">
+                We are two people doing this in our spare time. No lab, no funding, no
+                team. On the ARC-AGI-3 leaderboard we are currently{' '}
+                <strong style={{ color: ARC.text }}>fifth</strong>, which we still find
+                slightly hard to believe.
+              </p>
+              <p className="mb-4">
+                That is the whole argument for talking to us. Anyone reading this can do
+                the same thing — the tasks are open, the harness is open, and the gap
+                between a hobbyist and a frontier lab on this particular problem is much
+                smaller than it looks from outside.
+              </p>
+              <p className="mb-0">
+                We are also taking a poster to the{' '}
+                <a href={LUMA} target="_blank" rel="noreferrer" className="underline"
+                   style={{ color: ARC.text }}>ARC Prize Research Summit in Boston</a>.
+                One chart: how far people get on these tasks against how far the best
+                agents get, on exactly the same tasks. The agent half is measured. The
+                human half is whoever plays.
+              </p>
+            </div>
+
+            <a href={DISCORD} target="_blank" rel="noreferrer"
+               className="block p-6 transition-colors hover:opacity-90"
+               style={{ background: ARC.cell, border: `2px solid ${ARC.pink}` }}>
+              <div className="text-[11px] tracking-[2px] uppercase mb-2"
+                   style={{ color: ARC.pink, fontFamily: MONO }}>Discord ↗</div>
+              <p className="text-[14px] leading-[1.7] mb-3" style={{ color: ARC.text }}>
+                The official ARC Prize server. Come and argue with us about any of this.
+              </p>
+              <p className="text-[13px] leading-[1.7]" style={{ color: ARC.dim }}>
+                There is a community call <strong style={{ color: ARC.text }}>every
+                Sunday</strong>. Open to anyone — competitors, sceptics, and people who
+                have only just heard of ARC.
+              </p>
+            </a>
           </div>
+          <p className="text-[12px] mt-4" style={{ color: ARC.faint }}>
+            Anonymous gameplay events are recorded — inputs, timings, progress. No account,
+            no personal data.
+          </p>
         </Section>
 
         {/* ── related ──────────────────────────────────────────────────────── */}
