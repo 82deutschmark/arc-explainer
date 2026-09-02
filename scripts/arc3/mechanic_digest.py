@@ -277,6 +277,52 @@ def build() -> list[dict]:
     return out
 
 
+# Which action id each phrase in the prose is claiming the game uses. The prose is the
+# only unverified half of this file's output and "Controls" is the half a reviewer ACTS on
+# -- a note that says d-pad only, on a game that also reads ACTION5, sends them down a
+# blind alley and they have no reason to doubt it. These are checked against
+# actionsReferenced, which is derived, so the prose cannot drift from the source.
+CONTROL_CLAIMS = {
+    "action5": 5,
+    "action6": 6,
+    "action7": 7,
+}
+
+
+def check_prose(entries: list[dict]) -> list[str]:
+    """Cross-validate each note's control claims against the actions the source reads."""
+    problems: list[str] = []
+    for e in entries:
+        controls = (e.get("controls") or "").lower()
+        if not controls:
+            continue
+        used = set(e["actionsReferenced"])
+
+        # "D-pad only" / "Nothing else is used" is a claim that NOTHING beyond 1-4 is read.
+        if "d-pad only" in controls or "nothing else is used" in controls:
+            extra = sorted(used - {1, 2, 3, 4})
+            if extra:
+                problems.append(
+                    f'{e["gameId"]}: controls say d-pad only, but the source also reads {extra}'
+                )
+
+        # An action the prose names by number must actually be read by the game.
+        for phrase, action in CONTROL_CLAIMS.items():
+            if phrase in controls and action not in used:
+                problems.append(
+                    f'{e["gameId"]}: controls mention ACTION{action}, which the source never reads'
+                )
+
+        # A note that tells the player to click must be on a game whose click carries
+        # coordinates -- otherwise it is telling them to do the one thing that does nothing.
+        if "click a cell" in controls or "click a gate" in controls or "click your own" in controls:
+            if e["action6"] != "xy-click":
+                problems.append(
+                    f'{e["gameId"]}: controls tell the player to click a cell, but action6 is {e["action6"]}'
+                )
+    return problems
+
+
 def selftest(entries: list[dict]) -> int:
     got_xy = {e["gameId"] for e in entries if e["action6"] == "xy-click"}
     got_btn = {e["gameId"] for e in entries if e["action6"] == "button"}
@@ -307,6 +353,22 @@ def selftest(entries: list[dict]) -> int:
         print(f"FAIL xy-click games that never advertise ACTION6: {unreachable}")
     else:
         print("ok   every xy-click game advertises ACTION6")
+
+    missing_prose = [e["gameId"] for e in entries if not e["mechanic"]]
+    if missing_prose:
+        ok = False
+        print(f"FAIL no prose for: {missing_prose}")
+    else:
+        print(f"ok   prose present for all {len(entries)} games")
+
+    problems = check_prose(entries)
+    if problems:
+        ok = False
+        print(f"FAIL prose contradicts the source in {len(problems)} place(s):")
+        for line in problems:
+            print(f"       {line}")
+    else:
+        print("ok   every note's control claims agree with the actions its source reads")
 
     inert = [e["gameId"] for e in entries if e["action6Inert"]]
     print(f"note {len(inert)} games advertise ACTION6 and read nothing from it")

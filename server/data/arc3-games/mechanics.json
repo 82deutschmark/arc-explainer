@@ -155,7 +155,7 @@
    "rank": 1
   },
   "mechanic": "A metronome maze. Gates open and shut on a fixed period and the board's whole state cycles with the tick, so a cell is safe on some beats and lethal on others. Every move costs one beat, including a move into a wall.",
-  "controls": "D-pad only.",
+  "controls": "D-pad walks. ACTION5 waits in place -- which is a real move and advances the beat, so it is the control the puzzle is built around.",
   "goal": "Reach the goal without standing on a sealed cell when it closes. Waiting is a real move and usually the point."
  },
  {
@@ -1585,9 +1585,9 @@
    "status": "queued",
    "rank": 15
   },
-  "mechanic": "Guards that come to the noise. A bell on a plate draws guards towards wherever the sound came from, so the way past a patrol is to make it look somewhere else.",
-  "controls": "D-pad only. Guards take a step for every step you take.",
-  "goal": "Open the exit and leave. Guards chase a target that you set by ringing, which makes this a misdirection puzzle rather than a chase."
+  "mechanic": "Guards you lead by the nose. Stepping on a bell makes it the thing every guard walks towards, so the way past a patrol is to give it somewhere else to be. Guards are lethal on contact or adjacency.",
+  "controls": "D-pad walks and rings a bell by standing on it. ACTION5 waits in place. Guards take a step for every move you make, waiting included.",
+  "goal": "Stand on the exit with a guard parked on EVERY plate. You are not avoiding the patrol -- you are herding it onto the switches that open the way out."
  },
  {
   "gameId": "tca5096fc",

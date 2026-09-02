@@ -24,7 +24,7 @@ import path from 'node:path';
 import { Router, type Request, type Response } from 'express';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { formatResponse } from '../utils/responseFormatter';
-import { Arc3MirrorCatalog } from '../services/arc3Mirror/Arc3MirrorCatalog';
+import { Arc3MirrorCatalog, AUTHORED_DIR } from '../services/arc3Mirror/Arc3MirrorCatalog';
 import { Arc3MirrorThumbnails } from '../services/arc3Mirror/Arc3MirrorThumbnails';
 import { Arc3Triage } from '../services/arc3Mirror/Arc3Triage';
 
@@ -175,7 +175,12 @@ router.get(
   '/mechanics',
   asyncHandler(async (_req: Request, res: Response) => {
     if (mechanicsCache === null) {
-      const file = path.join(process.cwd(), 'server', 'data', 'arc3-games', 'mechanics.json');
+      // AUTHORED_DIR, not a second copy of the same literal. That constant carries a
+      // header explaining why the path is cwd-relative and why the directory is under
+      // server/ rather than data/ -- Railway mounts a volume at /app/data that would
+      // shadow a repo-tracked file there. Two spellings of one path is how the second
+      // one ends up wrong.
+      const file = path.join(AUTHORED_DIR, 'mechanics.json');
       mechanicsCache = JSON.parse(await readFile(file, 'utf-8'));
     }
     const games = mechanicsCache as unknown[];

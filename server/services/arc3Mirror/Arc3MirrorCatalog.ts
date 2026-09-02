@@ -99,7 +99,7 @@ const UPSTREAM = (process.env.ARC3_UPSTREAM ?? 'https://arc3.sonpham.net').repla
  * volume at /app/data, so a repo-tracked file there is shadowed by the mount at runtime
  * and the catalog would be empty in production while looking fine locally.
  */
-const AUTHORED_DIR = path.join(process.cwd(), 'server', 'data', 'arc3-games');
+export const AUTHORED_DIR = path.join(process.cwd(), 'server', 'data', 'arc3-games');
 
 /** Son's Caddy sets max-age=300 on /static/. Matching it keeps us no staler than his CDN. */
 const MANIFEST_TTL_MS = 5 * 60 * 1000;
