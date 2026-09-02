@@ -64,6 +64,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from strip_authoring_text import strip_authoring_text
+
 #: Source key mixed into every published name. Frozen -- see the module docstring.
 SOURCE_KEY = "arena"
 
@@ -135,12 +138,26 @@ def source_entries(source: Path) -> list[dict[str, str]]:
             by_file[entry["src_file"]] = entry["class_name"]
 
     entries: list[dict[str, str]] = []
+    skipped: list[str] = []
     for path in sorted(source.glob("*.py")):
         if path.name.startswith("__"):
             continue
         match = AUTHORED_ID_RE.match(path.name)
         if not match:
-            raise ValueError(f"{path.name}: filename does not start with an authored task id")
+            # SKIPPED, NOT FATAL -- but reported by name, every time.
+            #
+            # This raised until 02-Sep, on the assumption that the source directory holds
+            # tasks and nothing else. It does not any more: the authoring repo keeps its
+            # verifiers and tooling (verify_gNNN.py, funnel.py, legibility_gate.py, ...)
+            # beside the tasks, so a hard failure meant no resync could run at all and we
+            # sat on a 50-game snapshot while the pipeline reached 200.
+            #
+            # Skipping quietly would be the worse bug -- a real task dropped by a rename is
+            # invisible in a directory of hundreds -- so every skip is printed. Read the
+            # list. If something in it looks like a task, it is one, and the pattern is
+            # what needs fixing, not the file.
+            skipped.append(path.name)
+            continue
         entries.append(
             {
                 "authored_id": match.group(1),
@@ -148,6 +165,11 @@ def source_entries(source: Path) -> list[dict[str, str]]:
                 "path": str(path),
             }
         )
+
+    if skipped:
+        print(f"skipped {len(skipped)} non-task file(s) in {source}:", file=sys.stderr)
+        for name in skipped:
+            print(f"    {name}", file=sys.stderr)
     if not entries:
         raise ValueError(f"no task modules found in {source}")
     return entries
@@ -174,7 +196,21 @@ def rewrite(text: str, authored_id: str, game_id: str, classes: list[str]) -> st
     for name in classes:
         text = re.sub(rf"\b{re.escape(name)}\b", opaque("G", name), text)
     text = re.sub(rf"\b{re.escape(authored_id)}\b", game_id, text, flags=re.IGNORECASE)
-    return text
+
+    # PROSE COMES OUT LAST, AND IT IS NOT OPTIONAL.
+    #
+    # Renaming identifiers was never the whole leak. The authored modules carry a docstring
+    # naming the mechanic, the AI failure mode the task targets and often what each level
+    # teaches -- and `#` comments doing the same job further down. That source is served
+    # publicly at /api/arc3-mirror/games/:gameId/source and fetched into the player's own
+    # browser by the Pyodide worker, so publishing it hands over the exact thing the human
+    # baseline exists to measure someone inferring.
+    #
+    # This was not caught earlier because the authored modules did not carry those
+    # docstrings when the first 50 were imported; they do now. A resync without this step
+    # would have published the answer to all 200 tasks in plain English. See
+    # strip_authoring_text.py, vendored from the authoring repo's make_submission.py.
+    return f"# ARC-AGI-3 candidate task {game_id}.\n\n" + strip_authoring_text(text)
 
 
 def build(source: Path) -> list[dict[str, str]]:

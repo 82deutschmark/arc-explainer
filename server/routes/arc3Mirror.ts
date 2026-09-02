@@ -190,69 +190,44 @@ router.get(
 );
 
 /**
- * GET /api/arc3-mirror/click-targets - which tasks actually read a click's coordinates.
+ * GET /api/arc3-mirror/control-map - which actions each task actually READS.
  *
- * NOT the answer key. One bit per game, derived from source by
- * scripts/arc3/mechanic_digest.py: does a function that handles ACTION6 read data.x/data.y.
+ * NOT the answer key. One list of action ids per game, derived from source by
+ * scripts/arc3/mechanic_digest.py: which GameAction.ACTIONn the module tests against.
+ * It says nothing about what any of them does, which is the part the player has to find.
  *
- * The play surface needs this because `available_actions` lies. Only 18 of our 50 games
- * declare it; the rest inherit arcengine's [1,2,3,4,5,6] default (base_game.py:54), so 26
- * of them ADVERTISE ACTION6 and read nothing from it. Trusting the frame meant showing a
- * crosshair, accepting the click, spending a step and doing nothing on half the set --
- * indistinguishable, from the player's chair, from having clicked the wrong cell.
+ * WHY THE FRAME IS NOT ENOUGH. `available_actions` is advisory metadata -- arcengine's
+ * perform_action never gates on it (base_game.py:189) -- and it is wrong in both
+ * directions across our set:
  *
- * `known` is sent separately from `clickTargets` so the client can tell "this game does
- * not take clicks" from "this game is not ours and we cannot say". Upstream tasks are not
- * in the digest and must keep the old behaviour rather than being silently made inert.
+ *   - OVER-REPORTING. Only 18 of the 50 declare it; the rest inherit the
+ *     [1,2,3,4,5,6] default, so 26 advertise ACTION6 and read nothing from it, and 13 do
+ *     the same with ACTION5. The deck showed those as live controls: press one, spend a
+ *     step, nothing happens, indistinguishable from having used it wrongly.
+ *   - UNDER-REPORTING, which is worse. `t6381e4da` and `t7114b1e1` both READ ACTION7 and
+ *     neither advertises it, so the console -- which refuses anything outside
+ *     available_actions -- blocked a control those games use. In t7114b1e1 that is the
+ *     cancel for an armed fold, and folding is the whole game.
+ *
+ * `known` is separate from `reads` so the client can tell "this game does not use that
+ * control" from "this game is not ours and we cannot say". Upstream tasks are not in the
+ * digest and keep the frame's word; a false negative there would disable working controls,
+ * which is the more expensive mistake.
  */
-let clickTargetsCache: { known: string[]; clickTargets: string[] } | null = null;
+let controlMapCache: { known: string[]; reads: Record<string, number[]> } | null = null;
 router.get(
-  '/click-targets',
+  '/control-map',
   asyncHandler(async (_req: Request, res: Response) => {
-    if (clickTargetsCache === null) {
+    if (controlMapCache === null) {
       const raw = await readFile(path.join(AUTHORED_DIR, 'mechanics.json'), 'utf-8');
-      const games = JSON.parse(raw) as { gameId: string; action6: string | null }[];
-      clickTargetsCache = {
+      const games = JSON.parse(raw) as { gameId: string; actionsReferenced: number[] }[];
+      controlMapCache = {
         known: games.map((g) => g.gameId),
-        clickTargets: games.filter((g) => g.action6 === 'xy-click').map((g) => g.gameId),
+        reads: Object.fromEntries(games.map((g) => [g.gameId, g.actionsReferenced])),
       };
     }
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.json(formatResponse.success(clickTargetsCache));
-  }),
-);
-
-/**
- * GET /api/arc3-mirror/frames/:gameId.png - level 1 of an authored task, as an image.
- *
- * The mechanic guide is a reference for a set of VISUAL puzzles and carried no pictures,
- * so the two things players actually complained about -- "a big empty screen" and
- * "formulaic" -- could not be seen from it. These are rendered by
- * scripts/arc3/render_authored_frames.py and committed; nothing renders at request time.
- *
- * NOT A SPOILER, unlike the rest of this file's authored endpoints. It is the opening
- * frame after RESET and before any move, which is the same thing anyone gets by opening
- * the task. It is served without the noindex header the mechanics route sets, because it
- * gives nothing away that the play surface does not already show.
- *
- * The id is matched against the digest rather than interpolated into a path. A game id
- * reaching the filesystem is how a read of ../../.env gets written, and an allowlist of
- * fifty known ids removes the question rather than escaping it.
- */
-let frameIdsCache: Set<string> | null = null;
-router.get(
-  '/frames/:gameId.png',
-  asyncHandler(async (req: Request, res: Response) => {
-    if (frameIdsCache === null) {
-      const raw = await readFile(path.join(AUTHORED_DIR, 'mechanics.json'), 'utf-8');
-      frameIdsCache = new Set((JSON.parse(raw) as { gameId: string }[]).map((g) => g.gameId));
-    }
-    const { gameId } = req.params as { gameId: string };
-    if (!frameIdsCache.has(gameId)) {
-      return res.status(404).json(formatResponse.error('not_found', `No authored frame for ${gameId}`));
-    }
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    return res.sendFile(path.join(AUTHORED_DIR, 'frames', `${gameId}.png`));
+    res.json(formatResponse.success(controlMapCache));
   }),
 );
 

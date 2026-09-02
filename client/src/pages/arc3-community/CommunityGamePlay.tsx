@@ -302,25 +302,6 @@ export default function CommunityGamePlay() {
    * CONTROLS, which the console has to know to draw itself honestly, and not a fact about
    * how the task is solved.
    */
-  const { data: clickable } = useQuery<{ data: { known: string[]; clickTargets: string[] } }>({
-    queryKey: ['/api/arc3-mirror/click-targets'],
-    staleTime: 60 * 60 * 1000,
-  });
-
-  /**
-   * Does a click on this board mean anything?
-   *
-   * null = we cannot say. Upstream tasks are not in our digest, and an unknown task keeps
-   * the frame's own word rather than being silently made inert -- a false negative here
-   * would break the click games all over again, which is the more expensive mistake.
-   */
-  const readsClicks = useMemo(() => {
-    const d = clickable?.data;
-    if (!d || !gameId) return null;
-    if (d.clickTargets.includes(gameId)) return true;
-    return d.known.includes(gameId) ? false : null;
-  }, [clickable, gameId]);
-
   /** The ranked review queue: generated tasks that are neither duplicates nor pushovers. */
   const { data: review } = useQuery<{ data: { games: ReviewEntry[]; totals: ReviewTotals } }>({
     queryKey: ['/api/arc3-mirror/review-queue'],
@@ -396,6 +377,38 @@ export default function CommunityGamePlay() {
   const known = available.size > 0;
 
   /**
+   * WHICH CONTROLS THIS TASK ACTUALLY READS. A list of action ids, and nothing about what
+   * any of them does -- that part is still the player's to find.
+   *
+   * The frame's `available_actions` cannot answer this. It is advisory metadata the engine
+   * never gates on (arcengine base_game.py:189), and across our fifty it is wrong in BOTH
+   * directions: 26 games advertise ACTION6 and 13 advertise ACTION5 while reading neither,
+   * so the deck offered controls that spend a step and do nothing; and two games
+   * (t6381e4da, t7114b1e1) read ACTION7 without advertising it, so the console refused a
+   * control those games use -- in t7114b1e1 the cancel for an armed fold, and folding is
+   * the whole game.
+   *
+   * Fetched with the page, unlike the mechanic reveal. This is a fact about the CONTROLS,
+   * which the console has to know in order to draw itself honestly. It is not a fact about
+   * how the task is solved.
+   */
+  const { data: controlMap } = useQuery<{ data: { known: string[]; reads: Record<string, number[]> } }>({
+    queryKey: ['/api/arc3-mirror/control-map'],
+    staleTime: 60 * 60 * 1000,
+  });
+
+  /** The actions this task reads, or null when we cannot say -- an upstream task, or the
+   *  map has not loaded yet. Null means fall back to the frame and change nothing, because
+   *  a false negative here disables working controls, which is the more expensive way to
+   *  be wrong. */
+  const readsActions = useMemo(() => {
+    const d = controlMap?.data;
+    if (!d || !gameId || !d.known.includes(gameId)) return null;
+    return new Set(d.reads[gameId] ?? []);
+  }, [controlMap, gameId]);
+
+
+  /**
    * The grid currently on screen, and the single source of its dimensions.
    *
    * Read from `displayFrameIndex` rather than frame[0] because applyFrame walks
@@ -414,9 +427,18 @@ export default function CommunityGamePlay() {
    * routes through pyodide.reset(), so it must bypass this gate rather than be blocked.
    */
   const canSend = useCallback(
-    (action: string) =>
-      action === 'RESET' || !known || available.has(Number(action.replace('ACTION', ''))),
-    [available, known],
+    (action: string) => {
+      if (action === 'RESET') return true;
+      const n = Number(action.replace('ACTION', ''));
+      // The derived map wins over the frame WHEN WE HAVE IT, in both directions: it
+      // enables ACTION7 on the two games that read it without advertising it, and it
+      // refuses the ones a game advertises and ignores. The engine does not gate on
+      // available_actions (base_game.py:189), so sending an unadvertised action the game
+      // reads is exactly as valid as sending an advertised one.
+      if (readsActions) return readsActions.has(n);
+      return !known || available.has(n);
+    },
+    [available, known, readsActions],
   );
 
   const applyFrame = useCallback((next: PyodideFrameData) => {
@@ -489,15 +511,12 @@ export default function CommunityGamePlay() {
    *
    *   - the run is live;
    *   - the frame offers ACTION6, so the dispatcher will not refuse it;
-   *   - and the GAME ACTUALLY READS THE COORDINATES. `readsClicks === false` means we
-   *     checked the source and it does not. Offering a crosshair there is a lie: the click
-   *     is accepted, a step is spent, and nothing happens, which from the player's side is
-   *     indistinguishable from having clicked the wrong cell.
-   *
-   * `null` is not `false`. An unknown task keeps the frame's word.
+   *   - and `canSend` says ACTION6 is real here, which now means the GAME READS IT rather
+   *     than merely that the frame advertises it. A crosshair on a game that ignores the
+   *     coordinates is a lie: the click is accepted, a step is spent and nothing happens,
+   *     which from the player's side is indistinguishable from clicking the wrong cell.
    */
-  const boardClickable =
-    gameState === 'playing' && canSend('ACTION6') && readsClicks !== false;
+  const boardClickable = gameState === 'playing' && canSend('ACTION6');
 
   /**
    * Pointer position -> frame cell.
