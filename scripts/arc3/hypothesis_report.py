@@ -194,6 +194,34 @@ def collapse_hint(content: str) -> tuple[bool, str]:
     return False, ""
 
 
+def warn_on_stimulus_mismatch(rows: list[dict]) -> None:
+    """
+    Shout if the same game was shown as two different images.
+
+    Pooling results from two machines is only meaningful if both looked at the same picture,
+    and that is not guaranteed: the boxes can sit on different ARCEngine commits, and a
+    different engine could paint a different opening frame. Every row carries the sha of the
+    exact bytes that were sent, so this is checkable rather than assumed. If it fires, the
+    cross-machine comparison is between stimuli as well as models, and cannot separate them.
+    """
+    by_game: dict[str, dict[str, set]] = defaultdict(lambda: defaultdict(set))
+    for row in rows:
+        if row.get("frame_sha"):
+            by_game[row["game_id"]][row["frame_sha"]].add(
+                f"{row.get('host')}/{row.get('arcengine_revision')}"
+            )
+    for game, hashes in sorted(by_game.items()):
+        if len(hashes) > 1:
+            print(f"\n  WARNING: {game} was rendered as {len(hashes)} different images:")
+            for digest, sources in sorted(hashes.items()):
+                print(f"    {digest}  <- {', '.join(sorted(sources))}")
+            print("  These rows are NOT comparable across hosts: the stimulus differs too.")
+
+    missing = sum(1 for r in rows if not r.get("frame_sha"))
+    if missing:
+        print(f"\n  note: {missing} row(s) predate frame hashing; their stimulus is unverified.")
+
+
 def load_rows(paths: list[Path]) -> list[dict]:
     rows = []
     for path in paths:
@@ -334,6 +362,7 @@ def main(argv=None) -> int:
             print()
         return 0
 
+    warn_on_stimulus_mismatch(rows)
     summaries = summarise(rows)
     print_console(summaries)
     out = args.out or args.results[0].with_suffix(".digest.md")
