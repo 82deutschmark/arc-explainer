@@ -1,0 +1,1403 @@
+{
+ "generatedFrom": [
+  "hypotheses_msi.jsonl"
+ ],
+ "runs": [
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 0,
+   "elapsedMs": 232416,
+   "promptTokens": 345,
+   "completionTokens": 1188,
+   "reasoningTokens": 533,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Vertical Rail Shooter",
+     "body": "The whole board is a single 1‑D lane. The blue‑framed black square is your \"cannon\" locked to the center column; the orange block (top) and green block (bottom) are targets that drift in/out along that lane, and the tiny blue dot is a projectile you've already fired. The red‑framed square is a *second* cannon on the opposite side, suggesting a co‑op / two‑player vertical duel where each player defends their half and scores by hitting the enemy's target. The gray header row is a shared ammo/combo meter."
+    },
+    {
+     "n": 2,
+     "name": "Boundary Toggle (Wall as a Switch)",
+     "body": "The light‑gray horizontal band is not a wall but a *state line*. The blue‑framed square sits exactly on it, meaning the player straddles two rulesets: above the line \"up is forward,\" below it \"down is forward.\" The red frame directly beneath is the player's *shadow/ghost* in the other ruleset. Pressing an action flips which side is \"live,\" so the orange (top) and green (bottom) are the same kind of object seen under opposite physics."
+    },
+    {
+     "n": 3,
+     "name": "Color‑Charge Pairing",
+     "body": "The two framed squares (blue outline and red outline, both with a black core) are a *pair of terminals*. The black core is a charge cell that fills when the two frames see the same color on their respective sides. The orange above the blue frame and the green below the red frame are the current \"incoming colors\"; the tiny blue dot is a leftover charge token. Goal: make both cores light up simultaneously by routing colors."
+    },
+    {
+     "n": 4,
+     "name": "Header as a Sequence Buffer",
+     "body": "The top row of gray squares is a *queue* (like a 7‑slot memory buffer), and the yellow square in the corner is the \"now playing / active\" slot. Each time you correctly interact with a colored block in the field, the next gray cell flips to that color, building a pattern. The orange, blue, red, and green blocks are the *replay* of the last four inputs, displayed spatially. The game is a spatial‑to‑sequence translation puzzle: the field is the input tape, the header is the encoded output."
+    },
+    {
+     "n": 5,
+     "name": "Mirror / Symmetry Engine",
+     "body": "The board is vertically symmetric about the central band, and the mechanic is *reflection*: every object above the line has a mirror twin below (orange ↔ green, the blue dot ↔ the red frame, the blue frame ↔ itself on the axis). The player's job is to restore or break symmetry: the green 2×2 block is \"wrong\" (wrong size/position) and must be matched by moving the orange, or the red frame is an intruder that must be eliminated. The yellow corner is the symmetry‑axis indicator / parity flag. These five are intentionally different lenses (1‑D shooter, state‑line toggle, charge pairing, sequence buffer, symmetry engine) so that as soon as you see the next frame or the effect of one action, you can discard four and keep the one whose prediction matches."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 1,
+   "elapsedMs": 198432,
+   "promptTokens": 345,
+   "completionTokens": 1023,
+   "reasoningTokens": 521,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Transmutation Column",
+     "body": "The perfectly aligned vertical stack (orange → tiny blue dot → blue frame → red frame → green) is a single \"reaction channel.\" Dropping or pushing the orange token down this column passes it through fixed intermediate states (blue, then red) before it emerges as green in the lower zone. The two framed squares are not independent objects but the *in‑progress* states of one token being converted."
+    },
+    {
+     "n": 2,
+     "name": "Membrane Divider",
+     "body": "The light‑gray horizontal line is a two‑way membrane/gate. The blue‑framed and red‑framed squares sit exactly on it, suggesting the boundary itself is a state machine: anything crossing from the top dark region to the bottom dark region gets \"processed\" (color changed, frame added/removed). The yellow corner cell may be the control that toggles the membrane's rule."
+    },
+    {
+     "n": 3,
+     "name": "Header as Progress/Inventory Bar",
+     "body": "The top gray row with the dark squares is a HUD, not part of the play field: the dark squares are slots or a score meter, and the yellow square is the active cursor/selected item. Each time you complete a transformation in the field, one dark slot fills or the yellow marker advances, giving a goal condition."
+    },
+    {
+     "n": 4,
+     "name": "Gravity & Landing",
+     "body": "The upper dark region is a \"drop zone\" and the lower one a \"floor.\" Orange is a falling object, the framed squares mark the collision/impact point at the boundary, and green is the settled, transformed result on the floor. The mechanic is timing/positioning where an object lands so it converts correctly."
+    },
+    {
+     "n": 5,
+     "name": "Color‑Pair Reaction",
+     "body": "Colors are reagents that react only when stacked in the central column: orange (top) meets blue and red (the two framed \"activators\" at the boundary) to yield green (bottom). The game is about arranging the right colored tokens into the channel so the pair‑rule fires; wrong pairings leave the frames stuck or produce a different color. Each hypothesis is testable: in hypothesis 1/5 the key prediction is that the frames are *transient* states of one token; in 2 the divider is the active agent; in 3 the top row changes over time; in 4 vertical motion is the driver. Watching a few moves (does the orange move? do the frames change? does the header shift?) should let us discriminate between them."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 2,
+   "elapsedMs": 223636,
+   "promptTokens": 345,
+   "completionTokens": 1170,
+   "reasoningTokens": 653,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Membrane Mirror",
+     "body": "The light‑gray horizontal band is a *membrane* separating two parallel chambers (top and bottom dark fields). Colored tokens in one chamber cast a \"shadow\" or counterpart in the other (orange ↔ green). The two outlined cells sitting on the membrane (blue‑frame, red‑frame) are the player's avatar straddling both sides, and the objective is to make the two chambers' token sets match or reflect each other."
+    },
+    {
+     "n": 2,
+     "name": "Falling Stack",
+     "body": "Tokens are subject to a vertical \"gravity\" that pulls them down through the membrane. The orange block is a falling object, the tiny blue pixel is a small projectile mid‑flight, and the blue/red outlined cells are a *stack* being pushed downward like a Tetris piece. The top gray bar with the yellow cell is a score/level meter that fills as pieces lock in."
+    },
+    {
+     "n": 3,
+     "name": "Color Alchemy",
+     "body": "The outlined cells are *reactor slots*: blue + red outlines combine (mix) into a new element, while orange and green are raw reagents that must be fed in. The small blue dot is a particle in transit between reagent and reactor. Success = producing a target color, tracked by the gray header cells lighting up one by one from the yellow seed."
+    },
+    {
+     "n": 4,
+     "name": "Gate Threshold",
+     "body": "The middle outlined pair is a *locked gate/portal* on the boundary line. The gate only opens when the color above it (orange) and below it (green) satisfy a code, and the blue/red frames are the two halves of the lock that must be set to the correct values. The top gray row is the code/sequence display, with the yellow cell marking the active position the player is editing."
+    },
+    {
+     "n": 5,
+     "name": "Superposition Column",
+     "body": "Only the single vertical line (column 5) is \"observed\"; the rest of the dark field is an unmeasured quantum register. The outlined blue‑and‑red cell is one qubit in superposition (blue|red), and the orange/green cells are boundary conditions that, when aligned, *collapse* the state and propagate a wave through the dark regions. The top gray bar is the full register of qubits, yellow = the first excited qubit. Each hypothesis predicts a different thing the player's action does: swap/mirror (1), push/fall (2), mix colors (3), set a code to unlock (4), or collapse/observe a hidden state (5)."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 3,
+   "elapsedMs": 265033,
+   "promptTokens": 345,
+   "completionTokens": 1290,
+   "reasoningTokens": 605,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Vertical Column / Gravity Stack.",
+     "body": "The whole playfield is a single 1‑D \"well\" (one column) flanked by empty walls. The orange block is a falling projectile, the tiny blue pixel is its tip or a \"charge\" indicator, and the green block is the target/basket at the bottom. The light‑gray horizontal band is a *boundary plane* (like a one‑way membrane or a \"score line\"). The action probably launches objects down this column and the goal is to get the orange block past the boundary to land on / merge with the green block."
+    },
+    {
+     "n": 2,
+     "name": "Color‑Transmutation Gate.",
+     "body": "The light band is a *conversion zone*. Anything entering it from above changes identity: the blue‑ringed square (top side) and the red‑ringed square (bottom side) are the *same object seen on the two sides of the gate* (blue → red). So the mechanic is \"pass through the band and your color/state flips,\" and the orange and green blocks are the pre‑ and post‑gate forms of a third object. The tiny blue dot is a queued object about to enter."
+    },
+    {
+     "n": 3,
+     "name": "Top‑Bar Progress / Slot Meter.",
+     "body": "The top row (yellow token at left + a line of gray cells) is a *score/progress bar*, not part of the field. The yellow square is the player cursor that you slide left‑to‑right; each gray cell is a slot that must be filled by completing a vertical match below. The colored blocks in the column are the \"puzzle pieces\" whose correct vertical ordering (orange → blue → red → green) is what fills the next slot and turns the next gray cell yellow."
+    },
+    {
+     "n": 4,
+     "name": "Ringed = Active, Filled = Inert.",
+     "body": "The two mid squares are *outlined* (colored border, dark core) while orange and green are *solid*. Hypothesis: outlined blocks are \"charged/armed\" entities and solid blocks are \"spent/seed\" entities. The rule is that an armed block must be dropped onto a seed block of the same column to *discharge* it (blue‑ringed onto red‑ringed, or orange onto green), and the tiny blue pixel is the discharge spark. The game is about pairing armed vs. inert blocks in the same column."
+    },
+    {
+     "n": 5,
+     "name": "Two‑World / Phase Mirror.",
+     "body": "The light gray band is a *fault line between two parallel boards* (top world and bottom world). Objects in the top world (orange, tiny blue) and the bottom world (green) are independent, but the two ringed squares straddling the fault are *bridges* that can be toggled. An action flips a bridge's phase (blue‑ringed ↔ red‑ringed), and the win condition is to align a top‑world object with a bottom‑world object through an open bridge — i.e., a vertical \"wormhole\" puzzle where the top gray bar tracks how many bridges are currently open. These five are mutually distinct guesses about the core verb (launch, transmute, fill‑a‑meter, discharge, bridge‑toggle); the actual ARC rule will likely be one of them or a combination of the alignment idea (all key blocks share one column) with one of the color/outline states."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 4,
+   "elapsedMs": 221910,
+   "promptTokens": 345,
+   "completionTokens": 1111,
+   "reasoningTokens": 573,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Drop‑Channel Assembly",
+     "body": "The light‑gray horizontal strip in the middle is a \"conveyor\" or drop channel. The two dark panels are storage bins (top = supply, bottom = target layout). The blue‑bordered and red‑bordered cells are ordered *sockets* in the channel that must be filled in sequence, and the plain colored squares (orange, green, tiny blue) are the loose tokens you drag into those sockets. The goal is to fill the channel slots in the correct color order using the tokens from the bins."
+    },
+    {
+     "n": 2,
+     "name": "Gated Color Relay",
+     "body": "The center column is a vertical pipeline. Plain squares are *emitters* that fire a colored pulse downward (orange in the top bin, green in the bottom bin). The bordered cells are *gates* that only let a pulse of a matching color pass (blue gate → blue pulse, red gate → red pulse). The tiny blue dot is a pulse mid‑flight. Winning means routing pulses through the correct gates; a mismatch blocks or destroys the pulse."
+    },
+    {
+     "n": 3,
+     "name": "Palette / Tool Selection",
+     "body": "The top row of gray squares is a palette of placeable piece‑types, and the yellow square at the far left is the *currently selected* tool (or the score/level indicator). Each colored square on the board is an instance of a tool already placed. Your action is to pick a color from the palette and stamp it into the dark field; the bordered cells mark \"reserved\" or \"occupied‑by‑rule\" positions you cannot overwrite."
+    },
+    {
+     "n": 4,
+     "name": "Dual‑Zone Duel",
+     "body": "The top and bottom dark panels belong to two opposing players (or two independent sub‑games), and the central gap is the *exchange zone*. The blue‑bordered cell sits in the opponent's half of the channel and the red‑bordered cell in your half, so they are the contested \"front line.\" Tokens (orange, green, blue) are units you advance toward the channel to capture the enemy's bordered cell."
+    },
+    {
+     "n": 5,
+     "name": "Pulse‑Bounce / Reflection",
+     "body": "The board is a physics‑like field where a single active pulse (the tiny blue dot) travels along the central axis, bounces off the colored \"walls\" (orange above, green below), and toggles the state of the bordered cells it crosses (blue‑border ↔ red‑border = on/off or polarity flip). The top gray bar is a step‑counter or energy meter, with the yellow cell marking the current step. The puzzle is to position the walls so the pulse flips all sockets to the target configuration."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 5,
+   "elapsedMs": 208645,
+   "promptTokens": 345,
+   "completionTokens": 1035,
+   "reasoningTokens": 566,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Central Beam (column lock)",
+     "body": "All interactive elements sit on a single vertical line (column 6), suggesting the playfield is a one‑dimensional \"beam\" or pipe running top‑to‑bottom. The two dark rectangles are merely the visible cross‑section of a channel, and every action (moving, swapping, firing) travels along this axis rather than in 2‑D. The off‑axis gray top row is the only place horizontal movement exists."
+    },
+    {
+     "n": 2,
+     "name": "State‑Colored Gates",
+     "body": "The two black cells in the middle light‑gray band are the same object type (a \"gate\" or \"socket\") whose frame color encodes state: blue = active/selected, red = locked/armed. The tiny isolated blue pixel above is a \"pending\" or \"charging\" version of the blue gate, implying gates cycle through a state machine (none → charging → active → locked) as you apply actions."
+    },
+    {
+     "n": 3,
+     "name": "Progress / Charge Bar",
+     "body": "The top gray strip with the single yellow cell at the far left is a meter, not a wall. Yellow is the \"filled\" unit and gray the empty slots; performing correct actions in the chambers fills the bar left‑to‑right, and a full bar likely triggers a win or a power‑up. The yellow‑at‑zero position is the initial empty state."
+    },
+    {
+     "n": 4,
+     "name": "Mirror‑Chamber Pairing",
+     "body": "The top chamber (orange block) and bottom chamber (green block) are paired targets that must be made consistent (same color, same size, or linked). The middle band is the \"control deck\" where you manipulate the gates to transform one chamber's payload into the other's; success = orange and green become identical or are consumed together."
+    },
+    {
+     "n": 5,
+     "name": "Color‑Reaction Routing",
+     "body": "Each colored block is a token of a specific type (orange, green) and the gates convert or block types. The hypothesis is a reaction rule like \"blue gate passes blue/neutral, red gate blocks red,\" so the goal is to route the orange token down through the gate stack into the green token (or vice versa) so they annihilate/merge, with the top bar counting remaining tokens. The faint blue pixel is a stray token that escaped the channel and must be recollected."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 6,
+   "elapsedMs": 250474,
+   "promptTokens": 345,
+   "completionTokens": 1246,
+   "reasoningTokens": 744,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Progress Header",
+     "body": "The top row (one yellow cell at the far left, then a long run of gray cells) is a score / lives / progress meter, not a playable area. Each successful action (e.g., placing an object into a socket) converts one gray cell to yellow from left to right; the yellow cell is the \"head\" of the counter. The two dark panels below are the actual playfield."
+    },
+    {
+     "n": 2,
+     "name": "Membrane & Doors",
+     "body": "The horizontal light‑gray line splitting the board is a wall (a \"membrane\") between two chambers, and the only two places it is passable are the outlined cells (blue‑bordered and red‑bordered). Objects in the top chamber (orange) and bottom chamber (green) can only cross through a door, and each door has a color requirement that must be satisfied before transit."
+    },
+    {
+     "n": 3,
+     "name": "Color Sockets",
+     "body": "The blue‑ and red‑bordered squares with dark interiors are empty *sockets/locks*, not objects. The dark center means \"unfilled.\" The goal is to feed each socket the correct token (the blue 1‑px dot for the blue socket, an orange/green token for the red socket, etc.); a filled socket likely changes color to signal completion."
+    },
+    {
+     "n": 4,
+     "name": "Warm/Cold Pairing",
+     "body": "Colors encode a pairing rule: orange↔red are the \"warm\" pair and green↔blue are the \"cool\" pair. The tiny blue dot near the divider is a marker of the active \"cool\" side, suggesting the player toggles which pairing is currently valid; valid pairs can occupy the two sockets simultaneously to fire a win condition."
+    },
+    {
+     "n": 5,
+     "name": "Projectile / Drop Physics",
+     "body": "The single 1‑pixel blue dot is a moving projectile (or a falling token) while the solid orange and green squares are anchored bodies. Mechanics are likely gravity‑ or velocity‑based: the dot travels vertically toward the blue door and either opens it, gets absorbed, or bounces, after which the orange/green bodies shift to new rest positions. The yellow header cell could be the \"ammo\" count for firing such dots. (These are mutually compatible: a plausible read is that the header tracks shots, the dot is the shot, the two outlined cells are color‑locked doors/sockets in a membrane, and the orange/green squares are the bodies you must route through the matching door.)"
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 7,
+   "elapsedMs": 267540,
+   "promptTokens": 345,
+   "completionTokens": 1380,
+   "reasoningTokens": 755,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Vertical Conduit (gravity track).",
+     "body": "The single central column (orange → tiny blue dot → blue‑framed → red‑framed → green) is a one‑lane \"drop shaft.\" The orange square is a projectile, the 1‑pixel blue dot is its motion trail, the blue‑ and red‑framed squares are gates/switches it must pass through, and the green square is the goal pocket. The yellow square in the top‑left corner is the launch pad / player home. Each action = \"push down one row,\" and the gray header row is just a fixed ruler."
+    },
+    {
+     "n": 2,
+     "name": "Mirror Axis (two‑pane reflection).",
+     "body": "The two dark rectangles are two worlds separated by the light horizontal band, which is a mirror line. The blue‑framed square (just above the band) and the red‑framed square (just below) are the *same* token seen through two lenses — blue = top‑world view, red = bottom‑world view. The orange (top) and green (bottom) are the \"real\" objects that must be made to coincide under the mirror. An action moves one pane, and you win when the reflected positions align."
+    },
+    {
+     "n": 3,
+     "name": "Charge Bar (top meter fills left‑to‑right).",
+     "body": "The row of gray squares across the top is a progress/energy meter; the yellow square at its left end is the current charge head. Manipulating the colored tokens in the two panels (aligning orange with green, or matching the blue/red pair) deposits energy, advancing the yellow head rightward. When the bar fills, a global effect (clear, level‑up, or \"fire\") triggers."
+    },
+    {
+     "n": 4,
+     "name": "State‑Cycle Machine (color = state).",
+     "body": "Each token has a hidden state that cycles on every action: orange → blue → red → green → orange. The *framed* squares (blue‑framed, red‑framed) are tokens mid‑cycle / \"armed,\" the tiny blue dot is a transition in progress, and the filled colored squares (orange, green) are resting states. The challenge is to advance tokens in lockstep so that a specific state pattern appears across the column."
+    },
+    {
+     "n": 5,
+     "name": "Match‑or‑Mismatch Gate (blue vs red framing).",
+     "body": "The paired framed squares are a comparison gate: blue frame = \"what you have / input,\" red frame = \"what is expected / target.\" The orange above is the raw material and the green below is the reward slot. An action feeds the orange token into the gate; if it satisfies the rule encoded by the blue/red pair it transforms into green (success), otherwise it resets. The yellow corner is a \"reset / submit\" button and the gray header row is a tally of attempts. Each hypothesis is mutually compatible with the pixels shown; the discriminating test would be the first observed action (e.g., does the orange move down the column, does a top token reflect into the bottom pane, does the yellow head advance, or do the frames change color?)."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 0,
+   "elapsedMs": 235689,
+   "promptTokens": 345,
+   "completionTokens": 1207,
+   "reasoningTokens": 564,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Membrane Gateway.",
+     "body": "The horizontal gray band is a sealed wall splitting one field into two chambers. The blue‑outlined cell sitting exactly on that band is the *gate/lock*, and the red‑outlined cell just beneath it is the *key* you must slide into the lock to open the wall, allowing the green \"payload\" in the bottom chamber to rise and meet the orange \"receiver\" in the top chamber. The yellow cell in the top‑left corner (and the dashed gray top row) would then be the player's score/progress meter that ticks as gates open."
+    },
+    {
+     "n": 2,
+     "name": "1D Stack Physics.",
+     "body": "The whole puzzle reduces to a single vertical lane. The colored squares (orange → blue‑dot → blue‑box → red‑box → green) form a one‑dimensional stack whose order you can permute (e.g., each click swaps the selected box with its neighbor). The faint blue dot is a \"free slot/ghost\" you can drop boxes into, and the goal is to reach a target ordering (green adjacent to orange, etc.). The horizontal line is just a visual separator for the \"top\" vs \"bottom\" half of the stack."
+    },
+    {
+     "n": 3,
+     "name": "Color Reaction / Synthesis.",
+     "body": "Colors are chemistry: orange and green are *reagents*, red is a *reactant* that must be activated, and blue is the *catalyst/cursor*. The blue outline is the player's selection cursor; placing it on the red cell triggers a reaction that converts red+green into the orange state (or vice‑versa). The objective is to make the column a valid \"equation\" once more."
+    },
+    {
+     "n": 4,
+     "name": "Pulse‑on‑Wire Circuit.",
+     "body": "Treat the vertical column as a wiring trace. The tiny blue pixel is a propagating *pulse* moving downward; the outlined boxes are *gates/switches* the pulse must pass through, and the yellow corner cell is the *power source / player head* from which actions are issued. The dark gray horizontal line is a \"ground\" rail; the puzzle is to route the pulse from the yellow source, through the switch stack, to the green *output* node."
+    },
+    {
+     "n": 5,
+     "name": "Two‑World Mirror Bridge.",
+     "body": "The gray horizontal line divides two parallel layers of the same board. Objects above the line are \"real\" (orange), objects below are their \"shadows\"/duplicates (green, red), and the blue box astride the line is the *bridge* where the two layers are equal—that is, the player's avatar straddles both worlds at once. Moving the avatar changes both layers simultaneously, and the dashed top row is a \"phase/depth\" indicator of which world is currently dominant. The red box is a mismatched pair you must align with the blue bridge to sync the two worlds. (Each hypothesis is consistent with the same pixels but implies a different core verb—opening a gate, reordering a stack, firing a reaction, routing a pulse, or syncing two layers—so the next 1–2 screenshots showing what a click actually does would let us discriminate between them.)"
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 1,
+   "elapsedMs": 243066,
+   "promptTokens": 345,
+   "completionTokens": 1270,
+   "reasoningTokens": 795,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Lane‑Drop Trajectory",
+     "body": "The whole board is a single vertical lane, and the colored squares are stages an object must pass through in order (orange → blue‑dot → blue‑red token → green). Your actions \"push\" the token down the lane; the tiny blue pixel is the leading edge / cursor, and the goal is to get the token from the orange spawn pad to the green goal pad without it stalling in the central channel."
+    },
+    {
+     "n": 2,
+     "name": "Channel Duel",
+     "body": "The light‑gray horizontal band is a special \"battle zone\" where two agents (the blue‑centered square = you, the red‑centered square = an enemy) sit stacked on the same column. The minuscule blue dot above you is a shot you just fired upward at the orange target; actions fire bullets or slide you left/right within the channel, and green is the prize captured below."
+    },
+    {
+     "n": 3,
+     "name": "State‑Header Memory",
+     "body": "The top row of gray squares is not decoration but a 1‑D tape / memory header, with the yellow square marking the currently \"read\" cell. Each move shifts the yellow marker or writes a color into the tape, and the colored blocks in the panels are the live work registers; the puzzle is solved when the tape pattern matches the spatial pattern (orange‑blue‑red‑green)."
+    },
+    {
+     "n": 4,
+     "name": "Teleport Chute",
+     "body": "The gap between the two dark panels is a wormhole/conveyor, not empty space. The blue and red squares are the *near* and *far* faces of one portal object; entering with the tiny blue dot makes the token exit on the other side as the green square, while orange is the entry marker. Your actions rotate or charge the portal so the dot's entry position maps correctly to a green exit position."
+    },
+    {
+     "n": 5,
+     "name": "Color‑Charge Refraction",
+     "body": "The dark centers inside the blue and red squares are \"charges\" that absorb a color, and the colored outer ring is the shell you can recolor. The tiny dot is a traveling light‑particle that bounces off the orange and green pads and gets its color set by whichever shell it hits; your actions recolor the shells so the particle arrives at the green pad carrying the matching color, with the yellow header cell showing the required target color."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 2,
+   "elapsedMs": 227405,
+   "promptTokens": 345,
+   "completionTokens": 1101,
+   "reasoningTokens": 505,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Twin‑Socket Bridge.",
+     "body": "The two dark cells framed in blue (upper) and red (lower) that sit exactly on the light‑gray divider are a *paired* element, not two separate objects: a \"bridge\" or \"pipe\" that connects the top chamber to the bottom chamber. The blue frame is the input port, the red frame the output (or vice‑versa), and the game's core verb is to *route* a colored block through this bridge so the upper and lower fields interact. The orange block (top) and green block (bottom) are the two ends of a chain that must be linked."
+    },
+    {
+     "n": 2,
+     "name": "Chamber Gravity.",
+     "body": "The playfield is hard‑split into an upper room and a lower room by a horizontal light‑gray \"floor/ceiling\" band. The hypothesis is that blocks fall *within* their own chamber (orange would drop toward the blue socket; green would be resting on the bottom), and the only thing that can cross the wall is the blue→red connector. So positioning is about lining a block into the socket so gravity delivers it through the bridge."
+    },
+    {
+     "n": 3,
+     "name": "Hue‑Key / Color Gate.",
+     "body": "The colored frames (blue, red) are *locks* keyed by color. A block of the matching hue placed into the frame \"activates\" it; the orange/green/yellow blocks are the movable keys. The tiny isolated blue pixel just above the blue frame is the *next* block in the queue or a hint of which hue is currently \"hot.\" Goal: match each frame's color to open a passage."
+    },
+    {
+     "n": 4,
+     "name": "The Yellow Ledger.",
+     "body": "The single yellow cell in the top‑left, sitting in the dark header row, is the HUD, not part of the board: a score, life, turn‑counter, or \"stock\" of moves. The dark header squares are empty slots of a meter that fills (or drains) as you solve the board. The rest of the header being dark means the meter is currently near empty, i.e. we are at the start state."
+    },
+    {
+     "n": 5,
+     "name": "The Blue Mote (projectile/aim).",
+     "body": "The lone 1×1 blue pixel between the orange block and the blue frame is a *bullet/droplet* in flight, suggesting the real mechanic is a pinball/Plinko‑style launch: a small projectile travels down the center column, must bounce or pass through the blue‑red socket to transfer the orange block's properties onto the green block. The green square is the *target receiver* and the orange is the *source* of a property being transported by the mote. Taken together, my best composite read is: two isolated chambers linked by a color‑coded socket bridge, a small projectile traveling down the center column, a yellow HUD counter in the corner, and a color‑matching objective (orange → gateway → green)."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 3,
+   "elapsedMs": 165828,
+   "promptTokens": 345,
+   "completionTokens": 811,
+   "reasoningTokens": 386,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "HUD Counter",
+     "body": "The top gray strip is a menu/health bar and the single yellow square at the far left is a counter (moves left, score, or collected items). Each valid action you perform in the dark field updates this yellow token, so the gray row is passive UI rather than part of the play field."
+    },
+    {
+     "n": 2,
+     "name": "Dual-Gravity Wells",
+     "body": "The light‑gray horizontal band is a \"horizon\" that splits the board into an upper and lower gravity well. Colored blocks (orange, green) drift toward the center line, and the goal is to get matching‑framed blocks (the blue‑framed and red‑framed black squares sitting on the line) to meet and latch, like a zipper closing across the midline."
+    },
+    {
+     "n": 3,
+     "name": "Frame Binding",
+     "body": "The black squares are empty *sockets* and the colored border (blue, red, orange, green) marks which value they currently hold or demand. A loose pixel of the same color (the tiny blue dot in the upper panel) is the \"key\" that, when aligned into the blue socket, triggers a state change in the paired red socket — i.e., a color‑match / lock‑pick pairing mechanic."
+    },
+    {
+     "n": 4,
+     "name": "Divider as Shield/Bar",
+     "body": "The pale gray gap is a two‑way barrier (a shield or a depleting energy bar). Blocks from either chamber collide with it; when a framed block (blue/red) is pushed against it, the bar transfers the block to the opposite side or absorbs a hit, so the divider's color/width likely changes as you play."
+    },
+    {
+     "n": 5,
+     "name": "Pixel Projectile / Direction Cue",
+     "body": "The tiny 1‑pixel blue dot is not a static cell but a marker of an in‑flight projectile or an arrow of motion. It tells you the last (or next) direction of travel along the central vertical lane, implying a one‑dimensional lane‑shooter where small tokens travel between the orange and green end‑points and the framed squares act as gates they pass through."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 4,
+   "elapsedMs": 223942,
+   "promptTokens": 345,
+   "completionTokens": 1120,
+   "reasoningTokens": 751,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Twin‑Chamber Tunnel.",
+     "body": "The two big dark rectangles are separate \"rooms\" joined only by the pale horizontal band in the middle, which acts as a one‑wide corridor. The orange square (top room) and green square (bottom room) are the two payloads that must travel along the central column and be pushed through the corridor to link the rooms."
+    },
+    {
+     "n": 2,
+     "name": "Charge Pair.",
+     "body": "The blue‑bordered and red‑bordered squares are a matched +/− pair sitting on opposite edges of the corridor; their black centers mean they are currently \"unpowered.\" Moving the tiny lone blue pixel onto one of them charges the pair and flips both cores from black to a lit color."
+    },
+    {
+     "n": 3,
+     "name": "Energy Bar.",
+     "body": "The gray dashed line across the top is a finite resource meter (one dash = one move/energy), and the yellow corner is the home base that drains it. Every action in a dark room consumes a dash; the meter empties when the puzzle is solved."
+    },
+    {
+     "n": 4,
+     "name": "Stacked Switches.",
+     "body": "The center column is a vertical stack of layers: orange cap on top, green cap on bottom, with blue and red \"switch\" tiles in between. Clicking a switch toggles its core and also re‑colors the cap directly above/below it, so the goal is to make all caps match a target palette."
+    },
+    {
+     "n": 5,
+     "name": "Gravity Well.",
+     "body": "Each dark rectangle is its own gravity field with the pale band as a hard floor/ceiling between them; orange and green are the resting settled objects in each well, while the blue/red framed squares are \"anchors\" bolted to the boundary. The player's move is to launch a seed (the small blue dot) across the boundary so it lands and pins a new object in the opposite well."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 5,
+   "elapsedMs": 267558,
+   "promptTokens": 345,
+   "completionTokens": 1281,
+   "reasoningTokens": 699,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Socket‑and‑Plug Docking.",
+     "body": "The two colored‑bordered black squares in the light middle strip are *sockets*, and the solid orange/green/blue squares in the dark chambers are *plugs*. A colored border declares which plug type the socket accepts; the black core means “empty, waiting.” The action of moving a plug so its edge touches the matching border causes it to snap in, the core turns the border’s color, and the loss‑meter (top bar) flashes. Mismatched plugs bounce off."
+    },
+    {
+     "n": 2,
+     "name": "Twin‑Chamber Gravity.",
+     "body": "The image is two independent vertical lanes (top and bottom dark panels) separated by a shared “court.” Blocks in each lane fall (or the player nudges them) toward the central court; the tiny lone blue pixel is a block mid‑drop. Success = getting the lane’s block to land exactly on its colored socket in the court; failure = it lands elsewhere and decrements the yellow meter."
+    },
+    {
+     "n": 3,
+     "name": "State‑Color Gate.",
+     "body": "The blue‑border and red‑border squares are two *states of one gate*, not two objects. The border color is the gate’s current demand and the black core its “armed/empty” flag. Playing the matching solid block (blue or red) toggles the gate; the gate then translates that into an action on the opposite chamber (e.g., a blue gate‑fill releases the green block downward). This makes the middle strip a programmable relay rather than a target."
+    },
+    {
+     "n": 4,
+     "name": "Signal Propagation.",
+     "body": "The single blue pixel between the orange block and the court is *not* a block but a traveling signal/puls emitted by the orange block. It moves one row per action; when it reaches the blue socket it triggers it, which in turn fires a red signal downward through the red socket toward the green block. The player’s move is timing/reflecting these pulses, and the geometry (perfect vertical alignment) is the circuit."
+    },
+    {
+     "n": 5,
+     "name": "Loss‑Meter Coupling.",
+     "body": "The top gray bar with one yellow cell is a *shared resource/health* for both chambers: every mismatched dock, every signal that hits a wrong‑colored socket, or every block that exits the screen removes one yellow cell. When the bar is empty the run ends. The two dark panels are therefore co‑dependent: actions in either chamber drain the same meter, pushing the player to solve both lanes simultaneously with a single move. **Cross‑cutting read:** the strict vertical column alignment of orange → blue‑pixel → blue‑socket → red‑socket → green strongly suggests a one‑dimensional “column of cause,” and the player’s actions most plausibly *shift blocks horizontally within their chambers* (or emit a pulse) to engineer correct docking / signal routing in the central court."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 6,
+   "elapsedMs": 194530,
+   "promptTokens": 345,
+   "completionTokens": 966,
+   "reasoningTokens": 599,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Token Ledger",
+     "body": "The top row is a HUD/progress bar, not part of the playfield. The yellow cell marks your current \"step\" or score, and completing objective cells (orange/green) advances the marker one gray slot at a time; filling the whole bar likely ends the level."
+    },
+    {
+     "n": 2,
+     "name": "Dual‑Core Coupling",
+     "body": "The blue‑framed cell and the red‑framed cell sitting on the seam are two halves of one agent (think \"input / output\" or \"head / tail\"). Your actions move or rotate one core, and the other core is forced to mirror or complement it, so you can never separate the two stacked cells."
+    },
+    {
+     "n": 3,
+     "name": "Midline Gate",
+     "body": "The horizontal light band is a boundary/portal rather than empty space. Crossing it converts state (e.g., the active core's color or mode flips), meaning the upper and lower chambers obey different rules, and the green vs. orange squares are only \"collectable\" on the side that matches your current phase."
+    },
+    {
+     "n": 4,
+     "name": "Farsight Shot",
+     "body": "The isolated tiny blue pixel above the seam is a projectile or far‑click artifact. One action fires a token from your core across the board toward a target (orange here), and the shot passes through or resolves on the opposite side, which is why a stray marker appears disconnected from the main core."
+    },
+    {
+     "n": 5,
+     "name": "Mirror Protocol",
+     "body": "The orange (top) and green (bottom) squares are a matched pair of goals that must be activated in link, and the two framed cores are your \"hands\" straddling the seam. The win condition is hitting both targets in the same move or in a complementary order, with the framing color (blue/red) indicating which hand is currently \"armed.\""
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "medium",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 7,
+   "elapsedMs": 261846,
+   "promptTokens": 345,
+   "completionTokens": 1312,
+   "reasoningTokens": 710,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Membrane Anchor",
+     "body": "The light‑gray horizontal strip is a \"membrane\" between two chambers (the dark regions). Solid squares (orange, green) are ordinary matter that can only sit on one side, while the black‑centered rings (blue, red) are *anchors* that physically link the two chambers because they straddle the membrane. The tiny blue dot is a free \"seed\" that, when paired with a ring, spawns the anchor. Goal: create red–blue anchor pairs that hold the two halves together."
+    },
+    {
+     "n": 2,
+     "name": "Vertical Beam / Periscope",
+     "body": "All colored cells share one column, forming a light beam that travels top‑to‑bottom (orange → blue dot → blue ring → red ring → green). The black centers are \"lenses\" or gaps the beam passes through, and the solid squares are emitters/targets. The player's job is to keep the column perfectly aligned so the beam exits the green; the yellow top‑left cell is a score/alignment LED and the gray top row is the HUD."
+    },
+    {
+     "n": 3,
+     "name": "Socket & Fill",
+     "body": "Each 2×2 with a black center is a *socket* (an empty node waiting to be filled), while the solid orange/green squares are *cores* that can be moved into sockets. The blue and red sockets are currently an unfilled \"lock\" straddling the middle lane. The mechanic is a plug‑and‑socket puzzle: drag cores into matching sockets to complete circuits."
+    },
+    {
+     "n": 4,
+     "name": "Drop‑and‑Stack (lane rest)",
+     "body": "The light band is a one‑cell‑thick *platform*. Pieces fall in their column and rest on either the platform or the floor; the blue ring has already landed on the platform and the red ring hangs just below it, suggesting a \"collision\" where two rings met. The green square is a target to be hit by dropping the correct color from above (the orange). The top gray bar with a yellow cell is a lives/score HUD."
+    },
+    {
+     "n": 5,
+     "name": "Buddy‑Pair Reaction",
+     "body": "Colors come in reactive pairs (blue↔red, orange↔green). When two compatible pieces touch, they *merge* or mutually annihilate into the black center (the \"hole\" is the reaction by‑product). The current frame shows the mid‑reaction state of a blue+red merge at the lane, with orange and green still queued on opposite sides. The yellow corner marks the last reaction that fired (a recent \"pop\"). Each hypothesis explains the same visual facts (one shared column, a horizontal light lane, two black‑centered rings adjacent across that lane, two solid squares off to the sides, and a yellow corner marker) but commits to a different underlying rule — anchoring, beam alignment, socket‑filling, gravity/stacking, or pair‑reaction — so they are mutually testable against future frames."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 0,
+   "elapsedMs": 117737,
+   "promptTokens": 347,
+   "completionTokens": 650,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Vertical Projectile Tracking",
+     "body": "This hypothesis suggests that the game is a physics-based aiming or shooting puzzle. The small blue pixel in the upper room acts as a \"projectile\" or \"dart\" that the player controls. The player's objective is to fire it downwards, passing through the \"tunnel\" or \"gate\" defined by the blue and red squares in the center, to hit the green target square in the lower room. The orange square might represent the player's starting position, or a \"spawn point\" for the projectile."
+    },
+    {
+     "n": 2,
+     "name": "State-Based Portal System",
+     "body": "The small blue pixel is a \"key\" or \"state-changer\" that the player manipulates. The two large squares in the middle (blue border, red border) are not just a gate, but a pair of linked portals or switches. The blue-bordered square is currently \"active\" or \"primed,\" and the red one is its \"inactive\" counterpart. The player's goal is to move the small blue pixel into the blue square, which will trigger a transformation, perhaps swapping the colors of the squares, opening a path, or moving the green target."
+    },
+    {
+     "n": 3,
+     "name": "Color-Matching Lock Mechanism",
+     "body": "The game is a logic puzzle about color matching and alignment. The small blue pixel is a \"token.\" The blue-bordered square is a \"slot\" that accepts tokens of the same color. The red-bordered square below it is a \"lock\" that requires a specific sequence or condition to be met (e.g., after a blue token is placed in the blue slot, the red lock unlocks). The orange square is a \"source\" of a different type of token, and the green square is the final objective, which can only be reached once the correct sequence of actions is performed on the central locks."
+    },
+    {
+     "n": 4,
+     "name": "Layered Depth / 3D Projection",
+     "body": "The image is a 2D projection of a 3D space. The top and bottom dark areas are not separate rooms, but the front and back planes of a single chamber. The small blue pixel is a \"lens\" or \"light source\" that the player moves. The blue and red squares are filters or lenses on a vertical axis. The player must align the light source (blue pixel) with the correct filter (blue square) to cast a beam of light that passes through the red filter and illuminates the green square on the back plane, creating a specific color or effect."
+    },
+    {
+     "n": 5,
+     "name": "Binary Logic Gate Simulation",
+     "body": "The central elements represent a simplified digital logic circuit. The small blue pixel is a \"1\" (high signal), and the absence of a pixel is a \"0\" (low signal). The blue-bordered square is an AND gate, and the red-bordered square is an OR gate (or vice versa). The orange square is another input source. The player's task is to manipulate the inputs (the small blue pixel and the orange square) to produce the correct output signal at the green square, which represents the final output of the circuit. The entire grid is a visual representation of a boolean function."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 1,
+   "elapsedMs": 111776,
+   "promptTokens": 347,
+   "completionTokens": 591,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Orbital Decay",
+     "body": "The vertical arrangement suggests a gravity well or a \"tunnel.\" The blue entity is the player's avatar. The orange square is a \"fuel cell\" or \"repulsor\" that the player must reach. The green square is the \"goal\" or \"extraction point.\" The red square immediately below the player might be a \"hazard\" or a \"warp gate\" that the player is currently passing through. The yellow square in the top-left corner is the \"spawn point\" or the \"life counter.\""
+    },
+    {
+     "n": 2,
+     "name": "Color-Phase Resonance",
+     "body": "The game is not about movement, but about changing the \"phase\" of the central entity. The blue, black, and red squares are not separate objects, but three states of the same core. The player must interact with the orange (heat) and green (growth) elements to shift the core's color. The current state is a \"triton\" state (blue-red-black), which is unstable. The goal is to harmonize the core's color with one of the outer elements."
+    },
+    {
+     "n": 3,
+     "name": "Stacked Dimensional Planes",
+     "body": "The horizontal lines represent separate, parallel universes or dimensions. The top line is the \"Data Layer\" (where the yellow \"admin\" key resides). The upper dark area is the \"Physical Layer\" (containing the orange \"mass\"). The lower dark area is the \"Ghost Layer\" (containing the green \"energy\"). The central cluster (blue, black, red) is a \"portal\" connecting all three layers. The tiny blue square above it is a \"key\" that has fallen from the Data Layer."
+    },
+    {
+     "n": 4,
+     "name": "Kinetic Stacking",
+     "body": "The game is a physics puzzle about stacking. The player controls the blue block. The red block is a \"base\" that is currently attached to the player. The black block is a \"weight\" that must be placed correctly. The orange block is a \"moving obstacle\" that is falling down the \"chute.\" The green block is the \"target slot\" where the entire stack (blue+black+red) must be placed to win. The yellow block is the \"start\" position."
+    },
+    {
+     "n": 5,
+     "name": "Signal Interception",
+     "body": "This is a radar or signal processing game. The central column is the \"antenna array.\" The blue square is the \"receiver,\" the black is the \"processor,\" and the red is the \"transmitter.\" The orange square is a \"broadcast signal\" from a satellite. The green square is the \"source signal\" on the ground. The player's goal is to align the receiver (blue) to the broadcast (orange) to decode the message, while avoiding interference from the transmitter (red). The tiny blue dot is a \"ghost signal\" or \"noise.\""
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 2,
+   "elapsedMs": 87242,
+   "promptTokens": 347,
+   "completionTokens": 453,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Falling Blocks / Vertical Gravity",
+     "body": "This hypothesis posits that the game is a 2D physics puzzle where gravity pulls objects strictly along the vertical axis. The structure of two distinct \"rooms\" separated by a horizontal boundary suggests that the orange block in the top room will eventually fall into the bottom room, interacting with the green block and the central column."
+    },
+    {
+     "n": 2,
+     "name": "Pixel Spawning / Inverse Gravity",
+     "body": "The single, isolated blue pixel located in the middle of the top room is anomalous. It might be a \"seed\" or a newly spawned entity that is defying the standard rules. Alternatively, it could represent a \"ghost\" or a projectile fired upwards by a player at a specific coordinate, contrasting with the heavier, framed blocks."
+    },
+    {
+     "n": 3,
+     "name": "Frame vs. Void / Color Logic",
+     "body": "The game might be based on a rule where \"framed\" objects (blocks with a colored border and a black center) are \"solid\" or \"active,\" while \"solid\" colored blocks (orange, green) are \"static\" or \"inactive.\" The blue and red squares in the middle might be \"locked\" states or keys that determine which color is currently allowed to pass through the central boundary."
+    },
+    {
+     "n": 4,
+     "name": "Parallel Worlds / Mirror Mapping",
+     "body": "The horizontal white line might represent a \"mirror\" or a \"dimensional rift.\" The orange block in the upper world and the green block in the lower world might be linked; moving one could cause a reaction in the other. The central column (blue/red) could be a \"bridge\" or \"portal\" that currently has a mismatch (blue vs. red), preventing the two worlds from interacting."
+    },
+    {
+     "n": 5,
+     "name": "Binary State / Debugging Mode",
+     "body": "The grid of grey squares at the very top looks like a progress bar or a \"memory register.\" The single yellow square on the far left could represent a \"cursor\" or a \"life.\" The entire screen might be a \"debug screen\" for a larger game, where the goal is to align the colors in the central column to \"compile\" the orange and green blocks into a single, stable state."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 3,
+   "elapsedMs": 103013,
+   "promptTokens": 347,
+   "completionTokens": 523,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Color-Swipe Reaction",
+     "body": "The player controls the blue and red squares. When the player clicks (or presses a key), the blue and red squares \"swap\" or \"slide\" into each other, creating a single \"combined\" square (which appears blue in the top state and red in the bottom state, perhaps indicating a color change or merging). The goal is to catch the falling orange square with this combined square. The green square might be a \"power-up\" or a different type of target."
+    },
+    {
+     "n": 2,
+     "name": "Gravity Shift / Inversion",
+     "body": "The blue square is a \"player\" that can shift gravity. In the first state, it's above the red square. In the second state, it's below it. Perhaps the player can flip the entire board's gravity or their own position relative to a fixed anchor point (the red square). The orange square falls \"down\" in both states, suggesting gravity is constant, but the player can move up/down."
+    },
+    {
+     "n": 3,
+     "name": "Stacking / Tower Building",
+     "body": "The blue square is a \"base\" or \"platform\" that the player can move vertically. The red square is a \"block\" that sits on top of the blue square. The orange square is a \"falling block\" that must be caught by the red square. The green square might be a \"special block\" that gives points or changes the game state. The player's goal is to build a tower by catching blocks, with the blue square acting as the movable base."
+    },
+    {
+     "n": 4,
+     "name": "Orbital Mechanics / Magnetism",
+     "body": "The blue square is a \"magnet\" or \"attractor\" that pulls objects towards it. The red square is \"stuck\" to the blue square due to this attraction. The orange square is a \"neutral\" object that falls under gravity. The green square might be a \"repeller\" or \"repulsive force\" that pushes objects away. The player controls the blue square's position to attract or repel other objects."
+    },
+    {
+     "n": 5,
+     "name": "Phase Shifting / Dimensional Travel",
+     "body": "The blue square is a \"phase shifter\" that allows the player to move between two \"dimensions\" or \"layers\" (represented by the top and bottom states). The red square is an \"anchor\" in the current dimension. The orange square is a \"target\" that exists in both dimensions. The green square might be a \"portal\" or \"gate\" that allows movement between dimensions. The player must phase shift to catch targets in different dimensions."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 4,
+   "elapsedMs": 103551,
+   "promptTokens": 347,
+   "completionTokens": 488,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "The Courier",
+     "body": "The blue and red outlined squares in the center are a single \"vehicle\" or \"carrier\" object. The player's goal is to pick up the orange square (the cargo) and deliver it to the green square (the drop-off point). The red and blue parts might represent the two halves of the vehicle that need to align, or they are the \"front\" and \"back\" of the carrier that must stay together while moving."
+    },
+    {
+     "n": 2,
+     "name": "The Portal",
+     "body": "The central blue and red squares are a two-part teleportation gate. The objective is to connect them. When the gate is activated or \"breached,\" it creates a portal between the orange square and the green square. The player's task might be to build a path to the gate to activate this link, effectively solving the puzzle by bypassing the physical space."
+    },
+    {
+     "n": 3,
+     "name": "The Split Key",
+     "body": "The blue and red squares are two halves of a key that are currently separated by a gray wall. The player must use some kind of \"push\" or \"slide\" mechanic to combine them into a single, powerful object. Once combined, this new object becomes the player's avatar, who then has to navigate to the green square, perhaps using the orange square as a power-up or shield along the way."
+    },
+    {
+     "n": 4,
+     "name": "The Inversion",
+     "body": "The game is about color manipulation. The blue and red squares are a \"color inverter.\" The player's task is to move this inverter to the orange square. Once the orange square is inverted, its color changes (perhaps to green), and the puzzle is solved by matching the two green squares. The horizontal bar at the top could be a \"color palette\" or a status bar showing the current goal."
+    },
+    {
+     "n": 5,
+     "name": "The Fusion",
+     "body": "The orange, blue, red, and green squares are all separate entities with unique properties. The blue and red squares in the center are \"reactive\" particles. When the player moves the orange square into contact with the blue/red pair, they fuse to create a new, larger object (the green square). The goal is to perform this fusion in the correct location to create the green square where it is currently pictured, or to move the existing green square to the center to initiate a different reaction."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 5,
+   "elapsedMs": 97988,
+   "promptTokens": 347,
+   "completionTokens": 503,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Colorful Locks and Keys",
+     "body": "The colored squares (Orange, Green) are \"locks,\" and the corresponding colored squares (Red, Blue) are \"keys\" or \"activators.\" The goal is to bring the Red square to the Green square and the Blue square to the Orange square to unlock them. The small blue dot might be a directional indicator for the Red square, suggesting it will be pulled upwards."
+    },
+    {
+     "n": 2,
+     "name": "Magnetic Attraction",
+     "body": "The colored squares on the sides (Orange, Green) act as magnets. The squares in the middle (Red, Blue) are magnetic particles that are either attracted to or repelled by these magnets. The current position might be an equilibrium point, and the player's actions (perhaps indicated by the small blue dot) introduce a force that shifts this equilibrium, causing the Red and Blue squares to move towards their respective \"home\" colors."
+    },
+    {
+     "n": 3,
+     "name": "Stacking and Merging",
+     "body": "The Red and Blue squares are part of a stack. The game's goal is to manipulate this stack so that the colors merge or align in a specific way. Perhaps the Red square needs to be moved down to \"eat\" the Green square, and the Blue square needs to be moved up to \"eat\" the Orange square. The small blue dot could be a \"cursor\" or \"selection tool\" indicating which part of the stack is currently being manipulated."
+    },
+    {
+     "n": 4,
+     "name": "Gravity and Friction",
+     "body": "The Red and Blue squares are subject to gravity, constantly pulling them downwards. However, they are held in place by friction or a temporary magnetic field generated by the Orange and Green squares. The player's objective is to disrupt this field (perhaps by interacting with the small blue dot, which might be a \"pulse\" emitter) to overcome the friction and allow the squares to fall into their target positions (Red to Green, Blue to Orange)."
+    },
+    {
+     "n": 5,
+     "name": "Signal Transmission",
+     "body": "The Orange and Green squares are \"transmitters\" sending out signals. The Red and Blue squares are \"receivers\" that need to be positioned correctly to receive these signals. The small blue dot represents a \"signal strength\" indicator. The player's goal is to adjust the positions of the Red and Blue squares (perhaps by sliding them) until the signal strength (indicated by the dot) is maximized for both receivers, effectively \"tuning\" them to their respective transmitters."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 6,
+   "elapsedMs": 97468,
+   "promptTokens": 347,
+   "completionTokens": 503,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Color Resonance",
+     "body": "The core mechanic involves matching colors to activate objects. The player controls the \"blue\" entity (indicated by the blue frame, red core, and blue dot above it). The goal is to align or interact with objects of the same color (like the orange square) to make them disappear, change state, or open paths. The green square might be an obstacle or a goal that requires a different interaction."
+    },
+    {
+     "n": 2,
+     "name": "Quantum States",
+     "body": "The blue/red square entity is not a single object but a representation of a quantum state. The blue outer frame represents the \"observed\" or \"active\" state, while the red inner core represents the \"potential\" or \"hidden\" state. Actions might involve collapsing or superposing these states. The small blue dot above could be a \"ghost\" or a possible future position, suggesting movement or probability fields."
+    },
+    {
+     "n": 3,
+     "name": "Gravitational Anchors",
+     "body": "The colored squares (orange, green) are not static objects but gravitational wells or anchors. The player's entity (blue/red) is affected by their \"pull\". The goal might be to navigate the entity to specific anchor points to activate them, or to avoid being pulled into them. The yellow square in the top-left corner could be a special \"reset\" or \"start\" anchor."
+    },
+    {
+     "n": 4,
+     "name": "Signal Transmission",
+     "body": "The small blue dot above the main entity is a \"signal emitter\". The task is to emit signals of specific colors (represented by the entity's current color configuration) to activate distant receivers (the orange and green squares). The orange square might be a receiver that needs a blue signal, and the green square might need a red signal. The player might need to change their entity's color state to send the correct signal."
+    },
+    {
+     "n": 5,
+     "name": "Cellular Automata",
+     "body": "The entire grid is a cellular automaton. Each colored square is a \"cell\" with a specific state. The player's entity is a \"rule\" or \"catalyst\" that, when moved to a position, triggers a reaction in the surrounding cells based on their colors. For example, placing the blue/red entity next to the orange square might cause the orange square to split, change color, or disappear, following a set of hidden rules. The goal is to achieve a specific pattern or state across the grid."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 0.7,
+   "topK": 500,
+   "replicate": 7,
+   "elapsedMs": 121115,
+   "promptTokens": 347,
+   "completionTokens": 634,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "The Chromatic Conduit",
+     "body": "The central blue and red squares are not just objects, but an active interface. The blue square is the \"input\" or \"control\" node, and the red square is the \"output\" or \"target\" node. The player might be able to click or interact with the blue square to send a \"signal\" through the red one, which then triggers a change in one of the other colored objects (orange or green). The small blue dot above might be a \"charge\" or \"energy\" indicator that depletes with each action."
+    },
+    {
+     "n": 2,
+     "name": "The Equilibrium Beam",
+     "body": "The vertical line of objects (orange, blue dot, blue/red pair, green) represents a balance or a scale. The orange and green objects are \"weights\" on opposite sides. The blue/red pair is the fulcrum or the mechanism that adjusts the weight. The goal is to manipulate the blue/red pair (perhaps by clicking it) to achieve a state of equilibrium, which might be indicated by the objects aligning perfectly or a new color appearing. The yellow square in the corner could be a \"reset\" or \"start\" button."
+    },
+    {
+     "n": 3,
+     "name": "The Quantum State Toggle",
+     "body": "The blue and red squares represent two distinct quantum states or dimensions. The blue square is the \"active\" state, and the red square is the \"inactive\" or \"shadow\" state. The player's action (e.g., clicking the blue square) causes a \"collapse\" or \"flip\" of the state, which then propagates its effect to the nearest object (orange or green), changing its color or position. The small blue dot is a \"probability cloud\" that shrinks as the state becomes more defined."
+    },
+    {
+     "n": 4,
+     "name": "The Signal Propagation Grid",
+     "body": "The entire vertical axis is a single channel for signal propagation. The blue square is a transmitter, the red square is a receiver, and the orange and green squares are data packets or targets. The player's task is to \"encode\" a signal by interacting with the blue square (perhaps by changing its color or size) and then \"send\" it down the channel. The signal will be received by the red square and then passed on to either the orange or green square, depending on the encoding. The small blue dot is a \"buffer\" or \"delay\" element."
+    },
+    {
+     "n": 5,
+     "name": "The Color Synthesis Lab",
+     "body": "The blue and red squares are primary color components. The player's goal is to combine them to create a new color (purple/magenta) that will then be used to \"activate\" or \"transform\" the orange and green squares. The small blue dot is a \"catalyst\" or \"mixer\" that needs to be activated first. The yellow square in the corner is the \"final product\" or \"goal state\" that the player is trying to achieve by successfully synthesizing the correct color combination. The dark gray areas are the \"vacuum\" or \"empty space\" where the synthesis takes place."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 0,
+   "elapsedMs": 157394,
+   "promptTokens": 347,
+   "completionTokens": 749,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Resonant Circuit",
+     "body": "You are operating as a signal processor on a 1-bit line. The orange square is a \"transmitter\" and the green square is the \"destination\". They are of different colors because they are in different states (e.g., a high-frequency wave vs. a shaped reflection). Currently, there is a broken signal path (the single blue pixel) between two connection stubs (blue on top, red on bottom). Your task is to provide the correct \"connector\" (represented by a new color/state) that bridges the red and blue stubs to allow the orange signal to \"break through\" into the green one."
+    },
+    {
+     "n": 2,
+     "name": "Alchemical Fusion",
+     "body": "You are a master manipulator of matter. The primary rule of this world is that certain colors react to form new states. Blue (water) and Red (fire) combine to create Steam, which is represented by the single blue pixel you are pointing at. The orange square is a \"core\" that needs to be cooled, and the green square is the stable state for a cooled core. The two different colored, blue-outlined squares you are currently pointing at are the container holding the unstable mixture, and the red square is the heat source. You must synthesize the perfect solution and align it so that the heat source and the core interact with it simultaneously."
+    },
+    {
+     "n": 3,
+     "name": "Inverted View",
+     "body": "You possess a special ability to \"see through\" the lower world. The entities in the bottom region (like the green square) actually exist in 3D space just below the blue and red connector squares. However, due to a \"lens\" or \"portal\" effect created by the blue/red squares, they are visually translated into the display, but their physical form has been changed. The orange square is an object floating in the upper \"server room\" zone. Your challenge is not to change the green square, but to \"cast\" the blue and red squares into the correct sequence to instantly download the lower object into the upper room, changing its appearance from green to orange."
+    },
+    {
+     "n": 4,
+     "name": "Grammar of Arrows",
+     "body": "You are reading a language of metaphysical symbols. The top world (\"Heaven\") is the 'subject' state, and the lower world (\"Earth\") is the 'object' state. The color of every border and the choice of geometry (square vs. pixel) represents a grammatical rule. The orange square is a strong noun, and the green square is a passive noun. The blue and red outlines and the blurry, dark interiors indicate a \"direction verb\" (blinding/healing, for example), and the small blue pixel you pointed to is the \"tense marker\" (past/future). You must establish the correct verb (change the colors inside the box) and tense (change the pixel) to make a valid action based on the colors of the square shapes you see."
+    },
+    {
+     "n": 5,
+     "name": "Genetic Code & Phenotype",
+     "body": "Each of the colored squares represents one of the strands of the DNA double helix (Orange=Strand A, Green=Strand B) in different cells. They look different (phenotypes) because they are in different environments—inside a stable \"nucleus\" (top world) vs. inside a \"toy\" cell (bottom world). The blue and red squares you are looking at are \"motor proteins\" catching a strand of DNA and separating it. The small blue pixel is the actual base sequence that the motor is reading! The game's purpose is high-volume cell repair. Your actions will select the correct base sequence to read from the blue box, which will translate to an action on the objects in the game."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 1,
+   "elapsedMs": 99107,
+   "promptTokens": 347,
+   "completionTokens": 461,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Boundary Piers",
+     "body": "The gray line of blocks at the top acts as a physical boundary or a \"health bar.\" The yellow block on the far left might be a marker for your current position, progress score, or a specific resource level. The line below that looks like the \"ground\" or the ceiling of the main play area."
+    },
+    {
+     "n": 2,
+     "name": "Vertical Alignment/Essence Matching",
+     "body": "The key mechanic of this level involves the blue and red boxes, which are aligned directly beneath a tiny blue dot. Given the Arc \"Essence\" mechanic (where objects take on the properties of what they contain), it is highly likely the goal is to match an \"Essence.\" The blue box encloses the dark color of the background, and the red box encloses the same dark color. Their special property (blue vs red) must match something else. The goal is likely to collect the essence of the green block by catching the single blue pixel."
+    },
+    {
+     "n": 3,
+     "name": "Gravity & Pixel Catching",
+     "body": "The downward arrangement of the colorless blue box, the single blue pixel, and then the blue-filled red box below, suggests a falling object puzzle. The bright green block at the very bottom might be a \"hole,\" \"target,\" or \"goal,\" and the single blue pixel is a falling object that must be controlled to reach the target above the green block, or carried to it."
+    },
+    {
+     "n": 4,
+     "name": "Color Gate Toggle",
+     "body": "The two boxes (blue and red) may be separate gates that act as on/off switches or filters. The dark center inside both suggests they cannot pass their surrounding color. The mechanical rule might be that a blue gate (the blue frame) can only interact with blue-colored items, while the red gate interacts with red items. Currently, both are \"off\" or empty because the pixel above is blue, and the item below is green."
+    },
+    {
+     "n": 5,
+     "name": "Parallax Traversal",
+     "body": "The sudden narrowing of the dark play area between the light gray top bar and the main play area suggests the start of a side-scrolling segment. The green block might be a switch that needs to be activated from a different screen or by past events that are not visible to the player currently."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 2,
+   "elapsedMs": 111980,
+   "promptTokens": 347,
+   "completionTokens": 506,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Frame Extraction / Inception",
+     "body": "The light gray outline area is outside the \"mainframe,\" while the dark gray area is inside. The game starts by presenting the primary frame (a common layout in ARC), and the objective is to find the specific target (the floating yellow square) and \"extract\" it, effectively reducing the complexity of the main visual field."
+    },
+    {
+     "n": 2,
+     "name": "Magnet Matrix",
+     "body": "The varied color blocks in the center (orange, blue, red, green) are a set of different \"element types.\" The tiny blue square represents a neutral \"seed.\" The goal is for the seed to travel horizontally across the grid. The element types act as environmental modifiers that dictate *how* the seed moves (e.g., orange = gravity, blue = friction, red = teleport, etc.). The final pixel (yellow) is distinct from the elements, indicating it is the target rather than a mechanic."
+    },
+    {
+     "n": 3,
+     "name": "Generation Sequence",
+     "body": "The adjacent blocks (blue, dark blue, dark red) follow a specific vertical mathematical or logical progression (e.g., color-0, color-1, color-2). The player's status as the \"controlled agent\" is to determine the rule of this progression and map the final missing point (the yellow square) to its correct coordinate on a new, separate grid."
+    },
+    {
+     "n": 4,
+     "name": "Level Transition Portal",
+     "body": "The dark gray solid block is the completed \"Level 1\" or \"Map State Alpha.\" The light gray boundary is a demarcation line. The tiny colored pixels are \"data\"—the raw sequence or clue given by Level 1. The main objective of this puzzle instance is to decouple that data sequence and solve the \"Level 2\" hidden within it (finding the displaced yellow pixel), moving the user's active focus entirely into the gray area."
+    },
+    {
+     "n": 5,
+     "name": "Iconic Type",
+     "body": "The vast majority of the board is non-interactive. The image is essentially a board containing a hidden symbol. The central blocks (orange, blue, red/green) are the visual \"ink\" that makes up a pattern or shape. The game is a standard ARC \"Type Out\" task, where the player must find the pixels that belong to the isolated shape (the yellow square) and reproduce that 1x1 point on a new, empty canvas of the exact same color."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 3,
+   "elapsedMs": 127878,
+   "promptTokens": 347,
+   "completionTokens": 585,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Guided Kinetics / Laser Sight",
+     "body": "The small blue mark above the red box acts as a targeting reticle or laser sight for the player (the larger blue box). The player presses a directional input (like \"Up\") and the red projectile fires along the axis indicated by the reticle (the thin vertical line of blue pixels connects them). The orange block is the objective, and the green block is either a goal line or a \"cloning\" base."
+    },
+    {
+     "n": 2,
+     "name": "Cellular Automata (Cellular Gun)",
+     "body": "The game is a puzzle based on Cellula Automata (like Conway's Game of Life). The colored boxes are different states of cells. You are inputting moves to manipulate how these cells interact. In this specific frame, the \"bumps\" of dark pixels on the top of the blue cell and the bottom of the red cell might indicate they are locked together or forming a specific \"molecule\" or compound. The goal is to stabilize a pattern that includes the orange cell."
+    },
+    {
+     "n": 3,
+     "name": "Holey Block Stacking / Tetris Alchemy",
+     "body": "This is a 2D variant of Tetris where you have to catch falling blocks. The horizontal line across the middle of the board is a \"floor\" or \"barrier.\" The blue block was in the upper half, and now you have attached a red block to it, creating a 2x1 vertical piece. The green block is perhaps a \"spawn\" or \"doorway\" you must align your piece with to ascend to the next level, while the dashed line at the top marks the death zone or score line."
+    },
+    {
+     "n": 4,
+     "name": "Quantum Tunneling / Phase Shifting",
+     "body": "The colored squares represent different phases of matter. Blue is \"solid,\" Red is \"heat/energy,\" and Green is \"hydrogen/organic.\" The objective is to combine elements. The red square might represent a \"charge\" mechanism. The small blue dot isn't a trajectory line, but a \"quantum ghost\" of the blue block that indicates its possible future state. The goal is to jump the blue block *through* the wall (the line dividing the board) or alter its phase to become the brown/orange block."
+    },
+    {
+     "n": 5,
+     "name": "Framed Physics Targeting",
+     "body": "The game relies on grid-snapping physics. The black outline of the blue square is actually a \"magnet\" or \"puller.\" The dashed line at the top is a \"scanner.\" The tiny blue dot between the blue and red boxes is a collision indicator—a leftover trace from when the two boxes previously collided or snapped together. The player's objective is to navigate this composite Blue/Red ship to touch the Green target, which might require navigating around the Orange \"hornet\" hazard."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 4,
+   "elapsedMs": 115675,
+   "promptTokens": 347,
+   "completionTokens": 528,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Bridge Repair",
+     "body": "The thin gray line across the board represents a broken suspension bridge or a damaged wall separating two sectors. The blue and red squares with dark centers, which sit exactly on top of the line, are likely \"repair tools\" or \"welders.\" The objective might be to use the player's agent (the small blue dot) to activate these tools, fusing the two dark gray regions together to create a path or combining them into a single new entity."
+    },
+    {
+     "n": 2,
+     "name": "Polarity Re-wiring",
+     "body": "The blue and red squares represent positive and negative frequencies or electrical poles. The task is a puzzle of connection: the player must physically touch the red and blue nodes with the blue agent to successfully cancel out the frequency difference between them. This mechanic implies the game involves managing the \"temperature\" or \"charge\" state of the upper and lower fields (which correspond to the orange and green entities) to make them compatible."
+    },
+    {
+     "n": 3,
+     "name": "Logical Gate Processor",
+     "body": "The small blue dot is a \"bit\" or a \"token\" moving through a circuit. The orange square is the input signal, and the green square is the expected output signal. The red/blue nodes are logic gates or jump points. The challenge involves finding a specific path or sequence of actions that allows the \"bit\" to travel from the top field to the bottom field without colliding with the walls (the dark gray zones), transforming the abstract orange input into the concrete green state."
+    },
+    {
+     "n": 4,
+     "name": "Gravitational Anchoring",
+     "body": "The blue dot is a lightweight probe tethered by an unseen gravity well to the stationary blue/red nodes. The orange square is a high-mass object that is repelling the probe. The red square is an anchor point that the player must lock onto to \"stabilize\" the probe. The goal is to launch the probe at the red node to \"delete\" or \"demolish\" it, which will in turn allow the green object to move freely in the lower zone."
+    },
+    {
+     "n": 5,
+     "name": "Spectral Fusion",
+     "body": "The game operates on a light spectrum. The blue and red squares represent invisible Light and Shadow energy. The small blue dot is the \"Player Avatar\" which has to be colored by these nodes. The objective is to interact with the blue and red nodes to create a white or neutral state (potentially represented by the gray line itself), allowing the player to \"pass through\" the boundary between the orange (heat) and green (cold) zones to reach a hidden exit."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 5,
+   "elapsedMs": 109558,
+   "promptTokens": 347,
+   "completionTokens": 498,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Gravity Wells",
+     "body": "The orange and green squares are not static, but rather represent \"wells\" of influence. The red and blue squares (which look like negative and positive charges) are physical objects being pulled or pushed by these wells. The game might involve manipulating the red/blue squares to navigate between the orange and green zones, dealing with a hidden \"friction\" or resistance."
+    },
+    {
+     "n": 2,
+     "name": "Memory Sockets",
+     "body": "The top row of grey squares are inactive memory or inventory slots. The orange, blue, green, and red elements are \"programs\" or \"chips.\" The dark squares outlined in blue/red are \"sockets.\" The game's objective might be to drag the colored chips into the sockets in the correct sequence to compile a program or power up the device. The grey row at the top fills up as chips are \"installed.\""
+    },
+    {
+     "n": 3,
+     "name": "Fleet Command",
+     "body": "This is a top-down strategy interface. The green and orange squares represent different types of player-controlled ships or bases. The blue and red shapes are enemy ships or attack vectors. The grey bar at the top is a resource/score/money meter, and the game involves defending the green base (bottom) from the red attacks coming from the orange enemy base (top)."
+    },
+    {
+     "n": 4,
+     "name": "Colored Dominoes / State Map",
+     "body": "This is a logic or abstract puzzle. The colors represent different states (e.g., orange = fire, green = nature, blue = water, red = danger). The game mechanic could be about rotating the grid, pushing colored tiles, or making sequences. For example, maybe the goal is to align all red states with blue states, or stack them to create new colors (red+blue=purple). It could also be a pathfinding game where the red piece is navigating through obstacles (blue) to reach a target (orange/green)."
+    },
+    {
+     "n": 5,
+     "name": "Pixel Forge / Upgrader",
+     "body": "This is a manufacturing or crafting interface. The large colored squares (green/orange) are \"raw materials\" or \"cores.\" The smaller blue/red squares are \"modifiers\" or \"upgrades\" that need to be applied. The game might be about dragging modifiers onto the cores to change their properties (e.g., applying red to orange makes a \"super hot\" core), and then moving the finished product to the grey bar at the top to complete an order."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 6,
+   "elapsedMs": 90709,
+   "promptTokens": 347,
+   "completionTokens": 396,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Gravity/Drop Physics",
+     "body": "The orange, blue, and red squares are \"active\" pieces currently falling due to an unseen gravity force. Their proximity to the central horizontal grey line (the boundary or \"table\") suggests this is the terminal point of their trajectory. The green square might be an obstacle, a target, or a piece that was less recently activated."
+    },
+    {
+     "n": 2,
+     "name": "Quantum Entanglement/Superposition",
+     "body": "The active squares containing internal black squares represent \"entangled\" or \"flipped\" states. Their trajectory is not random but is specifically aimed at other elements to create a new \"entangled\" pair (e.g., the red square about to land on the green one). The small blue dot in flight is an \"alpha particle\" that doubles down this line of logic."
+    },
+    {
+     "n": 3,
+     "name": "Logic Puzzle (Vector Inversion)",
+     "body": "The top row of grey squares represents an input command map indicating a single-column operation (the 5th column). The falling objects are \"input states,\" and the game task is to stop them in specific positions to satisfy a hidden rule set (e.g., align all colors, create a perfect stack, avoid collisions)."
+    },
+    {
+     "n": 4,
+     "name": "Time Dilation/Static Simulation",
+     "body": "This is a static look at a slow-motion simulation. The grey areas are empty space. The colored squares are \"bodies\" in motion, and the dots in the background are \"glitches.\" The goal is either to predict the collision point before \"time resumes\" or to toggle the gravity vector to stop them from colliding."
+    },
+    {
+     "n": 5,
+     "name": "Stacking/Lisp (Closure)",
+     "body": "The squares with internal black centers are \"closures\" or high-level entities. The single-color squares are primitive types. The game mechanics involve constructing or validating code structures based on physical interactions in a minimal coordinate space."
+    }
+   ],
+   "raw": null
+  },
+  {
+   "host": "MSI",
+   "model": "qwen/qwen3.8-27b",
+   "game": "t088853a8",
+   "frameSha": "fa1723f4e0b50b05",
+   "effort": "none",
+   "temperature": 1.0,
+   "topK": 500,
+   "replicate": 7,
+   "elapsedMs": 114950,
+   "promptTokens": 347,
+   "completionTokens": 548,
+   "reasoningTokens": 0,
+   "finishReason": "stop",
+   "hypotheses": [
+    {
+     "n": 1,
+     "name": "Quantum Gravity Well",
+     "body": "The horizontal line acts as a \"mirror plane\" or \"gravity bar\" that affects objects passing through it. The blue object (perhaps a \"quantum\" particle, represented as a hollow or unstable box) hits the bar and generates a \"shadow\" or \"ghost\" entity (the red box) on the other side. The game involves manipulating objects by forcing them to cross this plane to create interacting entities or to alter their properties (e.g., changing a blue 'energy' object into a red 'matter' object)."
+    },
+    {
+     "n": 2,
+     "name": "Alchemical Transmutation",
+     "body": "The game is a puzzle about changing states. The blue box represents an item passing through an \"alchemical gate\" (the white border line). The gate transmutates its core color/state: the blue *structure* becomes a red *container* (or vice versa). The goal might be to transmute objects to match a target state or to trigger specific combinations when multiple objects cross the gate simultaneously."
+    },
+    {
+     "n": 3,
+     "name": "Parallax Depth Shift",
+     "body": "The screen is divided into two layers of depth. The upper layer is \"foreground\" and the lower is \"background.\" Objects belonging to the foreground (blue box) can traverse the \"horizon line\" (white barrier). When they cross, they lock or project a 2D \"shadow\" (red box) into the background layer. The objective could be to align these background shadows with static \"targets\" (green box) by shifting their position before they cross the horizon."
+    },
+    {
+     "n": 4,
+     "name": "Resonance and Echo",
+     "body": "The blue box is a \"pulse\" traveling down. When it crosses the barrier, it generates a decaying \"echo\" (red box). The resolution of the game depends on the distance or relative positions of the primary pulse (blue) and its echo (red). The task is to time the crossing so that the echo is created exactly at the green box's location, or perhaps so the blue and red entities collide with each other to create a new entity."
+    },
+    {
+     "n": 5,
+     "name": "Molecule Synthesis",
+     "body": "The components are building blocks. The blue box is a \"heavy\" element, and the red box is a \"light\" element. They act as opposed halves of a molecule (like protons and electrons). Crossing the barrier \"breaks\" the composite particle; the blue shell falls to one side, and the red core falls to the other. The mechanic might involve reversing this process—bouncing entities back and forth across the barrier to separate or recombine them to build more complex patterns that match a target shape."
+    }
+   ],
+   "raw": null
+  }
+ ],
+ "summary": {
+  "runCount": 32,
+  "hypothesisCount": 160,
+  "unparsedRuns": 0,
+  "games": [
+   "t088853a8"
+  ],
+  "hosts": [
+   "MSI"
+  ],
+  "models": [
+   "qwen/qwen3.8-27b"
+  ],
+  "cells": {
+   "medium|0.7": 8,
+   "medium|1.0": 8,
+   "none|0.7": 8,
+   "none|1.0": 8
+  }
+ }
+}
