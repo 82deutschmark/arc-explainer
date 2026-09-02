@@ -35,6 +35,19 @@
   - **What is explicitly kept**: `mechanic_digest.py` and its self-test. The derived facts are the trustworthy half; the problem is what was built on top of them.
   - **Files**: `docs/2026-09-02-arc3-mechanics-page-remediation.md`.
 
+### Version 9.28.0  Sep 2, 2026
+
+- **Every lying control fixed, not just the crosshair — and the arena resync unblocked** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: the crosshair was not the only control that lied. The deck decides what is live from `available_actions`, and that field is wrong in both directions across our fifty games.
+  - **Over-reporting**: 26 games advertise ACTION6 and 13 advertise ACTION5 while reading neither. Press one, spend a move, nothing happens. 29 of the 50 had at least one dead control.
+  - **Under-reporting, which is worse**: `t6381e4da` and `t7114b1e1` both READ ACTION7 and neither advertises it, so the console blocked a control those games use. In `t7114b1e1` that is the cancel for an armed fold, and folding is the entire game.
+  - **The fix**: `GET /api/arc3-mirror/control-map` serves the action ids each game actually reads, derived from source. `canSend` now trusts that over the frame in both directions -- it enables ACTION7 where a game reads it unadvertised and refuses the ones a game advertises and ignores. `available_actions` is advisory metadata the engine never gates on (`base_game.py:189`), so sending an unadvertised action a game reads is exactly as valid as sending an advertised one. Unknown games (upstream, not in our digest) keep the frame's word.
+  - **The arena resync was silently broken, and running it would have leaked the answer to every task.** The authoring repo's modules now open with a docstring naming the mechanic, the AI failure mode and what each level teaches. `import_authored_games.py` renamed identifiers but never stripped prose, and that source is served publicly at `/games/:gameId/source` and fetched into the player's own browser. `scripts/arc3/strip_authoring_text.py` is now vendored from the authoring repo's `make_submission.py` -- the same arrangement as `legibility_gate.py`, for the same reason -- and every publish goes through it.
+  - **The importer also refused to run at all**, because the authoring repo now keeps its verifiers and tooling beside the tasks and any non-task filename was fatal. Those are skipped now, and every skip is printed by name -- a task lost to a rename must not vanish quietly in a directory of hundreds.
+  - **With that fixed, only one game was actually stale**: `t2774d7a8`, which is the one the arena's own latest commit flags. It has been rewritten upstream -- it is now a tight +/-3 charge you carry to a mould drawn in the colour it wants -- so its guide note was wrong and has been rewritten. The other 49 match the pipeline exactly.
+  - **Checked in the running app**: on `t7114b1e1` ACTION7 now advances the step counter where it previously did nothing; on `t00810611` the dead spacebar no longer spends a move while an arrow still does, and there is no crosshair; on `t99e8274e` the crosshair is there and a click still fills the cell.
+  - **Files**: `scripts/arc3/strip_authoring_text.py`, `scripts/arc3/import_authored_games.py`, `server/data/arc3-games/t2774d7a8.py`, `server/data/arc3-games/mechanics.json`, `server/data/arc3-games/mechanics-notes.json`, `server/routes/arc3Mirror.ts`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
+
 ### Version 9.27.0  Sep 2, 2026
 
 - **The crosshair was lying on 26 of the 50 tasks. Fixed.** (Author: Mark Barney / Claude Opus 5)

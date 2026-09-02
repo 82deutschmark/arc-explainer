@@ -36,9 +36,9 @@
   "goal": "Reach the goal. Tracking which way is which after two or three transits is the puzzle."
  },
  "t2774d7a8": {
-  "mechanic": "A running total. Every tile you step on adds or subtracts a value; the board shows the total as a colour (hot above zero, cold below). Go past twelve either way and the level resets.",
+  "mechanic": "A running total you carry, on a smaller board. Each tile you step on adds or subtracts from a charge, drawn only as the colour of the thing you are moving. The mould you have to reach is drawn in the colour of the charge it wants, so the target is on screen and is a shade rather than a number.",
   "controls": "D-pad only.",
-  "goal": "Reach the exit with the total EXACTLY equal to the level's target. Standing on the exit with the wrong total does nothing at all -- no message, no death."
+  "goal": "Reach the mould carrying EXACTLY the charge it asks for. Stepping onto it with the wrong charge does nothing at all -- no message, no death. Going past +/-3 in either direction resets the level, so the range is tight and the route is the arithmetic."
  },
  "t33bdec30": {
   "mechanic": "Sokoban on ice, with parity. Rocks slide until they hit something, pits swallow a rock and become floor, and a switch flips gates. A parity counter changes what is passable, so the same board alternates between two shapes.",

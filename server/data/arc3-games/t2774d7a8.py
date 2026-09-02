@@ -9,258 +9,187 @@ from arcengine import (
     GameAction,
     InteractionMode,
     Level,
-    RenderableUserDisplay,
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-HOT = 8
-COLD = 9
-NEUTRAL = 0
-ORIGIN = 11
+HEARTH_FILL = 3
+KILN_EDGE = 12
+FLUE_MARK = 14
 
-DELTAS = {
-    ".": 0, "P": 0,
-    "1": 1, "2": 2, "3": 3,
-    "c": -1, "b": -2, "a": -3,
+SHADES = (15, 9, 2, 0, 7, 8, 13)
+SPAN = 3
+
+STEPS = {
+    ".": 0, "S": 0, "M": 0,
+    "p": 1, "q": 2, "m": -1, "n": -2,
 }
-LIMIT = 12
+VENTS = "pqmn"
 
 LEVELS_SPEC = [
-    {"target": 4, "rows": [
-        "################",
-        "#..............#",
-        "#..PX..........#",
-        "#..............#",
-        "#....2.........#",
-        "#..............#",
-        "#..........2...#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"wants": 2, "rows": [
+        "############",
+        "#SM........#",
+        "#..........#",
+        "#..######..#",
+        "#..######..#",
+        "#..q#####..#",
+        "#..######..#",
+        "#..######..#",
+        "#..######..#",
+        "#..........#",
+        "#..........#",
+        "############",
     ]},
-    {"target": 7, "rows": [
-        "################",
-        "#..............#",
-        "#..PX..........#",
-        "#..............#",
-        "#......3.......#",
-        "#..............#",
-        "#..........2...#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"wants": 3, "rows": [
+        "############",
+        "#S.........#",
+        "#..........#",
+        "#...####...#",
+        "#...#..#...#",
+        "#...#p.#...#",
+        "#...#..#...#",
+        "#...##.#...#",
+        "#..........#",
+        "#..........#",
+        "#.........M#",
+        "############",
     ]},
-    {"target": 2, "rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#..........2...#",
-        "#..............#",
-        "#..........2...#",
-        "#..............#",
-        "#..........1...#",
-        "#....######....#",
-        "#....#....#....#",
-        "#....a....#....#",
-        "#....#.X..#....#",
-        "#....#....#....#",
-        "#....######....#",
-        "#..............#",
-        "################",
+    {"wants": 0, "rows": [
+        "############",
+        "#S.........#",
+        "#..........#",
+        "#....q.....#",
+        "#..........#",
+        "#..#####...#",
+        "#..#...#...#",
+        "#..#.M.#...#",
+        "#..#...#...#",
+        "#..#p###...#",
+        "#.......m..#",
+        "############",
     ]},
-    {"target": 6, "rows": [
-        "################",
-        "#..PX..........#",
-        "#..............#",
-        "#..333333333...#",
-        "#..333333333...#",
-        "#..333333333...#",
-        "#..............#",
-        "#..............#",
-        "#....cccccc....#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"wants": 3, "rows": [
+        "############",
+        "#S.........#",
+        "#..##..##..#",
+        "#..#q..q#..#",
+        "#..##..##..#",
+        "#..........#",
+        "#.####.....#",
+        "#.#m.......#",
+        "#.####.....#",
+        "#..........#",
+        "#........M.#",
+        "############",
     ]},
-    {"target": 1, "rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#.a............#",
-        "#..............#",
-        "#.a............#",
-        "#..............#",
-        "#.b............#",
-        "#..............#",
-        "#....###########",
-        "#....333X#######",
-        "#....###########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"wants": -1, "rows": [
+        "############",
+        "#S...#...#q#",
+        "#....#...#.#",
+        "#.n..#.m.#.#",
+        "#....#...#.#",
+        "#....#...#.#",
+        "#..........#",
+        "#########.##",
+        "#########.##",
+        "#########.##",
+        "#Mpp.......#",
+        "############",
     ]},
-    {"target": -5, "rows": [
-        "################",
-        "#..PX..........#",
-        "#..............#",
-        "#....b.........#",
-        "#..............#",
-        "#.........a....#",
-        "#..............#",
-        "#..............#",
-        "#......2.......#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
-    ]},
-    {"target": -2, "rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#.1............#",
-        "#..............#",
-        "#.1...........3#",
-        "#..............#",
-        "#.2............#",
-        "#..............#",
-        "#....###########",
-        "#....aaX########",
-        "#....###########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
-    ]},
-    {"target": 8, "rows": [
-        "################",
-        "#..P...........#",
-        "#........33333.#",
-        "#........33333.#",
-        "#........33333.#",
-        "#..............#",
-        "#.aaa..........#",
-        "#..............#",
-        "#....###########",
-        "#....b3bX#######",
-        "#....###########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"wants": 2, "rows": [
+        "############",
+        "#S....#....#",
+        "#.....#..n.#",
+        "#..p..#....#",
+        "#.....#....#",
+        "#.....#....#",
+        "#..........#",
+        "#.##########",
+        "#.##########",
+        "#.##########",
+        "#.....mmpM##",
+        "############",
     ]},
 ]
 
-N = len(LEVELS_SPEC[0]["rows"])
-CELL = 4
+SIDE = len(LEVELS_SPEC[0]["rows"])
+CELL = 5
+INSET = (64 - SIDE * CELL) // 2
 
 
-def sum_colour(value: int) -> int:
-    if value > 0:
-        return HOT
-    if value < 0:
-        return COLD
-    return NEUTRAL
+def shade_for(value: int) -> int:
+    return SHADES[value + SPAN]
 
 
-def _solid(colour: int) -> list[list[int]]:
+def slab(colour: int) -> list[list[int]]:
     return [[colour] * CELL for _ in range(CELL)]
 
 
-def _ring(colour: int) -> list[list[int]]:
-    block = [[colour] * CELL for _ in range(CELL)]
-    for y in range(1, CELL - 1):
-        for x in range(1, CELL - 1):
-            block[y][x] = FLOOR
+def grating(colour: int) -> list[list[int]]:
+    block = slab(HEARTH_FILL)
+    for row in range(1, CELL - 1):
+        for col in range(1, CELL - 1):
+            block[row][col] = colour
+    block[CELL // 2][CELL // 2] = HEARTH_FILL
+    return block
+
+
+def quartered(colour: int) -> list[list[int]]:
+    block = slab(colour)
+    for i in range(CELL):
+        block[CELL // 2][i] = HEARTH_FILL
+        block[i][CELL // 2] = HEARTH_FILL
     return block
 
 
 def build_levels() -> list[Level]:
     levels: list[Level] = []
     for spec in LEVELS_SPEC:
-        sprites: list[Sprite] = []
+        pieces: list[Sprite] = []
         for y, row in enumerate(spec["rows"]):
             for x, glyph in enumerate(row):
-                px, py = x * CELL, y * CELL
+                px, py = INSET + x * CELL, INSET + y * CELL
                 if glyph == "#":
-                    sprites.append(Sprite(
-                        pixels=_solid(WALL), name=f"wall_{x}_{y}",
+                    pieces.append(Sprite(
+                        pixels=slab(KILN_EDGE), name=f"brick_{x}_{y}",
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=-1,
                     ).set_position(px, py))
-                elif glyph == "X":
-                    sprites.append(Sprite(
-                        pixels=_ring(sum_colour(spec["target"])), name="door",
-                        blocking=BlockingMode.BOUNDING_BOX,
-                        interaction=InteractionMode.TANGIBLE, layer=0, tags=["door"],
+                elif glyph in VENTS:
+                    pieces.append(Sprite(
+                        pixels=grating(FLUE_MARK), name=f"vent_{x}_{y}",
+                        blocking=BlockingMode.NOT_BLOCKED,
+                        interaction=InteractionMode.INTANGIBLE, layer=0,
                     ).set_position(px, py))
-                elif glyph == "P":
-                    sprites.append(Sprite(
-                        pixels=_solid(NEUTRAL), name="player",
+                elif glyph == "M":
+                    pieces.append(Sprite(
+                        pixels=quartered(shade_for(spec["wants"])), name="mould",
                         blocking=BlockingMode.BOUNDING_BOX,
-                        interaction=InteractionMode.TANGIBLE, layer=1,
+                        interaction=InteractionMode.TANGIBLE, layer=1, tags=["mould"],
                     ).set_position(px, py))
-        levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
+                elif glyph == "S":
+                    pieces.append(Sprite(
+                        pixels=slab(shade_for(0)), name="billet",
+                        blocking=BlockingMode.BOUNDING_BOX,
+                        interaction=InteractionMode.TANGIBLE, layer=2,
+                    ).set_position(px, py))
+        levels.append(Level(sprites=pieces, grid_size=(64, 64)))
     return levels
-
-
-class G29ca77d9(RenderableUserDisplay):
-
-    def __init__(self, game: "G52163734") -> None:
-        super().__init__()
-        self._game = game
-
-    def _row(self, frame: np.ndarray, top: int, value: int) -> None:
-        colour = sum_colour(value)
-        for i in range(min(abs(value), LIMIT)):
-            x = 33 + 2 * i if value > 0 else 31 - 2 * i
-            if 0 <= x < frame.shape[1]:
-                frame[top:top + 2, x:x + 1] = colour
-
-    def render_interface(self, frame: np.ndarray) -> np.ndarray:
-        frame[0:4, 32:33] = ORIGIN
-        self._row(frame, 0, self._game.heat)
-        self._row(frame, 2, LEVELS_SPEC[self._game.level_index]["target"])
-        return frame
 
 
 class G52163734(ARCBaseGame):
 
     def __init__(self) -> None:
-        self.heat = 0
+        self.charge = 0
         camera = Camera(
-            width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=5,
-            interfaces=[G29ca77d9(self)],
+            width=64, height=64,
+            background=HEARTH_FILL, letter_box=KILN_EDGE,
         )
         super().__init__(game_id="t2774d7a8", levels=build_levels(), camera=camera)
 
     def on_set_level(self, level: Level) -> None:
-        self.heat = 0
-        self._repaint()
+        self.charge = 0
+        self._recolour()
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -270,10 +199,10 @@ class G52163734(ARCBaseGame):
         super().full_reset()
         self.on_set_level(self.current_level)
 
-    def _repaint(self) -> None:
-        player = self.current_level.get_sprites_by_name("player")
-        if player:
-            player[0].pixels[:, :] = sum_colour(self.heat)
+    def _recolour(self) -> None:
+        found = self.current_level.get_sprites_by_name("billet")
+        if found:
+            found[0].pixels[:, :] = shade_for(self.charge)
 
     def step(self) -> None:
         dx = dy = 0
@@ -287,31 +216,32 @@ class G52163734(ARCBaseGame):
             dx = 1
 
         if dx or dy:
-            player = self.current_level.get_sprites_by_name("player")
-            if player:
-                self._enter(player[0], dx, dy)
+            found = self.current_level.get_sprites_by_name("billet")
+            if found:
+                self._advance(found[0], dx, dy)
 
         self.complete_action()
 
-    def _enter(self, player: Sprite, dx: int, dy: int) -> None:
+    def _advance(self, billet: Sprite, dx: int, dy: int) -> None:
         rows = LEVELS_SPEC[self.level_index]["rows"]
-        target = LEVELS_SPEC[self.level_index]["target"]
-        cx = player.x // CELL + dx
-        cy = player.y // CELL + dy
-        if not (0 <= cx < N and 0 <= cy < N):
+        wants = LEVELS_SPEC[self.level_index]["wants"]
+        cx = (billet.x - INSET) // CELL + dx
+        cy = (billet.y - INSET) // CELL + dy
+        if not (0 <= cx < SIDE and 0 <= cy < SIDE):
             return
         glyph = rows[cy][cx]
 
         if glyph == "#":
             return
-        if glyph == "X":
-            if self.heat == target:
+        if glyph == "M":
+            if self.charge == wants:
                 self.next_level()
             return
 
-        player.set_position(cx * CELL, cy * CELL)
-        self.heat += DELTAS[glyph]
-        if abs(self.heat) > LIMIT:
+        nxt = self.charge + STEPS[glyph]
+        billet.set_position(INSET + cx * CELL, INSET + cy * CELL)
+        if abs(nxt) > SPAN:
             self.level_reset()
         else:
-            self._repaint()
+            self.charge = nxt
+            self._recolour()
