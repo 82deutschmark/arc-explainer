@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import os
 import platform
@@ -240,6 +241,39 @@ def render_frame(game_id: str, out_dir: Path, size: int) -> Path:
 
 def data_url(png_path: Path) -> str:
     return "data:image/png;base64," + base64.b64encode(png_path.read_bytes()).decode("ascii")
+
+
+def frame_sha(png_path: Path) -> str:
+    """
+    Hash of the exact bytes sent to the model.
+
+    The decisive cross-machine check. The two boxes can legitimately sit on different ARCEngine
+    commits - on 01-Sep the Katana was on e243421 while the repository recorded 653c3ee - and a
+    different engine could in principle paint a different opening frame, which would make the
+    two machines' rows incomparable without anything in the data saying so. Two hosts showing
+    the same hash for a game id proves they looked at an identical image; two different hashes
+    say the comparison is between stimuli, not between models.
+    """
+    return hashlib.sha256(png_path.read_bytes()).hexdigest()[:16]
+
+
+def arcengine_revision() -> str:
+    """The engine commit that rendered the frames, plus a dirty marker if it has local edits."""
+    try:
+        head = subprocess.run(
+            ["git", "-C", str(ARCENGINE_PATH), "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=15,
+        )
+        if head.returncode != 0:
+            return "unknown"
+        revision = head.stdout.strip()
+        dirty = subprocess.run(
+            ["git", "-C", str(ARCENGINE_PATH), "status", "--porcelain"],
+            capture_output=True, text=True, timeout=15,
+        )
+        return revision + ("+dirty" if dirty.stdout.strip() else "")
+    except Exception:
+        return "unknown"
 
 
 def queued_game_ids() -> list[str]:
@@ -495,8 +529,12 @@ def main(argv=None) -> int:
     )
 
     print("\nrendering frames...")
-    images = {g: data_url(render_frame(g, frames_dir, args.image_px)) for g in games}
+    frame_paths = {g: render_frame(g, frames_dir, args.image_px) for g in games}
+    images = {g: data_url(path) for g, path in frame_paths.items()}
+    frame_hashes = {g: frame_sha(path) for g, path in frame_paths.items()}
+    engine = arcengine_revision()
     print(f"  {len(images)} frame(s) ready in {frames_dir}")
+    print(f"  arcengine {engine}")
 
     if args.calibrate:
         return calibrate(base_url, model_id, prompts, args, images[games[0]], cells)
@@ -511,6 +549,7 @@ def main(argv=None) -> int:
         "python": platform.python_version(),
     }
     static = {
+        "arcengine_revision": engine,
         "model_id": model_id,
         "quantization": model.get("quantization"),
         "context_length": model.get("max_context_length"),
@@ -555,6 +594,7 @@ def main(argv=None) -> int:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "run_key": key,
                 "game_id": game,
+                "frame_sha": frame_hashes[game],
                 "replicate": replicate,
                 "max_tokens": max_tokens,
                 **{
