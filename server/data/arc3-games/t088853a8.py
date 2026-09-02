@@ -1,7 +1,5 @@
 # ARC-AGI-3 candidate task t088853a8.
 
-import numpy as np
-
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -9,21 +7,17 @@ from arcengine import (
     GameAction,
     InteractionMode,
     Level,
-    RenderableUserDisplay,
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-EXIT = 14
-PLAYER = 12
-RATCHET_OPEN = 7
-RATCHET_SEALED = 13
-DRONE_COLOURS = (9, 8, 15, 10)
-TICK_ON = 11
-TICK_OFF = 3
+FLOOR = 0
+WALL = 2
+GOAL = 15
+AVATAR = 13
+SEAL_MARK = 3
+VOICE_INK = (9, 10, 6, 8)
 
-N = 16
+N = 14
 CELL = 4
 
 DIRS = {
@@ -35,251 +29,214 @@ DIRS = {
 }
 
 
-def shuttle(cells, hold=0):
+def sustain(cells, hold=0, phase=0):
     cells = [tuple(c) for c in cells]
-    return cells + [cells[-1]] * hold + list(reversed(cells[1:-1]))
+    if len(cells) == 1:
+        return cells
+    loop = cells + [cells[-1]] * hold + list(reversed(cells[1:-1]))
+    cut = phase % len(loop)
+    return loop[cut:] + loop[:cut]
 
 
-def hstrip(x0, x1, y, hold=0):
-    step = 1 if x1 >= x0 else -1
-    return shuttle([(x, y) for x in range(x0, x1 + step, step)], hold)
-
-
-def vstrip(x, y0, y1, hold=0):
-    step = 1 if y1 >= y0 else -1
-    return shuttle([(x, y) for y in range(y0, y1 + step, step)], hold)
-
-
-def gate_pair(tx, ty, ax, ay, bx, by):
-    return [[(tx, ty), (ax, ay)], [(bx, by), (tx, ty)]]
+def held(cell):
+    return sustain([cell])
 
 
 LEVELS_SPEC = [
     {"rows": [
-        "################",
-        "#..............#",
-        "#..............#",
-        "#......P.......#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#######.########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#......X.......#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "drones": gate_pair(7, 7, 7, 6, 7, 8)},
+        "##############",
+        "#............#",
+        "#............#",
+        "#............#",
+        "#....#####...#",
+        "#....#...#...#",
+        "#....#.*.#...#",
+        "#....#...#...#",
+        "#....##.##...#",
+        "#............#",
+        "#............#",
+        "#..o.........#",
+        "#............#",
+        "##############",
+     ], "voices": [
+        held((7, 8)),
+        sustain([(2, 2), (3, 2)]),
+        sustain([(11, 10), (11, 9)], hold=1),
+        sustain([(2, 5), (2, 6), (2, 7)], hold=1),
+     ]},
 
     {"rows": [
-        "################",
-        "#..............#",
-        "#......P.......#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#######.########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#......X.......#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "drones": [[(7, 6), (7, 7)], [(7, 8), (7, 7)]]},
+        "##############",
+        "#.....#......#",
+        "#.....#...*..#",
+        "#............#",
+        "#.....#......#",
+        "#.....#......#",
+        "#.....#......#",
+        "#.....#......#",
+        "###.##########",
+        "#............#",
+        "#............#",
+        "#..o.........#",
+        "#............#",
+        "##############",
+     ], "voices": [
+        held((3, 8)),
+        sustain([(5, 3), (6, 3)]),
+        sustain([(6, 3), (7, 3)], hold=1, phase=1),
+        sustain([(3, 10), (4, 10), (5, 10)], hold=1),
+     ]},
 
     {"rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#..............#",
-        "#####.##########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "##########.#####",
-        "#..............#",
-        "#..............#",
-        "#.........X....#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "drones": gate_pair(5, 4, 5, 3, 5, 5) + [
-        [(10, 8), (10, 9)], [(10, 10), (10, 9)]]},
+        "##############",
+        "#............#",
+        "#.##########.#",
+        "#.#........#.#",
+        "#.#.######.#.#",
+        "#.#.#....#.#.#",
+        "#.#.#.*..#.#.#",
+        "#.#.#....#.#.#",
+        "#.#.#....#.#.#",
+        "#.#.###.##.#.#",
+        "#.#........#.#",
+        "#.##.#######.#",
+        "#..o.........#",
+        "##############",
+     ], "voices": [
+        sustain([(7, 7), (7, 8)]),
+        sustain([(7, 10), (7, 9)], hold=1),
+        sustain([(7, 7), (7, 8), (7, 9)], hold=1),
+     ]},
 
     {"rows": [
-        "################",
-        "#P.............#",
-        "#..............#",
-        "####.###########",
-        "#..............#",
-        "#..............#",
-        "##########.#####",
-        "#..............#",
-        "#..............#",
-        "####.###########",
-        "#..............#",
-        "#..............#",
-        "#..........X...#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "drones": [[(4, 2), (4, 3)], [(4, 4), (4, 3)]]
-        + gate_pair(10, 6, 10, 5, 10, 7)
-        + [[(4, 8), (4, 9)], [(4, 10), (4, 9)]]},
+        "##############",
+        "#............#",
+        "#..o.........#",
+        "#............#",
+        "#......#.....#",
+        "######..######",
+        "######..######",
+        "#######......#",
+        "#............#",
+        "#............#",
+        "#......*.....#",
+        "#............#",
+        "#............#",
+        "##############",
+     ], "voices": [
+        sustain([(6, 5), (7, 5)]),
+        sustain([(7, 5), (7, 6)], hold=1, phase=1),
+        sustain([(6, 5), (6, 6), (7, 6)], hold=1, phase=4),
+     ]},
 
     {"rows": [
-        "################",
-        "#...P..........#",
-        "#..............#",
-        "#########.######",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "###.############",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#.........X....#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "drones": [[(9, 2), (9, 3)], [(9, 4), (9, 3)]]
-        + gate_pair(3, 7, 3, 6, 3, 8)
-        + [hstrip(3, 7, 9), hstrip(11, 7, 9, hold=1)]},
+        "##############",
+        "#.o..........#",
+        "#............#",
+        "#####=########",
+        "#............#",
+        "#......#.....#",
+        "######..######",
+        "#######.######",
+        "#............#",
+        "#............#",
+        "#.....*......#",
+        "#............#",
+        "#............#",
+        "##############",
+     ], "voices": [
+        sustain([(6, 6), (7, 6)]),
+        sustain([(7, 6), (7, 7)], hold=1, phase=2),
+        sustain([(6, 6), (7, 6), (7, 7)], hold=1, phase=1),
+     ]},
 
     {"rows": [
-        "################",
-        "#P.............#",
-        "#..............#",
-        "#####.##########",
-        "#..............#",
-        "#..............#",
-        "#..........r####",
-        "#..............#",
-        "#..............#",
-        "####.###########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#............X.#",
-        "#..............#",
-        "################",
-     ], "drones": [[(5, 2), (5, 3)], [(5, 4), (5, 3)]]
-        + gate_pair(11, 6, 11, 5, 11, 7)
-        + [[(4, 8), (4, 9)], [(4, 10), (4, 9)]]
-        + [hstrip(2, 6, 5), hstrip(10, 6, 5, hold=1)]},
-
-    {"rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "####r###########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "##########r#####",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#.......X......#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "drones": [[(4, 2), (4, 3)], [(4, 4), (4, 3)]]
-        + gate_pair(10, 8, 10, 7, 10, 9)
-        + [hstrip(3, 7, 6), hstrip(11, 7, 6, hold=1)]},
-
-    {"rows": [
-        "################",
-        "#.P............#",
-        "#..............#",
-        "###r############",
-        "#..............#",
-        "#..............#",
-        "#########r######",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "####.###########",
-        "#..............#",
-        "#..........X...#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "drones": [[(3, 2), (3, 3)], [(3, 4), (3, 3)]]
-        + gate_pair(9, 6, 9, 5, 9, 7)
-        + [[(4, 9), (4, 10)], [(4, 11), (4, 10)]]
-        + [hstrip(2, 6, 8), hstrip(10, 6, 8, hold=1)]},
+        "##############",
+        "#o...........#",
+        "#............#",
+        "##########=###",
+        "#............#",
+        "#............#",
+        "###=##########",
+        "#............#",
+        "#............#",
+        "######.#######",
+        "#............#",
+        "#............#",
+        "#.....*......#",
+        "##############",
+     ], "voices": [
+        sustain([(6, 8), (6, 9)]),
+        sustain([(6, 10), (6, 9)], hold=1),
+        sustain([(6, 7), (6, 8), (6, 9)], hold=1),
+     ]},
 ]
 
 
+def _find(index, mark):
+    rows = LEVELS_SPEC[index]["rows"]
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch == mark:
+                return (x, y)
+    raise AssertionError(f"level {index} has no {mark!r}")
+
+
 def start_of(index):
-    rows = LEVELS_SPEC[index]["rows"]
-    for y, row in enumerate(rows):
-        for x, ch in enumerate(row):
-            if ch == "P":
-                return (x, y)
-    raise AssertionError(f"level {index} has no start")
+    return _find(index, "o")
 
 
-def exit_of(index):
-    rows = LEVELS_SPEC[index]["rows"]
-    for y, row in enumerate(rows):
-        for x, ch in enumerate(row):
-            if ch == "X":
-                return (x, y)
-    raise AssertionError(f"level {index} has no exit")
+def goal_of(index):
+    return _find(index, "*")
 
 
-def ratchets_of(index):
+def seals_of(index):
     rows = LEVELS_SPEC[index]["rows"]
     return [(x, y) for y, row in enumerate(rows)
-            for x, ch in enumerate(row) if ch == "r"]
+            for x, ch in enumerate(row) if ch == "="]
 
 
-def period_of(index):
+def board_period(index):
     from math import gcd
     p = 1
-    for path in LEVELS_SPEC[index]["drones"]:
-        p = p * len(path) // gcd(p, len(path))
+    for loop in LEVELS_SPEC[index]["voices"]:
+        p = p * len(loop) // gcd(p, len(loop))
     return p
 
 
-def drone_cells(index, tick):
-    return [path[tick % len(path)] for path in LEVELS_SPEC[index]["drones"]]
+def voice_cells(index, tick):
+    return [loop[tick % len(loop)] for loop in LEVELS_SPEC[index]["voices"]]
 
 
-def lethal(index, cell, tick):
-    return drone_cells(index, tick).count(cell) >= 2
+def doubled(index, cell, tick):
+    return voice_cells(index, tick).count(cell) >= 2
 
 
-def resolve(index, pos, tick, sealed, move):
+def advance(index, pos, tick, shut, move):
     rows = LEVELS_SPEC[index]["rows"]
-    ratchets = set(ratchets_of(index))
+    seals = set(seals_of(index))
     nx, ny = pos[0] + move[0], pos[1] + move[1]
     nxt = pos
-    if 0 <= nx < N and 0 <= ny < N and rows[ny][nx] != "#" and (nx, ny) not in sealed:
+    if 0 <= nx < N and 0 <= ny < N and rows[ny][nx] != "#" and (nx, ny) not in shut:
         nxt = (nx, ny)
-    if nxt != pos and pos in ratchets:
-        sealed = sealed | frozenset({pos})
+    if nxt != pos and pos in seals:
+        shut = shut | frozenset({pos})
     tick += 1
-    return nxt, tick, sealed, lethal(index, nxt, tick)
+    return nxt, tick, shut, doubled(index, nxt, tick)
 
 
-def _solid(colour):
+def _block(colour):
     return [[colour] * CELL for _ in range(CELL)]
 
 
-def _ring(colour):
+def _berth(colour):
+    block = [[colour] * CELL for _ in range(CELL)]
+    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
+        block[y][x] = -1
+    return block
+
+
+def _rim(colour):
     block = [[colour] * CELL for _ in range(CELL)]
     for y in range(1, CELL - 1):
         for x in range(1, CELL - 1):
@@ -287,7 +244,7 @@ def _ring(colour):
     return block
 
 
-def _core(colour):
+def _pip(colour):
     block = [[-1] * CELL for _ in range(CELL)]
     for y in range(1, CELL - 1):
         for x in range(1, CELL - 1):
@@ -295,14 +252,19 @@ def _core(colour):
     return block
 
 
-_TRACE_CORNER = ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1))
+_STAVE_CORNER = ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1))
 
 
-def _trace(colour, drone_index):
+def _stave(colour, voice_index):
     block = [[-1] * CELL for _ in range(CELL)]
-    ty, tx = _TRACE_CORNER[drone_index % len(_TRACE_CORNER)]
+    ty, tx = _STAVE_CORNER[voice_index % len(_STAVE_CORNER)]
     block[ty][tx] = colour
     return block
+
+
+def _hatch(colour):
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(CELL)]
+            for y in range(CELL)]
 
 
 def build_levels():
@@ -314,46 +276,46 @@ def build_levels():
                 px, py = x * CELL, y * CELL
                 if ch == "#":
                     sprites.append(Sprite(
-                        pixels=_solid(WALL), name=f"wall_{x}_{y}",
+                        pixels=_block(WALL), name=f"bar_{x}_{y}",
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=-3,
                     ).set_position(px, py))
-                elif ch == "X":
+                elif ch == "*":
                     sprites.append(Sprite(
-                        pixels=_solid(EXIT), name="exit",
+                        pixels=_berth(GOAL), name="berth",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=-2,
                     ).set_position(px, py))
-                elif ch == "r":
+                elif ch == "=":
                     sprites.append(Sprite(
-                        pixels=_solid(RATCHET_SEALED), name=f"sealed_{x}_{y}",
+                        pixels=_block(WALL), name=f"shut_{x}_{y}",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=-2,
                     ).set_position(px, py))
                     sprites.append(Sprite(
-                        pixels=_ring(RATCHET_OPEN), name=f"ratchet_{x}_{y}",
+                        pixels=_hatch(SEAL_MARK), name=f"seal_{x}_{y}",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=0,
                     ).set_position(px, py))
 
-        for di, path in enumerate(spec["drones"]):
-            colour = DRONE_COLOURS[di % len(DRONE_COLOURS)]
-            for (cx, cy) in sorted(set(path)):
+        for vi, loop in enumerate(spec["voices"]):
+            ink = VOICE_INK[vi % len(VOICE_INK)]
+            for (cx, cy) in sorted(set(loop)):
                 sprites.append(Sprite(
-                    pixels=_trace(colour, di), name=f"trace_{di}_{cx}_{cy}",
+                    pixels=_stave(ink, vi), name=f"stave_{vi}_{cx}_{cy}",
                     blocking=BlockingMode.NOT_BLOCKED,
                     interaction=InteractionMode.INTANGIBLE, layer=-1,
                 ).set_position(cx * CELL, cy * CELL))
-            dx, dy = path[0]
+            vx, vy = loop[0]
             sprites.append(Sprite(
-                pixels=_ring(colour), name=f"drone_{di}",
+                pixels=_rim(ink), name=f"voice_{vi}",
                 blocking=BlockingMode.NOT_BLOCKED,
                 interaction=InteractionMode.INTANGIBLE, layer=1,
-            ).set_position(dx * CELL, dy * CELL))
+            ).set_position(vx * CELL, vy * CELL))
 
         sx, sy = start_of(index)
         sprites.append(Sprite(
-            pixels=_core(PLAYER), name="player",
+            pixels=_pip(AVATAR), name="mote",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.INTANGIBLE, layer=2,
         ).set_position(sx * CELL, sy * CELL))
@@ -362,42 +324,22 @@ def build_levels():
     return levels
 
 
-SLOTS = 20
-
-
-class G081d9642(RenderableUserDisplay):
-
-    def __init__(self, game):
-        super().__init__()
-        self._game = game
-
-    def render_interface(self, frame):
-        here = self._game.tick % SLOTS
-        for i in range(SLOTS):
-            x = 1 + i * 3
-            if x + 2 > frame.shape[1]:
-                break
-            frame[1:3, x:x + 2] = TICK_ON if i == here else TICK_OFF
-        return frame
-
-
 class G5b009c25(ARCBaseGame):
 
     def __init__(self):
         self.pos = start_of(0)
         self.tick = 0
-        self.sealed = frozenset()
+        self.shut = frozenset()
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=5,
-            interfaces=[G081d9642(self)],
+            background=FLOOR, letter_box=WALL,
         )
         super().__init__(game_id="t088853a8", levels=build_levels(), camera=camera)
 
     def on_set_level(self, level):
         self.pos = start_of(self.level_index)
         self.tick = 0
-        self.sealed = frozenset()
+        self.shut = frozenset()
 
     def level_reset(self):
         super().level_reset()
@@ -411,13 +353,13 @@ class G5b009c25(ARCBaseGame):
 
     def _redraw(self):
         level = self.current_level
-        for di, (cx, cy) in enumerate(drone_cells(self.level_index, self.tick)):
-            for s in level.get_sprites_by_name(f"drone_{di}"):
+        for vi, (cx, cy) in enumerate(voice_cells(self.level_index, self.tick)):
+            for s in level.get_sprites_by_name(f"voice_{vi}"):
                 s.set_position(cx * CELL, cy * CELL)
-        for s in level.get_sprites_by_name("player"):
+        for s in level.get_sprites_by_name("mote"):
             s.set_position(self.pos[0] * CELL, self.pos[1] * CELL)
-        for (rx, ry) in self.sealed:
-            for s in level.get_sprites_by_name(f"ratchet_{rx}_{ry}"):
+        for (sx, sy) in self.shut:
+            for s in level.get_sprites_by_name(f"seal_{sx}_{sy}"):
                 level.remove_sprite(s)
 
     def step(self):
@@ -426,8 +368,8 @@ class G5b009c25(ARCBaseGame):
             self.complete_action()
             return
 
-        self.pos, self.tick, self.sealed, dead = resolve(
-            self.level_index, self.pos, self.tick, self.sealed, move)
+        self.pos, self.tick, self.shut, dead = advance(
+            self.level_index, self.pos, self.tick, self.shut, move)
 
         if dead:
             self.level_reset()
@@ -435,6 +377,6 @@ class G5b009c25(ARCBaseGame):
             return
 
         self._redraw()
-        if self.pos == exit_of(self.level_index):
+        if self.pos == goal_of(self.level_index):
             self.next_level()
         self.complete_action()
