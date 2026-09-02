@@ -289,6 +289,38 @@ export default function CommunityGamePlay() {
     enabled: revealEarned,
   });
 
+  /**
+   * WHICH TASKS ACTUALLY READ A CLICK. One bit per game, not the answer key.
+   *
+   * `available_actions` cannot be trusted for this. Only 18 of the 50 declare it and the
+   * rest inherit arcengine's [1,2,3,4,5,6] default, so 26 games advertise ACTION6 and read
+   * nothing from it. Gating the crosshair on the frame alone put a live-looking click
+   * target on half the set that accepted the click, spent a step and did nothing -- the
+   * same complaint that started this work, wearing a different hat.
+   *
+   * Fetched with the page, unlike the mechanic reveal: this is one boolean about the
+   * CONTROLS, which the console has to know to draw itself honestly, and not a fact about
+   * how the task is solved.
+   */
+  const { data: clickable } = useQuery<{ data: { known: string[]; clickTargets: string[] } }>({
+    queryKey: ['/api/arc3-mirror/click-targets'],
+    staleTime: 60 * 60 * 1000,
+  });
+
+  /**
+   * Does a click on this board mean anything?
+   *
+   * null = we cannot say. Upstream tasks are not in our digest, and an unknown task keeps
+   * the frame's own word rather than being silently made inert -- a false negative here
+   * would break the click games all over again, which is the more expensive mistake.
+   */
+  const readsClicks = useMemo(() => {
+    const d = clickable?.data;
+    if (!d || !gameId) return null;
+    if (d.clickTargets.includes(gameId)) return true;
+    return d.known.includes(gameId) ? false : null;
+  }, [clickable, gameId]);
+
   /** The ranked review queue: generated tasks that are neither duplicates nor pushovers. */
   const { data: review } = useQuery<{ data: { games: ReviewEntry[]; totals: ReviewTotals } }>({
     queryKey: ['/api/arc3-mirror/review-queue'],
@@ -450,10 +482,22 @@ export default function CommunityGamePlay() {
   }, [pyodide, frame, applyFrame]);
 
   // ── The board as a click target ─────────────────────────────────────────────
-  /** Whether a click on the board means anything right now. Games that do not offer
-   *  ACTION6 leave the board inert, and it must LOOK inert -- no crosshair, no hover
-   *  cell -- or it invites a move the dispatcher will refuse. */
-  const boardClickable = gameState === 'playing' && canSend('ACTION6');
+  /**
+   * Whether a click on the board means anything right now, and therefore whether the board
+   * gets a crosshair and a hover cell at all. Three conditions, and the third is the one
+   * that took two passes to get right:
+   *
+   *   - the run is live;
+   *   - the frame offers ACTION6, so the dispatcher will not refuse it;
+   *   - and the GAME ACTUALLY READS THE COORDINATES. `readsClicks === false` means we
+   *     checked the source and it does not. Offering a crosshair there is a lie: the click
+   *     is accepted, a step is spent, and nothing happens, which from the player's side is
+   *     indistinguishable from having clicked the wrong cell.
+   *
+   * `null` is not `false`. An unknown task keeps the frame's word.
+   */
+  const boardClickable =
+    gameState === 'playing' && canSend('ACTION6') && readsClicks !== false;
 
   /**
    * Pointer position -> frame cell.

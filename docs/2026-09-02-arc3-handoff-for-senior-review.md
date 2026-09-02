@@ -131,6 +131,18 @@ pending this, and is flagged in three places so it is not tidied away. **Is ther
 framing here we are missing — is the right fix at the UI layer at all, or does this belong
 in the game-authoring contract?**
 
+### 2. A crosshair that lied, on 26 of 50 tasks — FIXED, but the shape of the fix is worth a look
+
+**Resolved 02-Sep.** This was raised here as an open question and should not have been: it
+was a live bug on more than half the set, not a trade-off. `/api/arc3-mirror/click-targets`
+now serves one derived bit per game -- does its ACTION6 handler read `data.x`/`data.y` --
+and the board offers a crosshair only when the answer is yes. Unknown games (upstream, not
+in our digest) keep the frame's word rather than being made inert.
+
+The original framing is left below because the reasoning in it is the thing to check.
+
+---
+
 ### 2. A crosshair that lies, on 26 of 50 tasks
 
 Those games advertise ACTION6 and read nothing. The board shows a crosshair, accepts the
