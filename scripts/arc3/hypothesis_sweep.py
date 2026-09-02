@@ -74,16 +74,54 @@ CANDIDATE_PORTS = (9099, 1234)
 # A request can legitimately take ten minutes on a partially offloaded 27B model.
 REQUEST_TIMEOUT_S = 1800
 
-# Rough per-run wall time, used only by --dry-run to size a night. Measured on the Katana at
-# 512px: 292s with thinking off (875 tokens to natural stop), ~550s with thinking on at a
-# 3000-token ceiling. Wrong on other hardware; it estimates a budget, it does not enforce one.
-EST_SECONDS = {"off": 300, "on": 550}
+# Reasoning effort is the ONLY lever that reaches the chat template over HTTP on this server,
+# and what it does is not what the name suggests. Probed directly on the Katana against
+# qwen3.8-27b, 01-Sep-2026, with a fixed 64-token prompt; only prompt_tokens moved, which means
+# the effect is entirely a rewrite of the rendered prompt:
+#
+#   effort sent        prompt_tokens   what the template did
+#   (nothing) / xhigh       64         injects "think carefully, validate assumptions, ..."
+#   high                    64         normalised to xhigh
+#   low / minimal           52         injects "keep your thinking brief and focused ..."
+#   medium                  26         injects NOTHING - the neutral case
+#   none                    28         enable_thinking=false; empty <think></think>, no reasoning
+#
+# So "effort" on this model is a sentence added to the system prompt, not a decode-time budget,
+# and `low` is an instruction to be brief that would ride along in every cell using it. MEDIUM
+# is the honest "thinking on" setting because it adds no text at all. This matters: a comparison
+# of low against none confounds a thinking switch with a prompt edit.
+#
+# `chat_template_kwargs` - top level, nested, either key - is accepted and ignored (still 64).
+NEUTRAL_EFFORT = "medium"
+EFFORT_CHOICES = ("none", "low", "medium", "xhigh")
+
+# Rough per-run wall time, used only by --dry-run to size a night. Wrong on other hardware; it
+# estimates a budget, it does not enforce one.
+# Measured on the Katana at 512px: none 119-215s (n=3), medium 203s (n=1, 600 reasoning
+# tokens, finishing naturally well under the ceiling). Reasoning turned
+# out far cheaper than the 3500-token ceiling allows for, so these sit deliberately above
+# what was observed - a plan that finishes early is better than one that overruns a night.
+EST_SECONDS = {"none": 240, "low": 320, "medium": 320, "xhigh": 480}
+
+# Named nights. Both are resumable and replicate-major, so either can be stopped at any point
+# and what exists is balanced across cells rather than lopsided.
+PLANS = {
+    # Settles the question that started this: is the difference between a coherent answer and
+    # word salad about thinking, about temperature, or about neither? One game, held constant.
+    "confound": {"games": ["queued:1"], "efforts": ["none", NEUTRAL_EFFORT],
+                 "temps": [0.7, 1.0], "n": 8},
+    # The Boss's actual interest: the same treatment across many games, to see the range of
+    # readings rather than the variance on one board. Thinking off, because it is 2.5x cheaper
+    # per sample and breadth is what this plan buys.
+    "breadth": {"games": ["queued:8"], "efforts": ["none"], "temps": [1.0], "n": 4},
+}
 
 # Catches a server-side system prompt being injected behind our back. The earlier sampler work
 # lost real time to LM Studio silently inserting 1789 tokens when the system role was omitted.
-# Measured on the Katana, 512px frame, qwen3.8-27b: 641 tokens (thinking off) / 665 (on) with
-# the v2_five prompt, and 333 / 369 with the much shorter v1_original. The ceiling sits above
-# both and still catches an injection of that size by a wide margin.
+# Measured on the Katana, 512px frame, qwen3.8-27b, v2_five prompt: 347 (none), 345 (medium),
+# 383 (effort unset, where the template injects its xhigh instruction). The ceiling sits well
+# above all three and still catches an injection of that size by a wide margin. It scales with
+# the prompt and the image, so re-run --calibrate after changing either.
 # Raise this ONLY after measuring with --calibrate. Never raise it to silence an abort: the
 # abort is the entire point.
 DEFAULT_MAX_PROMPT_TOKENS = 1000
@@ -236,11 +274,17 @@ def build_body(model_id: str, prompts: dict, image: str, cell: dict, max_tokens:
     * The system role is ALWAYS sent, even when its content is empty. Omitting the role lets
       LM Studio substitute its own configured prompt, which is invisible in every field except
       the token count.
-    * Thinking is pinned via `reasoning_effort`, which is the only field that actually controls
-      it over HTTP on this server. Tested 01-Sep-2026: `chat_template_kwargs.enable_thinking`,
-      a top-level `enable_thinking`, `reasoning: {...}` and a `/no_think` suffix are ALL
-      silently ignored, and the model thinks anyway. A sweep that sets thinking any of those
-      ways is confounded in every cell and will not say so.
+    * `reasoning_effort` is ALWAYS sent explicitly, never omitted. It is the only field that
+      reaches the chat template over HTTP here - `chat_template_kwargs`, a top-level
+      `enable_thinking`, a `reasoning` object and a `/no_think` suffix are all accepted and
+      ignored (tested 01-Sep-2026; see the table at the top of this file). Omitting it does not
+      mean "default", it means the template's own default of `xhigh`, which silently injects a
+      think-carefully instruction into the system prompt. There is a known LM Studio bug where
+      a GUI Custom Field overrides the API value (lmstudio-ai/lmstudio-bug-tracker#988, v0.3.25).
+      It does NOT apply to this build - probed by sending no field and getting the template
+      default rather than the GUI's configured `low` - but the preflight re-checks it per
+      machine rather than trusting that, because it is exactly the kind of invisible
+      server-side state that silently confounds a whole night.
     """
     body = {
         "model": model_id,
@@ -258,7 +302,7 @@ def build_body(model_id: str, prompts: dict, image: str, cell: dict, max_tokens:
         "top_p": cell["top_p"],
         "max_tokens": max_tokens,
         "stream": False,
-        "reasoning_effort": "none" if cell["thinking"] == "off" else cell["reasoning_effort"],
+        "reasoning_effort": cell["reasoning_effort"],
     }
     extra = {
         "top_k": cell["top_k"],
@@ -295,13 +339,13 @@ def cell_key(game_id: str, cell: dict, replicate: int) -> str:
         f"{game_id}|{cell['prompt_variant']}|{cell['stimulus_form']}|{cell['image_px']}|"
         f"t{cell['temperature']}|k{cell['top_k']}|p{cell['top_p']}|m{cell['min_p']}|"
         f"rp{cell['repeat_penalty']}|pp{cell['presence_penalty']}|"
-        f"think{cell['thinking']}|r{replicate}"
+        f"effort{cell['reasoning_effort']}|r{replicate}"
     )
 
 
 def build_cells(args) -> list[dict]:
     cells = []
-    for thinking in args.thinking:
+    for effort in args.efforts:
         for temperature in args.temps:
             for top_k in args.top_ks:
                 cells.append(
@@ -315,8 +359,10 @@ def build_cells(args) -> list[dict]:
                         "min_p": args.min_p,
                         "repeat_penalty": args.repeat_penalty,
                         "presence_penalty": args.presence_penalty,
-                        "thinking": thinking,
-                        "reasoning_effort": args.reasoning_effort,
+                        "reasoning_effort": effort,
+                        # Derived, and recorded so a row states plainly whether reasoning was
+                        # expected. `none` is the only setting that turns it off.
+                        "thinking": "off" if effort == "none" else "on",
                     }
                 )
     return cells
@@ -350,19 +396,26 @@ def parse_args(argv=None):
         description="Sample a local vision model's hypotheses about ARC-AGI-3 game frames.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--games", nargs="+", default=["queued:1"],
+    parser.add_argument("--plan", choices=sorted(PLANS), default=None,
+                        help="A named night: 'confound' (one game, thinking and temperature "
+                             "crossed) or 'breadth' (eight games, one cell). Sets --games, "
+                             "--efforts, --temps and --n; anything given explicitly still wins.")
+    parser.add_argument("--games", nargs="+", default=None,
                         help="Game ids, or 'queued:N' for the top N by triage rank.")
-    parser.add_argument("--n", type=int, default=8,
+    parser.add_argument("--n", type=int, default=None,
                         help="Replicates per cell. The point of the exercise; do not set 1.")
-    parser.add_argument("--temps", nargs="+", type=float, default=[0.7, 1.0])
+    parser.add_argument("--temps", nargs="+", type=float, default=None)
+    parser.add_argument("--efforts", nargs="+", default=None, choices=EFFORT_CHOICES,
+                        help="Reasoning effort per cell. 'none' is thinking off; 'medium' is "
+                             "thinking on with NO instruction added to the prompt, and is the "
+                             "honest comparison against 'none'. 'low' and 'xhigh' each inject a "
+                             "sentence telling the model how hard to think, which is a prompt "
+                             "edit riding along inside what looks like a sampler setting.")
     parser.add_argument("--top-ks", nargs="+", type=int, default=[500])
     parser.add_argument("--top-p", type=float, default=1.0)
     parser.add_argument("--min-p", type=float, default=0.0, help="0 disables the floor.")
     parser.add_argument("--repeat-penalty", type=float, default=1.0, help="1.0 is neutral.")
     parser.add_argument("--presence-penalty", type=float, default=0.0)
-    parser.add_argument("--thinking", nargs="+", default=["off", "on"], choices=["off", "on"])
-    parser.add_argument("--reasoning-effort", default="low",
-                        help="Effort sent when thinking is on. Ignored when it is off.")
     parser.add_argument("--prompt-variant", default=hypothesis_prompts.DEFAULT_VARIANT,
                         choices=sorted(hypothesis_prompts.PROMPTS))
     parser.add_argument("--image-px", type=int, default=512)
@@ -379,9 +432,21 @@ def parse_args(argv=None):
     parser.add_argument("--dry-run", action="store_true",
                         help="Print the grid and a time estimate; call nothing.")
     parser.add_argument("--calibrate", action="store_true",
-                        help="One 1-token request per thinking mode; report prompt_tokens and "
-                             "whether reasoning is actually off. Run this on a new machine.")
-    return parser.parse_args(argv)
+                        help="One 1-token request per effort level; report prompt_tokens and "
+                             "whether reasoning actually followed. Run this on a new machine.")
+    args = parser.parse_args(argv)
+
+    # A plan fills in only what was not asked for explicitly, so `--plan breadth --n 8` means
+    # what it looks like it means.
+    plan = PLANS[args.plan] if args.plan else {}
+    for field in ("games", "efforts", "temps", "n"):
+        if getattr(args, field) is None:
+            setattr(args, field, plan.get(field))
+    args.games = args.games or ["queued:1"]
+    args.efforts = args.efforts or ["none", NEUTRAL_EFFORT]
+    args.temps = args.temps or [0.7, 1.0]
+    args.n = args.n if args.n is not None else 8
+    return args
 
 
 def resolve_games(spec: list[str]) -> list[str]:
@@ -407,12 +472,12 @@ def main(argv=None) -> int:
     total = len(games) * len(cells) * args.n
     print(f"games {len(games)}  cells {len(cells)}  n {args.n}  ->  {total} runs")
     for cell in cells:
-        est = EST_SECONDS[cell["thinking"]] * len(games) * args.n
+        est = EST_SECONDS[cell["reasoning_effort"]] * len(games) * args.n
         print(
-            f"  think={cell['thinking']:3s} temp={cell['temperature']:<4} "
+            f"  effort={cell['reasoning_effort']:<6} temp={cell['temperature']:<4} "
             f"top_k={cell['top_k']:<4} ~{est / 3600:.1f}h"
         )
-    grand = sum(EST_SECONDS[c["thinking"]] for c in cells) * len(games) * args.n
+    grand = sum(EST_SECONDS[c["reasoning_effort"]] for c in cells) * len(games) * args.n
     print(f"  estimated total ~{grand / 3600:.1f}h (Katana rates; re-measure elsewhere)")
     print(f"  results -> {results_path}")
 
@@ -466,7 +531,7 @@ def main(argv=None) -> int:
         for cell in cells
     ]
 
-    baseline_prompt_tokens: int | None = None
+    baseline_prompt_tokens: dict[tuple[str, str], int] = {}
     completed = skipped = failed = 0
     started_at = time.time()
 
@@ -480,7 +545,7 @@ def main(argv=None) -> int:
             max_tokens = args.max_tokens or (1500 if cell["thinking"] == "off" else 3500)
             body = build_body(model_id, prompts, images[game], cell, max_tokens)
             label = (
-                f"[{index}/{len(schedule)}] {game} think={cell['thinking']} "
+                f"[{index}/{len(schedule)}] {game} effort={cell['reasoning_effort']} "
                 f"t={cell['temperature']} k={cell['top_k']} r{replicate}"
             )
             print(label, end=" ", flush=True)
@@ -541,25 +606,39 @@ def main(argv=None) -> int:
             sink.flush()
             completed += 1
 
-            # Guards. Both abort rather than warn: a confounded batch is worse than a short one.
+            # Guards. All of these abort rather than warn: a confounded batch is worse than a
+            # short one, and every failure they catch is silent by nature.
             if prompt_tokens > args.max_prompt_tokens:
                 raise SystemExit(
                     f"\nABORT: prompt_tokens={prompt_tokens} exceeds "
                     f"{args.max_prompt_tokens}. This usually means the server injected a system "
                     "prompt of its own. Investigate before raising the ceiling."
                 )
-            if baseline_prompt_tokens is None:
-                baseline_prompt_tokens = prompt_tokens
-            elif abs(prompt_tokens - baseline_prompt_tokens) > 50:
+            # Baselined PER EFFORT, because effort legitimately changes the rendered prompt -
+            # that is how it works here, and a single global baseline would fire on the very
+            # thing it is meant to let through.
+            seen = baseline_prompt_tokens.setdefault((game, cell["reasoning_effort"]), prompt_tokens)
+            if abs(prompt_tokens - seen) > 20:
                 raise SystemExit(
-                    f"\nABORT: prompt_tokens drifted {baseline_prompt_tokens} -> {prompt_tokens} "
-                    "mid-batch. The stimulus or the server-side prompt changed under the run."
+                    f"\nABORT: prompt_tokens for {game}/effort={cell['reasoning_effort']} "
+                    f"drifted {seen} -> {prompt_tokens} mid-batch. The stimulus or the "
+                    "server-side prompt changed under the run."
                 )
+            # Two-way. Thinking silently ON when asked off, and silently OFF when asked on, are
+            # both total confounds, and the second is the one a naive check misses - it looks
+            # like a fast, well-behaved run.
             if cell["thinking"] == "off" and reasoning.strip():
                 raise SystemExit(
-                    "\nABORT: thinking was requested off but reasoning_content came back "
-                    f"non-empty ({len(reasoning)} chars). `reasoning_effort` is not taking "
-                    "effect on this server, so every cell would be confounded."
+                    "\nABORT: effort=none was requested but reasoning_content came back "
+                    f"non-empty ({len(reasoning)} chars). `reasoning_effort` is not reaching "
+                    "the template on this server, so every cell would be confounded."
+                )
+            if cell["thinking"] == "on" and not reasoning.strip():
+                raise SystemExit(
+                    f"\nABORT: effort={cell['reasoning_effort']} was requested but no reasoning "
+                    "came back. Thinking is off when it should be on - most likely a GUI Custom "
+                    "Field overriding the API (lmstudio-bug-tracker#988). Check Inference > "
+                    "Custom Fields > Reasoning Effort in the app."
                 )
 
             flag = ""
@@ -591,29 +670,65 @@ def calibrate(base_url, model_id, prompts, args, image, cells) -> int:
     """
     print("\ncalibrating...")
     ok = True
-    for thinking in sorted({c["thinking"] for c in cells}):
-        cell = dict(cells[0], thinking=thinking)
+    efforts = sorted({c["reasoning_effort"] for c in cells})
+    # An unsent effort field renders the template's own default. If the API value were being
+    # overridden by a GUI Custom Field (lmstudio-bug-tracker#988), every row below would show
+    # the same prompt_tokens as this one no matter what was asked for.
+    probes = [("(unset)", None)] + [(e, e) for e in efforts]
+    seen: dict[str, int] = {}
+    for label, effort in probes:
+        cell = dict(cells[0])
+        if effort is not None:
+            cell["reasoning_effort"] = effort
+            cell["thinking"] = "off" if effort == "none" else "on"
         body = build_body(model_id, prompts, image, cell, max_tokens=1)
+        if effort is None:
+            body.pop("reasoning_effort", None)
         payload, elapsed_ms = call_model(base_url, body)
         usage = payload.get("usage", {})
         message = payload["choices"][0]["message"]
         prompt_tokens = usage.get("prompt_tokens", 0)
         reasoning = message.get("reasoning_content") or ""
+        seen[label] = prompt_tokens
+
         verdict = "ok"
         if prompt_tokens > args.max_prompt_tokens:
             verdict, ok = "PROMPT TOO LARGE - injection?", False
-        elif thinking == "off" and reasoning.strip():
-            verdict, ok = "THINKING NOT DISABLED - reasoning_effort ignored", False
-        elif thinking == "on" and not reasoning.strip():
-            verdict = "no reasoning emitted; check reasoning_effort value"
+        elif effort == "none" and reasoning.strip():
+            verdict, ok = "THINKING NOT DISABLED - effort ignored", False
+        elif effort not in (None, "none") and not reasoning.strip():
+            verdict, ok = "NO REASONING - thinking is off when it should be on", False
         print(
-            f"  think={thinking:3s} {elapsed_ms / 1000:5.1f}s prompt_tokens={prompt_tokens:4d} "
+            f"  effort={label:<8} {elapsed_ms / 1000:5.1f}s prompt_tokens={prompt_tokens:4d} "
             f"reasoning={len(reasoning):3d} chars  -> {verdict}"
         )
+
+    # The decisive check. Effort is implemented on this model as text injected into the system
+    # prompt, so a real effort change MUST move prompt_tokens. If every level renders the same
+    # prompt, the API parameter is being ignored and the grid's main axis would be inert.
+    distinct = len(set(seen[e] for e in efforts))
+    if len(efforts) > 1 and distinct == 1:
+        ok = False
+        print(
+            f"\n  FAIL: every effort level rendered the same prompt ({seen[efforts[0]]} tokens).\n"
+            "  The API parameter is not reaching the chat template, so the thinking axis of\n"
+            "  this experiment would vary nothing. Check Inference > Custom Fields >\n"
+            "  Reasoning Effort in the LM Studio app - a value set there overrides the API."
+        )
+    elif len(efforts) > 1:
+        print(f"\n  effort lever confirmed: {distinct} distinct prompt renderings across "
+              f"{len(efforts)} levels")
+    if seen.get("(unset)") is not None and "low" not in efforts:
+        print("  note: '(unset)' shows the template default, for comparison only.")
+
     print(
-        "\nExpected on the Katana at 512px: 333 (off) / 369 (on).\n"
-        "A different model or image size legitimately differs; hundreds more than expected "
-        "does not."
+        "\nReference, Katana / qwen3.8-27b / 512px frame / v2_five prompt: 347 (none), 345 "
+        "(medium), 383 unset.\nnone and medium sit close together because neither injects "
+        "instruction text - the gap is the empty think block. The unset value is larger "
+        "because the template's xhigh default DOES inject some, which is the clearest sign "
+        "the parameter is being honoured.\nAnother model or image size legitimately differs. "
+        "Hundreds more than expected does not - that is an injected prompt.\n"
+        f"{'PASS' if ok else 'FAIL - do not start a batch until this passes'}"
     )
     return 0 if ok else 1
 

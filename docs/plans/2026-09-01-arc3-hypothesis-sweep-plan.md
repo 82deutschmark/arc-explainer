@@ -88,21 +88,37 @@ Three things follow, and they dominate every other design choice:
 **1. The port is not 1234.** LM Studio answered on **9099**. Every doc and default in
 `G0DM0D3-research` says 1234, and 1234 was closed. Discover it, do not hardcode it.
 
-**2. Only `reasoning_effort` turns thinking off over HTTP.** This was tested directly, nine ways:
+**2. `reasoning_effort` is the only lever, and it is a prompt edit wearing a sampler's name.**
 
-| Request field | Effect |
-|---|---|
-| `reasoning_effort: "none"` | **Works.** `reasoning_content` empty, `content` populated, prompt drops to 28 tokens |
-| Assistant prefill of an empty `<think></think>` block | Works, but is a hack; prefer the above |
-| `chat_template_kwargs: {enable_thinking: false}` | **Silently ignored** — model still thinks |
-| `enable_thinking: false` (top level) | Silently ignored |
-| `reasoning: {effort: "none"}` / `{enabled: false}` | Silently ignored |
-| `reasoning_effort: "low"` | Model still thinks |
-| `/no_think` in the user turn | Ignored; model still thinks |
+Probed directly against `qwen3.8-27b` with a fixed 64-token text prompt, so that the only thing
+that could move `prompt_tokens` is the template rendering:
 
-The GUI toggle and the HTTP API do **not** share a mechanism. A sweep that sets thinking the GUI
-way will have thinking silently on in every cell, and the whole experiment will be confounded.
-**Pin it explicitly and assert on `reasoning_content` in the first live run.**
+| Sent | prompt_tokens | What the template actually did |
+|---|---|---|
+| nothing, or `xhigh`, or `high` | 64 | injects *"Reasoning effort is set to xhigh. Please think carefully, validate key assumptions…"* |
+| `low` or `minimal` | 52 | injects *"…keep your thinking brief and focused, moving directly to the conclusion…"* |
+| `medium` | 26 | **injects nothing.** The neutral case |
+| `none` | 28 | `enable_thinking=false`; empty `<think></think>`, no reasoning emitted |
+| `chat_template_kwargs`, top level or nested | 64 | **accepted and ignored** |
+| `enable_thinking`, `reasoning:{…}`, `/no_think` | 64 | accepted and ignored |
+
+Two consequences, and the second is the one that would have quietly spoiled the results:
+
+- The GUI toggle and the HTTP API do not share a mechanism. Set thinking the GUI way and it is
+  silently on in every cell.
+- **"Effort" here is a sentence added to your system prompt, not a decode-time budget.** So
+  comparing `low` against `none` crosses a thinking switch with a prompt edit and cannot
+  separate them. **`medium` is the honest "thinking on" setting**, because it is the only level
+  that adds no text. The harness defaults to `none` vs `medium` for exactly this reason; an
+  earlier draft defaulted to `low` and would have shipped the confound.
+
+There is a live LM Studio bug where a GUI Custom Field overrides the API value
+([lmstudio-ai/lmstudio-bug-tracker#988](https://github.com/lmstudio-ai/lmstudio-bug-tracker/issues/988),
+reported against 0.3.25). **It does not apply to this build** — sending no field renders the
+template's `xhigh` default rather than the GUI's configured `low`, which it would not if the GUI
+were winning. `--calibrate` re-checks this per machine anyway, by confirming that different
+effort levels produce different prompt renderings. If they all render identically, the main axis
+of the experiment is inert and the run aborts before wasting a night.
 
 **3. An omitted system role invites an injected prompt.** In the earlier sampler work, omitting the
 system message let LM Studio insert 1789 tokens of its own configured prompt — invisible in every
@@ -142,16 +158,26 @@ The console capture, if wanted, comes from the running site at `/arc3/play/<id>`
 colour is now randomised per game (changelog 9.13.0), which is an uncontrolled variable in any such
 capture and should be recorded or pinned.
 
-## Experiment 1 — the one worth the first night
+## Tonight — two named plans, one per machine
 
-Settle the confound that started this. Everything else is speculation until this is done.
+Both are `--plan` presets in the runner, both resumable, both replicate-major, so either can be
+killed at any moment and what exists is balanced across cells rather than lopsided.
 
-- **Fixed:** one game (`ta6acc86e`, triage rank 5, 8 levels, survives random play), bare 512px frame,
-  the system prompt quoted above, `top_k` 500, `top_p` 1.0, `min_p` 0, penalties off.
-- **Varied:** thinking `{on, off}` × temperature `{0.7, 1.0}`. Four cells.
-- **n = 8 per cell**, 32 runs.
-- **Cost:** roughly 2.5 h for the two thinking-off cells, 4 h for the two thinking-on cells at a
-  3000-token ceiling. Fits one night with room to spare.
+**`--plan confound`** — settles what started this. One game held constant, effort `{none,
+medium}` × temperature `{0.7, 1.0}`, n=8. 32 runs, ~3.4 h on the Katana. Answers: is the
+difference between a good answer and word salad about thinking, about temperature, or about
+neither? Given that the same cell produced both outcomes by hand, "neither" is a live
+possibility and would itself be the finding.
+
+**`--plan breadth`** — the Boss's actual interest. Eight games, effort `none`, temperature 1.0,
+n=4. 32 runs, ~2 h. Answers: across different boards, what range of readings does the model
+reach for? Thinking off because it is roughly 2.5× cheaper per sample and breadth is the point.
+
+Run one on each box. They write to `hypotheses_<hostname>.jsonl`, so the two files pool into a
+single report without collision and split back apart by cell.
+
+**Fixed in both:** bare 512px frame, the `v2_five` prompt, `top_k` 500, `top_p` 1.0, `min_p` 0,
+penalties off.
 
 **Dependent variables** — score every output on all four, they are not the same thing:
 
