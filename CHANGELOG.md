@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.26.0  Sep 2, 2026
+
+- **A handoff document for the next senior engineer on the play surface** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: a written brief for whoever picks this up next, covering what the recent work on the ARC-AGI-3 play page was actually about and what we would like a second opinion on.
+  - **It names the pattern rather than listing the bugs.** Six of the seven faults logged in `CommunityGamePlay.tsx` are one mistake wearing different clothes: reasoning about the whole task set from a single task. The canvas being made inert to protect one commit-style task, which then broke the seven tasks where the click is real, is the same error as the fix that preceded it -- applied in the opposite direction.
+  - **And it names the correction**: derive the fact across all fifty sources instead of inferring it from one. Doing that immediately produced three things no amount of playing would have surfaced, and each changed a decision.
+  - **Four open questions are put to the reader rather than quietly settled**: the ACTION6 overload that has now cost us a regression in both directions; the crosshair that lies on 26 of 50 tasks; whether an unlisted public answer key needs real gating; and the fact that wrong *mechanic* prose is not mechanically checkable while wrong *controls* is.
+  - **Written to be read cold** -- it states the constraint the surface exists to protect (the value is in the blindness, and the risk is invalidating the measurement rather than spoiling the fun), points at authoritative files instead of restating them, and ends with the three things to read, in order.
+  - **Files**: `docs/2026-09-02-arc3-handoff-for-senior-review.md`.
+
 ### Version 9.25.0  Sep 2, 2026
 
 - **A spoiler guide for the 50 synthetic tasks, and a reveal when you finish giving feedback** (Author: Mark Barney / Claude Opus 5)
