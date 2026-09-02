@@ -7,6 +7,34 @@
 # reference the old numbers.
 
 
+### Version 9.15.0  Sep 1, 2026
+
+- **The sweep's calibration gate was blind to the thing it gated on** (Author: Claude Opus 5)
+  - **In plain language**: `--calibrate` refuses to start a batch if the thinking lever is not
+    connected, because the whole `confound` plan varies that lever. It probed with a one-token
+    budget. A model given one token has no room to open a think block, so it always came back
+    with no reasoning, and the check was reading the budget rather than the lever. On the Mac Mini
+    it failed a lever that a real generation proves is working, and refused a valid night.
+  - **Why the Katana never saw it**: that build reports `reasoning_content` even at one token, so
+    the check passed there by luck. On the Mini every level measured empty — `none`, `low`,
+    `medium`, `high`, `xhigh` alike.
+  - **The fix**: probes run at 48 tokens. At that budget `none` alone returns no reasoning and
+    every other level returns ~200 characters, which is the distinction the gate exists to draw.
+    The companion "THINKING NOT DISABLED" check was equally vacuous — nothing could ever be
+    non-empty — and now works too. `prompt_tokens` does not move with the larger budget, so the
+    injection ceiling and the anti-#988 prompt-rendering check are untouched. Costs seconds, once.
+  - **Measured on the Mini, and it confirms the plan's main design choice from a second machine**:
+    `none` renders 92 prompt tokens, `medium` 90, and unset/`minimal`/`low`/`high`/`xhigh` all
+    render 116. `medium` is the only thinking-on level that injects no instruction text, which is
+    exactly why the plan picked it as the honest comparison against `none`.
+  - **First night's results are recorded** in `docs/2026-09-01-arc3-sweep-mini-results.md`: both
+    plans ran on the Mini, 60 rows, every run a natural stop, no truncation, no empty content, and
+    zero collapses — the failure mode that started the experiment did not reproduce. Concurrency,
+    left open by the plan and the runbook, was measured on the idle box at **1.76x** against the
+    Katana's 1.18x; a future night here should run parallel.
+  - **Files**: modified `scripts/arc3/hypothesis_sweep.py`, `CHANGELOG.md`. Added
+    `docs/2026-09-01-arc3-sweep-mini-results.md`.
+
 ### Version 9.14.0  Sep 1, 2026
 
 - **A harness for asking a local model what it thinks our games are** (Author: Mark Barney / Claude Opus 5)
