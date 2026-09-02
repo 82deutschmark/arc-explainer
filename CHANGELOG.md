@@ -23,6 +23,18 @@
   - **A side effect worth having**: `frames.json` records how many colours each opening frame uses and what share of the board is not the background. Descriptive only, nothing gates on it, and it is crude -- a surrounding border counts as ink -- but `t74db26e1` opens on 1.2% of the board in three colours, and that is a prompt to go and look.
   - **Files**: `scripts/arc3/render_authored_frames.py`, `server/data/arc3-games/frames/*.png`, `server/data/arc3-games/frames.json`, `server/routes/arc3Mirror.ts`, `client/src/pages/arc3-community/Arc3MechanicGuide.tsx`.
 
+### Version 9.29.0  Sep 2, 2026
+
+- **Wayfinding audit: the front door had no handle, and the gallery led with the worst work** (Author: Mark Barney / Claude Opus 5)
+  - **The landing page was unreachable.** `arc3.markbarney.net/` renders the synthetic programme's landing page and NOTHING in the chrome linked to it. The brand mark -- the one control every site uses for "take me home" -- pointed at `/arc3/gallery`, which is also where the nav's **Browse** goes. Two of the most prominent controls on the site did the same thing, and the best page could only be reached by typing the URL. The mark now points at `/`.
+  - **The gallery opened on the slop.** Section order led with `ai-generated`, the 571-task generator dump. Worse, `arena` was not in the section list at all, so the 50 hand-authored tasks -- the only ones built level by level, six to eight levels each, reviewed one at a time -- fell through to the unknown-category tail and rendered **last, under a raw slug heading**. The best work on the site was below the slop and unlabelled. Now: Hand-authored, in-house, community catalog, official, generator dump last.
+  - **The review queue was already correct** and is recorded as such so nobody "fixes" it: `/play` sorts by generation descending and all 36 queued hand-authored tasks occupy the first 36 positions. Reading `arc3Triage.json` in file order suggests otherwise, which is a trap rather than a bug.
+  - **ARC-Interactive is credited in the chrome, not a footnote.** 252 of the gallery's tasks are [theredbluepill/arc-interactive](https://github.com/theredbluepill/arc-interactive) under MIT. The per-task links and licence notice existed, but a credit you only see after scrolling to one section of one page is not what a quarter of the catalog has earned. It is now the first external link on every page.
+  - **Four pages had no door**: `/`, `/arc3/hypotheses` (shipped the same day, linked from nowhere), `/arc3/playground`, `/arc3/archive/games`. "About ARC-3" was a lone link and is now an **ARC-3** dropdown with Reference and Research groups. `/arc3/mechanics` stays out on purpose -- it is the unlisted spoiler guide.
+  - **Same pattern as the control bugs**: a per-page decision that is wrong when you look at the set. No single page's nav is wrong; it is only from above that the brand duplicates Browse, the best games render last, and the biggest contributor is a footnote.
+  - **Checked in the running app**: the brand mark resolves to `/`; the gallery opens on "Hand-authored 50"; the landing page renders with the header and the mark returns to it; ARC-Interactive appears in the chrome.
+  - **Files**: `client/src/components/layout/AppHeader.tsx`, `client/src/components/layout/AppNavigation.tsx`, `client/src/pages/arc3-community/CommunityGallery.tsx`, `docs/2026-09-02-nav-and-ordering-audit.md`.
+
 ### Version 9.28.0  Sep 2, 2026
 
 - **A remediation plan for `/arc3/mechanics`, which is incomplete and reads as self-report** (Author: Mark Barney / Claude Opus 5)
