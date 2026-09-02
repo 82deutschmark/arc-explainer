@@ -189,4 +189,37 @@ router.get(
   }),
 );
 
+/**
+ * GET /api/arc3-mirror/click-targets - which tasks actually read a click's coordinates.
+ *
+ * NOT the answer key. One bit per game, derived from source by
+ * scripts/arc3/mechanic_digest.py: does a function that handles ACTION6 read data.x/data.y.
+ *
+ * The play surface needs this because `available_actions` lies. Only 18 of our 50 games
+ * declare it; the rest inherit arcengine's [1,2,3,4,5,6] default (base_game.py:54), so 26
+ * of them ADVERTISE ACTION6 and read nothing from it. Trusting the frame meant showing a
+ * crosshair, accepting the click, spending a step and doing nothing on half the set --
+ * indistinguishable, from the player's chair, from having clicked the wrong cell.
+ *
+ * `known` is sent separately from `clickTargets` so the client can tell "this game does
+ * not take clicks" from "this game is not ours and we cannot say". Upstream tasks are not
+ * in the digest and must keep the old behaviour rather than being silently made inert.
+ */
+let clickTargetsCache: { known: string[]; clickTargets: string[] } | null = null;
+router.get(
+  '/click-targets',
+  asyncHandler(async (_req: Request, res: Response) => {
+    if (clickTargetsCache === null) {
+      const raw = await readFile(path.join(AUTHORED_DIR, 'mechanics.json'), 'utf-8');
+      const games = JSON.parse(raw) as { gameId: string; action6: string | null }[];
+      clickTargetsCache = {
+        known: games.map((g) => g.gameId),
+        clickTargets: games.filter((g) => g.action6 === 'xy-click').map((g) => g.gameId),
+      };
+    }
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json(formatResponse.success(clickTargetsCache));
+  }),
+);
+
 export default router;

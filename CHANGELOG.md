@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.27.0  Sep 2, 2026
+
+- **The crosshair was lying on 26 of the 50 tasks. Fixed.** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: on more than half the set the board showed a crosshair, took your click, spent a move and did nothing. From the player's chair that is identical to having clicked the wrong cell, which is the same complaint that started this whole piece of work.
+  - **Why it happened**: the board's crosshair was gated on `available_actions`, and `available_actions` cannot be trusted for this. Only 18 of the 50 games declare it; the other 32 inherit arcengine's `[1,2,3,4,5,6]` default (`base_game.py:54`), so they advertise ACTION6 without ever reading a coordinate from it.
+  - **The fix**: `GET /api/arc3-mirror/click-targets` serves one bit per game -- does a function handling ACTION6 read `data.x`/`data.y` -- derived from source by `scripts/arc3/mechanic_digest.py`. The board only offers a crosshair, a hover cell and a click when the game will actually read it.
+  - **`null` is not `false`.** Upstream tasks are not in our digest, so an unknown game keeps the frame's own word rather than being silently made inert. A false negative would break the click games all over again, which is the more expensive mistake of the two.
+  - **Checked in the running app**: on `t00810611`, which advertises ACTION6 and reads nothing, there is no crosshair, no hover outline, and a click does not advance the step counter. On `t99e8274e` the crosshair is there and a click still fills the cell.
+  - **Files**: `server/routes/arc3Mirror.ts`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
+
 ### Version 9.26.0  Sep 2, 2026
 
 - **A handoff document for the next senior engineer on the play surface** (Author: Mark Barney / Claude Opus 5)
