@@ -1,6 +1,7 @@
 [submodule "SnakeBench"]
 	path = external/SnakeBench
 	url = https://github.com/VoynichLabs/SnakeBench
+	ignore = dirty
 [submodule "external/re-arc"]
 	path = external/re-arc
 	url = https://github.com/conundrumer/re-arc
@@ -11,3 +12,4 @@
 	path = external/ARCEngine
 	url = https://github.com/82deutschmark/ARCEngine
 	branch = main
+	ignore = dirty
