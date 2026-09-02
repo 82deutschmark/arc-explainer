@@ -7,6 +7,16 @@
 # reference the old numbers.
 
 
+### Version 9.15.0  Sep 2, 2026
+
+- **Polished tasks now actually reach the play surface** (Author: Claude Opus 5 / Bubba sub-agent)
+  - **In plain language**: the 50 first-party tasks in `server/data/arc3-games/` are authored and polished in a private repository. Polishing them there changed nothing here — the two are joined by a publish step, and until someone ran it this repo kept serving the build it last imported. Two tasks had been polished upstream and the site was still serving their previous builds. Both are re-imported here: `t643da6ee` and `t715ea045`.
+  - **No id churned, which is the whole point.** A published id is a pure function of its upstream id, so an updated task is rewritten under the id it already had. All 50 rows in `arc3Triage.json` are keyed by those ids, as are the feedback rows and the human-play telemetry — an id change would type-check, sort, render, and address nothing. Verified after the import: the 50 manifest ids and the 50 triage ids are the same set, with an empty difference in both directions, and `manifest.json` came back byte-identical.
+  - **`import_authored_games.py` was already idempotent** — re-running it rewrites each task's bytes under the same id — so this needed no parallel path and no wrapper script. What it lacked was orphan detection: a task withdrawn upstream left a published file the manifest kept enumerating and the play surface kept serving. It now reports those. It does **not** delete them, deliberately: the id keys triage and telemetry rows that do not live in this repository, so retiring one is a decision to make with those in view, not a side effect of a sync.
+  - **New runbook** at `docs/2026-09-02-arc3-authored-resync.md`: the order the steps run in, the two gates that must pass before committing (`--check` on both scripts, plus a grep proving no upstream naming leaked onto an added line), and the reasoning for keeping this a **manual** step rather than a cron — it writes to a public permanent repo behind a judgement call no scheduler can make, it is gated on a human merge in someone else's repo, and polish cycles are bursty rather than periodic. The read-only `--check` half could be scheduled to *report* drift; that is the boss's call and nothing here installs it.
+  - **Checked**: before the import, the drift check named exactly 2 stale published files; after it, both `import_authored_games.py --check` and `build_authored_manifest.py --check` exit 0. `npx tsc --noEmit` shows the same 12 pre-existing errors as the unmodified checkout in the same worktree — no new ones. `npm run build` exits 0. Booted the server against the refreshed directory: `/api/arc3-community/games` returns 50, and the two re-imported tasks serve their new source.
+  - **Files**: added `docs/2026-09-02-arc3-authored-resync.md`. Modified `scripts/arc3/import_authored_games.py`, `server/data/arc3-games/t643da6ee.py`, `server/data/arc3-games/t715ea045.py`.
+
 ### Version 9.14.0  Sep 1, 2026
 
 - **23 tasks nobody could win have left the review queue** (Author: Claude Opus 5 / Bubba sub-agent)
