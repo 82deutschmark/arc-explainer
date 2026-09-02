@@ -93,6 +93,9 @@ const MONO = "'SF Mono', Menlo, Consolas, 'Courier New', monospace";
 const LUMA = 'https://luma.com/z1h24dqe?tk=kddwGm';
 /** The official ARC Prize server. Same invite the rest of this site already uses. */
 const DISCORD = 'https://discord.gg/9b77dPAmcA';
+/** Tufa Labs' duck harness -- what the competition entry is built on. Named wherever the
+ *  leaderboard placing is: the lab that wrote it sits one place above us on that board. */
+const DUCK_HARNESS = 'https://github.com/Tufalabs/duck-harness';
 const REPORT = 'https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf';
 const ARENA_REPO = 'https://github.com/sonpham-org/autoresearch-arena';
 const ARENA_SITE = 'https://arc3.sonpham.net';
@@ -391,16 +394,20 @@ export default function SyntheticLanding() {
             <div className="p-6 text-[14px] leading-[1.8]"
                  style={{ background: ARC.cell, border: `1px solid ${ARC.border}`, color: ARC.dim }}>
               <p className="mb-4">
-                We are two people doing this in our spare time. No lab, no funding, no
-                team. On the ARC-AGI-3 leaderboard we are currently{' '}
-                <strong style={{ color: ARC.text }}>fifth</strong>, which we still find
-                slightly hard to believe.
+                Two people, spare time, no lab and no funding. On the ARC Prize 2026
+                competition leaderboard we are currently{' '}
+                <strong style={{ color: ARC.text }}>fifth</strong>.
               </p>
+              {/* The harness credit is not a footnote and does not get separated from the
+                  placing. Tufa Labs wrote it and sit one seat above us on the same board;
+                  citing the placing without citing them would be taking credit for their
+                  work. Same rule as the ARC-Interactive attribution. */}
               <p className="mb-4">
-                That is the whole argument for talking to us. Anyone reading this can do
-                the same thing — the tasks are open, the harness is open, and the gap
-                between a hobbyist and a frontier lab on this particular problem is much
-                smaller than it looks from outside.
+                That run is built on{' '}
+                <a href={DUCK_HARNESS} target="_blank" rel="noreferrer" className="underline"
+                   style={{ color: ARC.text }}>Tufa Labs' duck harness</a>, and Tufa Labs are
+                fourth — one place ahead of us, on their own harness. It is an open
+                competition and that is the point: everything we used is public.
               </p>
               <p className="mb-0">
                 We are also taking a poster to the{' '}
