@@ -84,6 +84,7 @@ import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
 import LandingPage from "@/pages/LandingPage";
 import SyntheticLanding from "@/pages/arc3-community/SyntheticLanding";
 import Arc3Review from "@/pages/arc3-community/Arc3Review";
+import Arc3HypothesisResearch from "@/pages/arc3-community/Arc3HypothesisResearch";
 
 function LegacyArc3GameRedirect() {
   const params = useParams<{ gameId: string }>();
@@ -186,6 +187,9 @@ function Router() {
         {/* ARC3 Community - game play, gallery, uploads (secondary) */}
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />
         <Route path="/arc3/gallery" component={CommunityGallery} />
+        {/* Written up for readers outside the project: what a local model guesses about one
+            unseen frame, and what LM Studio's thinking controls actually do. */}
+        <Route path="/arc3/hypotheses" component={Arc3HypothesisResearch} />
         {/* /arc3/upload removed 2026-08-30: task submissions belong to
             arc3.sonpham.net, the source of truth for the synthetic set. */}
         {/* Legacy archive routes - redirect to new structure */}
