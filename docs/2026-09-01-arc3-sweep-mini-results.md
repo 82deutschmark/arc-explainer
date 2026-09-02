@@ -64,10 +64,12 @@ failure mode the runbook warns about did not occur.
 **1. The calibration gate could not see the thinking it was checking for.** Fixed in `172a272`.
 `--calibrate` probed with `max_tokens=1`, and a model given one token cannot open a think block,
 so `reasoning_content` returns empty however hard the server was told to think. The check
-measured the budget, not the lever. It passed on the Katana only because that build reports
-`reasoning_content` even at one token; here every level — `none`, `low`, `medium`, `high`,
-`xhigh` — measured empty, and `--plan confound` was refused on an axis a real generation proves
-works. Probes now run at 48 tokens. The companion "THINKING NOT DISABLED" check was vacuous for
+measured the budget, not the lever. Here every level — `none`, `low`, `medium`, `high`, `xhigh` —
+measured empty, and `--plan confound` was refused on an axis a real generation proves works.
+**Why the same check passed on the Katana was not tested from here**; its calibrate printed PASS
+at 347/345/383, which is consistent with that build reporting `reasoning_content` even at one
+token, but other explanations fit equally and none were ruled out. What is established is that on
+this build the check cannot pass, whatever the lever is doing. Probes now run at 48 tokens. The companion "THINKING NOT DISABLED" check was vacuous for
 the same reason and now works too.
 
 **2. The effort lever on this build, measured.** All seven values are accepted:
