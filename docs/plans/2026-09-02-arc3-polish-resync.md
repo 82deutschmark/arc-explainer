@@ -45,10 +45,15 @@ repo's own `--check`, because `--check` compares the published copy against an i
 and the published copy *did* match the stale `dist/`. **Check boundary 1→2 first, or the drift you
 are fixing is not the drift you will find.**
 
-A fourth revised task turned out to need no republish at all: its change was confined to the
-authoring docstring, which `make_submission.py` strips. Prose-only revisions are real work
-upstream and a no-op here. Expect the count of files that actually move to be smaller than the
-count of games that were revised.
+A fourth task showed up as revised and needed no republish, for a duller reason: its rewrite
+landed at 15:03 on 01-Sep and the migration import ran at 16:35 the same day, so the published
+copy already carried it. **"Revised recently" is the wrong question; "revised since the last
+import commit" is the right one.** Measure against the import commit's timestamp, not against a
+calendar date, or you will chase games that are already current.
+
+(Separately and generally: a revision confined to the module docstring produces no `dist/` change
+and no re-sync here, because the packager strips docstrings. That is correct behaviour rather than
+a missed rebuild — but it was not what happened to any game in this pass.)
 
 ## The constraint that makes this dangerous: ids must not churn
 
@@ -183,9 +188,15 @@ Boundary 2→3: three published task files changed, content only. `manifest.json
 (50/50), all 50 parse and declare their manifest class, and all 50 instantiate against ARCEngine
 under Python 3.13.
 
-Not done: the site was not driven in a browser and no revised game was played by a human. The
-verification above proves the files load and construct, not that the revisions are good games —
-that verdict is what the human-baseline pipeline exists to produce.
+The arena's own verifiers for the three revised games (`verify_gNNN.py`, run with
+`PYTHONPATH=<arc-explainer>/external/ARCEngine:.` under 3.13) all report PASS: each game is
+chain-solvable to a win across every level, and each one's death/reset behaviour matches the
+claims its rebuild commit makes. Run these — they are the difference between "the file loads" and
+"the rebuild still does what it says".
+
+Not done: the site was not driven in a browser and no revised game was played by a human. Passing
+a verifier proves a game is winnable and behaves as designed, not that it is a *good* game — that
+verdict is what the human-baseline pipeline exists to produce.
 
 ## Automated vs manual
 
@@ -214,6 +225,15 @@ clean` is open, and it is the failure this pass actually found.
   reduces the three copies to two makes this whole document obsolete, which is the real fix.
 - **A5, the promotion export**, is still not built; it is unrelated to re-syncing but is the other
   half of the loop.
+- **A slug→id pair for one game is already in this repo's public history.** `CHANGELOG.md` — in
+  entries predating this work — names one authoring filename beside its published id, and another
+  entry gives a second example id. That is the exact pairing the rest of this document forbids.
+  It was left alone deliberately: the lines are already public, so editing the file does not
+  unpublish anything, and rewriting published history on a public repo is a worse remedy than the
+  leak. Do not "fix" it by rewriting history. What is genuinely open is whether that one game's
+  human-baseline data is still usable given the mechanic was discoverable — a judgement call for
+  the Boss, not a code change. The rule stands for everything going forward; this is one known
+  exception, not a sign the rule is decorative.
 - **No check that a revision was intentional.** Nothing here distinguishes a deliberate rebuild
   from an accidental edit upstream. The content diff is reviewed by a human reading the PR, or not
   at all.
