@@ -11,7 +11,7 @@
 
 ## Background
 
-I'm a video game producer, not an engineer. I work with engineers. I'm not going to solve ARC-AGI — I just find it fascinating and wanted to build something that might be useful to the people who are actually working on it. Started in July 2025 as a curiosity project, grown into a full research suite. In late 2025, ARC Prize [recognized the effort](https://arcprize.org/blog/arc-prize-2025-results-analysis) — that meant a lot. As of February 22, 2026 I'm on a bit of a hiatus from active development, but the platform is live and maintained.
+I'm a video game producer, not an engineer. I work with engineers. I'm not going to solve ARC-AGI — I just find it fascinating and wanted to build something that might be useful to the people who are actually working on it. Started in July 2025 as a curiosity project, grown into a full research suite. In late 2025, ARC Prize [recognized the effort](https://arcprize.org/blog/arc-prize-2025-results-analysis) — that meant a lot. The platform is live and actively maintained.
 
 ---
 
@@ -21,12 +21,11 @@ I'm a video game producer, not an engineer. I work with engineers. I'm not going
 
 ---
 
-## Quick Start (Windows/PowerShell)
+## Quick Start (macOS/zsh)
 
-```powershell
+```bash
 # Clone and install
-git clone <repository-url> arc-explainer
-cd arc-explainer
+git clone <repository-url> arc-explainer && cd arc-explainer
 git submodule update --init --recursive
 npm install
 
