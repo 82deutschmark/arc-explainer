@@ -30,6 +30,11 @@ export interface Arc3MechanicEntry {
   callsLose: boolean;
   sourceLines: number;
   triage: { status: string | null; rank: number | null } | null;
+  /** The kind of game -- "Timing / Cycles", "Environmental Manipulation". Human-edited in
+   *  categories.json, merged by the digest, and the same column theredbluepill's GAMES.md
+   *  carries. It is a SPOILER and belongs to this type rather than to MirroredGame: the
+   *  public catalog deliberately exposes nothing that describes play. */
+  category: string | null;
   /** Human prose from mechanics-notes.json. Never machine-written. */
   mechanic: string | null;
   controls: string | null;
