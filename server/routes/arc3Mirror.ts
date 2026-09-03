@@ -3,8 +3,10 @@ Author: Claude Opus 5
 Date: 2026-08-30
 PURPOSE: Public, unauthenticated HTTP surface for the mirrored ARC-AGI-3 game catalog.
          Replaces the DB-backed community catalog, which had drifted months out of date
-         against arc3.sonpham.net (66 rows covering ~40 games, versus 300 upstream) and
-         which is no longer ours to own -- sonpham-org/arc3 is the source of truth.
+         against arc3.sonpham.net (66 rows covering ~40 games, versus 300 upstream).
+         The shared catalog is the source of truth and lives in sonpham-org/arc-3 --
+         WITH the hyphen; see the repo warning in Arc3MirrorCatalog.ts before pushing
+         anything at it.
 
          GET /games/:gameId/source deliberately returns the SAME {sourceCode, className}
          shape the previous catalog served, because client/src/hooks/usePyodideGame.ts
