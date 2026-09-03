@@ -1,21 +1,27 @@
 /*
 Author: Claude Opus 5
-Date: 2026-09-01 (third pass: our own catalog moved in-repo)
+Date: 2026-09-03 (fourth pass: the local copy claims the ids it also publishes)
 PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, from TWO
          independent sources.
 
-         SOURCE 1 (`upstream`, ARC3_UPSTREAM, default arc3.sonpham.net) is the programme's
-         source of truth. sonpham-org/arc3 is deployed on Railway as a Caddy static server
-         behind oauth2-proxy; its entrypoint marks `^/$` and `^/static/` as public
+         SOURCE 1 (`upstream`, ARC3_UPSTREAM, default arc3.sonpham.net) is the shared
+         catalog, deployed from sonpham-org/arc-3 -- WITH THE HYPHEN. sonpham-org/arc3 also
+         exists, still describes itself as arc3.sonpham.net, and has not deployed since
+         July; two PRs have already been opened against it by mistake, one of them because
+         this very docstring named it. The live manifest is docs/static/games/manifest.json
+         in arc-3, byte-identical to what the site serves -- diff it before believing any
+         repo's description, including this one. It runs on Railway as a Caddy static
+         server behind oauth2-proxy; its entrypoint marks `^/$` and `^/static/` as public
          (skip-auth) while gating the researcher surfaces, so the manifest and every game's
          Python source are fetchable without credentials. Those assets carry no
          Access-Control-Allow-Origin, so the browser cannot read them cross-origin -- this
          service pulls them server-to-server and re-serves them from our own origin.
 
-         SOURCE 2 (`arena`) is OUR OWN authored catalog, the 50 tasks in
-         server/data/arc3-games/ IN THIS REPOSITORY. It is a SECOND source rather than
-         rows pushed into Son's manifest, deliberately: the two programmes are competing
-         and each side's catalog stays its own.
+         SOURCE 2 (`arena`) is the 50 reviewed tasks in server/data/arc3-games/ IN THIS
+         REPOSITORY. The same 50 are published upstream as well, on purpose, so both sites
+         serve the same set. This source is the LOCAL COPY of them, and it is the one that
+         wins where the two catalogs overlap -- see claimOrder(), which explains why that
+         is a correctness rule rather than a preference about whose copy to prefer.
 
          Source 2 used to be fetched over HTTP from sonpham-org/autoresearch-arena
          (ARC3_ARENA_UPSTREAM / ARC3_ARENA_TOKEN). That repository is private and is
@@ -31,9 +37,10 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          when every source fails does this throw. Upstream going down must never take the
          play surface down, and our own 50 now stay up when it does.
 
-         Ids are assumed disjoint but not trusted to be: on a collision the `upstream`
-         entry wins and the loser is logged, because silently overwriting one programme's
-         task with another's would corrupt the human-vs-agent comparison at the root.
+         Ids OVERLAP by design on those 50, and the local copy claims them. Any OTHER
+         collision is unexpected -- two different games arriving under one id -- and is
+         still logged loudly. That is the case the old "first claimant wins" rule was
+         actually protecting, and it is kept.
 
          NOTHING IS RENAMED AT RUNTIME ANY MORE. The previous version derived opaque
          ids and class names on the way out, because the authoring repo names each task
@@ -185,8 +192,8 @@ interface MirrorSource {
 }
 
 /**
- * Order matters: the first source to claim an id keeps it, so `upstream` is listed first
- * and wins a collision.
+ * DECLARATION order, which is deliberately not claim order -- see claimOrder(). `upstream`
+ * stays first here because status() reports SOURCES[0] as the primary.
  */
 const SOURCES: MirrorSource[] = [
   {
@@ -335,6 +342,37 @@ async function ensure(source: MirrorSource): Promise<MirroredGame[]> {
   }
 }
 
+/**
+ * The order sources CLAIM ids in, which is deliberately not the order they are declared in.
+ *
+ * The two catalogs overlap on purpose: the 50 games in server/data/arc3-games/ are also
+ * published upstream so both sites serve the same set. Where they overlap, the copy on
+ * local disk wins.
+ *
+ * This is not about whose games they are -- it is one set, published in two places. It is
+ * that this repository ships artifacts DERIVED from these exact files and serves them by
+ * bare game id, without consulting this merge at all: the opening frames under
+ * server/data/arc3-games/frames/, the action lists in mechanics.json behind
+ * /api/arc3-mirror/control-map, and the triage verdicts. Run a different build of an id
+ * and every one of those describes a program that is not the one executing. The control
+ * map is the sharp edge: it enables ACTION7 for g028 and g033 because the copies here read
+ * it without advertising it, and in g028 that action is the cancel for an armed fold. A
+ * local read also cannot 404, time out or lag a redeploy, which fetching the same file
+ * over HTTP can and has -- g010 was rebuilt upstream after a set-wide publish and the two
+ * copies rendered visibly different opening frames.
+ *
+ * SOURCES itself stays in declaration order. status() reports SOURCES[0] as the primary
+ * and labels its base `upstream`; expressing this rule by reordering that array would make
+ * the ops endpoint print a local directory path and -- because a local source re-reads on
+ * every call -- a permanently zero-second age, while upstream could be down.
+ */
+function claimOrder(): number[] {
+  // sort is stable, so sources of the same kind keep declaration order among themselves.
+  return SOURCES
+    .map((_, index) => index)
+    .sort((a, b) => Number(SOURCES[a].kind !== 'local') - Number(SOURCES[b].kind !== 'local'));
+}
+
 export class Arc3MirrorCatalog {
   /**
    * The merged, stripped catalog.
@@ -347,34 +385,67 @@ export class Arc3MirrorCatalog {
   static async listGames(): Promise<MirroredGame[]> {
     const settled = await Promise.allSettled(SOURCES.map((s) => ensure(s)));
 
-    const merged: MirroredGame[] = [];
     const owners = new Map<string, MirrorSource>();
     let anyOk = false;
+    let shared = 0;
 
-    settled.forEach((result, i) => {
+    // PASS 1 -- decide who serves each id, in claim order.
+    for (const i of claimOrder()) {
       const source = SOURCES[i];
+      const result = settled[i];
       if (result.status === 'rejected') {
-        logger.warn(`arc3Mirror: ${source.key} unavailable and uncached, serving without it - ${result.reason instanceof Error ? result.reason.message : String(result.reason)}`);
-        return;
+        const reason = result.reason instanceof Error ? result.reason.message : String(result.reason);
+        if (source.kind === 'local') {
+          // Not the same event as upstream being unreachable. The files this process was
+          // started from could not be read, so ids this source would have claimed are
+          // about to be served from elsewhere while frames/, mechanics.json and the triage
+          // rows keep answering for them from disk. Loud, because nothing else will show it.
+          logger.error(`arc3Mirror: ${source.key} could not be read from ${source.base}; any id it publishes will be served from another catalog - ${reason}`);
+        } else {
+          logger.warn(`arc3Mirror: ${source.key} unavailable and uncached, serving without it - ${reason}`);
+        }
+        continue;
       }
       anyOk = true;
       for (const game of result.value) {
         const incumbent = owners.get(game.gameId);
-        if (incumbent) {
-          // Keep the first claimant -- SOURCES is ordered so that is `upstream`.
-          logger.warn(`arc3Mirror: id collision on ${game.gameId}; keeping ${incumbent.key}, dropping ${source.key}`);
+        if (!incumbent) {
+          owners.set(game.gameId, source);
           continue;
         }
-        owners.set(game.gameId, source);
-        merged.push(game);
+        if (incumbent.kind === 'local') {
+          // Expected: one of the 50 both catalogs publish. Counted rather than logged per
+          // id -- there are fifty and this runs on every catalog read.
+          shared++;
+        } else {
+          // Unexpected: two different games under one id. This is what the collision rule
+          // is actually for.
+          logger.warn(`arc3Mirror: id collision on ${game.gameId}; keeping ${incumbent.key}, dropping ${source.key}`);
+        }
       }
-    });
+    }
 
     if (!anyOk) {
       const reasons = settled
         .map((r, i) => `${SOURCES[i].key}: ${r.status === 'rejected' ? (r.reason instanceof Error ? r.reason.message : String(r.reason)) : 'ok'}`)
         .join('; ');
       throw new Error(`arc3Mirror: no catalog source available (${reasons})`);
+    }
+
+    // PASS 2 -- emit in DECLARATION order. Claiming decides which copy of a game runs; it
+    // should not also reshuffle the catalog. The gallery sorts by section and then falls
+    // back to "manifest order" for every source without triage verdicts, so the order
+    // returned here is the order those tiles appear in.
+    const merged: MirroredGame[] = [];
+    settled.forEach((result, i) => {
+      if (result.status !== 'fulfilled') return;
+      for (const game of result.value) {
+        if (owners.get(game.gameId) === SOURCES[i]) merged.push(game);
+      }
+    });
+
+    if (shared) {
+      logger.debug(`arc3Mirror: ${shared} ids published by both catalogs, served from disk`);
     }
 
     ownerIndex = owners;
