@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -13,16 +14,74 @@ from arcengine import (
     Sprite,
 )
 
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+
+FLOOR = 5
 WALL = 1
-FLOOR = 4
-PLATE_UP = 12
+WALL_JOINT = 5
+PLATE_UP = 1
 PLATE_DOWN = 14
-SPIKE = 8
+EXIT_FRAME = 14
+EXIT_BAR = 1
 CRATE = 7
-PLAYER = 10
-EXIT = 14
-EXIT_SHUT = 2
-PAIR_COLOURS = (0, 9, 13, 15, 1)
+PLAYER = 12
+PLAYER_MARK = 1
+SPIKE = 15
+SPIKE_TIP = 1
+DECOR_COLOURS = (WALL, PLATE_DOWN)
+PAIR_COLOURS = (12, 15, 7, 14, 1)
 
 DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0))
 
@@ -235,8 +294,62 @@ def start_state(rows):
     return find_char(rows, "P"), tuple(sorted(find_all(rows, "o")))
 
 
-def _block(colour):
-    return [[colour] * CELL for _ in range(CELL)]
+def _stamp(frame, cell, face):
+    x, y = cell
+    for j, row in enumerate(face):
+        for i, v in enumerate(row):
+            if v >= 0:
+                frame[y * CELL + 1 + j, x * CELL + 1 + i] = v
+
+
+def _no_corner(face):
+    face[0][0] = -1
+    return face
+
+
+def _wall_face(x, y):
+    px = block(WALL)
+    px[CELL - 1] = [WALL_JOINT] * CELL
+    for j in range(CELL - 1):
+        px[j][2 if (x + y) % 2 else 0] = WALL_JOINT
+    return px
+
+
+def _spike_face():
+    px = _no_corner(rounded(SPIKE, 3))
+    px[1][1] = SPIKE_TIP
+    return px
+
+
+def _crate_face():
+    return _no_corner(block(CRATE, 3))
+
+
+def _player_face(mark):
+    px = _no_corner(figure(PLAYER, cell=3))
+    px[2][0], px[2][1] = PLAYER, -1
+    px[1][1] = PLAYER_MARK if mark == PLAYER else mark
+    return px
+
+
+def _exit_face(state):
+    if state == "lintel":
+        return [[-1, EXIT_FRAME, EXIT_FRAME], [-1] * 3, [-1] * 3]
+    bar = {"shut": EXIT_BAR, "flare": EXIT_FRAME}.get(state)
+    return _no_corner(door(EXIT_FRAME, bar, 3))
+
+
+def _plate_socket(held):
+    px = ring(PLATE_DOWN if held else PLATE_UP, 3)
+    px[0][1] = -1
+    return px
+
+
+def _plate_studs(held):
+    c = PLATE_DOWN if held else PLATE_UP
+    px = [[-1] * 3 for _ in range(3)]
+    px[0][0] = px[0][2] = px[2][0] = px[2][2] = c
+    return px
 
 
 def build_levels() -> list[Level]:
@@ -247,16 +360,35 @@ def build_levels() -> list[Level]:
         for y in range(N):
             for x in range(N):
                 c = rows[y][x]
-                colour = {"#": WALL, "^": SPIKE}.get(c)
-                if colour is None:
+                if c == "#":
+                    px = _wall_face(x, y)
+                elif c == "^":
+                    px = [[-1] * CELL for _ in range(CELL)]
+                    for j, row in enumerate(_spike_face()):
+                        for i, v in enumerate(row):
+                            px[j + 1][i + 1] = v
+                else:
                     continue
                 sprites.append(Sprite(
-                    pixels=_block(colour), name=f"cell_{x}_{y}",
+                    pixels=px, name=f"cell_{x}_{y}",
                     blocking=BlockingMode.NOT_BLOCKED,
                     interaction=InteractionMode.INTANGIBLE, layer=0, collidable=False,
                 ).set_position(x * CELL, y * CELL))
         levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
     return levels
+
+
+def _decor_cells(spec, seed):
+    rows = spec["rows"]
+    taken = {tuple(c) for pair in spec["pairs"] for c in pair}
+    hits = [(x, y)
+            for y in range(N) for x in range(N)
+            if rows[y][x] == "." and (x, y) not in taken
+            and (x * 7 + y * 11 + seed * 5) % 13 == 0]
+    return tuple(hits[::max(1, len(hits) // 5)])[:5]
+
+
+DECOR = tuple(_decor_cells(s, i) for i, s in enumerate(LEVELS_SPEC))
 
 
 class G136A(RenderableUserDisplay):
@@ -268,42 +400,69 @@ class G136A(RenderableUserDisplay):
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         g = self._game
         rows = g.rows
-
-        def fill(cell, colour):
-            x, y = cell
-            frame[y * CELL:(y + 1) * CELL, x * CELL:(x + 1) * CELL] = colour
-
+        plates = find_all(rows, "=")
         held = held_plates(rows, g.twins, g.player, g.crates)
-        for p in find_all(rows, "="):
-            fill(p, PLATE_DOWN if p in held else PLATE_UP)
+        pair_of = {}
+        for i, (a, b) in enumerate(g.spec["pairs"]):
+            for c in (tuple(a), tuple(b)):
+                pair_of[c] = PAIR_COLOURS[i % len(PAIR_COLOURS)]
+
+        for i, cell in enumerate(DECOR[g.level_index]):
+            _stamp(frame, cell, fixture(DECOR_COLOURS, g.tick // 2, i, cell=3))
+
+        for p in plates:
+            _stamp(frame, p, _plate_socket(p in held))
 
         ex = find_char(rows, "X")
-        fill(ex, EXIT if len(held) == len(find_all(rows, "=")) else EXIT_SHUT)
+        opened = len(held) == len(plates)
+        state = "open" if opened else "shut"
+        if g.winning and g.winning % 2 == 0:
+            state = "flare"
+        _stamp(frame, ex, _exit_face(state))
 
         for k in g.crates:
             for c in occupies(g.twins, k):
-                fill(c, CRATE)
+                _stamp(frame, c, _crate_face())
 
-        for i, (a, b) in enumerate(g.spec["pairs"]):
-            colour = PAIR_COLOURS[i % len(PAIR_COLOURS)]
-            for (x, y) in (tuple(a), tuple(b)):
-                frame[y * CELL:(y + 1) * CELL, x * CELL:x * CELL + 1] = colour
-                frame[y * CELL:y * CELL + 1, x * CELL:(x + 1) * CELL] = colour
+        if g.dying:
+            body = _no_corner(rounded(SPIKE if g.dying % 2 else PLAYER, 3))
+            body[1][1] = PLAYER if g.dying % 2 else SPIKE
+        elif g.winning:
+            body = _player_face(PLAYER_MARK)
+            if g.winning % 2 == 0:
+                body = [[EXIT_FRAME if v >= 0 else v for v in row] for row in body]
+        else:
+            body = _player_face(PLATE_DOWN if g.player in held
+                                else pair_of.get(g.player, PLAYER_MARK))
+        _stamp(frame, g.player, body)
 
-        px, py = g.player
-        frame[py * CELL + 1:py * CELL + 4, px * CELL + 1:px * CELL + 4] = PLAYER
+        _stamp(frame, ex, _exit_face("lintel"))
+
+        for p in plates:
+            _stamp(frame, p, _plate_studs(p in held))
+
+        for cell, colour in pair_of.items():
+            x, y = cell
+            frame[y * CELL, x * CELL:(x + 1) * CELL] = colour
+            frame[y * CELL:(y + 1) * CELL, x * CELL] = colour
         return frame
 
 
 class G136(ARCBaseGame):
 
+    DYING_FRAMES = 6
+    WINNING_FRAMES = 4
+
     def __init__(self) -> None:
         self.player = (0, 0)
         self.crates = ()
         self.twins = {}
+        self.tick = 0
+        self.dying = 0
+        self.winning = 0
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=5,
+            background=FLOOR, letter_box=FLOOR,
             interfaces=[G136A(self)],
         )
         super().__init__(game_id="g136", levels=build_levels(), camera=camera,
@@ -321,6 +480,8 @@ class G136(ARCBaseGame):
     def on_set_level(self, level: Level) -> None:
         self.twins = twin_map(self.spec["pairs"])
         self.player, self.crates = start_state(self.rows)
+        self.dying = 0
+        self.winning = 0
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -328,16 +489,33 @@ class G136(ARCBaseGame):
 
     def full_reset(self) -> None:
         super().full_reset()
+        self.tick = 0
         self.on_set_level(self.current_level)
 
     def step(self) -> None:
+        self.tick += 1
+        if self.dying:
+            self.dying -= 1
+            if self.dying == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+        if self.winning:
+            self.winning -= 1
+            if self.winning == 0:
+                self.next_level()
+                self.complete_action()
+            return
+
         d = {GameAction.ACTION1: (0, -1), GameAction.ACTION2: (0, 1),
              GameAction.ACTION3: (-1, 0), GameAction.ACTION4: (1, 0)}.get(self.action.id)
         if d is not None:
             self.player, self.crates, dead = step_player(
                 self.rows, self.twins, self.player, self.crates, d)
             if dead:
-                self.level_reset()
-            elif solved(self.rows, self.twins, self.player, self.crates):
-                self.next_level()
+                self.dying = self.DYING_FRAMES
+                return
+            if solved(self.rows, self.twins, self.player, self.crates):
+                self.winning = self.WINNING_FRAMES
+                return
         self.complete_action()

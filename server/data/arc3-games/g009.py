@@ -13,22 +13,82 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 5
-WALL = 3
-PAD = 2
-GLASS = 1
-SPLIT_C = 10
-FIXED_C = 15
-PIP_ON = 11
-PIP_OFF = 4
-CURSOR = 0
 
-WHITE, RED, GREEN, BLUE = 0, 8, 14, 9
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def outline(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for x in range(max(0, x0), min(w, x1)):
+        if 0 <= y0 < h:
+            frame[y0, x] = colour
+        if 0 <= y1 - 1 < h:
+            frame[y1 - 1, x] = colour
+    for y in range(max(0, y0), min(h, y1)):
+        if 0 <= x0 < w:
+            frame[y, x0] = colour
+        if 0 <= x1 - 1 < w:
+            frame[y, x1 - 1] = colour
+    return frame
+
+
+FLOOR = 10
+HARD = 4
+WALL = 5
+PAD = HARD
+GLASS = HARD
+
+WHITE, RED, GREEN, BLUE = 5, 6, 7, 14
 
 N = 16
 CELL = 4
-HUD_ROWS = 2
+WIN_FLASH = 4
 
+WELD = {"/": "F", "\\": "K", "+": "S"}
 FILTER_COLOUR = {"r": RED, "g": GREEN, "b": BLUE}
 SINK_COLOUR = {"W": WHITE, "R": RED, "G": GREEN, "B": BLUE}
 EMITTER_DIR = {">": (1, 0), "<": (-1, 0), "^": (0, -1), "v": (0, 1)}
@@ -218,7 +278,7 @@ def trace(rows, placed):
         crossed.add((nx, ny))
         arms[(nx, ny, ARM_IN[d])] = colour
 
-        part = placed.get((nx, ny)) if ch == "o" else {"/": "F", "\\": "K", "+": "S"}.get(ch)
+        part = placed.get((nx, ny)) if ch == "o" else WELD.get(ch)
         outs = []
         if part == "F":
             outs = [(_reflect_f(d), colour)]
@@ -243,58 +303,63 @@ def board_won(rows, placed):
     return len(lit) == len(sinks_of(rows)) and len(lit) > 0
 
 
-def _solid(colour):
-    return [[colour] * CELL for _ in range(CELL)]
+def _mirror(main):
+    px = [[-1] * CELL for _ in range(CELL)]
+    for y in range(CELL):
+        for x in range(CELL):
+            run = (x - y) if main else (CELL - 1 - x - y)
+            if 0 <= run <= 1:
+                px[y][x] = GLASS
+    return px
 
 
-def part_glyph(part, colour=None):
-    tint = colour if colour is not None else GLASS
-    block = _solid(FLOOR)
+def part_glyph(part):
     if part == "F":
-        for i in range(CELL):
-            block[CELL - 1 - i][i] = tint
-    elif part == "K":
-        for i in range(CELL):
-            block[i][i] = tint
-    elif part == "S":
-        shade = colour if colour is not None else SPLIT_C
-        for i in range(CELL):
-            block[CELL - 1 - i][i] = shade
-        block[0][0] = shade
-        block[CELL - 1][CELL - 1] = shade
-    elif part in FILTER_COLOUR:
-        block = _solid(FILTER_COLOUR[part])
-        block[0][0] = FLOOR
-        block[CELL - 1][CELL - 1] = FLOOR
-    return block
+        return _mirror(False)
+    if part == "K":
+        return _mirror(True)
+    if part == "S":
+        px = _mirror(False)
+        px[0][0] = px[CELL - 1][CELL - 1] = GLASS
+        return px
+    if part in FILTER_COLOUR:
+        return medallion(FILTER_COLOUR[part], HARD)
+    return [[-1] * CELL for _ in range(CELL)]
+
+
+def _wall_block(x, y):
+    px = [[WALL] * CELL for _ in range(CELL)]
+    for j, row in enumerate(speckle(HARD, (x * 3 + y * 5) % 7)):
+        for i, v in enumerate(row):
+            if v >= 0:
+                px[j][i] = v
+    return px
 
 
 def _pad_block():
-    block = _solid(FLOOR)
-    for dy in (1, 2):
-        for dx in (1, 2):
-            block[dy][dx] = PAD
-    return block
+    return ring(PAD)
 
 
 def _emitter_block(ch):
-    block = _solid(WALL)
+    px = rounded(HARD)
     dx, dy = EMITTER_DIR[ch]
     ox = 2 if dx > 0 else (0 if dx < 0 else 1)
     oy = 2 if dy > 0 else (0 if dy < 0 else 1)
     for j in range(2):
         for i in range(2):
-            block[oy + j][ox + i] = CURSOR
-    return block
+            px[oy + j][ox + i] = WHITE
+    return px
 
 
 def _sink_block(ch, on):
-    block = _solid(SINK_COLOUR[ch] if ch != "W" else GLASS)
-    core = CURSOR if on else FLOOR
-    for dy in (1, 2):
-        for dx in (1, 2):
-            block[dy][dx] = core
-    return block
+    colour = SINK_COLOUR[ch]
+    px = ring(colour)
+    if on:
+        for y, row in enumerate(core(colour)):
+            for x, v in enumerate(row):
+                if v >= 0:
+                    px[y][x] = v
+    return px
 
 
 def build_levels():
@@ -305,15 +370,15 @@ def build_levels():
             for x, ch in enumerate(row):
                 pixels = None
                 if ch == "#":
-                    pixels = _solid(WALL)
+                    pixels = _wall_block(x, y)
                 elif ch == "o":
                     pixels = _pad_block()
                 elif ch in EMITTER_DIR:
                     pixels = _emitter_block(ch)
                 elif ch in SINK_COLOUR:
                     pixels = _sink_block(ch, False)
-                elif ch in ("/", "\\", "+"):
-                    pixels = part_glyph({"/": "F", "\\": "K", "+": "S"}[ch], FIXED_C)
+                elif ch in WELD:
+                    pixels = part_glyph(WELD[ch])
                 if pixels is None:
                     continue
                 name = f"sink_{x}_{y}" if ch in SINK_COLOUR else f"cell_{x}_{y}"
@@ -326,32 +391,49 @@ def build_levels():
     return levels
 
 
+BIN_COL = (N - 1) * CELL
+SLOT_TOP = 8
+SLOT_GAP = 10
+SLOT_PAD = 1
+SLOT_GROW = 2
+SLOT_GUTTER = 1
+
+
 class G009A(RenderableUserDisplay):
 
     def __init__(self, game):
         super().__init__()
         self._game = game
 
+    def _rail(self, frame):
+        game = self._game
+        tall = frame.shape[0]
+        ghost = weave(0)
+        for i, part in enumerate(game.bin_types):
+            top = SLOT_TOP + i * SLOT_GAP
+            if top + CELL > tall:
+                break
+            grow = SLOT_PAD + (SLOT_GROW if i == game.sel else 0)
+            frame[max(0, top - grow):min(tall, top + CELL + grow),
+                  BIN_COL + SLOT_GUTTER:BIN_COL + CELL] = FLOOR
+            spent = game.stock[part] <= 0
+            for y, row in enumerate(part_glyph(part)):
+                for x, v in enumerate(row):
+                    if v >= 0 and not (spent and ghost[y][x] < 0):
+                        frame[top + y, BIN_COL + x] = v
+        return frame
+
     def render_interface(self, frame):
         game = self._game
-        for i, part in enumerate(game.bin_types):
-            x0 = 2 + i * 10
-            if x0 + 8 > frame.shape[1]:
-                break
-            glyph = np.array(part_glyph(part), dtype=frame.dtype)
-            frame[1:1 + CELL, x0:x0 + CELL] = glyph
-            total = LEVELS_SPEC[game.level_index]["bin"][part]
-            left = game.stock[part]
-            for p in range(total):
-                px = x0 + p * 2
-                if px < frame.shape[1]:
-                    frame[6, px] = PIP_ON if p < left else PIP_OFF
-            if i == game.sel:
-                frame[5, x0:x0 + CELL] = CURSOR
+        parts = dict(game.placed)
+        for y, row in enumerate(game.rows):
+            for x, ch in enumerate(row):
+                welded = WELD.get(ch)
+                if welded:
+                    parts[(x, y)] = welded
 
-        for (x, y), part in game.placed.items():
-            frame[y * CELL:(y + 1) * CELL, x * CELL:(x + 1) * CELL] = np.array(
-                part_glyph(part), dtype=frame.dtype)
+        for x, y in game.placed:
+            frame[y * CELL:(y + 1) * CELL, x * CELL:(x + 1) * CELL] = FLOOR
 
         for (x, y, side), colour in game.arms.items():
             cx, cy = x * CELL, y * CELL
@@ -363,7 +445,36 @@ class G009A(RenderableUserDisplay):
                 frame[cy:cy + 2, cx + 1] = colour
             elif side == "S":
                 frame[cy + 2:cy + CELL, cx + 1] = colour
-        return frame
+
+        for (x, y), part in parts.items():
+            for j, row in enumerate(part_glyph(part)):
+                for i, v in enumerate(row):
+                    if v >= 0:
+                        frame[y * CELL + j, x * CELL + i] = v
+
+        for (x, y, side), colour in game.arms.items():
+            cx, cy = x * CELL, y * CELL
+            if side == "W":
+                frame[cy + 1, cx] = colour
+            elif side == "E":
+                frame[cy + 1, cx + CELL - 1] = colour
+            elif side == "N":
+                frame[cy, cx + 1] = colour
+            elif side == "S":
+                frame[cy + CELL - 1, cx + 1] = colour
+
+        for x, y, ch in sinks_of(game.rows):
+            if (x, y) in game.lit:
+                outline(frame, (x * CELL - 1, y * CELL - 1,
+                                (x + 1) * CELL + 1, (y + 1) * CELL + 1), SINK_COLOUR[ch])
+
+        if game.flash:
+            r = 2 + (WIN_FLASH - game.flash)
+            for x, y, ch in sinks_of(game.rows):
+                outline(frame, (x * CELL - r, y * CELL - r,
+                                (x + 1) * CELL + r, (y + 1) * CELL + r), SINK_COLOUR[ch])
+
+        return self._rail(frame)
 
 
 class G009(ARCBaseGame):
@@ -385,6 +496,7 @@ class G009(ARCBaseGame):
         self.placed = {}
         self.arms = {}
         self.lit = set()
+        self.flash = 0
         self._recompute()
 
     def on_set_level(self, level):
@@ -430,16 +542,22 @@ class G009(ARCBaseGame):
         self._recompute()
         self._paint_sinks()
         if len(self.lit) == len(sinks_of(self.rows)):
-            if self.is_last_level():
-                self.next_level()
-            else:
-                self.next_level()
+            self.flash = WIN_FLASH
 
     def step(self):
+        if self.flash:
+            self.flash -= 1
+            if self.flash == 0:
+                self.next_level()
+                self.complete_action()
+            return
+
         action = self.action.id
         if action == GameAction.ACTION5:
             self._step_cursor()
         elif action == GameAction.ACTION6:
             data = self.action.data or {}
             self._click(int(data.get("x", -1)) // CELL, int(data.get("y", -1)) // CELL)
+        if self.flash:
+            return
         self.complete_action()

@@ -12,17 +12,40 @@ from arcengine import (
     Sprite,
 )
 
-BACKDROP = 5
-EMPTY = 4
-BLOCK = 11
-ANCHOR = 12
-FORBID = 13
-FORBID_CORE = 5
-CLUE_PLAIN = 2
-CLUE_CONTIG = 9
-CLUE_SEP = 15
-PIP_BRIGHT = 0
-PIP_DIM = 3
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+
+FLOOR = 0
+SOCKET = 4
+COUNTS = 14
+REFUSED = 8
+MARK_CONTIG = 12
+MARK_SEP = 15
+PIP_OPEN = 0
+PIP_MET = 14
 
 GRID = 16
 CELL = 4
@@ -32,6 +55,9 @@ OX = 4
 OY = 4
 COL_CLUE_ROW = OY - 1
 ROW_CLUE_COL = OX - 1
+
+FITTINGS = [(13, 13), (14, 13), (13, 14), (14, 14), (1, 1)]
+FITTING_COLOURS = (COUNTS, MARK_CONTIG, MARK_SEP)
 
 LEVELS_SPEC = [
     {
@@ -164,21 +190,44 @@ LEVELS_SPEC = [
     },]
 
 
-def _solid(colour: int) -> list[list[int]]:
-    return [[colour] * CELL for _ in range(CELL)]
+def _overlay(base: list[list[int]], top: list[list[int]]) -> list[list[int]]:
+    for y in range(CELL):
+        for x in range(CELL):
+            if top[y][x] >= 0:
+                base[y][x] = top[y][x]
+    return base
 
 
-def _forbidden_tile() -> list[list[int]]:
-    block = _solid(FORBID)
-    for y in (1, 2):
-        for x in (1, 2):
-            block[y][x] = FORBID_CORE
-    return block
+def _blank() -> list[list[int]]:
+    return [[-1] * CELL for _ in range(CELL)]
 
 
-def _clue_tile(count: int, frame: int, satisfied: bool) -> list[list[int]]:
-    block = _solid(frame)
-    pip = PIP_DIM if satisfied else PIP_BRIGHT
+def _slot(colour: int) -> list[list[int]]:
+    return core(colour, CELL)
+
+
+def _stone(solid: bool = False) -> list[list[int]]:
+    px = rounded(COUNTS, CELL)
+    if not solid:
+        for y in range(1, CELL - 1):
+            for x in range(1, CELL - 1):
+                px[y][x] = -1
+    return px
+
+
+def _barred() -> list[list[int]]:
+    return weave(REFUSED, CELL)
+
+
+def _clue_tile(count: int, bracket: int, satisfied: bool,
+               blanked: bool = False) -> list[list[int]]:
+    block = [[SOCKET] * CELL for _ in range(CELL)]
+    for i in range(CELL):
+        block[0][i] = bracket
+        block[i][0] = bracket
+    if blanked:
+        return block
+    pip = PIP_MET if satisfied else PIP_OPEN
     for i in range(min(count, 9)):
         block[1 + i // 3][1 + i % 3] = pip
     return block
@@ -191,21 +240,27 @@ def build_levels() -> list[Level]:
         for y in range(BOARD):
             for x in range(BOARD):
                 sprites.append(Sprite(
-                    pixels=_solid(EMPTY), name=f"cell_{x}_{y}",
+                    pixels=_slot(SOCKET), name=f"cell_{x}_{y}",
                     blocking=BlockingMode.NOT_BLOCKED,
                     interaction=InteractionMode.TANGIBLE, layer=0,
                 ).set_position((OX + x) * CELL, (OY + y) * CELL))
             sprites.append(Sprite(
-                pixels=_solid(CLUE_PLAIN), name=f"rowclue_{y}",
+                pixels=_clue_tile(0, SOCKET, False), name=f"rowclue_{y}",
                 blocking=BlockingMode.NOT_BLOCKED,
                 interaction=InteractionMode.TANGIBLE, layer=0,
             ).set_position(ROW_CLUE_COL * CELL, (OY + y) * CELL))
         for x in range(BOARD):
             sprites.append(Sprite(
-                pixels=_solid(CLUE_PLAIN), name=f"colclue_{x}",
+                pixels=_clue_tile(0, SOCKET, False), name=f"colclue_{x}",
                 blocking=BlockingMode.NOT_BLOCKED,
                 interaction=InteractionMode.TANGIBLE, layer=0,
             ).set_position((OX + x) * CELL, COL_CLUE_ROW * CELL))
+        for i, (gx, gy) in enumerate(FITTINGS):
+            sprites.append(Sprite(
+                pixels=fixture(FITTING_COLOURS, 0, i, CELL), name=f"fitting_{i}",
+                blocking=BlockingMode.NOT_BLOCKED,
+                interaction=InteractionMode.TANGIBLE, layer=0,
+            ).set_position(gx * CELL, gy * CELL))
         levels.append(Level(sprites=sprites, grid_size=(GRID * CELL, GRID * CELL)))
     return levels
 
@@ -242,17 +297,26 @@ def solved(spec: dict, filled: frozenset) -> bool:
 
 class G038(ARCBaseGame):
 
+    COMMIT_FRAMES = 6
+    REJECT_FRAMES = 6
+    CLEAR_FRAMES = 5
+
     def __init__(self) -> None:
         self.filled: set = set()
+        self._fx = 0
+        self._fx_kind = ""
+        self._tick = 0
         camera = Camera(
             width=GRID * CELL, height=GRID * CELL,
-            background=BACKDROP, letter_box=BACKDROP,
+            background=FLOOR, letter_box=FLOOR,
         )
         super().__init__(game_id="g038", levels=build_levels(), camera=camera,
                          available_actions=[5, 6, 7])
 
     def on_set_level(self, level: Level) -> None:
         self.filled = set()
+        self._fx = 0
+        self._fx_kind = ""
         self._repaint()
 
     def level_reset(self) -> None:
@@ -271,33 +335,48 @@ class G038(ARCBaseGame):
         spec = self.spec
         level = self.current_level
         occ = occupied(spec, frozenset(self.filled))
+        beat = self._fx % 2 == 1
+        pulse = self._fx_kind == "commit" and beat
+        lifting = self._fx_kind == "clear"
         for y in range(BOARD):
             for x in range(BOARD):
                 kind = spec["cells"][y][x]
                 if kind == "#":
-                    block = _forbidden_tile()
+                    face = _barred()
                 elif kind == "A":
-                    block = _solid(ANCHOR)
+                    face = _slot(COUNTS) if pulse else _stone(solid=True)
                 elif (x, y) in self.filled:
-                    block = _solid(BLOCK)
+                    if lifting:
+                        face = _slot(COUNTS) if beat else _blank()
+                    else:
+                        face = _slot(COUNTS) if pulse else _stone()
                 else:
-                    block = _solid(EMPTY)
+                    face = _slot(SOCKET)
                 found = level.get_sprites_by_name(f"cell_{x}_{y}")
                 if found:
-                    found[0].pixels = np.array(block, dtype=np.int8)
+                    found[0].pixels = np.array(face, dtype=np.int8)
             found = level.get_sprites_by_name(f"rowclue_{y}")
             if found:
-                frame = CLUE_CONTIG if spec["row_contig"][y] else CLUE_PLAIN
+                met = row_ok(spec, occ, y)
+                bracket = MARK_CONTIG if spec["row_contig"][y] else SOCKET
                 found[0].pixels = np.array(
-                    _clue_tile(spec["rowclue"][y], frame, row_ok(spec, occ, y)),
+                    _clue_tile(spec["rowclue"][y], bracket, met,
+                               blanked=self._fx_kind == "reject" and beat and not met),
                     dtype=np.int8)
         for x in range(BOARD):
             found = level.get_sprites_by_name(f"colclue_{x}")
             if found:
-                frame = CLUE_SEP if spec["col_sep"][x] else CLUE_PLAIN
+                met = col_ok(spec, occ, x)
+                bracket = MARK_SEP if spec["col_sep"][x] else SOCKET
                 found[0].pixels = np.array(
-                    _clue_tile(spec["colclue"][x], frame, col_ok(spec, occ, x)),
+                    _clue_tile(spec["colclue"][x], bracket, met,
+                               blanked=self._fx_kind == "reject" and beat and not met),
                     dtype=np.int8)
+        for i in range(len(FITTINGS)):
+            found = level.get_sprites_by_name(f"fitting_{i}")
+            if found:
+                found[0].pixels = np.array(
+                    fixture(FITTING_COLOURS, self._tick // 3, i, CELL), dtype=np.int8)
 
     def _toggle(self, px: int, py: int) -> None:
         gx, gy = px // CELL, py // CELL
@@ -312,16 +391,37 @@ class G038(ARCBaseGame):
             self.filled.add((x, y))
 
     def step(self) -> None:
+        self._tick += 1
+        if self._fx:
+            self._fx -= 1
+            if self._fx:
+                self._repaint()
+                return
+            kind, self._fx_kind = self._fx_kind, ""
+            if kind == "clear":
+                self.filled = set()
+            self._repaint()
+            if kind == "commit" and solved(self.spec, frozenset(self.filled)):
+                self.next_level()
+            self.complete_action()
+            return
+
         action = self.action.id
         if action == GameAction.ACTION6:
             self._toggle(int(self.action.data.get("x", -1)),
                          int(self.action.data.get("y", -1)))
             self._repaint()
         elif action == GameAction.ACTION7:
-            self.filled = set()
+            if self.filled:
+                self._fx, self._fx_kind = self.CLEAR_FRAMES, "clear"
+                self._repaint()
+                return
             self._repaint()
         elif action == GameAction.ACTION5:
-            self._repaint()
             if solved(self.spec, frozenset(self.filled)):
-                self.next_level()
+                self._fx, self._fx_kind = self.COMMIT_FRAMES, "commit"
+            else:
+                self._fx, self._fx_kind = self.REJECT_FRAMES, "reject"
+            self._repaint()
+            return
         self.complete_action()

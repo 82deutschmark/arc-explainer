@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -13,11 +14,52 @@ from arcengine import (
     Sprite,
 )
 
-TONES = (0, 1, 2, 3)
-WALL = 5
-PLAYER = 12
-EXIT = 14
-SUN = 11
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def dither(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for y in range(max(0, y0), min(h, y1)):
+        for x in range(max(0, x0), min(w, x1)):
+            if (x + y) % 2:
+                frame[y, x] = colour
+    return frame
+
+
+TONES = (11, 2, 15, 4)
+WALL = 13
+WALL_GRAIN = 4
+PLAYER = 9
+EXIT = WALL
+SUN = TONES[0]
 
 CELL = 4
 N = 16
@@ -202,6 +244,19 @@ def build_levels() -> list[Level]:
     return levels
 
 
+def stamp(frame: np.ndarray, cx: int, cy: int, art: list[list[int]]) -> np.ndarray:
+    for j, row in enumerate(art):
+        for i, value in enumerate(row):
+            if value >= 0:
+                frame[cy * CELL + j, cx * CELL + i] = value
+    return frame
+
+
+WEDGE = (6, 4, 2, 1)
+
+FALL_FRAMES = 5
+
+
 class G014A(RenderableUserDisplay):
 
     def __init__(self, game: "G014") -> None:
@@ -214,24 +269,53 @@ class G014A(RenderableUserDisplay):
         for y in range(N):
             for x in range(N):
                 px, py = x * CELL, y * CELL
-                tone = WALL if shade[y][x] < 0 else TONES[shade[y][x]]
-                frame[py:py + CELL, px:px + CELL] = tone
+                if shade[y][x] < 0:
+                    frame[py:py + CELL, px:px + CELL] = WALL
+                    stamp(frame, x, y, speckle(WALL_GRAIN, (x * 5 + y * 3) % 7))
+                else:
+                    frame[py:py + CELL, px:px + CELL] = TONES[shade[y][x]]
 
         ex, ey = LEVELS_SPEC[g.level_index]["exit"]
-        frame[ey * CELL + 1:ey * CELL + 3, ex * CELL + 1:ex * CELL + 3] = EXIT
-        frame[g.py * CELL + 1:g.py * CELL + 3, g.px * CELL + 1:g.px * CELL + 3] = PLAYER
-
-        sx, sy = SUNS[g.sun]
-        mid = (N // 2 - 1) * CELL
-        if sy < 0:
-            frame[0:CELL, mid:mid + 2 * CELL] = SUN
-        elif sy > 0:
-            frame[(N - 1) * CELL:N * CELL, mid:mid + 2 * CELL] = SUN
-        elif sx > 0:
-            frame[mid:mid + 2 * CELL, (N - 1) * CELL:N * CELL] = SUN
+        stamp(frame, ex, ey, core(EXIT))
+        if g.falling:
+            self._paint_fall(frame, g)
         else:
-            frame[mid:mid + 2 * CELL, 0:CELL] = SUN
+            stamp(frame, g.px, g.py, core(PLAYER))
+
+        self._paint_sun(frame, SUNS[g.sun])
+
+        for seed, (cx, cy) in enumerate(((0, 0), (N - 1, 0), (0, N - 1), (N - 1, N - 1))):
+            stamp(frame, cx, cy,
+                  fixture((WALL_GRAIN, WALL, WALL_GRAIN), g.decor_phase, seed))
         return frame
+
+    def _paint_fall(self, frame: np.ndarray, g: "G014") -> None:
+        fx, fy = g.fall_to
+        x0, y0 = fx * CELL, fy * CELL
+        left = x0 + 1
+        if g.falling == FALL_FRAMES:
+            stamp(frame, fx, fy, rounded(PLAYER))
+        elif g.falling == 4:
+            frame[y0 + 2:y0 + 4, left:left + 2] = PLAYER
+        elif g.falling == 3:
+            dither(frame, (left, y0 + 2, left + 2, y0 + 4), PLAYER)
+        elif g.falling == 2:
+            dither(frame, (left, y0 + 3, left + 2, y0 + 4), PLAYER)
+
+    def _paint_sun(self, frame: np.ndarray, sun: tuple[int, int]) -> None:
+        sx, sy = sun
+        mid = N * CELL // 2
+        span = N * CELL
+        for depth, half in enumerate(WEDGE):
+            lo, hi = mid - half, mid + half
+            if sy < 0:
+                frame[depth, lo:hi] = SUN
+            elif sy > 0:
+                frame[span - 1 - depth, lo:hi] = SUN
+            elif sx < 0:
+                frame[lo:hi, depth] = SUN
+            else:
+                frame[lo:hi, span - 1 - depth] = SUN
 
 
 class G014(ARCBaseGame):
@@ -240,6 +324,9 @@ class G014(ARCBaseGame):
         self.px, self.py = LEVELS_SPEC[0]["start"]
         self.heights = heights(LEVELS_SPEC[0]["rows"])
         self.sun = 0
+        self.falling = 0
+        self.fall_to = LEVELS_SPEC[0]["start"]
+        self.decor_phase = 0
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=TONES[0], letter_box=WALL,
@@ -252,6 +339,8 @@ class G014(ARCBaseGame):
         self.px, self.py = spec["start"]
         self.heights = heights(spec["rows"])
         self.sun = 0
+        self.falling = 0
+        self.fall_to = spec["start"]
         self._sync(level)
 
     def level_reset(self) -> None:
@@ -269,6 +358,13 @@ class G014(ARCBaseGame):
             body[0].set_position(self.px * CELL, self.py * CELL)
 
     def step(self) -> None:
+        if self.falling:
+            self.falling -= 1
+            if self.falling == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+
         delta = {
             GameAction.ACTION1: (0, -1),
             GameAction.ACTION2: (0, 1),
@@ -281,8 +377,8 @@ class G014(ARCBaseGame):
             if 0 <= nx < N and 0 <= ny < N and self.heights[ny][nx] >= 0:
                 drop = self.heights[ny][nx] - self.heights[self.py][self.px]
                 if drop <= -2:
-                    self.level_reset()
-                    self.complete_action()
+                    self.fall_to = (nx, ny)
+                    self.falling = FALL_FRAMES
                     return
                 if drop <= 1:
                     self.px, self.py = nx, ny
@@ -293,4 +389,5 @@ class G014(ARCBaseGame):
                         return
 
         self.sun = (self.sun + 1) % len(SUNS)
+        self.decor_phase += 1
         self.complete_action()

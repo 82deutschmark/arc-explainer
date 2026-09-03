@@ -13,20 +13,74 @@ from arcengine import (
     Sprite,
 )
 
-DARK = 5
-M_WALL = 1
-M_FLOOR = 4
-M_PLAYER = 12
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def outline(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for x in range(max(0, x0), min(w, x1)):
+        if 0 <= y0 < h:
+            frame[y0, x] = colour
+        if 0 <= y1 - 1 < h:
+            frame[y1 - 1, x] = colour
+    for y in range(max(0, y0), min(h, y1)):
+        if 0 <= x0 < w:
+            frame[y, x0] = colour
+        if 0 <= x1 - 1 < w:
+            frame[y, x1 - 1] = colour
+    return frame
+
+
+FIELD = 1
+GRIT = 3
+M_FLOOR = 1
+M_WALL = 3
+M_PLAYER = 8
 M_EXIT = 14
-BAR_IDLE = 3
+M_EMPTY = 15
+CHROME = 3
 BAR_ARMED = 11
+FITTINGS = (3, 14, 8, 1, 3)
 
 N = 12
 CELL = 4
 ORIGIN = 8
+SPAN = N * CELL
+SLOT_DEEP = 6
+BAND_DEEP = 8
 
 ANCHORS = ((5, 0), (11, 5), (6, 11), (0, 6))
 DIRS = ((0, -1), (1, 0), (0, 1), (-1, 0))
+
+CORNERS = ((0, 0), (0, 64 - ORIGIN), (64 - ORIGIN, 0), (64 - ORIGIN, 64 - ORIGIN))
+
+def _grit_mask():
+    mask = np.zeros((SPAN, SPAN), dtype=bool)
+    seed = 0x5EED47
+    for y in range(SPAN):
+        for x in range(SPAN):
+            seed = (seed * 1103515245 + 12345) & 0x7FFFFFFF
+            mask[y, x] = (seed >> 16) % 29 == 0
+    return mask
+
+
+GRIT_MASK = _grit_mask()
 
 
 def strip_cells(rows, anchor, orient):
@@ -164,19 +218,19 @@ def build_levels() -> list[Level]:
                 px, py = ORIGIN + x * CELL, ORIGIN + y * CELL
                 if char == "#":
                     sprites.append(Sprite(
-                        pixels=_cell_block(DARK), name=f"wall_{x}_{y}",
+                        pixels=_cell_block(FIELD), name=f"wall_{x}_{y}",
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=-1,
                     ).set_position(px, py))
                 elif char == "X":
                     sprites.append(Sprite(
-                        pixels=_cell_block(DARK), name="exit",
+                        pixels=_cell_block(FIELD), name="exit",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=0, tags=["exit"],
                     ).set_position(px, py))
                 elif char == "P":
                     sprites.append(Sprite(
-                        pixels=_cell_block(DARK), name="player",
+                        pixels=_cell_block(FIELD), name="player",
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=1,
                     ).set_position(px, py))
@@ -190,52 +244,88 @@ class G047A(RenderableUserDisplay):
         super().__init__()
         self._game = game
 
+    @staticmethod
+    def _put(frame, k, a0, a1, d0, d1, colour) -> None:
+        if k == 0:
+            frame[d0:d1, ORIGIN + a0:ORIGIN + a1] = colour
+        elif k == 1:
+            frame[ORIGIN + a0:ORIGIN + a1, 64 - d1:64 - d0] = colour
+        elif k == 2:
+            frame[64 - d1:64 - d0, ORIGIN + a0:ORIGIN + a1] = colour
+        else:
+            frame[ORIGIN + a0:ORIGIN + a1, d0:d1] = colour
+
     def _slot_colour(self, cell) -> int:
         g = self._game
         if cell == (g.px, g.py):
+            if g.flash and cell == g.exit:
+                return M_EXIT if g.flash % 2 else M_PLAYER
             return M_PLAYER
         if cell == g.exit:
             return M_EXIT
         return M_WALL if g.rows[cell[1]][cell[0]] == "#" else M_FLOOR
 
-    def render_interface(self, frame: np.ndarray) -> np.ndarray:
+    def _paint_field(self, frame) -> None:
+        field = frame[ORIGIN:ORIGIN + SPAN, ORIGIN:ORIGIN + SPAN]
+        field[:] = FIELD
+        field[GRIT_MASK] = GRIT
+
+    def _paint_panel(self, frame, k) -> None:
         g = self._game
+        cells = strip_cells(g.rows, ANCHORS[k], g.orients[k])
+        lit = BAR_ARMED if g.held == k else CHROME
+        self._put(frame, k, 0, SPAN, SLOT_DEEP, BAND_DEEP, M_EMPTY)
+        for i in range(N):
+            a = i * CELL
+            self._put(frame, k, a, a + CELL, 0, SLOT_DEEP,
+                      self._slot_colour(cells[i]) if i < len(cells) else M_EMPTY)
+            self._put(frame, k, a, a + CELL - 1, SLOT_DEEP, BAND_DEEP, lit)
+            if i % 4 == 3 and i != N - 1:
+                self._put(frame, k, a + CELL - 1, a + CELL, BAND_DEEP - 1, BAND_DEEP, lit)
+
+    def _paint_corners(self, frame) -> None:
+        tick = self._game.tick
+        for seed, (top, left) in enumerate(CORNERS):
+            frame[top:top + ORIGIN, left:left + ORIGIN] = M_EMPTY
+            phase = (tick + seed) % len(FITTINGS)
+            art = ring(FITTINGS[phase]) if phase % 2 == 0 else core(FITTINGS[phase])
+            for y in range(CELL):
+                for x in range(CELL):
+                    if art[y][x] >= 0:
+                        frame[top + 2 + y, left + 2 + x] = art[y][x]
+
+    def _paint_flash(self, frame) -> None:
+        step = G047.FLASH_FRAMES - self._game.flash
+        inset = 4 * (G047.FLASH_FRAMES - step)
+        lo, hi = ORIGIN + inset, ORIGIN + SPAN - inset
+        if hi - lo >= 4:
+            outline(frame, (lo, lo, hi, hi), M_EXIT)
+
+    def render_interface(self, frame: np.ndarray) -> np.ndarray:
+        self._paint_field(frame)
         for k in range(4):
-            cells = strip_cells(g.rows, ANCHORS[k], g.orients[k])
-            for i in range(N):
-                colour = self._slot_colour(cells[i]) if i < len(cells) else DARK
-                lo = ORIGIN + i * CELL
-                if k == 0:
-                    frame[0:6, lo:lo + CELL] = colour
-                elif k == 1:
-                    frame[lo:lo + CELL, 58:64] = colour
-                elif k == 2:
-                    frame[58:64, lo:lo + CELL] = colour
-                else:
-                    frame[lo:lo + CELL, 0:6] = colour
-            bar = BAR_ARMED if g.held == k else BAR_IDLE
-            if k == 0:
-                frame[6:8, ORIGIN:ORIGIN + N * CELL] = bar
-            elif k == 1:
-                frame[ORIGIN:ORIGIN + N * CELL, 56:58] = bar
-            elif k == 2:
-                frame[56:58, ORIGIN:ORIGIN + N * CELL] = bar
-            else:
-                frame[ORIGIN:ORIGIN + N * CELL, 6:8] = bar
+            self._paint_panel(frame, k)
+        self._paint_corners(frame)
+        if self._game.flash:
+            self._paint_flash(frame)
         return frame
 
 
 class G047(ARCBaseGame):
+
+    FLASH_FRAMES = 5
 
     def __init__(self) -> None:
         spec = LEVELS_SPEC[0]
         self.rows = spec["rows"]
         self.orients = list(spec["orients"])
         self.held: int | None = None
+        self.flash = 0
+        self.tick = 0
         self.px, self.py = self._find(spec["rows"], "P")
         self.exit = self._find(spec["rows"], "X")
         camera = Camera(
-            width=64, height=64, background=DARK, letter_box=DARK,
+            width=64, height=64, background=FIELD, letter_box=FIELD,
             interfaces=[G047A(self)],
         )
         super().__init__(game_id="g047", levels=build_levels(), camera=camera)
@@ -253,6 +343,7 @@ class G047(ARCBaseGame):
         self.rows = spec["rows"]
         self.orients = list(spec["orients"])
         self.held = None
+        self.flash = 0
         self.px, self.py = self._find(spec["rows"], "P")
         self.exit = self._find(spec["rows"], "X")
         self._sync_sprite()
@@ -264,6 +355,7 @@ class G047(ARCBaseGame):
 
     def full_reset(self) -> None:
         super().full_reset()
+        self.tick = 0
         self.on_set_level(self.current_level)
 
     def _sync_sprite(self) -> None:
@@ -281,6 +373,15 @@ class G047(ARCBaseGame):
         return visible_cells(self.rows, self.orients)
 
     def step(self) -> None:
+        self.tick += 1
+
+        if self.flash:
+            self.flash -= 1
+            if self.flash == 0:
+                self.next_level()
+                self.complete_action()
+            return
+
         aid = self.action.id
         if aid in (GameAction.ACTION1, GameAction.ACTION2,
                    GameAction.ACTION3, GameAction.ACTION4):
@@ -300,6 +401,7 @@ class G047(ARCBaseGame):
                 self.orients[self.held] = (self.orients[self.held] + 1) % 4
 
         if (self.px, self.py) == self.exit and self.exit in self.visible():
-            self.next_level()
+            self.flash = self.FLASH_FRAMES
+            return
 
         self.complete_action()

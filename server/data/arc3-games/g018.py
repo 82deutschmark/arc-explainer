@@ -12,21 +12,79 @@ from arcengine import (
     Sprite,
 )
 
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def hatch(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 3 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+
 N = 16
 CELL = 4
 WALL_H = -1
 
-HEIGHT_COLOUR = {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}
-WALL = 13
-FLOOD = 9
+FLOOR = 13
+RELIEF = 7
+ROCK = 0
+FLOOD = 10
 DAMP_DRY = 10
 DAMP_WET = 11
-DAMP_SPENT = 6
-FLAG_OPEN = 14
-FLAG_DONE = 8
-SUMMIT = 15
+DAMP_SPENT = 10
+GOAL = 14
 SUMMIT_READY = 14
-PLAYER = 12
+PLAYER = 14
+PLAYER_MARK = 0
 
 DROWNED = object()
 
@@ -153,23 +211,48 @@ def is_win(model: dict, state: tuple) -> bool:
     return (state[0], state[1]) == model["summit"] and state[3] == model["all_flags"]
 
 
-def _ring(colour: int, core: int) -> list[list[int]]:
-    block = [[colour] * CELL for _ in range(CELL)]
-    for j in (1, 2):
-        for i in (1, 2):
-            block[j][i] = core
-    return block
+BAYER = ((0, 8, 2, 10), (12, 4, 14, 6), (3, 11, 1, 9), (15, 7, 13, 5))
+RELIEF_STEPS = (0, 3, 6, 9, 12, 15)
 
 
-def _player_pixels() -> list[list[int]]:
-    return _ring(PLAYER, -1)
+def _over(base: list[list[int]], mark: list[list[int]]) -> list[list[int]]:
+    return [[mark[y][x] if mark[y][x] >= 0 else base[y][x] for x in range(CELL)]
+            for y in range(CELL)]
+
+
+GROUND = tuple(
+    [[RELIEF if BAYER[y][x] < n else FLOOR for x in range(CELL)] for y in range(CELL)]
+    for n in RELIEF_STEPS
+)
+WATER_BLOCK = [[FLOOD] * CELL for _ in range(CELL)]
+_ROCK_BLOCKS: dict = {}
+
+
+def _rock(cx: int, cy: int, phase: int) -> list[list[int]]:
+    key = (cx, cy, phase)
+    got = _ROCK_BLOCKS.get(key)
+    if got is None:
+        got = [[ROCK] * CELL for _ in range(CELL)]
+        got[(cx * 3 + cy * 2) % CELL][(cx + cy * 3) % CELL] = FLOOR
+        if (cx * 5 + cy * 7) % 11 == 0:
+            got = _over(got, fixture((ROCK, RELIEF, ROCK), phase, cx + cy, CELL))
+        _ROCK_BLOCKS[key] = got
+    return got
+
+
+def _player_pixels(sunk: bool = False) -> list[list[int]]:
+    if sunk:
+        return figure(FLOOD, FLOOD, CELL)
+    px = figure(PLAYER, PLAYER_MARK, CELL)
+    px[1][1] = PLAYER_MARK
+    return px
 
 
 def build_levels() -> list[Level]:
     levels: list[Level] = []
     for model in MODELS:
         board = Sprite(
-            pixels=[[WALL] * (N * CELL) for _ in range(N * CELL)], name="board",
+            pixels=[[ROCK] * (N * CELL) for _ in range(N * CELL)], name="board",
             blocking=BlockingMode.NOT_BLOCKED, interaction=InteractionMode.INTANGIBLE,
             layer=-1, collidable=False,
         ).set_position(0, 0)
@@ -185,12 +268,20 @@ def build_levels() -> list[Level]:
 
 class G018(ARCBaseGame):
 
+    RISE_HOLD = 2
+    DROWN_FRAMES = 6
+
     def __init__(self) -> None:
         self.state = start_state(MODELS[0])
         self.cashed = 0
+        self.tick = 0
+        self.shown_water = None
+        self.shown_at = None
+        self._rise = 0
+        self._drown = 0
         super().__init__(game_id="g018", levels=build_levels(),
                          camera=Camera(width=N * CELL, height=N * CELL,
-                                       background=WALL, letter_box=WALL),
+                                       background=ROCK, letter_box=ROCK),
                          available_actions=[1, 2, 3, 4])
 
     @property
@@ -200,6 +291,11 @@ class G018(ARCBaseGame):
     def on_set_level(self, level: Level) -> None:
         self.state = start_state(MODELS[self.level_index])
         self.cashed = 0
+        self.tick = 0
+        self.shown_water = None
+        self.shown_at = None
+        self._rise = 0
+        self._drown = 0
         self._repaint(level)
 
     def level_reset(self) -> None:
@@ -217,37 +313,36 @@ class G018(ARCBaseGame):
             return
         board = found[0]
         x, y, wet, taken, water = self.state
+        if self.shown_water is not None:
+            water = self.shown_water
+        if self.shown_at is not None:
+            x, y = self.shown_at
         pix = board.pixels
         for cy in range(N):
             for cx in range(N):
                 h = model["heights"][cy][cx]
                 if h < 0:
-                    colour = WALL
+                    block = _rock(cx, cy, self.tick % 3)
                 elif h < water:
-                    colour = FLOOD
+                    block = WATER_BLOCK
                 else:
-                    colour = HEIGHT_COLOUR[h]
-                block = [[colour] * CELL for _ in range(CELL)]
-                if colour != FLOOD and colour != WALL:
+                    block = GROUND[h]
                     di = model["damp_index"].get((cx, cy))
                     if di is not None:
                         if not (wet >> di) & 1:
-                            dot = DAMP_DRY
+                            block = _over(block, core(DAMP_DRY, CELL))
                         elif (self.cashed >> di) & 1:
-                            dot = DAMP_SPENT
+                            block = _over(block, hatch(DAMP_SPENT, CELL))
                         else:
-                            dot = DAMP_WET
-                        for j in (1, 2):
-                            for i in (1, 2):
-                                block[j][i] = dot
+                            block = _over(block, core(DAMP_WET, CELL))
                     fi = model["flag_index"].get((cx, cy))
                     if fi is not None:
-                        block = _ring(FLAG_DONE if (taken >> fi) & 1 else FLAG_OPEN,
-                                      colour)
+                        block = _over(block, door(
+                            GOAL, FLOOD if (taken >> fi) & 1 else None, CELL))
                     if (cx, cy) == model["summit"]:
-                        block = _ring(SUMMIT,
-                                      SUMMIT_READY if taken == model["all_flags"]
-                                      else colour)
+                        block = _over(block, ring(GOAL, CELL))
+                        if taken == model["all_flags"]:
+                            block = _over(block, core(SUMMIT_READY, CELL))
                 pix[cy * CELL:(cy + 1) * CELL, cx * CELL:(cx + 1) * CELL] = \
                     np.array(block, dtype=np.int8)
 
@@ -255,7 +350,36 @@ class G018(ARCBaseGame):
         if players:
             players[0].set_position(x * CELL, y * CELL)
 
+    def _settle(self) -> None:
+        if is_win(self.model, self.state):
+            self.next_level()
+        self.complete_action()
+
     def step(self) -> None:
+        self.tick += 1
+
+        if self._drown:
+            self._drown -= 1
+            for sp in self.current_level.get_sprites_by_name("player"):
+                sp.pixels = np.array(_player_pixels(self._drown % 2 == 0))
+            self._repaint(self.current_level)
+            if self._drown == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+
+        if self._rise:
+            self._rise -= 1
+            if self.shown_water is not None and self.shown_water < self.state[4]:
+                self.shown_water += 1
+            if self._rise == 0:
+                self.shown_water = None
+                self.cashed = self.state[2]
+            self._repaint(self.current_level)
+            if self._rise == 0:
+                self._settle()
+            return
+
         dx = dy = 0
         if self.action.id == GameAction.ACTION1:
             dy = -1
@@ -271,17 +395,19 @@ class G018(ARCBaseGame):
 
         result = apply_move(self.model, self.state, dx, dy)
         if result is DROWNED:
-            self.level_reset()
-            self.complete_action()
+            self.shown_at = (self.state[0] + dx, self.state[1] + dy)
+            self.shown_water = self.state[4] + tally_of(self.state)
+            self._drown = self.DROWN_FRAMES
+            self._repaint(self.current_level)
             return
 
-        if result[4] > self.state[4]:
-            self.cashed = result[2]
+        rose = result[4] - self.state[4]
         self.state = result
-        if is_win(self.model, self.state):
-            self.next_level()
-            self.complete_action()
+        if rose > 0:
+            self.shown_water = result[4] - rose
+            self._rise = rose + self.RISE_HOLD
+            self._repaint(self.current_level)
             return
 
         self._repaint(self.current_level)
-        self.complete_action()
+        self._settle()

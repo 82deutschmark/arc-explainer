@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.39.0  Sep 3, 2026
+
+- **All 50 authored games republished after a set-wide visual pass** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: every one of the fifty hand-authored ARC-AGI-3 tasks got a presentation pass in the authoring repo — new palette, real drawn shapes instead of flat squares, readouts moved off the top border, and actions that used to resolve in a single frame now playing out over several. No game rule, level layout or win condition changed anywhere; all fifty verify on both lanes. 36 games and their preview frames are updated here.
+  - **The cause of the sameness was one line of copy-paste.** `floor 4 / wall 1 / player 12 / exit 14` appeared verbatim across the set, which is why games sharing almost no code looked like siblings. Set-wide pairwise similarity fell from 0.209 to 0.169.
+  - **Two scripts were broken by the id rename and are fixed here.** `build_authored_manifest.py` rejected the new `gNNN` names outright, and `render_authored_frames.py` still globbed the old hashed `t*` form and reported no sources at all. Both now accept either, so a half-migrated tree builds instead of failing — which is exactly the state this repo was in for several hours.
+  - **A publish went to the wrong branch first.** Another session had checked out `arc3-hypothesis-sweep` in this working copy, so the import wrote fifty files there before anyone noticed. Reverted without loss. Worth knowing that this repo has more than one writer and `git branch --show-current` is cheap.
+  - **Files**: 36 game sources and 36 frames under `server/data/arc3-games/`, plus `manifest.json`, `frames.json`, the registry, and the two scripts.
+
 ### Version 9.38.0  Sep 2, 2026
 
 - **The curated game categories reached nothing; now the API serves them** (Author: Mark Barney / Claude Opus 5)

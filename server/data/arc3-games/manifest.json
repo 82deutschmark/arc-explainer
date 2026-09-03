@@ -1,5 +1,32 @@
 [
   {
+    "id": "g001",
+    "class_name": "G001",
+    "src_file": "g001.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g005",
+    "class_name": "G005",
+    "src_file": "g005.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g006",
+    "class_name": "G006",
+    "src_file": "g006.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
     "id": "g007",
     "class_name": "G007",
     "src_file": "g007.py",
@@ -9,117 +36,9 @@
     "tile_scale": 4
   },
   {
-    "id": "g030",
-    "class_name": "G030",
-    "src_file": "g030.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g040",
-    "class_name": "G040",
-    "src_file": "g040.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g026",
-    "class_name": "G026",
-    "src_file": "g026.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g036",
-    "class_name": "G036",
-    "src_file": "g036.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g035",
-    "class_name": "G035",
-    "src_file": "g035.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g041",
-    "class_name": "G041",
-    "src_file": "g041.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g022",
-    "class_name": "G022",
-    "src_file": "g022.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g011",
-    "class_name": "G011",
-    "src_file": "g011.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g013",
-    "class_name": "G013",
-    "src_file": "g013.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g016",
-    "class_name": "G016",
-    "src_file": "g016.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g015",
-    "class_name": "G015",
-    "src_file": "g015.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g014",
-    "class_name": "G014",
-    "src_file": "g014.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g047",
-    "class_name": "G047",
-    "src_file": "g047.py",
+    "id": "g008",
+    "class_name": "G008",
+    "src_file": "g008.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
@@ -135,18 +54,198 @@
     "tile_scale": 4
   },
   {
-    "id": "g037",
-    "class_name": "G037",
-    "src_file": "g037.py",
+    "id": "g010",
+    "class_name": "G010",
+    "src_file": "g010.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
   },
   {
-    "id": "g043",
-    "class_name": "G043",
-    "src_file": "g043.py",
+    "id": "g011",
+    "class_name": "G011",
+    "src_file": "g011.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g012",
+    "class_name": "G012",
+    "src_file": "g012.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g013",
+    "class_name": "G013",
+    "src_file": "g013.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g014",
+    "class_name": "G014",
+    "src_file": "g014.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g015",
+    "class_name": "G015",
+    "src_file": "g015.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g016",
+    "class_name": "G016",
+    "src_file": "g016.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g017",
+    "class_name": "G017",
+    "src_file": "g017.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g018",
+    "class_name": "G018",
+    "src_file": "g018.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g019",
+    "class_name": "G019",
+    "src_file": "g019.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g020",
+    "class_name": "G020",
+    "src_file": "g020.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g021",
+    "class_name": "G021",
+    "src_file": "g021.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g022",
+    "class_name": "G022",
+    "src_file": "g022.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g023",
+    "class_name": "G023",
+    "src_file": "g023.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g024",
+    "class_name": "G024",
+    "src_file": "g024.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g025",
+    "class_name": "G025",
+    "src_file": "g025.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g026",
+    "class_name": "G026",
+    "src_file": "g026.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g027",
+    "class_name": "G027",
+    "src_file": "g027.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g028",
+    "class_name": "G028",
+    "src_file": "g028.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g029",
+    "class_name": "G029",
+    "src_file": "g029.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g030",
+    "class_name": "G030",
+    "src_file": "g030.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g031",
+    "class_name": "G031",
+    "src_file": "g031.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
@@ -171,24 +270,6 @@
     "tile_scale": 4
   },
   {
-    "id": "g171",
-    "class_name": "G171",
-    "src_file": "g171.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g017",
-    "class_name": "G017",
-    "src_file": "g017.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
     "id": "g034",
     "class_name": "G034",
     "src_file": "g034.py",
@@ -198,108 +279,27 @@
     "tile_scale": 4
   },
   {
-    "id": "g025",
-    "class_name": "G025",
-    "src_file": "g025.py",
+    "id": "g035",
+    "class_name": "G035",
+    "src_file": "g035.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
   },
   {
-    "id": "g010",
-    "class_name": "G010",
-    "src_file": "g010.py",
+    "id": "g036",
+    "class_name": "G036",
+    "src_file": "g036.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
   },
   {
-    "id": "g028",
-    "class_name": "G028",
-    "src_file": "g028.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g020",
-    "class_name": "G020",
-    "src_file": "g020.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g006",
-    "class_name": "G006",
-    "src_file": "g006.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g136",
-    "class_name": "G136",
-    "src_file": "g136.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g039",
-    "class_name": "G039",
-    "src_file": "g039.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g044",
-    "class_name": "G044",
-    "src_file": "g044.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g027",
-    "class_name": "G027",
-    "src_file": "g027.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g001",
-    "class_name": "G001",
-    "src_file": "g001.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g024",
-    "class_name": "G024",
-    "src_file": "g024.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g023",
-    "class_name": "G023",
-    "src_file": "g023.py",
+    "id": "g037",
+    "class_name": "G037",
+    "src_file": "g037.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
@@ -315,63 +315,27 @@
     "tile_scale": 4
   },
   {
-    "id": "g012",
-    "class_name": "G012",
-    "src_file": "g012.py",
+    "id": "g039",
+    "class_name": "G039",
+    "src_file": "g039.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
   },
   {
-    "id": "g045",
-    "class_name": "G045",
-    "src_file": "g045.py",
+    "id": "g040",
+    "class_name": "G040",
+    "src_file": "g040.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
   },
   {
-    "id": "g178",
-    "class_name": "G178",
-    "src_file": "g178.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g029",
-    "class_name": "G029",
-    "src_file": "g029.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g050",
-    "class_name": "G050",
-    "src_file": "g050.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g019",
-    "class_name": "G019",
-    "src_file": "g019.py",
-    "category": "arena",
-    "official": false,
-    "default_fps": 10,
-    "tile_scale": 4
-  },
-  {
-    "id": "g046",
-    "class_name": "G046",
-    "src_file": "g046.py",
+    "id": "g041",
+    "class_name": "G041",
+    "src_file": "g041.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
@@ -387,27 +351,63 @@
     "tile_scale": 4
   },
   {
-    "id": "g031",
-    "class_name": "G031",
-    "src_file": "g031.py",
+    "id": "g043",
+    "class_name": "G043",
+    "src_file": "g043.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
   },
   {
-    "id": "g005",
-    "class_name": "G005",
-    "src_file": "g005.py",
+    "id": "g044",
+    "class_name": "G044",
+    "src_file": "g044.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
   },
   {
-    "id": "g008",
-    "class_name": "G008",
-    "src_file": "g008.py",
+    "id": "g045",
+    "class_name": "G045",
+    "src_file": "g045.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g046",
+    "class_name": "G046",
+    "src_file": "g046.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g047",
+    "class_name": "G047",
+    "src_file": "g047.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g050",
+    "class_name": "G050",
+    "src_file": "g050.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g136",
+    "class_name": "G136",
+    "src_file": "g136.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
@@ -432,18 +432,18 @@
     "tile_scale": 4
   },
   {
-    "id": "g018",
-    "class_name": "G018",
-    "src_file": "g018.py",
+    "id": "g171",
+    "class_name": "G171",
+    "src_file": "g171.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
   },
   {
-    "id": "g021",
-    "class_name": "G021",
-    "src_file": "g021.py",
+    "id": "g178",
+    "class_name": "G178",
+    "src_file": "g178.py",
     "category": "arena",
     "official": false,
     "default_fps": 10,

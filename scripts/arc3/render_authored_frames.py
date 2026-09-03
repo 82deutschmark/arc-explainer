@@ -154,7 +154,10 @@ def main() -> int:
         assert palette[9] == (30, 147, 255), palette[9]
         print(f"palette ok: 16 colours parsed from {PALETTE_TS.relative_to(REPO)}")
 
-    sources = sorted(p for p in GAMES_DIR.glob("t*.py") if p.is_file())
+    # gNNN since the 03-Sep rename; the old hashed t-form is still matched so this
+    # renders a tree that has not been re-imported yet instead of reporting none.
+    sources = sorted(p for p in GAMES_DIR.glob("[gt]*.py")
+                     if p.is_file() and not p.name.startswith("__"))
     if not sources:
         raise SystemExit(f"no authored task sources under {GAMES_DIR}")
 
