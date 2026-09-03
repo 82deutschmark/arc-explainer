@@ -45,6 +45,7 @@ GAMES_DIR = REPO / "server" / "data" / "arc3-games"
 TRIAGE = REPO / "server" / "services" / "arc3Mirror" / "arc3Triage.json"
 OUT = GAMES_DIR / "mechanics.json"
 NOTES = GAMES_DIR / "mechanics-notes.json"
+CATEGORIES = GAMES_DIR / "categories.json"
 
 # The independent classification this extractor has to reproduce before its output can be
 # trusted: the seven xy-click tasks and the two that take ACTION6 as a plain button,
@@ -260,6 +261,11 @@ def build() -> list[dict]:
     manifest = json.loads((GAMES_DIR / "manifest.json").read_text(encoding="utf-8"))
     triage = triage_index()
     notes = json.loads(NOTES.read_text(encoding="utf-8")) if NOTES.exists() else {}
+    # The kind of game -- "Timing / Cycles", "Environmental Manipulation". Human-edited,
+    # like the prose, because nothing here can tell one from the other by reading source.
+    # It was written for docs/arc3-games-registry.md and reached nothing else; merging it
+    # in means the API serves it too, rather than every consumer re-reading the file.
+    categories = json.loads(CATEGORIES.read_text(encoding="utf-8")) if CATEGORIES.exists() else {}
     out = []
     for row in manifest:
         path = GAMES_DIR / row["src_file"]
@@ -273,6 +279,7 @@ def build() -> list[dict]:
         entry["mechanic"] = note.get("mechanic")
         entry["controls"] = note.get("controls")
         entry["goal"] = note.get("goal")
+        entry["category"] = categories.get(entry["gameId"])
         out.append(entry)
     return out
 

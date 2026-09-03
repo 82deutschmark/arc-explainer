@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.38.0  Sep 2, 2026
+
+- **The curated game categories reached nothing; now the API serves them** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: `categories.json` gives each of the 50 authored tasks a kind — "Timing / Cycles", "Environmental Manipulation", 13 in all. It was written for `docs/arc3-games-registry.md` and read by nothing else, while every consumer that wanted a category got `"arena"`, which is a *source* label, not a kind.
+  - **How**: `mechanic_digest.py` now merges `categories.json` the same way it already merges `mechanics-notes.json`, so the kind rides along in `mechanics.json` and out through `GET /api/arc3-mirror/mechanics`. One human-edited file, one merge, one endpoint — rather than each consumer re-reading the file.
+  - **Where it deliberately did NOT go**: `MirroredGame`, the public catalog behind the gallery. That type carries the comment "No field here describes play", and "Memory / Hidden State" describes play. Putting a kind label on public tiles is a trade against the blind-first-play experiment and is a product call, not a plumbing one.
+  - **Verified**: `--selftest` passes (7 xy-click, 2 button, prose agreeing with the source for all 50) — and note it now runs for real; the digest needs `--selftest`/`--write`, and a bare run only prints. The endpoint returns 50 of 50 with a category across all 13 kinds, and `/api/arc3-mirror/games` still exposes nothing but provenance.
+  - **Files**: `scripts/arc3/mechanic_digest.py`, `shared/arc3Mechanics.ts`, `server/data/arc3-games/mechanics.json`.
+
 ### Version 9.37.0  Sep 2, 2026
 
 - **A game is called `g007` again, in both repos** (Author: Mark Barney / Claude Opus 5)
