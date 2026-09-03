@@ -5,6 +5,8 @@
  * edge-to-edge layout. Includes the OpenRouter sync banner and the full AppNavigation.
  * 2026-08-29: the subtitle leads with ARC-3 and marks 1 & 2 as archive. The old resource
  * hub is still at /home, linked from the "ARC 1 & 2" nav dropdown.
+ * 2026-09-03: the brand mark resolves to the landing page on every host, not just the
+ * synthetic one -- see brandHomeHref in lib/syntheticHost.ts.
  * 2026-09-02: the brand mark points at / and not at /arc3/gallery. Two reasons, and both
  * were live complaints. It was the SECOND control going to the gallery -- the nav's
  * "Browse" is the first -- so the one place every site puts "take me home" was a
@@ -16,6 +18,7 @@
  */
 import React from 'react';
 import { Link } from 'wouter';
+import { brandHomeHref } from '@/lib/syntheticHost';
 import { AppNavigation } from './AppNavigation';
 import { OpenRouterSyncBanner } from './OpenRouterSyncBanner';
 
@@ -25,11 +28,12 @@ export function AppHeader() {
       <OpenRouterSyncBanner />
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-12 items-center justify-between gap-4 px-4">
-        {/* Home is `/`, whatever `/` means on this host -- the synthetic landing on
-            arc3.markbarney.net, the gallery everywhere else (see RootLanding in App.tsx).
-            Pointing the mark at the gallery directly duplicated "Browse" and left the
-            landing page unreachable. */}
-        <Link href="/">
+        {/* The mark goes to the landing page, on every host. Pointing it at `/` was not
+            enough: `/` only IS the landing on arc3.markbarney.net, and everywhere else it
+            redirects to /arc3/gallery -- so the mark was the second control going to the
+            gallery, next to the nav's "Browse", and the landing page had no link to it
+            from anywhere in the chrome. brandHomeHref() picks `/` or `/synthetic`. */}
+        <Link href={brandHomeHref()}>
           <div className="flex items-center gap-3 cursor-pointer group min-w-fit">
             {/* ARC-inspired colorful logo */}
             <div className="flex flex-col gap-0.5 group-hover:scale-110 transition-transform">

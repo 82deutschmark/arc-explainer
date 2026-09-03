@@ -397,7 +397,7 @@ def build_cells(args) -> list[dict]:
                 cells.append(
                     {
                         "prompt_variant": args.prompt_variant,
-                        "stimulus_form": "bare_frame",
+                        "stimulus_form": args.stimulus_form,
                         "image_px": args.image_px,
                         "temperature": temperature,
                         "top_k": top_k,
@@ -465,6 +465,16 @@ def parse_args(argv=None):
     parser.add_argument("--prompt-variant", default=hypothesis_prompts.DEFAULT_VARIANT,
                         choices=sorted(hypothesis_prompts.PROMPTS))
     parser.add_argument("--image-px", type=int, default=512)
+    # Was hardcoded to "bare_frame" on every row. That is a claim about what the model was
+    # shown, and it stops being true the moment a frame is supplied rather than rendered - a
+    # console screenshot carries the level counter and the control labels, and UNDO (Z) alone
+    # tells a reader that moves are discrete and undoable. Rows that mix the two silently are
+    # not comparable, and nothing else in the row would reveal it. It stays "bare_frame" by
+    # default, so every existing invocation records exactly what it recorded before.
+    parser.add_argument("--stimulus-form", default="bare_frame",
+                        help="What the image actually is. Set it when supplying your own "
+                             "frames (e.g. console_screenshot); it is recorded on every row "
+                             "and is part of the run key, so two forms never collide.")
     parser.add_argument("--max-tokens", type=int, default=None,
                         help="Default: 1500 thinking off, 3500 on. A thinking run at 1200 spent "
                              "every token on reasoning and returned EMPTY content.")

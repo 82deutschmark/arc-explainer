@@ -14,13 +14,10 @@
 
 ### Version 9.40.0  Sep 3, 2026
 
-- **g010 republished: the one game the set-wide pass left behind** (Author: Mark Barney / Claude Opus 5)
-  - **In plain language**: the previous entry republished all fifty games at 11:23. g010 was rebuilt upstream at 15:08, four hours later, so the copy this repo serves was still the old build. This is that one game, resynced, and nothing else — the other forty-nine already matched.
-  - **What actually changed in the game**: its opening frame used to be a near-black field (96.1% black pixels); it is now a whiteout — 80.0% pure white, with a small dark disc of lit ground. `frames.json` records the flip: background colour 5 → 0, distinct colours 3 → 5, ink fraction 0.0388 → 0.2002. The published source shrank 20,979 → 17,138 bytes.
-  - **How it was found, and how you find the next one**: `scripts/arc3/import_authored_games.py --check` against the authoring repo's `dist/` names every drifted file and exits 1. It named exactly one. Run it before assuming a republish is still current — an upstream commit landing after a publish is the normal case, not an unusual one.
-  - **All fifty frames were re-rendered, and only g010's moved.** That is the intended result and is worth stating: the renderer is deterministic against unchanged sources, so a frame that changes without its source changing is a bug.
-  - **Verified**: import `--check` and `build_authored_manifest.py --check` both exit 0; the authoring repo's verifier passes g010 on both source and dist lanes; the legibility gate passes the published copy; `render_authored_frames.py --selftest` reports 50 frames, none blank; `npm run build` exits 0 and `tsc --noEmit` produces no error the base branch did not already have.
-  - **Files**: `server/data/arc3-games/g010.py`, `server/data/arc3-games/frames/g010.png`, `server/data/arc3-games/frames.json`.
+- **The brand mark goes to the landing page on every host, and the landing page's one ask moved into the hero** (Author: Mark Barney / Claude Opus 5)
+  - **The mark was still a second link to the gallery.** It pointed at `/`, which only IS the landing page on `arc3.markbarney.net`; on `arc.markbarney.net` `/` redirects to `/arc3/gallery`, so "ARC Explainer" and the nav's "Browse" were two controls doing the same thing and the landing page had no link to it from anywhere in the chrome. The host test moved out of `App.tsx` into `client/src/lib/syntheticHost.ts` so the header and the router stop disagreeing; `brandHomeHref()` returns `/` or `/synthetic`.
+  - **"Nobody has ever played this one" was below the fold beside dead white space.** The hero's twelve-tile grid is taller than its three paragraphs, so the left column ended ~150px early and the one thing this page asks of a visitor sat in a full-width band underneath. It now sits inside the hero's left column, filling that gap.
+  - **Files**: `client/src/lib/syntheticHost.ts` (new), `client/src/components/layout/AppHeader.tsx`, `client/src/App.tsx`, `client/src/pages/arc3-community/SyntheticLanding.tsx`.
 
 ### Version 9.39.0  Sep 3, 2026
 
