@@ -11,7 +11,21 @@
 
 `arc-explainer` (repo: `82deutschmark/arc-explainer`, branch: `arc3`) is a Flask + TypeScript web app that lets users play, analyze, and run AI agents against ARC-AGI-3 games. It wraps an ARCEngine submodule (`external/ARCEngine`) and serves both the ARC Prize Foundation games and custom Observatory games.
 
-The upstream `arc-agi-3` repo (`sonpham-org/arc-agi-3`) has been the active development target. Most of the recent work happened there — the changelog in arc-explainer cuts off at **v7.4.0 (March 12, 2026)**. Everything since then needs to be reconciled.
+> **WHICH UPSTREAM REPO — read this before you push anything (added 03-Sep-2026).**
+> Three similarly-named public repos exist under `sonpham-org` and two of them are dead:
+>
+> | repo | state | manifest |
+> |---|---|---|
+> | **`sonpham-org/arc-3`** (hyphen) | **LIVE** — deploys arc3.sonpham.net | `docs/static/games/manifest.json`, 877 rows |
+> | `sonpham-org/arc3` (no hyphen) | dead since 27-Jul-2026, still self-describes as arc3.sonpham.net | `static/games/manifest.json`, 298 rows |
+> | `sonpham-org/arc-agi-3` | dead since May 2026 | — |
+>
+> The check that settles it: diff a candidate's manifest against
+> `https://arc3.sonpham.net/static/games/manifest.json`. Only `arc-3` matches byte for
+> byte. Two PRs have already been opened against the wrong repo. The private authoring
+> repo, `sonpham-org/autoresearch-arena`, is a genuinely different thing and is fine.
+
+The upstream `arc-agi-3` repo (`sonpham-org/arc-agi-3`, dead since May — see above) was the active development target at the time of writing. Most of the recent work happened there — the changelog in arc-explainer cuts off at **v7.4.0 (March 12, 2026)**. Everything since then needs to be reconciled.
 
 ---
 

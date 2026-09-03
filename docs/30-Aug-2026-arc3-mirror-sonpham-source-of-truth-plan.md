@@ -26,13 +26,23 @@ exist and becomes the place ordinary people play them blind.
 
 ## Where arc3.sonpham.net serves from
 
+> **CORRECTION, 03-Sep-2026.** The repo named below is the WRONG one. The live site
+> deploys from **`sonpham-org/arc-3`** — with the hyphen — where the manifest is
+> `docs/static/games/manifest.json` (877 rows, byte-identical to what the site serves).
+> `sonpham-org/arc3` has not deployed since 27-Jul and carries 298 rows;
+> `sonpham-org/arc-agi-3` has not been touched since May. Two PRs went to the wrong
+> repo, one of them because this line said so. The rest of this section describes the
+> deploy accurately; only the repo name is wrong.
+
 Railway deploy of `sonpham-org/arc3` — Caddy static server on :8081 behind
 oauth2-proxy. `entrypoint.sh` marks `^/$` and `^/static/` as skip-auth and gates
 everything else. So the catalog (`/static/games/manifest.json`, 300 games) and every
 game's Python source are already public; `internal.html`, runs, viewer, harness and
 `/data/*` are not. The auth split we needed already existed.
 
-`/Users/macmini/GitHub/arc3-site` is a checkout of that repo (port 8776 locally).
+`/Users/macmini/GitHub/arc3-site` is a checkout of a FORK of the wrong repo
+(`82deutschmark/arc3`), not of the live one — port 8776 locally. Anything committed there
+goes to the repo that no longer deploys. Clone `sonpham-org/arc-3` instead.
 
 ## Why a server-side mirror rather than a browser fetch
 
