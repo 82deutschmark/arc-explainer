@@ -1,7 +1,7 @@
 [
  {
-  "gameId": "t00810611",
-  "className": "Ga9bf44c0",
+  "gameId": "g007",
+  "className": "G007",
   "availableActions": [
    1,
    2,
@@ -43,8 +43,8 @@
   "goal": "Drop into the goal pit while UPRIGHT -- lying across it does not count. Broad plates need the block's weight spread flat; point plates need it standing. Rolling off the floor resets the level."
  },
  {
-  "gameId": "t027cce33",
-  "className": "G780c9217",
+  "gameId": "g030",
+  "className": "G030",
   "availableActions": [
    1,
    2,
@@ -82,8 +82,8 @@
   "goal": "Reach the goal cell. Doors that need a plate held cannot be crossed alone, so the puzzle is choosing which five moves to leave on the tape."
  },
  {
-  "gameId": "t056a6b16",
-  "className": "G25ca621b",
+  "gameId": "g040",
+  "className": "G040",
   "availableActions": [
    1,
    2,
@@ -120,8 +120,8 @@
   "goal": "Reach the exit once it is live. Pips are matched in coloured pairs, so which ones you take -- and in what order -- decides which apertures stay passable."
  },
  {
-  "gameId": "t088853a8",
-  "className": "G5b009c25",
+  "gameId": "g026",
+  "className": "G026",
   "availableActions": [
    1,
    2,
@@ -159,8 +159,8 @@
   "goal": "Reach the goal without standing on a sealed cell when it closes. Waiting is a real move and usually the point."
  },
  {
-  "gameId": "t0bf293c2",
-  "className": "G01aa15a5",
+  "gameId": "g036",
+  "className": "G036",
   "availableActions": [
    1,
    2,
@@ -199,8 +199,8 @@
   "goal": "Reach the end marker with a cord that holds when pulled -- a knot that does not hold undoes the run."
  },
  {
-  "gameId": "t18586acc",
-  "className": "Gcc173580",
+  "gameId": "g035",
+  "className": "G035",
   "availableActions": [
    1,
    2,
@@ -238,8 +238,8 @@
   "goal": "Reach the exit alive. The route is decided by which garments you can reach before the hazard that needs them, not by the shortest path."
  },
  {
-  "gameId": "t18c1e5f2",
-  "className": "Gbdf7d7e9",
+  "gameId": "g041",
+  "className": "G041",
   "availableActions": [
    1,
    2,
@@ -280,8 +280,8 @@
   "goal": "Reach the goal. Tracking which way is which after two or three transits is the puzzle."
  },
  {
-  "gameId": "t2774d7a8",
-  "className": "G52163734",
+  "gameId": "g022",
+  "className": "G022",
   "availableActions": [
    1,
    2,
@@ -317,8 +317,8 @@
   "goal": "Reach the mould carrying EXACTLY the charge it asks for. Stepping onto it with the wrong charge does nothing at all -- no message, no death. Going past +/-3 in either direction resets the level, so the range is tight and the route is the arithmetic."
  },
  {
-  "gameId": "t33bdec30",
-  "className": "Gb939dee5",
+  "gameId": "g011",
+  "className": "G011",
   "availableActions": [
    1,
    2,
@@ -355,8 +355,8 @@
   "goal": "Reach the goal. Filling a pit is permanent, so a rock spent in the wrong hole is a dead run, which is why the undo is there."
  },
  {
-  "gameId": "t35352a03",
-  "className": "G8e07018d",
+  "gameId": "g013",
+  "className": "G013",
   "availableActions": [
    1,
    2,
@@ -401,8 +401,8 @@
   "goal": "Reach the goal. Cuttings are finite and blooms are temporary, so it is a timing puzzle: plant early and it has withered, plant late and you are standing still while it grows."
  },
  {
-  "gameId": "t3722717c",
-  "className": "Gb64563e3",
+  "gameId": "g016",
+  "className": "G016",
   "availableActions": [
    1,
    2,
@@ -438,8 +438,8 @@
   "goal": "Deliver every lane in order, then reach the exit. The board scrolls sideways, so part of the yard is off screen."
  },
  {
-  "gameId": "t3d56da2d",
-  "className": "G8fbd710f",
+  "gameId": "g015",
+  "className": "G015",
   "availableActions": [
    1,
    2,
@@ -485,8 +485,8 @@
   "goal": "Get a crate onto the goal cell. The puzzle is which pair to be holding when you reach the obstacle."
  },
  {
-  "gameId": "t4049adae",
-  "className": "Ge45fd372",
+  "gameId": "g014",
+  "className": "G014",
   "availableActions": [
    1,
    2,
@@ -523,8 +523,8 @@
   "goal": "Reach the exit. You may climb one step up, but a drop of two or more resets the level -- so the route is decided by heights you can only infer from how dark each cell is."
  },
  {
-  "gameId": "t4409a16e",
-  "className": "G4999d108",
+  "gameId": "g047",
+  "className": "G047",
   "availableActions": [
    1,
    2,
@@ -562,8 +562,8 @@
   "goal": "Stand on the exit WHILE the exit is lit. Reaching it in the dark does nothing, so the puzzle is aiming a strip at the exit and then walking to it blind."
  },
  {
-  "gameId": "t521bcd1b",
-  "className": "G4aa2c481",
+  "gameId": "g009",
+  "className": "G009",
   "availableActions": [
    5,
    6
@@ -594,8 +594,8 @@
   "goal": "Light every sink with the colour it asks for. The trace is recomputed and redrawn after every placement, so the beam is live feedback rather than a submission."
  },
  {
-  "gameId": "t562e07f7",
-  "className": "G4cbef563",
+  "gameId": "g037",
+  "className": "G037",
   "availableActions": [
    1,
    2,
@@ -634,8 +634,8 @@
   "goal": "Clear every marker without losing one. A marker crushed or dropped out of reach is unrecoverable, so a cut in the wrong order ends the level quietly."
  },
  {
-  "gameId": "t61247d23",
-  "className": "Gdf672e23",
+  "gameId": "g043",
+  "className": "G043",
   "availableActions": [
    1,
    2,
@@ -671,8 +671,8 @@
   "goal": "Reach the exit once the gates it needs are held open."
  },
  {
-  "gameId": "t61abcaed",
-  "className": "G002751ba",
+  "gameId": "g032",
+  "className": "G032",
   "availableActions": [
    1,
    2,
@@ -710,8 +710,8 @@
   "goal": "Reach the goal. Seeds are limited and the mirror means a plant you needed can be destroyed by walking somewhere unrelated on the other side."
  },
  {
-  "gameId": "t6381e4da",
-  "className": "G50a9b350",
+  "gameId": "g033",
+  "className": "G033",
   "availableActions": [
    1,
    2,
@@ -750,8 +750,8 @@
   "goal": "Serve every stop in the required order. Serving the right crate at the wrong time is what loses the round, not dropping it."
  },
  {
-  "gameId": "t63b03ddb",
-  "className": "G8536565d",
+  "gameId": "g171",
+  "className": "G171",
   "availableActions": [
    1,
    2,
@@ -787,8 +787,8 @@
   "goal": "Flood every basin before the water runs out. Dams are for steering the flow away from dead ends, not for holding it back."
  },
  {
-  "gameId": "t643da6ee",
-  "className": "G8d6b057c",
+  "gameId": "g017",
+  "className": "G017",
   "availableActions": [
    1,
    2,
@@ -824,8 +824,8 @@
   "goal": "Lift every bead, which opens the exit, and get there. The route has to be planned so you never need a tile you spent early."
  },
  {
-  "gameId": "t64b427c7",
-  "className": "G84162c21",
+  "gameId": "g034",
+  "className": "G034",
   "availableActions": [
    5,
    6,
@@ -857,8 +857,8 @@
   "goal": "Match the target. Undo is built in, so this one is meant to be explored rather than solved first try."
  },
  {
-  "gameId": "t6acac767",
-  "className": "Gec73c7e1",
+  "gameId": "g025",
+  "className": "G025",
   "availableActions": [
    1,
    2,
@@ -899,13 +899,13 @@
    "status": "queued",
    "rank": 8
   },
-  "mechanic": "Tools from pairs, again -- the larger sibling of t3d56da2d. Six parts (magnet, rod, lens, torch, hook, bell) combine two at a time into abilities that burn vines, melt ice, grapple across gaps or ring a shutter open.",
+  "mechanic": "Tools from pairs, again -- the larger sibling of g015. Six parts (magnet, rod, lens, torch, hook, bell) combine two at a time into abilities that burn vines, melt ice, grapple across gaps or ring a shutter open.",
   "controls": "D-pad walks and faces. ACTION5 fires the held pair in the faced direction. ACTION6 drops what you hold, as a plain button with NO coordinates -- the other of the two tasks where clicking a cell is meaningless.",
   "goal": "Reach the exit. Which two parts you are carrying decides which obstacle you can pass, and there is only one pair of hands."
  },
  {
-  "gameId": "t6d44af56",
-  "className": "Gcd922880",
+  "gameId": "g010",
+  "className": "G010",
   "availableActions": [
    1,
    2,
@@ -939,8 +939,8 @@
   "goal": "Collect all three tokens and then reach the sink. Running the allowance out is the loss, so the puzzle is searching efficiently in the dark rather than avoiding a hazard."
  },
  {
-  "gameId": "t7114b1e1",
-  "className": "G8aa72dc2",
+  "gameId": "g028",
+  "className": "G028",
   "availableActions": [
    1,
    2,
@@ -984,8 +984,8 @@
   "goal": "Reach the exit on the folded sheet. Folds are the whole game -- walking alone never gets there."
  },
  {
-  "gameId": "t715ea045",
-  "className": "Ge05b1417",
+  "gameId": "g020",
+  "className": "G020",
   "availableActions": [
    1,
    2,
@@ -1025,8 +1025,8 @@
   "goal": "Reach the gate. Flares are the only information, so the game is about spending them where the map is ambiguous rather than where it is merely dark."
  },
  {
-  "gameId": "t74db26e1",
-  "className": "G3f0dd94b",
+  "gameId": "g006",
+  "className": "G006",
   "availableActions": [
    1,
    2,
@@ -1061,8 +1061,8 @@
   "goal": "Set off a chain of at least the level's target size. You get one detonation, so this is a waiting game: let the drift bring the dots into a cluster, then click it."
  },
  {
-  "gameId": "t7725dccf",
-  "className": "G1716746d",
+  "gameId": "g136",
+  "className": "G136",
   "availableActions": [
    1,
    2,
@@ -1096,8 +1096,8 @@
   "goal": "Hold every pressure plate down with crates AND stand on the exit at the same time. A pair that solves one plate usually breaks another, which is the whole difficulty."
  },
  {
-  "gameId": "t77f54ade",
-  "className": "G58a69beb",
+  "gameId": "g039",
+  "className": "G039",
   "availableActions": [
    1,
    2,
@@ -1135,8 +1135,8 @@
   "goal": "Collect the keys, which lights the exit, and get there. Cords block or bridge depending on how they are patched, so the route is something you rewire rather than walk."
  },
  {
-  "gameId": "t80d5b02c",
-  "className": "Gacff09fd",
+  "gameId": "g044",
+  "className": "G044",
   "availableActions": [
    1,
    2,
@@ -1173,8 +1173,8 @@
   "goal": "Collect every key and reach the exit. The difficulty is entirely that adjacency on screen is not adjacency on the cube."
  },
  {
-  "gameId": "t89a4dc45",
-  "className": "Gcf5b4623",
+  "gameId": "g027",
+  "className": "G027",
   "availableActions": [
    1,
    2,
@@ -1211,8 +1211,8 @@
   "goal": "Land every payload block in its socket. A payload in a pit ends the attempt -- speed is the thing to control."
  },
  {
-  "gameId": "t8dbff678",
-  "className": "G6d6a125b",
+  "gameId": "g001",
+  "className": "G001",
   "availableActions": [
    1,
    2,
@@ -1249,8 +1249,8 @@
   "goal": "Leave through the exit with enough left to pay for it. The board shows each door's price, so this is a budgeting puzzle rather than a maze."
  },
  {
-  "gameId": "t98b12bb2",
-  "className": "Gd0c7fac2",
+  "gameId": "g024",
+  "className": "G024",
   "availableActions": [
    1,
    2,
@@ -1288,8 +1288,8 @@
   "goal": "Reach the exit carrying at least the number the level asks for. Pads are for putting a token down to make room, so the puzzle is what to carry and what to park."
  },
  {
-  "gameId": "t999ce20d",
-  "className": "G7be0927f",
+  "gameId": "g023",
+  "className": "G023",
   "availableActions": [
    1,
    2,
@@ -1328,8 +1328,8 @@
   "goal": "Open the exit and reach it. Discovering that the click is overloaded is most of the task."
  },
  {
-  "gameId": "t99e8274e",
-  "className": "Gb19416f9",
+  "gameId": "g038",
+  "className": "G038",
   "availableActions": [
    5,
    6,
@@ -1364,8 +1364,8 @@
   "goal": "Satisfy every row and column clue. ACTION5 only advances you when the board is actually solved -- a wrong check costs nothing, so it is a check and not a commit."
  },
  {
-  "gameId": "ta3597a87",
-  "className": "G7b09f6c6",
+  "gameId": "g012",
+  "className": "G012",
   "availableActions": [
    1,
    2,
@@ -1403,8 +1403,8 @@
   "goal": "Collect the coins to open the exit and get out. Waiting for a patrol to pass is usually better than outrunning it."
  },
  {
-  "gameId": "ta6acc86e",
-  "className": "Gde529f75",
+  "gameId": "g045",
+  "className": "G045",
   "availableActions": [
    1,
    2,
@@ -1441,8 +1441,8 @@
   "goal": "Collect the keys and reach the exit. Timing which turn you enter a mouth on is the puzzle; the geometry alone never solves it."
  },
  {
-  "gameId": "ta6b3b4a0",
-  "className": "Gd904a37a",
+  "gameId": "g178",
+  "className": "G178",
   "availableActions": [
    1,
    2,
@@ -1478,8 +1478,8 @@
   "goal": "Latch every sink before the fires run out. Running out with a sink unlatched resets the level, so the routing has to be right before you fire, not after."
  },
  {
-  "gameId": "taa5fdde0",
-  "className": "Gd3852a1f",
+  "gameId": "g029",
+  "className": "G029",
   "availableActions": [
    1,
    2,
@@ -1515,8 +1515,8 @@
   "goal": "Get both bodies where they belong. A wall in front of one body freezes the pair, which is the lever you use to separate them."
  },
  {
-  "gameId": "tb4f43900",
-  "className": "G7d033fb2",
+  "gameId": "g050",
+  "className": "G050",
   "availableActions": [
    1,
    2,
@@ -1551,8 +1551,8 @@
   "goal": "Reach the exit. Walking into a pocket with no unburnt way out resets the level immediately -- the game tells you that you are stuck rather than letting you wander."
  },
  {
-  "gameId": "tc6f8ee4c",
-  "className": "G92073027",
+  "gameId": "g019",
+  "className": "G019",
   "availableActions": [
    1,
    2,
@@ -1590,8 +1590,8 @@
   "goal": "Stand on the exit with a guard parked on EVERY plate. You are not avoiding the patrol -- you are herding it onto the switches that open the way out."
  },
  {
-  "gameId": "tca5096fc",
-  "className": "Ga5c6b0d3",
+  "gameId": "g046",
+  "className": "G046",
   "availableActions": [
    1,
    2,
@@ -1629,8 +1629,8 @@
   "goal": "Reach the exit. The board is drawing you a stale picture on purpose; stale markers are drawn differently from live ones, and telling them apart is the task."
  },
  {
-  "gameId": "tcd57bacb",
-  "className": "G0b5d7897",
+  "gameId": "g042",
+  "className": "G042",
   "availableActions": [
    1,
    2,
@@ -1667,8 +1667,8 @@
   "goal": "Lift all the cargo and pass the final lock. Locks are one-way in practice, so collecting in the wrong order strands you."
  },
  {
-  "gameId": "td1047401",
-  "className": "G1da7cbe5",
+  "gameId": "g031",
+  "className": "G031",
   "availableActions": [
    1,
    2,
@@ -1706,8 +1706,8 @@
   "goal": "Fill every socket with the orientation it asks for, then leave. The mirrors are the only way to reach half the demands."
  },
  {
-  "gameId": "td6b934b7",
-  "className": "Gdcc1e8e5",
+  "gameId": "g005",
+  "className": "G005",
   "availableActions": [
    1,
    2,
@@ -1744,8 +1744,8 @@
   "goal": "Route the walker to the exit. Clicking anywhere off the path column does nothing at all, which reads as a broken click until you notice which cells respond."
  },
  {
-  "gameId": "tdbd4af05",
-  "className": "Gd561dd64",
+  "gameId": "g008",
+  "className": "G008",
   "availableActions": [
    1,
    2,
@@ -1782,8 +1782,8 @@
   "goal": "Reach the exit. The cooldown is the puzzle -- swapping early strands you on the wrong colour for four moves."
  },
  {
-  "gameId": "te5f94dfe",
-  "className": "Gfb536680",
+  "gameId": "g155",
+  "className": "G155",
   "availableActions": [
    1,
    2,
@@ -1819,8 +1819,8 @@
   "goal": "Reach the exit. Biting is irreversible and the game resets the level as soon as it detects you can no longer get anywhere, so a wrong bite ends things immediately rather than later."
  },
  {
-  "gameId": "tf17bd2df",
-  "className": "G57e0c0b7",
+  "gameId": "g162",
+  "className": "G162",
   "availableActions": [
    1,
    2,
@@ -1854,8 +1854,8 @@
   "goal": "Reach the exit. Loud tiles are often the direct route, so this is about choosing when to be heard and where you will be by the time they arrive."
  },
  {
-  "gameId": "tfd14806f",
-  "className": "G67d9914a",
+  "gameId": "g018",
+  "className": "G018",
   "availableActions": [
    1,
    2,
@@ -1890,8 +1890,8 @@
   "goal": "Take every flag and stand on the summit. Taking a flag while standing somewhere the new water level covers drowns you, so the order of the flags is the whole puzzle."
  },
  {
-  "gameId": "tfdb1fc6f",
-  "className": "G1d41b049",
+  "gameId": "g021",
+  "className": "G021",
   "availableActions": [
    1,
    2,

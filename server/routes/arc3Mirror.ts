@@ -204,9 +204,9 @@ router.get(
  *     [1,2,3,4,5,6] default, so 26 advertise ACTION6 and read nothing from it, and 13 do
  *     the same with ACTION5. The deck showed those as live controls: press one, spend a
  *     step, nothing happens, indistinguishable from having used it wrongly.
- *   - UNDER-REPORTING, which is worse. `t6381e4da` and `t7114b1e1` both READ ACTION7 and
+ *   - UNDER-REPORTING, which is worse. `g033` and `g028` both READ ACTION7 and
  *     neither advertises it, so the console -- which refuses anything outside
- *     available_actions -- blocked a control those games use. In t7114b1e1 that is the
+ *     available_actions -- blocked a control those games use. In g028 that is the
  *     cancel for an armed fold, and folding is the whole game.
  *
  * `known` is separate from `reads` so the client can tell "this game does not use that

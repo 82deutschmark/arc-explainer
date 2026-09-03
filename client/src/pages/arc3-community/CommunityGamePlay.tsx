@@ -68,7 +68,7 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
          7. THE CLICK GAMES COULD NOT BE PLAYED AT ALL. Making the canvas inert (see the
             second pass above) protected the tasks where ACTION6 is a submit and broke
             every task where it is a real click, which is the larger group: seven of the
-            fifty read data["x"]/data["y"] off the action. t99e8274e is the clearest —
+            fifty read data["x"]/data["y"] off the action. g038 is the clearest —
             available_actions is [5,6,7], so the d-pad is not merely unused, it does not
             exist, and the whole game is clicking cells to fill them. The deck's CLICK
             button sent ACTION6 with NO coordinates, so the game read the -1 default and
@@ -384,8 +384,8 @@ export default function CommunityGamePlay() {
    * never gates on (arcengine base_game.py:189), and across our fifty it is wrong in BOTH
    * directions: 26 games advertise ACTION6 and 13 advertise ACTION5 while reading neither,
    * so the deck offered controls that spend a step and do nothing; and two games
-   * (t6381e4da, t7114b1e1) read ACTION7 without advertising it, so the console refused a
-   * control those games use -- in t7114b1e1 the cancel for an armed fold, and folding is
+   * (g033, g028) read ACTION7 without advertising it, so the console refused a
+   * control those games use -- in g028 the cancel for an armed fold, and folding is
    * the whole game.
    *
    * Fetched with the page, unlike the mechanic reveal. This is a fact about the CONTROLS,

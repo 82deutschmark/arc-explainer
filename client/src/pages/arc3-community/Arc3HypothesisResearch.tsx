@@ -281,7 +281,7 @@ export default function Arc3HypothesisResearch() {
               <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-start' }}>
                 <figure style={{ margin: 0, flex: '0 0 auto' }}>
                   <img
-                    src="/data/arc3-hypothesis-frame-t088853a8.png"
+                    src="/data/arc3-hypothesis-frame-g026.png"
                     alt="The 64x64 opening frame shown to the model: coloured squares on dark bands, divided by a black horizontal strip."
                     width={240}
                     height={240}

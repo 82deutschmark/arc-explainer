@@ -52,10 +52,10 @@ NOTES = GAMES_DIR / "mechanics-notes.json"
 # wrong -- every prose note downstream is written against these facts.
 EXPECTED_ACTION6 = {
     "xy-click": {
-        "t99e8274e", "t64b427c7", "t521bcd1b", "td6b934b7",
-        "t999ce20d", "t35352a03", "t74db26e1",
+        "g038", "g034", "g009", "g005",
+        "g023", "g013", "g006",
     },
-    "button": {"t3d56da2d", "t6acac767"},
+    "button": {"g015", "g025"},
 }
 
 # Module-level names worth reporting as board geometry, in the spellings the set uses.
