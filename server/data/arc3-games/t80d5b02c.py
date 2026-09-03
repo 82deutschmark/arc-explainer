@@ -11,11 +11,11 @@ from arcengine import (
 )
 
 VOID = 5
-FLOOR = 4
-WALL = 1
-KEY = 11
+FLOOR = 0
+WALL = 4
+KEY = 12
 EXIT = 14
-PLAYER = 12
+PLAYER = 13
 
 N = 16
 S = 4
@@ -270,6 +270,19 @@ def _block(colour: int) -> list[list[int]]:
     return [[colour] * CELL for _ in range(CELL)]
 
 
+def _rounded(colour: int) -> list[list[int]]:
+    block = _block(colour)
+    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
+        block[y][x] = -1
+    return block
+
+
+def _walker(colour: int) -> list[list[int]]:
+    block = _rounded(colour)
+    block[0][1] = block[0][2] = -1
+    return block
+
+
 def _face_block() -> list[list[int]]:
     return [[FLOOR] * (S * CELL) for _ in range(S * CELL)]
 
@@ -278,7 +291,7 @@ def _exit_ring() -> list[list[int]]:
     block = _block(EXIT)
     for j in range(1, CELL - 1):
         for i in range(1, CELL - 1):
-            block[j][i] = FLOOR
+            block[j][i] = -1
     return block
 
 
@@ -300,7 +313,7 @@ def build_levels() -> list[Level]:
                 if char == "#":
                     pixels, layer, name = _block(WALL), -1, f"w_{x}_{y}"
                 elif char == "k":
-                    pixels, layer, name = _block(KEY), 0, f"k_{x}_{y}"
+                    pixels, layer, name = _rounded(KEY), 0, f"k_{x}_{y}"
                 else:
                     pixels, layer, name = _exit_ring(), 0, "exit"
                 sprites.append(Sprite(
@@ -309,7 +322,7 @@ def build_levels() -> list[Level]:
                     interaction=InteractionMode.TANGIBLE, layer=layer,
                 ).set_position(x * CELL, y * CELL))
         sprites.append(Sprite(
-            pixels=_block(PLAYER), name="player",
+            pixels=_walker(PLAYER), name="player",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.TANGIBLE, layer=1,
         ).set_position(0, 0))

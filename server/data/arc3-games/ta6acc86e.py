@@ -13,15 +13,15 @@ from arcengine import (
     Sprite,
 )
 
-VOID = 5
-FLOOR = 4
-WALL = 1
-KEY = 11
-EXIT = 14
-PLAYER = 12
-SHUTTER = 13
-PIP_ON = 11
-PIP_OFF = 3
+VOID = 3
+FLOOR = 9
+WALL = 0
+KEY = 12
+EXIT = 6
+PLAYER = 11
+SHUTTER = 8
+PIP_ON = KEY
+PIP_OFF = 4
 MOUTH = {"A": 9, "B": 10, "C": 15, "D": 6}
 
 N = 16
@@ -243,6 +243,13 @@ def _block(colour: int) -> list:
     return [[colour] * CELL for _ in range(CELL)]
 
 
+def _rounded(colour: int) -> list[list[int]]:
+    block = [[colour] * CELL for _ in range(CELL)]
+    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
+        block[y][x] = -1
+    return block
+
+
 def _ring(colour: int) -> list:
     px = _block(colour)
     for r in range(1, CELL - 1):
@@ -278,7 +285,7 @@ def build_levels() -> list:
                 if ch in " .#P":
                     continue
                 if ch == "k":
-                    pixels, name, layer = _block(KEY), f"k_{x}_{y}", 0
+                    pixels, name, layer = _rounded(KEY), f"k_{x}_{y}", 0
                 elif ch == "X":
                     pixels, name, layer = _ring(EXIT), "exit", 0
                 elif ch == "s":
@@ -291,7 +298,7 @@ def build_levels() -> list:
                     interaction=InteractionMode.TANGIBLE, layer=layer,
                 ).set_position(x * CELL, y * CELL))
         sprites.append(Sprite(
-            pixels=_block(PLAYER), name="player",
+            pixels=_rounded(PLAYER), name="player",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.TANGIBLE, layer=2,
         ).set_position(0, 0))
@@ -307,13 +314,18 @@ class Ge3e8d9dc(RenderableUserDisplay):
 
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         tick = self._game.tick
-        for i in range(3):
-            x = 1 + i * 3
-            frame[1:3, x:x + 2] = PIP_ON if i == tick % 3 else PIP_OFF
-        if "D" in self._game.present:
-            for i in range(4):
-                x = 52 + i * 3
-                frame[1:3, x:x + 2] = PIP_ON if i == tick % 4 else PIP_OFF
+        found = self._game.current_level.get_sprites_by_name("player")
+        if found:
+            px, py = found[0].x, found[0].y
+            for i in range(3):
+                x = px + i
+                if 0 <= x < 64 and py - 1 >= 0:
+                    frame[py - 1, x] = PIP_ON if i == tick % 3 else PIP_OFF
+            if "D" in self._game.present:
+                for i in range(4):
+                    x = px + i
+                    if 0 <= x < 64 and py + CELL < 64:
+                        frame[py + CELL, x] = PIP_ON if i == tick % 4 else PIP_OFF
         left = max(0, min(self._game.moves_left, frame.shape[1] - 2))
         if left:
             frame[60:63, 1:1 + left] = PIP_ON

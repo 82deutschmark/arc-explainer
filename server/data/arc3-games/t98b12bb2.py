@@ -13,12 +13,12 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-PAD = 2
-EXIT = 14
+FLOOR = 1
+WALL = 13
+PAD = 14
+EXIT = 15
 EXIT_PIP = 5
-PLAYER = 12
+PLAYER = 8
 MARK = 0
 
 TOKEN_COLOUR = {"D": 9, "T": 11, "F": 8, "L": 15}
@@ -267,6 +267,13 @@ def resolve_move(geom, tokens, pos, stack, direction, carry_room):
     return state["pos"], state["picked"], state["overflow"]
 
 
+def _rounded(colour: int) -> list[list[int]]:
+    block = [[colour] * CELL for _ in range(CELL)]
+    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
+        block[y][x] = -1
+    return block
+
+
 def _flat(colour):
     return [[colour] * CELL for _ in range(CELL)]
 
@@ -332,12 +339,14 @@ class Gee7fe1fb(RenderableUserDisplay):
         super().__init__()
         self._game = game
 
+    ROW = (8, 20, 32, 44)
+
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         for i, kind in enumerate(self._game.stack[:MAX_CARRY]):
-            x = 1 + i * 4
-            frame[0:3, x:x + 3] = TOKEN_COLOUR[kind]
+            top = self.ROW[i]
+            frame[top:top + 3, 61:64] = TOKEN_COLOUR[kind]
             for xx, yy in TOKEN_MARKS[kind]:
-                frame[yy - 1, x + xx - 1] = MARK
+                frame[top + yy - 1, 61 + xx - 1] = MARK
         return frame
 
 

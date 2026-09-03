@@ -35,10 +35,10 @@
     "width": 64
   },
   "t18586acc": {
-    "backgroundColour": 4,
+    "backgroundColour": 5,
     "distinctColours": 8,
     "height": 64,
-    "inkFraction": 0.3584,
+    "inkFraction": 0.3013,
     "width": 64
   },
   "t18c1e5f2": {
@@ -49,10 +49,10 @@
     "width": 64
   },
   "t2774d7a8": {
-    "backgroundColour": 4,
+    "backgroundColour": 3,
     "distinctColours": 5,
     "height": 64,
-    "inkFraction": 0.2412,
+    "inkFraction": 0.4941,
     "width": 64
   },
   "t33bdec30": {
@@ -112,7 +112,7 @@
     "width": 64
   },
   "t61247d23": {
-    "backgroundColour": 4,
+    "backgroundColour": 13,
     "distinctColours": 9,
     "height": 64,
     "inkFraction": 0.3506,
@@ -196,10 +196,10 @@
     "width": 64
   },
   "t77f54ade": {
-    "backgroundColour": 4,
-    "distinctColours": 9,
+    "backgroundColour": 2,
+    "distinctColours": 7,
     "height": 64,
-    "inkFraction": 0.157,
+    "inkFraction": 0.1545,
     "width": 64
   },
   "t80d5b02c": {
@@ -217,14 +217,14 @@
     "width": 64
   },
   "t8dbff678": {
-    "backgroundColour": 4,
-    "distinctColours": 7,
+    "backgroundColour": 2,
+    "distinctColours": 6,
     "height": 64,
-    "inkFraction": 0.2969,
+    "inkFraction": 0.4941,
     "width": 64
   },
   "t98b12bb2": {
-    "backgroundColour": 1,
+    "backgroundColour": 13,
     "distinctColours": 7,
     "height": 64,
     "inkFraction": 0.1133,
@@ -252,10 +252,10 @@
     "width": 64
   },
   "ta6acc86e": {
-    "backgroundColour": 4,
-    "distinctColours": 8,
+    "backgroundColour": 9,
+    "distinctColours": 7,
     "height": 64,
-    "inkFraction": 0.2061,
+    "inkFraction": 0.2002,
     "width": 64
   },
   "ta6b3b4a0": {

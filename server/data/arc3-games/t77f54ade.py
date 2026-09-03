@@ -13,17 +13,17 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-PLAYER = 12
+FLOOR = 2
+WALL = 5
+PLAYER = 8
 KEY = 11
-EXIT_LOCKED = 13
-EXIT_LIVE = 14
+EXIT_LOCKED = 9
+EXIT_LIVE = 6
 TERMINAL = 7
-CORD_A = 9
+CORD_A = 10
 CORD_B = 15
-UNGLUED = 5
-PIP_ON = 6
+UNGLUED = WALL
+PIP_ON = KEY
 PIP_OFF = 3
 
 N = 16
@@ -285,11 +285,25 @@ def _block(colour):
     return [[colour] * CELL for _ in range(CELL)]
 
 
+def _rounded(colour):
+    block = _block(colour)
+    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
+        block[y][x] = -1
+    return block
+
+
+def _walker(cords):
+    block = _rounded(PLAYER)
+    for i in range(CELL):
+        block[CELL - 1 - i][0] = PIP_ON if i < cords else PIP_OFF
+    return block
+
+
 def _inner(colour):
-    return [[FLOOR, FLOOR, FLOOR, FLOOR],
-            [FLOOR, colour, colour, FLOOR],
-            [FLOOR, colour, colour, FLOOR],
-            [FLOOR, FLOOR, FLOOR, FLOOR]]
+    return [[-1, -1, -1, -1],
+            [-1, colour, colour, -1],
+            [-1, colour, colour, -1],
+            [-1, -1, -1, -1]]
 
 
 def build_levels():
@@ -304,12 +318,12 @@ def build_levels():
                 elif ch == "k":
                     pix, name, tags, layer = _inner(KEY), f"key_{x}_{y}", ["key"], 0
                 elif ch == "X":
-                    pix, name, tags, layer = _block(EXIT_LOCKED), "exit", ["exit"], 0
+                    pix, name, tags, layer = _rounded(EXIT_LOCKED), "exit", ["exit"], 0
                 elif ch in "nesw":
-                    pix = _block(TERMINAL)
+                    pix = _rounded(TERMINAL)
                     name, tags, layer = f"term_{ch}", ["terminal", f"socket_{ch.upper()}"], 0
                 elif ch == "P":
-                    pix, name, tags, layer = _block(PLAYER), "player", ["player"], 1
+                    pix, name, tags, layer = _walker(spec["cords"]), "player", ["player"], 1
                 else:
                     continue
                 sprites.append(Sprite(
@@ -354,10 +368,6 @@ class G2edc6aa9(RenderableUserDisplay):
             ex, ey = self._game.exit_cell
             frame[ey * CELL:ey * CELL + CELL, ex * CELL:ex * CELL + CELL] = EXIT_LIVE
 
-        frame[0:8, 0:8] = UNGLUED
-        for i in range(4):
-            py, px = 1 + (i // 2) * 3, 1 + (i % 2) * 3
-            frame[py:py + 2, px:px + 2] = PIP_ON if i < self._game.cords else PIP_OFF
         return frame
 
 
@@ -387,6 +397,7 @@ class G58a69beb(ARCBaseGame):
     def level_reset(self) -> None:
         super().level_reset()
         self.on_set_level(self.current_level)
+        self._redraw_walker()
 
     def full_reset(self) -> None:
         super().full_reset()
@@ -395,6 +406,11 @@ class G58a69beb(ARCBaseGame):
     def _player(self):
         found = self.current_level.get_sprites_by_name("player")
         return found[0] if found else None
+
+    def _redraw_walker(self) -> None:
+        player = self._player()
+        if player is not None:
+            player.pixels = np.array(_walker(self.cords))
 
     def _socket_under(self, cell):
         for socket, pos in self.terminal_cells.items():
@@ -413,6 +429,7 @@ class G58a69beb(ARCBaseGame):
             socket = self._socket_under(cell)
             if socket is not None:
                 self.plugs, self.cords = press(self.plugs, socket, self.cords)
+                self._redraw_walker()
             self.complete_action()
             return
 

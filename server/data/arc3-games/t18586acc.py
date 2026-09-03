@@ -13,14 +13,14 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-PLAYER = 12
-EXIT = 14
-MARK = 5
+FLOOR = 5
+WALL = 2
+PLAYER = 11
+EXIT = 6
+MARK = 0
 EMPTY_PIP = 3
 
-HAZARD_COLOUR = {"F": 8, "C": 10, "W": 9, "S": 2}
+HAZARD_COLOUR = {"F": 8, "C": 10, "W": 9, "S": 15}
 
 N = 16
 CELL = 4
@@ -255,11 +255,34 @@ def _cell_block(colour: int) -> list[list[int]]:
     return [[colour] * CELL for _ in range(CELL)]
 
 
+def _rounded(colour: int) -> list[list[int]]:
+    block = _cell_block(colour)
+    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
+        block[y][x] = -1
+    return block
+
+
+def _weave(colour: int) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(CELL)]
+            for y in range(CELL)]
+
+
+def _figure(body: int, coat: int | None) -> list[list[int]]:
+    block = _rounded(body)
+    if coat is not None:
+        for i in range(CELL):
+            block[0][i] = block[CELL - 1][i] = coat
+            block[i][0] = block[i][CELL - 1] = coat
+        for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
+            block[y][x] = -1
+    return block
+
+
 _MARK_SPOTS = ((0, 0), (1, 0), (0, 1), (1, 1))
 
 
 def _garment_pixels(slot: int, hazard: str) -> list[list[int]]:
-    block = _cell_block(HAZARD_COLOUR[hazard])
+    block = _rounded(HAZARD_COLOUR[hazard])
     for i in range(slot + 1):
         mx, my = _MARK_SPOTS[i]
         block[my][mx] = MARK
@@ -268,7 +291,7 @@ def _garment_pixels(slot: int, hazard: str) -> list[list[int]]:
 
 def _exit_pixels() -> list[list[int]]:
     block = _cell_block(EXIT)
-    block[1][1] = block[1][2] = block[2][1] = block[2][2] = FLOOR
+    block[1][1] = block[1][2] = block[2][1] = block[2][2] = -1
     return block
 
 
@@ -287,7 +310,7 @@ def build_levels() -> list[Level]:
                     ).set_position(px, py))
                 elif ch in HAZARD_COLOUR:
                     sprites.append(Sprite(
-                        pixels=_cell_block(HAZARD_COLOUR[ch]), name=f"band_{x}_{y}",
+                        pixels=_weave(HAZARD_COLOUR[ch]), name=f"band_{x}_{y}",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=-1,
                     ).set_position(px, py))
@@ -306,7 +329,7 @@ def build_levels() -> list[Level]:
                     ).set_position(px, py))
                 elif ch == "P":
                     sprites.append(Sprite(
-                        pixels=_cell_block(PLAYER), name="player",
+                        pixels=_figure(PLAYER, None), name="player",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.TANGIBLE, layer=1,
                     ).set_position(px, py))
@@ -316,6 +339,8 @@ def build_levels() -> list[Level]:
 
 class G2a46fbeb(RenderableUserDisplay):
 
+    ROW = (10, 22, 34, 46)
+
     def __init__(self, game: "Gcc173580") -> None:
         super().__init__()
         self._game = game
@@ -323,15 +348,18 @@ class G2a46fbeb(RenderableUserDisplay):
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         filled = dict(worn_list(LEVELS_SPEC[self._game.level_index], self._game.donned))
         for slot in range(SLOTS):
-            x = 1 + slot * 3
             colour = HAZARD_COLOUR[filled[slot]] if slot in filled else EMPTY_PIP
-            frame[1:3, x:x + 2] = colour
+            top = self.ROW[slot]
+            frame[top:top + 2, 63 - slot:64] = colour
         return frame
 
 
 class Gcc173580(ARCBaseGame):
 
+    FLASH_FRAMES = 4
+
     def __init__(self) -> None:
+        self._flash = 0
         self.donned: tuple = ()
         self.px, self.py = start_cell(LEVELS_SPEC[0]["rows"])
         camera = Camera(
@@ -342,6 +370,7 @@ class Gcc173580(ARCBaseGame):
         super().__init__(game_id="t18586acc", levels=build_levels(), camera=camera)
 
     def on_set_level(self, level: Level) -> None:
+        self._flash = 0
         self.donned = ()
         self.px, self.py = start_cell(LEVELS_SPEC[self.level_index]["rows"])
 
@@ -356,9 +385,14 @@ class Gcc173580(ARCBaseGame):
     def _spec(self) -> dict:
         return LEVELS_SPEC[self.level_index]
 
+    def _outermost(self) -> int | None:
+        worn = worn_list(self._spec(), self.donned)
+        return HAZARD_COLOUR[worn[-1][1]] if worn else None
+
     def _place_player(self) -> None:
         found = self.current_level.get_sprites_by_name("player")
         if found:
+            found[0].pixels = np.array(_figure(PLAYER, self._outermost()))
             found[0].set_position(self.px * CELL, self.py * CELL)
 
     def _don_here(self) -> None:
@@ -369,8 +403,21 @@ class Gcc173580(ARCBaseGame):
         self.donned = tuple(sorted(self.donned + (key,)))
         for sprite in self.current_level.get_sprites_by_name(f"garment_{key}"):
             self.current_level.remove_sprite(sprite)
+        self._place_player()
 
     def step(self) -> None:
+        if self._flash:
+            self._flash -= 1
+            found = self.current_level.get_sprites_by_name("player")
+            if found:
+                lit = self._flash % 2 == 0
+                found[0].pixels = np.array(
+                    _figure(PLAYER if lit else WALL, self._outermost() if lit else None))
+            if self._flash == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+
         dx = dy = 0
         if self.action.id == GameAction.ACTION1:
             dy = -1
@@ -396,6 +443,7 @@ class Gcc173580(ARCBaseGame):
                     self.complete_action()
                     return
                 if not survives(spec, self.donned, nx, ny):
-                    self.level_reset()
+                    self._flash = self.FLASH_FRAMES
+                    return
 
         self.complete_action()

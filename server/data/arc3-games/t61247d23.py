@@ -12,15 +12,15 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
+FLOOR = 13
 WALL = 1
-GATE = 5
-EXIT = 14
-PLAYER = 12
-CRATE = 11
-CRATE_CORE = 3
-CRATE_SEATED = 14
-PLATE = 8
+GATE = 14
+EXIT = 7
+PLAYER = 0
+CRATE = 4
+CRATE_CORE = 12
+CRATE_SEATED = 10
+PLATE = 15
 PORTAL_COLOURS = {"a": 9, "b": 15, "c": 10, "d": 6}
 
 CELL = 4
@@ -288,6 +288,13 @@ def apply_move(st: Ga92bf8e0, player: tuple[int, int], crates: frozenset,
     if tgt in st.exits:
         return tgt, crates, True
     return tgt, crates, False
+
+
+def _rounded(colour: int) -> list[list[int]]:
+    block = [[colour] * CELL for _ in range(CELL)]
+    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
+        block[y][x] = -1
+    return block
 
 
 def _solid(colour: int) -> list[list[int]]:
