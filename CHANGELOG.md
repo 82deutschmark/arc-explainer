@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.34.0  Sep 2, 2026
+
+- **Six official ARC-AGI-3 games written up as design evidence, not code notes** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: `docs/2026-09-02-arc3-official-game-studies.md` says what six official games actually do, read the way a player experiences them. The same document is committed in the authoring repo next to the games it is meant to improve; `server/data/arc3-games/official-studies.json` carries the structured version so this site can serve it.
+  - **Every reading was challenged by a second reader whose only job was to refute it, and three of six came back substantially wrong.** Two failed the same way: the obvious visual interpretation was the trap. `cn04` looks like welding and is actually matching printed marks, most of which are hidden until you pick a part up. `lf52`'s button, the one thing we cited as the model confirm affordance, turns out not to be a move-confirm at all — it restarts a level you have already broken.
+  - **Seven transferable patterns are named**, each tied to its source game: return a verdict on every move rather than silence; charge the clock for failed progress rather than for elapsed time; let scenery the player dismissed become a control; make a control arrive as an event instead of sitting dead on screen; put another agent on the board that wants something; show the goal completely and hide only the arrangement; hand the player the rulebook to repair rather than execute.
+  - **Two gaps are recorded rather than hidden**: `dc22`'s reading was never challenged and is marked an unchecked first read, because that agent hit a session limit; and the automated synthesis died, so the patterns were written by hand from the six studies.
+  - **Files**: added `docs/2026-09-02-arc3-official-game-studies.md`, `server/data/arc3-games/official-studies.json`.
+
 ### Version 9.33.0  Sep 2, 2026
 
 - **A generated registry of the 50 authored games, in the shape of the one the Boss likes** (Author: Mark Barney / Claude Opus 5)
