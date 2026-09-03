@@ -231,4 +231,38 @@ router.get(
   }),
 );
 
+/**
+ * GET /api/arc3-mirror/frames/:gameId.png - level 1 of an authored task, as an image.
+ *
+ * The mechanic guide is a reference for a set of VISUAL puzzles and carried no pictures,
+ * so the two things players actually complained about -- "a big empty screen" and
+ * "formulaic" -- could not be seen from it. These are rendered by
+ * scripts/arc3/render_authored_frames.py and committed; nothing renders at request time.
+ *
+ * NOT A SPOILER, unlike the rest of this file's authored endpoints. It is the opening
+ * frame after RESET and before any move, which is the same thing anyone gets by opening
+ * the task. It is served without the noindex header the mechanics route sets, because it
+ * gives nothing away that the play surface does not already show.
+ *
+ * The id is matched against the digest rather than interpolated into a path. A game id
+ * reaching the filesystem is how a read of ../../.env gets written, and an allowlist of
+ * fifty known ids removes the question rather than escaping it.
+ */
+let frameIdsCache: Set<string> | null = null;
+router.get(
+  '/frames/:gameId.png',
+  asyncHandler(async (req: Request, res: Response) => {
+    if (frameIdsCache === null) {
+      const raw = await readFile(path.join(AUTHORED_DIR, 'mechanics.json'), 'utf-8');
+      frameIdsCache = new Set((JSON.parse(raw) as { gameId: string }[]).map((g) => g.gameId));
+    }
+    const { gameId } = req.params as { gameId: string };
+    if (!frameIdsCache.has(gameId)) {
+      return res.status(404).json(formatResponse.error('not_found', `No authored frame for ${gameId}`));
+    }
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.sendFile(path.join(AUTHORED_DIR, 'frames', `${gameId}.png`));
+  }),
+);
+
 export default router;

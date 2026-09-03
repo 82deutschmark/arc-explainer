@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.36.0  Sep 2, 2026
+
+- **The mechanic guide's images were 404 in production, and had been since this morning** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: every picture on `/arc3/mechanics` was broken. The route that serves them was added in 9.30.0 and removed later the same day by an unrelated commit that rewrote `server/routes/arc3Mirror.ts` — not deliberately, the file was simply reconstructed without it. Restored verbatim from the commit that introduced it, so nothing was re-invented on the way back.
+  - **How it was found**: by curling the endpoint after pushing, rather than by trusting that a push was enough. The push itself was clean; the site was not. The publish had reported success and the frames still would not load.
+  - **Verified**: four frames return `200 image/png`, and a directory-traversal attempt still returns 404, which is the check that matters on a route that maps a URL segment onto a filename.
+  - **Worth noting for anyone editing that file**: it now carries eight routes and has been rewritten wholesale twice today. It is the kind of file where a rewrite silently drops a sibling route, and neither the type checker nor the build catches it, because the result compiles perfectly.
+  - **Files**: `server/routes/arc3Mirror.ts`.
+
 ### Version 9.35.0  Sep 2, 2026
 
 - **Seven rebuilt games reach production, and the resync gap that was hiding them** (Author: Mark Barney / Claude Opus 5)
