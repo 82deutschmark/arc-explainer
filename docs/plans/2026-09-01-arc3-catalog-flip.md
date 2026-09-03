@@ -82,6 +82,13 @@ authored locally.
 out of it is a conversation with Son first — the two programmes are deliberately competing
 catalogs and he should hear it from the Boss, not discover it in a diff.
 
+> **SUPERSEDED, 03-Sep-2026.** Not competing catalogs — one set, published in both places.
+> sonpham-org/arc-3#1 adds the same 50 ids to the upstream manifest so both sites serve
+> them. Where the two overlap, the copy on local disk wins; see `claimOrder()` in
+> `server/services/arc3Mirror/Arc3MirrorCatalog.ts` for why that is a correctness rule
+> about derived artifacts (frames, control map, triage) and not a preference about whose
+> copy to serve.
+
 ## Status — 01-Sep-2026, evening
 
 A2, A3 and A4 are **done** and are what this branch contains. The 50 tasks live at
