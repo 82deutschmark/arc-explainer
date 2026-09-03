@@ -82,6 +82,7 @@ import DebateTaskRedirect from "@/pages/DebateTaskRedirect";
 
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
 import LandingPage from "@/pages/LandingPage";
+import { isSyntheticHost } from "@/lib/syntheticHost";
 import SyntheticLanding from "@/pages/arc3-community/SyntheticLanding";
 import Arc3Review from "@/pages/arc3-community/Arc3Review";
 import Arc3HypothesisResearch from "@/pages/arc3-community/Arc3HypothesisResearch";
@@ -96,13 +97,10 @@ function LegacyArc3GameRedirect() {
   return <Redirect to={`/arc3/games/${gameId}`} />;
 }
 
-/** Hosts that lead with the synthetic-programme landing rather than the task grid. */
-const SYNTHETIC_HOSTS = new Set(["arc3.markbarney.net", "arc3.localhost"]);
-
 function RootLanding() {
-  // Read at render rather than module load so a dev preview reflects the real hostname.
-  const host = typeof window === "undefined" ? "" : window.location.hostname.toLowerCase();
-  if (SYNTHETIC_HOSTS.has(host) || new URLSearchParams(window.location.search).has("synthetic")) {
+  // isSyntheticHost() reads at render rather than module load so a dev preview reflects the
+  // real hostname. It lives in lib/syntheticHost.ts because AppHeader needs the same answer.
+  if (isSyntheticHost()) {
     return <SyntheticLanding />;
   }
   return <Redirect to="/arc3/gallery" />;
