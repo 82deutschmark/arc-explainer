@@ -17,9 +17,9 @@ Six games from `arc-explainer/external/ARCEngine/environment_files/`, each studi
 formality: **three of the six first readings were substantially wrong**, including two where
 the obvious visual interpretation was the trap. Corrected readings are below.
 
-**Two gaps in this document, stated up front.** `dc22`'s reading was never challenged — that
-agent died — so treat it as a plausible first read, not a checked one. And the automated
-synthesis died too, so the patterns section below is written by hand from the six studies.
+**All six readings are now checked.** The first pass lost two agents to a session limit; both
+were re-run. Notably `dc22`'s checker **actually played the game** rather than reading it, and
+still found the second half of it missing from the first description.
 
 ---
 
@@ -50,10 +50,14 @@ parts, each printed with marks; you hold one at a time and slide, turn or stretc
 every mark meets a matching mark on another part. A mark goes dark the instant it is
 satisfied. In most levels **only the part in your hand shows its marks at all**.
 
-**`dc22` — building the floor you walk on.** *(Unverified.)* A walker has to reach a goal,
-but most of the floor does not exist yet; you press coloured buttons on a panel that reshape
-tiles across the board. A wrong press irises the screen to black, rewinds one move and
-charges the budget — it never kills you, it just makes mistakes expensive.
+**`dc22` — building the floor you walk on.** A walker has to reach a goal, but most of the
+floor does not exist yet; you press buttons on a side panel that reshape platforms across the
+board. A wrong press irises the screen to black, rewinds one move and charges the budget — it
+never kills you, it just makes mistakes expensive. **The half we missed:** from the fifth level
+the panel stops being more colour buttons and grows a claw that rides a painted track, moving
+twice as far as the walker and clamping onto a pillar you then stand on. Coloured pads fling
+you to their twin. The panel itself grows: a missing button appears only after you fetch a
+token on foot.
 
 **`lf52` — peg solitaire across linked rooms.** Click a piece, click where it lands, it hops
 a neighbour off the board. A rail cart ferries a piece between rooms. Its famous button is
@@ -121,6 +125,38 @@ somebody else is on the board hauling too. That is the thing worth taking.
 queue because the genre is in-distribution, not because `wa30` has already covered it. And
 if a push-block game is ever revisited, the change worth making is adding a second hauler,
 not improving the pushing.
+
+---
+
+## The brief, written after all six were checked
+
+# What we're missing
+
+Our games are correct and legible, which is most of the job. What separates them is that every one of ours states its single idea in the first ten seconds and never revises it. The official games are built around a moment where the player's model breaks — you discover there is no up button, that the wall you can't cross has a worker on the other side of it, that the button which has meant "turn" for four levels now means "stretch." They get that out of four to six controls, not out of more content. They add meanings rather than buttons, and they raise difficulty by changing what the player can *see* rather than by enlarging the board. That's the gap. It isn't art, theme, or variety.
+
+# The recurring shapes
+
+**One button, many meanings.** In the connector game the turn button silently becomes a stretch button the first time you hold a piece that grows; in the crate game the same key drops your cargo when your hands are full and destroys a thief when they're empty. The control set never grows, so every new meaning is learned by pressing a key you already trusted.
+
+**The world moves without you.** In the floating game you steer only left and right and rise on your own, so pressing sideways isn't walking — it's hunting for the gap in the ceiling. Elsewhere a claw rides a painted track, coloured pads fling you across the level, and whole rooms slide in from off-screen; position becomes a consequence of a decision rather than the decision itself.
+
+**The board is not one kind of block.** Two shades of red that look identical on screen and only count against their own kind; pegs you may hop over that are never captured, sitting among pegs that are; a yellow button that drives a grey platform. Pieces that look alike behave differently, and you find out by touching them — that is the direct cure for "blocky."
+
+**Someone else is working.** A helper on the far side of an uncrossable line hauls loose crates to the delivery floor, one step for every key you press, and a thief does the same in reverse — lifting crates out of your hands and off floor you already finished. Nothing is banked until the last crate lands and the thief is gone.
+
+**The game never answers.** The rune game's move budget is roomy — roughly double what a good solve costs. What kills guessing is silence: no tick on a correct tile, no partial credit, no warmer-or-colder. The board says nothing until the whole line is right at once, then simply ends.
+
+# The Sokoban verdict
+
+Plenty is left. The verb was never the problem — the solitaire is. A room where nothing else wants anything has one plan, worked out once and then typed in. The proven fix is cheap: a barrier that stops people but not cargo, a worker on the far side who delivers on your clock, a rival who undoes you, and at least one level with no delivery floor on your side at all so the hand-off is mandatory. That's a level-design pass on games we already have. What we should stop shipping is the fiftieth empty room of crates and marked squares.
+
+# Five things to do next
+
+1. Put a helper and a thief across an uncrossable line in our three best push-block games, with one level we cannot finish alone.
+2. Strip all partial feedback out of one game and see whether it still plays — if guessing dies and reading survives, do it everywhere.
+3. Cap every game at six controls, then give one control a second meaning that arrives mid-game, and check a fresh player finds it unaided.
+4. Print the win condition onto the pieces as a live readout that lights and unlights as you move — then three levels in, rub it off everything but the piece in hand.
+5. Give failure a performance instead of a message: a beat where nothing happens, then the board reacting, then a control we have never seen arriving on screen.
 
 ---
 
