@@ -1,7 +1,8 @@
 /*
 Author: Claude Opus 5
 Date: 2026-09-02
-PURPOSE: The unlisted answer key for the 50 hand-authored ARC-AGI-3 tasks. One row per
+PURPOSE: The unlisted answer key for the 50 reviewed ARC-AGI-3 tasks (agent-generated,
+         then played and revised -- not hand-authored, whatever older copy said). One row per
          task: a picture of level 1, what it actually is, what each control does, what
          wins it, and the structural facts derived from its source -- the action list it
          advertises, whether its ACTION6 is a spatial click or a plain button, its board
@@ -87,7 +88,7 @@ function ActionList({ entry }: { entry: Arc3MechanicEntry }) {
 export default function Arc3MechanicGuide() {
   usePageMeta({
     title: 'ARC-AGI-3 mechanic guide (spoilers)',
-    description: 'Unlisted reference: what each hand-authored ARC-AGI-3 task is and how it is controlled.',
+    description: 'Unlisted reference: what each task in the reviewed ARC-AGI-3 set is and how it is controlled.',
     noindex: true,
   });
 
@@ -119,7 +120,7 @@ export default function Arc3MechanicGuide() {
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-tight">ARC-AGI-3 mechanic guide</h1>
         <p className="text-sm text-muted-foreground max-w-3xl">
-          What each of the {totals.total} hand-authored tasks actually is. Everything except the
+          What each of the {totals.total} tasks in the reviewed set actually is. Everything except the
           prose is derived from the game sources by{' '}
           <code className="text-xs">scripts/arc3/mechanic_digest.py</code>, so it is re-derivable
           rather than remembered.

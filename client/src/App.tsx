@@ -82,7 +82,6 @@ import DebateTaskRedirect from "@/pages/DebateTaskRedirect";
 
 import ReArcErrorShowcase from "@/pages/dev/ReArcErrorShowcase";
 import LandingPage from "@/pages/LandingPage";
-import { isSyntheticHost } from "@/lib/syntheticHost";
 import SyntheticLanding from "@/pages/arc3-community/SyntheticLanding";
 import Arc3Review from "@/pages/arc3-community/Arc3Review";
 import Arc3HypothesisResearch from "@/pages/arc3-community/Arc3HypothesisResearch";
@@ -95,15 +94,6 @@ function LegacyArc3GameRedirect() {
   const params = useParams<{ gameId: string }>();
   const gameId = params.gameId ?? "";
   return <Redirect to={`/arc3/games/${gameId}`} />;
-}
-
-function RootLanding() {
-  // isSyntheticHost() reads at render rather than module load so a dev preview reflects the
-  // real hostname. It lives in lib/syntheticHost.ts because AppHeader needs the same answer.
-  if (isSyntheticHost()) {
-    return <SyntheticLanding />;
-  }
-  return <Redirect to="/arc3/gallery" />;
 }
 
 function Router() {
@@ -126,17 +116,15 @@ function Router() {
       <Route>
         <PageLayout>
           <Switch>
-        {/* Root depends on which host asked.
-
-            arc3.markbarney.net is the public face of the synthetic-task programme, so it
-            gets a real landing page -- what this is in plain language, a task that needs
-            coverage, the methodology, and how researchers contribute -- rather than being
-            bounced straight into a grid with no context.
-
-            On the main host the gallery is the front door, because a visitor there has
-            already arrived somewhere that explains itself. The resource hub is unchanged
-            at /home in both cases. */}
-        <Route path="/" component={RootLanding} />
+        {/* Root is the landing page, on EVERY host. It used to depend on which host asked:
+            arc3.markbarney.net got the landing, arc.markbarney.net redirected to
+            /arc3/gallery. That was wrong twice over. A visitor to the main host was
+            dropped into a wall of unlabelled thumbnails with nothing saying what the site
+            is, and the two hosts disagreed about what "home" means, which is how the
+            brand mark ended up as a second link to the gallery. One front door, one
+            explanation, both hosts. /synthetic stays as an alias because it has been
+            linked; the resource hub is unchanged at /home. */}
+        <Route path="/" component={SyntheticLanding} />
         <Route path="/synthetic" component={SyntheticLanding} />
         <Route path="/home" component={LandingPage} />
         <Route path="/browser" component={PuzzleBrowser} />

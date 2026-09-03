@@ -12,6 +12,30 @@
 # reference the old numbers.
 
 
+### Version 9.42.0  Sep 3, 2026
+
+- **The 50 are not "hand-authored", and the share card is not the Foundation's game** (Author: Mark Barney / Claude Opus 5)
+  - **"Hand-authored — built by us one at a time" was untrue, and it was the gallery's first section heading.** Nobody hand-writes these: an agent generates them, a person plays and reviews them, they go back for revision, and the set is still moving week to week. The section is now **"Reviewed set"**, described as what it is. This also sharpens the contrast with `ai-generated` — the real line between the two sections was never hand vs machine, since both are machine-written; it is reviewed-and-revised vs straight-off-the-generator, which is the more useful thing to tell a visitor.
+  - **Every share of the site led with somebody else's work.** The og:image for `/` and `/arc3/gallery` was `ls20-9607627b`, an ARC Prize Foundation task. Hand someone the gallery link and the picture that unfurls was not ours. Both now use `g012`, from the reviewed set — the busiest opening frame of the fifty at 10 distinct colours, which is what survives being shrunk to a card. Verified the thumbnail endpoint serves it: 200, image/png.
+  - **Files**: `client/src/pages/arc3-community/CommunityGallery.tsx`, `SyntheticLanding.tsx`, `Arc3MechanicGuide.tsx`, `shared/routes.ts`, `server/routes/arc3Mirror.ts`, `server/services/arc3Mirror/Arc3Triage.ts`, `server/services/arc3Mirror/arc3Triage.json`.
+
+### Version 9.41.0  Sep 3, 2026
+
+- **One front door on both hosts, and the hero stops quoting a score that goes stale weekly** (Author: Mark Barney / Claude Opus 5)
+  - **`/` is the landing page on every host.** It used to depend on the host: `arc3.markbarney.net` got the landing, `arc.markbarney.net` redirected to `/arc3/gallery` — so a visitor to the main host was dropped into a wall of unlabelled thumbnails with nothing saying what the site is. `RootLanding` and the `syntheticHost.ts` helper added earlier today are both deleted; the root is one `Route` line again. `/synthetic` stays as an alias.
+  - **No live frontier score in the copy.** The H1 was "Humans solve these. The best AI in the world scores half a percent", with 0.50% repeated in the prose beneath. Frontier results land constantly and a number welded into a headline is a maintenance job nobody signed up for. The page now asserts the gap — easy for a person, very hard for the best models — which stays true as the number moves. The figure survives once, in the footnote, scoped to the report and its date, plus a link to the live ARC Prize leaderboard. The opposite ditch is signposted in the code: an earlier draft said models "score zero", which is checkably wrong.
+  - **The stalest copy on the site was in the share cards, not the page.** "the best AI scores 0.50%" was also in the `/` and `/arc3/gallery` meta and in the per-task unfurl built in `metaTagInjector.ts` — the strings nobody reads in review that every Slack unfurl and search result shows. All three rewritten.
+  - **Two corrections while in there**: the hero's "Humans clear 100% of these environments" is now attributed to the *official* environments, because it sat 8px above the ask block saying no task here has a human attempt on record; and an unused `RELEASE_SCORES` const was deleted from the landing page (the real one lives in `Arc3Story.tsx`, correctly labelled as release-time).
+  - **Files**: `client/src/App.tsx`, `client/src/components/layout/AppHeader.tsx`, `client/src/pages/arc3-community/SyntheticLanding.tsx`, `shared/routes.ts`, `server/middleware/metaTagInjector.ts`, `client/src/lib/syntheticHost.ts` (deleted).
+
+### Version 9.40.1  Sep 3, 2026
+
+- **g010 republished — the one game the set-wide pass left behind** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: 9.39.0 republished the set, but g010 had been rebuilt upstream after that import ran, so the copy served here was still the previous build. This brings it into line. Its opening frame flips from a near-black field to a whiteout with a small lit disc.
+  - **The drift was caught by a check, not by eye.** `import_authored_games.py --check` named exactly one file. All fifty frames were re-rendered and only this one moved, which is the useful part: the renderer is deterministic against unchanged sources, so a one-file diff means one source changed.
+  - **`frames.json` follows the new frame**: background 5 → 0, distinct colours 3 → 5, ink 0.0388 → 0.2002.
+  - **Files**: `server/data/arc3-games/g010.py`, `server/data/arc3-games/frames/g010.png`, `server/data/arc3-games/frames.json`.
+
 ### Version 9.40.0  Sep 3, 2026
 
 - **The brand mark goes to the landing page on every host, and the landing page's one ask moved into the hero** (Author: Mark Barney / Claude Opus 5)

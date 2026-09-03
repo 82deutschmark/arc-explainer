@@ -11,9 +11,13 @@ PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: s
          how the set is generated, how to contribute a task, and how to consume the data
          belonged to the research side and were duplicating it here, months out of date.
          What remains is the pitch to a human being and the shortest path to playing.
-         Numbers are cited from the ARC-AGI-3 technical report (22-Apr-2026) rather than
-         asserted -- humans 100%, best frontier model 0.50% (Table 2). An earlier draft
-         said models "score zero", which is wrong and would not survive a poster session.
+         2026-09-03: no live frontier score appears in the prose. The hero asserts the
+         GAP -- easy for a person, very hard for the best models -- because that survives
+         the scores moving, and they move constantly. The 0.50% figure is cited once, in
+         the footnote, scoped to the ARC-AGI-3 technical report (22-Apr-2026, Table 2), so
+         it reads as a dated measurement rather than a current claim. Note the two ditches
+         either side: an earlier draft said models "score zero", which is checkably wrong,
+         and the draft after it welded 0.50% into the H1, which went stale in weeks.
          Prose is set in a sans stack for readability; monospace is kept for chrome, ids
          and code, matching CommunityGallery and the official ARC-AGI-3 task pages.
          Steers play toward ZERO-PLAY tasks: coverage is the scarce resource, not tasks.
@@ -38,7 +42,9 @@ interface Game {
 /** Our own generation pipeline: 571 tasks, unreviewed, and the weakest thing on the site. */
 const PIPELINE_CATEGORY = 'ai-generated';
 
-/** The 50 hand-authored tasks -- built level by level and reviewed one at a time. */
+/** The 50 reviewed tasks: agent-generated, then played and revised until they hold up.
+ *  NOT hand-authored -- the copy used to say that and it was untrue. See the section
+ *  labels in CommunityGallery.tsx, which this page has to agree with. */
 const AUTHORED_CATEGORY = 'arena';
 
 /**
@@ -49,7 +55,7 @@ const AUTHORED_CATEGORY = 'arena';
  * the set we have the least confidence in, and this page is the first thing a visitor
  * sees. A landing page opening on 571 unreviewed tasks is advertising the slop.
  *
- * Hand-authored leads now, matching the gallery's section order and /play's review queue.
+ * The reviewed set leads now, matching the gallery's section order and /play's queue.
  * Three surfaces, one answer about what is worth someone's time -- which is the whole
  * point, because a visitor who sees one task here and is handed a different one by Play
  * has been told the site does not know its own mind.
@@ -99,14 +105,6 @@ const DUCK_HARNESS = 'https://github.com/Tufalabs/duck-harness';
 const REPORT = 'https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf';
 const ARENA_REPO = 'https://github.com/sonpham-org/autoresearch-arena';
 const ARENA_SITE = 'https://arc3.sonpham.net';
-
-/* ARC-AGI-3 technical report, Table 2 — semi-private leaderboard at release. */
-const RELEASE_SCORES: [string, string][] = [
-  ['Claude Opus 4.6 (Max)', '0.50%'],
-  ['Gemini 3.1 Pro Preview', '0.40%'],
-  ['GPT 5.4 (High)', '0.20%'],
-  ['Grok-4.20 (Reasoning)', '0.10%'],
-];
 
 /**
  * Two links, both of which are other people's work on the same problem.
@@ -244,12 +242,20 @@ export default function SyntheticLanding() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start">
             <div>
               <h1 className="text-[30px] sm:text-[40px] leading-[1.15] font-bold mb-6 tracking-[-0.5px]">
-                Humans solve these. The best AI in the world scores half a percent.
+                Easy for you. Very hard for the best AI in the world.
               </h1>
-              {/* Three paragraphs, and it was four longer ones. The cut version said the
-                  same things at half the length; the paragraph explaining why the gap
-                  matters was the page telling the reader what to think before they had
-                  played anything. */}
+              {/* NO LIVE SCORE IN THIS COPY, AND DO NOT PUT ONE BACK.
+                  The hero used to end on "the best AI in the world scores half a percent",
+                  with 0.50% repeated in the second paragraph. Frontier scores move every
+                  few weeks; a number welded into an H1 is a maintenance job nobody signed
+                  up for, and it was already out of date. The durable claim is the GAP --
+                  people work these out in minutes, frontier systems mostly do not -- which
+                  stays true as the number moves and is the actual point of the page.
+                  The number still exists, once, in the footnote below, where it is scoped
+                  to a dated report. A citation to a dated source does not go stale; it
+                  becomes history. An assertion in the present tense does.
+                  Equally: do not swing to "models score zero". They do not, it is checkably
+                  wrong, and an earlier draft of this page said it. */}
               <div className="text-[15px] leading-[1.75] space-y-4" style={{ color: ARC.dim }}>
                 <p>
                   Open one and you get a screen, a few buttons, and no instructions. Nobody
@@ -259,9 +265,11 @@ export default function SyntheticLanding() {
                 </p>
                 <p>
                   The systems that pass medical exams and write working software{' '}
-                  <strong style={{ color: ARC.text }}>almost entirely cannot.</strong> Humans
-                  clear 100% of these environments. The best model anyone has tested scores{' '}
-                  <strong style={{ color: ARC.text }}>0.50%</strong>.
+                  <strong style={{ color: ARC.text }}>mostly cannot.</strong> On the official
+                  ARC-AGI-3 environments a person gets through the set and the frontier
+                  models get through almost none of it — a gap of nearly the whole
+                  benchmark, not a few points. New results land constantly, so treat any
+                  one figure as a snapshot; the one this page cites is below, with its date.
                 </p>
                 <p>
                   Exams reward recall. This rewards something else — looking at a thing you
@@ -341,20 +349,28 @@ export default function SyntheticLanding() {
           THE FOUR STAT CARDS THAT USED TO SIT HERE ARE GONE, AND SHOULD NOT COME BACK.
           They showed 100%, 0.50%, the task count and the unplayed count. Every one of the
           four restated a number from prose immediately above or below it: the first two
-          are in the hero's second paragraph, in the same words, and the second two are the
-          opening line of the ask, which now sits in the hero's left column. A number is worth a card when it is the
+          were in the hero's second paragraph, in the same words, and the second two are the
+          opening line of the ask, which now sits in the hero's left column. 0.50% has since
+          come out of the prose entirely -- it lives in the dated footnote and nowhere else,
+          which is NOT an opening to promote it back to a card. A frontier score on a card
+          is a number this page would have to chase forever. A number is worth a card when it is the
           first place the reader meets it. Repeated a paragraph later in a bigger font it
           is decoration, and four of them in a row read as a dashboard bolted onto an
           argument. The citation stays, because that is load-bearing -- it is what makes
           the hero's claim checkable rather than asserted.
         */}
         <p className="text-[12px] mb-14 max-w-[76ch]" style={{ color: ARC.faint }}>
-          Human and model figures from the{' '}
+          The figures behind that, as measured at the benchmark's release and not since:
+          humans 100%, best model 0.50% — Table 2 of the{' '}
           <a href={REPORT} target="_blank" rel="noreferrer" className="underline">
             ARC-AGI-3 technical report
           </a>{' '}
-          (22 April 2026), Table 2. Best-of-four at release: Opus 4.6 0.50%, Gemini 3.1 Pro
-          0.40%, GPT 5.4 0.20%, Grok-4.20 0.10%.
+          (22 April 2026), best-of-four, semi-private set. Frontier models have been
+          evaluated many times since and score better; none has closed the gap. For a
+          current board, see the{' '}
+          <a href="https://arcprize.org/leaderboard" target="_blank" rel="noreferrer" className="underline">
+            ARC Prize leaderboard
+          </a>.
         </p>
 
         {/* ── a look at the set ───────────────────────────────────────────── */}
@@ -367,11 +383,11 @@ export default function SyntheticLanding() {
             </p>
             <p className="text-[13px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.faint }}>
               These are the <strong style={{ color: ARC.text }}>{authoredCount}</strong>{' '}
-              hand-authored ones — built one at a time, six to eight levels each, and the
-              most finished tasks here. Behind them sit the 25 official ARC Prize tasks, a
-              contributed community catalog, and{' '}
-              <strong style={{ color: ARC.text }}>{pipelineCount}</strong> straight off our
-              generator that nobody has judged yet.
+              reviewed ones — written by our agent, then played and sent back for revision
+              until they hold up, six to eight levels each, and still being iterated.
+              Behind them sit the 25 official ARC Prize tasks, a contributed community
+              catalog, and <strong style={{ color: ARC.text }}>{pipelineCount}</strong>{' '}
+              straight off the same generator that nobody has judged yet.
             </p>
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
               {previewTiles.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}

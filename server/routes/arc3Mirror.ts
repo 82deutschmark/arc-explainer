@@ -159,7 +159,7 @@ router.get(
 /**
  * GET /api/arc3-mirror/mechanics - the spoiler guide's data.
  *
- * FULL SPOILERS for the 50 hand-authored tasks: what each one is, what each control does,
+ * FULL SPOILERS for the 50 tasks in the reviewed set: what each one is, what each control does,
  * and what wins it. Unauthenticated like the rest of this router, and deliberately NOT
  * linked from anywhere a player would find it -- the play surface exists to collect blind
  * first contact and a discoverable answer key would destroy the sample it collects.
