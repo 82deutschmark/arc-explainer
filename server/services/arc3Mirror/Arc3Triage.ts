@@ -4,7 +4,7 @@ Date: 2026-08-31 (revised 2026-09-01: second batch, generation as a field, and t
       illegible verdict)
 PURPOSE: The review ordering for the 621 probed tasks — which are worth a human's
          time, which are duplicates of another, and which fall over to random input.
-         571 are the qNNN-v1 generated set; 50 are the hand-authored set the arena
+         571 are the qNNN-v1 generated set; 50 are the reviewed set the arena
          catalog publishes, added 01-Sep and keyed by their PUBLISHED ids (see IDS below).
 
          ORDER IS BY RECENCY, NEWEST FIRST (01-Sep). This site is the slop filter for our
@@ -24,7 +24,7 @@ PURPOSE: The review ordering for the 621 probed tasks — which are worth a huma
          structural near-copies of another (clusters land on consecutive ids — q239-245,
          q425-431, q488-494 — the generator emitted batches of variations on a template),
          and 191 across both batches surrender a level to random button-mashing (177 of
-         the generated set, 14 of the 50 hand-authored). Neither is visible
+         the generated set, 14 of the 50 reviewed). Neither is visible
          without comparing tasks against each other, or playing badly on purpose many
          times. Both were measured by executing every task against the engine; the
          verdicts are baked here rather than recomputed, because the measurement needs

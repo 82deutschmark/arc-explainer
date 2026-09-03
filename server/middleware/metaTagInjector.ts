@@ -135,8 +135,11 @@ export async function metaTagInjector(
       routeMetaTags = {
         title: `${gameId.toUpperCase()} — an ARC-AGI-3 task`,
         description:
+          // No score here on purpose -- see ROOT_META_BY_HOST in shared/routes.ts. Meta
+          // strings are the stalest copy on the site: nobody reads them in review, and a
+          // frontier number in one is wrong within weeks of being written.
           'No instructions, no goal, no controls listed. Work out what it does. '
-          + 'Humans solve these; the best AI scores 0.50%.',
+          + 'Easy for a person, very hard for the best AI.',
         url: `https://${host || 'arc.markbarney.net'}/arc3/play/${gameId}`,
         image: `${BASE_URL}/api/arc3-mirror/games/${encodeURIComponent(gameId)}/thumbnail?size=512`,
         type: 'article',

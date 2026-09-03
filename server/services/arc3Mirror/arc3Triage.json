@@ -5,7 +5,7 @@
   {
    "generationRange": "1000",
    "count": 50,
-   "label": "hand-authored candidate set, published by the arena catalog",
+   "label": "reviewed candidate set, published by the arena catalog",
    "method": "execution probe only. Not duplicate-clustered: funnel.py measures near-copies WITHIN one generator's output and these come from a different process, so every duplicateOf here is null because it was not measured -- not because a clustering run cleared them."
   },
   {

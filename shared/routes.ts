@@ -25,10 +25,14 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/arc3/gallery': {
     title: 'ARC-AGI-3 Tasks — play one, no instructions',
     description:
-      'Interactive reasoning tasks that explain nothing. Humans solve these; the best AI '
-      + 'scores 0.50%. Pick one and work out what it does.',
+      'Interactive reasoning tasks that explain nothing. Easy for a person, very hard for '
+      + 'the best AI. Pick one and work out what it does.',
     url: 'https://arc.markbarney.net/arc3/gallery',
-    image: 'https://arc.markbarney.net/api/arc3-mirror/games/ls20-9607627b/thumbnail?size=512',
+    // OUR game, not an official one. This was ls20-9607627b -- an ARC Prize Foundation
+    // task -- so every share of this site led with somebody else's work as the picture.
+    // g012 is from the reviewed set and has the busiest opening frame of the fifty
+    // (10 colours) which is what survives being shrunk to a share-card thumbnail.
+    image: 'https://arc.markbarney.net/api/arc3-mirror/games/g012/thumbnail?size=512',
     type: 'website',
   },
 
@@ -65,18 +69,24 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   // '/analytics': analytics dashboard meta tags
 };
 /**
- * Meta for "/" by host. The root renders a different page per host, so one entry in
- * ROUTE_META_TAGS cannot describe it: sharing arc3.markbarney.net must not unfurl as the
- * gallery, and vice versa.
+ * Meta for "/" by host. Both hosts render the same landing page now, so the copy is
+ * shared; only the canonical url differs, which is the whole reason this is still keyed
+ * by host rather than folded into ROUTE_META_TAGS.
  */
+const ROOT_META: Omit<RouteMetaTags, 'url'> = {
+  // Matches the page's H1, and carries no score for the same reason it does not: this
+  // string is the Slack unfurl, the search result and the share card, so a number in it
+  // is the stalest copy on the site and the hardest to notice has gone stale.
+  title: 'Easy for you. Very hard for the best AI in the world.',
+  description:
+    'Synthetic ARC-AGI-3 tasks: little games that explain nothing. No instructions, no '
+    + 'goal, no controls listed — work it out. Five minutes, no account.',
+  // See the note on /arc3/gallery above: ours, not the Foundation's.
+  image: 'https://arc.markbarney.net/api/arc3-mirror/games/g012/thumbnail?size=512',
+  type: 'website',
+};
+
 export const ROOT_META_BY_HOST: Record<string, RouteMetaTags> = {
-  'arc3.markbarney.net': {
-    title: 'Humans solve these. The best AI scores half a percent.',
-    description:
-      'Synthetic ARC-AGI-3 tasks: little games that explain nothing. No instructions, no '
-      + 'goal, no controls listed — work it out. Five minutes, no account.',
-    url: 'https://arc3.markbarney.net/',
-    image: 'https://arc.markbarney.net/api/arc3-mirror/games/ls20-9607627b/thumbnail?size=512',
-    type: 'website',
-  },
+  'arc3.markbarney.net': { ...ROOT_META, url: 'https://arc3.markbarney.net/' },
+  'arc.markbarney.net': { ...ROOT_META, url: 'https://arc.markbarney.net/' },
 };
