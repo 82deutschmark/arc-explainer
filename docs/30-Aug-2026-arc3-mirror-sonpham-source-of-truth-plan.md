@@ -40,9 +40,10 @@ everything else. So the catalog (`/static/games/manifest.json`, 300 games) and e
 game's Python source are already public; `internal.html`, runs, viewer, harness and
 `/data/*` are not. The auth split we needed already existed.
 
-`/Users/macmini/GitHub/arc3-site` is a checkout of a FORK of the wrong repo
-(`82deutschmark/arc3`), not of the live one — port 8776 locally. Anything committed there
-goes to the repo that no longer deploys. Clone `sonpham-org/arc-3` instead.
+`/Users/macmini/GitHub/arc3-site` is a checkout of the live repo — port 8776 locally.
+It used to point at a fork of the wrong one (`82deutschmark/arc3`), which is where the
+stranded favicon PR came from; repointed to `sonpham-org/arc-3` on 03-Sep-2026, `origin`
+now being the live repo and the stale `fork` remote removed.
 
 ## Why a server-side mirror rather than a browser fetch
 
