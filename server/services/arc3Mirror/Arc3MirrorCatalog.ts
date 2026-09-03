@@ -77,9 +77,9 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          gain.
 
          Dependencies: global fetch (Node 18+) for the upstream source, fs/path for ours.
-         Deliberately no DB -- Son's catalog is not ours to persist, and ours is already
-         files under version control, so a stored copy would only recreate the
-         stale-mirror problem this service exists to remove.
+         Deliberately no DB. The upstream catalog is already served over HTTP and the
+         local one is already files under version control, so a stored third copy would
+         only recreate the stale-mirror problem this service exists to remove.
 SRP/DRY check: Pass -- reading/caching/stripping only, parameterised per source
          instead of duplicated: one read path, one strip, one refresh, one cache policy,
          applied to a list of source descriptors. Publishing our catalog belongs to
