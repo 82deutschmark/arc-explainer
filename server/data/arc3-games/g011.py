@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -12,16 +13,93 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 10
-WALL = 2
-PIT = 5
-FILLED = 1
-ROCK = 13
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+
+FLOOR = 0
+WALL = 3
+STONE = 3
+PIT = 13
+PLUG = 3
 SWITCH = 15
-GATE_SHUT = 8
-GATE_OPEN = 7
-GOAL = 14
-PLAYER = 12
+GATE = 15
+GATE_FILL = 3
+GOAL = 10
+PLAYER = 8
+GRIT = 3
 
 LEVELS_SPEC = [
     [
@@ -285,22 +363,57 @@ def goal_of(rows):
     raise AssertionError("level has no goal")
 
 
-def _solid(colour):
-    return [[colour] * CELL for _ in range(CELL)]
+def _over(base, top):
+    for y, row in enumerate(top):
+        for x, v in enumerate(row):
+            if v >= 0:
+                base[y][x] = v
+    return base
 
 
-def _framed(edge, inner):
-    px = [[inner] * CELL for _ in range(CELL)]
-    for i in range(CELL):
-        px[0][i] = px[CELL - 1][i] = edge
-        px[i][0] = px[i][CELL - 1] = edge
-    return px
+def _wall_px():
+    return _over(block(WALL, CELL), fixture((FLOOR, FLOOR), 0, 0, CELL))
 
 
-def _dot(colour, ground):
-    px = [[ground] * CELL for _ in range(CELL)]
-    px[1][1] = px[1][2] = px[2][1] = px[2][2] = colour
-    return px
+def _pit_px():
+    return weave(PIT, CELL)
+
+
+def _plug_px():
+    return medallion(PIT, PLUG, CELL)
+
+
+def _rock_px():
+    return rounded(STONE, CELL)
+
+
+def _switch_px():
+    return medallion(SWITCH, FLOOR, CELL)
+
+
+def _gate_px(shut):
+    return door(GATE, GATE_FILL if shut else None, CELL)
+
+
+def _socket_px():
+    return ring(GOAL, CELL)
+
+
+def _body_px(mode):
+    if mode == "gone":
+        return [[-1] * CELL for _ in range(CELL)]
+    if mode == "run":
+        return figure(PLAYER, None, CELL)
+    return core(PLAYER, CELL)
+
+
+def _grit_px(x, y, phase):
+    return fixture((GRIT, FLOOR, FLOOR), phase, (x * 3 + y) % 3, CELL)
+
+
+def _grit_cells(rows):
+    return [(x, y) for y in range(N) for x in range(N)
+            if _terrain(rows, x, y) == "." and (x * 7 + y * 5) % 17 == 0]
 
 
 def _tile(pixels, name, layer):
@@ -312,10 +425,17 @@ def _tile(pixels, name, layer):
 
 class G011(ARCBaseGame):
 
+    SINK_FRAMES = 6
+    DOCK_FRAMES = 2
+
     def __init__(self):
         self.rows = LEVELS_SPEC[0]
         self.player, self.rocks, self.filled, self.parity = start_state(self.rows)
         self._undo = []
+        self._anim = None
+        self._outcome = None
+        self._tick = 0
+        self._grit = []
         camera = Camera(width=N * CELL, height=N * CELL,
                         background=FLOOR, letter_box=5)
         super().__init__(game_id="g011", levels=self._blank_levels(),
@@ -330,6 +450,8 @@ class G011(ARCBaseGame):
         self.rows = LEVELS_SPEC[self.level_index]
         self.player, self.rocks, self.filled, self.parity = start_state(self.rows)
         self._undo = []
+        self._anim = None
+        self._outcome = None
         self._redraw()
 
     def level_reset(self):
@@ -341,34 +463,68 @@ class G011(ARCBaseGame):
         self.on_set_level(self.current_level)
 
     def _redraw(self):
+        self._paint(self.player, self.rocks, self.filled, self.parity)
+
+    def _paint(self, player, rocks, filled, parity, mode="run"):
+        self._tick += 1
         level = self.current_level
         level.remove_all_sprites()
+        self._grit = []
         for y in range(N):
             for x in range(N):
                 t = _terrain(self.rows, x, y)
                 px = None
                 if t == "#":
-                    px = _solid(WALL)
+                    px = _wall_px()
                 elif t == "^":
-                    px = _solid(FILLED) if (x, y) in self.filled else _solid(PIT)
+                    px = _plug_px() if (x, y) in filled else _pit_px()
                 elif t == "s":
-                    px = _dot(SWITCH, FLOOR)
+                    px = _switch_px()
                 elif t == "X":
-                    px = _framed(GOAL, FLOOR)
+                    px = _socket_px()
                 elif t in ("a", "b"):
-                    shut = (self.parity % 2 == 0) if t == "a" else (self.parity % 2 == 1)
-                    px = _solid(GATE_SHUT) if shut else _framed(GATE_OPEN, FLOOR)
+                    shut = (parity % 2 == 0) if t == "a" else (parity % 2 == 1)
+                    px = _gate_px(shut)
                 if px is not None:
                     level.add_sprite(_tile(px, f"t_{x}_{y}", -1)
                                      .set_position(x * CELL, y * CELL))
-        for i, (x, y) in enumerate(sorted(self.rocks)):
-            level.add_sprite(_tile(_solid(ROCK), f"rock_{i}", 1)
+        for i, (x, y) in enumerate(_grit_cells(self.rows)):
+            sp = _tile(_grit_px(x, y, self._tick), f"grit_{i}", -2)
+            level.add_sprite(sp.set_position(x * CELL, y * CELL))
+            self._grit.append((sp, x, y))
+        for i, (x, y) in enumerate(sorted(rocks)):
+            level.add_sprite(_tile(_rock_px(), f"rock_{i}", 1)
                              .set_position(x * CELL, y * CELL))
-        px, py = self.player
-        level.add_sprite(_tile(_framed(PLAYER, FLOOR), "player", 2)
+        px, py = player
+        level.add_sprite(_tile(_body_px(mode), "player", 2)
                          .set_position(px * CELL, py * CELL))
 
+    def _move_body(self, cell, mode):
+        self._tick += 1
+        for sp in self.current_level.get_sprites_by_name("player"):
+            sp.pixels = np.array(_body_px(mode), dtype=np.int8)
+            sp.set_position(cell[0] * CELL, cell[1] * CELL)
+        for sp, x, y in self._grit:
+            sp.pixels = np.array(_grit_px(x, y, self._tick), dtype=np.int8)
+
     def step(self):
+        if self._anim is not None:
+            if self._anim:
+                self._move_body(*self._anim.pop(0))
+                return
+            outcome, self._anim, self._outcome = self._outcome, None, None
+            if outcome is None:
+                self.level_reset()
+            else:
+                self.player, self.rocks, self.filled, self.parity = outcome
+                seated = self.player == goal_of(self.rows)
+                self._paint(self.player, self.rocks, self.filled, self.parity,
+                            "seated" if seated else "run")
+                if seated:
+                    self.next_level()
+            self.complete_action()
+            return
+
         act = self.action.id
         if act == GameAction.ACTION7:
             if self._undo:
@@ -385,17 +541,23 @@ class G011(ARCBaseGame):
         before = (self.player, self.rocks, self.filled, self.parity)
         player, rocks, filled, parity, dead = resolve_slide(
             self.rows, self.player, self.rocks, self.filled, self.parity, d)
-        if dead:
-            self.level_reset()
-            self.complete_action()
-            return
-        if (player, rocks, filled, parity) == before:
+        if not dead and (player, rocks, filled, parity) == before:
             self.complete_action()
             return
 
-        self._undo.append(before)
-        self.player, self.rocks, self.filled, self.parity = player, rocks, filled, parity
-        self._redraw()
-        if self.player == goal_of(self.rows):
-            self.next_level()
-        self.complete_action()
+        frames = [(cell, "run") for cell in
+                  slide_path(self.rows, self.player, self.rocks, self.filled,
+                             self.parity, d)]
+        if dead:
+            for i in range(self.SINK_FRAMES):
+                frames.append((player, "sunk" if i % 2 == 0 else "gone"))
+            self._outcome = None
+        else:
+            self._undo.append(before)
+            if player == goal_of(self.rows):
+                frames.extend((player, "seated") for _ in range(self.DOCK_FRAMES))
+            self._outcome = (player, rocks, filled, parity)
+        self._anim = frames
+        if self._anim:
+            self._move_body(*self._anim.pop(0))
+        return

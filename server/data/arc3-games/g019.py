@@ -15,21 +15,99 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-TRACK = 2
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+
+FLOOR = 2
+WALL = 5
+TRACK = 5
 BELL = 11
-PLATE_OFF = 9
-PLATE_ON = 10
-GUARD = 8
+PLATE_OFF = 15
+PLATE_ON = 11
+GUARD = 6
+GUARD_CORE = 5
 PLAYER = 12
-EXIT_SHUT = 13
-EXIT_OPEN = 14
-PIP_ON = 14
-PIP_OFF = 5
+PLAYER_MARK = 5
+EXIT_SHUT = 5
+EXIT_BAR = 15
+EXIT_OPEN = 11
+PIP_ON = 11
+PIP_OFF = 15
+DECOR = 2
 
 N = 16
 CELL = 4
+
+GAUGE_TOP = 12
+GAUGE_GAP = 15
+GAUGE_HEIGHT = 4
+GAUGE_BASE = 3
 
 LEVELS_SPEC = [
     ["################",
@@ -239,16 +317,44 @@ def _block(colour: int) -> list[list[int]]:
     return [[colour] * CELL for _ in range(CELL)]
 
 
+def _track_pixels() -> list[list[int]]:
+    return weave(TRACK, CELL)
+
+
 def _bell_pixels() -> list[list[int]]:
-    px = _block(TRACK)
-    px[1][1] = px[1][2] = px[2][1] = px[2][2] = BELL
-    return px
+    return rounded(BELL, CELL)
 
 
 def _plate_pixels(lit: bool) -> list[list[int]]:
-    px = _block(PLATE_ON if lit else PLATE_OFF)
-    px[0][0] = px[0][CELL - 1] = px[CELL - 1][0] = px[CELL - 1][CELL - 1] = TRACK
-    return px
+    return ring(PLATE_ON if lit else PLATE_OFF, CELL)
+
+
+def _guard_pixels() -> list[list[int]]:
+    return medallion(GUARD, GUARD_CORE, CELL)
+
+
+def _player_pixels() -> list[list[int]]:
+    return figure(PLAYER, PLAYER_MARK, CELL)
+
+
+def _caught_pixels(lit: bool) -> list[list[int]]:
+    return figure(GUARD if lit else PLATE_OFF, PLAYER, CELL)
+
+
+def _exit_pixels(live: bool) -> list[list[int]]:
+    return door(EXIT_OPEN if live else EXIT_SHUT, None if live else EXIT_BAR, CELL)
+
+
+def _ringing_pixels(lit: bool) -> list[list[int]]:
+    return figure(EXIT_OPEN if lit else PLAYER, PLAYER_MARK, CELL)
+
+
+DECOR_CYCLE = (WALL, DECOR, WALL, WALL, DECOR)
+DECOR_CELLS = ((4, 0), (7, 1), (11, 0), (4, 15), (8, 14), (11, 15))
+
+
+def _decor_pixels(phase: int, seed: int) -> list[list[int]]:
+    return fixture(DECOR_CYCLE, phase, seed, CELL)
 
 
 def _sprite(px, name, x, y, layer, tags=()):
@@ -267,17 +373,20 @@ def build_levels() -> list[Level]:
                 if ch == "#":
                     sprites.append(_sprite(_block(WALL), f"wall_{x}_{y}", x, y, -3))
                 elif (x, y) in m["track"]:
-                    sprites.append(_sprite(_block(TRACK), f"track_{x}_{y}", x, y, -2))
+                    sprites.append(_sprite(_track_pixels(), f"track_{x}_{y}", x, y, -2))
+        for i, (x, y) in enumerate(DECOR_CELLS):
+            sprites.append(_sprite(_decor_pixels(0, i), f"decor_{i}", x, y, -1,
+                                   tags=("decor",)))
         for x, y in m["bells"]:
             sprites.append(_sprite(_bell_pixels(), f"bell_{x}_{y}", x, y, -1))
         for x, y in m["plates"]:
             sprites.append(_sprite(_plate_pixels(False), f"plate_{x}_{y}", x, y, 0))
         ex, ey = m["exit"]
-        sprites.append(_sprite(_block(EXIT_SHUT), "exit", ex, ey, 0))
+        sprites.append(_sprite(_exit_pixels(False), "exit", ex, ey, 0))
         for i, (gx, gy) in enumerate(m["posts"]):
-            sprites.append(_sprite(_block(GUARD), f"guard_{i}", gx, gy, 2))
+            sprites.append(_sprite(_guard_pixels(), f"guard_{i}", gx, gy, 2))
         sx, sy = m["start"]
-        sprites.append(_sprite(_block(PLAYER), "player", sx, sy, 3))
+        sprites.append(_sprite(_player_pixels(), "player", sx, sy, 3))
         levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
     return levels
 
@@ -291,15 +400,21 @@ class G019A(RenderableUserDisplay):
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         m = model(self._game.level_index)
         on = set(self._game.guards)
+        beat = self._game.ringing and self._game.ringing % 2 == 0
         for i, plate in enumerate(m["plates"]):
-            x = 1 + i * 3
-            if x + 2 > frame.shape[1]:
+            top = GAUGE_TOP + i * GAUGE_GAP
+            length = GAUGE_BASE + 2 * i
+            if top + GAUGE_HEIGHT > frame.shape[0] or length > frame.shape[1]:
                 break
-            frame[1:3, x:x + 2] = PIP_ON if plate in on else PIP_OFF
+            lit = plate in on and not beat
+            frame[top:top + GAUGE_HEIGHT, 0:length] = PIP_ON if lit else PIP_OFF
         return frame
 
 
 class G019(ARCBaseGame):
+
+    CAUGHT_FRAMES = 6
+    RINGING_FRAMES = 5
 
     def __init__(self) -> None:
         m = model(0)
@@ -307,6 +422,9 @@ class G019(ARCBaseGame):
         self.guards = m["posts"]
         self.target = None
         self.deaths = 0
+        self.beat = 0
+        self._caught = 0
+        self.ringing = 0
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=FLOOR, letter_box=5,
@@ -319,6 +437,8 @@ class G019(ARCBaseGame):
         self.pos = m["start"]
         self.guards = m["posts"]
         self.target = None
+        self._caught = 0
+        self.ringing = 0
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -331,6 +451,10 @@ class G019(ARCBaseGame):
         self.on_set_level(self.current_level)
         self._redraw()
 
+    def _decorate(self) -> None:
+        for s in self.current_level.get_sprites_by_tag("decor"):
+            s.pixels = np.array(_decor_pixels(self.beat, (s.x + s.y) // CELL))
+
     def _redraw(self) -> None:
         level = self.current_level
         m = model(self.level_index)
@@ -338,6 +462,7 @@ class G019(ARCBaseGame):
             for s in level.get_sprites_by_name(f"guard_{i}"):
                 s.set_position(gx * CELL, gy * CELL)
         for s in level.get_sprites_by_name("player"):
+            s.pixels = np.array(_player_pixels())
             s.set_position(self.pos[0] * CELL, self.pos[1] * CELL)
         on = set(self.guards)
         for px, py in m["plates"]:
@@ -349,10 +474,30 @@ class G019(ARCBaseGame):
         ex, ey = m["exit"]
         for s in level.get_sprites_by_name("exit"):
             level.remove_sprite(s)
-        level.add_sprite(_sprite(_block(EXIT_OPEN if live else EXIT_SHUT),
-                                 "exit", ex, ey, 0))
+        level.add_sprite(_sprite(_exit_pixels(live), "exit", ex, ey, 0))
 
     def step(self) -> None:
+        self.beat += 1
+        self._decorate()
+
+        if self._caught:
+            self._caught -= 1
+            for s in self.current_level.get_sprites_by_name("player"):
+                s.pixels = np.array(_caught_pixels(self._caught % 2 == 0))
+            if self._caught == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+
+        if self.ringing:
+            self.ringing -= 1
+            for s in self.current_level.get_sprites_by_name("player"):
+                s.pixels = np.array(_ringing_pixels(self.ringing % 2 == 0))
+            if self.ringing == 0:
+                self.next_level()
+                self.complete_action()
+            return
+
         move = MOVES.get(self.action.id)
         if move is None:
             self.complete_action()
@@ -363,11 +508,12 @@ class G019(ARCBaseGame):
 
         if dead:
             self.deaths += 1
-            self.level_reset()
-            self.complete_action()
+            self._redraw()
+            self._caught = self.CAUGHT_FRAMES
             return
 
         self._redraw()
         if won:
-            self.next_level()
+            self.ringing = self.RINGING_FRAMES
+            return
         self.complete_action()

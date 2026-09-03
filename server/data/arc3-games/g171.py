@@ -13,16 +13,63 @@ from arcengine import (
     Sprite,
 )
 
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def outline(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for x in range(max(0, x0), min(w, x1)):
+        if 0 <= y0 < h:
+            frame[y0, x] = colour
+        if 0 <= y1 - 1 < h:
+            frame[y1 - 1, x] = colour
+    for y in range(max(0, y0), min(h, y1)):
+        if 0 <= x0 < w:
+            frame[y, x0] = colour
+        if 0 <= x1 - 1 < w:
+            frame[y, x1 - 1] = colour
+    return frame
+
+def blink(step: int, period: int = 3) -> bool:
+    return (step // period) % 2 == 0
+
+
 WALL = 1
 FLOOR = 4
-WATER = 9
-SOURCE = 14
-BASIN = 11
+WATER = 10
+SOURCE = WATER
+BASIN = 12
 DAM = 15
-CURSOR = 6
-PIP_ON = 10
-PIP_OFF = 3
-DAM_PIP = 15
+CURSOR = 8
+GAUGE_ON = WATER
+GAUGE_OFF = FLOOR
+
+GAUGE_X = 2
+GAUGE_FOOT = (16 - 2) * 4 + 2
+GAUGE_PITCH = 2
+DAM_TOP = 18
+DAM_GAP = 12
+DAM_RISE = 2
+SPLASH_FRAMES = 2
+SETTLE_FRAMES = 6
 
 DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0))
 
@@ -185,11 +232,14 @@ def placeable(rows):
             if rows[y][x] == "."]
 
 
-def _block(colour, core=None):
-    px = [[colour] * CELL for _ in range(CELL)]
-    if core is not None:
-        px[1][1] = px[1][2] = px[2][1] = px[2][2] = core
-    return px
+def _face(ch):
+    if ch == "#":
+        return block(WALL, CELL)
+    if ch == "S":
+        return rounded(SOURCE, CELL)
+    if ch == "B":
+        return rounded(BASIN, CELL)
+    return None
 
 
 def build_levels() -> list[Level]:
@@ -199,12 +249,11 @@ def build_levels() -> list[Level]:
         sprites: list[Sprite] = []
         for y in range(N):
             for x in range(N):
-                c = rows[y][x]
-                colour = {"#": WALL, "S": SOURCE, "B": BASIN}.get(c)
-                if colour is None:
+                face = _face(rows[y][x])
+                if face is None:
                     continue
                 sprites.append(Sprite(
-                    pixels=_block(colour), name=f"cell_{x}_{y}",
+                    pixels=face, name=f"cell_{x}_{y}",
                     blocking=BlockingMode.NOT_BLOCKED,
                     interaction=InteractionMode.INTANGIBLE, layer=0, collidable=False,
                 ).set_position(x * CELL, y * CELL))
@@ -221,38 +270,45 @@ class G171A(RenderableUserDisplay):
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         g = self._game
 
-        def paint(cell, colour, core=None):
+        def stamp(cell, px):
             x, y = cell
-            frame[y * CELL:(y + 1) * CELL, x * CELL:(x + 1) * CELL] = colour
-            if core is not None:
-                frame[y * CELL + 1:y * CELL + 3, x * CELL + 1:x * CELL + 3] = core
+            for j in range(CELL):
+                row = px[j]
+                for i in range(CELL):
+                    if row[i] >= 0:
+                        frame[y * CELL + j, x * CELL + i] = row[i]
 
         for cell in g.dams:
-            paint(cell, DAM)
+            stamp(cell, rounded(DAM, CELL))
+
         basins = find_all(g.rows, "B")
+        arriving = g.front if g.splash else set()
+        thin = bool(g.settle) and not g.ok and blink(g.settle, 1)
         for cell in g.flooded:
-            paint(cell, WATER, BASIN if cell in basins else None)
+            stamp(cell, weave(WATER, CELL) if (thin or cell in arriving)
+                  else block(WATER, CELL))
+            if cell in basins:
+                stamp(cell, core(BASIN, CELL))
+        if g.settle and g.ok and blink(g.settle, 1):
+            for cell in basins:
+                stamp(cell, block(BASIN, CELL))
 
-        def pip(slot, colour):
-            if slot < N - 2:
-                x, y = 1 + slot, 0
-            else:
-                x, y = 1 + slot - (N - 2), N - 1
-            frame[y * CELL + 1:y * CELL + 3, x * CELL + 1:x * CELL + 3] = colour
+        for k in range(g.spec["tank"]):
+            yy = GAUGE_FOOT - GAUGE_PITCH * k
+            if yy < CELL:
+                break
+            frame[yy:yy + 1, 0:GAUGE_X] = GAUGE_ON if k < g.units else GAUGE_OFF
 
-        for i in range(min(g.spec["tank"], 2 * (N - 2))):
-            pip(i, PIP_ON if i < g.units else PIP_OFF)
+        unspent = g.spec["dams"] - len(g.dams)
         for i in range(g.spec["dams"]):
-            unspent = i < (g.spec["dams"] - len(g.dams))
-            frame[(1 + i) * CELL + 1:(1 + i) * CELL + 3,
-                  1:3] = DAM_PIP if unspent else PIP_OFF
+            top = DAM_TOP + i * DAM_GAP
+            frame[top:top + 3 + i * DAM_RISE, N * CELL - GAUGE_X:N * CELL] = (
+                DAM if i < unspent else GAUGE_OFF)
 
         if not g.pouring:
             cx, cy = g.cursor
-            frame[cy * CELL:cy * CELL + 1, cx * CELL:(cx + 1) * CELL] = CURSOR
-            frame[cy * CELL + CELL - 1:(cy + 1) * CELL, cx * CELL:(cx + 1) * CELL] = CURSOR
-            frame[cy * CELL:(cy + 1) * CELL, cx * CELL:cx * CELL + 1] = CURSOR
-            frame[cy * CELL:(cy + 1) * CELL, cx * CELL + CELL - 1:(cx + 1) * CELL] = CURSOR
+            outline(frame, (cx * CELL, cy * CELL, (cx + 1) * CELL, (cy + 1) * CELL),
+                    CURSOR)
         return frame
 
 
@@ -261,12 +317,16 @@ class G171(ARCBaseGame):
     def __init__(self) -> None:
         self.dams: set = set()
         self.flooded: set = set()
+        self.front: set = set()
         self.pouring = False
         self.cursor = (0, 0)
         self.units = 0
+        self.splash = 0
+        self.settle = 0
+        self.ok = False
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=5,
+            background=FLOOR, letter_box=WALL,
             interfaces=[G171A(self)],
         )
         super().__init__(game_id="g171", levels=build_levels(), camera=camera,
@@ -284,9 +344,13 @@ class G171(ARCBaseGame):
     def on_set_level(self, level: Level) -> None:
         self.dams = set()
         self.flooded = set()
+        self.front = set()
         self.pouring = False
         self.cursor = find_char(self.rows, "S")
         self.units = self.spec["tank"]
+        self.splash = 0
+        self.settle = 0
+        self.ok = False
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -296,17 +360,22 @@ class G171(ARCBaseGame):
         super().full_reset()
         self.on_set_level(self.current_level)
 
-    def _tick(self) -> bool:
+    def _ring(self) -> set:
         ring = set()
         for (x, y) in self.flooded:
             for dx, dy in DIRS:
                 n = (x + dx, y + dy)
                 if n not in self.flooded and open_cell(self.rows, self.dams, *n):
                     ring.add(n)
+        return ring
+
+    def _tick(self) -> bool:
+        ring = self._ring()
         if not ring or len(ring) > self.units:
             return False
         self.flooded |= ring
         self.units -= len(ring)
+        self.front = ring
         return True
 
     def step(self) -> None:
@@ -315,12 +384,26 @@ class G171(ARCBaseGame):
                     self.action.id)
 
         if self.pouring:
-            if not self._tick():
-                if find_all(self.rows, "B") <= self.flooded:
-                    self.next_level()
-                else:
-                    self.level_reset()
-            self.complete_action()
+            if self.settle:
+                self.settle -= 1
+                if self.settle == 0:
+                    if find_all(self.rows, "B") <= self.flooded:
+                        self.next_level()
+                    else:
+                        self.level_reset()
+                    self.complete_action()
+                return
+            if self.splash:
+                self.splash -= 1
+                if self.splash == 0:
+                    self.front = set()
+                    self.complete_action()
+                return
+            if self._tick():
+                self.splash = SPLASH_FRAMES
+                return
+            self.ok = find_all(self.rows, "B") <= self.flooded
+            self.settle = SETTLE_FRAMES
             return
 
         if move is not None:

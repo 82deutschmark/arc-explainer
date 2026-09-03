@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -13,17 +14,70 @@ from arcengine import (
     Sprite,
 )
 
-WALL = 5
-NEUTRAL = 4
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+
+FLOOR = 5
+WALL = 2
+NEUTRAL = 15
 RED = 8
-BLUE = 9
-EXIT_CORE = 14
-AVATAR_EDGE = 0
-PIP_ON = 11
-PIP_OFF = 3
+BLUE = 14
+AVATAR_EDGE = 7
+PIP_ON = 7
+PIP_OFF = 5
 
 SKIN_COLOUR = {"r": RED, "b": BLUE}
 SWAP_COOLDOWN = 4
+FLIP_FRAMES = 4
+DECOR_PERIOD = 5
 
 LEVELS_SPEC = [
     {"skin": "r", "swaps": 0, "rows": [
@@ -188,20 +242,43 @@ def _solid(colour: int) -> list[list[int]]:
     return [[colour] * CELL for _ in range(CELL)]
 
 
+def _masonry() -> list[list[int]]:
+    px = _solid(WALL)
+    for y in range(CELL):
+        px[y][0] = FLOOR
+    for x in range(CELL):
+        px[CELL - 1][x] = FLOOR
+    return px
+
+
+def _fitting(phase: int) -> list[list[int]]:
+    px = _masonry()
+    col = (1, 2, 3, 2, 3)[phase % DECOR_PERIOD]
+    px[1][col] = px[2][col] = FLOOR
+    return px
+
+
+def _neutral_tile() -> list[list[int]]:
+    return rounded(NEUTRAL)
+
+
 def _exit_block(colour: int) -> list[list[int]]:
-    block = _solid(colour)
-    for dy in (1, 2):
-        for dx in (1, 2):
-            block[dy][dx] = EXIT_CORE
-    return block
+    return door(colour, None)
 
 
-def _avatar_block(skin: str) -> list[list[int]]:
-    block = _solid(AVATAR_EDGE)
-    for dy in (1, 2):
-        for dx in (1, 2):
-            block[dy][dx] = SKIN_COLOUR[skin]
-    return block
+CORE_ORDER = ((1, 1), (1, 2), (2, 2), (2, 1))
+
+
+def _avatar_block(skin: str, incoming: str | None = None, filled: int = 0) -> list[list[int]]:
+    px = medallion(AVATAR_EDGE, SKIN_COLOUR[skin])
+    if incoming is not None:
+        for (dy, dx) in CORE_ORDER[:filled]:
+            px[dy][dx] = SKIN_COLOUR[incoming]
+    return px
+
+
+DECOR_CELLS = frozenset({(2, 0), (6, 0), (10, 0), (13, 0),
+                         (4, N - 1), (9, N - 1), (12, N - 1)})
 
 
 def build_levels() -> list[Level]:
@@ -212,8 +289,14 @@ def build_levels() -> list[Level]:
             for x, ch in enumerate(row):
                 px, py = x * CELL, y * CELL
                 pixels = None
+                tags: list[str] = []
                 if ch == "#":
-                    pixels = _solid(WALL)
+                    if (x, y) in DECOR_CELLS:
+                        pixels, tags = _fitting(x + y), ["decor"]
+                    else:
+                        pixels = _masonry()
+                elif ch in OPEN_TO_BOTH:
+                    pixels = _neutral_tile()
                 elif ch == "r":
                     pixels = _solid(RED)
                 elif ch == "b":
@@ -224,7 +307,7 @@ def build_levels() -> list[Level]:
                     pixels = _exit_block(BLUE)
                 if pixels is not None:
                     sprites.append(Sprite(
-                        pixels=pixels, name=f"cell_{x}_{y}",
+                        pixels=pixels, name=f"cell_{x}_{y}", tags=tags,
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.INTANGIBLE, layer=-1,
                     ).set_position(px, py))
@@ -238,6 +321,11 @@ def build_levels() -> list[Level]:
     return levels
 
 
+NATURE_SLOT = {"r": 20, "b": 40}
+TIMER_TOP = 16
+TIMER_GAP = 8
+
+
 class G008A(RenderableUserDisplay):
 
     def __init__(self, game: "G008") -> None:
@@ -245,10 +333,14 @@ class G008A(RenderableUserDisplay):
         self._game = game
 
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
-        frame[1:3, 1:3] = SKIN_COLOUR[self._game.skin]
-        for i in range(SWAP_COOLDOWN):
-            x = 6 + i * 3
-            frame[1:3, x:x + 2] = PIP_ON if i < self._game.cooldown else PIP_OFF
+        game = self._game
+        for nature, top in NATURE_SLOT.items():
+            frame[top - 1:top + CELL + 1, 0:CELL] = PIP_OFF
+            frame[top:top + CELL, CELL - 1] = WALL
+            frame[top:top + CELL, 0:3] = (SKIN_COLOUR[nature] if game.skin == nature
+                                          else PIP_OFF)
+        studs(frame, SWAP_COOLDOWN, SWAP_COOLDOWN - game.cooldown, PIP_ON, PIP_OFF,
+              side="east", start=TIMER_TOP, gap=TIMER_GAP)
         return frame
 
 
@@ -259,9 +351,11 @@ class G008(ARCBaseGame):
         self.cooldown = 0
         self.px, self.py = find_start(LEVELS_SPEC[0]["rows"])
         self.grid = [list(r) for r in LEVELS_SPEC[0]["rows"]]
+        self._flip = 0
+        self._tick = 0
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=NEUTRAL, letter_box=WALL,
+            background=FLOOR, letter_box=WALL,
             interfaces=[G008A(self)],
         )
         super().__init__(game_id="g008", levels=build_levels(), camera=camera,
@@ -273,22 +367,39 @@ class G008(ARCBaseGame):
         self.px, self.py = find_start(spec["rows"])
         self.skin = spec["skin"]
         self.cooldown = 0
+        self._flip = 0
         self._repaint()
+        self._paint_decor()
 
     def _player(self) -> Sprite | None:
         found = self.current_level.get_sprites_by_name("player")
         return found[0] if found else None
 
-    def _repaint(self) -> None:
+    def _paint(self, pixels: list[list[int]]) -> None:
         sprite = self._player()
         if sprite is None:
             return
-        sprite.pixels[:, :] = np.array(_avatar_block(self.skin), dtype=sprite.pixels.dtype)
+        sprite.pixels[:, :] = np.array(pixels, dtype=sprite.pixels.dtype)
         sprite.set_position(self.px * CELL, self.py * CELL)
+
+    def _repaint(self) -> None:
+        self._paint(_avatar_block(self.skin))
+
+    def _paint_flip(self) -> None:
+        other = "b" if self.skin == "r" else "r"
+        self._paint(_avatar_block(self.skin, other, FLIP_FRAMES - self._flip))
+
+    def _paint_decor(self) -> None:
+        for sprite in self.current_level.get_sprites_by_tag("decor"):
+            phase = self._tick + sprite.x // CELL
+            sprite.pixels[:, :] = np.array(_fitting(phase), dtype=sprite.pixels.dtype)
 
     def _swap(self) -> None:
         if not swap_legal(self.grid[self.py][self.px], self.cooldown):
             return
+        self._flip = FLIP_FRAMES - 1
+
+    def _settle_flip(self) -> None:
         self.skin = "b" if self.skin == "r" else "r"
         self.cooldown = SWAP_COOLDOWN
         self._repaint()
@@ -311,6 +422,17 @@ class G008(ARCBaseGame):
                 self.next_level()
 
     def step(self) -> None:
+        self._tick += 1
+        self._paint_decor()
+        if self._flip:
+            self._flip -= 1
+            if self._flip:
+                self._paint_flip()
+                return
+            self._settle_flip()
+            self.complete_action()
+            return
+
         action = self.action.id
         if action == GameAction.ACTION1:
             self._walk(0, -1)
@@ -322,4 +444,7 @@ class G008(ARCBaseGame):
             self._walk(1, 0)
         elif action == GameAction.ACTION5:
             self._swap()
+            if self._flip:
+                self._paint_flip()
+                return
         self.complete_action()

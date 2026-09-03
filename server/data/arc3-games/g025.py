@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -13,19 +14,148 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-GAP = 5
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def facing(body: int, visor: int, heading: tuple, cell: int = 4) -> list[list[int]]:
+    px = rounded(body, cell)
+    dx, dy = heading
+    last = cell - 1
+    if dy < 0:
+        px[0][1] = px[0][cell - 2] = visor
+    elif dy > 0:
+        px[last][1] = px[last][cell - 2] = visor
+    elif dx < 0:
+        px[1][0] = px[cell - 2][0] = visor
+    elif dx > 0:
+        px[1][last] = px[cell - 2][last] = visor
+    else:
+        px[1][1] = visor
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def key_shape(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[0][1] = px[0][2] = colour
+    px[1][1] = px[1][2] = colour
+    px[2][1] = colour
+    px[3][1] = px[3][2] = colour
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def dither(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for y in range(max(0, y0), min(h, y1)):
+        for x in range(max(0, x0), min(w, x1)):
+            if (x + y) % 2:
+                frame[y, x] = colour
+    return frame
+
+def outline(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for x in range(max(0, x0), min(w, x1)):
+        if 0 <= y0 < h:
+            frame[y0, x] = colour
+        if 0 <= y1 - 1 < h:
+            frame[y1 - 1, x] = colour
+    for y in range(max(0, y0), min(h, y1)):
+        if 0 <= x0 < w:
+            frame[y, x0] = colour
+        if 0 <= x1 - 1 < w:
+            frame[y, x1 - 1] = colour
+    return frame
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+def blink(step: int, period: int = 3) -> bool:
+    return (step // period) % 2 == 0
+
+
+FLOOR = 15
+WALL = 2
+GAP = 2
 CRATE = 2
 VINE = 14
-ICE = 7
-SHUTTER = 13
-EXIT = 6
-PLAYER = 10
-PIP_OFF = 9
+ICE = 0
+SHUTTER = 2
+SHUTTER_BAR = 8
+EXIT = 14
+EXIT_FRAME = 0
+PLAYER = 11
+VISOR = 8
+SPARK = 0
+PIP_ON = 14
+SOCKET = FLOOR
+FITTING = (FLOOR, WALL, WALL, WALL, WALL)
 
 MAGNET, ROD, LENS, TORCH, HOOK, BELL = range(6)
-TOOL_COLOUR = {MAGNET: 8, ROD: 1, LENS: 10, TORCH: 12, HOOK: 15, BELL: 11}
 TOOL_CHARS = {"M": MAGNET, "R": ROD, "L": LENS, "T": TORCH, "K": HOOK, "B": BELL}
 
 PAIRS = {
@@ -393,6 +523,44 @@ def step_state(index: int, state: tuple, action: str) -> tuple:
     return new
 
 
+def tool_pixels(tid: int):
+    if tid == MAGNET:
+        return ring(8)
+    if tid == ROD:
+        return core(0)
+    if tid == LENS:
+        return ring(0)
+    if tid == TORCH:
+        return medallion(0, 8)
+    if tid == HOOK:
+        return key_shape(0)
+    return ring(14)
+
+
+HAND_ROWS = (5, 7)
+BELL_TOP = 34
+BELL_GAP = 7
+
+
+def _fitting_cell(x: int, y: int) -> bool:
+    return 0 < x < N - 1 and 0 < y < N - 1 and (x * 7 + y * 3) % 5 == 0
+
+
+def _changed_cells(lv, before: tuple, after: tuple) -> tuple:
+    if before == after:
+        return ()
+    cells = set(before[6]) ^ set(after[6])
+    cells |= set(after[7]) - set(before[7])
+    cells |= set(after[8]) - set(before[8])
+    cells |= set(after[9]) - set(before[9])
+    if (before[10] > 0) != (after[10] > 0):
+        cells |= set(lv["shutters"])
+    if (before[0], before[1]) != (after[0], after[1]):
+        cells.add((before[0], before[1]))
+        cells.add((after[0], after[1]))
+    return tuple(sorted(cells))
+
+
 def build_levels() -> list[Level]:
     levels: list[Level] = []
     for lv in LEVELS:
@@ -420,8 +588,17 @@ class G025A(RenderableUserDisplay):
         super().__init__()
         self._game = game
 
-    def _cell(self, frame, x, y, colour):
-        frame[y * CELL:(y + 1) * CELL, x * CELL:(x + 1) * CELL] = colour
+    def _stamp(self, frame, x, y, pixels, under=None) -> None:
+        oy, ox = y * CELL, x * CELL
+        if under is not None:
+            for dy in range(1, CELL - 1):
+                for dx in range(1, CELL - 1):
+                    frame[oy + dy, ox + dx] = under
+        for dy in range(CELL):
+            for dx in range(CELL):
+                v = pixels[dy][dx]
+                if v >= 0:
+                    frame[oy + dy, ox + dx] = v
 
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         g = self._game
@@ -431,52 +608,63 @@ class G025A(RenderableUserDisplay):
         for y in range(N):
             for x in range(N):
                 ch = lv["base"][y][x]
-                if ch == "_" and (x, y) not in filled:
-                    self._cell(frame, x, y, GAP)
+                if ch == "#":
+                    if _fitting_cell(x, y):
+                        self._stamp(frame, x, y, fixture(FITTING, g.tick, x + y))
+                elif ch == "_" and (x, y) not in filled:
+                    self._stamp(frame, x, y, weave(GAP))
                 elif ch == "V" and (x, y) not in burned:
-                    self._cell(frame, x, y, VINE)
+                    self._stamp(frame, x, y, weave(VINE))
                 elif ch == "I" and (x, y) not in melted:
-                    self._cell(frame, x, y, ICE)
+                    self._stamp(frame, x, y, rounded(ICE))
                 elif ch == "H":
                     if timer > 0:
                         frame[y * CELL, x * CELL:(x + 1) * CELL] = SHUTTER
                     else:
-                        self._cell(frame, x, y, SHUTTER)
+                        self._stamp(frame, x, y, door(SHUTTER, SHUTTER_BAR))
                 elif ch == "X":
-                    self._cell(frame, x, y, EXIT)
+                    self._stamp(frame, x, y, door(EXIT_FRAME, EXIT))
 
         for cx, cy in crates:
-            self._cell(frame, cx, cy, CRATE)
+            self._stamp(frame, cx, cy, rounded(CRATE))
 
         for tid, tx, ty in floor:
-            self._cell(frame, tx, ty, TOOL_COLOUR[tid])
-            frame[ty * CELL + 1:ty * CELL + 3, tx * CELL + 1:tx * CELL + 3] = FLOOR
+            self._stamp(frame, tx, ty, tool_pixels(tid))
 
-        self._cell(frame, px, py, PLAYER)
-        ox, oy = px * CELL, py * CELL
-        if fy == -1:
-            frame[oy, ox + 1:ox + 3] = GAP
-        elif fy == 1:
-            frame[oy + CELL - 1, ox + 1:ox + 3] = GAP
-        elif fx == -1:
-            frame[oy + 1:oy + 3, ox] = GAP
-        else:
-            frame[oy + 1:oy + 3, ox + CELL - 1] = GAP
+        self._stamp(frame, px, py, facing(PLAYER, VISOR, (fx, fy)))
+
+        if g.flash and blink(g.flash, 1):
+            for cx, cy in g.marks:
+                dither(frame, (cx * CELL, cy * CELL, (cx + 1) * CELL, (cy + 1) * CELL), SPARK)
+
+        if g.arrive:
+            ex, ey = lv["exit"]
+            k = G025.ARRIVE_FRAMES - g.arrive
+            outline(frame, (ex * CELL - k, ey * CELL - k,
+                            (ex + 1) * CELL + k, (ey + 1) * CELL + k), SPARK)
 
         for slot in range(2):
-            colour = TOOL_COLOUR[hands[slot]] if slot < len(hands) else PIP_OFF
-            x0 = 1 + slot * 4
-            frame[1:3, x0:x0 + 3] = colour
-        for i in range(RING_TURNS):
-            x0 = 55 + i * 3
-            frame[1:3, x0:x0 + 2] = TOOL_COLOUR[BELL] if i < timer else PIP_OFF
+            y = HAND_ROWS[slot]
+            if slot < len(hands):
+                self._stamp(frame, 0, y, tool_pixels(hands[slot]), under=SOCKET)
+            else:
+                self._stamp(frame, 0, y, core(SOCKET))
+        studs(frame, RING_TURNS, timer, PIP_ON, SOCKET,
+              side="east", start=BELL_TOP, gap=BELL_GAP)
         return frame
 
 
 class G025(ARCBaseGame):
 
+    FLASH_FRAMES = 4
+    ARRIVE_FRAMES = 4
+
     def __init__(self) -> None:
         self.state = initial_state(0)
+        self.tick = 0
+        self.flash = 0
+        self.arrive = 0
+        self.marks: tuple = ()
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=FLOOR, letter_box=5,
@@ -484,18 +672,47 @@ class G025(ARCBaseGame):
         )
         super().__init__(game_id="g025", levels=build_levels(), camera=camera)
 
-    def on_set_level(self, level: Level) -> None:
+    def _rearm(self) -> None:
         self.state = initial_state(self.level_index)
+        self.flash = 0
+        self.arrive = 0
+        self.marks = ()
+
+    def on_set_level(self, level: Level) -> None:
+        self._rearm()
 
     def level_reset(self) -> None:
         super().level_reset()
-        self.state = initial_state(self.level_index)
+        self._rearm()
 
     def full_reset(self) -> None:
         super().full_reset()
-        self.state = initial_state(self.level_index)
+        self.tick = 0
+        self._rearm()
+
+    def _settle(self, action: str) -> None:
+        self.state = step_state(self.level_index, self.state, action)
+        self.tick += 1
+        if is_won(self.state):
+            self.arrive = self.ARRIVE_FRAMES
+            return
+        self.complete_action()
 
     def step(self) -> None:
+        if self.arrive:
+            self.arrive -= 1
+            if self.arrive == 0:
+                self.next_level()
+                self.complete_action()
+            return
+
+        if self.flash:
+            self.flash -= 1
+            if self.flash == 0:
+                self.marks = ()
+                self._settle("F")
+            return
+
         action = {
             GameAction.ACTION1: "U",
             GameAction.ACTION2: "D",
@@ -504,8 +721,16 @@ class G025(ARCBaseGame):
             GameAction.ACTION5: "F",
             GameAction.ACTION6: "Z",
         }.get(self.action.id)
-        if action is not None:
-            self.state = step_state(self.level_index, self.state, action)
-            if is_won(self.state):
-                self.next_level()
-        self.complete_action()
+        if action is None:
+            self.complete_action()
+            return
+
+        if action == "F":
+            bitten = _fire(LEVELS[self.level_index], self.state)
+            marks = _changed_cells(LEVELS[self.level_index], self.state, bitten)
+            if marks:
+                self.marks = marks
+                self.flash = self.FLASH_FRAMES
+                return
+
+        self._settle(action)

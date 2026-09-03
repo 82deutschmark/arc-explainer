@@ -13,15 +13,90 @@ from arcengine import (
     Sprite,
 )
 
-BG = 4
-CRATE = 10
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def hairline(frame, a: tuple, b: tuple, colour: int, only_over=None):
+    x0, y0 = a
+    x1, y1 = b
+    dx, dy = abs(x1 - x0), abs(y1 - y0)
+    sx = 1 if x0 < x1 else -1
+    sy = 1 if y0 < y1 else -1
+    err = dx - dy
+    h, w = frame.shape
+    while True:
+        if 0 <= x0 < w and 0 <= y0 < h:
+            if only_over is None or int(frame[y0, x0]) in only_over:
+                frame[y0, x0] = colour
+        if x0 == x1 and y0 == y1:
+            break
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x0 += sx
+        if e2 < dx:
+            err += dx
+            y0 += sy
+    return frame
+
+def dither(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for y in range(max(0, y0), min(h, y1)):
+        for x in range(max(0, x0), min(w, x1)):
+            if (x + y) % 2:
+                frame[y, x] = colour
+    return frame
+
+
+BG = 0
+CRATE = 9
 CURSOR = 12
-BEAM = 1
-PILLAR = 2
-PAN = 2
+BEAM = 3
+PILLAR = 3
+PAN = 3
 PLATE = 3
-PIP = 11
-LOCKED = 8
+PIP = 14
+LOCKED = 6
 
 N = 16
 CELL = 4
@@ -40,12 +115,14 @@ PAN_Y = 8
 LEFT_PAN_X = (1, 2, 3, 4)
 RIGHT_PAN_X = (11, 12, 13, 14)
 PAN_ROWS = (7, 6)
+LEFT_CORD_X = BEAM_LEFT[0]
+RIGHT_CORD_X = BEAM_RIGHT[-1]
 
 PLATE_X = tuple(range(1, 15))
 PLATE_Y = tuple(range(10, 14))
-PIP_X0, PIP_COLS = 2, 12
+PIP_X0, PIP_GROUP, PIP_PER_ROW = 2, 5, 10
 PIP_Y0, PIP_ROWS = 11, 2
-PIP_CAPACITY = PIP_COLS * PIP_ROWS
+PIP_CAPACITY = PIP_PER_ROW * PIP_ROWS
 
 ROW, LEFT, RIGHT = 0, 1, 2
 
@@ -61,12 +138,37 @@ LEVELS_SPEC = [
 ]
 
 
-def _cells(colour: int, w_cells: int, h_cells: int) -> list[list[int]]:
-    return [[colour] * (w_cells * CELL) for _ in range(h_cells * CELL)]
+def _tiled(cell_px: list[list[int]], w_cells: int, h_cells: int) -> list[list[int]]:
+    rows: list[list[int]] = []
+    for _ in range(h_cells):
+        for row in cell_px:
+            rows.append(list(row) * w_cells)
+    return rows
 
 
-def _paint(frame: np.ndarray, cx: int, cy: int, colour: int) -> None:
-    frame[cy * CELL:(cy + 1) * CELL, cx * CELL:(cx + 1) * CELL] = colour
+def _placard(colour: int, w_cells: int, h_cells: int) -> list[list[int]]:
+    px = [[-1] * (w_cells * CELL) for _ in range(h_cells * CELL)]
+    h, w = len(px), len(px[0])
+    for x in range(1, w - 1):
+        px[1][x] = px[2][x] = px[h - 3][x] = px[h - 2][x] = colour
+    for y in range(1, h - 1):
+        px[y][1] = px[y][2] = px[y][w - 3] = px[y][w - 2] = colour
+    return px
+
+
+def pip_cell(k: int) -> tuple[int, int]:
+    within = k % PIP_PER_ROW
+    cx = PIP_X0 + within + (within // PIP_GROUP)
+    cy = PIP_Y0 + k // PIP_PER_ROW
+    return cx, cy
+
+
+def _stamp(frame: np.ndarray, cx: int, cy: int, px: list[list[int]]) -> None:
+    y0, x0 = cy * CELL, cx * CELL
+    for dy, row in enumerate(px):
+        for dx, value in enumerate(row):
+            if value >= 0:
+                frame[y0 + dy, x0 + dx] = value
 
 
 def apply_move(placement: list[int], cursor: int, action: int) -> tuple[list[int], int]:
@@ -87,22 +189,22 @@ def build_levels() -> list[Level]:
     for spec in LEVELS_SPEC:
         sprites: list[Sprite] = [
             Sprite(
-                pixels=_cells(PILLAR, len(PILLAR_X), len(PILLAR_Y)), name="pillar",
+                pixels=_tiled(ring(PILLAR), len(PILLAR_X), len(PILLAR_Y)), name="pillar",
                 blocking=BlockingMode.NOT_BLOCKED, interaction=InteractionMode.INTANGIBLE,
                 layer=-1,
             ).set_position(PILLAR_X[0] * CELL, PILLAR_Y[0] * CELL),
             Sprite(
-                pixels=_cells(PAN, len(LEFT_PAN_X), 1), name="pan_left",
+                pixels=_tiled(rounded(PAN), len(LEFT_PAN_X), 1), name="pan_left",
                 blocking=BlockingMode.NOT_BLOCKED, interaction=InteractionMode.INTANGIBLE,
                 layer=-1,
             ).set_position(LEFT_PAN_X[0] * CELL, PAN_Y * CELL),
             Sprite(
-                pixels=_cells(PAN, len(RIGHT_PAN_X), 1), name="pan_right",
+                pixels=_tiled(rounded(PAN), len(RIGHT_PAN_X), 1), name="pan_right",
                 blocking=BlockingMode.NOT_BLOCKED, interaction=InteractionMode.INTANGIBLE,
                 layer=-1,
             ).set_position(RIGHT_PAN_X[0] * CELL, PAN_Y * CELL),
             Sprite(
-                pixels=_cells(PLATE, len(PLATE_X), len(PLATE_Y)), name="plate",
+                pixels=_placard(PLATE, len(PLATE_X), len(PLATE_Y)), name="plate",
                 blocking=BlockingMode.NOT_BLOCKED, interaction=InteractionMode.INTANGIBLE,
                 layer=0,
             ).set_position(PLATE_X[0] * CELL, PLATE_Y[0] * CELL),
@@ -111,10 +213,9 @@ def build_levels() -> list[Level]:
         if target > PIP_CAPACITY:
             raise ValueError(f"target {target} exceeds the {PIP_CAPACITY} pips the plate can draw")
         for k in range(target):
-            cx = PIP_X0 + (k % PIP_COLS)
-            cy = PIP_Y0 + (k // PIP_COLS)
+            cx, cy = pip_cell(k)
             sprites.append(Sprite(
-                pixels=_cells(PIP, 1, 1), name=f"pip_{k}",
+                pixels=core(PIP), name=f"pip_{k}",
                 blocking=BlockingMode.NOT_BLOCKED, interaction=InteractionMode.INTANGIBLE,
                 layer=1,
             ).set_position(cx * CELL, cy * CELL))
@@ -128,38 +229,55 @@ class G021A(RenderableUserDisplay):
         super().__init__()
         self._game = game
 
+    def _beam_half(self, frame: np.ndarray, cells: tuple, cy: int) -> None:
+        y = cy * CELL + 1
+        x0 = cells[0] * CELL
+        x1 = (cells[-1] + 1) * CELL - 1
+        hairline(frame, (x0, y), (x1, y), BEAM)
+        hairline(frame, (x0, y + 1), (x1, y + 1), BEAM)
+
+    def _cord(self, frame: np.ndarray, cx: int, beam_cy: int) -> None:
+        x = cx * CELL + 1
+        hairline(frame, (x, beam_cy * CELL + 3), (x, PAN_Y * CELL), BEAM, only_over={BG})
+
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         g = self._game
 
         tilt = g.tilt()
         left_y = BEAM_Y + (1 if tilt < 0 else -1 if tilt > 0 else 0)
         right_y = BEAM_Y + (1 if tilt > 0 else -1 if tilt < 0 else 0)
-        for cx in BEAM_LEFT:
-            _paint(frame, cx, left_y, BEAM)
-        for cx in BEAM_RIGHT:
-            _paint(frame, cx, right_y, BEAM)
+        self._beam_half(frame, BEAM_LEFT, left_y)
+        self._beam_half(frame, BEAM_RIGHT, right_y)
+        self._cord(frame, LEFT_CORD_X, left_y)
+        self._cord(frame, RIGHT_CORD_X, right_y)
 
+        crate = ring(CRATE)
         left_slot = right_slot = 0
         for i, place in enumerate(g.placement):
             if place == ROW:
-                _paint(frame, 2 * i, HOME_Y, CRATE)
+                _stamp(frame, 2 * i, HOME_Y, crate)
             elif place == LEFT:
-                _paint(frame, LEFT_PAN_X[left_slot % 4], PAN_ROWS[left_slot // 4], CRATE)
+                _stamp(frame, LEFT_PAN_X[left_slot % 4], PAN_ROWS[left_slot // 4], crate)
                 left_slot += 1
             else:
-                _paint(frame, RIGHT_PAN_X[right_slot % 4], PAN_ROWS[right_slot // 4], CRATE)
+                _stamp(frame, RIGHT_PAN_X[right_slot % 4], PAN_ROWS[right_slot // 4], crate)
                 right_slot += 1
 
-        _paint(frame, 2 * g.cursor, CURSOR_Y, CURSOR)
+        _stamp(frame, 2 * g.cursor, CURSOR_Y, figure(CURSOR))
 
         if g.locked:
-            for cy in PLATE_Y:
-                for cx in PLATE_X:
-                    _paint(frame, cx, cy, LOCKED)
+            box = (PLATE_X[0] * CELL + 1, PLATE_Y[0] * CELL + 1,
+                   (PLATE_X[-1] + 1) * CELL - 1, (PLATE_Y[-1] + 1) * CELL - 1)
+            if g.flash % 2 == 0:
+                frame[box[1]:box[3], box[0]:box[2]] = LOCKED
+            else:
+                dither(frame, box, LOCKED)
         return frame
 
 
 class G021(ARCBaseGame):
+
+    SPENT_FRAMES = 6
 
     def __init__(self) -> None:
         spec = LEVELS_SPEC[0]
@@ -168,6 +286,7 @@ class G021(ARCBaseGame):
         self.placement = [ROW] * len(self.weights)
         self.cursor = 0
         self.locked = False
+        self.flash = 0
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=BG, letter_box=BG,
@@ -187,6 +306,7 @@ class G021(ARCBaseGame):
         self.placement = [ROW] * len(self.weights)
         self.cursor = 0
         self.locked = False
+        self.flash = 0
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -204,6 +324,13 @@ class G021(ARCBaseGame):
         return -1 if diff > 0 else 1 if diff < 0 else 0
 
     def step(self) -> None:
+        if self.flash:
+            self.flash -= 1
+            if self.flash == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+
         if self.locked:
             self.complete_action()
             return
@@ -221,5 +348,6 @@ class G021(ARCBaseGame):
                     self.next_level()
                 else:
                     self.locked = True
-                    self.level_reset()
+                    self.flash = self.SPENT_FRAMES
+                    return
         self.complete_action()

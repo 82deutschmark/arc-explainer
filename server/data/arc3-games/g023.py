@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -13,18 +14,57 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-STRIP = 5
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def blink(step: int, period: int = 3) -> bool:
+    return (step // period) % 2 == 0
+
+
+FLOOR = 9
+WALL = 4
+STRIP = 4
 PLAYER = 11
-PLAYER_FACE = 6
-ROD_MARK = 9
-ROD_PIP = 10
-PLATE_MARK = 13
-PLATE_PIP = 12
-FLAG = 15
-EXIT_SHUT = 2
-EXIT_OPEN = 14
+PLAYER_FACE = 4
+MARK_FRAME = 1
+ROD_LINE = 14
+ROD_PIP = 14
+PLATE_PIP = 7
+FLAG_RIM = 1
+FLAG_CORE = 4
+EXIT_FRAME = 14
+EXIT_BAR = 1
+
+ROD_BAR, PLATE_BAR, DEBT_BAR = 7, 11, 51
+BAR_TOP = 12
+BAR_GAP = 8
+DEBT_PIP = MARK_FRAME
 
 N = 16
 CELL = 4
@@ -235,7 +275,7 @@ def build_levels() -> list[Level]:
             for x in range(N):
                 if y > 0 and rows[y][x] == "#":
                     sprites.append(Sprite(
-                        pixels=[[WALL] * CELL for _ in range(CELL)], name=f"wall_{x}_{y}",
+                        pixels=block(WALL, CELL), name=f"wall_{x}_{y}",
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=0,
                     ).set_position(x * CELL, y * CELL))
@@ -250,6 +290,20 @@ class G023A(RenderableUserDisplay):
         self._game = game
 
     @staticmethod
+    def _fill(frame, cell, colour):
+        bx, by = cell[0] * CELL, cell[1] * CELL
+        frame[by:by + CELL, bx:bx + CELL] = colour
+
+    @staticmethod
+    def _stamp(frame, cell, pixels):
+        bx, by = cell[0] * CELL, cell[1] * CELL
+        for ry in range(CELL):
+            for rx in range(CELL):
+                v = pixels[ry][rx]
+                if v >= 0:
+                    frame[by + ry, bx + rx] = v
+
+    @staticmethod
     def _slots(frame, cell, count, marker, pip):
         bx, by = cell[0] * CELL, cell[1] * CELL
         for ry, rx in CORNERS:
@@ -258,53 +312,70 @@ class G023A(RenderableUserDisplay):
             ry, rx = EDGE_SLOTS[i]
             frame[by + ry, bx + rx] = pip
 
+    @staticmethod
+    def _bar(frame, x0, value, colour):
+        frame[BAR_TOP, x0:x0 + 2] = colour
+        top = BAR_TOP + BAR_GAP
+        for i in range(value):
+            height = i + 2
+            if top + height > (IY1 + 1) * CELL:
+                break
+            frame[top:top + height, x0:x0 + 2] = colour
+            top += height + 2
+
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         g = self._game
 
-        ex, ey = g.exit_cell
-        frame[ey * CELL:ey * CELL + CELL, ex * CELL:ex * CELL + CELL] = (
-            EXIT_OPEN if g.armed() else EXIT_SHUT)
+        self._stamp(frame, g.exit_cell,
+                    door(EXIT_FRAME, None if g.armed() else EXIT_BAR, CELL))
 
         for line, end, count, (dx, _dy) in g.rod_marks:
             for cx, cy in line:
                 bx, by = cx * CELL, cy * CELL
                 if dx:
-                    frame[by + 2, bx + 1:bx + 3] = ROD_MARK
+                    frame[by + 2, bx + 1:bx + 3] = ROD_LINE
                 else:
-                    frame[by + 1:by + 3, bx + 2] = ROD_MARK
+                    frame[by + 1:by + 3, bx + 2] = ROD_LINE
         for _line, end, count, _d in g.rod_marks:
-            self._slots(frame, end, count, ROD_MARK, ROD_PIP)
+            self._slots(frame, end, count, MARK_FRAME, ROD_PIP)
         for cell, count in g.plate_marks:
-            self._slots(frame, cell, count, PLATE_MARK, PLATE_PIP)
+            self._slots(frame, cell, count, MARK_FRAME, PLATE_PIP)
 
-        for cx, cy in g.flags:
-            frame[cy * CELL:cy * CELL + CELL, cx * CELL:cx * CELL + CELL] = FLAG
+        for cell in g.flags:
+            self._fill(frame, cell, FLOOR)
+            self._stamp(frame, cell, medallion(FLAG_RIM, FLAG_CORE, CELL))
+
+        lit = blink(g.FLASH_FRAMES - g.flash, 2)
+        dying = g.flash and g.flash_cell == (g.px, g.py)
+        if g.flash and not dying:
+            self._fill(frame, g.flash_cell, FLOOR)
+            if lit:
+                self._stamp(frame, g.flash_cell, medallion(FLAG_RIM, FLAG_CORE, CELL))
 
         px, py = g.px * CELL, g.py * CELL
-        frame[py + 1:py + 3, px + 1:px + 3] = PLAYER
-        dx, dy = g.facing
-        if dx == 1:
-            frame[py + 1:py + 3, px + 2] = PLAYER_FACE
-        elif dx == -1:
-            frame[py + 1:py + 3, px + 1] = PLAYER_FACE
-        elif dy == -1:
-            frame[py + 1, px + 1:px + 3] = PLAYER_FACE
+        if dying and not lit:
+            frame[py + 1:py + 3, px + 1:px + 3] = PLAYER_FACE
         else:
-            frame[py + 2, px + 1:px + 3] = PLAYER_FACE
+            frame[py + 1:py + 3, px + 1:px + 3] = PLAYER
+            dx, dy = g.facing
+            if dx == 1:
+                frame[py + 1:py + 3, px + 2] = PLAYER_FACE
+            elif dx == -1:
+                frame[py + 1:py + 3, px + 1] = PLAYER_FACE
+            elif dy == -1:
+                frame[py + 1, px + 1:px + 3] = PLAYER_FACE
+            else:
+                frame[py + 2, px + 1:px + 3] = PLAYER_FACE
 
-        x = 1
-        for total, colour in ((g.rod_left, ROD_PIP), (g.plate_left, PLATE_PIP),
-                              (len(g.hazards) - g.correct, FLAG)):
-            for i in range(total):
-                if x + 2 > frame.shape[1]:
-                    break
-                frame[1:3, x:x + 2] = colour
-                x += 3
-            x += 2
+        self._bar(frame, ROD_BAR, g.rod_left, ROD_PIP)
+        self._bar(frame, PLATE_BAR, g.plate_left, PLATE_PIP)
+        self._bar(frame, DEBT_BAR, len(g.hazards) - g.correct, DEBT_PIP)
         return frame
 
 
 class G023(ARCBaseGame):
+
+    FLASH_FRAMES = 6
 
     def __init__(self) -> None:
         self._init_state(0)
@@ -331,6 +402,8 @@ class G023(ARCBaseGame):
         self.plate_marks: list[tuple[tuple[int, int], int]] = []
         self.rod_slots: set[tuple[int, int]] = set()
         self.plate_slots: set[tuple[int, int]] = set()
+        self.flash = 0
+        self.flash_cell = (0, 0)
 
     def on_set_level(self, level: Level) -> None:
         self._init_state(self.level_index)
@@ -381,7 +454,11 @@ class G023(ARCBaseGame):
         if hit:
             self.correct += 1
         else:
-            self.level_reset()
+            self._start_flash(cell)
+
+    def _start_flash(self, cell) -> None:
+        self.flash = self.FLASH_FRAMES
+        self.flash_cell = cell
 
     def _walk(self, d) -> None:
         if self.facing != d:
@@ -399,9 +476,16 @@ class G023(ARCBaseGame):
             return
         self.px, self.py = nx, ny
         if (nx, ny) in self.hazards:
-            self.level_reset()
+            self._start_flash((nx, ny))
 
     def step(self) -> None:
+        if self.flash:
+            self.flash -= 1
+            if self.flash == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+
         a = self.action.id
         if a == GameAction.ACTION1:
             self._walk((0, -1))
@@ -420,4 +504,6 @@ class G023(ARCBaseGame):
                 self._fire_plate()
             else:
                 self._mark(cell)
+        if self.flash:
+            return
         self.complete_action()

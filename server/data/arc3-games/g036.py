@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -13,18 +14,56 @@ from arcengine import (
     Sprite,
 )
 
-VOID = 5
-TRACK = 4
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+
+VOID = 13
+TRACK = 2
 JUNCTION = 2
 WANT_H = 9
-WANT_V = 15
-CORD = 12
-UNDER = 13
-PLAYER = 8
+WANT_V = 11
+CORD = 7
+UNDER = VOID
+PLAYER = 14
 END = 14
-START = 6
-PIP_ON = 11
-PIP_OFF = 3
+START = VOID
+PIP_ON = CORD
+PIP_OFF = TRACK
 
 N = 16
 CELL = 4
@@ -54,6 +93,9 @@ LEVELS_SPEC = [
                (4, 8): "h", (8, 8): "h", (12, 8): "h",
                (4, 12): "v", (8, 12): "v", (12, 12): "v"}, "undos": 2},
 ]
+
+DECOR_CELLS = ((0, 0), (N - 1, 0), (0, N - 1), (N - 1, N - 1),
+               (3, 3), (N - 5, 3), (3, N - 5), (N - 5, N - 5))
 
 
 def build_board(spec: dict) -> tuple[dict, dict]:
@@ -127,16 +169,19 @@ def try_step(state: dict, direction: tuple[int, int], track: dict, junctions: di
     return out
 
 
-def knot_holds(state: dict, junctions: dict) -> bool:
+def failed_marks(state: dict, junctions: dict) -> list:
+    bad = []
     for cell, mark in junctions.items():
         if mark is None:
             continue
         order = state["cross"].get(cell, ())
-        if len(order) < 2:
-            return False
-        if order[1] != ("H" if mark == "h" else "V"):
-            return False
-    return True
+        if len(order) < 2 or order[1] != ("H" if mark == "h" else "V"):
+            bad.append(cell)
+    return bad
+
+
+def knot_holds(state: dict, junctions: dict) -> bool:
+    return not failed_marks(state, junctions)
 
 
 def state_key(state: dict) -> tuple:
@@ -144,37 +189,40 @@ def state_key(state: dict) -> tuple:
             tuple(sorted(state["cross"].items())))
 
 
-def _block(colour: int) -> list[list[int]]:
-    return [[colour] * CELL for _ in range(CELL)]
+def _paving() -> list[list[int]]:
+    return rounded(TRACK, CELL)
 
 
-def _cell_colour(spec: dict, junctions: dict, cell: tuple[int, int]) -> int:
-    if cell in junctions:
-        mark = junctions[cell]
-        if mark == "h":
-            return WANT_H
-        if mark == "v":
-            return WANT_V
-        return JUNCTION
-    if cell == tuple(spec["end"]):
-        return END
-    if cell == tuple(spec["start"]):
-        return START
-    return TRACK
+def _crossing(mark: str | None) -> list[list[int]]:
+    colour = JUNCTION if mark is None else (WANT_H if mark == "h" else WANT_V)
+    px = [[-1] * CELL for _ in range(CELL)]
+    for i in range(CELL):
+        px[i][i] = colour
+        px[i][CELL - 1 - i] = colour
+    return px
 
 
 def build_levels() -> list[Level]:
     levels: list[Level] = []
     for spec in LEVELS_SPEC:
         track, junctions = build_board(spec)
+        start, end = tuple(spec["start"]), tuple(spec["end"])
         sprites: list[Sprite] = []
-        for cell in sorted(track):
+
+        def place(pixels, name, cell, layer):
             sprites.append(Sprite(
-                pixels=_block(_cell_colour(spec, junctions, cell)),
-                name=f"t_{cell[0]}_{cell[1]}",
+                pixels=pixels, name=name,
                 blocking=BlockingMode.NOT_BLOCKED,
-                interaction=InteractionMode.INTANGIBLE, layer=-1,
+                interaction=InteractionMode.INTANGIBLE, layer=layer,
             ).set_position(cell[0] * CELL, cell[1] * CELL))
+
+        for cell in sorted(track):
+            place(_paving(), f"t_{cell[0]}_{cell[1]}", cell, -1)
+        for cell in sorted(junctions):
+            place(_crossing(junctions[cell]), f"x_{cell[0]}_{cell[1]}", cell, 0)
+        place(ring(END, CELL), "anchor", end, 0)
+        if start != end:
+            place(ring(START, CELL), "eyelet", start, 0)
         levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
     return levels
 
@@ -190,6 +238,14 @@ def _paint_arm(frame: np.ndarray, cell: tuple[int, int], direction: tuple[int, i
         frame[py + 1:py + 3, px:px + 2] = colour
     else:
         frame[py + 1:py + 3, px + 2:px + 4] = colour
+
+
+def _stamp(frame: np.ndarray, cell: tuple[int, int], pixels) -> None:
+    px, py = cell[0] * CELL, cell[1] * CELL
+    for y, row in enumerate(pixels):
+        for x, value in enumerate(row):
+            if value >= 0:
+                frame[py + y, px + x] = value
 
 
 class G036A(RenderableUserDisplay):
@@ -216,17 +272,37 @@ class G036A(RenderableUserDisplay):
                     _paint_arm(frame, cell, direction, CORD)
 
         px, py = state["pos"][0] * CELL, state["pos"][1] * CELL
-        frame[py + 1:py + 3, px + 1:px + 3] = PLAYER
+        face = frame[py:py + CELL, px:px + CELL]
+        cut_a, cut_b = int(face[0, 0]), int(face[CELL - 1, CELL - 1])
+        face[:, :] = PLAYER
+        face[1:CELL - 1, 1:CELL - 1] = CORD
+        face[0, 0] = cut_a
+        face[CELL - 1, CELL - 1] = cut_b
 
-        for i in range(game.level_undos):
-            x = 1 + i * 3
-            if x + 2 > frame.shape[1]:
-                break
-            frame[1:3, x:x + 2] = PIP_ON if i < game.undos else PIP_OFF
+        if game.cinch and game.cinch % 2 == 0:
+            bad = failed_marks(state, junctions)
+            if bad:
+                for cell in bad:
+                    bx, by = cell[0] * CELL, cell[1] * CELL
+                    frame[by:by + CELL, bx:bx + CELL] = (
+                        WANT_H if junctions[cell] == "h" else WANT_V)
+            else:
+                frame[frame == CORD] = END
+
+        for cell in DECOR_CELLS:
+            if cell in game.track:
+                continue
+            _stamp(frame, cell, fixture((WANT_H, WANT_V, TRACK),
+                                        game.tick // 2, (cell[0] + cell[1]) % 3, CELL))
+
+        studs(frame, game.level_undos, game.undos, PIP_ON, PIP_OFF,
+              side="east", start=8, gap=6)
         return frame
 
 
 class G036(ARCBaseGame):
+
+    CINCH_FRAMES = 6
 
     def __init__(self) -> None:
         spec = LEVELS_SPEC[0]
@@ -235,6 +311,8 @@ class G036(ARCBaseGame):
         self.history: list[dict] = []
         self.undos = spec["undos"]
         self.level_undos = spec["undos"]
+        self.cinch = 0
+        self.tick = 0
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=VOID, letter_box=VOID,
@@ -250,6 +328,7 @@ class G036(ARCBaseGame):
         self.history = []
         self.undos = spec["undos"]
         self.level_undos = spec["undos"]
+        self.cinch = 0
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -274,15 +353,27 @@ class G036(ARCBaseGame):
         self.undos -= 1
         return True
 
-    def pull(self) -> None:
+    def pull(self) -> bool:
         if self.state["pos"] != tuple(LEVELS_SPEC[self.level_index]["end"]):
-            return
+            return False
+        self.cinch = self.CINCH_FRAMES
+        return True
+
+    def _settle(self) -> None:
         if knot_holds(self.state, self.junctions):
             self.next_level()
         else:
             self.level_reset()
 
     def step(self) -> None:
+        if self.cinch:
+            self.cinch -= 1
+            if self.cinch == 0:
+                self._settle()
+                self.complete_action()
+            return
+
+        self.tick += 1
         action = self.action.id
         if action == GameAction.ACTION1:
             self.lay(UP)
@@ -293,7 +384,8 @@ class G036(ARCBaseGame):
         elif action == GameAction.ACTION4:
             self.lay(RIGHT)
         elif action == GameAction.ACTION5:
-            self.pull()
+            if self.pull():
+                return
         elif action == GameAction.ACTION7:
             self.retract()
         self.complete_action()

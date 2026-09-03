@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -12,19 +13,105 @@ from arcengine import (
     Sprite,
 )
 
-OUTSIDE = 5
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def key_shape(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[0][1] = px[0][2] = colour
+    px[1][1] = px[1][2] = colour
+    px[2][1] = colour
+    px[3][1] = px[3][2] = colour
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def dither(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for y in range(max(0, y0), min(h, y1)):
+        for x in range(max(0, x0), min(w, x1)):
+            if (x + y) % 2:
+                frame[y, x] = colour
+    return frame
+
+def outline(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for x in range(max(0, x0), min(w, x1)):
+        if 0 <= y0 < h:
+            frame[y0, x] = colour
+        if 0 <= y1 - 1 < h:
+            frame[y1 - 1, x] = colour
+    for y in range(max(0, y0), min(h, y1)):
+        if 0 <= x0 < w:
+            frame[y, x0] = colour
+        if 0 <= x1 - 1 < w:
+            frame[y, x1 - 1] = colour
+    return frame
+
+
+OUTSIDE = 4
 FLOOR = 1
-WALL = 3
-KEY = 11
-LOCK = 9
+WALL = 6
+KEY = 8
+LOCK = 14
 EXIT = 14
-PLAYER = 12
-PLAYER_ARMED = 8
-CREASE = 6
-PLY = 10
+PLAYER = 10
+CREASE = 8
+GRAIN = OUTSIDE
+SCONCE = (PLAYER, EXIT, WALL)
+
+GRAIN_SPOTS = ((0, 3), (3, 0), (0, 0), (3, 3))
 
 CELL = 4
 SIDE = 64
+
+FOLD_FRAMES = 4
+CRUSH_FRAMES = 4
 
 LEVELS_SPEC = [
     ["................",
@@ -205,25 +292,27 @@ def fold_geometry(span: int, idx: int, pos: int) -> tuple[int, int, int]:
     return keep_lo, keep_hi, 2 * idx - 1 - pos - keep_lo
 
 
+def fold_source(keep_lo: int, keep_hi: int, span: int, idx: int,
+                j: int) -> tuple[int, int | None]:
+    base = keep_lo + j
+    mirror = 2 * idx - 1 - base
+    if keep_lo <= mirror < keep_hi or not (0 <= mirror < span):
+        mirror = None
+    return base, mirror
+
+
 def fold_board(board, ply, px, py, orient, idx):
     h, w = len(board), len(board[0])
     span, pos = (w, px) if orient == "V" else (h, py)
     keep_lo, keep_hi, landed = fold_geometry(span, idx, pos)
     new_span = keep_hi - keep_lo
 
-    def source(j: int) -> tuple[int, int | None]:
-        base = keep_lo + j
-        mirror = 2 * idx - 1 - base
-        if keep_lo <= mirror < keep_hi or not (0 <= mirror < span):
-            mirror = None
-        return base, mirror
-
     if orient == "V":
         nb = [[None] * new_span for _ in range(h)]
         npl = [[0] * new_span for _ in range(h)]
         for y in range(h):
             for j in range(new_span):
-                base, mirror = source(j)
+                base, mirror = fold_source(keep_lo, keep_hi, span, idx, j)
                 if mirror is None:
                     nb[y][j], npl[y][j] = board[y][base], ply[y][base]
                 else:
@@ -233,7 +322,7 @@ def fold_board(board, ply, px, py, orient, idx):
         nb = [[None] * w for _ in range(new_span)]
         npl = [[0] * w for _ in range(new_span)]
         for i in range(new_span):
-            base, mirror = source(i)
+            base, mirror = fold_source(keep_lo, keep_hi, span, idx, i)
             for x in range(w):
                 if mirror is None:
                     nb[i][x], npl[i][x] = board[base][x], ply[base][x]
@@ -263,12 +352,52 @@ def build_levels() -> list[Level]:
     ]
 
 
-COLOUR = {".": FLOOR, "#": WALL, "k": KEY, "l": LOCK, "X": EXIT}
+def _over(base: list, px: list) -> list:
+    for dy, row in enumerate(px):
+        for dx, v in enumerate(row):
+            if v >= 0:
+                base[dy][dx] = v
+    return base
+
+
+def _blit(frame, y0: int, x0: int, px: list) -> None:
+    for dy, row in enumerate(px):
+        for dx, v in enumerate(row):
+            if v >= 0:
+                frame[y0 + dy, x0 + dx] = v
+
+
+def wall_art(x: int, y: int, beat: int) -> list:
+    px = _over(block(WALL, CELL), speckle(FLOOR, (x * 3 + y) % 5, CELL))
+    if (x * 7 + y * 3) % 5 == 0:
+        _over(px, fixture(SCONCE, beat, (x + y) % 3, CELL))
+    return px
+
+
+def cell_art(ch: str, x: int, y: int, beat: int):
+    if ch == "#":
+        return wall_art(x, y, beat)
+    if ch == "k":
+        return key_shape(KEY, CELL)
+    if ch == "l":
+        return door(LOCK, OUTSIDE, CELL)
+    if ch == "X":
+        return door(EXIT, None, CELL)
+    return None
+
+
+def player_art(armed: bool) -> list:
+    return figure(PLAYER, CREASE if armed else OUTSIDE, CELL)
 
 
 class G028(ARCBaseGame):
 
     def __init__(self) -> None:
+        self._beat = 0
+        self._stage = None
+        self._tick = 0
+        self._pending = None
+        self._fold = ("V", 1, 0, 0, 0)
         self.board, self.px, self.py = parse_level(LEVELS_SPEC[0])
         self.ply = [[1] * N for _ in range(N)]
         self.armed = False
@@ -287,6 +416,9 @@ class G028(ARCBaseGame):
         self.armed = False
         self.orient = "V"
         self.crease = 1
+        self._stage = None
+        self._tick = 0
+        self._pending = None
         self._paint()
 
     def level_reset(self) -> None:
@@ -297,31 +429,164 @@ class G028(ARCBaseGame):
         super().full_reset()
         self.on_set_level(self.current_level)
 
-    def _paint(self) -> None:
+    def _show(self, frame) -> None:
         sprites = self.current_level.get_sprites_by_name("sheet")
-        if not sprites:
-            return
-        h, w = len(self.board), len(self.board[0])
+        if sprites:
+            sprites[0].pixels = frame
+
+    def _sheet_frame(self, board, ply, player=None):
+        h, w = len(board), len(board[0])
         frame = np.full((SIDE, SIDE), OUTSIDE, dtype=np.int8)
         for y in range(h):
+            y0 = y * CELL
             for x in range(w):
-                ch = self.board[y][x]
-                block = COLOUR[ch]
-                y0, x0 = y * CELL, x * CELL
-                frame[y0:y0 + CELL, x0:x0 + CELL] = block
-                if self.ply[y][x] > 1 and ch != "#":
-                    for cy in (y0, y0 + CELL - 1):
-                        for cx in (x0, x0 + CELL - 1):
-                            frame[cy, cx] = PLY
-        y0, x0 = self.py * CELL, self.px * CELL
-        frame[y0 + 1:y0 + CELL - 1, x0 + 1:x0 + CELL - 1] = (
-            PLAYER_ARMED if self.armed else PLAYER)
+                x0, ch = x * CELL, board[y][x]
+                frame[y0:y0 + CELL, x0:x0 + CELL] = FLOOR
+                if ch != "#":
+                    for k in range(min(ply[y][x] - 1, len(GRAIN_SPOTS))):
+                        gy, gx = GRAIN_SPOTS[k]
+                        frame[y0 + gy, x0 + gx] = GRAIN
+                art = cell_art(ch, x, y, self._beat)
+                if art is not None:
+                    _blit(frame, y0, x0, art)
+        if player is not None:
+            px, py, armed = player
+            _blit(frame, py * CELL, px * CELL, player_art(armed))
+        return frame
+
+    def _crease_line(self, frame, orient, idx, h, w) -> None:
+        if orient == "V":
+            frame[0:h * CELL, idx * CELL] = CREASE
+        else:
+            frame[idx * CELL, 0:w * CELL] = CREASE
+
+    def _paint(self) -> None:
+        frame = self._sheet_frame(self.board, self.ply,
+                                  (self.px, self.py, self.armed))
         if self.armed:
-            if self.orient == "V":
-                frame[0:h * CELL, self.crease * CELL] = CREASE
-            else:
-                frame[self.crease * CELL, 0:w * CELL] = CREASE
-        sprites[0].pixels = frame
+            self._crease_line(frame, self.orient, self.crease,
+                              len(self.board), len(self.board[0]))
+        self._show(frame)
+
+    def _fold_views(self):
+        orient, idx, keep_lo, keep_hi, span = self._fold
+        board, ply = self.board, self.ply
+        h, w = len(board), len(board[0])
+        new_span = keep_hi - keep_lo
+        base_g, base_p, mir_g = [], [], []
+        if orient == "V":
+            for y in range(h):
+                brow, prow, mrow = [], [], []
+                for j in range(new_span):
+                    base, mirror = fold_source(keep_lo, keep_hi, span, idx, j)
+                    brow.append(board[y][base])
+                    prow.append(ply[y][base])
+                    mrow.append(None if mirror is None else board[y][mirror])
+                base_g.append(brow)
+                base_p.append(prow)
+                mir_g.append(mrow)
+        else:
+            for i in range(new_span):
+                base, mirror = fold_source(keep_lo, keep_hi, span, idx, i)
+                base_g.append(list(board[base]))
+                base_p.append(list(ply[base]))
+                mir_g.append([None] * w if mirror is None else list(board[mirror]))
+        return base_g, base_p, mir_g
+
+    def _flap_box(self, orient, idx, keep_lo, h, w):
+        if orient == "V":
+            return ((idx * CELL, 0, w * CELL, h * CELL) if keep_lo == 0
+                    else (0, 0, idx * CELL, h * CELL))
+        return ((0, idx * CELL, w * CELL, h * CELL) if keep_lo == 0
+                else (0, 0, w * CELL, idx * CELL))
+
+    def _lift_box(self, box, orient, keep_lo, stage):
+        x0, y0, x1, y1 = box
+        lifts = max(1, FOLD_FRAMES // 2)
+        if orient == "V":
+            reach = -(-(x1 - x0) * stage // lifts)
+            return (x1 - reach, y0, x1, y1) if keep_lo == 0 else (x0, y0, x0 + reach, y1)
+        reach = -(-(y1 - y0) * stage // lifts)
+        return (x0, y1 - reach, x1, y1) if keep_lo == 0 else (x0, y0, x1, y0 + reach)
+
+    def _paint_lift(self, stage: int) -> None:
+        orient, idx, keep_lo, _, _ = self._fold
+        h, w = len(self.board), len(self.board[0])
+        frame = self._sheet_frame(self.board, self.ply, (self.px, self.py, True))
+        box = self._flap_box(orient, idx, keep_lo, h, w)
+        dither(frame, self._lift_box(box, orient, keep_lo, stage), CREASE)
+        outline(frame, box, CREASE)
+        self._crease_line(frame, orient, idx, h, w)
+        self._show(frame)
+
+    def _paint_superimposed(self, stage: int) -> None:
+        base_g, base_p, mir_g = self._fold_views()
+        frame = self._sheet_frame(base_g, base_p)
+        h, w = len(base_g), len(base_g[0])
+        parity = stage % 2
+        for y in range(h):
+            for x in range(w):
+                ch = mir_g[y][x]
+                art = None if ch is None else cell_art(ch, x, y, self._beat)
+                if art is None:
+                    continue
+                y0, x0 = y * CELL, x * CELL
+                for dy, row in enumerate(art):
+                    for dx, v in enumerate(row):
+                        if v >= 0 and (dx + dy) % 2 == parity:
+                            frame[y0 + dy, x0 + dx] = v
+        _, _, nx, ny, _ = self._pending
+        if 0 <= nx < w and 0 <= ny < h:
+            _blit(frame, ny * CELL, nx * CELL, player_art(True))
+        self._show(frame)
+
+    def _paint_crush(self, stage: int) -> None:
+        board, ply, nx, ny, _ = self._pending
+        orient = self._fold[0]
+        h, w = len(board), len(board[0])
+        inside = 0 <= nx < w and 0 <= ny < h
+        frame = self._sheet_frame(board, ply, (nx, ny, True) if inside else None)
+        mark = CREASE if stage % 2 else OUTSIDE
+        if inside:
+            for pad in (2, 3):
+                outline(frame, (max(0, nx * CELL - pad), max(0, ny * CELL - pad),
+                                min(SIDE, nx * CELL + CELL + pad),
+                                min(SIDE, ny * CELL + CELL + pad)), mark)
+        elif nx < 0 or ny < 0:
+            box = (0, 0, 2, h * CELL) if orient == "V" else (0, 0, w * CELL, 2)
+            frame[box[1]:box[3], box[0]:box[2]] = mark
+        else:
+            box = ((w * CELL - 2, 0, w * CELL, h * CELL) if orient == "V"
+                   else (0, h * CELL - 2, w * CELL, h * CELL))
+            frame[box[1]:box[3], box[0]:box[2]] = mark
+        self._show(frame)
+
+    def _advance(self) -> None:
+        self._tick += 1
+        if self._stage == "fold":
+            if self._tick <= FOLD_FRAMES // 2:
+                self._paint_lift(self._tick)
+                return
+            if self._tick <= FOLD_FRAMES:
+                self._paint_superimposed(self._tick)
+                return
+            board, ply, nx, ny, crushed = self._pending
+            if crushed:
+                self._stage, self._tick = "crush", 0
+                self._advance()
+                return
+            self.board, self.ply, self.px, self.py = board, ply, nx, ny
+            self.orient, self.crease = "V", 1
+            self._stage, self._pending = None, None
+            self._paint()
+            self.complete_action()
+            return
+        if self._tick <= CRUSH_FRAMES:
+            self._paint_crush(self._tick)
+            return
+        self._stage, self._pending = None, None
+        self.level_reset()
+        self.complete_action()
 
     def _walk(self, dx: int, dy: int) -> None:
         nx, ny = self.px + dx, self.py + dy
@@ -348,27 +613,31 @@ class G028(ARCBaseGame):
         self.crease = min(max(self.crease + (1 if key in ("R", "D") else -1), 1), limit)
 
     def _commit(self) -> None:
-        board, ply, nx, ny, crushed = fold_board(
-            self.board, self.ply, self.px, self.py, self.orient, self.crease)
+        span = len(self.board[0]) if self.orient == "V" else len(self.board)
+        pos = self.px if self.orient == "V" else self.py
+        keep_lo, keep_hi, _ = fold_geometry(span, self.crease, pos)
+        self._fold = (self.orient, self.crease, keep_lo, keep_hi, span)
+        self._pending = fold_board(self.board, self.ply, self.px, self.py,
+                                   self.orient, self.crease)
         self.armed = False
-        if crushed:
-            self.level_reset()
-            return
-        self.board, self.ply, self.px, self.py = board, ply, nx, ny
-        self.orient = "V"
-        self.crease = 1
+        self._stage, self._tick = "fold", 0
+        self._advance()
 
     def step(self) -> None:
+        self._beat += 1
+        if self._stage:
+            self._advance()
+            return
         act = self.action.id
         if act == GameAction.ACTION7:
             self.armed = False
         elif act == GameAction.ACTION5:
             if self.armed:
                 self._commit()
-            else:
-                self.armed = True
-                self.orient = "V"
-                self.crease = min(max(self.px, 1), len(self.board[0]) - 1)
+                return
+            self.armed = True
+            self.orient = "V"
+            self.crease = min(max(self.px, 1), len(self.board[0]) - 1)
         elif act in (GameAction.ACTION1, GameAction.ACTION2,
                      GameAction.ACTION3, GameAction.ACTION4):
             key = {GameAction.ACTION1: "U", GameAction.ACTION2: "D",

@@ -42,7 +42,10 @@ from pathlib import Path
 BASE_CLASS = "ARCBaseGame"
 
 #: Published filenames are `<gameId>.py`, and the id is opaque by construction.
-GAME_ID_RE = re.compile(r"^(t[0-9a-f]{8})$")
+# Published ids became gNNN on 03-Sep (see "a game is called g007 in both repos").
+# The old hashed t-form is still accepted so a directory left over from before the
+# rename builds rather than raising, which is what a half-migrated tree looks like.
+GAME_ID_RE = re.compile(r"^(g[0-9]{3}|t[0-9a-f]{8})$")
 
 #: Category slug for our entries. The mirror treats category as an open string and the
 #: gallery sections on it, so ours must be distinguishable from anything upstream. Kept

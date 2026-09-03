@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -13,16 +14,65 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-PLAYER = 12
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def facing(body: int, visor: int, heading: tuple, cell: int = 4) -> list[list[int]]:
+    px = rounded(body, cell)
+    dx, dy = heading
+    last = cell - 1
+    if dy < 0:
+        px[0][1] = px[0][cell - 2] = visor
+    elif dy > 0:
+        px[last][1] = px[last][cell - 2] = visor
+    elif dx < 0:
+        px[1][0] = px[cell - 2][0] = visor
+    elif dx > 0:
+        px[1][last] = px[cell - 2][last] = visor
+    else:
+        px[1][1] = visor
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+
+FLOOR = 15
+WALL = 5
+PLAYER = 7
+PLAYER_CORE = 5
 GUARD = 8
-TRAIL = 13
+GUARD_VISOR = 0
+TRAIL = 2
 COIN = 11
+COIN_CORE = 12
 EXIT_SHUT = 2
-EXIT_OPEN = 14
-PIP_ON = 11
-PIP_OFF = 3
+EXIT_OPEN = 9
+PIP_ON = COIN
+PIP_OFF = 2
+DECOR_A = 6
+DECOR_B = 10
 
 N = 16
 CELL = 4
@@ -326,10 +376,23 @@ def _dot(colour: int) -> list:
 
 
 def _coin(colour: int) -> list:
-    px = [[-1] * CELL for _ in range(CELL)]
-    for x in range(CELL):
-        px[1][x] = px[2][x] = colour
-    return px
+    return medallion(colour, COIN_CORE, CELL)
+
+
+def _guard(heading: tuple) -> list:
+    return facing(GUARD, GUARD_VISOR, heading, CELL)
+
+
+def _intruder(lit: bool = False) -> list:
+    body = GUARD if lit else PLAYER
+    return [[-1, -1, body, -1],
+            [-1, body, body, body],
+            [body, body, PLAYER_CORE, body],
+            [-1, body, -1, body]]
+
+
+def _fixture(phase: int, seed: int) -> list:
+    return fixture((DECOR_A, DECOR_B, WALL), phase, seed, CELL)
 
 
 def build_levels() -> list:
@@ -345,6 +408,13 @@ def build_levels() -> list:
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=-1,
                     ).set_position(px, py))
+                    if (x * 7 + y * 3) % 5 == 0:
+                        sprites.append(Sprite(
+                            pixels=_fixture(0, (x + y) % 3), name=f"fix_{x}_{y}",
+                            blocking=BlockingMode.NOT_BLOCKED,
+                            interaction=InteractionMode.INTANGIBLE, layer=0,
+                            tags=["decor"],
+                        ).set_position(px, py))
                 elif char == "C":
                     sprites.append(Sprite(
                         pixels=_coin(COIN), name=f"coin_{x}_{y}",
@@ -364,7 +434,7 @@ def build_levels() -> list:
                     ).set_position(px, py))
         sx, sy = spec["start"]
         sprites.append(Sprite(
-            pixels=_block(PLAYER), name="player",
+            pixels=_intruder(), name="player",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.INTANGIBLE, layer=2,
         ).set_position(sx * CELL, sy * CELL))
@@ -378,7 +448,7 @@ def build_levels() -> list:
                 ).set_position(cx * CELL, cy * CELL))
             gx, gy = guard_cells(li, 0, 0)[gi]
             sprites.append(Sprite(
-                pixels=_block(GUARD), name=f"guard_{gi}",
+                pixels=_guard((0, 0)), name=f"guard_{gi}",
                 blocking=BlockingMode.NOT_BLOCKED,
                 interaction=InteractionMode.INTANGIBLE, layer=1,
             ).set_position(gx * CELL, gy * CELL))
@@ -396,16 +466,19 @@ class G012A(RenderableUserDisplay):
         total = len(LEVELS_SPEC[self._game.level_index]["coins_all"])
         got = total - len(self._game.coins)
         for i in range(total):
-            x = 1 + i * 3
-            if x + 2 > frame.shape[1]:
+            top = 6 + i * 6
+            if top + 2 > frame.shape[0]:
                 break
-            frame[1:3, x:x + 2] = PIP_ON if i < got else PIP_OFF
+            frame[top:top + 2, 0:1 + i] = PIP_ON if i < got else PIP_OFF
         return frame
 
 
 class G012(ARCBaseGame):
 
+    CAUGHT_FRAMES = 6
+
     def __init__(self) -> None:
+        self._caught = 0
         self.pos = LEVELS_SPEC[0]["start"]
         self.coins = LEVELS_SPEC[0]["coins_all"]
         self.tick = 0
@@ -422,6 +495,7 @@ class G012(ARCBaseGame):
         self.pos = spec["start"]
         self.coins = spec["coins_all"]
         self.tick = 0
+        self._caught = 0
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -438,8 +512,12 @@ class G012(ARCBaseGame):
         level = self.current_level
         phase = len(LEVELS_SPEC[self.level_index]["coins_all"]) - len(self.coins)
         here = guard_cells(self.level_index, phase, self.tick)
+        nxt = guard_cells(self.level_index, phase, self.tick + 1)
         for gi, (gx, gy) in enumerate(here):
+            ax, ay = nxt[gi]
+            heading = (ax - gx, ay - gy)
             for s in level.get_sprites_by_name(f"guard_{gi}"):
+                s.pixels = np.array(_guard(heading))
                 s.set_position(gx * CELL, gy * CELL)
             for k in range(TRAIL_LEN):
                 tx, ty = guard_cells(self.level_index, phase, self.tick - 1 - k)[gi]
@@ -447,11 +525,23 @@ class G012(ARCBaseGame):
                     s.set_position(tx * CELL, ty * CELL)
         for s in level.get_sprites_by_name("player"):
             s.set_position(self.pos[0] * CELL, self.pos[1] * CELL)
+        for s in level.get_sprites_by_tag("decor"):
+            gx, gy = s.x // CELL, s.y // CELL
+            s.pixels = np.array(_fixture(self.tick, (gx + gy) % 3))
         if not self.coins:
             for s in level.get_sprites_by_name("exit_shut"):
                 level.remove_sprite(s)
 
     def step(self) -> None:
+        if self._caught:
+            self._caught -= 1
+            for sp in self.current_level.get_sprites_by_name("player"):
+                sp.pixels = np.array(_intruder(lit=self._caught % 2 == 0))
+            if self._caught == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+
         move = {
             GameAction.ACTION1: (0, -1),
             GameAction.ACTION2: (0, 1),
@@ -475,8 +565,8 @@ class G012(ARCBaseGame):
 
         if dead:
             self.deaths += 1
-            self.level_reset()
-            self.complete_action()
+            self._redraw()
+            self._caught = self.CAUGHT_FRAMES
             return
 
         self._redraw()

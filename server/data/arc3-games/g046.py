@@ -5,6 +5,7 @@ from math import gcd
 
 import numpy as np
 
+
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -16,12 +17,48 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-EXIT = 14
-PLAYER = 12
-PLAYER_CORE = 0
-MOVER_LIVE = 8
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+
+FLOOR = 14
+WALL = 5
+EXIT = 10
+PLAYER = 0
+PLAYER_CORE = 5
+MOVER_LIVE = 6
 MOVER_STALE = 13
 
 N = 16
@@ -265,14 +302,54 @@ def resolve(level_index: int, pos: tuple[int, int], tick: int,
     return (nx, ny), tick + 1, died, (not died and (nx, ny) == exit_cell(rows))
 
 
-def _block(colour: int) -> list[list[int]]:
-    return [[colour] * CELL for _ in range(CELL)]
+def _wall() -> list[list[int]]:
+    return block(WALL, CELL)
 
 
-def _player_block() -> list[list[int]]:
-    px = _block(PLAYER)
-    px[1][1] = px[1][2] = px[2][1] = px[2][2] = PLAYER_CORE
+def _exit_pad() -> list[list[int]]:
+    return ring(EXIT, CELL)
+
+
+def _player() -> list[list[int]]:
+    return figure(PLAYER, PLAYER_CORE, CELL)
+
+
+def _mover_live() -> list[list[int]]:
+    return rounded(MOVER_LIVE, CELL)
+
+
+def _mover_stale() -> list[list[int]]:
+    return ring(MOVER_STALE, CELL)
+
+
+def _impact(phase: int) -> list[list[int]]:
+    lit = phase % 2 == 0
+    px = block(MOVER_LIVE if lit else PLAYER, CELL)
+    inner = PLAYER if lit else MOVER_LIVE
+    for y in range(1, CELL - 1):
+        for x in range(1, CELL - 1):
+            px[y][x] = inner
     return px
+
+
+def _stamp(frame, cell: tuple[int, int], px: list[list[int]]) -> None:
+    cx, cy = cell
+    for j in range(CELL):
+        for i in range(CELL):
+            if px[j][i] >= 0:
+                frame[cy * CELL + j, cx * CELL + i] = px[j][i]
+
+
+def _halo(frame, cell: tuple[int, int], colour: int) -> None:
+    cx, cy = cell
+    x0, y0 = cx * CELL - 1, cy * CELL - 1
+    x1, y1 = cx * CELL + CELL, cy * CELL + CELL
+    h, w = frame.shape
+    edge = ([(x, y0) for x in range(x0, x1 + 1)] + [(x, y1) for x in range(x0, x1 + 1)]
+            + [(x0, y) for y in range(y0 + 1, y1)] + [(x1, y) for y in range(y0 + 1, y1)])
+    for x, y in edge:
+        if 0 <= x < w and 0 <= y < h and int(frame[y, x]) in (FLOOR, WALL):
+            frame[y, x] = colour
 
 
 def build_levels() -> list[Level]:
@@ -284,20 +361,20 @@ def build_levels() -> list[Level]:
                 px, py = x * CELL, y * CELL
                 if ch == "#":
                     sprites.append(Sprite(
-                        pixels=_block(WALL), name=f"wall_{x}_{y}",
+                        pixels=_wall(), name=f"wall_{x}_{y}",
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=-1,
                     ).set_position(px, py))
                 elif ch == "X":
                     sprites.append(Sprite(
-                        pixels=_block(EXIT), name="exit",
+                        pixels=_exit_pad(), name="exit",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=-1,
                         tags=["exit"],
                     ).set_position(px, py))
         sx, sy = start_cell(spec["rows"])
         sprites.append(Sprite(
-            pixels=_player_block(), name="player",
+            pixels=_player(), name="player",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.INTANGIBLE, layer=1,
         ).set_position(sx * CELL, sy * CELL))
@@ -314,23 +391,32 @@ class G046A(RenderableUserDisplay):
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         game = self._game
         seen = game.seen
+        live, stale = _mover_live(), _mover_stale()
+
+        if game.dying:
+            for cell, remembered in game.memory.items():
+                if remembered:
+                    _stamp(frame, cell, live if cell in seen else stale)
+            _stamp(frame, game.pos, _impact(game.dying))
+            _halo(frame, game.pos, MOVER_LIVE if game.dying % 2 else PLAYER)
+            return frame
+
         truth = set(mover_cells(game.level_index, game.tick))
-        for (x, y), remembered in game.memory.items():
-            if (x, y) in seen:
-                if (x, y) not in truth:
-                    continue
-                colour = MOVER_LIVE
-            else:
-                if not remembered:
-                    continue
-                colour = MOVER_STALE
-            frame[y * CELL:(y + 1) * CELL, x * CELL:(x + 1) * CELL] = colour
+        for cell, remembered in game.memory.items():
+            if cell in seen:
+                if cell in truth:
+                    _stamp(frame, cell, live)
+            elif remembered:
+                _stamp(frame, cell, stale)
         return frame
 
 
 class G046(ARCBaseGame):
 
+    DYING_FRAMES = 6
+
     def __init__(self) -> None:
+        self.dying = 0
         self.pos = start_cell(LEVELS_SPEC[0]["rows"])
         self.tick = 0
         self.memory = initial_memory(0)
@@ -345,6 +431,7 @@ class G046(ARCBaseGame):
 
     def on_set_level(self, level: Level) -> None:
         index = self.level_index
+        self.dying = 0
         self.pos = start_cell(LEVELS_SPEC[index]["rows"])
         self.tick = 0
         self.memory = initial_memory(index)
@@ -366,6 +453,13 @@ class G046(ARCBaseGame):
             sprite.set_position(self.pos[0] * CELL, self.pos[1] * CELL)
 
     def step(self) -> None:
+        if self.dying:
+            self.dying -= 1
+            if self.dying == 0:
+                self.level_reset()
+                self.complete_action()
+            return
+
         move = {
             GameAction.ACTION1: (0, -1),
             GameAction.ACTION2: (0, 1),
@@ -383,8 +477,8 @@ class G046(ARCBaseGame):
 
         if died:
             self.deaths += 1
-            self.level_reset()
-            self.complete_action()
+            self._redraw()
+            self.dying = self.DYING_FRAMES
             return
 
         self.memory = observe(rows, self.memory, self.pos,
