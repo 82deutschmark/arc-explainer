@@ -42,10 +42,10 @@
     "width": 64
   },
   "g010": {
-    "backgroundColour": 5,
-    "distinctColours": 3,
+    "backgroundColour": 0,
+    "distinctColours": 5,
     "height": 64,
-    "inkFraction": 0.0388,
+    "inkFraction": 0.2002,
     "width": 64
   },
   "g011": {
