@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.35.0  Sep 2, 2026
+
+- **Seven rebuilt games reach production, and the resync gap that was hiding them** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: six games got a presentation pass in the authoring repo today and a seventh was rebuilt there yesterday, and **none of them had reached this site**. Publishing to the authoring repo is not publishing: `scripts/arc3/import_authored_games.py` has to run, and nothing runs it automatically. Its `--check` mode reported all seven as differing, which is how the gap was found. All seven are imported now, with frames, and the site serves the current games.
+  - **What changed in them**: `g001` was rebuilt into a ring vault upstream; the other six are colour, silhouette and readout passes with no rule touched. The shared cause was one line of copy-paste — floor 4, wall 1, player 12, exit 14 appeared verbatim in seven of the fifty, which is why games sharing almost no code looked like siblings.
+  - **One of them was a real legibility fault, not a style complaint.** The cube-net game drew dark grey faces on a black void, so the shape of the net — which is the entire puzzle — was nearly invisible. It is black table, white paper now.
+  - **Three readouts came off the top wall**, which is where every game in this set was putting its meter. Two moved onto a wall; the third could not, because that board's borders are playable floor rather than wall, so it rides the avatar instead.
+  - **An eighth frame changed with no source change**: `t2774d7a8`'s picture was rendered from a build older than its published source. Re-rendering fixed it, and it is a second instance of the same class of staleness as the import gap.
+  - **Files**: 7 game sources, 8 frames, `frames.json` under `server/data/arc3-games/`.
+
 ### Version 9.34.0  Sep 2, 2026
 
 - **Six official ARC-AGI-3 games written up as design evidence, not code notes** (Author: Mark Barney / Claude Opus 5)

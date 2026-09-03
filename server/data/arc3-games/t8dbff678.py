@@ -1,7 +1,5 @@
 # ARC-AGI-3 candidate task t8dbff678.
 
-import numpy as np
-
 from arcengine import (
     ARCBaseGame,
     BlockingMode,
@@ -9,181 +7,157 @@ from arcengine import (
     GameAction,
     InteractionMode,
     Level,
-    RenderableUserDisplay,
     Sprite,
 )
 
-FLOOR = 4
-WALL = 1
-DOOR = 6
-DOOR_COST = 0
-EXIT = 14
-EXIT_COST = 5
-PLAYER = 12
-PIP_ON = 11
-PIP_OFF = 3
+FLOOR = 9
+WALL = 2
+PLAYER = 0
+GATE_BODY = 13
+GATE_PIP = 11
+GOAL_CORE = 6
+TALLY_PIP = 11
 
+N = 15
+CELL = 4
+
+TALLY_COL = 2
+TALLY_TOP = 3
 
 LEVELS_SPEC = [
-    {"charges": 4, "exit_cost": 3, "rows": [
-        "################",
-        "#..............#",
-        "#..............#",
-        "#..P.......X...#",
-        "#..............#",
-        "#..............#",
-        "#####1##########",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"charges": 6, "core_cost": 4, "min_spend": 5, "rows": [
+        "###############",
+        "#.............#",
+        "#.#####.#####.#",
+        "#.#.........#.#",
+        "#.#.........#.#",
+        "#.#.........#.#",
+        "#.#...#1#...#.#",
+        "#.#...#O#...#.#",
+        "#.#...#3#...#.#",
+        "#.#.........#.#",
+        "#.#.........#.#",
+        "#.#.........#.#",
+        "#.#####.#####.#",
+        "#......P......#",
+        "###############",
     ]},
-    {"charges": 5, "exit_cost": 4, "rows": [
-        "################",
-        "#..............#",
-        "#..P...........#",
-        "#..............#",
-        "#..####..####..#",
-        "#..#..#..#..#..#",
-        "#..#2#....#2#..#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#.......X......#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"charges": 7, "core_cost": 4, "min_spend": 7, "rows": [
+        "###############",
+        "#......P......#",
+        "#.#####.#####.#",
+        "#.#.........#.#",
+        "#.#.###2###.#.#",
+        "#.#.#.....#.#.#",
+        "#.#.#.#2#.#.#.#",
+        "#.#.1.#O3.#.#.#",
+        "#.#.#.###.#.#.#",
+        "#.#.#.....#.#.#",
+        "#.#.#######.#.#",
+        "#.#.........#.#",
+        "#.#####.#####.#",
+        "#.............#",
+        "###############",
     ]},
-    {"charges": 6, "exit_cost": 4, "rows": [
-        "################",
-        "#..............#",
-        "#..P...........#",
-        "#..............#",
-        "#..####...####.#",
-        "#..#..#...#..#.#",
-        "#..#3#.....#1#.#",
-        "#..............#",
-        "######2#########",
-        "#..............#",
-        "#..............#",
-        "#......X.......#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"charges": 9, "core_cost": 4, "min_spend": 9, "rows": [
+        "###############",
+        "#......P......#",
+        "#.#####1#####.#",
+        "#.##.......##.#",
+        "#.#.#######.#.#",
+        "#.#.#.....#.#.#",
+        "#.#.#.###.#.#.#",
+        "#.#.#.#O#.#.#.#",
+        "#.#.#.#3#.#.#.#",
+        "#.#.#.....#.#.#",
+        "#.#.###2###.#.#",
+        "#.#.........#.#",
+        "#.#####.#####.#",
+        "#.............#",
+        "###############",
     ]},
-    {"charges": 7, "exit_cost": 5, "rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#..###.####....#",
-        "#..#.#.#..#....#",
-        "#..#.#.#..#....#",
-        "#..#1#.#2##....#",
-        "#..............#",
-        "####3#########.#",
-        "#..............#",
-        "#......X.......#",
-        "#..............#",
-        "########.#######",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"charges": 9, "core_cost": 5, "min_spend": 9, "rows": [
+        "###############",
+        "#......P......#",
+        "#.#####1#####.#",
+        "#.##........#.#",
+        "#.#.###4###.#.#",
+        "#.#.#.....#.#.#",
+        "#.#.#.#1#.#.#.#",
+        "#.#.1.#O#.#.#.#",
+        "#.#.#.###.#.#.#",
+        "#.#.#.....#.#.#",
+        "#.#.#######.#.#",
+        "#.#........##.#",
+        "#.#####2#####.#",
+        "#.............#",
+        "###############",
     ]},
-    {"charges": 8, "exit_cost": 4, "rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#.###..........#",
-        "#.#.#..........#",
-        "#.#3#..........#",
-        "#..............#",
-        "#####2##########",
-        "#..............#",
-        "#..............#",
-        "##########2#####",
-        "#..............#",
-        "#......X.......#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"charges": 8, "core_cost": 4, "min_spend": 8, "rows": [
+        "###############",
+        "#......P......#",
+        "#.#####1#####.#",
+        "#.##.......##.#",
+        "#.#.###3###.#.#",
+        "#.#.#....##.#.#",
+        "#.#.#.#2#.#.#.#",
+        "#.#.#.#O#.#.1.#",
+        "#.#.#.#1#.#.#.#",
+        "#.#.##....#.#.#",
+        "#.#.###1###.#.#",
+        "#.#........##.#",
+        "#.#####2#####.#",
+        "#.............#",
+        "###############",
     ]},
-    {"charges": 9, "exit_cost": 5, "rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#..............#",
-        "#2############5#",
-        "#.############.#",
-        "#.############.#",
-        "#2############.#",
-        "#.############.#",
-        "#..............#",
-        "#..............#",
-        "#......X.......#",
-        "#....#1#.......#",
-        "#....#.#.......#",
-        "#....###.......#",
-        "################",
-    ]},
-    {"charges": 6, "exit_cost": 6, "rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#.#1#....#2#...#",
-        "#.#.#....#.#...#",
-        "#.###....###...#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#......X.......#",
-        "#..............#",
-        "#....#3#.......#",
-        "#....#.#.......#",
-        "#....###.......#",
-        "#..............#",
-        "################",
-    ]},
-    {"charges": 9, "exit_cost": 4, "rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#.#1#..........#",
-        "#.#.#..........#",
-        "#.###..........#",
-        "######3#########",
-        "#..............#",
-        "#....#2#.......#",
-        "#....#.#.......#",
-        "#....###.......#",
-        "###########2####",
-        "#..............#",
-        "#.....X........#",
-        "#..............#",
-        "################",
+    {"charges": 9, "core_cost": 5, "min_spend": 9, "rows": [
+        "###############",
+        "#...P.........#",
+        "#.##1##1#####.#",
+        "#.##.#.....##.#",
+        "#.#.###1###.#.#",
+        "#.#.#....##.#.#",
+        "#.#.#.#2#.#.#.#",
+        "#.#.#.#O3.1.1.#",
+        "#.#.#.###.#.#.#",
+        "#.#.##....#.#.#",
+        "#.#.###2###.#.#",
+        "#.#........##.#",
+        "#.#####2#####.#",
+        "#.............#",
+        "###############",
     ]},
 ]
 
-N = len(LEVELS_SPEC[0]["rows"])
-CELL = 4
 
-
-def _door_cost_pixels(cost: int) -> list[list[int]]:
-    block = [[DOOR for _ in range(CELL)] for _ in range(CELL)]
-    for i in range(min(cost, 9)):
-        block[1 + i // 3][1 + i % 3] = DOOR_COST
+def _priced_block(body: int, price: int) -> list[list[int]]:
+    block = [[body] * CELL for _ in range(CELL)]
+    for i in range(min(price, 9)):
+        block[1 + i // 3][1 + i % 3] = GATE_PIP
     return block
 
 
-def _cell_block(colour: int) -> list[list[int]]:
-    return [[colour] * CELL for _ in range(CELL)]
+def _core_block(price: int) -> list[list[int]]:
+    block = _priced_block(GOAL_CORE, price)
+    block[0][0] = block[0][CELL - 1] = -1
+    block[CELL - 1][0] = block[CELL - 1][CELL - 1] = -1
+    return block
+
+
+def _runner_block() -> list[list[int]]:
+    block = [[PLAYER] * CELL for _ in range(CELL)]
+    block[0][0] = block[0][CELL - 1] = -1
+    return block
+
+
+def _tally_block() -> list[list[int]]:
+    block = [[-1] * CELL for _ in range(CELL)]
+    block[1][1] = block[1][2] = block[2][1] = block[2][2] = TALLY_PIP
+    return block
+
+
+def _stone_block() -> list[list[int]]:
+    return [[WALL] * CELL for _ in range(CELL)]
 
 
 def build_levels() -> list[Level]:
@@ -195,68 +169,53 @@ def build_levels() -> list[Level]:
                 px, py = x * CELL, y * CELL
                 if char == "#":
                     sprites.append(Sprite(
-                        pixels=_cell_block(WALL), name=f"wall_{x}_{y}",
+                        pixels=_stone_block(), name=f"stone_{x}_{y}",
                         blocking=BlockingMode.BOUNDING_BOX,
-                        interaction=InteractionMode.TANGIBLE, layer=-1,
+                        interaction=InteractionMode.TANGIBLE, layer=-2,
                     ).set_position(px, py))
                 elif char.isdigit():
                     sprites.append(Sprite(
-                        pixels=_door_cost_pixels(int(char)), name=f"door_{x}_{y}",
+                        pixels=_priced_block(GATE_BODY, int(char)), name=f"gate_{x}_{y}",
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=0,
-                        tags=["door", f"cost_{char}"],
+                        tags=["gate", f"price_{char}"],
                     ).set_position(px, py))
-                elif char == "X":
+                elif char == "O":
                     sprites.append(Sprite(
-                        pixels=_cell_block(EXIT), name="exit",
+                        pixels=_core_block(spec["core_cost"]), name="core",
                         blocking=BlockingMode.BOUNDING_BOX,
-                        interaction=InteractionMode.TANGIBLE, layer=0, tags=["exit"],
+                        interaction=InteractionMode.TANGIBLE, layer=0, tags=["core"],
                     ).set_position(px, py))
                 elif char == "P":
                     sprites.append(Sprite(
-                        pixels=_cell_block(PLAYER), name="player",
+                        pixels=_runner_block(), name="runner",
                         blocking=BlockingMode.BOUNDING_BOX,
-                        interaction=InteractionMode.TANGIBLE, layer=1,
+                        interaction=InteractionMode.TANGIBLE, layer=2,
                     ).set_position(px, py))
+        for i in range(spec["charges"]):
+            sprites.append(Sprite(
+                pixels=_tally_block(), name=f"tally_{i}",
+                blocking=BlockingMode.BOUNDING_BOX,
+                interaction=InteractionMode.INTANGIBLE, layer=1, tags=["tally"],
+            ).set_position(TALLY_COL * CELL, (TALLY_TOP + i) * CELL))
         levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
     return levels
-
-
-class G3f7bc36d(RenderableUserDisplay):
-
-    def __init__(self, game: "G6d6a125b") -> None:
-        super().__init__()
-        self._game = game
-
-    def render_interface(self, frame: np.ndarray) -> np.ndarray:
-        total = self._game.level_charges
-        left = self._game.charges
-        for i in range(total):
-            x = 1 + i * 3
-            if x + 2 > frame.shape[1]:
-                break
-            frame[1:3, x:x + 2] = PIP_ON if i < left else PIP_OFF
-        return frame
 
 
 class G6d6a125b(ARCBaseGame):
 
     def __init__(self) -> None:
         self.charges = LEVELS_SPEC[0]["charges"]
-        self.level_charges = LEVELS_SPEC[0]["charges"]
-        self._facing = (0, 1)
+        self._facing = (0, -1)
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=5,
-            interfaces=[G3f7bc36d(self)],
+            background=FLOOR, letter_box=WALL,
         )
         super().__init__(game_id="t8dbff678", levels=build_levels(), camera=camera)
 
     def on_set_level(self, level: Level) -> None:
-        spec = LEVELS_SPEC[self.level_index]
-        self.charges = spec["charges"]
-        self.level_charges = spec["charges"]
-        self._facing = (0, 1)
+        self.charges = LEVELS_SPEC[self.level_index]["charges"]
+        self._facing = (0, -1)
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -266,49 +225,55 @@ class G6d6a125b(ARCBaseGame):
         super().full_reset()
         self.on_set_level(self.current_level)
 
-    def _facing_sprite(self) -> Sprite | None:
-        player = self.current_level.get_sprites_by_name("player")
-        if not player:
-            return None
-        px, py = player[0].x, player[0].y
-        dx, dy = self._facing
-        return self.current_level.get_sprite_at(px + dx * CELL, py + dy * CELL)
+    def _burn(self, amount: int) -> None:
+        self.charges -= amount
+        studs = sorted(self.current_level.get_sprites_by_tag("tally"), key=lambda s: s.y)
+        for stud in studs[self.charges:]:
+            self.current_level.remove_sprite(stud)
 
-    def _spend(self, sprite: Sprite) -> bool:
-        cost = next((int(t.split("_")[1]) for t in sprite.tags if t.startswith("cost_")), None)
-        if cost is None or self.charges < cost:
-            return False
-        self.charges -= cost
-        self.current_level.remove_sprite(sprite)
-        return True
+    @staticmethod
+    def _price_of(sprite: Sprite) -> int | None:
+        for tag in sprite.tags:
+            if tag.startswith("price_"):
+                return int(tag.split("_")[1])
+        return None
+
+    def _faced(self) -> Sprite | None:
+        runner = self.current_level.get_sprites_by_name("runner")
+        if not runner:
+            return None
+        dx, dy = self._facing
+        return self.current_level.get_sprite_at(
+            runner[0].x + dx * CELL, runner[0].y + dy * CELL)
+
+    def _pay(self) -> None:
+        target = self._faced()
+        if target is None:
+            return
+        if "core" in target.tags:
+            cost = LEVELS_SPEC[self.level_index]["core_cost"]
+            if self.charges >= cost:
+                self._burn(cost)
+                self.next_level()
+            return
+        if "gate" in target.tags:
+            price = self._price_of(target)
+            if price is not None and self.charges >= price:
+                self._burn(price)
+                self.current_level.remove_sprite(target)
 
     def step(self) -> None:
-        dx = dy = 0
-        if self.action.id == GameAction.ACTION1:
-            dy = -1
-        elif self.action.id == GameAction.ACTION2:
-            dy = 1
-        elif self.action.id == GameAction.ACTION3:
-            dx = -1
-        elif self.action.id == GameAction.ACTION4:
-            dx = 1
-        elif self.action.id == GameAction.ACTION5:
-            target = self._facing_sprite()
-            if target is not None:
-                if "exit" in target.tags:
-                    if self.charges >= LEVELS_SPEC[self.level_index]["exit_cost"]:
-                        self.charges -= LEVELS_SPEC[self.level_index]["exit_cost"]
-                        if self.is_last_level():
-                            self.next_level()
-                        else:
-                            self.next_level()
-                elif "door" in target.tags:
-                    self._spend(target)
-            self.complete_action()
-            return
+        heading = {
+            GameAction.ACTION1: (0, -1),
+            GameAction.ACTION2: (0, 1),
+            GameAction.ACTION3: (-1, 0),
+            GameAction.ACTION4: (1, 0),
+        }.get(self.action.id)
 
-        if dx or dy:
-            self._facing = (dx, dy)
-            self.try_move("player", dx * CELL, dy * CELL)
+        if heading is not None:
+            self._facing = heading
+            self.try_move("runner", heading[0] * CELL, heading[1] * CELL)
+        elif self.action.id == GameAction.ACTION5:
+            self._pay()
 
         self.complete_action()
