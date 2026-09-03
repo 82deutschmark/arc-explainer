@@ -6,7 +6,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 0.7,
@@ -49,7 +49,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 0.7,
@@ -92,7 +92,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 0.7,
@@ -135,7 +135,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 0.7,
@@ -178,7 +178,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 0.7,
@@ -221,7 +221,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 0.7,
@@ -264,7 +264,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 0.7,
@@ -307,7 +307,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 0.7,
@@ -350,7 +350,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 1.0,
@@ -393,7 +393,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 1.0,
@@ -436,7 +436,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 1.0,
@@ -479,7 +479,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 1.0,
@@ -522,7 +522,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 1.0,
@@ -565,7 +565,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 1.0,
@@ -608,7 +608,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 1.0,
@@ -651,7 +651,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "medium",
    "temperature": 1.0,
@@ -694,7 +694,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 0.7,
@@ -737,7 +737,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 0.7,
@@ -780,7 +780,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 0.7,
@@ -823,7 +823,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 0.7,
@@ -866,7 +866,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 0.7,
@@ -909,7 +909,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 0.7,
@@ -952,7 +952,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 0.7,
@@ -995,7 +995,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 0.7,
@@ -1038,7 +1038,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 1.0,
@@ -1081,7 +1081,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 1.0,
@@ -1124,7 +1124,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 1.0,
@@ -1167,7 +1167,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 1.0,
@@ -1210,7 +1210,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 1.0,
@@ -1253,7 +1253,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 1.0,
@@ -1296,7 +1296,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 1.0,
@@ -1339,7 +1339,7 @@
   {
    "host": "MSI",
    "model": "qwen/qwen3.8-27b",
-   "game": "t088853a8",
+   "game": "g026",
    "frameSha": "fa1723f4e0b50b05",
    "effort": "none",
    "temperature": 1.0,
@@ -1385,7 +1385,7 @@
   "hypothesisCount": 160,
   "unparsedRuns": 0,
   "games": [
-   "t088853a8"
+   "g026"
   ],
   "hosts": [
    "MSI"

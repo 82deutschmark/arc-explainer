@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.37.0  Sep 2, 2026
+
+- **A game is called `g007` again, in both repos** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: the 50 hand-authored tasks were published here under hashed names — `g007` in the authoring repo arrived as `t00810611`. Same game, two names, and a lookup table needed to hold a conversation about one. They are now published under the authoring id verbatim.
+  - **Why the hash existed, and why it was wrong**: the authoring repo names each task `gNNN_<mechanic>.py` — `g007_tumble_block.py`. Exactly one half of that is a spoiler. `g007` is an ordinal and gives nothing away; `tumble_block` says the game is Bloxorz before the player has moved, which is the one data point the human-baseline experiment exists to collect. Hashing the whole thing protected the half that needed no protecting and cost cross-repo legibility. The mechanic slug still never crosses: class names stay derived (`G007`, `G007A`) and `strip_authoring_text.py` still cuts the authoring prose, which is now the only thing standing between it and a public endpoint.
+  - **How it was done**: `scripts/arc3/rename_to_gnnn.py` in one pass — 50 modules with their class names, the frames, and every keyed JSON (manifest, mechanics, mechanics-notes, categories, frames, triage, hypothesis traces) plus five hardcoded ids in two client pages. One scripted pass rather than a hand sweep because another session is working in this tree.
+  - **Verified**: no `t`-hash token survives anywhere under `server/data`, `server/services/arc3Mirror`, `client/src` or `client/public/data`. `import_authored_games.py --check` reproduces 46 of the 50 modules byte-for-byte under the new scheme — the 4 that differ are the games being reworked upstream right now, not naming faults. And g007 was played in the browser: engine loads, `G007` instantiates, `LEVEL 1 / 8` renders, the block moves on ArrowRight.
+  - **Still to run**: `server/migrations/2026-09-02-game-ids-to-gnnn.sql` repoints collected play data (`community_human_sessions`, `community_game_feedback`, `arc3_sessions`). It is idempotent, prints before/after counts, and lists any `t`-shaped id **not** in the 50 rather than touching it. This machine has no `DATABASE_URL`, so it has not been run.
+  - **Files**: `scripts/arc3/rename_to_gnnn.py` (new), `scripts/arc3/import_authored_games.py` (derivation, leak check, docstring; `--map-out` removed — the map is the identity function now), `server/migrations/2026-09-02-game-ids-to-gnnn.sql` (new), all 50 `server/data/arc3-games/g*.py`, and the keyed JSON above.
+
 ### Version 9.36.0  Sep 2, 2026
 
 - **The mechanic guide's images were 404 in production, and had been since this morning** (Author: Mark Barney / Claude Opus 5)

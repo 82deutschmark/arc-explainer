@@ -8,28 +8,23 @@ PURPOSE: Publish OUR hand-authored ARC-AGI-3 candidate tasks INTO this repo, und
          every batch after it, which is the publish step that replaces the old
          fetch-from-a-private-repo path (see docs/plans/2026-09-01-arc3-catalog-flip.md).
 
-         WHY THE NAMES ARE REWRITTEN. The authoring repo names each task for what it does
-         (`gNNN_<mechanic>.py`, `class <Mechanic>`, usually with a `<Mechanic>Display`
-         beside it), and this repo is public and permanent.
-         The play surface prints the game id to the player, so a descriptive id or class
-         name hands over the mechanic before the first move -- which is the exact data
-         point the human-baseline experiment exists to collect. Every published name is
-         therefore derived, and the descriptive one never enters this repo, not as a
-         filename, not in the manifest, not in a class name, and not in git history: files
-         are written straight to their opaque name and the source directory is never
-         copied verbatim.
+         WHAT IS REWRITTEN, AND WHAT IS NOT. The authoring repo names each task
+         `gNNN_<mechanic>.py` -- `g007_tumble_block.py` -- with `class <Mechanic>` and
+         usually a `<Mechanic>Display` beside it. Exactly one half of that is a spoiler.
+         `g007` is an ordinal and gives nothing away, so it is published VERBATIM and a
+         game is called the same thing in this repo, in the arena repo, and in
+         conversation. The mechanic slug is what must not cross: class names are derived
+         (`G007`, `G007A`), and the docstrings and comments that name the mechanic are cut
+         by strip_authoring_text.py, which is now the only thing standing between the
+         authoring prose and a public endpoint.
 
-         THE DERIVATION IS FROZEN, NOT FREE. Published id is
-         `"t" + sha256("arena:" + <authoring id>)[:8]` and published class is
-         `"G" + sha256("arena:" + <authoring class>)[:8]`. `arena` is the source key the
-         removed HTTP source used, and the 50 ids it produces are already baked into
-         server/services/arc3Mirror/arc3Triage.json. Changing the prefix, the key or the
-         hash orphans all 50 triage rows -- they would type-check, sort, and address
-         nothing. --check exists to prove a re-run reproduces the committed ids.
-
-         THE MAP OUT IS MANDATORY AND GOES OUTSIDE THIS REPO. --map-out is required and
-         refuses to write inside the repository: a committed slug->id table would undo
-         everything above in one file.
+         THIS REPLACED A HASH, ON PURPOSE. Published ids used to be
+         `"t" + sha256("arena:" + <authoring id>)[:8]`, so g007 was published as
+         t00810611. That hid the ordinal, which never needed hiding, and cost the ability
+         to say "g007" and be understood on both sides. It also meant every cross-repo
+         conversation went through a lookup table. Renamed in one pass on 02-Sep-2026 by
+         scripts/arc3/rename_to_gnnn.py, which also moved the frames, the triage rows and
+         every keyed JSON; the database rows are migrate_ids_db.sql.
 
          RE-RUNNING IS THE POINT, NOT AN EDGE CASE. A published id is a pure function of
          the authoring id, so importing an updated batch rewrites each game's bytes UNDER
@@ -47,7 +42,7 @@ PURPOSE: Publish OUR hand-authored ARC-AGI-3 candidate tasks INTO this repo, und
          Dependencies: stdlib only (ast, argparse, hashlib, json, pathlib, re).
          Usage (source dir is required; no path to a private repo is baked in):
              python3 scripts/arc3/import_authored_games.py \
-                 --source /path/to/authored/dist --map-out /tmp/arc3-authored-map.json
+                 --source /path/to/autoresearch-arena/arc3games
              python3 scripts/arc3/build_authored_manifest.py
 SRP/DRY check: Pass -- importing/renaming only. Enumerating the published directory into
          a manifest is build_authored_manifest.py's job and is not duplicated here; the
@@ -58,7 +53,6 @@ from __future__ import annotations
 
 import argparse
 import ast
-import hashlib
 import json
 import re
 import sys
@@ -66,9 +60,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from strip_authoring_text import strip_authoring_text
-
-#: Source key mixed into every published name. Frozen -- see the module docstring.
-SOURCE_KEY = "arena"
 
 #: The engine base class every playable task derives from. Used only when the source
 #: directory ships no manifest, so a batch can be imported straight from .py files.
@@ -85,9 +76,25 @@ PUBLISHED_DIR = Path(__file__).resolve().parents[2] / "server" / "data" / "arc3-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
-def opaque(prefix: str, raw: str) -> str:
-    """The published name for `raw`. Mirrors `opaque()` in Arc3MirrorCatalog.ts."""
-    return prefix + hashlib.sha256(f"{SOURCE_KEY}:{raw}".encode("utf-8")).hexdigest()[:8]
+def published_classes(game_id: str, classes: list[str], game_class: str) -> dict[str, str]:
+    """Every class a module declares, mapped to the name it is published under.
+
+    The class the manifest points at -- the one that leaves this repo, through
+    manifest.json, to the Pyodide hook that instantiates it -- takes `G007`. The rest take
+    `G007A`, `G007B` in declaration order, and are file-local: a published module imports
+    only numpy and arcengine, so nothing outside it can refer to them.
+
+    Class names stay derived when the id no longer is, because they are not the same kind
+    of name. `g007` is an ordinal. `TumbleBlock` and `TumbleBlockDisplay` say the game is
+    Bloxorz, in a file served to the player's own browser.
+    """
+    suffix = game_id[1:]
+    renames = {game_class: f"G{suffix}"}
+    for index, name in enumerate([c for c in classes if c != game_class]):
+        if index >= 26:
+            raise ValueError(f"{game_id}: more than 26 helper classes; the suffix rule no longer fits")
+        renames[name] = f"G{suffix}{chr(ord('A') + index)}"
+    return renames
 
 
 def _base_name(base: ast.expr) -> str | None:
@@ -175,7 +182,7 @@ def source_entries(source: Path) -> list[dict[str, str]]:
     return entries
 
 
-def rewrite(text: str, authored_id: str, game_id: str, classes: list[str]) -> str:
+def rewrite(text: str, game_id: str, renames: dict[str, str]) -> str:
     """The authored module with every self-naming identifier replaced by its published one.
 
     EVERY class the module declares is renamed, not just the playable one. Most of these
@@ -193,9 +200,8 @@ def rewrite(text: str, authored_id: str, game_id: str, classes: list[str]) -> st
     here are the ones a player is shown; the rest is the already-accepted limit that the
     Python is readable in devtools, and mangling it would break the games for no gain.
     """
-    for name in classes:
-        text = re.sub(rf"\b{re.escape(name)}\b", opaque("G", name), text)
-    text = re.sub(rf"\b{re.escape(authored_id)}\b", game_id, text, flags=re.IGNORECASE)
+    for name, published in renames.items():
+        text = re.sub(rf"\b{re.escape(name)}\b", published, text)
 
     # PROSE COMES OUT LAST, AND IT IS NOT OPTIONAL.
     #
@@ -217,22 +223,21 @@ def build(source: Path) -> list[dict[str, str]]:
     """Everything one import would publish, computed before anything is written."""
     published: list[dict[str, str]] = []
     for entry in source_entries(source):
-        game_id = opaque("t", entry["authored_id"])
-        published_class = opaque("G", entry["class_name"])
+        game_id = entry["authored_id"]
         module = Path(entry["path"])
         classes = declared_classes(module)
         if entry["class_name"] not in classes:
             raise ValueError(f"{module.name}: manifest names {entry['class_name']}, which the module does not declare")
-        body = rewrite(module.read_text(encoding="utf-8"), entry["authored_id"], game_id, classes)
+        renames = published_classes(game_id, classes, entry["class_name"])
+        published_class = renames[entry["class_name"]]
+        body = rewrite(module.read_text(encoding="utf-8"), game_id, renames)
 
-        # The id check is case-insensitive because an id may also be written in caps. The
-        # class check is not: a module's constants are shouted versions of words its
-        # classes also use, so folding case here would report a constant as an un-renamed
-        # class and fail an import that is in fact correct.
-        leaks: list[str] = []
-        if re.search(rf"\b{re.escape(entry['authored_id'])}\b", body, re.IGNORECASE):
-            leaks.append(entry["authored_id"])
-        leaks += [name for name in classes if re.search(rf"\b{re.escape(name)}\b", body)]
+        # Only class names are checked now. The id is SUPPOSED to survive into the
+        # published body -- it is the name of the game in both repos -- so the check that
+        # used to assert its absence would fail every import. Case is not folded: a
+        # module's constants are shouted versions of words its classes also use, and
+        # folding would report a constant as an un-renamed class.
+        leaks = [name for name in classes if re.search(rf"\b{re.escape(name)}\b", body)]
         if leaks:
             raise ValueError(f"{Path(entry['path']).name}: rewrite left {leaks} in the published body")
         if f"class {published_class}" not in body:
@@ -281,20 +286,14 @@ def orphans(out_dir: Path, published: list[dict[str, str]]) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Publish authored ARC-AGI-3 tasks into this repo under opaque names.")
+    parser = argparse.ArgumentParser(description="Publish authored ARC-AGI-3 tasks into this repo.")
     parser.add_argument("--source", type=Path, required=True, help="directory of authored task modules")
     parser.add_argument("--out", type=Path, default=PUBLISHED_DIR, help=f"published directory (default: {PUBLISHED_DIR})")
-    parser.add_argument("--map-out", type=Path, required=True, help="where to write the authored-name -> published-id map; MUST be outside this repository")
     parser.add_argument("--check", action="store_true", help="verify the published files match what an import would produce; write nothing, exit 1 on a difference")
     args = parser.parse_args()
 
     if not args.source.is_dir():
         print(f"error: no such directory: {args.source}", file=sys.stderr)
-        return 1
-
-    map_out = args.map_out.resolve()
-    if not args.check and map_out.is_relative_to(REPO_ROOT):
-        print(f"error: --map-out must be outside {REPO_ROOT}; a committed slug map defeats the rename", file=sys.stderr)
         return 1
 
     published = build(args.source)
@@ -325,20 +324,7 @@ def main() -> int:
     for item in published:
         (args.out / f"{item['gameId']}.py").write_text(item["body"], encoding="utf-8")
 
-    map_out.parent.mkdir(parents=True, exist_ok=True)
-    map_out.write_text(
-        json.dumps(
-            [
-                {k: item[k] for k in ("gameId", "className", "authoredId", "authoredFile", "authoredClass")}
-                for item in published
-            ],
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
     print(f"published {len(published)} tasks to {args.out}")
-    print(f"wrote the authored-name map to {map_out} (keep it out of this repo)")
     return 0
 
 
