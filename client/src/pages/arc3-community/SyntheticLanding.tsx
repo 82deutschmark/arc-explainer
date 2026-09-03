@@ -269,6 +269,53 @@ export default function SyntheticLanding() {
                   machines are so bad at it.
                 </p>
               </div>
+              {/* ── the one ask ────────────────────────────────────────────────
+                It sits INSIDE the hero's left column, under the prose. It used to be a
+                full-width band below the fold, which left a column of dead white space
+                beside the twelve-tile grid -- the grid is taller than the three
+                paragraphs -- and pushed the single thing this page asks of a visitor off
+                the first screen. */}
+              {needsCoverage && (
+                <div className="mt-8 flex flex-col sm:flex-row gap-6 items-start p-6"
+                     style={{ background: ARC.cell, border: `1px solid ${ARC.pink}` }}>
+                  <Link href="/play" className="shrink-0 w-[150px] group">
+                      <div className="relative aspect-square overflow-hidden"
+                           style={{ border: `1px solid ${ARC.border}` }}>
+                        <img src={thumb(needsCoverage.gameId)} alt=""
+                             className="w-full h-full" style={{ imageRendering: 'pixelated', display: 'block' }} />
+                        <Scanlines />
+                      </div>
+                      <div className="px-2 py-1 text-[11px] tracking-[.55px] text-white"
+                           style={{ background: ARC.pink, fontFamily: MONO }}>{needsCoverage.gameId}</div>
+                  </Link>
+                  <div className="min-w-0">
+                    <h2 className="text-[20px] font-bold mb-3">Nobody has ever played this one.</h2>
+                    <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
+                      {unplayed} of {games.length} tasks here have no human attempt on record —
+                      not one, ever. Until somebody tries, we cannot say whether this one is easy
+                      for a person or quietly impossible, and a model's score on it means nothing
+                      either way. You would be the first.
+                    </p>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <Link
+                        href="/play"
+                        className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
+                        style={{ background: ARC.pink, color: '#fff' }}
+                      >
+                        Play it →
+                      </Link>
+                      <Link href="/arc3/gallery">
+                        <a className="text-[13px] underline" style={{ color: ARC.dim }}>or pick your own</a>
+                      </Link>
+                    </div>
+                    <p className="text-[12px] mt-4" style={{ color: ARC.faint }}>
+                      About five minutes. No account, nothing to install, no experience needed.
+                      When you stop, the game asks what you made of it — that note is the most
+                      useful thing you can leave us, and it tells you what the task actually was.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Real opening frames — the fastest way to convey what a task even is. */}
@@ -295,7 +342,7 @@ export default function SyntheticLanding() {
           They showed 100%, 0.50%, the task count and the unplayed count. Every one of the
           four restated a number from prose immediately above or below it: the first two
           are in the hero's second paragraph, in the same words, and the second two are the
-          opening line of the ask directly beneath. A number is worth a card when it is the
+          opening line of the ask, which now sits in the hero's left column. A number is worth a card when it is the
           first place the reader meets it. Repeated a paragraph later in a bigger font it
           is decoration, and four of them in a row read as a dashboard bolted onto an
           argument. The citation stays, because that is load-bearing -- it is what makes
@@ -309,49 +356,6 @@ export default function SyntheticLanding() {
           (22 April 2026), Table 2. Best-of-four at release: Opus 4.6 0.50%, Gemini 3.1 Pro
           0.40%, GPT 5.4 0.20%, Grok-4.20 0.10%.
         </p>
-
-        {/* ── the one ask ──────────────────────────────────────────────────── */}
-        {needsCoverage && (
-          <div className="mb-16 flex flex-col sm:flex-row gap-6 items-start p-6"
-               style={{ background: ARC.cell, border: `1px solid ${ARC.pink}` }}>
-            <Link href="/play" className="shrink-0 w-[150px] group">
-                <div className="relative aspect-square overflow-hidden"
-                     style={{ border: `1px solid ${ARC.border}` }}>
-                  <img src={thumb(needsCoverage.gameId)} alt=""
-                       className="w-full h-full" style={{ imageRendering: 'pixelated', display: 'block' }} />
-                  <Scanlines />
-                </div>
-                <div className="px-2 py-1 text-[11px] tracking-[.55px] text-white"
-                     style={{ background: ARC.pink, fontFamily: MONO }}>{needsCoverage.gameId}</div>
-            </Link>
-            <div className="min-w-0">
-              <h2 className="text-[20px] font-bold mb-3">Nobody has ever played this one.</h2>
-              <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
-                {unplayed} of {games.length} tasks here have no human attempt on record —
-                not one, ever. Until somebody tries, we cannot say whether this one is easy
-                for a person or quietly impossible, and a model's score on it means nothing
-                either way. You would be the first.
-              </p>
-              <div className="flex flex-wrap items-center gap-4">
-                <Link
-                  href="/play"
-                  className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
-                  style={{ background: ARC.pink, color: '#fff' }}
-                >
-                  Play it →
-                </Link>
-                <Link href="/arc3/gallery">
-                  <a className="text-[13px] underline" style={{ color: ARC.dim }}>or pick your own</a>
-                </Link>
-              </div>
-              <p className="text-[12px] mt-4" style={{ color: ARC.faint }}>
-                About five minutes. No account, nothing to install, no experience needed.
-                When you stop, the game asks what you made of it — that note is the most
-                useful thing you can leave us, and it tells you what the task actually was.
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* ── a look at the set ───────────────────────────────────────────── */}
         {previewTiles.length > 0 && (

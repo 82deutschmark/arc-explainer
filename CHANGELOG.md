@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.40.0  Sep 3, 2026
+
+- **The brand mark goes to the landing page on every host, and the landing page's one ask moved into the hero** (Author: Mark Barney / Claude Opus 5)
+  - **The mark was still a second link to the gallery.** It pointed at `/`, which only IS the landing page on `arc3.markbarney.net`; on `arc.markbarney.net` `/` redirects to `/arc3/gallery`, so "ARC Explainer" and the nav's "Browse" were two controls doing the same thing and the landing page had no link to it from anywhere in the chrome. The host test moved out of `App.tsx` into `client/src/lib/syntheticHost.ts` so the header and the router stop disagreeing; `brandHomeHref()` returns `/` or `/synthetic`.
+  - **"Nobody has ever played this one" was below the fold beside dead white space.** The hero's twelve-tile grid is taller than its three paragraphs, so the left column ended ~150px early and the one thing this page asks of a visitor sat in a full-width band underneath. It now sits inside the hero's left column, filling that gap.
+  - **Files**: `client/src/lib/syntheticHost.ts` (new), `client/src/components/layout/AppHeader.tsx`, `client/src/App.tsx`, `client/src/pages/arc3-community/SyntheticLanding.tsx`.
+
 ### Version 9.39.0  Sep 3, 2026
 
 - **All 50 authored games republished after a set-wide visual pass** (Author: Mark Barney / Claude Opus 5)
