@@ -95,6 +95,9 @@ class Telemetry {
   private isFirst = false;
   /** Whether the page currently has the player's attention. Seeded true by start(). */
   private attentionPresent = true;
+  /** Identity of the game build being played, from the source response. Null until the
+   *  source lands: start() runs when the run begins, which is before the fetch resolves. */
+  private sourceVersion: string | null = null;
 
   /** Begin a run. The GUID is minted here because the browser runs the game -- the
    *  server never sees a Pyodide session. Random, derived from nothing about the user. */
@@ -116,6 +119,7 @@ class Telemetry {
     this.startedAt = Date.now();
     this.markedPlayed = false;
     this.attentionPresent = true;
+    this.sourceVersion = null;
     if (this.timer === null) {
       this.timer = setInterval(() => this.flush(false), FLUSH_MS);
       try {
@@ -205,6 +209,18 @@ class Telemetry {
     this.record(present ? FOCUS : BLUR, this.lastLevel, null);
   }
 
+  /** Record which build of the game was loaded. Called by the play page once the source
+   *  response lands, because that response is the only place the version exists. */
+  setSourceVersion(version: string | null): void {
+    this.sourceVersion = version && /^[0-9a-f]{6,64}$/.test(version) ? version : null;
+  }
+
+  /** The build the current run is playing, for the feedback form to snapshot onto its
+   *  row the same way it snapshots the level and outcome. */
+  currentSourceVersion(): string | null {
+    return this.sourceVersion;
+  }
+
   flush(useBeacon: boolean): void {
     try {
       if (!this.sessionGuid || this.queue.length === 0) return;
@@ -216,6 +232,7 @@ class Telemetry {
         isFirstSession: this.isFirst,
         uaFamily: uaFamily(),
         viewport: viewport(),
+        sourceVersion: this.sourceVersion,
         events: batch,
       });
       if (useBeacon && navigator.sendBeacon

@@ -48,6 +48,9 @@ export interface PyodideGameState {
   loadingStage: PyodideInitStage | null;
   loadingMessage: string | null;
   error: string | null;
+  /** Identity of the exact game build currently loaded, from the source response. Null
+   *  before a load resolves, and on a server that predates the field. */
+  sourceVersion: string | null;
   /** True if Pyodide failed to initialise — component should fall back to server mode. */
   pyodideFailed: boolean;
 }
@@ -99,6 +102,10 @@ export function usePyodideGame(): UsePyodideGameReturn {
   const [loadingStage, setLoadingStage] = useState<PyodideInitStage | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /** Identity of the exact game build this load is running, from the source response.
+   *  Surfaced rather than reported from here so the hook keeps its single job -- the
+   *  page owns telemetry and decides what to stamp with it. */
+  const [sourceVersion, setSourceVersion] = useState<string | null>(null);
   const [pyodideFailed, setPyodideFailed] = useState(false);
   const [isActing, setIsActing] = useState(false);
 
@@ -237,6 +244,9 @@ export function usePyodideGame(): UsePyodideGameReturn {
     setError(null);
     setFrame(null);
     setPyodideFailed(false);
+    // Cleared before the fetch: a stale version from the previous game would stamp this
+    // run with the build of a different task.
+    setSourceVersion(null);
 
     try {
       // Step 1: fetch source + class name from server
@@ -245,8 +255,11 @@ export function usePyodideGame(): UsePyodideGameReturn {
       const res = await fetch(`/api/arc3-mirror/games/${gameId}/source`);
       if (!res.ok) throw new Error(`Failed to fetch game source: ${res.statusText}`);
       const json = await res.json();
-      const { sourceCode, className } = json.data as { sourceCode: string; className: string | null };
+      const { sourceCode, className, sourceVersion: version } = json.data as {
+        sourceCode: string; className: string | null; sourceVersion?: string | null;
+      };
       if (!className) throw new Error('Game source does not export an ARCBaseGame subclass');
+      setSourceVersion(typeof version === 'string' && version ? version : null);
 
       // Step 2: boot Pyodide (idempotent)
       setLoadingStage('pyodide');
@@ -330,6 +343,7 @@ export function usePyodideGame(): UsePyodideGameReturn {
     loadingStage,
     loadingMessage,
     error,
+    sourceVersion,
     pyodideFailed,
     isActing,
     initGame,

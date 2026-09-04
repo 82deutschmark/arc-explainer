@@ -113,6 +113,12 @@ async function ensureSchema(): Promise<void> {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS idx_chs_game ON community_human_sessions(game_id)
   `);
+  // Which build of the game this session actually played. A game keeps its id across a
+  // rebuild, so without this a session recorded before a glow-up is indistinguishable
+  // from one recorded after it. NULL means the row predates the stamp -- not "unknown
+  // version of the current build" -- and rows written before 04-Sep-2026 are all NULL.
+  // Additive with no backfill: the bytes those sessions saw were never recorded.
+  await pool.query(`ALTER TABLE community_human_sessions ADD COLUMN IF NOT EXISTS source_version TEXT`);
   schemaReady = true;
 }
 
@@ -178,19 +184,25 @@ export class HumanPlayRepository {
    *  raised afterwards: a run recorded as a repeat cannot be reclassified as blind. */
   static async ensureSession(
     sessionGuid: string, gameId: string, isFirst: boolean,
-    uaFamily: string, viewport: string,
+    uaFamily: string, viewport: string, sourceVersion: string | null = null,
   ): Promise<void> {
     try {
       await ensureSchema();
       const pool = getPool();
       if (!pool) return;
+      // source_version is COALESCEd on conflict rather than overwritten: the first batch
+      // of a session carries the version that was loaded, and a later batch that somehow
+      // arrives without one must not erase it.
       await pool.query(
         `INSERT INTO community_human_sessions
-           (session_guid, game_id, is_first_session, ua_family, viewport)
-         VALUES ($1,$2,$3,$4,$5)
-         ON CONFLICT (session_guid) DO UPDATE SET updated_at = NOW()`,
+           (session_guid, game_id, is_first_session, ua_family, viewport, source_version)
+         VALUES ($1,$2,$3,$4,$5,$6)
+         ON CONFLICT (session_guid) DO UPDATE SET
+           updated_at = NOW(),
+           source_version = COALESCE(community_human_sessions.source_version, EXCLUDED.source_version)`,
         [sessionGuid, gameId.slice(0, 64), isFirst,
-         uaFamily.slice(0, 16), viewport.slice(0, 16)],
+         uaFamily.slice(0, 16), viewport.slice(0, 16),
+         sourceVersion ? sourceVersion.slice(0, 64) : null],
       );
     } catch (error) {
       logger.warn(
