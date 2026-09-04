@@ -59,11 +59,16 @@ const C = {
 };
 
 export function Arc3FeedbackPanel({
-  gameId, reachedLevel, outcome, onDone, doneLabel, compact, afterSent, onSent,
+  gameId, reachedLevel, outcome, sourceVersion, onDone, doneLabel, compact, afterSent, onSent,
 }: {
   gameId: string;
   reachedLevel: number | null;
   outcome: string | null;
+  /** Which build of the game this verdict is about, snapshotted onto the row for the same
+   *  reason reachedLevel and outcome are: the row has to stand alone. A game keeps its id
+   *  across a rebuild, so a verdict without this cannot be told apart from a verdict on a
+   *  version the player never saw. Falls back to whatever the run was stamped with. */
+  sourceVersion?: string | null;
   /** Where the form leads once it is done with — closing the scratchpad mid-run, or the
    *  next task when the run is over. The caller decides; the panel only calls it. */
   onDone?: () => void;
@@ -113,6 +118,7 @@ export function Arc3FeedbackPanel({
           note: note.slice(0, MAX_NOTE),
           reachedLevel,
           outcome,
+          sourceVersion: sourceVersion ?? humanPlay.currentSourceVersion(),
         }),
       });
     } catch {
