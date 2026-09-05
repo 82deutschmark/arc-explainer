@@ -3,7 +3,7 @@
 
 # ARC-AGI-3 authored games
 
-The 50 tasks authored in this project, one row each. Structure and geometry are
+The 94 tasks authored in this project, one row each. Structure and geometry are
 derived from the game sources by `scripts/arc3/mechanic_digest.py`; the descriptions are
 human prose checked against the source; the previews are level 1 as the player first meets
 it, rendered by `scripts/arc3/render_authored_frames.py`.
@@ -12,7 +12,7 @@ it, rendered by `scripts/arc3/render_authored_frames.py`.
 surface exists to make people work out for themselves. Do not hand this page to anyone you
 want a blind first play from.
 
-
+**44 games are Unclassified** — add them to `server/data/arc3-games/categories.json`.
 
 | Game | Category | Grid | Levels | Description | Preview | Actions |
 |------|----------|------|--------|-------------|---------|---------|
@@ -66,3 +66,47 @@ want a blind first play from.
 | g026 | Timing / Cycles | 14x14 | 6 | A metronome maze. Gates open and shut on a fixed period and the board's whole state cycles with the tick, so a cell is safe on some beats and lethal on others. | ![g026](/api/arc3-mirror/frames/g026.png) | • 1-4: Movement • 5: Action • *(offers 6, reads nothing)* |
 | g041 | Timing / Cycles | ?  (cell 6px) | ? | A rotating maze. The board is a wheel whose mouths are linked in pairs; entering one puts you out at its partner and turns the whole frame by a recorded number of quarter-turns. | ![g041](/api/arc3-mirror/frames/g041.png) | • 1-4: Movement |
 | g045 | Timing / Cycles | ?  (cell 3px) | 7 | Portals that re-pair themselves. Four mouths are linked in pairs, and the pairing advances through a cycle as turns pass -- the mouth that took you somewhere last turn goes somewhere else this turn. | ![g045](/api/arc3-mirror/frames/g045.png) | • 1-4: Movement • *(offers 6, reads nothing)* |
+| g500 | Unclassified | ?  (cell ?px) | ? | — | ![g500](/api/arc3-mirror/frames/g500.png) | • none read • *(offers 6, reads nothing)* |
+| g501 | Unclassified | ?  (cell ?px) | ? | — | ![g501](/api/arc3-mirror/frames/g501.png) | • none read • *(offers 6, reads nothing)* |
+| g502 | Unclassified | ?  (cell ?px) | ? | — | ![g502](/api/arc3-mirror/frames/g502.png) | • none read • *(offers 6, reads nothing)* |
+| g503 | Unclassified | ?  (cell ?px) | ? | — | ![g503](/api/arc3-mirror/frames/g503.png) | • none read • *(offers 6, reads nothing)* |
+| g504 | Unclassified | ?  (cell ?px) | ? | — | ![g504](/api/arc3-mirror/frames/g504.png) | • none read • *(offers 6, reads nothing)* |
+| g505 | Unclassified | ?  (cell ?px) | ? | — | ![g505](/api/arc3-mirror/frames/g505.png) | • none read • *(offers 6, reads nothing)* |
+| g506 | Unclassified | ?  (cell ?px) | ? | — | ![g506](/api/arc3-mirror/frames/g506.png) | • none read • *(offers 6, reads nothing)* |
+| g507 | Unclassified | ?  (cell ?px) | ? | — | ![g507](/api/arc3-mirror/frames/g507.png) | • none read • *(offers 6, reads nothing)* |
+| g508 | Unclassified | ?  (cell ?px) | ? | — | ![g508](/api/arc3-mirror/frames/g508.png) | • none read • *(offers 6, reads nothing)* |
+| g509 | Unclassified | ?  (cell ?px) | ? | — | ![g509](/api/arc3-mirror/frames/g509.png) | • none read • *(offers 6, reads nothing)* |
+| g510 | Unclassified | ?  (cell ?px) | ? | — | ![g510](/api/arc3-mirror/frames/g510.png) | • none read • *(offers 6, reads nothing)* |
+| g511 | Unclassified | ?  (cell ?px) | ? | — | ![g511](/api/arc3-mirror/frames/g511.png) | • none read • *(offers 6, reads nothing)* |
+| g512 | Unclassified | ?  (cell ?px) | ? | — | ![g512](/api/arc3-mirror/frames/g512.png) | • none read • *(offers 6, reads nothing)* |
+| g513 | Unclassified | ?  (cell ?px) | ? | — | ![g513](/api/arc3-mirror/frames/g513.png) | • none read • *(offers 6, reads nothing)* |
+| g514 | Unclassified | ?  (cell ?px) | ? | — | ![g514](/api/arc3-mirror/frames/g514.png) | • none read • *(offers 6, reads nothing)* |
+| g515 | Unclassified | ?  (cell ?px) | ? | — | ![g515](/api/arc3-mirror/frames/g515.png) | • none read • *(offers 6, reads nothing)* |
+| g516 | Unclassified | ?  (cell ?px) | ? | — | ![g516](/api/arc3-mirror/frames/g516.png) | • none read • *(offers 6, reads nothing)* |
+| g517 | Unclassified | ?  (cell ?px) | ? | — | ![g517](/api/arc3-mirror/frames/g517.png) | • none read • *(offers 6, reads nothing)* |
+| g518 | Unclassified | ?  (cell ?px) | ? | — | ![g518](/api/arc3-mirror/frames/g518.png) | • none read • *(offers 6, reads nothing)* |
+| g519 | Unclassified | ?  (cell ?px) | ? | — | ![g519](/api/arc3-mirror/frames/g519.png) | • none read • *(offers 6, reads nothing)* |
+| g520 | Unclassified | ?  (cell ?px) | ? | — | ![g520](/api/arc3-mirror/frames/g520.png) | • none read • *(offers 6, reads nothing)* |
+| g521 | Unclassified | ?  (cell ?px) | ? | — | ![g521](/api/arc3-mirror/frames/g521.png) | • none read • *(offers 6, reads nothing)* |
+| g522 | Unclassified | ?  (cell ?px) | ? | — | ![g522](/api/arc3-mirror/frames/g522.png) | • none read • *(offers 6, reads nothing)* |
+| g523 | Unclassified | ?  (cell ?px) | ? | — | ![g523](/api/arc3-mirror/frames/g523.png) | • none read • *(offers 6, reads nothing)* |
+| g524 | Unclassified | ?  (cell ?px) | ? | — | ![g524](/api/arc3-mirror/frames/g524.png) | • none read • *(offers 6, reads nothing)* |
+| g525 | Unclassified | ?  (cell ?px) | ? | — | ![g525](/api/arc3-mirror/frames/g525.png) | • none read • *(offers 6, reads nothing)* |
+| g526 | Unclassified | ?  (cell ?px) | ? | — | ![g526](/api/arc3-mirror/frames/g526.png) | • none read • *(offers 6, reads nothing)* |
+| g527 | Unclassified | ?  (cell ?px) | ? | — | ![g527](/api/arc3-mirror/frames/g527.png) | • none read • *(offers 6, reads nothing)* |
+| g528 | Unclassified | ?  (cell ?px) | ? | — | ![g528](/api/arc3-mirror/frames/g528.png) | • none read • *(offers 6, reads nothing)* |
+| g529 | Unclassified | ?  (cell ?px) | ? | — | ![g529](/api/arc3-mirror/frames/g529.png) | • none read • *(offers 6, reads nothing)* |
+| g530 | Unclassified | ?  (cell ?px) | ? | — | ![g530](/api/arc3-mirror/frames/g530.png) | • none read • *(offers 6, reads nothing)* |
+| g531 | Unclassified | ?  (cell ?px) | ? | — | ![g531](/api/arc3-mirror/frames/g531.png) | • none read • *(offers 6, reads nothing)* |
+| g532 | Unclassified | ?  (cell ?px) | ? | — | ![g532](/api/arc3-mirror/frames/g532.png) | • none read • *(offers 6, reads nothing)* |
+| g533 | Unclassified | ?  (cell ?px) | ? | — | ![g533](/api/arc3-mirror/frames/g533.png) | • none read • *(offers 6, reads nothing)* |
+| g534 | Unclassified | ?  (cell ?px) | ? | — | ![g534](/api/arc3-mirror/frames/g534.png) | • none read • *(offers 6, reads nothing)* |
+| g535 | Unclassified | ?  (cell ?px) | ? | — | ![g535](/api/arc3-mirror/frames/g535.png) | • none read • *(offers 6, reads nothing)* |
+| g536 | Unclassified | ?  (cell ?px) | ? | — | ![g536](/api/arc3-mirror/frames/g536.png) | • none read • *(offers 6, reads nothing)* |
+| g537 | Unclassified | ?  (cell ?px) | ? | — | ![g537](/api/arc3-mirror/frames/g537.png) | • none read • *(offers 6, reads nothing)* |
+| g538 | Unclassified | ?  (cell ?px) | ? | — | ![g538](/api/arc3-mirror/frames/g538.png) | • none read • *(offers 6, reads nothing)* |
+| g539 | Unclassified | ?  (cell ?px) | ? | — | ![g539](/api/arc3-mirror/frames/g539.png) | • none read • *(offers 6, reads nothing)* |
+| g540 | Unclassified | ?  (cell ?px) | ? | — | ![g540](/api/arc3-mirror/frames/g540.png) | • none read • *(offers 6, reads nothing)* |
+| g541 | Unclassified | ?  (cell ?px) | ? | — | ![g541](/api/arc3-mirror/frames/g541.png) | • none read • *(offers 6, reads nothing)* |
+| g542 | Unclassified | ?  (cell ?px) | ? | — | ![g542](/api/arc3-mirror/frames/g542.png) | • none read • *(offers 6, reads nothing)* |
+| g543 | Unclassified | ?  (cell ?px) | ? | — | ![g543](/api/arc3-mirror/frames/g543.png) | • none read • *(offers 6, reads nothing)* |
