@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Author: Claude Opus 5 (Bubba)
+Author: Claude Opus 5 (Bubba) / Codex
 Date: 05-September-2026
 PURPOSE: The one gate standing between a push to main and arc.markbarney.net. Asserts that
          server/data/arc3-games/ is internally consistent: every published id is one this
          project allocated, no published module still carries the prose that names its own
-         mechanic, and every derived artifact matches what its generator would produce from
-         the .py files sitting beside it. Runs in the Docker build (see Dockerfile) BEFORE
+         mechanic, every contributed game exposes usable controls and explanation, and every
+         derived artifact matches what its generator would produce from the .py files sitting
+         beside it. Runs in the Docker build (see Dockerfile) BEFORE
          `npm run build`, so a bad push fails the image and Railway keeps serving the last
          good deploy -- the failure costs a deploy, not the data.
 
@@ -17,7 +18,7 @@ PURPOSE: The one gate standing between a push to main and arc.markbarney.net. As
          anywhere. Two people now push to a branch with no protection, so the invariant
          needs teeth.
 
-         THE THREE CHECKS, AND WHY EACH IS SHAPED THE WAY IT IS.
+         THE FOUR CHECKS, AND WHY EACH IS SHAPED THE WAY IT IS.
 
          1. ID OWNERSHIP reads authored-ids.json, which import_authored_games.py writes
             from the AUTHORING repo's ledger. It cannot be derived from this directory:
@@ -32,7 +33,11 @@ PURPOSE: The one gate standing between a push to main and arc.markbarney.net. As
             points. A .py copied straight into this directory is not. No wordlist to keep
             current and no false positives.
 
-         3. DERIVED ARTIFACTS are regenerated in a scratch tree -- the four generators are
+         3. CONTROL AND EXPLANATION SEMANTICS run the mechanic digest's self-test against
+            the scratch tree. A contributed task with no recognized inputs or missing
+            post-play prose cannot pass the Docker build.
+
+         4. DERIVED ARTIFACTS are regenerated in a scratch tree -- the four generators are
             run against a temp copy, never against the working tree -- and compared. JSON
             is compared byte for byte because it is json.dumps output and deterministic.
             PNGs are compared as PIXEL ARRAYS, never as bytes: render_authored_frames.py
@@ -81,6 +86,8 @@ GENERATORS = (
     ("render_authored_frames.py", []),
     ("build_authored_manifest.py", []),
     ("mechanic_digest.py", ["--write"]),
+    ("mechanic_digest.py", ["--selftest"]),
+    ("smoke_contributed_games.py", []),
     ("build_games_registry.py", []),
 )
 
