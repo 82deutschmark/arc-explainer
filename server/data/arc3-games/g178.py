@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from sprite_book import blink, core, figure, medallion, ring, rounded, speckle, studs
 
 from arcengine import (
     ARCBaseGame,
@@ -15,6 +14,87 @@ from arcengine import (
     Sprite,
 )
 
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+def blink(step: int, period: int = 3) -> bool:
+    return (step // period) % 2 == 0
+
+
 FLOOR = 6
 WALL = 2
 WALL_FLECK = 5
@@ -24,7 +104,6 @@ MARKER = 11
 PIP = 14
 SINK_RIM = JUNCTION
 SINK_FILL = 11
-SINK_PART_FILL = 12
 EMITTER = 11
 EMITTER_CORE = 5
 PULSE = 11
@@ -40,16 +119,16 @@ CONDUCT = set("=JSTE")
 LEVELS_SPEC = [
     {"pips": [0], "fires": 2, "rows": [
         "################",
-        "################",
-        "################",
-        "################",
-        "###..........###",
-        "###....S.....###",
-        "###....=.....###",
-        "###..E=J.....###",
-        "###....=.....###",
-        "###....S.....###",
-        "###..........###",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#.....S........#",
+        "#.....=........#",
+        "#.....=........#",
+        "#.E===J........#",
+        "#.....=........#",
+        "#.....=........#",
+        "#.....S........#",
         "################",
         "################",
         "################",
@@ -58,16 +137,16 @@ LEVELS_SPEC = [
     ]},
     {"pips": [1], "fires": 2, "rows": [
         "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "###......T...###",
-        "###......=...###",
-        "###......=...###",
-        "###......=...###",
-        "###.E====J...###",
-        "###......=...###",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#.....T........#",
+        "#.....=........#",
+        "#.....=........#",
+        "#.E===J........#",
+        "#.....=........#",
+        "#.....=........#",
+        "#.....=........#",
         "################",
         "################",
         "################",
@@ -76,15 +155,15 @@ LEVELS_SPEC = [
     ]},
     {"pips": [1, 0], "fires": 3, "rows": [
         "################",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#.....S..S.....#",
+        "#.....=..=.....#",
+        "#.....=..=.....#",
+        "#.E===J==J==S..#",
         "################",
         "################",
-        "################",
-        "################",
-        "##.....S......##",
-        "##.....=......##",
-        "##.E===J==J==S##",
-        "##........=...##",
-        "##........S...##",
         "################",
         "################",
         "################",
@@ -94,51 +173,51 @@ LEVELS_SPEC = [
     ]},
     {"pips": [1, 0], "fires": 5, "rows": [
         "################",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#.....T..T.....#",
+        "#.....=..=.....#",
+        "#.....=..=.....#",
+        "#.E===J==J==S..#",
         "################",
         "################",
         "################",
-        "################",
-        "##....T....T..##",
-        "##....=....=..##",
-        "##....=....=..##",
-        "##....=....=..##",
-        "##....=....=..##",
-        "##.E==J====J=S##",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-    ]},
-    {"pips": [1, 2, 0], "fires": 7, "rows": [
-        "################",
-        "################",
-        "################",
-        "################",
-        "#..........T..##",
-        "#..........=..##",
-        "#......S...=..##",
-        "#......=...=..##",
-        "#..T...=...=..##",
-        "#..=...=...=..##",
-        "#E=J===J===J=S##",
         "################",
         "################",
         "################",
         "################",
         "################",
     ]},
-    {"pips": [1, 2, 2, 0], "fires": 11, "rows": [
+    {"pips": [2, 0, 0], "fires": 6, "rows": [
+        "################",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#....T..T..S...#",
+        "#....=..=..=...#",
+        "#....=..=..=...#",
+        "#E===J==J==J==S#",
         "################",
         "################",
         "################",
         "################",
         "################",
         "################",
-        "#E=J==J==J==J=S#",
-        "#..=..=..=..=..#",
-        "#..=..=..=..=..#",
-        "#..S..T..S..T..#",
+        "################",
+        "################",
+    ]},
+    {"pips": [0, 2, 0], "fires": 8, "rows": [
+        "################",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#....T..S..T...#",
+        "#....=..=..=...#",
+        "#....=..=..=...#",
+        "#E===J==J==J==S#",
+        "################",
+        "################",
         "################",
         "################",
         "################",
@@ -316,8 +395,7 @@ class G178A(RenderableUserDisplay):
             else:
                 _stamp(frame, ring(SINK_RIM, CELL), x, y)
                 if not done and g.hits[i] > 0:
-                    frame[y * CELL + CELL - 2,
-                          x * CELL + 1:x * CELL + CELL - 1] = SINK_PART_FILL
+                    frame[y * CELL + CELL - 2, x * CELL + 1:x * CELL + CELL - 1] = SINK_FILL
 
         for i, (x, y) in enumerate(cells_of(rows, "J")):
             _stamp(frame, rounded(JUNCTION, CELL), x, y)
@@ -346,9 +424,7 @@ class G178A(RenderableUserDisplay):
                 frame[y * CELL + (0 if p == 0 else CELL - 1), x * CELL] = PIP
 
         lit = 0 if (g.flash and not g.flash_won and not strobe) else g.fires
-        budget = g.spec["fires"]
-        gap = max(3, (N * CELL - 10) // max(budget, 1))
-        studs(frame, budget, lit, METER_ON, METER_OFF, side="east", start=4, gap=gap)
+        studs(frame, g.spec["fires"], lit, METER_ON, METER_OFF, side="east")
         return frame
 
 

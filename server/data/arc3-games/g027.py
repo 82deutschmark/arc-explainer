@@ -15,138 +15,247 @@ from arcengine import (
     Sprite,
 )
 
-BACKGROUND = 5
-WALL = 2
-FLOOR = 3
-HAZARD = 15
-GOAL = 0
-MARK = 0
-BLOCK_A = 11
-BLOCK_B = 14
-BLOCK_C = 9
-PIP_ON = 0
-PIP_OFF = 3
 
-TYPE_COLOUR = (BLOCK_A, BLOCK_B, BLOCK_C)
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def facing(body: int, visor: int, heading: tuple, cell: int = 4) -> list[list[int]]:
+    px = rounded(body, cell)
+    dx, dy = heading
+    last = cell - 1
+    if dy < 0:
+        px[0][1] = px[0][cell - 2] = visor
+    elif dy > 0:
+        px[last][1] = px[last][cell - 2] = visor
+    elif dx < 0:
+        px[1][0] = px[cell - 2][0] = visor
+    elif dx > 0:
+        px[1][last] = px[cell - 2][last] = visor
+    else:
+        px[1][1] = visor
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+def ease_out(t: float) -> float:
+    t = 0.0 if t < 0 else (1.0 if t > 1 else t)
+    return 1 - (1 - t) * (1 - t)
+
+def tween(a: int, b: int, step: int, span: int) -> int:
+    if span <= 0:
+        return b
+    return int(round(a + (b - a) * ease_out(step / span)))
+
+
+FLOOR = 5
+WALL = 1
+PIT = 15
+SOCKET = 8
+RELAY = 10
+PAYLOAD = 8
+PLAYER = 12
+NOTCH = 1
+PIP_ON = 12
+PIP_OFF = WALL
 
 WALL_C = "#"
 PIT_C = "P"
 SOCK_C = "T"
 MAX_SPEED = 4
 
-NX, NY = 12, 11
-CELL = 5
-PAD_X, PAD_Y = 2, 1
-
-STEP = {"L": (-1, 0), "R": (1, 0), "V": (0, 1)}
-EDGES = {
-    0: ((-1, 0), (1, 0), (0, 1)),
-    1: ((-1, 0), (1, 0), (0, -1)),
-}
-FACES = ("L", "R", "V")
-
-OUTCOME = {
-    (0, 0): "couple", (0, 1): "drive", (0, 2): "jam",
-    (1, 0): "jam", (1, 1): "couple", (1, 2): "drive",
-    (2, 0): "drive", (2, 1): "jam", (2, 2): "couple",
-}
-N_TYPES = 3
+N = 16
+CELL = 4
 
 LEVELS_SPEC = [
-    {"ptype": 0, "rows": [
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
-        "#S...aA..T.#",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
+    {"rows": [
+        "################",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#....###########",
+        "#.S......BO..T##",
+        "#....###########",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "################",
     ]},
-    {"ptype": 0, "rows": [
-        "############",
-        "############",
-        "############",
-        "#S...cA.T..#",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
+    {"rows": [
+        "################",
+        "#..............#",
+        "#..............#",
+        "#....###########",
+        "#.S.....BO.T.P##",
+        "#....###########",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "################",
     ]},
-    {"ptype": 2, "rows": [
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
-        "#S...aB.T..#",
-        "############",
-        "############",
-        "############",
-        "############",
+    {"rows": [
+        "################",
+        "#.......S......#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#B#.....#",
+        "#......#O#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#T#.....#",
+        "#......#P#.....#",
+        "#..............#",
+        "################",
     ]},
-    {"ptype": 1, "rows": [
-        "############",
-        "############",
-        "#S.........#",
-        "########..##",
-        "########..##",
-        "#T.Cb.....##",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
+    {"rows": [
+        "################",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "###########....#",
+        "##T.OBB......S.#",
+        "###########....#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "################",
     ]},
-    {"ptype": 2, "rows": [
-        "############",
-        "############",
-        "############",
-        "############",
-        "#S...cC.T.P#",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
+    {"rows": [
+        "################",
+        "#..............#",
+        "#.S............#",
+        "#..............#",
+        "#....###########",
+        "#.......B..O.T##",
+        "#....###########",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "################",
     ]},
-    {"ptype": 0, "rows": [
-        "############",
-        "#S...bbC.T.#",
-        "#..#########",
-        "#..#########",
-        "#....cA.T..#",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
-        "############",
+    {"rows": [
+        "################",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#....###########",
+        "#.S.....BOBT.P##",
+        "#....###########",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "#..............#",
+        "################",
+    ]},
+    {"rows": [
+        "################",
+        "#....###########",
+        "#....###########",
+        "#....###########",
+        "#....###########",
+        "#........BO..T##",
+        "#....###########",
+        "#....###########",
+        "#.S..###########",
+        "#....###########",
+        "#....###########",
+        "#.......BO.T####",
+        "#....###########",
+        "#....###########",
+        "#....###########",
+        "################",
+    ]},
+    {"rows": [
+        "################",
+        "#......#P#.....#",
+        "#......#T#.....#",
+        "#......#.#.....#",
+        "#......#O#.....#",
+        "#......#B#.....#",
+        "#......#.#.....#",
+        "#......#B#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#......#.#.....#",
+        "#.......S......#",
+        "################",
     ]},
 ]
 
+
+DIR_UP = (0, -1)
+DIR_DOWN = (0, 1)
+DIR_LEFT = (-1, 0)
+DIR_RIGHT = (1, 0)
+DIRS = (DIR_UP, DIR_DOWN, DIR_LEFT, DIR_RIGHT)
+
 for _spec in LEVELS_SPEC:
     _spec["rows"] = tuple(_spec["rows"])
-
-RELAY_CHARS = "abc"
-PAYLOAD_CHARS = "ABC"
-
-
-def up_cell(x, y):
-    return (x + y) % 2 == 0
-
-
-def edge_step(x, y, face):
-    dx, dy = EDGES[0 if up_cell(x, y) else 1][FACES.index(face)]
-    return x + dx, y + dy
 
 
 def cell_at(rows, x, y):
@@ -158,84 +267,67 @@ def cell_at(rows, x, y):
 @functools.lru_cache(maxsize=None)
 def parse(rows):
     start = None
-    bodies = []
+    positions = []
     kinds = []
     for y, row in enumerate(rows):
         for x, ch in enumerate(row):
             if ch == "S":
                 start = (x, y)
-            elif ch in RELAY_CHARS:
-                bodies.append((x, y, RELAY_CHARS.index(ch)))
-                kinds.append("B")
-            elif ch in PAYLOAD_CHARS:
-                bodies.append((x, y, PAYLOAD_CHARS.index(ch)))
-                kinds.append("O")
+            elif ch in ("B", "O"):
+                positions.append((x, y))
+                kinds.append(ch)
     if start is None:
         raise ValueError("level has no start")
-    return start, tuple(bodies), tuple(kinds)
+    return start, tuple(positions), tuple(kinds)
 
 
-def initial_state(spec):
-    (sx, sy), bodies, _ = parse(spec["rows"])
-    return (sx, sy, 0, None, spec["ptype"], bodies)
+def initial_state(rows):
+    (sx, sy), positions, _ = parse(rows)
+    return (sx, sy, 0, None, positions)
 
 
-def _shove(rows, pos, occupied, index, face, budget, avatar, trace):
-    x, y, kind = pos[index]
+def _shove(rows, pos, occupied, index, direction, budget, avatar):
+    dx, dy = direction
+    x, y = pos[index]
     del occupied[(x, y)]
     remaining = budget
-    came_from = None
     while remaining > 0:
-        nx, ny = edge_step(x, y, face)
-        if (nx, ny) == came_from:
-            break
+        nx, ny = x + dx, y + dy
         char = cell_at(rows, nx, ny)
         if char == WALL_C or (nx, ny) == avatar:
             break
         if (nx, ny) in occupied:
             struck = occupied[(nx, ny)]
-            pos[index] = (x, y, kind)
+            pos[index] = (x, y)
             occupied[(x, y)] = index
-            verdict = OUTCOME[(kind, pos[struck][2])]
-            handed = remaining - 1 if verdict == "drive" else remaining
-            if verdict != "jam" and handed > 0:
-                _shove(rows, pos, occupied, struck, face, handed, avatar, trace)
+            if remaining - 1 > 0:
+                _shove(rows, pos, occupied, struck, direction, remaining - 1, avatar)
             return
-        came_from = (x, y)
         x, y = nx, ny
         remaining -= 1
-        pos[index] = (x, y, kind)
-        if trace is not None:
-            trace.append((avatar[0], avatar[1], tuple(pos)))
         if char == PIT_C:
             pos[index] = None
-            if trace is not None:
-                trace.append((avatar[0], avatar[1], tuple(pos)))
             return
-    pos[index] = (x, y, kind)
+    pos[index] = (x, y)
     occupied[(x, y)] = index
 
 
-def press(rows, state, face, trace=None):
-    px, py, speed, facing, ptype, bodies = state
-    if face == "SWAP":
-        return (px, py, speed, facing, (ptype + 1) % N_TYPES, bodies), None
-    if face is None:
+def press(rows, state, direction):
+    px, py, speed, facing, blocks = state
+    if direction is None:
         slower = max(0, speed - 1)
-        return (px, py, slower, facing if slower else None, ptype, bodies), None
+        return (px, py, slower, facing if slower else None, blocks), None
 
-    pos = list(bodies)
-    occupied = {(b[0], b[1]): i for i, b in enumerate(pos) if b is not None}
+    pos = list(blocks)
+    occupied = {p: i for i, p in enumerate(pos) if p is not None}
     _, _, kinds = parse(rows)
 
-    launched = min(speed + 1, MAX_SPEED) if facing == face else 1
+    launched = min(speed + 1, MAX_SPEED) if facing == direction else 1
+    dx, dy = direction
     remaining = launched
     struck_kind = None
-    came_from = None
     while remaining > 0:
-        nx, ny = edge_step(px, py, face)
-        if (nx, ny) == came_from:
-            break
+        nx, ny = px + dx, py + dy
         char = cell_at(rows, nx, ny)
         if char == WALL_C or char == PIT_C:
             launched = 0
@@ -243,175 +335,112 @@ def press(rows, state, face, trace=None):
         if (nx, ny) in occupied:
             struck = occupied[(nx, ny)]
             struck_kind = kinds[struck]
-            verdict = OUTCOME[(ptype, pos[struck][2])]
-            handed = launched - 1 if verdict == "drive" else launched
-            if verdict != "jam" and handed > 0:
-                _shove(rows, pos, occupied, struck, face, handed, (px, py), trace)
+            _shove(rows, pos, occupied, struck, direction, launched, (px, py))
             launched = 0
             break
-        came_from = (px, py)
         px, py = nx, ny
         remaining -= 1
-        if trace is not None:
-            trace.append((px, py, tuple(pos)))
 
-    return (px, py, launched, face if launched else None, ptype, tuple(pos)), struck_kind
+    return (px, py, launched, direction if launched else None, tuple(pos)), struck_kind
 
 
 def is_won(rows, state):
     _, _, kinds = parse(rows)
+    blocks = state[4]
     for i, kind in enumerate(kinds):
         if kind != "O":
             continue
-        body = state[5][i]
-        if body is None or cell_at(rows, body[0], body[1]) != SOCK_C:
+        p = blocks[i]
+        if p is None or cell_at(rows, p[0], p[1]) != SOCK_C:
             return False
     return True
 
 
 def payload_lost(rows, state):
     _, _, kinds = parse(rows)
-    return any(kinds[i] == "O" and b is None for i, b in enumerate(state[5]))
+    return any(kinds[i] == "O" and p is None for i, p in enumerate(state[4]))
 
 
-UP_WIDTHS = (1, 3, 3, 5, 5)
-DOWN_WIDTHS = (5, 5, 3, 3, 1)
+TRAVEL_FRAMES = 4
+DOOM_FRAMES = 6
+CHEER_FRAMES = 4
 
-
-def _mask(up):
-    out = []
-    for w in (UP_WIDTHS if up else DOWN_WIDTHS):
-        a = (CELL - w) // 2
-        out.append([a <= i < a + w for i in range(CELL)])
-    return out
-
-
-def _tri(colour, up):
-    m = _mask(up)
-    return [[colour if m[y][x] else -1 for x in range(CELL)] for y in range(CELL)]
-
-
-def _hollow(colour, up):
-    face = _tri(colour, up)
-    row = CELL - 2 if up else 1
-    for x in range(1, CELL - 1):
-        face[row][x] = -1
-    return face
-
-
-def _floor_face(up):
-    return _tri(FLOOR, up)
-
-
-def _wall_face(x, y):
-    face = [[WALL] * CELL for _ in range(CELL)]
-    face[(x * 3 + y) % CELL][(x + y * 2) % CELL] = FLOOR
-    face[(x + y * 3 + 2) % CELL][(x * 2 + y + 1) % CELL] = FLOOR
-    return face
-
-
-def _pit_face(up, lit=False):
-    face = _tri(HAZARD, up)
-    if not lit:
-        for y in range(CELL):
-            for x in range(CELL):
-                if face[y][x] >= 0 and (x + y) % 2:
-                    face[y][x] = -1
-    return face
-
-
-def _socket_face(up):
-    return _hollow(GOAL, up)
-
-
-def _body_face(btype, up, payload, seated=False):
-    face = _tri(TYPE_COLOUR[btype], up)
-    if payload:
-        row = CELL - 2 if up else 1
-        face[row][CELL // 2] = MARK if seated else BACKGROUND
-    return face
-
-
-EDGE_PIXELS = {
-    (True, "L"): ((CELL - 1, 0), (CELL - 2, 1)),
-    (True, "R"): ((CELL - 1, CELL - 1), (CELL - 2, CELL - 2)),
-    (True, "V"): ((CELL - 1, CELL // 2),),
-    (False, "L"): ((0, 0), (1, 1)),
-    (False, "R"): ((0, CELL - 1), (1, CELL - 2)),
-    (False, "V"): ((0, CELL // 2),),
-}
-
-
-def _player_face(ptype, facing, up):
-    face = _hollow(TYPE_COLOUR[ptype], up)
-    for y, x in EDGE_PIXELS.get((up, facing), ()):
-        face[y][x] = MARK
-    return face
-
-
-def _stamp(grid, cx, cy, face):
-    height, width = grid.shape
-    for dy, row in enumerate(face):
-        y = PAD_Y + cy * CELL + dy
-        if not 0 <= y < height:
-            continue
-        for dx, value in enumerate(row):
-            x = PAD_X + cx * CELL + dx
-            if value >= 0 and 0 <= x < width:
-                grid[y, x] = value
-
-
-DECOR_X = (3, 47, 55)
+DECOR_X = (4, 11, 13)
 DECOR_CYCLE = (WALL, WALL, WALL, WALL, WALL, WALL, FLOOR)
 
 
-def _paint(index, state, over=None, doom=None, dim=False):
-    rows = LEVELS_SPEC[index]["rows"]
-    px, py, _, facing, ptype, own = state
-    bodies = own
-    if over is not None:
-        px, py, bodies = over
-    _, _, kinds = parse(rows)
-    grid = np.full((64, 64), BACKGROUND, dtype=np.int64)
+def _block(colour):
+    return [[colour] * CELL for _ in range(CELL)]
 
-    for y in range(NY):
-        for x in range(NX):
-            ch = rows[y][x]
-            up = up_cell(x, y)
+
+def _pit_pixels(lit=False):
+    return rounded(PIT) if lit else weave(PIT)
+
+
+def _payload_pixels(lit=False):
+    return ring(PAYLOAD) if lit else rounded(PAYLOAD)
+
+
+def _static_sprites(rows):
+    sprites = []
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            px, py = x * CELL, y * CELL
             if ch == WALL_C:
-                _stamp(grid, x, y, _wall_face(x, y))
+                sprites.append(Sprite(
+                    pixels=_block(WALL), name=f"wall_{x}_{y}",
+                    blocking=BlockingMode.BOUNDING_BOX,
+                    interaction=InteractionMode.TANGIBLE, layer=-1,
+                ).set_position(px, py))
             elif ch == PIT_C:
-                _stamp(grid, x, y, _pit_face(up, lit=(doom is not None and doom % 2 == 0)))
+                sprites.append(Sprite(
+                    pixels=_pit_pixels(), name=f"pit_{x}_{y}",
+                    blocking=BlockingMode.BOUNDING_BOX,
+                    interaction=InteractionMode.TANGIBLE, layer=-1, tags=["pit"],
+                ).set_position(px, py))
             elif ch == SOCK_C:
-                _stamp(grid, x, y, _socket_face(up))
-            else:
-                _stamp(grid, x, y, _floor_face(up))
-
-    for i, body in enumerate(bodies):
-        if body is None:
-            continue
-        bx, by, btype = body
-        payload = kinds[i] == "O"
-        seated = payload and not dim and cell_at(rows, bx, by) == SOCK_C
-        _stamp(grid, bx, by, _body_face(btype, up_cell(bx, by), payload, seated))
-    _stamp(grid, px, py, _player_face(ptype, facing, up_cell(px, py)))
-    return grid
+                sprites.append(Sprite(
+                    pixels=ring(SOCKET), name=f"socket_{x}_{y}",
+                    blocking=BlockingMode.NOT_BLOCKED,
+                    interaction=InteractionMode.INTANGIBLE, layer=-1, tags=["socket"],
+                ).set_position(px, py))
+    for i, x in enumerate(DECOR_X):
+        sprites.append(Sprite(
+            pixels=fixture(DECOR_CYCLE, 0, seed=2 * i), name=f"decor_{i}",
+            blocking=BlockingMode.NOT_BLOCKED,
+            interaction=InteractionMode.INTANGIBLE, layer=0, tags=["decor"],
+        ).set_position(x * CELL, (N - 1) * CELL))
+    return sprites
 
 
 def build_levels():
     levels = []
-    for i, spec in enumerate(LEVELS_SPEC):
-        canvas = Sprite(
-            pixels=_paint(i, initial_state(spec)), name="canvas",
-            blocking=BlockingMode.NOT_BLOCKED,
-            interaction=InteractionMode.TANGIBLE, layer=0,
-        ).set_position(0, 0)
-        levels.append(Level(sprites=[canvas], grid_size=(64, 64)))
+    for spec in LEVELS_SPEC:
+        rows = spec["rows"]
+        sprites = _static_sprites(rows)
+        _, positions, kinds = parse(rows)
+        for i, (x, y) in enumerate(positions):
+            payload = kinds[i] == "O"
+            sprites.append(Sprite(
+                pixels=_payload_pixels() if payload else rounded(RELAY),
+                name=f"block_{i}", blocking=BlockingMode.BOUNDING_BOX,
+                interaction=InteractionMode.TANGIBLE, layer=1,
+                tags=["payload" if payload else "relay"],
+            ).set_position(x * CELL, y * CELL))
+        (sx, sy), _, _ = parse(rows)
+        sprites.append(Sprite(
+            pixels=_player_pixels(None), name="player",
+            blocking=BlockingMode.BOUNDING_BOX,
+            interaction=InteractionMode.TANGIBLE, layer=2,
+        ).set_position(sx * CELL, sy * CELL))
+        levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
     return levels
 
 
-RAIL_TOP, RAIL_BOTTOM = 58, 61
-RAIL_LEFT = 6
+def _player_pixels(heading):
+    if heading is None:
+        return rounded(PLAYER)
+    return facing(PLAYER, NOTCH, heading)
 
 
 class G027A(RenderableUserDisplay):
@@ -421,78 +450,150 @@ class G027A(RenderableUserDisplay):
         self._game = game
 
     def render_interface(self, frame):
-        speed = self._game.state[2]
-        frame[RAIL_TOP:RAIL_BOTTOM, RAIL_LEFT:RAIL_LEFT + MAX_SPEED * 3 + 1] = PIP_OFF
-        if speed:
-            frame[RAIL_TOP:RAIL_BOTTOM, RAIL_LEFT:RAIL_LEFT + speed * 3 + 1] = PIP_ON
-        for i, x in enumerate(DECOR_X):
-            lit = DECOR_CYCLE[(self._game.beat + 2 * i) % len(DECOR_CYCLE)]
-            frame[RAIL_TOP + 1:RAIL_BOTTOM, x:x + 2] = lit
-        return frame
+        return studs(frame, MAX_SPEED, self._game.state[2], PIP_ON, PIP_OFF,
+                     side="west", start=12, gap=8)
 
 
 class G027(ARCBaseGame):
 
-    DOOM_FRAMES = 6
-    CHEER_FRAMES = 5
-
     def __init__(self) -> None:
-        self.state = initial_state(LEVELS_SPEC[0])
-        self._frames = []
+        self.rows = LEVELS_SPEC[0]["rows"]
+        self.state = initial_state(self.rows)
+        self._travel = 0
         self._doom = 0
         self._cheer = 0
-        self.beat = 0
+        self._beat = 0
+        self._slides = ()
+        self._doom_cells = ()
         camera = Camera(
-            width=64, height=64, background=BACKGROUND, letter_box=5,
+            width=N * CELL, height=N * CELL,
+            background=FLOOR, letter_box=5,
             interfaces=[G027A(self)],
         )
         super().__init__(game_id="g027", levels=build_levels(), camera=camera,
                          available_actions=[1, 2, 3, 4, 5])
 
-    def _rearm(self) -> None:
-        self.state = initial_state(LEVELS_SPEC[self.level_index])
-        self._frames = []
+    def on_set_level(self, level: Level) -> None:
+        self.rows = LEVELS_SPEC[self.level_index]["rows"]
+        self.state = initial_state(self.rows)
+        self._travel = 0
         self._doom = 0
         self._cheer = 0
-        self._repaint()
-
-    def on_set_level(self, level: Level) -> None:
-        self._rearm()
+        self._slides = ()
+        self._doom_cells = ()
+        self._sync()
 
     def level_reset(self) -> None:
         super().level_reset()
-        self._rearm()
+        self.on_set_level(self.current_level)
 
     def full_reset(self) -> None:
         super().full_reset()
-        self.beat = 0
-        self._rearm()
+        self._beat = 0
+        self.on_set_level(self.current_level)
 
-    def _repaint(self, over=None, doom=None, dim=False) -> None:
-        canvas = self.current_level.get_sprites_by_name("canvas")
-        if canvas:
-            canvas[0].pixels = _paint(self.level_index, self.state, over, doom, dim)
+    def _sync(self) -> None:
+        level = self.current_level
+        px, py, _, heading, blocks = self.state
+        for i, p in enumerate(blocks):
+            found = level.get_sprites_by_name(f"block_{i}")
+            if not found:
+                continue
+            if p is None:
+                level.remove_sprite(found[0])
+            else:
+                found[0].set_position(p[0] * CELL, p[1] * CELL)
+        player = level.get_sprites_by_name("player")
+        if player:
+            player[0].pixels = np.array(_player_pixels(heading), dtype=np.int64)
+            player[0].set_position(px * CELL, py * CELL)
+        for i, s in enumerate(level.get_sprites_by_tag("decor")):
+            s.pixels = np.array(fixture(DECOR_CYCLE, self._beat, seed=2 * i),
+                                dtype=np.int64)
+
+    def _fall_cell(self, start, direction):
+        dx, dy = direction
+        x, y = start
+        for _ in range(MAX_SPEED):
+            x, y = x + dx, y + dy
+            char = cell_at(self.rows, x, y)
+            if char == PIT_C:
+                return (x, y)
+            if char == WALL_C:
+                break
+        return start
+
+    def _begin_travel(self, before, after, direction) -> None:
+        _, _, kinds = parse(self.rows)
+        doomed = []
+        slides = []
+        bx, by, _, _, bblocks = before
+        ax, ay, _, _, ablocks = after
+        if (bx, by) != (ax, ay):
+            slides.append(("player", bx, by, ax, ay))
+        for i, (was, now) in enumerate(zip(bblocks, ablocks)):
+            if was is None:
+                continue
+            lands = now if now is not None else self._fall_cell(was, direction)
+            if now is None and kinds[i] == "O":
+                doomed.append(lands)
+            if lands != was:
+                slides.append((f"block_{i}", was[0], was[1], lands[0], lands[1]))
+        self._doom_cells = tuple(doomed)
+        self._slides = tuple(slides)
+        self._travel = TRAVEL_FRAMES if slides else 0
+        if slides:
+            player = self.current_level.get_sprites_by_name("player")
+            if player:
+                player[0].pixels = np.array(_player_pixels(self.state[3]),
+                                            dtype=np.int64)
+
+    def _paint_travel(self, frame_no) -> None:
+        level = self.current_level
+        for name, x0, y0, x1, y1 in self._slides:
+            for s in level.get_sprites_by_name(name):
+                s.set_position(tween(x0 * CELL, x1 * CELL, frame_no, TRAVEL_FRAMES),
+                               tween(y0 * CELL, y1 * CELL, frame_no, TRAVEL_FRAMES))
+
+    def _advance_travel(self) -> None:
+        self._travel -= 1
+        self._paint_travel(TRAVEL_FRAMES - self._travel)
+        if self._travel == 0:
+            self._resolve()
+
+    def _paint_decor(self) -> None:
+        for i, s in enumerate(self.current_level.get_sprites_by_tag("decor")):
+            s.pixels = np.array(fixture(DECOR_CYCLE, self._beat, seed=2 * i),
+                                dtype=np.int64)
+
+    def _paint_doom(self) -> None:
+        for x, y in self._doom_cells:
+            for s in self.current_level.get_sprites_by_name(f"pit_{x}_{y}"):
+                s.pixels = np.array(_pit_pixels(lit=self._doom % 2 == 0), dtype=np.int64)
+
+    def _paint_cheer(self) -> None:
+        for s in self.current_level.get_sprites_by_tag("payload"):
+            s.pixels = np.array(_payload_pixels(lit=self._cheer % 2 == 1),
+                                dtype=np.int64)
 
     def _resolve(self) -> None:
-        rows = LEVELS_SPEC[self.level_index]["rows"]
-        if is_won(rows, self.state):
-            self._cheer = self.CHEER_FRAMES
+        self._sync()
+        if is_won(self.rows, self.state):
+            self._cheer = CHEER_FRAMES
             return
-        if payload_lost(rows, self.state):
-            self._doom = self.DOOM_FRAMES
+        if payload_lost(self.rows, self.state):
+            self._doom = DOOM_FRAMES
             return
         self.complete_action()
 
     def step(self) -> None:
-        if self._frames:
-            self._repaint(self._frames.pop(0))
-            if not self._frames:
-                self._resolve()
+        if self._travel:
+            self._advance_travel()
             return
 
         if self._cheer:
             self._cheer -= 1
-            self._repaint(dim=self._cheer % 2 == 1)
+            self._paint_cheer()
             if self._cheer == 0:
                 self.next_level()
                 self.complete_action()
@@ -500,37 +601,36 @@ class G027(ARCBaseGame):
 
         if self._doom:
             self._doom -= 1
-            self._repaint(doom=self._doom)
+            self._paint_doom()
             if self._doom == 0:
                 self.level_reset()
                 self.complete_action()
             return
 
-        face = {
-            GameAction.ACTION1: "L",
-            GameAction.ACTION2: "R",
-            GameAction.ACTION3: "V",
-            GameAction.ACTION4: "SWAP",
-            GameAction.ACTION5: "HOLD",
-        }.get(self.action.id)
+        direction = None
+        acted = False
+        if self.action.id == GameAction.ACTION1:
+            direction, acted = DIR_UP, True
+        elif self.action.id == GameAction.ACTION2:
+            direction, acted = DIR_DOWN, True
+        elif self.action.id == GameAction.ACTION3:
+            direction, acted = DIR_LEFT, True
+        elif self.action.id == GameAction.ACTION4:
+            direction, acted = DIR_RIGHT, True
+        elif self.action.id == GameAction.ACTION5:
+            direction, acted = None, True
 
-        if face is None:
-            self.complete_action()
+        if acted:
+            before = self.state
+            self.state, _ = press(self.rows, self.state, direction)
+            self._beat += 1
+            self._paint_decor()
+            if direction is not None:
+                self._begin_travel(before, self.state, direction)
+            if self._travel:
+                self._advance_travel()
+                return
+            self._resolve()
             return
 
-        rows = LEVELS_SPEC[self.level_index]["rows"]
-        trace = []
-        self.state, _ = press(rows, self.state,
-                              None if face == "HOLD" else face, trace)
-        self.beat += 1
-
-        settled = (self.state[0], self.state[1], self.state[5])
-        self._frames = [f for k, f in enumerate(trace)
-                        if f != settled and (k == 0 or f != trace[k - 1])]
-        if self._frames:
-            self._repaint(self._frames.pop(0))
-            if not self._frames:
-                self._resolve()
-            return
-        self._repaint()
-        self._resolve()
+        self.complete_action()

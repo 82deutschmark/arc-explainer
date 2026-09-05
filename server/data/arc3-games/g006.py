@@ -12,7 +12,32 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-from sprite_book import block, hatch, studs, weave
+
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def hatch(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 3 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
 
 FIELD = 1
 DOT = 13

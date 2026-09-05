@@ -12,21 +12,97 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-from sprite_book import core, figure, fixture, hairline, ring, rounded, speckle, weave
 
-WALL_FILL = 3
-WALL_EDGE = 4
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def hairline(frame, a: tuple, b: tuple, colour: int, only_over=None):
+    x0, y0 = a
+    x1, y1 = b
+    dx, dy = abs(x1 - x0), abs(y1 - y0)
+    sx = 1 if x0 < x1 else -1
+    sy = 1 if y0 < y1 else -1
+    err = dx - dy
+    h, w = frame.shape
+    while True:
+        if 0 <= x0 < w and 0 <= y0 < h:
+            if only_over is None or int(frame[y0, x0]) in only_over:
+                frame[y0, x0] = colour
+        if x0 == x1 and y0 == y1:
+            break
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x0 += sx
+        if e2 < dx:
+            err += dx
+            y0 += sy
+    return frame
+
+
+WALL = 3
+SOIL = 10
 SPINE_COLOUR = 5
-SOIL_TILE = 1
-SOIL_MARK = 4
-GOAL_EDGE = 0
+GOAL = SPINE_COLOUR
 PLAYER = 15
-PIP_ON = 0
-PIP_OFF = 3
-PLANT_YOUNG_FILL = 10
-PLANT_MID_FILL = 9
-PLANT_ASH_FILL = 3
-AGE_COLOURS = (PLANT_YOUNG_FILL, PLANT_MID_FILL, PLANT_ASH_FILL)
+PIP_ON = 11
+PIP_OFF = PLAYER
+AGE_COLOURS = (11, 8, 5)
 
 N = 16
 CELL = 4
@@ -43,10 +119,10 @@ THREAD_FRAMES = 3
 FITTING_HOLD = 5
 FITTINGS_PER_LEVEL = 3
 
-TALLY_LEFT = SPINE * CELL
-TALLY_TOP = 18
-TALLY_GAP = 9
-TALLY_MIN = 2
+LEDGER_LEFT = SPINE * CELL
+LEDGER_TOP = 18
+LEDGER_GAP = 9
+LEDGER_MIN = 2
 
 ROCK_CH = "#"
 SOIL_CH = "."
@@ -61,12 +137,12 @@ LEVELS_SPEC = [
     {"seeds": 1, "rows": [
         "################",
         "################",
-        "####.#####t#####",
-        "####.###########",
-        "####..P#########",
         "################",
         "################",
         "################",
+        "################",
+        "################",
+        "#P...#####.t..##",
         "################",
         "################",
         "################",
@@ -79,12 +155,12 @@ LEVELS_SPEC = [
     {"seeds": 2, "rows": [
         "################",
         "################",
-        "####.#####t#####",
-        "####.###########",
-        "###...##########",
-        "####P#####t#####",
         "################",
         "################",
+        "################",
+        "################",
+        "################",
+        "#P.....#t....t##",
         "################",
         "################",
         "################",
@@ -97,12 +173,30 @@ LEVELS_SPEC = [
     {"seeds": 1, "rows": [
         "################",
         "################",
-        "####.###########",
-        "####.#####.t####",
-        "####.###########",
-        "####..P#########",
         "################",
         "################",
+        "################",
+        "################",
+        "################",
+        "#P.########t..##",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+    ]},
+    {"seeds": 1, "rows": [
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "#P.#######t...##",
         "################",
         "################",
         "################",
@@ -115,12 +209,12 @@ LEVELS_SPEC = [
     {"seeds": 2, "rows": [
         "################",
         "################",
-        "####.#####t#####",
-        "####.###########",
-        "####.#####..t###",
-        "####..P#########",
         "################",
         "################",
+        "################",
+        "################",
+        "#.....###.....##",
+        "#P#...###t..t.##",
         "################",
         "################",
         "################",
@@ -133,12 +227,12 @@ LEVELS_SPEC = [
     {"seeds": 2, "rows": [
         "################",
         "################",
-        "####..P#########",
-        "####.#####.t####",
-        "####.###########",
-        "####.###########",
-        "####.#####...t##",
-        "####.###########",
+        "################",
+        "#P#########t..##",
+        "#.###########.##",
+        "#.###########.##",
+        "#.###########.##",
+        "#....#####t...##",
         "################",
         "################",
         "################",
@@ -151,32 +245,14 @@ LEVELS_SPEC = [
     {"seeds": 3, "rows": [
         "################",
         "################",
-        "####.#####t#####",
-        "####.###########",
-        "####.#####.t####",
-        "####..P#########",
-        "####.###########",
-        "####.#####..t###",
         "################",
         "################",
         "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-    ]},
-    {"seeds": 3, "rows": [
-        "################",
-        "################",
-        "####.#####t#####",
-        "####..P#########",
-        "####.#####...t##",
-        "####.###########",
-        "####.####t.#####",
-        "################",
-        "################",
-        "################",
+        "#.###########t##",
+        "#.##############",
+        "#P.########t..##",
+        "#.##############",
+        "#.##########t.##",
         "################",
         "################",
         "################",
@@ -291,11 +367,11 @@ def _paste(under, over):
 
 
 def _stone_face(x, y):
-    px = [[WALL_FILL] * CELL for _ in range(CELL)]
+    px = [[WALL] * CELL for _ in range(CELL)]
     joint = (y % 2) * 2
     for j in range(CELL - 1):
-        px[j][joint] = WALL_EDGE
-    px[CELL - 1] = [WALL_EDGE] * CELL
+        px[j][joint] = SPINE_COLOUR
+    px[CELL - 1] = [SPINE_COLOUR] * CELL
     return px
 
 
@@ -309,8 +385,8 @@ def _fitting_face(x, y, pulse):
 
 
 def _floor_face(x, y):
-    px = [[SOIL_TILE] * CELL for _ in range(CELL)]
-    return _paste(px, speckle(WALL_FILL, x + y)) if (x * 2 + y) % 3 == 0 else px
+    px = [[SOIL] * CELL for _ in range(CELL)]
+    return _paste(px, speckle(WALL, x + y)) if (x * 2 + y) % 3 == 0 else px
 
 
 def _plant_face(age):
@@ -324,7 +400,7 @@ def _plant_face(age):
 
 
 def _goal_face(age, lit=False):
-    px = ring(GOAL_EDGE)
+    px = ring(GOAL)
     for j, i in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
         px[j][i] = -1
     if age is None:
@@ -392,11 +468,11 @@ class G032A(RenderableUserDisplay):
         total = LEVELS_SPEC[self._game.level_index]["seeds"]
         left = self._game.seeds
         for i in range(total):
-            top = TALLY_TOP + i * TALLY_GAP
-            length = min(TALLY_MIN + i, CELL)
-            if top + 2 > frame.shape[0] or TALLY_LEFT + length > frame.shape[1]:
+            top = LEDGER_TOP + i * LEDGER_GAP
+            length = min(LEDGER_MIN + i, CELL)
+            if top + 2 > frame.shape[0] or LEDGER_LEFT + length > frame.shape[1]:
                 break
-            frame[top:top + 2, TALLY_LEFT:TALLY_LEFT + length] = (
+            frame[top:top + 2, LEDGER_LEFT:LEDGER_LEFT + length] = (
                 PIP_ON if i < left else PIP_OFF)
 
         pair = self._game.thread_pair
@@ -404,7 +480,7 @@ class G032A(RenderableUserDisplay):
             (ax, ay), (bx, by) = pair
             hairline(frame, (ax * CELL + CELL // 2, ay * CELL + CELL // 2),
                      (bx * CELL + CELL // 2, by * CELL + CELL // 2), PIP_ON,
-                     only_over={SOIL_TILE, WALL_FILL, SPINE_COLOUR})
+                     only_over={SOIL, WALL, SPINE_COLOUR})
         return frame
 
 
@@ -422,7 +498,7 @@ class G032(ARCBaseGame):
         self._fittings = ()
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=SOIL_TILE, letter_box=SPINE_COLOUR,
+            background=SOIL, letter_box=SPINE_COLOUR,
             interfaces=[G032A(self)],
         )
         super().__init__(game_id="g032", levels=build_levels(), camera=camera)
