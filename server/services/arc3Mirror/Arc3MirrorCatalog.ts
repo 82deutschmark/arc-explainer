@@ -388,6 +388,97 @@ function claimOrder(): number[] {
     .sort((a, b) => Number(SOURCES[a].kind !== 'local') - Number(SOURCES[b].kind !== 'local'));
 }
 
+/** Module names a Python file imports, by name only. Deliberately syntactic -- a regex
+ *  over import statements, not a parse. Over-matching is harmless because every name is
+ *  then required to resolve to a support file on disk; under-matching is the only real
+ *  risk, and the two forms below are the only ones the published games use. */
+function importedModuleNames(code: string): string[] {
+  const names = new Set<string>();
+  const re = /^[ \t]*(?:from[ \t]+([A-Za-z_][A-Za-z0-9_]*)[ \t]+import|import[ \t]+([A-Za-z_][A-Za-z0-9_]*))/gm;
+  for (const m of code.matchAll(re)) names.add((m[1] ?? m[2]) as string);
+  return [...names];
+}
+
+/**
+ * The browser runs a game with `exec(source, globals())` in a Pyodide worker -- one
+ * string, no import machinery, no filesystem. So a game that imports a shared support
+ * module (sprite_book, and whatever the publisher adds next) loads fine on this server
+ * and raises ModuleNotFoundError in the browser, which is where people actually play.
+ *
+ * Not hypothetical: publishing shared modules alongside the games fixed the server-side
+ * renderer on 05-Sep-2026 and simultaneously broke 35 of the 50 authored games in the
+ * browser. Reverting the publisher was not an option -- the renderer needs those modules
+ * shipped -- so the serving side is what closes the gap.
+ *
+ * This resolves the modules against the publishing directory and prepends each as a real
+ * entry in `sys.modules`, dependencies first, so the game's own import statement finds a
+ * module instead of a hole. The game body is served byte-identical below the preamble;
+ * nothing rewrites the game.
+ *
+ * A name qualifies only if `<base>/<name>.py` exists AND is not itself a published game.
+ * Both halves matter: the first leaves stdlib, numpy and arcengine alone, the second stops
+ * one game being inlined into another if a game is ever named like a module.
+ *
+ * The payload travels as base64 rather than an interpolated literal because it is
+ * arbitrary Python -- quotes, backslashes and triple-quoted docstrings included -- and
+ * hand-escaping that is a bug waiting to happen.
+ */
+async function bundleSupportModules(source: MirrorSource, code: string): Promise<string> {
+  // Only a local source has a directory to resolve against. An http catalog serves what
+  // its publisher chose to serve, and guessing at sibling URLs there would turn one 404
+  // into a broken game.
+  if (source.kind !== 'local') return code;
+
+  const gameFiles = new Set(source.srcPathIndex.values());
+  const emitted = new Map<string, string>();
+
+  const visit = async (body: string, chain: string[]): Promise<void> => {
+    for (const name of importedModuleNames(body)) {
+      if (emitted.has(name) || chain.includes(name)) continue;
+      const rel = `${name}.py`;
+      if (gameFiles.has(rel)) continue;
+      let modSource: string;
+      try {
+        modSource = await readFrom(source, rel);
+      } catch {
+        continue; // not a support module on disk: stdlib, numpy, arcengine, or absent
+      }
+      // Depth first, so a support module that imports another is defined after it.
+      await visit(modSource, [...chain, name]);
+      emitted.set(name, modSource);
+    }
+  };
+
+  await visit(code, []);
+  if (emitted.size === 0) return code;
+
+  const blocks = [...emitted].map(([name, modSource]) => {
+    const b64 = Buffer.from(modSource, 'utf-8').toString('base64');
+    const file = JSON.stringify(`${name}.py`);
+    // __file__ and the compile() filename are set so a traceback inside a support module
+    // names that module, not the game that imported it.
+    return [
+      `_arc3_mod = _arc3_types.ModuleType(${JSON.stringify(name)})`,
+      `_arc3_mod.__file__ = ${file}`,
+      `exec(compile(_arc3_b64.b64decode("${b64}").decode("utf-8"), ${file}, "exec"), _arc3_mod.__dict__)`,
+      `_arc3_sys.modules[${JSON.stringify(name)}] = _arc3_mod`,
+    ].join('\n');
+  });
+
+  const preamble = [
+    `# --- support modules inlined by arc3Mirror: ${[...emitted.keys()].join(', ')} ---`,
+    `# The Pyodide worker execs one string with no import machinery. See`,
+    `# bundleSupportModules() in server/services/arc3Mirror/Arc3MirrorCatalog.ts.`,
+    `import sys as _arc3_sys, types as _arc3_types, base64 as _arc3_b64`,
+    ...blocks,
+    `del _arc3_sys, _arc3_types, _arc3_b64, _arc3_mod`,
+    `# --- end support modules ---`,
+    '',
+  ].join('\n');
+
+  return preamble + code;
+}
+
 export class Arc3MirrorCatalog {
   /**
    * The merged, stripped catalog.
@@ -511,6 +602,10 @@ export class Arc3MirrorCatalog {
         }
       }
     }
+
+    // Bundled before the version is taken, not after: sourceVersion is what the client
+    // caches and reports against, so it has to describe the string the client receives.
+    served = await bundleSupportModules(owner, served);
 
     return { sourceCode: served, className: game.className, sourceVersion: sourceVersionOf(served) };
   }
