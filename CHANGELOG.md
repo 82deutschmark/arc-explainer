@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.45.0  Sep 5, 2026
+
+- **The 571 unreviewed generated tasks come off the default browse view** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: Son Pham's call — "Fresh Off The Pipeline is a slop machine garbage of epic proportion, hide them from main page for the time being. On the front page, we will only accept games with at least one glow-up." So `/arc3/browse` now opens on the 356 tasks that have been through review, not on the generator dump.
+  - **Hidden at the presentation layer, on purpose.** `HIDDEN_FROM_BROWSE` in `CommunityGallery.tsx` is the whole of the change, and the note on it says why the catalog was the wrong place: `Arc3MirrorCatalog.getSource()` and `Arc3MirrorThumbnails.getThumbnailPath()` both resolve an id *through* `listGames()`, so dropping `ai-generated` there would return no Python source and no opening frame for 305 of the 341 tasks in `/play`'s review queue. The queue is static data and would never have noticed — it would have gone on handing reviewers ids that no longer load.
+  - **Still reachable in one click.** The filter chip keeps its full count of 571 and still works; only the unfiltered view drops the set. A set nobody can open is a set nobody can overrule, and this is explicitly "for the time being" — reverting is emptying one `Set`.
+  - **Every count comes off the same list.** `browsable` feeds the pager, the total beside the search box, the section totals and the "All" chip. This page has already shipped the bug where a count and the grid disagreed — it announced "1–60 of 877" while rendering nothing — and hiding a category is exactly the change that brings it back. The "All" chip in particular would otherwise have advertised 927 over a grid paging through 356.
+  - **The thumbnail warm-up was pointed at the hidden set.** `WARM_UP_PLAN` rendered 60 `ai-generated` tiles at 256px on boot, on a comment claiming that category was "what both public pages lead with". That was already false — `SyntheticLanding` sorts it last — and after this change it is the one set page 1 never shows. Railway's disk is ephemeral, so every redeploy would have left the front page filling in from grey while the cache held frames for tiles nobody sees. The pipeline set now warms last.
+
 ### Version 9.44.0  Sep 5, 2026
 
 - **Publishing a game is now gated in the Docker build, and copying the games was never publishing them** (Author: Mark Barney / Claude Opus 5)

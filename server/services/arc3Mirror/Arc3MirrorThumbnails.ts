@@ -1,6 +1,6 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-30
+Date: 2026-09-05
 PURPOSE: Renders one mirrored ARC-AGI-3 game's opening frame to a cached PNG. The blind
          gallery shows a frame per task the way arcprize.org does, and the frame is the
          only thing a player is supposed to reason from -- it carries no words, so unlike
@@ -56,8 +56,15 @@ const WARM_UP_PLAN: { size: number; count: number }[] = [
   { size: 128, count: 12 },
 ];
 
-/** Our own generation pipeline -- the category both public pages lead with, so it is
- *  also what warms first. Mirrors PIPELINE_CATEGORY in the client pages. */
+/** Our own generation pipeline. Mirrors PIPELINE_CATEGORY in the client pages.
+ *
+ *  It is what warms LAST. The comment here used to say this was "the category both public
+ *  pages lead with", and by 05-Sep-2026 that was false on both counts: SyntheticLanding
+ *  sorts it to the back, and CommunityGallery's HIDDEN_FROM_BROWSE now keeps it off the
+ *  default browse view entirely. Warming it first spent the whole warm-up budget on tiles
+ *  no visitor is shown -- and because Railway's disk is ephemeral, that is the state after
+ *  EVERY redeploy, not an edge case. The front page would fill in from grey while the
+ *  cache held 60 frames for a hidden set. */
 const PIPELINE_CATEGORY = 'ai-generated';
 
 let activeRenders = 0;
@@ -129,10 +136,12 @@ export class Arc3MirrorThumbnails {
       const startedAt = Date.now();
       try {
         const games = await Arc3MirrorCatalog.listGames();
-        // Same order the pages render in, so we warm what is actually shown first.
+        // Same order the pages render in, so we warm what is actually shown first --
+        // which since 05-Sep-2026 means the pipeline set goes to the BACK. See
+        // PIPELINE_CATEGORY above.
         const ordered = [
-          ...games.filter((g) => g.category === PIPELINE_CATEGORY),
           ...games.filter((g) => g.category !== PIPELINE_CATEGORY),
+          ...games.filter((g) => g.category === PIPELINE_CATEGORY),
         ];
 
         let rendered = 0;
