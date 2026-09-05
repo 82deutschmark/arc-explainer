@@ -618,7 +618,7 @@ class G519(ARCBaseGame):
             for item in LEVELS
         ]
         super().__init__(
-            "q070", levels,
+            "g519", levels,
             Camera(0, 0, 64, 64, SNOW, SNOW, [self.display]),
             False, len(levels), [1, 2, 3, 4, 5, 6],
         )
