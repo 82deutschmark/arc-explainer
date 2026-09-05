@@ -31,6 +31,7 @@ import {
   FEEDBACK_FLAGS,
   MAX_NOTE_LENGTH,
 } from '../repositories/Arc3FeedbackRepository.js';
+import { Arc3Promotion } from '../services/arc3Mirror/Arc3Promotion.js';
 
 const router = Router();
 
@@ -203,6 +204,31 @@ router.get(
       return res.status(400).json(formatResponse.error('BAD_GAME_ID', 'Invalid game id'));
     }
     return res.json(formatResponse.success(await Arc3FeedbackRepository.getSummary(gameId)));
+  }),
+);
+
+/**
+ * GET /api/arc3-play/promoted
+ * Which games a human has validated, on which build, and why the rest did not clear.
+ *
+ * The selection signal for the training side, which until now had none: the agent trained
+ * on whatever games were in a run rather than on games somebody confirmed were fair.
+ *
+ * Public and unauthenticated like the rest of this surface, and counts only -- the rule,
+ * the numbers behind each decision, and the reasons. Never note text.
+ *
+ * Advisory. It returns every candidate and its verdict, not a filtered corpus; the caller
+ * decides what to do. An empty `promoted` list is a real answer and the expected one until
+ * the current builds have been played.
+ */
+router.get(
+  '/promoted',
+  asyncHandler(async (req: Request, res: Response) => {
+    const gameId = typeof req.query.game === 'string' ? req.query.game : undefined;
+    if (gameId && !GAME_ID.test(gameId)) {
+      return res.status(400).json(formatResponse.error('BAD_GAME_ID', 'Invalid game id'));
+    }
+    return res.json(formatResponse.success(await Arc3Promotion.list(gameId)));
   }),
 );
 
