@@ -59,6 +59,23 @@ export interface FeedbackInput {
   sourceVersion: string | null;
 }
 
+/** One game-and-build's verdict counts. `sourceVersion` null means the rows predate the
+ *  stamp, not that they describe the current build. */
+export interface VerdictBuildRow {
+  gameId: string;
+  sourceVersion: string | null;
+  responses: number;
+  solvedIt: number;
+  neverUnderstood: number;
+  inputsDidNothing: number;
+  feltBroken: number;
+  feltImpossible: number;
+  enjoyedIt: number;
+  notes: number;
+  maxReachedLevel: number;
+  lastSeen: string;
+}
+
 /** Notes are for a human reader, not a corpus. Long enough for a real thought. */
 export const MAX_NOTE_LENGTH = 1000;
 
@@ -141,6 +158,66 @@ export class Arc3FeedbackRepository {
       logger.warn(`arc3 feedback write failed: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
+  }
+
+  /**
+   * Verdict counts grouped by GAME AND BUILD, which is the grouping a promotion decision
+   * needs and getSummary deliberately does not have.
+   *
+   * getSummary groups by game_id alone. That is right for culling -- "is this game broken"
+   * is a question about the game -- and wrong for promotion, because a game keeps its id
+   * across a rebuild and its verdicts do not transfer. Two rows for the same game with
+   * different source_version are two different games as far as this is concerned.
+   *
+   * A NULL source_version is its own group and is never a claim about the current build:
+   * those rows predate the stamp (everything before 04-Sep-2026). They are returned so the
+   * caller can SAY they were excluded rather than quietly dropping them.
+   *
+   * COUNTS ONLY, like getSummary. Note text never leaves the database through an endpoint.
+   */
+  static async getVerdictsByBuild(gameId?: string): Promise<VerdictBuildRow[]> {
+    await ensureSchema();
+    const pool = getPool();
+    if (!pool) return [];
+
+    const where = gameId ? 'WHERE game_id = $1' : '';
+    const params = gameId ? [gameId] : [];
+
+    const rows = await pool.query(
+      `SELECT game_id,
+              source_version,
+              COUNT(*)                                                      AS responses,
+              COUNT(*) FILTER (WHERE 'solved_it'          = ANY(flags))     AS solved_it,
+              COUNT(*) FILTER (WHERE 'never_understood'   = ANY(flags))     AS never_understood,
+              COUNT(*) FILTER (WHERE 'inputs_did_nothing' = ANY(flags))     AS inputs_did_nothing,
+              COUNT(*) FILTER (WHERE 'felt_broken'        = ANY(flags))     AS felt_broken,
+              COUNT(*) FILTER (WHERE 'felt_impossible'    = ANY(flags))     AS felt_impossible,
+              COUNT(*) FILTER (WHERE 'enjoyed_it'         = ANY(flags))     AS enjoyed_it,
+              COUNT(*) FILTER (WHERE note <> '')                            AS notes,
+              COALESCE(MAX(reached_level), 0)                               AS max_reached_level,
+              MAX(created_at)                                               AS last_seen
+         FROM community_game_feedback
+         ${where}
+        GROUP BY game_id, source_version`,
+      params,
+    );
+
+    // pg returns bigint/numeric as string to avoid precision loss. These are all small
+    // counts, so the cast is safe and the caller gets numbers it can compare.
+    return rows.rows.map((r: Record<string, unknown>) => ({
+      gameId: String(r.game_id),
+      sourceVersion: r.source_version === null ? null : String(r.source_version),
+      responses: Number(r.responses),
+      solvedIt: Number(r.solved_it),
+      neverUnderstood: Number(r.never_understood),
+      inputsDidNothing: Number(r.inputs_did_nothing),
+      feltBroken: Number(r.felt_broken),
+      feltImpossible: Number(r.felt_impossible),
+      enjoyedIt: Number(r.enjoyed_it),
+      notes: Number(r.notes),
+      maxReachedLevel: Number(r.max_reached_level),
+      lastSeen: r.last_seen instanceof Date ? r.last_seen.toISOString() : String(r.last_seen ?? ''),
+    }));
   }
 
   /**
