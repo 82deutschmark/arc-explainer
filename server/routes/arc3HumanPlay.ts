@@ -36,6 +36,15 @@ const router = Router();
 
 const SESSION_GUID = /^[A-Za-z0-9_-]{8,64}$/;
 const GAME_ID = /^[A-Za-z0-9_.-]{1,64}$/;
+/** Short hex from Arc3MirrorCatalog.sourceVersionOf. Anything else is stored as null
+ *  rather than rejected: a stamp we cannot trust is worse than no stamp, and failing the
+ *  write would lose the player's note over a field they did not type. */
+const SOURCE_VERSION = /^[0-9a-f]{6,64}$/;
+
+function cleanSourceVersion(value: unknown): string | null {
+  const v = typeof value === 'string' ? value : '';
+  return SOURCE_VERSION.test(v) ? v : null;
+}
 
 /**
  * A click coordinate, or null. Grids are small, but this is a public unauthenticated
@@ -79,6 +88,7 @@ router.post(
       req.body?.isFirstSession === true,
       typeof req.body?.uaFamily === 'string' ? req.body.uaFamily : '',
       typeof req.body?.viewport === 'string' ? req.body.viewport : '',
+      cleanSourceVersion(req.body?.sourceVersion),
     );
 
     let written = 0;
@@ -174,6 +184,7 @@ router.post(
 
     const stored = await Arc3FeedbackRepository.record({
       sessionGuid, gameId, flags, note, reachedLevel, outcome,
+      sourceVersion: cleanSourceVersion(req.body?.sourceVersion),
     });
     return res.json(formatResponse.success({ stored }));
   }),

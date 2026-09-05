@@ -88,6 +88,7 @@ SRP/DRY check: Pass -- reading/caching/stripping only, parameterised per source
          contract is unchanged.
 */
 
+import { createHash } from 'node:crypto';
 import fs from 'fs/promises';
 import path from 'path';
 import { logger } from '../../utils/logger';
@@ -118,6 +119,20 @@ const MANIFEST_TTL_MS = 5 * 60 * 1000;
  * would reproduce, in memory, exactly the staleness this mirror exists to remove. Applies
  * to HTTP sources only: our own files are read from disk on demand and never cached.
  */
+/**
+ * Identity of the exact bytes we served. A game keeps its id when its content changes --
+ * `g012` has already been rebuilt from 16x16 in eight blocks to 15x11 in six -- so a
+ * verdict keyed by id alone silently becomes a verdict on a game the player never saw.
+ * This is the version that makes a stored verdict mean something.
+ *
+ * Content-derived rather than a manifest field, because nothing upstream emits a version
+ * and a hash of what we actually handed the browser cannot drift from what was played.
+ * Short hex: this is a change detector, not a security boundary.
+ */
+export function sourceVersionOf(sourceCode: string): string {
+  return createHash('sha256').update(sourceCode, 'utf8').digest('hex').slice(0, 12);
+}
+
 const SOURCE_TTL_MS = 60 * 60 * 1000;
 const FETCH_TIMEOUT_MS = 20_000;
 
@@ -460,7 +475,9 @@ export class Arc3MirrorCatalog {
   /** Python source for one game, read from the source that published it. An `http`
    *  source is cached for SOURCE_TTL_MS -- see the note there on why that is not
    *  indefinite; a local file is read every time and never cached. */
-  static async getSource(gameId: string): Promise<{ sourceCode: string; className: string } | null> {
+  static async getSource(
+    gameId: string,
+  ): Promise<{ sourceCode: string; className: string; sourceVersion: string } | null> {
     const game = await this.getGame(gameId);
     if (!game) return null;
 
@@ -470,26 +487,32 @@ export class Arc3MirrorCatalog {
     if (!owner || !srcPath) return null;
 
     const cached = owner.kind === 'local' ? undefined : sourceCache.get(gameId);
+
+    // One variable holds whatever we are about to serve, and the version is derived from
+    // it at the single exit. Hashing anywhere else would stamp the fresh read's version
+    // onto the stale-cache fallback below, which is the one path where the two differ.
+    let served: string;
+
     if (cached && Date.now() - cached.fetchedAt < SOURCE_TTL_MS) {
-      return { sourceCode: cached.value, className: game.className };
-    }
-
-    let sourceCode: string;
-    try {
-      sourceCode = await readFrom(owner, srcPath);
-      if (!sourceCode.trim()) throw new Error(`${owner.key} source was empty`);
-    } catch (error) {
-      // An expired entry still runs the game; refusing to serve it because the refresh
-      // failed would take a playable task offline for no gain.
-      if (cached) {
-        logger.warn(`arc3Mirror: source refresh failed for ${gameId}, serving cached copy - ${error instanceof Error ? error.message : String(error)}`);
-        return { sourceCode: cached.value, className: game.className };
+      served = cached.value;
+    } else {
+      try {
+        served = await readFrom(owner, srcPath);
+        if (!served.trim()) throw new Error(`${owner.key} source was empty`);
+        if (owner.kind !== 'local') sourceCache.set(gameId, { value: served, fetchedAt: Date.now() });
+      } catch (error) {
+        // An expired entry still runs the game; refusing to serve it because the refresh
+        // failed would take a playable task offline for no gain.
+        if (cached) {
+          logger.warn(`arc3Mirror: source refresh failed for ${gameId}, serving cached copy - ${error instanceof Error ? error.message : String(error)}`);
+          served = cached.value;
+        } else {
+          throw error;
+        }
       }
-      throw error;
     }
 
-    if (owner.kind !== 'local') sourceCache.set(gameId, { value: sourceCode, fetchedAt: Date.now() });
-    return { sourceCode, className: game.className };
+    return { sourceCode: served, className: game.className, sourceVersion: sourceVersionOf(served) };
   }
 
   /** Ops visibility: is the mirror live, and how stale is it? Top-level keys describe the

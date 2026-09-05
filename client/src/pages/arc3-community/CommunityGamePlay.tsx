@@ -657,6 +657,13 @@ export default function CommunityGamePlay() {
    *  from a clickable task would say the next one takes clicks when it does not. */
   useEffect(() => { if (!boardClickable) setHoverCell(null); }, [boardClickable]);
 
+  /* Stamp the run with the build that actually loaded. The version arrives with the
+     source, which resolves after humanPlay.start() has already minted the session, so it
+     is set here rather than passed to start(). Without it a verdict is keyed by id alone,
+     and an id survives a rebuild -- g012 went from 16x16 in eight blocks to 15x11 in six
+     while keeping its name, so praise for the old one would read as praise for the new. */
+  useEffect(() => { humanPlay.setSourceVersion(pyodide.sourceVersion); }, [pyodide.sourceVersion]);
+
 
   const start = useCallback(async () => {
     const target = gameId;
@@ -1004,6 +1011,7 @@ export default function CommunityGamePlay() {
               gameId={gameId ?? ''}
               reachedLevel={levelsDone}
               outcome={gameState === 'won' ? 'completed' : gameState === 'lost' ? 'lost' : 'in_progress'}
+              sourceVersion={pyodide.sourceVersion}
               doneLabel={runOver ? 'Skip \u2192 next task' : 'Skip'}
               onDone={
                 runOver
