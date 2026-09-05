@@ -12,174 +12,227 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-from sprite_book import block, door, hatch, medallion, ring, weave
 
-VOID_BG = 4
-ROCK_WALL = 8
-PLATE_SEAM = 1
-LATCH_GATE = 15
-DIGGER_AVATAR = 6
-TWIN_GHOST = 7
 
-N = 20
-CELL = 3
-PAD = (64 - N * CELL) // 2
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def hatch(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 3 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+
+FLOOR = 3
+WALL = 15
+PLATE = 11
+BUTTON = 14
+EXIT = 0
+PLAYER = 0
+GHOST = 7
+
+N = 16
+CELL = 4
 MAX_TAPE = 5
 
 LEVELS_SPEC = [
     [
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "#########s##########",
-        "#########.##########",
-        "#########.##########",
-        "#########p##########",
-        "#########.##########",
-        "#########.##########",
-        "#########D##########",
-        "#########g##########",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "####.......#####",
+        "####.s..p.Dg####",
+        "####.......#####",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
     ],
     [
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "#######s############",
-        "#######.############",
-        "#######.############",
-        "#######p############",
-        "#######....Dg#######",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "##.........#####",
+        "##.s.p....Dg####",
+        "##.........#####",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
     ],
     [
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "############p#######",
-        "############.#######",
-        "####s........#######",
-        "############.#######",
-        "############D#######",
-        "############g#######",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "####sp.....#####",
+        "##########.#####",
+        "##########.#####",
+        "##########.#####",
+        "##########D#####",
+        "##########g#####",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
     ],
     [
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "############p#######",
-        "############p#######",
-        "############.#######",
-        "####s........#######",
-        "############.#######",
-        "############D#######",
-        "############D#######",
-        "############g#######",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
+        "################",
+        "################",
+        "################",
+        "########B#######",
+        "########.#######",
+        "####sp....DEg###",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
     ],
     [
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "######B####p########",
-        "######.####.########",
-        "######.####.########",
-        "###s........########",
-        "###########D########",
-        "###########E########",
-        "###########g########",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "#######p########",
+        "###s.......Dg###",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
     ],
     [
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "#######B#####p######",
-        "#######.#####.######",
-        "#######.#####.######",
-        "#######.#####.######",
-        "####s.........######",
-        "#############.######",
-        "#############D######",
-        "#############E######",
-        "#############g######",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "######p#########",
+        "######p#########",
+        "###s.......DDg##",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
     ],
     [
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
-        "##############p#####",
-        "######B#######p#####",
-        "######.#######.#####",
-        "######.#######.#####",
-        "######.#######.#####",
-        "###s...........#####",
-        "##############.#####",
-        "##############D#####",
-        "##############D#####",
-        "##############E#####",
-        "##############g#####",
-        "####################",
-        "####################",
-        "####################",
-        "####################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "####B##p########",
+        "####.##p########",
+        "##s........DDEg#",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
+        "################",
     ],
 ]
 
@@ -256,34 +309,30 @@ def is_win(rows, state):
     return rows[state[1]][state[0]] == "g"
 
 
-def rock_pixels(x, y):
-    px = block(ROCK_WALL, CELL)
-    if 0 < x < N - 1 and 0 < y < N - 1 and (x * 3 + y * 5) % 7 == 0:
-        px[(x + y) % CELL][(x * 2 + y) % CELL] = VOID_BG
-    return px
+def wall_pixels(x, y):
+    if x in (0, N - 1) or y in (0, N - 1):
+        return block(WALL)
+    return rounded(WALL)
 
 
 def plate_pixels():
-    return medallion(PLATE_SEAM, VOID_BG, CELL)
+    return medallion(PLATE, FLOOR)
 
 
-def latch_pixels(latched):
-    return medallion(LATCH_GATE, LATCH_GATE if latched else VOID_BG, CELL)
+def button_pixels(latched):
+    return medallion(BUTTON, BUTTON if latched else FLOOR)
 
 
 def door_pixels(colour, is_open):
-    return door(colour, None if is_open else colour, CELL)
+    return door(colour, None if is_open else colour)
 
 
 def exit_pixels():
-    return ring(DIGGER_AVATAR, CELL)
+    return ring(EXIT)
 
 
-def digger_pixels(carrying):
-    core = TWIN_GHOST if carrying else DIGGER_AVATAR
-    return [[-1, DIGGER_AVATAR, -1],
-            [DIGGER_AVATAR, core, DIGGER_AVATAR],
-            [DIGGER_AVATAR, -1, DIGGER_AVATAR]]
+def player_pixels(carrying):
+    return figure(PLAYER, GHOST if carrying else None)
 
 
 def build_levels():
@@ -295,15 +344,15 @@ def build_levels():
                 px, py = x * CELL, y * CELL
                 art = tags = None
                 if ch == "#":
-                    art, tags = rock_pixels(x, y), []
+                    art, tags = wall_pixels(x, y), []
                 elif ch == "p":
                     art, tags = plate_pixels(), ["plate"]
                 elif ch == "D":
-                    art, tags = door_pixels(PLATE_SEAM, False), ["pdoor"]
+                    art, tags = door_pixels(PLATE, False), ["pdoor"]
                 elif ch == "B":
-                    art, tags = latch_pixels(False), ["latch"]
+                    art, tags = button_pixels(False), ["button"]
                 elif ch == "E":
-                    art, tags = door_pixels(LATCH_GATE, False), ["bdoor"]
+                    art, tags = door_pixels(BUTTON, False), ["bdoor"]
                 elif ch == "g":
                     art, tags = exit_pixels(), ["exit"]
                 if art is None:
@@ -316,7 +365,7 @@ def build_levels():
                 ).set_position(px, py))
         sx, sy = start_state(rows)[0], start_state(rows)[1]
         sprites.append(Sprite(
-            pixels=digger_pixels(True), name="digger",
+            pixels=player_pixels(True), name="player",
             blocking=BlockingMode.BOUNDING_BOX,
             interaction=InteractionMode.TANGIBLE, layer=2,
         ).set_position(sx * CELL, sy * CELL))
@@ -326,24 +375,24 @@ def build_levels():
 
 class G030A(RenderableUserDisplay):
 
-    CELL_X, CELL_Y = 4, 4
-    CELL_H = 2
+    SOCKET_TOP, SOCKET_BOTTOM = 10, 18
+    TRACK_TOP, TRACK_BOTTOM = 22, 52
+    FIRST_MARK, PITCH = 24, 6
+    INSET = 6
 
     def __init__(self, game):
         super().__init__()
         self._game = game
 
     def render_interface(self, frame):
+        used = self._game.state[7]
         held = len(self._game.state[2])
-        x0 = PAD + self.CELL_X * CELL
-        y0 = PAD + self.CELL_Y * CELL
-        rows = self.CELL_H * CELL
-        frame[y0:y0 + rows, x0:x0 + CELL] = VOID_BG
-        for i in range(min(held, rows)):
-            width = min(i // 2 + 1, CELL)
-            y = y0 + rows - 1 - i
-            frame[y, x0:x0 + width] = PLATE_SEAM
-        return frame
+        frame[self.SOCKET_TOP:self.SOCKET_BOTTOM, 0:self.INSET] = FLOOR
+        if not used:
+            frame[self.SOCKET_TOP + 1:self.SOCKET_BOTTOM - 1, 1:self.INSET - 1] = GHOST
+        frame[self.TRACK_TOP:self.TRACK_BOTTOM, 0:self.INSET] = FLOOR
+        return studs(frame, MAX_TAPE, held, PLATE, WALL,
+                     side="west", start=self.FIRST_MARK, gap=self.PITCH)
 
 
 class G030(ARCBaseGame):
@@ -359,11 +408,10 @@ class G030(ARCBaseGame):
         self._wake = False
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=VOID_BG, letter_box=ROCK_WALL,
+            background=FLOOR, letter_box=5,
             interfaces=[G030A(self)],
         )
-        super().__init__(game_id="g030", levels=build_levels(), camera=camera,
-                         available_actions=[1, 2, 3, 4, 5])
+        super().__init__(game_id="g030", levels=build_levels(), camera=camera)
 
     @property
     def rows(self):
@@ -393,37 +441,37 @@ class G030(ARCBaseGame):
         level = self.current_level
         px, py, _, gx, gy, _, latched, used = self.state
 
-        self._face("digger", digger_pixels(not used))
-        digger = level.get_sprites_by_name("digger")
-        if digger:
-            digger[0].set_position(px * CELL, py * CELL)
+        self._face("player", player_pixels(not used))
+        player = level.get_sprites_by_name("player")
+        if player:
+            player[0].set_position(px * CELL, py * CELL)
 
-        twin = level.get_sprites_by_name("twin")
+        ghost = level.get_sprites_by_name("ghost")
         if gx >= 0:
-            self._face("twin", weave(TWIN_GHOST, CELL))
-            if twin:
-                twin[0].set_position(gx * CELL, gy * CELL)
+            self._face("ghost", weave(GHOST))
+            if ghost:
+                ghost[0].set_position(gx * CELL, gy * CELL)
             else:
                 level.add_sprite(Sprite(
-                    pixels=weave(TWIN_GHOST, CELL), name="twin",
+                    pixels=weave(GHOST), name="ghost",
                     blocking=BlockingMode.BOUNDING_BOX,
                     interaction=InteractionMode.TANGIBLE, layer=1,
                 ).set_position(gx * CELL, gy * CELL))
-        elif twin:
-            level.remove_sprite(twin[0])
+        elif ghost:
+            level.remove_sprite(ghost[0])
 
         held = _plate_held(rows, px, py, gx, gy)
         for sprite in level.get_sprites_by_tag("pdoor"):
-            sprite.pixels = np.array(door_pixels(PLATE_SEAM, held), dtype=np.int8)
+            sprite.pixels = np.array(door_pixels(PLATE, held), dtype=np.int8)
         for sprite in level.get_sprites_by_tag("bdoor"):
-            sprite.pixels = np.array(door_pixels(LATCH_GATE, latched), dtype=np.int8)
-        for sprite in level.get_sprites_by_tag("latch"):
-            sprite.pixels = np.array(latch_pixels(latched), dtype=np.int8)
+            sprite.pixels = np.array(door_pixels(BUTTON, latched), dtype=np.int8)
+        for sprite in level.get_sprites_by_tag("button"):
+            sprite.pixels = np.array(button_pixels(latched), dtype=np.int8)
 
     def _mark_wake(self, x, y):
         self._wake = True
         self.current_level.add_sprite(Sprite(
-            pixels=hatch(TWIN_GHOST, CELL), name="wake",
+            pixels=hatch(GHOST), name="wake",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.INTANGIBLE, layer=1,
         ).set_position(x * CELL, y * CELL))
@@ -437,16 +485,12 @@ class G030(ARCBaseGame):
         lit = self._fx % 2 == 0
         used = self.state[7]
         if self._fx_kind == "release":
-            self._face("twin", block(TWIN_GHOST, CELL))
-            self._face("digger",
-                       digger_pixels(True) if lit else weave(DIGGER_AVATAR, CELL))
+            self._face("ghost", block(GHOST))
+            self._face("player", player_pixels(True) if lit else weave(PLAYER))
         elif self._fx_kind == "fade":
-            self._face("wake",
-                       weave(TWIN_GHOST, CELL) if lit else hatch(TWIN_GHOST, CELL))
+            self._face("wake", weave(GHOST) if lit else hatch(GHOST))
         elif self._fx_kind == "clear":
-            self._face("digger",
-                       medallion(ROCK_WALL, DIGGER_AVATAR, CELL) if lit
-                       else digger_pixels(not used))
+            self._face("player", medallion(WALL, PLAYER) if lit else player_pixels(not used))
 
     def _settle(self):
         kind, self._fx_kind = self._fx_kind, ""

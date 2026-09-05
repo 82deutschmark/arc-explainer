@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from sprite_book import hatch, weave
 
 from arcengine import (
     ARCBaseGame,
@@ -15,518 +14,576 @@ from arcengine import (
     Sprite,
 )
 
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def facing(body: int, visor: int, heading: tuple, cell: int = 4) -> list[list[int]]:
+    px = rounded(body, cell)
+    dx, dy = heading
+    last = cell - 1
+    if dy < 0:
+        px[0][1] = px[0][cell - 2] = visor
+    elif dy > 0:
+        px[last][1] = px[last][cell - 2] = visor
+    elif dx < 0:
+        px[1][0] = px[cell - 2][0] = visor
+    elif dx > 0:
+        px[1][last] = px[cell - 2][last] = visor
+    else:
+        px[1][1] = visor
+    return px
+
+def key_shape(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[0][1] = px[0][2] = colour
+    px[1][1] = px[1][2] = colour
+    px[2][1] = colour
+    px[3][1] = px[3][2] = colour
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def hatch(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 3 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def hairline(frame, a: tuple, b: tuple, colour: int, only_over=None):
+    x0, y0 = a
+    x1, y1 = b
+    dx, dy = abs(x1 - x0), abs(y1 - y0)
+    sx = 1 if x0 < x1 else -1
+    sy = 1 if y0 < y1 else -1
+    err = dx - dy
+    h, w = frame.shape
+    while True:
+        if 0 <= x0 < w and 0 <= y0 < h:
+            if only_over is None or int(frame[y0, x0]) in only_over:
+                frame[y0, x0] = colour
+        if x0 == x1 and y0 == y1:
+            break
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x0 += sx
+        if e2 < dx:
+            err += dx
+            y0 += sy
+    return frame
+
+def ease_out(t: float) -> float:
+    t = 0.0 if t < 0 else (1.0 if t > 1 else t)
+    return 1 - (1 - t) * (1 - t)
+
+def tween(a: int, b: int, step: int, span: int) -> int:
+    if span <= 0:
+        return b
+    return int(round(a + (b - a) * ease_out(step / span)))
+
+
 FLOOR = 1
 WALL = 5
-SAND_FILL = 3
-BUFFER_EDGE = 13
-DRUM_FILL = 9
+PIT = 5
+DECK = 1
+GOAL = 14
+CRATE = 9
 PLAYER = 12
-PLAYER_MARK = 5
-GOAL = 10
-PART_GLYPH = 6
-PART_EYE = 5
+PLAYER_VISOR = 5
+PART = 7
+PART_CORE = 5
+SLOT_EMPTY = 1
 
-PART_KINDS = ("R", "W", "M", "S")
+PART_KINDS = ("R", "W", "M", "O")
 
-NX, NY = 12, 10
-CELL = 5
-PAD_X, PAD_Y = 2, 3
-
-STEP = {"L": (-1, 0), "R": (1, 0), "V": (0, 1)}
-EDGES = {
-    0: ((-1, 0), (1, 0), (0, 1)),
-    1: ((-1, 0), (1, 0), (0, -1)),
-}
-FACES = ("L", "R", "V")
-ACTIONS = ("L", "R", "V", "TAKE", "FIRE", "WAIT")
-
-OPEN = ".~vX"
+N = 16
+CELL = 4
 
 PAIRS = {
-    ("R", "W"): "crank",
-    ("S", "W"): "chock",
-    ("M", "R"): "auger",
-    ("R", "S"): "line",
+    ("R", "W"): "cart",
+    ("M", "R"): "drill",
+    ("M", "O"): "winch",
+    ("O", "W"): "grapple",
+    ("R", "R"): "plank",
 }
 
+DIRS = {"U": (0, -1), "D": (0, 1), "L": (-1, 0), "R": (1, 0)}
+MOVES = ("U", "D", "L", "R")
+ACTIONS = MOVES + ("ACT", "RET")
+
 LEVELS_SPEC = [
+    ["################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "#..............#",
+     "#..............#",
+     "#..............#",
+     "#.P.R.W....C.G##",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################"],
 
-    ["############",
-     "############",
-     "############",
-     "#..........#",
-     "#..R..W....#",
-     "#P..D.....X#",
-     "#..........#",
-     "############",
-     "############",
-     "############"],
+    ["################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "#..........#####",
+     "#..........#####",
+     "#.P.R.M.R.W#..##",
+     "#..........#CG##",
+     "#..........#####",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################"],
 
-    ["############",
-     "############",
-     "############",
-     "#..........#",
-     "#P.R.W.S...#",
-     "#=..{..~~.X#",
-     "#..........#",
-     "############",
-     "############",
-     "############"],
+    ["################",
+     "################",
+     "################",
+     "################",
+     "#..............#",
+     "#.O.M.W........#",
+     "#..............#",
+     "#.P...Goo...C..#",
+     "#..............#",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################"],
 
-    ["############",
-     "#..S.#######",
-     "#.R..#######",
-     "#..W.#######",
-     "#...########",
-     "#P.D..D..X##",
-     "############",
-     "############",
-     "############",
-     "############"],
+    ["################",
+     "################",
+     "################",
+     "#..............#",
+     "#.R.R.R.W......#",
+     "#..............#",
+     "#.P......C.o.G##",
+     "#..............#",
+     "#..............#",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################"],
 
-    ["############",
-     "############",
-     "############",
-     "#..........#",
-     "#.R.W...WS.#",
-     "#=......XDP#",
-     "#..........#",
-     "############",
-     "############",
-     "############"],
+    ["################",
+     "################",
+     "#..............#",
+     "#.P.O.W........#",
+     "#..............#",
+     "#..............#",
+     "#oooooooooooooo#",
+     "#..............#",
+     "#.O.M.....C.G..#",
+     "#..............#",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################"],
 
-    ["############",
-     "############",
-     "#..........#",
-     "#.M.R.R.W..#",
-     "#P.D#...v..#",
-     "########.X##",
-     "############",
-     "############",
-     "############",
-     "############"],
+    ["################",
+     "################",
+     "#..............#",
+     "#.R.M.O.W......#",
+     "#..............#",
+     "#.P......C..o..#",
+     "#..............#",
+     "#........G.#...#",
+     "#..............#",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################"],
 
-    ["############",
-     "############",
-     "########.#.#",
-     "########...#",
-     "########.M.#",
-     "#RWD.R.SPX##",
-     "############",
-     "############",
-     "############",
-     "############"],
+    ["################",
+     "################",
+     "#.......o......#",
+     "#.......o......#",
+     "#.R.W.O.o......#",
+     "#.......o......#",
+     "#.P.C.C.o..G...#",
+     "#.....M.o......#",
+     "#.......o......#",
+     "#.......o......#",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################"],
 
-    ["############",
-     "############",
-     "############",
-     "#####......#",
-     "#####MRRWS.#",
-     "#=..D.#P.X##",
-     "############",
-     "############",
-     "############",
-     "############"],
+    ["################",
+     "################",
+     "#.R.R.R.R.W.M..#",
+     "#..............#",
+     "#..............#",
+     "#......#.......#",
+     "#.P..C.#.o.G####",
+     "#......#.......#",
+     "#..............#",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################",
+     "################"],
 ]
 
 
 def _parse(rows: list[str]) -> dict:
     base = [list(r) for r in rows]
     parts: list[tuple[int, int, str]] = []
-    drums: list[tuple[int, int, int, int]] = []
-    start = cradle = None
+    crates: list[tuple[int, int]] = []
+    start = goal = None
     for y, row in enumerate(rows):
         for x, ch in enumerate(row):
             if ch in PART_KINDS:
                 parts.append((x, y, ch))
                 base[y][x] = "."
-            elif ch == "D":
-                drums.append((x, y, 0, 1))
-                base[y][x] = "."
-            elif ch == ">":
-                drums.append((x, y, 1, 1))
-                base[y][x] = "."
-            elif ch == "<":
-                drums.append((x, y, 1, -1))
-                base[y][x] = "."
-            elif ch == "}":
-                drums.append((x, y, 2, 1))
-                base[y][x] = "."
-            elif ch == "{":
-                drums.append((x, y, 2, -1))
+            elif ch == "C":
+                crates.append((x, y))
                 base[y][x] = "."
             elif ch == "P":
                 start = (x, y)
                 base[y][x] = "."
-            elif ch == "X":
-                cradle = (x, y)
-    if start is None or cradle is None or not drums:
-        raise ValueError("a level needs a start, a cradle and at least one drum")
+            elif ch == "G":
+                goal = (x, y)
+    if start is None or goal is None or not crates:
+        raise ValueError("level needs a start, a goal and at least one payload")
     return {
         "rows": rows,
         "base": ["".join(r) for r in base],
         "parts": parts,
-        "drums": tuple(sorted(drums)),
+        "crates": tuple(sorted(crates)),
         "start": start,
-        "cradle": cradle,
+        "goal": goal,
     }
 
 
 LEVELS = [_parse(rows) for rows in LEVELS_SPEC]
-for _lv in LEVELS:
-    assert len(_lv["rows"]) == NY and all(len(r) == NX for r in _lv["rows"])
-
-
-def up_cell(x: int, y: int) -> bool:
-    return (x + y) % 2 == 0
-
-
-def _edge(x: int, y: int, name: str) -> tuple[int, int]:
-    dx, dy = EDGES[0 if up_cell(x, y) else 1][FACES.index(name)]
-    return x + dx, y + dy
 
 
 def initial_state(index: int) -> tuple:
     lv = LEVELS[index]
-    return (lv["start"][0], lv["start"][1], "R", (),
-            tuple(0 for _ in lv["parts"]), lv["drums"], 0, ())
+    return (lv["start"][0], lv["start"][1], 1, 0, (),
+            tuple(0 for _ in lv["parts"]), lv["crates"], (), ())
 
 
-def momentum(state: tuple) -> int:
-    return sum(d[2] for d in state[5]) + state[6]
+def _in_bounds(x: int, y: int) -> bool:
+    return 0 <= x < N and 0 <= y < N
 
 
-def _terrain(lv: dict, opened: tuple, x: int, y: int) -> str:
-    if not (0 <= x < NX and 0 <= y < NY):
-        return "#"
-    ch = lv["base"][y][x]
-    if ch == "#" and (x, y) in opened:
-        return "."
-    return ch
+def _is_wall(lv: dict, opened: tuple, x: int, y: int) -> bool:
+    return lv["base"][y][x] == "#" and (x, y) not in opened
 
 
-def _drum_at(drums, x: int, y: int, skip: int = -1):
-    for i, d in enumerate(drums):
-        if i != skip and d[0] == x and d[1] == y:
-            return i
-    return None
+def _is_pit(lv: dict, filled: tuple, x: int, y: int) -> bool:
+    return lv["base"][y][x] == "o" and (x, y) not in filled
 
 
-def _standable(lv, opened, drums, x: int, y: int) -> bool:
-    return (_terrain(lv, opened, x, y) in OPEN
-            and _drum_at(drums, x, y) is None)
+def _player_can_stand(lv, opened, filled, crates, x, y) -> bool:
+    return (_in_bounds(x, y) and not _is_wall(lv, opened, x, y)
+            and not _is_pit(lv, filled, x, y) and (x, y) not in crates)
 
 
-def _tick(lv: dict, opened: tuple, drums: tuple, spent: int, trace=None):
-    live = [list(d) for d in drums]
-    settled = [False] * len(live)
-
-    def snapshot():
-        if trace is not None:
-            trace.append(tuple(sorted(tuple(d) for d in live)))
-
-    for i in range(len(live)):
-        if settled[i]:
-            continue
-        settled[i] = True
-        x, y, s, h = live[i]
-        moved = 0
-        while s > 0 and moved < s:
-            nx, ny = x + h, y
-            ch = _terrain(lv, opened, nx, ny)
-            if ch == "#":
-                spent += s
-                s = 0
-                break
-            if ch == "=":
-                h = -h
-                moved += 1
-                live[i] = [x, y, s, h]
-                snapshot()
-                continue
-            j = _drum_at(live, nx, ny, skip=i)
-            if j is not None:
-                live[j][2] += s
-                live[j][3] = h
-                settled[j] = True
-                s = 0
-                break
-            x, y = nx, ny
-            if _terrain(lv, opened, x, y) == "v":
-                vx, vy = _edge(x, y, "V")
-                if (_terrain(lv, opened, vx, vy) in OPEN
-                        and _drum_at(live, vx, vy, skip=i) is None):
-                    x, y = vx, vy
-            if _terrain(lv, opened, x, y) == "~":
-                spent += 1
-                s -= 1
-            moved += 1
-            live[i] = [x, y, s, h]
-            snapshot()
-        live[i] = [x, y, s, h]
-    snapshot()
-    return tuple(sorted(tuple(d) for d in live)), spent
+def _crate_can_rest(lv, opened, filled, crates, x, y) -> bool:
+    return (_in_bounds(x, y) and not _is_wall(lv, opened, x, y)
+            and not _is_pit(lv, filled, x, y) and (x, y) not in crates)
 
 
 def _tool(lv: dict, hands: tuple) -> str | None:
     if len(hands) != 2:
         return None
-    return PAIRS.get(tuple(sorted(lv["parts"][i][2] for i in hands)))
+    key = tuple(sorted(lv["parts"][i][2] for i in hands))
+    return PAIRS.get(key)
 
 
-def _apply(lv, tool, px, py, face, drums, spent, opened):
-    if tool == "crank":
-        if face == "V":
-            return px, py, drums, spent, opened
-        tx, ty = _edge(px, py, face)
-        i = _drum_at(drums, tx, ty)
-        if i is not None:
-            d = list(drums)
-            x, y, s, _h = d[i]
-            d[i] = (x, y, s + 1, -1 if face == "L" else 1)
-            return px, py, tuple(sorted(d)), spent, opened
+def _fire(lv, tool, px, py, dx, dy, crates, opened, filled):
+    if tool == "drill":
+        tx, ty = px + dx, py + dy
+        if (_in_bounds(tx, ty) and 0 < tx < N - 1 and 0 < ty < N - 1
+                and _is_wall(lv, opened, tx, ty)):
+            return px, py, crates, tuple(sorted(opened + ((tx, ty),))), filled
 
-    elif tool == "chock":
-        tx, ty = _edge(px, py, face)
-        i = _drum_at(drums, tx, ty)
-        if i is not None and drums[i][2] > 0:
-            d = list(drums)
-            x, y, s, h = d[i]
-            d[i] = (x, y, 0, h)
-            return px, py, tuple(sorted(d)), spent + s, opened
+    elif tool == "plank":
+        tx, ty = px + dx, py + dy
+        if _in_bounds(tx, ty) and _is_pit(lv, filled, tx, ty):
+            return px, py, crates, opened, tuple(sorted(filled + ((tx, ty),)))
 
-    elif tool == "auger":
-        if face == "V":
-            return px, py, drums, spent, opened
-        dx = -1 if face == "L" else 1
-        tx, ty = px + dx, py
-        if (_terrain(lv, opened, tx, ty) == "#"
-                and _terrain(lv, opened, tx + dx, ty) in OPEN):
-            return px, py, drums, spent, tuple(sorted(opened + ((tx, ty),)))
+    elif tool == "cart":
+        cx, cy = px + dx, py + dy
+        if (cx, cy) in crates:
+            rest = [c for c in crates if c != (cx, cy)]
+            ax, ay = cx, cy
+            while True:
+                nx, ny = ax + dx, ay + dy
+                if not _in_bounds(nx, ny) or _is_wall(lv, opened, nx, ny) or (nx, ny) in rest:
+                    break
+                if _is_pit(lv, filled, nx, ny):
+                    return (px, py, tuple(sorted(rest)), opened,
+                            tuple(sorted(filled + ((nx, ny),))))
+                ax, ay = nx, ny
+            if (ax, ay) != (cx, cy):
+                return px, py, tuple(sorted(rest + [(ax, ay)])), opened, filled
 
-    elif tool == "line":
-        if face == "V":
-            return px, py, drums, spent, opened
-        dx = -1 if face == "L" else 1
-        land = None
+    elif tool == "winch":
         k = 1
         while True:
-            cx = px + dx * k
-            if _terrain(lv, opened, cx, py) not in OPEN:
+            sx, sy = px + dx * k, py + dy * k
+            if not _in_bounds(sx, sy) or _is_wall(lv, opened, sx, sy):
                 break
-            if _drum_at(drums, cx, py) is None:
-                land = (cx, py)
+            if (sx, sy) in crates:
+                tx, ty = px + dx, py + dy
+                rest = [c for c in crates if c != (sx, sy)]
+                if k >= 2 and _crate_can_rest(lv, opened, filled, tuple(rest), tx, ty):
+                    return px, py, tuple(sorted(rest + [(tx, ty)])), opened, filled
+                break
             k += 1
-        if land is not None and land != (px, py):
-            return land[0], land[1], drums, spent, opened
 
-    return px, py, drums, spent, opened
+    elif tool == "grapple":
+        k = 1
+        while True:
+            sx, sy = px + dx * k, py + dy * k
+            if (not _in_bounds(sx, sy) or _is_wall(lv, opened, sx, sy)
+                    or (sx, sy) in crates):
+                break
+            k += 1
+        land = k - 1
+        if land >= 1:
+            lx, ly = px + dx * land, py + dy * land
+            if _player_can_stand(lv, opened, filled, crates, lx, ly):
+                return lx, ly, crates, opened, filled
+
+    return px, py, crates, opened, filled
 
 
-def _part_underfoot(lv, status, px, py):
-    for i, (qx, qy, _k) in enumerate(lv["parts"]):
-        if status[i] == 0 and (qx, qy) == (px, py):
-            return i
-    return None
-
-
-def step_state(index: int, state: tuple, action: str, trace=None) -> tuple:
+def step_state(index: int, state: tuple, action: str) -> tuple:
     lv = LEVELS[index]
-    px, py, face, hands, status, drums, spent, opened = state
+    px, py, fx, fy, hands, status, crates, opened, filled = state
 
-    if action in STEP:
-        face = action
-        nx, ny = _edge(px, py, action)
-        if _standable(lv, opened, drums, nx, ny):
+    if action in DIRS:
+        dx, dy = DIRS[action]
+        fx, fy = dx, dy
+        nx, ny = px + dx, py + dy
+        if _player_can_stand(lv, opened, filled, crates, nx, ny):
             px, py = nx, ny
+        return (px, py, fx, fy, hands, status, crates, opened, filled)
 
-    elif action == "TAKE":
-        here = _part_underfoot(lv, status, px, py)
-        if here is not None and len(hands) < 2:
-            st = list(status)
-            st[here] = 1
-            hands, status = hands + (here,), tuple(st)
-        elif hands:
-            st = list(status)
-            for i in hands:
-                st[i] = 0
-            hands, status = (), tuple(st)
+    if action == "RET":
+        st = list(status)
+        for i in hands:
+            st[i] = 0
+        return (px, py, fx, fy, (), tuple(st), crates, opened, filled)
 
-    elif action == "FIRE":
+    if action == "ACT":
         tool = _tool(lv, hands)
         if tool is not None:
-            world = _apply(lv, tool, px, py, face, drums, spent, opened)
-            if world != (px, py, drums, spent, opened):
-                px, py, drums, spent, opened = world
+            world = _fire(lv, tool, px, py, fx, fy, crates, opened, filled)
+            if world != (px, py, crates, opened, filled):
+                npx, npy, ncr, nop, nfi = world
                 st = list(status)
                 for i in hands:
                     st[i] = 2
-                hands, status = (), tuple(st)
+                return (npx, npy, fx, fy, (), tuple(st), ncr, nop, nfi)
+            return state
+        if len(hands) < 2:
+            for i, (qx, qy, _kind) in enumerate(lv["parts"]):
+                if status[i] == 0 and (qx, qy) == (px, py):
+                    st = list(status)
+                    st[i] = 1
+                    return (px, py, fx, fy, hands + (i,), tuple(st),
+                            crates, opened, filled)
+        return state
 
-    drums, spent = _tick(lv, opened, drums, spent, trace)
-    return (px, py, face, hands, status, drums, spent, opened)
+    return state
 
 
 def is_won(index: int, state: tuple) -> bool:
-    cx, cy = LEVELS[index]["cradle"]
-    return any(x == cx and y == cy and s == 0 for x, y, s, _h in state[5])
+    return LEVELS[index]["goal"] in state[6]
 
 
-UP_WIDTHS = (1, 3, 3, 5, 5)
-DOWN_WIDTHS = (5, 5, 3, 3, 1)
+def _over(base: list, top: list) -> list:
+    px = [row[:] for row in base]
+    for y, row in enumerate(top):
+        for x, value in enumerate(row):
+            if value >= 0:
+                px[y][x] = value
+    return px
 
 
-def _mask(up: bool) -> list[list[bool]]:
-    out = []
-    for w in (UP_WIDTHS if up else DOWN_WIDTHS):
-        a = (CELL - w) // 2
-        out.append([a <= i < a + w for i in range(CELL)])
-    return out
-
-
-def _tri(colour: int, up: bool) -> list[list[int]]:
-    m = _mask(up)
-    return [[colour if m[y][x] else -1 for x in range(CELL)] for y in range(CELL)]
-
-
-def _cut(face: list, texture: list, up: bool) -> list:
-    m = _mask(up)
-    for y, row in enumerate(texture):
-        for x, v in enumerate(row):
-            if v >= 0 and m[y][x]:
-                face[y][x] = v
-    return face
-
-
-def _floor_face(up: bool) -> list:
-    return _tri(FLOOR, up)
-
-
-def _sand_face(up: bool) -> list:
-    return _cut(_tri(SAND_FILL, up), weave(WALL, CELL), up)
-
-
-def _buffer_face(up: bool) -> list:
-    return _cut(_tri(BUFFER_EDGE, up), hatch(WALL, CELL), up)
-
-
-def _ramp_face(up: bool) -> list:
-    face = _tri(FLOOR, up)
-    row = CELL - 1 if up else 0
-    for x in range(CELL):
-        if face[row][x] >= 0:
-            face[row][x] = WALL
-    face[row - 1 if up else row + 1][CELL // 2] = WALL
-    return face
-
-
-def _cradle_face(up: bool) -> list:
-    m = _mask(up)
-    face = _tri(FLOOR, up)
-    for y in range(CELL):
-        for x in range(CELL):
-            if not m[y][x]:
-                continue
-            edge = (y in (0, CELL - 1) or x in (0, CELL - 1)
-                    or not m[y - 1][x] or not m[y + 1][x]
-                    or not m[y][x - 1] or not m[y][x + 1])
-            if edge:
-                face[y][x] = GOAL
-    return face
-
-
-DRUM_RIM = ((2, 0), (1, 1), (3, 1), (0, 2), (4, 2), (1, 3), (3, 3), (2, 4))
-DRUM_BODY = ((2, 1), (1, 2), (2, 2), (3, 2), (2, 3))
-PIP_ROWS = (0, 4, 1, 3)
-
-
-def _drum_face(s: int, h: int) -> list:
-    face = [[-1] * CELL for _ in range(CELL)]
-    for x, y in DRUM_RIM:
-        face[y][x] = DRUM_FILL
-    if s <= 0:
-        return face
-    for x, y in DRUM_BODY:
-        face[y][x] = DRUM_FILL
-    lead = 0 if h < 0 else CELL - 1
-    for ry in PIP_ROWS[:min(s, len(PIP_ROWS))]:
-        face[ry][lead] = DRUM_FILL
-    return face
-
-
-def _part_face(kind: str) -> list:
-    face = [[-1] * CELL for _ in range(CELL)]
-    if kind == "R":
-        for y in (1, 2, 3):
-            face[y][2] = PART_GLYPH
-        face[3][1] = face[3][3] = PART_GLYPH
-    elif kind == "W":
-        for y in (1, 2, 3):
-            for x in (1, 2, 3):
-                if not (y == 2 and x == 2):
-                    face[y][x] = PART_GLYPH
-    elif kind == "M":
-        for y in (1, 2, 3):
-            for x in (1, 2, 3):
-                face[y][x] = PART_GLYPH
-        face[2][2] = PART_EYE
-    else:
-        for y, x in ((1, 1), (1, 2), (2, 2), (3, 2), (3, 3)):
-            face[y][x] = PART_GLYPH
-    return face
-
-
-def _player_face(face_name: str, up: bool) -> list:
-    face = _tri(PLAYER, up)
-    if face_name == "L":
-        face[3 if up else 1][1] = PLAYER_MARK
-    elif face_name == "R":
-        face[3 if up else 1][3] = PLAYER_MARK
-    else:
-        face[4 if up else 0][2] = PLAYER_MARK
-    return face
-
-
-def _stamp(grid: np.ndarray, cx: int, cy: int, face: list) -> None:
+def _stamp_px(grid: np.ndarray, x0: int, y0: int, face: list) -> None:
     height, width = grid.shape
     for dy, row in enumerate(face):
-        y = PAD_Y + cy * CELL + dy
+        y = y0 + dy
         if not 0 <= y < height:
             continue
         for dx, value in enumerate(row):
-            x = PAD_X + cx * CELL + dx
+            x = x0 + dx
             if value >= 0 and 0 <= x < width:
                 grid[y, x] = value
 
 
-TERRAIN_FACE = {
-    ".": _floor_face,
-    "~": _sand_face,
-    "=": _buffer_face,
-    "v": _ramp_face,
-    "X": _cradle_face,
-}
+def _stamp(grid: np.ndarray, cx: int, cy: int, face: list) -> None:
+    _stamp_px(grid, cx * CELL, cy * CELL, face)
 
 
-def _paint(index: int, state: tuple, drums=None) -> np.ndarray:
+def _pit_face() -> list:
+    return weave(PIT, CELL)
+
+
+def _deck_face() -> list:
+    return _over(ring(WALL, CELL), core(DECK, CELL))
+
+
+def _goal_face() -> list:
+    return ring(GOAL, CELL)
+
+
+def _crate_face() -> list:
+    return rounded(CRATE, CELL)
+
+
+def _player_face(heading: tuple) -> list:
+    return facing(PLAYER, PLAYER_VISOR, heading, CELL)
+
+
+def _part_face(kind: str) -> list:
+    if kind == "R":
+        return key_shape(PART, CELL)
+    if kind == "W":
+        return ring(PART, CELL)
+    if kind == "M":
+        return _over(rounded(PART, CELL), core(PART_CORE, CELL))
+    return hatch(PART, CELL)
+
+
+def _wall_extra(x: int, y: int, tick: int) -> list | None:
+    if (x * 3 + y * 5) % 7:
+        return None
+    return fixture((WALL, WALL, FLOOR, WALL, WALL, WALL, FLOOR), tick,
+                   (x + y) % 7, CELL)
+
+
+def _paint(index: int, state: tuple, tick: int = 0,
+           omit_crate: tuple | None = None, omit_player: bool = False) -> np.ndarray:
     lv = LEVELS[index]
-    px, py, face_name, _hands, status, own, _spent, opened = state
-    if drums is None:
-        drums = own
-    grid = np.full((64, 64), WALL, dtype=np.int8)
+    px, py, fx, fy, _hands, status, crates, opened, filled = state
+    grid = np.full((N * CELL, N * CELL), FLOOR, dtype=np.int8)
 
-    for y in range(NY):
-        for x in range(NX):
-            builder = TERRAIN_FACE.get(_terrain(lv, opened, x, y))
-            if builder is not None:
-                _stamp(grid, x, y, builder(up_cell(x, y)))
+    for y in range(N):
+        for x in range(N):
+            ch = lv["base"][y][x]
+            if ch == "#":
+                if (x, y) in opened:
+                    continue
+                grid[y * CELL:y * CELL + CELL, x * CELL:x * CELL + CELL] = WALL
+                extra = _wall_extra(x, y, tick)
+                if extra is not None:
+                    _stamp(grid, x, y, extra)
+            elif ch == "o":
+                _stamp(grid, x, y, _deck_face() if (x, y) in filled else _pit_face())
+            elif ch == "G":
+                _stamp(grid, x, y, _goal_face())
 
     for i, (qx, qy, kind) in enumerate(lv["parts"]):
         if status[i] == 0:
             _stamp(grid, qx, qy, _part_face(kind))
-    for dx, dy, s, h in drums:
-        _stamp(grid, dx, dy, _drum_face(s, h))
-    _stamp(grid, px, py, _player_face(face_name, up_cell(px, py)))
+    for cx, cy in crates:
+        if (cx, cy) != omit_crate:
+            _stamp(grid, cx, cy, _crate_face())
+    if not omit_player:
+        _stamp(grid, px, py, _player_face((fx, fy)))
+    return grid
+
+
+def _transit(before: tuple, after: tuple):
+    moved_player = (before[0], before[1]) != (after[0], after[1])
+    gone = set(before[6]) - set(after[6])
+    came = set(after[6]) - set(before[6])
+    dug = set(after[7]) - set(before[7])
+    decked = set(after[8]) - set(before[8])
+
+    if moved_player and not gone and not came and not dug and not decked:
+        return "player", (before[0], before[1]), (after[0], after[1])
+    if moved_player:
+        return None
+    if len(gone) == 1 and len(came) == 1 and not dug and not decked:
+        return "crate", gone.pop(), came.pop()
+    if len(gone) == 1 and not came and not dug and len(decked) == 1:
+        return "crate", gone.pop(), decked.pop()
+    if not gone and not came and len(dug) == 1 and not decked:
+        return "break", dug.pop(), None
+    if not gone and not came and not dug and len(decked) == 1:
+        return "deck", decked.pop(), None
+    return None
+
+
+def _paint_flight(index: int, before: tuple, after: tuple, flight: tuple,
+                  step: int, span: int, tick: int) -> np.ndarray:
+    kind, src, dst = flight
+    if kind == "crate":
+        grid = _paint(index, before, tick, omit_crate=src)
+        _stamp_px(grid, tween(src[0] * CELL, dst[0] * CELL, step, span),
+                  tween(src[1] * CELL, dst[1] * CELL, step, span), _crate_face())
+        return grid
+    if kind == "player":
+        grid = _paint(index, before, tick, omit_player=True)
+        _stamp_px(grid, tween(src[0] * CELL, dst[0] * CELL, step, span),
+                  tween(src[1] * CELL, dst[1] * CELL, step, span),
+                  _player_face((before[2], before[3])))
+        return grid
+    grid = _paint(index, before, tick)
+    half = step >= span // 2
+    if kind == "break":
+        _stamp(grid, src[0], src[1],
+               weave(FLOOR, CELL) if half else hatch(FLOOR, CELL))
+    else:
+        _stamp(grid, src[0], src[1],
+               _deck_face() if half else _over(_pit_face(), hatch(DECK, CELL)))
     return grid
 
 
@@ -538,12 +595,13 @@ def build_levels() -> list[Level]:
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.TANGIBLE, layer=0,
         ).set_position(0, 0)
-        levels.append(Level(sprites=[canvas], grid_size=(64, 64)))
+        levels.append(Level(sprites=[canvas], grid_size=(N * CELL, N * CELL)))
     return levels
 
 
-RACK_TOP, RACK_BOTTOM = 56, 61
-SOCKET_X = (22, 36)
+RACK_X = N * CELL - CELL
+RACK_TOP, RACK_BOTTOM = 18, 39
+SLOT_Y = (22, 31)
 
 
 class G015A(RenderableUserDisplay):
@@ -554,86 +612,102 @@ class G015A(RenderableUserDisplay):
 
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         lv = LEVELS[self._game.level_index]
-        hands = self._game.state[3]
-        frame[RACK_TOP:RACK_BOTTOM, SOCKET_X[0] - 5:SOCKET_X[1] + CELL + 5] = FLOOR
-        for slot, x0 in enumerate(SOCKET_X):
-            frame[RACK_TOP:RACK_BOTTOM, x0:x0 + CELL] = WALL
-            if slot < len(hands):
-                face = _part_face(lv["parts"][hands[slot]][2])
-            else:
-                face = [[-1] * CELL for _ in range(CELL)]
-                face[2][2] = FLOOR
-            for dy, row in enumerate(face):
-                for dx, value in enumerate(row):
-                    if value >= 0:
-                        frame[RACK_TOP + dy, x0 + dx] = value
+        hands = self._game.state[4]
+        frame[RACK_TOP:RACK_BOTTOM, RACK_X:RACK_X + CELL] = WALL
+        hairline(frame, (RACK_X + 1, RACK_TOP), (RACK_X + 1, RACK_BOTTOM - 1), SLOT_EMPTY)
+        for slot, top in enumerate(SLOT_Y):
+            face = (_part_face(lv["parts"][hands[slot]][2]) if slot < len(hands)
+                    else ring(SLOT_EMPTY, CELL))
+            _stamp_px(frame, RACK_X, top, face)
         return frame
 
 
 class G015(ARCBaseGame):
 
+    FIRE_FRAMES = 5
+
     def __init__(self) -> None:
         self.state = initial_state(0)
-        self._frames: list = []
+        self.tick = 0
+        self._pending = None
+        self._flight = None
+        self._playing = 0
         camera = Camera(
-            width=64, height=64, background=WALL, letter_box=5,
+            width=N * CELL, height=N * CELL,
+            background=FLOOR, letter_box=5,
             interfaces=[G015A(self)],
         )
         super().__init__(game_id="g015", levels=build_levels(), camera=camera)
 
-    def _rearm(self) -> None:
-        self.state = initial_state(self.level_index)
-        self._frames = []
-        self._repaint(self.state[5])
-
     def on_set_level(self, level: Level) -> None:
-        self._rearm()
+        self.state = initial_state(self.level_index)
+        self._pending = None
+        self._flight = None
+        self._playing = 0
+        self._repaint()
 
     def level_reset(self) -> None:
         super().level_reset()
-        self._rearm()
+        self.on_set_level(self.current_level)
 
     def full_reset(self) -> None:
         super().full_reset()
-        self._rearm()
+        self.on_set_level(self.current_level)
 
-    def _repaint(self, drums) -> None:
+    def _repaint(self) -> None:
         canvas = self.current_level.get_sprites_by_name("canvas")
         if canvas:
-            canvas[0].pixels = _paint(self.level_index, self.state, drums)
+            canvas[0].pixels = _paint(self.level_index, self.state, self.tick)
+
+    def _repaint_flight(self, step: int) -> None:
+        canvas = self.current_level.get_sprites_by_name("canvas")
+        if canvas:
+            canvas[0].pixels = _paint_flight(
+                self.level_index, self.state, self._pending, self._flight,
+                step, self.FIRE_FRAMES, self.tick)
+
+    def _settle(self) -> None:
+        self.state = self._pending
+        self._pending = None
+        self._flight = None
+        self._repaint()
 
     def step(self) -> None:
-        if self._frames:
-            self._repaint(self._frames.pop(0))
-            if not self._frames:
+        if self._playing:
+            self._playing -= 1
+            if self._playing == 0:
                 self._settle()
+                if is_won(self.level_index, self.state):
+                    self.next_level()
+                self.complete_action()
+                return
+            self._repaint_flight(self.FIRE_FRAMES - self._playing)
             return
 
         action = {
-            GameAction.ACTION1: "L",
-            GameAction.ACTION2: "R",
-            GameAction.ACTION3: "V",
-            GameAction.ACTION4: "TAKE",
-            GameAction.ACTION5: "FIRE",
-            GameAction.ACTION6: "WAIT",
+            GameAction.ACTION1: "U",
+            GameAction.ACTION2: "D",
+            GameAction.ACTION3: "L",
+            GameAction.ACTION4: "R",
+            GameAction.ACTION5: "ACT",
+            GameAction.ACTION6: "RET",
         }.get(self.action.id)
 
-        if action is None:
-            self.complete_action()
-            return
+        self.tick += 1
 
-        trace: list = []
-        self.state = step_state(self.level_index, self.state, action, trace)
-        seen = self.state[5]
-        self._frames = [f for k, f in enumerate(trace)
-                        if f != seen and (k == 0 or f != trace[k - 1])]
-        if self._frames:
-            self._repaint(self._frames.pop(0))
-            return
-        self._settle()
+        if action is not None:
+            nxt = step_state(self.level_index, self.state, action)
+            spent = sum(s == 2 for s in nxt[5]) > sum(s == 2 for s in self.state[5])
+            flight = _transit(self.state, nxt) if spent else None
+            if flight is not None:
+                self._pending = nxt
+                self._flight = flight
+                self._playing = self.FIRE_FRAMES
+                self._repaint_flight(0)
+                return
+            self.state = nxt
+            self._repaint()
+            if is_won(self.level_index, self.state):
+                self.next_level()
 
-    def _settle(self) -> None:
-        self._repaint(self.state[5])
-        if is_won(self.level_index, self.state):
-            self.next_level()
         self.complete_action()
