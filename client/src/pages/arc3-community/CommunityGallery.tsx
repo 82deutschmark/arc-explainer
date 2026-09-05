@@ -275,7 +275,9 @@ export default function CommunityGallery() {
   const [page, setPage] = useState(0);
   // With the pipeline set leading and 877 tasks paginated 60 at a time, the official 25
   // would otherwise sit ten pages deep. These keep every section one click away.
-  const [category, setCategory] = useState<string | null>(null);
+  // Defaults to the sonpham-org glow-ups (05-Sep-2026): newest verified batch, and the one
+  // we most want feedback on first. "All" is still one click away via the chip row.
+  const [category, setCategory] = useState<string | null>('contributed-glowup');
 
   const { data, isLoading, isError } = useQuery<GamesResponse>({
     queryKey: ['/api/arc3-mirror/games'],
