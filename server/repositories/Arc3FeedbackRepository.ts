@@ -54,6 +54,9 @@ export interface FeedbackInput {
   note: string;
   reachedLevel: number | null;
   outcome: string | null;
+  /** Which build of the game the verdict is about. Null means the row predates the
+   *  stamp; it does NOT mean the current build. */
+  sourceVersion: string | null;
 }
 
 /** Notes are for a human reader, not a corpus. Long enough for a real thought. */
@@ -80,6 +83,13 @@ async function ensureSchema(): Promise<void> {
   `);
   // The cull query is "group by game", so that is the index.
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_cgf_game ON community_game_feedback(game_id)`);
+  // Which build of the game the verdict is about. A game keeps its id when its content
+  // changes -- g012 was rebuilt from 16x16 in eight blocks to 15x11 in six after it was
+  // played -- so "praised g012" is worthless without knowing which g012. This is the
+  // column that makes a verdict promotable. NULL means the row predates the stamp
+  // (everything written before 04-Sep-2026); it is never a claim about the current build.
+  // No backfill: the bytes those players saw were never recorded and cannot be recovered.
+  await pool.query(`ALTER TABLE community_game_feedback ADD COLUMN IF NOT EXISTS source_version TEXT`);
   // One submission per session per game: the form can be reopened, and a player who
   // edits and resubmits should correct their answer rather than vote twice.
   await pool.query(
@@ -114,15 +124,17 @@ export class Arc3FeedbackRepository {
 
       await pool.query(
         `INSERT INTO community_game_feedback
-           (session_guid, game_id, flags, note, reached_level, outcome)
-         VALUES ($1, $2, $3, $4, $5, $6)
+           (session_guid, game_id, flags, note, reached_level, outcome, source_version)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          ON CONFLICT (session_guid, game_id) DO UPDATE
            SET flags = EXCLUDED.flags,
                note = EXCLUDED.note,
                reached_level = EXCLUDED.reached_level,
                outcome = EXCLUDED.outcome,
+               source_version = EXCLUDED.source_version,
                created_at = NOW()`,
-        [input.sessionGuid, input.gameId, flags, note, input.reachedLevel, input.outcome],
+        [input.sessionGuid, input.gameId, flags, note, input.reachedLevel, input.outcome,
+         input.sourceVersion ? input.sourceVersion.slice(0, 64) : null],
       );
       return true;
     } catch (error) {
