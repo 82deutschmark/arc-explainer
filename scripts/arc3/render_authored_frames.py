@@ -89,6 +89,10 @@ def opening_frame(path: Path) -> np.ndarray:
     """
     from arcengine import ARCBaseGame, ActionInput, GameAction  # noqa: WPS433
 
+    # A published game may import a support module published beside it (sprite_book), so
+    # the games directory has to be on the path or every game that uses one fails to load.
+    if str(GAMES_DIR) not in sys.path:
+        sys.path.insert(0, str(GAMES_DIR))
     spec = importlib.util.spec_from_file_location(f"frame_{path.stem}", path)
     mod = importlib.util.module_from_spec(spec)
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):

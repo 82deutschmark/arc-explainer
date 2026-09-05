@@ -14,217 +14,128 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
+from sprite_book import figure, gauge, hex_face, hex_ring, pips, rounded
+
+WALL = 4
+FLOOR_HIGH = 10
+FLOOR_LOW = 9
+GUARD_BODY = 13
+BALLAST_FILL = 8
+LOAD_PIP = 8
+PLATE_RIM = 7
+BELL_GLYPH = 7
+PLAYER = 0
+EXIT_SHUT = 4
+EXIT_LIVE = 0
+SEEP_MARK = 8
+
+COLS = 10
+ROWS = 10
+CELL = 6
+OX = 2
+OY = 1
+
+MOVES = {
+    GameAction.ACTION1: (0, -1),
+    GameAction.ACTION2: (0, 1),
+    GameAction.ACTION3: (-1, 0),
+    GameAction.ACTION4: (1, 0),
+    GameAction.ACTION5: (1, -1),
+    GameAction.ACTION7: (-1, 1),
+}
+HEX_DIRS = ((0, -1), (1, -1), (1, 0), (0, 1), (-1, 1), (-1, 0))
+HOLD = (0, 0)
+WAIT_ACTIONS = frozenset({GameAction.ACTION6})
 
 
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def ring(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = -1
-    return px
-
-def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    mid = cell // 2
-    for x in range(1, cell - 1):
-        px[0][x] = body
-    for y in range(1, cell - 1):
-        for x in range(cell):
-            px[y][x] = body
-    px[cell - 1][0] = px[cell - 1][mid] = -1
-    for x in range(cell):
-        if px[cell - 1][x] != -1:
-            px[cell - 1][x] = body
-    px[cell - 1][1] = body
-    px[cell - 1][cell - 1] = body
-    if mark is not None and cell >= 4:
-        px[mid][mid] = mark
-    return px
-
-def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for x in range(1, last):
-        px[0][x] = px[last][x] = rim
-    for y in range(1, last):
-        px[y][0] = px[y][last] = rim
-    for y in range(1, last):
-        for x in range(1, last):
-            px[y][x] = centre
-    return px
-
-def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for y in range(cell):
-        px[y][0] = px[y][last] = frame_colour
-    for x in range(cell):
-        px[0][x] = frame_colour
-    if bar is not None:
-        for y in range(1, cell):
-            for x in range(1, last):
-                px[y][x] = bar
-    return px
-
-def weave(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
-
-def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
-    return px
+def to_axial(col: int, row: int) -> tuple[int, int]:
+    return (col - (row // 2), row)
 
 
-FLOOR = 2
-WALL = 5
-TRACK = 5
-BELL = 11
-PLATE_OFF = 15
-PLATE_ON = 11
-GUARD = 6
-GUARD_CORE = 5
-PLAYER = 12
-PLAYER_MARK = 5
-EXIT_SHUT = 5
-EXIT_BAR = 15
-EXIT_OPEN = 11
-PIP_ON = 11
-PIP_OFF = 15
-DECOR = 2
+def to_offset(q: int, r: int) -> tuple[int, int]:
+    return (q + (r // 2), r)
 
-N = 16
-CELL = 4
 
-GAUGE_TOP = 12
-GAUGE_GAP = 15
-GAUGE_HEIGHT = 4
-GAUGE_BASE = 3
+def hex_dist(a: tuple[int, int], b: tuple[int, int]) -> int:
+    dq, dr = a[0] - b[0], a[1] - b[1]
+    return (abs(dq) + abs(dq + dr) + abs(dr)) // 2
+
+
+SUMP_PLATES = "1234"
+SHELF_PLATES = "pqrs"
+GLYPH_HEIGHT = {".": 0, "-": 1, "=": 2, "b": 2, "G": 1, "P": 1, "X": 1,
+                "1": 0, "2": 0, "3": 0, "4": 0,
+                "p": 2, "q": 2, "r": 2, "s": 2}
+
+
+def plate_load(ch: str) -> int:
+    return (SUMP_PLATES.index(ch) if ch in SUMP_PLATES
+            else SHELF_PLATES.index(ch)) + 1
 
 LEVELS_SPEC = [
-    ["################",
-     "################",
-     "##============##",
-     "##=.....P....=##",
-     "##=..........=##",
-     "##=..........=##",
-     "##=..........b##",
-     "##=........X.=##",
-     "##=..........=##",
-     "##=..........=##",
-     "##=..........=##",
-     "##=..........=##",
-     "##b..........=##",
-     "##====G====p==##",
-     "################",
-     "################"],
-    ["################",
-     "################",
-     "##============##",
-     "##=..........=##",
-     "##=..........=##",
-     "##=..........=##",
-     "##=..........=##",
-     "##=......P...=##",
-     "##G..........=##",
-     "##b..........=##",
-     "##=..........=##",
-     "##b..........=##",
-     "##=......X...=##",
-     "##=====pb=====##",
-     "################",
-     "################"],
-    ["################",
-     "################",
-     "##==p=========##",
-     "##=..........G##",
-     "##=..........=##",
-     "##=..........=##",
-     "##=..........=##",
-     "##b..........=##",
-     "##=..........b##",
-     "##=........X.=##",
-     "##p..........=##",
-     "##=..........=##",
-     "##=........P.=##",
-     "##G===========##",
-     "################",
-     "################"],
-    ["################",
-     "################",
-     "################",
-     "###===G====#####",
-     "###=......p#####",
-     "###=......=#####",
-     "###b......=#####",
-     "###=....X.=#####",
-     "###=......G#####",
-     "###=......=#####",
-     "###b......=#####",
-     "###=...P..b#####",
-     "###===p====#####",
-     "################",
-     "################",
-     "################"],
-    ["################",
-     "################",
-     "##=b==========##",
-     "##=X.........=##",
-     "##=..........=##",
-     "##=..........=##",
-     "##=...P......=##",
-     "##=..........G##",
-     "##=..........=##",
-     "##=..........=##",
-     "##p..........=##",
-     "##p..........=##",
-     "##G..........=##",
-     "##==b=p=====G=##",
-     "################",
-     "################"],
-    ["################",
-     "################",
-     "################",
-     "###pb==p=p=#####",
-     "###=......=#####",
-     "###=......=#####",
-     "###=......=#####",
-     "###=.....X=#####",
-     "###=..P...b#####",
-     "###=......=#####",
-     "###=......G#####",
-     "###=......=#####",
-     "###G====G==#####",
-     "################",
-     "################",
-     "################"],
-    ["################",
-     "################",
-     "################",
-     "###=====G==#####",
-     "###=......=#####",
-     "###=......=#####",
-     "###=....X.=#####",
-     "###b......=#####",
-     "###p.....P=#####",
-     "###p......b#####",
-     "###p......=#####",
-     "###=......=#####",
-     "###=b===GG=#####",
-     "################",
-     "################",
-     "################"],
+    {"ballast": [1], "rows": [
+        "##########",
+        "#-======-#",
+        "#-=....=b#",
+        "#-=....=-#",
+        "#-G..1..b#",
+        "#-=....=-#",
+        "#-=....=X#",
+        "#--P====-#",
+        "#--------#",
+        "##########",
+    ]},
+    {"ballast": [1, 1], "rows": [
+        "##########",
+        "#b-------#",
+        "#X======-#",
+        "#-=G=G=--#",
+        "#-......-#",
+        "#-.....2-#",
+        "#-......b#",
+        "#-------P#",
+        "#--------#",
+        "##########",
+    ]},
+    {"ballast": [2, 2], "rows": [
+        "##########",
+        "#-======-#",
+        "#X=....=-#",
+        "#bG....Gb#",
+        "#-=3...=-#",
+        "#-=p====-#",
+        "#--------#",
+        "#---b----#",
+        "#P-------#",
+        "##########",
+    ]},
+    {"ballast": [2, 2, 1], "rows": [
+        "##########",
+        "#b======-#",
+        "#-=G==G=-#",
+        "#-======-#",
+        "#-----X--#",
+        "#-......-#",
+        "#-..G.13b#",
+        "#-......P#",
+        "#b-------#",
+        "##########",
+    ]},
+    {"ballast": [2, 2, 1], "rows": [
+        "##########",
+        "#-======-#",
+        "#bG====GX#",
+        "#-======-#",
+        "#---G----#",
+        "#-...13b-#",
+        "#-......-#",
+        "#-......-#",
+        "#b------P#",
+        "##########",
+    ]},
 ]
 
-DIRS = ((0, -1), (1, 0), (0, 1), (-1, 0))
+SEEP_CYCLE = (0, 1, 1, 0, 2)
 
 
 _MODELS: dict[int, dict] = {}
@@ -233,46 +144,54 @@ _MODELS: dict[int, dict] = {}
 def model(index: int) -> dict:
     if index in _MODELS:
         return _MODELS[index]
-    rows = LEVELS_SPEC[index]
-    track, floor, bells, plates, posts = set(), set(), [], [], []
+    spec = LEVELS_SPEC[index]
+    rows = spec["rows"]
+    floor, height, bells, plates, posts = set(), {}, [], [], []
     start = exit_cell = None
-    for y, row in enumerate(rows):
-        for x, ch in enumerate(row):
+    seep = []
+    for row, line in enumerate(rows):
+        for col, ch in enumerate(line):
             if ch == "#":
                 continue
-            if ch in "=bpG":
-                track.add((x, y))
-            else:
-                floor.add((x, y))
+            cell = to_axial(col, row)
+            floor.add(cell)
+            height[cell] = GLYPH_HEIGHT[ch]
             if ch == "b":
-                bells.append((x, y))
-            elif ch == "p":
-                plates.append((x, y))
+                bells.append(cell)
+            elif ch in SUMP_PLATES or ch in SHELF_PLATES:
+                plates.append((cell, plate_load(ch)))
             elif ch == "G":
-                posts.append((x, y))
+                posts.append(cell)
             elif ch == "P":
-                start = (x, y)
+                start = cell
             elif ch == "X":
-                exit_cell = (x, y)
+                exit_cell = cell
+            elif ch in ".-=":
+                seep.append(cell)
     if start is None or exit_cell is None:
         raise ValueError(f"level {index + 1} is missing a start or an exit")
+    if len(posts) != len(spec["ballast"]):
+        raise ValueError(f"level {index + 1} has a ballast list of the wrong length")
 
     dist = []
     for b in bells:
         d = {b: 0}
         q = deque([b])
         while q:
-            cx, cy = q.popleft()
-            for dx, dy in DIRS:
-                nb = (cx + dx, cy + dy)
-                if nb in track and nb not in d:
-                    d[nb] = d[(cx, cy)] + 1
+            cur = q.popleft()
+            for dq, dr in HEX_DIRS:
+                nb = (cur[0] + dq, cur[1] + dr)
+                if nb in floor and nb not in d:
+                    d[nb] = d[cur] + 1
                     q.append(nb)
         dist.append(d)
 
-    m = {"rows": rows, "track": frozenset(track), "walk": frozenset(track | floor),
+    marks = tuple(seep[len(seep) * k // 4] for k in (1, 2, 3)) if len(seep) >= 4 else ()
+
+    m = {"rows": rows, "floor": frozenset(floor), "height": height,
          "bells": tuple(bells), "plates": tuple(plates), "posts": tuple(posts),
-         "start": start, "exit": exit_cell, "dist": tuple(dist)}
+         "ballast": tuple(spec["ballast"]), "start": start, "exit": exit_cell,
+         "dist": tuple(dist), "seep": marks}
     _MODELS[index] = m
     return m
 
@@ -282,112 +201,149 @@ def guard_step(m: dict, cell: tuple[int, int], target: int) -> tuple[int, int]:
     here = d.get(cell)
     if here is None or here == 0:
         return cell
-    for dx, dy in DIRS:
-        nb = (cell[0] + dx, cell[1] + dy)
+    for dq, dr in HEX_DIRS:
+        nb = (cell[0] + dq, cell[1] + dr)
         if d.get(nb, 1 << 30) == here - 1:
             return nb
     return cell
 
 
-MOVES = {
-    GameAction.ACTION1: (0, -1),
-    GameAction.ACTION2: (0, 1),
-    GameAction.ACTION3: (-1, 0),
-    GameAction.ACTION4: (1, 0),
-    GameAction.ACTION5: (0, 0),
-}
+def advance(m: dict, guards: tuple, target: int) -> tuple:
+    want = [guard_step(m, g, target) for g in guards]
+    cur = list(guards)
+    occupied = set(cur)
+    moving = True
+    while moving:
+        moving = False
+        for i, dest in enumerate(want):
+            if cur[i] == dest or dest in occupied:
+                continue
+            occupied.discard(cur[i])
+            occupied.add(dest)
+            cur[i] = dest
+            moving = True
+    return tuple(cur)
 
 
-def resolve(index, player, guards, target, move):
+def settle(m: dict, guards: tuple, ballast: tuple) -> tuple:
+    h = m["height"]
+    out = list(ballast)
+    for i, gi in enumerate(guards):
+        for j, gj in enumerate(guards):
+            if i == j or hex_dist(gi, gj) != 1 or out[i] < 1:
+                continue
+            if (out[i] + h[gi]) - (out[j] + h[gj]) >= 2:
+                out[i] -= 1
+                out[j] += 1
+    return tuple(out)
+
+
+def held(m: dict, guards: tuple, ballast: tuple) -> tuple:
+    return tuple(
+        any(g == cell and ballast[i] >= load for i, g in enumerate(guards))
+        for cell, load in m["plates"]
+    )
+
+
+def resolve(index, player, guards, ballast, target, move, pour=True):
     m = model(index)
     nxt = (player[0] + move[0], player[1] + move[1])
-    if nxt not in m["walk"]:
+    if nxt not in m["floor"]:
         nxt = player
     if nxt in m["bells"]:
         target = m["bells"].index(nxt)
     if target is not None:
-        guards = tuple(guard_step(m, g, target) for g in guards)
-    dead = any(abs(g[0] - nxt[0]) + abs(g[1] - nxt[1]) <= 1 for g in guards)
-    on = set(guards)
-    won = (not dead) and nxt == m["exit"] and all(p in on for p in m["plates"])
-    return nxt, guards, target, dead, won
+        guards = advance(m, guards, target)
+    if pour:
+        ballast = settle(m, guards, ballast)
+    dead = any(hex_dist(g, nxt) <= 1 for g in guards)
+    won = (not dead) and nxt == m["exit"] and all(held(m, guards, ballast))
+    return nxt, guards, ballast, target, dead, won
 
 
-def _block(colour: int) -> list[list[int]]:
-    return [[colour] * CELL for _ in range(CELL)]
+def _pixel(cell: tuple[int, int]) -> tuple[int, int]:
+    col, row = to_offset(*cell)
+    return (OX + col * CELL + (row % 2) * (CELL // 2), OY + row * CELL)
 
 
-def _track_pixels() -> list[list[int]]:
-    return weave(TRACK, CELL)
+def _over(base, top):
+    return [[top[y][x] if top[y][x] >= 0 else base[y][x] for x in range(CELL)]
+            for y in range(CELL)]
+
+
+def _ground_pixels(h: int) -> list[list[int]]:
+    if h == 2:
+        return hex_face(FLOOR_HIGH, CELL)
+    if h == 0:
+        return hex_face(FLOOR_LOW, CELL)
+    return _over(hex_face(FLOOR_HIGH, CELL), hex_ring(FLOOR_LOW, CELL))
 
 
 def _bell_pixels() -> list[list[int]]:
-    return rounded(BELL, CELL)
+    return rounded(BELL_GLYPH, CELL)
 
 
-def _plate_pixels(lit: bool) -> list[list[int]]:
-    return ring(PLATE_ON if lit else PLATE_OFF, CELL)
+def _plate_pixels(load: int, lit: bool) -> list[list[int]]:
+    throat = hex_face(BALLAST_FILL, CELL) if lit else gauge(LOAD_PIP, load, CELL)
+    return _over(throat, hex_ring(PLATE_RIM, CELL))
 
 
-def _guard_pixels() -> list[list[int]]:
-    return medallion(GUARD, GUARD_CORE, CELL)
+def _guard_pixels(load: int) -> list[list[int]]:
+    return _over(hex_face(GUARD_BODY, CELL), gauge(BALLAST_FILL, load, CELL))
 
 
-def _player_pixels() -> list[list[int]]:
-    return figure(PLAYER, PLAYER_MARK, CELL)
+def _player_pixels(carried: int) -> list[list[int]]:
+    return _over(figure(PLAYER, None, CELL), pips(BALLAST_FILL, carried, CELL))
 
 
 def _caught_pixels(lit: bool) -> list[list[int]]:
-    return figure(GUARD if lit else PLATE_OFF, PLAYER, CELL)
+    return figure(GUARD_BODY if lit else PLAYER, None, CELL)
 
 
 def _exit_pixels(live: bool) -> list[list[int]]:
-    return door(EXIT_OPEN if live else EXIT_SHUT, None if live else EXIT_BAR, CELL)
+    px = hex_ring(EXIT_LIVE if live else EXIT_SHUT, CELL)
+    if not live:
+        for x in range(1, CELL - 1):
+            px[CELL // 2][x] = EXIT_SHUT
+    return px
 
 
-def _ringing_pixels(lit: bool) -> list[list[int]]:
-    return figure(EXIT_OPEN if lit else PLAYER, PLAYER_MARK, CELL)
+def _seep_pixels(phase: int) -> list[list[int]]:
+    step = SEEP_CYCLE[phase % len(SEEP_CYCLE)]
+    if step == 0:
+        return [[-1] * CELL for _ in range(CELL)]
+    return pips(FLOOR_HIGH if step == 1 else SEEP_MARK, 2, CELL)
 
 
-DECOR_CYCLE = (WALL, DECOR, WALL, WALL, DECOR)
-DECOR_CELLS = ((4, 0), (7, 1), (11, 0), (4, 15), (8, 14), (11, 15))
-
-
-def _decor_pixels(phase: int, seed: int) -> list[list[int]]:
-    return fixture(DECOR_CYCLE, phase, seed, CELL)
-
-
-def _sprite(px, name, x, y, layer, tags=()):
-    return Sprite(pixels=px, name=name, blocking=BlockingMode.NOT_BLOCKED,
+def _sprite(px, name, cell, layer, tags=()):
+    x, y = _pixel(cell)
+    return Sprite(pixels=[list(r) for r in px], name=name,
+                  blocking=BlockingMode.NOT_BLOCKED,
                   interaction=InteractionMode.INTANGIBLE, layer=layer,
-                  tags=list(tags)).set_position(x * CELL, y * CELL)
+                  tags=list(tags)).set_position(x, y)
 
 
 def build_levels() -> list[Level]:
     levels: list[Level] = []
-    for index, rows in enumerate(LEVELS_SPEC):
+    for index in range(len(LEVELS_SPEC)):
         m = model(index)
         sprites: list[Sprite] = []
-        for y, row in enumerate(rows):
-            for x, ch in enumerate(row):
-                if ch == "#":
-                    sprites.append(_sprite(_block(WALL), f"wall_{x}_{y}", x, y, -3))
-                elif (x, y) in m["track"]:
-                    sprites.append(_sprite(_track_pixels(), f"track_{x}_{y}", x, y, -2))
-        for i, (x, y) in enumerate(DECOR_CELLS):
-            sprites.append(_sprite(_decor_pixels(0, i), f"decor_{i}", x, y, -1,
-                                   tags=("decor",)))
-        for x, y in m["bells"]:
-            sprites.append(_sprite(_bell_pixels(), f"bell_{x}_{y}", x, y, -1))
-        for x, y in m["plates"]:
-            sprites.append(_sprite(_plate_pixels(False), f"plate_{x}_{y}", x, y, 0))
-        ex, ey = m["exit"]
-        sprites.append(_sprite(_exit_pixels(False), "exit", ex, ey, 0))
-        for i, (gx, gy) in enumerate(m["posts"]):
-            sprites.append(_sprite(_guard_pixels(), f"guard_{i}", gx, gy, 2))
-        sx, sy = m["start"]
-        sprites.append(_sprite(_player_pixels(), "player", sx, sy, 3))
-        levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
+        for cell in sorted(m["floor"]):
+            sprites.append(_sprite(_ground_pixels(m["height"][cell]),
+                                   f"ground_{cell[0]}_{cell[1]}", cell, -3))
+        for i, cell in enumerate(m["seep"]):
+            sprites.append(_sprite(_seep_pixels(i + 1), f"seep_{i}", cell, -2,
+                                   tags=("seep",)))
+        for cell in m["bells"]:
+            sprites.append(_sprite(_bell_pixels(), f"bell_{cell[0]}_{cell[1]}", cell, -1))
+        for cell, load in m["plates"]:
+            sprites.append(_sprite(_plate_pixels(load, False),
+                                   f"plate_{cell[0]}_{cell[1]}", cell, 0))
+        sprites.append(_sprite(_exit_pixels(False), "exit", m["exit"], 0))
+        for i, cell in enumerate(m["posts"]):
+            sprites.append(_sprite(_guard_pixels(m["ballast"][i]), f"guard_{i}", cell, 2))
+        sprites.append(_sprite(_player_pixels(0), "player", m["start"], 3))
+        levels.append(Level(sprites=sprites, grid_size=(64, 64)))
     return levels
 
 
@@ -398,16 +354,16 @@ class G019A(RenderableUserDisplay):
         self._game = game
 
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
-        m = model(self._game.level_index)
-        on = set(self._game.guards)
-        beat = self._game.ringing and self._game.ringing % 2 == 0
-        for i, plate in enumerate(m["plates"]):
-            top = GAUGE_TOP + i * GAUGE_GAP
-            length = GAUGE_BASE + 2 * i
-            if top + GAUGE_HEIGHT > frame.shape[0] or length > frame.shape[1]:
-                break
-            lit = plate in on and not beat
-            frame[top:top + GAUGE_HEIGHT, 0:length] = PIP_ON if lit else PIP_OFF
+        g = self._game
+        m = model(g.level_index)
+        live = all(held(m, g.guards, g.ballast))
+        if not live and not g.ringing:
+            return frame
+        lit = EXIT_LIVE if (not g.ringing or g.ringing % 2 == 0) else PLATE_RIM
+        frame[0, :] = lit
+        frame[-1, :] = lit
+        frame[:, 0] = lit
+        frame[:, -1] = lit
         return frame
 
 
@@ -420,22 +376,25 @@ class G019(ARCBaseGame):
         m = model(0)
         self.pos = m["start"]
         self.guards = m["posts"]
+        self.ballast = m["ballast"]
         self.target = None
         self.deaths = 0
         self.beat = 0
         self._caught = 0
         self.ringing = 0
         camera = Camera(
-            width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=5,
+            width=64, height=64,
+            background=WALL, letter_box=5,
             interfaces=[G019A(self)],
         )
-        super().__init__(game_id="g019", levels=build_levels(), camera=camera)
+        super().__init__(game_id="g019", levels=build_levels(), camera=camera,
+                         available_actions=[1, 2, 3, 4, 5, 6, 7])
 
     def on_set_level(self, level: Level) -> None:
         m = model(self.level_index)
         self.pos = m["start"]
         self.guards = m["posts"]
+        self.ballast = m["ballast"]
         self.target = None
         self._caught = 0
         self.ringing = 0
@@ -452,29 +411,27 @@ class G019(ARCBaseGame):
         self._redraw()
 
     def _decorate(self) -> None:
-        for s in self.current_level.get_sprites_by_tag("decor"):
-            s.pixels = np.array(_decor_pixels(self.beat, (s.x + s.y) // CELL))
+        for s in self.current_level.get_sprites_by_tag("seep"):
+            s.pixels = np.array(_seep_pixels(self.beat + (s.x + s.y) // CELL))
 
     def _redraw(self) -> None:
         level = self.current_level
         m = model(self.level_index)
-        for i, (gx, gy) in enumerate(self.guards):
+        flags = held(m, self.guards, self.ballast)
+        for i, cell in enumerate(self.guards):
+            px, py = _pixel(cell)
             for s in level.get_sprites_by_name(f"guard_{i}"):
-                s.set_position(gx * CELL, gy * CELL)
+                s.pixels = np.array(_guard_pixels(self.ballast[i]))
+                s.set_position(px, py)
         for s in level.get_sprites_by_name("player"):
-            s.pixels = np.array(_player_pixels())
-            s.set_position(self.pos[0] * CELL, self.pos[1] * CELL)
-        on = set(self.guards)
-        for px, py in m["plates"]:
-            lit = (px, py) in on
-            for s in level.get_sprites_by_name(f"plate_{px}_{py}"):
-                level.remove_sprite(s)
-            level.add_sprite(_sprite(_plate_pixels(lit), f"plate_{px}_{py}", px, py, 0))
-        live = all(p in on for p in m["plates"])
-        ex, ey = m["exit"]
+            s.pixels = np.array(_player_pixels(sum(flags)))
+            s.set_position(*_pixel(self.pos))
+        for (cell, load), lit in zip(m["plates"], flags):
+            name = f"plate_{cell[0]}_{cell[1]}"
+            for s in level.get_sprites_by_name(name):
+                s.pixels = np.array(_plate_pixels(load, lit))
         for s in level.get_sprites_by_name("exit"):
-            level.remove_sprite(s)
-        level.add_sprite(_sprite(_exit_pixels(live), "exit", ex, ey, 0))
+            s.pixels = np.array(_exit_pixels(all(flags)))
 
     def step(self) -> None:
         self.beat += 1
@@ -491,8 +448,6 @@ class G019(ARCBaseGame):
 
         if self.ringing:
             self.ringing -= 1
-            for s in self.current_level.get_sprites_by_name("player"):
-                s.pixels = np.array(_ringing_pixels(self.ringing % 2 == 0))
             if self.ringing == 0:
                 self.next_level()
                 self.complete_action()
@@ -500,11 +455,13 @@ class G019(ARCBaseGame):
 
         move = MOVES.get(self.action.id)
         if move is None:
-            self.complete_action()
-            return
+            if self.action.id not in WAIT_ACTIONS:
+                self.complete_action()
+                return
+            move = HOLD
 
-        self.pos, self.guards, self.target, dead, won = resolve(
-            self.level_index, self.pos, self.guards, self.target, move)
+        self.pos, self.guards, self.ballast, self.target, dead, won = resolve(
+            self.level_index, self.pos, self.guards, self.ballast, self.target, move)
 
         if dead:
             self.deaths += 1

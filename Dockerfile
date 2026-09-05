@@ -80,6 +80,15 @@ RUN echo "=== PREPARING ARCENGINE LIBRARY ===" && \
     test -f external/ARCEngine/pyproject.toml && echo "\u2713 ARCEngine pyproject.toml exists" || (echo "\u2717 ARCEngine pyproject.toml NOT FOUND after clone" && exit 1) && \
     echo "=== INSTALLING ARCENGINE AS EDITABLE PACKAGE ===" && \
     cd external/ARCEngine && python3 -m pip install --no-cache-dir --break-system-packages -e .
+# Gate the ARC-3 published games BEFORE the app is built, so a bad push fails the image
+# and Railway keeps serving the last good deploy. Checks that every published id is one
+# this project allocated, that no module still carries the prose naming its own mechanic,
+# and that every derived artifact matches what its generator produces from the .py files
+# beside it. On 05-Sep-2026 a republish shipped 35 games importing a module that was never
+# published with them; this is what stops the next one.
+RUN echo "=== ARC-3 PUBLISH INTEGRITY ===" && \
+    PYTHONPATH=external/ARCEngine python3 scripts/arc3/check_publish_integrity.py
+
 # Poetiq solver is now internalized at solver/poetiq/ (copied above)
 # Verify the internalized solver exists
 RUN echo "=== VERIFYING INTERNALIZED POETIQ SOLVER ===" && \

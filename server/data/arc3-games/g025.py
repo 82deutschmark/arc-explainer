@@ -2,6 +2,21 @@
 
 import numpy as np
 
+from sprite_book import (
+    blink,
+    core,
+    dither,
+    door,
+    facing,
+    fixture,
+    key_shape,
+    medallion,
+    outline,
+    ring,
+    rounded,
+    studs,
+    weave,
+)
 
 from arcengine import (
     ARCBaseGame,
@@ -13,130 +28,6 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def ring(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = -1
-    return px
-
-def core(colour: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = colour
-    return px
-
-def facing(body: int, visor: int, heading: tuple, cell: int = 4) -> list[list[int]]:
-    px = rounded(body, cell)
-    dx, dy = heading
-    last = cell - 1
-    if dy < 0:
-        px[0][1] = px[0][cell - 2] = visor
-    elif dy > 0:
-        px[last][1] = px[last][cell - 2] = visor
-    elif dx < 0:
-        px[1][0] = px[cell - 2][0] = visor
-    elif dx > 0:
-        px[1][last] = px[cell - 2][last] = visor
-    else:
-        px[1][1] = visor
-    return px
-
-def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for x in range(1, last):
-        px[0][x] = px[last][x] = rim
-    for y in range(1, last):
-        px[y][0] = px[y][last] = rim
-    for y in range(1, last):
-        for x in range(1, last):
-            px[y][x] = centre
-    return px
-
-def key_shape(colour: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[0][1] = px[0][2] = colour
-    px[1][1] = px[1][2] = colour
-    px[2][1] = colour
-    px[3][1] = px[3][2] = colour
-    return px
-
-def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for y in range(cell):
-        px[y][0] = px[y][last] = frame_colour
-    for x in range(cell):
-        px[0][x] = frame_colour
-    if bar is not None:
-        for y in range(1, cell):
-            for x in range(1, last):
-                px[y][x] = bar
-    return px
-
-def weave(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
-
-def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
-    return px
-
-def dither(frame, box: tuple, colour: int):
-    x0, y0, x1, y1 = box
-    h, w = frame.shape
-    for y in range(max(0, y0), min(h, y1)):
-        for x in range(max(0, x0), min(w, x1)):
-            if (x + y) % 2:
-                frame[y, x] = colour
-    return frame
-
-def outline(frame, box: tuple, colour: int):
-    x0, y0, x1, y1 = box
-    h, w = frame.shape
-    for x in range(max(0, x0), min(w, x1)):
-        if 0 <= y0 < h:
-            frame[y0, x] = colour
-        if 0 <= y1 - 1 < h:
-            frame[y1 - 1, x] = colour
-    for y in range(max(0, y0), min(h, y1)):
-        if 0 <= x0 < w:
-            frame[y, x0] = colour
-        if 0 <= x1 - 1 < w:
-            frame[y, x1 - 1] = colour
-    return frame
-
-def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
-          start: int = 8, gap: int = 6):
-    h, w = frame.shape
-    for i in range(count):
-        top = start + i * gap
-        if top + 2 > h:
-            break
-        colour = on if i < filled else off
-        length = min(1 + i, w // 4)
-        if side == "east":
-            frame[top:top + 2, w - length:w] = colour
-        else:
-            frame[top:top + 2, 0:length] = colour
-    return frame
-
-def blink(step: int, period: int = 3) -> bool:
-    return (step // period) % 2 == 0
-
 
 FLOOR = 15
 WALL = 2
@@ -242,34 +133,34 @@ LEVELS_SPEC = [
      "#..............#",
      "################"],
     ["################",
-     "#.B..........R.#",
-     "#P.............#",
-     "#......M.......#",
      "#..............#",
+     "#.M..........L.#",
+     "#..............#",
+     "#P...........T.#",
+     "#.R............#",
      "#______________#",
-     "#......C.......#",
      "#..............#",
      "#..............#",
-     "######H#########",
-     "#..............#",
+     "#.........C....#",
+     "######V#########",
      "#..............#",
      "#......X.......#",
      "#..............#",
      "#..............#",
      "################"],
     ["################",
-     "#.T..........R.#",
      "#..............#",
-     "#......K.......#",
+     "#.M..........R.#",
      "#P.............#",
-     "#####I##########",
-     "#..............#",
-     "#..............#",
      "#..............#",
      "#______________#",
-     "#______________#",
+     "#..............#",
+     "#......C..B....#",
+     "#..............#",
+     "######H#########",
      "#..............#",
      "#......X.......#",
+     "#..............#",
      "#..............#",
      "#..............#",
      "################"],

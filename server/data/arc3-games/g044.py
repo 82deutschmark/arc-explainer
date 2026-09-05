@@ -83,10 +83,10 @@ def fold_faces(rows: list[str]) -> list[tuple[tuple[int, int], tuple, tuple, tup
     return [(s, frames[s][0], frames[s][1], frames[s][2]) for s in order]
 
 
-def step_cell(faces, fi: int, u: int, v: int, du: int, dv: int) -> tuple[int, int, int]:
+def step_cell(faces, fi: int, u: int, v: int, du: int, dv: int):
     nu, nv = u + du, v + dv
     if 0 <= nu < S and 0 <= nv < S:
-        return fi, nu, nv
+        return fi, nu, nv, du, dv
     _, n, r, d = faces[fi]
     if nu >= S:
         e = r
@@ -100,7 +100,22 @@ def step_cell(faces, fi: int, u: int, v: int, du: int, dv: int) -> tuple[int, in
     q = _add(_sub(p, n), e)
     ni = next(i for i, f in enumerate(faces) if f[1] == e)
     _, _, r2, d2 = faces[ni]
-    return ni, (_dot(q, r2) + (S - 1)) // 2, (_dot(q, d2) + (S - 1)) // 2
+    heading = _neg(n)
+    return (ni, (_dot(q, r2) + (S - 1)) // 2, (_dot(q, d2) + (S - 1)) // 2,
+            _dot(heading, r2), _dot(heading, d2))
+
+
+LIPS = {">": (1, 0), "<": (-1, 0), "v": (0, 1), "^": (0, -1)}
+
+
+def attempt(rows: list[str], faces, fi: int, u: int, v: int, du: int, dv: int):
+    nf, nu, nv, ndu, ndv = step_cell(faces, fi, u, v, du, dv)
+    char = cell_char(rows, faces, nf, nu, nv)
+    if char == "#":
+        return None
+    if char in LIPS and LIPS[char] != (ndu, ndv):
+        return None
+    return nf, nu, nv, char
 
 
 def cell_char(rows: list[str], faces, fi: int, u: int, v: int) -> str:
@@ -142,86 +157,14 @@ LEVELS_SPEC = [
         "......k.        ",
         ".k..####        ",
         "........        ",
-        "    ....#...    ",
+        "    ....#.>.    ",
         "    .k....k.    ",
         "    ........    ",
         "    ..#.....    ",
         "        ####....",
-        "        .k....k.",
+        "        .k....kv",
         "        .....X..",
         "        ........",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-    ]},
-    {"rows": [
-        "        .k..    ",
-        "        ....    ",
-        "        ####    ",
-        "        ....    ",
-        ".P......####....",
-        "####.k....k..k..",
-        ".k....#.........",
-        "................",
-        "####            ",
-        "..k.            ",
-        ".X..            ",
-        "....            ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-    ]},
-    {"rows": [
-        "        .P......",
-        "        ......k.",
-        "        .k....#.",
-        "        ........",
-        "    ....####    ",
-        "    .k....k.    ",
-        "    #.......    ",
-        "    ........    ",
-        ".X......        ",
-        "......k.        ",
-        ".k..####        ",
-        "........        ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-    ]},
-    {"rows": [
-        ".k..            ",
-        "....            ",
-        "####            ",
-        "....            ",
-        ".P....#......k..",
-        ".....k#.#k..####",
-        ".k....#.........",
-        "................",
-        "            ....",
-        "            ..k.",
-        "            .X..",
-        "            ....",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-    ]},
-    {"rows": [
-        "    #k#.        ",
-        "    ....        ",
-        "    ####        ",
-        "    ....        ",
-        "...#.P#......#..",
-        ".k.#..#...k..k..",
-        "..##.k#.#....#..",
-        "....########....",
-        "    ####        ",
-        "    .k..        ",
-        "    ..X.        ",
-        "    ....        ",
         "                ",
         "                ",
         "                ",
@@ -236,8 +179,8 @@ LEVELS_SPEC = [
         ".k....k.        ",
         ".......#        ",
         "........        ",
-        "    #.......    ",
-        "    .k....k.    ",
+        "    #.....>.    ",
+        "    .k....kv    ",
         "    ......##    ",
         "    ........    ",
         "        ....    ",
@@ -246,13 +189,85 @@ LEVELS_SPEC = [
         "        ....    ",
     ]},
     {"rows": [
-        "    .k..        ",
+        "        .k..    ",
+        "        ....    ",
+        "        ####    ",
+        "        ....    ",
+        ".P......####....",
+        "####.k....k.vk..",
+        ".k....#........^",
+        "................",
+        "####            ",
+        "..k.            ",
+        ".X..            ",
+        "....            ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+    ]},
+    {"rows": [
+        "        .P......",
+        "        .^....k.",
+        "        .k....#.",
+        "        .....>.v",
+        "    ....####    ",
+        "    .k....k.    ",
+        "    #.......    ",
+        "    .....>..    ",
+        ".X......        ",
+        "......k.        ",
+        ".k..####        ",
+        "........        ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+    ]},
+    {"rows": [
+        ".k..            ",
+        "....            ",
+        "####            ",
+        "....            ",
+        ".P....#.....vk.>",
+        ".....k#.#k..####",
+        ".k....#.........",
+        ".....^..........",
+        "            ....",
+        "            ..kv",
+        "            .X..",
+        "            ...v",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+    ]},
+    {"rows": [
+        "    #k#.        ",
+        "    .>..        ",
         "    ####        ",
         "    ....        ",
+        "...#.P#......#..",
+        ".k.#.>#...k^.kv.",
+        "..##.k#.#...>#..",
+        "....########....",
+        "    ####        ",
+        "    .k..        ",
+        "    ..X.        ",
         "    ....        ",
-        "..#..P..####    ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+    ]},
+    {"rows": [
+        "    vk..        ",
+        "    ####        ",
+        "    ....        ",
+        "    .vv.        ",
+        "..#<vP..####    ",
         ".k..#####k..    ",
-        "..#..k......    ",
+        "..#.<k...^..    ",
         "########....    ",
         "    ####        ",
         "    .k..        ",
@@ -280,6 +295,21 @@ def _rounded(colour: int) -> list[list[int]]:
 def _walker(colour: int) -> list[list[int]]:
     block = _rounded(colour)
     block[0][1] = block[0][2] = -1
+    return block
+
+
+def _lip(direction: tuple[int, int]) -> list[list[int]]:
+    block = [[-1] * CELL for _ in range(CELL)]
+    du, dv = direction
+    for i in range(CELL):
+        if du != 1:
+            block[i][0] = WALL
+        if du != -1:
+            block[i][CELL - 1] = WALL
+        if dv != 1:
+            block[0][i] = WALL
+        if dv != -1:
+            block[CELL - 1][i] = WALL
     return block
 
 
@@ -312,6 +342,8 @@ def build_levels() -> list[Level]:
                     continue
                 if char == "#":
                     pixels, layer, name = _block(WALL), -1, f"w_{x}_{y}"
+                elif char in LIPS:
+                    pixels, layer, name = _lip(LIPS[char]), -1, f"l_{x}_{y}"
                 elif char == "k":
                     pixels, layer, name = _rounded(KEY), 0, f"k_{x}_{y}"
                 else:
@@ -377,24 +409,21 @@ class G044(ARCBaseGame):
             self.complete_action()
             return
 
-        rows = self.rows
-        nf, nu, nv = step_cell(self.faces, self.face, self.u, self.v, d[0], d[1])
-        char = cell_char(rows, self.faces, nf, nu, nv)
-
-        if char == "#":
-            pass
-        elif char == "X":
-            if not self.keys_left:
-                self.next_level()
-                self.complete_action()
-                return
-        else:
-            self.face, self.u, self.v = nf, nu, nv
-            if (nf, nu, nv) in self.keys_left:
-                self.keys_left.discard((nf, nu, nv))
-                sx, sy = cell_screen(self.faces, nf, nu, nv)
-                for sprite in self.current_level.get_sprites_by_name(f"k_{sx}_{sy}"):
-                    self.current_level.remove_sprite(sprite)
+        landed = attempt(self.rows, self.faces, self.face, self.u, self.v, d[0], d[1])
+        if landed is not None:
+            nf, nu, nv, char = landed
+            if char == "X":
+                if not self.keys_left:
+                    self.next_level()
+                    self.complete_action()
+                    return
+            else:
+                self.face, self.u, self.v = nf, nu, nv
+                if (nf, nu, nv) in self.keys_left:
+                    self.keys_left.discard((nf, nu, nv))
+                    sx, sy = cell_screen(self.faces, nf, nu, nv)
+                    for sprite in self.current_level.get_sprites_by_name(f"k_{sx}_{sy}"):
+                        self.current_level.remove_sprite(sprite)
 
         self._sync()
         self.complete_action()

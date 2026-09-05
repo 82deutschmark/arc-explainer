@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from sprite_book import door, medallion, rounded, studs
 
 from arcengine import (
     ARCBaseGame,
@@ -13,57 +14,6 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for x in range(1, last):
-        px[0][x] = px[last][x] = rim
-    for y in range(1, last):
-        px[y][0] = px[y][last] = rim
-    for y in range(1, last):
-        for x in range(1, last):
-            px[y][x] = centre
-    return px
-
-def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for y in range(cell):
-        px[y][0] = px[y][last] = frame_colour
-    for x in range(cell):
-        px[0][x] = frame_colour
-    if bar is not None:
-        for y in range(1, cell):
-            for x in range(1, last):
-                px[y][x] = bar
-    return px
-
-def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
-          start: int = 8, gap: int = 6):
-    h, w = frame.shape
-    for i in range(count):
-        top = start + i * gap
-        if top + 2 > h:
-            break
-        colour = on if i < filled else off
-        length = min(1 + i, w // 4)
-        if side == "east":
-            frame[top:top + 2, w - length:w] = colour
-        else:
-            frame[top:top + 2, 0:length] = colour
-    return frame
-
 
 FLOOR = 5
 WALL = 2

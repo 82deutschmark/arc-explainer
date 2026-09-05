@@ -10,12 +10,13 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 0
-WALL = 2
-GOAL = 15
-AVATAR = 13
-SEAL_MARK = 3
-VOICE_INK = (9, 10, 6, 8)
+TIDE_FILL = 9
+BANK_WALL = 1
+LANTERN_GOAL = 11
+WADER_PIP = 6
+WRACK_MARK = 5
+SILT_MARK = 10
+EDDY_INK = (0, 8, 15, 13)
 
 N = 14
 CELL = 4
@@ -110,23 +111,23 @@ LEVELS_SPEC = [
 
     {"rows": [
         "##############",
-        "#............#",
-        "#..o.........#",
-        "#............#",
+        "#o...........#",
+        "#.##.##.##.#.#",
+        "#.##.##.##.#.#",
         "#......#.....#",
         "######..######",
         "######..######",
         "#######......#",
-        "#............#",
-        "#............#",
-        "#......*.....#",
-        "#............#",
-        "#............#",
+        "#.....##.....#",
+        "#.###....###.#",
+        "#.#...*...##.#",
+        "#.#........#.#",
+        "#..........#.#",
         "##############",
      ], "voices": [
-        sustain([(6, 5), (7, 5)]),
-        sustain([(7, 5), (7, 6)], hold=1, phase=1),
-        sustain([(6, 5), (6, 6), (7, 6)], hold=1, phase=4),
+        sustain([(6, 5), (7, 5)], phase=1),
+        sustain([(7, 5), (7, 6)], hold=1, phase=2),
+        sustain([(6, 5), (6, 6), (7, 6)], hold=1, phase=1),
      ]},
 
     {"rows": [
@@ -153,22 +154,22 @@ LEVELS_SPEC = [
     {"rows": [
         "##############",
         "#o...........#",
-        "#............#",
-        "##########=###",
-        "#............#",
-        "#............#",
-        "###=##########",
-        "#............#",
-        "#............#",
+        "#...........##",
+        "##=.........##",
+        "###.........##",
+        "####........##",
+        "#####.......##",
+        "######......##",
+        "######.....###",
         "######.#######",
         "#............#",
-        "#............#",
+        "#....=.......#",
         "#.....*......#",
         "##############",
      ], "voices": [
         sustain([(6, 8), (6, 9)]),
-        sustain([(6, 10), (6, 9)], hold=1),
-        sustain([(6, 7), (6, 8), (6, 9)], hold=1),
+        sustain([(6, 10), (6, 9)], hold=1, phase=2),
+        sustain([(6, 7), (6, 8), (6, 9)], hold=1, phase=4),
      ]},
 ]
 
@@ -225,46 +226,101 @@ def advance(index, pos, tick, shut, move):
     return nxt, tick, shut, doubled(index, nxt, tick)
 
 
-def _block(colour):
+CORNERS = ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1))
+
+
+def _slab(colour):
     return [[colour] * CELL for _ in range(CELL)]
 
 
-def _berth(colour):
-    block = [[colour] * CELL for _ in range(CELL)]
-    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
-        block[y][x] = -1
-    return block
+def _bank(x, y):
+    px = _slab(BANK_WALL)
+    px[CELL - 1] = [WRACK_MARK] * CELL
+    px[0][(x + y) % CELL] = WRACK_MARK
+    return px
 
 
-def _rim(colour):
-    block = [[colour] * CELL for _ in range(CELL)]
-    for y in range(1, CELL - 1):
-        for x in range(1, CELL - 1):
-            block[y][x] = -1
-    return block
+def _lamp():
+    px = _slab(LANTERN_GOAL)
+    for (y, x) in CORNERS:
+        px[y][x] = -1
+    px[1][1] = WRACK_MARK
+    px[2][2] = WRACK_MARK
+    return px
 
 
-def _pip(colour):
-    block = [[-1] * CELL for _ in range(CELL)]
-    for y in range(1, CELL - 1):
-        for x in range(1, CELL - 1):
-            block[y][x] = colour
-    return block
+def _ring(colour):
+    px = [[-1] * CELL for _ in range(CELL)]
+    for i in range(CELL):
+        px[0][i] = px[CELL - 1][i] = colour
+        px[i][0] = px[i][CELL - 1] = colour
+    for (y, x) in CORNERS:
+        px[y][x] = -1
+    return px
 
 
-_STAVE_CORNER = ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1))
+SWIRL_CORNER = CORNERS
 
 
-def _stave(colour, voice_index):
-    block = [[-1] * CELL for _ in range(CELL)]
-    ty, tx = _STAVE_CORNER[voice_index % len(_STAVE_CORNER)]
-    block[ty][tx] = colour
-    return block
+def _swirl(colour, eddy_index):
+    px = [[-1] * CELL for _ in range(CELL)]
+    ty, tx = SWIRL_CORNER[eddy_index % len(SWIRL_CORNER)]
+    px[ty][tx] = colour
+    return px
 
 
-def _hatch(colour):
+def _silt(colour):
     return [[colour if (x + y) % 2 == 0 else -1 for x in range(CELL)]
             for y in range(CELL)]
+
+
+def _wader(under):
+    px = [row[:] for row in under]
+    for j in (1, 2):
+        for i in (1, 2):
+            px[j][i] = WADER_PIP
+    px[0][1] = px[CELL - 1][2] = WRACK_MARK
+    return px
+
+
+def _open_water():
+    return [[-1] * CELL for _ in range(CELL)]
+
+
+def under_face(index, pos, shut):
+    if pos in seals_of(index) and pos not in shut:
+        return _silt(SILT_MARK)
+    return _open_water()
+
+
+def ripple_lanes(index, count=6):
+    rows = LEVELS_SPEC[index]["rows"]
+    lanes = [y for y, row in enumerate(rows) if row.count(".") >= 9] or [y for y in range(1, N)]
+    return [lanes[i % len(lanes)] for i in range(count)]
+
+
+def shell_spots(index, count=6):
+    rows = LEVELS_SPEC[index]["rows"]
+    water = [(x, y) for y, row in enumerate(rows)
+             for x, ch in enumerate(row) if ch == "."]
+    loops = {c for loop in LEVELS_SPEC[index]["voices"] for c in loop}
+    water = [c for c in water if c not in loops and c != start_of(index)]
+    stride = max(1, len(water) // count)
+    return water[::stride][:count]
+
+
+def wrack_spots(index, count=5):
+    rows = LEVELS_SPEC[index]["rows"]
+    out = []
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch != "." or len(out) == count:
+                continue
+            near = ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1))
+            if any(0 <= b < N and 0 <= a < N and rows[b][a] == "#" for a, b in near) \
+                    and (x * 3 + y) % 7 == 0:
+                out.append((x, y))
+    return out
 
 
 def build_levels():
@@ -276,46 +332,65 @@ def build_levels():
                 px, py = x * CELL, y * CELL
                 if ch == "#":
                     sprites.append(Sprite(
-                        pixels=_block(WALL), name=f"bar_{x}_{y}",
+                        pixels=_bank(x, y), name=f"bank_{x}_{y}",
                         blocking=BlockingMode.BOUNDING_BOX,
                         interaction=InteractionMode.TANGIBLE, layer=-3,
                     ).set_position(px, py))
                 elif ch == "*":
                     sprites.append(Sprite(
-                        pixels=_berth(GOAL), name="berth",
+                        pixels=_lamp(), name="lantern",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=-2,
                     ).set_position(px, py))
                 elif ch == "=":
                     sprites.append(Sprite(
-                        pixels=_block(WALL), name=f"shut_{x}_{y}",
+                        pixels=_slab(BANK_WALL), name=f"silted_{x}_{y}",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=-2,
                     ).set_position(px, py))
                     sprites.append(Sprite(
-                        pixels=_hatch(SEAL_MARK), name=f"seal_{x}_{y}",
+                        pixels=_silt(SILT_MARK), name=f"ford_{x}_{y}",
                         blocking=BlockingMode.NOT_BLOCKED,
                         interaction=InteractionMode.INTANGIBLE, layer=0,
                     ).set_position(px, py))
 
+        for li, lane in enumerate(ripple_lanes(index)):
+            sprites.append(Sprite(
+                pixels=[[SILT_MARK, -1, SILT_MARK, -1]], name=f"ripple_{li}",
+                blocking=BlockingMode.NOT_BLOCKED,
+                interaction=InteractionMode.INTANGIBLE, layer=-4,
+            ).set_position((li * 5) % N * CELL, lane * CELL + 2))
+        for si, (sx, sy) in enumerate(shell_spots(index)):
+            sprites.append(Sprite(
+                pixels=[[EDDY_INK[0]]], name=f"shell_{si}",
+                blocking=BlockingMode.NOT_BLOCKED,
+                interaction=InteractionMode.INTANGIBLE, layer=-4,
+            ).set_position(sx * CELL + 2, sy * CELL + 1))
+        for wi, (wx, wy) in enumerate(wrack_spots(index)):
+            sprites.append(Sprite(
+                pixels=[[WRACK_MARK, WRACK_MARK]], name=f"wrack_{wi}",
+                blocking=BlockingMode.NOT_BLOCKED,
+                interaction=InteractionMode.INTANGIBLE, layer=-4,
+            ).set_position(wx * CELL + 1, wy * CELL + 2))
+
         for vi, loop in enumerate(spec["voices"]):
-            ink = VOICE_INK[vi % len(VOICE_INK)]
+            ink = EDDY_INK[vi % len(EDDY_INK)]
             for (cx, cy) in sorted(set(loop)):
                 sprites.append(Sprite(
-                    pixels=_stave(ink, vi), name=f"stave_{vi}_{cx}_{cy}",
+                    pixels=_swirl(ink, vi), name=f"swirl_{vi}_{cx}_{cy}",
                     blocking=BlockingMode.NOT_BLOCKED,
                     interaction=InteractionMode.INTANGIBLE, layer=-1,
                 ).set_position(cx * CELL, cy * CELL))
             vx, vy = loop[0]
             sprites.append(Sprite(
-                pixels=_rim(ink), name=f"voice_{vi}",
+                pixels=_ring(ink), name=f"eddy_{vi}",
                 blocking=BlockingMode.NOT_BLOCKED,
                 interaction=InteractionMode.INTANGIBLE, layer=1,
             ).set_position(vx * CELL, vy * CELL))
 
         sx, sy = start_of(index)
         sprites.append(Sprite(
-            pixels=_pip(AVATAR), name="mote",
+            pixels=_wader(under_face(index, (sx, sy), frozenset())), name="wader",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.INTANGIBLE, layer=2,
         ).set_position(sx * CELL, sy * CELL))
@@ -330,9 +405,10 @@ class G026(ARCBaseGame):
         self.pos = start_of(0)
         self.tick = 0
         self.shut = frozenset()
+        self.wash = 0
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=WALL,
+            background=TIDE_FILL, letter_box=WRACK_MARK,
         )
         super().__init__(game_id="g026", levels=build_levels(), camera=camera)
 
@@ -340,6 +416,7 @@ class G026(ARCBaseGame):
         self.pos = start_of(self.level_index)
         self.tick = 0
         self.shut = frozenset()
+        self.wash = 0
 
     def level_reset(self):
         super().level_reset()
@@ -354,13 +431,24 @@ class G026(ARCBaseGame):
     def _redraw(self):
         level = self.current_level
         for vi, (cx, cy) in enumerate(voice_cells(self.level_index, self.tick)):
-            for s in level.get_sprites_by_name(f"voice_{vi}"):
+            for s in level.get_sprites_by_name(f"eddy_{vi}"):
                 s.set_position(cx * CELL, cy * CELL)
-        for s in level.get_sprites_by_name("mote"):
+        for s in level.get_sprites_by_name("wader"):
+            s.pixels[:, :] = _wader(under_face(self.level_index, self.pos, self.shut))
             s.set_position(self.pos[0] * CELL, self.pos[1] * CELL)
         for (sx, sy) in self.shut:
-            for s in level.get_sprites_by_name(f"seal_{sx}_{sy}"):
+            for s in level.get_sprites_by_name(f"ford_{sx}_{sy}"):
                 level.remove_sprite(s)
+
+    def _dress(self):
+        level = self.current_level
+        for li, lane in enumerate(ripple_lanes(self.level_index)):
+            for s in level.get_sprites_by_name(f"ripple_{li}"):
+                s.set_position(((li * 5 + self.wash) % N) * CELL, lane * CELL + 2)
+        for wi in range(len(wrack_spots(self.level_index))):
+            lit = WRACK_MARK if (self.wash + wi) % 3 else -1
+            for s in level.get_sprites_by_name(f"wrack_{wi}"):
+                s.pixels[:, :] = [[lit, lit]]
 
     def step(self):
         move = DIRS.get(self.action.id)
@@ -368,6 +456,7 @@ class G026(ARCBaseGame):
             self.complete_action()
             return
 
+        self.wash += 1
         self.pos, self.tick, self.shut, dead = advance(
             self.level_index, self.pos, self.tick, self.shut, move)
 
@@ -377,6 +466,7 @@ class G026(ARCBaseGame):
             return
 
         self._redraw()
+        self._dress()
         if self.pos == goal_of(self.level_index):
             self.next_level()
         self.complete_action()

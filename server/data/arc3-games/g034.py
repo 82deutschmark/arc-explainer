@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from sprite_book import outline, ring, rounded
 
 from arcengine import (
     ARCBaseGame,
@@ -13,39 +14,6 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def ring(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = -1
-    return px
-
-def outline(frame, box: tuple, colour: int):
-    x0, y0, x1, y1 = box
-    h, w = frame.shape
-    for x in range(max(0, x0), min(w, x1)):
-        if 0 <= y0 < h:
-            frame[y0, x] = colour
-        if 0 <= y1 - 1 < h:
-            frame[y1 - 1, x] = colour
-    for y in range(max(0, y0), min(h, y1)):
-        if 0 <= x0 < w:
-            frame[y, x0] = colour
-        if 0 <= x1 - 1 < w:
-            frame[y, x1 - 1] = colour
-    return frame
-
 
 BLANK = 5
 MATTE = 13
