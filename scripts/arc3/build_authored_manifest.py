@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Author: Claude Opus 5
-Date: 01-September-2026
+Date: 05-September-2026 (revised: a contributor's reserved range gets its own category)
 PURPOSE: Generate server/data/arc3-games/manifest.json -- the catalog of OUR authored
          ARC-AGI-3 tasks, in the exact entry shape Arc3MirrorCatalog already parses for
          the upstream arc3.sonpham.net manifest ({id, class_name, src_file, category,
@@ -47,10 +47,36 @@ BASE_CLASS = "ARCBaseGame"
 # rename builds rather than raising, which is what a half-migrated tree looks like.
 GAME_ID_RE = re.compile(r"^(g[0-9]{3}|t[0-9a-f]{8})$")
 
-#: Category slug for our entries. The mirror treats category as an open string and the
+#: Category slug for our own entries. The mirror treats category as an open string and the
 #: gallery sections on it, so ours must be distinguishable from anything upstream. Kept
 #: as `arena` because it is the value already published to the play surface.
 CATEGORY = "arena"
+
+#: Category slug for a game published out of a range reserved for an outside contributor.
+#:
+#: A contributor's revised games are OURS to serve but not ours to have made, and the
+#: gallery sections on this string: filing them under `arena` would put them in the
+#: "Reviewed set" heading, which describes work this project played and sent back for
+#: revision. It is a provenance label, not a description of play, and it leaks nothing.
+CONTRIBUTED_CATEGORY = "contributed-glowup"
+
+
+def category_for(game_id: str, reserved: dict[str, dict[str, int]]) -> str:
+    """`arena` for our own ids, `contributed-glowup` for a reserved contributor range.
+
+    Derived from authored-ids.json's `reserved` block rather than from a second list here,
+    so the ranges are declared in exactly one place. An id outside every reserved range is
+    ours by definition -- check_publish_integrity.py is what refuses an id that is in
+    neither `authored` nor a range, and duplicating that refusal here would give two
+    answers to one question.
+    """
+    number = int(game_id[1:]) if game_id[1:].isdigit() else None
+    if number is None:
+        return CATEGORY
+    for span in reserved.values():
+        if span["from"] <= number <= span["to"]:
+            return CONTRIBUTED_CATEGORY
+    return CATEGORY
 
 #: Defaults matching the mirror's own fallbacks, stated explicitly so entries are complete.
 DEFAULT_FPS = 10
@@ -86,6 +112,14 @@ def game_class_name(path: Path) -> str:
     return found[0]
 
 
+def reserved_ranges(directory: Path) -> dict[str, dict[str, int]]:
+    """The contributor id ranges declared in authored-ids.json. See category_for()."""
+    allocations = directory / "authored-ids.json"
+    if not allocations.is_file():
+        return {}
+    return json.loads(allocations.read_text(encoding="utf-8")).get("reserved", {})
+
+
 def support_names(directory: Path) -> frozenset[str]:
     """Modules published beside the games because the games import them.
 
@@ -101,6 +135,7 @@ def support_names(directory: Path) -> frozenset[str]:
 def build(directory: Path) -> list[dict[str, object]]:
     """One manifest entry per published module, sorted by id for a stable diff."""
     entries: list[dict[str, object]] = []
+    reserved = reserved_ranges(directory)
     for path in sorted(directory.glob("*.py")):
         if path.name.startswith("__"):
             continue
@@ -115,7 +150,7 @@ def build(directory: Path) -> list[dict[str, object]]:
                 "id": path.stem,
                 "class_name": game_class_name(path),
                 "src_file": path.name,
-                "category": CATEGORY,
+                "category": category_for(path.stem, reserved),
                 "official": False,
                 "default_fps": DEFAULT_FPS,
                 "tile_scale": TILE_SCALE,

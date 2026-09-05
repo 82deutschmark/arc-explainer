@@ -348,5 +348,313 @@
     "height": 64,
     "inkFraction": 0.3018,
     "width": 64
+  },
+  "g500": {
+    "backgroundColour": 5,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.2344,
+    "width": 64
+  },
+  "g501": {
+    "backgroundColour": 5,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.2395,
+    "width": 64
+  },
+  "g502": {
+    "backgroundColour": 5,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.3914,
+    "width": 64
+  },
+  "g503": {
+    "backgroundColour": 0,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.5647,
+    "width": 64
+  },
+  "g504": {
+    "backgroundColour": 0,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.5308,
+    "width": 64
+  },
+  "g505": {
+    "backgroundColour": 1,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.4141,
+    "width": 64
+  },
+  "g506": {
+    "backgroundColour": 5,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.6667,
+    "width": 64
+  },
+  "g507": {
+    "backgroundColour": 1,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.5229,
+    "width": 64
+  },
+  "g508": {
+    "backgroundColour": 5,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.4971,
+    "width": 64
+  },
+  "g509": {
+    "backgroundColour": 5,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.2515,
+    "width": 64
+  },
+  "g510": {
+    "backgroundColour": 5,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.2366,
+    "width": 64
+  },
+  "g511": {
+    "backgroundColour": 5,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.2454,
+    "width": 64
+  },
+  "g512": {
+    "backgroundColour": 4,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.4949,
+    "width": 64
+  },
+  "g513": {
+    "backgroundColour": 0,
+    "distinctColours": 12,
+    "height": 64,
+    "inkFraction": 0.4409,
+    "width": 64
+  },
+  "g514": {
+    "backgroundColour": 2,
+    "distinctColours": 12,
+    "height": 64,
+    "inkFraction": 0.6462,
+    "width": 64
+  },
+  "g515": {
+    "backgroundColour": 4,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.5203,
+    "width": 64
+  },
+  "g516": {
+    "backgroundColour": 5,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.4519,
+    "width": 64
+  },
+  "g517": {
+    "backgroundColour": 1,
+    "distinctColours": 13,
+    "height": 64,
+    "inkFraction": 0.688,
+    "width": 64
+  },
+  "g518": {
+    "backgroundColour": 1,
+    "distinctColours": 12,
+    "height": 64,
+    "inkFraction": 0.7588,
+    "width": 64
+  },
+  "g519": {
+    "backgroundColour": 0,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.1868,
+    "width": 64
+  },
+  "g520": {
+    "backgroundColour": 1,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.4653,
+    "width": 64
+  },
+  "g521": {
+    "backgroundColour": 5,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.1472,
+    "width": 64
+  },
+  "g522": {
+    "backgroundColour": 4,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.5698,
+    "width": 64
+  },
+  "g523": {
+    "backgroundColour": 5,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.3838,
+    "width": 64
+  },
+  "g524": {
+    "backgroundColour": 0,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.6917,
+    "width": 64
+  },
+  "g525": {
+    "backgroundColour": 5,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.1516,
+    "width": 64
+  },
+  "g526": {
+    "backgroundColour": 1,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.748,
+    "width": 64
+  },
+  "g527": {
+    "backgroundColour": 0,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.2834,
+    "width": 64
+  },
+  "g528": {
+    "backgroundColour": 5,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.2729,
+    "width": 64
+  },
+  "g529": {
+    "backgroundColour": 1,
+    "distinctColours": 14,
+    "height": 64,
+    "inkFraction": 0.1804,
+    "width": 64
+  },
+  "g530": {
+    "backgroundColour": 0,
+    "distinctColours": 14,
+    "height": 64,
+    "inkFraction": 0.5703,
+    "width": 64
+  },
+  "g531": {
+    "backgroundColour": 5,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.1948,
+    "width": 64
+  },
+  "g532": {
+    "backgroundColour": 0,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.2148,
+    "width": 64
+  },
+  "g533": {
+    "backgroundColour": 5,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.3875,
+    "width": 64
+  },
+  "g534": {
+    "backgroundColour": 0,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.2837,
+    "width": 64
+  },
+  "g535": {
+    "backgroundColour": 10,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.6709,
+    "width": 64
+  },
+  "g536": {
+    "backgroundColour": 0,
+    "distinctColours": 7,
+    "height": 64,
+    "inkFraction": 0.4932,
+    "width": 64
+  },
+  "g537": {
+    "backgroundColour": 5,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.2,
+    "width": 64
+  },
+  "g538": {
+    "backgroundColour": 0,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.3914,
+    "width": 64
+  },
+  "g539": {
+    "backgroundColour": 1,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.4541,
+    "width": 64
+  },
+  "g540": {
+    "backgroundColour": 5,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.6643,
+    "width": 64
+  },
+  "g541": {
+    "backgroundColour": 5,
+    "distinctColours": 9,
+    "height": 64,
+    "inkFraction": 0.4058,
+    "width": 64
+  },
+  "g542": {
+    "backgroundColour": 0,
+    "distinctColours": 8,
+    "height": 64,
+    "inkFraction": 0.5579,
+    "width": 64
+  },
+  "g543": {
+    "backgroundColour": 0,
+    "distinctColours": 10,
+    "height": 64,
+    "inkFraction": 0.2278,
+    "width": 64
   }
 }

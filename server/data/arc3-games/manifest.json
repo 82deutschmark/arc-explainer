@@ -448,5 +448,401 @@
     "official": false,
     "default_fps": 10,
     "tile_scale": 4
+  },
+  {
+    "id": "g500",
+    "class_name": "G500",
+    "src_file": "g500.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g501",
+    "class_name": "G501",
+    "src_file": "g501.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g502",
+    "class_name": "G502",
+    "src_file": "g502.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g503",
+    "class_name": "G503",
+    "src_file": "g503.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g504",
+    "class_name": "G504",
+    "src_file": "g504.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g505",
+    "class_name": "G505",
+    "src_file": "g505.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g506",
+    "class_name": "G506",
+    "src_file": "g506.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g507",
+    "class_name": "G507",
+    "src_file": "g507.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g508",
+    "class_name": "G508",
+    "src_file": "g508.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g509",
+    "class_name": "G509",
+    "src_file": "g509.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g510",
+    "class_name": "G510",
+    "src_file": "g510.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g511",
+    "class_name": "G511",
+    "src_file": "g511.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g512",
+    "class_name": "G512",
+    "src_file": "g512.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g513",
+    "class_name": "G513",
+    "src_file": "g513.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g514",
+    "class_name": "G514",
+    "src_file": "g514.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g515",
+    "class_name": "G515",
+    "src_file": "g515.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g516",
+    "class_name": "G516",
+    "src_file": "g516.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g517",
+    "class_name": "G517",
+    "src_file": "g517.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g518",
+    "class_name": "G518",
+    "src_file": "g518.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g519",
+    "class_name": "G519",
+    "src_file": "g519.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g520",
+    "class_name": "G520",
+    "src_file": "g520.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g521",
+    "class_name": "G521",
+    "src_file": "g521.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g522",
+    "class_name": "G522",
+    "src_file": "g522.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g523",
+    "class_name": "G523",
+    "src_file": "g523.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g524",
+    "class_name": "G524",
+    "src_file": "g524.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g525",
+    "class_name": "G525",
+    "src_file": "g525.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g526",
+    "class_name": "G526",
+    "src_file": "g526.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g527",
+    "class_name": "G527",
+    "src_file": "g527.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g528",
+    "class_name": "G528",
+    "src_file": "g528.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g529",
+    "class_name": "G529",
+    "src_file": "g529.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g530",
+    "class_name": "G530",
+    "src_file": "g530.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g531",
+    "class_name": "G531",
+    "src_file": "g531.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g532",
+    "class_name": "G532",
+    "src_file": "g532.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g533",
+    "class_name": "G533",
+    "src_file": "g533.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g534",
+    "class_name": "G534",
+    "src_file": "g534.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g535",
+    "class_name": "G535",
+    "src_file": "g535.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g536",
+    "class_name": "G536",
+    "src_file": "g536.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g537",
+    "class_name": "G537",
+    "src_file": "g537.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g538",
+    "class_name": "G538",
+    "src_file": "g538.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g539",
+    "class_name": "G539",
+    "src_file": "g539.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g540",
+    "class_name": "G540",
+    "src_file": "g540.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g541",
+    "class_name": "G541",
+    "src_file": "g541.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g542",
+    "class_name": "G542",
+    "src_file": "g542.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g543",
+    "class_name": "G543",
+    "src_file": "g543.py",
+    "category": "contributed-glowup",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
   }
 ]
