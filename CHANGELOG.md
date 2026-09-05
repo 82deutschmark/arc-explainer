@@ -1,5 +1,15 @@
 # New entries at the top, use proper SemVer!
 
+### Version 7.6.0  Sep 05, 2026
+
+- **FEAT: Import 44 verified ARC-3 glow-up community games** (Author: OpenAI Codex GPT-5)
+  - **What**: Added the 44 active synthetic games that have completed at least one glow-up pass. Each contribution is stored as an independently loadable `ARCBaseGame` source file under `data/community-games/sonpham/`; the six remaining v1 seeds are intentionally excluded.
+  - **Why**: Make the polished portion of the 50-game research pool playable and reviewable in arc-explainer while keeping unreviewed seed versions out of the community catalog.
+  - **How**: Exported from the canonical Cycle 27 ledger, preserved each qualified source body byte-for-byte, and added only the repository-required Author/Date/PURPOSE/SRP-DRY header. The export rejects stale source hashes, forbidden imports or calls, oversized files, non-`ARCBaseGame` implementations, and v1 entries.
+  - **Verified**: All 44 files compile, import, instantiate, and return a 64x64 palette-valid RESET frame. Every exported body hash matches its qualified canonical source. Static checks found no forbidden imports or calls; `q121-v2` has one validator-safe `hashlib` import used only by its direct-run self-check.
+  - **Scope**: No client, server, route, storage, or runtime behavior changed.
+  - **Files**: `data/community-games/sonpham/q*_v*_q*.py` (44 new), `docs/plans/2026-09-05-glowed-community-games-import-plan.md` (new)
+
 ### Version 7.5.0  Jul 30, 2026
 
 - **DOCS: /arc3 rebuilt around the official ARC-AGI-3 technical report** (Author: Claude Opus 5)
