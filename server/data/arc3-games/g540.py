@@ -287,7 +287,7 @@ class G540(ARCBaseGame):
         self.pending_state = None; self.pending_budget = None; self.pending_terminal = None
         self.intro_mark = True; self.terminal_hold = None
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(item), name=item["name"]) for item in LEVELS]
-        super().__init__("q181", levels, Camera(0, 0, 64, 64, INK, INK, [self.display]), False, len(levels), [1, 2, 3, 4])
+        super().__init__("g540", levels, Camera(0, 0, 64, 64, INK, INK, [self.display]), False, len(levels), [1, 2, 3, 4])
 
     def on_set_level(self, _level):
         self.level = LEVELS[self.level_index]; self.state = start_state(self.level)

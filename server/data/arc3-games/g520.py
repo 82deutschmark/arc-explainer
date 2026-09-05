@@ -498,7 +498,7 @@ class G520(ARCBaseGame):
         self.pending_terminal = None; self.intro_mark = True
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(level), name=level["name"])
                   for level in LEVELS]
-        super().__init__("q071", levels, Camera(0, 0, 64, 64, LEAF, LEAF, [self.display]),
+        super().__init__("g520", levels, Camera(0, 0, 64, 64, LEAF, LEAF, [self.display]),
                          False, len(levels), [1, 2, 3, 4, 5, 6])
 
     def on_set_level(self, _level):
