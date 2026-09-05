@@ -82,7 +82,7 @@
  },
  "g043": {
   "mechanic": "Sokoban with coloured portals and pressure plates. Crates travel through portals as you do, plates held by a crate open gates, and the two interact -- a crate pushed into a portal comes out somewhere it can no longer be reached.",
-  "controls": "D-pad only.",
+  "controls": "ACTION1, ACTION3, and ACTION4 move the active body on the triangular grid. ACTION5 swaps control between the ox and the mote.",
   "goal": "Reach the exit once the gates it needs are held open."
  },
  "g032": {
@@ -102,7 +102,7 @@
  },
  "g017": {
   "mechanic": "Tiles on loan. Standing on a fresh tile starts a countdown on it; ten turns later it has turned to stone, and being on it then resets the level. The whole board is a shrinking floor recording where you have been.",
-  "controls": "D-pad only.",
+  "controls": "ACTION1 through ACTION5 plus ACTION7 traverse the six directions of the hexagonal map.",
   "goal": "Lift every bead, which opens the exit, and get there. The route has to be planned so you never need a tile you spent early."
  },
  "g034": {

@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.46.0  Sep 5, 2026
+
+- **The 44 contributed glow-up games are playable instead of being published with every control disabled** (Author: Codex)
+  - **Root cause:** the games route numeric ids through aliases such as `aid = self.action.id.value` and declare controls in the sixth positional `ARCBaseGame` argument. The digest only recognized `GameAction.ACTIONn` references and keyword declarations, so it wrote an empty `actionsReferenced` array for every `g500`-`g543`; the player correctly obeyed that bad control map and disabled the deck.
+  - **Both authoring styles are now recognized.** The digest resolves keyword and positional action declarations, static action constants such as `list(HEX_ACTIONS)`, and coordinate-bearing ACTION6 handlers. The regenerated control map enables the exact declared deck for all 44 games and distinguishes the six spatial-click games from ordinary ACTION6 buttons.
+  - **The mechanic is explainable after blind play.** Each contributed game now has canonical mechanic, controls, and goal prose sourced from its glow-up metadata, while the public Python remains spoiler-stripped. The registry and post-feedback reveal no longer show an em dash where the task explanation should be.
+  - **This failure is now a publishing error.** The Docker integrity gate runs the digest self-test and a new ARCEngine smoke pass. Every contributed module must import, expose 7-12 levels, return a 64x64 frame, accept every advertised action, and visibly respond to an opening action.
+  - **Files:** `scripts/arc3/mechanic_digest.py`, `scripts/arc3/smoke_contributed_games.py`, `scripts/arc3/check_publish_integrity.py`, `server/data/arc3-games/mechanics-contributed-notes.json`, `server/data/arc3-games/mechanics.json`, `server/data/arc3-games/mechanics-notes.json`, `docs/arc3-games-registry.md`, `docs/plans/2026-09-05-contributed-glowup-playability.md`.
+
 ### Version 9.45.0  Sep 5, 2026
 
 - **The 571 unreviewed generated tasks come off the default browse view** (Author: Mark Barney / Claude Opus 5)
