@@ -5,6 +5,7 @@ from math import gcd
 
 import numpy as np
 
+from sprite_book import block, figure, ring, rounded
 
 from arcengine import (
     ARCBaseGame,
@@ -17,42 +18,6 @@ from arcengine import (
     Sprite,
 )
 
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def ring(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = -1
-    return px
-
-def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    mid = cell // 2
-    for x in range(1, cell - 1):
-        px[0][x] = body
-    for y in range(1, cell - 1):
-        for x in range(cell):
-            px[y][x] = body
-    px[cell - 1][0] = px[cell - 1][mid] = -1
-    for x in range(cell):
-        if px[cell - 1][x] != -1:
-            px[cell - 1][x] = body
-    px[cell - 1][1] = body
-    px[cell - 1][cell - 1] = body
-    if mark is not None and cell >= 4:
-        px[mid][mid] = mark
-    return px
-
-
 FLOOR = 14
 WALL = 5
 EXIT = 10
@@ -61,154 +26,136 @@ PLAYER_CORE = 5
 MOVER_LIVE = 6
 MOVER_STALE = 13
 
-N = 16
-CELL = 4
+N = 10
+CELL = 6
 
-DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0))
+HEX_STEPS = (
+    ((1, 0), (0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1)),
+    ((1, 0), (1, -1), (0, -1), (-1, 0), (0, 1), (1, 1)),
+)
+
+
+def step_cell(cell: tuple[int, int], d: int) -> tuple[int, int]:
+    x, y = cell
+    dx, dy = HEX_STEPS[y & 1][d]
+    return x + dx, y + dy
+
+
+def neighbours(cell: tuple[int, int]) -> list[tuple[int, int]]:
+    return [step_cell(cell, d) for d in range(6)]
+
+
+ACTION_SLOTS = {
+    GameAction.ACTION1: 1,
+    GameAction.ACTION2: 2,
+    GameAction.ACTION3: 3,
+    GameAction.ACTION4: 4,
+    GameAction.ACTION5: 5,
+    GameAction.ACTION7: 0,
+}
+
+
+def on_board(cell: tuple[int, int]) -> bool:
+    x, y = cell
+    return 0 <= x < N and 0 <= y < N
+
 
 LEVELS_SPEC = [
-    {"rows": [
-        "################",
-        "#..............#",
-        "#..P...........#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..........X...#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "movers": [("H", 7, 4, 11, 0)]},
+    {"rows": ["##########",
+              "##########",
+              "##########",
+              "#P.......#",
+              "#........#",
+              "#.......X#",
+              "##########",
+              "##########",
+              "##########",
+              "##########"],
+     "movers": [(2, 4, 0, 5, 0)]},
 
-    {"rows": [
-        "################",
-        "#..P...........#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..........X...#",
-        "#..............#",
-        "#..............#",
-        "################",
-     ], "movers": [("H", 6, 4, 9, 0), ("V", 10, 4, 9, 3)]},
+    {"rows": ["##########",
+              "#P.......#",
+              "#........#",
+              "#........#",
+              "#........#",
+              "#........#",
+              "#........#",
+              "#.......X#",
+              "##########",
+              "##########"],
+     "movers": [(1, 3, 0, 6, 11), (2, 6, 0, 5, 0)]},
 
-    {"rows": [
-        "################",
-        "#..P...........#",
-        "####.###########",
-        "#..............#",
-        "########.#######",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..........X...#",
-        "################",
-     ], "movers": [("H", 3, 2, 13, 18)]},
+    {"rows": ["##########",
+              "#P.......#",
+              "####.#####",
+              "#........#",
+              "#........#",
+              "#........#",
+              "#........#",
+              "#.......X#",
+              "##########",
+              "##########"],
+     "movers": [(1, 3, 0, 6, 5), (2, 6, 0, 5, 0)]},
 
-    {"rows": [
-        "################",
-        "#..P...........#",
-        "####.###########",
-        "#..............#",
-        "#######.########",
-        "#..............#",
-        "##########.#####",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#...........X..#",
-        "################",
-     ], "movers": [("H", 3, 2, 13, 17), ("H", 5, 2, 13, 6)]},
+    {"rows": ["##########",
+              "#P.......#",
+              "#........#",
+              "#######.##",
+              "#........#",
+              "#........#",
+              "##.#######",
+              "#........#",
+              "#.......X#",
+              "##########"],
+     "movers": [(1, 2, 0, 5, 0), (2, 5, 0, 4, 3), (2, 7, 0, 4, 7)]},
 
-    {"rows": [
-        "################",
-        "#.P............#",
-        "###.############",
-        "#..............#",
-        "######.#########",
-        "#..............#",
-        "#########.######",
-        "#..............#",
-        "############.###",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#...........X..#",
-        "################",
-     ], "movers": [("H", 3, 2, 13, 10), ("H", 5, 2, 13, 4), ("H", 7, 2, 13, 21)]},
+    {"rows": ["##########",
+              "#P.......#",
+              "#........#",
+              "#######.##",
+              "#........#",
+              "#........#",
+              "##.#######",
+              "#........#",
+              "#.......X#",
+              "##########"],
+     "movers": [(2, 2, 0, 4, 6), (2, 4, 0, 4, 0), (2, 7, 0, 4, 1)]},
 
-    {"rows": [
-        "################",
-        "#..P...........#",
-        "####.###########",
-        "#..............#",
-        "#######.########",
-        "#..............#",
-        "####.###########",
-        "#..............#",
-        "########.#######",
-        "#..............#",
-        "###########.####",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#.X............#",
-        "################",
-     ], "movers": [("H", 3, 2, 13, 9), ("H", 5, 2, 13, 16), ("H", 7, 2, 13, 19), ("H", 9, 2, 13, 7)]},
+    {"rows": ["##########",
+              "#.......P#",
+              "#........#",
+              "##.#######",
+              "#........#",
+              "#........#",
+              "#######.##",
+              "#........#",
+              "#X.......#",
+              "##########"],
+     "movers": [(1, 1, 0, 6, 8), (1, 4, 0, 6, 8), (2, 5, 0, 5, 2), (2, 7, 0, 5, 9)]},
 
-    {"rows": [
-        "################",
-        "#.P............#",
-        "##.#############",
-        "#..............#",
-        "####.###########",
-        "#..............#",
-        "#######.########",
-        "#..............#",
-        "#########.######",
-        "#..............#",
-        "############.###",
-        "#..............#",
-        "##########.#####",
-        "#..............#",
-        "#.........X....#",
-        "################",
-     ], "movers": [("H", 3, 2, 13, 0), ("H", 5, 2, 13, 5), ("H", 7, 2, 13, 15), ("H", 9, 2, 13, 18), ("H", 11, 2, 13, 11)]},
+    {"rows": ["##########",
+              "#P.......#",
+              "#........#",
+              "#######.##",
+              "#........#",
+              "#........#",
+              "##.#######",
+              "#........#",
+              "#.......X#",
+              "##########"],
+     "movers": [(1, 1, 0, 6, 11), (1, 2, 0, 6, 3), (2, 4, 0, 5, 9), (2, 7, 0, 5, 3)]},
 ]
 
 
 @lru_cache(maxsize=None)
 def _route(mover: tuple) -> list[tuple[int, int]]:
-    axis, fixed, lo, hi, _ = mover
-    out = list(range(lo, hi + 1))
-    back = list(range(hi - 1, lo, -1))
-    line = out + back
-    return [(v, fixed) if axis == "H" else (fixed, v) for v in line]
+    x, y, d, span, _ = mover
+    out = [(x, y)]
+    cell = (x, y)
+    for _ in range(span):
+        cell = step_cell(cell, d)
+        out.append(cell)
+    return out + out[-2:0:-1]
 
 
 def _routes(level_index: int) -> list[list[tuple[int, int]]]:
@@ -246,16 +193,48 @@ def exit_cell(rows) -> tuple[int, int]:
     return _find(tuple(rows), "X")
 
 
-def line_of_sight(rows: list[str], a: tuple[int, int], b: tuple[int, int]) -> bool:
-    ax, ay = a
-    bx, by = b
-    dx, dy = bx - ax, by - ay
-    n = max(abs(dx), abs(dy))
+def to_cube(cell: tuple[int, int]) -> tuple[int, int, int]:
+    x, y = cell
+    cx = x - ((y - (y & 1)) // 2)
+    return cx, -cx - y, y
+
+
+def from_cube(c: tuple[int, int, int]) -> tuple[int, int]:
+    cx, _, cz = c
+    return cx + ((cz - (cz & 1)) // 2), cz
+
+
+def _cube_round(x: float, y: float, z: float) -> tuple[int, int, int]:
+    rx, ry, rz = round(x), round(y), round(z)
+    dx, dy, dz = abs(rx - x), abs(ry - y), abs(rz - z)
+    if dx > dy and dx > dz:
+        rx = -ry - rz
+    elif dy > dz:
+        ry = -rx - rz
+    else:
+        rz = -rx - ry
+    return int(rx), int(ry), int(rz)
+
+
+def hex_distance(a: tuple[int, int], b: tuple[int, int]) -> int:
+    ax, ay, az = to_cube(a)
+    bx, by, bz = to_cube(b)
+    return max(abs(ax - bx), abs(ay - by), abs(az - bz))
+
+
+def line_of_sight(rows, a: tuple[int, int], b: tuple[int, int]) -> bool:
+    n = hex_distance(a, b)
+    if n <= 1:
+        return True
+    ax, ay, az = to_cube(a)
+    bx, by, bz = to_cube(b)
     for i in range(1, n):
         t = i / n
-        gx = int(ax + dx * t + 0.5)
-        gy = int(ay + dy * t + 0.5)
-        if rows[gy][gx] == "#":
+        cell = from_cube(_cube_round(ax + (bx - ax) * t + 1e-6,
+                                     ay + (by - ay) * t + 1e-6,
+                                     az + (bz - az) * t - 2e-6))
+        x, y = cell
+        if not on_board(cell) or rows[y][x] == "#":
             return False
     return True
 
@@ -288,10 +267,10 @@ def initial_memory(level_index: int) -> dict:
 
 
 def resolve(level_index: int, pos: tuple[int, int], tick: int,
-            move: tuple[int, int]) -> tuple[tuple[int, int], int, bool, bool]:
+            move) -> tuple[tuple[int, int], int, bool, bool]:
     rows = LEVELS_SPEC[level_index]["rows"]
-    nx, ny = pos[0] + move[0], pos[1] + move[1]
-    if rows[ny][nx] == "#":
+    nx, ny = pos if move is None else step_cell(pos, move)
+    if not on_board((nx, ny)) or rows[ny][nx] == "#":
         nx, ny = pos
     before = mover_cells(level_index, tick)
     after = mover_cells(level_index, tick + 1)
@@ -332,18 +311,25 @@ def _impact(phase: int) -> list[list[int]]:
     return px
 
 
-def _stamp(frame, cell: tuple[int, int], px: list[list[int]]) -> None:
+def cell_origin(cell: tuple[int, int]) -> tuple[int, int]:
     cx, cy = cell
+    return cx * CELL + (CELL // 2 if cy & 1 else 0), cy * CELL
+
+
+def _stamp(frame, cell: tuple[int, int], px: list[list[int]]) -> None:
+    ox, oy = cell_origin(cell)
+    h, w = frame.shape
     for j in range(CELL):
         for i in range(CELL):
-            if px[j][i] >= 0:
-                frame[cy * CELL + j, cx * CELL + i] = px[j][i]
+            y, x = oy + j, ox + i
+            if px[j][i] >= 0 and 0 <= x < w and 0 <= y < h:
+                frame[y, x] = px[j][i]
 
 
 def _halo(frame, cell: tuple[int, int], colour: int) -> None:
-    cx, cy = cell
-    x0, y0 = cx * CELL - 1, cy * CELL - 1
-    x1, y1 = cx * CELL + CELL, cy * CELL + CELL
+    ox, oy = cell_origin(cell)
+    x0, y0 = ox - 1, oy - 1
+    x1, y1 = ox + CELL, oy + CELL
     h, w = frame.shape
     edge = ([(x, y0) for x in range(x0, x1 + 1)] + [(x, y1) for x in range(x0, x1 + 1)]
             + [(x0, y) for y in range(y0 + 1, y1)] + [(x1, y) for y in range(y0 + 1, y1)])
@@ -358,7 +344,7 @@ def build_levels() -> list[Level]:
         sprites: list[Sprite] = []
         for y, row in enumerate(spec["rows"]):
             for x, ch in enumerate(row):
-                px, py = x * CELL, y * CELL
+                px, py = cell_origin((x, y))
                 if ch == "#":
                     sprites.append(Sprite(
                         pixels=_wall(), name=f"wall_{x}_{y}",
@@ -372,13 +358,22 @@ def build_levels() -> list[Level]:
                         interaction=InteractionMode.INTANGIBLE, layer=-1,
                         tags=["exit"],
                     ).set_position(px, py))
+        for y in range(N):
+            for px in (0, (N - 1) * CELL + CELL // 2):
+                sprites.append(Sprite(
+                    pixels=_wall(), name=f"margin_{px}_{y}",
+                    blocking=BlockingMode.BOUNDING_BOX,
+                    interaction=InteractionMode.TANGIBLE, layer=-1,
+                ).set_position(px, y * CELL))
+
         sx, sy = start_cell(spec["rows"])
         sprites.append(Sprite(
             pixels=_player(), name="player",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.INTANGIBLE, layer=1,
-        ).set_position(sx * CELL, sy * CELL))
-        levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
+        ).set_position(*cell_origin((sx, sy))))
+        levels.append(Level(sprites=sprites,
+                            grid_size=(N * CELL + CELL // 2, N * CELL)))
     return levels
 
 
@@ -423,7 +418,7 @@ class G046(ARCBaseGame):
         self.seen = visible_cells(LEVELS_SPEC[0]["rows"], self.pos)
         self.deaths = 0
         camera = Camera(
-            width=N * CELL, height=N * CELL,
+            width=N * CELL + CELL // 2, height=N * CELL,
             background=FLOOR, letter_box=5,
             interfaces=[G046A(self)],
         )
@@ -460,16 +455,10 @@ class G046(ARCBaseGame):
                 self.complete_action()
             return
 
-        move = {
-            GameAction.ACTION1: (0, -1),
-            GameAction.ACTION2: (0, 1),
-            GameAction.ACTION3: (-1, 0),
-            GameAction.ACTION4: (1, 0),
-            GameAction.ACTION5: (0, 0),
-        }.get(self.action.id)
-        if move is None:
+        if self.action.id not in ACTION_SLOTS:
             self.complete_action()
             return
+        move = ACTION_SLOTS[self.action.id]
 
         index = self.level_index
         rows = LEVELS_SPEC[index]["rows"]

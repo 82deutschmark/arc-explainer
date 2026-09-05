@@ -2,6 +2,16 @@
 
 import numpy as np
 
+from sprite_book import (
+    block,
+    dither,
+    door,
+    figure,
+    fixture,
+    key_shape,
+    outline,
+    speckle,
+)
 
 from arcengine import (
     ARCBaseGame,
@@ -12,87 +22,6 @@ from arcengine import (
     Level,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    mid = cell // 2
-    for x in range(1, cell - 1):
-        px[0][x] = body
-    for y in range(1, cell - 1):
-        for x in range(cell):
-            px[y][x] = body
-    px[cell - 1][0] = px[cell - 1][mid] = -1
-    for x in range(cell):
-        if px[cell - 1][x] != -1:
-            px[cell - 1][x] = body
-    px[cell - 1][1] = body
-    px[cell - 1][cell - 1] = body
-    if mark is not None and cell >= 4:
-        px[mid][mid] = mark
-    return px
-
-def key_shape(colour: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[0][1] = px[0][2] = colour
-    px[1][1] = px[1][2] = colour
-    px[2][1] = colour
-    px[3][1] = px[3][2] = colour
-    return px
-
-def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for y in range(cell):
-        px[y][0] = px[y][last] = frame_colour
-    for x in range(cell):
-        px[0][x] = frame_colour
-    if bar is not None:
-        for y in range(1, cell):
-            for x in range(1, last):
-                px[y][x] = bar
-    return px
-
-def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    for y in range(cell):
-        for x in range(cell):
-            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
-                px[y][x] = colour
-    return px
-
-def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
-    return px
-
-def dither(frame, box: tuple, colour: int):
-    x0, y0, x1, y1 = box
-    h, w = frame.shape
-    for y in range(max(0, y0), min(h, y1)):
-        for x in range(max(0, x0), min(w, x1)):
-            if (x + y) % 2:
-                frame[y, x] = colour
-    return frame
-
-def outline(frame, box: tuple, colour: int):
-    x0, y0, x1, y1 = box
-    h, w = frame.shape
-    for x in range(max(0, x0), min(w, x1)):
-        if 0 <= y0 < h:
-            frame[y0, x] = colour
-        if 0 <= y1 - 1 < h:
-            frame[y1 - 1, x] = colour
-    for y in range(max(0, y0), min(h, y1)):
-        if 0 <= x0 < w:
-            frame[y, x0] = colour
-        if 0 <= x1 - 1 < w:
-            frame[y, x1 - 1] = colour
-    return frame
-
 
 OUTSIDE = 4
 FLOOR = 1
