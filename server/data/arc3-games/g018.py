@@ -11,64 +11,7 @@ from arcengine import (
     Level,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def ring(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = -1
-    return px
-
-def core(colour: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = colour
-    return px
-
-def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    mid = cell // 2
-    for x in range(1, cell - 1):
-        px[0][x] = body
-    for y in range(1, cell - 1):
-        for x in range(cell):
-            px[y][x] = body
-    px[cell - 1][0] = px[cell - 1][mid] = -1
-    for x in range(cell):
-        if px[cell - 1][x] != -1:
-            px[cell - 1][x] = body
-    px[cell - 1][1] = body
-    px[cell - 1][cell - 1] = body
-    if mark is not None and cell >= 4:
-        px[mid][mid] = mark
-    return px
-
-def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for y in range(cell):
-        px[y][0] = px[y][last] = frame_colour
-    for x in range(cell):
-        px[0][x] = frame_colour
-    if bar is not None:
-        for y in range(1, cell):
-            for x in range(1, last):
-                px[y][x] = bar
-    return px
-
-def hatch(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour if (x + y) % 3 == 0 else -1 for x in range(cell)] for y in range(cell)]
-
-def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
-    return px
-
+from sprite_book import core, door, figure, fixture, hatch, ring
 
 N = 16
 CELL = 4

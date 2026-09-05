@@ -12,43 +12,7 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for y in range(cell):
-        px[y][0] = px[y][last] = frame_colour
-    for x in range(cell):
-        px[0][x] = frame_colour
-    if bar is not None:
-        for y in range(1, cell):
-            for x in range(1, last):
-                px[y][x] = bar
-    return px
-
-def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    for y in range(cell):
-        for x in range(cell):
-            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
-                px[y][x] = colour
-    return px
-
-def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
-    return px
-
+from sprite_book import door, fixture, rounded, speckle
 
 FLOOR = 12
 WALL = 5
@@ -250,7 +214,7 @@ LEVELS_SPEC = [
         "####M#####M#####",
         "#..............#",
         "#..#########...#",
-        "#..#.......#...#",
+        "#..#..7....#...#",
         "#..#..0....#...#",
         "#..#.......#...#",
         "#..#####M###...#",

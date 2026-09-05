@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from sprite_book import core, dither, fixture, rounded, speckle
 
 from arcengine import (
     ARCBaseGame,
@@ -13,46 +14,6 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def core(colour: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = colour
-    return px
-
-def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    for y in range(cell):
-        for x in range(cell):
-            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
-                px[y][x] = colour
-    return px
-
-def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
-    return px
-
-def dither(frame, box: tuple, colour: int):
-    x0, y0, x1, y1 = box
-    h, w = frame.shape
-    for y in range(max(0, y0), min(h, y1)):
-        for x in range(max(0, x0), min(w, x1)):
-            if (x + y) % 2:
-                frame[y, x] = colour
-    return frame
-
 
 TONES = (11, 2, 15, 4)
 WALL = 13

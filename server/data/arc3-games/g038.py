@@ -11,32 +11,7 @@ from arcengine import (
     Level,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def core(colour: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    for y in range(1, cell - 1):
-        for x in range(1, cell - 1):
-            px[y][x] = colour
-    return px
-
-def weave(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
-
-def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
-    return px
-
+from sprite_book import core, fixture, rounded, weave
 
 FLOOR = 0
 SOCKET = 4

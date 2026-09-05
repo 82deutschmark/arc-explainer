@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from sprite_book import blink, block, door, medallion
 
 from arcengine import (
     ARCBaseGame,
@@ -13,39 +14,6 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for x in range(1, last):
-        px[0][x] = px[last][x] = rim
-    for y in range(1, last):
-        px[y][0] = px[y][last] = rim
-    for y in range(1, last):
-        for x in range(1, last):
-            px[y][x] = centre
-    return px
-
-def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for y in range(cell):
-        px[y][0] = px[y][last] = frame_colour
-    for x in range(cell):
-        px[0][x] = frame_colour
-    if bar is not None:
-        for y in range(1, cell):
-            for x in range(1, last):
-                px[y][x] = bar
-    return px
-
-def blink(step: int, period: int = 3) -> bool:
-    return (step // period) % 2 == 0
-
 
 FLOOR = 9
 WALL = 4

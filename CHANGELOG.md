@@ -12,6 +12,18 @@
 # reference the old numbers.
 
 
+### Version 9.44.0  Sep 5, 2026
+
+- **Publishing a game is now gated in the Docker build, and copying the games was never publishing them** (Author: Mark Barney / Claude Opus 5)
+  - **In plain language**: the authoring package factored its sprites into a shared `sprite_book` module. `import_authored_games.py` copied game modules and nothing else, so a republish earlier today landed 35 of the 50 games importing a module that does not exist in this repository — every one of them unimportable, live. That republish was reverted in `e76308d1`. The importer now resolves what the games import and publishes it beside them; the check that would have caught it runs on every push.
+  - **What the gate checks**, in `scripts/arc3/check_publish_integrity.py`, run by the Dockerfile before `npm run build` so a failure costs a deploy and never the data — Railway keeps serving the last good image. Every published id is one the authoring ledger produced or sits in a range reserved for another pusher. No published module still carries the prose naming its own mechanic. Every derived artifact matches what its generator produces from the `.py` files beside it.
+  - **The id list cannot be derived from this directory, so it is committed.** A manifest regenerated from whatever `.py` files are present agrees with itself no matter who put them there, so an unauthorised id would pass its own check. `import_authored_games.py` — the one step that can see the authoring repo — now writes `authored-ids.json`, and `g500`–`g599` is reserved there for `sonpham-org`.
+  - **Frames are compared as pixels, never as bytes.** `render_authored_frames.py` saves with `optimize=True`, so the PNG encoding depends on the Pillow and zlib versions; a byte comparison would redden a clean tree on any machine whose Pillow differs from the one that rendered. The JSON artifacts are `json.dumps` output and are compared byte for byte.
+  - **The spoiler rule is an idempotency, not a wordlist.** A published module must satisfy `strip_authoring_text(body) == body`. Anything that came through the importer already has; a file copied straight into the directory has not. Nothing to keep current, and no false positives.
+  - **Generators run against a scratch copy, never the working tree**, so the check cannot repair the drift it is meant to report. The scratch tree carries `shared/config/arc3Colors.ts` (the renderer parses the palette out of the app's own table) and `arc3Triage.json` (the digest joins verdicts in) — without either, artifacts differ for reasons that have nothing to do with the games.
+  - **Proven against four deliberate breaks**, each blocked with the file named: a colour constant changed without re-rendering, an id nobody allocated, a game carrying its authoring docstring, and a stray module. The tree verifies clean again after each.
+  - **Two supporting fixes.** `render_authored_frames.py` puts the games directory on `sys.path`, or every game importing a support module fails to load. `build_authored_manifest.py` skips modules listed as `support` in `authored-ids.json` while still hard-erroring on any other non-game filename.
+
 ### Version 9.43.0  Sep 3, 2026
 
 - **The local copy of a game wins, and the upstream repo has a hyphen in it** (Author: Mark Barney / Claude Opus 5)

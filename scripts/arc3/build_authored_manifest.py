@@ -86,11 +86,27 @@ def game_class_name(path: Path) -> str:
     return found[0]
 
 
+def support_names(directory: Path) -> frozenset[str]:
+    """Modules published beside the games because the games import them.
+
+    Read from authored-ids.json rather than inferred from the filename, so a stray .py
+    dropped into this directory is still the hard error it has always been.
+    """
+    allocations = directory / "authored-ids.json"
+    if not allocations.is_file():
+        return frozenset()
+    return frozenset(json.loads(allocations.read_text(encoding="utf-8")).get("support", []))
+
+
 def build(directory: Path) -> list[dict[str, object]]:
     """One manifest entry per published module, sorted by id for a stable diff."""
     entries: list[dict[str, object]] = []
     for path in sorted(directory.glob("*.py")):
         if path.name.startswith("__"):
+            continue
+        if path.stem in support_names(directory):
+            # A shared module the games import, published beside them by
+            # import_authored_games.py. It is not a game and gets no manifest entry.
             continue
         if not GAME_ID_RE.match(path.stem):
             raise ValueError(f"{path.name}: filename is not a published game id; import it with import_authored_games.py")

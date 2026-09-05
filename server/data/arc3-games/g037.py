@@ -2,6 +2,9 @@
 
 import numpy as np
 
+from sprite_book import (
+    facing, fixture, hairline, medallion, outline, rounded, speckle, studs, weave,
+)
 
 from arcengine import (
     ARCBaseGame,
@@ -13,114 +16,6 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-
-
-def block(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour] * cell for _ in range(cell)]
-
-def rounded(colour: int, cell: int = 4) -> list[list[int]]:
-    px = block(colour, cell)
-    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
-        px[y][x] = -1
-    return px
-
-def facing(body: int, visor: int, heading: tuple, cell: int = 4) -> list[list[int]]:
-    px = rounded(body, cell)
-    dx, dy = heading
-    last = cell - 1
-    if dy < 0:
-        px[0][1] = px[0][cell - 2] = visor
-    elif dy > 0:
-        px[last][1] = px[last][cell - 2] = visor
-    elif dx < 0:
-        px[1][0] = px[cell - 2][0] = visor
-    elif dx > 0:
-        px[1][last] = px[cell - 2][last] = visor
-    else:
-        px[1][1] = visor
-    return px
-
-def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    last = cell - 1
-    for x in range(1, last):
-        px[0][x] = px[last][x] = rim
-    for y in range(1, last):
-        px[y][0] = px[y][last] = rim
-    for y in range(1, last):
-        for x in range(1, last):
-            px[y][x] = centre
-    return px
-
-def weave(colour: int, cell: int = 4) -> list[list[int]]:
-    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
-
-def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    for y in range(cell):
-        for x in range(cell):
-            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
-                px[y][x] = colour
-    return px
-
-def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
-    px = [[-1] * cell for _ in range(cell)]
-    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
-    return px
-
-def hairline(frame, a: tuple, b: tuple, colour: int, only_over=None):
-    x0, y0 = a
-    x1, y1 = b
-    dx, dy = abs(x1 - x0), abs(y1 - y0)
-    sx = 1 if x0 < x1 else -1
-    sy = 1 if y0 < y1 else -1
-    err = dx - dy
-    h, w = frame.shape
-    while True:
-        if 0 <= x0 < w and 0 <= y0 < h:
-            if only_over is None or int(frame[y0, x0]) in only_over:
-                frame[y0, x0] = colour
-        if x0 == x1 and y0 == y1:
-            break
-        e2 = 2 * err
-        if e2 > -dy:
-            err -= dy
-            x0 += sx
-        if e2 < dx:
-            err += dx
-            y0 += sy
-    return frame
-
-def outline(frame, box: tuple, colour: int):
-    x0, y0, x1, y1 = box
-    h, w = frame.shape
-    for x in range(max(0, x0), min(w, x1)):
-        if 0 <= y0 < h:
-            frame[y0, x] = colour
-        if 0 <= y1 - 1 < h:
-            frame[y1 - 1, x] = colour
-    for y in range(max(0, y0), min(h, y1)):
-        if 0 <= x0 < w:
-            frame[y, x0] = colour
-        if 0 <= x1 - 1 < w:
-            frame[y, x1 - 1] = colour
-    return frame
-
-def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
-          start: int = 8, gap: int = 6):
-    h, w = frame.shape
-    for i in range(count):
-        top = start + i * gap
-        if top + 2 > h:
-            break
-        colour = on if i < filled else off
-        length = min(1 + i, w // 4)
-        if side == "east":
-            frame[top:top + 2, w - length:w] = colour
-        else:
-            frame[top:top + 2, 0:length] = colour
-    return frame
-
 
 SKY = 11
 BEDROCK = 5
