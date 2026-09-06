@@ -12,7 +12,7 @@
 # reference the old numbers.
 
 
-### Version 9.46.0  Sep 5, 2026
+### Version 9.49.0  Sep 5, 2026
 
 - **The 44 contributed glow-up games are playable instead of being published with every control disabled** (Author: Codex)
   - **Root cause:** the games route numeric ids through aliases such as `aid = self.action.id.value` and declare controls in the sixth positional `ARCBaseGame` argument. The digest only recognized `GameAction.ACTIONn` references and keyword declarations, so it wrote an empty `actionsReferenced` array for every `g500`-`g543`; the player correctly obeyed that bad control map and disabled the deck.
@@ -20,7 +20,27 @@
   - **The mechanic is explainable after blind play.** Each contributed game now has canonical mechanic, controls, and goal prose sourced from its glow-up metadata, while the public Python remains spoiler-stripped. The registry and post-feedback reveal no longer show an em dash where the task explanation should be.
   - **This failure is now a publishing error.** The Docker integrity gate runs the digest self-test and a new ARCEngine smoke pass. Every contributed module must import, expose 7-12 levels, return a 64x64 frame, accept every advertised action, and visibly respond to an opening action.
   - **Files:** `scripts/arc3/mechanic_digest.py`, `scripts/arc3/smoke_contributed_games.py`, `scripts/arc3/check_publish_integrity.py`, `server/data/arc3-games/mechanics-contributed-notes.json`, `server/data/arc3-games/mechanics.json`, `server/data/arc3-games/mechanics-notes.json`, `docs/arc3-games-registry.md`, `docs/plans/2026-09-05-contributed-glowup-playability.md`.
+### Version 9.48.0  Sep 6, 2026
 
+- **Player feedback on ARC-3 tasks now reaches Son Pham automatically, daily** (Author: Mark Barney / Claude Sonnet 5)
+  - **In plain language**: counts on player feedback already left the database publicly (`/feedback-summary`, `/promoted`); the note text — the actual *why* behind a flag, and the thing a revision decision is made from — was deliberately write-only, readable only by hand-SQL (see `docs/2026-09-02-arc3-game-feedback-synthesis.md`, itself a one-off transcription of exactly that query). `server/scripts/export-arc3-feedback.ts` is that query, run daily via `launchd` on the Mac Mini (`scripts/arc3/daily-feedback-export.sh` + `com.markbarney.arc3-feedback-export.plist`) and pushed straight into `sonpham-org/autoresearch-arena` as `arc3games/feedback.jsonl`, beside `revisions.jsonl`.
+  - **Why the Mac Mini and not Railway cron**: a Railway cron runs in a stateless container with no access to the autoresearch-arena checkout, so it would need to clone the repo and hold a write-capable git credential to another org as an unattended cloud secret. The Mac Mini already has both repos and the Railway token this uses to reach the DB — reused rather than duplicated into a riskier surface.
+  - **Versioning, because these games get revised repeatedly.** Each row already carries the `sourceVersion` it was recorded against (a content hash; `null` predates the 04-Sep-2026 stamp). Freshness — "is that build still what's served" — cannot be baked into the row as a boolean; it would go stale the moment a revision publishes. It is instead a separate file, `arc3games/game-versions.json`, fully overwritten every run (even on a day with zero new feedback, since a revision with no feedback yet is exactly what a skipped refresh would hide) — reusing `Arc3MirrorCatalog.getSource()` the same way `Arc3Promotion.ts` already does for the in-app promotion signal, not re-deriving it.
+  - **Caught before it shipped to the cron**: the first run silently double-appended all 76 rows. `pg` returns `bigint`/`bigserial` as a string (the same quirk documented in `Arc3FeedbackRepository.getVerdictsByBuild`), so the id-watermark comparison (`typeof id === 'number'`) always failed and read the file as empty. Fixed by casting at read; `feedback.jsonl` was deduped and `id` normalized to a real number before the daily job went live. Verified idempotent (a second run appends nothing) and verified once end-to-end through the actual headless `launchd` environment, not just an interactive shell, since `launchd` does not source `.zshrc` and `node`/`railway` (Homebrew) are off its default `PATH` otherwise.
+  - **Full writeup**: `docs/ARC3-FEEDBACK-EXPORT.md` — what runs where, how to check it's alive, how to rerun/reinstall/remove it.
+
+### Version 9.47.0  Sep 5, 2026
+
+- **The community gallery opens on the new glow-ups, not "All"** (Author: Mark Barney / Claude Sonnet 5)
+  - **In plain language**: `CommunityGallery.tsx`'s default `category` state is now `'contributed-glowup'` instead of `null`. The 44 sonpham-org games (below) are the newest verified batch and the one most wanted feedback on first, so they're what a visitor sees before clicking anything. "All" stays one chip away.
+
+### Version 9.46.0  Sep 5, 2026
+
+- **44 sonpham-org glow-up games published as g500-g543** (Author: Mark Barney / Claude Sonnet 5)
+  - **In plain language**: of a 94-file upload (50 v1 seeds + 44 revised), only the 44 carrying at least one revision (`_v2_`/`_v3_` in the filename) qualify to publish, per Son Pham's own rule ("we will only accept games with at least one glow-up"). New `scripts/arc3/stage_contributed_glowups.py` renames a contributor's own filenames into the `import_authored_games.py` input shape and allocates stable ids out of the `sonpham-org` reserved range (`g500`-`g599`) via an append-only ledger (`server/data/arc3-uploads/sonpham-org-ids.json`) keyed on filename stem, not directory order — order shifts as files are added or withdrawn, and these ids key `arc3Triage.json`, human-play telemetry and feedback rows.
+  - **Uploads moved out of the repo-root `data/` directory** to `server/data/arc3-uploads/`, because Railway mounts a persistent volume at `/app/data` that shadows anything committed under the repo's own `data/` at runtime — the 94 files sat there, unread by any code path, from the PR that added them until this publish.
+  - **New category, not `arena`.** `build_authored_manifest.py`'s `category_for()` files a contributor's games under `contributed-glowup`, derived from `authored-ids.json`'s `reserved` block rather than a second list — `arena` describes work this project authored and reviewed, and a contributor's games are ours to serve but not ours to have made.
+  - **Publish gate green**: regenerated `manifest.json`, `frames.json`, `mechanics.json`, `docs/arc3-games-registry.md` and all 44 preview frames; `check_publish_integrity.py` reports 94 games, ids owned, no authoring prose, artifacts current.
 ### Version 9.45.0  Sep 5, 2026
 
 - **The 571 unreviewed generated tasks come off the default browse view** (Author: Mark Barney / Claude Opus 5)

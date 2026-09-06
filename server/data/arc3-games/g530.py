@@ -452,7 +452,7 @@ class G530(ARCBaseGame):
         self.intro_mark = True
         self.terminal_hold = None
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(item), name=item["name"]) for item in LEVELS]
-        super().__init__("q129", levels, Camera(0, 0, 64, 64, PAPER, PAPER, [self.display]), False, len(levels), [1, 2, 3, 4, 5])
+        super().__init__("g530", levels, Camera(0, 0, 64, 64, PAPER, PAPER, [self.display]), False, len(levels), [1, 2, 3, 4, 5])
 
     def on_set_level(self, _level):
         self.level = LEVELS[self.level_index]

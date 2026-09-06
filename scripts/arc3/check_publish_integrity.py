@@ -293,9 +293,38 @@ def check_derived(failures: list[str]) -> None:
                 )
 
 
+def check_self_reported_ids(failures: list[str]) -> None:
+    """Every module hands the engine the id it is published under.
+
+    ARCBaseGame stores that literal and FrameData.game_id echoes it to every consumer --
+    human-play telemetry, feedback rows, arc3Triage.json. It is invisible in the manifest,
+    which derives its own rows from the filename, so a wrong literal survives every other
+    check here and only shows up as play history filed under a name this repo does not
+    publish. That is exactly how g500-g543 shipped reporting q001-q200.
+    """
+    pattern = re.compile(
+        r"(?:super\(\)\.__init__\(\s*(?:game_id\s*=\s*)?)([\"'])([A-Za-z0-9_]+)\1"
+    )
+    for game_id in published_ids():
+        path = GAMES_DIR / f"{game_id}.py"
+        match = pattern.search(path.read_text(encoding="utf-8"))
+        if match is None:
+            failures.append(
+                f"server/data/arc3-games/{game_id}.py: no game id literal found in the "
+                "super().__init__ call, so what it reports to the engine cannot be checked."
+            )
+        elif match.group(2) != game_id:
+            failures.append(
+                f"server/data/arc3-games/{game_id}.py: hands the engine "
+                f"{match.group(2)!r}, but is published as {game_id!r}. import_authored_games.py "
+                "rewrites this literal; a file edited in place after import will drift."
+            )
+
+
 def main() -> int:
     failures: list[str] = []
     check_ids(failures)
+    check_self_reported_ids(failures)
     check_spoilers(failures)
     check_derived(failures)
 

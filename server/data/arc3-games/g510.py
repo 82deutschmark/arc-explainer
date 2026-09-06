@@ -390,7 +390,7 @@ class G510(ARCBaseGame):
         self.intro_mark = True
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(item), name=item["name"])
                   for item in LEVELS]
-        super().__init__("q032", levels, Camera(0, 0, 64, 64, BLACK, BLACK, [self.display]),
+        super().__init__("g510", levels, Camera(0, 0, 64, 64, BLACK, BLACK, [self.display]),
                          False, len(levels), [1, 2, 3, 4, 5, 6])
 
     def on_set_level(self, _level):

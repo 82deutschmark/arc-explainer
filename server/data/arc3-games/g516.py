@@ -514,7 +514,7 @@ class G516(ARCBaseGame):
                   name=level["name"])
             for level in LEVELS
         ]
-        super().__init__("q060", levels,
+        super().__init__("g516", levels,
                          Camera(0, 0, 64, 64, VOID, VOID, [self.display]),
                          False, len(levels), [1, 2, 3, 4, 5, 6])
 

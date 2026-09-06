@@ -568,7 +568,7 @@ class G512(ARCBaseGame):
         self.pending_terminal = None
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(item),
                         name=item["name"]) for item in LEVELS]
-        super().__init__("q041", levels,
+        super().__init__("g512", levels,
                          Camera(0, 0, 64, 64, CINDER, CINDER, [self.display]),
                          False, len(levels), list(HEX_ACTIONS))
 

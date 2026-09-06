@@ -506,7 +506,7 @@ class G502(ARCBaseGame):
             for item in LEVELS
         ]
         super().__init__(
-            "q009", levels,
+            "g502", levels,
             Camera(0, 0, 64, 64, ABYSS, ABYSS, [self.display]),
             False, len(levels), [1, 2, 3, 4, 5, 6],
         )

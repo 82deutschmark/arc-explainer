@@ -675,7 +675,7 @@ class G537(ARCBaseGame):
             for item in LEVELS
         ]
         super().__init__(
-            "q161", levels,
+            "g537", levels,
             Camera(0, 0, 64, 64, INK, INK, [self.display]),
             False, len(levels), [1, 2, 3, 4, 5, 6],
         )

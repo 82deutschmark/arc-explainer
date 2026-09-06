@@ -648,7 +648,7 @@ class G500(ARCBaseGame):
         self.pending_terminal = None; self.terminal_hold = None
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(level),
                         name=level["name"]) for level in LEVELS]
-        super().__init__("q001", levels,
+        super().__init__("g500", levels,
                          Camera(0, 0, 64, 64, VELVET, VELVET, [self.display]),
                          False, len(levels), [1, 2, 3, 4, 5, 6])
 
