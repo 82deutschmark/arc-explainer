@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.49.0  Sep 5, 2026
+
+- **The 44 contributed glow-up games are playable instead of being published with every control disabled** (Author: Codex)
+  - **Root cause:** the games route numeric ids through aliases such as `aid = self.action.id.value` and declare controls in the sixth positional `ARCBaseGame` argument. The digest only recognized `GameAction.ACTIONn` references and keyword declarations, so it wrote an empty `actionsReferenced` array for every `g500`-`g543`; the player correctly obeyed that bad control map and disabled the deck.
+  - **Both authoring styles are now recognized.** The digest resolves keyword and positional action declarations, static action constants such as `list(HEX_ACTIONS)`, and coordinate-bearing ACTION6 handlers. The regenerated control map enables the exact declared deck for all 44 games and distinguishes the six spatial-click games from ordinary ACTION6 buttons.
+  - **The mechanic is explainable after blind play.** Each contributed game now has canonical mechanic, controls, and goal prose sourced from its glow-up metadata, while the public Python remains spoiler-stripped. The registry and post-feedback reveal no longer show an em dash where the task explanation should be.
+  - **This failure is now a publishing error.** The Docker integrity gate runs the digest self-test and a new ARCEngine smoke pass. Every contributed module must import, expose 7-12 levels, return a 64x64 frame, accept every advertised action, and visibly respond to an opening action.
+  - **Files:** `scripts/arc3/mechanic_digest.py`, `scripts/arc3/smoke_contributed_games.py`, `scripts/arc3/check_publish_integrity.py`, `server/data/arc3-games/mechanics-contributed-notes.json`, `server/data/arc3-games/mechanics.json`, `server/data/arc3-games/mechanics-notes.json`, `docs/arc3-games-registry.md`, `docs/plans/2026-09-05-contributed-glowup-playability.md`.
 ### Version 9.48.0  Sep 6, 2026
 
 - **Player feedback on ARC-3 tasks now reaches Son Pham automatically, daily** (Author: Mark Barney / Claude Sonnet 5)
@@ -33,7 +41,6 @@
   - **Uploads moved out of the repo-root `data/` directory** to `server/data/arc3-uploads/`, because Railway mounts a persistent volume at `/app/data` that shadows anything committed under the repo's own `data/` at runtime — the 94 files sat there, unread by any code path, from the PR that added them until this publish.
   - **New category, not `arena`.** `build_authored_manifest.py`'s `category_for()` files a contributor's games under `contributed-glowup`, derived from `authored-ids.json`'s `reserved` block rather than a second list — `arena` describes work this project authored and reviewed, and a contributor's games are ours to serve but not ours to have made.
   - **Publish gate green**: regenerated `manifest.json`, `frames.json`, `mechanics.json`, `docs/arc3-games-registry.md` and all 44 preview frames; `check_publish_integrity.py` reports 94 games, ids owned, no authoring prose, artifacts current.
-
 ### Version 9.45.0  Sep 5, 2026
 
 - **The 571 unreviewed generated tasks come off the default browse view** (Author: Mark Barney / Claude Opus 5)
