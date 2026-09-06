@@ -41,6 +41,7 @@ export class DatabaseSchema {
       await this.createReArcDatasetsTable(client);
       await this.createReArcSubmissionsTable(client);
       await this.createVisitorStatsTable(client);
+      await this.createKaggleLeaderboardSnapshotsTable(client);
       // community_games / community_game_sessions removed 2026-08-30: the catalog is now
       // mirrored from arc3.sonpham.net (the source of truth) rather than stored here, and
       // the submission pipeline that wrote these tables is gone. Anonymous human-play
@@ -557,6 +558,81 @@ export class DatabaseSchema {
       INSERT INTO visitor_stats (page, count)
       VALUES ('landing', 0)
       ON CONFLICT (page) DO NOTHING
+    `);
+  }
+
+  /**
+   * One row per observation of a public Kaggle competition leaderboard.
+   *
+   * WHY A HISTORY TABLE AND NOT A SINGLE CURRENT-VALUE ROW. The landing page wants two
+   * things: where we are now, and the best we have ever placed. The second is a query over
+   * history (MIN(rank)), not a value somebody types in -- and a hand-maintained "best ever"
+   * string is exactly the class of claim this whole change exists to delete. The Mac Mini
+   * job that feeds this overwrites its own state file daily and keeps no archive, so before
+   * this table existed our own placings were unrecoverable except by scraping chat logs.
+   *
+   * (captured_at, competition, team_id) is UNIQUE so a re-POST of the same observation is
+   * idempotent -- the pusher can retry after a deploy without inflating history.
+   *
+   * rank is INTEGER NOT NULL and callers must filter Kaggle's rank-0 host baselines
+   * (Stochastic Goose, Random Agent, Just Explore) BEFORE inserting; they are not
+   * competitors. See docs/2026-09-02-kaggle-leaderboard-monitoring.md.
+   *
+   * top_teams is JSONB because it is displayed, never queried.
+   */
+  private static async createKaggleLeaderboardSnapshotsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS kaggle_leaderboard_snapshots (
+        id SERIAL PRIMARY KEY,
+        competition VARCHAR(255) NOT NULL,
+        captured_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        rank INTEGER NOT NULL,
+        score NUMERIC(12,4),
+        team_id VARCHAR(64) NOT NULL,
+        team_name VARCHAR(255),
+        team_count INTEGER,
+        leader_score NUMERIC(12,4),
+        submissions INTEGER,
+        source VARCHAR(32) NOT NULL DEFAULT 'observed',
+        top_teams JSONB,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT kaggle_lb_unique_observation UNIQUE (competition, captured_at, team_id)
+      )
+    `);
+
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_kaggle_lb_latest ON kaggle_leaderboard_snapshots(competition, captured_at DESC)`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_kaggle_lb_peak ON kaggle_leaderboard_snapshots(competition, rank ASC)`);
+
+    /*
+     * SEEDED HISTORY -- source='backfill', and it must stay distinguishable from 'observed'.
+     *
+     * No structured history survived for arc-prize-2026-arc-agi-3: the daily job overwrites
+     * one state file and the 6-hourly full-board archiver tracks a DIFFERENT competition
+     * (kaggriculture). These four rows were recovered on 06-Sep-2026 from two places, and
+     * both are recorded here because a seeded row nobody can trace is worth less than no row:
+     *
+     *   16-Aug-2026 -- the daily Discord digests posted to #arc-3, replayed out of the
+     *                  OpenClaw cron transcripts in ~/.openclaw/agents/main/sessions/*.jsonl
+     *   02-Sep-2026 -- a verbatim state-file excerpt preserved in this repo, at
+     *                  docs/2026-09-02-kaggle-leaderboard-monitoring.md ("Mode B state file")
+     *
+     * team_id 15605182 is ours throughout. The team was called "Logical Arbitrage" in August
+     * and "Son Pham & Mark Barney" by September -- which is precisely why identity here is
+     * team_id and never team name. Kaggle member username sonphamorg is the stable handle
+     * the pusher matches on.
+     *
+     * The 02-Sep row (rank 4) is the current peak and therefore the one the landing page
+     * brags with. ON CONFLICT DO NOTHING so this never fights a real observation.
+     */
+    await client.query(`
+      INSERT INTO kaggle_leaderboard_snapshots
+        (competition, captured_at, rank, score, team_id, team_name, team_count, source)
+      VALUES
+        ('arc-prize-2026-arc-agi-3', '2026-08-16T13:00:00Z', 43, 1.50, '15605182', 'Logical Arbitrage', 2342, 'backfill'),
+        ('arc-prize-2026-arc-agi-3', '2026-08-16T20:25:00Z',  5, 2.03, '15605182', 'Logical Arbitrage', 2349, 'backfill'),
+        ('arc-prize-2026-arc-agi-3', '2026-09-02T10:00:00Z',  4, 4.52, '15605182', 'Son Pham & Mark Barney', 2708, 'backfill'),
+        ('arc-prize-2026-arc-agi-3', '2026-09-06T10:00:00Z',  9, 4.84, '15605182', 'Son Pham & Mark Barney', 2831, 'backfill')
+      ON CONFLICT ON CONSTRAINT kaggle_lb_unique_observation DO NOTHING
     `);
   }
 

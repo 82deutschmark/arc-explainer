@@ -44,6 +44,7 @@ import arc3Router from "./routes/arc3";
 import arc3ArchiveRouter from "./routes/arc3Archive";
 import arc3MirrorRouter from "./routes/arc3Mirror";
 import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
+import kaggleRouter from "./routes/kaggle";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -113,6 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Replaces the removed DB-backed community catalog and its submission pipeline.
   app.use("/api/arc3-mirror", arc3MirrorRouter);
   app.use("/api/arc3-play", arc3HumanPlayRouter);
+  app.use("/api/kaggle", kaggleRouter);
 
   // Contributor trading cards routes
   app.use("/api/contributors", contributorController);
