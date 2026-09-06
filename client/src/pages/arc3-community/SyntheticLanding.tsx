@@ -164,6 +164,12 @@ const ARENA_SITE = 'https://arc3.sonpham.net';
 const RELATED = [
   { href: ARENA_SITE, label: 'arc3.sonpham.net', note: "Son Pham's site — the research half of this programme: the task set, the agent harness, the run data" },
   { href: 'https://github.com/theredbluepill/arc-interactive', label: 'ARC-Interactive', note: "theredbluepill's community game repo — 252 of the tasks here are his, and it has 200+ more, tutorials, and a local human-play mode" },
+  // The same finding as the harness section above, reached independently and six months
+  // earlier: what the model is allowed to keep and look up beats what it is told to do.
+  // Fox et al gave a coding agent nothing but READ, GREP and python over one uncompressed
+  // log file and got within ~19% of the human action count -- and reported that ADDING
+  // memory abstractions made it worse. Worth linking precisely because it is not us.
+  { href: 'https://blog.alexisfox.dev/arcagi3', label: 'Hill-climbing ARC-AGI-3', note: "Alexis Fox, Junlin Wang, Paul Rosu and Bhuwan Dhingra (DukeNLP), March 2026 — an agent with only READ, GREP and Python over a raw log finished the three preview games in 1,069 actions against a human baseline of ~900" },
 ];
 
 function thumb(gameId: string, size = 256) {
