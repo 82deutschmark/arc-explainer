@@ -15,9 +15,12 @@ PURPOSE: HTTP layer for our standing on a public Kaggle competition leaderboard 
          the hard-coded "we are currently fifth" with fetched data. Honest data cannot
          come from a forgeable endpoint.
 
-         CLOSED BY DEFAULT. With KAGGLE_PUSH_TOKEN unset the write route is DISABLED, not
-         open. A missing secret is the state a fresh deploy is in, and the safe reading of
-         "no credential configured" is "accept nothing".
+         CLOSED BY DEFAULT. With no token configured the write route is DISABLED, not open.
+         A missing secret is the state a fresh deploy is in, and the safe reading of "no
+         credential configured" is "accept nothing".
+
+         THE CREDENTIAL IS THE EXISTING ARC3_COMMUNITY_ADMIN_TOKEN, not a new secret --
+         see requirePushToken for why.
 
          Deliberately NOT using middleware/apiKeyAuth.ts: it ships three hardcoded default
          keys in the repo source, so anything it guards is guarded by a published password.
@@ -58,12 +61,30 @@ function tokenMatches(provided: string, expected: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-/** Shared-secret guard for the push route. Closed when no secret is configured. */
+/**
+ * Shared-secret guard for the push route. Closed when no secret is configured.
+ *
+ * REUSES THE EXISTING ARC-3 ADMIN TOKEN rather than minting a new secret.
+ * `ARC3_COMMUNITY_ADMIN_TOKEN` + the `X-ARC3-Admin-Token` header is this repo's documented
+ * convention for security-sensitive arc3 endpoints (docs/reference/api/EXTERNAL_API.md,
+ * docs/plans/020426-arc3-community-submissions-publish-plan.md). The code that used it went
+ * away with the community-submission pipeline on 30-Aug-2026, so the variable is currently
+ * dormant -- but the value is still provisioned, and on the Mac Mini it is already in the
+ * login keychain (service `arc3-community-admin-token`), which is what the pusher reads.
+ * Inventing a second secret would have meant provisioning something new in two places to
+ * do a job an existing credential already does.
+ *
+ * `KAGGLE_PUSH_TOKEN` / `x-api-key` are accepted too, so the two can be split later
+ * without a redeploy dance: set the new variable, switch the job, drop the old one.
+ */
 function requirePushToken(req: Request, res: Response, next: NextFunction) {
-  const expected = process.env.KAGGLE_PUSH_TOKEN;
+  const expected = process.env.ARC3_COMMUNITY_ADMIN_TOKEN || process.env.KAGGLE_PUSH_TOKEN;
 
   if (!expected) {
-    logger.warn('Kaggle push rejected: KAGGLE_PUSH_TOKEN is not configured.', 'kaggle-standing');
+    logger.warn(
+      'Kaggle push rejected: neither ARC3_COMMUNITY_ADMIN_TOKEN nor KAGGLE_PUSH_TOKEN is set.',
+      'kaggle-standing',
+    );
     return res.status(503).json(
       formatResponse.error(
         'push_disabled',
@@ -72,13 +93,13 @@ function requirePushToken(req: Request, res: Response, next: NextFunction) {
     );
   }
 
-  const header = req.headers['x-api-key'];
+  const header = req.headers['x-arc3-admin-token'] ?? req.headers['x-api-key'];
   const provided = typeof header === 'string' ? header : '';
 
   if (!provided || !tokenMatches(provided, expected)) {
     logger.warn('Kaggle push rejected: bad or missing token.', 'kaggle-standing');
     return res.status(401).json(
-      formatResponse.error('unauthorized', 'A valid x-api-key header is required.'),
+      formatResponse.error('unauthorized', 'A valid X-ARC3-Admin-Token header is required.'),
     );
   }
 
