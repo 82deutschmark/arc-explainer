@@ -65,6 +65,32 @@ function authoredFirst(games: Game[]): Game[] {
     g.category === AUTHORED_CATEGORY ? 0 : g.category === PIPELINE_CATEGORY ? 2 : 1;
   return [...games].sort((a, b) => rank(a) - rank(b));
 }
+
+/**
+ * The front page shows GLOW-UPS ONLY.
+ *
+ * 05-Sep-2026, Son Pham: "Fresh Off The Pipeline is a slop machine garbage of epic
+ * proportion, hide them from main page for the time being. On the front page, we will
+ * only accept games with at least one glow-up." Ordering the pipeline set last was not
+ * enough -- it still supplied the featured task, which is the one thing this page asks a
+ * visitor to do, and the review queue front is a pipeline task by construction.
+ *
+ * HIDDEN ON THIS PAGE AND THE GALLERY, NOWHERE DEEPER. The set stays fully playable and
+ * fully reachable: /play's review queue still leads with it (that queue exists to judge
+ * it) and the gallery's filter chip still opens it at full count. Same reasoning as
+ * HIDDEN_FROM_BROWSE in CommunityGallery.tsx -- hiding is a presentation decision and
+ * belongs at the presentation layer, never in the catalog that resolves sources and
+ * thumbnails.
+ *
+ * KNOWN COST, ACCEPTED: this page and /play now offer different tasks. "One queue, one
+ * answer" (see needsCoverage below) held while both surfaces wanted the same set; it
+ * cannot hold once the front page refuses the set the queue exists to triage.
+ *
+ * TEMPORARY, and shaped to be reverted in one line: return `games`.
+ */
+function frontPageSet(games: Game[]): Game[] {
+  return games.filter((g) => g.category !== PIPELINE_CATEGORY);
+}
 interface GamesResponse {
   success: boolean;
   data: { games: Game[]; total: number };
@@ -191,7 +217,7 @@ export default function SyntheticLanding() {
     [stats],
   );
 
-  const ordered = useMemo(() => authoredFirst(games), [games]);
+  const ordered = useMemo(() => authoredFirst(frontPageSet(games)), [games]);
 
   /**
    * The task this page offers — which must be the SAME task /play hands over, resolved by
@@ -206,14 +232,13 @@ export default function SyntheticLanding() {
    * disappears from the page.
    */
   const needsCoverage = useMemo(() => {
-    const byId = new Map(games.map((g) => [g.gameId, g]));
+    const byId = new Map(ordered.map((g) => [g.gameId, g]));
     const queued = (review?.data?.games ?? []).map((g) => byId.get(g.gameId)).filter(Boolean);
     const front = queued.find((g) => !playedIds.has(g!.gameId)) ?? queued[0];
     if (front) return front;
 
     const never = ordered.filter((g) => !playedIds.has(g.gameId));
-    const neverPipeline = never.filter((g) => g.category === PIPELINE_CATEGORY);
-    const pool = neverPipeline.length ? neverPipeline : never.length ? never : ordered;
+    const pool = never.length ? never : ordered;
     return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
   }, [games, review, ordered, playedIds]);
 
@@ -222,9 +247,8 @@ export default function SyntheticLanding() {
   // our set, not the official 25.
   const heroTiles = useMemo(() => ordered.slice(0, 12), [ordered]);
 
-  const unplayed = games.filter((g) => !playedIds.has(g.gameId)).length;
-  const pipelineCount = games.filter((g) => g.category === PIPELINE_CATEGORY).length;
-  const authoredCount = games.filter((g) => g.category === AUTHORED_CATEGORY).length;
+  const unplayed = ordered.filter((g) => !playedIds.has(g.gameId)).length;
+  const authoredCount = ordered.filter((g) => g.category === AUTHORED_CATEGORY).length;
   // A strip of real frames, not a full catalog dump -- browsing lives in the gallery.
   const previewTiles = useMemo(() => ordered.slice(0, 24), [ordered]);
 
@@ -299,7 +323,7 @@ export default function SyntheticLanding() {
                   <div className="min-w-0">
                     <h2 className="text-[20px] font-bold mb-3">Nobody has ever played this one.</h2>
                     <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
-                      {unplayed} of {games.length} tasks here have no human attempt on record —
+                      {unplayed} of {ordered.length} tasks here have no human attempt on record —
                       not one, ever. Until somebody tries, we cannot say whether this one is easy
                       for a person or quietly impossible, and a model's score on it means nothing
                       either way. You would be the first.
@@ -375,7 +399,7 @@ export default function SyntheticLanding() {
 
         {/* ── a look at the set ───────────────────────────────────────────── */}
         {previewTiles.length > 0 && (
-          <Section title="What they look like" note={`${games.length} playable`}>
+          <Section title="What they look like" note={`${ordered.length} playable`}>
             <p className="text-[14px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.dim }}>
               Real ARC-AGI-3 environments on the official engine — the same screen and the
               same buttons an agent is given. These are their opening frames. That is all
@@ -385,9 +409,8 @@ export default function SyntheticLanding() {
               These are the <strong style={{ color: ARC.text }}>{authoredCount}</strong>{' '}
               reviewed ones — written by our agent, then played and sent back for revision
               until they hold up, six to eight levels each, and still being iterated.
-              Behind them sit the 25 official ARC Prize tasks, a contributed community
-              catalog, and <strong style={{ color: ARC.text }}>{pipelineCount}</strong>{' '}
-              straight off the same generator that nobody has judged yet.
+              Behind them sit the 25 official ARC Prize tasks and a contributed community
+              catalog.
             </p>
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
               {previewTiles.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
