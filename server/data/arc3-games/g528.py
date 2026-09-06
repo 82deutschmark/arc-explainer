@@ -429,7 +429,7 @@ class G528(ARCBaseGame):
         self.pending_state = self.pending_budget = self.pending_terminal = None
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(item), name=item["name"])
                   for item in LEVELS]
-        super().__init__("q116", levels, Camera(0, 0, 64, 64, BLACK, BLACK, [self.display]),
+        super().__init__("g528", levels, Camera(0, 0, 64, 64, BLACK, BLACK, [self.display]),
                          False, len(levels), [1, 2, 3, 4, 5, 6])
 
     def example_positions(self):

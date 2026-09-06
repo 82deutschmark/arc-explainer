@@ -65,6 +65,12 @@ from strip_authoring_text import strip_authoring_text
 #: directory ships no manifest, so a batch can be imported straight from .py files.
 BASE_CLASS = "ARCBaseGame"
 
+# The first argument of ARCBaseGame.__init__ is `game_id`, whether it is passed positionally
+# or by keyword. Anchored to the super() call so it can never match another string literal.
+SUPER_GAME_ID_RE = re.compile(
+    r"(super\(\)\.__init__\(\s*(?:game_id\s*=\s*)?)([\"'])([A-Za-z0-9_]+)\2"
+)
+
 #: Authoring filenames are `<id>_<mechanic>.py`; the id is the leading token.
 AUTHORED_ID_RE = re.compile(r"^(g\d+)_")
 
@@ -202,6 +208,18 @@ def rewrite(text: str, game_id: str, renames: dict[str, str]) -> str:
     """
     for name, published in renames.items():
         text = re.sub(rf"\b{re.escape(name)}\b", published, text)
+
+    # THE PUBLISHED ID IS NOT ONLY A HEADER COMMENT.
+    #
+    # The module hands its own id to the engine, and FrameData.game_id echoes that back to
+    # every consumer: human-play telemetry, feedback rows, arc3Triage.json. The first 50
+    # were authored in this project's own numbering, so their literal already matched the
+    # id they published under and nothing here was needed. A contributed upload carries the
+    # contributor's numbering instead, so g500-g543 shipped reporting q001-q200 -- a game's
+    # play history filed under a name this repo does not publish.
+    text = SUPER_GAME_ID_RE.sub(
+        lambda m: f"{m.group(1)}{m.group(2)}{game_id}{m.group(2)}", text, count=1
+    )
 
     # PROSE COMES OUT LAST, AND IT IS NOT OPTIONAL.
     #

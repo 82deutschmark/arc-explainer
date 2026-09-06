@@ -244,7 +244,7 @@ class G541(ARCBaseGame):
         self.terminal_hold = None
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(item), name=item["name"])
                   for item in LEVELS]
-        super().__init__("q191", levels, Camera(0, 0, 64, 64, INK, INK, [self.display]),
+        super().__init__("g541", levels, Camera(0, 0, 64, 64, INK, INK, [self.display]),
                          False, len(levels), [5, 6])
 
     def on_set_level(self, _level):

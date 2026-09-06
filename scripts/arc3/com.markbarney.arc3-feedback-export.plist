@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.markbarney.arc3-feedback-export.plist
+
+  Author: Claude Sonnet 5
+  Date: 2026-09-06
+  PURPOSE: launchd job definition, daily, for scripts/arc3/daily-feedback-export.sh.
+           See docs/ARC3-FEEDBACK-EXPORT.md for what this does and how to install it.
+           Kept here (not only in ~/Library/LaunchAgents) so it survives a machine reset.
+
+  Install:  cp scripts/arc3/com.markbarney.arc3-feedback-export.plist ~/Library/LaunchAgents/
+            launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.markbarney.arc3-feedback-export.plist
+  Remove:   launchctl bootout gui/$(id -u)/com.markbarney.arc3-feedback-export
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.markbarney.arc3-feedback-export</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/macmini/GitHub/arc-explainer/scripts/arc3/daily-feedback-export.sh</string>
+    </array>
+
+    <!-- Once a day. RunAtLoad is deliberately false: installing this should not also
+         fire an extra run on top of whatever was just run by hand. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>6</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/macmini/Library/Logs/arc3-feedback-export.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/macmini/Library/Logs/arc3-feedback-export.log</string>
+</dict>
+</plist>

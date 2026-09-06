@@ -537,7 +537,7 @@ class G507(ARCBaseGame):
         self.pending_state = self.pending_budget = self.pending_terminal = None
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(level),
                         name=level["name"]) for level in LEVELS]
-        super().__init__("q022", levels,
+        super().__init__("g507", levels,
                          Camera(0, 0, 64, 64, PAPER, PAPER, [self.display]),
                          False, len(levels), [1, 2, 3, 4, 5, 6])
 

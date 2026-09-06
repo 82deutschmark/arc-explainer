@@ -271,7 +271,7 @@ class G508(ARCBaseGame):
         self.anim_left = self.anim_total = self.anim_progress = 0; self.anim_before = self.state
         self.pending_state = None; self.pending_terminal = None; self.intro_mark = True; self.terminal_hold = None
         levels = [Level(sprites=[], grid_size=(64, 64), data=deepcopy(item), name=item["name"]) for item in LEVELS]
-        super().__init__("q030", levels, Camera(0, 0, 64, 64, INK, INK, [self.display]), False, len(levels), [1, 3, 4, 5, 6])
+        super().__init__("g508", levels, Camera(0, 0, 64, 64, INK, INK, [self.display]), False, len(levels), [1, 3, 4, 5, 6])
 
     def on_set_level(self, _level):
         self.level = LEVELS[self.level_index]; self.state = start_state(self.level)

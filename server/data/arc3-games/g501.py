@@ -482,7 +482,7 @@ class G501(ARCBaseGame):
                   name=item["name"])
             for item in LEVELS
         ]
-        super().__init__("q002", levels,
+        super().__init__("g501", levels,
                          Camera(0, 0, 64, 64, SOOT, SOOT, [self.display]),
                          False, len(levels), [1, 2, 3, 4, 5, 6])
 
