@@ -60,8 +60,9 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
 
          6. Z DID THE OPPOSITE OF WHAT IT SAID. It was bound to ACTION5 next to the
             spacebar while the deck read "Undo (Z)", so the key a stuck player reaches
-            for spent a move instead of taking one back. Z is Undo. The spacebar is
-            ACTION5. See KEY_MAP.
+            for spent a move instead of taking one back. Fixed then by making Z Undo;
+            since 05-Sep (Son's call) Z is ACTION5 again and Undo has NO key at all, so
+            the two can no longer be confused in either direction. See KEY_MAP.
 
          02-Sep, fourth pass:
 
@@ -133,22 +134,29 @@ interface ReviewTotals {
 const PIPELINE_CATEGORY = 'ai-generated';
 
 /**
- * Keyboard bindings, matching the official player.
+ * Keyboard bindings.
  *
- * Z IS NOT HERE, DELIBERATELY. It used to be a second binding for ACTION5 alongside the
- * spacebar, while the deck's Undo control was labelled "Undo (Z)" and the Help overlay
- * said "Spacebar or Z". So the one key a stuck player reaches for spent a MOVE instead
- * of taking one back -- the worst direction for that mistake to go on a surface where a
- * single wrong action can end the level. Z is Undo (see the keydown handler); the
- * spacebar is ACTION5. They are different things and no key means both.
+ * 05-Sep, Son's call: the two extra actions get the two keys next to each other --
+ * Z is ACTION5, X is ACTION6 -- and the deck prints them as "ACTION5 (Z)" and
+ * "ACTION6 (X)", so the label and the key cannot disagree again (see post-mortem 6).
+ *
+ * NOTHING THAT DESTROYS WORK IS ON THE KEYBOARD ANY MORE. Undo and Reset are click-only,
+ * deliberately: a held Z auto-repeated, which made rewinding cheaper than thinking, and a
+ * stray R threw a run away. Those two cost a mouse trip now.
+ *
+ * The spacebar keeps ACTION5 for parity with the official player -- Z is an addition, not
+ * a replacement. X sends the COORDINATE-FREE ACTION6, the same thing the deck's ACTION6
+ * button sends; clicking the board is still how you aim on the spatial tasks. C keeps
+ * ACTION7, because ACTION7 has no deck button and C is now its only input.
  */
 const KEY_MAP: Record<string, string> = {
   ArrowUp: 'ACTION1', w: 'ACTION1', W: 'ACTION1',
   ArrowDown: 'ACTION2', s: 'ACTION2', S: 'ACTION2',
   ArrowLeft: 'ACTION3', a: 'ACTION3', A: 'ACTION3',
   ArrowRight: 'ACTION4', d: 'ACTION4', D: 'ACTION4',
-  ' ': 'ACTION5',
-  x: 'ACTION7', X: 'ACTION7', c: 'ACTION7', C: 'ACTION7',
+  ' ': 'ACTION5', z: 'ACTION5', Z: 'ACTION5',
+  x: 'ACTION6', X: 'ACTION6',
+  c: 'ACTION7', C: 'ACTION7',
 };
 
 const ARC = {
@@ -564,12 +572,8 @@ export default function CommunityGamePlay() {
     const down = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.key === 'r' || e.key === 'R') { e.preventDefault(); void act('RESET'); return; }
-      // Z is Undo. It returns before KEY_MAP is consulted so it can never also be read as
-      // a move -- see the note on KEY_MAP. Held down it repeats, which is what rewinding
-      // out of a blind guess actually looks like; undo() itself refuses at depth 0 and
-      // while a step is in flight, so the repeat cannot outrun the engine.
-      if (e.key === 'z' || e.key === 'Z') { e.preventDefault(); void undo(); return; }
+      // No key for Undo, and none for Reset. Both are deck-click-only so they stay
+      // deliberate -- see the note on KEY_MAP. Z is ACTION5 now; R is nothing.
       const action = KEY_MAP[e.key];
       if (!action || !canSend(action)) return;
       e.preventDefault();
@@ -584,7 +588,7 @@ export default function CommunityGamePlay() {
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
-  }, [act, undo, canSend, gameState, live]);
+  }, [act, canSend, gameState, live]);
 
   // ── Live tick ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -841,15 +845,18 @@ export default function CommunityGamePlay() {
           down={ctl('ACTION2', '')}
           left={ctl('ACTION3', '')}
           right={ctl('ACTION4', '')}
-          spacebar={ctl('ACTION5', 'Spacebar')}
-          click={ctl('ACTION6', 'Click')}
+          // The spacebar/click prop names are the deck's physical rows, not the
+          // actions -- renaming them would churn Arc3Console for nothing. The LABELS
+          // are what a player actually reads.
+          spacebar={ctl('ACTION5', 'ACTION5 (Z)')}
+          click={ctl('ACTION6', 'ACTION6 (X)')}
           undo={{
-            label: 'Undo (Z)',
+            label: 'Undo',
             onPress: () => void undo(),
             disabled: !frame?.undo_depth || pyodide.isActing,
           }}
           reset={{
-            label: 'Reset',
+            label: 'RESET',
             onPress: () => void act('RESET'),
             disabled: gameState === 'idle' || pyodide.isActing,
           }}
@@ -927,11 +934,12 @@ export default function CommunityGamePlay() {
                        style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
                     <p style={{ color: '#FFF' }}>Controls</p>
                     <p>Arrows or WASD — the d-pad.</p>
-                    <p>Spacebar — the Spacebar button.</p>
+                    <p>Z or Spacebar — ACTION5.</p>
                     <p>Click the board — that is ACTION6, sent at the cell you clicked.</p>
-                    <p>The Click button sends the same action with no coordinates, for the
-                       tasks that use it as a plain button.</p>
-                    <p>Z undoes one move. R resets the level.</p>
+                    <p>X, or the ACTION6 button, sends that same action with no coordinates,
+                       for the tasks that use it as a plain button.</p>
+                    <p>Undo and RESET are buttons only — no key, so neither one happens by
+                       accident.</p>
                     <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
                     <p style={{ color: 'rgba(255,255,255,.5)' }}>
                       Greyed controls are ones this task does not use. What any of them do
