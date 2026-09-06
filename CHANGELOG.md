@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.51.0  Sep 6, 2026
+
+- **The live leaderboard push is wired up and running end to end** (Author: Mark Barney / Claude Opus 5)
+  - **No new secret was needed.** I had invented `KAGGLE_PUSH_TOKEN`; there was already a credential for exactly this. `ARC3_COMMUNITY_ADMIN_TOKEN` is this repo's documented admin token (`X-ARC3-Admin-Token`, see `docs/reference/api/EXTERNAL_API.md`) — dormant since the community-submission pipeline was removed on 30-Aug, but **still set on Railway**, and the identical value is in the Mac Mini login keychain as service `arc3-community-admin-token`. Verified they match by comparing sha256 prefixes rather than printing either. The route accepts it; `KAGGLE_PUSH_TOKEN`/`x-api-key` still work so the two can be split later.
+  - **The cron job needs no secret in its environment.** `arc3-leaderboard-daily` (OpenClaw job `8a54d687`, 06:00 America/New_York) now passes `--push-url` and `--push-username sonphamorg`. The pusher reads the env var and falls back to the macOS login keychain, because scheduled jobs get a bare environment — launchd does not read a shell profile, and a secret in a plist is a secret in every backup and in `ps`. Prior job definition backed up to `~/bubba-workspace/state/arc3-leaderboard-cron.bak-20260906.json`.
+  - **Proven, not assumed.** Ran the job manually: production came back with `capturedAt` seconds old and `teamCount` **2,840** against the seeded 2,831 — a genuine fresh read from Kaggle, not the backfill. Full chain confirmed: cron → Kaggle CLI → keychain → `POST /api/kaggle/standing` → Postgres → the landing page. Peak correctly held at 4th.
+  - **Related work gains a third link.** Alexis Fox, Junlin Wang, Paul Rosu and Bhuwan Dhingra (DukeNLP), *Hill-climbing ARC-AGI-3*, March 2026: an agent given only `READ`, `GREP` and `python3` over one uncompressed log finished the three preview games in **1,069 actions** against a human baseline of ~900. Independent, six months earlier, and the same conclusion as the Astra harness gap the page already shows — *"The model knows best; minimal tooling is sufficient"*, with **diminishing (even negative) returns from added memory abstractions**. Worth linking precisely because it is not our result.
+  - **Files**: `client/src/pages/arc3-community/SyntheticLanding.tsx`, `server/routes/kaggle.ts` (previous commit). Outside the repo: OpenClaw cron job `8a54d687`, `~/bubba-workspace/tools/kaggriculture_leaderboard.py`.
+
 ### Version 9.50.0  Sep 6, 2026
 
 - **The arc3 landing page stopped making claims that expire** (Author: Mark Barney / Claude Opus 5)
