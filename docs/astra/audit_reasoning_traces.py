@@ -1,4 +1,7 @@
-import json,re,os,collections
+import json,re,os,sys,collections
+
+# Data dir: arg 1, else $ASTRA_DIR, else ./astra-data beside this script (see fetch_recordings.sh).
+DATA=sys.argv[1] if len(sys.argv)>1 else os.environ.get('ASTRA_DIR') or os.path.join(os.path.dirname(os.path.abspath(__file__)),'astra-data')
 CANON={0:'white',1:'off-white',2:'gray',3:'dark gray',4:'darker gray',5:'black',6:'pink',7:'light pink',
        8:'red',9:'blue',10:'light blue',11:'yellow',12:'orange',13:'dark red',14:'green',15:'purple'}
 WORD2IDX={'white':{0,1},'off-white':{0,1},'light gray':{1,2},'light grey':{1,2},'gray':{2,3,4},'grey':{2,3,4},
@@ -52,8 +55,8 @@ def run(path,label):
     return st
 
 out=[]
-for f in sorted(os.listdir('/tmp/astra')):
-    if f.endswith('.ndjson'): out.append(run('/tmp/astra/'+f,f[:-7]))
+for f in sorted(os.listdir(DATA)):
+    if f.endswith('.ndjson'): out.append(run(os.path.join(DATA,f),f[:-7]))
 for s in out:
     r=s['rows']; ok=sum(1 for x in r if x[6]); nm=s['named']; nok=sum(1 for x in nm if x[3])
     print(f"\n### {s['label']}: {s['n']} actions | prose-output {s['n_out']} | reasoning-summary {s['n_sum']}")
@@ -62,4 +65,4 @@ for s in out:
     print(f"  colour+index pairs: {len(nm)}  consistent: {nok}")
     if nm: print("   ",collections.Counter((x[1],x[2]) for x in nm).most_common(6))
     print("  odd phrases:",dict(s['odd'].most_common(12)))
-json.dump([{k:(dict(v) if isinstance(v,collections.Counter) else v) for k,v in s.items()} for s in out],open('/tmp/astra/out/audit.json','w'),indent=1)
+json.dump([{k:(dict(v) if isinstance(v,collections.Counter) else v) for k,v in s.items()} for s in out],open(os.path.join(DATA,'audit.json'),'w'),indent=1)
