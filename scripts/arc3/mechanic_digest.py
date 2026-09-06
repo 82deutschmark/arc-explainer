@@ -1,9 +1,10 @@
 """
-Author: Claude Opus 5
-Date: 02-September-2026
-PURPOSE: Derive a per-game mechanic digest for the 50 hand-authored ARC-AGI-3 tasks in
+Author: Claude Opus 5 / Codex
+Date: 05-September-2026
+PURPOSE: Derive a per-game mechanic digest for every published ARC-AGI-3 task in
 server/data/arc3-games/, so a reviewer can audit what a task IS without playing it blind
-or asking its author. Emits the structural facts that are decidable from source --
+or asking its author. Recognizes both enum-based authored games and numeric-dispatch
+contributed games. Emits the structural facts that are decidable from source --
 available actions, whether ACTION6 is a spatial click or a plain button, the action->
 meaning table where the source states one, board geometry, level count -- into
 server/data/arc3-games/mechanics.json, which the unlisted guide page and the play page's
@@ -45,18 +46,19 @@ GAMES_DIR = REPO / "server" / "data" / "arc3-games"
 TRIAGE = REPO / "server" / "services" / "arc3Mirror" / "arc3Triage.json"
 OUT = GAMES_DIR / "mechanics.json"
 NOTES = GAMES_DIR / "mechanics-notes.json"
+CONTRIBUTED_NOTES = GAMES_DIR / "mechanics-contributed-notes.json"
 CATEGORIES = GAMES_DIR / "categories.json"
 
 # The independent classification this extractor has to reproduce before its output can be
-# trusted: the seven xy-click tasks and the two that take ACTION6 as a plain button,
+# trusted: the nine xy-click tasks and the three that take ACTION6 as a plain button,
 # identified by hand from the authoring side. If a rule change breaks this, the rule is
 # wrong -- every prose note downstream is written against these facts.
 EXPECTED_ACTION6 = {
     "xy-click": {
         "g038", "g034", "g009", "g005",
-        "g023", "g013", "g006",
+        "g023", "g013", "g006", "g020", "g042",
     },
-    "button": {"g015", "g025"},
+    "button": {"g015", "g019", "g025"},
 }
 
 # Module-level names worth reporting as board geometry, in the spellings the set uses.
@@ -85,6 +87,25 @@ def action_ids(node: ast.AST) -> set[int]:
     return found
 
 
+def attribute_chain(node: ast.AST) -> tuple[str, ...]:
+    """Return a dotted name as parts, or an empty tuple for any other expression."""
+    if isinstance(node, ast.Name):
+        return (node.id,)
+    if isinstance(node, ast.Attribute):
+        parent = attribute_chain(node.value)
+        return (*parent, node.attr) if parent else ()
+    return ()
+
+
+def reads_action_id(node: ast.AST) -> bool:
+    """True when code reads `self.action.id` (with or without its `.value`)."""
+    return any(
+        attribute_chain(sub)[:3] == ("self", "action", "id")
+        for sub in ast.walk(node)
+        if isinstance(sub, ast.Attribute)
+    )
+
+
 def reads_coordinates(node: ast.AST) -> bool:
     """True when `node` reads an "x" or "y" key off an action's data payload.
 
@@ -110,23 +131,24 @@ def reads_coordinates(node: ast.AST) -> bool:
     return False
 
 
-def classify_action6(tree: ast.AST) -> str | None:
+def classify_action6(tree: ast.AST, referenced: set[int] | None = None) -> str | None:
     """'xy-click', 'button', or None when the game never mentions ACTION6.
 
     Function-scoped rather than module-wide: a game that reads coordinates in an unrelated
     helper must not be counted as a click game because ACTION6 appears elsewhere in the
     file. The two have to meet in one function body.
     """
+    known = referenced or action_ids(tree)
     mentions = False
     for fn in ast.walk(tree):
         if not isinstance(fn, (ast.FunctionDef, ast.AsyncFunctionDef)):
             continue
-        if 6 not in action_ids(fn):
+        if 6 not in action_ids(fn) and not (6 in known and reads_action_id(fn)):
             continue
         mentions = True
         if reads_coordinates(fn):
             return "xy-click"
-    if 6 in action_ids(tree):
+    if 6 in known:
         # Referenced outside any function (a module-level dispatch table). Fall back to a
         # module-wide coordinate read rather than reporting nothing.
         mentions = True
@@ -187,6 +209,66 @@ def kwarg_literal(tree: ast.AST, name: str):
     return None
 
 
+def assignment_nodes(tree: ast.Module) -> dict[str, ast.AST]:
+    """Module-level values available to the small static evaluator below."""
+    values: dict[str, ast.AST] = {}
+    for stmt in tree.body:
+        if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1 and isinstance(stmt.targets[0], ast.Name):
+            values[stmt.targets[0].id] = stmt.value
+    return values
+
+
+def static_literal(node: ast.AST, env: dict[str, ast.AST], seen: set[str] | None = None):
+    """Evaluate container literals and simple `list(NAME)` wrappers without executing code."""
+    try:
+        return ast.literal_eval(node)
+    except (ValueError, TypeError, SyntaxError):
+        pass
+    if isinstance(node, ast.Name):
+        visited = seen or set()
+        if node.id in visited or node.id not in env:
+            return None
+        return static_literal(env[node.id], env, visited | {node.id})
+    if (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id in {"list", "tuple", "set"}
+        and len(node.args) == 1
+        and not node.keywords
+    ):
+        value = static_literal(node.args[0], env, seen)
+        if value is None:
+            return None
+        return {"list": list, "tuple": tuple, "set": set}[node.func.id](value)
+    return None
+
+
+def declared_actions(tree: ast.Module) -> list[int] | None:
+    """Resolve available actions from keyword or ARCBaseGame's sixth positional argument."""
+    env = assignment_nodes(tree)
+    for sub in ast.walk(tree):
+        if not isinstance(sub, ast.Call):
+            continue
+        candidates = [kw.value for kw in sub.keywords if kw.arg == "available_actions"]
+        # ARCBaseGame.__init__(game_id, levels, camera, ..., win_levels, available_actions)
+        if (
+            isinstance(sub.func, ast.Attribute)
+            and sub.func.attr == "__init__"
+            and isinstance(sub.func.value, ast.Call)
+            and isinstance(sub.func.value.func, ast.Name)
+            and sub.func.value.func.id == "super"
+            and len(sub.args) >= 6
+        ):
+            candidates.append(sub.args[5])
+        for candidate in candidates:
+            value = static_literal(candidate, env)
+            if isinstance(value, (list, tuple, set)) and all(
+                isinstance(item, int) and not isinstance(item, bool) for item in value
+            ):
+                return sorted(set(value))
+    return None
+
+
 def action_labels(tree: ast.AST) -> dict[str, str]:
     """Action -> meaning, where the source states one as a dict literal.
 
@@ -207,30 +289,90 @@ def action_labels(tree: ast.AST) -> dict[str, str]:
     return labels
 
 
+def sequence_length(node: ast.AST, env: dict[str, ast.AST], seen: set[str] | None = None) -> int | None:
+    """Resolve only a static sequence's length; its elements need not be literals."""
+    if isinstance(node, (ast.List, ast.Tuple, ast.Set)):
+        return len(node.elts)
+    if isinstance(node, ast.Name):
+        visited = seen or set()
+        if node.id in visited or node.id not in env:
+            return None
+        return sequence_length(env[node.id], env, visited | {node.id})
+    if (
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id in {"enumerate", "list", "tuple", "set"}
+        and node.args
+    ):
+        return sequence_length(node.args[0], env, seen)
+    return None
+
+
+def appends_to(node: ast.AST, name: str) -> bool:
+    """True when a block appends one item to a named list."""
+    return any(
+        isinstance(sub, ast.Call)
+        and isinstance(sub.func, ast.Attribute)
+        and sub.func.attr == "append"
+        and isinstance(sub.func.value, ast.Name)
+        and sub.func.value.id == name
+        for sub in ast.walk(node)
+    )
+
+
 def level_count(tree: ast.Module) -> int | None:
+    env = assignment_nodes(tree)
+    functions = {
+        stmt.name: stmt for stmt in tree.body
+        if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
     for stmt in tree.body:
         if (isinstance(stmt, ast.Assign) and len(stmt.targets) == 1
                 and isinstance(stmt.targets[0], ast.Name)
-                and stmt.targets[0].id.endswith("LEVELS_SPEC")
-                and isinstance(stmt.value, (ast.List, ast.Tuple))):
-            return len(stmt.value.elts)
+                and stmt.targets[0].id in {"LEVELS", "LEVELS_SPEC"}
+        ):
+            direct = sequence_length(stmt.value, env)
+            if direct:
+                return direct
+            if isinstance(stmt.value, ast.Call) and isinstance(stmt.value.func, ast.Name):
+                builder = functions.get(stmt.value.func.id)
+                if builder is not None:
+                    for loop in builder.body:
+                        if isinstance(loop, (ast.For, ast.AsyncFor)) and appends_to(loop, "levels"):
+                            inferred = sequence_length(loop.iter, env)
+                            if inferred is not None:
+                                return inferred
+            # Some modules build `LEVELS = []` in one top-level pass over RAW_LEVELS.
+            for loop in tree.body:
+                if isinstance(loop, (ast.For, ast.AsyncFor)) and appends_to(loop, "LEVELS"):
+                    inferred = sequence_length(loop.iter, env)
+                    if inferred is not None:
+                        return inferred
     return None
 
 
 def digest(path: Path, manifest_row: dict) -> dict:
     tree = ast.parse(path.read_text(encoding="utf-8"))
     env = const_env(tree)
-    declared = kwarg_literal(tree, "available_actions")
-    declared = sorted(declared) if isinstance(declared, list) else None
+    declared = declared_actions(tree)
     effective = declared if declared is not None else list(ENGINE_DEFAULT_ACTIONS)
-    referenced = sorted(action_ids(tree))
-    action6 = classify_action6(tree)
+    referenced = action_ids(tree)
+    # Contributed games intentionally keep engine enums out of their pure transition
+    # functions. Their step method reads one numeric action id and routes it through a
+    # declared domain. That is a real read of the whole declared domain, not an empty game.
+    if (
+        manifest_row.get("category") == "contributed-glowup"
+        and declared is not None
+        and reads_action_id(tree)
+    ):
+        referenced.update(declared)
+    action6 = classify_action6(tree, referenced)
     return {
         "gameId": path.stem,
         "className": manifest_row.get("class_name"),
         "availableActions": effective,
         "availableActionsSource": "declared" if declared is not None else "engine-default",
-        "actionsReferenced": referenced,
+        "actionsReferenced": sorted(referenced),
         "action6": action6,
         # The player is OFFERED a click but the game reads nothing. Not a bug in the game
         # -- it simply never narrowed the default -- but it is the difference between "this
@@ -261,6 +403,8 @@ def build() -> list[dict]:
     manifest = json.loads((GAMES_DIR / "manifest.json").read_text(encoding="utf-8"))
     triage = triage_index()
     notes = json.loads(NOTES.read_text(encoding="utf-8")) if NOTES.exists() else {}
+    if CONTRIBUTED_NOTES.exists():
+        notes.update(json.loads(CONTRIBUTED_NOTES.read_text(encoding="utf-8")))
     # The kind of game -- "Timing / Cycles", "Environmental Manipulation". Human-edited,
     # like the prose, because nothing here can tell one from the other by reading source.
     # It was written for docs/arc3-games-registry.md and reached nothing else; merging it
@@ -279,7 +423,7 @@ def build() -> list[dict]:
         entry["mechanic"] = note.get("mechanic")
         entry["controls"] = note.get("controls")
         entry["goal"] = note.get("goal")
-        entry["category"] = categories.get(entry["gameId"])
+        entry["category"] = categories.get(entry["gameId"]) or row.get("category")
         out.append(entry)
     return out
 
@@ -334,9 +478,10 @@ def selftest(entries: list[dict]) -> int:
     got_xy = {e["gameId"] for e in entries if e["action6"] == "xy-click"}
     got_btn = {e["gameId"] for e in entries if e["action6"] == "button"}
     ok = True
+    legacy_ids = {f"g{i:03d}" for i in range(50)}
     for label, expected, got in (
-        ("xy-click", EXPECTED_ACTION6["xy-click"], got_xy),
-        ("button", EXPECTED_ACTION6["button"], got_btn),
+        ("xy-click", EXPECTED_ACTION6["xy-click"], got_xy & legacy_ids),
+        ("button", EXPECTED_ACTION6["button"], got_btn & legacy_ids),
     ):
         if expected != got:
             ok = False
@@ -376,6 +521,23 @@ def selftest(entries: list[dict]) -> int:
             print(f"       {line}")
     else:
         print("ok   every note's control claims agree with the actions its source reads")
+
+    contributed = [e for e in entries if e.get("category") == "contributed-glowup"]
+    contributed_failures = [
+        e["gameId"] for e in contributed
+        if not e["actionsReferenced"]
+        or e["availableActionsSource"] != "declared"
+        or any(not e.get(field) for field in ("mechanic", "controls", "goal"))
+        or (6 in e["actionsReferenced"] and e["action6"] not in {"button", "xy-click"})
+        or not isinstance(e["levels"], int)
+        or not 7 <= e["levels"] <= 12
+    ]
+    if contributed_failures:
+        ok = False
+        print("FAIL contributed games without usable controls and explanation: "
+              f"{contributed_failures}")
+    else:
+        print(f"ok   all {len(contributed)} contributed games expose controls and explanation")
 
     inert = [e["gameId"] for e in entries if e["action6Inert"]]
     print(f"note {len(inert)} games advertise ACTION6 and read nothing from it")
