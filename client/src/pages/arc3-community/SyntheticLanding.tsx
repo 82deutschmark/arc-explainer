@@ -1,34 +1,65 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-28 / 2026-08-30
+Date: 2026-08-28 / 2026-08-30 / 2026-09-06
 PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: someone
          with no background who needs the idea in plain language and one game to try.
 
          2026-08-30: the researcher half of this page was removed. arc3.sonpham.net is
          now the source of truth for the synthetic programme -- it owns the catalog, the
          submissions, the harness and the run data -- and this site is the public,
-         no-account play surface that mirrors it to collect a human baseline. Sections on
-         how the set is generated, how to contribute a task, and how to consume the data
-         belonged to the research side and were duplicating it here, months out of date.
-         What remains is the pitch to a human being and the shortest path to playing.
-         2026-09-03: no live frontier score appears in the prose. The hero asserts the
-         GAP -- easy for a person, very hard for the best models -- because that survives
-         the scores moving, and they move constantly. The 0.50% figure is cited once, in
-         the footnote, scoped to the ARC-AGI-3 technical report (22-Apr-2026, Table 2), so
-         it reads as a dated measurement rather than a current claim. Note the two ditches
-         either side: an earlier draft said models "score zero", which is checkably wrong,
-         and the draft after it welded 0.50% into the H1, which went stale in weeks.
+         no-account play surface that mirrors it. Sections on how the set is generated,
+         how to contribute a task, and how to consume the data belonged to the research
+         side and were duplicating it here, months out of date. What remains is the pitch
+         to a human being and the shortest path to playing.
+
+         ── 2026-09-06: THE PAGE STOPPED MAKING CLAIMS ABOUT AI ─────────────────────────
+
+         This page kept going out of date because it kept reaching for a thesis it never
+         needed. Three drafts of the same mistake:
+
+           1. "models score zero"        -- checkably wrong
+           2. "the best model scores 0.50%" welded into the H1 -- stale in weeks
+           3. "frontier models get through almost none of it" -- the GAP, asserted instead
+              of the number, on the reasoning that a gap survives the number moving
+
+         (3) is the one that had to die. On 02-Sep-2026 ARC Prize published GPT-6 Astra at
+         99.9% on the ARC-AGI-3 semi-private set -- the same set the old footnote cited
+         0.50% from. The gap was itself a number in disguise, and it closed.
+
+         The fix is NOT a better thesis. It is no thesis. This is two people describing a
+         hobby and asking for help with the part they cannot do alone. Nothing on this page
+         now asserts anything about the state of machine intelligence, because nothing here
+         needs to, and every version of that claim has expired within weeks.
+
+         RULES, in descending order of how much pain each one has already caused:
+
+         - NO FRONTIER SCORE IN BODY PROSE. Measurements live in dated, cited blocks with
+           their source next to them. A citation to a dated source becomes history; an
+           assertion in the present tense becomes wrong.
+         - NO CLAIM THE PAGE CANNOT CHECK. If a hostile reader would look it up, it is
+           either live and dated (see KaggleStanding) or it is cut (see the summit poster,
+           removed 06-Sep-2026 -- it was never confirmed).
+         - THE ASK IS ABOUT OUR OWN TASKS. "Is this set any good" is the one question no
+           frontier release can settle and only our visitors can. It is also a better ask
+           than the old one, which was only true until it wasn't.
+
          Prose is set in a sans stack for readability; monospace is kept for chrome, ids
          and code, matching CommunityGallery and the official ARC-AGI-3 task pages.
          Steers play toward ZERO-PLAY tasks: coverage is the scarce resource, not tasks.
 SRP/DRY check: Pass - reuses the mirror catalog + thumbnail endpoints that back the
-         gallery, and the existing human-stats aggregate; no new data plumbing. Routing
-         stays in App.tsx.
+         gallery, and the existing human-stats aggregate. The leaderboard placing and the
+         Astra chart are their own components (KaggleStanding, HarnessGapChart) because
+         each owns a data source this page should not know about. Palette moved to
+         landingTheme.ts rather than copied a sixth time. Routing stays in App.tsx.
 */
 
 import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
+import KaggleStanding from '@/components/arc3/KaggleStanding';
+import HarnessGapChart from '@/components/arc3/HarnessGapChart';
+import { ASTRA_SOURCE, ENVS_WITH_GAP, ENV_TOTAL, WORST_ENV } from '@/data/astraHarnessGap';
+import { ARC, SANS, MONO } from './landingTheme';
 
 /** Mirrors MirroredGame in server/services/arc3Mirror/Arc3MirrorCatalog.ts.
  *  No title, description or tags by design -- see the gallery's no-spoiler note.
@@ -101,36 +132,26 @@ interface HumanStatsResponse {
   data: { games: { game_id: string; first_sessions: number }[] };
 }
 
-/**
- * LIGHT. This page ran on the console's near-black palette, inherited from the play
- * surface where a dark ground is the right call -- it is a game screen and the frames are
- * saturated pixel art that needs somewhere quiet to sit. A landing page is not a game
- * screen. It is three paragraphs of argument and an ask, and dark chrome made it read as
- * a research console for people already inside the project rather than an invitation to
- * someone who has never heard of any of this.
- *
- * The task thumbnails keep their own dark cells, so the frames still sit on the ground
- * they were drawn for and the page's only saturated colour is the work itself.
- */
-const ARC = {
-  ground: '#FFFFFF', text: '#111111', dim: '#4A4A4A', faint: '#767676',
-  cell: '#F6F5F4', border: '#E2E0DE', pink: '#C42F89', pinkAlt: '#A8256F',
-  control: '#393736', green: '#2E8B1F', yellow: '#B8860B',
-  /** The dark ground a task frame is drawn against, kept inside the tiles. */
-  tile: '#141414',
-};
-const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif";
-const MONO = "'SF Mono', Menlo, Consolas, 'Courier New', monospace";
+/* Palette, type stacks and the shared date format now live in ./landingTheme, imported
+ * above -- see that file for why this page is light while the play surface is dark. */
 
-const LUMA = 'https://luma.com/z1h24dqe?tk=kddwGm';
 /** The official ARC Prize server. Same invite the rest of this site already uses. */
 const DISCORD = 'https://discord.gg/9b77dPAmcA';
 /** Tufa Labs' duck harness -- what the competition entry is built on. Named wherever the
- *  leaderboard placing is: the lab that wrote it sits one place above us on that board. */
+ *  placing is: taking credit for a run without naming the harness it rides on would be
+ *  taking credit for their work. Same rule as the ARC-Interactive attribution below. */
 const DUCK_HARNESS = 'https://github.com/Tufalabs/duck-harness';
-const REPORT = 'https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf';
-const ARENA_REPO = 'https://github.com/sonpham-org/autoresearch-arena';
 const ARENA_SITE = 'https://arc3.sonpham.net';
+
+/* LUMA (the ARC Prize Research Summit event page) was removed on 06-Sep-2026 along with
+ * the sentence that used it: "We are also taking a poster to the ARC Prize Research Summit
+ * in Boston." Nothing about that was settled -- the Luma page says registration is subject
+ * to host approval and mentions no poster session, and the venue is MIT in Cambridge, not
+ * Boston. Put it back when there is something confirmed to say, not before.
+ *
+ * REPORT (the 22-Apr-2026 ARC-AGI-3 technical report) went with the footnote that cited
+ * its 0.50% figure. That citation was honest and correctly dated; what made it a liability
+ * was the present-tense claim it propped up. See the header comment. */
 
 /**
  * Two links, both of which are other people's work on the same problem.
@@ -160,8 +181,7 @@ function Scanlines() {
 function Tile({ game, alt }: { game: Game; alt: boolean }) {
   /* Id only. The mirror strips names before they reach the browser. */
   return (
-    <Link href={`/arc3/play/${game.gameId}`}>
-      <a className="group block">
+    <Link href={`/arc3/play/${game.gameId}`} className="group block">
         <div className="relative aspect-square overflow-hidden"
              style={{ background: ARC.tile, border: `1px solid ${ARC.border}` }}>
           <img src={thumb(game.gameId)} alt="" loading="lazy" decoding="async"
@@ -173,7 +193,6 @@ function Tile({ game, alt }: { game: Game; alt: boolean }) {
              style={{ background: alt ? ARC.pinkAlt : ARC.pink, fontFamily: MONO }}>
           <span className="text-[11px] tracking-[.55px] text-white truncate">{game.gameId}</span>
         </div>
-      </a>
     </Link>
   );
 }
@@ -265,40 +284,30 @@ export default function SyntheticLanding() {
 
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start">
             <div>
-              <h1 className="text-[30px] sm:text-[40px] leading-[1.15] font-bold mb-6 tracking-[-0.5px]">
-                Easy for you. Very hard for the best AI in the world.
+              {/* KEEP THIS SHORT AND KEEP IT ABOUT US. Every long headline this page has
+                  had was a claim about AI, and all of them expired -- see the header
+                  comment. It says what we are doing. That is all it has to do. */}
+              <h1 className="text-[34px] sm:text-[44px] leading-[1.1] font-bold mb-6 tracking-[-0.5px]">
+                We're doing ARC-AGI-3.
               </h1>
-              {/* NO LIVE SCORE IN THIS COPY, AND DO NOT PUT ONE BACK.
-                  The hero used to end on "the best AI in the world scores half a percent",
-                  with 0.50% repeated in the second paragraph. Frontier scores move every
-                  few weeks; a number welded into an H1 is a maintenance job nobody signed
-                  up for, and it was already out of date. The durable claim is the GAP --
-                  people work these out in minutes, frontier systems mostly do not -- which
-                  stays true as the number moves and is the actual point of the page.
-                  The number still exists, once, in the footnote below, where it is scoped
-                  to a dated report. A citation to a dated source does not go stale; it
-                  becomes history. An assertion in the present tense does.
-                  Equally: do not swing to "models score zero". They do not, it is checkably
-                  wrong, and an earlier draft of this page said it. */}
               <div className="text-[15px] leading-[1.75] space-y-4" style={{ color: ARC.dim }}>
                 <p>
-                  Open one and you get a screen, a few buttons, and no instructions. Nobody
-                  tells you the goal, what the buttons do, or what the colours mean. You
-                  press things, watch what changes, and work it out.{' '}
+                  Two of us. No company, no lab, no funding — spare evenings and a Kaggle
+                  account, up against teams with actual money.
+                </p>
+                <p>
+                  ARC-AGI-3 is a set of little games with no instructions. Open one and you
+                  get a screen, a few buttons, and nothing else. Nobody tells you the goal,
+                  what the buttons do, or what the colours mean. You press things, watch what
+                  changes, and work it out.{' '}
                   <strong style={{ color: ARC.text }}>Most people manage in a couple of minutes.</strong>
                 </p>
                 <p>
-                  The systems that pass medical exams and write working software{' '}
-                  <strong style={{ color: ARC.text }}>mostly cannot.</strong> On the official
-                  ARC-AGI-3 environments a person gets through the set and the frontier
-                  models get through almost none of it — a gap of nearly the whole
-                  benchmark, not a few points. New results land constantly, so treat any
-                  one figure as a snapshot; the one this page cites is below, with its date.
-                </p>
-                <p>
-                  Exams reward recall. This rewards something else — looking at a thing you
-                  have never seen and working out how it behaves. Nobody fully knows why
-                  machines are so bad at it.
+                  We build them too, and we build the scaffolding that lets an AI agent try
+                  to play them. Some of ours are good.{' '}
+                  <strong style={{ color: ARC.text }}>A lot are garbage</strong> — formulaic,
+                  ugly, unfair, occasionally just broken. We can't tell which from the
+                  inside, because we already know what every one of them does.
                 </p>
               </div>
               {/* ── the one ask ────────────────────────────────────────────────
@@ -321,12 +330,12 @@ export default function SyntheticLanding() {
                            style={{ background: ARC.pink, fontFamily: MONO }}>{needsCoverage.gameId}</div>
                   </Link>
                   <div className="min-w-0">
-                    <h2 className="text-[20px] font-bold mb-3">Nobody has ever played this one.</h2>
+                    <h2 className="text-[20px] font-bold mb-3">Play this one. Then roast us.</h2>
                     <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
-                      {unplayed} of {ordered.length} tasks here have no human attempt on record —
-                      not one, ever. Until somebody tries, we cannot say whether this one is easy
-                      for a person or quietly impossible, and a model's score on it means nothing
-                      either way. You would be the first.
+                      Nobody has ever played it — {unplayed} of {ordered.length} tasks here have
+                      no human attempt on record, not one, ever. So we genuinely do not know
+                      whether it is a decent puzzle, trivially easy, or quietly impossible.
+                      You would be the first person to find out.
                     </p>
                     <div className="flex flex-wrap items-center gap-4">
                       <Link
@@ -336,14 +345,19 @@ export default function SyntheticLanding() {
                       >
                         Play it →
                       </Link>
-                      <Link href="/arc3/gallery">
-                        <a className="text-[13px] underline" style={{ color: ARC.dim }}>or pick your own</a>
-                      </Link>
+                      <Link href="/arc3/gallery" className="text-[13px] underline"
+                            style={{ color: ARC.dim }}>or pick your own</Link>
                     </div>
-                    <p className="text-[12px] mt-4" style={{ color: ARC.faint }}>
+                    {/* The feedback box is the ask, not a courtesy. Said plainly, because the
+                        previous copy called the note "the most useful thing you can leave us"
+                        and then described it last, in the smallest type on the page. */}
+                    <p className="text-[12px] leading-[1.7] mt-4" style={{ color: ARC.faint }}>
                       About five minutes. No account, nothing to install, no experience needed.
-                      When you stop, the game asks what you made of it — that note is the most
-                      useful thing you can leave us, and it tells you what the task actually was.
+                      There is a box at the end — <strong style={{ color: ARC.dim }}>use it</strong>.
+                      Tell us it was boring, that the controls did nothing, that it looks like
+                      every other one, that you sat there ten minutes and never had a single
+                      idea. Praise teaches us nothing. Last round of notes got turned into a hit
+                      list and rewrote most of the set inside a week.
                     </p>
                   </div>
                 </div>
@@ -354,14 +368,13 @@ export default function SyntheticLanding() {
             {heroTiles.length > 0 && (
               <div className="grid grid-cols-3 gap-2">
                 {heroTiles.map((g) => (
-                  <Link key={g.gameId} href={`/arc3/play/${g.gameId}`}>
-                    <a className="relative aspect-square overflow-hidden block group"
-                       style={{ background: ARC.tile, border: `1px solid ${ARC.border}` }}>
+                  <Link key={g.gameId} href={`/arc3/play/${g.gameId}`}
+                        className="relative aspect-square overflow-hidden block group"
+                        style={{ background: ARC.tile, border: `1px solid ${ARC.border}` }}>
                       <img src={thumb(g.gameId, 128)} alt="" loading="lazy"
                            className="w-full h-full opacity-85 group-hover:opacity-100 transition-opacity"
                            style={{ imageRendering: 'pixelated', display: 'block' }} />
                       <Scanlines />
-                    </a>
                   </Link>
                 ))}
               </div>
@@ -372,30 +385,80 @@ export default function SyntheticLanding() {
         {/*
           THE FOUR STAT CARDS THAT USED TO SIT HERE ARE GONE, AND SHOULD NOT COME BACK.
           They showed 100%, 0.50%, the task count and the unplayed count. Every one of the
-          four restated a number from prose immediately above or below it: the first two
-          were in the hero's second paragraph, in the same words, and the second two are the
-          opening line of the ask, which now sits in the hero's left column. 0.50% has since
-          come out of the prose entirely -- it lives in the dated footnote and nowhere else,
-          which is NOT an opening to promote it back to a card. A frontier score on a card
-          is a number this page would have to chase forever. A number is worth a card when it is the
-          first place the reader meets it. Repeated a paragraph later in a bigger font it
-          is decoration, and four of them in a row read as a dashboard bolted onto an
-          argument. The citation stays, because that is load-bearing -- it is what makes
-          the hero's claim checkable rather than asserted.
+          four restated a number from prose immediately above or below it. A frontier score
+          on a card is a number this page would have to chase forever; a number earns a card
+          only where it is the first place the reader meets it. Repeated a paragraph later
+          in a bigger font it is decoration, and four in a row read as a dashboard bolted
+          onto an argument.
+
+          THE DATED FOOTNOTE THAT REPLACED THEM IS ALSO GONE (06-Sep-2026). It cited humans
+          100% / best model 0.50% from the 22-Apr-2026 technical report, and said "none has
+          closed the gap". By the time anyone read that sentence it was false: GPT-6 Astra,
+          02-Sep-2026, 99.9% on the same semi-private set. The citation itself was fine --
+          correctly dated, correctly scoped. What killed it was the present-tense claim it
+          existed to support. It is not replaced by a newer score. It is replaced by the
+          section below, which is about what we do rather than about how good AI is.
         */}
-        <p className="text-[12px] mb-14 max-w-[76ch]" style={{ color: ARC.faint }}>
-          The figures behind that, as measured at the benchmark's release and not since:
-          humans 100%, best model 0.50% — Table 2 of the{' '}
-          <a href={REPORT} target="_blank" rel="noreferrer" className="underline">
-            ARC-AGI-3 technical report
-          </a>{' '}
-          (22 April 2026), best-of-four, semi-private set. Frontier models have been
-          evaluated many times since and score better; none has closed the gap. For a
-          current board, see the{' '}
-          <a href="https://arcprize.org/leaderboard" target="_blank" rel="noreferrer" className="underline">
-            ARC Prize leaderboard
-          </a>.
-        </p>
+        <div className="mb-14 h-px" style={{ background: ARC.border }} />
+
+        {/* ── what we actually do ──────────────────────────────────────────── */}
+        <Section title="What we're actually doing" note="harness engineering">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] items-start mb-10">
+            <div>
+              <p className="text-[14px] leading-[1.8] mb-4" style={{ color: ARC.dim }}>
+                We enter the ARC Prize 2026 competition on Kaggle. Our run is built on{' '}
+                <a href={DUCK_HARNESS} target="_blank" rel="noreferrer" className="underline"
+                   style={{ color: ARC.text }}>Tufa Labs' duck harness</a> — an open harness
+                written by people who are also competing. It is that kind of competition, and
+                that is the good part of it.
+              </p>
+              <p className="text-[13px] leading-[1.8]" style={{ color: ARC.faint }}>
+                A harness is the scaffolding around the model: what it sees each turn, what it
+                is allowed to remember, when it gets to stop and think. Not the model itself.
+                It sounds like plumbing.
+              </p>
+            </div>
+            {/* Live, dated, and never asserted from memory -- this is the number a sceptical
+                reader checks first, and until today the page got it wrong. */}
+            <KaggleStanding />
+          </div>
+
+          <h3 className="text-[20px] font-bold mb-3 max-w-[70ch]">
+            It turns out the plumbing can matter more than the model.
+          </h3>
+          <div className="text-[14px] leading-[1.8] space-y-4 mb-8 max-w-[74ch]"
+               style={{ color: ARC.dim }}>
+            {/* The date is not decoration. Every measurement on this page renders with the
+                day it was published, so a reader can see at a glance how old the claim is
+                instead of taking "recently" on trust -- and so it ages into history rather
+                than into a lie. Sourced from the data file, never retyped here. */}
+            <p>
+              On {ASTRA_SOURCE.published} ARC Prize published a set of runs that made this
+              unusually vivid. The same model was pointed at the same {ENV_TOTAL} ARC-AGI-3
+              environments twice. The only thing that changed between the two was the
+              harness — whether the model's own working state was carried from one request
+              to the next, or thrown away and rebuilt each turn.
+            </p>
+            <p>
+              On <strong style={{ color: ARC.text }}>{WORST_ENV.env}</strong>, the throw-it-away
+              path never got above{' '}
+              <strong style={{ color: ARC.text }}>
+                {(WORST_ENV.standard * 100).toFixed(1)}%
+              </strong>{' '}
+              — not at any of the six reasoning settings, including the most expensive one.
+              Let it keep its state, and it solves the environment. Same weights, same
+              puzzle. Turning up the thinking did nothing; letting it remember did
+              everything. That pattern holds on {ENVS_WITH_GAP} of the {ENV_TOTAL}.
+            </p>
+            <p>
+              We think that is the most interesting thing published about this benchmark all
+              year, and it is our reading rather than anyone's finding — ARC Prize put the
+              numbers up without telling anyone what to make of them. It is also, more
+              selfishly, the bit we spend our evenings on.
+            </p>
+          </div>
+          <HarnessGapChart />
+        </Section>
 
         {/* ── a look at the set ───────────────────────────────────────────── */}
         {previewTiles.length > 0 && (
@@ -416,9 +479,9 @@ export default function SyntheticLanding() {
               {previewTiles.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}
             </div>
             <p className="text-[13px] mt-5">
-              <Link href="/arc3/gallery"><a className="underline" style={{ color: ARC.dim }}>
+              <Link href="/arc3/gallery" className="underline" style={{ color: ARC.dim }}>
                 Browse every task →
-              </a></Link>
+              </Link>
             </p>
           </Section>
         )}
@@ -429,36 +492,33 @@ export default function SyntheticLanding() {
           about a poster, a link to the research site, and a privacy note. It explained our
           plans to a reader who had not yet been given a reason to care about them.
           What this page actually wants is people to talk to. So: who we are, where we are
-          on Sundays, and the door in. The poster is one line inside it rather than the
-          reason for the section.
+          on Sundays, and the door in.
+          2026-09-06: the poster line that used to close it was cut (never confirmed), and
+          the leaderboard placing moved out of here into a live component further up. What
+          is left is the invitation, which is what the section was for.
         */}
         <Section title="Come and talk to us">
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-start">
+            {/* THE PLACING IS NOT REPEATED HERE. It used to be -- "we are currently fifth",
+                hard-coded, three weeks out of date by the time anyone read it, sitting
+                beside a sentence naming the team one place ahead which had ALSO gone wrong.
+                It now appears once, live and dated, in "What we're actually doing" above.
+                One number, one place, fetched. Do not restate it in prose anywhere.
+
+                THE POSTER SENTENCE IS GONE (06-Sep-2026): "We are also taking a poster to
+                the ARC Prize Research Summit in Boston." None of it was settled. Say
+                something here when there is something confirmed to say. */}
             <div className="p-6 text-[14px] leading-[1.8]"
                  style={{ background: ARC.cell, border: `1px solid ${ARC.border}`, color: ARC.dim }}>
               <p className="mb-4">
-                Two people, spare time, no lab and no funding. On the ARC Prize 2026
-                competition leaderboard we are currently{' '}
-                <strong style={{ color: ARC.text }}>fifth</strong>.
-              </p>
-              {/* The harness credit is not a footnote and does not get separated from the
-                  placing. Tufa Labs wrote it and sit one seat above us on the same board;
-                  citing the placing without citing them would be taking credit for their
-                  work. Same rule as the ARC-Interactive attribution. */}
-              <p className="mb-4">
-                That run is built on{' '}
-                <a href={DUCK_HARNESS} target="_blank" rel="noreferrer" className="underline"
-                   style={{ color: ARC.text }}>Tufa Labs' duck harness</a>, and Tufa Labs are
-                fourth — one place ahead of us, on their own harness. It is an open
-                competition and that is the point: everything we used is public.
+                Everything here is public — the harness we build on, the competition, the
+                task set, the replays. If you think we are doing it wrong, you can see
+                exactly how we are doing it wrong and say so.
               </p>
               <p className="mb-0">
-                We are also taking a poster to the{' '}
-                <a href={LUMA} target="_blank" rel="noreferrer" className="underline"
-                   style={{ color: ARC.text }}>ARC Prize Research Summit in Boston</a>.
-                One chart: how far people get on these tasks against how far the best
-                agents get, on exactly the same tasks. The agent half is measured. The
-                human half is whoever plays.
+                Most useful of all is the five minutes you spend on one of the tasks and the
+                two sentences you type afterwards. We cannot buy that and we cannot generate
+                it, which is the entire reason this page exists.
               </p>
             </div>
 
@@ -504,14 +564,14 @@ export default function SyntheticLanding() {
             repeat made three on one page, plus Browse in the nav. A footer earns its place
             by reaching what the body does not. */}
         <footer className="pt-2 text-[12px] leading-[2]" style={{ color: ARC.faint }}>
-          <Link href="/arc3/hypotheses"><a className="underline">Research: what a model guesses from one frame</a></Link>
+          <Link href="/arc3/hypotheses" className="underline">Research: what a model guesses from one frame</Link>
           <span className="mx-2 opacity-50">·</span>
           {/* Labelled as spoilers on purpose. /arc3 names the mechanic of six official
               games and links to full write-ups, and five of those six are playable here.
               A blind player must not be able to wander into it from a bare "reference". */}
-          <Link href="/arc3"><a className="underline">Reference (spoilers)</a></Link>
+          <Link href="/arc3" className="underline">Reference (spoilers)</Link>
           <span className="mx-2 opacity-50">·</span>
-          <Link href="/home"><a className="underline">ARC Explainer</a></Link>
+          <Link href="/home" className="underline">ARC Explainer</Link>
         </footer>
       </div>
     </div>

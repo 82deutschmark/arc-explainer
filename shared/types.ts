@@ -1738,3 +1738,42 @@ export type ReArcSSEEvent =
     }> } }
   | { type: 'complete'; data: { type: 'malformed' } }
   | { type: 'error'; data: { message: string } };
+
+/**
+ * Kaggle public-leaderboard standing, shared by the push endpoint, the read endpoint and
+ * the landing page's <KaggleStanding /> component.
+ *
+ * EVERY SHAPE HERE CARRIES ITS OWN capturedAt. That is deliberate and load-bearing: the
+ * arc3 landing page exists in its current form because a hard-coded placing ("we are
+ * currently fifth") outlived the fact by three weeks. There is no way to render a rank
+ * from this type without having its date in hand.
+ *
+ * `rank` is the PUBLIC leaderboard position. Kaggle medals are awarded on the PRIVATE
+ * board when the competition closes, so a public position is a standing, never a medal --
+ * copy that renders this must say "public leaderboard".
+ */
+export interface KaggleStandingObservation {
+  /** ISO-8601, UTC. When Kaggle was actually read -- not when we served the response. */
+  capturedAt: string;
+  rank: number;
+  score: number | null;
+  teamName: string | null;
+  /** Ranked competitors only. Kaggle's rank-0 host baselines are filtered before insert. */
+  teamCount: number | null;
+}
+
+export interface KaggleStanding {
+  competition: string;
+  /** Most recent observation, or null when nothing has ever been pushed. */
+  current: KaggleStandingObservation | null;
+  /** Best rank ever recorded, including seeded backfill rows. Null when there is no history. */
+  peak: KaggleStandingObservation | null;
+  /**
+   * True when `current` is older than the staleness window. The daily push means a fresh
+   * standing is <24h old; past the window the consumer must stop asserting a CURRENT rank
+   * and fall back to `peak`, which is history and cannot go stale.
+   */
+  isStale: boolean;
+  /** Hours after which `current` is considered stale. Echoed so the client need not guess. */
+  staleAfterHours: number;
+}
