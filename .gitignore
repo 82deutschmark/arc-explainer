@@ -30,3 +30,4 @@ data/arc3-mirror-thumbnails/
 # Local model output from scripts/arc3/hypothesis_sweep.py: raw JSONL, rendered frames and
 # digests. Machine-local research data, regenerable, and not something the site serves.
 data/arc3-hypothesis-sweep/
+docs/astra/astra-data/

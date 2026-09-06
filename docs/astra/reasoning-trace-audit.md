@@ -11,8 +11,11 @@ trace text itself. No overlap. docs/prolong/ covers PRO-LONG's own numbers.
 
 # Astra reasoning traces: colour claims and "the developer is absent"
 
-Companion to [`README.md`](README.md) (the per-game harness gap) and
-[`trace-audit-token-spend.md`](trace-audit-token-spend.md) (token spend).
+**Where the companions live:** the per-game harness gap (`docs/astra/README.md`), the token-spend
+audit (`docs/astra/trace-audit-token-spend.md`), the PRO-LONG numbers (`docs/prolong/`) and the raw
+gap table (`docs/astra/astra_v3_gaps.json`) are all in the **`sonpham-org/arc-3`** repo
+(<https://github.com/sonpham-org/arc-3>), not in this one — local clone `~/GitHub/arc-3-tmp`. This
+file is here because the Boss asked for it here; nothing else about Astra is.
 
 Source of every number below: the raw replay recordings, pulled from
 `https://arcprize.org/api/recordings/{game_env_id}/{session_guid}` (NDJSON, one record per
@@ -233,9 +236,27 @@ map is index-keyed, but it will bite anyone diffing colour words across harnesse
 ## Reproducing
 
 ```bash
-python3 docs/astra/audit_reasoning_traces.py       # expects the six .ndjson files in /tmp/astra
+docs/astra/fetch_recordings.sh          # ~231 MB into docs/astra/astra-data/ (gitignored), no auth
+python3 docs/astra/audit_reasoning_traces.py
 ```
 
-Recording URLs are built from `docs/astra/astra_v3_gaps.json` in `sonpham-org/arc-3`: take a
-replay GUID, `GET https://three.arcprize.org/api/sessions/{guid}` for the environment id, then
-`GET https://arcprize.org/api/recordings/{env_id}/{guid}`. No auth required.
+`fetch_recordings.sh` carries the six full `{env_id}/{session_guid}` pairs, so the audit is
+reproducible from a clean clone with no other repo present. The recordings themselves are **not
+committed** — 231 MB of frame stacks. Verified 06-Sep-2026: the script reproduces every count in
+§1 (155 strict claims, 9 correct).
+
+To widen it past these three games: take a replay GUID from `docs/astra/astra_v3_gaps.json` in
+`sonpham-org/arc-3`, `GET https://three.arcprize.org/api/sessions/{guid}` for the environment id,
+then `GET https://arcprize.org/api/recordings/{env_id}/{guid}`. No auth required.
+
+## Open threads a next reader inherits
+
+1. **Is a colour legend in Astra's prompt?** The mechanism in §1 is a hypothesis until ARC Prize
+   says whether `benchmark_agent` supplies one (or sends rendered images). `benchmark_agent` is
+   not in the public `arcprize/ARC-AGI-3-Agents` tree and the prompt is not in the recordings.
+2. **Compaction vs accumulation** (§2) is an observation on three games with two arms that differ
+   in more than memory policy. Not an ablation. The open #arc-3 question it touches is whether the
+   ~90-point gap is memory policy at all.
+3. **`playerNN`** (§2) is read as a summariser artifact, not tested against a null model.
+4. **Only 3 of 25 games** are audited here — the three with published screenshots. The other
+   twenty-two are unread.
