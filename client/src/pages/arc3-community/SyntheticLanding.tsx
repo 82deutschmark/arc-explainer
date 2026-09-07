@@ -79,7 +79,7 @@ import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import KaggleStanding from '@/components/arc3/KaggleStanding';
-import { PIPELINE_CATEGORY, AUTHORED_CATEGORY, visitorFacing } from '@/lib/arc3TaskSets';
+import { PIPELINE_CATEGORY, AUTHORED_CATEGORY, GLOWUP_CATEGORY, visitorFacing } from '@/lib/arc3TaskSets';
 import HarnessGapChart from '@/components/arc3/HarnessGapChart';
 import { ASTRA_SOURCE, ENVS_WITH_GAP, ENV_TOTAL, WORST_ENV } from '@/data/astraHarnessGap';
 import { ARC, SANS, MONO } from './landingTheme';
@@ -114,7 +114,7 @@ function authoredFirst(games: Game[]): Game[] {
 }
 
 /**
- * The front page shows GLOW-UPS ONLY.
+ * The front page shows GLOW-UPS ONLY -- and as of 07-Sep it actually does.
  *
  * 05-Sep-2026, Son Pham: "Fresh Off The Pipeline is a slop machine garbage of epic
  * proportion, hide them from main page for the time being. On the front page, we will
@@ -129,11 +129,16 @@ function authoredFirst(games: Game[]): Game[] {
  * belongs at the presentation layer, never in the catalog that resolves sources and
  * thumbnails.
  *
- * KNOWN COST, ACCEPTED: this page and /play now offer different tasks. "One queue, one
- * answer" (see needsCoverage below) held while both surfaces wanted the same set; it
- * cannot hold once the front page refuses the set the queue exists to triage.
+ * WHAT THIS USED TO SAY, and why it was wrong: "KNOWN COST, ACCEPTED: this page and /play
+ * now offer different tasks." The cost was accepted and then not paid for -- the featured
+ * task's button still pointed at /play, so the divergence went straight into the one
+ * control this page exists to have clicked. Fixed 07-Sep; see needsCoverage.
  *
- * TEMPORARY, and shaped to be reverted in one line: return `games`.
+ * IT ALSO DID NOT DO WHAT IT SAID. The rule quoted above is "at least one glow-up", which
+ * is arena + contributed-glowup, 94 tasks. This filtered out the generator's 571 and let
+ * the other 402 through -- official, custom, and theredbluepill's 252-task repo. So the
+ * tail of every visitor's session was somebody else's work, which no amount of feedback
+ * on can tell us whether OUR set is any good. Now an allowlist; see arc3TaskSets.
  */
 function frontPageSet(games: Game[]): Game[] {
   return visitorFacing(games);
@@ -296,6 +301,7 @@ export default function SyntheticLanding() {
 
   const unplayed = ordered.filter((g) => !playedIds.has(g.gameId)).length;
   const authoredCount = ordered.filter((g) => g.category === AUTHORED_CATEGORY).length;
+  const glowupCount = ordered.filter((g) => g.category === GLOWUP_CATEGORY).length;
   // A strip of real frames, not a full catalog dump -- browsing lives in the gallery.
   const previewTiles = useMemo(() => ordered.slice(0, 24), [ordered]);
 
@@ -370,10 +376,15 @@ export default function SyntheticLanding() {
                   <div className="min-w-0">
                     <h2 className="text-[20px] font-bold mb-3">Play this one. Then roast us.</h2>
                     <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
-                      Nobody has ever played it, and nobody has played {unplayed} of the{' '}
-                      {ordered.length} tasks here either. So we honestly don't know whether
-                      this one is a decent puzzle, trivially easy, or quietly impossible.
-                      You'd be the first person to find out.
+                      {/* Reads correctly at every ratio, which the two previous versions did
+                          not: "not one, ever" piled onto a clause that had already landed,
+                          and "nobody has played N of M either" turns into "94 of the 94"
+                          the moment the pool is small and coverage is thin. This is the
+                          page's whole ask; it should not depend on the numbers. */}
+                      Nobody has ever played it. {unplayed} of the {ordered.length} tasks
+                      here have never been played by anyone. So we honestly don't know
+                      whether this one is a decent puzzle, trivially easy, or quietly
+                      impossible. You'd be the first person to find out.
                     </p>
                     <div className="flex flex-wrap items-center gap-4">
                       <Link
@@ -506,12 +517,21 @@ export default function SyntheticLanding() {
               same buttons an agent is given. These are their opening frames. That is all
               you get.
             </p>
+            {/* The counts come from the set, never typed in. This paragraph used to say
+                "behind them sit the 25 official ARC Prize tasks and a contributed community
+                catalog" -- true of the catalog, and no longer true of this page, which
+                shows glow-ups only. Describing a wider set than the tiles below it is how
+                the page ends up promising something a click does not deliver. */}
             <p className="text-[13px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.faint }}>
               These are the <strong style={{ color: ARC.text }}>{authoredCount}</strong>{' '}
               reviewed ones — written by our agent, then played and sent back for revision
-              until they hold up, six to eight levels each, and still being iterated.
-              Behind them sit the 25 official ARC Prize tasks and a contributed community
-              catalog.
+              until they hold up, six to eight levels each, and still being iterated —
+              plus {glowupCount} community tasks that have been through the same treatment.
+              Everything else we mirror, including the official 25 and a 252-task community
+              catalog, is in the{' '}
+              <Link href="/arc3/gallery" className="underline" style={{ color: ARC.dim }}>
+                gallery
+              </Link>.
             </p>
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
               {previewTiles.map((g, i) => <Tile key={g.gameId} game={g} alt={i % 2 === 1} />)}

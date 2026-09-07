@@ -12,6 +12,17 @@
 # reference the old numbers.
 
 
+### Version 9.55.0  Sep 7, 2026
+
+- **Visitors get the curated 94, not "everything that isn't slop"** (Author: Mark Barney / Claude Opus 5)
+  - **The rule was written down on 05-Sep and never implemented.** `frontPageSet` quotes Son Pham — *"On the front page, we will only accept games with at least one glow-up"* — which is `arena` + `contributed-glowup`, **94 tasks**. What the code did was exclude `ai-generated` and let the other **402** through. The 571 slop games were stopped; theredbluepill's **252**-task community repo, 31 `custom` and the 25 `official` were not.
+  - **So the tail of every visitor's session was somebody else's work.** The review queue holds only `arena` (36) and `ai-generated` (305) — every other category is reachable only through the catalog fallback, which is dominated by redbluepill. A visitor got 36 of ours and then drifted into a repo we link to as *related work*. No amount of feedback on those tasks answers the one question this page asks, which is whether **our** set is any good.
+  - **Now an allowlist, and that is the substantive change.** A blocklist names the sets that are bad today, so every category added later is visitor-facing by default and nobody finds out until someone is playing it — `ai-generated` arrived with 571 tasks the day after the gallery shipped. `VISITOR_CATEGORIES` inverts it: a task earns its way in by being glowed up. Widening is one line, which is the intended path for the pipeline set once it has been reviewed.
+  - **Tiles and play set are now the same 94, necessarily.** Every tile on the landing page links straight to `/arc3/play/:id`, so being displayed and being handed over are one decision — a displayed-but-not-playable set would put the curation one click from being bypassed.
+  - **Copy follows the set.** "402 playable" → "94 playable". The set description said the official 25 and a community catalog sit "behind them", which was true of the catalog and no longer true of the page; it now names the 50 + 44 split and points at the gallery for the rest. Counts are read from the set, never typed.
+  - **The featured-task ask no longer depends on the numbers.** "nobody has played N of M either" renders as "94 of the 94" once the pool is small and coverage is thin. Rephrased to read correctly at every ratio — it is the page's entire ask.
+  - Files: `client/src/lib/arc3TaskSets.ts`, `client/src/pages/arc3-community/SyntheticLanding.tsx`.
+
 ### Version 9.54.0  Sep 7, 2026
 
 - **The queue readout described a queue the Next button had stopped walking** (Author: Mark Barney / Claude Opus 5)

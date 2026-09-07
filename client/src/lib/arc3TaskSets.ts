@@ -39,24 +39,46 @@ export const PIPELINE_CATEGORY = 'ai-generated';
  *  NOT hand-authored -- copy that said so was untrue. Matches CommunityGallery's labels. */
 export const AUTHORED_CATEGORY = 'arena';
 
+/** Community tasks that have been through at least one revision pass. */
+export const GLOWUP_CATEGORY = 'contributed-glowup';
+
+/**
+ * THE ALLOWLIST. Categories a visitor may be handed, and nothing else.
+ *
+ * 05-Sep-2026, Son Pham: "On the front page, we will only accept games with at least one
+ * glow-up." That is these two, 94 tasks. The rule was written down and then not
+ * implemented: the code excluded the generator's output and let the other 402 through, so
+ * a visitor who got past the 36 queued arena tasks started being handed theredbluepill's
+ * 252-task community repo -- fine work, and not ours, so a verdict on it answers nothing
+ * this site is asking.
+ *
+ * AN ALLOWLIST, NOT A BLOCKLIST, and that is the point. A blocklist says which sets are
+ * bad today; every category added later is visitor-facing by default and nobody finds out
+ * until someone is playing it. 'ai-generated' arrived with 571 tasks the day after the
+ * gallery shipped. The next one gets no such welcome.
+ */
+const VISITOR_CATEGORIES = new Set<string>([AUTHORED_CATEGORY, GLOWUP_CATEGORY]);
+
 /** Anything with a category, which is every shape of task row the three surfaces pass in. */
 interface Categorised { category?: string }
 
 /**
  * Is this task one we would put in front of someone who came here because we asked them to?
  *
- * 05-Sep-2026, Son Pham: "Fresh Off The Pipeline is a slop machine garbage of epic
- * proportion, hide them from main page for the time being." That call is this predicate.
+ * Every tile on the landing page links straight to /arc3/play/:id, so being shown and
+ * being handed over are the same decision -- a set that is displayed but not playable
+ * would just mean the curation is one click from being bypassed.
  */
 export function isVisitorFacing(game: Categorised): boolean {
-  return game.category !== PIPELINE_CATEGORY;
+  return VISITOR_CATEGORIES.has(game.category ?? '');
 }
 
 /**
  * The tasks a visitor may be shown or handed. Reviewer surfaces do not call this.
  *
- * Shaped to be reverted in one line -- `return games` -- if the pipeline set is ever good
- * enough to show, which is the entire point of getting it reviewed.
+ * Widening it is one line: add a category to VISITOR_CATEGORIES. That is the intended
+ * path for the pipeline set once it has been reviewed, which is the entire point of
+ * reviewing it -- a task earns its way in by being glowed up, not by being generated.
  */
 export function visitorFacing<T extends Categorised>(games: T[]): T[] {
   return games.filter(isVisitorFacing);
