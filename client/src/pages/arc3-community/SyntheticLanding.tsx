@@ -480,9 +480,9 @@ export default function SyntheticLanding() {
             </p>
             <p>
               We think that's the most interesting thing published about this benchmark all
-              year. To be clear, that's our reading, not anyone's finding — ARC Prize put the
-              numbers up and said nothing about what they meant. It's also, more selfishly,
-              the bit we spend our evenings on.
+              year. That's our reading, not anyone's finding — ARC Prize put the numbers up
+              and said nothing about what they meant. It's also, more selfishly, the bit we
+              spend our evenings on.
             </p>
           </div>
           <HarnessGapChart />
