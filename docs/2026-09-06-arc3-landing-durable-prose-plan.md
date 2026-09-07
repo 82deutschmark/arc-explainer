@@ -367,3 +367,40 @@ data flow, and the site degrades gracefully until they land — so 1–9 can shi
   carry the field size, the gap to the leader, and movement since the last capture — all of
   which the digest already computes and the snapshot table would hold. Proposed: ship the
   minimum, keep the table wide enough to add the rest without a migration.
+
+## 10. Round two, 07-Sep-2026: the sentences, not the claims
+
+§1–§9 fixed *what the page asserts*. They did nothing about *how the sentences are built*,
+and the user read the result and called it word salad. Both things are true at once: the
+claims are now durable, and the prose got worse while that happened. Careful hedging is what
+made it worse — every qualification added a clause, and the clauses went in front of the verb.
+
+**The specimen.** Reported as the worst sentence on the page:
+
+> The systems that pass medical exams and write working software **mostly cannot.**
+
+It was already cut in `78dc1d5a` on 06-Sep and is on neither the live page nor in source. But
+the diagnosis was correct and the shape had spread: a long noun-phrase subject that recaps the
+paragraph above it, with the verb stranded at the end as a bolded fragment. Four more
+sentences had it. All four are fixed; see the 9.52.0 changelog entry for before/after.
+
+**Register was the systemic cause.** Half the page was spoken ("We're doing", "can't tell",
+"Praise teaches us nothing") and half was written ("We cannot buy that", "it is our reading
+rather than anyone's finding", "what it is allowed to remember"). The seam is audible. The
+voice to hold is the one the hero opens in: *Two of us. No company, no lab, no funding.*
+
+**The title outlived the body copy by three weeks.** `shared/routes.ts` still served
+`Easy for you. Very hard for the best AI in the world.` — banned by §4's own rules, and
+contradicted by the harness chart on the same page (adapter at 100% on all 25 environments).
+It was invisible because nobody reviews meta strings; the same claim was also sitting in the
+per-task unfurl in `metaTagInjector.ts`. Both cut. **Meta strings are part of the page's prose
+and go in the same review pass as the body copy.**
+
+**Rules added to the `SyntheticLanding.tsx` header comment**, because that comment governed
+claims only and this is the second round of the same complaint:
+
+1. The subject does not recap the previous paragraph.
+2. The subject does not change mid-sentence.
+3. Contractions throughout — if you would not say it in a pub, cut it.
+
+§9's "tone calibration" item is now closed by this section.

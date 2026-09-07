@@ -135,11 +135,13 @@ export async function metaTagInjector(
       routeMetaTags = {
         title: `${gameId.toUpperCase()} — an ARC-AGI-3 task`,
         description:
-          // No score here on purpose -- see ROOT_META_BY_HOST in shared/routes.ts. Meta
-          // strings are the stalest copy on the site: nobody reads them in review, and a
-          // frontier number in one is wrong within weeks of being written.
+          // No score AND no claim about AI here on purpose -- see ROOT_META_BY_HOST in
+          // shared/routes.ts. Meta strings are the stalest copy on the site: nobody reads
+          // them in review, so a frontier number is wrong within weeks and a claim about
+          // what AI can't do is wrong within months. This one said "very hard for the best
+          // AI" until 07-Sep-2026, well after the landing page dropped the same sentence.
           'No instructions, no goal, no controls listed. Work out what it does. '
-          + 'Easy for a person, very hard for the best AI.',
+          + 'Five minutes, no account.',
         url: `https://${host || 'arc.markbarney.net'}/arc3/play/${gameId}`,
         image: `${BASE_URL}/api/arc3-mirror/games/${encodeURIComponent(gameId)}/thumbnail?size=512`,
         type: 'article',
