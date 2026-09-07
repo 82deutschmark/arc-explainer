@@ -1,8 +1,16 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-31 (revised 2026-09-01: the illegible count)
-PURPOSE: /arc3/review — the front door for working through the generated set. Picks the
-         highest-ranked task nobody has played and sends you straight into it.
+Date: 2026-08-31 (revised 2026-09-01: the illegible count; 2026-09-07: visitor vs reviewer)
+PURPOSE: Resolves "just give me something to play" and redirects into it. Two routes, two
+         audiences, and the audience decides which set is in scope:
+           /arc3/review — a reviewer working through the generated set. Whole queue.
+           /play        — a visitor. Reviewed tasks only, matching the front page.
+         Picks the highest-ranked task in scope that nobody has played.
+
+         A surface that already knows WHICH task it is offering must link to
+         /arc3/play/:id instead. This route re-resolves from scratch every time, so using
+         it as the destination for a named task throws that name away -- which is exactly
+         what the front page's Play button did until 07-Sep.
 
          WHY A ROUTE AND NOT A BUTTON ON THE GALLERY. The gallery is 877 tiles behind
          category chips and pagination, which is the right shape for browsing and the
@@ -19,8 +27,9 @@ SRP/DRY check: Pass — resolution and redirect only. The ordering lives server-
 */
 
 import { useEffect, useMemo } from 'react';
-import { useLocation, Link } from 'wouter';
+import { useLocation, useRoute, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
+import { isVisitorFacing } from '@/lib/arc3TaskSets';
 
 const ARC = {
   ground: '#0a0a0c', text: '#e8e6e3', dim: '#8b8a87', faint: '#5a5957', pink: '#e0218a',
@@ -34,6 +43,16 @@ interface ReviewTotals {
 
 export default function Arc3Review() {
   const [, setLocation] = useLocation();
+  /**
+   * WHICH AUDIENCE ASKED. One component, two routes, and until 07-Sep one answer for both.
+   *
+   * /arc3/review is a reviewer sitting down to judge the generator's output: they get the
+   * whole queue, unreviewed set included, because triaging it is the entire job.
+   * /play is the button we put in front of a visitor -- from the nav, and from the front
+   * page, which has excluded the unreviewed set since 05-Sep. Handing that visitor the
+   * slop the front page just refused to show them is how this was reported.
+   */
+  const [reviewerRoute] = useRoute('/arc3/review');
 
   const { data: review, isLoading, isError } = useQuery<{
     data: { games: ReviewEntry[]; totals: ReviewTotals; method: string };
@@ -57,19 +76,24 @@ export default function Arc3Review() {
    * visitor.
    */
   const { data: catalog, isLoading: catalogLoading } = useQuery<{
-    data: { games: { gameId: string }[] };
+    data: { games: { gameId: string; category?: string }[] };
   }>({ queryKey: ['/api/arc3-mirror/games'], staleTime: 5 * 60 * 1000 });
 
   const target = useMemo(() => {
-    const servable = new Set((catalog?.data?.games ?? []).map((g) => g.gameId));
+    const catalogue = catalog?.data?.games ?? [];
+    const servable = new Set(catalogue.map((g) => g.gameId));
     // Before the catalog answers, every task looks unservable; waiting is right, because
     // sending someone to a dead task is worse than a moment of "finding you a task".
     if (servable.size === 0) return null;
-    const queue = (review?.data?.games ?? []).filter((g) => servable.has(g.gameId));
+    const category = new Map(catalogue.map((g) => [g.gameId, g.category]));
+    const queue = (review?.data?.games ?? []).filter(
+      (g) => servable.has(g.gameId)
+        && (reviewerRoute || isVisitorFacing({ category: category.get(g.gameId) })),
+    );
     if (queue.length === 0) return null;
     const played = new Set((stats?.data?.games ?? []).map((g) => g.game_id));
     return (queue.find((g) => !played.has(g.gameId)) ?? queue[0]).gameId;
-  }, [review, stats, catalog]);
+  }, [review, stats, catalog, reviewerRoute]);
 
   useEffect(() => {
     if (target) setLocation(`/arc3/play/${target}`, { replace: true });

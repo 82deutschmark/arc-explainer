@@ -1,6 +1,6 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-28 / 2026-08-30 / 2026-09-06 / 2026-09-07
+Date: 2026-08-28 / 2026-08-30 / 2026-09-06 / 2026-09-07 (prose + the Play button)
 PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: someone
          with no background who needs the idea in plain language and one game to try.
 
@@ -79,6 +79,7 @@ import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import KaggleStanding from '@/components/arc3/KaggleStanding';
+import { PIPELINE_CATEGORY, AUTHORED_CATEGORY, visitorFacing } from '@/lib/arc3TaskSets';
 import HarnessGapChart from '@/components/arc3/HarnessGapChart';
 import { ASTRA_SOURCE, ENVS_WITH_GAP, ENV_TOTAL, WORST_ENV } from '@/data/astraHarnessGap';
 import { ARC, SANS, MONO } from './landingTheme';
@@ -92,13 +93,6 @@ interface Game {
   category: string;
 }
 
-/** Our own generation pipeline: 571 tasks, unreviewed, and the weakest thing on the site. */
-const PIPELINE_CATEGORY = 'ai-generated';
-
-/** The 50 reviewed tasks: agent-generated, then played and revised until they hold up.
- *  NOT hand-authored -- the copy used to say that and it was untrue. See the section
- *  labels in CommunityGallery.tsx, which this page has to agree with. */
-const AUTHORED_CATEGORY = 'arena';
 
 /**
  * Display order for every strip of tiles on this page.
@@ -108,10 +102,10 @@ const AUTHORED_CATEGORY = 'arena';
  * the set we have the least confidence in, and this page is the first thing a visitor
  * sees. A landing page opening on 571 unreviewed tasks is advertising the slop.
  *
- * The reviewed set leads now, matching the gallery's section order and /play's queue.
- * Three surfaces, one answer about what is worth someone's time -- which is the whole
- * point, because a visitor who sees one task here and is handed a different one by Play
- * has been told the site does not know its own mind.
+ * The reviewed set leads now, matching the gallery's section order. It does NOT match
+ * /play's queue, which is unfiltered by design -- see frontPageSet. A visitor who sees one
+ * task here and is handed a different one has been told the site does not know its own
+ * mind, so the featured task links to its own id rather than re-resolving through /play.
  */
 function authoredFirst(games: Game[]): Game[] {
   const rank = (g: Game) =>
@@ -142,7 +136,7 @@ function authoredFirst(games: Game[]): Game[] {
  * TEMPORARY, and shaped to be reverted in one line: return `games`.
  */
 function frontPageSet(games: Game[]): Game[] {
-  return games.filter((g) => g.category !== PIPELINE_CATEGORY);
+  return visitorFacing(games);
 }
 interface GamesResponse {
   success: boolean;
@@ -267,13 +261,19 @@ export default function SyntheticLanding() {
   const ordered = useMemo(() => authoredFirst(frontPageSet(games)), [games]);
 
   /**
-   * The task this page offers — which must be the SAME task /play hands over, resolved by
-   * the same rule: first in the review queue that nobody has played.
+   * The task this page offers: first in the review queue that is visitor-facing and that
+   * nobody has played.
    *
-   * It used to pick at random from the unplayed pipeline set, which made this page a third
-   * competing opinion about where to start, alongside the nav and the gallery. A visitor
-   * could see one task here, click Play in the nav and be given another, and the tile they
-   * had just decided to try was gone. One queue, one answer, everywhere.
+   * IT IS RESOLVED ONCE, HERE, AND LINKED TO BY ID. It used to render this task's
+   * thumbnail and id and then point its button at bare /play, which threw the answer away
+   * and re-resolved from the unfiltered queue -- so the page showed g026, said nobody had
+   * ever played it, and handed over a pipeline task. Reported 07-Sep. Any surface that
+   * shows a specific task links to /arc3/play/:id; /play is for "just give me something".
+   *
+   * The earlier note here claimed this must be the SAME task /play hands over. That parity
+   * died on 05-Sep when frontPageSet started excluding the pipeline set and /play did not,
+   * and frontPageSet's own docstring records it as a known cost. What was not accepted,
+   * and was never true, is a button that does not go where the page says it goes.
    *
    * Falls back to the old random pick only when the queue is unavailable, so the ask never
    * disappears from the page.
@@ -330,12 +330,22 @@ export default function SyntheticLanding() {
                   changes, and work it out.{' '}
                   <strong style={{ color: ARC.text }}>Most people manage in a couple of minutes.</strong>
                 </p>
+                {/* THE ARGUMENT PARAGRAPH. It is about our method, not about how good AI
+                    is -- see the 06-Sep block above for why that distinction is the whole
+                    ballgame. "Unlike anything in the training data" is the benchmark's
+                    stated design, not a capability claim, so it does not expire when the
+                    next model lands. No count of tasks here: the real ones are 402 and 877
+                    and both are on the page already, and "thousands" would be a number we
+                    would have to defend. */}
                 <p>
-                  We build them too, and we build the scaffolding that lets an AI agent try
-                  to play them. Some of ours are good.{' '}
-                  <strong style={{ color: ARC.text }}>A lot are garbage</strong> — formulaic,
-                  ugly, unfair, occasionally just broken. We can't tell which from the
-                  inside, because we already know what every one of them does.
+                  The point of the benchmark is that it's unlike anything in the training
+                  data. So we make more of them — that's the boring answer to an
+                  out-of-distribution problem: make enough and it isn't one. Then we
+                  hill-climb the harness that plays them: change one thing, measure, keep it
+                  or bin it. We're not solving AGI, we're making training data. We've played
+                  ours, and{' '}
+                  <strong style={{ color: ARC.text }}>a lot of it is slop</strong>. Want to
+                  see? Want to help?
                 </p>
               </div>
               {/* ── the one ask ────────────────────────────────────────────────
@@ -347,7 +357,7 @@ export default function SyntheticLanding() {
               {needsCoverage && (
                 <div className="mt-8 flex flex-col sm:flex-row gap-6 items-start p-6"
                      style={{ background: ARC.cell, border: `1px solid ${ARC.pink}` }}>
-                  <Link href="/play" className="shrink-0 w-[150px] group">
+                  <Link href={`/arc3/play/${needsCoverage.gameId}`} className="shrink-0 w-[150px] group">
                       <div className="relative aspect-square overflow-hidden"
                            style={{ border: `1px solid ${ARC.border}` }}>
                         <img src={thumb(needsCoverage.gameId)} alt=""
@@ -367,7 +377,7 @@ export default function SyntheticLanding() {
                     </p>
                     <div className="flex flex-wrap items-center gap-4">
                       <Link
-                        href="/play"
+                        href={`/arc3/play/${needsCoverage.gameId}`}
                         className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
                         style={{ background: ARC.pink, color: '#fff' }}
                       >
@@ -545,8 +555,8 @@ export default function SyntheticLanding() {
               </p>
               <p className="mb-0">
                 The most useful thing you can give us is five minutes on one of the tasks and
-                two sentences afterwards. We can't buy that and we can't generate it. That's
-                the entire reason this page exists.
+                two sentences afterwards. It's the one thing here we can't generate more of.
+                That's the entire reason this page exists.
               </p>
             </div>
 
