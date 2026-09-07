@@ -1,6 +1,6 @@
 /*
 Author: Claude Opus 5
-Date: 2026-08-28 / 2026-08-30 / 2026-09-06
+Date: 2026-08-28 / 2026-08-30 / 2026-09-06 / 2026-09-07
 PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: someone
          with no background who needs the idea in plain language and one game to try.
 
@@ -42,6 +42,28 @@ PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: s
          - THE ASK IS ABOUT OUR OWN TASKS. "Is this set any good" is the one question no
            frontier release can settle and only our visitors can. It is also a better ask
            than the old one, which was only true until it wasn't.
+
+         ── 2026-09-07: HOW THE SENTENCES ARE BUILT, NOT JUST WHAT THEY CLAIM ───────────
+
+         The rules above got the claims right and left the prose unreadable. Reported as
+         "a word salad of the previous paragraph". The worst offender is gone, but it had
+         a shape, and the shape had spread to four more sentences on the page:
+
+           "The systems that pass medical exams and write working software mostly cannot."
+
+         A long noun-phrase subject that recaps the paragraph above it, and a verb stranded
+         at the end as a bolded fragment. Three rules, all cheap to check by reading a
+         sentence out loud:
+
+         - THE SUBJECT DOES NOT RECAP THE PREVIOUS PARAGRAPH. If a sentence opens by
+           re-describing what the reader just read, it has no room left to say anything.
+         - THE SUBJECT DOES NOT CHANGE MID-SENTENCE. "Last round of notes got turned into
+           a hit list and rewrote most of the set" -- the notes were turned into a list,
+           then the notes rewrote the set. Name the actor: WE turned them into a list.
+         - CONTRACTIONS THROUGHOUT. The voice is the one the hero opens in: "Two of us. No
+           company, no lab, no funding." Half this page used to be spoken and half written
+           ("we cannot buy that", "it is our reading rather than anyone's finding"), and
+           the seam is audible. If you would not say it to someone in a pub, cut it.
 
          Prose is set in a sans stack for readability; monospace is kept for chrome, ids
          and code, matching CommunityGallery and the official ARC-AGI-3 task pages.
@@ -338,10 +360,10 @@ export default function SyntheticLanding() {
                   <div className="min-w-0">
                     <h2 className="text-[20px] font-bold mb-3">Play this one. Then roast us.</h2>
                     <p className="text-[14px] leading-[1.75] mb-5" style={{ color: ARC.dim }}>
-                      Nobody has ever played it — {unplayed} of {ordered.length} tasks here have
-                      no human attempt on record, not one, ever. So we genuinely do not know
-                      whether it is a decent puzzle, trivially easy, or quietly impossible.
-                      You would be the first person to find out.
+                      Nobody has ever played it, and nobody has played {unplayed} of the{' '}
+                      {ordered.length} tasks here either. So we honestly don't know whether
+                      this one is a decent puzzle, trivially easy, or quietly impossible.
+                      You'd be the first person to find out.
                     </p>
                     <div className="flex flex-wrap items-center gap-4">
                       <Link
@@ -362,7 +384,7 @@ export default function SyntheticLanding() {
                       There is a box at the end — <strong style={{ color: ARC.dim }}>use it</strong>.
                       Tell us it was boring, that the controls did nothing, that it looks like
                       every other one, that you sat there ten minutes and never had a single
-                      idea. Praise teaches us nothing. Last round of notes got turned into a hit
+                      idea. Praise teaches us nothing. Last round we turned the notes into a hit
                       list and rewrote most of the set inside a week.
                     </p>
                   </div>
@@ -419,8 +441,8 @@ export default function SyntheticLanding() {
                 that is the good part of it.
               </p>
               <p className="text-[13px] leading-[1.8]" style={{ color: ARC.faint }}>
-                A harness is the scaffolding around the model: what it sees each turn, what it
-                is allowed to remember, when it gets to stop and think. Not the model itself.
+                A harness is the scaffolding around the model: what it sees each turn, what
+                it's allowed to remember, when it gets to stop and think. Not the model itself.
                 It sounds like plumbing.
               </p>
             </div>
@@ -457,10 +479,10 @@ export default function SyntheticLanding() {
               everything. That pattern holds on {ENVS_WITH_GAP} of the {ENV_TOTAL}.
             </p>
             <p>
-              We think that is the most interesting thing published about this benchmark all
-              year, and it is our reading rather than anyone's finding — ARC Prize put the
-              numbers up without telling anyone what to make of them. It is also, more
-              selfishly, the bit we spend our evenings on.
+              We think that's the most interesting thing published about this benchmark all
+              year. To be clear, that's our reading, not anyone's finding — ARC Prize put the
+              numbers up and said nothing about what they meant. It's also, more selfishly,
+              the bit we spend our evenings on.
             </p>
           </div>
           <HarnessGapChart />
@@ -518,13 +540,13 @@ export default function SyntheticLanding() {
                  style={{ background: ARC.cell, border: `1px solid ${ARC.border}`, color: ARC.dim }}>
               <p className="mb-4">
                 Everything here is public — the harness we build on, the competition, the
-                task set, the replays. If you think we are doing it wrong, you can see
-                exactly how we are doing it wrong and say so.
+                task set, the replays. If you think we're doing it wrong, you can see exactly
+                how we're doing it wrong and say so.
               </p>
               <p className="mb-0">
-                Most useful of all is the five minutes you spend on one of the tasks and the
-                two sentences you type afterwards. We cannot buy that and we cannot generate
-                it, which is the entire reason this page exists.
+                The most useful thing you can give us is five minutes on one of the tasks and
+                two sentences afterwards. We can't buy that and we can't generate it. That's
+                the entire reason this page exists.
               </p>
             </div>
 

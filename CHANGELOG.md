@@ -12,6 +12,17 @@
 # reference the old numbers.
 
 
+### Version 9.52.0  Sep 7, 2026
+
+- **Fixed the prose on the arc3 landing page, and the title that outlived the claim** (Author: Mark Barney / Claude Opus 5)
+  - **The reported sentence was already gone; the shape it had was not.** The user quoted "The systems that pass medical exams and write working software mostly cannot" as word salad. That sentence was cut on 06-Sep in `78dc1d5a`, so it is neither in the source nor on the live page — but the defect it demonstrated had spread to four more sentences, and the diagnosis was right. The shape: a long noun-phrase subject that recaps the paragraph above it, with the verb stranded at the end as a bolded fragment.
+  - **What changed in `SyntheticLanding.tsx`.** (1) "Last round of notes got turned into a hit list and rewrote most of the set" — the notes were turned into a list, then the notes rewrote the set; the subject shifts mid-sentence. Now "Last round we turned the notes into a hit list". (2) "Most useful of all is the five minutes you spend... and the two sentences you type afterwards. We cannot buy that and we cannot generate it, which is..." — inverted, compound subject, payload stranded on a trailing relative clause. Now three plain sentences with contractions. (3) "it is our reading rather than anyone's finding" — nobody says this out loud; now "that's our reading, not anyone's finding". (4) "no human attempt on record, not one, ever" — piling on a clause that had already landed; now "nobody has played 347 of the 402 tasks here either". Plus contractions on "we are doing it wrong" and "what it is allowed to remember", which were the audible seam between the page's spoken half and its written half.
+  - **Left alone deliberately.** "Praise teaches us nothing." and the "It sounds like plumbing." → "It turns out the plumbing can matter more than the model." pivot are the best writing on the page. This was four targeted fixes, not a rewrite.
+  - **The served `<title>` was still making the claim the body dropped.** `shared/routes.ts` carried `Easy for you. Very hard for the best AI in the world.` — the exact class of assertion the 06-Sep header comment bans, three weeks stale, and contradicted by the chart on the same page showing the adapter harness at 100% on all 25 environments. The page was arguing with its own title in the Slack unfurl, the search result and the share card. Now `We're doing ARC-AGI-3. Come and roast our tasks.`, which matches the H1 and the on-page ask.
+  - **Same claim found and cut in a second place.** `server/middleware/metaTagInjector.ts` gave every `/arc3/play/:gameId` unfurl the description "Easy for a person, very hard for the best AI" — directly under a comment congratulating itself for carrying no score. Now "Five minutes, no account."
+  - **The rule that stops a third round.** The header comment in `SyntheticLanding.tsx` governed *claims* and said nothing about *construction*, which is why the claims got durable and the prose got worse. Added three rules with the offending sentence quoted as the specimen: subjects do not recap the previous paragraph, subjects do not change mid-sentence, contractions throughout.
+  - Files: `client/src/pages/arc3-community/SyntheticLanding.tsx`, `shared/routes.ts`, `server/middleware/metaTagInjector.ts`, `docs/2026-09-06-arc3-landing-durable-prose-plan.md`.
+
 ### Version 9.51.0  Sep 6, 2026
 
 - **The live leaderboard push is wired up and running end to end** (Author: Mark Barney / Claude Opus 5)

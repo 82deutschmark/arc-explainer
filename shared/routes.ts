@@ -74,10 +74,13 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
  * by host rather than folded into ROUTE_META_TAGS.
  */
 const ROOT_META: Omit<RouteMetaTags, 'url'> = {
-  // Matches the page's H1, and carries no score for the same reason it does not: this
-  // string is the Slack unfurl, the search result and the share card, so a number in it
-  // is the stalest copy on the site and the hardest to notice has gone stale.
-  title: 'Easy for you. Very hard for the best AI in the world.',
+  // Matches the page's H1, and makes no claim about AI for the same reason it does not.
+  // This string is the Slack unfurl, the search result and the share card -- the stalest
+  // copy on the site and the hardest to notice has gone stale. It carried "Very hard for
+  // the best AI in the world" until 07-Sep-2026, three weeks after the body prose dropped
+  // exactly that claim, and by then the chart further down the same page showed the
+  // adapter harness at 100% on all 25 environments. The page was arguing with its title.
+  title: "We're doing ARC-AGI-3. Come and roast our tasks.",
   description:
     'Synthetic ARC-AGI-3 tasks: little games that explain nothing. No instructions, no '
     + 'goal, no controls listed — work it out. Five minutes, no account.',
