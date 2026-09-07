@@ -80,7 +80,13 @@ const ROOT_META: Omit<RouteMetaTags, 'url'> = {
   // the best AI in the world" until 07-Sep-2026, three weeks after the body prose dropped
   // exactly that claim, and by then the chart further down the same page showed the
   // adapter harness at 100% on all 25 environments. The page was arguing with its title.
-  title: "We're doing ARC-AGI-3. Come and roast our tasks.",
+  //
+  // IT IS NOT THE PLACE FOR THE ASK. It briefly read "Come and roast our tasks", which is
+  // a fine throwaway line inside a paragraph and the wrong thing to be the page's whole
+  // public identity -- this is what a search result, a shared link and every unfurl show
+  // before anyone has read a word. The title says what the page IS. The ask lives on the
+  // page, where someone has already arrived and the tone has somewhere to sit.
+  title: "We're doing ARC-AGI-3.",
   description:
     'Synthetic ARC-AGI-3 tasks: little games that explain nothing. No instructions, no '
     + 'goal, no controls listed — work it out. Five minutes, no account.',

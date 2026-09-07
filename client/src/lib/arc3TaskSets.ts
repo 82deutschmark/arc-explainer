@@ -42,8 +42,8 @@ export const AUTHORED_CATEGORY = 'arena';
 /** Community tasks that have been through at least one revision pass. */
 export const GLOWUP_CATEGORY = 'contributed-glowup';
 
-/** Built in-house: hand-made by us and by Son Pham. The gallery calls them "Built
- *  in-house"; they are the only tasks on the site a person wrote from nothing. */
+/** Built in-house: hand-made by the two of us. The gallery calls them "Built in-house";
+ *  they are the only tasks on the site a person wrote from nothing. */
 export const CUSTOM_CATEGORY = 'custom';
 
 /**
@@ -57,7 +57,7 @@ export const CUSTOM_CATEGORY = 'custom';
  * answers nothing this site is asking.
  *
  * 07-Sep: `custom` joins them, on the user's call -- 31 tasks the gallery labels "Built
- * in-house", hand-made by the two of them. They predate the glow-up rule rather than
+ * in-house", hand-made by the two of us. They predate the glow-up rule rather than
  * failing it, and they are the most obviously OURS work on the site, which is the actual
  * test this list applies. 125 tasks.
  *
