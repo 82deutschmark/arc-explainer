@@ -314,13 +314,48 @@ export default function CommunityGamePlay() {
     staleTime: 60 * 60 * 1000,
   });
 
-  /** Where this task sits in the queue, for the "17 / 328" readout. */
+  /**
+   * THE QUEUE THIS PLAYER IS ACTUALLY WALKING. One definition, because the readout and
+   * the Next button both describe it and they must not be able to disagree.
+   *
+   * They did until 07-Sep. Next filtered by servability; the readout filtered by nothing,
+   * so it counted tasks Next would never serve. Then the visitor/reviewer split landed on
+   * Next alone and the readout told a visitor they were at "1 / 341" of a queue Next had
+   * already stopped walking. Two reads of one thing is the same shape of bug as the front
+   * page's Play button -- a surface describing a set it does not deliver -- so this is the
+   * shape worth removing rather than the instance.
+   *
+   * WHICH POOL, decided by the task in front of the player rather than by referrer or
+   * route state: it survives a reload, a bookmark and a shared link.
+   */
+  const walk = useMemo(() => {
+    const games = catalog?.data?.games ?? [];
+    // A queued task the catalog cannot serve is not a next task. The queue is static
+    // triage and lists tasks independently of whether any source can currently fetch them
+    // -- as of 01-Sep the arena set is triaged but unservable -- so this must check.
+    const servable = new Set(games.map((g) => g.gameId));
+    const category = new Map(games.map((g) => [g.gameId, g.category]));
+    const reviewing = category.get(gameId ?? '') === PIPELINE_CATEGORY;
+    const queue = (review?.data?.games ?? []).filter(
+      (g) => servable.has(g.gameId)
+        && (reviewing || isVisitorFacing({ category: category.get(g.gameId) })),
+    );
+    return { games, queue, reviewing };
+  }, [review, catalog, gameId]);
+
+  /**
+   * Where this task sits in the queue, for the "17 / 328" readout.
+   *
+   * Null when the player is not in the queue at all -- a visitor on an official or
+   * community task reached by the catalog fallback or a direct link. Showing them a
+   * position in a queue they are not walking is the thing this readout got wrong.
+   */
   const queuePosition = useMemo(() => {
-    const q = review?.data?.games ?? [];
-    if (q.length === 0 || !gameId) return null;
-    const i = q.findIndex((g) => g.gameId === gameId);
-    return i < 0 ? null : { at: i + 1, of: q.length };
-  }, [review, gameId]);
+    const { queue } = walk;
+    if (queue.length === 0 || !gameId) return null;
+    const i = queue.findIndex((g) => g.gameId === gameId);
+    return i < 0 ? null : { at: i + 1, of: queue.length, reviewing: walk.reviewing };
+  }, [walk, gameId]);
 
   /**
    * The next task to offer.
@@ -345,22 +380,8 @@ export default function CommunityGamePlay() {
    * link) — Next must never dead-end.
    */
   const nextGameId = useMemo(() => {
-    const allQueued = review?.data?.games ?? [];
     const played = new Set((stats?.data?.games ?? []).map((g) => g.game_id));
-    const games = catalog?.data?.games ?? [];
-
-    // A queued task the catalog cannot serve is not a next task. The queue is static
-    // triage and lists tasks independently of whether any source can currently fetch them
-    // -- as of 01-Sep the arena set is triaged but unservable -- so Next must check.
-    const servable = new Set(games.map((g) => g.gameId));
-    // Which pool the player is in, decided by the task in front of them rather than by
-    // referrer or route state -- it survives a reload, a bookmark and a shared link.
-    const category = new Map(games.map((g) => [g.gameId, g.category]));
-    const reviewing = category.get(gameId ?? '') === PIPELINE_CATEGORY;
-    const queue = allQueued.filter(
-      (g) => servable.has(g.gameId)
-        && (reviewing || isVisitorFacing({ category: category.get(g.gameId) })),
-    );
+    const { games, queue, reviewing } = walk;
 
     if (queue.length > 0) {
       const at = queue.findIndex((g) => g.gameId === gameId);
@@ -401,7 +422,7 @@ export default function CommunityGamePlay() {
     let hash = 0;
     for (let i = 0; i < (gameId ?? '').length; i++) hash = (hash * 31 + gameId!.charCodeAt(i)) >>> 0;
     return candidates[hash % candidates.length].gameId;
-  }, [review, catalog, stats, gameId]);
+  }, [walk, stats, gameId]);
 
   useEffect(() => { if (pyodide.frame) setFrame(pyodide.frame); }, [pyodide.frame]);
 
@@ -829,12 +850,14 @@ export default function CommunityGamePlay() {
         <span className="text-[11px]" style={{ color: ARC.faint }}>
           {gameState === 'idle' ? '' : `Step ${frame?.action_counter ?? 0}`}
         </span>
-        {/* Where this sits in the review run. A reviewer working a 328-long queue needs to
-            see progress, and it marks the difference between the queue walk and the
-            catalog fallback. */}
+        {/* Where this sits in the run. A reviewer working a 300-long queue needs to see
+            progress, and it marks the difference between the queue walk and the catalog
+            fallback. The word changes with the audience: a visitor who came to play a
+            couple of tasks is not reviewing anything, and calling it a review run told
+            them they had joined a backlog. */}
         {queuePosition && (
           <span className="text-[11px]" style={{ color: ARC.faint }}>
-            Review {queuePosition.at} / {queuePosition.of}
+            {queuePosition.reviewing ? 'Review' : 'Task'} {queuePosition.at} / {queuePosition.of}
           </span>
         )}
         {statusLabel && (
