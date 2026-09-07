@@ -404,3 +404,38 @@ claims only and this is the second round of the same complaint:
 3. Contractions throughout — if you would not say it in a pub, cut it.
 
 §9's "tone calibration" item is now closed by this section.
+
+## 11. 07-Sep-2026: the Play button did not go where the page said
+
+Reported alongside §10: the featured task on the front page has never been played, clicking
+it does not open it, and what you get instead is generator output with ids like `q506-v1`.
+Two bugs that compound.
+
+**The page had already worked out the answer and the button threw it away.** `needsCoverage`
+resolves the featured task; the tile rendered its thumbnail and id badge; both links went to
+bare `/play`, which re-resolves from scratch through a *different* selector. Fixed by linking
+to `/arc3/play/:id`. **A surface that knows which task it is offering must link to that task.
+`/play` is for "just give me something".**
+
+**The other selector was reviewer-shaped, and the numbers make it stark.** Measured against
+the live catalog: the review queue is 341 entries, the first 36 reviewed, entries 36–341 all
+`ai-generated`. `/play` filtered by servability only, so once those 36 had a play on record it
+walked past them into 305 pipeline tasks and stayed there. "Next task" repeated it, and its
+catalog fallback preferred the pipeline set *first*.
+
+**The split that was missing.** `/arc3/review` and `/play` are one component serving two
+audiences with opposite requirements — a reviewer wants exactly the set a visitor must not be
+given. The routes already existed; the behaviour did not. It does now, and in `CommunityGamePlay`
+the audience is read off the task in front of the player, so it survives reload, bookmark and
+shared link.
+
+**Root cause, and the general lesson.** `'ai-generated'` was hand-written in four places across
+three files. On 05-Sep the landing page started excluding it and nothing made the others follow;
+`frontPageSet`'s docstring even recorded the divergence as "KNOWN COST, ACCEPTED". Accepting that
+two surfaces offer different sets is defensible. What was never defensible, and was not noticed,
+is that a *button* inherited the divergence. **When a decision gets recorded as an accepted cost,
+check what links through it.** One definition now lives in `client/src/lib/arc3TaskSets.ts`.
+
+**Known, not fixed:** the play page's "Review 1 / 341" counter still reads from the unfiltered
+queue, so a visitor sees a position in a 341-task queue that Next task no longer walks. Cosmetic,
+and worth making audience-aware next time that file is open.

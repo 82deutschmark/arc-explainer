@@ -99,6 +99,7 @@ import { Arc3Console, type ConsoleButton } from '@/components/arc3-community/Arc
 import { Arc3FeedbackPanel } from '@/components/arc3-community/Arc3FeedbackPanel';
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
+import { PIPELINE_CATEGORY, isVisitorFacing } from '@/lib/arc3TaskSets';
 import { ARC3_COLORS } from '@/utils/arc3Colors';
 import type { Arc3MechanicEntry } from '@shared/arc3Mechanics';
 
@@ -129,9 +130,6 @@ interface ReviewTotals {
   illegible: number;
 }
 
-/** Our own generation pipeline — the fallback ordering when the review queue is
- *  unavailable. Mirrors PIPELINE_CATEGORY on the gallery and landing pages. */
-const PIPELINE_CATEGORY = 'ai-generated';
 
 /**
  * Keyboard bindings.
@@ -327,6 +325,13 @@ export default function CommunityGamePlay() {
   /**
    * The next task to offer.
    *
+   * IT STAYS IN THE POOL THE PLAYER ENTERED FROM. A visitor arrives from the front page,
+   * which shows reviewed tasks only, plays one, clicks Next -- and until 07-Sep was handed
+   * the generator's unreviewed output, because this walked the queue filtered by nothing
+   * but servability. Same defect as the front page's Play button, one click later: the
+   * site offering a set it then declines to stay inside. A reviewer on a pipeline task
+   * still walks the whole queue, which is the point of /arc3/review.
+   *
    * Walks the review queue rather than the raw catalog. The catalog is 877 entries, and
    * most of them are not what this site is for: the official 25, the 252 community tasks
    * and the in-house set are known good and need nobody's verdict. What needs a human is
@@ -348,7 +353,14 @@ export default function CommunityGamePlay() {
     // triage and lists tasks independently of whether any source can currently fetch them
     // -- as of 01-Sep the arena set is triaged but unservable -- so Next must check.
     const servable = new Set(games.map((g) => g.gameId));
-    const queue = allQueued.filter((g) => servable.has(g.gameId));
+    // Which pool the player is in, decided by the task in front of them rather than by
+    // referrer or route state -- it survives a reload, a bookmark and a shared link.
+    const category = new Map(games.map((g) => [g.gameId, g.category]));
+    const reviewing = category.get(gameId ?? '') === PIPELINE_CATEGORY;
+    const queue = allQueued.filter(
+      (g) => servable.has(g.gameId)
+        && (reviewing || isVisitorFacing({ category: category.get(g.gameId) })),
+    );
 
     if (queue.length > 0) {
       const at = queue.findIndex((g) => g.gameId === gameId);
@@ -356,17 +368,33 @@ export default function CommunityGamePlay() {
         const cand = queue[(at + i + queue.length) % queue.length];
         if (cand.gameId !== gameId && !played.has(cand.gameId)) return cand.gameId;
       }
-      // Whole queue played: keep moving rather than stranding the reviewer.
-      const fallback = queue[(at + 1 + queue.length) % queue.length];
-      if (fallback && fallback.gameId !== gameId) return fallback.gameId;
+      // Whole queue played. A reviewer keeps moving through it rather than being
+      // stranded. A visitor falls through to the catalog instead: their queue is 36 of
+      // the 402 tasks they could be handed -- the queue is triage for the pipeline set,
+      // so it barely covers the reviewed one -- and looping those 36 is a worse answer
+      // than walking the rest.
+      if (reviewing) {
+        const fallback = queue[(at + 1 + queue.length) % queue.length];
+        if (fallback && fallback.gameId !== gameId) return fallback.gameId;
+      }
     }
 
     if (games.length === 0) return null;
-    const pools = [
-      games.filter((g) => g.category === PIPELINE_CATEGORY && !played.has(g.gameId)),
-      games.filter((g) => !played.has(g.gameId)),
-      games,
-    ];
+    // The pools were pipeline-FIRST, which was the second way a visitor got handed the
+    // unreviewed set: even when the queue branch fell through, the catalog walk went
+    // looking for slop before anything else. That preference is right for a reviewer and
+    // exactly backwards for everyone else.
+    const inScope = reviewing ? games : games.filter(isVisitorFacing);
+    const pools = reviewing
+      ? [
+        inScope.filter((g) => g.category === PIPELINE_CATEGORY && !played.has(g.gameId)),
+        inScope.filter((g) => !played.has(g.gameId)),
+        inScope,
+      ]
+      : [
+        inScope.filter((g) => !played.has(g.gameId)),
+        inScope,
+      ];
     const pool = pools.find((p) => p.some((g) => g.gameId !== gameId));
     if (!pool) return null;
     const candidates = pool.filter((g) => g.gameId !== gameId);
