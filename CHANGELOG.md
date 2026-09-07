@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.54.0  Sep 7, 2026
+
+- **The queue readout described a queue the Next button had stopped walking** (Author: Mark Barney / Claude Opus 5)
+  - **Left over from 9.53.0.** `queuePosition` read the raw review queue — unfiltered by servability, and unaware of the visitor/reviewer split that had just landed on `nextGameId`. So a visitor on the front page's featured task saw **"Review 1 / 341"**: the wrong word, and a position in a 341-task queue that Next would never walk past entry 36.
+  - **Fixed by removing the second read, not by patching it.** The readout and Next both describe the same walk, so there is now one `walk` memo — servable ∩ audience-scoped — and both consume it. Two independent derivations of one thing is precisely the shape that produced the original bug (a surface describing a set it does not deliver), so the shape went rather than the instance.
+  - **The label follows the audience.** "Review N / M" for a reviewer on a pipeline task; **"Task N / M"** for a visitor. Someone who came to play a couple of tasks is not reviewing anything, and calling it a review run told them they had joined a backlog.
+  - **Hidden when the player is not in the queue at all** — a visitor on an official or community task reached by the catalog fallback or a direct link. Showing a position in a queue you are not walking is the thing this readout got wrong in the first place.
+  - **Verified all three states against the live catalog:** visitor on g026 → `Task 1 / 36`; reviewer on q800-v1 → `Review 37 / 341` (37 confirms it sits immediately after the 36 reviewed entries); visitor on ar25-… → no counter, Next still working.
+  - Files: `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
+
 ### Version 9.53.0  Sep 7, 2026
 
 - **The front page's Play button went somewhere else, and that somewhere was the slop** (Author: Mark Barney / Claude Opus 5)
