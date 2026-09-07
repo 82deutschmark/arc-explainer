@@ -79,7 +79,9 @@ import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import KaggleStanding from '@/components/arc3/KaggleStanding';
-import { PIPELINE_CATEGORY, AUTHORED_CATEGORY, GLOWUP_CATEGORY, visitorFacing } from '@/lib/arc3TaskSets';
+import {
+  PIPELINE_CATEGORY, AUTHORED_CATEGORY, GLOWUP_CATEGORY, CUSTOM_CATEGORY, visitorFacing,
+} from '@/lib/arc3TaskSets';
 import HarnessGapChart from '@/components/arc3/HarnessGapChart';
 import { ASTRA_SOURCE, ENVS_WITH_GAP, ENV_TOTAL, WORST_ENV } from '@/data/astraHarnessGap';
 import { ARC, SANS, MONO } from './landingTheme';
@@ -302,6 +304,7 @@ export default function SyntheticLanding() {
   const unplayed = ordered.filter((g) => !playedIds.has(g.gameId)).length;
   const authoredCount = ordered.filter((g) => g.category === AUTHORED_CATEGORY).length;
   const glowupCount = ordered.filter((g) => g.category === GLOWUP_CATEGORY).length;
+  const customCount = ordered.filter((g) => g.category === CUSTOM_CATEGORY).length;
   // A strip of real frames, not a full catalog dump -- browsing lives in the gallery.
   const previewTiles = useMemo(() => ordered.slice(0, 24), [ordered]);
 
@@ -525,10 +528,10 @@ export default function SyntheticLanding() {
             <p className="text-[13px] leading-[1.75] mb-5 max-w-[70ch]" style={{ color: ARC.faint }}>
               These are the <strong style={{ color: ARC.text }}>{authoredCount}</strong>{' '}
               reviewed ones — written by our agent, then played and sent back for revision
-              until they hold up, six to eight levels each, and still being iterated —
-              plus {glowupCount} community tasks that have been through the same treatment.
-              Everything else we mirror, including the official 25 and a 252-task community
-              catalog, is in the{' '}
+              until they hold up, six to eight levels each, and still being iterated — plus
+              {' '}{customCount} we made by hand and {glowupCount} community tasks that have
+              been through the same treatment. Everything else we mirror, including the
+              official 25 and a 252-task community catalog, is in the{' '}
               <Link href="/arc3/gallery" className="underline" style={{ color: ARC.dim }}>
                 gallery
               </Link>.

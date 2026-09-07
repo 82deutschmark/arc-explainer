@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.55.1  Sep 7, 2026
+
+- **`custom` added to the visitor allowlist — 125 tasks, not 94** (Author: Mark Barney / Claude Opus 5)
+  - The 31 `custom` tasks are the gallery's "Built in-house — hand-made by us and by Son Pham": the only tasks on the site a person wrote from nothing. They were excluded by 9.55.0 because Son's 05-Sep rule was phrased as "at least one glow-up" and these predate it rather than fail it. On the user's call they go in — being **ours** is the test this list actually applies, and by that test they qualify more plainly than anything else on the site.
+  - Visitor set is now `arena` 50 + `contributed-glowup` 44 + `custom` 31 = **125**. Still excluded: `ai-generated` 571, `redbluepill` 252, `official` 25.
+  - One line in `VISITOR_CATEGORIES`, which is what the allowlist was built for. Set copy names the split — "the 50 reviewed ones … plus 31 we made by hand and 44 community tasks" — with every count read from the set.
+  - Files: `client/src/lib/arc3TaskSets.ts`, `client/src/pages/arc3-community/SyntheticLanding.tsx`.
+
 ### Version 9.55.0  Sep 7, 2026
 
 - **Visitors get the curated 94, not "everything that isn't slop"** (Author: Mark Barney / Claude Opus 5)

@@ -42,22 +42,33 @@ export const AUTHORED_CATEGORY = 'arena';
 /** Community tasks that have been through at least one revision pass. */
 export const GLOWUP_CATEGORY = 'contributed-glowup';
 
+/** Built in-house: hand-made by us and by Son Pham. The gallery calls them "Built
+ *  in-house"; they are the only tasks on the site a person wrote from nothing. */
+export const CUSTOM_CATEGORY = 'custom';
+
 /**
  * THE ALLOWLIST. Categories a visitor may be handed, and nothing else.
  *
  * 05-Sep-2026, Son Pham: "On the front page, we will only accept games with at least one
- * glow-up." That is these two, 94 tasks. The rule was written down and then not
- * implemented: the code excluded the generator's output and let the other 402 through, so
- * a visitor who got past the 36 queued arena tasks started being handed theredbluepill's
- * 252-task community repo -- fine work, and not ours, so a verdict on it answers nothing
- * this site is asking.
+ * glow-up." That is arena + contributed-glowup, 94 tasks. The rule was written down and
+ * then not implemented: the code excluded the generator's output and let the other 402
+ * through, so a visitor who got past the 36 queued arena tasks started being handed
+ * theredbluepill's 252-task community repo -- fine work, and not ours, so a verdict on it
+ * answers nothing this site is asking.
+ *
+ * 07-Sep: `custom` joins them, on the user's call -- 31 tasks the gallery labels "Built
+ * in-house", hand-made by the two of them. They predate the glow-up rule rather than
+ * failing it, and they are the most obviously OURS work on the site, which is the actual
+ * test this list applies. 125 tasks.
  *
  * AN ALLOWLIST, NOT A BLOCKLIST, and that is the point. A blocklist says which sets are
  * bad today; every category added later is visitor-facing by default and nobody finds out
  * until someone is playing it. 'ai-generated' arrived with 571 tasks the day after the
  * gallery shipped. The next one gets no such welcome.
  */
-const VISITOR_CATEGORIES = new Set<string>([AUTHORED_CATEGORY, GLOWUP_CATEGORY]);
+const VISITOR_CATEGORIES = new Set<string>([
+  AUTHORED_CATEGORY, GLOWUP_CATEGORY, CUSTOM_CATEGORY,
+]);
 
 /** Anything with a category, which is every shape of task row the three surfaces pass in. */
 interface Categorised { category?: string }
