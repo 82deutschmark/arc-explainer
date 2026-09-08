@@ -100,11 +100,11 @@ LEVELS_SPEC = [
         "  .........  .......",
         "  .........  .......",
         "  ...A.....  .B.....",
-        "  .........  .......",
+        "  .........  .c.....",
         "  P........  .......",
-        "  .........  ...c...",
+        "  .........  .X.....",
         "   ........  .......",
-        "    ......   ...X...",
+        "    ......   .......",
         "             .......",
         "              ....  ",
         "                    ",
@@ -282,7 +282,7 @@ def build_levels() -> list:
     return levels
 
 
-class G045A(RenderableUserDisplay):
+class Instruments(RenderableUserDisplay):
 
     PAD = 2
     LAMP_W, LAMP_GAP, LAMP_X = 9, 3, 3
@@ -293,7 +293,7 @@ class G045A(RenderableUserDisplay):
     BAR_H, BAR_X = 4, XOFF
     BAR_MAX = 64 - 2 * XOFF
 
-    def __init__(self, game: "G045") -> None:
+    def __init__(self, game: "Ferry") -> None:
         super().__init__()
         self._game = game
 
@@ -315,7 +315,7 @@ class G045A(RenderableUserDisplay):
         return frame
 
 
-class G045(ARCBaseGame):
+class Ferry(ARCBaseGame):
 
     def __init__(self) -> None:
         spec = LEVELS_SPEC[0]
@@ -328,7 +328,7 @@ class G045(ARCBaseGame):
         camera = Camera(
             width=W * CELL, height=H * CELL,
             background=WATER, letter_box=WATER,
-            interfaces=[G045A(self)],
+            interfaces=[Instruments(self)],
         )
         super().__init__(game_id="g045", levels=build_levels(), camera=camera)
 
