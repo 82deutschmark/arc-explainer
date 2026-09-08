@@ -60,9 +60,9 @@ def on_board(cell: tuple[int, int]) -> bool:
 
 LEVELS_SPEC = [
     {"rows": [
-        "..O.o.=X",
-        ".M.a....",
-        "........",
+        "....o.=X",
+        "...a.M..",
+        ".....O..",
         "..#..#..",
         "########",
         "_a......",
@@ -132,7 +132,7 @@ LEVELS_SPEC = [
 ]
 
 
-class G043A:
+class Static:
 
     __slots__ = ("walls", "plates", "gates", "exits", "portals", "starts", "crates")
 
@@ -176,17 +176,17 @@ class G043A:
             self.portals[cells[1]] = cells[0]
 
 
-def parse_level(rows: list[str]) -> G043A:
+def parse_level(rows: list[str]) -> Static:
     if len(rows) != N or any(len(r) != N for r in rows):
         raise ValueError("every level must be a square grid of side N")
-    return G043A(rows)
+    return Static(rows)
 
 
-def plates_held(st: G043A, crates: frozenset) -> bool:
+def plates_held(st: Static, crates: frozenset) -> bool:
     return st.plates <= crates
 
 
-def _crate_blocked(st: G043A, cell: tuple[int, int], others: frozenset,
+def _crate_blocked(st: Static, cell: tuple[int, int], others: frozenset,
                    bodies: tuple) -> bool:
     if not on_board(cell):
         return True
@@ -194,7 +194,7 @@ def _crate_blocked(st: G043A, cell: tuple[int, int], others: frozenset,
             or cell in others or cell in bodies)
 
 
-def push_crate(st: G043A, crates: frozenset, src: tuple[int, int],
+def push_crate(st: Static, crates: frozenset, src: tuple[int, int],
                d: tuple[int, int], bodies: tuple) -> frozenset | None:
     others = crates - {src}
     dest = neighbour(src, d)
@@ -226,7 +226,7 @@ def push_crate(st: G043A, crates: frozenset, src: tuple[int, int],
     return others | {pos}
 
 
-def apply_move(st: G043A, active: int, ox: tuple[int, int], mote: tuple[int, int],
+def apply_move(st: Static, active: int, ox: tuple[int, int], mote: tuple[int, int],
                crates: frozenset, d: tuple[int, int]):
     me = ox if active == OX else mote
     other = mote if active == OX else ox
@@ -383,7 +383,7 @@ def build_levels() -> list[Level]:
     return levels
 
 
-class G043(ARCBaseGame):
+class Shunt(ARCBaseGame):
 
     def __init__(self) -> None:
         self._statics = [parse_level(spec["rows"]) for spec in LEVELS_SPEC]
