@@ -4,7 +4,6 @@ from collections import deque
 
 import numpy as np
 
-from sprite_book import block, door, facing, figure, rounded, speckle
 
 from arcengine import (
     ARCBaseGame,
@@ -16,6 +15,72 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
+
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def facing(body: int, visor: int, heading: tuple, cell: int = 4) -> list[list[int]]:
+    px = rounded(body, cell)
+    dx, dy = heading
+    last = cell - 1
+    if dy < 0:
+        px[0][1] = px[0][cell - 2] = visor
+    elif dy > 0:
+        px[last][1] = px[last][cell - 2] = visor
+    elif dx < 0:
+        px[1][0] = px[cell - 2][0] = visor
+    elif dx > 0:
+        px[1][last] = px[cell - 2][last] = visor
+    else:
+        px[1][1] = visor
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
 
 STONE_WALL = 2
 STILL_TILE = 9
@@ -34,10 +99,10 @@ QUIET_LIMIT = 4
 LEVELS_SPEC = [
     {"rows": [
         "############",
-        "#P....#....#",
         "#.....#....#",
         "#.....#....#",
         "#.....#....#",
+        "#...P.#....#",
         "#.....~....#",
         "#.....#....#",
         "#.....#....#",
@@ -278,12 +343,12 @@ def build_levels() -> list[Level]:
     return levels
 
 
-class G162A(RenderableUserDisplay):
+class EchoDisplay(RenderableUserDisplay):
 
     GROUND = (STILL_TILE, LOOSE_TILE, WADER_CORE)
     MID = CELL // 2
 
-    def __init__(self, game: "G162") -> None:
+    def __init__(self, game: "Sleeper") -> None:
         super().__init__()
         self._game = game
 
@@ -300,7 +365,7 @@ class G162A(RenderableUserDisplay):
         return frame
 
 
-class G162(ARCBaseGame):
+class Sleeper(ARCBaseGame):
 
     CAUGHT_FRAMES = 6
 
@@ -314,7 +379,7 @@ class G162(ARCBaseGame):
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=STILL_TILE, letter_box=STONE_WALL,
-            interfaces=[G162A(self)],
+            interfaces=[EchoDisplay(self)],
         )
         super().__init__(game_id="g162", levels=build_levels(), camera=camera,
                          available_actions=[1, 2, 3, 4])
