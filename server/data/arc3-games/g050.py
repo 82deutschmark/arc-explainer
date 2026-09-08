@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from sprite_book import block, door, figure, fixture, medallion, ring, rounded, speckle
 
 from arcengine import (
     ARCBaseGame,
@@ -14,6 +13,80 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
+
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
 
 FLOOR = 10
 WALL = 2
@@ -34,11 +107,11 @@ LEVELS_SPEC = [
         "################",
         "################",
         "################",
-        "#####P......####",
-        "###########.####",
-        "###########.####",
-        "#######X....####",
-        "################",
+        "#####P....######",
+        "#########.######",
+        "#########.######",
+        "#########.######",
+        "#######X..######",
         "################",
         "################",
         "################",
@@ -269,9 +342,9 @@ def build_levels() -> list[Level]:
     return levels
 
 
-class G050A(RenderableUserDisplay):
+class Fog(RenderableUserDisplay):
 
-    def __init__(self, game: "G050") -> None:
+    def __init__(self, game: "AshPath") -> None:
         super().__init__()
         self._game = game
 
@@ -283,7 +356,7 @@ class G050A(RenderableUserDisplay):
         return out
 
 
-class G050(ARCBaseGame):
+class AshPath(ARCBaseGame):
 
     BURN_FRAMES = 1
     DIE_FRAMES = 5
@@ -299,7 +372,7 @@ class G050(ARCBaseGame):
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=FLOOR, letter_box=DARK,
-            interfaces=[G050A(self)],
+            interfaces=[Fog(self)],
         )
         super().__init__(game_id="g050", levels=build_levels(), camera=camera,
                          available_actions=[1, 2, 3, 4, 5])
