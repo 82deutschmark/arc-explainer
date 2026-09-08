@@ -8,7 +8,7 @@ PURPOSE: React hook that manages the Pyodide Web Worker lifecycle for client-sid
 
          Responsibilities:
            - Lazy-create and own the pyodide-game-worker.js Web Worker
-           - Drive init → load_game → step/reset message flow
+           - Drive init → load_game → step/reset/probe_move message flow
            - Wrap every worker postMessage in a promise with 30s timeout
            - Expose typed FrameData + loading stages to the component
            - Expose `pyodideFailed` so the component can fall back to server sessions
@@ -40,6 +40,24 @@ export interface PyodideFrameData {
 
 export type PyodideInitStage = 'pyodide' | 'packages' | 'arcengine' | 'game';
 
+/**
+ * What a speculative click probe found. `action` is an ACTION id or null, and null is a
+ * real answer: no candidate moves the pixel the player pointed at, so the page does
+ * nothing rather than spending a move on a guess.
+ *
+ * `clean` is the worker's own assertion that the probe left the live instance, the action
+ * counter and the undo stack untouched. It is reported rather than swallowed: a false here
+ * means the speculative copy leaked into the real run, and the action must not be fired.
+ */
+export interface ProbeResult {
+  action: number | null;
+  reason: string;
+  clean?: boolean;
+  candidatesTried?: number[];
+  candidatesThatChanged?: number[];
+  ambiguous?: number[];
+}
+
 export type PyodideStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 export interface PyodideGameState {
@@ -64,17 +82,28 @@ export interface UsePyodideGameReturn extends PyodideGameState {
   reset: () => Promise<PyodideFrameData>;
   /** Rewind one step. Resolves to the restored frame; a no-op at depth 0. */
   undo: () => Promise<PyodideFrameData>;
+  /**
+   * Ask the RUNNING game which action moves the clicked cell, without playing one.
+   *
+   * The worker deep-copies the instance once per candidate, applies the action to the copy
+   * and diffs the settled board. Nothing is mutated and no move is spent; the caller fires
+   * the answer through `step` so undo and telemetry stay correct.
+   */
+  probeMove: (x: number, y: number, candidates: number[]) => Promise<ProbeResult>;
   /** True while a step/reset message is awaiting a response. */
   isActing: boolean;
 }
 
 // ─── Worker message types ─────────────────────────────────────────────────────
 interface WorkerOutMessage {
-  type: 'ready' | 'frame' | 'error' | 'progress';
+  type: 'ready' | 'frame' | 'error' | 'progress' | 'probe';
   id: number;
   frame?: PyodideFrameData;
   message?: string;
   stage?: PyodideInitStage;
+  action?: number | null;
+  reason?: string;
+  clean?: boolean;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -120,9 +149,11 @@ export function usePyodideGame(): UsePyodideGameReturn {
   }, []);
 
   // ── Send a message to the worker and await its response ──────────────────────
-  const sendToWorker = useCallback(<T extends PyodideFrameData | void>(
+  /** @param expect which reply type resolves this call. 'frame' for step/reset/load,
+   *                 'ready' for init, 'probe' for a speculative move probe. */
+  const sendToWorker = useCallback(<T,>(
     msg: Record<string, unknown>,
-    expectFrame: boolean,
+    expect: 'frame' | 'ready' | 'probe',
   ): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
       if (!workerRef.current) {
@@ -136,30 +167,18 @@ export function usePyodideGame(): UsePyodideGameReturn {
         reject(new Error(`Worker call timed out after ${CALL_TIMEOUT_MS / 1000}s`));
       }, CALL_TIMEOUT_MS);
 
-      if (expectFrame) {
-        pendingRef.current.set(id, {
-          resolve: (f) => {
-            clearTimeout(timer);
-            resolve(f as T);
-          },
-          reject: (e) => {
-            clearTimeout(timer);
-            reject(e);
-          },
-        });
-      } else {
-        // For init: resolve on 'ready', reject on 'error'
-        (pendingRef.current as Map<number, { resolve: (f: PyodideFrameData) => void; reject: (e: Error) => void }>).set(id, {
-          resolve: () => {
-            clearTimeout(timer);
-            (resolve as (v: void) => void)(undefined);
-          },
-          reject: (e) => {
-            clearTimeout(timer);
-            reject(e);
-          },
-        });
-      }
+      // 'frame' and 'probe' both carry a payload the caller wants; 'ready' carries
+      // nothing and resolves void. One map, because every reply is matched by call id.
+      pendingRef.current.set(id, {
+        resolve: (payload) => {
+          clearTimeout(timer);
+          resolve((expect === 'ready' ? undefined : payload) as T);
+        },
+        reject: (e) => {
+          clearTimeout(timer);
+          reject(e);
+        },
+      });
 
       workerRef.current.postMessage({ ...msg, id });
     });
@@ -191,6 +210,9 @@ export function usePyodideGame(): UsePyodideGameReturn {
         } else if (type === 'frame' && msgFrame) {
           pendingRef.current.delete(id);
           pending.resolve(msgFrame);
+        } else if (type === 'probe') {
+          pendingRef.current.delete(id);
+          pending.resolve(e.data as unknown as PyodideFrameData);
         } else if (type === 'error') {
           pendingRef.current.delete(id);
           pending.reject(new Error(message ?? 'Unknown worker error'));
@@ -271,7 +293,7 @@ export function usePyodideGame(): UsePyodideGameReturn {
       setLoadingMessage('Starting game...');
       const initialFrame = await sendToWorker<PyodideFrameData>(
         { type: 'load_game', source: sourceCode, className },
-        true,
+        'frame',
       );
 
       setFrame(initialFrame);
@@ -299,7 +321,7 @@ export function usePyodideGame(): UsePyodideGameReturn {
     try {
       const newFrame = await sendToWorker<PyodideFrameData>(
         { type: 'step', action: action.toUpperCase(), data: data ?? null },
-        true,
+        'frame',
       );
       setFrame(newFrame);
       return newFrame;
@@ -314,12 +336,25 @@ export function usePyodideGame(): UsePyodideGameReturn {
   const undo = useCallback(async (): Promise<PyodideFrameData> => {
     setIsActing(true);
     try {
-      const newFrame = await sendToWorker<PyodideFrameData>({ type: 'undo' }, true);
+      const newFrame = await sendToWorker<PyodideFrameData>({ type: 'undo' }, 'frame');
       setFrame(newFrame);
       return newFrame;
     } finally {
       setIsActing(false);
     }
+  }, [sendToWorker]);
+
+  // ── Public: probeMove ────────────────────────────────────────────────────────
+  // Deliberately does NOT set isActing and does not touch `frame`: a probe plays nothing,
+  // so putting the deck into its acting state would flash the controls off for a click
+  // that may turn out to mean nothing. The caller guards against overlap with its own
+  // in-flight check before calling.
+  const probeMove = useCallback(async (
+    x: number,
+    y: number,
+    candidates: number[],
+  ): Promise<ProbeResult> => {
+    return sendToWorker<ProbeResult>({ type: 'probe_move', x, y, candidates }, 'probe');
   }, [sendToWorker]);
 
   // ── Public: reset ────────────────────────────────────────────────────────────
@@ -328,7 +363,7 @@ export function usePyodideGame(): UsePyodideGameReturn {
     try {
       const newFrame = await sendToWorker<PyodideFrameData>(
         { type: 'reset' },
-        true,
+        'frame',
       );
       setFrame(newFrame);
       return newFrame;
@@ -350,5 +385,6 @@ export function usePyodideGame(): UsePyodideGameReturn {
     step,
     reset,
     undo,
+    probeMove,
   };
 }
