@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.56.1  Sep 7, 2026
+
+- **Probe candidates come from the read set, not from `canSend`** (Author: Claude Opus 5)
+  - `canSend` falls back to the frame's `available_actions` while `/api/arc3-mirror/control-map` is still in flight, and **g046 and g043 inherit arcengine's `[1,2,3,4,5,6]` default** — so in that window `ACTION7` was dropped from the candidate set and one of g046's six hex directions silently answered nothing. Candidates now come from `readsActions`, and when that is unknown all six go over: an action the game ignores changes no pixels and the diff discards it, so a false positive costs one deep copy and a false negative costs a direction.
+  - `act()` gained a `proven` flag for the probe's answer. The probe applied that action to a copy of the live game and watched the board change, which is stronger evidence than advisory metadata the engine never gates on (`base_game.py:189`) — without it the dispatcher would refuse a move it had just been shown working, on exactly the game that needs it.
+  - Both branches verified: `verify_probe_move.py` and `--all-candidates` (the unknown-read-set path) each return 133/133 across the ten.
+  - Files: `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `scripts/arc3/verify_probe_move.py`.
+
 ### Version 9.56.0  Sep 7, 2026
 
 - **Click-to-move on the ten non-square boards** (Author: Claude Opus 5)
