@@ -87,8 +87,34 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
             decision, so do not tidy it away — see
             docs/2026-09-02-arc3-canvas-click-plan.md.
 
+         07-Sep, fifth pass:
+
+         8. THE HEX AND TRIANGULAR TASKS HAD NO DISCOVERABLE DIRECTIONS. Reported by Son
+            Pham: "For Hexagonal games or any games in which the tile are more than 4
+            directions. You need to allow the use of mouse to move by clicking on adjacent
+            tiles, otherwise sometimes the agent is stuck." On a hex board six neighbours
+            are reached by ACTION1,2,3,4,5,7 in an axial order (see the HEX table in g013),
+            and NOTHING on screen or on the keyboard says which key is which direction. On
+            the triangular tasks there are three neighbours and ACTION4 is a dead key.
+            Ten of the fifty are one of those two.
+
+            Click-to-move now asks the RUNNING GAME rather than a metadata table: the
+            worker deep-copies the live instance once per candidate action, applies it,
+            diffs the settled board, and reports which action moves the pixel the player
+            pointed at (usePyodideGame.probeMove -> handleProbeMove). Nothing is mutated
+            and no move is spent; the winner is then fired through the normal act() path so
+            undo and telemetry are unchanged. If no candidate moves that cell, or two are
+            indistinguishable, NOTHING happens -- a crosshair that lies is the failure this
+            page has already shipped twice.
+
+            SON'S SENTENCE CONFLATES TWO THINGS AND ONLY ONE OF THEM IS FIXED HERE. A mouse
+            affordance helps a HUMAN find the mapping. It does nothing whatsoever for a
+            stuck API agent: the action space is the same seven ids it always was, and an
+            agent never sees this page.
+
 SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodideGame,
-         telemetry in humanPlayTelemetry, colours in utils/arc3Colors.
+         telemetry in humanPlayTelemetry, colours in utils/arc3Colors, and the list of
+         non-square boards in shared/arc3Topology.
 */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -100,6 +126,7 @@ import { Arc3FeedbackPanel } from '@/components/arc3-community/Arc3FeedbackPanel
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 import { PIPELINE_CATEGORY, isVisitorFacing } from '@/lib/arc3TaskSets';
+import { PROBE_CANDIDATE_ACTIONS, probeGestureFor } from '@shared/arc3Topology';
 import { ARC3_COLORS } from '@/utils/arc3Colors';
 import type { Arc3MechanicEntry } from '@shared/arc3Mechanics';
 
@@ -615,6 +642,44 @@ export default function CommunityGamePlay() {
     void act('ACTION6', cell);
   }, [boardClickable, pyodide.isActing, cellFromPointer, act]);
 
+  // ── Click an adjacent tile to move ──────────────────────────────────────────
+  /**
+   * Which mouse button means "move me there" on this task, or null on the square boards
+   * where the d-pad already says it. LEFT on the seven exotic tasks whose ACTION6 is not a
+   * coordinate action, RIGHT on g009/g013/g020 where it is -- see shared/arc3Topology.
+   */
+  const probeGesture = probeGestureFor(gameId);
+  const probeActive = probeGesture !== null && gameState === 'playing';
+
+  /** The candidates worth deep-copying: the directions this task reads, never ACTION6.
+   *  Sending the whole set on a game that reads three of them would triple the work for
+   *  four answers that cannot win. */
+  const probeCandidates = useMemo(
+    () => PROBE_CANDIDATE_ACTIONS.filter((n) => canSend(`ACTION${n}`)),
+    [canSend],
+  );
+
+  /** One probe at a time. Six deep copies and six perform_action calls run inside WASM on
+   *  the player's machine (49ms for the worst of the ten in CPython, so materially more
+   *  here); a double click must not stack twelve of them. */
+  const probingRef = useRef(false);
+
+  const probeAndMove = useCallback(async (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!probeActive || pyodide.isActing || probingRef.current) return;
+    if (!probeCandidates.length) return;
+    const cell = cellFromPointer(e);
+    if (!cell) return;
+    probingRef.current = true;
+    try {
+      const result = await pyodide.probeMove(cell.x, cell.y, [...probeCandidates]);
+      // clean === false means the speculative copy leaked into the live run. Refusing the
+      // action is the only safe read of that: firing it would compound the damage.
+      if (!result || result.action === null || result.clean === false) return;
+      void act(`ACTION${result.action}`);
+    } catch { /* surfaced through pyodide.error */ }
+    finally { probingRef.current = false; }
+  }, [probeActive, pyodide, probeCandidates, cellFromPointer, act]);
+
   // ── Keyboard ────────────────────────────────────────────────────────────────
   useEffect(() => {
     if (gameState === 'idle') return;
@@ -708,7 +773,7 @@ export default function CommunityGamePlay() {
 
   /** Nothing to hover when the board is not a click target -- a stale outline left over
    *  from a clickable task would say the next one takes clicks when it does not. */
-  useEffect(() => { if (!boardClickable) setHoverCell(null); }, [boardClickable]);
+  useEffect(() => { if (!boardClickable && !probeActive) setHoverCell(null); }, [boardClickable, probeActive]);
 
   /* Stamp the run with the build that actually loaded. The version arrives with the
      source, which resolves after humanPlay.start() has already minted the session, so it
@@ -974,12 +1039,33 @@ export default function CommunityGamePlay() {
                     hover outline appear only when this task actually takes ACTION6. */}
                 <canvas
                   ref={canvasRef}
-                  className={`block w-full h-full ${boardClickable ? 'cursor-crosshair' : ''}`}
+                  className={`block w-full h-full ${boardClickable || probeActive ? 'cursor-crosshair' : ''}`}
                   style={{ imageRendering: 'pixelated' }}
-                  onClick={clickBoard}
-                  onMouseMove={(e) => { if (boardClickable) setHoverCell(cellFromPointer(e)); }}
+                  onClick={probeGesture === 'left' ? (e) => void probeAndMove(e) : clickBoard}
+                  // The move gesture on g009/g013/g020, where the left button is already a
+                  // real coordinate action the game reads. preventDefault or the browser
+                  // menu covers the board instead.
+                  onContextMenu={(e) => {
+                    if (!probeActive) return;
+                    e.preventDefault();
+                    void probeAndMove(e);
+                  }}
+                  onMouseMove={(e) => { if (boardClickable || probeActive) setHoverCell(cellFromPointer(e)); }}
                   onMouseLeave={() => setHoverCell(null)}
                 />
+                {/* THE AFFORDANCE HAS TO BE SAID. The whole point is that the mapping from
+                    key to direction is not discoverable on these boards, so a control the
+                    player cannot find fixes nothing. This names the gesture and stops --
+                    it does not say what the board is, how it is solved, or that it is a
+                    hex at all, because that is still the player's to work out. */}
+                {probeActive && (
+                  <div className="absolute left-0 right-0 bottom-0 px-3 py-1.5 text-[9.5px] tracking-[.4px] text-center pointer-events-none"
+                       style={{ background: 'rgba(0,0,0,.55)', color: 'rgba(255,255,255,.62)' }}>
+                    {probeGesture === 'right'
+                      ? 'This board has more than four directions — right-click an adjacent tile to move there.'
+                      : 'This board has more than four directions — click an adjacent tile to move there.'}
+                  </div>
+                )}
                 {showHelp && (
                   <div className="absolute inset-0 p-5 flex flex-col justify-center gap-2 text-[10.5px] leading-relaxed"
                        style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
@@ -992,6 +1078,14 @@ export default function CommunityGamePlay() {
                     <p>Undo and RESET are buttons only — no key, so neither one happens by
                        accident.</p>
                     <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
+                    {probeActive && (
+                      <p style={{ color: '#FFF' }}>
+                        {probeGesture === 'right' ? 'Right-click' : 'Click'} an adjacent tile
+                        — this board has more than four directions, and the game itself is
+                        asked which control moves you onto the tile you picked. If none
+                        does, nothing happens and no move is spent.
+                      </p>
+                    )}
                     <p style={{ color: 'rgba(255,255,255,.5)' }}>
                       Greyed controls are ones this task does not use. What any of them do
                       is for you to find out — that part is the experiment.

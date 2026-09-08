@@ -26,7 +26,19 @@ PURPOSE: Web Worker for running ARCEngine community games client-side via Pyodid
            {type:'load_game', id, source, className}   → {type:'frame', id, frame}
            {type:'step', id, action, data}              → {type:'frame', id, frame}
            {type:'reset', id}                           → {type:'frame', id, frame}
+           {type:'probe_move', id, x, y, candidates}    → {type:'probe', id, action, ...}
          All messages may respond with {type:'error', id, message} on failure.
+
+         07-Sep-2026: probe_move. On the hex and triangular tasks a neighbour is reached by
+         ACTION1,2,3,4,5,7 in an order a blind player cannot learn -- there is no key that
+         means "the cell up and to the right". probe_move takes a clicked frame cell,
+         speculatively applies each candidate action to a DEEP COPY of the live instance,
+         and reports which one moves the clicked pixel. It never touches the real instance,
+         the undo stack or the action counter; the page then fires the winner through the
+         normal step path so telemetry and undo stay correct. The probe body lives between
+         the PROBE_PY markers below and is extracted verbatim by
+         scripts/arc3/verify_probe_move.py, so the browser and the verification harness run
+         one copy of it rather than two that can drift.
 
 SRP/DRY check: Pass — single responsibility: Pyodide lifecycle + game execution loop.
 */
@@ -70,6 +82,9 @@ self.onmessage = async (e) => {
     } else if (type === 'undo') {
       const frame = await handleUndo(id);
       self.postMessage({ type: 'frame', id, frame });
+    } else if (type === 'probe_move') {
+      const probe = await handleProbeMove(id, msg.x, msg.y, msg.candidates);
+      self.postMessage({ type: 'probe', id, ...probe });
     } else {
       self.postMessage({ type: 'error', id, message: `Unknown message type: ${type}` });
     }
@@ -298,6 +313,180 @@ _game_instance, _frame_data, _action_counter, _last_action = _undo_stack.pop()
 
   return extractFrameJson();
 }
+
+// ─── Probe move: which direction key does the player mean by this click? ──────
+/**
+ * WHY THIS EXISTS. On the hex tasks six neighbours are reached by ACTION1,2,3,4,5,7 in an
+ * axial order that is arbitrary from the player's side -- there is no key labelled "up and
+ * to the right", and no amount of staring at the board reveals which of six keys is which
+ * of six directions. On the triangular tasks the neighbour count is three and ACTION4 is a
+ * dead key. Either way a blind player brute-forces the keyboard, which is exactly the
+ * "sometimes the agent is stuck" report.
+ *
+ * The answer is not per-game metadata -- that is an answer key by another name, it goes
+ * stale on every regeneration, and it would tell the page what the directions MEAN. This
+ * asks the game instead: apply each candidate to a throwaway copy and look at which one
+ * moves the pixel the player pointed at. The page learns one action id and nothing else.
+ *
+ * HONEST ABOUT WHAT IT IS NOT: it does not widen the action space. An API agent has the
+ * same seven actions it always had. This is a mouse affordance for a human.
+ */
+async function handleProbeMove(id, clickX, clickY, candidates) {
+  ensureReady();
+
+  const ids = (Array.isArray(candidates) ? candidates : [1, 2, 3, 4, 5, 7])
+    .map(Number)
+    .filter((n) => Number.isInteger(n) && n >= 1 && n <= 7 && n !== 6);
+  if (!ids.length) return { action: null, reason: 'no-candidates' };
+
+  pyodide.globals.set('_probe_click_x', Math.round(clickX));
+  pyodide.globals.set('_probe_click_y', Math.round(clickY));
+  pyodide.globals.set('_probe_candidate_ids', pyodide.toPy(ids));
+
+  await pyodide.runPythonAsync(PROBE_PY);
+  return JSON.parse(pyodide.runPython('_probe_result'));
+}
+
+/**
+ * The probe body, in Python, as one string.
+ *
+ * Extracted verbatim between the markers by scripts/arc3/verify_probe_move.py. The browser
+ * gets ONE exec'd string and no filesystem, so a harness that re-implements this logic in
+ * its own file verifies a second program that merely resembles the shipped one. Keep the
+ * markers, and keep template interpolation out of the body.
+ */
+const PROBE_PY = `
+# --- PROBE_PY_BEGIN ---
+import copy, json
+from arcengine import ActionInput, GameAction
+
+
+def _probe_grid(fd):
+    """The SETTLED board -- the last animation frame, not the first.
+
+    perform_action returns a sequence, and on the hex tasks a single press plays an
+    expanding ring over many frames. Diffing frame[0] against frame[0] compares two
+    pictures of the moment before anything happened.
+    """
+    frames = getattr(fd, "frame", None)
+    if not frames:
+        return None
+    grid = frames[-1]
+    if hasattr(grid, "tolist"):
+        return grid.tolist()
+    return [list(row) for row in grid]
+
+
+def _probe_changed(base, other):
+    """Cells whose colour differs. None when the two boards are not comparable."""
+    if base is None or other is None:
+        return None
+    if len(other) != len(base):
+        return None
+    out = set()
+    for y in range(len(base)):
+        brow = base[y]
+        orow = other[y]
+        if len(orow) != len(brow):
+            return None
+        for x in range(len(brow)):
+            if brow[x] != orow[x]:
+                out.add((x, y))
+    return out
+
+
+def _probe_run():
+    base = _probe_grid(_frame_data)
+    if base is None:
+        return {"action": None, "reason": "no-frame"}
+
+    before_counter = _action_counter
+    before_undo = len(_undo_stack)
+    before_last = _last_action
+
+    changed = {}
+    failed = []
+    for raw in _probe_candidate_ids:
+        aid = int(raw)
+        try:
+            # The undo stack already deep-copies these instances fifty at a time, so this
+            # is a proven-safe operation on this game set rather than a hopeful one.
+            clone = copy.deepcopy(_game_instance)
+            probe_frame = clone.perform_action(
+                ActionInput(id=GameAction.from_id(aid), data={})
+            )
+            cells = _probe_changed(base, _probe_grid(probe_frame))
+        except Exception as exc:  # a rejected action is a legitimate answer: it moves nothing
+            failed.append([aid, str(exc)[:120]])
+            cells = None
+        if cells:
+            changed[aid] = cells
+
+    result = {
+        "action": None,
+        "reason": "no-candidate-moves-that-cell",
+        "candidatesTried": [int(a) for a in _probe_candidate_ids],
+        "candidatesThatChanged": sorted(changed.keys()),
+        "failed": failed,
+    }
+
+    if changed:
+        ids = sorted(changed.keys())
+        # SUBTRACT WHAT HAPPENS WHICHEVER WAY YOU GO. On g013 one press turns over a ring of
+        # twenty-plus cells: the ambient spread, the clock, the animated bloom all repaint
+        # the same cells for every candidate, so a raw changed-set test matches most of the
+        # keyboard and the centroid tie-break then measures the spread rather than the move.
+        # The discriminating residual is what actually distinguishes one direction from
+        # another.
+        common = set.intersection(*[changed[i] for i in ids]) if len(ids) >= 2 else set()
+        click = (int(_probe_click_x), int(_probe_click_y))
+        ranked = []
+        for aid in ids:
+            residual = changed[aid] - common
+            # An EMPTY residual means this action repaints exactly what every other one
+            # repaints, so nothing on the board can tell them apart and a click cannot mean
+            # this one rather than that one. Dropped, not kept as a weak match: on g013 at
+            # level start all six directions are blocked and produce one identical
+            # four-pixel blink, and answering that with an arbitrary direction is the
+            # crosshair-that-lies failure this page has already shipped twice.
+            if not residual or click not in residual:
+                continue
+            cx = sum(p[0] for p in residual) / float(len(residual))
+            cy = sum(p[1] for p in residual) / float(len(residual))
+            dist = ((click[0] - cx) ** 2 + (click[1] - cy) ** 2) ** 0.5
+            ranked.append((round(dist, 6), len(residual), aid, residual))
+        ranked.sort(key=lambda t: t[:3])
+        if ranked:
+            if len(ranked) >= 2 and ranked[0][3] == ranked[1][3]:
+                # Two actions that change exactly the same cells. Whichever we picked would
+                # be a coin toss spending one of the player's moves.
+                result["reason"] = "ambiguous"
+                result["ambiguous"] = [ranked[0][2], ranked[1][2]]
+            else:
+                result["action"] = ranked[0][2]
+                result["reason"] = "ok"
+                result["scores"] = [
+                    {"action": r[2], "distance": r[0], "residual": r[1]} for r in ranked
+                ]
+
+    # NO-MUTATION ASSERTION. The clones are what got acted on; if any of this moved, the
+    # probe leaked into the real run and the answer must be thrown away rather than used.
+    after = _probe_grid(_frame_data)
+    result["clean"] = (
+        after == base
+        and _action_counter == before_counter
+        and len(_undo_stack) == before_undo
+        and _last_action == before_last
+    )
+    if not result["clean"]:
+        result["action"] = None
+        result["reason"] = "probe-mutated-live-state"
+    return result
+
+
+_probe_result = json.dumps(_probe_run())
+# --- PROBE_PY_END ---
+`;
 
 // ─── Guard ────────────────────────────────────────────────────────────────────
 function ensureReady() {
