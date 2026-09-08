@@ -162,7 +162,7 @@
  },
  {
   "gameId": "g008",
-  "className": "G008",
+  "className": "TwoSkins",
   "availableActions": [
    1,
    2,
@@ -189,7 +189,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 400,
+  "sourceLines": 451,
   "triage": {
    "status": "queued",
    "rank": 21
@@ -1577,7 +1577,7 @@
  },
  {
   "gameId": "g043",
-  "className": "G043",
+  "className": "Shunt",
   "availableActions": [
    1,
    2,
@@ -1655,7 +1655,7 @@
  },
  {
   "gameId": "g045",
-  "className": "G045",
+  "className": "Ferry",
   "availableActions": [
    1,
    2,
@@ -1781,7 +1781,7 @@
  },
  {
   "gameId": "g050",
-  "className": "G050",
+  "className": "AshPath",
   "availableActions": [
    1,
    2,
@@ -1806,7 +1806,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 450,
+  "sourceLines": 523,
   "triage": {
    "status": "weak",
    "rank": null
@@ -1892,7 +1892,7 @@
  },
  {
   "gameId": "g162",
-  "className": "G162",
+  "className": "Sleeper",
   "availableActions": [
    1,
    2,
@@ -1916,7 +1916,7 @@
   "levels": 6,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 377,
+  "sourceLines": 442,
   "triage": {
    "status": "queued",
    "rank": 24

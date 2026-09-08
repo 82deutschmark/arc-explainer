@@ -37,7 +37,7 @@
   },
   {
     "id": "g008",
-    "class_name": "G008",
+    "class_name": "TwoSkins",
     "src_file": "g008.py",
     "category": "arena",
     "official": false,
@@ -352,7 +352,7 @@
   },
   {
     "id": "g043",
-    "class_name": "G043",
+    "class_name": "Shunt",
     "src_file": "g043.py",
     "category": "arena",
     "official": false,
@@ -370,7 +370,7 @@
   },
   {
     "id": "g045",
-    "class_name": "G045",
+    "class_name": "Ferry",
     "src_file": "g045.py",
     "category": "arena",
     "official": false,
@@ -397,7 +397,7 @@
   },
   {
     "id": "g050",
-    "class_name": "G050",
+    "class_name": "AshPath",
     "src_file": "g050.py",
     "category": "arena",
     "official": false,
@@ -424,7 +424,7 @@
   },
   {
     "id": "g162",
-    "class_name": "G162",
+    "class_name": "Sleeper",
     "src_file": "g162.py",
     "category": "arena",
     "official": false,
