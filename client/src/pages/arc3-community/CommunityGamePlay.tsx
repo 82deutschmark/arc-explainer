@@ -547,17 +547,24 @@ export default function CommunityGamePlay() {
   }, []);
 
   /**
-   * @param silent live tick — advances the game but is not recorded. A held key at
-   *               10-30fps is not a deliberate move, and logging it would swamp the
-   *               human baseline this site exists to collect.
+   * @param silent live tick -- advances the game but is not recorded. A held key at 10-30fps
+   *               is not a deliberate move, and logging it would swamp the human baseline
+   *               this site exists to collect.
+   * @param proven the probe applied this action to a copy of the live game and watched the
+   *               board change, so the game demonstrably reads it. That beats
+   *               `available_actions`, which is advisory and wrong in both directions
+   *               across our fifty -- g046 does not advertise ACTION7 and uses it as one of
+   *               its six hex directions. Without this the dispatcher would refuse a move
+   *               it has just been shown working.
    */
   const act = useCallback(async (
     action: string,
     coords?: { x: number; y: number },
     silent = false,
+    proven = false,
   ) => {
     if (action !== 'RESET' && (gameState === 'won' || gameState === 'lost')) return;
-    if (!canSend(action)) return;
+    if (!proven && !canSend(action)) return;
     try {
       const next = action === 'RESET' ? await pyodide.reset() : await pyodide.step(action, coords);
       if (!silent) {
@@ -651,12 +658,23 @@ export default function CommunityGamePlay() {
   const probeGesture = probeGestureFor(gameId);
   const probeActive = probeGesture !== null && gameState === 'playing';
 
-  /** The candidates worth deep-copying: the directions this task reads, never ACTION6.
-   *  Sending the whole set on a game that reads three of them would triple the work for
-   *  four answers that cannot win. */
+  /**
+   * The candidates worth deep-copying: the directions this task READS, never ACTION6.
+   * Trimming to the read set on a game that uses three of them saves half the work.
+   *
+   * Filtered on `readsActions` and NOT on `canSend`, which is the difference between six
+   * directions and five. `canSend` falls back to the frame's `available_actions` while
+   * /control-map is still in flight, and g046 and g043 inherit arcengine's [1,2,3,4,5,6]
+   * default -- so in that window ACTION7 would be dropped from the candidate set and one of
+   * g046's six hex directions would silently answer nothing. When the read set is unknown,
+   * send all six: an action the game ignores changes no pixels and the diff discards it, so
+   * a false positive here costs one deep copy and a false negative costs a direction.
+   */
   const probeCandidates = useMemo(
-    () => PROBE_CANDIDATE_ACTIONS.filter((n) => canSend(`ACTION${n}`)),
-    [canSend],
+    () => (readsActions
+      ? PROBE_CANDIDATE_ACTIONS.filter((n) => readsActions.has(n))
+      : [...PROBE_CANDIDATE_ACTIONS]),
+    [readsActions],
   );
 
   /** One probe at a time. Six deep copies and six perform_action calls run inside WASM on
@@ -675,7 +693,7 @@ export default function CommunityGamePlay() {
       // clean === false means the speculative copy leaked into the live run. Refusing the
       // action is the only safe read of that: firing it would compound the damage.
       if (!result || result.action === null || result.clean === false) return;
-      void act(`ACTION${result.action}`);
+      void act(`ACTION${result.action}`, undefined, false, true);
     } catch { /* surfaced through pyodide.error */ }
     finally { probingRef.current = false; }
   }, [probeActive, pyodide, probeCandidates, cellFromPointer, act]);

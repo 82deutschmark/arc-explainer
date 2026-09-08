@@ -25,6 +25,8 @@ PURPOSE: Verify the click-to-move probe under the contract the BROWSER actually 
               click run in WASM on the player's machine.
 
          Run: python3 scripts/arc3/verify_probe_move.py [gameId ...]
+         --all-candidates probes with all six directions regardless of what the game reads,
+         which is what the client sends before /control-map resolves.
          Emit the cross-check fixture for the real-Pyodide run:
               python3 scripts/arc3/verify_probe_move.py --fixture <dir> [gameId ...]
          then: node scripts/arc3/verify_probe_pyodide.mjs <dir>, which boots actual
@@ -125,8 +127,18 @@ def class_name(game_id: str) -> str:
     return entry["className"]
 
 
+ALL_CANDIDATES = False
+
+
 def candidates_for(game_id: str) -> list[int]:
-    """What the client sends: the actions the game READS, minus ACTION6."""
+    """What the client sends: the actions the game READS, minus ACTION6.
+
+    --all-candidates covers the other branch the client can take: until /control-map
+    resolves the read set is unknown and all six go over, so the probe has to give the same
+    answers when handed directions the game never looks at.
+    """
+    if ALL_CANDIDATES:
+        return [1, 2, 3, 4, 5, 7]
     entry = next(e for e in json.loads(MECHANICS.read_text()) if e["gameId"] == game_id)
     return [a for a in entry["actionsReferenced"] if a != 6]
 
@@ -448,7 +460,11 @@ def run_game(game_id: str) -> dict:
 
 
 def main() -> int:
+    global ALL_CANDIDATES
     argv = sys.argv[1:]
+    if "--all-candidates" in argv:
+        ALL_CANDIDATES = True
+        argv = [a for a in argv if a != "--all-candidates"]
     fixture_dir = None
     if argv and argv[0] == "--fixture":
         fixture_dir = Path(argv[1])
