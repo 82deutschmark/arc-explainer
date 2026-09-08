@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from sprite_book import door, medallion, rounded, studs
 
 from arcengine import (
     ARCBaseGame,
@@ -15,12 +14,64 @@ from arcengine import (
     Sprite,
 )
 
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+
 FLOOR = 5
 WALL = 2
 NEUTRAL = 15
 RED = 8
 BLUE = 14
 AVATAR_EDGE = 7
+EXIT_FRAME = 11
 PIP_ON = 7
 PIP_OFF = 5
 
@@ -33,7 +84,7 @@ LEVELS_SPEC = [
     {"skin": "r", "swaps": 0, "rows": [
         "################",
         "#bbbbbbbbbbbbbb#",
-        "#PrrrrrrrrrrrrR#",
+        "#PrrrrrrrrRrrrr#",
         "#bbbbbbbbbbbbbb#",
         "#bbbbbbbbbbbbbb#",
         "#bbbbbbbbbbbbbb#",
@@ -213,7 +264,7 @@ def _neutral_tile() -> list[list[int]]:
 
 
 def _exit_block(colour: int) -> list[list[int]]:
-    return door(colour, None)
+    return door(EXIT_FRAME, colour)
 
 
 CORE_ORDER = ((1, 1), (1, 2), (2, 2), (2, 1))
@@ -276,9 +327,9 @@ TIMER_TOP = 16
 TIMER_GAP = 8
 
 
-class G008A(RenderableUserDisplay):
+class SkinDisplay(RenderableUserDisplay):
 
-    def __init__(self, game: "G008") -> None:
+    def __init__(self, game: "TwoSkins") -> None:
         super().__init__()
         self._game = game
 
@@ -294,7 +345,7 @@ class G008A(RenderableUserDisplay):
         return frame
 
 
-class G008(ARCBaseGame):
+class TwoSkins(ARCBaseGame):
 
     def __init__(self) -> None:
         self.skin = LEVELS_SPEC[0]["skin"]
@@ -306,7 +357,7 @@ class G008(ARCBaseGame):
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=FLOOR, letter_box=WALL,
-            interfaces=[G008A(self)],
+            interfaces=[SkinDisplay(self)],
         )
         super().__init__(game_id="g008", levels=build_levels(), camera=camera,
                          available_actions=[1, 2, 3, 4, 5])
