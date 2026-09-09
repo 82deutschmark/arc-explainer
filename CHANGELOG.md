@@ -12,6 +12,24 @@
 # reference the old numbers.
 
 
+### Version 9.57.0  Sep 9, 2026
+
+- **The deck had drifted off the official console, and Z was the proof** (Author: Mark Barney / Claude Opus 5)
+  - **Reported with a screenshot of the official player.** It prints `SPACEBAR`, `👆 CLICK`, `↺ UNDO (Z)`. Ours printed `ACTION5 (Z)`, `ACTION6 (X)`, `UNDO` — different words for the same controls, and **Z, the official UNDO key, reassigned to a game action**. A player who knows that console presses Z to take a move back and spends one instead.
+  - **This is the third time this line has been written.** Z was ACTION5 originally against a deck that read "Undo (Z)" (post-mortem 6). `e8f5135d` (01-Sep) made Z undo and the label true. `9640d3ef` (05-Sep) made Z ACTION5 again and took undo off the keyboard entirely. Fixed again here.
+  - **The 05-Sep pass was answering a real complaint, and paid for it with the wrong thing.** A *held* Z auto-repeated, so rewinding was cheaper than thinking. That is a genuine problem, and it is now fixed where it lives — an `e.repeat` guard, one press one undo — rather than by spending the one key the official console had already given a meaning.
+  - **The drift is older than the binding.** `a6f1e998` is titled "rebuild the player to match the official ARC-AGI-3 UI" and its own body says it was **ported from `arc3.sonpham.net`'s `games-play.js`** — a mirror of the official player, not the official player. Every later UI decision was reviewed against *our* deck instead of the console we claim parity with, so each change was locally reasonable and the distance kept growing.
+  - **The rule, recorded next to KEY_MAP: the official console is the spec.** Its keys and its wording are fixed points. We may **add** what it does not have — `X` for a coordinate-free ACTION6, `C` for ACTION7 (which arcengine defines at `enums.py:59` and the official action space does not, so it has no deck button and C is its only input). We may never **reassign** something it has already given a meaning. A local usability complaint gets fixed on our surface, never by taking one of its keys.
+  - Deck now reads `SPACEBAR` / `CLICK` / `UNDO (Z)`; HELP names the two keys we added and says they are ours. RESET keeps no key — a stray R threw a run away, and unlike undo it has no official binding to honour.
+  - Files: `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
+
+- **`/arc3/play/ls20` 404'd, and said so in an empty sentence** (Author: Mark Barney / Claude Opus 5)
+  - **Every catalog id carries a build hash** — the game is `ls20-9607627b`. The bare id a person actually has, the one the official player uses, matched nothing. `getGame` now falls back to prefix resolution.
+  - **A bare id can hit more than one build.** `ls20` exists twice: once as `official`, once as a **redbluepill fork of it**. The official build wins — someone typing `ls20` means the game ARC Prize ships, not somebody's fork. If that still leaves more than one candidate we return null rather than pick; serving an unannounced build under a name the player thinks they know is the same class of lie as a crosshair pointing at the wrong cell.
+  - **The endpoint now returns the id it resolved to**, not the one the caller typed, because the client stamps telemetry with whatever comes back — a run on `ls20` must record as the build it actually played.
+  - **The error message was empty because `res.statusText` is always empty over HTTP/2**, which is what production serves. A real 404 reached the user as *"Failed to fetch game source: "* with nothing after the colon, and the id that did not exist was nowhere on screen. Now names the status code, and a 404 names the id.
+  - Files: `server/services/arc3Mirror/Arc3MirrorCatalog.ts`, `server/routes/arc3Mirror.ts`, `client/src/hooks/usePyodideGame.ts`.
+
 ### Version 9.56.1  Sep 7, 2026
 
 - **Probe candidates come from the read set, not from `canSend`** (Author: Claude Opus 5)

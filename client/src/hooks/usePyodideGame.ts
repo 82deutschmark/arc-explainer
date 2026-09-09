@@ -275,7 +275,16 @@ export function usePyodideGame(): UsePyodideGameReturn {
       setLoadingStage('game');
       setLoadingMessage('Fetching game source...');
       const res = await fetch(`/api/arc3-mirror/games/${gameId}/source`);
-      if (!res.ok) throw new Error(`Failed to fetch game source: ${res.statusText}`);
+      // statusText is ALWAYS empty over HTTP/2, which is what production serves -- a real
+      // 404 reached a user as "Failed to fetch game source: " with nothing after the
+      // colon, and the id that did not exist was nowhere on screen. Status code and id.
+      if (!res.ok) {
+        throw new Error(
+          res.status === 404
+            ? `No task with id "${gameId}" — check the link.`
+            : `Failed to fetch game source: HTTP ${res.status}`,
+        );
+      }
       const json = await res.json();
       const { sourceCode, className, sourceVersion: version } = json.data as {
         sourceCode: string; className: string | null; sourceVersion?: string | null;
