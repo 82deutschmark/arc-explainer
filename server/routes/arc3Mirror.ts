@@ -51,7 +51,9 @@ router.get(
     if (!source) {
       return res.status(404).json(formatResponse.error('GAME_NOT_FOUND', 'Game not found'));
     }
-    res.json(formatResponse.success({ gameId: req.params.gameId, ...source }));
+    // getSource's gameId, not the caller's: a bare id like `ls20` resolves to a build,
+    // and the client stamps telemetry with whatever id comes back here.
+    res.json(formatResponse.success(source));
   }),
 );
 

@@ -560,7 +560,31 @@ export class Arc3MirrorCatalog {
 
   static async getGame(gameId: string): Promise<MirroredGame | null> {
     const games = await this.listGames();
-    return games.find((g) => g.gameId === gameId) ?? null;
+    const exact = games.find((g) => g.gameId === gameId);
+    if (exact) return exact;
+    const resolved = this.resolveBareId(games, gameId);
+    return resolved ? games.find((g) => g.gameId === resolved) ?? null : null;
+  }
+
+  /**
+   * `ls20` -> `ls20-9607627b`. Every catalog id carries a build hash, so the bare id a
+   * person actually has -- the one the official player uses, the one in a paper or a
+   * message -- matches nothing and 404s. /arc3/play/ls20 was reported doing exactly that.
+   *
+   * A bare id can hit more than one build: ls20 exists twice, once as `official` and once
+   * as a redbluepill fork of it. THE OFFICIAL BUILD WINS, which is the only non-arbitrary
+   * reading of a bare official id -- someone typing `ls20` means the game ARC Prize ships,
+   * not somebody's fork of it. If that still leaves more than one candidate we return
+   * null rather than pick: serving an unannounced build under a name the player thinks
+   * they know is the same class of lie as a crosshair that points at the wrong cell.
+   */
+  private static resolveBareId(games: MirroredGame[], bareId: string): string | null {
+    const prefix = `${bareId}-`;
+    const matches = games.filter((g) => g.gameId.startsWith(prefix));
+    if (matches.length === 0) return null;
+    if (matches.length === 1) return matches[0].gameId;
+    const official = matches.filter((g) => g.official);
+    return official.length === 1 ? official[0].gameId : null;
   }
 
   /** Python source for one game, read from the source that published it. An `http`
@@ -568,9 +592,12 @@ export class Arc3MirrorCatalog {
    *  indefinite; a local file is read every time and never cached. */
   static async getSource(
     gameId: string,
-  ): Promise<{ sourceCode: string; className: string; sourceVersion: string } | null> {
+  ): Promise<{ gameId: string; sourceCode: string; className: string; sourceVersion: string } | null> {
     const game = await this.getGame(gameId);
     if (!game) return null;
+    // getGame may have resolved a bare id to a build; every lookup below must use the id
+    // it settled on, not the one the caller typed.
+    gameId = game.gameId;
 
     // getGame() ran listGames(), so ownerIndex describes the catalog this game came from.
     const owner = ownerIndex.get(gameId);
@@ -607,7 +634,7 @@ export class Arc3MirrorCatalog {
     // caches and reports against, so it has to describe the string the client receives.
     served = await bundleSupportModules(owner, served);
 
-    return { sourceCode: served, className: game.className, sourceVersion: sourceVersionOf(served) };
+    return { gameId, sourceCode: served, className: game.className, sourceVersion: sourceVersionOf(served) };
   }
 
   /** Ops visibility: is the mirror live, and how stale is it? Top-level keys describe the

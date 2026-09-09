@@ -60,9 +60,10 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
 
          6. Z DID THE OPPOSITE OF WHAT IT SAID. It was bound to ACTION5 next to the
             spacebar while the deck read "Undo (Z)", so the key a stuck player reaches
-            for spent a move instead of taking one back. Fixed then by making Z Undo;
-            since 05-Sep (Son's call) Z is ACTION5 again and Undo has NO key at all, so
-            the two can no longer be confused in either direction. See KEY_MAP.
+            for spent a move instead of taking one back. Fixed on 01-Sep by making Z Undo;
+            RE-BROKEN on 05-Sep, when Z went back to ACTION5 and Undo lost its key
+            entirely; fixed again on 09-Sep. See the ninth pass below and KEY_MAP -- the
+            lesson that finally stuck is that Z was never ours to assign.
 
          02-Sep, fourth pass:
 
@@ -112,6 +113,29 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
             stuck API agent: the action space is the same seven ids it always was, and an
             agent never sees this page.
 
+         09-Sep, sixth pass:
+
+         9. THE DECK HAD DRIFTED OFF THE OFFICIAL CONSOLE, IN WORDS AND IN KEYS. The
+            official ARC-AGI-3 player prints SPACEBAR, CLICK and UNDO (Z). Ours printed
+            ACTION5 (Z) and ACTION6 (X) and had taken Z -- the official UNDO key -- for a
+            game action, so a player who already knows that console pressed Z to take a
+            move back and SPENT one instead.
+
+            THE DRIFT IS OLDER THAN THE BINDING. This page was ported from Son's
+            games-play.js (a6f1e998, titled "match the official ARC-AGI-3 UI"), which is a
+            mirror of the official player, not the official player. Every later UI
+            decision was then reviewed against OUR deck rather than against the console we
+            claim parity with, so each change was locally reasonable and the distance kept
+            growing. Item 6 above is the same mistake landing twice.
+
+            THE RULE, so this stops recurring: THE OFFICIAL CONSOLE IS THE SPEC. Its keys
+            and its wording are fixed points. We may ADD what it does not have -- X for a
+            coordinate-free ACTION6, C for ACTION7, which arcengine defines and the
+            official action space does not -- but we may never reassign something it has
+            already given a meaning. A local usability complaint gets fixed on our own
+            surface (the held-Z auto-repeat is now an `e.repeat` guard), never by
+            spending one of its keys.
+
 SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodideGame,
          telemetry in humanPlayTelemetry, colours in utils/arc3Colors, and the list of
          non-square boards in shared/arc3Topology.
@@ -159,30 +183,45 @@ interface ReviewTotals {
 
 
 /**
- * Keyboard bindings.
+ * Keyboard bindings. THE OFFICIAL PLAYER IS THE SPEC; we may add to it, never reassign it.
  *
- * 05-Sep, Son's call: the two extra actions get the two keys next to each other --
- * Z is ACTION5, X is ACTION6 -- and the deck prints them as "ACTION5 (Z)" and
- * "ACTION6 (X)", so the label and the key cannot disagree again (see post-mortem 6).
+ * The official ARC-AGI-3 console binds four arrows to ACTION1-4, SPACEBAR to ACTION5,
+ * a board CLICK to ACTION6, and Z to UNDO. Z is a META key there -- it takes a move back.
  *
- * NOTHING THAT DESTROYS WORK IS ON THE KEYBOARD ANY MORE. Undo and Reset are click-only,
- * deliberately: a held Z auto-repeated, which made rewinding cheaper than thinking, and a
- * stray R threw a run away. Those two cost a mouse trip now.
+ * 09-Sep: Z IS UNDO AGAIN, which is the third time this line has been written. It was
+ * ACTION5 originally against a deck that read "Undo (Z)"; 01-Sep made Z undo and the
+ * label true; 05-Sep made Z ACTION5 once more and took undo off the keyboard entirely.
+ * That last pass fixed a real complaint -- a HELD Z auto-repeated, so rewinding was
+ * cheaper than thinking -- but it paid for it with the one key the official console has
+ * already given a meaning. A player arriving from the official player presses Z to undo
+ * and SPENDS a move instead: the exact inversion 01-Sep had removed.
  *
- * The spacebar keeps ACTION5 for parity with the official player -- Z is an addition, not
- * a replacement. X sends the COORDINATE-FREE ACTION6, the same thing the deck's ACTION6
- * button sends; clicking the board is still how you aim on the spatial tasks. C keeps
- * ACTION7, because ACTION7 has no deck button and C is now its only input.
+ * The auto-repeat is now fixed where it lives, at `e.repeat`, so one press is one undo
+ * no matter how long the key is held. That answers the complaint without spending a key
+ * that is not ours to spend.
+ *
+ * OUR TWO ADDITIONS SIT ON KEYS THE OFFICIAL CONSOLE LEAVES FREE. X sends the
+ * COORDINATE-FREE ACTION6 that the commit-style tasks want -- clicking the board is still
+ * how you aim on the spatial ones -- and C sends ACTION7, which arcengine defines
+ * (enums.py:59) and the official action space does not, so it has no deck button and C is
+ * its only input. Neither key means anything upstream, so neither can contradict it.
+ *
+ * RESET keeps no key. A stray R threw a run away, and unlike undo it has no official
+ * binding to honour, so the mouse trip stays.
  */
 const KEY_MAP: Record<string, string> = {
   ArrowUp: 'ACTION1', w: 'ACTION1', W: 'ACTION1',
   ArrowDown: 'ACTION2', s: 'ACTION2', S: 'ACTION2',
   ArrowLeft: 'ACTION3', a: 'ACTION3', A: 'ACTION3',
   ArrowRight: 'ACTION4', d: 'ACTION4', D: 'ACTION4',
-  ' ': 'ACTION5', z: 'ACTION5', Z: 'ACTION5',
+  ' ': 'ACTION5',
   x: 'ACTION6', X: 'ACTION6',
   c: 'ACTION7', C: 'ACTION7',
 };
+
+/** Z is UNDO, and it is not in KEY_MAP because it is not a move. Kept separate so the
+ *  official meta key can never be handed to the dispatcher as a game action again. */
+const UNDO_KEY = 'z';
 
 const ARC = {
   ground: '#0E0C0C',
@@ -704,8 +743,16 @@ export default function CommunityGamePlay() {
     const down = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      // No key for Undo, and none for Reset. Both are deck-click-only so they stay
-      // deliberate -- see the note on KEY_MAP. Z is ACTION5 now; R is nothing.
+      // Z is UNDO, matching the official console. `e.repeat` is what keeps a HELD Z from
+      // rewinding the whole run -- one press, one undo -- which is the complaint that got
+      // the key unbound in the first place. R is still nothing: RESET has no official
+      // binding to honour, so it stays a mouse trip.
+      if (e.key === UNDO_KEY || e.key === UNDO_KEY.toUpperCase()) {
+        e.preventDefault();
+        if (e.repeat || !frame?.undo_depth || pyodide.isActing) return;
+        void undo();
+        return;
+      }
       const action = KEY_MAP[e.key];
       if (!action || !canSend(action)) return;
       e.preventDefault();
@@ -720,7 +767,7 @@ export default function CommunityGamePlay() {
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
-  }, [act, canSend, gameState, live]);
+  }, [act, canSend, gameState, live, undo, frame?.undo_depth, pyodide.isActing]);
 
   // ── Live tick ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -982,10 +1029,13 @@ export default function CommunityGamePlay() {
           // The spacebar/click prop names are the deck's physical rows, not the
           // actions -- renaming them would churn Arc3Console for nothing. The LABELS
           // are what a player actually reads.
-          spacebar={ctl('ACTION5', 'ACTION5 (Z)')}
-          click={ctl('ACTION6', 'ACTION6 (X)')}
+          // Official wording, because these are the official console's controls: it
+          // prints SPACEBAR and CLICK, not the action ids behind them. The two keys we
+          // added that it does not have are named in HELP rather than on the deck.
+          spacebar={ctl('ACTION5', 'SPACEBAR')}
+          click={ctl('ACTION6', 'CLICK')}
           undo={{
-            label: 'Undo',
+            label: 'UNDO (Z)',
             onPress: () => void undo(),
             disabled: !frame?.undo_depth || pyodide.isActing,
           }}
@@ -1089,12 +1139,14 @@ export default function CommunityGamePlay() {
                        style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
                     <p style={{ color: '#FFF' }}>Controls</p>
                     <p>Arrows or WASD — the d-pad.</p>
-                    <p>Z or Spacebar — ACTION5.</p>
+                    <p>Spacebar — ACTION5.</p>
                     <p>Click the board — that is ACTION6, sent at the cell you clicked.</p>
-                    <p>X, or the ACTION6 button, sends that same action with no coordinates,
-                       for the tasks that use it as a plain button.</p>
-                    <p>Undo and RESET are buttons only — no key, so neither one happens by
-                       accident.</p>
+                    <p>Z — Undo, one move per press, as on the official console.</p>
+                    <p>X, or the CLICK button, sends ACTION6 with no coordinates, for the
+                       tasks that use it as a plain button.</p>
+                    <p>C — ACTION7, which a few of these tasks read and the official
+                       console does not have.</p>
+                    <p>RESET is a button only — no key, so it cannot happen by accident.</p>
                     <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
                     {probeActive && (
                       <p style={{ color: '#FFF' }}>
