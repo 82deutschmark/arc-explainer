@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.58.0  Sep 11, 2026
+
+- **Extended the ARC3 spoiler-page names from 6 games to the full 25-game public demo set** (Author: Claude Sonnet 5)
+  - The public demo set grew from the original 6 (`ls20`, `as66`, `ft09`, `lp85`, `sp80`, `vc33`) to 25 without the informal-name registry keeping up. Added 20 new `Arc3GameMetadata` entries: `sk48` ("Skewer Kebabs", user-assigned), 6 games (`tr87`, `bp35`, `wa30`, `cn04`, `dc22`, `lf52`) using the adversarially-checked analysis already in `docs/2026-09-02-arc3-official-game-studies.md`, and 13 games (`ar25`, `cd82`, `g50t`, `ka59`, `m0r0`, `r11l`, `re86`, `s5i5`, `sb26`, `sc25`, `su15`, `tn36`, `tu93`) that had no prior analysis anywhere — each read cold from its obfuscated source in `external/ARCEngine/environment_files/`, grounded in the actual `step()`/win-condition code rather than sprite-name guesses, written up in the new `docs/2026-09-11-arc3-public-set-additional-games-study.md`.
+  - New entries are honest about what's missing: `difficulty: 'unknown'`, `hints: []`, `isFullyDocumented: false`, and `resources` limited to the two real replay URLs ARC Prize published per game (built from `client/src/data/astraHarnessGap.ts` + its `REPLAY_BASE`) — no screenshots, video, or hints exist yet, and CLAUDE.md forbids inventing them.
+  - **AS66 confirmed withdrawn from the public demo set.** Three independent, dated sources agree: the live `arcprize.org/tasks?v=3` listing (25 games, no AS66), the 2-Sep-2026 `astraHarnessGap.ts` extract (same 25, no AS66), and the 31-Aug-2026 ARCEngine download batch (same 25 codes pulled, not AS66). Its destination (semi-private/private) isn't verifiable — those sets are never published — so `as66.ts` records the withdrawal as fact without claiming where it went; its original preview-era content is otherwise untouched.
+  - Investigated the four codes that break the usual two-letter-prefix shape (`G50T`, `M0R0`, `R11L`, `S5I5`): their source is structurally identical to every other game in the batch (same imports, same obfuscation style, class simply named after its own id) — the digit-split shape is an artifact of ARC Prize's id generator, not a code-side signal, and isn't even rare (4 of 25 codes have it).
+  - Files: `shared/arc3Games/{sk48,tr87,bp35,wa30,cn04,dc22,ar25,cd82,g50t,ka59,m0r0,r11l,re86,s5i5,sb26,sc25,su15,tn36,tu93}.ts` (new), `shared/arc3Games/index.ts`, `shared/arc3Games/as66.ts`, `docs/2026-09-11-arc3-25-game-names-plan.md` (new), `docs/2026-09-11-arc3-public-set-additional-games-study.md` (new).
+
 ### Version 9.57.0  Sep 9, 2026
 
 - **The deck had drifted off the official console, and Z was the proof** (Author: Mark Barney / Claude Opus 5)
