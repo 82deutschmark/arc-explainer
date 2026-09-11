@@ -1,7 +1,10 @@
 /*
- * Author: Cascade (ChatGPT)
- * Date: 2026-01-09
+ * Author: Cascade (ChatGPT); withdrawal note added by Claude Sonnet 5, 2026-09-11
+ * Date: 2026-01-09 (note added 2026-09-11)
  * PURPOSE: Game metadata for AS66 (Always Sliding) plus curated replay video reference.
+ *          As of 2026-09-11, confirmed withdrawn from the ARC-AGI-3 public demo set --
+ *          see the `notes` field below for the three independent sources. Content
+ *          otherwise unchanged from the original preview-era spoiler page.
  * SRP/DRY check: Pass - Single responsibility for AS66 game data.
  */
 
@@ -59,5 +62,5 @@ export const as66: Arc3GameMetadata = {
     caption: 'Full Always Sliding clear demonstrating Action timing',
   },
   isFullyDocumented: true,
-  notes: 'Updated with strategic intel about enemy lethality and exit conditions.',
+  notes: 'Updated with strategic intel about enemy lethality and exit conditions. WITHDRAWN FROM THE PUBLIC DEMO SET as of Sep 2026 (confirmed 2026-09-11 via arcprize.org/tasks -- the live ARC-AGI-3 Public Demo listing shows 25 games and AS66 is not one of them; client/src/data/astraHarnessGap.ts, ARC Prize\'s own 2-Sep-2026 published results, lists the same 25 without AS66; and the 2026-08-31 ARCEngine environment_files download batch pulled those same 25 codes, not AS66). Where it moved (semi-private or private) is not verifiable -- those sets are never published. Kept here as historical preview-era content; see docs/2026-09-11-arc3-25-game-names-plan.md.',
 };
