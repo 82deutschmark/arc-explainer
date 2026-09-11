@@ -1,8 +1,13 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11
- * PURPOSE: Game metadata for WA30 (Warehouse Allies), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Mechanics verified by an adversarial two-reader pass (a second agent tried to refute the first reading).
+ * Date: 2026-09-11 (renamed and de-badged 2026-09-11)
+ * PURPOSE: Game metadata for WA30 (Warehouse Associates), part of the ARC-AGI-3 public
+ *          demo set (25 games as of Sep 2026). Renamed from "Warehouse Allies" after a
+ *          direct source read found levels 6-7 spawn only the crate-stealing unit and zero
+ *          of the actual helper unit, so "Allies" was false for two of nine levels. The
+ *          "adversarially verified" claim below is dropped for the same reason: that pass
+ *          already knew about the crate-stealing unit (see the 2026-09-02 doc) and still
+ *          produced this name.
  *          See docs/2026-09-02-arc3-official-game-studies.md.
  * SRP/DRY check: Pass - Single responsibility for WA30 game data.
  */
@@ -12,9 +17,9 @@ import { Arc3GameMetadata } from './types';
 export const wa30: Arc3GameMetadata = {
   gameId: 'wa30',
   officialTitle: 'wa30',
-  informalName: 'Warehouse Allies',
-  description: 'Sokoban-style crate hauling where allied haulers on the far side also move crates — for you, or against you.',
-  mechanicsExplanation: 'Crate-hauling with Sokoban\'s verbs (push and pull), so no move is ever unrecoverable. From the second board onward you are never the only one hauling: a unit on the far side of an uncrossable line does your job for you, one cell per key you press. Later a second unit does the identical thing toward the wrong bay and will lift a crate out of your hands, so the allies you rely on can also work against you.',
+  informalName: 'Warehouse Associates',
+  description: 'Sokoban-style crate hauling where other haulers on the far side also move crates — for you, or against you.',
+  mechanicsExplanation: 'Crate-hauling with Sokoban\'s verbs (push and pull), so no move is ever unrecoverable. From the second board onward you are never the only one hauling: a unit on the far side of an uncrossable line does your job for you, one cell per key you press. Later a second unit does the identical thing toward the wrong bay and will lift a crate out of your hands, so the haulers you rely on can also work against you. Levels 6-7 spawn only the crate-stealing unit and none of the helper unit, so treat any single hauler you see as a stranger, not a friend, until you\'ve watched which bay it heads for.',
   category: 'evaluation',
   difficulty: 'unknown',
   levelCount: 9,
@@ -40,7 +45,7 @@ export const wa30: Arc3GameMetadata = {
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
   ],
-  tags: ['sokoban', 'crate-pushing', 'allies', 'public-demo-2026'],
+  tags: ['sokoban', 'crate-pushing', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Mechanics verified by an adversarial two-reader pass (a second agent tried to refute the first reading).',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Renamed from "Warehouse Allies" to "Warehouse Associates" 2026-09-11: levels 6-7 spawn zero of the helper unit and one of the crate-stealing unit, so "Allies" was false for those levels. The prior "adversarially verified" claim is dropped -- that pass already documented the crate-stealing unit and still named the game after the helper alone.',
 };

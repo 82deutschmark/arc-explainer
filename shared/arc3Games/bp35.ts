@@ -1,8 +1,12 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11
+ * Date: 2026-09-11 (verified-badge dropped 2026-09-11)
  * PURPOSE: Game metadata for BP35 (Buoyant Pursuit), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Mechanics verified by an adversarial two-reader pass (a second agent tried to refute the first reading).
+ *          demo set (25 games as of Sep 2026). The "chaser gains only when you fail to
+ *          rise" rule is confirmed in source only for levels 1-3, via mylefxfaev()
+ *          (bp35.py:4052), which explicitly returns False past level 3. Levels 4-9 route
+ *          through a different animation-queue code path that was not traced, so the
+ *          "adversarially verified" claim is dropped as unsupported for those levels.
  *          See docs/2026-09-02-arc3-official-game-studies.md.
  * SRP/DRY check: Pass - Single responsibility for BP35 game data.
  */
@@ -41,5 +45,5 @@ export const bp35: Arc3GameMetadata = {
   ],
   tags: ['vertical-scroller', 'chase', 'physics', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Mechanics verified by an adversarial two-reader pass (a second agent tried to refute the first reading).',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. "Adversarially verified" claim dropped 2026-09-11: the chase rule in the description is confirmed only for levels 1-3 in source (mylefxfaev() returns False past level 3); levels 4-9 were not traced.',
 };
