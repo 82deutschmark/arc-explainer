@@ -20,6 +20,7 @@ import React from 'react';
 import { Link } from 'wouter';
 import { ExternalLink } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { ARC3_GAMES } from '@shared/arc3Games';
 
 /* ------------------------------------------------------------------ */
 /*  Static data — technical report + shared/arc3Games metadata         */
@@ -129,6 +130,30 @@ const EVAL_SET: PreviewGame[] = [
   { id: 'sp80', name: 'Streaming Purple', input: 'Click + Interact', difficulty: 'Medium' },
   { id: 'vc33', name: 'Volume Control', input: 'Click', difficulty: 'Medium' },
 ];
+
+/* Every currently-live public-demo game (25, as of Sep 2026), derived straight from the
+   shared/arc3Games registry rather than hand-copied, so a future rename or correction there
+   shows up here automatically. as66 is excluded -- it's kept in the registry for its
+   preview-era history but is confirmed withdrawn from the current public demo set. */
+function summarizeInput(actionMappings: { commonName?: string; action: string }[]): string {
+  const names = actionMappings.map((a) => a.commonName || a.action);
+  const dpadDirs = ['Up', 'Down', 'Left', 'Right'];
+  const hasDpad = dpadDirs.every((d) => names.includes(d));
+  const rest = names.filter((n) => !hasDpad || !dpadDirs.includes(n));
+  const parts = hasDpad ? ['D-pad', ...rest] : rest;
+  return parts.length ? parts.join(' + ') : '—';
+}
+
+const PUBLIC_DEMO_SET: PreviewGame[] = Object.values(ARC3_GAMES)
+  .filter((g) => g.gameId !== 'as66')
+  .map((g) => ({
+    id: g.gameId,
+    name: g.informalName || g.officialTitle,
+    input: summarizeInput(g.actionMappings),
+    difficulty: g.difficulty === 'unknown' ? 'Unknown' : g.difficulty.charAt(0).toUpperCase() + g.difficulty.slice(1),
+    note: g.levelCount ? `${g.levelCount} level${g.levelCount === 1 ? '' : 's'}` : undefined,
+  }))
+  .sort((a, b) => a.id.localeCompare(b.id));
 
 const RESOURCES = [
   { title: 'ARC-AGI-3 Technical Report (PDF)', url: REPORT_URL, desc: 'The official 23-page specification: benchmark design, RHAE scoring, environment construction, human calibration. April 22, 2026.' },
@@ -397,6 +422,25 @@ export default function Arc3Story() {
             It may be held back for evaluation, or retired. Our documentation of that game may cover content
             no longer publicly available.
           </Note>
+        </section>
+
+        {/* Full Public Demo Set */}
+        <section className="mb-10 rounded-lg border border-slate-800 bg-slate-900/60 p-6">
+          <h2 className="text-xl font-semibold text-slate-100 mb-2">The Full Public Demo Set (25 games, 2026)</h2>
+          <div className="mb-5 rounded border border-amber-700/60 bg-amber-950/30 px-4 py-3">
+            <p className="text-sm font-semibold text-amber-300 mb-1">Spoilers below</p>
+            <p className="text-xs text-amber-200/80 leading-relaxed">
+              Same warning as above: click a game ID for its full mechanics write-up, adversarially
+              fact-checked against the game's own source — but read it only after you've played the
+              game yourself, if you plan to at all.
+            </p>
+          </div>
+          <p className="text-xs text-slate-500 mb-5">
+            The current public demo set — the community front door described in the dataset table
+            below. This is every entry this site documents, current as of the March 2026 ARCEngine
+            catalog; the six preview/evaluation games above are the historical subset of these 25.
+          </p>
+          <GameTable games={PUBLIC_DEMO_SET} label="All 25 games" />
         </section>
 
         {/* How Games Work */}
