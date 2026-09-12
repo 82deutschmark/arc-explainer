@@ -1,8 +1,10 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11
+ * Date: 2026-09-11 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for AR25 (Axis Reflectors), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Mechanics traced from the source's step()/win-condition code in a single-pass read (not adversarially double-checked).
+ *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
+ *          2026-09-12: most levels give you TWO independently movable/reflecting
+ *          pieces, not one, and Cycle (ACTION5) spends a step too.
  *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
  * SRP/DRY check: Pass - Single responsibility for AR25 game data.
  */
@@ -13,8 +15,8 @@ export const ar25: Arc3GameMetadata = {
   gameId: 'ar25',
   officialTitle: 'ar25',
   informalName: 'Axis Reflectors',
-  description: 'Move a piece and axis-aligned mirrors; live reflections must cover every target dot.',
-  mechanicsExplanation: 'You control a small colored puzzle piece, and in most levels one or two straight mirror-lines you can also select and slide, on a 21x21 board scattered with single-pixel target dots. Every move is mirrored live: any cell touched directly by a piece, or by that piece\'s reflection bounced across the mirror-line(s), counts as filled, so shifting a mirror re-reflects the whole board instantly. The level ends the moment every target dot is covered by a piece or one of its live reflections -- many puzzles are solved by repositioning the mirror rather than the piece itself. A shrinking step budget and a positions-only undo (it never refunds spent steps) keep you from brute-forcing the symmetry.',
+  description: 'Move one or two pieces and axis-aligned mirrors; live reflections must cover every target dot.',
+  mechanicsExplanation: 'You control one or two small colored puzzle pieces -- most levels (3, 4, 6, 7, 8) give you two, each moving and reflecting independently -- and in most levels one or two straight mirror-lines you can also select and slide, on a 21x21 board scattered with single-pixel target dots. Every move is mirrored live: any cell touched directly by a piece, or by that piece\'s reflection bounced across the mirror-line(s), counts as filled, so shifting a mirror re-reflects the whole board instantly. The level ends the moment every target dot is covered by a piece or one of its live reflections -- many puzzles are solved by repositioning the mirror rather than the piece itself. A shrinking step budget and a positions-only undo (it never refunds spent steps) keep you from brute-forcing the symmetry -- even just pressing Cycle to switch which piece or mirror is selected spends a step, so indecision costs you too.',
   category: 'evaluation',
   difficulty: 'unknown',
   levelCount: 8,
@@ -44,5 +46,5 @@ export const ar25: Arc3GameMetadata = {
   ],
   tags: ['mirrors', 'reflection', 'step-budget', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Mechanics traced from the source\'s step()/win-condition code in a single-pass read (not adversarially double-checked).',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: the single-piece framing and the free-cycling claim were both wrong.',
 };

@@ -1,7 +1,11 @@
 /*
- * Author: Cascade (ChatGPT)
- * Date: 2026-01-09
+ * Author: Cascade (ChatGPT); corrected by Claude Sonnet 5, 2026-09-12
+ * Date: 2026-01-09 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for VC33 with featured replay video metadata.
+ *          Adversarially re-verified 2026-09-12: player-square transit needs a manual
+ *          click on a specific bar (it's a two-way swap, not an automatic glide),
+ *          blue squares don't move liquid at all (only red/maroon do), and every
+ *          level has an unmentioned click budget that can lose the game.
  * SRP/DRY check: Pass - Single responsibility for VC33 game data.
  */
 
@@ -11,12 +15,12 @@ export const vc33: Arc3GameMetadata = {
   gameId: 'vc33',
   officialTitle: 'vc33',
   informalName: 'Volume Control',
-  description: 'Manage white columns as a liquid system to transport player squares to objectives.',
-  mechanicsExplanation: 'The white columns function like liquid or water within a closed system. Clicking red or blue controller squares causes the "liquid" to flow from one contained area to another. Large player squares (yellow, green, purple) cannot be manually selected; instead, they automatically move when the path is cleared. If a player square is sitting on a white column, it will rise or fall with the column height, similar to a person sitting on top of a tube of liquid.',
+  description: 'Manage white columns as a liquid system, then click the crossing bar to swap player squares across a cleared gap, before your click budget runs out.',
+  mechanicsExplanation: 'The white columns function like liquid or water within a closed system. Clicking red/maroon controller squares causes the "liquid" to flow from one contained area to another -- the blue-colored squares aren\'t a second control, they\'re just the disabled look of a separate crossing-trigger bar before it\'s ready. Large player squares (yellow, green, purple) cannot be manually selected, and don\'t glide across on their own either: once a gap clears enough to align that bar, you have to click it directly, and the click swaps the two player squares on either side of the gap with each other. If a player square is sitting on a white column, it will rise or fall with the column height, similar to a person sitting on top of a tube of liquid. Every click, including a wasted one, spends part of a small per-level budget; run out before finishing and you lose.',
   category: 'evaluation',
   difficulty: 'medium',
   actionMappings: [
-    { action: 'ACTION6', description: 'Click controller (Red/Blue) to shift liquid/height', commonName: 'Click' },
+    { action: 'ACTION6', description: 'Click red/maroon controller to shift liquid, or click the crossing bar to swap players', commonName: 'Click' },
   ],
   hints: [
     {
@@ -27,8 +31,8 @@ export const vc33: Arc3GameMetadata = {
     },
     {
       id: 'vc33-hint-2',
-      title: 'Automatic Transit',
-      content: 'You don\'t need to move the players. Once the gap is high enough, they will move on their own. Focus exclusively on the hydraulics.',
+      title: 'Manual Crossing',
+      content: 'Player squares don\'t glide across by themselves -- once the gap is high enough, you have to click the crossing bar directly, and that click swaps the two squares on either side of it. Watch your click budget while you experiment.',
       spoilerLevel: 1,
     }
   ],
@@ -50,5 +54,5 @@ export const vc33: Arc3GameMetadata = {
     caption: 'Volume Control replay highlighting hydraulic manipulation',
   },
   isFullyDocumented: true,
-  notes: 'Updated with strategic intel about the closed liquid system.',
+  notes: 'Corrected 2026-09-12 after a direct, adversarially-verified source read: transit is a manual click-to-swap on a specific bar, not an automatic glide; blue squares never move liquid; and a per-level click budget that can lose the game was missing.',
 };

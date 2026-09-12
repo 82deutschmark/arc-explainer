@@ -1,8 +1,12 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11
+ * Date: 2026-09-11 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for SC25 (Sigil Caster), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Mechanics traced from the source's step()/win-condition code in a single-pass read (not adversarially double-checked).
+ *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
+ *          2026-09-12: the fireball only destroys crystals via one specific marked
+ *          tile (then clears all matching crystals in the level, not just nearby
+ *          ones), and the "bulldozed" crystal tile is non-solid and disappears on
+ *          contact regardless of the grow spell.
  *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
  * SRP/DRY check: Pass - Single responsibility for SC25 game data.
  */
@@ -13,8 +17,8 @@ export const sc25: Arc3GameMetadata = {
   gameId: 'sc25',
   officialTitle: 'sc25',
   informalName: 'Sigil Caster',
-  description: 'Draw a lit pattern on a toggle grid to auto-cast one of three spells and reach the exit.',
-  mechanicsExplanation: 'You control a small wizard walking a maze of walls, boxes, and crystal obstacles toward a portal tile. A 3x3 grid of clickable dots in the corner toggles on/off, and if the lit pattern exactly matches one of three known sigils, the game auto-casts the matching spell: a teleport/swap, a grow/shrink toggle that lets you squeeze through gaps or bulldoze crystal blocks, or a directional fireball that destroys crystal obstacles ahead of you. Spells are gated per level, and a shared move-and-click budget ends the level in a loss if exhausted.',
+  description: 'Draw a lit pattern on a toggle grid to auto-cast one of three spells (teleport, grow/shrink, or a marked-crystal-clearing fireball) and reach the exit.',
+  mechanicsExplanation: 'You control a small wizard walking a maze of walls and crystal obstacles toward a portal tile. A 3x3 grid of clickable dots in the corner toggles on/off, and if the lit pattern exactly matches one of three known sigils, the game auto-casts the matching spell: a teleport/swap, a grow/shrink toggle that lets you squeeze through gaps, or a directional fireball. The fireball only does something if its straight-line path hits one specific marked crystal tile -- hitting an ordinary crystal block just fizzles it out -- but when it connects, it clears every matching marked crystal in the whole level at once, not just the one it hit. A separate, non-solid crystal tile simply disappears (and refunds a little budget) the moment you walk over it, regardless of which spell is active -- nothing is actually bulldozed. Spells are gated per level, and a shared move-and-click budget ends the level in a loss if exhausted.',
   category: 'evaluation',
   difficulty: 'unknown',
   levelCount: 6,
@@ -42,5 +46,5 @@ export const sc25: Arc3GameMetadata = {
   ],
   tags: ['spellcasting', 'pattern-matching', 'maze', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Mechanics traced from the source\'s step()/win-condition code in a single-pass read (not adversarially double-checked).',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: the fireball and grow-spell claims both mischaracterized what actually gets destroyed.',
 };
