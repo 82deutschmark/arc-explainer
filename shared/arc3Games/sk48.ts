@@ -55,5 +55,5 @@ export const sk48: Arc3GameMetadata = {
   ],
   tags: ['skewer', 'threading', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: adversarial re-verification confirmed the skewer pushes beads rather than passing through them, and added the level-5+ solid walls; the win-condition specifics are still an open gap.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: adversarial re-verification confirmed the skewer pushes beads rather than passing through them, and added the level-5+ solid walls; the win-condition specifics are still an open gap.',
 };

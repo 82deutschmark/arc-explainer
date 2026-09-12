@@ -54,5 +54,5 @@ export const g50t: Arc3GameMetadata = {
   ],
   tags: ['time-loop', 'ghost-replay', 'timer', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: "dodge patrols" and "a handful of ghosts" both overstated what most levels actually contain, and a teleport-tile mechanic in 3 levels was missing entirely.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: "dodge patrols" and "a handful of ghosts" both overstated what most levels actually contain, and a teleport-tile mechanic in 3 levels was missing entirely.',
 };

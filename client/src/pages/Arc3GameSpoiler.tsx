@@ -1,14 +1,22 @@
 /*
- * Author: Cascade (ChatGPT)
- * Date: 2026-02-10
+ * Author: Cascade (ChatGPT); updated by Claude Opus 5, 2026-09-12
+ * Date: 2026-02-10 (last updated 2026-09-12)
  * PURPOSE: Individual game spoiler page for ARC-AGI-3 games.
  *          Displays all known information on a single page: game mechanics (centerpiece),
  *          action mappings, level screenshots, and external resources.
  *          Optimized for developer comprehension and LLM parsing (no interactive tabs).
+ *          2026-09-12: the two "Test with Agent" buttons are gone -- this site does not
+ *          run agents against games any more -- and are replaced by a single Play button
+ *          into the blind play surface. The play id is NOT the spoiler-page id: the mirror
+ *          publishes the official games under a versioned id (`sc25` -> `sc25-635fd71a`),
+ *          so it is resolved at render time from /api/arc3-mirror/games. When the catalog
+ *          has no match the button is not rendered at all, because linking a player into a
+ *          task the mirror cannot serve is the exact failure CommunityGamePlay documents.
  * SRP/DRY check: Pass - Single responsibility (game detail display), reuses shared game metadata.
  */
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'wouter';
 import {
   Gamepad2,
@@ -22,7 +30,7 @@ import {
   CheckCircle2,
   Keyboard,
   Link2,
-  Bot,
+  Play,
   Download,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -117,6 +125,28 @@ export default function Arc3GameSpoiler() {
     canonicalPath: `/arc3/games/${gameId}`,
   });
 
+  /**
+   * The id the play surface serves this game under, or null when it serves none.
+   *
+   * The mirror publishes the official games with a version suffix (`sc25` ->
+   * `sc25-635fd71a`) that comes from upstream's manifest and is not ours to hardcode, so
+   * it is matched by prefix here. A few games publish more than one version; the sorted
+   * first is taken so the link is stable across catalog refreshes. No match means no
+   * button -- CommunityGamePlay cannot serve a task the catalog does not list.
+   */
+  const { data: catalog } = useQuery<{ data: { games: { gameId: string }[] } }>({
+    queryKey: ['/api/arc3-mirror/games'],
+    staleTime: 5 * 60 * 1000,
+  });
+  const playId = React.useMemo(() => {
+    if (!gameId) return null;
+    const matches = (catalog?.data?.games ?? [])
+      .map((g) => g.gameId)
+      .filter((id) => id === gameId || id.startsWith(`${gameId}-`))
+      .sort();
+    return matches[0] ?? null;
+  }, [catalog, gameId]);
+
   if (!game) {
     return <GameNotFound gameId={gameId} />;
   }
@@ -153,14 +183,16 @@ export default function Arc3GameSpoiler() {
               {getDifficultyBadge(game.difficulty)}
             </div>
           </div>
-          <div>
-            <Button asChild>
-              <Link href={`/arc3/playground?game=${game.gameId}`}>
-                <Bot className="h-4 w-4 mr-2" />
-                Test with Agent
-              </Link>
-            </Button>
-          </div>
+          {playId && (
+            <div>
+              <Button asChild>
+                <Link href={`/arc3/play/${playId}`}>
+                  <Play className="h-4 w-4 mr-2" />
+                  Play
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
         <p className="text-lg text-muted-foreground">
           {game.description}
@@ -276,7 +308,7 @@ export default function Arc3GameSpoiler() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {game.levelScreenshots
                   .sort((a: LevelScreenshot, b: LevelScreenshot) => a.level - b.level)
                   .map((screenshot: LevelScreenshot) => (
@@ -292,6 +324,7 @@ export default function Arc3GameSpoiler() {
                           src={screenshot.imageUrl}
                           alt={`Level ${screenshot.level}${screenshot.caption ? ` - ${screenshot.caption}` : ''}`}
                           className="w-full h-full object-contain"
+                          style={{ imageRendering: 'pixelated' }}
                           loading="lazy"
                         />
                       </div>
@@ -442,12 +475,14 @@ export default function Arc3GameSpoiler() {
                 ARC-AGI-3
               </Link>
             </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/arc3/playground?game=${game.gameId}`}>
-                <Bot className="h-4 w-4 mr-1" />
-                Test with Agent
-              </Link>
-            </Button>
+            {playId && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/arc3/play/${playId}`}>
+                  <Play className="h-4 w-4 mr-1" />
+                  Play
+                </Link>
+              </Button>
+            )}
             <Button asChild variant="outline" size="sm">
               <a
                 href={`https://three.arcprize.org/games/${game.gameId}`}
