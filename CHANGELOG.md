@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.67.0  Sep 12, 2026
+
+- **Untracked 171MB of raw audio and removed git-lfs from the working tree** (Author: Claude Opus 5)
+  - **Why this repo had LFS at all.** One commit: `4a0af190`, 2-Mar-2026, which added a 118MB zip of a Craig.chat multi-track recording of the ARC Prize weekly meeting AND the `.gitattributes` line enabling LFS, together. It was never a repo-wide decision — GitHub hard-rejects any blob over 100MB, and LFS was the only way to push that one file.
+  - **The rule was catching the wrong file.** `media/*.zip` matched the zip and nothing else. The three mp3s beside it in `media/reference/` (`JFPuget.mp3` 33MB, `jBudd-combined.mp3` 11MB, `jBudd1.mp3` 8.9MB) were never LFS — they went into history as ordinary blobs and are the three largest blobs in the repository. So LFS was managing the one audio file that was *not* bloating history while 53MB that was sailed past it.
+  - **Nothing used any of it.** The only reference to the zip anywhere was `.gitattributes` itself. The useful product of that recording is already committed separately as 54K of plain text (`client/public/arc-weekly-2026-03-01-transcript.txt`, `7003d4c2`).
+  - **What changed:** all four files are untracked (`git rm --cached`, so the mp3s stay on disk), `media/` is in `.gitignore`, `.gitattributes` is deleted since no path matched it any more, and the Craig zip is deleted from disk at the owner's request. **History is deliberately untouched** — no `filter-repo`, no rewritten hashes, nothing for anyone to re-clone around.
+  - **So this reclaims no space, by design.** `.git` stays ~713MB (184MB objects, 118MB LFS cache); the bytes live in history and in LFS storage either way. What it fixes is that none of it is in the working tree or in future clones' checkouts. The Craig zip remains recoverable from `4a0af190` — the LFS object is intact locally and on GitHub.
+  - **git-lfs is still worth keeping installed.** Old commits still carry an LFS pointer, so checking one out needs it. The `pre-push` hook in `.git/hooks` is LFS's own and is left alone; with no LFS-tracked files it is a no-op.
+
 ### Version 9.66.0  Sep 12, 2026
 
 - **Game pages show the real human action counts, and the changelog renumbers itself** (Author: Claude Opus 5)
