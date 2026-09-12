@@ -60,10 +60,13 @@ PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: s
          - THE SUBJECT DOES NOT CHANGE MID-SENTENCE. "Last round of notes got turned into
            a hit list and rewrote most of the set" -- the notes were turned into a list,
            then the notes rewrote the set. Name the actor: WE turned them into a list.
-         - CONTRACTIONS THROUGHOUT. The voice is the one the hero opens in: "Two of us. No
-           company, no lab, no funding." Half this page used to be spoken and half written
-           ("we cannot buy that", "it is our reading rather than anyone's finding"), and
-           the seam is audible. If you would not say it to someone in a pub, cut it.
+         - CONTRACTIONS THROUGHOUT. The voice is the one the hero opens in: "Two of us,
+           working this in spare evenings with a Kaggle account." (Reworded 12-Sep-2026 --
+           the earlier "no company, no lab, no funding... up against teams with actual
+           money" version read as adversarial rather than just honest about scale; the
+           point was never who we're up against.) Half this page used to be spoken and half
+           written ("we cannot buy that", "it is our reading rather than anyone's finding"),
+           and the seam is audible. If you would not say it to someone in a pub, cut it.
 
          Prose is set in a sans stack for readability; monospace is kept for chrome, ids
          and code, matching CommunityGallery and the official ARC-AGI-3 task pages.
@@ -329,8 +332,7 @@ export default function SyntheticLanding() {
               </h1>
               <div className="text-[15px] leading-[1.75] space-y-4" style={{ color: ARC.dim }}>
                 <p>
-                  Two of us. No company, no lab, no funding — spare evenings and a Kaggle
-                  account, up against teams with actual money.
+                  Two of us, working this in spare evenings with a Kaggle account.
                 </p>
                 <p>
                   ARC-AGI-3 is a set of little games with no instructions. Open one and you
