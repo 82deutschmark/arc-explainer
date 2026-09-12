@@ -12,14 +12,7 @@
 # reference the old numbers.
 
 
-### Version 9.64.0  Sep 12, 2026
-
-- **R11L reframed: it is an amoeba that eats colour, not a shape-into-outline puzzle** (Author: Claude Opus 5)
-  - **The old description does not survive level 5.** The Boss played it and asked what level 5 wants; the answer is not in the shape-matching framing. Verified directly in `external/ARCEngine/environment_files/r11l/495a7899/r11l.py`: the body marker is set to the arithmetic centroid of its own pieces (`rvkbignsyr`, :1536-1551), so you never move the body — you move arms and the body is dragged behind them, pseudopod-style. The win check compares the *set of colours* on the body against the set on the outline (`ldzvchvkvp`, :1601-1607), not the shape.
-  - **Food only exists on levels 5 and 6.** `puukul-` sprites: 0 on levels 1-4, 4 on level 5, 10 on level 6. When the body overlaps one, the food's pixels are copied onto the body and the food is removed from the level (`zlkgwqnxrp`, :1585-1599). So the game silently changes rules at level 5 — from there, some outlines can only be matched by a colour you have to go swallow first. That is why level 5 reads as incomprehensible under the old description.
-  - **Added the human full-clear replay** to `shared/arc3Games/r11l.ts` resources: 6/6 levels, score 72.87, 316 clicks, 13m56s, 7 resets. Per-level clicks 13/17/31/35/40/180 against baselines 22/33/51/26/52/49 — levels 1-3 and 5 beat baseline, level 6 took 3.7x it. Pulled from `arcprize.org/api/sessions/<guid>` and `/api/recordings/<game>/<guid>` (both unauthenticated).
-
-### Version 9.64.0  Sep 12, 2026
+### Version 9.65.0  Sep 12, 2026
 
 - **Official game pages unfurl with a picture of the game, and link the ARC Prize human leaderboard** (Author: Claude Opus 5)
   - **Link previews.** `/arc3/games/:gameId` had no meta tags of its own, so every shared game link unfurled with the site-wide default — same title, same picture, for all 26. `metaTagInjector` now matches the route and builds tags from the shared registry: the game's informal name and id as the title, its objective as the description, and a card made from its own level-1 frame. An unknown id falls through to the default rather than unfurling a "game not found" page.
@@ -27,6 +20,13 @@
   - **ARC Prize human leaderboard, per game.** Every surface that shows a game now links `https://arcprize.org/arc-agi/3/leaderboard?task=<gameId>` — the spoiler page (beside Play, and in the footer), the `/arc3/games` index (per entry), and the Markdown reference (in each game's facts block, so an agent reasoning about difficulty reads real numbers instead of our `difficulty` field, which is `unknown` for most of the set). One helper, `arcPrizeLeaderboardUrl()` in `shared/arc3Games/index.ts`, so 26 hand-written URLs cannot go stale in three places independently.
   - **Meta values are escaped** before injection (`escapeAttribute`). The game strings are prose from the registry and a description containing a quotation mark would close the attribute early and drop the rest of the tag. Deliberately not applied inside `generateMetaTags`: the hand-written entries in `shared/routes.ts` may already carry entities, and escaping those again would show readers a literal `&amp;`.
   - **`/arc3/games` gained a static meta entry** in `shared/routes.ts`, using `r11l`'s frame — an official game is the right picture for a page about the official games, unlike `/arc3/gallery`, which is ours and must not lead with someone else's work.
+
+### Version 9.64.0  Sep 12, 2026
+
+- **R11L reframed: it is an amoeba that eats colour, not a shape-into-outline puzzle** (Author: Claude Opus 5)
+  - **The old description does not survive level 5.** The Boss played it and asked what level 5 wants; the answer is not in the shape-matching framing. Verified directly in `external/ARCEngine/environment_files/r11l/495a7899/r11l.py`: the body marker is set to the arithmetic centroid of its own pieces (`rvkbignsyr`, :1536-1551), so you never move the body — you move arms and the body is dragged behind them, pseudopod-style. The win check compares the *set of colours* on the body against the set on the outline (`ldzvchvkvp`, :1601-1607), not the shape.
+  - **Food only exists on levels 5 and 6.** `puukul-` sprites: 0 on levels 1-4, 4 on level 5, 10 on level 6. When the body overlaps one, the food's pixels are copied onto the body and the food is removed from the level (`zlkgwqnxrp`, :1585-1599). So the game silently changes rules at level 5 — from there, some outlines can only be matched by a colour you have to go swallow first. That is why level 5 reads as incomprehensible under the old description.
+  - **Added the human full-clear replay** to `shared/arc3Games/r11l.ts` resources: 6/6 levels, score 72.87, 316 clicks, 13m56s, 7 resets. Per-level clicks 13/17/31/35/40/180 against baselines 22/33/51/26/52/49 — levels 1-3 and 5 beat baseline, level 6 took 3.7x it. Pulled from `arcprize.org/api/sessions/<guid>` and `/api/recordings/<game>/<guid>` (both unauthenticated).
 
 ### Version 9.63.0  Sep 12, 2026
 
