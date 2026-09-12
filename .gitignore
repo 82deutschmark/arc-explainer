@@ -31,3 +31,9 @@ data/arc3-mirror-thumbnails/
 # digests. Machine-local research data, regenerable, and not something the site serves.
 data/arc3-hypothesis-sweep/
 docs/astra/astra-data/
+
+# Raw meeting/interview audio. Untracked as of 12-Sep-2026: 171MB of source material
+# whose useful output (transcripts) is committed as text instead, and which nothing in
+# the app referenced. The 118MB zip is why this repo had git-lfs at all -- see CHANGELOG
+# 9.67.0. Still on disk locally; history is unchanged, so old commits keep their copies.
+media/
