@@ -17,11 +17,10 @@ PURPOSE: Publish OUR hand-authored ARC-AGI-3 candidate tasks INTO this repo, und
          CLASS NAMES ARE NO LONGER RENAMED (changed 2026-09-12). They used to become
          `G007` / `G007A` here, on the theory that a descriptive name must not exist in a
          public repository. That conflated two requirements -- a player must not be SHOWN
-         the name, which is true, with the repository must not CONTAIN it, which is not --
-         and it left the real boundary unguarded, because the catalog published whatever
-         class_name it was handed. Masking now happens where it belongs, at serve time, in
-         server/services/arc3Mirror/Arc3MirrorCatalog.ts. Descriptive class names are
-         welcome in this directory and are the more useful name for everyone working here.
+         the name, which is true, with the repository must not CONTAIN it, which is not.
+         Nothing in the client renders a class name, so the rename protected nothing.
+         Descriptive class names are welcome in this directory and are the more useful name
+         for everyone working here.
 
          The prose strip is unchanged and still mandatory: strip_authoring_text.py cuts the
          docstrings and comments that name the mechanic, and remains the only thing standing
@@ -97,18 +96,14 @@ def published_classes(game_id: str, classes: list[str], game_class: str) -> dict
 
     THIS USED TO RENAME EVERY CLASS TO `G007` / `G007A`, AND NO LONGER DOES. The reasoning
     was that `TumbleBlock` and `TumbleBlockDisplay` say the game is Bloxorz in a file
-    served to the player's own browser, so the descriptive name must not exist in this
-    repository at all. The first half of that is right and the conclusion was wrong: it
-    turned "a player must not be shown the name" into "the repository may not contain the
-    name", which are different requirements, and it paid for the second one with the first
-    one's guarantee. Nothing checked the boundary -- the catalog passed `class_name`
-    straight through -- so the protection was only ever "every file happens to be called
-    GNNN", which lasts exactly until a game is published with a real class name.
+    served to the player's own browser. That turned "a player must not be shown the name"
+    into "the repository may not contain the name", which are different requirements. The
+    first is about what the play surface renders; the second is about strings on disk, and
+    meeting it bought nothing.
 
-    The masking now lives at the serving boundary, in
-    server/services/arc3Mirror/Arc3MirrorCatalog.ts: the catalog publishes an id-derived
-    class name and appends an alias to the served source, whatever the module calls itself.
-    That holds for every game from every source, including ones this importer never touched.
+    Nothing in the client renders a class name -- it is read by the Pyodide hook to
+    instantiate the class and by nothing else, and the play page shows no game title. The
+    name was never in front of a player, so there was nothing for the rename to protect.
 
     So descriptive class names are published verbatim now, and are the better name to use:
     `class WeighStation` is worth more to everyone working on these games than `class G021`,
