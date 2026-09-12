@@ -85,6 +85,22 @@ export const ARC3_GAMES: Record<string, any> = {
 };
 
 /**
+ * The official ARC Prize human leaderboard for one game.
+ *
+ * Every page that shows a game links here, so it is defined once: the spoiler page, the
+ * /arc3/games index and the Markdown reference all call this rather than each formatting
+ * the query string themselves. `task=` takes the plain game id -- the same id this
+ * registry is keyed by, and the one in our own URLs.
+ *
+ * Deliberately not a field on Arc3GameMetadata: it is a pure function of the id, and 26
+ * hand-written copies of the same URL is exactly the kind of thing that ends up with two
+ * of them stale.
+ */
+export function arcPrizeLeaderboardUrl(gameId: string): string {
+  return `https://arcprize.org/arc-agi/3/leaderboard?task=${encodeURIComponent(gameId)}`;
+}
+
+/**
  * Get all games as an array, sorted by category and then by gameId
  */
 export function getAllGames() {

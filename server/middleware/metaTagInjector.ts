@@ -10,6 +10,7 @@ import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { ROUTE_META_TAGS, ROOT_META_BY_HOST, RouteMetaTags } from '../../shared/routes.js';
+import { getGameById } from '../../shared/arc3Games/index.js';
 import { puzzleLoader } from '../services/puzzleLoader.js';
 import { logger } from '../utils/logger.js';
 
@@ -19,8 +20,30 @@ const PUZZLE_ROUTE_PATTERN = /^\/puzzle\/([a-f0-9]{8})(?:\/.*)?$/i;
 // ARC-AGI-3 community task pages: /arc3/play/:gameId
 const ARC3_PLAY_PATTERN = /^\/arc3\/play\/([A-Za-z0-9_.-]{1,64})$/;
 
+// Official-game explainer pages: /arc3/games/:gameId. Note this is the OPPOSITE surface to
+// /arc3/play above -- that one unfurls a task to be met blind and says nothing about it,
+// this one is the write-up and is meant to advertise exactly what the game is.
+const ARC3_GAME_PAGE_PATTERN = /^\/arc3\/games\/([A-Za-z0-9_-]{2,16})$/;
+
 // Base URL for generating absolute URLs
 const BASE_URL = process.env.BASE_URL || 'https://arc.markbarney.net';
+
+/**
+ * Escape a value going into a double-quoted HTML attribute.
+ *
+ * Applied to the ARC3 game strings below because they come from the shared registry and
+ * are written as prose -- a description with a quotation mark in it would otherwise close
+ * the attribute early and drop the rest of the tag. Deliberately NOT applied inside
+ * generateMetaTags: the hand-written entries in shared/routes.ts may already contain
+ * entities, and escaping those again would render a literal `&amp;` to readers.
+ */
+function escapeAttribute(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
 
 /**
  * Generate meta description, title, Open Graph and Twitter Card meta tags HTML
@@ -146,6 +169,30 @@ export async function metaTagInjector(
         image: `${BASE_URL}/api/arc3-mirror/games/${encodeURIComponent(gameId)}/thumbnail?size=512`,
         type: 'article',
       };
+    }
+  }
+
+  // Then an official game's write-up, which unfurls with a frame from the game itself.
+  if (!routeMetaTags) {
+    const gamePageMatch = requestPath.match(ARC3_GAME_PAGE_PATTERN);
+    if (gamePageMatch) {
+      const gameId = gamePageMatch[1].toLowerCase();
+      const game = getGameById(gameId);
+      // An unknown id falls through to the site default rather than unfurling a page that
+      // renders "game not found".
+      if (game) {
+        const name = game.informalName || game.gameId;
+        routeMetaTags = {
+          title: escapeAttribute(`${name} (${game.gameId}) - ARC-AGI-3 game mechanics`),
+          description: escapeAttribute(game.description),
+          url: `https://${host || 'arc.markbarney.net'}/arc3/games/${gameId}`,
+          // The game's own level-1 frame, framed to 1200x630 -- see
+          // server/services/arc3/arc3GameOgImageService.ts. The raw 256px PNG would unfurl
+          // as a thumbnail.
+          image: `${BASE_URL}/api/arc3/og-image/${gameId}`,
+          type: 'article',
+        };
+      }
     }
   }
 
