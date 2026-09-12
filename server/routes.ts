@@ -62,6 +62,7 @@ import { formatResponse } from "./utils/responseFormatter.ts";
 import { isProduction, requiresUserApiKey } from "./utils/environmentPolicy.js";
 import { storage } from "./storage";
 import { Request, Response } from "express";
+import { buildArc3GameMechanicsDoc } from "./services/arc3/arc3GameMechanicsDoc.ts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -353,6 +354,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/council/puzzle/:taskId/explanations", asyncHandler(councilController.getExplanationsForAssessment));
   app.post("/api/council/assess", asyncHandler(councilController.assessPuzzle));
   app.post("/api/council/assess/stream", asyncHandler(councilController.streamAssessment));
+
+  /**
+   * The complete official-game mechanics reference, as one plain-Markdown document.
+   *
+   * This is THE link to hand an agent (or a person) who wants the rules of the official
+   * ARC-AGI-3 games: every game, full mechanics, per-action controls, every level frame,
+   * no JavaScript to execute and no 25 pages to crawl. It exists because each of these
+   * write-ups cost a hand trace of the game's obfuscated Python plus an adversarial
+   * re-check, and without one flat URL the next agent just redoes that work and repeats
+   * the same 57 errors the re-check caught.
+   *
+   * Served ahead of the SPA so the extension wins over the /arc3/games client route, and
+   * as .txt as well because a fair number of crawlers will not fetch text/markdown.
+   * Generated per request from the shared/arc3Games registry -- no cached copy to drift.
+   */
+  const serveArc3MechanicsDoc = (contentType: string) => (_req: Request, res: Response) => {
+    try {
+      res.type(contentType).send(buildArc3GameMechanicsDoc());
+    } catch (error) {
+      logger.error(`Failed to build ARC3 mechanics doc: ${error instanceof Error ? error.message : String(error)}`, 'arc3');
+      res.status(500).type('text/plain').send('Unable to generate the ARC-AGI-3 mechanics reference.');
+    }
+  };
+
+  app.get("/arc3/games.md", serveArc3MechanicsDoc("text/markdown; charset=utf-8"));
+  app.get("/arc3/games.txt", serveArc3MechanicsDoc("text/plain; charset=utf-8"));
 
   // Removed 2026-09-12: these two 301s pointed the CANONICAL spoiler URLs at the archive,
   // which is backwards. /arc3/games/:gameId is the real route (App.tsx), and

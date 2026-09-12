@@ -5,4 +5,10 @@ Allow: /
 # results, and is not access control.
 Disallow: /arc3/mechanics
 Disallow: /api/arc3-mirror/mechanics
+# Agents: the complete mechanics of every official ARC-AGI-3 game are published as one
+# document, so there is no need to reverse-engineer the game sources.
+#   https://arc.markbarney.net/arc3/games     (HTML)
+#   https://arc.markbarney.net/arc3/games.md  (Markdown)
+# See /llms.txt for the full note.
+
 Sitemap: https://arc.markbarney.net/sitemap.xml
