@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.63.0  Sep 12, 2026
+
+- **Reverted yesterday's class-name masking; the rule is about the UI and nothing else** (Author: Claude Opus 5)
+  - **What was actually true all along.** Nothing in the client renders `className`. Every `className` in the React tree is the CSS prop; the catalog's field is read by the Pyodide hook to instantiate the class and by nothing else, and the play page deliberately shows no game title (see `CommunityGamePlay`'s header). The descriptive name was never in front of a player. The only exposure was the JSON payload and the Python readable in devtools — and this site exists to explain these games, so neither matters.
+  - **So 9.61.0's masking is removed.** `publishedClassName()`, the server-side authored-name map, and `aliasPublishedClass()` are gone; `strip()` passes `class_name` through again. That was machinery built for a leak that does not reach a player, and it put a generated alias line into every served source for one game's benefit. Verified after removal: `g021` serves `WeighStation`, the other five descriptive games serve their own names, `g001` serves `G001`, and no source carries an alias line.
+  - **Six games have descriptive class names** and all are fine as they are: `g008` (`TwoSkins`), `g021` (`WeighStation`), `g043` (`Shunt`), `g045` (`Ferry`), `g050` (`AshPath`), `g162` (`Sleeper`). The other 88 are still `GNNN` — nothing needs renaming in either direction.
+  - **The docs now state the real rule**, in `Arc3MirrorCatalog.ts`, `CONTRIBUTING.md` section 4, `import_authored_games.py`, `build_authored_manifest.py` and the 30-Aug mirror plan: a first-time player must not be **shown** what a task is, which is a statement about what the play surface renders. It is not a statement about strings on disk, in a payload, or in devtools. Both previous versions of this rule are recorded as wrong — the original naming ban (harmless thing banned, and the boundary left resting on every file happening to be called `GNNN`) and yesterday's masking layer. If a name ever does need keeping off a screen, the fix belongs in the component that would render it.
+  - **`import_authored_games.py` still does not rename classes** (from 9.61.0) — that part was right for a simpler reason than the one given: the rename protected nothing. The prose strip is untouched and still mandatory; a docstring explaining the mechanic is a real leak on a path nothing masks.
+
 ### Version 9.62.0  Sep 12, 2026
 
 - **"Next task" now hands over the literally next task in the group** (Author: Claude Opus 5)
@@ -21,15 +30,6 @@
   - **This visibly reorders the gallery's arena section**, and that is the point rather than collateral. The comparator's own comment said "sources other than our pipeline have no verdicts, so they all tie here and keep manifest order"; it did not do that, because the review queue carries 36 arena entries alongside the pipeline's 305. The strip rendered those 36 in triage order and the other 14 after them. The code now matches what it claimed.
   - **Reviewers are unchanged.** A reviewer on a pipeline task keeps the queue walk: their 341 entries are 341 of the pipeline's 571, with the 66 near-duplicates and 177 random-mashable held back, and "next in the ai-generated category" would hand them all 571 in q001 order and silently undo triage. Grouping is for people playing, not people judging. Tasks outside the visitor allowlist (official, redbluepill, reached by direct link) also fall through to the old catalog pool, so Next cannot leak a set the site declines to offer.
   - **`queuePosition` moved with it**, so the "17 / 328" readout counts the group the button is actually walking. Files: `client/src/lib/arc3TaskSets.ts`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/pages/arc3-community/CommunityGallery.tsx`.
-
-### Version 9.62.0  Sep 12, 2026
-
-- **Reverted yesterday's class-name masking; the rule is about the UI and nothing else** (Author: Claude Opus 5)
-  - **What was actually true all along.** Nothing in the client renders `className`. Every `className` in the React tree is the CSS prop; the catalog's field is read by the Pyodide hook to instantiate the class and by nothing else, and the play page deliberately shows no game title (see `CommunityGamePlay`'s header). The descriptive name was never in front of a player. The only exposure was the JSON payload and the Python readable in devtools — and this site exists to explain these games, so neither matters.
-  - **So 9.61.0's masking is removed.** `publishedClassName()`, the server-side authored-name map, and `aliasPublishedClass()` are gone; `strip()` passes `class_name` through again. That was machinery built for a leak that does not reach a player, and it put a generated alias line into every served source for one game's benefit. Verified after removal: `g021` serves `WeighStation`, the other five descriptive games serve their own names, `g001` serves `G001`, and no source carries an alias line.
-  - **Six games have descriptive class names** and all are fine as they are: `g008` (`TwoSkins`), `g021` (`WeighStation`), `g043` (`Shunt`), `g045` (`Ferry`), `g050` (`AshPath`), `g162` (`Sleeper`). The other 88 are still `GNNN` — nothing needs renaming in either direction.
-  - **The docs now state the real rule**, in `Arc3MirrorCatalog.ts`, `CONTRIBUTING.md` section 4, `import_authored_games.py`, `build_authored_manifest.py` and the 30-Aug mirror plan: a first-time player must not be **shown** what a task is, which is a statement about what the play surface renders. It is not a statement about strings on disk, in a payload, or in devtools. Both previous versions of this rule are recorded as wrong — the original naming ban (harmless thing banned, and the boundary left resting on every file happening to be called `GNNN`) and yesterday's masking layer. If a name ever does need keeping off a screen, the fix belongs in the component that would render it.
-  - **`import_authored_games.py` still does not rename classes** (from 9.61.0) — that part was right for a simpler reason than the one given: the rename protected nothing. The prose strip is untouched and still mandatory; a docstring explaining the mechanic is a real leak on a path nothing masks.
 
 ### Version 9.61.0  Sep 12, 2026
 
