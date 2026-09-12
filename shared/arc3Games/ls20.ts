@@ -1,7 +1,11 @@
 /*
- * Author: Cascade (ChatGPT)
- * Date: 2026-01-09
+ * Author: Cascade (ChatGPT); corrected by Claude Sonnet 5, 2026-09-12
+ * Date: 2026-01-09 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for LS20 (Locksmith), including featured replay video details.
+ *          Adversarially re-verified 2026-09-12: every level runs a hidden 42-step
+ *          budget with a 3-life game-over system, level 6 has two doors to solve in
+ *          sequence, and the final level adds fog-of-war -- none of this was in the
+ *          original write-up.
  * SRP/DRY check: Pass - Single responsibility for LS20 game data.
  */
 
@@ -11,8 +15,8 @@ export const ls20: Arc3GameMetadata = {
   gameId: 'ls20',
   officialTitle: 'ls20',
   informalName: 'Locksmith',
-  description: 'Transform a key into the required shape, color, and rotation to unlock an exit door.',
-  mechanicsExplanation: 'The key is represented as a distinct group of pixels, typically located in the bottom-left area at the start of each level. You must move your player avatar over transformation tiles to change the key\'s shape, color, and rotation to match the lock. The door does not require a specific trigger action; simply reaching it with the correct key configuration will finish the level.',
+  description: 'Transform a key into the required shape, color, and rotation to unlock an exit door, under a hidden step budget and limited lives.',
+  mechanicsExplanation: 'The key is represented as a distinct group of pixels, typically located in the bottom-left area at the start of each level. You must move your player avatar over transformation tiles to change the key\'s shape, color, and rotation to match the lock. The door does not require a specific trigger action; simply reaching it with the correct key configuration will finish the level -- though level 6 has two separate doors that both need solving in turn, not just one. Every level also runs on a hidden 42-step move budget; running out resets you to the level\'s start and costs one of only 3 total lives, with a 4th failure ending the game. The final level adds fog-of-war, blacking out everything beyond a short radius around you.',
   category: 'preview',
   difficulty: 'hard',
   actionMappings: [
@@ -33,6 +37,12 @@ export const ls20: Arc3GameMetadata = {
       title: 'Exit Requirement',
       content: 'The door area often shows a hint of the "target" key. Ensure your key matches that ghost image perfectly before approaching.',
       spoilerLevel: 1,
+    },
+    {
+      id: 'ls20-hint-3',
+      title: 'Hidden Move Limit',
+      content: 'Every level secretly caps you at 42 steps before it resets you and costs a life -- you only get 3 lives total. The final level also blacks out everything beyond a short radius around you.',
+      spoilerLevel: 2,
     }
   ],
   resources: [
@@ -54,5 +64,5 @@ export const ls20: Arc3GameMetadata = {
     caption: 'Locksmith walkthrough replay captured Dec 2025',
   },
   isFullyDocumented: true,
-  notes: 'Updated with strategic intel from manual game mastery.',
+  notes: 'Corrected 2026-09-12 after a direct, adversarially-verified source read: added the hidden 42-step/3-life budget, level 6\'s second door, and the final level\'s fog-of-war, none of which the original write-up mentioned.',
 };

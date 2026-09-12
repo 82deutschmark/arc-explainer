@@ -1,8 +1,11 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11
+ * Date: 2026-09-11 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for M0R0 (Mirror Rendezvous), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Mechanics traced from the source's step()/win-condition code in a single-pass read (not adversarially double-checked).
+ *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
+ *          2026-09-12: trap tiles reset both twins (not just spare blocks), gates are
+ *          live buttons confined to the last two levels, and every level has an
+ *          unmentioned 150-move budget that can lose the game.
  *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
  * SRP/DRY check: Pass - Single responsibility for M0R0 game data.
  */
@@ -13,8 +16,8 @@ export const m0r0: Arc3GameMetadata = {
   gameId: 'm0r0',
   officialTitle: 'm0r0',
   informalName: 'Mirror Rendezvous',
-  description: 'A mirrored pair moves in lockstep; deliberately desync them off walls until they meet.',
-  mechanicsExplanation: 'You steer a mirror-image pair of tokens that always move together: vertical input shifts both by the same amount, horizontal input pushes them toward or away from each other by equal and opposite amounts. Because mirrored motion preserves their relative offset, you can never bring them together by walking through open space -- the puzzle is deliberately driving one twin into a wall, block, or shut gate so only it stops, permanently shifting the gap, repeated until both land on the same tile and merge. Checkerboard trap tiles reset every draggable piece back to its level-start position.',
+  description: 'A mirrored pair moves in lockstep; deliberately desync them off walls until they meet, within a 150-move budget.',
+  mechanicsExplanation: 'You steer a mirror-image pair of tokens that always move together: vertical input shifts both by the same amount, horizontal input pushes them toward or away from each other by equal and opposite amounts. Because mirrored motion preserves their relative offset, you can never bring them together by walking through open space -- the puzzle is deliberately driving one twin into a wall or block so only it stops, permanently shifting the gap, repeated until both land on the same tile and merge. In the last two levels, colored gates open and close live depending on which button tile either twin is currently standing on -- they\'re switches, not static walls. Checkerboard trap tiles snap both twins straight back to the level\'s starting position. Each level also gives you a hard cap of 150 moves, shown as a shrinking bar; run out before the twins merge and you lose.',
   category: 'evaluation',
   difficulty: 'unknown',
   levelCount: 6,
@@ -42,5 +45,5 @@ export const m0r0: Arc3GameMetadata = {
   ],
   tags: ['mirrored-movement', 'desync-puzzle', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Mechanics traced from the source\'s step()/win-condition code in a single-pass read (not adversarially double-checked).',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: traps reset both twins (not just spare blocks), gates are an active switch mechanic in the last 2 levels only, and a 150-move budget that can lose the game was missing entirely.',
 };

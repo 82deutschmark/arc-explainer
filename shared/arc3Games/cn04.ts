@@ -1,8 +1,11 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11
+ * Date: 2026-09-11 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for CN04 (Coded Notches), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Mechanics verified by an adversarial two-reader pass (a second agent tried to refute the first reading).
+ *          demo set (25 games as of Sep 2026). A second, independent adversarial
+ *          re-verification pass on 2026-09-12 found the original "adversarially
+ *          verified" pass still missed real errors: there is no stretch action, and
+ *          the piece count is nothing like "three to five" (2 to 13 across levels).
  *          See docs/2026-09-02-arc3-official-game-studies.md.
  * SRP/DRY check: Pass - Single responsibility for CN04 game data.
  */
@@ -13,17 +16,17 @@ export const cn04: Arc3GameMetadata = {
   gameId: 'cn04',
   officialTitle: 'cn04',
   informalName: 'Coded Notches',
-  description: 'Slide, turn, and stretch loose parts until every printed mark meets its match on another part.',
-  mechanicsExplanation: 'Three to five loose parts, each printed with marks; you hold one part at a time and slide, turn, or stretch it until every mark meets a matching mark on another part. A mark goes dark the instant it is satisfied. In most levels only the part currently in your hand shows its marks at all, so tracking what still needs to line up means remembering what you\'ve already seen.',
+  description: 'Slide and turn loose parts until every printed mark meets its match on another part.',
+  mechanicsExplanation: 'Anywhere from two to thirteen loose parts, depending on the level, each printed with marks; you hold one part at a time and slide it with the arrow actions until every mark meets a matching mark on another part. Interact gives the held part a quarter-turn -- or, where a spot is stacked with more than one part, swaps in the other part hiding underneath instead. There is no stretching or resizing anywhere in the game. A mark goes dark the instant it is satisfied. In most levels only the part currently in your hand shows its marks at all, so tracking what still needs to line up means remembering what you\'ve already seen.',
   category: 'evaluation',
   difficulty: 'unknown',
   levelCount: 6,
   actionMappings: [
-    { action: 'ACTION1', description: 'Slide/turn held part', commonName: 'Up' },
-    { action: 'ACTION2', description: 'Slide/turn held part', commonName: 'Down' },
-    { action: 'ACTION3', description: 'Slide/turn held part', commonName: 'Left' },
-    { action: 'ACTION4', description: 'Slide/turn held part', commonName: 'Right' },
-    { action: 'ACTION5', description: 'Stretch held part', commonName: 'Interact' },
+    { action: 'ACTION1', description: 'Slide held part', commonName: 'Up' },
+    { action: 'ACTION2', description: 'Slide held part', commonName: 'Down' },
+    { action: 'ACTION3', description: 'Slide held part', commonName: 'Left' },
+    { action: 'ACTION4', description: 'Slide held part', commonName: 'Right' },
+    { action: 'ACTION5', description: 'Rotate 90°, or swap in a stacked part', commonName: 'Interact' },
     { action: 'ACTION6', description: 'Select a part', commonName: 'Click' },
   ],
   hints: [],
@@ -43,5 +46,5 @@ export const cn04: Arc3GameMetadata = {
   ],
   tags: ['matching', 'manipulation', 'memory', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Mechanics verified by an adversarial two-reader pass (a second agent tried to refute the first reading).',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: the original "adversarially verified" pass still missed a fabricated stretch action and a wrong piece-count claim, caught by a second, independent re-verification.',
 };

@@ -1,7 +1,11 @@
 /*
- * Author: Cascade (ChatGPT)
- * Date: 2026-01-09
+ * Author: Cascade (ChatGPT); corrected by Claude Sonnet 5, 2026-09-12
+ * Date: 2026-01-09 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for LP85, including embedded replay video reference.
+ *          Adversarially re-verified 2026-09-12: levels 3-4 add a mandatory second,
+ *          orange block/target pair the original write-up never mentioned; the
+ *          "swap/push/pull button" hint described a mechanic that doesn't exist
+ *          anywhere in the code; and the mover/target sprite roles were reversed.
  * SRP/DRY check: Pass - Single responsibility for LP85 game data.
  */
 
@@ -11,8 +15,8 @@ export const lp85: Arc3GameMetadata = {
   gameId: 'lp85',
   officialTitle: 'lp85',
   informalName: 'Loop and Pull',
-  description: 'Align large yellow blocks with indicated positions by toggling loop controls.',
-  mechanicsExplanation: 'Four small yellow squares indicate the target positions where the larger yellow blocks need to be aligned. You control the sequence by pushing red and green buttons which advance or reverse the loop. In advanced levels, buttons may perform more complex actions like swapping positions, pushing, or pulling blocks instead of just looping.',
+  description: 'Rotate a fixed loop of positions with buttons until each large block (yellow, and orange from level 3) sits on its matching small target square.',
+  mechanicsExplanation: 'A small target square (or two, from level 3 on, one yellow and one orange) marks where each larger block of the matching color needs to land -- the number of target squares actually ranges from one to three depending on the level, never a fixed four. You control the sequence by pushing red and green buttons, which only ever step the shared loop forward or backward by one position; there is no swap, push, or pull hidden in later levels.',
   category: 'evaluation',
   difficulty: 'hard',
   actionMappings: [
@@ -22,13 +26,13 @@ export const lp85: Arc3GameMetadata = {
     {
       id: 'lp85-hint-1',
       title: 'Indicator Targets',
-      content: 'The small yellow squares are not decorations; they are the exact slots for the large yellow blocks. Match them precisely.',
+      content: 'The small squares are not decorations; they are the exact slots for the larger blocks of the same color. Levels 3-4 add a second, orange pair alongside the yellow one -- match every color\'s target, not just yellow.',
       spoilerLevel: 1,
     },
     {
       id: 'lp85-hint-2',
-      title: 'Advanced Buttons',
-      content: 'When a loop doesn\'t behave normally, test the buttons. One might be a "Swap" or a "Push" that changes the relative order of blocks in the loop.',
+      title: 'Two Buttons, One Loop',
+      content: 'Red and green only ever step the shared loop forward or backward by one position each press -- there is no swap or push mechanic hiding in later levels. Watch which blocks share a loop and count how many steps apart they need to end up.',
       spoilerLevel: 2,
     }
   ],
@@ -50,5 +54,5 @@ export const lp85: Arc3GameMetadata = {
     caption: 'Loop and Pull expert run showing button sequencing',
   },
   isFullyDocumented: true,
-  notes: 'Updated with strategic intel about target indicators and button complexity.',
+  notes: 'Corrected 2026-09-12 after a direct, adversarially-verified source read: levels 3-4 add a second, orange block/target pair the write-up never mentioned; the "swap/push/pull button" claim described a mechanic that doesn\'t exist in the code; and the mover/target sprite roles were reversed.',
 };

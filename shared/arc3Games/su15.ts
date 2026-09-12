@@ -1,8 +1,12 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11
+ * Date: 2026-09-11 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for SU15 (Sorting Urn), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Mechanics traced from the source's step()/win-condition code in a single-pass read (not adversarially double-checked).
+ *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
+ *          2026-09-12: Undo is actually free (the escalating cost is charged for
+ *          colliding different-tier blocks, not Undo), critters are absent from the
+ *          first 3 of 9 levels, and the smallest tier is destroyed outright on
+ *          critter contact rather than demoted.
  *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
  * SRP/DRY check: Pass - Single responsibility for SU15 game data.
  */
@@ -13,14 +17,14 @@ export const su15: Arc3GameMetadata = {
   gameId: 'su15',
   officialTitle: 'su15',
   informalName: 'Sorting Urn',
-  description: 'Pull and merge numbered blocks until an exact tiered mix of blocks/critters fills the zone.',
-  mechanicsExplanation: 'You pull numbered blocks around the board with a magnetic click: tapping the play area drags every nearby block toward that point. Blocks come in nine size tiers; two of the same tier that touch fuse into the next tier up, Suika-style, and merging the top tier destroys the pair. Diamond hazard critters roam the same field and merge among themselves the same way, but a block that touches one instead recoils and is knocked down a tier. Each level\'s win condition is an exact count -- not a minimum -- of specific block and/or critter tiers sitting in a marked zone at once, within a shrinking step budget; undo is available but costs progressively more steps each use.',
+  description: 'Pull and merge numbered blocks until an exact tiered mix of blocks (and, from level 4, hazard critters) fills the zone.',
+  mechanicsExplanation: 'You pull numbered blocks around the board with a magnetic click: tapping the play area drags every nearby block toward that point. Blocks come in nine size tiers; two of the same tier that touch fuse into the next tier up, Suika-style, and merging the top tier destroys the pair. From level 4 onward, diamond hazard critters also roam the field and merge among themselves the same way; a block that touches one recoils and drops a tier, except the smallest tier, which is destroyed outright on contact instead of dropping further. Each level\'s win condition is an exact count -- not a minimum -- of specific block and/or critter tiers sitting in a marked zone at once, within a shrinking step budget. Undo is free and simply restores your last position; the cost that escalates each use is instead charged for shoving two different-tier blocks or critters into each other.',
   category: 'evaluation',
   difficulty: 'unknown',
   levelCount: 9,
   actionMappings: [
     { action: 'ACTION6', description: 'Pull nearby blocks toward a point', commonName: 'Click' },
-    { action: 'ACTION7', description: 'Undo (escalating cost)', commonName: 'Undo' },
+    { action: 'ACTION7', description: 'Undo (free)', commonName: 'Undo' },
   ],
   hints: [],
   resources: [
@@ -39,5 +43,5 @@ export const su15: Arc3GameMetadata = {
   ],
   tags: ['merging', 'sorting', 'exact-count', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Mechanics traced from the source\'s step()/win-condition code in a single-pass read (not adversarially double-checked).',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: Undo\'s cost claim was backwards, and the critter mechanic\'s scope and smallest-tier outcome were both wrong.',
 };
