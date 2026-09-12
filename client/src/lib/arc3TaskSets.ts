@@ -94,3 +94,44 @@ export function isVisitorFacing(game: Categorised): boolean {
 export function visitorFacing<T extends Categorised>(games: T[]): T[] {
   return games.filter(isVisitorFacing);
 }
+
+/** A task row with enough on it to be placed in a group and ordered inside one. */
+export interface Groupable extends Categorised { gameId: string }
+
+/**
+ * ORDER WITHIN ONE GROUP. The gallery renders it and "Next task" walks it, and they must
+ * agree — a strip whose order is not the order the Next button follows is a strip that
+ * lies about what comes next.
+ *
+ * 12-Sep-2026, Hieu Pham via Son: "People like to play game one after the other. So change
+ * it so that Next task is literally next task in the group." He plays g0xx and g5xx in id
+ * order, and the site was not handing them over that way.
+ *
+ * TWO RULES, AND WHICH APPLIES DEPENDS ON THE GROUP:
+ *
+ * 1. The pipeline set keeps the review queue's order — newest generated work first, with
+ *    the near-duplicates and the random-mashable held back. That order is the server's
+ *    (Arc3Triage) and it is the entire product of triage; a reviewer opening /arc3/review
+ *    is asking for it by name.
+ *
+ * 2. EVERY OTHER GROUP SORTS BY ID, ASCENDING. This is what the gallery already meant to
+ *    do -- "Sources other than our pipeline have no verdicts, so they all tie here and
+ *    keep manifest order" -- and did not: the review queue carries 36 `arena` entries as
+ *    well as the pipeline's, so the arena strip rendered 36 tasks in triage order and the
+ *    other 14 after them. Restricting the queue's authority to the set it was built for
+ *    makes the code do what its own comment says. Sorting on the id rather than trusting
+ *    the catalog's incidental order is deliberate: `custom` is already out of order
+ *    upstream (tl01, pr01, ng01, eh01 are appended), and any future append would break
+ *    the rest silently.
+ */
+export function withinGroupOrder(
+  a: Groupable,
+  b: Groupable,
+  queuePlace: Map<string, number>,
+): number {
+  if (a.category === PIPELINE_CATEGORY && b.category === PIPELINE_CATEGORY) {
+    const byQueue = (queuePlace.get(a.gameId) ?? Infinity) - (queuePlace.get(b.gameId) ?? Infinity);
+    if (byQueue !== 0) return byQueue;
+  }
+  return a.gameId.localeCompare(b.gameId);
+}

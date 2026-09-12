@@ -36,6 +36,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
 import { Arc3PixelPage, SpriteMosaic } from '@/components/arc3-community/Arc3PixelUI';
 import { REDBLUEPILL, isRedbluepill, redbluepillSourceUrl } from '@/utils/arc3Attribution';
+import { withinGroupOrder } from '@/lib/arc3TaskSets';
 
 /** Mirrors MirroredGame in server/services/arc3Mirror/Arc3MirrorCatalog.ts. */
 interface MirroredGame {
@@ -325,9 +326,11 @@ export default function CommunityGallery() {
     return [...games].sort((a, b) => {
       const bySection = (section.get(a.category) ?? 99) - (section.get(b.category) ?? 99);
       if (bySection !== 0) return bySection;
-      // Sources other than our pipeline have no verdicts, so they all tie here and keep
-      // manifest order — which is right, since none of them is what we need judged.
-      return (queuePlace.get(a.gameId) ?? Infinity) - (queuePlace.get(b.gameId) ?? Infinity);
+      // Shared with "Next task" (CommunityGamePlay) so a strip cannot render one order
+      // while the Next button walks another. Pipeline keeps the queue's triage order;
+      // every other group is id-ascending, which is what this comparator used to claim
+      // and did not do -- the queue carries 36 arena entries too.
+      return withinGroupOrder(a, b, queuePlace);
     });
   }, [games, queuePlace]);
 

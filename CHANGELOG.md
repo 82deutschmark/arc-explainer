@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.62.0  Sep 12, 2026
+
+- **"Next task" now hands over the literally next task in the group** (Author: Claude Opus 5)
+  - **The report.** Hieu Pham, via Son, 12-Sep: "People like to play game one after the other. So change it so that Next task is literally next task in the group." He plays the `g0xx` and `g5xx` sets in id order and the site was not sequencing them.
+  - **What it did instead.** `CommunityGamePlay`'s `nextGameId` walked the review queue, which for a visitor is the 36 `arena` tasks that queue happens to carry, in triage order. `contributed-glowup` and `custom` are not in the queue at all, so `findIndex` returned `-1`, the wrap arithmetic resolved to `queue[0]`, and **every** glow-up and in-house task handed back `g026` — measured against the live catalog: g500→g026, g540→g026, tl01→g026. Inside `arena` it walked triage order and skipped anything already played, so g014→g022 rather than g015. Now: g500→g501, g540→g541, g014→g015, and the last task in a group wraps to its first.
+  - **Ordering moved to one shared comparator**, `withinGroupOrder` in `client/src/lib/arc3TaskSets.ts`, used by both the gallery strip and the Next button — the two must not be able to disagree about what follows what. The pipeline set keeps the review queue's order, which is the whole product of triage; every other group sorts by id, ascending, on the id itself rather than on the catalog's incidental order (`custom` is already out of order upstream: tl01, pr01, ng01, eh01 are appended).
+  - **This visibly reorders the gallery's arena section**, and that is the point rather than collateral. The comparator's own comment said "sources other than our pipeline have no verdicts, so they all tie here and keep manifest order"; it did not do that, because the review queue carries 36 arena entries alongside the pipeline's 305. The strip rendered those 36 in triage order and the other 14 after them. The code now matches what it claimed.
+  - **Reviewers are unchanged.** A reviewer on a pipeline task keeps the queue walk: their 341 entries are 341 of the pipeline's 571, with the 66 near-duplicates and 177 random-mashable held back, and "next in the ai-generated category" would hand them all 571 in q001 order and silently undo triage. Grouping is for people playing, not people judging. Tasks outside the visitor allowlist (official, redbluepill, reached by direct link) also fall through to the old catalog pool, so Next cannot leak a set the site declines to offer.
+  - **`queuePosition` moved with it**, so the "17 / 328" readout counts the group the button is actually walking. Files: `client/src/lib/arc3TaskSets.ts`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/pages/arc3-community/CommunityGallery.tsx`.
+
 ### Version 9.61.0  Sep 12, 2026
 
 - **The no-spoiler rule on class names was enforced in the wrong place; moved to the serving boundary** (Author: Claude Opus 5)
