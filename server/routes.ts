@@ -354,15 +354,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/council/assess", asyncHandler(councilController.assessPuzzle));
   app.post("/api/council/assess/stream", asyncHandler(councilController.streamAssessment));
 
-  // Legacy ARC3 frontend routes -> archive
-  app.get("/arc3/games", (_req, res) => {
-    res.redirect(301, "/arc3/archive/games");
-  });
-
-  app.get("/arc3/games/:gameId", (req, res) => {
-    const { gameId } = req.params;
-    res.redirect(301, `/arc3/archive/games/${gameId}`);
-  });
+  // Removed 2026-09-12: these two 301s pointed the CANONICAL spoiler URLs at the archive,
+  // which is backwards. /arc3/games/:gameId is the real route (App.tsx), and
+  // /arc3/archive/games/:gameId is the legacy alias that redirects INTO it client-side.
+  // Shipping both meant a shared link bounced out to the archive path and back, so the
+  // URL a visitor landed on was never the one that was shared.
 
   // RE-ARC dataset generation and verification routes
   // Rate limiting: 5 generations per 5min, 50 verifications per 5min per IP

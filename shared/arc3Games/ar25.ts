@@ -56,5 +56,5 @@ export const ar25: Arc3GameMetadata = {
   ],
   tags: ['mirrors', 'reflection', 'step-budget', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: the single-piece framing and the free-cycling claim were both wrong.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: the single-piece framing and the free-cycling claim were both wrong.',
 };

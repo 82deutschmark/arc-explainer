@@ -54,5 +54,5 @@ export const su15: Arc3GameMetadata = {
   ],
   tags: ['merging', 'sorting', 'exact-count', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No screenshots, replay video, or hints exist yet for this game -- only the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: Undo\'s cost claim was backwards, and the critter mechanic\'s scope and smallest-tier outcome were both wrong.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: Undo\'s cost claim was backwards, and the critter mechanic\'s scope and smallest-tier outcome were both wrong.',
 };

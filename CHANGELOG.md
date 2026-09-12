@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.59.0  Sep 12, 2026
+
+- **ARC3 game pages: Play instead of Test with Agent, bigger level shots, canonical URL** (Author: Claude Opus 5)
+  - **Dropped both "Test with Agent" buttons** from `client/src/pages/Arc3GameSpoiler.tsx` (hero + footer). This site does not run agents against games any more; the page's job is to explain a game and hand the reader a way to play it. `/arc3/playground` and its route are left alone — removing that page is a separate decision.
+  - **Added a single Play button** into the blind play surface at `/arc3/play/:id`. The play id is NOT the spoiler-page id: the mirror publishes the official games under a versioned id (`sc25` -> `sc25-635fd71a`) that comes from upstream's manifest, so it is resolved at render time from `/api/arc3-mirror/games` by prefix match, sorted-first where a game publishes more than one version. No catalog match renders no button, rather than linking a player into a task the mirror cannot serve.
+  - **Blew the level screenshots up.** They are 256px renders sitting in a 3-across grid at ~291px — a non-integer upscale that the browser smooths into mush. Now 2-across on large screens with `image-rendering: pixelated`, so the pixel art stays sharp at the larger size.
+  - **`/arc3/games/:gameId` is canonical again.** `server/routes.ts` carried two legacy 301s pointing the canonical spoiler URLs at `/arc3/archive/games/...`, which is backwards — the archive path is the legacy alias and `App.tsx` already redirects it back into `/arc3/games/:gameId` client-side. A shared link bounced out and back, so the URL a visitor landed on was never the one that was shared. Both 301s removed. **These were 301s, so browsers that have already followed one cache it permanently — a hard reload is needed to see the fix on a host you've already visited.**
+  - **Retired the "no screenshots exist yet" note on all 20 games that now have them** (`shared/arc3Games/*.ts`). Commit 8a53ecd2 rendered every level of all 25 public-demo games; the note was still claiming none existed. The replay-video and hints halves of that sentence are still true for all 20 and are kept.
+  - **`sc25` marked `isFullyDocumented: true`** — its mechanics write-up was corrected against source on 2026-09-12 and all six levels are rendered. Note that the green check now shows on a game that still has `hints: []` and `difficulty: 'unknown'`; the other 19 undocumented games are left at `false` pending the same call.
+
 ### Version 9.58.0  Sep 11, 2026
 
 - **Extended the ARC3 spoiler-page names from 6 games to the full 25-game public demo set** (Author: Claude Sonnet 5)
