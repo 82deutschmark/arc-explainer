@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.66.0  Sep 12, 2026
+
+- **Game pages show the real human action counts, and the changelog renumbers itself** (Author: Claude Opus 5)
+  - **Human Records on every official game page.** A new card under the hero shows what people actually did on that game: fewest actions to win, the spread across the top ten, and the ranked table (player, score, actions, resets). The action count is the point, not the score — on `r11l` the whole top ten scores 100 and ranges from 57 to 69 actions, and that spread is the difficulty. It is also the only hard difficulty measurement on the page that is not ours: our own `difficulty` field is `unknown` for most of the set.
+  - **Source is ARC Prize's own human leaderboard** (`server/services/arc3/arcPrizeLeaderboardService.ts`, served at `/api/arc3/leaderboard/:gameId`). `POST https://arcprize.org/api/leaderboards/<gameId>` with `{ai: false, game_id}` — what arcprize.org's leaderboard page itself calls, public and unauthenticated. `ai: false` is what makes it the human board rather than the agent one. Read through our own origin because that endpoint sends no CORS header.
+  - **Treated as the undocumented third-party API it is:** 8s timeout, every field validated rather than trusted (a renamed field drops the row instead of rendering `undefined actions`), a 6h cache since these runs are published over months, in-flight deduplication so a cold page does not fan out one request per reader, and a last-good copy served when a refresh fails. Ids are checked against our registry before any outbound request, so this cannot bounce arbitrary strings off arcprize.org. When there is nothing to show the endpoint 404s and the card does not render — a game's write-up must not depend on somebody else's service being up.
+  - **The changelog renumbers itself at commit time** (`scripts/changelog_version_guard.py`, installed by `scripts/install-git-hooks.sh`). The version was being chosen when an entry was *written*, sometimes an hour before it was committed, and main takes pushes from more than one session a day — so it collided four times on 12-Sep alone (9.62.0 twice, 9.64.0 twice) on top of the three earlier rounds recorded at the head of this file. The pre-commit hook now rewrites a newly-added top entry whose version is not greater than HEAD's, and prints what it did. It only ever moves a number up, never touches prose or ordering, and `--no-verify` skips it. Installed into `.git/hooks` rather than via `core.hooksPath`, because that setting replaces the hooks directory and would silently stop git-lfs's `pre-push` hook from running.
+
 ### Version 9.65.0  Sep 12, 2026
 
 - **Official game pages unfurl with a picture of the game, and link the ARC Prize human leaderboard** (Author: Claude Opus 5)

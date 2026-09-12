@@ -64,6 +64,7 @@ import { storage } from "./storage";
 import { Request, Response } from "express";
 import { buildArc3GameMechanicsDoc } from "./services/arc3/arc3GameMechanicsDoc.ts";
 import { buildArc3GameOgImage } from "./services/arc3/arc3GameOgImageService.ts";
+import { getHumanLeaderboard } from "./services/arc3/arcPrizeLeaderboardService.ts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -378,6 +379,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).type('text/plain').send('Unable to generate the ARC-AGI-3 mechanics reference.');
     }
   };
+
+  /**
+   * The official ARC Prize HUMAN leaderboard for one official game -- what people actually
+   * did on it, which is the one hard difficulty measurement on a game page that is not our
+   * own guess. Read through our own origin because arcprize.org's endpoint carries no CORS
+   * header, and cached there so a page view is not a request to somebody else's server.
+   *
+   * 404 rather than an empty list when there is nothing to show, so the client renders no
+   * card at all instead of an empty one.
+   */
+  app.get("/api/arc3/leaderboard/:gameId", asyncHandler(async (req: Request, res: Response) => {
+    const board = await getHumanLeaderboard(String(req.params.gameId).toLowerCase());
+    if (!board || board.entries.length === 0) {
+      return res.status(404).json(formatResponse.error('LEADERBOARD_UNAVAILABLE', 'No human leaderboard for this game'));
+    }
+    res.json(formatResponse.success(board));
+  }));
 
   /**
    * The link-preview card for one official game page: its level-1 frame on a 1200x630
