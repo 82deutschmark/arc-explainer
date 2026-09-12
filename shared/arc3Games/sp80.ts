@@ -48,6 +48,11 @@ export const sp80: Arc3GameMetadata = {
     },
   ],
   levelScreenshots: [
+    { level: 1, imageUrl: '/arc3-levels/sp80/lvl1.png' },
+    { level: 2, imageUrl: '/arc3-levels/sp80/lvl2.png' },
+    { level: 3, imageUrl: '/arc3-levels/sp80/lvl3.png' },
+    { level: 4, imageUrl: '/arc3-levels/sp80/lvl4.png' },
+    { level: 5, imageUrl: '/arc3-levels/sp80/lvl5.png' },
     { level: 6, imageUrl: '/sp80-lvl6.png', notes: 'Platforms must be set before pressing Action 5.' },
   ],
   tags: ['evaluation-set', 'physics', 'fluid-dynamics'],

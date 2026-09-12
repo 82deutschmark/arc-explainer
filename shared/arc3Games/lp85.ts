@@ -46,6 +46,13 @@ export const lp85: Arc3GameMetadata = {
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/lp85.png', notes: 'Align the big yellow block with the small yellow square slots.' },
+    { level: 2, imageUrl: '/arc3-levels/lp85/lvl2.png' },
+    { level: 3, imageUrl: '/arc3-levels/lp85/lvl3.png' },
+    { level: 4, imageUrl: '/arc3-levels/lp85/lvl4.png' },
+    { level: 5, imageUrl: '/arc3-levels/lp85/lvl5.png' },
+    { level: 6, imageUrl: '/arc3-levels/lp85/lvl6.png' },
+    { level: 7, imageUrl: '/arc3-levels/lp85/lvl7.png' },
+    { level: 8, imageUrl: '/arc3-levels/lp85/lvl8.png' },
   ],
   tags: ['evaluation-set', 'looping', 'sequencing'],
   thumbnailUrl: '/lp85.png',

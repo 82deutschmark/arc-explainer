@@ -54,8 +54,13 @@ export const ls20: Arc3GameMetadata = {
     },
   ],
   levelScreenshots: [
+    { level: 1, imageUrl: '/arc3-levels/ls20/lvl1.png' },
+    { level: 2, imageUrl: '/arc3-levels/ls20/lvl2.png' },
+    { level: 3, imageUrl: '/arc3-levels/ls20/lvl3.png' },
     { level: 4, imageUrl: '/ls20-lvl4.png' },
     { level: 5, imageUrl: '/ls20-lvl5.png', notes: 'Key starts in bottom left. Door is usually at the top or center.' },
+    { level: 6, imageUrl: '/arc3-levels/ls20/lvl6.png' },
+    { level: 7, imageUrl: '/arc3-levels/ls20/lvl7.png' },
   ],
   tags: ['preview-set', 'transformation', 'navigation'],
   thumbnailUrl: '/ls20.png',

@@ -45,6 +45,12 @@ export const vc33: Arc3GameMetadata = {
     },
   ],
   levelScreenshots: [
+    { level: 1, imageUrl: '/arc3-levels/vc33/lvl1.png' },
+    { level: 2, imageUrl: '/arc3-levels/vc33/lvl2.png' },
+    { level: 3, imageUrl: '/arc3-levels/vc33/lvl3.png' },
+    { level: 4, imageUrl: '/arc3-levels/vc33/lvl4.png' },
+    { level: 5, imageUrl: '/arc3-levels/vc33/lvl5.png' },
+    { level: 6, imageUrl: '/arc3-levels/vc33/lvl6.png' },
     { level: 7, imageUrl: '/vc33-lvl7.png', notes: 'Players sit atop the white hydraulic columns.' },
   ],
   tags: ['preview-set', 'hydraulics', 'physics'],

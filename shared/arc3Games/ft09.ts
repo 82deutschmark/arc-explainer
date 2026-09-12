@@ -46,14 +46,21 @@ export const ft09: Arc3GameMetadata = {
     },
   ],
   levelScreenshots: [
+    { level: 1, imageUrl: '/arc3-levels/ft09/lvl1.png', notes: 'Current 6-level build (ARCEngine, March 2026) -- see the note below on why this differs from the level 8/9 shots further down.' },
+    { level: 2, imageUrl: '/arc3-levels/ft09/lvl2.png' },
+    { level: 3, imageUrl: '/arc3-levels/ft09/lvl3.png' },
+    { level: 4, imageUrl: '/arc3-levels/ft09/lvl4.png' },
+    { level: 5, imageUrl: '/arc3-levels/ft09/lvl5.png' },
+    { level: 6, imageUrl: '/arc3-levels/ft09/lvl6.png' },
     {
       level: 8,
       imageUrl: '/ft09-lvl8.png',
-      notes: 'The top-right block is just a color legend, not a target to copy -- the real goal is the scattered match/clash markers around the board.',
+      notes: 'Preview-era capture (Jul-Aug 2025) from a build with more levels than the current 6-level source -- kept for its own sake, not the same numbering as the renders above. The top-right block is just a color legend, not a target to copy -- the real goal is the scattered match/clash markers around the board.',
     },
     {
       level: 9,
       imageUrl: '/ft09-lvl9.png',
+      notes: 'Same preview-era build as the level 8 shot above; not present in the current 6-level source.',
     },
   ],
   tags: ['preview-set', 'pattern-matching', 'logic'],
