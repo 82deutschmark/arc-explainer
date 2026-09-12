@@ -22,7 +22,7 @@ export const wa30: Arc3GameMetadata = {
   simpleExplanation: 'It\'s Sokoban — you push and pull crates into their bays — but starting on the second board another hauler is also moving crates, sometimes helping you and sometimes stealing your crate for the wrong bay.',
   mechanicsExplanation: 'Crate-hauling with Sokoban\'s verbs (push and pull), so no move is ever unrecoverable. From the second board onward you are never the only one hauling: a unit on the far side of an uncrossable line does your job for you, one cell per key you press. Later a second unit does the identical thing toward the wrong bay and will lift a crate out of your hands, so the haulers you rely on can also work against you. Levels 6-7 spawn only the crate-stealing unit and none of the helper unit, so treat any single hauler you see as a stranger, not a friend, until you\'ve watched which bay it heads for.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'medium',
   levelCount: 9,
   actionMappings: [
     { action: 'ACTION1', description: 'Move Up', commonName: 'Up' },

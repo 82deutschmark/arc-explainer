@@ -20,7 +20,7 @@ export const lf52: Arc3GameMetadata = {
   simpleExplanation: 'It\'s peg solitaire: click a peg, click where it lands, and it hops a neighbor off the board. A rail cart, moved with the arrow keys, links rooms together, and you only have a limited number of moves.',
   mechanicsExplanation: 'Click a piece, click where it lands, and it hops a neighbour off the board — peg solitaire. From level 6 on, one peg is a special red peg that can only be knocked off by another red peg; since each level has just one, it never actually leaves the board (an ordinary peg can still leap over and past it), which is why levels 6 and 7 uniquely let you finish with two pegs left instead of one. A rail cart links rooms so a hop set up in one room can be finished in another, but it only moves when you press the arrow-key actions -- it doesn\'t ferry anything on its own. The cart\'s own click button is not a move-confirm the way it looks; it restarts a level you\'ve broken. You also have a limited number of moves: just 64 on level 1, 320 on levels 2-5, and 640 on levels 6-10 -- run out and you lose.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'hard',
   levelCount: 10,
   actionMappings: [
     { action: 'ACTION1', description: 'Move rail cart Up', commonName: 'Up' },

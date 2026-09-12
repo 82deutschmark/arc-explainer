@@ -19,7 +19,7 @@ export const cd82: Arc3GameMetadata = {
   simpleExplanation: 'You fire colored dye from eight stations around a small target square to recreate a reference pattern shown in the corner, before your move countdown runs out.',
   mechanicsExplanation: 'You control a color-throwing rig built around a small 10x10 target square, cycling between eight fixed compass stations (N/NE/E/SE/S/SW/W/NW) around it. At each station you pick a color, then fire to wash half the target (cardinal stations) or a diagonal triangle of it (intercardinal stations) in that color. From level 3 on, the four cardinal stations also gain a second tool -- an arrow-dab that paints a thin edge strip in the current color -- because Fire alone can only ever lay down a full half or triangle and can\'t build the more intricate patterns those levels need. The goal is to reproduce a small reference pattern shown in the corner before a 100-move countdown runs out; the win-check is a bit forgiving, since it never checks the target\'s two diagonal lines of cells, across six levels of increasingly multi-region, multi-color targets.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'easy',
   levelCount: 6,
   actionMappings: [
     { action: 'ACTION1', description: 'Move selector', commonName: 'Up' },

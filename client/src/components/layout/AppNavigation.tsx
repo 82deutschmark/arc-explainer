@@ -14,6 +14,8 @@
  * item is now the searchable 25-game spoiler index (/arc3/games, see Arc3GamesIndex.tsx),
  * which previously had no nav entry at all despite being the actual front door for "what
  * are these games."
+ * 2026-09-12 PM: also dropped "Hypothesis traces" (/arc3/hypotheses) -- confusing page,
+ * not worth a nav slot. Route still exists, just not linked from here.
  * SRP/DRY check: Pass - single responsibility (navigation structure). Reuses shadcn
  * NavigationMenu/DropdownMenu, including the DropdownMenuLabel and DropdownMenuSeparator
  * primitives already exported by components/ui/dropdown-menu.tsx.
@@ -172,13 +174,6 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
             icon: BookOpen,
             description: 'Reference and history — the technical report behind the benchmark',
             exact: true,
-          },
-          {
-            type: 'link',
-            title: 'Hypothesis traces',
-            href: '/arc3/hypotheses',
-            icon: BookOpen,
-            description: 'What a vision model guesses from one opening frame, 32 times over',
           },
           {
             type: 'link',
