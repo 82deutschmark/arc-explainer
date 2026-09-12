@@ -48,6 +48,114 @@ import {
   type GameResource,
 } from '../../../shared/arc3Games';
 
+interface HumanLeaderboardEntry {
+  userName: string;
+  score: number;
+  actions: number;
+  resets: number;
+  endState: string;
+}
+
+interface HumanLeaderboard {
+  gameId: string;
+  entries: HumanLeaderboardEntry[];
+  fewestActions: number | null;
+}
+
+/**
+ * What people actually did on this game, from the official ARC Prize human leaderboard.
+ *
+ * The one hard difficulty measurement on this page that is not our own guess -- our
+ * `difficulty` field is 'unknown' for most of the set. The interesting number is the
+ * ACTION COUNT, not the score: the top runs almost all score 100, and what separates them
+ * is that one person needed 57 moves and another needed 103. That spread is the difficulty.
+ *
+ * Renders nothing at all when the endpoint has nothing for this game -- it is somebody
+ * else's service and the write-up must not depend on it being up.
+ */
+function HumanRecordsCard({ gameId }: { gameId: string }) {
+  const { data } = useQuery<{ data: HumanLeaderboard }>({
+    queryKey: [`/api/arc3/leaderboard/${gameId}`],
+    staleTime: 60 * 60 * 1000,
+    retry: false,
+  });
+
+  const board = data?.data;
+  if (!board || board.entries.length === 0) return null;
+
+  const best = board.entries[0];
+  const slowest = board.entries[board.entries.length - 1];
+
+  return (
+    <Card className="mb-12 border-2 border-amber-300/60">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-amber-600" />
+          Human Records
+        </CardTitle>
+        <CardDescription>
+          From the official ARC Prize human leaderboard — the real measure of how hard this one is
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="flex flex-wrap gap-8">
+          <div>
+            <div className="text-3xl font-bold tabular-nums">{board.fewestActions ?? '—'}</div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              fewest actions to win
+            </div>
+          </div>
+          {board.entries.length > 1 && slowest.actions !== best.actions && (
+            <div>
+              <div className="text-3xl font-bold tabular-nums text-muted-foreground">
+                {best.actions}–{slowest.actions}
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">
+                range across the top {board.entries.length}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs text-muted-foreground border-b">
+                <th className="py-2 pr-4 font-medium">#</th>
+                <th className="py-2 pr-4 font-medium">Player</th>
+                <th className="py-2 pr-4 font-medium text-right">Score</th>
+                <th className="py-2 pr-4 font-medium text-right">Actions</th>
+                <th className="py-2 font-medium text-right">Resets</th>
+              </tr>
+            </thead>
+            <tbody>
+              {board.entries.map((entry, index) => (
+                <tr key={`${entry.userName}-${index}`} className="border-b last:border-0">
+                  <td className="py-2 pr-4 text-muted-foreground tabular-nums">{index + 1}</td>
+                  <td className="py-2 pr-4">{entry.userName}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums">{entry.score}</td>
+                  <td className="py-2 pr-4 text-right tabular-nums font-semibold">{entry.actions}</td>
+                  <td className="py-2 text-right tabular-nums text-muted-foreground">{entry.resets}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <a
+          href={arcPrizeLeaderboardUrl(gameId)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-sm text-primary hover:underline"
+        >
+          Full leaderboard on arcprize.org
+          <ExternalLink className="h-3 w-3 ml-1" />
+        </a>
+      </CardContent>
+    </Card>
+  );
+}
+
 /**
  * Map difficulty to color variant
  */
@@ -208,6 +316,8 @@ export default function Arc3GameSpoiler() {
           {game.description}
         </p>
       </div>
+
+      <HumanRecordsCard gameId={game.gameId} />
 
       {/* Featured Replay */}
       {game.video && (
