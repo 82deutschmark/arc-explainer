@@ -15,6 +15,9 @@
  *          2026-09-12 PM: added the "In Plain English" card, right under the hero -- every
  *          game in shared/arc3Games now carries a required `simpleExplanation`, one or two
  *          plain sentences with the source citations and precise field names stripped out.
+ *          2026-09-12 PM (later): moved Level Screenshots up to lead the page, right after
+ *          In Plain English -- pictures of the game before Human Records, replays, and the
+ *          full mechanics write-up, not buried under them. No content changed, just order.
  * SRP/DRY check: Pass - Single responsibility (game detail display), reuses shared game metadata.
  */
 
@@ -329,6 +332,51 @@ export default function Arc3GameSpoiler() {
         </CardContent>
       </Card>
 
+      {/* Screenshots -- lead with these. Pictures of the game and its levels come before
+          records, replays, and write-ups, not after them. */}
+      {game.levelScreenshots && game.levelScreenshots.length > 0 && (
+        <Card className="mb-12">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Level Screenshots
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {game.levelScreenshots
+                .sort((a: LevelScreenshot, b: LevelScreenshot) => a.level - b.level)
+                .map((screenshot: LevelScreenshot) => (
+                  <div key={screenshot.level} className="border rounded-lg overflow-hidden bg-muted">
+                    <div className="p-3 bg-muted/80 border-b">
+                      <p className="font-semibold text-sm">
+                        Level {screenshot.level}
+                        {screenshot.caption && ` – ${screenshot.caption}`}
+                      </p>
+                    </div>
+                    <div className="relative aspect-square">
+                      <img
+                        src={screenshot.imageUrl}
+                        alt={`Level ${screenshot.level}${screenshot.caption ? ` - ${screenshot.caption}` : ''}`}
+                        className="w-full h-full object-contain"
+                        style={{ imageRendering: 'pixelated' }}
+                        loading="lazy"
+                      />
+                    </div>
+                    {screenshot.notes && (
+                      <div className="p-3 border-t">
+                        <p className="text-xs text-muted-foreground italic">
+                          {screenshot.notes}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <HumanRecordsCard gameId={game.gameId} />
 
       {/* Featured Replay */}
@@ -425,50 +473,6 @@ export default function Arc3GameSpoiler() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Screenshots */}
-        {game.levelScreenshots && game.levelScreenshots.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5" />
-                Level Screenshots
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {game.levelScreenshots
-                  .sort((a: LevelScreenshot, b: LevelScreenshot) => a.level - b.level)
-                  .map((screenshot: LevelScreenshot) => (
-                    <div key={screenshot.level} className="border rounded-lg overflow-hidden bg-muted">
-                      <div className="p-3 bg-muted/80 border-b">
-                        <p className="font-semibold text-sm">
-                          Level {screenshot.level}
-                          {screenshot.caption && ` – ${screenshot.caption}`}
-                        </p>
-                      </div>
-                      <div className="relative aspect-square">
-                        <img
-                          src={screenshot.imageUrl}
-                          alt={`Level ${screenshot.level}${screenshot.caption ? ` - ${screenshot.caption}` : ''}`}
-                          className="w-full h-full object-contain"
-                          style={{ imageRendering: 'pixelated' }}
-                          loading="lazy"
-                        />
-                      </div>
-                      {screenshot.notes && (
-                        <div className="p-3 border-t">
-                          <p className="text-xs text-muted-foreground italic">
-                            {screenshot.notes}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
               </div>
             </CardContent>
           </Card>
