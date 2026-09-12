@@ -684,7 +684,7 @@
  },
  {
   "gameId": "g021",
-  "className": "G021",
+  "className": "WeighStation",
   "availableActions": [
    1,
    2,
@@ -716,7 +716,7 @@
   "levels": 8,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 279,
+  "sourceLines": 353,
   "triage": {
    "status": "weak",
    "rank": null

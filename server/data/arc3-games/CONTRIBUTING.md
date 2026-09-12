@@ -56,16 +56,35 @@ broken engine and is not. Use `/opt/homebrew/bin/python3.13`.
 
 ## 4. A game's prose must not name its own mechanic
 
-These files are served from a public endpoint. Games authored in
-`autoresearch-arena/arc3games` come in through
+These files are served from a public endpoint, and a player is meant to infer the rules
+from the frame. Games authored in `autoresearch-arena/arc3games` come in through
 `scripts/arc3/import_authored_games.py --source <dir>`, which runs
-`strip_authoring_text.py` — it derives class names (`g007_tumble_block.py` →
-`class G007`) and cuts the docstrings and comments that name the mechanic. The ordinal
-is published verbatim because it gives nothing away; the mechanic slug is the spoiler.
+`strip_authoring_text.py` to cut the docstrings and comments that name the mechanic.
 
 **Copying a `.py` straight into this directory bypasses that strip.** If your game is not
-coming through the importer, then before you commit: no docstring, comment, class name,
-filename or variable name may state what the player is supposed to figure out.
+coming through the importer, then before you commit: no docstring and no comment may state
+what the player is supposed to figure out.
+
+### Class names ARE allowed to be descriptive
+
+This changed on 2026-09-12, and the old rule is still quoted in a few places — it was
+wrong. `class WeighStation` is fine, and is better than `class G021`: this repository is
+where the work on these games happens, and naming everything `GNNN` costs every reader
+for no gain.
+
+The requirement is that a player is not SHOWN the name, not that the repository does not
+contain it. Those are different things, and the old rule met the second while leaving the
+first unguarded — the catalog published whatever `class_name` it was handed, so the
+protection was only ever "every file happens to be called `GNNN`".
+
+`Arc3MirrorCatalog` now masks it at serve time: it publishes an id-derived class name
+(`g021` → `G021`) and appends a one-line alias to the served source, so the browser
+instantiates the published name and the authored one never appears in the payload.
+Name your classes for what they do; the boundary handles the rest.
+
+One limit, unchanged: the source itself is executed in the player's browser and can be
+read in devtools, so the class statement is visible to anyone who goes looking. That is
+the accepted bar and always has been — no obfuscation layer is attempted.
 
 ## 5. Before you push
 

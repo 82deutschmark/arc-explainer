@@ -154,7 +154,7 @@
   },
   {
     "id": "g021",
-    "class_name": "G021",
+    "class_name": "WeighStation",
     "src_file": "g021.py",
     "category": "arena",
     "official": false,

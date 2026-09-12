@@ -2,21 +2,31 @@
 """
 Author: Claude Opus 5
 Date: 01-September-2026
-PURPOSE: Publish OUR hand-authored ARC-AGI-3 candidate tasks INTO this repo, under opaque
-         names, as the first-party catalog `Arc3MirrorCatalog`'s `authored` source serves
+PURPOSE: Publish OUR hand-authored ARC-AGI-3 candidate tasks INTO this repo, under their
+         ordinal ids, as the first-party catalog `Arc3MirrorCatalog`'s `authored` source serves
          from `server/data/arc3-games/`. One-shot for the initial 50 and repeatable for
          every batch after it, which is the publish step that replaces the old
          fetch-from-a-private-repo path (see docs/plans/2026-09-01-arc3-catalog-flip.md).
 
          WHAT IS REWRITTEN, AND WHAT IS NOT. The authoring repo names each task
          `gNNN_<mechanic>.py` -- `g007_tumble_block.py` -- with `class <Mechanic>` and
-         usually a `<Mechanic>Display` beside it. Exactly one half of that is a spoiler.
-         `g007` is an ordinal and gives nothing away, so it is published VERBATIM and a
-         game is called the same thing in this repo, in the arena repo, and in
-         conversation. The mechanic slug is what must not cross: class names are derived
-         (`G007`, `G007A`), and the docstrings and comments that name the mechanic are cut
-         by strip_authoring_text.py, which is now the only thing standing between the
-         authoring prose and a public endpoint.
+         usually a `<Mechanic>Display` beside it. The id `g007` is an ordinal and gives
+         nothing away, so it is published VERBATIM and a game is called the same thing in
+         this repo, in the arena repo, and in conversation.
+
+         CLASS NAMES ARE NO LONGER RENAMED (changed 2026-09-12). They used to become
+         `G007` / `G007A` here, on the theory that a descriptive name must not exist in a
+         public repository. That conflated two requirements -- a player must not be SHOWN
+         the name, which is true, with the repository must not CONTAIN it, which is not --
+         and it left the real boundary unguarded, because the catalog published whatever
+         class_name it was handed. Masking now happens where it belongs, at serve time, in
+         server/services/arc3Mirror/Arc3MirrorCatalog.ts. Descriptive class names are
+         welcome in this directory and are the more useful name for everyone working here.
+
+         The prose strip is unchanged and still mandatory: strip_authoring_text.py cuts the
+         docstrings and comments that name the mechanic, and remains the only thing standing
+         between the authoring prose and a public endpoint. A docstring explaining the game
+         is a leak on a path nothing masks.
 
          THIS REPLACED A HASH, ON PURPOSE. Published ids used to be
          `"t" + sha256("arena:" + <authoring id>)[:8]`, so g007 was published as
@@ -44,7 +54,7 @@ PURPOSE: Publish OUR hand-authored ARC-AGI-3 candidate tasks INTO this repo, und
              python3 scripts/arc3/import_authored_games.py \
                  --source /path/to/autoresearch-arena/arc3games
              python3 scripts/arc3/build_authored_manifest.py
-SRP/DRY check: Pass -- importing/renaming only. Enumerating the published directory into
+SRP/DRY check: Pass -- importing only. Enumerating the published directory into
          a manifest is build_authored_manifest.py's job and is not duplicated here; the
          class-name lookup below reads the SOURCE manifest rather than re-deriving it.
 """
@@ -83,24 +93,30 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def published_classes(game_id: str, classes: list[str], game_class: str) -> dict[str, str]:
-    """Every class a module declares, mapped to the name it is published under.
+    """Every class a module declares, mapped to the name it is published under: itself.
 
-    The class the manifest points at -- the one that leaves this repo, through
-    manifest.json, to the Pyodide hook that instantiates it -- takes `G007`. The rest take
-    `G007A`, `G007B` in declaration order, and are file-local: a published module imports
-    only numpy and arcengine, so nothing outside it can refer to them.
+    THIS USED TO RENAME EVERY CLASS TO `G007` / `G007A`, AND NO LONGER DOES. The reasoning
+    was that `TumbleBlock` and `TumbleBlockDisplay` say the game is Bloxorz in a file
+    served to the player's own browser, so the descriptive name must not exist in this
+    repository at all. The first half of that is right and the conclusion was wrong: it
+    turned "a player must not be shown the name" into "the repository may not contain the
+    name", which are different requirements, and it paid for the second one with the first
+    one's guarantee. Nothing checked the boundary -- the catalog passed `class_name`
+    straight through -- so the protection was only ever "every file happens to be called
+    GNNN", which lasts exactly until a game is published with a real class name.
 
-    Class names stay derived when the id no longer is, because they are not the same kind
-    of name. `g007` is an ordinal. `TumbleBlock` and `TumbleBlockDisplay` say the game is
-    Bloxorz, in a file served to the player's own browser.
+    The masking now lives at the serving boundary, in
+    server/services/arc3Mirror/Arc3MirrorCatalog.ts: the catalog publishes an id-derived
+    class name and appends an alias to the served source, whatever the module calls itself.
+    That holds for every game from every source, including ones this importer never touched.
+
+    So descriptive class names are published verbatim now, and are the better name to use:
+    `class WeighStation` is worth more to everyone working on these games than `class G021`,
+    and this repository is where that work happens. The prose strip is unchanged and still
+    mandatory -- see strip_authoring_text.py -- because a docstring explaining the mechanic
+    is a different leak, on a path nothing masks.
     """
-    suffix = game_id[1:]
-    renames = {game_class: f"G{suffix}"}
-    for index, name in enumerate([c for c in classes if c != game_class]):
-        if index >= 26:
-            raise ValueError(f"{game_id}: more than 26 helper classes; the suffix rule no longer fits")
-        renames[name] = f"G{suffix}{chr(ord('A') + index)}"
-    return renames
+    return {name: name for name in classes}
 
 
 def _base_name(base: ast.expr) -> str | None:
@@ -189,22 +205,18 @@ def source_entries(source: Path) -> list[dict[str, str]]:
 
 
 def rewrite(text: str, game_id: str, renames: dict[str, str]) -> str:
-    """The authored module with every self-naming identifier replaced by its published one.
+    """The authored module with its published id substituted in.
 
-    EVERY class the module declares is renamed, not just the playable one. Most of these
-    modules open with a display class named after the same mechanic as the game
-    (`<Mechanic>Display` beside `class <Mechanic>`), so renaming only the game would leave
-    the answer sitting three lines above it, in a file this repository keeps forever.
+    `renames` is an identity map now (see published_classes) and the loop below is a no-op
+    kept for the case where a future rule does need to move an identifier. Class names are
+    published as authored; the catalog masks them on the way out rather than this script
+    erasing them on the way in.
 
-    Whole-word replacement rather than editing the `class` lines alone: a module refers to
-    its own classes further down (a display is constructed in `interfaces=[...]`, the
-    engine is handed `game_id=`), and a half-renamed module does not import. Safe to do
-    blind here because no module in the set looks a class up by name -- no `getattr`, no
-    `globals()`, no `__name__` comparison anywhere in it.
-
-    Constants and helper functions are deliberately left alone. The identifiers renamed
-    here are the ones a player is shown; the rest is the already-accepted limit that the
-    Python is readable in devtools, and mangling it would break the games for no gain.
+    Whole-word replacement, if it ever does anything again: a module refers to its own
+    classes further down (a display is constructed in `interfaces=[...]`, the engine is
+    handed `game_id=`), and a half-renamed module does not import. Safe to do blind here
+    because no module in the set looks a class up by name -- no `getattr`, no `globals()`,
+    no `__name__` comparison anywhere in it.
     """
     for name, published in renames.items():
         text = re.sub(rf"\b{re.escape(name)}\b", published, text)
@@ -250,14 +262,12 @@ def build(source: Path) -> list[dict[str, str]]:
         published_class = renames[entry["class_name"]]
         body = rewrite(module.read_text(encoding="utf-8"), game_id, renames)
 
-        # Only class names are checked now. The id is SUPPOSED to survive into the
-        # published body -- it is the name of the game in both repos -- so the check that
-        # used to assert its absence would fail every import. Case is not folded: a
-        # module's constants are shouted versions of words its classes also use, and
-        # folding would report a constant as an un-renamed class.
-        leaks = [name for name in classes if re.search(rf"\b{re.escape(name)}\b", body)]
-        if leaks:
-            raise ValueError(f"{Path(entry['path']).name}: rewrite left {leaks} in the published body")
+        # The old check here asserted that NO authored class name survived into the
+        # published body, which was the enforcement arm of the rename. Both are gone: class
+        # names are published as authored and masked at the serving boundary instead, so a
+        # surviving name is now the expected outcome rather than a leak. What still has to
+        # hold is that the body declares the class the manifest will point at, because the
+        # Pyodide hook instantiates it by that name.
         if f"class {published_class}" not in body:
             raise ValueError(f"{Path(entry['path']).name}: published body declares no class {published_class}")
 

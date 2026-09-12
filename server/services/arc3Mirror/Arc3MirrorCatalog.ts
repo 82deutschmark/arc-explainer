@@ -42,16 +42,34 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          still logged loudly. That is the case the old "first claimant wins" rule was
          actually protecting, and it is kept.
 
-         NOTHING IS RENAMED AT RUNTIME ANY MORE. The previous version derived opaque
-         ids and class names on the way out, because the authoring repo names each task
-         for what it does (`gNNN_<mechanic>.py`, `class <Mechanic>`) and the play surface
-         prints the game id to the player -- a spoiler before the first move. Now that the
-         catalog lives here, the rename happens ONCE, at import, and the descriptive name
-         never enters this public repository at all: files are stored as `<gameId>.py` and
-         the class they declare is already the published one. See
-         scripts/arc3/import_authored_games.py, which owns that derivation
-         (`"t" + sha256("arena:" + <authored id>)[:8]`) and which must keep producing the
-         same ids -- server/services/arc3Mirror/arc3Triage.json addresses all 50 by them.
+         THE CLASS NAME IS MASKED HERE, NOT BANNED UPSTREAM. THIS IS NOT A NAMING RULE
+         FOR THE REPOSITORY. Descriptive class names are allowed -- wanted, in fact -- in
+         server/data/arc3-games/: `class WeighStation` is far more use to everyone working
+         on these games than `class G021`, and the repository is where that work happens.
+         What must not happen is a descriptive name reaching a player who is meeting the
+         task for the first time, because the whole experiment is whether a person can
+         infer the rules from the frame.
+
+         Those are two different requirements, and the previous version confused them: it
+         pushed the requirement up into the import step, renaming every class to `GNNN` so
+         that nothing descriptive existed anywhere, and then trusted that -- `strip()`
+         passed `class_name` straight through on an audit that every published class name
+         was already slug-derived. That made the guarantee a property of what files happen
+         to be called, which is not a guarantee at all: the day one game is published with
+         a real class name, the name is on the wire and nothing catches it.
+
+         So the masking lives here, at the serving boundary, where it holds no matter what
+         anything in the repository is named. `strip()` publishes an id-derived class name
+         (`g021` -> `G021`), and `getSource()` appends a one-line alias binding it to
+         whatever class the module actually declares, so the Pyodide worker instantiates
+         the published name and never has to be told the authored one. Rename a class in
+         this repository freely; the catalog will not repeat it.
+
+         The accepted limit is unchanged and is stated again below: `sourceCode` executes
+         in the browser and a player who opens devtools can read the class statement in
+         it. Masking the metadata raises the bar from "printed in the payload" to "read the
+         Python"; rewriting identifiers inside the source to hide them is still not
+         attempted, for the same reason it never was.
 
          This is still the split between the two sites. arc-explainer runs the human
          experiment, where a name is a spoiler; arc3.sonpham.net is the researcher surface,
@@ -62,11 +80,12 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          arc-explainer's job is human-baseline collection: a player is meant to infer the
          rules from the frame, so a tile or payload carrying `title` ("Light Bender"),
          `description`, or `tags` ("stealth", "sokoban", "fog-of-war") destroys the data
-         point. Audited 2026-08-30: `id`, `src_file` and `class_name` are all slug-derived
-         across all upstream entries (`gh14` / `gh14.py` / `Gh14`), so they are safe to keep
-         and are required -- the Pyodide worker cannot instantiate a game without
-         `class_name`. Our own manifest emits no title/description/tags at all, and its
-         ids and class names are opaque by construction.
+         point. `id` and `src_file` are ordinals and are published verbatim -- `g021` says
+         nothing about the game. `class_name` is the one the worker cannot do without, so
+         it is replaced rather than dropped: see publishedClassName() and the alias in
+         getSource(). The 2026-08-30 audit that found every upstream class name already
+         slug-derived is no longer what makes this safe, and was never a guarantee -- it
+         described the inputs, not the boundary.
 
          Known and accepted limit: `sourceCode` executes in the browser and is readable in
          devtools. Opaque metadata raises the bar from "visible on the tile" to "read the
@@ -278,12 +297,41 @@ async function readFrom(source: MirrorSource, relPath: string): Promise<string> 
   }
 }
 
+/**
+ * The class name this catalog publishes for a game: derived from its id, never from what
+ * the module calls itself.
+ *
+ * `g021` -> `G021`, `sc25-635fd71a` -> `Sc25_635fd71a`. The id is already public -- it is
+ * in the URL the player is looking at -- so deriving from it leaks nothing, and the result
+ * is a valid Python identifier that getSource() can bind. For the games whose modules are
+ * still named `GNNN` this returns exactly what they were already publishing, so nothing
+ * about them changes.
+ */
+export function publishedClassName(gameId: string): string {
+  const sanitized = gameId.replace(/[^A-Za-z0-9]/g, '_');
+  const identifier = /^[A-Za-z]/.test(sanitized) ? sanitized : `G${sanitized}`;
+  return identifier.charAt(0).toUpperCase() + identifier.slice(1);
+}
+
+/**
+ * What the module actually calls its playable class, server-side only.
+ *
+ * Recorded so getSource() can bind the published alias to it. Deliberately NOT a field on
+ * MirroredGame: that interface is the API payload, and a field there is a field on the
+ * wire. A map keyed by id keeps the authored name reachable by the one function that
+ * needs it and unreachable by everything that serializes.
+ */
+const authoredClassNames = new Map<string, string>();
+
 /** Drop every mechanic-naming field. The single place the no-spoiler rule is enforced,
- *  for both sources. */
+ *  for both sources -- including the class name, which is replaced with an id-derived one
+ *  rather than passed through. See the header: the repository may name a class whatever
+ *  is useful, and this boundary is what keeps that name off the wire. */
 function strip(entry: UpstreamEntry, source: MirrorSource): MirroredGame {
+  authoredClassNames.set(entry.id, entry.class_name);
   return {
     gameId: entry.id,
-    className: entry.class_name,
+    className: publishedClassName(entry.id),
     source: source.key,
     category: entry.category,
     official: entry.official ?? entry.category === 'official',
@@ -423,6 +471,34 @@ function importedModuleNames(code: string): string[] {
  * arbitrary Python -- quotes, backslashes and triple-quoted docstrings included -- and
  * hand-escaping that is a bug waiting to happen.
  */
+/**
+ * Bind the published class name to whatever class the module actually declares.
+ *
+ * The worker is handed `{sourceCode, className}` and does `exec(source, globals())` then
+ * looks `className` up, so the published name has to exist in the module's namespace. It
+ * is an id-derived alias (see publishedClassName), which for a module that declares
+ * `class WeighStation(ARCBaseGame)` is not a name the module defines -- hence one
+ * assignment appended after the body.
+ *
+ * The authored name is taken from the manifest where possible and from the source itself
+ * otherwise, because the two can disagree: the manifest is regenerated by parsing these
+ * files, but an http source publishes whatever its own manifest says. Reading the actual
+ * `class X(ARCBaseGame)` statement is the authoritative answer for the string being
+ * served, and a mismatch means the manifest is stale, not that the game is unplayable.
+ *
+ * No-ops when the module already declares the published name, which is every game whose
+ * class is still called `GNNN`. Appending rather than rewriting is deliberate: the game
+ * body is served byte-identical, exactly as bundleSupportModules leaves it, and one
+ * trailing assignment cannot break a module the way a search-and-replace over identifiers
+ * could.
+ */
+function aliasPublishedClass(gameId: string, published: string, code: string): string {
+  const declared = code.match(/^class[ \t]+([A-Za-z_][A-Za-z0-9_]*)[ \t]*\([^)]*\bARCBaseGame\b/m)?.[1];
+  const authored = declared ?? authoredClassNames.get(gameId);
+  if (!authored || authored === published) return code;
+  return `${code}\n\n# Published alias: this catalog addresses games by an id-derived class\n# name, so the authored name never appears in the payload. See\n# server/services/arc3Mirror/Arc3MirrorCatalog.ts.\n${published} = ${authored}\n`;
+}
+
 async function bundleSupportModules(source: MirrorSource, code: string): Promise<string> {
   // Only a local source has a directory to resolve against. An http catalog serves what
   // its publisher chose to serve, and guessing at sibling URLs there would turn one 404
@@ -633,6 +709,7 @@ export class Arc3MirrorCatalog {
     // Bundled before the version is taken, not after: sourceVersion is what the client
     // caches and reports against, so it has to describe the string the client receives.
     served = await bundleSupportModules(owner, served);
+    served = aliasPublishedClass(gameId, game.className, served);
 
     return { gameId, sourceCode: served, className: game.className, sourceVersion: sourceVersionOf(served) };
   }

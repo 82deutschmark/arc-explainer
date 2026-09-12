@@ -41,7 +41,10 @@ from pathlib import Path
 #: The engine base class every playable task derives from.
 BASE_CLASS = "ARCBaseGame"
 
-#: Published filenames are `<gameId>.py`, and the id is opaque by construction.
+#: Published filenames are `<gameId>.py`. The id is an ordinal and says nothing about the
+#: game; the class name this parses out may well be descriptive, which is fine -- the
+#: catalog masks it at serve time rather than the repository avoiding it. See
+#: server/services/arc3Mirror/Arc3MirrorCatalog.ts and CONTRIBUTING.md section 4.
 # Published ids became gNNN on 03-Sep (see "a game is called g007 in both repos").
 # The old hashed t-form is still accepted so a directory left over from before the
 # rename builds rather than raising, which is what a half-migrated tree looks like.
