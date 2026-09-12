@@ -17,6 +17,7 @@ export const sk48: Arc3GameMetadata = {
   officialTitle: 'sk48',
   informalName: 'Skewer Kebabs',
   description: 'Extend a skewer that pushes scattered colored items ahead of its tip, then get the threaded colors to line up correctly.',
+  simpleExplanation: 'You extend a skewer that pushes colored items ahead of its tip instead of passing through them. Get the pushed colors to line up correctly before you run out of moves.',
   mechanicsExplanation: 'You extend, retract, or slide a skewer piece along a fixed axis. Extending it doesn\'t pass through the colored items in its path -- it shoves each one ahead of the tip, and if a piece has nowhere to go, the whole extension is blocked that turn. From level 5 on, solid wall tiles also appear that stop the skewer outright, unlike beads, which just get pushed. A step budget and an undo (restoring prior positions, beads included) bound each attempt. This is still a single-pass read of the source -- the exact win-condition rule (how many skewers a level has, and precisely what their threaded sequences must satisfy) needs a fuller pass before this counts as a complete spoiler.',
   category: 'evaluation',
   difficulty: 'unknown',

@@ -15,6 +15,7 @@ export const as66: Arc3GameMetadata = {
   officialTitle: 'as66',
   informalName: 'Always Sliding',
   description: 'Navigate a sliding block to the exit while matching required colors and avoiding enemies.',
+  simpleExplanation: 'You slide a block in one direction until it hits something. Get it to the exit while matching the exit\'s required color, and avoid enemies that kill you on contact.',
   mechanicsExplanation: 'The player block always slides in the chosen direction until it hits an obstacle. Collision with orange or red enemies results in instant death and level failure. To exit, you must match the color expected by the door area, which is typically marked as a white U-shaped area. Special objects in the field can change your block\'s color.',
   category: 'preview',
   difficulty: 'easy',

@@ -1,7 +1,8 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11 (corrected 2026-09-12; mechanics reframed 2026-09-12 PM)
- * PURPOSE: Game metadata for R11L (Rearrange Layout), part of the ARC-AGI-3 public
+ * Date: 2026-09-11 (corrected 2026-09-12; mechanics reframed 2026-09-12 PM; renamed and
+ *       simpleExplanation added 2026-09-12 PM)
+ * PURPOSE: Game metadata for R11L (Reaching Lurch), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
  *          2026-09-12: the "shadow" marker is explicitly visible, not invisible; the
  *          hazard-zone mistake mechanic only exists in 3 of 6 levels while the wall
@@ -11,6 +12,10 @@
  *          does not survive level 5. The body marker is the centroid of its own pieces
  *          (so pieces drag it like pseudopods) and it absorbs colour by overlapping food
  *          sprites, which only exist on levels 5-6. Verified in r11l.py directly.
+ *          Renamed from "Rearrange Layout" 2026-09-12: that name predated the reframe
+ *          above and never got updated to match it. New name keeps this set's two-word,
+ *          first-letters-match-the-id convention (R11L -> R _ L _, confirmed against
+ *          m0r0/g50t/s5i5/tu93/sb26/dc22/cn04/cd82).
  *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
  * SRP/DRY check: Pass - Single responsibility for R11L game data.
  */
@@ -20,9 +25,10 @@ import { Arc3GameMetadata } from './types';
 export const r11l: Arc3GameMetadata = {
   gameId: 'r11l',
   officialTitle: 'r11l',
-  informalName: 'Rearrange Layout',
-  description: 'Drag a blob around by its arms to swallow colored food, then park it on the outline that wants exactly those colors.',
-  mechanicsExplanation: 'Click-only. Each piece is one arm of a blob: clicking an arm selects it, clicking an empty cell moves that arm there, and the blob\'s body marker is then re-centered to the arithmetic centroid of all its arms (rvkbignsyr, r11l.py:1536-1551). You never move the body directly -- you reposition arms and the body gets dragged along behind them, like an amoeba pulling itself with pseudopods. A level clears when every blob\'s body sits on its own outline target AND the set of colors on the body exactly equals the set on that outline (ldzvchvkvp, :1601-1607). Levels 1-4 contain no food, so there the body already carries its colors and it genuinely is just shape-into-outline. Level 5 changes the game: it adds 4 food particles (level 6 adds 10; puukul- sprites), and whenever the body overlaps one, the food\'s pixels are copied onto the body and the food is deleted from the level (zlkgwqnxrp, :1585-1599) -- you eat it, and that permanently changes which outline you can satisfy. That is why level 5 reads as incomprehensible under a pure shape-matching model: from level 5 on, some outlines can only be matched by a color you have to go swallow first. Walls (wakneh-) silently block a move with no penalty; 3 of the 6 levels also place a hazard zone that snaps a piece back and counts a mistake, and five mistakes or an exhausted per-level click budget loses the level.',
+  informalName: 'Reaching Lurch',
+  description: 'Drag a blob around by its limbs to swallow colored food, then park it on the outline that wants exactly those colors.',
+  simpleExplanation: 'It\'s an amoeba, or blob, with limbs. You can\'t move its body directly, but the body always re-centers between its limbs. In the early levels the body already has the colors its target wants; in later levels you have to move the body over food pellets to eat them, changing the body\'s color, until it matches what the target needs.',
+  mechanicsExplanation: 'Click-only. Each piece is one arm of a blob: clicking an arm selects it, clicking an empty cell moves that arm there, and the blob\'s body marker is then re-centered to the arithmetic centroid of all its arms (rvkbignsyr, r11l.py:1536-1551). You never move the body directly -- you reposition arms and the body gets dragged along behind them, like an amoeba pulling itself with pseudopods. A level clears when every blob\'s body sits on its own outline target AND the set of colors on the body exactly equals the set on that outline (ldzvchvkvp, :1601-1607). Levels 1-4 contain no food, so there the body already carries its colors and it genuinely is just shape-into-outline. Level 5 changes the game: it adds 4 food particles (level 6 adds 10; puukul- sprites), and whenever the BODY overlaps one -- not the arm that moved it there -- the food\'s pixels are copied onto the body and the food is deleted from the level (zlkgwqnxrp, :1585-1599) -- you eat it, and that permanently changes which outline you can satisfy. That is why level 5 reads as incomprehensible under a pure shape-matching model: from level 5 on, some outlines can only be matched by a color you have to go swallow first. Walls (wakneh-) silently block a move with no penalty; 3 of the 6 levels also place a hazard zone that snaps a piece back and counts a mistake, and five mistakes or an exhausted per-level click budget loses the level.',
   category: 'evaluation',
   difficulty: 'unknown',
   levelCount: 6,
@@ -60,5 +66,5 @@ export const r11l: Arc3GameMetadata = {
   ],
   tags: ['click-puzzle', 'shape-matching', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: the marker sprite is visible not invisible, the hazard/mistake mechanic is level-scoped, and the keyhole markers matter a level earlier than claimed.',
+  notes: 'The blob/pseudopod mechanic on this page was identified by an eccentric chicken farmer after playing the game directly. The original write-up here, produced by coding agents reading the obfuscated source, missed it entirely and described this as a generic shape-into-outline puzzle -- a description that only holds through level 4. Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: the marker sprite is visible not invisible, the hazard/mistake mechanic is level-scoped, and the keyhole markers matter a level earlier than claimed.',
 };

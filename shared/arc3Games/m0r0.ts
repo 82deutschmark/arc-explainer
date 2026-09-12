@@ -17,6 +17,7 @@ export const m0r0: Arc3GameMetadata = {
   officialTitle: 'm0r0',
   informalName: 'Mirror Rendezvous',
   description: 'A mirrored pair moves in lockstep; deliberately desync them off walls until they meet, within a 150-move budget.',
+  simpleExplanation: 'You steer two mirror-image tokens that always move as opposite reflections of each other. You can\'t just walk them together — you have to knock one into a wall to break the mirroring, and repeat until both land on the same tile.',
   mechanicsExplanation: 'You steer a mirror-image pair of tokens that always move together: vertical input shifts both by the same amount, horizontal input pushes them toward or away from each other by equal and opposite amounts. Because mirrored motion preserves their relative offset, you can never bring them together by walking through open space -- the puzzle is deliberately driving one twin into a wall or block so only it stops, permanently shifting the gap, repeated until both land on the same tile and merge. In the last two levels, colored gates open and close live depending on which button tile either twin is currently standing on -- they\'re switches, not static walls. Checkerboard trap tiles snap both twins straight back to the level\'s starting position. Each level also gives you a hard cap of 150 moves, shown as a shrinking bar; run out before the twins merge and you lose.',
   category: 'evaluation',
   difficulty: 'unknown',

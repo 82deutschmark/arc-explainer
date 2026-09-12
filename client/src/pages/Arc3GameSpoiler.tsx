@@ -1,5 +1,5 @@
 /*
- * Author: Cascade (ChatGPT); updated by Claude Opus 5, 2026-09-12
+ * Author: Cascade (ChatGPT); updated by Claude Opus 5, 2026-09-12; updated by Claude Sonnet 5, 2026-09-12
  * Date: 2026-02-10 (last updated 2026-09-12)
  * PURPOSE: Individual game spoiler page for ARC-AGI-3 games.
  *          Displays all known information on a single page: game mechanics (centerpiece),
@@ -12,6 +12,9 @@
  *          so it is resolved at render time from /api/arc3-mirror/games. When the catalog
  *          has no match the button is not rendered at all, because linking a player into a
  *          task the mirror cannot serve is the exact failure CommunityGamePlay documents.
+ *          2026-09-12 PM: added the "In Plain English" card, right under the hero -- every
+ *          game in shared/arc3Games now carries a required `simpleExplanation`, one or two
+ *          plain sentences with the source citations and precise field names stripped out.
  * SRP/DRY check: Pass - Single responsibility (game detail display), reuses shared game metadata.
  */
 
@@ -316,6 +319,15 @@ export default function Arc3GameSpoiler() {
           {game.description}
         </p>
       </div>
+
+      <Card className="mb-12 border-2 border-primary/20 bg-primary/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-xl">In Plain English</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-base leading-relaxed">{game.simpleExplanation}</p>
+        </CardContent>
+      </Card>
 
       <HumanRecordsCard gameId={game.gameId} />
 
