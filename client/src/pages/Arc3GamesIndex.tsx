@@ -26,12 +26,12 @@
 
 import React from 'react';
 import { Link } from 'wouter';
-import { BookOpen, FileText, ExternalLink, AlertTriangle, Gamepad2 } from 'lucide-react';
+import { BookOpen, FileText, ExternalLink, AlertTriangle, Gamepad2, Trophy } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
+import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
 
 /**
  * as66 sits in the registry for its historical preview-era content but is no longer in
@@ -58,11 +58,19 @@ function GameEntry({ game }: { game: Arc3GameMetadata }) {
               )}
             </div>
           </div>
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/arc3/games/${game.gameId}`}>
-              Full write-up
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <a href={arcPrizeLeaderboardUrl(game.gameId)} target="_blank" rel="noopener noreferrer">
+                <Trophy className="h-4 w-4 mr-1" />
+                Leaderboard
+              </a>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/arc3/games/${game.gameId}`}>
+                Full write-up
+              </Link>
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

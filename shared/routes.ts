@@ -22,6 +22,19 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   // ==================== ARC-AGI-3 ====================
   // Keyed by host for "/" because the root differs per host: arc3.markbarney.net is the
   // synthetic-programme landing, arc.markbarney.net leads with the task gallery.
+  '/arc3/games': {
+    title: 'ARC-AGI-3 Game Mechanics - every official game, explained',
+    description:
+      'Full mechanics for all 25 official ARC-AGI-3 games: what each one is, what every '
+      + 'action does, how it is won. Traced from the game sources so you do not have to.',
+    url: 'https://arc.markbarney.net/arc3/games',
+    // r11l's opening frame: the busiest of the official set at a glance, and an official
+    // game is the right picture here because this page is about the official games --
+    // unlike /arc3/gallery below, which is ours and must not lead with somebody else's work.
+    image: 'https://arc.markbarney.net/api/arc3/og-image/r11l',
+    type: 'website',
+  },
+
   '/arc3/gallery': {
     title: 'ARC-AGI-3 Tasks — play one, no instructions',
     description:

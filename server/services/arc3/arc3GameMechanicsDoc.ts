@@ -31,7 +31,7 @@
  *          stays in client/src/pages/Arc3GameSpoiler.tsx.
  */
 
-import { getAllGames, type Arc3GameMetadata, type ActionMapping } from '../../../shared/arc3Games';
+import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata, type ActionMapping } from '../../../shared/arc3Games';
 
 /** Public origin used for the absolute links in the document. */
 const SITE_ORIGIN = 'https://arc.markbarney.net';
@@ -67,6 +67,10 @@ function formatGame(game: Arc3GameMetadata): string {
   if (typeof game.maxActions === 'number') facts.push(`- **Max actions:** ${game.maxActions}`);
   if (game.tags.length > 0) facts.push(`- **Tags:** ${game.tags.join(', ')}`);
   facts.push(`- **Write-up:** ${SITE_ORIGIN}/arc3/games/${game.gameId}`);
+  // How humans actually do on this exact task, from ARC Prize. Worth having in the machine
+  // -readable copy too: an agent reasoning about difficulty should read the real numbers
+  // rather than our `difficulty` field, which is 'unknown' for most of the set.
+  facts.push(`- **Official human leaderboard:** ${arcPrizeLeaderboardUrl(game.gameId)}`);
   parts.push(`${facts.join('\n')}\n`);
 
   parts.push(`**Objective.** ${game.description}\n`);

@@ -63,6 +63,7 @@ import { isProduction, requiresUserApiKey } from "./utils/environmentPolicy.js";
 import { storage } from "./storage";
 import { Request, Response } from "express";
 import { buildArc3GameMechanicsDoc } from "./services/arc3/arc3GameMechanicsDoc.ts";
+import { buildArc3GameOgImage } from "./services/arc3/arc3GameOgImageService.ts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -377,6 +378,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).type('text/plain').send('Unable to generate the ARC-AGI-3 mechanics reference.');
     }
   };
+
+  /**
+   * The link-preview card for one official game page: its level-1 frame on a 1200x630
+   * canvas. Referenced as og:image by metaTagInjector, so a shared /arc3/games/:id link
+   * unfurls with a picture of the actual game rather than the site-wide default.
+   *
+   * Immutable for a year: the frames are committed files, so a given id's card only
+   * changes on a redeploy, and unfurl caches on the other side re-fetch rarely anyway.
+   */
+  app.get("/api/arc3/og-image/:gameId", asyncHandler(async (req: Request, res: Response) => {
+    const card = await buildArc3GameOgImage(String(req.params.gameId).toLowerCase());
+    if (!card) {
+      return res.status(404).json(formatResponse.error('OG_IMAGE_UNAVAILABLE', 'No preview image for this game'));
+    }
+    res.type('image/png').setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.send(card);
+  }));
 
   app.get("/arc3/games.md", serveArc3MechanicsDoc("text/markdown; charset=utf-8"));
   app.get("/arc3/games.txt", serveArc3MechanicsDoc("text/plain; charset=utf-8"));

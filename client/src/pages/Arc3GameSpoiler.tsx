@@ -31,6 +31,7 @@ import {
   Keyboard,
   Link2,
   Play,
+  Trophy,
   Download,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,6 +39,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
+  arcPrizeLeaderboardUrl,
   getGameById,
   type Arc3GameMetadata,
   type DifficultyRating,
@@ -183,16 +185,24 @@ export default function Arc3GameSpoiler() {
               {getDifficultyBadge(game.difficulty)}
             </div>
           </div>
-          {playId && (
-            <div>
+          <div className="flex items-center gap-2">
+            {playId && (
               <Button asChild>
                 <Link href={`/arc3/play/${playId}`}>
                   <Play className="h-4 w-4 mr-2" />
                   Play
                 </Link>
               </Button>
-            </div>
-          )}
+            )}
+            {/* How people actually do on this exact task, from ARC Prize rather than from
+                us -- the one number on this page we are not the source for. */}
+            <Button asChild variant="outline">
+              <a href={arcPrizeLeaderboardUrl(game.gameId)} target="_blank" rel="noopener noreferrer">
+                <Trophy className="h-4 w-4 mr-2" />
+                Human Leaderboard
+              </a>
+            </Button>
+          </div>
         </div>
         <p className="text-lg text-muted-foreground">
           {game.description}
@@ -483,6 +493,12 @@ export default function Arc3GameSpoiler() {
                 </Link>
               </Button>
             )}
+            <Button asChild variant="outline" size="sm">
+              <a href={arcPrizeLeaderboardUrl(game.gameId)} target="_blank" rel="noopener noreferrer">
+                <Trophy className="h-4 w-4 mr-1" />
+                Human Leaderboard
+              </a>
+            </Button>
             <Button asChild variant="outline" size="sm">
               <a
                 href={`https://three.arcprize.org/games/${game.gameId}`}
