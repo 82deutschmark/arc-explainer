@@ -149,7 +149,7 @@ import { Arc3Console, type ConsoleButton } from '@/components/arc3-community/Arc
 import { Arc3FeedbackPanel } from '@/components/arc3-community/Arc3FeedbackPanel';
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
-import { PIPELINE_CATEGORY, isVisitorFacing } from '@/lib/arc3TaskSets';
+import { PIPELINE_CATEGORY, isVisitorFacing, withinGroupOrder } from '@/lib/arc3TaskSets';
 import { PROBE_CANDIDATE_ACTIONS, probeGestureFor } from '@shared/arc3Topology';
 import { ARC3_COLORS } from '@/utils/arc3Colors';
 import type { Arc3MechanicEntry } from '@shared/arc3Mechanics';
@@ -401,12 +401,41 @@ export default function CommunityGamePlay() {
     // -- as of 01-Sep the arena set is triaged but unservable -- so this must check.
     const servable = new Set(games.map((g) => g.gameId));
     const category = new Map(games.map((g) => [g.gameId, g.category]));
-    const reviewing = category.get(gameId ?? '') === PIPELINE_CATEGORY;
-    const queue = (review?.data?.games ?? []).filter(
+    const mine = category.get(gameId ?? '');
+    const reviewing = mine === PIPELINE_CATEGORY;
+    const queued = review?.data?.games ?? [];
+    const queue = queued.filter(
       (g) => servable.has(g.gameId)
         && (reviewing || isVisitorFacing({ category: category.get(g.gameId) })),
     );
-    return { games, queue, reviewing };
+    const queuePlace = new Map(queued.map((g, i) => [g.gameId, i] as const));
+
+    /**
+     * THE GROUP THIS PLAYER IS INSIDE: every servable task sharing this one's category,
+     * in the order the gallery renders that section.
+     *
+     * 12-Sep-2026, Hieu Pham via Son: "People like to play game one after the other. So
+     * change it so that Next task is literally next task in the group." He was right that
+     * it did not. Next walked the review queue, which for a visitor is 36 arena tasks in
+     * triage order -- so from g500 (contributed-glowup, absent from the queue entirely)
+     * `findIndex` returned -1, the wrap arithmetic handed back queue[0], and the next task
+     * after g500 was g026. Out of the group, out of id order, in one click.
+     *
+     * A REVIEWER IS NOT IN A GROUP and keeps the queue walk below. Their 341 entries are
+     * 341 of the pipeline's 571, with the 66 near-duplicates and 177 random-mashable held
+     * back; "next in the ai-generated category" would hand them all 571 in q001 order and
+     * silently undo triage. Grouping is for people playing, not people judging.
+     *
+     * Empty for a task outside the allowlist -- an official or redbluepill task reached by
+     * direct link. Walking that group would hand a visitor a set the site declines to
+     * offer them, so those fall through to the catalog pool exactly as before.
+     */
+    const group = (!reviewing && isVisitorFacing({ category: mine }))
+      ? games.filter((g) => g.category === mine)
+        .sort((a, b) => withinGroupOrder(a, b, queuePlace))
+      : [];
+
+    return { games, queue, group, reviewing };
   }, [review, catalog, gameId]);
 
   /**
@@ -417,8 +446,13 @@ export default function CommunityGamePlay() {
    * position in a queue they are not walking is the thing this readout got wrong.
    */
   const queuePosition = useMemo(() => {
-    const { queue } = walk;
-    if (queue.length === 0 || !gameId) return null;
+    const { queue, group } = walk;
+    if (!gameId) return null;
+    // The group first, because that is what Next walks when there is one. Reading the
+    // position off a different list than the button follows is the 07-Sep defect.
+    const inGroup = group.findIndex((g) => g.gameId === gameId);
+    if (inGroup >= 0) return { at: inGroup + 1, of: group.length, reviewing: false };
+    if (queue.length === 0) return null;
     const i = queue.findIndex((g) => g.gameId === gameId);
     return i < 0 ? null : { at: i + 1, of: queue.length, reviewing: walk.reviewing };
   }, [walk, gameId]);
@@ -447,7 +481,14 @@ export default function CommunityGamePlay() {
    */
   const nextGameId = useMemo(() => {
     const played = new Set((stats?.data?.games ?? []).map((g) => g.game_id));
-    const { games, queue, reviewing } = walk;
+    const { games, queue, group, reviewing } = walk;
+
+    // LITERALLY THE NEXT ONE. No skipping what has been played: skipping is what made the
+    // sequence non-literal -- play g014 and Next jumped g013 straight to g015 -- and it is
+    // the behaviour Hieu asked us to drop. Wraps to the head of the group rather than
+    // dead-ending, which is the one rule Next has always had to keep.
+    const at = group.findIndex((g) => g.gameId === gameId);
+    if (at >= 0 && group.length > 1) return group[(at + 1) % group.length].gameId;
 
     if (queue.length > 0) {
       const at = queue.findIndex((g) => g.gameId === gameId);
