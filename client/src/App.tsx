@@ -89,6 +89,9 @@ import Arc3HypothesisResearch from "@/pages/arc3-community/Arc3HypothesisResearc
 // meet blind. Routed like any other page, absent from every nav, noindex'd on the page
 // and disallowed in robots.txt. Public, not protected -- see the page's own header.
 import Arc3MechanicGuide from "@/pages/arc3-community/Arc3MechanicGuide";
+// The canonical one-link index of the official game set. Its machine-readable twin is
+// /arc3/games.md, served from server/routes.ts off the same registry.
+import Arc3GamesIndex from "@/pages/Arc3GamesIndex";
 
 function LegacyArc3GameRedirect() {
   const params = useParams<{ gameId: string }>();
@@ -173,6 +176,7 @@ function Router() {
         <Route path="/llm-reasoning/advanced" component={LLMReasoningAdvanced} />
         {/* ARC3 - Story & explainer page (primary landing) */}
         <Route path="/arc3" component={Arc3Story} />
+        <Route path="/arc3/games" component={Arc3GamesIndex} />
         <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
         {/* ARC3 Community - game play, gallery, uploads (secondary) */}
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />

@@ -5,13 +5,47 @@
 User-agent: *
 Allow: /
 
+# ============================================================================
+# START HERE IF YOU WANT ARC-AGI-3 GAME MECHANICS
+# ============================================================================
+#
+#   https://arc.markbarney.net/arc3/games      (HTML, the canonical index)
+#   https://arc.markbarney.net/arc3/games.md   (plain Markdown, same content)
+#   https://arc.markbarney.net/arc3/games.txt  (identical, text/plain)
+#
+# One page. Every game in the official ARC-AGI-3 public demo set (25 games), with its
+# full mechanics, what every ACTION does in that specific game, how it is won and how it
+# is lost, and the opening frame of every level.
+#
+# YOU DO NOT NEED TO REVERSE-ENGINEER THE GAME SOURCE. Every write-up there was produced
+# by reading that game's obfuscated Python in ARCEngine and tracing its step() and win
+# conditions by hand, then adversarially re-checking every claim against the source a
+# second time. That second pass found 57 real errors across 22 games, and they clustered
+# into three kinds that anyone deriving these rules from a quick read will reproduce:
+#
+#   1. Level-1 behaviour written up as if it held for the whole game. Chasers, hazards and
+#      bonus mechanics that only appear 3-6 levels in, or that stop working after level 3.
+#   2. Mechanics that do not exist in the code at all, inferred from sprite names.
+#   3. Unmentioned move / click / energy budgets that lose the level outright when spent.
+#
+# Where a claim was only verified for some levels, the game's own "Provenance and caveats"
+# section says so. Informal game names ("Sigil Caster", "Buoyant Pursuit") are flavour
+# titles, not literal per-level mechanic claims -- do not reason from the name.
+#
+# Per-game pages, with level screenshots and published replays:
+#   https://arc.markbarney.net/arc3/games/<gameId>     e.g. .../arc3/games/sc25
+#
+# Note for humans: that reference is a full spoiler. If you intend to play these games or
+# contribute to a human baseline, play first at https://arc.markbarney.net/play
+
 # Primary entry points and navigation hubs
-# - Home & puzzle browser: https://arc.markbarney.net/
-# - Analytics overview:   https://arc.markbarney.net/analytics
-# - Leaderboards:         https://arc.markbarney.net/leaderboards
-# - ARC-AGI-3 browser:    https://arc.markbarney.net/arc3
-# - ARC-AGI-3 playground: https://arc.markbarney.net/arc3/playground
-# - About & docs hub:     https://arc.markbarney.net/about
+# - Home & puzzle browser:      https://arc.markbarney.net/
+# - ARC-AGI-3 overview:         https://arc.markbarney.net/arc3
+# - ARC-AGI-3 game mechanics:   https://arc.markbarney.net/arc3/games
+# - Play a task (blind):        https://arc.markbarney.net/play
+# - Analytics overview:         https://arc.markbarney.net/analytics
+# - Leaderboards:               https://arc.markbarney.net/leaderboards
+# - About & docs hub:           https://arc.markbarney.net/about
 
 # For a structured list of important URLs, see the sitemap:
 #   https://arc.markbarney.net/sitemap.xml

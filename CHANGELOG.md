@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.60.0  Sep 12, 2026
+
+- **One link that gives an agent every official ARC-AGI-3 game's mechanics** (Author: Claude Opus 5)
+  - **The problem.** Every one of the 25 official-game write-ups cost a hand trace of that game's obfuscated Python in ARCEngine plus an adversarial re-check against the source — two passes that found 57 real errors across 22 games. All of it was already published, but only as 25 separate React pages, so an agent asking "what are the rules of `sc25`" has to find and parse 25 URLs. In practice it does not: it re-reads the Python and reproduces the same three classes of error the re-check caught (level-1 behaviour written up as whole-game behaviour, mechanics inferred from sprite names that do not exist in the code, and unmentioned move/click/energy budgets that lose a level outright).
+  - **`/arc3/games` is now the canonical index** (`client/src/pages/Arc3GamesIndex.tsx`). Every official game on one page with its FULL mechanics text, not a teaser — the point is that the reader gets the answer without a click-through per game. Per-game pages stay and are linked for what does not belong in a list: level screenshots, replays, provenance. The URL was free because the legacy 301 on it was removed in 9.59.0.
+  - **`/arc3/games.md` and `/arc3/games.txt` are the machine-readable twin** (`server/services/arc3/arc3GameMechanicsDoc.ts`, served from `server/routes.ts`). ~82KB of flat Markdown: mechanics, per-action controls, every level frame URL, published replays, and each game's provenance caveats. Served as `.txt` as well because a fair number of crawlers will not fetch `text/markdown`. Generated per request from the `shared/arc3Games` registry — the same objects the HTML renders, so there is no second copy of any mechanic text to drift, and a correction to a game file appears in the document on the next request.
+  - **`llms.txt` leads with it.** Rewritten so the first substantive block is "START HERE IF YOU WANT ARC-AGI-3 GAME MECHANICS", naming all three URLs, stating plainly that reverse-engineering the source is unnecessary, and listing the three error classes so an agent that ignores the advice at least knows what to check. `robots.txt` carries a short version of the same pointer.
+  - **Sitemap.** Added `/arc3/games`, `/arc3/games.md`, and all 26 per-game URLs — the per-game pages had never been in the sitemap at all.
+  - **Not affected:** `/arc3/mechanics`, the unlisted answer key for the 50 synthetic tasks, stays disallowed in `robots.txt` and unlinked. The blind play surface needs those met cold. The 25 published here are ARC Prize's own public demo set, already documented on `/arc3` behind its play-first warning — this is a second format for content that is already public.
+
 ### Version 9.59.0  Sep 12, 2026
 
 - **ARC3 game pages: Play instead of Test with Agent, bigger level shots, canonical URL** (Author: Claude Opus 5)
