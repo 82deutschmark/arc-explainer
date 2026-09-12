@@ -67,24 +67,26 @@ what the player is supposed to figure out.
 
 ### Class names ARE allowed to be descriptive
 
-This changed on 2026-09-12, and the old rule is still quoted in a few places — it was
-wrong. `class WeighStation` is fine, and is better than `class G021`: this repository is
-where the work on these games happens, and naming everything `GNNN` costs every reader
-for no gain.
+`class WeighStation` is fine, and is better than `class G021`. This repository is where the
+work on these games happens, and naming everything `GNNN` costs every reader for no gain.
+Six games are already named this way: `g008`, `g021`, `g043`, `g045`, `g050`, `g162`.
 
-The requirement is that a player is not SHOWN the name, not that the repository does not
-contain it. Those are different things, and the old rule met the second while leaving the
-first unguarded — the catalog published whatever `class_name` it was handed, so the
-protection was only ever "every file happens to be called `GNNN`".
+The rule is about the UI, and only the UI. A player meeting a task for the first time must
+not be **shown** what it is, because the experiment is whether a person can infer the rules
+from the frame. That is a statement about what the play surface renders — not about what
+strings exist in this repository, in a JSON payload, or in the Python a browser can read in
+devtools. Today nothing in the client renders `className` at all: it is read by the Pyodide
+hook to instantiate the class, and the play page shows no game title.
 
-`Arc3MirrorCatalog` now masks it at serve time: it publishes an id-derived class name
-(`g021` → `G021`) and appends a one-line alias to the served source, so the browser
-instantiates the published name and the authored one never appears in the payload.
-Name your classes for what they do; the boundary handles the rest.
+Two rules used to be written down here and both were wrong:
 
-One limit, unchanged: the source itself is executed in the player's browser and can be
-read in devtools, so the class statement is visible to anyone who goes looking. That is
-the accepted bar and always has been — no obfuscation layer is attempted.
+- **"Class names must be derived (`g007_tumble_block.py` → `class G007`)."** Banned a
+  harmless thing, and the importer enforced it by renaming every class on the way in.
+  `import_authored_games.py` no longer does this.
+- **"The catalog masks `class_name` on the way out."** Briefly true on 2026-09-12, then
+  removed — it was machinery for a leak that never reached a player.
+
+If a name ever does need keeping off a screen, fix the component that would render it.
 
 ## 5. Before you push
 

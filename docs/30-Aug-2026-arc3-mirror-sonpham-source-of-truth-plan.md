@@ -67,12 +67,12 @@ Audited across all 300 entries: `id`, `src_file` and `class_name` are slug-deriv
 (`gh14` / `gh14.py` / `Gh14`), so they leak nothing and are kept. `class_name` is
 **required** — the Pyodide worker cannot instantiate a game without it.
 
-> **Superseded 2026-09-12.** Keeping `class_name` because every entry *happened* to be
-> slug-derived described the inputs, not the boundary — the first game published with a
-> real class name would have put it on the wire. `strip()` now replaces `class_name` with
-> an id-derived one and `getSource()` appends an alias, so descriptive class names are
-> allowed (and wanted) in the repository. See `Arc3MirrorCatalog.ts` and
-> `server/data/arc3-games/CONTRIBUTING.md` section 4.
+> **Clarified 2026-09-12.** `class_name` is kept, but not because every entry happens to be
+> slug-derived — six games are now named descriptively (`WeighStation`, `Ferry`, `Shunt`,
+> `Sleeper`, `TwoSkins`, `AshPath`) and that is fine. Nothing in the client renders
+> `className`; it is read by the Pyodide hook to instantiate the class and by nothing else.
+> The rule is about what the UI shows a first-time player, not about what a payload
+> contains. See `server/data/arc3-games/CONTRIBUTING.md` section 4.
 
 Leaks removed from our own UI in this pass:
 - the gallery's `title={game.displayName}` **hover tooltip**
