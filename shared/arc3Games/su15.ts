@@ -21,7 +21,7 @@ export const su15: Arc3GameMetadata = {
   simpleExplanation: 'You drag numbered blocks together; two of the same size fuse into the next size up. Get an exact mix of block sizes sitting in the marked zone, without running out of moves.',
   mechanicsExplanation: 'You pull numbered blocks around the board with a magnetic click: tapping the play area drags every nearby block toward that point. Blocks come in nine size tiers; two of the same tier that touch fuse into the next tier up, Suika-style, and merging the top tier destroys the pair. From level 4 onward, diamond hazard critters also roam the field and merge among themselves the same way; a block that touches one recoils and drops a tier, except the smallest tier, which is destroyed outright on contact instead of dropping further. Each level\'s win condition is an exact count -- not a minimum -- of specific block and/or critter tiers sitting in a marked zone at once, within a shrinking step budget. Undo is free and simply restores your last position; the cost that escalates each use is instead charged for shoving two different-tier blocks or critters into each other.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'hard',
   levelCount: 9,
   actionMappings: [
     { action: 'ACTION6', description: 'Pull nearby blocks toward a point', commonName: 'Click' },

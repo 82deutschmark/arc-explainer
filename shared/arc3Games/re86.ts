@@ -20,7 +20,7 @@ export const re86: Arc3GameMetadata = {
   simpleExplanation: 'You slide one piece at a time to cover a set of visible target dots on the board, switching between pieces as needed, before your moves run out.',
   mechanicsExplanation: 'You control one piece at a time on a board and slide it in 3-pixel steps; a fifth action hands control to the next piece. The small colored target dots sit behind your (mostly see-through) pieces and are visible on the board from the very start, not hidden -- the win-check only cares about each dot\'s center pixel, ignoring the decorative border drawn around it. Colored pads recolor whichever piece touches them in a slow spreading stain. From level 6 on, walls also appear: rigid pieces stop dead against them while elastic ones compress instead -- levels 1-5 have no walls at all, even though elastic pieces show up earlier. A per-level move budget ends the attempt in a loss if it runs out first.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'medium',
   levelCount: 8,
   actionMappings: [
     { action: 'ACTION1', description: 'Slide selected piece Up', commonName: 'Up' },

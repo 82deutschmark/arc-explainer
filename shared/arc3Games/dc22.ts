@@ -19,7 +19,7 @@ export const dc22: Arc3GameMetadata = {
   simpleExplanation: 'You press buttons on a side panel to reshape platforms into a path a walker can cross to reach the goal. A wrong press costs you, and running your budget to zero ends the level outright.',
   mechanicsExplanation: 'A walker has to reach a goal, but most of the floor doesn\'t exist yet; you press buttons on a side panel that reshape platforms across the board. A wrong press irises the screen to black, rewinds one move, and charges the budget — and if that charge drains the budget to zero, the level ends in a loss immediately instead of rewinding, so mistakes are more than just expensive. From the fifth level the panel grows a claw that rides a painted track, moving twice as far as the walker and clamping onto a pillar you then stand on; coloured pads fling you to their twin, and a missing button appears only after you fetch a token on foot.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'easy',
   levelCount: 6,
   actionMappings: [
     { action: 'ACTION1', description: 'Move Up', commonName: 'Up' },

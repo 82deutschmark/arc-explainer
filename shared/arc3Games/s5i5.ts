@@ -17,7 +17,7 @@ export const s5i5: Arc3GameMetadata = {
   simpleExplanation: 'You extend and rotate telescoping rods anchored at fixed points to walk a marker on each rod\'s tip onto every pin, before your clicks run out.',
   mechanicsExplanation: 'You steer a set of color-coded telescoping rods, each pinned at a fixed anchor point. Clicking the correct half of a two-headed slider handle extends or retracts the rod anchored there; clicking a small color-matched diamond icon pivots every rod of that color 90 degrees around its anchor. Rods are chained together, so moving a base rod drags everything welded to it, and any move that would overlap two rods is silently undone. The goal is walking a marker riding a rod-tip onto a fixed pin, for every pin, before a shrinking click budget runs out.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'hard',
   levelCount: 8,
   actionMappings: [
     { action: 'ACTION6', description: 'Extend/retract or pivot a rod', commonName: 'Click' },

@@ -22,7 +22,7 @@ export const tn36: Arc3GameMetadata = {
   simpleExplanation: 'You flip switches to chain instructions — move, rotate, resize, recolor — onto a token, trying to match a target exactly before a scrolling deadline catches up.',
   mechanicsExplanation: 'You\'re looking at two side-by-side circuit panels, each holding a token, one or more independent banks of binary toggle switches, and a target marker. Only the right-hand panel counts toward winning -- position, rotation, scale, and color must all match its target at once -- and it\'s also the one whose switches you actually click yourself: each bank of switches forms its own separate number, looked up in a fixed instruction set (move, rotate, grow/shrink, or recolor), and running the panel fires each bank\'s instruction in sequence, one after another (by the last level, that\'s a chain of six). The left-hand panel\'s switches can never be clicked by hand at all; it only runs preset programs for you to reverse-engineer what a given combination does. Every click also scrolls a background strip toward a cutoff line; reaching it before solving the right panel is a loss. The final level also adds blockers that cycle in and out along the token\'s path -- running into one mid-program freezes the token until the run resets.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'hard',
   levelCount: 7,
   actionMappings: [
     { action: 'ACTION6', description: 'Toggle a switch / run a panel', commonName: 'Click' },

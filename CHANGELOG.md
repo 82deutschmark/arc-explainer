@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.69.0  Sep 12, 2026
+
+- **Game pages lead with pictures, real difficulty ranked from human data, BP35/VC33 corrected, dropped a confusing nav link** (Author: Claude Sonnet 5)
+  - **Level Screenshots moved to the top of each game page** (`Arc3GameSpoiler.tsx`), right after "In Plain English" — pictures of the game and its levels now come before Human Records, the featured replay, and the full mechanics write-up, not buried under them.
+  - **`difficulty` is now computed from the ARC Prize human leaderboard, not a guess.** Every top human run scores 100, so score can't rank anything, but the fewest-actions number and how far the rest of the top 10 spreads out from it can — a wide relative spread, or a reset sitting in the top 10, both mean even the best players struggled. New script `server/scripts/compute-arc3-difficulty.ts` (`rankDifficulty()`, exported for reuse) reads that signal and buckets easy/medium/hard; applied to all 25 games (previously `'unknown'` for all but four, three of which were also just guesses).
+  - **BP35 ("Buoyant Pursuit") corrected: it has no chaser.** The thing that "rises from below" in levels 1-3 was described as a pursuer with its own catch condition. It's cosmetic — a rising animation that plays when the action budget gets low, not a second failure condition. The only real way to lose, in every level, is running that budget to zero. Caught by an eccentric chicken farmer who actually played it.
+  - **VC33 ("Volume Control") gets an orientation note.** Flagged by the same eccentric chicken farmer, who played it at its original release: the liquid framing isn't drawn on a consistent axis level to level — checked against our own screenshots, `lvl1.png` fills left-to-right while `lvl4.png`/`lvl7.png` read as ordinary vertical columns. Same conservation-of-volume mechanic either way; the write-up now says so instead of assuming everything stands upright.
+  - **Nav: dropped "Hypothesis traces"** (`/arc3/hypotheses`) from the ARC-3 dropdown — confusing page, not worth a nav slot. Route still exists, just unlinked.
+
 ### Version 9.68.0  Sep 12, 2026
 
 - **ARC-3 nav dropdown stops pointing at the deprecated agent playground; the 25-game index is now searchable and every game carries a plain-English explanation** (Author: Claude Sonnet 5)

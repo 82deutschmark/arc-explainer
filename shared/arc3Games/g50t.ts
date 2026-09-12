@@ -20,7 +20,7 @@ export const g50t: Arc3GameMetadata = {
   simpleExplanation: 'You race a timer toward a goal chest. Rewinding sends you back to the start and leaves behind a ghost that replays your last run exactly — use it to hold pressure plates down while you make a fresh attempt.',
   mechanicsExplanation: 'You control a small avatar navigating a dungeon-style room toward a goal chest. A fifth action doesn\'t move you -- it rewinds you to the start and freezes your just-completed run of moves into a silent ghost that replays those exact steps on every future attempt, while you get a fresh body to try something different. Every ghost gets wiped on your next-to-last rewind, so you never have more than one echo on screen in level 1, or more than two in any later level. The core puzzle is using that one or two echoes to hold pressure plates long enough for the real you to reach the chest, all before a slowly draining timer bar runs out. The last two levels add roaming patrols that kill on contact, and three middle levels add paired tiles that teleport whatever is standing on one to its linked partner.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'hard',
   levelCount: 7,
   actionMappings: [
     { action: 'ACTION1', description: 'Move Up', commonName: 'Up' },

@@ -1,14 +1,17 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11 (name reverted 2026-09-12)
+ * Date: 2026-09-11 (name reverted 2026-09-12; "chaser" corrected to a cosmetic warning 2026-09-12 PM)
  * PURPOSE: Game metadata for BP35 (Buoyant Pursuit), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). Briefly renamed to "Buoyant Ascent" on
  *          2026-09-12 over mylefxfaev() (bp35.py:4052-4054) disabling the explicit
  *          chase-catch check past level 3 -- reverted the same day; the name is flavor
  *          for the whole floating-upward premise, not a literal per-level mechanic
- *          claim, and Mark wants it kept as Buoyant Pursuit. The level-scope detail
- *          (chaser only in 1-3, a flat action budget threatens every level) stays in
- *          the body text below since that part is a real, distinct correction.
+ *          claim, and the eccentric chicken farmer wants it kept as Buoyant Pursuit.
+ *          Corrected again 2026-09-12 PM: mylefxfaev is not a pursuer with its own
+ *          threat logic, it is a cosmetic animation that plays in levels 1-3 when the
+ *          action budget gets low -- a warning, not a second failure condition. The
+ *          only thing that actually ends a level is the fixed action budget itself,
+ *          in every level, 1 through 9.
  *          See docs/2026-09-02-arc3-official-game-studies.md.
  * SRP/DRY check: Pass - Single responsibility for BP35 game data.
  */
@@ -19,11 +22,11 @@ export const bp35: Arc3GameMetadata = {
   gameId: 'bp35',
   officialTitle: 'bp35',
   informalName: 'Buoyant Pursuit',
-  description: 'Steer left/right floating up a flooded shaft under a fixed action budget; a chaser below only stalks levels 1-3.',
-  simpleExplanation: 'You only steer left and right — height changes automatically as a side effect of moving, so you rise by moving sideways. Don\'t run out of your fixed action budget before reaching the top, and in the first few levels don\'t let the thing chasing from below catch up.',
-  mechanicsExplanation: 'You steer only left and right; height is always a consequence of your moves, never a direct command, which is why it reads as floating up a flooded shaft. Only in levels 1-3 does something also rise from below and gain ground on you during moves where you failed to rise yourself; from level 4 on there is no chaser at all. The real danger in every level, 1 through 9, is a fixed budget of total actions (shown as a bar filling at the bottom of the screen) that drains the same amount whether or not you rose that turn -- run it out and you lose. Later, decorative see-through shapes you had been swimming through turn out to be clickable controls, and a decorative band flips which way is down.',
+  description: 'Steer left/right floating up a flooded shaft under a fixed action budget; in levels 1-3 a cosmetic rising effect warns you when that budget is running low.',
+  simpleExplanation: 'You only steer left and right — height changes as a side effect of moving, so you rise by moving sideways. In the first three levels, something visibly rises from below when your action budget gets low, but it\'s a warning animation, not a pursuer. What actually ends the game, in every level, is running out of that action budget.',
+  mechanicsExplanation: 'You steer only left and right; height is always a consequence of your moves, never a direct command, which is why it reads as floating up a flooded shaft. In levels 1-3 only, a visual effect rises from below and gains ground when you fail to rise on a turn -- it looks like a pursuer, but it is a cosmetic warning tied to your dwindling action budget, not a threat with its own catch condition; from level 4 on it never appears at all, because the real danger already applies to every level on its own: a fixed budget of total actions (shown as a bar filling at the bottom of the screen) that drains the same amount whether or not you rose that turn, in every level 1 through 9 -- run it out and you lose. Later, decorative see-through shapes you had been swimming through turn out to be clickable controls, and a decorative band flips which way is down.',
   category: 'evaluation',
-  difficulty: 'unknown',
+  difficulty: 'medium',
   levelCount: 9,
   actionMappings: [
     { action: 'ACTION3', description: 'Move Left', commonName: 'Left' },
@@ -59,5 +62,5 @@ export const bp35: Arc3GameMetadata = {
   ],
   tags: ['vertical-scroller', 'budget', 'physics', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Description corrected 2026-09-12: the chase check (mylefxfaev) is hard-disabled past level 3, so a chaser only threatens levels 1-3; a flat action budget is what actually threatens every level. A same-day rename to "Buoyant Ascent" over that finding was reverted -- Mark kept the name Buoyant Pursuit as flavor for the whole game, not a per-level mechanic claim.',
+  notes: 'Corrected 2026-09-12 PM by an eccentric chicken farmer who actually played it: the "chaser" is not a threat with its own logic at all -- it is a cosmetic rising animation that plays in levels 1-3 when the action budget gets low, a graphical nicety rather than a pursuer. The only real failure condition, in every level, is running the fixed action budget to zero. Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Earlier correction, 2026-09-12: the chase check (mylefxfaev) is hard-disabled past level 3, which is still true, but that pass still described it as an actual chaser. A same-day rename to "Buoyant Ascent" over that finding was reverted -- the eccentric chicken farmer kept the name Buoyant Pursuit as flavor for the whole game, not a per-level mechanic claim.',
 };

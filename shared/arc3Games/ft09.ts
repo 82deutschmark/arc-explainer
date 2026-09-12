@@ -20,7 +20,7 @@ export const ft09: Arc3GameMetadata = {
   simpleExplanation: 'Markers scattered across the board each want their neighboring tiles to either match or clash in color. Clicking a tile cycles its color; get every marker satisfied at once before you run out of clicks.',
   mechanicsExplanation: 'Small marker sprites are scattered all over each level (not just in one corner), and each one demands that its neighboring tiles either match or clash in color. The level is won only once every single marker\'s rule holds at once -- there is no "dominant color" that overrides a conflicting one; one unsatisfied marker fails the whole level. The block of colors that sits near the top-right in most levels is not a target picture to copy -- it\'s just an ordered list of the colors that level actually uses (and each tile\'s default color). Clicking a tile normally advances it through that level\'s color list, a plain round-robin, though one special tile type recolors itself and up to four orthogonal neighbors at once in a single click. Every level also gives you a limited number of clicks, shown as a draining bar along the bottom edge; run out before every marker is satisfied and you lose the level outright.',
   category: 'preview',
-  difficulty: 'medium',
+  difficulty: 'easy',
   actionMappings: [
     { action: 'ACTION6', description: 'Click to change tile/color', commonName: 'Click' },
   ],
