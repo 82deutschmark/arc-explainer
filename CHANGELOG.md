@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.64.0  Sep 12, 2026
+
+- **R11L reframed: it is an amoeba that eats colour, not a shape-into-outline puzzle** (Author: Claude Opus 5)
+  - **The old description does not survive level 5.** The Boss played it and asked what level 5 wants; the answer is not in the shape-matching framing. Verified directly in `external/ARCEngine/environment_files/r11l/495a7899/r11l.py`: the body marker is set to the arithmetic centroid of its own pieces (`rvkbignsyr`, :1536-1551), so you never move the body — you move arms and the body is dragged behind them, pseudopod-style. The win check compares the *set of colours* on the body against the set on the outline (`ldzvchvkvp`, :1601-1607), not the shape.
+  - **Food only exists on levels 5 and 6.** `puukul-` sprites: 0 on levels 1-4, 4 on level 5, 10 on level 6. When the body overlaps one, the food's pixels are copied onto the body and the food is removed from the level (`zlkgwqnxrp`, :1585-1599). So the game silently changes rules at level 5 — from there, some outlines can only be matched by a colour you have to go swallow first. That is why level 5 reads as incomprehensible under the old description.
+  - **Added the human full-clear replay** to `shared/arc3Games/r11l.ts` resources: 6/6 levels, score 72.87, 316 clicks, 13m56s, 7 resets. Per-level clicks 13/17/31/35/40/180 against baselines 22/33/51/26/52/49 — levels 1-3 and 5 beat baseline, level 6 took 3.7x it. Pulled from `arcprize.org/api/sessions/<guid>` and `/api/recordings/<game>/<guid>` (both unauthenticated).
+
 ### Version 9.63.0  Sep 12, 2026
 
 - **Reverted yesterday's class-name masking; the rule is about the UI and nothing else** (Author: Claude Opus 5)
