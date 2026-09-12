@@ -149,9 +149,10 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
             title: 'About ARC-3',
             href: '/arc3',
             icon: BookOpen,
-            // Says "spoilers" because it is one: the page names the mechanic of six
-            // official games, five of which are playable blind at /arc3/gallery.
-            description: 'Reference and history — contains spoilers for six official games',
+            // Says "spoilers" because it is one: the page names the mechanic of every
+            // game in the 25-game public demo set, five of which are playable blind
+            // at /arc3/gallery.
+            description: 'Reference and history — mechanics write-ups for all 25 public-demo games',
             exact: true,
           },
           {
