@@ -20,6 +20,7 @@ export const bp35: Arc3GameMetadata = {
   officialTitle: 'bp35',
   informalName: 'Buoyant Pursuit',
   description: 'Steer left/right floating up a flooded shaft under a fixed action budget; a chaser below only stalks levels 1-3.',
+  simpleExplanation: 'You only steer left and right — height changes automatically as a side effect of moving, so you rise by moving sideways. Don\'t run out of your fixed action budget before reaching the top, and in the first few levels don\'t let the thing chasing from below catch up.',
   mechanicsExplanation: 'You steer only left and right; height is always a consequence of your moves, never a direct command, which is why it reads as floating up a flooded shaft. Only in levels 1-3 does something also rise from below and gain ground on you during moves where you failed to rise yourself; from level 4 on there is no chaser at all. The real danger in every level, 1 through 9, is a fixed budget of total actions (shown as a bar filling at the bottom of the screen) that drains the same amount whether or not you rose that turn -- run it out and you lose. Later, decorative see-through shapes you had been swimming through turn out to be clickable controls, and a decorative band flips which way is down.',
   category: 'evaluation',
   difficulty: 'unknown',

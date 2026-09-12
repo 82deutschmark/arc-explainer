@@ -17,6 +17,7 @@ export const sb26: Arc3GameMetadata = {
   officialTitle: 'sb26',
   informalName: 'Sequence Belt',
   description: 'Arrange tiles in machine containers, then run them to be read against a required color sequence, on a limited energy budget.',
+  simpleExplanation: 'You arrange colored tiles in containers, then run them so their colors get read out in order and checked against a required sequence. Every run and every move costs energy, so don\'t waste them.',
   mechanicsExplanation: 'You control colored square tiles sitting in fixed slots inside machine containers. Level 1 has just one container and nothing else; from level 2 on, ring-shaped tiles act as color-coded doorways that redirect the reading order into a different machine mid-sequence and later return. Running the arrangement reads every machine\'s slots in order and checks each tile\'s color against the next color required by a sequence of goal sockets across the top -- get every socket filled in the right order to clear the level, but any mismatch or empty gap stops the run early. Every run and every tile swap or move also spends part of a 64-point energy pool; drain it to zero and the level is lost outright. Undo reverts your last tile swap or placement, not your last run.',
   category: 'evaluation',
   difficulty: 'unknown',

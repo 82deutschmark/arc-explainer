@@ -1,37 +1,100 @@
 /*
- * Author: Claude Opus 5
- * Date: 2026-09-12
- * PURPOSE: The canonical index of the official ARC-AGI-3 game set at /arc3/games -- one
- *          page listing every game with its mechanics, so there is a single link to hand
- *          someone who wants the rules rather than 25 separate URLs to find.
+ * Author: Claude Opus 5; modernized into a searchable landing page by Claude Sonnet 5, 2026-09-12
+ * Date: 2026-09-12 (searchable landing page added 2026-09-12)
+ * PURPOSE: The canonical index of the official ARC-AGI-3 game set at /arc3/games -- the
+ *          front door for "what are these 25 games", which is now also the nav's lead
+ *          ARC-3 link instead of the deprecated agent playground. A live search box over
+ *          a scannable card grid lets a reader find one game by name/id/tag/mechanic
+ *          without scrolling a 25-entry page; the grid links through to that game's own
+ *          page (screenshots, replays, human records) rather than scrolling here.
  *
- *          WHY IT LOOKS LIKE THIS. Each entry carries the FULL mechanics text, not a
- *          teaser. The point of the page is that a reader (or a crawler) gets the answer
- *          here, without a click-through per game and without re-deriving anything from
- *          the Python. The per-game pages still exist and are linked, because they carry
- *          what does not belong in a list: level screenshots, replays, and provenance.
+ *          WHY THE FULL TEXT STILL FOLLOWS THE GRID. Each entry below the grid still
+ *          carries the FULL mechanics text, not a teaser -- a reader (or a crawler) gets
+ *          the answer here without a click-through per game and without re-deriving
+ *          anything from the Python. That dump is filtered by the same search box, so
+ *          search narrows both halves of the page at once.
  *
  *          Its machine-readable twin is /arc3/games.md, generated from the same registry
  *          by server/services/arc3/arc3GameMechanicsDoc.ts and linked at the top for
  *          agents. Both read shared/arc3Games, so neither can drift from the other.
  *
- *          This route previously 301'd to the archive browser and was removed on
- *          2026-09-12 along with its sibling redirect (see server/routes.ts) -- /arc3/games
- *          now resolves here, which is what the URL always implied.
- *
- * SRP/DRY check: Pass -- presentation only, over the shared registry. Reuses shadcn Card
- *          and Badge, and the getAllGames/getGamesByCategory helpers rather than
- *          re-sorting the registry locally. No mechanics text lives in this file.
+ * SRP/DRY check: Pass -- presentation + client-side filtering only, over the shared
+ *          registry. Reuses shadcn Card, Badge and Input, and the getAllGames helper
+ *          rather than re-sorting the registry locally. No mechanics text lives in this
+ *          file; the search predicate reads the same Arc3GameMetadata fields already
+ *          rendered, so it can't drift from what's on screen.
  */
 
 import React from 'react';
 import { Link } from 'wouter';
-import { BookOpen, FileText, ExternalLink, AlertTriangle, Gamepad2, Trophy } from 'lucide-react';
+import { BookOpen, FileText, ExternalLink, AlertTriangle, Gamepad2, Trophy, Search, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
+
+/** Lowercased, whitespace-collapsed haystack of every field a search should match. */
+function searchHaystack(game: Arc3GameMetadata): string {
+  return [
+    game.gameId,
+    game.officialTitle,
+    game.informalName,
+    game.description,
+    game.simpleExplanation,
+    game.mechanicsExplanation,
+    game.category,
+    ...game.tags,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+}
+
+function matchesQuery(game: Arc3GameMetadata, query: string): boolean {
+  if (!query.trim()) return true;
+  const needle = query.trim().toLowerCase();
+  return searchHaystack(game).includes(needle);
+}
+
+/** The scannable card grid: one tile per game, linking straight to its own page. */
+function GameGridTile({ game }: { game: Arc3GameMetadata }) {
+  const thumbnail = [...(game.levelScreenshots ?? [])].sort((a, b) => a.level - b.level)[0];
+
+  return (
+    <Link
+      href={`/arc3/games/${game.gameId}`}
+      className="group block rounded-lg border bg-card overflow-hidden transition-colors hover:border-primary/50 hover:bg-accent/40"
+    >
+      <div className="aspect-square bg-muted overflow-hidden">
+        {thumbnail ? (
+          <img
+            src={thumbnail.imageUrl}
+            alt={`${game.informalName || game.gameId} level ${thumbnail.level}`}
+            className="w-full h-full object-contain"
+            style={{ imageRendering: 'pixelated' }}
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Gamepad2 className="h-8 w-8 text-muted-foreground/40" />
+          </div>
+        )}
+      </div>
+      <div className="p-3">
+        <div className="flex items-center justify-between gap-2">
+          <code className="text-xs font-semibold">{game.gameId}</code>
+          {typeof game.levelCount === 'number' && (
+            <span className="text-[11px] text-muted-foreground">{game.levelCount}lv</span>
+          )}
+        </div>
+        <p className="text-sm font-medium mt-1 truncate">{game.informalName || game.officialTitle}</p>
+        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{game.simpleExplanation}</p>
+      </div>
+    </Link>
+  );
+}
 
 /**
  * as66 sits in the registry for its historical preview-era content but is no longer in
@@ -102,6 +165,14 @@ export default function Arc3GamesIndex() {
   const live = all.filter((g) => !WITHDRAWN_IDS.has(g.gameId));
   const withdrawn = all.filter((g) => WITHDRAWN_IDS.has(g.gameId));
 
+  const [query, setQuery] = React.useState('');
+  const filteredLive = React.useMemo(() => live.filter((g) => matchesQuery(g, query)), [live, query]);
+  const filteredWithdrawn = React.useMemo(
+    () => withdrawn.filter((g) => matchesQuery(g, query)),
+    [withdrawn, query],
+  );
+  const isFiltering = query.trim().length > 0;
+
   usePageMeta({
     title: 'ARC-AGI-3 Official Game Mechanics – Complete Reference',
     description:
@@ -113,7 +184,7 @@ export default function Arc3GamesIndex() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
           <BookOpen className="h-8 w-8 text-primary" />
           <h1 className="text-3xl font-bold">ARC-AGI-3 Game Mechanics</h1>
@@ -122,6 +193,49 @@ export default function Arc3GamesIndex() {
           Every game in the official ARC-AGI-3 public demo set ({live.length} games), with its full
           mechanics and control mapping on one page.
         </p>
+      </div>
+
+      <div className="mb-8 space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={'Search by name, game ID, tag, or mechanic (e.g. "sokoban", "ls20", "key")'}
+            className="pl-9 pr-9 h-11 text-base"
+            aria-label="Search the 25 official ARC-AGI-3 games"
+          />
+          {isFiltering && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {isFiltering
+            ? `${filteredLive.length} of ${live.length} games match "${query.trim()}"`
+            : `Showing all ${live.length} games`}
+        </p>
+
+        {filteredLive.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-1">
+            {filteredLive.map((game) => (
+              <GameGridTile key={game.gameId} game={game} />
+            ))}
+          </div>
+        ) : (
+          !isFiltering || filteredWithdrawn.length === 0 ? (
+            <Card className="py-8 text-center text-sm text-muted-foreground">
+              No games match "{query.trim()}". Try a game ID, mechanic, or tag instead.
+            </Card>
+          ) : null
+        )}
       </div>
 
       <Card className="mb-8 border-primary/30 bg-primary/5">
@@ -171,13 +285,14 @@ export default function Arc3GamesIndex() {
         </CardContent>
       </Card>
 
+      {isFiltering && <h2 className="text-lg font-semibold mb-4">Full write-ups</h2>}
       <div className="space-y-6">
-        {live.map((game) => (
+        {filteredLive.map((game) => (
           <GameEntry key={game.gameId} game={game} />
         ))}
       </div>
 
-      {withdrawn.length > 0 && (
+      {filteredWithdrawn.length > 0 && (
         <div className="mt-12 space-y-6">
           <div>
             <h2 className="text-xl font-bold">Withdrawn from the public demo set</h2>
@@ -185,7 +300,7 @@ export default function Arc3GamesIndex() {
               Kept as historical preview-era content. Not part of the current official set.
             </p>
           </div>
-          {withdrawn.map((game) => (
+          {filteredWithdrawn.map((game) => (
             <GameEntry key={game.gameId} game={game} />
           ))}
         </div>

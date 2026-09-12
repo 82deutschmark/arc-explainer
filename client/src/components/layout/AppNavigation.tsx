@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5
- * Date: 2026-08-29
+ * Author: Claude Opus 5; ARC-3 dropdown modernized by Claude Sonnet 5, 2026-09-12
+ * Date: 2026-08-29 (ARC-3 dropdown modernized 2026-09-12)
  * PURPOSE: ARC-3-forward top navigation. The primary row is the ARC-AGI-3 flow a visitor
  * actually walks -- Play, Submit, About ARC-3 -- matching the root redirect in
  * App.tsx, which already sends "/" to /arc3/gallery. Everything ARC-1/2 collapses into a single
@@ -9,11 +9,17 @@
  * (arcprize.org and Son Pham's sibling catalog at arc3.sonpham.net) plus the repo link.
  * No routes changed -- every archived destination is still registered in App.tsx and still
  * reachable by deep link; this file only decides what gets top billing.
+ * 2026-09-12: the ARC-3 dropdown no longer links the agent playground -- this site doesn't
+ * run agents against games anymore, so advertising that flow in the nav was stale. Its lead
+ * item is now the searchable 25-game spoiler index (/arc3/games, see Arc3GamesIndex.tsx),
+ * which previously had no nav entry at all despite being the actual front door for "what
+ * are these games."
  * SRP/DRY check: Pass - single responsibility (navigation structure). Reuses shadcn
  * NavigationMenu/DropdownMenu, including the DropdownMenuLabel and DropdownMenuSeparator
  * primitives already exported by components/ui/dropdown-menu.tsx.
  * CRITICAL: dividers render INSIDE each menu item to keep the Radix hierarchy intact.
- * See docs/2026-08-29-arc3-forward-nav-plan.md.
+ * See docs/2026-08-29-arc3-forward-nav-plan.md and
+ * docs/plans/2026-09-12-arc3-nav-games-search-plan.md.
  */
 import React from 'react';
 import { Link, useLocation } from 'wouter';
@@ -51,6 +57,7 @@ import {
   Info,
   Layers,
   MessageSquare,
+  Search,
   Trophy,
   Upload,
   Users,
@@ -139,34 +146,33 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
     type: 'dropdown',
     title: 'ARC-3',
     icon: BookOpen,
-    description: 'Reference, research and the agent tooling behind the ARC-AGI-3 work',
+    description: 'Spoilers, reference and research behind the ARC-AGI-3 work',
     sections: [
       {
-        label: 'Reference',
+        label: 'Spoilers',
         items: [
+          {
+            /*
+             * Lead item on purpose. This is what the dropdown is FOR now -- not the
+             * agent playground (removed 2026-09-12, this site doesn't run agents against
+             * games anymore) but finding one game's rules fast. Says "spoilers" because
+             * it is one: full mechanics for all 25 public-demo games, five of which are
+             * playable blind at /arc3/gallery.
+             */
+            type: 'link',
+            title: 'All 25 Games',
+            href: '/arc3/games',
+            icon: Search,
+            description: 'Search every official game by name, ID, or mechanic — full spoilers',
+          },
           {
             type: 'link',
             title: 'About ARC-3',
             href: '/arc3',
             icon: BookOpen,
-            // Says "spoilers" because it is one: the page names the mechanic of every
-            // game in the 25-game public demo set, five of which are playable blind
-            // at /arc3/gallery.
-            description: 'Reference and history — mechanics write-ups for all 25 public-demo games',
+            description: 'Reference and history — the technical report behind the benchmark',
             exact: true,
           },
-          {
-            type: 'link',
-            title: 'Archive',
-            href: '/arc3/archive/games',
-            icon: Archive,
-            description: 'Retired ARC-AGI-3 games and their replays',
-          },
-        ],
-      },
-      {
-        label: 'Research',
-        items: [
           {
             type: 'link',
             title: 'Hypothesis traces',
@@ -176,10 +182,10 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
           },
           {
             type: 'link',
-            title: 'Agent playground',
-            href: '/arc3/playground',
-            icon: Gamepad2,
-            description: 'Run an LLM agent against a task and watch it reason',
+            title: 'Archive',
+            href: '/arc3/archive/games',
+            icon: Archive,
+            description: 'Retired ARC-AGI-3 games and their replays',
           },
         ],
       },

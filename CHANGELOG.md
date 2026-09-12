@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.68.0  Sep 12, 2026
+
+- **ARC-3 nav dropdown stops pointing at the deprecated agent playground; the 25-game index is now searchable and every game carries a plain-English explanation** (Author: Claude Sonnet 5)
+  - **Nav (`client/src/components/layout/AppNavigation.tsx`).** The ARC-3 dropdown no longer links `/arc3/playground` — this site doesn't run agents against games anymore, so advertising that flow in the nav was stale. Its lead item is now `/arc3/games`, which previously had no nav entry at all despite being the actual front door for "what are these games."
+  - **`/arc3/games` (`Arc3GamesIndex.tsx`) is now actually searchable.** A search box filters a new scannable grid (screenshot, id, name, level count, one-line explanation, links straight to the per-game page) plus the existing full-text write-up list below it, by name/id/tag/mechanic. It was previously a static 25-entry text dump with no way to jump to one game besides scrolling.
+  - **`Arc3Story.tsx`'s buried "All 25 games" table is gone.** It sat ~430 lines into a long technical-report page; that section now just links to `/arc3/games`. Dropped the `PUBLIC_DEMO_SET`/`summarizeInput`/`ARC3_GAMES` import that only fed it.
+  - **R11L renamed "Rearrange Layout" → "Reaching Lurch."** The old name predated a mechanics reframe done by an eccentric chicken farmer after playing the game directly (commit `e47c5665`) and was never updated to match it. New name keeps the set's two-word, first-letters-match-the-id convention (R11L → R _ L _, confirmed against `m0r0`/`g50t`/`s5i5`/`tu93`/`sb26`/`dc22`/`cn04`/`cd82`). Added an explicit on-page credit: the blob/pseudopod mechanic was that discovery, not something the coding agents extracted from the source — the original write-up described it as generic shape-matching, which only holds through level 4.
+  - **New required `simpleExplanation` field on every game** (`shared/arc3Games/types.ts`), one or two plain sentences with jargon and source citations stripped out — not a "kids' version," just the same claim as `mechanicsExplanation` restated simply. Written for all 25 games. Surfaced as an "In Plain English" card on each game's page (`Arc3GameSpoiler.tsx`) and used as the grid-tile description on the searchable index.
+
 ### Version 9.67.0  Sep 12, 2026
 
 - **Untracked 171MB of raw audio and removed git-lfs from the working tree** (Author: Claude Opus 5)

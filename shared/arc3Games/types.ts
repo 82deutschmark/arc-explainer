@@ -95,6 +95,15 @@ export interface Arc3GameMetadata {
   /** Brief description of the game objective (may contain spoilers) */
   description: string;
 
+  /**
+   * Plain-language explanation of the core mechanic, one or two sentences, no jargon.
+   * Not a "kids' version" in tone -- just the same claim as `mechanicsExplanation` with
+   * the source-line citations and precise field names stripped out. Required so every
+   * game in the registry has one; the source of truth for correctness is still
+   * `mechanicsExplanation`, this just has to agree with it.
+   */
+  simpleExplanation: string;
+
   /** Detailed explanation of the game mechanics (full spoiler) */
   mechanicsExplanation?: string;
 

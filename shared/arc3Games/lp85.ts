@@ -16,6 +16,7 @@ export const lp85: Arc3GameMetadata = {
   officialTitle: 'lp85',
   informalName: 'Loop and Pull',
   description: 'Rotate a fixed loop of positions with buttons until each large block (yellow, and orange from level 3) sits on its matching small target square.',
+  simpleExplanation: 'Buttons step a shared loop of positions forward or backward. Get each colored block to land on its matching small target square.',
   mechanicsExplanation: 'A small target square (or two, from level 3 on, one yellow and one orange) marks where each larger block of the matching color needs to land -- the number of target squares actually ranges from one to three depending on the level, never a fixed four. You control the sequence by pushing red and green buttons, which only ever step the shared loop forward or backward by one position; there is no swap, push, or pull hidden in later levels.',
   category: 'evaluation',
   difficulty: 'hard',

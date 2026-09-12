@@ -17,6 +17,7 @@ export const tu93: Arc3GameMetadata = {
   officialTitle: 'tu93',
   informalName: 'Trail Unwind',
   description: 'From level 7 on, hazards wake and replay your own past moves against you as your move budget unwinds.',
+  simpleExplanation: 'You steer a token along a circuit-board of connected paths toward an exit. From level 7 on, some obstacles wake up and start copying your own past moves against you.',
   mechanicsExplanation: 'You steer a token along the printed wires of a circuit-board style grid, hopping between connected segments. Some blocks are breakable walls that shatter when walked into, but wake and lunge toward you if you stop in front of one without destroying it. A third kind slides back and forth on its own wire every turn regardless of your actions. Starting at level 7 of 9, a fourth kind stays dormant until you pass within two cells, then wakes -- its first couple of moves are just its own preset facing repeated, and only after that does it settle into replaying your own past moves one turn behind, retracing your path toward you. A shrinking move budget, your token being worn down to nothing by repeated hazard contact, and reaching a marked exit tile are the three ways a level ends.',
   category: 'evaluation',
   difficulty: 'unknown',

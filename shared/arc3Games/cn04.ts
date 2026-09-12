@@ -17,6 +17,7 @@ export const cn04: Arc3GameMetadata = {
   officialTitle: 'cn04',
   informalName: 'Coded Notches',
   description: 'Slide and turn loose parts until every printed mark meets its match on another part.',
+  simpleExplanation: 'You hold one part at a time, slide and rotate it, until every printed mark on it lines up with a matching mark on another part.',
   mechanicsExplanation: 'Anywhere from two to thirteen loose parts, depending on the level, each printed with marks; you hold one part at a time and slide it with the arrow actions until every mark meets a matching mark on another part. Interact gives the held part a quarter-turn -- or, where a spot is stacked with more than one part, swaps in the other part hiding underneath instead. There is no stretching or resizing anywhere in the game. A mark goes dark the instant it is satisfied. In most levels only the part currently in your hand shows its marks at all, so tracking what still needs to line up means remembering what you\'ve already seen.',
   category: 'evaluation',
   difficulty: 'unknown',
