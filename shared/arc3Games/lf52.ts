@@ -29,7 +29,7 @@ export const lf52: Arc3GameMetadata = {
     { action: 'ACTION3', description: 'Move rail cart Left', commonName: 'Left' },
     { action: 'ACTION4', description: 'Move rail cart Right', commonName: 'Right' },
     { action: 'ACTION6', description: 'Select/place a peg', commonName: 'Click' },
-    { action: 'ACTION7', description: 'Undo', commonName: 'Undo' },
+    { action: 'ACTION7', description: 'Undo', commonName: 'Undo', notes: 'One of only 3 public games (with bp35, sk48) where Undo is load-bearing, not a convenience -- see notes below.' },
   ],
   hints: [],
   resources: [
@@ -60,5 +60,5 @@ export const lf52: Arc3GameMetadata = {
   ],
   tags: ['peg-solitaire', 'linked-rooms', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: the original "adversarially verified" pass still missed the red peg, the manual rail cart, and the per-level move budget, caught by a second, independent re-verification.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: the original "adversarially verified" pass still missed the red peg, the manual rail cart, and the per-level move budget, caught by a second, independent re-verification. ACTION7 (Undo) cross-game note (2026-09-14): Mark identifies lf52 as one of only three public games (with bp35 and sk48) where Undo is load-bearing rather than a convenience -- see bp35.ts for the full breakdown of which games expose ACTION7 at all. Reasoning for why it matters here specifically: this is peg solitaire, a combinatorial puzzle where a hop that looks fine in isolation can quietly make the remaining board unsolvable, and that usually isn\'t obvious until several hops later. Combined with a hard per-level move ceiling (64/320/640) where every hop is irreversible on the board itself, a full Reset after a bad line throws away all the correct hops made before it and re-spends move budget re-deriving them, while Undo only costs you the bad hop(s) -- the difference between backing out one step and re-solving the level from scratch inside a shrinking budget. The multi-room rail-cart structure compounds this: a hop set up in one room may only reveal whether it was a mistake once the cart carries you to a room you couldn\'t see at the time, which is the same viewport-vs-world gap documented on bp35\'s page, just expressed through room transitions instead of scrolling.',
 };
