@@ -1,7 +1,9 @@
 /*
-Author: Claude Opus 5
-Date: 2026-09-03 (fourth pass: the local copy claims the ids it also publishes)
-PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, from TWO
+Author: Claude Opus 5 / Codex (GPT-6)
+Date: 2026-09-14
+Update: Add the independently validated research collection using the existing local-source
+        reader, ownership checks, source hashing and thumbnail/player contracts.
+PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, from THREE
          independent sources.
 
          SOURCE 1 (`upstream`, ARC3_UPSTREAM, default arc3.sonpham.net) is the shared
@@ -30,6 +32,10 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          from disk: no fetch, no cache, no TTL, no independent-failure path, because a
          local read cannot go stale or fall over. See
          docs/plans/2026-09-01-arc3-catalog-flip.md.
+
+         SOURCE 3 (`research`) contains the 25 experimental reasoning tasks in
+         server/data/arc3-research-games/. They use the same local reader, are separately
+         labeled, and have no human-review or benchmark-validation claim.
 
          The sources still fail INDEPENDENTLY. Each keeps its own manifest cache,
          source-path index and in-flight refresh, and each falls back to its own last good
@@ -123,6 +129,7 @@ const UPSTREAM = (process.env.ARC3_UPSTREAM ?? 'https://arc3.sonpham.net').repla
  * and the catalog would be empty in production while looking fine locally.
  */
 export const AUTHORED_DIR = path.join(process.cwd(), 'server', 'data', 'arc3-games');
+export const RESEARCH_DIR = path.join(process.cwd(), 'server', 'data', 'arc3-research-games');
 
 /** Son's Caddy sets max-age=300 on /static/. Matching it keeps us no staler than his CDN. */
 const MANIFEST_TTL_MS = 5 * 60 * 1000;
@@ -244,6 +251,17 @@ const SOURCES: MirrorSource[] = [
     key: 'arena',
     kind: 'local',
     base: AUTHORED_DIR,
+    manifestPath: 'manifest.json',
+    srcPath: (entry) => entry.src_file,
+    headers: {},
+    manifestCache: null,
+    srcPathIndex: new Map(),
+    inFlight: null,
+  },
+  {
+    key: 'research',
+    kind: 'local',
+    base: RESEARCH_DIR,
     manifestPath: 'manifest.json',
     srcPath: (entry) => entry.src_file,
     headers: {},

@@ -89,6 +89,9 @@ RUN echo "=== PREPARING ARCENGINE LIBRARY ===" && \
 RUN echo "=== ARC-3 PUBLISH INTEGRITY ===" && \
     PYTHONPATH=external/ARCEngine python3 scripts/arc3/check_publish_integrity.py
 
+# Research games are a separate catalog; verify all fixed-seed level replays as well.
+RUN PYTHONPATH=external/ARCEngine python3 scripts/arc3/check_research_games.py
+
 # Poetiq solver is now internalized at solver/poetiq/ (copied above)
 # Verify the internalized solver exists
 RUN echo "=== VERIFYING INTERNALIZED POETIQ SOLVER ===" && \

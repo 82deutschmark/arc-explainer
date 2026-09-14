@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.70.0  Sep 14, 2026
+
+- **Add a separate collection of 25 experimental reasoning games** (Author: Codex GPT-6).
+  - `server/data/arc3-research-games/` adds five five-level games for each of five research topics. All use opaque two-letter/two-number IDs and standalone ARC modules. Existing catalog loading, source hashing, thumbnails and Pyodide playback serve them.
+  - `/arc3/gallery?category=research` opens the collection. It is explicitly labeled as awaiting human review. Next task stays within the collection, and actions wait for their pixel animations at the declared frame rate; RESET can interrupt playback. The default gallery returns to the original reviewed set.
+  - Docker runs `check_research_games.py`: 375 packaged level replays plus all 25 failure/reset paths. Authoring verification also checks source/bundle frame parity, 25 rule mutations and four matched appearances for the five invariance games.
+  - These are research candidates, not human-calibrated benchmarks. No contributed-glowup games or original-game rules change.
+
 ### Version 9.69.0  Sep 12, 2026
 
 - **Game pages lead with pictures, real difficulty ranked from human data, BP35/VC33 corrected, dropped a confusing nav link** (Author: Claude Sonnet 5)

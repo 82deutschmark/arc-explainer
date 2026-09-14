@@ -1,6 +1,7 @@
 /*
-Author: Claude Opus 5
-Date: 2026-09-05
+Author: Claude Opus 5 / Codex (GPT-6)
+Date: 2026-09-14
+Update: Add the new research collection and category deep links while preserving blind tiles.
 PURPOSE: The blind task grid — arc3.markbarney.net's play surface. Every tile is one
          ARC-AGI-3 task, shown as its own opening frame and nothing else.
 
@@ -97,6 +98,7 @@ const ARC = {
  * surface should open on the work that stands up.
  */
 const SECTION_LABELS: { key: string; label: string; note: string; credit?: JSX.Element }[] = [
+  { key: 'research', label: 'Research collection', note: '25 new games with five levels each. Ready for first play and your feedback; human review is still pending.' },
   // "Hand-authored" was flatly untrue and sat here for weeks. Nobody hand-wrote these:
   // an agent generates them, and a person reviews, plays and sends them back for
   // revision, repeatedly, and still is -- the set moves week to week. The real line
@@ -278,9 +280,11 @@ export default function CommunityGallery() {
   const [page, setPage] = useState(0);
   // With the pipeline set leading and 877 tasks paginated 60 at a time, the official 25
   // would otherwise sit ten pages deep. These keep every section one click away.
-  // Defaults to the sonpham-org glow-ups (05-Sep-2026): newest verified batch, and the one
-  // we most want feedback on first. "All" is still one click away via the chip row.
-  const [category, setCategory] = useState<string | null>('contributed-glowup');
+  // A shared collection link should open that collection directly. Keep the original
+  // reviewed games as the default when no collection was selected.
+  const [category, setCategory] = useState<string | null>(
+    () => new URLSearchParams(window.location.search).get('category') || 'arena',
+  );
 
   const { data, isLoading, isError } = useQuery<GamesResponse>({
     queryKey: ['/api/arc3-mirror/games'],
