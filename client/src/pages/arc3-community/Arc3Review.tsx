@@ -1,6 +1,6 @@
 /*
-Author: Claude Opus 5
-Date: 2026-08-31 (revised 2026-09-01: the illegible count; 2026-09-07: visitor vs reviewer)
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-14
 PURPOSE: Resolves "just give me something to play" and redirects into it. Two routes, two
          audiences, and the audience decides which set is in scope:
            /arc3/review — a reviewer working through the generated set. Whole queue.
@@ -26,6 +26,7 @@ SRP/DRY check: Pass — resolution and redirect only. The ordering lives server-
          Arc3Triage, and playing lives in CommunityGamePlay; this owns neither.
 */
 
+import { publicGameId } from '@shared/arc3PublicIds';
 import { useEffect, useMemo } from 'react';
 import { useLocation, useRoute, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -96,7 +97,7 @@ export default function Arc3Review() {
   }, [review, stats, catalog, reviewerRoute]);
 
   useEffect(() => {
-    if (target) setLocation(`/arc3/play/${target}`, { replace: true });
+    if (target) setLocation(`/arc3/play/${publicGameId(target)}`, { replace: true });
   }, [target, setLocation]);
 
   const totals = review?.data?.totals;

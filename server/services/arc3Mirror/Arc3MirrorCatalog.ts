@@ -1,5 +1,5 @@
 /*
-Author: Claude Opus 5 / Codex (GPT-6)
+Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-14
 Update: Add the independently validated research collection using the existing local-source
         reader, ownership checks, source hashing and thumbnail/player contracts.
@@ -110,6 +110,7 @@ SRP/DRY check: Pass -- reading/caching/stripping only, parameterised per source
 */
 
 import { createHash } from 'node:crypto';
+import { canonicalGameId } from '../../../shared/arc3PublicIds';
 import fs from 'fs/promises';
 import path from 'path';
 import { logger } from '../../utils/logger';
@@ -593,6 +594,7 @@ export class Arc3MirrorCatalog {
   }
 
   static async getGame(gameId: string): Promise<MirroredGame | null> {
+    gameId = canonicalGameId(gameId);
     const games = await this.listGames();
     const exact = games.find((g) => g.gameId === gameId);
     if (exact) return exact;

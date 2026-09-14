@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Author: Claude Opus 5
-Date: 01-September-2026
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-14
 PURPOSE: Publish OUR hand-authored ARC-AGI-3 candidate tasks INTO this repo, under their
          ordinal ids, as the first-party catalog `Arc3MirrorCatalog`'s `authored` source serves
          from `server/data/arc3-games/`. One-shot for the initial 50 and repeatable for
@@ -77,7 +77,7 @@ BASE_CLASS = "ARCBaseGame"
 # The first argument of ARCBaseGame.__init__ is `game_id`, whether it is passed positionally
 # or by keyword. Anchored to the super() call so it can never match another string literal.
 SUPER_GAME_ID_RE = re.compile(
-    r"(super\(\)\.__init__\(\s*(?:game_id\s*=\s*)?)([\"'])([A-Za-z0-9_]+)\2"
+    r"(super\(\)\.__init__\(\s*(?:game_id\s*=\s*)?)([\"'])([A-Za-z0-9_-]+)\2"
 )
 
 #: Authoring filenames are `<id>_<mechanic>.py`; the id is the leading token.

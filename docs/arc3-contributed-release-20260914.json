@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-14",
+  "scope": "44 contributed public names and four frozen QC-qualified revisions; no research games; no evolution pool activation",
+  "games": {
+    "g500": {
+      "public_id": "ks01",
+      "candidate_id": "q001-v3",
+      "source_sha256": "05b9c890d485707e86910dff96a08c90a819c0abfd65f6d7253781dc47106f46",
+      "published_sha256": "4c1050f0d6aed61ad7688504791cfe7aa87f432408a3e056b886e15a7adad499",
+      "qc_status": "provisional_pass",
+      "machine_status": "machine_pass",
+      "pair_status": "pass",
+      "pair_score": 92.25,
+      "validation_kind": "machine tests and independent simulated reviews; not human approval",
+      "recordings": {
+        "win": "tests/fixtures/arc3-contributed-20260914/g500-win.json",
+        "loss": "tests/fixtures/arc3-contributed-20260914/g500-loss.json"
+      }
+    },
+    "g502": {
+      "public_id": "ey09",
+      "candidate_id": "q009-v3",
+      "source_sha256": "b9ef6744c6e24c0f506a9e8cdef5366891b47ee329d9f0cdfb098be7e8d8076c",
+      "published_sha256": "62738096469a60c99e05e72d3a868ecf1712387123484c79fd7193154c57157e",
+      "qc_status": "provisional_pass",
+      "machine_status": "machine_pass",
+      "pair_status": "pass",
+      "pair_score": 96.75,
+      "validation_kind": "machine tests and independent simulated reviews; not human approval",
+      "recordings": {
+        "win": "tests/fixtures/arc3-contributed-20260914/g502-win.json",
+        "loss": "tests/fixtures/arc3-contributed-20260914/g502-loss.json"
+      }
+    },
+    "g519": {
+      "public_id": "pc70",
+      "candidate_id": "q070-v3",
+      "source_sha256": "ca72c7c387c4f3d4023673d5f84f8d53e86a9a27dd67aaf757a9a7c7b01c87df",
+      "published_sha256": "1c5bd59b7cdc6443cbbf8cbe8e2dbe4429df6aad60260b5bc4177b3e2c1336ac",
+      "qc_status": "provisional_pass",
+      "machine_status": "machine_pass",
+      "pair_status": "pass",
+      "pair_score": 92.25,
+      "validation_kind": "machine tests and independent simulated reviews; not human approval",
+      "recordings": {
+        "win": "tests/fixtures/arc3-contributed-20260914/g519-win.json",
+        "loss": "tests/fixtures/arc3-contributed-20260914/g519-loss.json"
+      }
+    },
+    "g542": {
+      "public_id": "aq93",
+      "candidate_id": "q193-v3",
+      "source_sha256": "452a1655abaa829cfa5c7504b99b46b630e3939be30e5d880a9458e449c7191b",
+      "published_sha256": "5f70a46b8c08d9c59906468c80443fce757aaa04a802fd122abdad6bc7ab6b0b",
+      "qc_status": "provisional_pass",
+      "machine_status": "machine_pass",
+      "pair_status": "pass",
+      "pair_score": 96.75,
+      "validation_kind": "machine tests and independent simulated reviews; not human approval",
+      "recordings": {
+        "win": "tests/fixtures/arc3-contributed-20260914/g542-win.json",
+        "loss": "tests/fixtures/arc3-contributed-20260914/g542-loss.json"
+      }
+    }
+  }
+}

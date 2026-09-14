@@ -1,6 +1,6 @@
 /*
-Author: Claude Opus 5
-Date: 2026-08-28 / 2026-08-30 / 2026-09-06 / 2026-09-07 (prose + the Play button)
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-14
 PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: someone
          with no background who needs the idea in plain language and one game to try.
 
@@ -78,6 +78,7 @@ SRP/DRY check: Pass - reuses the mirror catalog + thumbnail endpoints that back 
          landingTheme.ts rather than copied a sixth time. Routing stays in App.tsx.
 */
 
+import { publicGameId } from '@shared/arc3PublicIds';
 import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -199,7 +200,7 @@ const RELATED = [
 ];
 
 function thumb(gameId: string, size = 256) {
-  return `/api/arc3-mirror/games/${encodeURIComponent(gameId)}/thumbnail?size=${size}`;
+  return `/api/arc3-mirror/games/${encodeURIComponent(publicGameId(gameId))}/thumbnail?size=${size}`;
 }
 
 function Scanlines() {
@@ -213,7 +214,7 @@ function Scanlines() {
 function Tile({ game, alt }: { game: Game; alt: boolean }) {
   /* Id only. The mirror strips names before they reach the browser. */
   return (
-    <Link href={`/arc3/play/${game.gameId}`} className="group block">
+    <Link href={`/arc3/play/${publicGameId(game.gameId)}`} className="group block">
         <div className="relative aspect-square overflow-hidden"
              style={{ background: ARC.tile, border: `1px solid ${ARC.border}` }}>
           <img src={thumb(game.gameId)} alt="" loading="lazy" decoding="async"
@@ -223,7 +224,7 @@ function Tile({ game, alt }: { game: Game; alt: boolean }) {
         </div>
         <div className="flex items-center justify-between gap-2 px-2 py-1"
              style={{ background: alt ? ARC.pinkAlt : ARC.pink, fontFamily: MONO }}>
-          <span className="text-[11px] tracking-[.55px] text-white truncate">{game.gameId}</span>
+          <span className="text-[11px] tracking-[.55px] text-white truncate">{publicGameId(game.gameId)}</span>
         </div>
     </Link>
   );
@@ -368,7 +369,7 @@ export default function SyntheticLanding() {
               {needsCoverage && (
                 <div className="mt-8 flex flex-col sm:flex-row gap-6 items-start p-6"
                      style={{ background: ARC.cell, border: `1px solid ${ARC.pink}` }}>
-                  <Link href={`/arc3/play/${needsCoverage.gameId}`} className="shrink-0 w-[150px] group">
+                  <Link href={`/arc3/play/${publicGameId(needsCoverage.gameId)}`} className="shrink-0 w-[150px] group">
                       <div className="relative aspect-square overflow-hidden"
                            style={{ border: `1px solid ${ARC.border}` }}>
                         <img src={thumb(needsCoverage.gameId)} alt=""
@@ -376,7 +377,7 @@ export default function SyntheticLanding() {
                         <Scanlines />
                       </div>
                       <div className="px-2 py-1 text-[11px] tracking-[.55px] text-white"
-                           style={{ background: ARC.pink, fontFamily: MONO }}>{needsCoverage.gameId}</div>
+                           style={{ background: ARC.pink, fontFamily: MONO }}>{publicGameId(needsCoverage.gameId)}</div>
                   </Link>
                   <div className="min-w-0">
                     <h2 className="text-[20px] font-bold mb-3">Play this one. Then roast us.</h2>
@@ -393,7 +394,7 @@ export default function SyntheticLanding() {
                     </p>
                     <div className="flex flex-wrap items-center gap-4">
                       <Link
-                        href={`/arc3/play/${needsCoverage.gameId}`}
+                        href={`/arc3/play/${publicGameId(needsCoverage.gameId)}`}
                         className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
                         style={{ background: ARC.pink, color: '#fff' }}
                       >
@@ -422,7 +423,7 @@ export default function SyntheticLanding() {
             {heroTiles.length > 0 && (
               <div className="grid grid-cols-3 gap-2">
                 {heroTiles.map((g) => (
-                  <Link key={g.gameId} href={`/arc3/play/${g.gameId}`}
+                  <Link key={g.gameId} href={`/arc3/play/${publicGameId(g.gameId)}`}
                         className="relative aspect-square overflow-hidden block group"
                         style={{ background: ARC.tile, border: `1px solid ${ARC.border}` }}>
                       <img src={thumb(g.gameId, 128)} alt="" loading="lazy"
