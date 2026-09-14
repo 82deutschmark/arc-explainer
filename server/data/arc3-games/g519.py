@@ -16,6 +16,25 @@ TERMINAL_INDEX = 10
 ACTIVE, WIN, LOSS = 0, 2, 3
 UNAVAILABLE = 255
 
+QC_RUNTIME_VERSION = "q070-v3-qc-repair-1"
+QC_CONTROL_LABELS = {
+    1: "Move the yellow cursor to the hollow magenta trail mark",
+    2: "Move the yellow cursor to the solid magenta trail mark",
+    3: "Select the next triangle; its black ring moves with selection",
+    4: "Scan at the selected triangle; a used station turns gray",
+    5: "Move the marked station; this control appears only when available",
+    6: "Commit only when green corners surround the yellow cursor",
+}
+QC_GOAL = (
+    "Spend every blue scan stone to remove possible signal places. In Level "
+    "1, yellow rays mark the next station allowed, while a used station turns "
+    "gray. Large purple signal rings mark the only surviving place; the "
+    "movable cursor is the small black diamond with a yellow center. Move it "
+    "until green corners appear, then click anywhere to commit. A wrong fix "
+    "marks one red strike, two strikes end the run, and the bottom trail marks "
+    "show the remaining action budget."
+)
+
 
 def beacon(position, metric="range", *, decoy=False):
     return {
@@ -72,9 +91,9 @@ def survey(
 LEVELS = [
     survey(
         "Snowline Ranges",
-        ((1, 3), (3, 2), (8, 3), (10, 4), (2, 3), (9, 8), (4, 9),
-         (5, 6), (7, 9), (10, 9), (1, 8), (6, 2), (11, 6), (3, 7)), 7,
-        (beacon((1, 1)), beacon((10, 1))), scans=2, budget=11,
+        ((1, 3), (3, 2), (8, 3), (10, 4), (5, 6), (10, 9)), 4,
+        (beacon((4, 1)), beacon((10, 1))), scans=2, budget=11,
+        fix_sites=((1, 3), (5, 6), (3, 2), (8, 3), (10, 4), (10, 9)),
     ),
     survey(
         "Third Bearing",
@@ -168,7 +187,7 @@ LEVELS = [
 
 
 KNOWN_SOLUTIONS = (
-    (4, 3, 4, *(1,) * 7, 6),
+    (4, 3, 4, 2, 6),
     (4, 3, 3, 4, 3, 4, *(1,) * 7, 6),
     (4, 3, 4, 3, 3, 4, *(1,) * 7, 6),
     (4, 3, 3, 4, 3, 4, *(1,) * 7, 6),
@@ -261,6 +280,25 @@ def singleton(mask):
     return mask != 0 and mask & (mask - 1) == 0
 
 
+def protocol_ready(level, state):
+    ready = state[4] == 0
+    if level["relocation"]:
+        ready = ready and bool(state[6])
+    if level["drift"]:
+        ready = ready and state[8] >= level["scans"]
+    return ready and singleton(state[3])
+
+
+def fix_ready(level, state):
+    if not protocol_ready(level, state):
+        return False
+    survivor = (state[3] & -state[3]).bit_length() - 1
+    return (
+        level["fix_sites"][state[0]]
+        == current_position(level, survivor, state[8])
+    )
+
+
 def transition(level, state, action):
     if state[TERMINAL_INDEX] or action not in (1, 2, 3, 4, 5, 6):
         return state
@@ -308,12 +346,7 @@ def transition(level, state, action):
 
     target_point = current_position(level, level["target"], phase)
     cursor_point = level["fix_sites"][cursor]
-    protocol_ready = scans_left == 0
-    if level["relocation"]:
-        protocol_ready = protocol_ready and bool(relocated)
-    if level["drift"]:
-        protocol_ready = protocol_ready and phase >= level["scans"]
-    if (protocol_ready and singleton(candidates)
+    if (protocol_ready(level, state) and singleton(candidates)
             and candidates & (1 << level["target"])
             and cursor_point == target_point):
         return state[:TERMINAL_INDEX] + (WIN,)
@@ -336,7 +369,7 @@ def map_point(point):
     return 7 + x * 4, 8 + y * 4
 
 
-class G519A(RenderableUserDisplay):
+class SurveyDisplay(RenderableUserDisplay):
     def __init__(self, game):
         self.game = game
 
@@ -441,6 +474,17 @@ class G519A(RenderableUserDisplay):
                     self.line(frame, center,
                               (center[0] + (index % 3) - 1, center[1] - 3),
                               VIOLET)
+                if singleton(state[3]):
+                    self.disc(frame, center, 6, VIOLET, hollow=True)
+                    self.disc(frame, center, 4, SKY, hollow=True)
+                    self.line(frame, (center[0] - 8, center[1]),
+                              (center[0] - 6, center[1]), VIOLET)
+                    self.line(frame, (center[0] + 6, center[1]),
+                              (center[0] + 8, center[1]), VIOLET)
+                    self.line(frame, (center[0], center[1] - 8),
+                              (center[0], center[1] - 6), VIOLET)
+                    self.line(frame, (center[0], center[1] + 6),
+                              (center[0], center[1] + 8), VIOLET)
                 if preview is not None:
                     survives = any(
                         state[3] & preview & (1 << index)
@@ -464,11 +508,24 @@ class G519A(RenderableUserDisplay):
         required = scan_order[scan_index] if scan_index < len(scan_order) else -1
         for index, item in enumerate(self.game.level["beacons"]):
             center = map_point(beacon_position(self.game.level, state[6], index))
-            color = ALPINE if index == state[1] else MAROON
+            used = bool(state[2] & (1 << index))
+            color = GRANITE if used else (ALPINE if index == state[1] else MAROON)
+            if index == state[1]:
+                self.disc(frame, center, 5, INK, hollow=True)
             if index == required:
-                self.disc(frame, center, 6, SUN, hollow=True)
-                self.diamond(frame, (center[0], center[1] - 7), 2, VIOLET)
+                self.line(frame, (center[0] - 7, center[1]),
+                          (center[0] - 5, center[1]), SUN, width=2)
+                self.line(frame, (center[0] + 5, center[1]),
+                          (center[0] + 7, center[1]), SUN, width=2)
+                self.line(frame, (center[0], center[1] - 8),
+                          (center[0], center[1] - 6), SUN, width=2)
+                self.diamond(frame, (center[0], center[1] + 7), 1, SUN)
             self.triangle(frame, center, 4, color, pattern=index)
+            if used:
+                for offset in (-2, 0, 2):
+                    self.line(frame, (center[0] - 3, center[1] + offset),
+                              (center[0] + 3, center[1] + offset), SHALE,
+                              dotted=bool(offset))
             metric = item["metric"]
             if metric == "climb":
                 self.line(frame, (center[0] - 3, center[1] + 5),
@@ -500,10 +557,41 @@ class G519A(RenderableUserDisplay):
                 y = 6 + round(4 * math.sin(angle))
                 frame[y, x] = VIOLET
 
+        span = max(1, self.game.budget_max - 1)
+        for index in range(self.game.budget_max):
+            x = 2 + round(index * 59 / span)
+            color = INK if index < self.game.budget_left else CLOUD
+            frame[63, x] = color
+            if index < self.game.budget_left and index % 2 == 0:
+                frame[62, x] = MEADOW
+
+    def cursor_guides(self, frame, state):
+        if (not self.game.level["scan_order"]
+                and not singleton(state[3]) and not state[7]):
+            return
+        count = len(self.game.level["fix_sites"])
+        previous = map_point(self.game.level["fix_sites"][(state[0] - 1) % count])
+        following = map_point(self.game.level["fix_sites"][(state[0] + 1) % count])
+        here = map_point(self.game.level["fix_sites"][state[0]])
+        self.line(frame, here, previous, MAGENTA, dotted=True)
+        self.line(frame, here, following, MAGENTA, dotted=False)
+        self.diamond(frame, previous, 2, MAGENTA, hollow=True)
+        frame[previous[1], previous[0]] = SNOW
+        self.diamond(frame, following, 2, MAGENTA)
+
     def cursor(self, frame, state, center=None, color=INK):
         center = center or map_point(self.game.level["fix_sites"][state[0]])
         self.diamond(frame, center, 4, color, hollow=True)
         self.disc(frame, center, 1, SUN)
+        if center == map_point(self.game.level["fix_sites"][state[0]]) and fix_ready(
+                self.game.level, state):
+            for dx, dy in ((-6, -6), (6, -6), (-6, 6), (6, 6)):
+                self.line(frame, (center[0] + dx, center[1] + dy),
+                          (center[0] + dx // 2, center[1] + dy), MEADOW,
+                          width=2)
+                self.line(frame, (center[0] + dx, center[1] + dy),
+                          (center[0] + dx, center[1] + dy // 2), MEADOW,
+                          width=2)
 
     def relocation_preview(self, frame, state):
         relocation = self.game.level["relocation"]
@@ -549,10 +637,17 @@ class G519A(RenderableUserDisplay):
             if progress > span // 2:
                 removed = before[3] & ~after[3]
                 for hypothesis in range(len(game.level["tracks"])):
-                    if removed & (1 << hypothesis):
+                    if before[3] & (1 << hypothesis):
                         point = current_position(game.level, hypothesis, before[8])
-                        self.line(frame, (map_point(point)[0] - 2, map_point(point)[1] - 2),
-                                  (map_point(point)[0] + 2, map_point(point)[1] + 2), RED)
+                        destination = map_point(point)
+                        rejected = bool(removed & (1 << hypothesis))
+                        self.line(frame, center, destination,
+                                  ROSE if rejected else VIOLET,
+                                  dotted=rejected)
+                        if rejected:
+                            self.line(frame,
+                                      (destination[0] - 2, destination[1] - 2),
+                                      (destination[0] + 2, destination[1] + 2), RED)
         elif game.anim_kind == "preview":
             destination = map_point(game.level["relocation"]["to"])
             self.disc(frame, destination, 3 + wave, MAGENTA, hollow=True)
@@ -566,11 +661,43 @@ class G519A(RenderableUserDisplay):
             center = (a[0] + (b[0] - a[0]) * progress // span,
                       a[1] + (b[1] - a[1]) * progress // span)
             self.triangle(frame, center, 4, MAGENTA, pattern=index)
+        elif game.anim_kind == "repeat_scan":
+            center = map_point(beacon_position(game.level, before[6], before[1]))
+            self.disc(frame, center, 5 + wave, GRANITE, hollow=True)
+            for offset in (-2, 0, 2):
+                self.line(frame, (center[0] - 4 - wave, center[1] + offset),
+                          (center[0] + 4 + wave, center[1] + offset), SHALE,
+                          dotted=bool(offset))
+        elif game.anim_kind == "order_block":
+            scan_index = game.level["scans"] - before[4]
+            order = game.level["scan_order"]
+            required = order[scan_index] if scan_index < len(order) else before[1]
+            center = map_point(beacon_position(game.level, before[6], required))
+            for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                start = (center[0] + dx * (5 + wave),
+                         center[1] + dy * (5 + wave))
+                end = (center[0] + dx * (7 + wave),
+                       center[1] + dy * (7 + wave))
+                self.line(frame, start, end, SUN, width=2)
+        elif game.anim_kind in ("empty_scan", "move_unavailable", "scan_blocked"):
+            if game.anim_kind == "empty_scan":
+                center = (7, 60)
+            else:
+                center = map_point(beacon_position(game.level, before[6], before[1]))
+            self.disc(frame, center, 3 + wave, GRANITE, hollow=True)
+            self.line(frame, (center[0] - 3, center[1] - 3),
+                      (center[0] + 3, center[1] + 3), SHALE, width=2)
         elif game.anim_kind == "reject":
             center = map_point(game.level["fix_sites"][before[0]])
             offset = (-2, 2, -1, 1, 0, 1, 0)[min(progress, 6)]
             self.diamond(frame, (center[0] + offset, center[1]), 5,
                          RED, hollow=True)
+            if singleton(before[3]):
+                survivor = (before[3] & -before[3]).bit_length() - 1
+                signal = map_point(current_position(
+                    game.level, survivor, before[8]))
+                self.line(frame, center, signal, ROSE, dotted=True)
+                self.disc(frame, signal, 6 + wave, VIOLET, hollow=True)
         elif game.anim_kind == "success":
             center = map_point(game.level["fix_sites"][before[0]])
             self.disc(frame, center, 4 + progress * 3, MEADOW, hollow=True)
@@ -598,6 +725,7 @@ class G519A(RenderableUserDisplay):
         self.candidates(frame, state)
         self.beacons(frame, state)
         self.instruments(frame, state)
+        self.cursor_guides(frame, state)
         self.cursor(frame, state)
         self.relocation_preview(frame, state)
         self.animation(frame)
@@ -606,7 +734,7 @@ class G519A(RenderableUserDisplay):
 
 class G519(ARCBaseGame):
     def __init__(self):
-        self.display = G519A(self)
+        self.display = SurveyDisplay(self)
         self.level = LEVELS[0]
         self.state = start_state(self.level)
         self.budget_left = self.budget_max = 0
@@ -622,6 +750,14 @@ class G519(ARCBaseGame):
             Camera(0, 0, 64, 64, SNOW, SNOW, [self.display]),
             False, len(levels), [1, 2, 3, 4, 5, 6],
         )
+        self._available_actions = self.level_actions()
+
+    def level_actions(self):
+        actions = [1, 2, 3, 4]
+        if self.level["relocation"] and not self.state[6]:
+            actions.append(5)
+        actions.append(6)
+        return actions
 
     def on_set_level(self, _level):
         self.level = LEVELS[self.level_index]
@@ -630,6 +766,7 @@ class G519(ARCBaseGame):
         self.anim_kind = None
         self.anim_left = self.anim_total = self.anim_progress = 0
         self.pending_state = self.pending_budget = self.pending_terminal = None
+        self._available_actions = self.level_actions()
 
     def begin(self, kind, frames, state, budget, terminal=None):
         self.anim_kind = kind
@@ -645,6 +782,7 @@ class G519(ARCBaseGame):
         self.budget_left = self.pending_budget
         self.anim_kind = None
         self.pending_state = self.pending_budget = self.pending_terminal = None
+        self._available_actions = self.level_actions()
         if terminal == "win":
             self.next_level()
         elif terminal == "loss":
@@ -665,7 +803,22 @@ class G519(ARCBaseGame):
         before = self.state
         after = transition(self.level, before, action)
         if after == before:
-            self.begin("blocked", 5, before, self.budget_left)
+            kind = "blocked"
+            if action == 4:
+                scan_index = self.level["scans"] - before[4]
+                order = self.level["scan_order"]
+                if (scan_index < len(order)
+                        and before[1] != order[scan_index]):
+                    kind = "order_block"
+                elif before[4] <= 0:
+                    kind = "empty_scan"
+                elif before[2] & (1 << before[1]):
+                    kind = "repeat_scan"
+                else:
+                    kind = "scan_blocked"
+            elif action == 5:
+                kind = "move_unavailable"
+            self.begin(kind, 6, before, self.budget_left)
             return
         cost = action_cost(before, after)
         budget = self.budget_left - cost

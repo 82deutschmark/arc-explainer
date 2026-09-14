@@ -1,6 +1,6 @@
 /*
-Author: Claude Opus 5
-Date: 2026-09-03 (fourth pass: the local copy claims the ids it also publishes)
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-14
 PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, from TWO
          independent sources.
 
@@ -104,6 +104,7 @@ SRP/DRY check: Pass -- reading/caching/stripping only, parameterised per source
 */
 
 import { createHash } from 'node:crypto';
+import { canonicalGameId } from '../../../shared/arc3PublicIds';
 import fs from 'fs/promises';
 import path from 'path';
 import { logger } from '../../utils/logger';
@@ -575,6 +576,7 @@ export class Arc3MirrorCatalog {
   }
 
   static async getGame(gameId: string): Promise<MirroredGame | null> {
+    gameId = canonicalGameId(gameId);
     const games = await this.listGames();
     const exact = games.find((g) => g.gameId === gameId);
     if (exact) return exact;
