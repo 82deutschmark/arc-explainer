@@ -133,12 +133,17 @@ def load_frames(jsonl_path: pathlib.Path, max_frames: int | None = None) -> tupl
 
 
 def filter_frame_events(frames_payload: List[dict], file_label: str) -> List[dict]:
-    """Remove entries that do not contain a frame."""
+    """Remove entries that do not contain a non-empty frame grid.
+
+    GAME_OVER events sometimes carry `frame: []` (no grid at all) instead of
+    omitting the key -- observed in live-play replays with repeated deaths.
+    """
     filtered: List[dict] = []
     skipped = 0
     for payload in frames_payload:
         data = payload.get("data") or {}
-        if "frame" not in data:
+        frame = data.get("frame")
+        if not frame or not frame[0]:
             skipped += 1
             continue
         filtered.append(payload)
