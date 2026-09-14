@@ -28,7 +28,7 @@ export const sk48: Arc3GameMetadata = {
     { action: 'ACTION3', description: 'Extend/retract Left', commonName: 'Left' },
     { action: 'ACTION4', description: 'Extend/retract Right', commonName: 'Right' },
     { action: 'ACTION6', description: 'Select a skewer', commonName: 'Click' },
-    { action: 'ACTION7', description: 'Undo', commonName: 'Undo' },
+    { action: 'ACTION7', description: 'Undo', commonName: 'Undo', notes: 'One of only 3 public games (with bp35, lf52) where Undo is load-bearing, not a convenience -- see notes below.' },
   ],
   hints: [],
   resources: [
@@ -57,5 +57,5 @@ export const sk48: Arc3GameMetadata = {
   ],
   tags: ['skewer', 'threading', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: adversarial re-verification confirmed the skewer pushes beads rather than passing through them, and added the level-5+ solid walls; the win-condition specifics are still an open gap.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: adversarial re-verification confirmed the skewer pushes beads rather than passing through them, and added the level-5+ solid walls; the win-condition specifics are still an open gap. ACTION7 (Undo) cross-game note (2026-09-14): Mark identifies sk48 as one of only three public games (with bp35 and lf52) where Undo is load-bearing rather than a convenience -- see bp35.ts for the full breakdown of which games expose ACTION7 at all. Reasoning for why it matters here specifically: this is a push-block mechanic (the skewer shoves beads ahead of its tip instead of passing through them), and push-block puzzles are the classic case where moves are one-directional -- retracting or sliding the skewer back does not pull a pushed bead back with it, so a bad extension can permanently scramble the bead arrangement with no way to recover it by further play. That is presumably why the source implementation makes Undo explicitly restore bead positions, not just skewer position (per mechanicsExplanation) -- ordinary movement cannot undo a push, only the dedicated Undo can. Bounded by a step budget same as bp35/lf52, so Undo also saves you from re-spending moves re-deriving a bead layout a Reset would have thrown away.',
 };
