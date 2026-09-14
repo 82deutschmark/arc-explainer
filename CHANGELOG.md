@@ -12,7 +12,7 @@
 # reference the old numbers.
 
 
-### Version 9.70.0  Sep 14, 2026
+### Version 9.71.0  Sep 14, 2026
 
 - **Name all 44 contributed games and publish four QC-qualified simplified revisions** (Author: Codex, GPT-6).
   - The contributed gallery, player and links use stable two-letter/two-digit names. Existing g500–g543 URLs, engine IDs, telemetry and feedback keys continue to resolve through one shared mapping.
@@ -20,6 +20,14 @@
   - Match these four games' printed Z prompts to ACTION5, keep Space as an alternative and expose the website Undo on U. Respect their per-level control unlocks and refresh the control map against the loaded source version. The publication smoke check verifies the union across level openings for games that unlock actions later. The importer now recognizes versioned source IDs containing hyphens so exported frames retain the canonical website identity.
   - Validation includes the full publication integrity gate, all 44 old/new source URL pairs, deterministic replays of all 32 revised levels and four recorded losses, exact recorded frame hashes, production build and browser checks. Release source hashes and fixtures are recorded in `docs/arc3-contributed-release-20260914.json`.
   - This is a partial website release; the canonical evolution pool stays unchanged and the 44-game simplification batch remains unfinished. The QC evidence does not claim human approval.
+
+### Version 9.70.0  Sep 14, 2026
+
+- **Add a separate collection of 25 experimental reasoning games** (Author: Codex GPT-6).
+  - `server/data/arc3-research-games/` adds five five-level games for each of five research topics. All use opaque two-letter/two-number IDs and standalone ARC modules. Existing catalog loading, source hashing, thumbnails and Pyodide playback serve them.
+  - `/arc3/gallery?category=research` opens the collection. It is explicitly labeled as awaiting human review. Next task stays within the collection, and actions wait for their pixel animations at the declared frame rate; RESET can interrupt playback. The default gallery returns to the original reviewed set.
+  - Docker runs `check_research_games.py`: 375 packaged level replays plus all 25 failure/reset paths. Authoring verification also checks source/bundle frame parity, 25 rule mutations and four matched appearances for the five invariance games.
+  - These are research candidates, not human-calibrated benchmarks. No contributed-glowup games or original-game rules change.
 
 ### Version 9.69.0  Sep 12, 2026
 

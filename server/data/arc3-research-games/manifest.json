@@ -1,0 +1,227 @@
+[
+  {
+    "id": "am84",
+    "class_name": "Am84",
+    "src_file": "am84.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "bf75",
+    "class_name": "Bf75",
+    "src_file": "bf75.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "bt91",
+    "class_name": "Bt91",
+    "src_file": "bt91.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "cu64",
+    "class_name": "Cu64",
+    "src_file": "cu64.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "dv51",
+    "class_name": "Dv51",
+    "src_file": "dv51.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "es81",
+    "class_name": "Es81",
+    "src_file": "es81.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "ex92",
+    "class_name": "Ex92",
+    "src_file": "ex92.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "fr52",
+    "class_name": "Fr52",
+    "src_file": "fr52.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "gp53",
+    "class_name": "Gp53",
+    "src_file": "gp53.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "hj65",
+    "class_name": "Hj65",
+    "src_file": "hj65.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "iz54",
+    "class_name": "Iz54",
+    "src_file": "iz54.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "jl93",
+    "class_name": "Jl93",
+    "src_file": "jl93.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "ke73",
+    "class_name": "Ke73",
+    "src_file": "ke73.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "ks55",
+    "class_name": "Ks55",
+    "src_file": "ks55.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "ln85",
+    "class_name": "Ln85",
+    "src_file": "ln85.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "md61",
+    "class_name": "Md61",
+    "src_file": "md61.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "nu72",
+    "class_name": "Nu72",
+    "src_file": "nu72.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "oy83",
+    "class_name": "Oy83",
+    "src_file": "oy83.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "px71",
+    "class_name": "Px71",
+    "src_file": "px71.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "qo94",
+    "class_name": "Qo94",
+    "src_file": "qo94.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "rv63",
+    "class_name": "Rv63",
+    "src_file": "rv63.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "tq62",
+    "class_name": "Tq62",
+    "src_file": "tq62.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "uy95",
+    "class_name": "Uy95",
+    "src_file": "uy95.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "wk82",
+    "class_name": "Wk82",
+    "src_file": "wk82.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  },
+  {
+    "id": "za74",
+    "class_name": "Za74",
+    "src_file": "za74.py",
+    "category": "research",
+    "official": false,
+    "default_fps": 12,
+    "tile_scale": 4
+  }
+]

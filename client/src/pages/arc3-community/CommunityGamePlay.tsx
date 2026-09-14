@@ -1,6 +1,8 @@
 /*
 Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-14
+Update: Keep Next task inside the research collection and complete its pixel animations
+        at the declared frame rate before accepting another move.
 PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the way the
          official ARC-AGI-3 player does it. Full rewrite of the previous page, replaced
          rather than patched for three reasons:
@@ -346,6 +348,8 @@ export default function CommunityGamePlay() {
     () => catalog?.data?.games?.find((g) => g.gameId === gameId) ?? null,
     [catalog, gameId],
   );
+  const researchAnimating = meta?.category === 'research'
+    && displayFrameIndex < (frame?.frame?.length ?? 1) - 1;
 
   /** Which tasks anyone has ever played, so Next can prefer one nobody has touched. */
   const { data: stats } = useQuery<{ data: { games: { game_id: string }[] } }>({
@@ -435,7 +439,9 @@ export default function CommunityGamePlay() {
      * direct link. Walking that group would hand a visitor a set the site declines to
      * offer them, so those fall through to the catalog pool exactly as before.
      */
-    const group = (!reviewing && isVisitorFacing({ category: mine }))
+    // Opening the experimental collection opts into walking its 25 tasks. This does
+    // not add unreviewed games to the default visitor recommendation pool.
+    const group = (!reviewing && (mine === 'research' || isVisitorFacing({ category: mine })))
       ? games.filter((g) => g.category === mine)
         .sort((a, b) => withinGroupOrder(a, b, queuePlace))
       : [];
@@ -582,7 +588,7 @@ export default function CommunityGamePlay() {
    * The grid currently on screen, and the single source of its dimensions.
    *
    * Read from `displayFrameIndex` rather than frame[0] because applyFrame walks
-   * multi-frame responses on a 200ms timer: a click landing mid-animation must map
+   * multi-frame responses on a timer: a click landing mid-animation must map
    * against the grid the player is actually looking at, and a game whose frames differ
    * in size would otherwise map against the wrong one.
    */
@@ -617,15 +623,17 @@ export default function CommunityGamePlay() {
   const applyFrame = useCallback((next: PyodideFrameData) => {
     setFrame(next);
     const total = next.frame?.length ?? 1;
+    const interval = meta?.category === 'research'
+      ? 1000 / Math.max(1, meta.defaultFps || 12) : 200;
     if (animRef.current) clearTimeout(animRef.current);
     if (total > 1) {
       setDisplayFrameIndex(0);
       let i = 0;
       const step = () => {
         i += 1;
-        if (i < total) { setDisplayFrameIndex(i); animRef.current = setTimeout(step, 200); }
+        if (i < total) { setDisplayFrameIndex(i); animRef.current = setTimeout(step, interval); }
       };
-      animRef.current = setTimeout(step, 200);
+      animRef.current = setTimeout(step, interval);
     } else {
       setDisplayFrameIndex(0);
     }
@@ -633,7 +641,7 @@ export default function CommunityGamePlay() {
     if (s === 'WIN' || s === 'WON') setGameState('won');
     else if (s === 'GAME_OVER' || s === 'LOSE' || s === 'LOST') setGameState('lost');
     else setGameState('playing');
-  }, []);
+  }, [meta]);
 
   /**
    * @param silent live tick -- advances the game but is not recorded. A held key at 10-30fps
@@ -652,6 +660,7 @@ export default function CommunityGamePlay() {
     silent = false,
     proven = false,
   ) => {
+    if (researchAnimating && action !== 'RESET') return;
     if (action !== 'RESET' && (gameState === 'won' || gameState === 'lost')) return;
     if (!proven && !canSend(action)) return;
     try {
@@ -676,12 +685,12 @@ export default function CommunityGamePlay() {
       }
       applyFrame(next);
     } catch { /* surfaced through pyodide.error */ }
-  }, [pyodide, canSend, applyFrame, gameState]);
+  }, [pyodide, canSend, applyFrame, gameState, researchAnimating]);
 
   const undo = useCallback(async () => {
-    if (!frame?.undo_depth || pyodide.isActing) return;
+    if (!frame?.undo_depth || pyodide.isActing || researchAnimating) return;
     try { applyFrame(await pyodide.undo()); } catch { /* surfaced through pyodide.error */ }
-  }, [pyodide, frame, applyFrame]);
+  }, [pyodide, frame, applyFrame, researchAnimating]);
 
   // ── The board as a click target ─────────────────────────────────────────────
   /**
@@ -983,7 +992,7 @@ export default function CommunityGamePlay() {
     label,
     onPress: () => void act(action),
     unavailable: !canSend(action),
-    disabled: pyodide.isActing || gameState !== 'playing',
+    disabled: pyodide.isActing || researchAnimating || gameState !== 'playing',
   });
 
   /*
@@ -1088,7 +1097,7 @@ export default function CommunityGamePlay() {
           undo={{
             label: `UNDO (${undoKey.toUpperCase()})`,
             onPress: () => void undo(),
-            disabled: !frame?.undo_depth || pyodide.isActing,
+            disabled: !frame?.undo_depth || pyodide.isActing || researchAnimating,
           }}
           reset={{
             label: 'RESET',

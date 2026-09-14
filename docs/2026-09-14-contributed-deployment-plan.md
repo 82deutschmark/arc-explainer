@@ -29,3 +29,18 @@ are simulated reviews, not human approval.
 6. Merge the scoped release, observe the Railway deployment and verify the live gallery and source hashes.
 
 `arc3-contributed-release-20260914.json` records the source and published hashes and fixture paths.
+
+## Concurrent production update
+
+During preparation, research PR #464 was merged separately as 89b1dff8. This branch integrates
+that existing main commit without changing its research sources; its diff against current main
+contains only the contributed release and its publication integration. No research work is
+merged by this release. The research collection therefore reflects that separate publication.
+
+## Checks completed before release
+
+- All 94 bundled authored/contributed games pass the production publication integrity gate.
+- All 44 contributed modules import and respond; all 44 public/legacy source pairs resolve identically.
+- Four revised campaigns and their losses replay twice: 32 distinct levels, 16 replays, 5,800 frames.
+- Production build passes. Project-wide TypeScript checking reports 12 errors in existing unrelated
+  SnakeBench, ingestion and test files; no errors are reported in this release’s changed files.
