@@ -19,7 +19,8 @@ export const ka59: Arc3GameMetadata = {
   simpleExplanation: 'You push boxes until each one sits exactly in its matching outline. Pushing into another box takes a few turns to move it along, and a special block can only be moved by being pushed or knocked into place.',
   mechanicsExplanation: 'Click a box to select it, then push it with the arrow actions. Pushing into another movable object doesn\'t move it instantly -- it takes several turns of continued pushing, with recursive chain-pushing of anything further in line, before the push resolves. Every ordinary box must end up sitting exactly inside its matching outlined frame. A special block -- never directly selectable -- can only be repositioned by being pushed by a box or, in later levels, knocked around by a bomb\'s blast once its fuse burns down; most levels give you one of these blocks with its own frame to land in, but level 3 drops two of them at once outnumbering that level\'s single regular box, and level 5\'s special block has no frame at all, so where it ends up is never checked. A step budget ends the level in a loss if it runs out first.',
   category: 'evaluation',
-  difficulty: 'medium',
+  humanDifficulty: 'medium',
+  aiDifficulty: 'medium',
   levelCount: 7,
   actionMappings: [
     { action: 'ACTION1', description: 'Push selected box Up', commonName: 'Up' },

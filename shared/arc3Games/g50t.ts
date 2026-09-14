@@ -32,7 +32,8 @@ export const g50t: Arc3GameMetadata = {
   simpleExplanation: 'Nothing tells you this up front, so figuring it out costs you a run: every move you make toward the goal chest is being recorded. The fifth action isn\'t a simple rewind — it walks you back to the start and spawns a ghost twin that performs that exact recorded sequence, move for move, right alongside whatever you do next. You\'re meant to use that twin to hold a pressure plate down while the real you goes finish the job. A timer bar drains as you act and ends the run if it empties first.',
   mechanicsExplanation: 'You control a small avatar navigating a dungeon-style room toward a goal chest, and every successful move is silently appended to a history list. The fifth action doesn\'t move you -- it plays that history back in reverse to walk you to the start, then clones your just-finished self into a ghost twin bound to that exact move list. From then on, the twin re-executes its recorded moves in lockstep with your live moves, one step per step you take, whether or not that still makes sense for the room you\'re now in. Nothing in the level explains this before you trigger it, so a first attempt can\'t be a clean run -- you\'re meant to spend it learning what the fifth action does, then use the twin(s) it leaves behind to hold pressure plates while the real you reaches the chest. A timer bar drains on a fixed schedule tied to your action count and ends the run at zero if it beats you there. The last two levels add roaming patrols that kill on contact, and three middle levels add paired tiles that teleport whatever is standing on one to its linked partner.',
   category: 'evaluation',
-  difficulty: 'hard',
+  humanDifficulty: 'hard',
+  aiDifficulty: 'very-hard',
   levelCount: 7,
   actionMappings: [
     { action: 'ACTION1', description: 'Move Up', commonName: 'Up' },

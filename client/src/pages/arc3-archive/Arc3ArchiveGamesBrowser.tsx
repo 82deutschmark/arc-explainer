@@ -41,8 +41,8 @@ function GameCard({ game }: { game: Arc3GameMetadata }) {
               )}
             </CardDescription>
           </div>
-          <Badge className={difficultyColors[game.difficulty]}>
-            {game.difficulty}
+          <Badge className={difficultyColors[game.humanDifficulty]}>
+            {game.humanDifficulty}
           </Badge>
         </div>
       </CardHeader>

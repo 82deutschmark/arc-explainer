@@ -21,7 +21,8 @@ export const sp80: Arc3GameMetadata = {
   simpleExplanation: 'You position platforms first, then start a stream of liquid that flows automatically. Get all of it into the yellow containers, or the level fails and resets.',
   mechanicsExplanation: 'You must position all platforms perfectly before initiating the stream. Initiating the stream is done with ACTION5 (Interact). Once triggered, the stream flows over several frames automatically -- and in 3 of the 6 levels the whole screen is rendered upside-down, so the same downward flow looks like it\'s rising. If the liquid spills outside the yellow U-shaped containers, the level fails and must be reset; a correctly filled container turns dark red. If all liquid is contained, you pass to the next level.',
   category: 'evaluation',
-  difficulty: 'hard',
+  humanDifficulty: 'hard',
+  aiDifficulty: 'hard',
   actionMappings: [
     { action: 'ACTION5', description: 'Start the liquid stream', commonName: 'Interact/Execute' },
     { action: 'ACTION6', description: 'Place or move platforms', commonName: 'Click' },

@@ -29,7 +29,8 @@ export const vc33: Arc3GameMetadata = {
   simpleExplanation: 'White columns act like liquid, and you drain or fill them from station to station. It doesn\'t always look like a vertical tube of liquid -- on some levels the same fill-and-drain runs sideways instead, which is what makes it read as confusing at first. Once a gap closes enough, click the crossing bar to swap the two players across it, before your clicks run out.',
   mechanicsExplanation: 'The white columns function like liquid or water within a closed system -- but "column" here means a run of connected cells along whichever axis that level draws it on, not necessarily standing up: some levels present as ordinary vertical tubes rising off a floor line, others run the identical fill-and-drain sideways, left to right. Clicking red/maroon controller squares causes the "liquid" to flow from one contained area to another -- the blue-colored squares aren\'t a second control, they\'re just the disabled look of a separate crossing-trigger bar before it\'s ready. Large player squares (yellow, green, purple) cannot be manually selected, and don\'t glide across on their own either: once a gap clears enough to align that bar, you have to click it directly, and the click swaps the two player squares on either side of the gap with each other. If a player square is sitting on a column, it moves with that column\'s fill level along whichever axis the column runs, similar to a person sitting on top of a tube of liquid. Every click, including a wasted one, spends part of a small per-level budget; run out before finishing and you lose.',
   category: 'evaluation',
-  difficulty: 'medium',
+  humanDifficulty: 'medium',
+  aiDifficulty: 'easy',
   actionMappings: [
     { action: 'ACTION6', description: 'Click red/maroon controller to shift liquid, or click the crossing bar to swap players', commonName: 'Click' },
   ],
