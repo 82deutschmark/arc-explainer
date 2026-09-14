@@ -133,3 +133,37 @@ export function getGameById(gameId: string) {
 export function hasGameMetadata(gameId: string): boolean {
   return gameId in ARC3_GAMES;
 }
+
+/**
+ * Ids withdrawn from the current 25-game public demo set but kept in the registry for
+ * historical content (see as66.ts's notes). Kept in sync by hand with the same set in
+ * Arc3GamesIndex.tsx and arc3GameMechanicsDoc.ts -- all three read from this registry but
+ * none of them import from each other.
+ */
+const WITHDRAWN_IDS = new Set(['as66']);
+
+/**
+ * Every game id in the current 25-game public demo set, in the exact order ARC Prize
+ * itself presents them: plain alphabetical by id, ignoring category (preview vs
+ * evaluation) -- unlike getAllGames(), which sorts category first. AR25 first, WA30 last.
+ */
+export function getPublicDemoGameIdsInOrder(): string[] {
+  return Object.keys(ARC3_GAMES)
+    .filter((id) => !WITHDRAWN_IDS.has(id))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * The game immediately before/after `gameId` in that alphabetical ordering. Either side
+ * is null at the ends of the list, and both are null if `gameId` isn't in the live set
+ * (not in the registry at all, or withdrawn like as66).
+ */
+export function getAdjacentGameIds(gameId: string): { prevId: string | null; nextId: string | null } {
+  const order = getPublicDemoGameIdsInOrder();
+  const index = order.indexOf(gameId);
+  if (index === -1) return { prevId: null, nextId: null };
+  return {
+    prevId: index > 0 ? order[index - 1] : null,
+    nextId: index < order.length - 1 ? order[index + 1] : null,
+  };
+}
