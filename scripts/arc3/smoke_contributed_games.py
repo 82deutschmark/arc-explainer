@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Author: Codex
-Date: 05-September-2026
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-14
 PURPOSE: Smoke-test every published contributed glow-up through ARCEngine. A game must
          import, expose 7-12 levels, return a 64x64 reset frame, accept every advertised
          action, and visibly respond to at least one action from its opening state. This
          catches publishable-looking Python modules that the web player cannot actually run.
+         For controls unlocked by later levels, compare the full level-opening union with
+         the static action domain instead of requiring every control in the first lesson.
 SRP/DRY check: Pass -- runtime verification only; action and category facts are read from
          the generated mechanic digest rather than reconstructed here.
 """
@@ -75,9 +77,20 @@ def check_game(row: dict) -> list[str]:
         opening = last_frame(reset)
         advertised = sorted(int(action) for action in reset.available_actions)
         if advertised != row["availableActions"]:
-            failures.append(
-                f"engine advertises {advertised}, digest publishes {row['availableActions']}"
-            )
+            # The digest describes the whole source; PC70 unlocks ACTION5 in a later
+            # lesson and intentionally omits it from early frames. Still require exact
+            # equality over all level openings, so a missing or extra control fails.
+            all_advertised = set(advertised)
+            for level_index in range(1, level_count):
+                probe.set_level(level_index)
+                # RESET restarts the campaign, so inspect the engine's actual published
+                # action list immediately after the normal level-initialization hook.
+                all_advertised.update(int(action) for action in probe._available_actions)
+            if sorted(all_advertised) != row["availableActions"]:
+                failures.append(
+                    f"engine advertises {sorted(all_advertised)} across levels, "
+                    f"digest publishes {row['availableActions']}"
+                )
 
         visible_response = False
         for action_id in row["availableActions"]:

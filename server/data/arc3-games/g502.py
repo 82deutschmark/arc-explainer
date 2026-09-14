@@ -17,6 +17,22 @@ NORMAL = 1
 COUNTER = -1
 UNGATED = -1
 
+QC_CONTROL_LABELS = {
+    1: "Move the lens counterclockwise",
+    2: "Move the lens clockwise",
+    3: "Widen or shrink the lens (level 3+)",
+    4: "Reverse Flow (level 6+)",
+    5: "Flow; change the yellow-ringed nodes",
+    6: "Check all targets and the home position (click anywhere)",
+}
+QC_GOAL = (
+    "Match the left number to the right number on every node. "
+    "The cyan lens holds nodes still; Z changes the yellow-ringed nodes "
+    "(in Level 1, add one and wrap from 3 to 0). Up/Down moves the lens; return it to the "
+    "pink home ring before clicking anywhere to check. You lose if LEFT reaches "
+    "zero before a successful check, or after two wrong checks. Reset to retry."
+)
+
 
 def level(
     name,
@@ -192,12 +208,51 @@ RING_POSITIONS = {
 }
 
 
-class G502A(RenderableUserDisplay):
+class CurrentDisplay(RenderableUserDisplay):
     INNER = ((0, -3), (3, 0), (0, 3), (-3, 0))
     OUTER = ((0, -7), (7, 0), (0, 7), (-7, 0))
+    FONT = {
+        "0": ("111", "101", "101", "101", "111"),
+        "1": ("010", "110", "010", "010", "111"),
+        "2": ("111", "001", "111", "100", "111"),
+        "3": ("111", "001", "111", "001", "111"),
+        "4": ("101", "101", "111", "001", "001"),
+        "5": ("111", "100", "111", "001", "111"),
+        "6": ("111", "100", "111", "101", "111"),
+        "7": ("111", "001", "010", "010", "010"),
+        "8": ("111", "101", "111", "101", "111"),
+        "9": ("111", "101", "111", "001", "111"),
+        "A": ("010", "101", "111", "101", "101"),
+        "B": ("110", "101", "110", "101", "110"),
+        "C": ("111", "100", "100", "100", "111"),
+        "D": ("110", "101", "101", "101", "110"),
+        "E": ("111", "100", "110", "100", "111"),
+        "F": ("111", "100", "110", "100", "100"),
+        "H": ("101", "101", "111", "101", "101"),
+        "K": ("101", "101", "110", "101", "101"),
+        "L": ("100", "100", "100", "100", "111"),
+        "M": ("101", "111", "111", "101", "101"),
+        "N": ("101", "111", "111", "111", "101"),
+        "O": ("111", "101", "101", "101", "111"),
+        "R": ("110", "101", "110", "101", "101"),
+        "S": ("111", "100", "111", "001", "111"),
+        "T": ("111", "010", "010", "010", "010"),
+        "V": ("101", "101", "101", "101", "010"),
+        "/": ("001", "001", "010", "100", "100"),
+        " ": ("000",) * 5,
+    }
 
     def __init__(self, game):
         self.game = game
+
+    @classmethod
+    def text(cls, frame, text, x, y, color):
+        for letter in text:
+            for row, pixels in enumerate(cls.FONT[letter]):
+                for column, pixel in enumerate(pixels):
+                    if pixel == "1" and 0 <= y + row < 64 and 0 <= x + column < 64:
+                        frame[y + row, x + column] = color
+            x += 4
 
     @staticmethod
     def disc(frame, center, radius, color, hollow=False):
@@ -258,17 +313,8 @@ class G502A(RenderableUserDisplay):
         frame[:, :] = ABYSS
         for y in range(4, 61, 7):
             for x in range(3 + (y // 7) % 5, 63, 11):
-                color = DEEP if (x + y) % 3 else SLATE
-                self.disc(frame, (x, y), 1, color)
-                if (x * 3 + y) % 5 == 0:
-                    self.line(frame, (x - 2, y + 1), (x + 1, y - 2), BLUE,
-                              dotted=True)
+                frame[y, x] = DEEP
         self.disc(frame, (32, 31), 28, DEEP, hollow=True)
-        self.disc(frame, (31, 32), 24, BLUE, hollow=True)
-        self.disc(frame, (33, 30), 18, SLATE, hollow=True)
-        for center in ((5, 14), (59, 17), (7, 49), (57, 48)):
-            self.crescent(frame, center, 3, VIOLET, ABYSS,
-                          reverse=center[0] < 32)
 
     def topology(self, frame, state):
         positions = self.positions()
@@ -291,23 +337,14 @@ class G502A(RenderableUserDisplay):
                           color, down=dy < 0)
 
     def gauge(self, frame, center, value, target, modulus):
-        for index in range(modulus):
-            ix, iy = self.INNER[index]
-            ox, oy = self.OUTER[index]
-            if index < value:
-                self.droplet(frame, (center[0] + ix, center[1] + iy), 1,
-                             LIME, orientation=index)
-            else:
-                frame[center[1] + iy, center[0] + ix] = DEEP
-            if index < target:
-                self.disc(frame, (center[0] + ox, center[1] + oy), 1,
-                          FUCHSIA, hollow=True)
-                frame[center[1] + oy, center[0] + ox] = PEARL
-        if value == 0:
-            self.disc(frame, center, 2, SLATE, hollow=True)
-        if target == 0:
-            self.crescent(frame, (center[0], center[1] - 7), 2,
-                          FUCHSIA, DEEP)
+        x, y = center
+        frame[y - 4:y + 3, x - 6:x + 7] = ABYSS
+        self.text(frame, str(value), x - 5, y - 3, LIME)
+        self.text(frame, "/", x - 1, y - 3, MIST)
+        self.text(frame, str(target), x + 3, y - 3, PEARL)
+        if value == target:
+            self.line(frame, (x - 2, y + 4), (x - 1, y + 5), MIST)
+            self.line(frame, (x - 1, y + 5), (x + 2, y + 2), MIST)
 
     def node(self, frame, index, value, target, state):
         center = self.positions()[index]
@@ -358,37 +395,27 @@ class G502A(RenderableUserDisplay):
 
     def hud(self, frame, state):
         phase, reverse, strikes = state[4], bool(state[3]), state[5]
-        if phase == 0:
+        gated = any(gate != UNGATED for gate in self.game.level["gates"])
+        if gated and phase == 0:
             self.disc(frame, (5, 5), 3, LIME)
             for dx, dy in ((0, -5), (5, 0), (0, 5), (-5, 0)):
                 self.line(frame, (5, 5), (5 + dx, 5 + dy), PEARL)
-        else:
+        elif gated:
             self.crescent(frame, (5, 5), 4, FUCHSIA, ABYSS)
 
-        self.disc(frame, (59, 5), 4, VIOLET, hollow=True)
-        if reverse:
+        if self.game.level["reversible"]:
+            self.disc(frame, (59, 5), 4, VIOLET, hollow=True)
+        if self.game.level["reversible"] and reverse:
             self.line(frame, (62, 5), (56, 2), PEARL)
             self.triangle(frame, (56, 2), 2, LIME, down=False)
-        else:
+        elif self.game.level["reversible"]:
             self.line(frame, (56, 5), (62, 2), PEARL)
             self.triangle(frame, (62, 2), 2, LIME, down=False)
 
-        for index in range(2):
-            center = (59, 26 + index * 12)
-            if index < strikes:
-                self.crescent(frame, center, 4, RED, ABYSS,
-                              reverse=index % 2 == 0)
-                self.line(frame, (56, center[1] + 3), (62, center[1] - 3), PEARL)
-            else:
-                self.disc(frame, center, 4, SLATE, hollow=True)
-
-        for index in range(self.game.budget_max):
-            center = (6 + index * 4, 60)
-            live = index < self.game.budget_left
-            self.disc(frame, center, 1, CYAN if live else SLATE,
-                      hollow=not live)
-            if live and index % 2 == 0:
-                frame[60, center[0]] = PEARL
+        frame[58:64, :] = ABYSS
+        self.text(frame, "LEFT " + str(self.game.budget_left), 1, 59, CYAN)
+        self.text(frame, "BAD " + str(strikes) + "/2", 35, 59,
+                  RED if strikes else SLATE)
 
     def pulse_state(self):
         g = self.game
@@ -408,11 +435,11 @@ class G502A(RenderableUserDisplay):
     def animation(self, frame, render_state):
         g = self.game
         if not g.anim_kind:
-            if g.intro_mark:
-                for index in affected_indices(g.level, g.state):
-                    self.disc(frame, self.positions()[index], 11, LIME, hollow=True)
             if g.terminal_hold == "loss":
-                self.crescent(frame, (32, 31), 27, RED, ABYSS)
+                frame[24:39, 15:49] = ABYSS
+                reason = "2 CHECKS" if g.state[5] >= 2 else "NO MOVES"
+                self.text(frame, reason, 16, 25, RED)
+                self.text(frame, "RESET", 22, 33, MIST)
             return
         progress = g.anim_progress
         span = max(1, g.anim_total - 1)
@@ -484,6 +511,11 @@ class G502A(RenderableUserDisplay):
             self.node(frame, index, value, target, render_state)
         if self.game.anim_kind != "focus":
             self.influence(frame, render_state)
+        for (x, y), node_type in zip(self.positions(), self.game.level["types"]):
+            frame[y - 7:y - 4, x - 1:x + 2] = ABYSS
+            self.line(frame, (x - 1, y - 6), (x + 1, y - 6), MIST)
+            if node_type * (-1 if render_state[3] else 1) > 0:
+                self.line(frame, (x, y - 7), (x, y - 5), MIST)
         self.hud(frame, render_state)
         self.animation(frame, render_state)
         return frame
@@ -491,7 +523,7 @@ class G502A(RenderableUserDisplay):
 
 class G502(ARCBaseGame):
     def __init__(self):
-        self.display = G502A(self)
+        self.display = CurrentDisplay(self)
         self.level = LEVELS[0]
         self.state = start_state(self.level)
         self.budget_left = self.budget_max = 0

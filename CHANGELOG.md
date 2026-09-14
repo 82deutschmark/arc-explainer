@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.70.0  Sep 14, 2026
+
+- **Name all 44 contributed games and publish four QC-qualified simplified revisions** (Author: Codex, GPT-6).
+  - The contributed gallery, player and links use stable two-letter/two-digit names. Existing g500–g543 URLs, engine IDs, telemetry and feedback keys continue to resolve through one shared mapping.
+  - Publish KS01/g500, EY09/g502, PC70/g519 and AQ93/g542 from frozen v3 sources with matching machine, independent simulated clarity and pair-comparison evidence. Regenerate their previews, controls and post-play explanations. The other 40 contributed sources remain unchanged; the 25 research games and unrelated feedback changes are excluded.
+  - Match these four games' printed Z prompts to ACTION5, keep Space as an alternative and expose the website Undo on U. Respect their per-level control unlocks and refresh the control map against the loaded source version. The publication smoke check verifies the union across level openings for games that unlock actions later. The importer now recognizes versioned source IDs containing hyphens so exported frames retain the canonical website identity.
+  - Validation includes the full publication integrity gate, all 44 old/new source URL pairs, deterministic replays of all 32 revised levels and four recorded losses, exact recorded frame hashes, production build and browser checks. Release source hashes and fixtures are recorded in `docs/arc3-contributed-release-20260914.json`.
+  - This is a partial website release; the canonical evolution pool stays unchanged and the 44-game simplification batch remains unfinished. The QC evidence does not claim human approval.
+
 ### Version 9.69.0  Sep 12, 2026
 
 - **Game pages lead with pictures, real difficulty ranked from human data, BP35/VC33 corrected, dropped a confusing nav link** (Author: Claude Sonnet 5)

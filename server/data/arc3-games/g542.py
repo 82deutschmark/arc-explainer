@@ -16,9 +16,30 @@ BRASS, OXBLOOD, MOSS, VIOLET = 12, 13, 14, 15
 GLYPHS = 4
 MAX_RIBBON = 4
 TERMINAL_INDEX = 9
+RUNTIME_VERSION = "q193-v3-qc-repair-2"
+
+QC_CONTROL_LABELS = {
+    1: "Up: choose the outlined shape to the left, or the previous cam after clamping",
+    2: "Down: choose the outlined shape to the right, or the next cam after clamping",
+    3: "Left or A: punch the chosen shape into the gold empty slot; after clamping, show the preview",
+    4: "Right or D: remove the last editable punch, hide a preview, or reopen an unused clamp",
+    5: "Z: clamp only a row that matches the shown row, or seal a large diamond page break",
+    6: "Click the lit green preview platen to replay its whole row into the current page",
+}
+QC_GOAL = (
+    "Complete the bottom ribbon so it matches the shown row. In Level 1 the "
+    "brass-framed first punch is a locked example, the gold dotted slot is the "
+    "place you can fill, and the needed shape starts selected in gold. Clamp the "
+    "match, reveal the preview, then click the lit green platen to replay the "
+    "whole row into each page; press Z when a large diamond page break blocks "
+    "the next page. A rejected clamp or replay cracks one wax seal and the second "
+    "rejection loses. Other useful moves spend side rivets; Right or D corrects "
+    "editable work, and Reset restarts the level."
+)
 
 
-def bindery(name, motif, cams, budget, *, prefill=(), branch_after=()):
+def bindery(name, motif, cams, budget, *, prefill=(), branch_after=(),
+            locked_prefix=0, start_selector=0):
     branches = frozenset(branch_after)
     return {
         "name": name,
@@ -26,13 +47,16 @@ def bindery(name, motif, cams, budget, *, prefill=(), branch_after=()):
         "cams": tuple(cams),
         "budget": budget,
         "prefill": tuple(prefill),
+        "locked_prefix": locked_prefix,
+        "start_selector": start_selector,
         "branch_after": branches,
         "required_branches": branches,
     }
 
 
 LEVELS = [
-    bindery("Three Punches", (0, 2, 1), (0,), 11),
+    bindery("First Impression", (0, 2), (0, 0), 12, prefill=(0,),
+             branch_after=(0,), locked_prefix=1, start_selector=2),
     bindery("Branch Binding", (1, 3, 0), (0, 1), 16,
              branch_after=(0,)),
     bindery("Ratchet Refrain", (2, 0, 3), (0, 0, 0), 19,
@@ -88,83 +112,90 @@ def branch_pending(level, state):
 
 
 def start_state(level):
-    return level["prefill"], 0, 0, 0, 0, 0, 2, 0, 0, 0
+    return (level["prefill"], level.get("start_selector", 0), 0, 0, 0, 0,
+            2, 0, 0, 0)
 
 
 def rejected(state):
     seals = state[6] - 1
-    return state[:6] + (seals,) + state[7:TERMINAL_INDEX] + (
+    return state[:6] + (seals, 1) + state[8:TERMINAL_INDEX] + (
         3 if seals <= 0 else 0,
     )
+
+
+def blocked(state):
+    return state[:7] + (1,) + state[8:]
 
 
 def transition(level, state, action):
     if state[TERMINAL_INDEX] or action not in (1, 2, 3, 4, 5, 6):
         return state
-    ribbon, selector, bound, cam, preview, folio, seals, edited, used, _ = state
+    ribbon, selector, bound, cam, preview, folio, seals, _warning, used, _ = state
 
     if not bound:
         if action == 1:
             return (ribbon, (selector - 1) % GLYPHS, bound, cam, preview,
-                    folio, seals, edited, used, 0)
+                    folio, seals, 0, used, 0)
         if action == 2:
             return (ribbon, (selector + 1) % GLYPHS, bound, cam, preview,
-                    folio, seals, edited, used, 0)
+                    folio, seals, 0, used, 0)
         if action == 3:
-            if len(ribbon) >= MAX_RIBBON:
-                return state
+            if len(ribbon) >= len(level["motif"]):
+                return blocked(state)
             return (ribbon + (selector,), selector, bound, cam, preview,
-                    folio, seals, edited, used, 0)
+                    folio, seals, 0, used, 0)
         if action == 4:
-            if not ribbon:
-                return state
+            if len(ribbon) <= level.get("locked_prefix", 0):
+                return blocked(state)
             return (ribbon[:-1], selector, bound, cam, preview, folio,
-                    seals, 1, used, 0)
+                    seals, 0, used, 0)
         if action == 5:
             if ribbon != level["motif"]:
                 return rejected(state)
-            return (ribbon, selector, 1, 0, 0, folio, seals, edited, used, 0)
-        return state
+            return (ribbon, selector, 1, 0, 0, folio, seals, 0, used, 0)
+        return blocked(state)
 
     if branch_pending(level, state):
         if action == 5:
-            return (ribbon, selector, bound, 0, 0, folio, seals, edited,
+            return (ribbon, selector, bound, 0, 0, folio, seals, 0,
                     used | branch_bit(folio - 1), 0)
-        return state
+        return blocked(state)
     if folio >= len(level["cams"]):
-        return state
+        return blocked(state)
 
     if action == 1:
         return (ribbon, selector, bound, (cam - 1) % GLYPHS, 0,
-                folio, seals, edited, used, 0)
+                folio, seals, 0, used, 0)
     if action == 2:
         return (ribbon, selector, bound, (cam + 1) % GLYPHS, 0,
-                folio, seals, edited, used, 0)
+                folio, seals, 0, used, 0)
     if action == 3:
         if preview:
-            return state
-        return (ribbon, selector, bound, cam, 1, folio, seals, edited, used, 0)
+            return blocked(state)
+        return (ribbon, selector, bound, cam, 1, folio, seals, 0, used, 0)
     if action == 4:
+        if preview:
+            return (ribbon, selector, bound, cam, 0, folio,
+                    seals, 0, used, 0)
         if folio:
-            return state
-        return (ribbon, selector, 0, cam, 0, folio, seals, 1, used, 0)
+            return blocked(state)
+        return (ribbon, selector, 0, cam, 0, folio, seals, 0, used, 0)
     if action == 5:
-        if not preview:
-            return state
-        return (ribbon, selector, bound, cam, 0, folio,
-                seals, edited, used, 0)
+        return blocked(state)
 
     if not preview or cam != level["cams"][folio]:
         return rejected(state)
     next_folio = folio + 1
     final = next_folio == len(level["cams"])
     terminal = 2 if final and branch_contract_ready(level, state) else 0
-    return (ribbon, selector, bound, 0, 0, next_folio, seals, edited,
+    return (ribbon, selector, bound, 0, 0, next_folio, seals, 0,
             used | (1 << cam), terminal)
 
 
 def action_cost(state, after):
     if after == state:
+        return 0
+    if after[:7] == state[:7] and after[8:] == state[8:]:
         return 0
     if after[6] < state[6]:
         return 0
@@ -191,7 +222,7 @@ def known_solution(level):
            and ribbon[prefix] == level["motif"][prefix]):
         prefix += 1
     plan = [4] * (len(ribbon) - prefix)
-    selector = 0
+    selector = level.get("start_selector", 0)
     for glyph in level["motif"][prefix:]:
         moves = shortest_turns(selector, glyph)
         plan.extend(moves); selector = glyph; plan.append(3)
@@ -204,7 +235,7 @@ def known_solution(level):
     return tuple(plan)
 
 
-class G542A(RenderableUserDisplay):
+class BinderyDisplay(RenderableUserDisplay):
     def __init__(self, game):
         self.game = game
 
@@ -233,6 +264,14 @@ class G542A(RenderableUserDisplay):
                     frame[y, x] = color
 
     @classmethod
+    def box(cls, frame, left, top, right, bottom, color, dotted=False,
+            width=1):
+        cls.line(frame, (left, top), (right, top), color, dotted, width)
+        cls.line(frame, (right, top), (right, bottom), color, dotted, width)
+        cls.line(frame, (right, bottom), (left, bottom), color, dotted, width)
+        cls.line(frame, (left, bottom), (left, top), color, dotted, width)
+
+    @classmethod
     def diamond(cls, frame, center, radius, color, hollow=False):
         cx, cy = center
         for dy in range(-radius, radius + 1):
@@ -246,39 +285,43 @@ class G542A(RenderableUserDisplay):
     @classmethod
     def triangle(cls, frame, center, radius, color, hollow=False):
         cx, cy = center
-        for row in range(radius + 1):
-            y = cy - radius // 2 + row
-            reach = row * radius // max(1, radius)
+        height = max(1, radius * 2)
+        for row in range(height + 1):
+            y = cy - radius + row
+            reach = row * radius // height
             if hollow:
                 frame[y, cx - reach] = color; frame[y, cx + reach] = color
             else:
                 frame[y, cx - reach:cx + reach + 1] = color
-        cls.line(frame, (cx - radius, cy + radius // 2),
-                 (cx + radius, cy + radius // 2), color)
+        cls.line(frame, (cx - radius, cy + radius),
+                 (cx + radius, cy + radius), color)
 
     @classmethod
     def glyph(cls, frame, center, identity, color=INK, small=False):
-        x, y = center; radius = 2 if small else 3
+        x, y = center; radius = 3 if small else 4
         if identity == 0:
             cls.disc(frame, center, radius, color, hollow=True)
-            cls.disc(frame, center, 1, color)
+            cls.line(frame, (x - 1, y - radius), (x + 1, y - radius), color)
+            cls.line(frame, (x - 1, y + radius), (x + 1, y + radius), color)
         elif identity == 1:
             cls.triangle(frame, center, radius, color, hollow=True)
-            cls.line(frame, (x, y - 1), (x, y + 2), color, dotted=True)
+            cls.line(frame, (x, y - radius + 2), (x, y + radius - 1),
+                     color, dotted=True)
         elif identity == 2:
             cls.diamond(frame, center, radius, color, hollow=True)
-            cls.line(frame, (x - 1, y), (x + 1, y), color)
-            cls.line(frame, (x, y - 1), (x, y + 1), color)
+            cls.line(frame, (x - radius + 1, y), (x + radius - 1, y), color)
+            cls.line(frame, (x, y - radius + 1), (x, y + radius - 1), color)
         else:
-            cls.line(frame, (x - radius, y - radius),
-                     (x + radius, y - radius), color)
             cls.line(frame, (x - radius, y - radius),
                      (x - radius, y + radius), color)
             cls.line(frame, (x + radius, y - radius),
                      (x + radius, y + radius), color)
-            cls.line(frame, (x, y - radius), (x, y + 1), color, dotted=True)
-            frame[y + radius, x - radius:x - 1] = color
-            frame[y + radius, x + 2:x + radius + 1] = color
+            cls.line(frame, (x - radius, y - radius), (x, y - 1), color)
+            cls.line(frame, (x + radius, y - radius), (x, y - 1), color)
+            cls.line(frame, (x - radius, y + radius), (x - 2, y + radius),
+                     color)
+            cls.line(frame, (x + 2, y + radius), (x + radius, y + radius),
+                     color)
 
     @classmethod
     def cam(cls, frame, center, identity, color=BRASS, small=False):
@@ -330,7 +373,8 @@ class G542A(RenderableUserDisplay):
 
     def folio_register(self, frame, state):
         level = self.game.level; total = len(level["cams"])
-        centers = tuple(8 + i * 48 // max(1, total - 1) for i in range(total))
+        centers = ((32,) if total == 1 else
+                   tuple(8 + i * 48 // (total - 1) for i in range(total)))
         for index, (x, cam_id) in enumerate(zip(centers, level["cams"])):
             complete = index < state[5]
             color = CHARCOAL if complete else BRASS
@@ -349,8 +393,18 @@ class G542A(RenderableUserDisplay):
                 self.line(frame, (x, 2), (x + 6, 4), OXBLOOD)
             if index in level["branch_after"] and index + 1 < total:
                 bx = (x + centers[index + 1]) // 2
-                self.line(frame, (bx, 5), (bx, 21), OXBLOOD, dotted=True)
-                self.diamond(frame, (bx, 22), 2, CHARCOAL, hollow=True)
+                sealed = bool(state[8] & branch_bit(index))
+                color = MOSS if sealed else OXBLOOD
+                self.line(frame, (bx, 5), (bx, 21), color,
+                          dotted=not sealed, width=2 if sealed else 1)
+                self.diamond(frame, (bx, 22), 3, color, hollow=not sealed)
+                if branch_pending(level, state) and state[5] - 1 == index:
+                    self.line(frame, (bx, 21), (bx, 39), OXBLOOD, width=2)
+                    self.diamond(frame, (bx, 34), 5, GOLD, hollow=True)
+                    self.line(frame, (bx - 10, 30), (bx - 4, 34), BRASS,
+                              width=2)
+                    self.line(frame, (bx + 10, 30), (bx + 4, 34), BRASS,
+                              width=2)
 
     def target_and_preview(self, frame, state):
         level = self.game.level
@@ -359,55 +413,100 @@ class G542A(RenderableUserDisplay):
         else:
             target = target_segments(level)[state[5]]
         centers = self.ribbon_centers(len(target))
+        left, right = centers[0] - 6, centers[-1] + 6
+        frame[22:32, left:right + 1] = PAPER
+        self.box(frame, left, 22, right, 31, BRASS)
         for x, glyph in zip(centers, target):
             self.glyph(frame, (x, 27), glyph, CHARCOAL)
             frame[31, x - 3:x + 4:2] = ASH
-        self.line(frame, (centers[0] - 5, 22), (centers[-1] + 5, 22), BRASS)
-        self.line(frame, (centers[0] - 5, 22), (centers[0] - 5, 31), BRASS)
-        self.line(frame, (centers[-1] + 5, 22), (centers[-1] + 5, 31), BRASS)
 
+        if (not self.game.level_index and not state[2]
+                and len(state[0]) < len(target)):
+            index = len(state[0])
+            x = centers[index]
+            self.box(frame, x - 5, 22, x + 5, 31, GOLD, width=2)
+
+        frame[33:40, 10:55] = ASH
         if state[2] and state[4]:
+            frame[33:40, 10:55] = PARCHMENT
+            self.box(frame, 10, 32, 54, 39, MOSS, width=2)
             ghost = transform_ribbon(state[0], state[3])
             for x, glyph in zip(self.ribbon_centers(len(ghost)), ghost):
-                self.glyph(frame, (x, 35), glyph, BRASS, small=True)
-            self.line(frame, (15, 35), (49, 35), GOLD, dotted=True)
+                self.glyph(frame, (x, 36), glyph, INK, small=True)
+            self.line(frame, (7, 38), (7, 32), MOSS, width=2)
+            self.triangle(frame, (7, 31), 2, MOSS)
+            self.line(frame, (57, 38), (57, 32), MOSS, width=2)
+            self.triangle(frame, (57, 31), 2, MOSS)
         else:
+            self.box(frame, 10, 32, 54, 39, STONE, dotted=True)
             for x in centers:
-                self.disc(frame, (x, 35), 1, ASH, hollow=True)
+                self.disc(frame, (x, 36), 1, STONE, hollow=True)
+        if (not self.game.level_index and not state[2]
+                and len(state[0]) < len(target)):
+            x = centers[len(state[0])]
+            self.line(frame, (x, 32), (x, 41), GOLD, dotted=True)
 
     def working_ribbon(self, frame, state):
-        frame[40:50, 5:59] = PAPER
-        self.line(frame, (5, 40), (59, 40), CHARCOAL, dotted=True)
-        self.line(frame, (5, 49), (59, 49), CHARCOAL, dotted=True)
-        centers = self.ribbon_centers(MAX_RIBBON)
+        frame[42:52, 5:60] = PAPER
+        self.line(frame, (5, 42), (59, 42), CHARCOAL, dotted=True)
+        self.line(frame, (5, 51), (59, 51), CHARCOAL, dotted=True)
+        centers = self.ribbon_centers(len(self.game.level["motif"]))
+        locked = self.game.level.get("locked_prefix", 0)
         for index, x in enumerate(centers):
-            self.disc(frame, (x, 45), 4, ASH, hollow=True)
+            slot_color = GOLD if index == len(state[0]) and not state[2] else ASH
+            self.box(frame, x - 5, 42, x + 5, 51, slot_color,
+                     dotted=index >= len(state[0]))
             if index < len(state[0]):
-                self.glyph(frame, (x, 45), state[0][index], INK)
+                match = state[0][index] == self.game.level["motif"][index]
+                if index < locked:
+                    frame[43:51, x - 4:x + 5] = ASH
+                    self.box(frame, x - 5, 42, x + 5, 51, BRASS, width=2)
+                    for dx in (-3, 3):
+                        self.disc(frame, (x + dx, 49), 1, OXBLOOD)
+                else:
+                    self.box(frame, x - 5, 42, x + 5, 51,
+                             MOSS if match else RED, width=2)
+                self.glyph(frame, (x, 47), state[0][index], INK)
         if state[2]:
-            self.line(frame, (3, 39), (3, 51), BRASS, width=2)
-            self.line(frame, (61, 39), (61, 51), BRASS, width=2)
-            self.line(frame, (3, 39), (10, 35), BRASS, width=2)
-            self.line(frame, (61, 39), (54, 35), BRASS, width=2)
-            self.line(frame, (10, 35), (54, 35), BRASS, dotted=True)
-            self.disc(frame, (32, 38), 2, OXBLOOD)
+            self.line(frame, (3, 41), (3, 52), BRASS, width=2)
+            self.line(frame, (61, 41), (61, 52), BRASS, width=2)
+            self.line(frame, (3, 41), (11, 39), BRASS, width=2)
+            self.line(frame, (61, 41), (53, 39), BRASS, width=2)
+            self.line(frame, (11, 39), (53, 39), GOLD, width=2)
+            self.diamond(frame, (32, 41), 3, OXBLOOD)
         else:
-            self.line(frame, (4, 52), (60, 52), OXBLOOD, dotted=True)
+            self.line(frame, (4, 53), (60, 53), OXBLOOD, dotted=True)
+            if len(state[0]) >= len(centers):
+                self.line(frame, (4, 43), (4, 50), CHARCOAL, width=2)
+                self.line(frame, (60, 43), (60, 50), CHARCOAL, width=2)
 
     def gauges(self, frame, state):
-        self.glyph(frame, (8, 56), state[1], INK)
-        self.line(frame, (3, 56), (5, 56), BRASS)
-        self.line(frame, (11, 56), (14, 56), BRASS)
-        if state[2]:
-            self.cam(frame, (56, 56), state[3], BRASS)
-        else:
-            self.cam(frame, (56, 56), 3, ASH, small=True)
+        active = state[3] if state[2] else state[1]
+        for identity, x in enumerate((13, 26, 39, 52)):
+            color = INK if identity == active else STONE
+            if state[2]:
+                self.cam(frame, (x, 58), identity, color)
+            else:
+                self.glyph(frame, (x, 58), identity, color, small=True)
+            if identity == active:
+                self.box(frame, x - 6, 53, x + 6, 62, GOLD, width=2)
+                self.triangle(frame, (x, 53), 2, GOLD)
 
-        for index, x in enumerate((46, 53)):
+        if (not self.game.level_index and not state[2]
+                and len(state[0]) < len(self.game.level["motif"])):
+            slot_x = self.ribbon_centers(len(self.game.level["motif"]))[
+                len(state[0])]
+            choice_x = (13, 26, 39, 52)[active]
+            self.line(frame, (choice_x, 52), (slot_x, 50), GOLD, width=2)
+
+        for index, y in enumerate((25, 34)):
             live = index < state[6]
-            self.disc(frame, (x, 32), 3, OXBLOOD if live else ASH,
+            self.disc(frame, (59, y), 3, OXBLOOD if live else ASH,
                       hollow=not live)
-            self.glyph(frame, (x, 32), 0 if live else 3, INK, small=True)
+            if live:
+                self.disc(frame, (59, y), 1, PAPER, hollow=True)
+            else:
+                self.line(frame, (56, y + 3), (62, y - 3), RED, width=2)
 
         shown = self.game.budget_left
         for index in range(self.game.budget_max):
@@ -419,13 +518,92 @@ class G542A(RenderableUserDisplay):
                 frame[y, x] = ASH
                 if x + 1 < 64:
                     frame[y, x + 1] = CHARCOAL
+        if not shown:
+            self.line(frame, (2, 23), (4, 49), RED, width=2)
+            self.line(frame, (4, 23), (2, 49), RED, width=2)
+
+    def status_feedback(self, frame, state):
+        if not state[7]:
+            return
+        if state[6] < 2:
+            if state[2]:
+                self.line(frame, (13, 32), (51, 39), RED, width=2)
+                self.line(frame, (51, 32), (13, 39), RED, width=2)
+                self.box(frame, 9, 31, 55, 40, RED, width=2)
+            else:
+                self.line(frame, (5, 40), (14, 46), RED, width=2)
+                self.line(frame, (59, 40), (50, 46), RED, width=2)
+                self.line(frame, (13, 43), (51, 51), RED, width=2)
+                self.line(frame, (51, 43), (13, 51), RED, width=2)
+                broken_y = 25 if state[6] == 0 else 34
+                self.line(frame, (52, 45), (57, broken_y + 2), RED,
+                          dotted=True)
+        else:
+            locked = self.game.level.get("locked_prefix", 0)
+            if not state[2] and len(state[0]) >= len(self.game.level["motif"]):
+                self.line(frame, (8, 40), (56, 40), CHARCOAL, width=2)
+                self.line(frame, (8, 53), (56, 53), CHARCOAL, width=2)
+                self.box(frame, 56, 42, 60, 51, ASH, width=2)
+            elif not state[2] and len(state[0]) <= locked and locked:
+                x = self.ribbon_centers(len(self.game.level["motif"]))[0]
+                self.box(frame, x - 7, 40, x + 7, 53, BRASS, width=2)
+                self.diamond(frame, (x, 40), 2, OXBLOOD)
+                self.line(frame, (x - 3, 52), (x + 3, 52), BRASS, width=2)
+            else:
+                self.box(frame, 11, 32, 53, 39, CHARCOAL, width=2)
+                self.line(frame, (18, 35), (46, 35), CHARCOAL, width=2)
+                self.line(frame, (18, 38), (46, 38), ASH, width=2)
+
+    def page_break_feedback(self, frame, state):
+        level = self.game.level
+        if not branch_pending(level, state):
+            return
+        total = len(level["cams"])
+        centers = ((32,) if total == 1 else
+                   tuple(8 + i * 48 // (total - 1) for i in range(total)))
+        previous = state[5] - 1
+        bx = (centers[previous] + centers[previous + 1]) // 2
+        self.line(frame, (bx, 20), (bx, 41), OXBLOOD, width=2)
+        self.diamond(frame, (bx, 34), 6, GOLD, hollow=True)
+        self.diamond(frame, (bx, 34), 2, OXBLOOD)
+        self.line(frame, (bx - 13, 30), (bx - 6, 34), BRASS, width=2)
+        self.line(frame, (bx + 13, 30), (bx + 6, 34), BRASS, width=2)
+
+    def tutorial_cues(self, frame, state):
+        if self.game.level_index or state[TERMINAL_INDEX]:
+            return
+        centers = self.ribbon_centers(len(self.game.level["motif"]))
+        if state[7]:
+            return
+        if branch_pending(self.game.level, state):
+            self.diamond(frame, (32, 34), 6, GOLD, hollow=True)
+            self.diamond(frame, (32, 34), 2, OXBLOOD)
+            return
+        if not state[2]:
+            if state[0] == self.game.level["motif"]:
+                self.box(frame, centers[0] - 6, 41,
+                         centers[-1] + 6, 52, MOSS, width=2)
+                self.line(frame, (4, 40), (12, 46), GOLD, width=2)
+                self.line(frame, (60, 40), (52, 46), GOLD, width=2)
+                self.diamond(frame, (32, 40), 2, GOLD, hollow=True)
+            else:
+                index = min(len(state[0]), len(centers) - 1)
+                self.box(frame, centers[index] - 6, 41,
+                         centers[index] + 6, 52, GOLD, width=2)
+        elif not state[4]:
+            self.box(frame, 9, 31, 55, 40, GOLD, width=2)
+        else:
+            self.box(frame, 8, 30, 56, 41, MOSS, width=2)
+            self.line(frame, (6, 39), (6, 32), MOSS, width=2)
+            self.triangle(frame, (6, 31), 2, MOSS)
 
     def animation(self, frame):
         g = self.game
         if not g.anim_kind:
             if g.state[TERMINAL_INDEX] == 3:
-                for x in range(7, 58, 9):
-                    self.line(frame, (x, 24), (x + 5, 31), RED, width=2)
+                self.box(frame, 4, 20, 60, 53, RED, width=2)
+                self.line(frame, (8, 22), (56, 51), RED, width=2)
+                self.line(frame, (56, 22), (8, 51), RED, width=2)
             return
         before, after = g.state, g.pending_state
         p = g.anim_progress; span = max(1, g.anim_total - 1)
@@ -440,14 +618,17 @@ class G542A(RenderableUserDisplay):
                      center[1] + round(radius * math.sin(angle)))
             self.line(frame, center, tooth, GOLD)
         elif g.anim_kind == "punch":
-            index = len(before[0]); x = self.ribbon_centers(MAX_RIBBON)[index]
-            y = 33 + 10 * p // span
+            index = len(before[0])
+            x = self.ribbon_centers(len(g.level["motif"]))[index]
+            y = 35 + 12 * p // span
+            self.box(frame, x - 6, 41, x + 6, 52, GOLD, width=2)
+            self.line(frame, (x, 55), (x, 51), GOLD, width=2)
             self.line(frame, (x - 4, y - 5), (x + 4, y - 5), CHARCOAL, width=2)
             self.glyph(frame, (x, y), before[1], OXBLOOD)
         elif g.anim_kind == "edit":
             index = max(0, len(before[0]) - 1)
-            x = self.ribbon_centers(MAX_RIBBON)[index]
-            y = 45 - 9 * p // span
+            x = self.ribbon_centers(len(g.level["motif"]))[index]
+            y = 47 - 10 * p // span
             self.glyph(frame, (x + wave, y), before[0][-1] if before[0] else 3,
                        ASH)
             self.line(frame, (x - 4, y + 4), (x + 5, y - 3), OXBLOOD,
@@ -460,29 +641,40 @@ class G542A(RenderableUserDisplay):
             self.line(frame, (61 - inset, 38), (54 - inset // 2, 34), GOLD)
         elif g.anim_kind == "preview":
             edge = 13 + 38 * p // span
-            self.line(frame, (13, 35), (edge, 35), GOLD, width=2)
+            self.line(frame, (13, 36), (edge, 36), GOLD, width=2)
             ghost = transform_ribbon(before[0], before[3])
             for index, (x, glyph) in enumerate(zip(self.ribbon_centers(len(ghost)), ghost)):
                 if index * span <= p * len(ghost):
-                    self.glyph(frame, (x, 35), glyph, BRASS, small=True)
+                    self.glyph(frame, (x, 36), glyph, BRASS, small=True)
         elif g.anim_kind == "release":
             self.line(frame, (8, 35 - wave), (56, 35 + wave), ASH,
                       dotted=True)
             self.line(frame, (8, 35 + wave), (56, 35 - wave), BRASS,
                       dotted=True)
+        elif g.anim_kind == "unclamp":
+            inset = 20 * (span - p) // span
+            self.line(frame, (3 + inset, 38), (3 + inset, 51), BRASS, width=2)
+            self.line(frame, (61 - inset, 38), (61 - inset, 51), BRASS, width=2)
         elif g.anim_kind == "replay":
             ghost = transform_ribbon(before[0], before[3])
-            y = 44 - 17 * p // span
+            y = 47 - 20 * p // span
             for x, glyph in zip(self.ribbon_centers(len(ghost)), ghost):
                 self.glyph(frame, (x, y), glyph, BRASS)
-                self.line(frame, (x, 44), (x, y), ASH, dotted=True)
+                self.line(frame, (x, 47), (x, y), ASH, dotted=True)
             self.disc(frame, (56, 56), 5 + wave, GOLD, hollow=True)
         elif g.anim_kind == "reject":
             offset = (-2, 1, 2, -1, 2, 0, -1, 0)[min(p, 7)]
-            self.line(frame, (14 + offset, 38), (50 + offset, 51), OXBLOOD,
+            top = 32 if before[2] else 42
+            bottom = 39 if before[2] else 51
+            self.line(frame, (14 + offset, top), (50 + offset, bottom), RED,
                       width=2)
-            self.line(frame, (50 + offset, 38), (14 + offset, 51), OXBLOOD,
+            self.line(frame, (50 + offset, top), (14 + offset, bottom), RED,
                       width=2)
+            if not before[2]:
+                self.line(frame, (5 + offset, 40), (14 + offset, 46), RED,
+                          width=2)
+                self.line(frame, (59 + offset, 40), (50 + offset, 46), RED,
+                          width=2)
             self.disc(frame, (49, 32), 3 + wave, RED, hollow=True)
         elif g.anim_kind == "success":
             for index, x in enumerate(range(7, 59, 10)):
@@ -496,9 +688,12 @@ class G542A(RenderableUserDisplay):
             self.line(frame, (61 - inset, 22), (61 - inset, 52), RED, width=2)
         else:
             offset = (-2, 2, -1, 1, 0)[min(p, 4)]
-            self.glyph(frame, (32 + offset, 36), 3, OXBLOOD)
-            self.line(frame, (25 + offset, 33), (39 + offset, 39), ASH,
-                      dotted=True)
+            self.box(frame, 12 + offset, 31, 52 + offset, 40,
+                     OXBLOOD, width=2)
+            self.line(frame, (18 + offset, 33), (46 + offset, 38),
+                      OXBLOOD, width=2)
+            self.line(frame, (46 + offset, 33), (18 + offset, 38),
+                      OXBLOOD, width=2)
 
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
         self.background(frame)
@@ -507,13 +702,17 @@ class G542A(RenderableUserDisplay):
         self.target_and_preview(frame, state)
         self.working_ribbon(frame, state)
         self.gauges(frame, state)
+        self.page_break_feedback(frame, state)
+        self.status_feedback(frame, state)
+        self.tutorial_cues(frame, state)
         self.animation(frame)
         return frame
 
 
 class G542(ARCBaseGame):
     def __init__(self):
-        self.display = G542A(self)
+        self.runtime_version = RUNTIME_VERSION
+        self.display = BinderyDisplay(self)
         self.level = LEVELS[0]; self.state = start_state(self.level)
         self.budget_left = self.budget_max = 0
         self.anim_kind = None; self.anim_left = self.anim_total = self.anim_progress = 0
@@ -569,18 +768,27 @@ class G542(ARCBaseGame):
         budget = self.budget_left - cost
         won = after[TERMINAL_INDEX] == 2
         lost = after[TERMINAL_INDEX] == 3
+        warning_only = (after[:7] == before[:7]
+                        and after[8:] == before[8:])
         if won:
             kind, frames, terminal = "success", 7, "win"
         elif lost:
             kind, frames, terminal = "loss", 7, "loss"
         elif after[6] < before[6]:
             kind, frames, terminal = "reject", 7, None
+        elif warning_only:
+            kind, frames, terminal = "blocked", 5, None
         elif action in (1, 2):
             kind, frames, terminal = "ratchet", 5, None
         elif not before[2] and action == 3:
             kind, frames, terminal = "punch", 6, None
         elif action == 4:
-            kind, frames, terminal = "edit", 6, None
+            if before[2] and before[4]:
+                kind, frames, terminal = "release", 5, None
+            elif before[2]:
+                kind, frames, terminal = "unclamp", 6, None
+            else:
+                kind, frames, terminal = "edit", 6, None
         elif not before[2] and action == 5:
             kind, frames, terminal = "clamp", 7, None
         elif before[2] and action == 3:
