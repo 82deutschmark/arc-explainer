@@ -351,9 +351,9 @@
   },
   "g500": {
     "backgroundColour": 5,
-    "distinctColours": 12,
+    "distinctColours": 11,
     "height": 64,
-    "inkFraction": 0.197,
+    "inkFraction": 0.1948,
     "width": 64
   },
   "g501": {

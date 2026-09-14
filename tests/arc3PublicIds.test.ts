@@ -2,8 +2,8 @@
 Author: Codex (GPT-6)
 Date: 2026-09-14
 PURPOSE: Verify public ID round trips and real catalog/source resolution while
-preserving legacy telemetry identities. Uses the shipped local catalog and upstream
-catalog, without mocking source responses.
+preserving legacy game identities and isolating contributed practice telemetry. Uses the
+shipped local catalog and upstream catalog, without mocking source responses.
 SRP/DRY check: Pass — calls the shared resolver and the production catalog service.
 */
 import assert from 'node:assert/strict';
@@ -11,7 +11,21 @@ import { test } from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { ARC3_PUBLIC_IDS, canonicalGameId, publicGameId } from '../shared/arc3PublicIds.ts';
 import { Arc3MirrorCatalog } from '../server/services/arc3Mirror/Arc3MirrorCatalog.ts';
-import { usesAuthoredZKey } from '../shared/arc3ContributedControls.ts';
+import { contributedPlayVersion, usesAuthoredZKey, usesContributedRecovery } from '../shared/arc3ContributedControls.ts';
+
+test('practice recovery covers every contributed alias and has a distinct accepted telemetry hash', async () => {
+  for (const [legacy, alias] of Object.entries(ARC3_PUBLIC_IDS)) {
+    assert.ok(usesContributedRecovery(legacy));
+    assert.ok(usesContributedRecovery(alias.toUpperCase()));
+  }
+  for (const id of ['g026', 'ls20', 'unknown', undefined]) assert.ok(!usesContributedRecovery(id));
+  const hash = 'a'.repeat(64);
+  const practice = await contributedPlayVersion(hash);
+  assert.match(practice, /^[0-9a-f]{64}$/);
+  assert.notEqual(practice, hash);
+  assert.equal(practice, await contributedPlayVersion(hash));
+  assert.notEqual(practice, await contributedPlayVersion('b'.repeat(64)));
+});
 
 test('all 44 contributed games have permanent names matching the research registry', async () => {
   const registry = JSON.parse(await readFile(new URL('../shared/arc3EvolutionIds.json', import.meta.url), 'utf8'));
