@@ -29,7 +29,7 @@ Allow: /
 #   3. Unmentioned move / click / energy budgets that lose the level outright when spent.
 #
 # Where a claim was only verified for some levels, the game's own "Provenance and caveats"
-# section says so. Informal game names ("Sigil Caster", "Buoyant Pursuit") are flavour
+# section says so. Informal game names ("Sigil Caster", "Buoyant Pontoons") are flavour
 # titles, not literal per-level mechanic claims -- do not reason from the name.
 #
 # Per-game pages, with level screenshots and published replays:
