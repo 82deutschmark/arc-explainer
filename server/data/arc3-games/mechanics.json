@@ -2011,7 +2011,8 @@
    3,
    4,
    5,
-   6
+   6,
+   7
   ],
   "availableActionsSource": "declared",
   "actionsReferenced": [
@@ -2020,7 +2021,8 @@
    3,
    4,
    5,
-   6
+   6,
+   7
   ],
   "action6": "xy-click",
   "action6Advertised": true,
@@ -2030,11 +2032,11 @@
   "levels": 8,
   "winLevels": null,
   "callsLose": true,
-  "sourceLines": 792,
+  "sourceLines": 793,
   "triage": null,
-  "mechanic": "Move the eye to control who moves: crescent moths move only while hidden from it, and suns only while visible. Rings show every puppet that Z will advance one step around its loop; puppets can pass their targets. W/S move the eye left/right, A switches its row, and clicks open or close hanging curtains; fixed reed screens cannot be moved. Finish with every puppet on its white corner-marked outline, the eye at its gold brackets, and later requirements met. You may win on the last bead; running out first loses. Eye moves, curtain changes and successful rewinds cost one bead each. A pulse costs one if it changes a puppet, the saved rewind point or a curtain mark; inputs that change nothing are free. D undoes only the last pulse's puppet changes, preserving the eye, curtains, curtain marks and spent beads. An empty rewind costs no bead but adds a strike; two strikes lose. Later levels require landing on marked split moon/sun points, which switch a puppet's shape and movement rule. Toggle each marked curtain and keep it changed until it changes which puppets a pulse advances; its ring becomes a crossed diamond, and it must finish in its printed OPEN or SHUT pose. A large D blocks other controls until you rewind; this is that level's only successful rewind. Reset starts over.",
-  "controls": "W/Up and S/Down move the eye; A/Left switches its row; D/Right rewinds the last pulse; Z or Space pulses; click a curtain to toggle it. U is the website Undo; Reset retries.",
-  "goal": "Move the pink crescent moth to its white corner-marked outline with the eye at its gold brackets, within five beads. The fixed reed screen hides the moth; its ring means Z moves it one step around its loop, even past its target. Eye moves and successful rewinds cost one bead; pulses do too if they move the moth or change its saved rewind point. Unchanged inputs are free, and winning on the last bead counts. D undoes the last pulse's moth changes without refunding beads; empty rewinds cost no bead but add strikes, two strikes lose, and Reset starts over.",
+  "mechanic": "Move the eye to change which puppets can see it. Pink moths advance only when hidden; yellow suns advance only when seen. Rings preview exactly which puppets a pulse will move. Match the white target outlines and return the eye to its gold brackets. Later levels add curtains, type-changing diamonds and pulse rewind. A marked curtain must change which puppets a pulse moves; its ring becomes a crossed diamond when credited. Leave curtains in the OPEN or SHUT pose shown below them. A large C requires rewinding the opening pulse before moving. Rewind restores puppets only, leaving the eye and curtains where they are. These opening-rewind levels allow only that one pulse rewind. There is no move limit or empty-rewind penalty; the website Undo and Retry level remain available for exploration.",
+  "controls": "Arrows / WASD move the eye spatially. Z or Space pulses ringed puppets. Click a curtain to open or close it. C / Rewind pulse rewinds puppet positions without moving the eye or curtains. U undoes a website move. Retry level restarts the current level and keeps completed levels in this run.",
+  "goal": "Move puppets onto the white outlines and return the eye to its gold brackets. Later, cross marked type-change diamonds and use the marked curtains to change a pulse, leaving them OPEN or SHUT as labeled. Explore freely: no move limit, no fatal empty rewind.",
   "category": "contributed-glowup"
  },
  {

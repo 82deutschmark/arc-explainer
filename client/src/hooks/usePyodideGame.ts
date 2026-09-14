@@ -1,6 +1,7 @@
 /*
-Author: Claude Sonnet 4.6
-Date: 2026-03-12
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-14
+Update: Version contributed practice sessions and expose checkpoint retries.
 PURPOSE: React hook that manages the Pyodide Web Worker lifecycle for client-side
          ARCEngine community game execution. Replaces the server-side Python subprocess
          bridge (CommunityGamePythonBridge + CommunityGameRunner) for the community game
@@ -21,6 +22,7 @@ SRP/DRY check: Pass — single responsibility: Pyodide worker lifecycle for game
 */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { contributedPlayVersion, usesContributedRecovery } from '@shared/arc3ContributedControls';
 
 // Matches the shape emitted by pyodide-game-worker.js and the existing CommunityGamePlay interface.
 export interface PyodideFrameData {
@@ -36,6 +38,14 @@ export interface PyodideFrameData {
   last_action: string;
   /** How many steps can still be rewound. 0 disables the Undo control. */
   undo_depth?: number;
+  player_feedback?: {
+    unlimited_retries: boolean;
+    moves_remaining: number | null;
+    recoveries: number;
+    notice: string | null;
+    goal: string | null;
+    hint: string | null;
+  } | null;
 }
 
 export type PyodideInitStage = 'pyodide' | 'packages' | 'arcengine' | 'game';
@@ -80,6 +90,7 @@ export interface UsePyodideGameReturn extends PyodideGameState {
   step: (action: string, data?: Record<string, number>) => Promise<PyodideFrameData>;
   /** Reset the current game. */
   reset: () => Promise<PyodideFrameData>;
+  retryLevel: () => Promise<PyodideFrameData>;
   /** Rewind one step. Resolves to the restored frame; a no-op at depth 0. */
   undo: () => Promise<PyodideFrameData>;
   /**
@@ -290,7 +301,9 @@ export function usePyodideGame(): UsePyodideGameReturn {
         sourceCode: string; className: string | null; sourceVersion?: string | null;
       };
       if (!className) throw new Error('Game source does not export an ARCBaseGame subclass');
-      setSourceVersion(typeof version === 'string' && version ? version : null);
+      const recoverable = usesContributedRecovery(gameId);
+      setSourceVersion(typeof version === 'string' && version
+        ? recoverable ? await contributedPlayVersion(version) : version : null);
 
       // Step 2: boot Pyodide (idempotent)
       setLoadingStage('pyodide');
@@ -301,7 +314,7 @@ export function usePyodideGame(): UsePyodideGameReturn {
       setLoadingStage('game');
       setLoadingMessage('Starting game...');
       const initialFrame = await sendToWorker<PyodideFrameData>(
-        { type: 'load_game', source: sourceCode, className },
+        { type: 'load_game', source: sourceCode, className, recoverable },
         'frame',
       );
 
@@ -353,6 +366,15 @@ export function usePyodideGame(): UsePyodideGameReturn {
     }
   }, [sendToWorker]);
 
+  const retryLevel = useCallback(async (): Promise<PyodideFrameData> => {
+    setIsActing(true);
+    try {
+      const next = await sendToWorker<PyodideFrameData>({ type: 'retry_level' }, 'frame');
+      setFrame(next);
+      return next;
+    } finally { setIsActing(false); }
+  }, [sendToWorker]);
+
   // ── Public: probeMove ────────────────────────────────────────────────────────
   // Deliberately does NOT set isActing and does not touch `frame`: a probe plays nothing,
   // so putting the deck into its acting state would flash the controls off for a click
@@ -393,6 +415,7 @@ export function usePyodideGame(): UsePyodideGameReturn {
     initGame,
     step,
     reset,
+    retryLevel,
     undo,
     probeMove,
   };
