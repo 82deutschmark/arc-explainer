@@ -27,6 +27,7 @@ import { Link, useParams } from 'wouter';
 import {
   Gamepad2,
   ArrowLeft,
+  ArrowRight,
   ExternalLink,
   Eye,
   Lock,
@@ -47,6 +48,7 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import {
   arcPrizeLeaderboardUrl,
   getGameById,
+  getAdjacentGameIds,
   type Arc3GameMetadata,
   type DifficultyRating,
   type ActionMapping,
@@ -230,6 +232,14 @@ export default function Arc3GameSpoiler() {
   const params = useParams<{ gameId: string }>();
   const gameId = params.gameId || '';
   const game = getGameById(gameId);
+
+  /**
+   * Previous/next game in ARC Prize's own alphabetical presentation of the 25-game
+   * public demo set (AR25 first, WA30 last) -- not our category-then-id sort.
+   */
+  const { prevId, nextId } = getAdjacentGameIds(gameId);
+  const prevGame = prevId ? getGameById(prevId) : null;
+  const nextGame = nextId ? getGameById(nextId) : null;
 
   usePageMeta({
     title: game 
@@ -611,6 +621,22 @@ export default function Arc3GameSpoiler() {
                 ARC-AGI-3
               </Link>
             </Button>
+            {prevGame && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/arc3/games/${prevGame.gameId}`}>
+                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  Previous: {prevGame.informalName || prevGame.gameId}
+                </Link>
+              </Button>
+            )}
+            {nextGame && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/arc3/games/${nextGame.gameId}`}>
+                  Next: {nextGame.informalName || nextGame.gameId}
+                  <ArrowRight className="h-4 w-4 ml-1" />
+                </Link>
+              </Button>
+            )}
             {playId && (
               <Button asChild variant="outline" size="sm">
                 <Link href={`/arc3/play/${playId}`}>
