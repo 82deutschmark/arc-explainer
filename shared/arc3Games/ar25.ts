@@ -19,7 +19,8 @@ export const ar25: Arc3GameMetadata = {
   simpleExplanation: 'You move one or two pieces and the mirror lines that reflect them across the board. Any dot touched by a piece or its live reflection counts as covered — clear a level by covering every target dot, often by moving the mirror instead of the piece.',
   mechanicsExplanation: 'You control one or two small colored puzzle pieces -- most levels (3, 4, 6, 7, 8) give you two, each moving and reflecting independently -- and in most levels one or two straight mirror-lines you can also select and slide, on a 21x21 board scattered with single-pixel target dots. Every move is mirrored live: any cell touched directly by a piece, or by that piece\'s reflection bounced across the mirror-line(s), counts as filled, so shifting a mirror re-reflects the whole board instantly. The level ends the moment every target dot is covered by a piece or one of its live reflections -- many puzzles are solved by repositioning the mirror rather than the piece itself. A shrinking step budget and a positions-only undo (it never refunds spent steps) keep you from brute-forcing the symmetry -- even just pressing Cycle to switch which piece or mirror is selected spends a step, so indecision costs you too.',
   category: 'evaluation',
-  difficulty: 'easy',
+  humanDifficulty: 'easy',
+  aiDifficulty: 'easy',
   levelCount: 8,
   actionMappings: [
     { action: 'ACTION1', description: 'Move piece/mirror Up', commonName: 'Up' },

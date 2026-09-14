@@ -21,7 +21,8 @@ export const sc25: Arc3GameMetadata = {
   simpleExplanation: 'You draw a pattern on a small toggle grid; if it matches a known symbol, it casts a spell — teleport, grow/shrink, or fireball — that helps your wizard reach the exit.',
   mechanicsExplanation: 'You control a small wizard walking a maze of walls and crystal obstacles toward a portal tile. A 3x3 grid of clickable dots in the corner toggles on/off, and if the lit pattern exactly matches one of three known sigils, the game auto-casts the matching spell: a teleport/swap, a grow/shrink toggle that lets you squeeze through gaps, or a directional fireball. The fireball only does something if its straight-line path hits one specific marked crystal tile -- hitting an ordinary crystal block just fizzles it out -- but when it connects, it clears every matching marked crystal in the whole level at once, not just the one it hit. A separate, non-solid crystal tile simply disappears (and refunds a little budget) the moment you walk over it, regardless of which spell is active -- nothing is actually bulldozed. Spells are gated per level, and a shared move-and-click budget ends the level in a loss if exhausted.',
   category: 'evaluation',
-  difficulty: 'medium',
+  humanDifficulty: 'medium',
+  aiDifficulty: 'medium',
   levelCount: 6,
   actionMappings: [
     { action: 'ACTION1', description: 'Move Up', commonName: 'Up' },

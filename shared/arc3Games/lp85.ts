@@ -19,7 +19,8 @@ export const lp85: Arc3GameMetadata = {
   simpleExplanation: 'Buttons step a shared loop of positions forward or backward. Get each colored block to land on its matching small target square.',
   mechanicsExplanation: 'A small target square (or two, from level 3 on, one yellow and one orange) marks where each larger block of the matching color needs to land -- the number of target squares actually ranges from one to three depending on the level, never a fixed four. You control the sequence by pushing red and green buttons, which only ever step the shared loop forward or backward by one position; there is no swap, push, or pull hidden in later levels.',
   category: 'evaluation',
-  difficulty: 'hard',
+  humanDifficulty: 'hard',
+  aiDifficulty: 'easy',
   actionMappings: [
     { action: 'ACTION6', description: 'Click Red/Green button to shift blocks', commonName: 'Click' },
   ],

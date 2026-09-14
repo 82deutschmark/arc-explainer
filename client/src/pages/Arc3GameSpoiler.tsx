@@ -40,6 +40,8 @@ import {
   Play,
   Trophy,
   Download,
+  User,
+  Bot,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -164,22 +166,46 @@ function HumanRecordsCard({ gameId }: { gameId: string }) {
   );
 }
 
+const DIFFICULTY_STYLES: Record<DifficultyRating, string> = {
+  easy: 'bg-green-50 text-green-700 border-green-300',
+  medium: 'bg-yellow-50 text-yellow-700 border-yellow-300',
+  hard: 'bg-orange-50 text-orange-700 border-orange-300',
+  'very-hard': 'bg-red-50 text-red-700 border-red-300',
+  unknown: 'bg-gray-50 text-gray-500 border-gray-300',
+};
+
+const DIFFICULTY_LABELS: Record<DifficultyRating, string> = {
+  easy: 'Easy',
+  medium: 'Medium',
+  hard: 'Hard',
+  'very-hard': 'Very Hard',
+  unknown: 'Unknown',
+};
+
 /**
- * Map difficulty to color variant
+ * Two separate difficulty signals, deliberately kept apart rather than averaged into one
+ * badge: humanDifficulty comes from the ARC Prize human leaderboard, aiDifficulty from a
+ * dated snapshot of our own competition run data -- the two disagree often enough (BP35 is
+ * "medium" for humans and "very-hard" for AI) that collapsing them into one number would
+ * hide the more interesting fact.
  */
-function getDifficultyBadge(difficulty: DifficultyRating) {
-  switch (difficulty) {
-    case 'easy':
-      return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">Easy</Badge>;
-    case 'medium':
-      return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">Medium</Badge>;
-    case 'hard':
-      return <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-300">Hard</Badge>;
-    case 'very-hard':
-      return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-300">Very Hard</Badge>;
-    default:
-      return <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-300">Unknown</Badge>;
-  }
+function DifficultyBadge({
+  icon: Icon,
+  prefix,
+  difficulty,
+  title,
+}: {
+  icon: typeof User;
+  prefix: string;
+  difficulty: DifficultyRating;
+  title: string;
+}) {
+  return (
+    <Badge variant="outline" className={DIFFICULTY_STYLES[difficulty]} title={title}>
+      <Icon className="h-3 w-3 mr-1" />
+      {prefix}: {DIFFICULTY_LABELS[difficulty]}
+    </Badge>
+  );
 }
 
 
@@ -279,6 +305,35 @@ export default function Arc3GameSpoiler() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
+      {/* Top nav -- same Previous/Next pair as the footer, so a reader working through
+          the set in order (AR25 -> ... -> WA30) doesn't have to scroll down every time. */}
+      <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/arc3">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            ARC-AGI-3
+          </Link>
+        </Button>
+        <div className="flex items-center gap-2">
+          {prevGame && (
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/arc3/games/${prevGame.gameId}`}>
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                {prevGame.informalName || prevGame.gameId}
+              </Link>
+            </Button>
+          )}
+          {nextGame && (
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/arc3/games/${nextGame.gameId}`}>
+                {nextGame.informalName || nextGame.gameId}
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Link>
+            </Button>
+          )}
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="mb-12">
         <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
@@ -306,7 +361,18 @@ export default function Arc3GameSpoiler() {
                   <><Lock className="h-3 w-3 mr-1" /> Evaluation Game</>
                 )}
               </Badge>
-              {getDifficultyBadge(game.difficulty)}
+              <DifficultyBadge
+                icon={User}
+                prefix="Human"
+                difficulty={game.humanDifficulty}
+                title="From the ARC Prize human leaderboard's top-10 action-count spread"
+              />
+              <DifficultyBadge
+                icon={Bot}
+                prefix="AI"
+                difficulty={game.aiDifficulty}
+                title="Snapshot from our own competition run data -- not live, not every run"
+              />
             </div>
           </div>
           <div className="flex items-center gap-2">

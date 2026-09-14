@@ -21,7 +21,8 @@ export const tr87: Arc3GameMetadata = {
   simpleExplanation: 'You translate a phrase into a second alphabet by matching each symbol to its paired rune on the wall. In the last two levels the answer is already right, and you fix the wall of rune-pairs instead of translating.',
   mechanicsExplanation: 'A phrase appears in one alphabet, and a wall of paired runes is the only dictionary; in levels 1-4, you spell the phrase out in a second alphabet by matching each rune to its pair. The angles of paired runes are random and mean nothing, so a symbol can only be looked up, never derived from its shape. The phrase row itself is never editable, in any level. In levels 5-6, the answer row is already correct and left untouched -- instead the dictionary wall gets scrambled, and the controls that used to edit your answer now rotate the dictionary\'s glyphs, so you\'re repairing the lookup table rather than translating anything. A move budget (128 actions in levels 1-5, 256 in level 6) ticks down on every action, including a bare cursor move; run out and you lose.',
   category: 'evaluation',
-  difficulty: 'hard',
+  humanDifficulty: 'hard',
+  aiDifficulty: 'hard',
   levelCount: 6,
   actionMappings: [
     { action: 'ACTION1', description: 'Move Up', commonName: 'Up' },

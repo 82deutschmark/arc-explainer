@@ -110,8 +110,24 @@ export interface Arc3GameMetadata {
   /** Category: preview (public from start) or evaluation (held back) */
   category: GameCategory;
 
-  /** Difficulty rating based on community experience */
-  difficulty: DifficultyRating;
+  /**
+   * Difficulty for human players, derived from the ARC Prize human leaderboard's action
+   * counts (relative spread across the top 10, plus whether any of them needed a reset).
+   * See server/scripts/compute-arc3-difficulty.ts.
+   */
+  humanDifficulty: DifficultyRating;
+
+  /**
+   * Difficulty for AI agents, from a snapshot of our own competition run data (the
+   * arc3_game_scores table in the ARC3/Arena Railway Postgres DB): average
+   * levels-completed-of-levels-total across recorded runs, ranked against the other 24
+   * public games and split into quartiles (bottom 7 = 'very-hard', matching how this
+   * rating gets talked about -- "one of the seven hardest"). Not live -- a dated
+   * snapshot, re-run by hand. 'unknown' where we have no run data (as66, withdrawn from
+   * the public set before this snapshot). See
+   * server/scripts/compute-arc3-ai-difficulty.ts.
+   */
+  aiDifficulty: DifficultyRating;
 
   /** Win score required to complete the game */
   winScore?: number;

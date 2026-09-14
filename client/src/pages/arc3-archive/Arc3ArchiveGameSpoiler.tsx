@@ -83,8 +83,8 @@ export default function Arc3ArchiveGameSpoiler() {
           <div className="flex items-center gap-3">
             <Archive className="h-8 w-8 text-amber-600" />
             <h1 className="text-3xl font-bold">{game.gameId.toUpperCase()}</h1>
-            <Badge className={difficultyColors[game.difficulty]}>
-              {game.difficulty}
+            <Badge className={difficultyColors[game.humanDifficulty]}>
+              {game.humanDifficulty}
             </Badge>
           </div>
           <p className="text-xl text-muted-foreground mt-1">

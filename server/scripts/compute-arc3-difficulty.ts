@@ -79,7 +79,7 @@ async function main() {
         `relSpread=${(signal.relativeSpread * 100).toFixed(0).padStart(3)}%  ` +
         `tied=${signal.tiedAtFewest}  resetsInTop=${signal.resetsInTop}  n=${signal.sampleSize}  ` +
         `-> ${difficulty}` +
-        `  (current: ${game.difficulty})`,
+        `  (current: ${game.humanDifficulty})`,
     );
   }
   console.log(rows.join('\n'));
