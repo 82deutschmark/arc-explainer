@@ -1,5 +1,5 @@
 /*
-Author: Claude Opus 5 / Codex (GPT-6)
+Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-14
 Update: Add the new research collection and category deep links while preserving blind tiles.
 PURPOSE: The blind task grid — arc3.markbarney.net's play surface. Every tile is one
@@ -31,6 +31,7 @@ SRP/DRY check: Pass — presentation only; fetching/stripping lives in Arc3Mirro
          catalog service that /play's review queue depends on.
 */
 
+import { publicGameId } from '@shared/arc3PublicIds';
 import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -213,7 +214,7 @@ function TaskCell({ game, index, onPlay }: {
       onClick={onPlay}
       className="group block text-left w-full"
       /* No `title` attribute. A tooltip is a spoiler surface like any other. */
-      aria-label={`Play task ${game.gameId}`}
+      aria-label={`Play task ${publicGameId(game.gameId)}`}
     >
       <div
         className="relative aspect-square overflow-hidden transition-colors"
@@ -230,7 +231,7 @@ function TaskCell({ game, index, onPlay }: {
           />
         ) : (
           <img
-            src={`/api/arc3-mirror/games/${encodeURIComponent(game.gameId)}/thumbnail?size=256`}
+            src={`/api/arc3-mirror/games/${encodeURIComponent(publicGameId(game.gameId))}/thumbnail?size=256`}
             alt=""
             loading="lazy"
             decoding="async"
@@ -254,7 +255,7 @@ function TaskCell({ game, index, onPlay }: {
         style={{ background: index % 2 === 0 ? ARC.pink : ARC.pinkAlt }}
       >
         <span className="text-[11px] tracking-[.55px] text-white truncate">
-          {game.gameId}
+          {publicGameId(game.gameId)}
         </span>
       </div>
     </button>
@@ -360,7 +361,7 @@ export default function CommunityGallery() {
     const byCategory = category ? ordered.filter((g) => g.category === category) : browsable;
     const q = search.trim().toLowerCase();
     if (!q) return byCategory;
-    return byCategory.filter((g) => g.gameId.toLowerCase().includes(q));
+    return byCategory.filter((g) => (g.gameId.toLowerCase().includes(q) || publicGameId(g.gameId).includes(q)));
   }, [ordered, browsable, search, category]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -479,10 +480,10 @@ export default function CommunityGallery() {
             <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
               {section.games.map((game, i) => (
                 <TaskCell
-                  key={game.gameId}
+                  key={publicGameId(game.gameId)}
                   game={game}
                   index={i}
-                  onPlay={() => setLocation(`/arc3/play/${game.gameId}`)}
+                  onPlay={() => setLocation(`/arc3/play/${publicGameId(game.gameId)}`)}
                 />
               ))}
             </div>

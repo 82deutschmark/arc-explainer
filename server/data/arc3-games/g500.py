@@ -9,6 +9,29 @@ import numpy as np
 from arcengine import ARCBaseGame, Camera, Level, RenderableUserDisplay
 
 
+QC_CONTROL_LABELS = {
+    1: "Move eye left",
+    2: "Move eye right",
+    3: "Switch eye row",
+    4: "Rewind last pulse",
+    5: "Pulse ringed puppets",
+    6: "Open / close curtain",
+}
+QC_GOAL = (
+    "Move every puppet to its white corner-marked outline and return the eye "
+    "to its gold-bracketed starting perch before the bottom move beads run out. "
+    "Z pulses all ringed puppets one step along their paths: pink crescent moths move "
+    "only when hidden from the eye, and yellow suns only when seen. "
+    "Later, cross split moon/sun change points, use each marked curtain to "
+    "change a pulse (ring becomes a crossed diamond), and leave curtains in "
+    "the OPEN or SHUT pose printed below them. "
+    "A large D means rewind first; rewind restores only the last pulse's "
+    "puppets, not the eye, curtains, or spent moves, and levels that begin "
+    "with D allow only that one rewind. "
+    "Two empty rewinds also end the attempt; Reset starts over."
+)
+
+
 PEARL, MIST, SLATE, SMOKE, CHARCOAL, VELVET = 0, 1, 2, 3, 4, 5
 MAGENTA, PINK, RED, BLUE, ICE, AMBER = 6, 7, 8, 9, 10, 11
 GOLD, OXBLOOD, MOSS, VIOLET = 12, 13, 14, 15
@@ -358,7 +381,7 @@ def encoded_witness(level):
     return tuple(encoded)
 
 
-class G500A(RenderableUserDisplay):
+class TheatreDisplay(RenderableUserDisplay):
     def __init__(self, game):
         self.game = game
 
@@ -425,10 +448,19 @@ class G500A(RenderableUserDisplay):
     @classmethod
     def puppet(cls, frame, center, kind, color=None, hollow=False):
         color = color if color is not None else (MAGENTA if kind == SHY else AMBER)
+        if hollow:
+            silhouette = np.full_like(frame, VELVET)
+            cls.puppet(silhouette, center, kind, color=color)
+            mask = silhouette != VELVET
+            inside = mask.copy()
+            for axis in (0, 1):
+                inside &= np.roll(mask, 1, axis) & np.roll(mask, -1, axis)
+            frame[mask & ~inside] = color
+            return
         if kind == SHY:
             cls.crescent(frame, center, 5, color, VELVET, reverse=True)
-            cls.diamond(frame, (center[0] + 2, center[1] + 3), 2, PINK,
-                        hollow=hollow)
+            cls.diamond(frame, (center[0] + 2, center[1] + 3), 2,
+                        PINK if color == MAGENTA else color)
             cls.line(frame, (center[0] - 4, center[1] - 1),
                      (center[0] - 7, center[1] - 3), color)
         else:
@@ -437,25 +469,53 @@ class G500A(RenderableUserDisplay):
 
     def background(self, frame):
         frame[:, :] = VELVET
-        for x in range(0, 64, 5):
-            color = CHARCOAL if (x // 5) % 2 else SMOKE
-            self.line(frame, (x, 0), (x + 2, 63), color, dotted=True)
+        for x in range(0, 64, 8):
+            self.line(frame, (x, 0), (x + 2, 53), CHARCOAL, dotted=True)
         self.line(frame, (2, 22), (8, 8), OXBLOOD, width=2)
         self.line(frame, (8, 8), (32, 2), OXBLOOD, width=2)
         self.line(frame, (32, 2), (56, 8), OXBLOOD, width=2)
         self.line(frame, (56, 8), (62, 22), OXBLOOD, width=2)
         for x in range(8, 57, 8):
             self.disc(frame, (x, 8 - abs(32 - x) // 8), 1, GOLD)
-        self.line(frame, (4, 56), (60, 56), SLATE, dotted=True)
-        for x in range(6, 61, 9):
-            self.crescent(frame, (x, 60), 2, CHARCOAL, VELVET,
-                          reverse=(x // 9) % 2 == 0)
+        self.line(frame, (4, 59), (60, 59), CHARCOAL, dotted=True)
 
     def curve(self, frame, points, color):
         for index, (start, end) in enumerate(zip(points, points[1:] + points[:1])):
             self.line(frame, start, end, color, dotted=True)
             midpoint = ((start[0] + end[0]) // 2, (start[1] + end[1]) // 2)
             self.disc(frame, midpoint, 1, SLATE, hollow=index % 2 == 0)
+        for point in points:
+            self.disc(frame, point, 1, MIST, hollow=True)
+
+    @classmethod
+    def brackets(cls, frame, point, radius, color):
+        x, y = point
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                corner = (x + sx * radius, y + sy * radius)
+                cls.line(frame, corner, (corner[0] - sx * 2, corner[1]), color)
+                cls.line(frame, corner, (corner[0], corner[1] - sy * 2), color)
+
+    @staticmethod
+    def label(frame, text, x, y, color, scale=1):
+        glyphs = {
+            "D": ("110", "101", "101", "101", "110"),
+            "E": ("111", "100", "110", "100", "111"),
+            "H": ("101", "101", "111", "101", "101"),
+            "N": ("101", "111", "111", "111", "101"),
+            "O": ("111", "101", "101", "101", "111"),
+            "P": ("110", "101", "110", "100", "100"),
+            "S": ("111", "100", "111", "001", "111"),
+            "T": ("111", "010", "010", "010", "010"),
+            "U": ("101", "101", "101", "101", "111"),
+        }
+        for char in text:
+            for row, pixels in enumerate(glyphs[char]):
+                for col, pixel in enumerate(pixels):
+                    if pixel == "1":
+                        frame[y + row * scale:y + (row + 1) * scale,
+                              x + col * scale:x + (col + 1) * scale] = color
+            x += 4 * scale
 
     def veil(self, frame, spec, closed=True, selected=False):
         x, y0, y1, width = spec
@@ -489,6 +549,8 @@ class G500A(RenderableUserDisplay):
             self.disc(frame, center, 3, PEARL, hollow=True)
             self.line(frame, (x - 2, y0 - 1), (x + 2, y0 - 1), MIST,
                       dotted=True)
+        elif self.game.level["required_toggles"] & bit:
+            self.disc(frame, center, 3, SLATE, hollow=True)
 
     def sight_and_preview(self, frame, state):
         g = self.game; eye = EYE_POSITIONS[state[2]]
@@ -507,14 +569,23 @@ class G500A(RenderableUserDisplay):
         g = self.game
         for orb in g.level["orbs"]:
             self.curve(frame, orb["path"], SLATE)
-            target = orb["path"][orb["target"]]
-            self.puppet(frame, target, target_kind(orb), color=SMOKE,
-                        hollow=True)
         for veil in g.level["veils"]:
             self.veil(frame, veil, True)
         for index, shutter in enumerate(g.level["shutters"]):
             self.veil(frame, shutter, bool(state[3] & (1 << index)))
             self.shutter_mark(frame, state, index, shutter)
+        for orb in g.level["orbs"]:
+            target = orb["path"][orb["target"]]
+            self.puppet(frame, target, target_kind(orb), color=MIST, hollow=True)
+            self.brackets(frame, target, 7, MIST)
+            for position in orb["flips"]:
+                x, y = orb["path"][position]
+                self.diamond(frame, (x, y), 3, PEARL, hollow=True)
+                self.crescent(frame, (x - 1, y), 1, MAGENTA)
+                self.line(frame, (x + 1, y - 1), (x + 1, y + 1), AMBER)
+        for perch in EYE_POSITIONS:
+            self.disc(frame, perch, 1, SLATE)
+        self.brackets(frame, EYE_POSITIONS[g.level["target_eye"]], 6, GOLD)
         self.sight_and_preview(frame, state)
         for index, orb in enumerate(g.level["orbs"]):
             point = orb["path"][state[0][index]]
@@ -523,18 +594,18 @@ class G500A(RenderableUserDisplay):
 
     def hud(self, frame, state):
         for index in range(self.game.budget_max):
-            group = index // 5; offset = index % 5
-            x = 4 + group * 11 + offset * 2
-            y = 58
+            x = 3 + index * 3 + (index // 5) * 2
             live = index < self.game.budget_left
-            self.disc(frame, (x, y), 1, AMBER if live else SLATE,
-                      hollow=not live)
-            if offset == 4:
-                self.line(frame, (x + 1, y - 2), (x + 1, y + 2), OXBLOOD)
-        for index, x in enumerate((55, 61)):
+            frame[61:63, x:x + 2] = AMBER if live else SLATE
+        for index, x in enumerate((56, 61)):
             live = index < state[8]
-            self.crescent(frame, (x, 24), 2, MAGENTA if live else SLATE,
+            self.crescent(frame, (x, 61), 2, MAGENTA if live else SLATE,
                           VELVET, reverse=index == 1)
+        for index, (x, _y0, _y1, _width) in enumerate(self.game.level["shutters"]):
+            desired = bool(self.game.level["target_shutters"] & (1 << index))
+            matched = bool(state[3] & (1 << index)) == desired
+            self.label(frame, "SHUT" if desired else "OPEN", x - 7, 54,
+                       GOLD if matched else MIST)
         if self.game.level["required_rewind"] and not state[7] and state[6]:
             old_positions, old_kinds, _old_flipped = state[6][0]
             for index, orb in enumerate(self.game.level["orbs"]):
@@ -542,9 +613,7 @@ class G500A(RenderableUserDisplay):
                             old_kinds[index], color=MIST, hollow=True)
             self.crescent(frame, (54, 29), 4, PINK, VELVET, reverse=True)
             self.line(frame, (58, 28), (60, 31), MIST, dotted=True)
-            for index in range(4):
-                self.diamond(frame, (49 + index * 3, 35), 1, PEARL,
-                             hollow=bool(index % 2))
+            self.label(frame, "D", 54, 33, PEARL, scale=2)
         if state[7]:
             self.line(frame, (51, 29), (57, 27), MIST, dotted=True)
             self.line(frame, (51, 27), (57, 31), PINK, dotted=True)
@@ -640,7 +709,7 @@ class G500A(RenderableUserDisplay):
 
 class G500(ARCBaseGame):
     def __init__(self):
-        self.display = G500A(self)
+        self.display = TheatreDisplay(self)
         self.level = LEVELS[0]; self.state = start_state(self.level)
         self.budget_left = self.budget_max = 0
         self.anim_kind = None; self.anim_left = self.anim_total = self.anim_progress = 0

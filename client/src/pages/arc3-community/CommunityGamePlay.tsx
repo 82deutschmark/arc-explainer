@@ -1,5 +1,5 @@
 /*
-Author: Claude Opus 5 / Codex (GPT-6)
+Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-14
 Update: Keep Next task inside the research collection and complete its pixel animations
         at the declared frame rate before accepting another move.
@@ -143,6 +143,8 @@ SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodi
          non-square boards in shared/arc3Topology.
 */
 
+import { canonicalGameId, publicGameId } from '@shared/arc3PublicIds';
+import { usesAuthoredZKey } from '@shared/arc3ContributedControls';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useLocation, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -305,7 +307,10 @@ function MechanicReveal({ entry, onNext, onBack }: {
 }
 
 export default function CommunityGamePlay() {
-  const { gameId } = useParams<{ gameId: string }>();
+  const { gameId: routeGameId } = useParams<{ gameId: string }>();
+  const gameId = routeGameId ? canonicalGameId(routeGameId) : undefined;
+  const authoredZKey = usesAuthoredZKey(gameId);
+  const undoKey = authoredZKey ? 'u' : UNDO_KEY;
   const [, navigate] = useLocation();
   const pyodide = usePyodideGame();
 
@@ -563,7 +568,8 @@ export default function CommunityGamePlay() {
    * how the task is solved.
    */
   const { data: controlMap } = useQuery<{ data: { known: string[]; reads: Record<string, number[]> } }>({
-    queryKey: ['/api/arc3-mirror/control-map'],
+    queryKey: [`/api/arc3-mirror/control-map?sourceVersion=${pyodide.sourceVersion ?? ''}`],
+    enabled: Boolean(pyodide.sourceVersion),
     staleTime: 60 * 60 * 1000,
   });
 
@@ -600,6 +606,9 @@ export default function CommunityGamePlay() {
     (action: string) => {
       if (action === 'RESET') return true;
       const n = Number(action.replace('ACTION', ''));
+      // These verified revisions publish accurate per-level controls. In PC70 the
+      // relocation action unlocks later; the static source map alone would expose it early.
+      if (authoredZKey && known) return available.has(n) && (!readsActions || readsActions.has(n));
       // The derived map wins over the frame WHEN WE HAVE IT, in both directions: it
       // enables ACTION7 on the two games that read it without advertising it, and it
       // refuses the ones a game advertises and ignores. The engine does not gate on
@@ -608,7 +617,7 @@ export default function CommunityGamePlay() {
       if (readsActions) return readsActions.has(n);
       return !known || available.has(n);
     },
-    [available, known, readsActions],
+    [available, known, readsActions, authoredZKey],
   );
 
   const applyFrame = useCallback((next: PyodideFrameData) => {
@@ -793,17 +802,18 @@ export default function CommunityGamePlay() {
     const down = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      // Z is UNDO, matching the official console. `e.repeat` is what keeps a HELD Z from
+      // The four revised games print Z for ACTION5; their host Undo moves to U.
+      // Other games keep the official console mapping. `e.repeat` is what keeps a HELD Z from
       // rewinding the whole run -- one press, one undo -- which is the complaint that got
       // the key unbound in the first place. R is still nothing: RESET has no official
       // binding to honour, so it stays a mouse trip.
-      if (e.key === UNDO_KEY || e.key === UNDO_KEY.toUpperCase()) {
+      if (e.key.toLowerCase() === undoKey) {
         e.preventDefault();
         if (e.repeat || !frame?.undo_depth || pyodide.isActing) return;
         void undo();
         return;
       }
-      const action = KEY_MAP[e.key];
+      const action = authoredZKey && e.key.toLowerCase() === 'z' ? 'ACTION5' : KEY_MAP[e.key];
       if (!action || !canSend(action)) return;
       e.preventDefault();
       // In live mode a key is HELD: it sets what the tick repeats rather than firing one
@@ -817,7 +827,7 @@ export default function CommunityGamePlay() {
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
-  }, [act, canSend, gameState, live, undo, frame?.undo_depth, pyodide.isActing]);
+  }, [act, canSend, gameState, live, undo, frame?.undo_depth, pyodide.isActing, authoredZKey, undoKey]);
 
   // ── Live tick ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -961,7 +971,7 @@ export default function CommunityGamePlay() {
   /** Feedback's exit, and the game-over Skip. Nowhere to go is a no-op, never a dead end
    *  on the queue's last task. */
   const goNext = useCallback(() => {
-    if (nextGameId) navigate(`/arc3/play/${nextGameId}`);
+    if (nextGameId) navigate(`/arc3/play/${publicGameId(nextGameId)}`);
   }, [navigate, nextGameId]);
 
   const statusLabel = gameState === 'won' ? 'WIN'
@@ -1047,7 +1057,7 @@ export default function CommunityGamePlay() {
             produces volume is play -> react -> next, not play -> finish -> next. */}
         {nextGameId && (
           <Link
-            href={`/arc3/play/${nextGameId}`}
+            href={`/arc3/play/${publicGameId(nextGameId)}`}
             className={`flex items-center gap-1 text-[12px] ${statusLabel ? '' : 'ml-auto'}`}
             style={{ color: ARC.pink }}
           >
@@ -1070,7 +1080,7 @@ export default function CommunityGamePlay() {
           showFeedbackPanel ? 'lg:max-w-[880px]' : ''
         }`}>
         <Arc3Console
-          gameId={gameId ?? ''}
+          gameId={publicGameId(gameId ?? '')}
           levelLabel={levelLabel}
           up={ctl('ACTION1', '')}
           down={ctl('ACTION2', '')}
@@ -1082,10 +1092,10 @@ export default function CommunityGamePlay() {
           // Official wording, because these are the official console's controls: it
           // prints SPACEBAR and CLICK, not the action ids behind them. The two keys we
           // added that it does not have are named in HELP rather than on the deck.
-          spacebar={ctl('ACTION5', 'SPACEBAR')}
+          spacebar={ctl('ACTION5', authoredZKey ? 'Z / SPACEBAR' : 'SPACEBAR')}
           click={ctl('ACTION6', 'CLICK')}
           undo={{
-            label: 'UNDO (Z)',
+            label: `UNDO (${undoKey.toUpperCase()})`,
             onPress: () => void undo(),
             disabled: !frame?.undo_depth || pyodide.isActing || researchAnimating,
           }}
@@ -1189,9 +1199,9 @@ export default function CommunityGamePlay() {
                        style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
                     <p style={{ color: '#FFF' }}>Controls</p>
                     <p>Arrows or WASD — the d-pad.</p>
-                    <p>Spacebar — ACTION5.</p>
+                    <p>{authoredZKey ? 'Z or Spacebar' : 'Spacebar'} — ACTION5.</p>
                     <p>Click the board — that is ACTION6, sent at the cell you clicked.</p>
-                    <p>Z — Undo, one move per press, as on the official console.</p>
+                    <p>{undoKey.toUpperCase()} — Undo, one move per press.</p>
                     <p>X, or the CLICK button, sends ACTION6 with no coordinates, for the
                        tasks that use it as a plain button.</p>
                     <p>C — ACTION7, which a few of these tasks read and the official
@@ -1230,7 +1240,7 @@ export default function CommunityGamePlay() {
                       </button>
                       {nextGameId && (
                         <Link
-                          href={`/arc3/play/${nextGameId}`}
+                          href={`/arc3/play/${publicGameId(nextGameId)}`}
                           className="px-4 h-8 text-[11px] rounded-[4px] inline-flex items-center gap-1.5"
                           style={{ background: ARC.pink, color: '#fff' }}
                         >

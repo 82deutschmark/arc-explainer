@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "game_id": "g519",
+  "expected_state": "GAME_OVER",
+  "actions": [
+    [
+      6
+    ],
+    [
+      6
+    ]
+  ],
+  "terminal_frame_sha256": "21b437f3e1871df4eee6660240a9539878a5a4abf413dd4552f35e3129137395"
+}
