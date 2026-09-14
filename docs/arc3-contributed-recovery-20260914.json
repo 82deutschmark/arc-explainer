@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-14",
+  "game_id": "g500",
+  "public_id": "ks01",
+  "revision": "spatial-controls-free-exploration",
+  "previous_published_sha256": "4c1050f0d6aed61ad7688504791cfe7aa87f432408a3e056b886e15a7adad499",
+  "published_sha256": "ae6a9a562b64598b26e9f25a90539193420effa3f4302a9ca3925a8015949623",
+  "supersedes": "docs/arc3-contributed-release-20260914.json games.g500; old source QC scores do not validate this revision",
+  "validation_kind": "Regression gameplay, all eight genuine wins, exploratory actions, real rejection recovery and browser play; not a new independent QC pass",
+  "recording": "tests/fixtures/arc3-contributed-20260914/g500-recovery-win.json",
+  "practice_scope": "All 44 contributed games in the website player; original and research games retain their engine behavior",
+  "practice_version": "retry1",
+  "telemetry_identity": "SHA256(sourceVersion + :retry1), hexadecimal, distinct from strict engine source identity",
+  "checkpoint_scope": "Current browser run; completed levels are preserved by Retry level, not across page reloads"
+}

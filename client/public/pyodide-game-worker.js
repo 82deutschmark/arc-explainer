@@ -1,6 +1,7 @@
 /*
-Author: Claude Sonnet 4.6
-Date: 2026-03-12
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-14
+Update: Recover contributed-game failures and checkpoint completed levels for unlimited retries.
 PURPOSE: Web Worker for running ARCEngine community games client-side via Pyodide 0.27.4.
          Eliminates server-side Python subprocesses and per-action network round-trips.
          Loads numpy + pydantic via Pyodide's pre-compiled package system, then installs
@@ -71,13 +72,16 @@ self.onmessage = async (e) => {
     if (type === 'init') {
       await handleInit(id);
     } else if (type === 'load_game') {
-      const frame = await handleLoadGame(id, msg.source, msg.className);
+      const frame = await handleLoadGame(id, msg.source, msg.className, msg.recoverable);
       self.postMessage({ type: 'frame', id, frame });
     } else if (type === 'step') {
       const frame = await handleStep(id, msg.action, msg.data || null);
       self.postMessage({ type: 'frame', id, frame });
     } else if (type === 'reset') {
       const frame = await handleReset(id);
+      self.postMessage({ type: 'frame', id, frame });
+    } else if (type === 'retry_level') {
+      const frame = await handleRetryLevel(id);
       self.postMessage({ type: 'frame', id, frame });
     } else if (type === 'undo') {
       const frame = await handleUndo(id);
@@ -175,17 +179,21 @@ importlib.invalidate_caches()
 from arcengine import ARCBaseGame, ActionInput, GameAction, GameState
 `);
 
+  const recoveryBytes = await fetchWithTimeout('/arc3-player-recovery.py?v=retry1', 30_000);
+  await pyodide.runPythonAsync(new TextDecoder().decode(recoveryBytes));
+
   initStage = 'ready';
   self.postMessage({ type: 'ready', id });
 }
 
 // ─── Load game: exec source, instantiate, RESET ──────────────────────────────
-async function handleLoadGame(id, source, className) {
+async function handleLoadGame(id, source, className, recoverable) {
   ensureReady();
 
   // Inject source into Python globals, then exec and instantiate
   pyodide.globals.set('_game_source', source);
   pyodide.globals.set('_game_class_name', className);
+  pyodide.globals.set('_recoverable', recoverable === true);
 
   await pyodide.runPythonAsync(`
 import copy, numpy as np
@@ -211,6 +219,7 @@ _undo_stack = []
 # Get initial frame via RESET
 _reset_input = ActionInput(id=GameAction.RESET)
 _frame_data = _game_instance.perform_action(_reset_input)
+_player_recovery = ContributedRecovery(_recoverable, _game_instance, _frame_data)
 `);
 
   return extractFrameJson();
@@ -248,6 +257,8 @@ _action_enum = GameAction.from_id(int(_step_action_id))
 _data = dict(_step_action_data) if _step_action_data is not None else {}
 _action_input = ActionInput(id=_action_enum, data=_data)
 _frame_data = _game_instance.perform_action(_action_input)
+_game_instance, _frame_data = _player_recovery.after_step(
+    _game_instance, _frame_data, _undo_stack, int(_step_action_id))
 
 if _step_action_id == 0:  # RESET
     _action_counter = 0
@@ -294,6 +305,7 @@ json.dumps({
     "available_actions": list(_frame_data.available_actions),
     "last_action": _last_action,
     "undo_depth": len(_undo_stack),
+    "player_feedback": _player_recovery.feedback(_game_instance),
 })
 `);
 
@@ -309,8 +321,21 @@ async function handleUndo(id) {
 
   await pyodide.runPythonAsync(`
 _game_instance, _frame_data, _action_counter, _last_action = _undo_stack.pop()
+_player_recovery.after_undo()
+if _player_recovery.enabled:
+    _frame_data = _player_recovery.settled(_frame_data)
 `);
 
+  return extractFrameJson();
+}
+
+// Retry from the current level checkpoint; engine RESET can restart the campaign.
+async function handleRetryLevel(id) {
+  ensureReady();
+  await pyodide.runPythonAsync(`
+_game_instance, _frame_data = _player_recovery.retry(_undo_stack)
+_last_action = "RETRY_LEVEL"
+`);
   return extractFrameJson();
 }
 

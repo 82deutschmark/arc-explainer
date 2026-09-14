@@ -2,9 +2,9 @@
 """
 Author: Codex (GPT-6)
 Date: 2026-09-14
-PURPOSE: Replay the four frozen, qualified contributed revisions through the published
-engine modules. Check source hashes, all 32 level transitions, terminal losses, deterministic
-replays and exact recorded frames. Fixtures come from the source QC run, not this importer.
+PURPOSE: Replay unchanged qualified contributed revisions against frozen source QC frames.
+KS01 was superseded by a human-requested usability correction; verify its new source hash
+and recovery/win suite explicitly instead of attributing the old QC results to new code.
 SRP/DRY check: Pass — reuses the existing smoke loader and ARCEngine action protocol.
 """
 import hashlib
@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 from smoke_contributed_games import load_game
 from arcengine import ActionInput, GameAction, GameState
+from check_contributed_recovery import check_ks01
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -54,6 +55,12 @@ def main():
     total_frames = 0
     for game_id, record in release['games'].items():
         source = (ROOT / f'server/data/arc3-games/{game_id}.py').read_text(encoding='utf-8')
+        if game_id == 'g500':
+            revision = json.loads((ROOT / 'docs/arc3-contributed-recovery-20260914.json').read_text())
+            assert revision['previous_published_sha256'] == record['published_sha256']
+            assert hashlib.sha256(source.encode()).hexdigest() == revision['published_sha256']
+            check_ks01()
+            continue
         assert hashlib.sha256(source.encode()).hexdigest() == record['published_sha256']
         for outcome, fixture in record['recordings'].items():
             recording = json.loads((ROOT / fixture).read_text(encoding='utf-8'))
@@ -62,7 +69,7 @@ def main():
             assert first == second, (game_id, outcome, 'nondeterministic replay')
             total_frames += len(first) + len(second)
         print(f"ok   {record['public_id']} ({game_id}): all 8 levels, recorded loss, reset and frame hashes")
-    print(f'ok   {total_frames} frames verified across 16 full win/loss replays')
+    print(f'ok   {total_frames} frames verified across 12 frozen win/loss replays, plus revised KS01 checks')
 
 
 if __name__ == '__main__':

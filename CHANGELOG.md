@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.72.0  Sep 14, 2026
+
+- **Make KS01 exploration safe and recover failed contributed-game moves** (Author: Codex, GPT-6).
+  - Reproduced the live KS01 trap: two Right presses invoked two empty rewinds and caused GAME OVER. Arrows now move the eye spatially, C and a labeled button rewind pulses, and the move budget and empty-rewind penalties are removed. Show the goal, ring/pulse rule and contextual blocked-action hints; preserve all eight puzzle win conditions.
+  - All 44 contributed games now restore the position before a fatal move, explain the recovery and show unlimited retries. Retry level uses a checkpoint so completed levels stay complete during the current run. Undo stays within the current level. Original and research game rules are unchanged.
+  - Complete contributed pixel animations at the declared frame rate, reject overlapping input and key repeat, and allow Retry level to interrupt animation playback. Practice telemetry uses a separate source-and-mode hash so these sessions are distinguishable from strict engine runs.
+  - Validate KS01's eight wins with and without recovery, 8,000 state probes, 100 extra exploration moves, repeated real losses across all other 43 contributed engines, and next-level retries in the four revised games. The publication gate, public ID tests, production build and browser checks cover deployment integration.
+  - `docs/arc3-contributed-recovery-20260914.json` supersedes KS01's earlier website source. Old QC scores remain historical; this correction is not presented as a new independent QC pass.
+
 ### Version 9.71.0  Sep 14, 2026
 
 - **Name all 44 contributed games and publish four QC-qualified simplified revisions** (Author: Codex, GPT-6).

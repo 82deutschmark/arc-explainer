@@ -10,25 +10,16 @@ from arcengine import ARCBaseGame, Camera, Level, RenderableUserDisplay
 
 
 QC_CONTROL_LABELS = {
-    1: "Move eye left",
-    2: "Move eye right",
-    3: "Switch eye row",
-    4: "Rewind last pulse",
-    5: "Pulse ringed puppets",
-    6: "Open / close curtain",
+    1: "Move eye up", 2: "Move eye down", 3: "Move eye left", 4: "Move eye right",
+    5: "Pulse ringed puppets", 6: "Open / close curtain", 7: "Rewind last pulse",
 }
 QC_GOAL = (
-    "Move every puppet to its white corner-marked outline and return the eye "
-    "to its gold-bracketed starting perch before the bottom move beads run out. "
-    "Z pulses all ringed puppets one step along their paths: pink crescent moths move "
-    "only when hidden from the eye, and yellow suns only when seen. "
-    "Later, cross split moon/sun change points, use each marked curtain to "
-    "change a pulse (ring becomes a crossed diamond), and leave curtains in "
-    "the OPEN or SHUT pose printed below them. "
-    "A large D means rewind first; rewind restores only the last pulse's "
-    "puppets, not the eye, curtains, or spent moves, and levels that begin "
-    "with D allow only that one rewind. "
-    "Two empty rewinds also end the attempt; Reset starts over."
+    "Move puppets to the white outlines and return the eye to its gold brackets. "
+    "Arrows move the eye; Z or Space pulses ringed puppets. "
+    "Pink moths move when hidden; yellow suns move when seen. "
+    "Click curtains to change the view. C rewinds a pulse without moving the eye or curtains. "
+    "Marked curtains must change a pulse, then match their OPEN or SHUT labels. "
+    "A large C means rewind the marked pulse first. Explore freely: there is no move limit."
 )
 
 
@@ -98,14 +89,14 @@ LEVELS = [
         "Lantern Crossing",
         (puppet(BOLD, RIGHT_LOOP, 0, 5),),
         eye=0, target_eye=0, veils=((31, 18, 52, 2),), budget=10,
-        witness=(2, 2, 5, 5, 5, 5, 5, 1, 1),
+        witness=(4, 4, 5, 5, 5, 5, 5, 3, 3),
     ),
     theatre(
         "Opposite Cues",
         (puppet(SHY, LEFT_LOOP, 0, 5),
          puppet(BOLD, RIGHT_LOOP, 0, 5)),
         eye=2, target_eye=2, veils=((31, 18, 52, 3),), budget=10,
-        witness=(2, 2, 5, 1, 5, 5, 5, 5, 1),
+        witness=(4, 4, 5, 3, 5, 5, 5, 5, 3),
     ),
     theatre(
         "Velvet Turn",
@@ -114,7 +105,7 @@ LEVELS = [
         eye=1, target_eye=1, veils=((17, 21, 50, 2),),
         shutters=((36, 21, 52, 5),), start_shutters=1,
         target_shutters=0, required_toggles=1, budget=14,
-        witness=(1, 3, 5, 5, 5, (6, 0), 5, 3, 5, 2, 5, 5, 5),
+        witness=(3, 2, 5, 5, 5, (6, 0), 5, 1, 5, 4, 5, 5, 5),
     ),
     theatre(
         "Twin Curtains",
@@ -132,7 +123,7 @@ LEVELS = [
         eye=4, target_eye=4, veils=((36, 18, 51, 3),),
         required_flips=1, required_rewind=True,
         history_start=(((0,), (SHY,), 0),), budget=15,
-        witness=(4, 1, 3, 5, 5, 2, 5, 5, 1, 1, 3, 5, 2, 2),
+        witness=(7, 3, 2, 5, 5, 4, 5, 5, 3, 3, 1, 5, 4, 4),
     ),
     theatre(
         "Three-Puppet Matinee",
@@ -143,7 +134,7 @@ LEVELS = [
         shutters=((19, 21, 50, 5),), start_shutters=1,
         target_shutters=0, required_toggles=1, required_flips=4,
         budget=13,
-        witness=(2, 3, 5, 1, 5, 1, 5, (6, 0), 5, 2, 3, 5),
+        witness=(4, 2, 5, 3, 5, 3, 5, (6, 0), 5, 4, 1, 5),
     ),
     theatre(
         "Velvet Eclipse Theatre",
@@ -156,8 +147,7 @@ LEVELS = [
         required_flips=5, required_rewind=True,
         history_start=(((0, 0, 0), (SHY, BOLD, SHY), 0),),
         budget=14,
-        witness=(4, 2, 2, 3, 5, 1, 1, 3, (6, 0), 5, (6, 1), 5,
-                 (6, 0)),
+        witness=(7, 4, 4, 2, 5, 3, 3, 1, (6, 0), 5, (6, 1), 5, (6, 0)),
     ),
 ]
 
@@ -271,33 +261,25 @@ def transition(level, state, action):
     if state[TERMINAL_INDEX]:
         return state
     aid, target = parse_action(action)
-    if aid not in (1, 2, 3, 4, 5, 6):
+    if aid not in (1, 2, 3, 4, 5, 6, 7):
         return state
     positions, kinds, eye, shutters, toggled, flipped, history, rewound, seals, _ = state
     column = eye % 5; balcony = eye // 5
 
-    if level["required_rewind"] and not rewound and aid != 4:
+    if level["required_rewind"] and not rewound and aid != 7:
         return state
 
-    if aid == 1:
-        if column == 0:
+    if aid in (1, 2, 3, 4):
+        if (aid == 1 and balcony == 0) or (aid == 2 and balcony == 1):
             return state
-        return _finish(level, (positions, kinds, eye - 1, shutters, toggled,
-                               flipped, history, rewound, seals, ACTIVE))
-    if aid == 2:
-        if column == 4:
+        if (aid == 3 and column == 0) or (aid == 4 and column == 4):
             return state
-        return _finish(level, (positions, kinds, eye + 1, shutters, toggled,
+        next_eye = eye + {1: -5, 2: 5, 3: -1, 4: 1}[aid]
+        return _finish(level, (positions, kinds, next_eye, shutters, toggled,
                                flipped, history, rewound, seals, ACTIVE))
-    if aid == 3:
-        return _finish(level, (positions, kinds, column + (1 - balcony) * 5,
-                               shutters, toggled, flipped, history, rewound,
-                               seals, ACTIVE))
-    if aid == 4:
+    if aid == 7:
         if not history:
-            seals -= 1
-            return (positions, kinds, eye, shutters, toggled, flipped, history,
-                    rewound, seals, LOSS if seals <= 0 else ACTIVE)
+            return state
         old_positions, old_kinds, old_flipped = history[0]
         return _finish(level, (tuple(old_positions), tuple(old_kinds), eye,
                                shutters, toggled, old_flipped, (), 1, seals,
@@ -365,7 +347,7 @@ def solved(level, state):
 
 
 def action_tokens(level):
-    return (1, 2, 3, 4, 5) + tuple((6, index)
+    return (1, 2, 3, 4, 5, 7) + tuple((6, index)
                                     for index in range(len(level["shutters"])))
 
 
@@ -499,7 +481,9 @@ class TheatreDisplay(RenderableUserDisplay):
     @staticmethod
     def label(frame, text, x, y, color, scale=1):
         glyphs = {
-            "D": ("110", "101", "101", "101", "110"),
+            "C": ("111", "100", "100", "100", "111"),
+            "F": ("111", "100", "110", "100", "100"),
+            "R": ("110", "101", "110", "101", "101"),
             "E": ("111", "100", "110", "100", "111"),
             "H": ("101", "101", "111", "101", "101"),
             "N": ("101", "111", "111", "111", "101"),
@@ -593,14 +577,7 @@ class TheatreDisplay(RenderableUserDisplay):
         self.almond(frame, EYE_POSITIONS[state[2]], 5, PEARL, VIOLET)
 
     def hud(self, frame, state):
-        for index in range(self.game.budget_max):
-            x = 3 + index * 3 + (index // 5) * 2
-            live = index < self.game.budget_left
-            frame[61:63, x:x + 2] = AMBER if live else SLATE
-        for index, x in enumerate((56, 61)):
-            live = index < state[8]
-            self.crescent(frame, (x, 61), 2, MAGENTA if live else SLATE,
-                          VELVET, reverse=index == 1)
+        self.label(frame, "FREE", 3, 59, MIST)
         for index, (x, _y0, _y1, _width) in enumerate(self.game.level["shutters"]):
             desired = bool(self.game.level["target_shutters"] & (1 << index))
             matched = bool(state[3] & (1 << index)) == desired
@@ -613,7 +590,7 @@ class TheatreDisplay(RenderableUserDisplay):
                             old_kinds[index], color=MIST, hollow=True)
             self.crescent(frame, (54, 29), 4, PINK, VELVET, reverse=True)
             self.line(frame, (58, 28), (60, 31), MIST, dotted=True)
-            self.label(frame, "D", 54, 33, PEARL, scale=2)
+            self.label(frame, "C", 54, 33, PEARL, scale=2)
         if state[7]:
             self.line(frame, (51, 29), (57, 27), MIST, dotted=True)
             self.line(frame, (51, 27), (57, 31), PINK, dotted=True)
@@ -719,11 +696,17 @@ class G500(ARCBaseGame):
                         name=level["name"]) for level in LEVELS]
         super().__init__("g500", levels,
                          Camera(0, 0, 64, 64, VELVET, VELVET, [self.display]),
-                         False, len(levels), [1, 2, 3, 4, 5, 6])
+                         False, len(levels), [1, 2, 3, 4, 5, 6, 7])
+        self._available_actions = self.level_actions()
+
+    def level_actions(self):
+        return [1, 2, 3, 4, 5, 7] + ([6] if self.level["shutters"] else [])
 
     def on_set_level(self, _level):
         self.level = LEVELS[self.level_index]; self.state = start_state(self.level)
-        self.budget_left = self.budget_max = self.level["budget"]
+        self.budget_left = self.budget_max = 0
+        self.notice = None
+        self._available_actions = self.level_actions()
         self.anim_kind = None; self.anim_left = self.anim_total = self.anim_progress = 0
         self.anim_trace = (); self.pending_state = self.pending_budget = None
         self.pending_terminal = None; self.terminal_hold = None
@@ -766,23 +749,27 @@ class G500(ARCBaseGame):
             target = self.snap_shutter(int(self.action.data.get("x", -99)),
                                        int(self.action.data.get("y", -99)))
             token = aid if target is None else (aid, target)
+        self.notice = None
         before = self.state; after = transition(self.level, before, token)
+        if self.level["required_rewind"] and not before[7] and aid != 7:
+            self.notice = "Rewind the marked pulse first: press C or Rewind pulse."
+        elif aid == 7 and not before[6]:
+            self.notice = "There is no pulse to rewind. Move the eye or pulse with Z / Space."
+        elif aid in (1, 2, 3, 4) and after == before:
+            self.notice = "The eye is already at this edge. Try another direction."
+        elif aid == 6 and after == before:
+            self.notice = "Click directly on a curtain to open or close it."
+        elif aid == 5 and not affected_indices(self.level, before):
+            self.notice = "No puppet is ringed. Move the eye or adjust a curtain before pulsing."
         if after == before:
             self.begin("blocked", 5, before, self.budget_left); return
-        cost = action_cost(before, after); budget = self.budget_left - cost
+        budget = 0
         won = after[TERMINAL_INDEX] == WIN
-        lost = after[TERMINAL_INDEX] == LOSS or (budget <= 0 and not won)
-        if lost and after[TERMINAL_INDEX] != LOSS:
-            after = after[:TERMINAL_INDEX] + (LOSS,)
         if won:
             kind, frames, terminal = "success", 7, "win"
-        elif lost:
-            kind, frames, terminal = "loss", 7, "loss"
-        elif after[8] < before[8]:
-            kind, frames, terminal = "reject", 6, None
-        elif aid in (1, 2, 3):
+        elif aid in (1, 2, 3, 4):
             kind, frames, terminal = "eye", 6, None
-        elif aid == 4:
+        elif aid == 7:
             kind, frames, terminal = "rewind", 7, None
         elif aid == 5:
             kind, frames, terminal = "pulse", 7, None
@@ -790,3 +777,17 @@ class G500(ARCBaseGame):
             kind, frames, terminal = "shutter", 6, None
         trace = affected_indices(self.level, before) if aid == 5 else ()
         self.begin(kind, frames, after, budget, trace=trace, terminal=terminal)
+
+
+    def player_feedback(self):
+        hint = "Arrows move the eye. Z / Space pulses ringed puppets. Pink moths move when hidden; yellow suns move when seen."
+        if self.level["shutters"]:
+            hint += " Click curtains to change sight; marked curtains must change a pulse, then match their OPEN / SHUT labels."
+        if self.level["required_flips"]:
+            hint += " Cross the split moon/sun diamonds to change puppet type."
+        if self.level["required_rewind"] and not self.state[7]:
+            hint = "Press C or Rewind pulse to restore the ghost puppets first. Then use arrows and Z / Space."
+        elif self.state[0] == tuple(orb["target"] for orb in self.level["orbs"]) and self.state[2] != self.level["target_eye"]:
+            hint = "The puppets are in place. Return the eye to its gold brackets."
+        return {"goal": "Move puppets onto the white outlines and return the eye to its gold brackets.",
+                "hint": hint, "notice": self.notice}
