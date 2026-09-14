@@ -1,12 +1,24 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11 (corrected against source 2026-09-12)
- * PURPOSE: Game metadata for G50T (Ghost Timer), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
- *          2026-09-12: patrols only exist in the last 2 of 7 levels, you can never
- *          have more than 1-2 ghosts at once (never a "handful"), and 3 levels add an
- *          unmentioned paired-tile teleport mechanic.
- *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
+ * Date: 2026-09-13 (renamed and reframed after Mark's own playthrough)
+ * PURPOSE: Game metadata for G50T (Ghost Twin, formerly "Ghost Timer"), part of the
+ *          ARC-AGI-3 public demo set (25 games as of Sep 2026).
+ *          Renamed 2026-09-13 per Mark: "Timer" was the wrong headline -- the timer
+ *          bar is real (confirmed in code, drains on a fixed schedule, ends the run at
+ *          zero) but it isn't what makes the game hard or interesting. The defining
+ *          mechanic, confirmed by rereading G50t/qxlodtievc.move() and .pmlawcgvcp()
+ *          in g50t.py: every successful move is silently recorded, and the fifth
+ *          action doesn't just "rewind" -- it walks you back to the start step by
+ *          step, then clones your just-finished run into a ghost twin that owns that
+ *          exact move list and replays it move-for-move alongside your next attempt.
+ *          Mark's framing, confirmed against source: pressing it is like saying
+ *          "remember everything I just did, send me back to start, and spawn a twin
+ *          that performs those exact moves and nothing else." Nothing in the level
+ *          hints at this before you try it, so a blind first run can't be perfect --
+ *          you have to burn an attempt discovering what the fifth action even does.
+ *          Prior corrections retained, not re-verified this pass: patrols only exist
+ *          in the last 2 of 7 levels, and 3 levels add a paired-tile teleport
+ *          mechanic. See docs/2026-09-11-arc3-public-set-additional-games-study.md.
  * SRP/DRY check: Pass - Single responsibility for G50T game data.
  */
 
@@ -15,10 +27,10 @@ import { Arc3GameMetadata } from './types';
 export const g50t: Arc3GameMetadata = {
   gameId: 'g50t',
   officialTitle: 'g50t',
-  informalName: 'Ghost Timer',
-  description: 'Rewinding freezes a replaying ghost of your last run; hold plates, dodge late-game patrols, and race a draining timer to reach the chest.',
-  simpleExplanation: 'You race a timer toward a goal chest. Rewinding sends you back to the start and leaves behind a ghost that replays your last run exactly — use it to hold pressure plates down while you make a fresh attempt.',
-  mechanicsExplanation: 'You control a small avatar navigating a dungeon-style room toward a goal chest. A fifth action doesn\'t move you -- it rewinds you to the start and freezes your just-completed run of moves into a silent ghost that replays those exact steps on every future attempt, while you get a fresh body to try something different. Every ghost gets wiped on your next-to-last rewind, so you never have more than one echo on screen in level 1, or more than two in any later level. The core puzzle is using that one or two echoes to hold pressure plates long enough for the real you to reach the chest, all before a slowly draining timer bar runs out. The last two levels add roaming patrols that kill on contact, and three middle levels add paired tiles that teleport whatever is standing on one to its linked partner.',
+  informalName: 'Ghost Twin',
+  description: 'Every move you make is being recorded; the fifth action sends you back to the start and spawns a twin that replays those exact moves alongside you, all under a draining timer bar.',
+  simpleExplanation: 'Nothing tells you this up front, so figuring it out costs you a run: every move you make toward the goal chest is being recorded. The fifth action isn\'t a simple rewind — it walks you back to the start and spawns a ghost twin that performs that exact recorded sequence, move for move, right alongside whatever you do next. You\'re meant to use that twin to hold a pressure plate down while the real you goes finish the job. A timer bar drains as you act and ends the run if it empties first.',
+  mechanicsExplanation: 'You control a small avatar navigating a dungeon-style room toward a goal chest, and every successful move is silently appended to a history list. The fifth action doesn\'t move you -- it plays that history back in reverse to walk you to the start, then clones your just-finished self into a ghost twin bound to that exact move list. From then on, the twin re-executes its recorded moves in lockstep with your live moves, one step per step you take, whether or not that still makes sense for the room you\'re now in. Nothing in the level explains this before you trigger it, so a first attempt can\'t be a clean run -- you\'re meant to spend it learning what the fifth action does, then use the twin(s) it leaves behind to hold pressure plates while the real you reaches the chest. A timer bar drains on a fixed schedule tied to your action count and ends the run at zero if it beats you there. The last two levels add roaming patrols that kill on contact, and three middle levels add paired tiles that teleport whatever is standing on one to its linked partner.',
   category: 'evaluation',
   difficulty: 'hard',
   levelCount: 7,
@@ -53,7 +65,7 @@ export const g50t: Arc3GameMetadata = {
     { level: 6, imageUrl: '/arc3-levels/g50t/lvl6.png' },
     { level: 7, imageUrl: '/arc3-levels/g50t/lvl7.png' },
   ],
-  tags: ['time-loop', 'ghost-replay', 'timer', 'public-demo-2026'],
+  tags: ['ghost-twin', 'move-recording', 'time-loop', 'timer', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: "dodge patrols" and "a handful of ghosts" both overstated what most levels actually contain, and a teleport-tile mechanic in 3 levels was missing entirely.',
+  notes: 'Renamed 2026-09-13 from "Ghost Timer" to "Ghost Twin" by Mark, who played it: the timer bar is real but isn\'t the point, and the old name buried the actual mechanic -- an unexplained fifth action that records your moves and replays them via a cloned twin. Confirmed against g50t.py that move history is recorded and replayed exactly as Mark described. Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: "dodge patrols" and "a handful of ghosts" both overstated what most levels actually contain, and a teleport-tile mechanic in 3 levels was missing entirely.',
 };

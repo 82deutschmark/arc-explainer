@@ -1,17 +1,35 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-11 (name reverted 2026-09-12; "chaser" corrected to a cosmetic warning 2026-09-12 PM)
+ * Date: 2026-09-12 (rewritten after reading bp35.py's real game logic, not just the level scaffolding)
  * PURPOSE: Game metadata for BP35 (Buoyant Pursuit), part of the ARC-AGI-3 public
- *          demo set (25 games as of Sep 2026). Briefly renamed to "Buoyant Ascent" on
- *          2026-09-12 over mylefxfaev() (bp35.py:4052-4054) disabling the explicit
- *          chase-catch check past level 3 -- reverted the same day; the name is flavor
- *          for the whole floating-upward premise, not a literal per-level mechanic
- *          claim, and the eccentric chicken farmer wants it kept as Buoyant Pursuit.
- *          Corrected again 2026-09-12 PM: mylefxfaev is not a pursuer with its own
- *          threat logic, it is a cosmetic animation that plays in levels 1-3 when the
- *          action budget gets low -- a warning, not a second failure condition. The
- *          only thing that actually ends a level is the fixed action budget itself,
- *          in every level, 1 through 9.
+ *          demo set (25 games as of Sep 2026).
+ *          This pass reread the actual class (Bp35 / uakietkqfso in bp35.py, lines
+ *          ~4032-4465, obfuscated names) instead of the placeholder `levels` list at
+ *          the top of the file, and confirmed against Mark's own play:
+ *          - There is no vertical move action at all (available_actions = [3,4,6,7]:
+ *            left, right, click, undo). Every left/right step (pywlvyklps) is
+ *            automatically followed by an unstoppable slide (fsvnqdbzrp) through open
+ *            space in whichever direction is currently "up" -- you cannot move
+ *            sideways without also being carried in that direction. This is the
+ *            "suction" Mark described, confirmed, not softened.
+ *          - A clickable red control tile flips a real boolean (vivnprldht) that
+ *            reverses that direction, turning your automatic rise into an automatic
+ *            sink. This is a functional mechanic, not decorative -- corrected from the
+ *            prior "decorative band" wording.
+ *          - The rising "chaser" (mylefxfaev, aknlbboysnc sprite) is real code with a
+ *            real self.lose() call, active only in levels 1-3, that advances only when
+ *            you fail to gain height twice in a row. Mark confirms it basically never
+ *            fires in normal play, which matches: reaching it requires repeated failed
+ *            moves, and it's coded out entirely from level 4 on.
+ *          - OPEN QUESTION, not yet resolved: a purple tile with a bit of yellow and
+ *            white on it (ubhhgljbnpu/hzusueifitk in code) sets landed_on_spike and
+ *            calls self.lose() when the auto-rise carries the player onto it -- i.e.
+ *            the code says it's a fatal hazard tile, not a passage. Mark's play
+ *            experience says the opposite: it reads as a pipe-like teleporter you
+ *            sometimes have to enter to reach the next space. Neither of us has
+ *            resolved this yet -- described here per the code, with the discrepancy
+ *            flagged in `notes` rather than picked one way. Revisit against a replay
+ *            or a level screenshot before trusting either read fully.
  *          See docs/2026-09-02-arc3-official-game-studies.md.
  * SRP/DRY check: Pass - Single responsibility for BP35 game data.
  */
@@ -22,9 +40,9 @@ export const bp35: Arc3GameMetadata = {
   gameId: 'bp35',
   officialTitle: 'bp35',
   informalName: 'Buoyant Pursuit',
-  description: 'Steer left/right floating up a flooded shaft under a fixed action budget; in levels 1-3 a cosmetic rising effect warns you when that budget is running low.',
-  simpleExplanation: 'You only steer left and right — height changes as a side effect of moving, so you rise by moving sideways. In the first three levels, something visibly rises from below when your action budget gets low, but it\'s a warning animation, not a pursuer. What actually ends the game, in every level, is running out of that action budget.',
-  mechanicsExplanation: 'You steer only left and right; height is always a consequence of your moves, never a direct command, which is why it reads as floating up a flooded shaft. In levels 1-3 only, a visual effect rises from below and gains ground when you fail to rise on a turn -- it looks like a pursuer, but it is a cosmetic warning tied to your dwindling action budget, not a threat with its own catch condition; from level 4 on it never appears at all, because the real danger already applies to every level on its own: a fixed budget of total actions (shown as a bar filling at the bottom of the screen) that drains the same amount whether or not you rose that turn, in every level 1 through 9 -- run it out and you lose. Later, decorative see-through shapes you had been swimming through turn out to be clickable controls, and a decorative band flips which way is down.',
+  description: 'Steer left or right through a flooded shaft; every move automatically carries you further in whichever direction is currently "up" until you hit something solid, and a control tile lets you flip which way that is.',
+  simpleExplanation: 'You only ever move left or right — there is no up/down button. Instead, every sideways move automatically sucks you further in whatever direction is currently "up," and you can\'t opt out of it: move onto an open space and it keeps carrying you until you hit something solid. A red control tile flips which way is "up," so in some levels you sink instead of float. In levels 1 through 3 only, something rises toward you if you keep failing to gain height, and can end the level if it catches you — but that takes repeated failed moves in a row, so a normal playthrough basically never triggers it. What actually ends most runs is a fixed action budget, shown as a bar filling at the bottom of the screen.',
+  mechanicsExplanation: 'You steer only left and right; there is no direct vertical action. Every left/right step is automatically followed by a slide through any open space in whichever direction currently counts as "up," continuing until you hit something solid -- this is not optional floating, it is a forced pull you cannot decline. A red clickable control tile flips a real boolean that reverses this pull, so later levels can have you sinking instead of rising after the same left/right input. In levels 1-3 only, a background sprite rises one step whenever you fail to gain height on a move, and if it reaches your row the level ends in a loss -- but the code only checks this after a failed move, on top of needing height parity, so it requires repeated failed moves in a row and effectively never triggers in normal play; from level 4 on the check is removed entirely. Regardless of level, a fixed action budget (a bar at the bottom of the screen, roughly double the length in the later levels) drains with every action taken and ends the run at zero. A goal tile ends the level in a win the moment your auto-rise carries you onto it. A purple tile marked with a touch of yellow and white ends the level in a loss when the auto-rise carries you onto it, per the game code -- though this conflicts with how it plays in practice (see notes) and is still unresolved.',
   category: 'evaluation',
   difficulty: 'medium',
   levelCount: 9,
@@ -62,5 +80,5 @@ export const bp35: Arc3GameMetadata = {
   ],
   tags: ['vertical-scroller', 'budget', 'physics', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Corrected 2026-09-12 PM by an eccentric chicken farmer who actually played it: the "chaser" is not a threat with its own logic at all -- it is a cosmetic rising animation that plays in levels 1-3 when the action budget gets low, a graphical nicety rather than a pursuer. The only real failure condition, in every level, is running the fixed action budget to zero. Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Earlier correction, 2026-09-12: the chase check (mylefxfaev) is hard-disabled past level 3, which is still true, but that pass still described it as an actual chaser. A same-day rename to "Buoyant Ascent" over that finding was reverted -- the eccentric chicken farmer kept the name Buoyant Pursuit as flavor for the whole game, not a per-level mechanic claim.',
+  notes: 'Reread 2026-09-12 by Mark, who actually plays this game, against the real bp35.py logic (not the placeholder `levels` list at the top of the file). Confirmed: the auto-rise is a forced pull with no opt-out, not optional floating; the gravity-flip control tile is a real functional mechanic, not decorative; and the rising "chaser" (mylefxfaev/aknlbboysnc) is real code with a real self.lose() call, gated to levels 1-3, but requires repeated failed moves in a row to trigger, which matches Mark never seeing it fire in practice. UNRESOLVED: a purple tile with a bit of yellow and white on it (ubhhgljbnpu/hzusueifitk in code) sets a fatal flag and ends the level when the auto-rise carries the player onto it, per the game source -- but Mark\'s play experience is that it works like a pipe/passage you sometimes have to enter to reach the next space, not a hazard. Revisit against a replay before trusting either read as final. Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from the game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results.',
 };
