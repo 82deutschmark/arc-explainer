@@ -1,8 +1,19 @@
 /*
-Author: Codex (GPT-6), with existing contributors
+Author: Claude Sonnet 5, correcting Codex (GPT-6) and existing contributors
 Date: 2026-09-14
 Update: Explain KS01 controls, show unlimited contributed retries and restore failed moves;
         finish pixel animations before accepting another action.
+10th pass, same day, per Mark: the KS01 pass above RE-BROKE point 9. It gave KS01's
+        ACTION5 the invented deck label "PULSE (Z / SPACE)" and moved Undo to U for it
+        (and the other three `AUTHORED_Z_GAMES`), plus a bespoke "Rewind pulse (C)" button
+        that narrated the mechanic in the deck itself. All three violate THE RULE at point
+        9: the official console is the spec, its wording is SPACEBAR/CLICK/UNDO (Z) with no
+        per-game synonyms, and we do not tell the player what an action does. Reverted: the
+        spacebar control is always labelled SPACEBAR, Undo is always Z on every game with no
+        exceptions, and the KS01-only button is gone -- C already sends ACTION7 through the
+        normal deck. `usesAuthoredZKey` stays wired into `canSend` only, where it is
+        legitimately about which actions a verified per-level revision (PC70 among them)
+        actually accepts, not about keys or labels.
 PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the way the
          official ARC-AGI-3 player does it. Full rewrite of the previous page, replaced
          rather than patched for three reasons:
@@ -311,8 +322,6 @@ export default function CommunityGamePlay() {
   const gameId = routeGameId ? canonicalGameId(routeGameId) : undefined;
   const authoredZKey = usesAuthoredZKey(gameId);
   const recoverable = usesContributedRecovery(gameId);
-  const isKS01 = gameId === 'g500';
-  const undoKey = authoredZKey ? 'u' : UNDO_KEY;
   const [, navigate] = useLocation();
   const pyodide = usePyodideGame();
 
@@ -818,18 +827,19 @@ export default function CommunityGamePlay() {
     const down = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      // The four revised games print Z for ACTION5; their host Undo moves to U.
-      // Other games keep the official console mapping. `e.repeat` is what keeps a HELD Z from
-      // rewinding the whole run -- one press, one undo -- which is the complaint that got
-      // the key unbound in the first place. R is still nothing: RESET has no official
-      // binding to honour, so it stays a mouse trip.
-      if (e.key.toLowerCase() === undoKey) {
+      // Z is UNDO, full stop, on every game -- it is the official console's key and this
+      // site never reassigns it, no matter what a contributed game's own source happens to
+      // use internally. `e.repeat` is what keeps a HELD Z from rewinding the whole run --
+      // one press, one undo -- which is the complaint that got the key unbound in the first
+      // place. R is still nothing: RESET has no official binding to honour, so it stays a
+      // mouse trip.
+      if (e.key.toLowerCase() === UNDO_KEY) {
         e.preventDefault();
         if (e.repeat || !frame?.undo_depth || pyodide.isActing) return;
         void undo();
         return;
       }
-      const action = authoredZKey && e.key.toLowerCase() === 'z' ? 'ACTION5' : KEY_MAP[e.key];
+      const action = KEY_MAP[e.key];
       if (!action || !canSend(action)) return;
       e.preventDefault();
       if (recoverable && e.repeat) return;
@@ -844,7 +854,7 @@ export default function CommunityGamePlay() {
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
-  }, [act, canSend, gameState, live, undo, frame?.undo_depth, pyodide.isActing, authoredZKey, undoKey, recoverable]);
+  }, [act, canSend, gameState, live, undo, frame?.undo_depth, pyodide.isActing, recoverable]);
 
   // ── Live tick ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -1110,10 +1120,10 @@ export default function CommunityGamePlay() {
           // Official wording, because these are the official console's controls: it
           // prints SPACEBAR and CLICK, not the action ids behind them. The two keys we
           // added that it does not have are named in HELP rather than on the deck.
-          spacebar={ctl('ACTION5', isKS01 ? 'PULSE (Z / SPACE)' : authoredZKey ? 'Z / SPACEBAR' : 'SPACEBAR')}
+          spacebar={ctl('ACTION5', 'SPACEBAR')}
           click={ctl('ACTION6', 'CLICK')}
           undo={{
-            label: `UNDO (${undoKey.toUpperCase()})`,
+            label: 'UNDO (Z)',
             onPress: () => void undo(),
             disabled: !frame?.undo_depth || pyodide.isActing || actionAnimating,
           }}
@@ -1217,13 +1227,12 @@ export default function CommunityGamePlay() {
                        style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
                     <p style={{ color: '#FFF' }}>Controls</p>
                     <p>Arrows or WASD — the d-pad.</p>
-                    <p>{authoredZKey ? 'Z or Spacebar' : 'Spacebar'} — ACTION5.</p>
+                    <p>Spacebar — ACTION5.</p>
                     <p>Click the board — that is ACTION6, sent at the cell you clicked.</p>
-                    <p>{undoKey.toUpperCase()} — Undo, one move per press.</p>
+                    <p>Z — Undo, one move per press.</p>
                     <p>X, or the CLICK button, sends ACTION6 with no coordinates, for the
                        tasks that use it as a plain button.</p>
-                    <p>{isKS01 ? 'C — Rewind the last pulse, keeping the eye and curtains in place.'
-                      : 'C — ACTION7, which a few of these tasks read.'}</p>
+                    <p>C — ACTION7, which a few of these tasks read.</p>
                     <p>{recoverable ? 'Retry level restarts only this level. Completed levels stay complete during this run.'
                       : 'RESET is a button only — no key, so it cannot happen by accident.'}</p>
                     <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
@@ -1284,12 +1293,6 @@ export default function CommunityGamePlay() {
             </div>
             {frame.player_feedback?.goal && <p className="mt-2">{frame.player_feedback.goal}</p>}
             {frame.player_feedback?.hint && <p className="mt-1 text-[#b8cad9]">{frame.player_feedback.hint}</p>}
-            {isKS01 && (
-              <button onClick={() => void act('ACTION7')} disabled={!canSend('ACTION7') || pyodide.isActing || actionAnimating || gameState !== 'playing'}
-                className="mt-2 px-3 py-2 border border-[#96b7d0] disabled:opacity-40">
-                Rewind pulse (C)
-              </button>
-            )}
             <p role="status" aria-live="polite" className="mt-2 text-[#ffe1a0]">
               {frame.player_feedback?.notice || 'A failed move is restored automatically. Retry level starts this level again.'}
             </p>
