@@ -1,8 +1,8 @@
 /*
 Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-14
-Update: Keep Next task inside the research collection and complete its pixel animations
-        at the declared frame rate before accepting another move.
+Update: Explain KS01 controls, show unlimited contributed retries and restore failed moves;
+        finish pixel animations before accepting another action.
 PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the way the
          official ARC-AGI-3 player does it. Full rewrite of the previous page, replaced
          rather than patched for three reasons:
@@ -144,7 +144,7 @@ SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodi
 */
 
 import { canonicalGameId, publicGameId } from '@shared/arc3PublicIds';
-import { usesAuthoredZKey } from '@shared/arc3ContributedControls';
+import { usesAuthoredZKey, usesContributedRecovery } from '@shared/arc3ContributedControls';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useLocation, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -310,6 +310,8 @@ export default function CommunityGamePlay() {
   const { gameId: routeGameId } = useParams<{ gameId: string }>();
   const gameId = routeGameId ? canonicalGameId(routeGameId) : undefined;
   const authoredZKey = usesAuthoredZKey(gameId);
+  const recoverable = usesContributedRecovery(gameId);
+  const isKS01 = gameId === 'g500';
   const undoKey = authoredZKey ? 'u' : UNDO_KEY;
   const [, navigate] = useLocation();
   const pyodide = usePyodideGame();
@@ -335,6 +337,8 @@ export default function CommunityGamePlay() {
   const animRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const feedbackRef = useRef<HTMLDivElement | null>(null);
   const heldRef = useRef<string | null>(null);
+  const actionInFlight = useRef(false);
+  const animationInFlight = useRef(false);
   /** The task this component is currently showing, so a same-route param change can be
    *  told apart from a re-render. See the task-change effect below `start`. */
   const shownGameRef = useRef(gameId);
@@ -348,7 +352,7 @@ export default function CommunityGamePlay() {
     () => catalog?.data?.games?.find((g) => g.gameId === gameId) ?? null,
     [catalog, gameId],
   );
-  const researchAnimating = meta?.category === 'research'
+  const actionAnimating = (recoverable || meta?.category === 'research')
     && displayFrameIndex < (frame?.frame?.length ?? 1) - 1;
 
   /** Which tasks anyone has ever played, so Next can prefer one nobody has touched. */
@@ -623,15 +627,20 @@ export default function CommunityGamePlay() {
   const applyFrame = useCallback((next: PyodideFrameData) => {
     setFrame(next);
     const total = next.frame?.length ?? 1;
-    const interval = meta?.category === 'research'
-      ? 1000 / Math.max(1, meta.defaultFps || 12) : 200;
+    const completeAnimation = recoverable || meta?.category === 'research';
+    const interval = completeAnimation ? 1000 / Math.max(1, meta?.defaultFps || 12) : 200;
+    animationInFlight.current = completeAnimation && total > 1;
     if (animRef.current) clearTimeout(animRef.current);
     if (total > 1) {
       setDisplayFrameIndex(0);
       let i = 0;
       const step = () => {
         i += 1;
-        if (i < total) { setDisplayFrameIndex(i); animRef.current = setTimeout(step, interval); }
+        if (i < total) {
+          setDisplayFrameIndex(i);
+          animationInFlight.current = completeAnimation && i < total - 1;
+          animRef.current = setTimeout(step, interval);
+        }
       };
       animRef.current = setTimeout(step, interval);
     } else {
@@ -641,7 +650,7 @@ export default function CommunityGamePlay() {
     if (s === 'WIN' || s === 'WON') setGameState('won');
     else if (s === 'GAME_OVER' || s === 'LOSE' || s === 'LOST') setGameState('lost');
     else setGameState('playing');
-  }, [meta]);
+  }, [meta, recoverable]);
 
   /**
    * @param silent live tick -- advances the game but is not recorded. A held key at 10-30fps
@@ -660,11 +669,15 @@ export default function CommunityGamePlay() {
     silent = false,
     proven = false,
   ) => {
-    if (researchAnimating && action !== 'RESET') return;
+    if (actionInFlight.current || pyodide.isActing) return;
+    if ((actionAnimating || animationInFlight.current) && action !== 'RESET') return;
     if (action !== 'RESET' && (gameState === 'won' || gameState === 'lost')) return;
     if (!proven && !canSend(action)) return;
+    actionInFlight.current = true;
     try {
-      const next = action === 'RESET' ? await pyodide.reset() : await pyodide.step(action, coords);
+      const next = action === 'RESET'
+        ? await (recoverable ? pyodide.retryLevel() : pyodide.reset())
+        : await pyodide.step(action, coords);
       if (!silent) {
         const s = next.state?.toUpperCase?.() ?? '';
         // level and score are DIFFERENT numbers and are sent separately. The score used
@@ -673,7 +686,7 @@ export default function CommunityGamePlay() {
         // is the display fallback used for the level label, and reusing it would put the
         // score back in the level column under a different name.
         humanPlay.record(
-          action,
+          action === 'RESET' && recoverable ? 'RETRY_LEVEL' : action,
           typeof next.levels_completed === 'number' ? next.levels_completed : null,
           s === 'WIN' ? 'WIN' : s === 'GAME_OVER' ? 'GAME_OVER' : 'NOT_FINISHED',
           typeof next.score === 'number' ? next.score : null,
@@ -685,12 +698,15 @@ export default function CommunityGamePlay() {
       }
       applyFrame(next);
     } catch { /* surfaced through pyodide.error */ }
-  }, [pyodide, canSend, applyFrame, gameState, researchAnimating]);
+    finally { actionInFlight.current = false; }
+  }, [pyodide, canSend, applyFrame, gameState, actionAnimating, recoverable]);
 
   const undo = useCallback(async () => {
-    if (!frame?.undo_depth || pyodide.isActing || researchAnimating) return;
+    if (!frame?.undo_depth || actionInFlight.current || pyodide.isActing || actionAnimating || animationInFlight.current) return;
+    actionInFlight.current = true;
     try { applyFrame(await pyodide.undo()); } catch { /* surfaced through pyodide.error */ }
-  }, [pyodide, frame, applyFrame, researchAnimating]);
+    finally { actionInFlight.current = false; }
+  }, [pyodide, frame, applyFrame, actionAnimating]);
 
   // ── The board as a click target ─────────────────────────────────────────────
   /**
@@ -816,6 +832,7 @@ export default function CommunityGamePlay() {
       const action = authoredZKey && e.key.toLowerCase() === 'z' ? 'ACTION5' : KEY_MAP[e.key];
       if (!action || !canSend(action)) return;
       e.preventDefault();
+      if (recoverable && e.repeat) return;
       // In live mode a key is HELD: it sets what the tick repeats rather than firing one
       // step per keydown.
       if (live) heldRef.current = action;
@@ -827,7 +844,7 @@ export default function CommunityGamePlay() {
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); };
-  }, [act, canSend, gameState, live, undo, frame?.undo_depth, pyodide.isActing, authoredZKey, undoKey]);
+  }, [act, canSend, gameState, live, undo, frame?.undo_depth, pyodide.isActing, authoredZKey, undoKey, recoverable]);
 
   // ── Live tick ───────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -992,7 +1009,7 @@ export default function CommunityGamePlay() {
     label,
     onPress: () => void act(action),
     unavailable: !canSend(action),
-    disabled: pyodide.isActing || researchAnimating || gameState !== 'playing',
+    disabled: pyodide.isActing || actionAnimating || gameState !== 'playing',
   });
 
   /*
@@ -1077,8 +1094,9 @@ export default function CommunityGamePlay() {
         )}
 
         <div className={`w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-5 ${
-          showFeedbackPanel ? 'lg:max-w-[880px]' : ''
+          recoverable && frame ? 'lg:max-w-[1200px]' : showFeedbackPanel ? 'lg:max-w-[880px]' : ''
         }`}>
+        <div className="w-full max-w-[500px] shrink-0">
         <Arc3Console
           gameId={publicGameId(gameId ?? '')}
           levelLabel={levelLabel}
@@ -1092,15 +1110,15 @@ export default function CommunityGamePlay() {
           // Official wording, because these are the official console's controls: it
           // prints SPACEBAR and CLICK, not the action ids behind them. The two keys we
           // added that it does not have are named in HELP rather than on the deck.
-          spacebar={ctl('ACTION5', authoredZKey ? 'Z / SPACEBAR' : 'SPACEBAR')}
+          spacebar={ctl('ACTION5', isKS01 ? 'PULSE (Z / SPACE)' : authoredZKey ? 'Z / SPACEBAR' : 'SPACEBAR')}
           click={ctl('ACTION6', 'CLICK')}
           undo={{
             label: `UNDO (${undoKey.toUpperCase()})`,
             onPress: () => void undo(),
-            disabled: !frame?.undo_depth || pyodide.isActing || researchAnimating,
+            disabled: !frame?.undo_depth || pyodide.isActing || actionAnimating,
           }}
           reset={{
-            label: 'RESET',
+            label: recoverable ? 'RETRY LEVEL' : 'RESET',
             onPress: () => void act('RESET'),
             disabled: gameState === 'idle' || pyodide.isActing,
           }}
@@ -1156,8 +1174,8 @@ export default function CommunityGamePlay() {
                   </p>
                 )}
                 <p className="text-[9.5px] max-w-[36ch] leading-relaxed" style={{ color: 'rgba(255,255,255,.32)' }}>
-                  No instructions — that is the experiment. Anonymous gameplay events are
-                  recorded so human play can be compared to AI play. No account.
+                  {recoverable ? "Explore freely. Unlimited retries keep completed levels saved."
+                    : "No instructions — that is the experiment."} Anonymous gameplay events are recorded. No account.
                 </p>
               </div>
             ) : (
@@ -1204,9 +1222,10 @@ export default function CommunityGamePlay() {
                     <p>{undoKey.toUpperCase()} — Undo, one move per press.</p>
                     <p>X, or the CLICK button, sends ACTION6 with no coordinates, for the
                        tasks that use it as a plain button.</p>
-                    <p>C — ACTION7, which a few of these tasks read and the official
-                       console does not have.</p>
-                    <p>RESET is a button only — no key, so it cannot happen by accident.</p>
+                    <p>{isKS01 ? 'C — Rewind the last pulse, keeping the eye and curtains in place.'
+                      : 'C — ACTION7, which a few of these tasks read.'}</p>
+                    <p>{recoverable ? 'Retry level restarts only this level. Completed levels stay complete during this run.'
+                      : 'RESET is a button only — no key, so it cannot happen by accident.'}</p>
                     <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
                     {probeActive && (
                       <p style={{ color: '#FFF' }}>
@@ -1254,6 +1273,28 @@ export default function CommunityGamePlay() {
             )
           }
         />
+        </div>
+        {recoverable && frame && (
+          <div className="order-first lg:order-none w-full max-w-[500px] lg:max-w-[300px] shrink-0 px-4 py-3 text-[13px] leading-relaxed" style={{ background: '#161b20', color: '#e8edf2', border: '1px solid #46515c' }}>
+            <div className="flex justify-between gap-3 font-semibold">
+              <span>RETRIES ∞</span>
+              {frame.player_feedback?.moves_remaining != null
+                ? <span>Moves left: {frame.player_feedback.moves_remaining}</span>
+                : <span>Progress kept</span>}
+            </div>
+            {frame.player_feedback?.goal && <p className="mt-2">{frame.player_feedback.goal}</p>}
+            {frame.player_feedback?.hint && <p className="mt-1 text-[#b8cad9]">{frame.player_feedback.hint}</p>}
+            {isKS01 && (
+              <button onClick={() => void act('ACTION7')} disabled={!canSend('ACTION7') || pyodide.isActing || actionAnimating || gameState !== 'playing'}
+                className="mt-2 px-3 py-2 border border-[#96b7d0] disabled:opacity-40">
+                Rewind pulse (C)
+              </button>
+            )}
+            <p role="status" aria-live="polite" className="mt-2 text-[#ffe1a0]">
+              {frame.player_feedback?.notice || 'A failed move is restored automatically. Retry level starts this level again.'}
+            </p>
+          </div>
+        )}
 
         {/* Feedback sits BELOW the console, never inside the screen. Two reasons: the CRT
             is a fixed square and the form clipped inside it, and while writing about a
