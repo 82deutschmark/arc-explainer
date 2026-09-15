@@ -9,7 +9,9 @@
  *          anywhere in the code; and the mover/target sprite roles were reversed.
  *          2026-09-15: the thin resources[] entry added in 891dc5a6 for the 2026-09-15
  *          human win was expanded in place with the figures the session API and the
- *          committed NDJSON recording both derive, and its score dropped per the owner.
+ *          committed NDJSON recording both derive. Its score was dropped at that point on
+ *          a direction the owner never actually gave (see CHANGELOG 9.82.0); the session
+ *          score of 76.39 was restored to the page later the same day.
  * SRP/DRY check: Pass - Single responsibility for LP85 game data.
  */
 
@@ -50,10 +52,10 @@ export const lp85: Arc3GameMetadata = {
       description: 'Gameplay replay of LP85 (Loop and Pull). Its session is tagged human, not an agent run: a win on all eight levels in 545 actions with 4 resets, published 2026-01-05 against the older lp85-d265526edbaa build, before per-level baselines were published for this game (the session reports none). The mp4 on this page carries the same lp85-d265526edbaa game id, though nothing in the repo states outright which recording it was rendered from.',
     },
     {
-      title: 'LP85 Human Replay (Win, 8/8 Levels)',
+      title: 'LP85 Human Replay (Win, 8/8 Levels, Score 76.39)',
       url: 'https://arcprize.org/replay/129ddf21-d7ba-4ca0-9577-0cea2af042b6',
       type: 'replay',
-      description: 'The owner\'s own ARC Prize replay, published 2026-09-15 -- and the second human run in this list, not the first: the January 2026 replay in this same list is tagged human too. A win, all eight levels cleared, 415 actions and 6 mid-run resets, split 7/23/26/17/22/103/55/162 across levels 1-8. Honestly read, that is slightly OVER the game\'s own action baseline, not under it: 415 against 388, a ratio of 1.07x. The walls were level 7 (55 actions against a 26 baseline, 2.12x) and level 6 (103 against 60, 1.72x), and the API\'s level_scores agree without being asked -- its two lowest values, 22.3 and 33.9, fall on exactly those two levels. Level 6\'s single reset came straight after a GAME_OVER, so it was forced recovery rather than a choice. Level 8 reads 1.02x by actions (162 against 159), but that understates it: five of the run\'s six resets happened inside level 8, so those 162 actions are 157 clicks spread across six separate attempts. The raw 416-row NDJSON recording is committed at arc3/lp85-305b61c3.129ddf21-d7ba-4ca0-9577-0cea2af042b6.jsonl.',
+      description: 'The owner\'s own ARC Prize replay, published 2026-09-15 -- and the second human run in this list, not the first: the January 2026 replay in this same list is tagged human too. A win, all eight levels cleared, score 76.39, 415 actions and 6 mid-run resets, split 7/23/26/17/22/103/55/162 across levels 1-8. Honestly read, that is slightly OVER the game\'s own action baseline, not under it: 415 against 388, a ratio of 1.07x. The walls were level 7 (55 actions against a 26 baseline, 2.12x) and level 6 (103 against 60, 1.72x), and the API\'s level_scores agree without being asked -- its two lowest values, 22.3 and 33.9, fall on exactly those two levels. Level 6\'s single reset came straight after a GAME_OVER, so it was forced recovery rather than a choice. Level 8 reads 1.02x by actions (162 against 159), but that understates it: five of the run\'s six resets happened inside level 8, so those 162 actions are 157 clicks spread across six separate attempts. The 76.39 is those over-baseline levels showing up in the score, on the same scale as the 100s on the Human Records card beside it rather than in a different unit. The raw 416-row NDJSON recording is committed at arc3/lp85-305b61c3.129ddf21-d7ba-4ca0-9577-0cea2af042b6.jsonl.',
     },
   ],
   levelScreenshots: [

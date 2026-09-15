@@ -1,5 +1,6 @@
 /*
- * Author: Claude Sonnet 5; human replay added by Claude Opus 5, 2026-09-15
+ * Author: Claude Sonnet 5; human replay added by Claude Opus 5, 2026-09-15; its session
+ *         score backfilled onto the page by Claude Opus 5, 2026-09-15 (see CHANGELOG 9.82.0)
  * Date: 2026-09-11 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for KA59 (Kinetic Assembly), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
@@ -8,6 +9,8 @@
  *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
  *          2026-09-15: a human win was added to resources[] -- the first non-agent
  *          replay on this game -- and its raw NDJSON recording committed under arc3/.
+ *          Later the same day its session score of 84.57 was added, having been held off
+ *          the page by 9.78.0 on a direction the owner never actually gave.
  * SRP/DRY check: Pass - Single responsibility for KA59 game data.
  */
 
@@ -46,10 +49,10 @@ export const ka59: Arc3GameMetadata = {
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
     {
-      title: 'KA59 Human Replay (Win, 7/7 Levels)',
+      title: 'KA59 Human Replay (Win, 7/7 Levels, Score 84.57)',
       url: 'https://arcprize.org/replay/1333b2ee-cf42-40dc-8994-cff1a5a9c55d',
       type: 'replay',
-      description: 'A human playthrough, not an agent run -- the other two replays listed here are GPT-6 Astra. Published 2026-09-15: a win, all seven levels cleared, 598 actions and 2 mid-run resets, split 22/102/55/43/59/174/143 across levels 1-7. Under the game\'s own action baseline overall (730), but over it on three levels -- marginally on level 3 (55 against 51), and heavily on the two that were clearly the hard ones: level 5 at 59 against 33 and level 6 at 174 against 132, where one of the run\'s two resets happened (the other was eight actions into level 1). Level 7 ran 143 against a 326 baseline. The raw 599-row NDJSON recording is committed at arc3/ka59-38d34dbb.1333b2ee-cf42-40dc-8994-cff1a5a9c55d.jsonl.',
+      description: 'A human playthrough, not an agent run -- the other two replays listed here are GPT-6 Astra. Published 2026-09-15: a win, all seven levels cleared, score 84.57, 598 actions and 2 mid-run resets, split 22/102/55/43/59/174/143 across levels 1-7. Under the game\'s own action baseline overall (730), but over it on three levels -- marginally on level 3 (55 against 51), and heavily on the two that were clearly the hard ones: level 5 at 59 against 33 and level 6 at 174 against 132, where one of the run\'s two resets happened (the other was eight actions into level 1). Level 7 ran 143 against a 326 baseline. The 84.57 is those three over-baseline levels showing up in the score -- level_scores reads [115, 114.20, 85.98, 115, 31.28, 57.55, 115], with its two lowest values on exactly levels 5 and 6. It is the same scale as the 100s on the Human Records card beside it, not a different unit. The raw 599-row NDJSON recording is committed at arc3/ka59-38d34dbb.1333b2ee-cf42-40dc-8994-cff1a5a9c55d.jsonl.',
     },
   ],
   levelScreenshots: [
@@ -63,5 +66,5 @@ export const ka59: Arc3GameMetadata = {
   ],
   tags: ['sokoban', 'chain-push', 'bombs', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the three replay links in resources[] -- two ARC Prize published with the GPT-6 Astra results, plus a human win published 2026-09-15 (7/7 levels, 598 actions, 2 mid-run resets), whose raw recording is committed under arc3/. Corrected 2026-09-12 after an adversarially-verified direct source read: the special block\'s role varies a lot more per level (0, 1, or 2 blocks, with or without a frame) than "one special block" implied.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the three replay links in resources[] -- two ARC Prize published with the GPT-6 Astra results, plus a human win published 2026-09-15 (7/7 levels, score 84.57, 598 actions, 2 mid-run resets), whose raw recording is committed under arc3/. Corrected 2026-09-12 after an adversarially-verified direct source read: the special block\'s role varies a lot more per level (0, 1, or 2 blocks, with or without a frame) than "one special block" implied.',
 };
