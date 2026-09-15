@@ -314,7 +314,7 @@ console.log(`Steps: ${result.summary.stepsTaken}`);
 - Official Python SDK (reference): https://github.com/arcprize/ARC-AGI-3-Agents
 - ARC-AGI-3-Agents2 templates (external reference in repo): `external/ARC-AGI-3-Agents2/agents/templates/`
 - OpenAI Agents SDK: https://www.npmjs.com/package/@openai/agents
-- Documentation: https://three.arcprize.org/docs
+- Documentation: https://docs.arcprize.org (the old https://three.arcprize.org/docs now redirects to the arcprize.org marketing page, not real docs -- confirmed 2026-09-15). REST reference: https://docs.arcprize.org/rest_overview, OpenAPI spec at https://docs.arcprize.org/arc3v1.yaml. Full page index: https://docs.arcprize.org/llms.txt.
 
 ## See Also
 
