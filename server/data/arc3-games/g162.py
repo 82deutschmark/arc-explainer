@@ -343,6 +343,18 @@ def build_levels() -> list[Level]:
     return levels
 
 
+def sound_distances(rows, origin):
+    dist = {origin: 0}
+    queue = deque([origin])
+    while queue:
+        x,y=queue.popleft()
+        for dx,dy in DIRS:
+            n=(x+dx,y+dy)
+            if n not in dist and passable(rows,*n):
+                dist[n]=dist[(x,y)]+1
+                queue.append(n)
+    return dist
+
 class EchoDisplay(RenderableUserDisplay):
 
     GROUND = (STILL_TILE, LOOSE_TILE, WADER_CORE)
@@ -353,6 +365,20 @@ class EchoDisplay(RenderableUserDisplay):
         self._game = game
 
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
+        g=self._game
+        if g._wave is not None:
+            dist, radius = g._wave
+            for (x,y),distance in dist.items():
+                if radius-1 <= distance <= radius:
+                    ox,oy=PAD+x*CELL,PAD+y*CELL
+                    for dx,dy in ((0,2),(2,0),(4,2),(2,4)):
+                        if int(frame[oy+dy,ox+dx]) in self.GROUND:
+                            frame[oy+dy,ox+dx] = ECHO_MARK if distance==radius else LOOSE_TILE
+        if g._wake and g._wake%2:
+            for x,y in g.sounders:
+                ox,oy=PAD+x*CELL,PAD+y*CELL
+                frame[oy,ox+1:ox+4]=WADER_AVATAR
+                frame[oy+1,ox+1]=frame[oy+1,ox+3]=0
         m = self._game.echo
         if m is None:
             return frame
@@ -370,6 +396,9 @@ class Sleeper(ARCBaseGame):
     CAUGHT_FRAMES = 6
 
     def __init__(self) -> None:
+        self._wave = None
+        self._wake = 0
+        self._pending = None
         self._caught = 0
         rows = LEVELS_SPEC[0]["rows"]
         self.wader = find_char(rows, "P")
@@ -391,6 +420,9 @@ class Sleeper(ARCBaseGame):
 
     def on_set_level(self, level: Level) -> None:
         self.wader, self.sounders, self.echo, self.quiet = start_state(self.rows)
+        self._wave = None
+        self._wake = 0
+        self._pending = None
         self._caught = 0
         self._repaint()
 
@@ -426,17 +458,45 @@ class Sleeper(ARCBaseGame):
                 self.complete_action()
             return
 
-        direction = {GameAction.ACTION1: (0, -1), GameAction.ACTION2: (0, 1),
-                     GameAction.ACTION3: (-1, 0), GameAction.ACTION4: (1, 0)}.get(
-                         self.action.id)
-        if direction is not None:
-            state = (self.wader, self.sounders, self.echo, self.quiet)
-            (self.wader, self.sounders, self.echo, self.quiet), dead = advance(
-                self.rows, state, direction)
-            self._repaint()
-            if dead:
-                self._caught = self.CAUGHT_FRAMES
+        if self._wave is not None:
+            dist,radius=self._wave
+            reach=max((dist.get(h,0) for h in self.sounders),default=0)
+            if radius < reach:
+                self._wave=(dist,radius+1)
                 return
-            if self.wader == find_char(self.rows, "X"):
-                self.next_level()
+            self._wave=None
+            self._wake=6
+            return
+        if self._wake:
+            self._wake-=1
+            if self._wake:
+                return
+            state,dead=self._pending
+            self._pending=None
+            self._finish_move(state,dead)
+            return
+        direction = {GameAction.ACTION1:(0,-1),GameAction.ACTION2:(0,1),
+                     GameAction.ACTION3:(-1,0),GameAction.ACTION4:(1,0)}.get(self.action.id)
+        if direction is None:
+            self.complete_action()
+            return
+        state=(self.wader,self.sounders,self.echo,self.quiet)
+        nxt,dead=advance(self.rows,state,direction)
+        nx,ny=self.wader[0]+direction[0],self.wader[1]+direction[1]
+        if passable(self.rows,nx,ny) and is_loud(self.rows,nx,ny):
+            self._pending=(nxt,dead)
+            self.wader=(nx,ny)
+            self._wave=(sound_distances(self.rows,(nx,ny)),0)
+            self._repaint()
+            return
+        self._finish_move(nxt,dead)
+
+    def _finish_move(self,state,dead):
+        self.wader,self.sounders,self.echo,self.quiet=state
+        self._repaint()
+        if dead:
+            self._caught=self.CAUGHT_FRAMES
+            return
+        if self.wader==find_char(self.rows,'X'):
+            self.next_level()
         self.complete_action()

@@ -1,12 +1,13 @@
 /**
- * Author: Claude Code using Sonnet 4.5 (updated by Sonnet 4)
- * Date: 2025-12-30 (updated 2026-01-05)
+ * Author: Codex (GPT-6), with existing contributors
+ * Date: 2026-09-12
  * PURPOSE: Middleware for injecting route-specific meta tags for link unfurling.
  *          Now supports dynamic puzzle routes with OG image generation.
  * SRP/DRY check: Pass - Single responsibility: meta tag injection. No duplication found.
  */
 
 import { Request, Response, NextFunction } from 'express';
+import { publicGameId } from '../../shared/arc3PublicIds.js';
 import fs from 'fs';
 import path from 'path';
 import { ROUTE_META_TAGS, ROOT_META_BY_HOST, RouteMetaTags } from '../../shared/routes.js';
@@ -154,7 +155,7 @@ export async function metaTagInjector(
   if (!routeMetaTags) {
     const playMatch = requestPath.match(ARC3_PLAY_PATTERN);
     if (playMatch) {
-      const gameId = playMatch[1];
+      const gameId = publicGameId(playMatch[1]);
       routeMetaTags = {
         title: `${gameId.toUpperCase()} — an ARC-AGI-3 task`,
         description:
@@ -163,7 +164,7 @@ export async function metaTagInjector(
           // them in review, so a frontier number is wrong within weeks and a claim about
           // what AI can't do is wrong within months. This one said "very hard for the best
           // AI" until 07-Sep-2026, well after the landing page dropped the same sentence.
-          'No instructions, no goal, no controls listed. Work out what it does. '
+          'Explore an interactive ARC-AGI-3 puzzle. '
           + 'Five minutes, no account.',
         url: `https://${host || 'arc.markbarney.net'}/arc3/play/${gameId}`,
         image: `${BASE_URL}/api/arc3-mirror/games/${encodeURIComponent(gameId)}/thumbnail?size=512`,

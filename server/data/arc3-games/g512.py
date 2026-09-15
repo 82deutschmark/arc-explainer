@@ -15,12 +15,9 @@ COPPER, OXBLOOD, MOSS, VIOLET = 12, 13, 14, 15
 
 ACTIVE, WIN, LOSS = 0, 2, 3
 TERMINAL_INDEX = 9
-HEX_ACTIONS = (1, 2, 3, 4, 5, 6)
-HEX_DELTAS = {
-    1: (1, 0), 2: (0, 1), 3: (-1, 1),
-    4: (-1, 0), 5: (0, -1), 6: (1, -1),
-}
-class G512A(NamedTuple):
+ACTIONS = (1,2,3,4,6)
+DELTAS = {1:(0,-1),2:(0,1),3:(-1,0),4:(1,0)}
+class State(NamedTuple):
     position: tuple
     revealed: int
     has_key: bool
@@ -33,18 +30,15 @@ class G512A(NamedTuple):
     terminal: int
 
 
-def hex_center(cell):
-    q, r = cell
-    return 30 + 7 * q + 3 * r, 25 + 6 * r
+def cell_center(cell):
+    return 30+6*cell[0],25+6*cell[1]
 
 
-def hex_distance(left, right):
-    dq = left[0] - right[0]
-    dr = left[1] - right[1]
-    return (abs(dq) + abs(dr) + abs(dq + dr)) // 2
+def cell_distance(a,b):
+    return abs(a[0]-b[0])+abs(a[1]-b[1])
 
 
-def _move_cell(cell, aid, deltas=HEX_DELTAS):
+def _move_cell(cell, aid, deltas=DELTAS):
     dq, dr = deltas[int(aid)]
     return cell[0] + dq, cell[1] + dr
 
@@ -62,23 +56,23 @@ def vault(name, start, moves, apertures, *, keys=(), doors=(),
     for center in apertures:
         mask = 0
         for cell, offset in index.items():
-            if hex_distance(center, cell) <= 1:
+            if cell_distance(center, cell) <= 1:
                 mask |= 1 << offset
         aperture_masks.append(frozenset(
             cell for cell in cells if mask & (1 << index[cell])))
     initial_revealed = frozenset((tuple(start),))
-    witness = [(6, *hex_center(cell)) for cell in apertures]
+    witness = [(6, *cell_center(cell)) for cell in apertures]
     position = tuple(start)
     for aid in moves:
         position = _move_cell(position, aid)
-        witness.append((6, *hex_center(position)) if aid == 6 else aid)
+        witness.append((6, *cell_center(position)) if aid == 6 else aid)
     result = {
         "name": name,
         "cells": cells,
         "cell_index": index,
         "start": tuple(start),
         "goal": route[-1],
-        "hex_audit_cell": tuple(start),
+        "grid_audit_cell": tuple(start),
         "route": tuple(route),
         "apertures": apertures,
         "aperture_masks": tuple(aperture_masks),
@@ -100,55 +94,14 @@ def vault(name, start, moves, apertures, *, keys=(), doors=(),
 
 
 LEVELS = (
-    vault(
-        "First Ember", (0, 0), (1, 1), ((1, 0),),
-        curriculum=("hex-east", "radius-one-aperture"),
-    ),
-    vault(
-        "Descending Keyholes", (0, -2), (2, 2, 2, 2, 2, 2),
-        ((0, -1), (0, 1), (0, 3)),
-        curriculum=("hex-southeast", "two-information-cuts"),
-    ),
-    vault(
-        "Brass Detour", (0, 0), (3, 6, 1, 1, 1, 1),
-        ((0, 0), (2, 0), (4, 0)), keys=((-1, 1),), doors=((3, 0),),
-        require_key=True,
-        curriculum=("hex-southwest", "pointer-return", "key-door-detour"),
-    ),
-    vault(
-        "Pressure Span", (3, 0), (4, 4, 4, 4, 4, 4),
-        ((2, 0), (0, 0), (-2, 0)), doors=((-2, 0),), fragile=((2, 0),),
-        required_collapse=((2, 0),),
-        curriculum=("hex-west", "collapse-pressure-door"),
-    ),
-    vault(
-        "Ashen Ascent", (0, 4), (5, 5, 5, 5, 5, 5),
-        ((0, 3), (0, 1), (0, -1)),
-        curriculum=("hex-northwest", "aperture-overlap"),
-    ),
-    vault(
-        "Needle Causeway", (-1, 4), (6, 6, 6, 6, 6, 6),
-        ((0, 3), (3, 0), (4, -1)), keys=((0, 3),), doors=((3, 0),),
-        fragile=((2, 1),), required_collapse=((2, 1),),
-        require_key=True,
-        curriculum=("pointer-sixth-neighbor", "key", "collapse", "door"),
-    ),
-    vault(
-        "Cinder Circuit", (0, 0), (1, 2, 3, 4, 5, 6),
-        ((0, 0), (1, 1), (-1, 2)), keys=((1, 0),), doors=((1, 1),),
-        fragile=((1, 0),), required_collapse=((1, 0),),
-        require_key=True,
-        curriculum=("hex-cycle", "future-route-cut", "opened-door-goal-cut"),
-    ),
-    vault(
-        "Cinder Keyhole Catacomb", (0, 0),
-        (5, 2, 1, 2, 3, 4, 5, 6, 6),
-        ((0, 0), (1, 1), (-1, 2)),
-        keys=((0, -1),), doors=((1, 1),), fragile=((1, 0),),
-        required_collapse=((1, 0),), require_key=True,
-        curriculum=("all-six-neighbors", "three-aperture-plan", "key-spur",
-                    "future-reachability-collapse", "door-cut", "return-seal"),
-    ),
+ vault('First Ember',(0,0),(4,4),((1,0),)),
+ vault('Descending Keyholes',(0,-2),(2,2,2,2,2,2),((0,-1),(0,1),(0,3))),
+ vault('Brass Detour',(0,0),(3,4,4,4,4,4),((0,0),(2,0),(4,0)),keys=((-1,0),),doors=((3,0),),require_key=True),
+ vault('Pressure Span',(3,0),(3,3,3,3,3,3),((2,0),(0,0),(-2,0)),doors=((-2,0),),fragile=((2,0),),required_collapse=((2,0),)),
+ vault('Ashen Ascent',(0,4),(1,1,1,1,1,1),((0,3),(0,1),(0,-1))),
+ vault('Needle Causeway',(-2,2),(4,4,1,1,4,4),((-1,2),(0,1),(1,0)),keys=((-1,2),),doors=((1,0),),fragile=((0,1),),required_collapse=((0,1),),require_key=True),
+ vault('Cinder Circuit',(0,0),(4,2,3,1),((1,1),),keys=((1,0),),doors=((1,1),),fragile=((1,0),),required_collapse=((1,0),),require_key=True),
+ vault('Cinder Keyhole Catacomb',(0,0),(1,2,4,2,2,3,3,1,1,1),((0,0),(1,1),(-1,0),(0,2)),keys=((0,-1),),doors=((1,1),),fragile=((1,0),),required_collapse=((1,0),),require_key=True),
 )
 
 
@@ -157,8 +110,8 @@ def action_id(action):
 
 
 def action_tokens(level):
-    pointer = tuple((6, *hex_center(cell)) for cell in level["cells"])
-    return (1, 2, 3, 4, 5) + pointer
+    pointer = tuple((6, *cell_center(cell)) for cell in level["cells"])
+    return (1, 2, 3, 4) + pointer
 
 
 def encode_action(_level, action):
@@ -194,34 +147,29 @@ def terrain_at(level, cell):
     return "floor"
 
 
-def hex_neighbor(_level, cell, action):
+def cell_neighbor(_level, cell, action):
     return _move_cell(tuple(cell), action_id(action))
 
 
 def _clicked_cell(level, action):
-    if not isinstance(action, (tuple, list)) or len(action) != 3:
-        return None
-    x, y = int(action[1]), int(action[2])
-    return min(level["cells"],
-               key=lambda cell: abs(x - hex_center(cell)[0])
-               + abs(y - hex_center(cell)[1]))
+    if not isinstance(action,(tuple,list)) or len(action)!=3:return None
+    x,y=int(action[1]),int(action[2])
+    for cell in level['cells']:
+        cx,cy=cell_center(cell)
+        if abs(cx-x)<=3 and abs(cy-y)<=3:return cell
+    return None
 
 
-def action6_mode(level, state, action):
-    if action_id(action) != 6:
-        return "blocked"
-    clicked = _clicked_cell(level, action)
-    if clicked is None:
-        return "blocked"
-    for index, center in enumerate(level["apertures"]):
-        if clicked == center and not state.used_apertures & (1 << index):
-            return "aperture"
-    return ("move" if clicked == hex_neighbor(level, state.position, 6)
-            else "blocked")
+def action6_mode(level,state,action):
+    if action_id(action)!=6:return 'blocked'
+    clicked=_clicked_cell(level,action)
+    for index,center in enumerate(level['apertures']):
+        if clicked==center and not state.used_apertures & (1<<index):return 'aperture'
+    return 'blocked'
 
 
 def start_state(level):
-    return G512A(
+    return State(
         level["start"], level["initial_revealed"], False, frozenset(), 0, 0,
         0, 0, 0, ACTIVE,
     )
@@ -292,7 +240,7 @@ def _transition(level, state, action, mode="normal"):
     if state.terminal != ACTIVE:
         return state
     aid = action_id(action)
-    if aid not in HEX_ACTIONS:
+    if aid not in ACTIONS:
         return state
     if aid != 6:
         return _step(level, state, aid, mode)
@@ -309,11 +257,8 @@ def _transition(level, state, action, mode="normal"):
                 last_event=60 + index,
                 free_action=1 if mode == "without_information_cost" else 0,
             )
-    expected = _move_cell(state.position, 6)
-    if clicked == expected:
-        return _step(level, state, 6, mode)
-    if mode == "without_hex_adjacency":
-        return _enter(level, state, clicked, 6, mode)
+    if mode == 'without_adjacency' and clicked is not None:
+        return _enter(level,state,clicked,6,mode)
     return state
 
 
@@ -321,8 +266,8 @@ def transition(level, state, action):
     return _transition(level, state, action)
 
 
-def without_hex_adjacency(level, state, action):
-    return _transition(level, state, action, "without_hex_adjacency")
+def without_adjacency(level, state, action):
+    return _transition(level, state, action, "without_adjacency")
 
 
 def without_information_cost(level, state, action):
@@ -363,10 +308,10 @@ for _level in LEVELS:
     assert solved(_level, _state) and _left == 0, (
         _level["name"], _state, _left, _level["witness"])
 assert {action_id(action) for level in LEVELS
-        for action in level["witness"]} == set(HEX_ACTIONS)
+        for action in level["witness"]} == set(ACTIONS)
 
 
-class G512B(RenderableUserDisplay):
+class CatacombDisplay(RenderableUserDisplay):
     def __init__(self, game):
         self.game = game
 
@@ -387,30 +332,27 @@ class G512B(RenderableUserDisplay):
             cls.pixel(frame, x, y, color)
 
     @classmethod
-    def hexagon(cls, frame, cell, color, inner=None):
-        x, y = hex_center(cell)
-        spans = (2, 3, 4, 4, 3, 2, 1)
-        for dy, span in zip(range(-3, 4), spans):
-            frame[y + dy, max(0, x - span):min(64, x + span + 1)] = color
+    def square(cls,frame,cell,color,inner=None):
+        x,y=cell_center(cell)
+        for dy in range(-2,3):
+            for dx in range(-2,3):cls.pixel(frame,x+dx,y+dy,color)
         if inner is not None:
-            for dy in range(-1, 2):
-                frame[y + dy, max(0, x - 2):min(64, x + 3)] = inner
+            for dy in range(-1,2):
+                for dx in range(-1,2):cls.pixel(frame,x+dx,y+dy,inner)
 
     @classmethod
-    def outline_hex(cls, frame, center, color):
-        x, y = center
-        points = ((x, y - 5), (x + 5, y - 2), (x + 5, y + 2),
-                  (x, y + 5), (x - 5, y + 2), (x - 5, y - 2))
-        for left, right in zip(points, points[1:] + points[:1]):
-            cls.line(frame, left, right, color)
+    def outline_square(cls,frame,center,color):
+        x,y=center
+        points=((x-3,y-3),(x+3,y-3),(x+3,y+3),(x-3,y+3))
+        for a,b in zip(points,points[1:]+points[:1]):cls.line(frame,a,b,color)
 
     def background(self, frame):
         frame[:, :] = CINDER
         for r in range(-3, 6):
             for q in range(-5, 6):
-                x, y = hex_center((q, r))
+                x, y = cell_center((q, r))
                 if 4 <= x < 60 and 5 <= y < 56:
-                    self.hexagon(frame, (q, r), STONE, CINDER)
+                    self.square(frame, (q, r), STONE, CINDER)
         frame[0:3, :] = OXBLOOD
         frame[57:64, :] = STONE
 
@@ -419,8 +361,8 @@ class G512B(RenderableUserDisplay):
         terrain = terrain_at(level, cell)
         visible = cell in state.revealed
         if not visible:
-            self.hexagon(frame, cell, SLATE, CINDER)
-            x, y = hex_center(cell)
+            self.square(frame, cell, SLATE, CINDER)
+            x, y = cell_center(cell)
             self.pixel(frame, x, y, ASH)
             return
         color = ASH if terrain == "floor" else STONE
@@ -434,10 +376,10 @@ class G512B(RenderableUserDisplay):
             color = BLUE if not state.has_key else ASH
         if cell in state.collapsed:
             color = OXBLOOD
-        self.hexagon(frame, cell, color, BONE if color in (ASH, STONE) else None)
-        x, y = hex_center(cell)
+        self.square(frame, cell, color, BONE if color in (ASH, STONE) else None)
+        x, y = cell_center(cell)
         if terrain == "key" and not state.has_key:
-            self.outline_hex(frame, (x - 2, y), PAPER)
+            self.outline_square(frame, (x - 2, y), PAPER)
             self.line(frame, (x + 1, y), (x + 5, y), PAPER)
             self.line(frame, (x + 4, y), (x + 4, y + 2), CINDER)
         elif terrain == "door":
@@ -447,7 +389,7 @@ class G512B(RenderableUserDisplay):
             self.line(frame, (x - 4, y - 1), (x + 4, y - 1), PAPER)
             self.line(frame, (x - 4, y + 2), (x + 4, y + 2), CINDER)
         elif terrain == "goal":
-            self.hexagon(frame, cell, MOSS, CINDER)
+            self.square(frame, cell, MOSS, CINDER)
         elif terrain == "fragile" and cell not in state.collapsed:
             self.line(frame, (x - 3, y - 2), (x + 2, y + 2), PAPER,
                       dotted=True)
@@ -461,48 +403,37 @@ class G512B(RenderableUserDisplay):
         game = self.game; level = game.level; state = game.visual_state()
         self.background(frame)
         for cell in level["cells"]:
-            for aid in (1, 2, 3):
-                other = hex_neighbor(level, cell, aid)
+            for aid in (2,4):
+                other = cell_neighbor(level, cell, aid)
                 if other in level["cell_index"]:
-                    self.line(frame, hex_center(cell), hex_center(other), SLATE)
+                    self.line(frame, cell_center(cell), cell_center(other), SLATE)
         for cell in level["cells"]:
             self.tile(frame, level, state, cell)
 
         for index, cell in enumerate(level["apertures"]):
-            x, y = hex_center(cell); used = bool(state.used_apertures & (1 << index))
+            x, y = cell_center(cell); used = bool(state.used_apertures & (1 << index))
             color = COPPER if used else BRASS
-            for aid in HEX_ACTIONS:
+            for aid in DELTAS:
                 neighbor = _move_cell(cell, aid)
-                nx, ny = hex_center(neighbor)
+                nx, ny = cell_center(neighbor)
                 self.line(frame, (x, y), ((x * 2 + nx) // 3,
                                            (y * 2 + ny) // 3), color)
             self.pixel(frame, x, y, PAPER if not used else COPPER)
 
-        px, py = hex_center(state.position)
-        self.hexagon(frame, state.position, MAGENTA, VIOLET)
+        px, py = cell_center(state.position)
+        self.square(frame, state.position, MAGENTA, VIOLET)
         self.pixel(frame, px, py, PAPER)
-
-        sixth = hex_neighbor(level, state.position, 6)
-        sixth_bit = _bit(level, sixth)
-        if sixth_bit:
-            target = hex_center(sixth)
-            priority = any(
-                sixth == cell and not state.used_apertures & (1 << index)
-                for index, cell in enumerate(level["apertures"]))
-            self.outline_hex(frame, target, ROSE if priority else GLASS)
-            if priority:
-                self.outline_hex(frame, (target[0], target[1] + 1), BRASS)
 
         for index in range(game.budget_left):
             x = 3 + index * 4
             frame[59:62, x:x + 3] = BRASS
         remaining = len(level["apertures"]) - state.used_apertures.bit_count()
         for index in range(remaining):
-            self.hexagon(frame, (-4 + index, 5), BLUE)
+            frame[54:56,2+index*4:5+index*4]=BLUE
         for index in range(2):
             y = 6 + index * 8
             color = EMBER if index < state.strikes else MOSS
-            self.outline_hex(frame, (59, y), color)
+            self.outline_square(frame, (59, y), color)
             if index < state.strikes:
                 self.line(frame, (56, y - 3), (62, y + 3), PAPER)
                 self.line(frame, (62, y - 3), (56, y + 3), EMBER)
@@ -523,17 +454,17 @@ class G512B(RenderableUserDisplay):
             direction = 1 if progress % 4 < 2 else -1
             if kind in ("move", "key", "door", "collapse"):
                 target = game.pending_state.position
-                tx, ty = hex_center(target)
+                tx, ty = cell_center(target)
                 self.line(frame, (px, py), (tx, ty),
                           GLASS if progress % 2 else BRASS, dotted=True)
                 self.pixel(frame, tx + direction, ty, PAPER)
             elif kind == "aperture":
                 event = max(0, game.pending_state.last_event - 60)
                 center = level["apertures"][min(event, len(level["apertures"]) - 1)]
-                cx, cy = hex_center(center)
+                cx, cy = cell_center(center)
                 radius = 1 + progress % 4
-                for aid in HEX_ACTIONS:
-                    nx, ny = hex_center(_move_cell(center, aid))
+                for aid in DELTAS:
+                    nx, ny = cell_center(_move_cell(center, aid))
                     self.pixel(frame, cx + (nx - cx) * radius // 4,
                                cy + (ny - cy) * radius // 4, BRASS)
             elif kind == "blocked":
@@ -543,7 +474,7 @@ class G512B(RenderableUserDisplay):
             elif kind == "warning":
                 frame[29:35, 1 + progress % 4:5 + progress % 4] = EMBER
                 frame[29:35, 59 - progress % 4:63 - progress % 4] = EMBER
-                self.outline_hex(frame, (32, 8), PAPER if progress % 2 else EMBER)
+                self.outline_square(frame, (32, 8), PAPER if progress % 2 else EMBER)
                 self.line(frame, (29, 5), (35, 11), EMBER)
             elif kind == "loss":
                 color = EMBER if progress % 2 else BRASS
@@ -557,9 +488,9 @@ class G512B(RenderableUserDisplay):
         return frame
 
 
-class G512(ARCBaseGame):
+class Q041(ARCBaseGame):
     def __init__(self):
-        self.display = G512B(self)
+        self.display = CatacombDisplay(self)
         self.level = None; self.state = None
         self.budget_left = self.budget_max = 0
         self.anim_kind = None; self.anim_total = 0
@@ -570,7 +501,7 @@ class G512(ARCBaseGame):
                         name=item["name"]) for item in LEVELS]
         super().__init__("g512", levels,
                          Camera(0, 0, 64, 64, CINDER, CINDER, [self.display]),
-                         False, len(levels), list(HEX_ACTIONS))
+                         False, len(levels), list(ACTIONS))
 
     def on_set_level(self, _level):
         self.level = LEVELS[self.level_index]
