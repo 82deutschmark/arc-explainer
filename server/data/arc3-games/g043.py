@@ -30,106 +30,91 @@ N = 8
 WEST = (-1, 0)
 EAST = (1, 0)
 BASE = (0, 1)
-DIRS = {
-    GameAction.ACTION3: WEST,
-    GameAction.ACTION4: EAST,
-    GameAction.ACTION1: BASE,
-}
+DIRS = {GameAction.ACTION1: (0,-1), GameAction.ACTION2: (0,1), GameAction.ACTION3: (-1,0), GameAction.ACTION4: (1,0)}
 SWAP = GameAction.ACTION5
 OX, MOTE = 0, 1
 
 
-def points_up(cell: tuple[int, int]) -> bool:
-    return (cell[0] + cell[1]) % 2 == 0
+def points_up(cell):
+    return True
 
 
-def base_of(cell: tuple[int, int]) -> tuple[int, int]:
-    x, y = cell
-    return (x, y + 1) if points_up(cell) else (x, y - 1)
+def base_of(cell):
+    return cell[0], cell[1]+1
 
 
-def neighbour(cell: tuple[int, int], d: tuple[int, int]) -> tuple[int, int]:
-    if d == BASE:
-        return base_of(cell)
-    return (cell[0] + d[0], cell[1] + d[1])
+def move_action(direction, cell):
+    return next(a for a,d in DIRS.items() if d == direction)
+
+
+def action_direction(action, cell):
+    return DIRS.get(action)
+
+
+def neighbour(cell, d):
+    return cell[0]+d[0], cell[1]+d[1]
 
 
 def on_board(cell: tuple[int, int]) -> bool:
     return 0 <= cell[0] < N and 0 <= cell[1] < N
 
 
-LEVELS_SPEC = [
-    {"rows": [
-        "....o.=X",
-        "...a.M..",
-        ".....O..",
-        "..#..#..",
-        "########",
-        "_a......",
-        "...##...",
-        "........",
-    ]},
-    {"rows": [
-        "..O..o..",
-        ".M...a..",
-        "=......#",
-        "X#......",
-        "########",
-        "......a_",
-        "..##....",
-        "........",
-    ]},
-    {"rows": [
-        "..O.o.=X",
-        ".M.o.o..",
-        "....a...",
-        "########",
-        "#_.a.._.",
-        "..#..#..",
-        "........",
-        "........",
-    ]},
-    {"rows": [
-        "..o.o.=X",
-        ".M......",
-        ".O.a.b..",
-        "########",
-        "#a...b__",
-        "..#..#..",
-        "........",
-        "........",
-    ]},
-    {"rows": [
-        "..O...=X",
-        ".Moo....",
-        "...a....",
-        "..#..#..",
-        "########",
-        ".a...._.",
-        "...##...",
-        "........",
-    ]},
-    {"rows": [
-        "..=X#...",
-        ".M..#...",
-        ".O..#...",
-        "o...#...",
-        "..o.#...",
-        ".oa.#a._",
-        "....#...",
-        "...b#b._",
-    ]},
-    {"rows": [
-        "..o.o.o.",
-        ".M..b..=",
-        ".O.a..#X",
-        "########",
-        "........",
-        "_a...b__",
-        "..##..#.",
-        "........",
-    ]},
-]
+LEVELS_SPEC = [{'rows': ['....o.=X',
+           '...a.M.#',
+           '.....O..',
+           '..#..#..',
+           '########',
+           '_a......',
+           '...##...',
+           '........']},
+ {'rows': ['..O..o..',
+           '.M...a..',
+           '=......#',
+           'X#......',
+           '########',
+           '......a_',
+           '..##....',
+           '........']},
+ {'rows': ['..O.o.=X',
+           '.M.o.o.#',
+           '....a...',
+           '########',
+           '#_.a.._.',
+           '..#..#..',
+           '........',
+           '........']},
+ {'rows': ['..o.o.=X',
+           '.M.....#',
+           '.O.a.b..',
+           '########',
+           '#a...b__',
+           '..#..#..',
+           '........',
+           '........']},
+ {'rows': ['..O...=X',
+           '.Moo...#',
+           '...a....',
+           '..#..#..',
+           '########',
+           '.a...._.',
+           '...##...',
+           '........']},
+ {'rows': ['..=X#...',
+           '.M.##...',
+           '.O..#...',
+           'o...#...',
+           '..o.#...',
+           '.oa.#a._',
+           '....#...',
+           '...b#b._']},
+ {'rows': ['..o.o.o.',
+           '.M..b..=',
+           '.O.a..#X',
+           '########',
+           '........',
+           '_a...b__',
+           '..##..#.',
+           '........']}]
 
 
 class Static:
@@ -241,13 +226,13 @@ def apply_move(st: Static, active: int, ox: tuple[int, int], mote: tuple[int, in
 
     if tgt in crates:
         if active == OX:
-            if d == BASE:
+            if d[0] == 0:
                 return active, ox, mote, crates, False
             moved = push_crate(st, crates, tgt, d, (other,))
             if moved is None:
                 return active, ox, mote, crates, False
             return active, tgt, mote, moved, False
-        if d != BASE:
+        if d[0] != 0:
             return active, ox, mote, crates, False
         return active, ox, tgt, (crates - {tgt}) | {me}, False
 
@@ -270,15 +255,8 @@ def _blank() -> list[list[int]]:
     return [[-1] * CELL for _ in range(CELL)]
 
 
-def _tile(colour: int, up: bool) -> list[list[int]]:
-    block = _blank()
-    spans = _tri_rows(up)
-    for r, (lo, hi) in enumerate(spans):
-        if r == (CELL - 1 if up else 0):
-            continue
-        for c in range(lo, hi + 1):
-            block[r][c] = colour
-    return block
+def _tile(colour, up=True):
+    return [[BACKGROUND if x == 0 or y == 0 else colour for x in range(CELL)] for y in range(CELL)]
 
 
 def _shrink(block: list[list[int]], colour: int) -> list[list[int]]:
@@ -393,7 +371,7 @@ class Shunt(ARCBaseGame):
         self._crates = self._st.crates
         camera = Camera(width=N * CELL, height=N * CELL, background=BACKGROUND,
                         letter_box=5)
-        super().__init__(game_id="g043", levels=build_levels(), camera=camera)
+        super().__init__(game_id="g043", levels=build_levels(), camera=camera, available_actions=[1, 2, 3, 4, 5])
 
     def on_set_level(self, level: Level) -> None:
         self._st = self._statics[self.level_index]
@@ -437,7 +415,8 @@ class Shunt(ARCBaseGame):
             self._sync()
             self.complete_action()
             return
-        d = DIRS.get(self.action.id)
+        cell = self._ox if self._active == OX else self._mote
+        d = action_direction(self.action.id, cell)
         if d is not None:
             self._active, self._ox, self._mote, self._crates, reached = apply_move(
                 self._st, self._active, self._ox, self._mote, self._crates, d)

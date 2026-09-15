@@ -45,6 +45,22 @@ EDGES = {
 }
 FACES = ("L", "R", "V")
 
+
+def action_face(action, x, y):
+    if action == GameAction.ACTION1:
+        return "V" if not up_cell(x, y) else None
+    if action == GameAction.ACTION2:
+        return "V" if up_cell(x, y) else None
+    return {GameAction.ACTION3: "L", GameAction.ACTION4: "R",
+            GameAction.ACTION5: "HOLD", GameAction.ACTION6: "SWAP"}.get(action)
+
+
+def edge_action(face, x, y):
+    if face == "V":
+        return GameAction.ACTION2 if up_cell(x, y) else GameAction.ACTION1
+    return {"L": GameAction.ACTION3, "R": GameAction.ACTION4,
+            "SWAP": GameAction.ACTION6, None: GameAction.ACTION5}[face]
+
 OUTCOME = {
     (0, 0): "couple", (0, 1): "drive", (0, 2): "jam",
     (1, 0): "jam", (1, 1): "couple", (1, 2): "drive",
@@ -414,7 +430,7 @@ RAIL_TOP, RAIL_BOTTOM = 58, 61
 RAIL_LEFT = 6
 
 
-class G027A(RenderableUserDisplay):
+class SpeedRail(RenderableUserDisplay):
 
     def __init__(self, game):
         super().__init__()
@@ -431,7 +447,7 @@ class G027A(RenderableUserDisplay):
         return frame
 
 
-class G027(ARCBaseGame):
+class Cue(ARCBaseGame):
 
     DOOM_FRAMES = 6
     CHEER_FRAMES = 5
@@ -444,10 +460,10 @@ class G027(ARCBaseGame):
         self.beat = 0
         camera = Camera(
             width=64, height=64, background=BACKGROUND, letter_box=5,
-            interfaces=[G027A(self)],
+            interfaces=[SpeedRail(self)],
         )
         super().__init__(game_id="g027", levels=build_levels(), camera=camera,
-                         available_actions=[1, 2, 3, 4, 5])
+                         available_actions=[1, 2, 3, 4, 5, 6])
 
     def _rearm(self) -> None:
         self.state = initial_state(LEVELS_SPEC[self.level_index])
@@ -506,13 +522,7 @@ class G027(ARCBaseGame):
                 self.complete_action()
             return
 
-        face = {
-            GameAction.ACTION1: "L",
-            GameAction.ACTION2: "R",
-            GameAction.ACTION3: "V",
-            GameAction.ACTION4: "SWAP",
-            GameAction.ACTION5: "HOLD",
-        }.get(self.action.id)
+        face = action_face(self.action.id, self.state[0], self.state[1])
 
         if face is None:
             self.complete_action()

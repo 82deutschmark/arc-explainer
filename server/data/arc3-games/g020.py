@@ -29,21 +29,19 @@ GLYPH = (GLYPH_A, GLYPH_B, GLYPH_C)
 FRAME = 64
 W = 9
 H = 10
-CELL = 5
-SHEAR = 2
+CELL = 6
+SHEAR = 1
 OX = 0
-OY = 7
+OY = 3
 PULSE_REACH = 2
 
-HEX_DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0), (1, -1), (-1, 1))
+SQUARE_DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0))
 
 ACTION_STEP = {
     GameAction.ACTION1: (0, -1),
     GameAction.ACTION2: (0, 1),
     GameAction.ACTION3: (-1, 0),
     GameAction.ACTION4: (1, 0),
-    GameAction.ACTION5: (1, -1),
-    GameAction.ACTION7: (-1, 1),
 }
 
 OPEN_CHARS = ".ePX"
@@ -51,7 +49,7 @@ SEAL_CHARS = "ABC"
 SEAL_TYPE = {"A": 0, "B": 1, "C": 2}
 VOID = " "
 
-LAMP_XY = ((48, 8), (2, 38), (2, 46))
+LAMP_XY = ((2, 0), (14, 0), (26, 0))
 
 
 def cell_px(q: int, r: int) -> tuple[int, int]:
@@ -77,7 +75,7 @@ def pulse_reveal(rows, dissolved, sq, sr, ptype, reach=PULSE_REACH):
         nxt = []
         absorbed = False
         for q, r in front:
-            for dq, dr in HEX_DIRS:
+            for dq, dr in SQUARE_DIRS:
                 n = (q + dq, r + dr)
                 if not in_board(rows, *n) or n in seen:
                     continue
@@ -108,7 +106,7 @@ def walkable_from(rows, known, dissolved, start):
     stack = [start]
     while stack:
         q, r = stack.pop()
-        for dq, dr in HEX_DIRS:
+        for dq, dr in SQUARE_DIRS:
             n = (q + dq, r + dr)
             if n in reached or n not in known:
                 continue
@@ -144,15 +142,15 @@ LEVELS_SPEC = [
         "  #####  ",
         "         ",
     ]},
-    {"charges": {0: 1, 1: 0, 2: 3}, "min_pulses": 4, "needed_types": 2, "rows": [
+    {"charges": {0: 1, 1: 0, 2: 2}, "min_pulses": 3, "needed_types": 2, "rows": [
         "         ",
         " ####### ",
         " #..P..# ",
         " #.#B#.# ",
         " #e#.#e# ",
-        " #A#.#A# ",
+        " #A#A#A# ",
         " #.#.#.# ",
-        " #..#..# ",
+        " #.....# ",
         " #.#X#.# ",
         " ####### ",
     ]},
@@ -168,7 +166,7 @@ LEVELS_SPEC = [
         " #.X#..# ",
         " ####### ",
     ]},
-    {"charges": {0: 2, 1: 1, 2: 3}, "min_pulses": 6, "needed_types": 3, "rows": [
+    {"charges": {0: 3, 1: 1, 2: 3}, "min_pulses": 7, "needed_types": 3, "rows": [
         " ####### ",
         " #.P...# ",
         " #A###C# ",
@@ -180,11 +178,11 @@ LEVELS_SPEC = [
         " ##X#### ",
         " ####### ",
     ]},
-    {"charges": {0: 2, 1: 1, 2: 4}, "min_pulses": 7, "needed_types": 3, "rows": [
+    {"charges": {0: 3, 1: 1, 2: 4}, "min_pulses": 8, "needed_types": 3, "rows": [
         "#########",
         "#.P....##",
         "##A###C##",
-        "#.####.##",
+        "#..###.##",
         "#e####A##",
         "#.####e##",
         "#B####.##",
@@ -218,7 +216,7 @@ def _seal_face(seal: int) -> list[list[int]]:
     face = [[colour] * CELL for _ in range(CELL)]
     for x in range(CELL):
         face[0][x] = BORDER
-        face[4][x] = BORDER
+        face[CELL - 1][x] = BORDER
     weak = GLYPH[(seal + 2) % 3]
     face[2][1] = weak
     face[2][3] = weak
@@ -319,9 +317,9 @@ def build_levels() -> list[Level]:
     return levels
 
 
-class G020A(RenderableUserDisplay):
+class Fog(RenderableUserDisplay):
 
-    def __init__(self, game: "G020") -> None:
+    def __init__(self, game: "Ping") -> None:
         super().__init__()
         self._game = game
 
@@ -342,22 +340,39 @@ class G020A(RenderableUserDisplay):
         return out
 
 
-class G020B(RenderableUserDisplay):
+class Drift(RenderableUserDisplay):
 
-    def __init__(self, game: "G020") -> None:
+    def __init__(self, game: "Ping") -> None:
         super().__init__()
         self._game = game
 
     def render_interface(self, frame: np.ndarray) -> np.ndarray:
+        frame[0:7, 0:36] = SMOKE
+        for i, (lx, ly) in enumerate(LAMP_XY):
+            art = _lamp_face(i, self._game.charges.get(i, 0))
+            for y, row in enumerate(art):
+                for x, value in enumerate(row):
+                    if value >= 0:
+                        frame[ly + y, lx + x] = value
+            frame[ly + 2:ly + 4, lx + 7:lx + 9] = GLYPH[BEATS[i]]
+        if self._game.pulse_frame:
+            g = self._game
+            for q, r in g.pulse_cells:
+                if abs(q-g.pos[0]) + abs(r-g.pos[1]) == g.pulse_frame:
+                    x, y = cell_px(q, r)
+                    if 0 <= x < 64 and 0 <= y < 64:
+                        frame[y, x] = GLYPH[g.pulse_type]
         phase = self._game.tick // 2
         for i, (mx, my) in enumerate(MOTE_XY):
+            if my < 7 and mx < 36:
+                continue
             shade = GLYPH[(i + phase) % 3]
             for dy, dx in MOTE_PIXELS:
                 frame[my + dy, mx + dx] = shade
         return frame
 
 
-class G020(ARCBaseGame):
+class Ping(ARCBaseGame):
 
     def __init__(self) -> None:
         spec = LEVELS_SPEC[0]
@@ -366,13 +381,17 @@ class G020(ARCBaseGame):
         self.dissolved: set[tuple[int, int]] = set()
         self.pos = (0, 0)
         self.tick = 0
+        self.pulse_frame = 0
+        self.pulse_cells = set()
+        self.pulse_type = 0
+        self.pulse_reset = False
         camera = Camera(
             width=FRAME, height=FRAME,
             background=BORDER, letter_box=BORDER,
-            interfaces=[G020A(self), G020B(self)],
+            interfaces=[Fog(self), Drift(self)],
         )
         super().__init__(game_id="g020", levels=build_levels(),
-                         camera=camera, available_actions=[1, 2, 3, 4, 5, 6, 7])
+                         camera=camera, available_actions=[1, 2, 3, 4, 6])
 
     def rows(self) -> list[str]:
         return LEVELS_SPEC[self.level_index]["rows"]
@@ -397,6 +416,8 @@ class G020(ARCBaseGame):
         self.known = set()
         self.dissolved = set()
         self.pos = self.start_cell()
+        self.pulse_frame = 0
+        self.pulse_reset = False
         self._redraw_lamps()
 
     def _redraw_lamps(self) -> None:
@@ -422,7 +443,10 @@ class G020(ARCBaseGame):
             self._clear_seal(cell)
         self._redraw_lamps()
         if sum(self.charges.values()) == 0 and not self._gate_still_winnable():
-            self.level_reset()
+            self.pulse_reset = True
+        self.pulse_frame = 1
+        self.pulse_type = ptype
+        self.pulse_cells = learned
 
     def _gate_still_winnable(self) -> bool:
         gate = self.gate_cell()
@@ -448,13 +472,22 @@ class G020(ARCBaseGame):
             self.next_level()
 
     def step(self) -> None:
+        if self.pulse_frame:
+            self.pulse_frame += 1
+            if self.pulse_frame > PULSE_REACH:
+                self.pulse_frame = 0
+                if self.pulse_reset:
+                    self.level_reset()
+                self.complete_action()
+            return
         self.tick += 1
         if self.action.id == GameAction.ACTION6:
             hit = self._clicked_emitter(int(self.action.data.get("x", -1)),
                                         int(self.action.data.get("y", -1)))
             if hit is not None:
                 self._fire(hit)
-            self.complete_action()
+            if not self.pulse_frame:
+                self.complete_action()
             return
         move = ACTION_STEP.get(self.action.id)
         if move is not None:

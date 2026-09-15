@@ -1,6 +1,9 @@
 # ARC-AGI-3 candidate task g044.
 
+import numpy as np
+
 from arcengine import (
+    RenderableUserDisplay,
     ARCBaseGame,
     BlockingMode,
     Camera,
@@ -19,7 +22,7 @@ PLAYER = 13
 
 N = 16
 S = 4
-CELL = 4
+CELL = 7
 
 DIRS = {
     GameAction.ACTION1: (0, -1),
@@ -115,7 +118,7 @@ def attempt(rows: list[str], faces, fi: int, u: int, v: int, du: int, dv: int):
         return None
     if char in LIPS and LIPS[char] != (ndu, ndv):
         return None
-    return nf, nu, nv, char
+    return nf, nu, nv, char, ndu, ndv
 
 
 def cell_char(rows: list[str], faces, fi: int, u: int, v: int) -> str:
@@ -153,24 +156,6 @@ LEVELS_SPEC = [
         "                ",
     ]},
     {"rows": [
-        ".P......        ",
-        "......k.        ",
-        ".k..####        ",
-        "........        ",
-        "    ....#.>.    ",
-        "    .k....k.    ",
-        "    ........    ",
-        "    ..#.....    ",
-        "        ####....",
-        "        .k....kv",
-        "        .....X..",
-        "        ........",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-    ]},
-    {"rows": [
         ".P..            ",
         "....            ",
         "..k.            ",
@@ -184,7 +169,7 @@ LEVELS_SPEC = [
         "    ......##    ",
         "    ........    ",
         "        ....    ",
-        "        .k..    ",
+        "        ..k.    ",
         "        ..X.    ",
         "        ....    ",
     ]},
@@ -195,7 +180,7 @@ LEVELS_SPEC = [
         "        ....    ",
         ".P......####....",
         "####.k....k.vk..",
-        ".k....#........^",
+        ".k^...#........^",
         "................",
         "####            ",
         "..k.            ",
@@ -210,7 +195,7 @@ LEVELS_SPEC = [
         "        .P......",
         "        .^....k.",
         "        .k....#.",
-        "        .....>.v",
+        "        v....>.v",
         "    ....####    ",
         "    .k....k.    ",
         "    #.......    ",
@@ -285,36 +270,30 @@ def _block(colour: int) -> list[list[int]]:
     return [[colour] * CELL for _ in range(CELL)]
 
 
-def _rounded(colour: int) -> list[list[int]]:
-    block = _block(colour)
-    for (y, x) in ((0, 0), (0, CELL - 1), (CELL - 1, 0), (CELL - 1, CELL - 1)):
-        block[y][x] = -1
+def _rounded(colour):
+    return [[colour if abs(x-3)+abs(y-3)<=2 else -1 for x in range(CELL)] for y in range(CELL)]
+
+
+def _walker(colour, du=0, dv=1):
+    block=[[-1]*CELL for _ in range(CELL)]
+    for y in range(1,6):
+        for x in range(1,6):
+            if (x-3)**2+(y-3)**2<=7:block[y][x]=colour
+    block[3+dv*2][3+du*2]=0
+    block[3+dv][3+du]=0
     return block
 
 
-def _walker(colour: int) -> list[list[int]]:
-    block = _rounded(colour)
-    block[0][1] = block[0][2] = -1
-    return block
+def _lip(direction):
+    out=[[-1]*CELL for _ in range(CELL)]
+    dx,dy=direction
+    for t in range(-2,3):out[3+dy*t][3+dx*t]=9
+    for side in (-1,1):out[3+dy+dx*side][3+dx-dy*side]=9
+    return out
 
 
-def _lip(direction: tuple[int, int]) -> list[list[int]]:
-    block = [[-1] * CELL for _ in range(CELL)]
-    du, dv = direction
-    for i in range(CELL):
-        if du != 1:
-            block[i][0] = WALL
-        if du != -1:
-            block[i][CELL - 1] = WALL
-        if dv != 1:
-            block[0][i] = WALL
-        if dv != -1:
-            block[CELL - 1][i] = WALL
-    return block
-
-
-def _face_block() -> list[list[int]]:
-    return [[FLOOR] * (S * CELL) for _ in range(S * CELL)]
+def _face_block():
+    return [[1 if x % CELL == 0 or y % CELL == 0 else FLOOR for x in range(S*CELL)] for y in range(S*CELL)]
 
 
 def _exit_ring() -> list[list[int]]:
@@ -358,21 +337,69 @@ def build_levels() -> list[Level]:
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.TANGIBLE, layer=1,
         ).set_position(0, 0))
-        levels.append(Level(sprites=sprites, grid_size=(N * CELL, N * CELL)))
+        levels.append(Level(sprites=sprites, grid_size=(64, 64)))
     return levels
 
 
-class G044(ARCBaseGame):
+EDGE_COLOURS = (6, 7, 8, 9, 10, 11, 12, 14, 15, 2, 3, 1)
+
+class FoldDisplay(RenderableUserDisplay):
+    def __init__(self,game):
+        super().__init__()
+        self.game=game
+
+    def render_interface(self,frame):
+        g=self.game
+        seams={}
+        for fi in range(6):
+            for du,dv in ((0,-1),(0,1),(-1,0),(1,0)):
+                u=0 if du<0 else S-1 if du>0 else 1
+                v=0 if dv<0 else S-1 if dv>0 else 1
+                nf,nu,nv,_,_=step_cell(g.faces,fi,u,v,du,dv)
+                a=cell_screen(g.faces,fi,u,v);b=cell_screen(g.faces,nf,nu,nv)
+                if (b[0]-a[0],b[1]-a[1])==(du,dv):continue
+                key=tuple(sorted((fi,nf)))
+                seams.setdefault(key,len(seams))
+                col=EDGE_COLOURS[seams[key]]
+                fx,fy=g.faces[fi][0]
+                for t in range(S*CELL):
+                    wx=fx*S*CELL + (0 if du<0 else S*CELL-1 if du>0 else t)
+                    wy=fy*S*CELL + (0 if dv<0 else S*CELL-1 if dv>0 else t)
+                    x,y=wx-g.camera.x,wy-g.camera.y
+                    if 0<=x<64 and 0<=y<56:frame[y,x]=col
+        frame[56:,:]=5
+        for i in range(6):
+            left=2+i*5;live=any(f==i for f,u,v in g.keys_left)
+            frame[59:62,left:left+3]=KEY if live else 14
+        for i,(slot,_,_,_) in enumerate(g.faces):
+            x,y=50+slot[0]*3,56+slot[1]*2
+            frame[y:y+2,x:x+3]=2
+            frame[y,x+1]=14 if not any(f==i for f,u,v in g.keys_left) else KEY
+            if i==g.face:frame[y:y+2,x:x+3]=0
+        if g.crossing:
+            sx,sy=cell_screen(g.faces,g.face,g.u,g.v)
+            cx,cy=sx*CELL+3-g.camera.x,sy*CELL+3-g.camera.y
+            radius=8-g.crossing
+            for dx,dy in ((1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,1),(1,-1),(-1,-1)):
+                x,y=cx+dx*radius,cy+dy*radius
+                if 0<=x<64 and 0<=y<56:frame[y,x]=10 if g.crossing%2 else 0
+        return frame
+
+
+class Rind(ARCBaseGame):
 
     def __init__(self) -> None:
         self.faces = fold_faces(LEVELS_SPEC[0]["rows"])
         self.face = self.u = self.v = 0
+        self.heading = (0, 1)
         self.keys_left: set[tuple[int, int, int]] = set()
+        self.crossing = 0
+        self.cross_from = (0, 0)
         camera = Camera(
-            width=N * CELL, height=N * CELL,
-            background=VOID, letter_box=5,
+            width=64, height=64,
+            background=VOID, letter_box=VOID, interfaces=[FoldDisplay(self)],
         )
-        super().__init__(game_id="g044", levels=build_levels(), camera=camera)
+        super().__init__(game_id="g044", levels=build_levels(), camera=camera, available_actions=[1,2,3,4])
 
     @property
     def rows(self) -> list[str]:
@@ -382,6 +409,8 @@ class G044(ARCBaseGame):
         rows = self.rows
         self.faces = fold_faces(rows)
         self.face, self.u, self.v = find_chars(rows, self.faces, "P")[0]
+        self.heading = (0, 1)
+        self.crossing = 0
         self.keys_left = set(find_chars(rows, self.faces, "k"))
         self._sync()
 
@@ -393,17 +422,31 @@ class G044(ARCBaseGame):
         super().full_reset()
         self.on_set_level(self.current_level)
 
+    def _follow_camera(self):
+        sx,sy=cell_screen(self.faces,self.face,self.u,self.v)
+        self.camera.x=max(0,min(N*CELL-64,sx*CELL-28))
+        self.camera.y=max(0,min(N*CELL-56,sy*CELL-25))
+
     def _sync(self) -> None:
+        self._follow_camera()
+        """Draw the model. The player is the only thing that moves; the exit fills in the
+        moment the last key is off the board."""
         player = self.current_level.get_sprites_by_name("player")
         if player:
             sx, sy = cell_screen(self.faces, self.face, self.u, self.v)
             player[0].set_position(sx * CELL, sy * CELL)
+            player[0].pixels[:, :] = _walker(PLAYER, *self.heading)
         exits = self.current_level.get_sprites_by_name("exit")
         if exits:
             fill = EXIT if not self.keys_left else FLOOR
             exits[0].pixels[1:CELL - 1, 1:CELL - 1] = fill
 
     def step(self) -> None:
+        if self.crossing:
+            self.crossing -= 1
+            if not self.crossing:self.complete_action()
+            return
+        before=cell_screen(self.faces,self.face,self.u,self.v)
         d = DIRS.get(self.action.id)
         if d is None:
             self.complete_action()
@@ -411,7 +454,7 @@ class G044(ARCBaseGame):
 
         landed = attempt(self.rows, self.faces, self.face, self.u, self.v, d[0], d[1])
         if landed is not None:
-            nf, nu, nv, char = landed
+            nf, nu, nv, char, ndu, ndv = landed
             if char == "X":
                 if not self.keys_left:
                     self.next_level()
@@ -419,6 +462,7 @@ class G044(ARCBaseGame):
                     return
             else:
                 self.face, self.u, self.v = nf, nu, nv
+                self.heading = (ndu, ndv)
                 if (nf, nu, nv) in self.keys_left:
                     self.keys_left.discard((nf, nu, nv))
                     sx, sy = cell_screen(self.faces, nf, nu, nv)
@@ -426,4 +470,9 @@ class G044(ARCBaseGame):
                         self.current_level.remove_sprite(sprite)
 
         self._sync()
+        after=cell_screen(self.faces,self.face,self.u,self.v)
+        if after != before and (after[0]-before[0],after[1]-before[1]) != d:
+            self.crossing=6
+            self.cross_from=before
+            return
         self.complete_action()
