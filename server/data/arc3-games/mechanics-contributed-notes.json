@@ -61,9 +61,9 @@
   "goal": "Coordinate seven ordered distributions using a tide-gated double braid, one-way source branches, a two-strand linked pulse, a reversible moon-gilled return, exact capacities, and a final direction change before auditing."
  },
  "g512": {
-  "mechanic": "Cinder Keyhole Catacomb. Information and navigation share one exact hex machine. Each purchased brass aperture reveals only its six-neighbor radius; five keyboard controls and one snapped pointer direction traverse the corresponding axial edges. Leaving an ember bridge permanently cracks it, that pressure state unlocks designated doors alongside a carried key, and late circuits require planning the reachable side of the collapse before entering the goal tail.",
-  "controls": "The active deck controls are ACTION1, ACTION2, ACTION3, ACTION4, ACTION5, ACTION6. ACTION6 carries coordinates: click a cell on the visible board.",
-  "goal": "Reserve a key-spur round trip, deliberately cut the two-edge return while opening its pressure door, then take the four-edge surviving arc and enter the final seal."
+  "mechanic": "Square-grid catacomb. Brass apertures reveal their cell and its four neighbors. Keys and leaving fragile ember bridges unlock doors. Eight rebuilt paths require planning the surviving route before bridges collapse.",
+  "controls": "D-pad moves in the four screen directions. ACTION6 carries coordinates: click a brass aperture to buy its reveal. Clicking never substitutes for a movement direction.",
+  "goal": "Reach the green seal within the action budget, with the required key, collapsed bridges and opened doors."
  },
  "g513": {
   "mechanic": "Pressed Wildflower Atlas. Selective memory becomes an operational two-stage construction puzzle: the player chooses which richly identified specimens deserve a bounded pressing before the garden vanishes, then relocates and transforms only that preserved evidence into a future botanical model whose late linked operations overlap across cards.",

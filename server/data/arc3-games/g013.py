@@ -14,8 +14,8 @@ from arcengine import (
     Sprite,
 )
 
-STONE_FILL = 2
-STONE_EDGE = 13
+STONE_FILL = 4
+STONE_EDGE = 3
 LEDGE_TILE = 7
 LEDGE_EDGE = 6
 LOAM_TILE = 6
@@ -41,18 +41,11 @@ BLOOM_NEXT = (BLOOM_MID_FILL, BLOOM_OLD_FILL, ASH_TILE)
 COLS, ROWS = 7, 8
 CELL = 6
 FRAME = 64
-ORIGIN_X = 0
+ORIGIN_X = 11
 ORIGIN_Y = 8
 
-HEX = {
-    GameAction.ACTION1: (0, -1),
-    GameAction.ACTION2: (0, 1),
-    GameAction.ACTION3: (-1, 0),
-    GameAction.ACTION4: (1, 0),
-    GameAction.ACTION5: (1, -1),
-    GameAction.ACTION7: (-1, 1),
-}
-NEIGHBOURS = tuple(HEX.values())
+MOVES = {GameAction.ACTION1: (0,-1), GameAction.ACTION2: (0,1), GameAction.ACTION3: (-1,0), GameAction.ACTION4: (1,0)}
+NEIGHBOURS = tuple(MOVES.values())
 
 SPREAD_PERIOD = 1
 LIFESPAN = 5
@@ -66,79 +59,72 @@ EXIT_CH = "X"
 LEDGE_CHARS = "=" + START_CH + EXIT_CH
 GROWABLE_CHARS = LOAM_CH + MOUTH_CH
 
-LEVELS_SPEC = [
-    {"cuttings": 1, "rows": [
-        "#######",
-        "#######",
-        "#######",
-        "@o..###",
-        "##X####",
-        "#######",
-        "#######",
-        "#######",
-    ], "decor": ((3, 2, "lichen"), (5, 4, "lichen"), (1, 5, "drip"), (4, 1, "vein"))},
-    {"cuttings": 1, "rows": [
-        "#######",
-        "#######",
-        "@====##",
-        "####o##",
-        "####.##",
-        "###.###",
-        "###.###",
-        "##X####",
-    ], "decor": ((2, 1, "lichen"), (5, 5, "lichen"), (1, 6, "drip"), (5, 2, "vein"),
-                 (0, 4, "vein"))},
-    {"cuttings": 1, "rows": [
-        "#######",
-        "####.=#",
-        "@o..#X#",
-        "##.####",
-        "#.#####",
-        "#######",
-        "#######",
-        "#######",
-    ], "decor": ((4, 0, "lichen"), (1, 3, "lichen"), (6, 5, "drip"), (0, 6, "vein"),
-                 (3, 4, "vein"))},
-    {"cuttings": 1, "rows": [
-        "#####=#",
-        "@o...##",
-        "##..###",
-        "#..####",
-        "#=#####",
-        "#X#####",
-        "#######",
-        "#######",
-    ], "decor": ((2, 0, "lichen"), (0, 3, "lichen"), (6, 6, "drip"), (4, 2, "vein"),
-                 (3, 3, "vein"))},
-    {"cuttings": 2, "rows": [
-        "#######",
-        "@o...=#",
-        "#####.#",
-        "####o.#",
-        "###..##",
-        "##..###",
-        "##X####",
-        "#######",
-    ], "decor": ((3, 0, "lichen"), (6, 4, "lichen"), (0, 5, "drip"), (2, 2, "vein"),
-                 (5, 6, "vein"))},
-    {"cuttings": 2, "rows": [
-        "@o..=##",
-        "####=##",
-        "####o.#",
-        "###...#",
-        "##...##",
-        "#X#.###",
-        "##.####",
-        "#######",
-    ], "decor": ((6, 0, "lichen"), (0, 3, "lichen"), (1, 6, "drip"), (2, 1, "vein"),
-                 (2, 7, "vein"))},
-]
+LEVELS_SPEC = [{'rows': ['#######',
+           '#######',
+           '#######',
+           '@o..###',
+           '###X###',
+           '#######',
+           '#######',
+           '#######'],
+  'cuttings': 1,
+  'decor': ()},
+ {'rows': ['#######',
+           '@====##',
+           '####o##',
+           '####.##',
+           '####.##',
+           '####.##',
+           '####X##',
+           '#######'],
+  'cuttings': 1,
+  'decor': ()},
+ {'rows': ['####=##',
+           '####=##',
+           '@o...##',
+           '####.##',
+           '##X..##',
+           '#######',
+           '#######',
+           '#######'],
+  'cuttings': 1,
+  'decor': ()},
+ {'rows': ['####=##',
+           '####=##',
+           '####=##',
+           '@o...##',
+           '####.##',
+           '####.##',
+           '#X...##',
+           '#######'],
+  'cuttings': 1,
+  'decor': ()},
+ {'rows': ['#######',
+           '@o..=##',
+           '####=##',
+           '####o##',
+           '####.##',
+           '##X..##',
+           '#######',
+           '#######'],
+  'cuttings': 2,
+  'decor': ()},
+ {'rows': ['@o..=##',
+           '####=##',
+           '####o##',
+           '####.##',
+           '##=..##',
+           '##=####',
+           '##o..X#',
+           '#######'],
+  'cuttings': 3,
+  'decor': ()}]
 
 for _spec in LEVELS_SPEC:
     assert len(_spec["rows"]) == ROWS and all(len(r) == COLS for r in _spec["rows"])
 
 
-class G013A(NamedTuple):
+class World(NamedTuple):
 
     q: int
     r: int
@@ -153,7 +139,7 @@ def cells(rows, ch):
 
 def opening(spec):
     q, r = cells(spec["rows"], START_CH)[0]
-    return G013A(q, r, frozenset(), frozenset(), spec["cuttings"])
+    return World(q, r, frozenset(), frozenset(), spec["cuttings"])
 
 
 def ages_of(bloom):
@@ -220,7 +206,7 @@ def tick(rows, w, dq, dr, sow):
         q, r = q + dq, r + dr
 
     bloom, ash = advance(rows, bloom, w.ash)
-    moved = G013A(q, r, bloom, ash, cuttings)
+    moved = World(q, r, bloom, ash, cuttings)
     if not footing(rows, moved, q, r):
         return moved, "gone"
     if rows[r][q] == EXIT_CH:
@@ -264,14 +250,7 @@ def drawn_cells(rows, w):
     return out
 
 
-HEX_TILE_MASK = (
-    (-1, -1, 0, 0, -1, -1),
-    (-1, 0, 1, 1, 0, -1),
-    (0, 1, 1, 1, 1, 0),
-    (0, 1, 1, 1, 1, 0),
-    (-1, 0, 1, 1, 0, -1),
-    (-1, -1, 0, 0, -1, -1),
-)
+MOVES_TILE_MASK = tuple(tuple(0 if x in (0,5) or y in (0,5) else 1 for x in range(6)) for y in range(6))
 LOAM_MASK = (
     (-1, -1, 0, 0, -1, -1),
     (-1, 0, 0, 1, 0, -1),
@@ -347,20 +326,22 @@ VEIN_MASK = (
 
 
 def stamp(mask, colours, under=None):
-    face = np.empty((CELL, CELL), dtype=np.int8) if under is None else under.copy()
+    face = np.full((CELL, CELL), colours[0], dtype=np.int8) if under is None else under.copy()
     for j, row in enumerate(mask):
         for i, slot in enumerate(row):
             if slot >= 0:
                 face[j, i] = colours[slot]
+    face[0, :] = colours[0]
+    face[:, 0] = colours[0]
     return face
 
 
 def screen_of(q, r):
-    return ORIGIN_X + q * CELL + (r * CELL) // 2, ORIGIN_Y + r * CELL
+    return ORIGIN_X + q * CELL, ORIGIN_Y + r * CELL
 
 
 def stone_face(gx, gy):
-    return stamp(STONE_MASK, (STONE_FILL, STONE_EDGE))
+    return np.array([[STONE_EDGE if y == CELL-1 else STONE_FILL for x in range(CELL)] for y in range(CELL)], dtype=np.int8)
 
 
 def band_index(age):
@@ -369,6 +350,10 @@ def band_index(age):
 
 def face_of(rows, ages, ash, q, r, under):
     ch = rows[r][q]
+    if ch == STONE_CH:
+        return under
+    under = np.full((CELL, CELL), LEDGE_EDGE, dtype=np.int8)
+    under[1:, 1:] = LOAM_TILE
     if (q, r) in ages:
         i = band_index(ages[(q, r)])
         return stamp(BLOOM_MASK, (BLOOM_BANDS[i], BLOOM_NEXT[i]), under=under)
@@ -382,7 +367,7 @@ def face_of(rows, ages, ash, q, r, under):
         return stamp(EXIT_MASK, (EXIT_FILL, EXIT_MARK), under=under)
     if ch == STONE_CH:
         return under
-    return stamp(HEX_TILE_MASK, (LEDGE_EDGE, LEDGE_TILE), under=under)
+    return stamp(MOVES_TILE_MASK, (LEDGE_EDGE, LEDGE_TILE), under=under)
 
 
 def rider_face(under, cuttings):
@@ -422,6 +407,8 @@ def paint(rows, w, decor, pulse):
             patch = board[top:top + CELL, left:left + CELL]
             patch[:, :] = face_of(rows, ages, w.ash, q, r, patch)
     decorate(board, decor, pulse)
+    for i in range(3):
+        board[2:5,24+i*6:27+i*6] = RIDER_PIP if i < w.cuttings else STONE_EDGE
     return board
 
 
@@ -448,7 +435,7 @@ def build_levels():
     return made
 
 
-class G013(ARCBaseGame):
+class RotGarden(ARCBaseGame):
 
     def __init__(self):
         self.world = opening(LEVELS_SPEC[0])
@@ -457,7 +444,7 @@ class G013(ARCBaseGame):
             game_id="g013", levels=build_levels(),
             camera=Camera(width=FRAME, height=FRAME,
                           background=STONE_FILL, letter_box=STONE_FILL),
-            available_actions=[1, 2, 3, 4, 5, 6, 7],
+            available_actions=[1, 2, 3, 4, 6],
         )
 
     @property
@@ -494,7 +481,7 @@ class G013(ARCBaseGame):
             rider[0].set_position(left, top)
 
     def read_move(self):
-        heading = HEX.get(self.action.id)
+        heading = MOVES.get(self.action.id)
         if heading is not None:
             return heading
         if self.action.id != GameAction.ACTION6:

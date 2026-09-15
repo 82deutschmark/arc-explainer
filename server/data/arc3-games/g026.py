@@ -174,6 +174,21 @@ LEVELS_SPEC = [
 ]
 
 
+LEVELS_SPEC.append({"rows": [
+    "##############", "#o...........#", "#............#", "#####=########",
+    "#............#", "######..######", "#######.######", "#............#",
+    "#######=######", "#............#", "######..######", "#######.######",
+    "#.....*......#", "##############",
+], "voices": [
+    sustain([(6, 5), (7, 5)]),
+    sustain([(7, 5), (7, 6)], hold=1, phase=2),
+    sustain([(6, 5), (7, 5), (7, 6)], hold=1, phase=1),
+    sustain([(6, 10), (7, 10)], phase=1),
+    sustain([(7, 10), (7, 11)], hold=1),
+    sustain([(6, 10), (7, 10), (7, 11)], hold=1, phase=3),
+]})
+
+
 def _find(index, mark):
     rows = LEVELS_SPEC[index]["rows"]
     for y, row in enumerate(rows):
@@ -257,6 +272,14 @@ def _ring(colour):
     for (y, x) in CORNERS:
         px[y][x] = -1
     return px
+
+
+def _overlap_face(active):
+    if active:
+        return [[8 if x == y or x + y == CELL - 1 else 11
+                 for x in range(CELL)] for y in range(CELL)]
+    return [[10 if (x, y) in ((0, 0), (3, 3)) else -1
+             for x in range(CELL)] for y in range(CELL)]
 
 
 SWIRL_CORNER = CORNERS
@@ -373,6 +396,14 @@ def build_levels():
                 interaction=InteractionMode.INTANGIBLE, layer=-4,
             ).set_position(wx * CELL + 1, wy * CELL + 2))
 
+        overlap = {c for loop in spec["voices"] for c in loop
+                   if sum(c in other for other in spec["voices"]) >= 2}
+        for cx, cy in overlap:
+            sprites.append(Sprite(
+                pixels=_overlap_face(doubled(index, (cx, cy), 0)),
+                name=f"overlap_{cx}_{cy}", blocking=BlockingMode.NOT_BLOCKED,
+                interaction=InteractionMode.INTANGIBLE, layer=3,
+            ).set_position(cx * CELL, cy * CELL))
         for vi, loop in enumerate(spec["voices"]):
             ink = EDDY_INK[vi % len(EDDY_INK)]
             for (cx, cy) in sorted(set(loop)):
@@ -399,24 +430,29 @@ def build_levels():
     return levels
 
 
-class G026(ARCBaseGame):
+class Chorus(ARCBaseGame):
 
     def __init__(self):
         self.pos = start_of(0)
         self.tick = 0
         self.shut = frozenset()
         self.wash = 0
+        self._pause = 0
+        self._pending = None
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=TIDE_FILL, letter_box=WRACK_MARK,
         )
-        super().__init__(game_id="g026", levels=build_levels(), camera=camera)
+        super().__init__(game_id="g026", levels=build_levels(), camera=camera,
+                         available_actions=[1, 2, 3, 4, 5])
 
     def on_set_level(self, level):
         self.pos = start_of(self.level_index)
         self.tick = 0
         self.shut = frozenset()
         self.wash = 0
+        self._pause = 0
+        self._pending = None
 
     def level_reset(self):
         super().level_reset()
@@ -433,6 +469,11 @@ class G026(ARCBaseGame):
         for vi, (cx, cy) in enumerate(voice_cells(self.level_index, self.tick)):
             for s in level.get_sprites_by_name(f"eddy_{vi}"):
                 s.set_position(cx * CELL, cy * CELL)
+        for s in level.get_sprites():
+            if s.name.startswith("overlap_"):
+                _, cx, cy = s.name.split("_")
+                s.pixels[:, :] = _overlap_face(
+                    doubled(self.level_index, (int(cx), int(cy)), self.tick))
         for s in level.get_sprites_by_name("wader"):
             s.pixels[:, :] = _wader(under_face(self.level_index, self.pos, self.shut))
             s.set_position(self.pos[0] * CELL, self.pos[1] * CELL)
@@ -451,6 +492,17 @@ class G026(ARCBaseGame):
                 s.pixels[:, :] = [[lit, lit]]
 
     def step(self):
+        if self._pause:
+            self._pause -= 1
+            if self._pause == 0:
+                pending = self._pending
+                self._pending = None
+                if pending == "reset":
+                    self.level_reset()
+                elif pending == "advance":
+                    self.next_level()
+                self.complete_action()
+            return
         move = DIRS.get(self.action.id)
         if move is None:
             self.complete_action()
@@ -460,13 +512,12 @@ class G026(ARCBaseGame):
         self.pos, self.tick, self.shut, dead = advance(
             self.level_index, self.pos, self.tick, self.shut, move)
 
-        if dead:
-            self.level_reset()
-            self.complete_action()
-            return
-
         self._redraw()
         self._dress()
+        if dead:
+            self._pause, self._pending = 7, "reset"
+            return
         if self.pos == goal_of(self.level_index):
-            self.next_level()
+            self._pause, self._pending = 4, "advance"
+            return
         self.complete_action()

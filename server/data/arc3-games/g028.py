@@ -2,16 +2,6 @@
 
 import numpy as np
 
-from sprite_book import (
-    block,
-    dither,
-    door,
-    figure,
-    fixture,
-    key_shape,
-    outline,
-    speckle,
-)
 
 from arcengine import (
     ARCBaseGame,
@@ -22,6 +12,87 @@ from arcengine import (
     Level,
     Sprite,
 )
+
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def key_shape(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[0][1] = px[0][2] = colour
+    px[1][1] = px[1][2] = colour
+    px[2][1] = colour
+    px[3][1] = px[3][2] = colour
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def dither(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for y in range(max(0, y0), min(h, y1)):
+        for x in range(max(0, x0), min(w, x1)):
+            if (x + y) % 2:
+                frame[y, x] = colour
+    return frame
+
+def outline(frame, box: tuple, colour: int):
+    x0, y0, x1, y1 = box
+    h, w = frame.shape
+    for x in range(max(0, x0), min(w, x1)):
+        if 0 <= y0 < h:
+            frame[y0, x] = colour
+        if 0 <= y1 - 1 < h:
+            frame[y1 - 1, x] = colour
+    for y in range(max(0, y0), min(h, y1)):
+        if 0 <= x0 < w:
+            frame[y, x0] = colour
+        if 0 <= x1 - 1 < w:
+            frame[y, x1 - 1] = colour
+    return frame
+
 
 OUTSIDE = 4
 FLOOR = 1
@@ -43,144 +114,155 @@ FOLD_FRAMES = 4
 CRUSH_FRAMES = 4
 
 LEVELS_SPEC = [
-    ["................",
-     "................",
-     "..S.............",
-     "................",
-     "................",
-     "................",
-     "................",
-     "...........###..",
-     "k..........lX#..",
-     "...........###..",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................"],
-
-    ["................",
-     "................",
-     "...S............",
-     "................",
-     "........k.......",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................",
-     ".......#l#......",
-     ".......#X#......",
-     ".......###......",
-     "................",
-     "................"],
-
-    ["................",
-     "................",
-     "..S.............",
-     "................",
-     "................",
-     "................",
-     "...........#.#..",
-     ".k.k.......#l#..",
-     "...#.......#X#..",
-     "...........###..",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................"],
-
-    ["................",
-     ".S..............",
-     "................",
-     "..k.............",
-     "................",
-     "................",
-     "................",
-     "...........###..",
-     "...........lX#..",
-     "...........###..",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................"],
-
-    ["................",
-     ".........#......",
-     "..S......#......",
-     ".........#......",
-     ".........#......",
-     ".........#......",
-     ".........#......",
-     "...........###..",
-     "k..........lX#..",
-     "...........###..",
-     ".........#......",
-     ".........#......",
-     ".........#......",
-     ".........#......",
-     ".........#......",
-     "................"],
-
-    ["................",
-     "................",
-     "................",
-     "................",
-     "................",
-     "................",
-     "...........###..",
-     "...........lX#..",
-     "...........###..",
-     "................",
-     "................",
-     "................",
-     "..k.............",
-     "................",
-     ".S..............",
-     "................"],
-
-    ["......#.........",
-     "......#.........",
-     "..S...#.........",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#....###..",
-     "k.....#....lX#..",
-     "......#....###..",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#........."],
-
-    ["......#.........",
-     "......#.........",
-     "..S...#.........",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#....#.#..",
-     ".k.k..#....#l#..",
-     "...#..#....#X#..",
-     "......#....###..",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#.........",
-     "......#........."],
+    [
+        '........',
+        '........',
+        '..S.....',
+        '.....###',
+        '..k..lX#',
+        '.....###',
+        '........',
+        '........',
+    ],
+    [
+        '................',
+        '................',
+        '...S............',
+        '................',
+        '........k.......',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '.......#l#......',
+        '.......#X#......',
+        '.......###......',
+        '................',
+        '................',
+    ],
+    [
+        '................',
+        '................',
+        '..S.............',
+        '................',
+        '................',
+        '................',
+        '...........#.#..',
+        '.k.k.......#l#..',
+        '...#.......#X#..',
+        '...........###..',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+    ],
+    [
+        '................',
+        '.S..............',
+        '................',
+        '..k.............',
+        '................',
+        '................',
+        '................',
+        '...........###..',
+        '...........lX#..',
+        '...........###..',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+    ],
+    [
+        '................',
+        '.........#......',
+        '..S......#......',
+        '.........#......',
+        '.........#......',
+        '.........#......',
+        '.........#......',
+        '...........###..',
+        'k..........lX#..',
+        '...........###..',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+    ],
+    [
+        '................',
+        '.S............#.',
+        '................',
+        '..k.............',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '........###.....',
+        '........#Xl.....',
+        '........###.....',
+        '.#..............',
+        '................',
+    ],
+    [
+        '................',
+        '.S............#.',
+        '................',
+        '..k.............',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '........###.....',
+        '........#Xl..l..',
+        '........###.....',
+        '.#..............',
+        '................',
+    ],
+    [
+        '................',
+        '.S............#.',
+        '..k.............',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '................',
+        '........###.....',
+        '........#Xl.....',
+        '........###.....',
+        '................',
+        '................',
+        '.#..............',
+        '................',
+    ],
 ]
 
 N = 16
+SEAM_LEVELS = frozenset((5, 6, 7))
+
+
+def crease_choices(board, seamed=False):
+    h, w = len(board), len(board[0])
+    for orient, span in (("V", w), ("H", h)):
+        for idx in ([span // 2] if seamed else range(1, span)):
+            if 0 < idx < span:
+                yield orient, idx, span
+
 FOLD_KEYS = {"L": "V", "R": "V", "U": "H", "D": "H"}
 
 
@@ -298,8 +380,6 @@ def _blit(frame, y0: int, x0: int, px: list) -> None:
 
 def wall_art(x: int, y: int, beat: int) -> list:
     px = _over(block(WALL, CELL), speckle(FLOOR, (x * 3 + y) % 5, CELL))
-    if (x * 7 + y * 3) % 5 == 0:
-        _over(px, fixture(SCONCE, beat, (x + y) % 3, CELL))
     return px
 
 
@@ -319,7 +399,7 @@ def player_art(armed: bool) -> list:
     return figure(PLAYER, CREASE if armed else OUTSIDE, CELL)
 
 
-class G028(ARCBaseGame):
+class Fold(ARCBaseGame):
 
     def __init__(self) -> None:
         self._beat = 0
@@ -328,20 +408,21 @@ class G028(ARCBaseGame):
         self._pending = None
         self._fold = ("V", 1, 0, 0, 0)
         self.board, self.px, self.py = parse_level(LEVELS_SPEC[0])
-        self.ply = [[1] * N for _ in range(N)]
+        self.ply = [[1] * len(self.board[0]) for _ in self.board]
         self.armed = False
         self.orient = "V"
         self.crease = 1
         super().__init__(
             game_id="g028",
             levels=build_levels(),
+            available_actions=[1, 2, 3, 4, 5, 6, 7],
             camera=Camera(width=SIDE, height=SIDE, background=OUTSIDE, letter_box=OUTSIDE),
         )
         self._paint()
 
     def on_set_level(self, level: Level) -> None:
         self.board, self.px, self.py = parse_level(LEVELS_SPEC[self.level_index])
-        self.ply = [[1] * N for _ in range(N)]
+        self.ply = [[1] * len(self.board[0]) for _ in self.board]
         self.armed = False
         self.orient = "V"
         self.crease = 1
@@ -392,7 +473,21 @@ class G028(ARCBaseGame):
     def _paint(self) -> None:
         frame = self._sheet_frame(self.board, self.ply,
                                   (self.px, self.py, self.armed))
+        h, w = len(self.board), len(self.board[0])
+        self.camera.width, self.camera.height = w * CELL, h * CELL
+        if self.level_index in SEAM_LEVELS:
+            for orient, idx, _ in crease_choices(self.board, True):
+                if orient == "V":
+                    frame[:h * CELL:2, idx * CELL] = 2
+                else:
+                    frame[idx * CELL, :w * CELL:2] = 2
         if self.armed:
+            _, _, nx, ny, crushed = fold_board(self.board, self.ply, self.px, self.py, self.orient, self.crease)
+            span, pos = (w, self.px) if self.orient == "V" else (h, self.py)
+            lo, _, _ = fold_geometry(span, self.crease, pos)
+            gx, gy = (nx + lo, ny) if self.orient == "V" else (nx, ny + lo)
+            if 0 <= gx < w and 0 <= gy < h:
+                outline(frame, (gx * CELL, gy * CELL, (gx+1) * CELL, (gy+1) * CELL), 8 if crushed else 0)
             self._crease_line(frame, self.orient, self.crease,
                               len(self.board), len(self.board[0]))
         self._show(frame)
@@ -531,6 +626,10 @@ class G028(ARCBaseGame):
     def _aim(self, key: str) -> None:
         h, w = len(self.board), len(self.board[0])
         want = FOLD_KEYS[key]
+        if self.level_index in SEAM_LEVELS:
+            self.orient = want
+            self.crease = (w if want == "V" else h) // 2
+            return
         limit = (w if want == "V" else h) - 1
         if limit < 1:
             return
@@ -542,6 +641,11 @@ class G028(ARCBaseGame):
         self.crease = min(max(self.crease + (1 if key in ("R", "D") else -1), 1), limit)
 
     def _commit(self) -> None:
+        if (self.orient, self.crease) not in {(a, b) for a, b, _ in crease_choices(self.board, self.level_index in SEAM_LEVELS)}:
+            self.armed = False
+            self._paint()
+            self.complete_action()
+            return
         span = len(self.board[0]) if self.orient == "V" else len(self.board)
         pos = self.px if self.orient == "V" else self.py
         keep_lo, keep_hi, _ = fold_geometry(span, self.crease, pos)
@@ -560,13 +664,22 @@ class G028(ARCBaseGame):
         act = self.action.id
         if act == GameAction.ACTION7:
             self.armed = False
+        elif act == GameAction.ACTION6:
+            data = self.action.data or {}
+            point = self.camera.display_to_grid(int(data.get("x", -1)), int(data.get("y", -1)))
+            if point is not None:
+                x, y = point
+                choices = list(crease_choices(self.board, self.level_index in SEAM_LEVELS))
+                if choices:
+                    self.orient, self.crease, _ = min(choices, key=lambda c: abs((x if c[0] == "V" else y) - c[1] * CELL))
+                    self.armed = True
         elif act == GameAction.ACTION5:
             if self.armed:
                 self._commit()
                 return
             self.armed = True
             self.orient = "V"
-            self.crease = min(max(self.px, 1), len(self.board[0]) - 1)
+            self.crease = len(self.board[0]) // 2 if self.level_index in SEAM_LEVELS else min(max(self.px, 1), len(self.board[0]) - 1)
         elif act in (GameAction.ACTION1, GameAction.ACTION2,
                      GameAction.ACTION3, GameAction.ACTION4):
             key = {GameAction.ACTION1: "U", GameAction.ACTION2: "D",

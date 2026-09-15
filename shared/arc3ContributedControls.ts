@@ -5,7 +5,8 @@ PURPOSE: Share contributed control bindings and scope unlimited browser retries 
 44 public aliases. Hash the practice mode with the source identity for honest telemetry.
 SRP/DRY check: Pass — the shared predicates drive worker, keyboard, deck and Help.
 */
-import { ARC3_PUBLIC_IDS, canonicalGameId } from './arc3PublicIds';
+import { canonicalGameId } from './arc3PublicIds';
+import evolutionIds from './arc3EvolutionIds.json';
 const AUTHORED_Z_GAMES = new Set(['g500', 'g502', 'g519', 'g542']);
 export function usesAuthoredZKey(id: string | undefined): boolean {
   return id !== undefined && AUTHORED_Z_GAMES.has(canonicalGameId(id));
@@ -14,7 +15,7 @@ export function usesAuthoredZKey(id: string | undefined): boolean {
 // Practice rules are versioned separately from each immutable engine source for telemetry.
 export const CONTRIBUTED_PLAY_VERSION = 'retry1';
 export function usesContributedRecovery(id: string | undefined): boolean {
-  return id !== undefined && Object.hasOwn(ARC3_PUBLIC_IDS, canonicalGameId(id));
+  return id !== undefined && Object.hasOwn(evolutionIds.published_public_ids, canonicalGameId(id));
 }
 
 export async function contributedPlayVersion(sourceVersion: string): Promise<string> {

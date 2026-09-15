@@ -1,5 +1,7 @@
 # ARC-AGI-3 candidate task g009.
 
+from collections import deque
+
 import numpy as np
 
 from arcengine import (
@@ -12,7 +14,34 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-from sprite_book import hairline, weave
+
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def hairline(frame, a: tuple, b: tuple, colour: int, only_over=None):
+    x0, y0 = a
+    x1, y1 = b
+    dx, dy = abs(x1 - x0), abs(y1 - y0)
+    sx = 1 if x0 < x1 else -1
+    sy = 1 if y0 < y1 else -1
+    err = dx - dy
+    h, w = frame.shape
+    while True:
+        if 0 <= x0 < w and 0 <= y0 < h:
+            if only_over is None or int(frame[y0, x0]) in only_over:
+                frame[y0, x0] = colour
+        if x0 == x1 and y0 == y1:
+            break
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x0 += sx
+        if e2 < dx:
+            err += dx
+            y0 += sy
+    return frame
+
 
 FLOOR = 3
 WALL = 13
@@ -72,14 +101,16 @@ def emitter_of(rows):
     raise AssertionError("board has no emitter")
 
 
-def trace(rows, mounted):
+def trace(rows, mounted, max_depth=None):
     lit, crossed, ports = set(), set(), {}
     ex, ey, eh = emitter_of(rows)
     ports[(ex, ey, eh, "out")] = BEAM_CLEAR
     seen = set()
-    stack = [(ex, ey, eh, BEAM_CLEAR)]
+    stack = deque([(ex, ey, eh, BEAM_CLEAR, 0)])
     while stack:
-        x, y, heading, colour = stack.pop()
+        x, y, heading, colour, depth = stack.popleft()
+        if max_depth is not None and depth >= max_depth:
+            continue
         sx, sy = step_of(x, y, heading)
         nx, ny = x + sx, y + sy
         if not (0 <= nx < COLS and 0 <= ny < BAND):
@@ -113,7 +144,7 @@ def trace(rows, mounted):
             outs = [(heading, colour)]
         for nh, ncolour in outs:
             ports[(nx, ny, nh, "out")] = ncolour
-            stack.append((nx, ny, nh, ncolour))
+            stack.append((nx, ny, nh, ncolour, depth + 1))
     return lit, ports, crossed
 
 
@@ -300,9 +331,9 @@ def draw_optic(frame, x, y, part):
             px, py = port_pixel(x, y, heading)
             hairline(frame, (ox + cx, oy + cy), (ox + px, oy + py), OPTIC_FILL)
     elif part == "P":
-        for j in range(cy - 1, cy + 1):
-            for i in range(cx - 2, cx + 2):
-                frame[oy + j, ox + i] = OPTIC_FILL
+        for dx, dy in ((-2, -1), (2, -1), (0, 2)):
+            hairline(frame, (ox + cx, oy + cy), (ox + cx + dx, oy + cy + dy), OPTIC_FILL)
+        frame[oy + cy, ox + cx] = 0
     elif part in TINT_COLOUR:
         for j in range(cy - 1, cy + 2):
             for i in range(cx - 1, cx + 2):
@@ -338,9 +369,10 @@ def rail_glyph(part):
     elif part == "z":
         line((1, 0), (6, 5))
     elif part == "P":
-        for j in range(2, 4):
-            for i in range(2, 6):
-                px[j][i] = OPTIC_FILL
+        line((3, 3), (1, 0))
+        line((3, 3), (6, 0))
+        line((3, 3), (3, 5))
+        px[0][1] = px[0][6] = 0
     elif part in TINT_COLOUR:
         for j in range(1, 4):
             for i in range(2, 5):
@@ -376,7 +408,7 @@ def build_levels():
     return levels
 
 
-class G009A(RenderableUserDisplay):
+class RailDisplay(RenderableUserDisplay):
 
     def __init__(self, game):
         super().__init__()
@@ -448,13 +480,13 @@ class G009A(RenderableUserDisplay):
         return self._rail(frame)
 
 
-class G009(ARCBaseGame):
+class PrismRun(ARCBaseGame):
 
     def __init__(self):
         self.level_state(0)
         camera = Camera(width=COLS * HALF + HALF, height=BAND * CELL,
                         background=WALL, letter_box=WALL,
-                        interfaces=[G009A(self)])
+                        interfaces=[RailDisplay(self)])
         super().__init__(game_id="g009", levels=build_levels(), camera=camera,
                          available_actions=[5, 6])
 
@@ -468,6 +500,7 @@ class G009(ARCBaseGame):
         self.ports = {}
         self.lit = set()
         self.hold = 0
+        self.wave = 0
         self._recompute()
 
     def on_set_level(self, level):
@@ -506,6 +539,11 @@ class G009(ARCBaseGame):
         return None, None
 
     def _click(self, px, py):
+        if RAIL_HIGH <= py < BAND * CELL:
+            slot = (px - SLOT_LEFT) // SLOT_PITCH
+            if 0 <= slot < len(self.bin_types):
+                self.sel = slot
+            return
         x, y = self._face_at(px, py)
         if x is None or self.rows[y][x] != "o":
             return
@@ -522,11 +560,23 @@ class G009(ARCBaseGame):
             self.stock[part] -= 1
             self.mounted[(x, y)] = part
         self._recompute()
+        self._wave_target = (self.lit, self.ports)
+        self.wave = 1
+        self.lit, self.ports, _ = trace(self.rows, self.mounted, 0)
         self._paint_wells()
-        if len(self.lit) == len(wells_of(self.rows)):
-            self.hold = WIN_HOLD
 
     def step(self):
+        if self.wave:
+            self.lit, self.ports, _ = trace(self.rows, self.mounted, self.wave)
+            self._paint_wells()
+            self.wave += 1
+            if self.lit == self._wave_target[0] and self.ports == self._wave_target[1]:
+                self.wave = 0
+                if len(self.lit) == len(wells_of(self.rows)):
+                    self.hold = WIN_HOLD
+                else:
+                    self.complete_action()
+            return
         if self.hold:
             self.hold -= 1
             if self.hold == 0:
@@ -540,6 +590,6 @@ class G009(ARCBaseGame):
         elif action == GameAction.ACTION6:
             data = self.action.data or {}
             self._click(int(data.get("x", -1)), int(data.get("y", -1)))
-        if self.hold:
+        if self.hold or self.wave:
             return
         self.complete_action()

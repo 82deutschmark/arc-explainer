@@ -14,7 +14,62 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
-from sprite_book import figure, gauge, hex_face, hex_ring, pips, rounded
+
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def gauge(colour: int, value: int, cell: int = 6) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for k in range(min(value, cell - 2)):
+        for x in range(1, cell - 1):
+            px[cell - 2 - k][x] = colour
+    return px
+
+def pips(colour: int, count: int, cell: int = 6) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    if count <= 0:
+        return px
+    n = 0
+    for y in range(cell - 2, 0, -1):
+        for x in range(1, cell - 1):
+            if n >= count:
+                return px
+            px[y][x] = colour
+            n += 1
+    return px
+
 
 WALL = 4
 FLOOR_HIGH = 10
@@ -35,30 +90,22 @@ CELL = 6
 OX = 2
 OY = 1
 
-MOVES = {
-    GameAction.ACTION1: (0, -1),
-    GameAction.ACTION2: (0, 1),
-    GameAction.ACTION3: (-1, 0),
-    GameAction.ACTION4: (1, 0),
-    GameAction.ACTION5: (1, -1),
-    GameAction.ACTION7: (-1, 1),
-}
-HEX_DIRS = ((0, -1), (1, -1), (1, 0), (0, 1), (-1, 1), (-1, 0))
+MOVES = {GameAction.ACTION1: (0,-1), GameAction.ACTION2: (0,1), GameAction.ACTION3: (-1,0), GameAction.ACTION4: (1,0)}
+NEIGHBOURS = ((0,-1),(1,0),(0,1),(-1,0))
 HOLD = (0, 0)
 WAIT_ACTIONS = frozenset({GameAction.ACTION6})
 
 
-def to_axial(col: int, row: int) -> tuple[int, int]:
-    return (col - (row // 2), row)
+def to_axial(col, row):
+    return col, row
 
 
-def to_offset(q: int, r: int) -> tuple[int, int]:
-    return (q + (r // 2), r)
+def to_offset(q, r):
+    return q, r
 
 
-def hex_dist(a: tuple[int, int], b: tuple[int, int]) -> int:
-    dq, dr = a[0] - b[0], a[1] - b[1]
-    return (abs(dq) + abs(dq + dr) + abs(dr)) // 2
+def grid_distance(a, b):
+    return abs(a[0]-b[0]) + abs(a[1]-b[1])
 
 
 SUMP_PLATES = "1234"
@@ -72,68 +119,61 @@ def plate_load(ch: str) -> int:
     return (SUMP_PLATES.index(ch) if ch in SUMP_PLATES
             else SHELF_PLATES.index(ch)) + 1
 
-LEVELS_SPEC = [
-    {"ballast": [1], "rows": [
-        "##########",
-        "#-======-#",
-        "#-=....=b#",
-        "#-=....=-#",
-        "#-G..1..b#",
-        "#-=....=-#",
-        "#-=....=X#",
-        "#--P====-#",
-        "#--------#",
-        "##########",
-    ]},
-    {"ballast": [1, 1], "rows": [
-        "##########",
-        "#b-------#",
-        "#X======-#",
-        "#-=G=G=--#",
-        "#-......-#",
-        "#-.....2-#",
-        "#-......b#",
-        "#-------P#",
-        "#--------#",
-        "##########",
-    ]},
-    {"ballast": [2, 2], "rows": [
-        "##########",
-        "#-======-#",
-        "#X=....=-#",
-        "#bG....Gb#",
-        "#-=3...=-#",
-        "#-=p====-#",
-        "#--------#",
-        "#---b----#",
-        "#P-------#",
-        "##########",
-    ]},
-    {"ballast": [2, 2, 1], "rows": [
-        "##########",
-        "#b======-#",
-        "#-=G==G=-#",
-        "#-======-#",
-        "#-----X--#",
-        "#-......-#",
-        "#-..G.13b#",
-        "#-......P#",
-        "#b-------#",
-        "##########",
-    ]},
-    {"ballast": [2, 2, 1], "rows": [
-        "##########",
-        "#-======-#",
-        "#bG====GX#",
-        "#-======-#",
-        "#---G----#",
-        "#-...13b-#",
-        "#-......-#",
-        "#-......-#",
-        "#b------P#",
-        "##########",
-    ]},
-]
+LEVELS_SPEC = [{'ballast': [1],
+  'rows': ['##########',
+           '#-======-#',
+           '#-=....=b#',
+           '#-=....=-#',
+           '#-G..1..b#',
+           '#-=....=-#',
+           '#-=....=X#',
+           '#--P====-#',
+           '#--------#',
+           '##########']},
+ {'ballast': [1, 1],
+  'rows': ['##########',
+           '#==G=====#',
+           '#==G====X#',
+           '#========#',
+           '#-----Pb-#',
+           '#.......2#',
+           '#.......b#',
+           '#.......b#',
+           '#........#',
+           '##########']},
+ {'ballast': [2, 2, 1],
+  'rows': ['##########',
+           '#b======X#',
+           '#-=G==G=-#',
+           '#-======-#',
+           '#--------#',
+           '#-......-#',
+           '#-..G.13b#',
+           '#-......-#',
+           '#b------P#',
+           '##########']},
+ {'ballast': [2, 2, 1],
+  'rows': ['##########',
+           '#b======-#',
+           '#-=G==G=-#',
+           '#-======-#',
+           '#-----X--#',
+           '#-......-#',
+           '#-..G.13b#',
+           '#-......P#',
+           '#b-------#',
+           '##########']},
+ {'ballast': [2, 2, 1],
+  'rows': ['##########',
+           '#b======X#',
+           '#-=G==G=-#',
+           '#-======-#',
+           '#--------#',
+           '#-......P#',
+           '#-..G.13b#',
+           '#-......-#',
+           '#b-------#',
+           '##########']}]
 
 SEEP_CYCLE = (0, 1, 1, 0, 2)
 
@@ -179,7 +219,7 @@ def model(index: int) -> dict:
         q = deque([b])
         while q:
             cur = q.popleft()
-            for dq, dr in HEX_DIRS:
+            for dq, dr in NEIGHBOURS:
                 nb = (cur[0] + dq, cur[1] + dr)
                 if nb in floor and nb not in d:
                     d[nb] = d[cur] + 1
@@ -201,7 +241,7 @@ def guard_step(m: dict, cell: tuple[int, int], target: int) -> tuple[int, int]:
     here = d.get(cell)
     if here is None or here == 0:
         return cell
-    for dq, dr in HEX_DIRS:
+    for dq, dr in NEIGHBOURS:
         nb = (cell[0] + dq, cell[1] + dr)
         if d.get(nb, 1 << 30) == here - 1:
             return nb
@@ -230,7 +270,7 @@ def settle(m: dict, guards: tuple, ballast: tuple) -> tuple:
     out = list(ballast)
     for i, gi in enumerate(guards):
         for j, gj in enumerate(guards):
-            if i == j or hex_dist(gi, gj) != 1 or out[i] < 1:
+            if i == j or grid_distance(gi, gj) != 1 or out[i] < 1:
                 continue
             if (out[i] + h[gi]) - (out[j] + h[gj]) >= 2:
                 out[i] -= 1
@@ -256,14 +296,13 @@ def resolve(index, player, guards, ballast, target, move, pour=True):
         guards = advance(m, guards, target)
     if pour:
         ballast = settle(m, guards, ballast)
-    dead = any(hex_dist(g, nxt) <= 1 for g in guards)
+    dead = any(grid_distance(g, nxt) <= 1 for g in guards)
     won = (not dead) and nxt == m["exit"] and all(held(m, guards, ballast))
     return nxt, guards, ballast, target, dead, won
 
 
-def _pixel(cell: tuple[int, int]) -> tuple[int, int]:
-    col, row = to_offset(*cell)
-    return (OX + col * CELL + (row % 2) * (CELL // 2), OY + row * CELL)
+def _pixel(cell):
+    return OX + cell[0] * CELL, OY + cell[1] * CELL
 
 
 def _over(base, top):
@@ -273,10 +312,10 @@ def _over(base, top):
 
 def _ground_pixels(h: int) -> list[list[int]]:
     if h == 2:
-        return hex_face(FLOOR_HIGH, CELL)
+        return block(FLOOR_HIGH, CELL)
     if h == 0:
-        return hex_face(FLOOR_LOW, CELL)
-    return _over(hex_face(FLOOR_HIGH, CELL), hex_ring(FLOOR_LOW, CELL))
+        return block(FLOOR_LOW, CELL)
+    return _over(block(FLOOR_HIGH, CELL), ring(FLOOR_LOW, CELL))
 
 
 def _bell_pixels() -> list[list[int]]:
@@ -284,12 +323,12 @@ def _bell_pixels() -> list[list[int]]:
 
 
 def _plate_pixels(load: int, lit: bool) -> list[list[int]]:
-    throat = hex_face(BALLAST_FILL, CELL) if lit else gauge(LOAD_PIP, load, CELL)
-    return _over(throat, hex_ring(PLATE_RIM, CELL))
+    throat = block(BALLAST_FILL, CELL) if lit else gauge(LOAD_PIP, load, CELL)
+    return _over(throat, ring(PLATE_RIM, CELL))
 
 
 def _guard_pixels(load: int) -> list[list[int]]:
-    return _over(hex_face(GUARD_BODY, CELL), gauge(BALLAST_FILL, load, CELL))
+    return _over(block(GUARD_BODY, CELL), gauge(BALLAST_FILL, load, CELL))
 
 
 def _player_pixels(carried: int) -> list[list[int]]:
@@ -301,7 +340,7 @@ def _caught_pixels(lit: bool) -> list[list[int]]:
 
 
 def _exit_pixels(live: bool) -> list[list[int]]:
-    px = hex_ring(EXIT_LIVE if live else EXIT_SHUT, CELL)
+    px = ring(EXIT_LIVE if live else EXIT_SHUT, CELL)
     if not live:
         for x in range(1, CELL - 1):
             px[CELL // 2][x] = EXIT_SHUT
@@ -347,9 +386,9 @@ def build_levels() -> list[Level]:
     return levels
 
 
-class G019A(RenderableUserDisplay):
+class BasinDisplay(RenderableUserDisplay):
 
-    def __init__(self, game: "G019") -> None:
+    def __init__(self, game: "SlowBell") -> None:
         super().__init__()
         self._game = game
 
@@ -367,7 +406,7 @@ class G019A(RenderableUserDisplay):
         return frame
 
 
-class G019(ARCBaseGame):
+class SlowBell(ARCBaseGame):
 
     CAUGHT_FRAMES = 6
     RINGING_FRAMES = 5
@@ -385,10 +424,10 @@ class G019(ARCBaseGame):
         camera = Camera(
             width=64, height=64,
             background=WALL, letter_box=5,
-            interfaces=[G019A(self)],
+            interfaces=[BasinDisplay(self)],
         )
         super().__init__(game_id="g019", levels=build_levels(), camera=camera,
-                         available_actions=[1, 2, 3, 4, 5, 6, 7])
+                         available_actions=[1, 2, 3, 4, 6])
 
     def on_set_level(self, level: Level) -> None:
         m = model(self.level_index)

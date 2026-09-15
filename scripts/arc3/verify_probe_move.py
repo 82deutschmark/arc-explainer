@@ -1,6 +1,6 @@
 """
-Author: Claude Opus 5
-Date: 07-September-2026
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-12
 PURPOSE: Verify the click-to-move probe under the contract the BROWSER actually runs it
          under, not under a friendlier one. The Pyodide worker gets ONE exec'd Python
          string, no filesystem and no import machinery, so a check that imports the game
@@ -60,7 +60,7 @@ MECHANICS = GAMES_DIR / "mechanics.json"
 # mentions ACTION7" is true of games where ACTION7 is a wait, and false of triangular
 # games that use only 1/3/4. See EXOTIC_GAME_IDS in shared/arc3Topology.ts, which is the
 # copy the client uses; this list must match it.
-EXOTIC = ["g009", "g013", "g015", "g017", "g019", "g020", "g022", "g027", "g043", "g046"]
+EXOTIC = ["g009", "g015", "g022", "g027"]
 
 IMPORT_RE = re.compile(
     r"^[ \t]*(?:from[ \t]+([A-Za-z_][A-Za-z0-9_]*)[ \t]+import|import[ \t]+([A-Za-z_][A-Za-z0-9_]*))",

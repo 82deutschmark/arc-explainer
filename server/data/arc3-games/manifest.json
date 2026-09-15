@@ -46,7 +46,7 @@
   },
   {
     "id": "g009",
-    "class_name": "G009",
+    "class_name": "PrismRun",
     "src_file": "g009.py",
     "category": "arena",
     "official": false,
@@ -55,7 +55,7 @@
   },
   {
     "id": "g010",
-    "class_name": "G010",
+    "class_name": "LanternLedger",
     "src_file": "g010.py",
     "category": "arena",
     "official": false,
@@ -64,7 +64,7 @@
   },
   {
     "id": "g011",
-    "class_name": "G011",
+    "class_name": "Slick",
     "src_file": "g011.py",
     "category": "arena",
     "official": false,
@@ -73,7 +73,7 @@
   },
   {
     "id": "g012",
-    "class_name": "G012",
+    "class_name": "KeeperRound",
     "src_file": "g012.py",
     "category": "arena",
     "official": false,
@@ -82,7 +82,7 @@
   },
   {
     "id": "g013",
-    "class_name": "G013",
+    "class_name": "RotGarden",
     "src_file": "g013.py",
     "category": "arena",
     "official": false,
@@ -91,7 +91,7 @@
   },
   {
     "id": "g014",
-    "class_name": "G014",
+    "class_name": "LongShadow",
     "src_file": "g014.py",
     "category": "arena",
     "official": false,
@@ -100,7 +100,7 @@
   },
   {
     "id": "g015",
-    "class_name": "G015",
+    "class_name": "KitBash",
     "src_file": "g015.py",
     "category": "arena",
     "official": false,
@@ -109,7 +109,7 @@
   },
   {
     "id": "g016",
-    "class_name": "G016",
+    "class_name": "SlowPost",
     "src_file": "g016.py",
     "category": "arena",
     "official": false,
@@ -118,7 +118,7 @@
   },
   {
     "id": "g017",
-    "class_name": "G017",
+    "class_name": "Interest",
     "src_file": "g017.py",
     "category": "arena",
     "official": false,
@@ -127,7 +127,7 @@
   },
   {
     "id": "g018",
-    "class_name": "G018",
+    "class_name": "TideLedger",
     "src_file": "g018.py",
     "category": "arena",
     "official": false,
@@ -136,7 +136,7 @@
   },
   {
     "id": "g019",
-    "class_name": "G019",
+    "class_name": "SlowBell",
     "src_file": "g019.py",
     "category": "arena",
     "official": false,
@@ -145,7 +145,7 @@
   },
   {
     "id": "g020",
-    "class_name": "G020",
+    "class_name": "Ping",
     "src_file": "g020.py",
     "category": "arena",
     "official": false,
@@ -163,7 +163,7 @@
   },
   {
     "id": "g022",
-    "class_name": "G022",
+    "class_name": "Ember",
     "src_file": "g022.py",
     "category": "arena",
     "official": false,
@@ -181,7 +181,7 @@
   },
   {
     "id": "g024",
-    "class_name": "G024",
+    "class_name": "Cuff",
     "src_file": "g024.py",
     "category": "arena",
     "official": false,
@@ -199,7 +199,7 @@
   },
   {
     "id": "g026",
-    "class_name": "G026",
+    "class_name": "Chorus",
     "src_file": "g026.py",
     "category": "arena",
     "official": false,
@@ -208,7 +208,7 @@
   },
   {
     "id": "g027",
-    "class_name": "G027",
+    "class_name": "Cue",
     "src_file": "g027.py",
     "category": "arena",
     "official": false,
@@ -217,7 +217,7 @@
   },
   {
     "id": "g028",
-    "class_name": "G028",
+    "class_name": "Fold",
     "src_file": "g028.py",
     "category": "arena",
     "official": false,
@@ -271,7 +271,7 @@
   },
   {
     "id": "g034",
-    "class_name": "G034",
+    "class_name": "SecondCoat",
     "src_file": "g034.py",
     "category": "arena",
     "official": false,
@@ -280,7 +280,7 @@
   },
   {
     "id": "g035",
-    "class_name": "G035",
+    "class_name": "DressCode",
     "src_file": "g035.py",
     "category": "arena",
     "official": false,
@@ -289,7 +289,7 @@
   },
   {
     "id": "g036",
-    "class_name": "G036",
+    "class_name": "Shoelace",
     "src_file": "g036.py",
     "category": "arena",
     "official": false,
@@ -361,7 +361,7 @@
   },
   {
     "id": "g044",
-    "class_name": "G044",
+    "class_name": "Rind",
     "src_file": "g044.py",
     "category": "arena",
     "official": false,
@@ -379,7 +379,7 @@
   },
   {
     "id": "g046",
-    "class_name": "G046",
+    "class_name": "StaleSight",
     "src_file": "g046.py",
     "category": "arena",
     "official": false,
@@ -388,7 +388,7 @@
   },
   {
     "id": "g047",
-    "class_name": "G047",
+    "class_name": "Peephole",
     "src_file": "g047.py",
     "category": "arena",
     "official": false,
@@ -406,7 +406,7 @@
   },
   {
     "id": "g136",
-    "class_name": "G136",
+    "class_name": "Quotient",
     "src_file": "g136.py",
     "category": "arena",
     "official": false,
@@ -415,7 +415,7 @@
   },
   {
     "id": "g155",
-    "class_name": "G155",
+    "class_name": "OneBite",
     "src_file": "g155.py",
     "category": "arena",
     "official": false,
@@ -433,7 +433,7 @@
   },
   {
     "id": "g171",
-    "class_name": "G171",
+    "class_name": "Ration",
     "src_file": "g171.py",
     "category": "arena",
     "official": false,
@@ -442,7 +442,7 @@
   },
   {
     "id": "g178",
-    "class_name": "G178",
+    "class_name": "Turnout",
     "src_file": "g178.py",
     "category": "arena",
     "official": false,
@@ -559,7 +559,7 @@
   },
   {
     "id": "g512",
-    "class_name": "G512",
+    "class_name": "Q041",
     "src_file": "g512.py",
     "category": "contributed-glowup",
     "official": false,

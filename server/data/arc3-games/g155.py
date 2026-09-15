@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from sprite_book import block, blink, door, figure, hatch, medallion, weave
 
 from arcengine import (
     ARCBaseGame,
@@ -15,132 +14,191 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 0
-WALL = 4
-HOLE = WALL
-PLAYER = 9
-EXIT_CORE = 11
-DARK = WALL
 
-CLASSES = {"1": 13, "2": 11, "3": 7, "4": 13, "5": 7}
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
 
-DOORS = {"a": "1", "b": "2", "c": "3", "d": "4", "e": "5"}
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def gauge(colour: int, value: int, cell: int = 6) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for k in range(min(value, cell - 2)):
+        for x in range(1, cell - 1):
+            px[cell - 2 - k][x] = colour
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def blink(step: int, period: int = 3) -> bool:
+    return (step // period) % 2 == 0
+
+
+VOID_BG = 4
+ROCK_WALL = 3
+DARK_FILL = 5
+WATER = 11
+PLAYER = 0
+EXIT_GATE = 9
+
+CLASSES = {"1": 15, "2": 10, "3": 7}
+
+GATES = {"a": "1", "b": "2", "c": "3"}
 
 DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0))
 
+N = 8
+CELL = 8
+CAP = 6
+WADE = 3
+
+BEDROCK = "#"
+BRIM = "~"
+DRIP = ":"
+START = "P"
+EXIT = "X"
+
+SOURCE = {BRIM: CAP, DRIP: 1}
+
 LEVELS_SPEC = [
     {"reveal": None, "rows": [
-        "################",
-        "#.........#....#",
-        "#.........#....#",
-        "#....1....#....#",
-        "#.........#....#",
-        "#..P......aX...#",
-        "#.........#....#",
-        "#....1....#....#",
-        "#.........#....#",
-        "#......1..#....#",
-        "#.........#....#",
-        "#..1......#....#",
-        "#.........#....#",
-        "#.........#....#",
-        "#.........#....#",
-        "################",
+        "~~#....#",
+        "11#....#",
+        "..#....#",
+        "..#....#",
+        "..#....#",
+        "########",
+        "P..1..aX",
+        "########",
     ]},
     {"reveal": None, "rows": [
-        "################",
-        "#..............#",
-        "#....1....1....#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
-        "#P...1111.1.a.X#",
-        "################",
-        "#..............#",
-        "#......1.......#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "#..............#",
-        "################",
+        "P.######",
+        "#1######",
+        "#.######",
+        "#1######",
+        "#..##.aX",
+        "##~~~~##",
+        "##1111##",
+        "........",
     ]},
     {"reveal": None, "rows": [
-        "################",
-        "#..............#",
-        "#.....1........#",
-        "#..............#",
-        "################",
-        "#P..1111..2..b.#",
-        "#############.##",
-        "#.......#....1.#",
-        "#.......#......#",
-        "#.......a......#",
-        "#......X#......#",
-        "#.......#......#",
-        "#########......#",
-        "#..............#",
-        "#..............#",
-        "################",
+        "P.#~####",
+        "..#~####",
+        "..#~####",
+        "..#~####",
+        "..#1####",
+        "..#.#1aX",
+        ".......#",
+        "########",
     ]},
-    {"reveal": 3, "rows": [
-        "################",
-        "#P.............#",
-        "#..............#",
-        "#####.##########",
-        "#####3##########",
-        "#####3##########",
-        "#####3##########",
-        "#..333333......#",
-        "#########.######",
-        "#########c######",
-        "#..............#",
-        "#..............#",
-        "#.............X#",
-        "#..............#",
-        "#..............#",
-        "################",
+    {"reveal": 2, "rows": [
+        "X#~~~#~#",
+        "a#222#~#",
+        ".#...#~#",
+        ".##b##1#",
+        ".##.##.#",
+        "P.2.....",
+        "######.#",
+        "........",
     ]},
-    {"reveal": 3, "rows": [
-        "################",
-        "#..............#",
-        "#.....4........#",
-        "#..............#",
-        "################",
-        "#P..4444.......#",
-        "####d#########.#",
-        "####.#########.#",
-        "###...########.#",
-        "###.4.########.#",
-        "###...########.#",
-        "##############.#",
-        "#............5.#",
-        "#########e######",
-        "#########X######",
-        "################",
+    {"reveal": 2, "rows": [
+        "X#.~.#~#",
+        "a#.1.#~#",
+        ".#...#~#",
+        ".#...#~#",
+        ".#####1#",
+        "P.......",
+        "######2#",
+        "........",
     ]},
-    {"reveal": 3, "rows": [
-        "################",
-        "#P.............#",
-        "#..............#",
-        "#####1##########",
-        "#####1##########",
-        "#..111111......#",
-        "#########a######",
-        "#.........2....#",
-        "#..............#",
-        "#####b###.######",
-        "#.....#........#",
-        "#.....#...3....#",
-        "#..c..#........#",
-        "#.....#........#",
-        "#..X..#........#",
-        "################",
+    {"reveal": 2, "rows": [
+        "#####X#~",
+        "#####c#~",
+        ".3333.#~",
+        ".######~",
+        "a######1",
+        "P.......",
+        "#######2",
+        "........",
     ]},
 ]
 
-N = len(LEVELS_SPEC[0]["rows"])
-CELL = 4
+
+CURRENTS = {'>':(1,0), '<':(-1,0), '^':(0,-1), 'v':(0,1)}
+MAGMA = 'M'
+HEAT_CLASS = '2'
+
+LEVELS_SPEC.extend([
+    {'reveal':2,'chapter_start':True,'rows':[
+        '########','#P.2####','##.#####','##M#####',
+        '##M.1###','####v###','#X.a<###','########']},
+    {'reveal':2,'rows':[
+        '########','#P..2..#','#.####.#','#..M...#',
+        '###M##1#','#..M.v##','#X.a<<##','########']},
+])
+
+def walk_result(rows,eaten,fill,pos,direction):
+    x,y=pos
+    if rows[y][x] in CURRENTS and direction!=CURRENTS[rows[y][x]]:
+        return pos
+    dest=(x+direction[0],y+direction[1])
+    if not passable(rows,eaten,fill,*dest):return pos
+    seen=set()
+    while rows[dest[1]][dest[0]] in CURRENTS:
+        if dest in seen:return pos
+        seen.add(dest)
+        dx,dy=CURRENTS[rows[dest[1]][dest[0]]]
+        nxt=(dest[0]+dx,dest[1]+dy)
+        if not passable(rows,eaten,fill,*nxt):break
+        dest=nxt
+    return dest
+
+def index(x: int, y: int) -> int:
+    return y * N + x
 
 
 def find_char(rows, ch):
@@ -151,59 +209,168 @@ def find_char(rows, ch):
     raise ValueError(f"no {ch!r} in board")
 
 
-def eat_targets(rows, glyph):
+def class_cells(rows, glyph):
     return {(x, y) for y, row in enumerate(rows)
             for x, c in enumerate(row) if c == glyph}
 
 
-def passable(rows, eaten, holes, x, y):
-    if not (0 <= x < N and 0 <= y < N):
-        return False
+def initial_fill(rows):
+    return tuple(SOURCE.get(rows[y][x], 0) for y in range(N) for x in range(N))
+
+
+def terrain_open(rows, eaten, x, y):
     c = rows[y][x]
-    if c == "#":
+    if c == BEDROCK:
         return False
-    if (x, y) in holes:
-        return False
-    if c in DOORS:
-        return DOORS[c] in eaten
+    if c in CLASSES:
+        return c in eaten
+    if c in GATES:
+        return GATES[c] in eaten
     return True
 
 
-def _wall():
-    return block(WALL, CELL)
+def passable(rows, eaten, fill, x, y):
+    if not (0 <= x < N and 0 <= y < N):
+        return False
+    c = rows[y][x]
+    if c == BEDROCK or c == MAGMA and HEAT_CLASS not in eaten:
+        return False
+    if c in CLASSES and c in eaten:
+        return False
+    if c in GATES and GATES[c] not in eaten:
+        return False
+    return fill[index(x, y)] < WADE
 
 
-def _tile(glyph):
-    return medallion(CLASSES[glyph], WALL, CELL)
+def flow(rows, eaten, fill, limit=None, sweep=1):
+    g = list(fill)
+    xs = range(N) if sweep > 0 else range(N - 1, -1, -1)
+    sides = (-1, 1) if sweep > 0 else (1, -1)
+    passes = 0
+    while limit is None or passes < limit:
+        moved = False
+        passes += 1
+        for y in range(N - 1, -1, -1):
+            for x in xs:
+                here = index(x, y)
+                if g[here] and y + 1 < N and terrain_open(rows, eaten, x, y + 1):
+                    below = index(x, y + 1)
+                    n = min(CAP - g[below], g[here])
+                    if n > 0:
+                        g[below] += n
+                        g[here] -= n
+                        moved = True
+                for dx in sides:
+                    nx = x + dx
+                    if not (0 <= nx < N) or not terrain_open(rows, eaten, nx, y):
+                        continue
+                    beside = index(nx, y)
+                    if g[beside] + 1 < g[here]:
+                        g[beside] += 1
+                        g[here] -= 1
+                        moved = True
+        if not moved:
+            break
+    return tuple(g)
 
 
-def _crumb(glyph):
-    return weave(CLASSES[glyph], CELL)
+def bite_result(rows, eaten, fill, glyph):
+    spent = frozenset(eaten | {glyph})
+    return spent, flow(rows, spent, fill)
 
 
-def _spent(glyph):
-    return hatch(CLASSES[glyph], CELL)
+def stranded(rows, eaten, fill, x, y):
+    return not any(walk_result(rows,eaten,fill,(x,y),d)!=(x,y) for d in DIRS)
 
 
-def _hole(colour=HOLE):
-    return weave(colour, CELL)
+def drowned(fill, x, y):
+    return fill[index(x, y)] >= WADE
 
 
-def _shut(glyph, bar=None, frame=None):
-    return door(WALL if frame is None else frame,
-                CLASSES[glyph] if bar is None else bar, CELL)
+def _rock(x, y):
+    px = block(ROCK_WALL, CELL)
+    for fy, row in enumerate(speckle(VOID_BG, x * 3 + y, CELL)):
+        for fx, v in enumerate(row):
+            if v >= 0:
+                px[fy][fx] = v
+    return px
 
 
-def _open():
-    return door(WALL, None, CELL)
+def _shelf(glyph):
+    return rounded(CLASSES[glyph], CELL)
+
+
+def _rubble(glyph=None):
+    return weave(ROCK_WALL if glyph is None else CLASSES[glyph], CELL)
+
+
+def _arch(frame_colour):
+    px = [[-1] * CELL for _ in range(CELL)]
+    for y in range(CELL):
+        for x in (0, 1, CELL - 2, CELL - 1):
+            px[y][x] = frame_colour
+    for y in (0, 1):
+        for x in range(CELL):
+            px[y][x] = frame_colour
+    return px
+
+
+def _gate(glyph, bar=None, frame=None):
+    px = _arch(ROCK_WALL if frame is None else frame)
+    fill = CLASSES[glyph] if bar is None else bar
+    for y in range(2, CELL):
+        for x in range(2, CELL - 2):
+            px[y][x] = fill if y % 2 == 0 else -1
+    return px
+
+
+def _open_gate():
+    return _arch(ROCK_WALL)
 
 
 def _exit(lit):
-    return medallion(PLAYER, EXIT_CORE if lit else WALL, CELL)
+    px = ring(EXIT_GATE, CELL)
+    if lit:
+        for y, row in enumerate(core(PLAYER, CELL)):
+            for x, v in enumerate(row):
+                if v >= 0:
+                    px[y][x] = v
+    return px
 
 
-def _player(mark):
-    return figure(PLAYER, mark, CELL)
+def _fluid(depth):
+    d = min(depth, CAP)
+    px = gauge(WATER, d, CELL)
+    for x in range(1, CELL - 1):
+        px[CELL - 1][x] = WATER
+    top = CELL - 1 - d
+    for x in range(1, CELL - 1):
+        if x % 2:
+            px[top][x] = -1
+    if depth >= WADE:
+        for y in range(top, CELL):
+            px[y][0] = px[y][CELL - 1] = WATER
+    return px
+
+
+def _player(wet):
+    px = figure(PLAYER, WATER if wet else None, CELL)
+    for x in (0, CELL - 1):
+        px[1][x] = -1
+    for y in (CELL - 3, CELL - 2, CELL - 1):
+        for x in range(CELL):
+            px[y][x] = PLAYER if x in (1, 2, CELL - 3, CELL - 2) else -1
+    if wet:
+        px[CELL - 3][3] = px[CELL - 3][CELL - 4] = WATER
+    return px
+
+
+def _layer(base, over):
+    for y in range(CELL):
+        for x in range(CELL):
+            if over[y][x] >= 0:
+                base[y][x] = over[y][x]
+    return base
 
 
 def build_levels() -> list[Level]:
@@ -213,26 +380,15 @@ def build_levels() -> list[Level]:
         sprites: list[Sprite] = []
         for y in range(N):
             for x in range(N):
-                c = rows[y][x]
-                if c == "#":
-                    pixels, name = _wall(), f"wall_{x}_{y}"
-                elif c in CLASSES:
-                    pixels, name = _tile(c), f"cell_{x}_{y}"
-                elif c in DOORS:
-                    pixels, name = _shut(DOORS[c]), f"cell_{x}_{y}"
-                elif c == "X":
-                    pixels, name = _exit(True), "exit"
-                else:
-                    continue
                 sprites.append(Sprite(
-                    pixels=pixels, name=name,
+                    pixels=[[-1] * CELL for _ in range(CELL)], name=f"cell_{x}_{y}",
                     blocking=BlockingMode.NOT_BLOCKED,
                     interaction=InteractionMode.INTANGIBLE, layer=0,
                     collidable=False,
                 ).set_position(x * CELL, y * CELL))
-        px, py = find_char(rows, "P")
+        px, py = find_char(rows, START)
         sprites.append(Sprite(
-            pixels=_player(FLOOR), name="player",
+            pixels=_player(False), name="player",
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.INTANGIBLE, layer=1, collidable=False,
         ).set_position(px * CELL, py * CELL))
@@ -240,40 +396,38 @@ def build_levels() -> list[Level]:
     return levels
 
 
-class G155A(RenderableUserDisplay):
+class Fog(RenderableUserDisplay):
 
-    def __init__(self, game: "G155") -> None:
+    def __init__(self, game: "OneBite") -> None:
         super().__init__()
         self._game = game
 
-    def render_interface(self, frame: np.ndarray) -> np.ndarray:
-        if self._game.reveal_radius is None:
-            return frame
-        out = np.full_like(frame, DARK)
-        for x, y in self._game.revealed:
-            out[y * CELL:(y + 1) * CELL, x * CELL:(x + 1) * CELL] = \
-                frame[y * CELL:(y + 1) * CELL, x * CELL:(x + 1) * CELL]
+    def render_interface(self, frame):
+        g=self._game
+        if g.reveal_radius is None:return frame
+        out=np.full_like(frame,DARK_FILL)
+        for x,y in g.lit_pixels:out[y,x]=frame[y,x]
         return out
 
 
-class G155(ARCBaseGame):
+class OneBite(ARCBaseGame):
 
-    BITE_FRAMES = 6
+    POUR_CAP = 9
     DYING_FRAMES = 6
 
     def __init__(self) -> None:
-        self.eaten: set[str] = set()
-        self.holes: set[tuple[int, int]] = set()
-        self.pending: tuple[int, int] | None = None
+        self.eaten: frozenset = frozenset()
+        self.fill: tuple = ()
         self.revealed: set[tuple[int, int]] = set()
         self.tick = 0
-        self._biting = 0
+        self._pour = 0
+        self._pour_span = 0
+        self._pour_before: tuple = ()
         self._dying = 0
-        self._chewed: str | None = None
         camera = Camera(
             width=N * CELL, height=N * CELL,
-            background=FLOOR, letter_box=DARK,
-            interfaces=[G155A(self)],
+            background=VOID_BG, letter_box=VOID_BG,
+            interfaces=[Fog(self)],
         )
         super().__init__(game_id="g155", levels=build_levels(), camera=camera,
                          available_actions=[1, 2, 3, 4, 5])
@@ -294,14 +448,16 @@ class G155(ARCBaseGame):
         return p[0].x // CELL, p[0].y // CELL
 
     def on_set_level(self, level: Level) -> None:
-        self.eaten = set()
-        self.holes = set()
-        self.pending = None
+        self.eaten = frozenset()
+        self.fill = flow(self.rows, self.eaten, initial_fill(self.rows))
         self.revealed = set()
-        self._biting = 0
+        self.lit_pixels = set()
+        self._pour = 0
+        self._pour_span = 0
+        self._pour_before = self.fill
         self._dying = 0
-        self._chewed = None
-        self._reveal(*find_char(self.rows, "P"))
+        self._reveal(*find_char(self.rows, START))
+        self._repaint(self.fill)
 
     def level_reset(self) -> None:
         super().level_reset()
@@ -311,90 +467,86 @@ class G155(ARCBaseGame):
         super().full_reset()
         self.on_set_level(self.current_level)
 
-    def _reveal(self, x: int, y: int) -> None:
-        r = self.reveal_radius
+    def _reveal(self,x,y):
+        r=self.reveal_radius
         if r is None:
-            self.revealed = {(a, b) for a in range(N) for b in range(N)}
+            self.revealed={(a,b) for a in range(N) for b in range(N)}
+            self.lit_pixels={(a,b) for a in range(64) for b in range(64)}
             return
-        for b in range(y - r, y + r + 1):
-            for a in range(x - r, x + r + 1):
-                if 0 <= a < N and 0 <= b < N:
-                    self.revealed.add((a, b))
+        cx,cy=x*CELL+CELL//2,y*CELL+CELL//2
+        radius=r*CELL+CELL//2
+        for b in range(max(0,cy-radius),min(64,cy+radius+1)):
+            for a in range(max(0,cx-radius),min(64,cx+radius+1)):
+                if (a-cx)**2+(b-cy)**2<=radius**2:
+                    self.lit_pixels.add((a,b))
+                    self.revealed.add((a//CELL,b//CELL))
 
-    def _paint(self, x: int, y: int, pixels) -> None:
-        for s in self.current_level.get_sprites_by_name(f"cell_{x}_{y}"):
-            s.pixels = np.array(pixels)
+    def _face(self, x, y, field):
+        c = self.rows[y][x]
+        if c == BEDROCK:
+            base = _rock(x, y)
+        elif c in CLASSES:
+            base = _shelf(c) if c not in self.eaten else _rubble()
+        elif c in GATES:
+            base = _open_gate() if GATES[c] in self.eaten else _gate(GATES[c])
+        elif c == MAGMA:
+            cooled = HEAT_CLASS in self.eaten
+            base=block(3 if cooled else 13,CELL)
+            for a in range(CELL):
+                base[(a*3+self.tick)%CELL][a]=CLASSES[HEAT_CLASS] if cooled else 12
+                base[(a*3+self.tick+1)%CELL][a]=3 if cooled else 8
+        elif c in CURRENTS:
+            base=block(9,CELL)
+            dx,dy=CURRENTS[c]
+            for k in range(-2,3):base[3+dy*k][3+dx*k]=10
+            for side in (-1,1):base[3+dy-dx*side][3+dx+dy*side]=0
+        elif c == EXIT:
+            base = _exit(blink(self.tick, 3))
+        else:
+            base = block(VOID_BG,CELL)
+            base[CELL-1]=[3]*CELL
+            base[(x+2*y)%6][(x*3+y)%6]=3
+        depth = field[index(x, y)]
+        return _layer(base, _fluid(depth)) if depth else base
 
-    def _paint_hole(self, x: int, y: int) -> None:
-        self._paint(x, y, _hole())
+    def _repaint(self, field) -> None:
+        for y in range(N):
+            for x in range(N):
+                for s in self.current_level.get_sprites_by_name(f"cell_{x}_{y}"):
+                    s.pixels = np.array(self._face(x, y, field))
+        self._paint_player(field)
 
-    def _paint_player(self, standing: bool = True) -> None:
+    def _paint_player(self, field, standing: bool = True) -> None:
         x, y = self.player_cell()
-        glyph = self.rows[y][x]
-        mark = CLASSES[glyph] if glyph in CLASSES and glyph not in self.eaten else FLOOR
-        px = _player(mark) if standing else _hole()
+        wet = field[index(x, y)] > 0
+        px = _player(wet) if standing else _rubble()
+        if HEAT_CLASS in self.eaten and any(MAGMA in row for row in self.rows):
+            px[1][2:6]=[CLASSES[HEAT_CLASS]]*4
         for s in self.current_level.get_sprites_by_name("player"):
             s.pixels = np.array(px)
-
-    def _paint_exit(self) -> None:
-        for s in self.current_level.get_sprites_by_name("exit"):
-            s.pixels = np.array(_exit(blink(self.tick, 3)))
-
-    def _paint_bite(self, left: int) -> None:
-        glyph = self._chewed
-        if glyph is None:
-            return
-        if left >= 5:
-            face, bar, frame = _crumb(glyph), None, None
-        elif left >= 3:
-            face, bar, frame = _spent(glyph), None, CLASSES[glyph]
-        else:
-            face, bar, frame = hatch(WALL, CELL), FLOOR, CLASSES[glyph]
-        for cell in eat_targets(self.rows, glyph):
-            if cell != self.pending:
-                self._paint(cell[0], cell[1], face)
-        for c, g in DOORS.items():
-            if g == glyph:
-                for cx, cy in eat_targets(self.rows, c):
-                    self._paint(cx, cy, _shut(glyph, bar, frame))
-
-    def _settle_bite(self) -> None:
-        glyph = self._chewed
-        self._chewed = None
-        if glyph is None:
-            return
-        for cell in eat_targets(self.rows, glyph):
-            if cell == self.pending:
-                self._paint(cell[0], cell[1], _spent(glyph))
-            else:
-                self._paint_hole(*cell)
-        for c, g in DOORS.items():
-            if g == glyph:
-                for cx, cy in eat_targets(self.rows, c):
-                    self._paint(cx, cy, _open())
-        self._paint_player()
 
     def _bite(self) -> bool:
         x, y = self.player_cell()
         glyph = self.rows[y][x]
         if glyph not in CLASSES or glyph in self.eaten:
             return False
-        self.eaten.add(glyph)
-        for cell in eat_targets(self.rows, glyph):
-            if cell == (x, y):
-                self.pending = cell
-            else:
-                self.holes.add(cell)
-        self._chewed = glyph
+        before = self.fill
+        self.eaten, self.fill = bite_result(self.rows, self.eaten, before, glyph)
+        span = 1
+        while span < self.POUR_CAP and \
+                flow(self.rows, self.eaten, before, limit=span) != self.fill:
+            span += 1
+        self._pour_span = span
+        self._pour = span
         return True
 
-    def _stuck(self) -> bool:
-        x, y = self.player_cell()
-        return not any(passable(self.rows, self.eaten, self.holes, x + dx, y + dy)
-                       for dx, dy in DIRS)
+    def _pour_frame(self) -> None:
+        done = self._pour_span - self._pour + 1
+        self._repaint(flow(self.rows, self.eaten, self._pour_before, limit=done))
 
     def _finish_or_die(self) -> None:
-        if self._stuck():
+        x, y = self.player_cell()
+        if drowned(self.fill, x, y) or stranded(self.rows, self.eaten, self.fill, x, y):
             self._dying = self.DYING_FRAMES
             return
         self.complete_action()
@@ -402,29 +554,29 @@ class G155(ARCBaseGame):
     def step(self) -> None:
         if self._dying:
             self._dying -= 1
-            self._paint_player(standing=self._dying % 2 == 0)
+            self._paint_player(self.fill, standing=self._dying % 2 == 0)
             if self._dying == 0:
                 self.level_reset()
                 self.complete_action()
             return
 
-        if self._biting:
-            self._biting -= 1
-            if self._biting:
-                self._paint_bite(self._biting)
+        if self._pour:
+            self._pour -= 1
+            if self._pour:
+                self._pour_frame()
                 return
-            self._settle_bite()
+            self._repaint(self.fill)
             self._finish_or_die()
             return
 
         self.tick += 1
-        self._paint_exit()
 
         if self.action.id == GameAction.ACTION5:
+            self._pour_before = self.fill
             if self._bite():
-                self._biting = self.BITE_FRAMES
-                self._paint_bite(self._biting)
+                self._pour_frame()
                 return
+            self._repaint(self.fill)
             self.complete_action()
             return
 
@@ -440,20 +592,18 @@ class G155(ARCBaseGame):
 
         if dx or dy:
             x, y = self.player_cell()
-            nx, ny = x + dx, y + dy
-            if passable(self.rows, self.eaten, self.holes, nx, ny):
+            nx,ny=walk_result(self.rows,self.eaten,self.fill,(x,y),(dx,dy))
+            if (nx,ny)!=(x,y):
                 for s in self.current_level.get_sprites_by_name("player"):
                     s.set_position(nx * CELL, ny * CELL)
-                if self.pending == (x, y):
-                    self.holes.add(self.pending)
-                    self._paint_hole(*self.pending)
-                    self.pending = None
                 self._reveal(nx, ny)
-                self._paint_player()
-                if (nx, ny) == find_char(self.rows, "X"):
+                self._repaint(self.fill)
+                if (nx, ny) == find_char(self.rows, EXIT):
                     self.next_level()
-                elif self._stuck():
+                elif stranded(self.rows, self.eaten, self.fill, nx, ny):
                     self._dying = self.DYING_FRAMES
                     return
+        else:
+            self._repaint(self.fill)
 
         self.complete_action()

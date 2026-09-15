@@ -1,7 +1,9 @@
 /*
-Author: Claude Sonnet 5, correcting Codex (GPT-6) and existing contributors
+Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-14
-Update: Explain KS01 controls, show unlimited contributed retries and restore failed moves;
+Update: Combine reviewed action playback and hints with native research animations,
+        contributed recovery, source-versioned controls and the official Z Undo binding.
+Previous update: Explain KS01 controls, show unlimited contributed retries and restore failed moves;
         finish pixel animations before accepting another action.
 10th pass, same day, per Mark: the KS01 pass above RE-BROKE point 9. It gave KS01's
         ACTION5 the invented deck label "PULSE (Z / SPACE)" and moved Undo to U for it
@@ -151,7 +153,8 @@ PURPOSE: The blind play surface — one ARC-AGI-3 task, rendered and driven the 
 
 SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodideGame,
          telemetry in humanPlayTelemetry, colours in utils/arc3Colors, and the list of
-         non-square boards in shared/arc3Topology.
+         non-square boards in shared/arc3Topology. Shared actionPlayback supplies the
+         reviewed transitions; one local timer and lock also preserve native playback.
 */
 
 import { canonicalGameId, publicGameId } from '@shared/arc3PublicIds';
@@ -165,7 +168,9 @@ import { Arc3FeedbackPanel } from '@/components/arc3-community/Arc3FeedbackPanel
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 import { PIPELINE_CATEGORY, isVisitorFacing, withinGroupOrder } from '@/lib/arc3TaskSets';
-import { PROBE_CANDIDATE_ACTIONS, probeGestureFor } from '@shared/arc3Topology';
+import { actionPlayback, type PixelGrid } from '@shared/arc3ActionFrames';
+import { arc3PlayHint } from '@shared/arc3PlayHints';
+import { PROBE_CANDIDATE_ACTIONS, TRIANGULAR_MOVEMENT_GAME_IDS, probeGestureFor } from '@shared/arc3Topology';
 import { ARC3_COLORS } from '@/utils/arc3Colors';
 import type { Arc3MechanicEntry } from '@shared/arc3Mechanics';
 
@@ -328,6 +333,11 @@ export default function CommunityGamePlay() {
   const [frame, setFrame] = useState<PyodideFrameData | null>(null);
   const [gameState, setGameState] = useState<GameState>('idle');
   const [displayFrameIndex, setDisplayFrameIndex] = useState(0);
+  const [displayFrames, setDisplayFrames] = useState<PixelGrid[]>([]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const settledGridRef = useRef<PixelGrid | null>(null);
+  const animationBusyRef = useRef(false);
+  const requestBusyRef = useRef(false);
   const [live, setLive] = useState(false);
   // HELP is a control on the official deck. It explains the CONTROLS only -- never the
   // task -- so it cannot leak the mechanic.
@@ -346,8 +356,6 @@ export default function CommunityGamePlay() {
   const animRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const feedbackRef = useRef<HTMLDivElement | null>(null);
   const heldRef = useRef<string | null>(null);
-  const actionInFlight = useRef(false);
-  const animationInFlight = useRef(false);
   /** The task this component is currently showing, so a same-route param change can be
    *  told apart from a re-render. See the task-change effect below `start`. */
   const shownGameRef = useRef(gameId);
@@ -361,8 +369,6 @@ export default function CommunityGamePlay() {
     () => catalog?.data?.games?.find((g) => g.gameId === gameId) ?? null,
     [catalog, gameId],
   );
-  const actionAnimating = (recoverable || meta?.category === 'research')
-    && displayFrameIndex < (frame?.frame?.length ?? 1) - 1;
 
   /** Which tasks anyone has ever played, so Next can prefer one nobody has touched. */
   const { data: stats } = useQuery<{ data: { games: { game_id: string }[] } }>({
@@ -555,8 +561,6 @@ export default function CommunityGamePlay() {
     return candidates[hash % candidates.length].gameId;
   }, [walk, stats, gameId]);
 
-  useEffect(() => { if (pyodide.frame) setFrame(pyodide.frame); }, [pyodide.frame]);
-
   /** Which of ACTION1..7 this game accepts. Empty = unknown, so allow everything. */
   const available = useMemo(
     () => new Set((frame?.available_actions ?? []).map(Number)),
@@ -581,7 +585,9 @@ export default function CommunityGamePlay() {
    * how the task is solved.
    */
   const { data: controlMap } = useQuery<{ data: { known: string[]; reads: Record<string, number[]> } }>({
-    queryKey: [`/api/arc3-mirror/control-map?sourceVersion=${pyodide.sourceVersion ?? ''}`],
+    // A deployment can change a task from keyboard to mouse-only. Tie both browser
+    // and query caches to the loaded source so an hour-old map cannot disable it.
+    queryKey: [`/api/arc3-mirror/control-map?sourceVersion=${encodeURIComponent(pyodide.sourceVersion ?? '')}`],
     enabled: Boolean(pyodide.sourceVersion),
     staleTime: 60 * 60 * 1000,
   });
@@ -601,15 +607,14 @@ export default function CommunityGamePlay() {
    * The grid currently on screen, and the single source of its dimensions.
    *
    * Read from `displayFrameIndex` rather than frame[0] because applyFrame walks
-   * multi-frame responses on a timer: a click landing mid-animation must map
+   * the presentation frames at their playback interval: a click landing mid-animation must map
    * against the grid the player is actually looking at, and a game whose frames differ
    * in size would otherwise map against the wrong one.
    */
   const displayedGrid = useMemo(() => {
-    const frames = frame?.frame;
-    if (!frames?.length) return null;
-    return frames[Math.min(displayFrameIndex, frames.length - 1)] ?? null;
-  }, [frame, displayFrameIndex]);
+    if (!displayFrames.length) return null;
+    return displayFrames[Math.min(displayFrameIndex, displayFrames.length - 1)] ?? null;
+  }, [displayFrames, displayFrameIndex]);
 
   /**
    * RESET is action id 0 and never appears in available_actions — it is not a move. It
@@ -633,33 +638,47 @@ export default function CommunityGamePlay() {
     [available, known, readsActions, authoredZKey],
   );
 
-  const applyFrame = useCallback((next: PyodideFrameData) => {
+  const applyFrame = useCallback((next: PyodideFrameData, animate = false) => {
     setFrame(next);
-    const total = next.frame?.length ?? 1;
-    const completeAnimation = recoverable || meta?.category === 'research';
-    const interval = completeAnimation ? 1000 / Math.max(1, meta?.defaultFps || 12) : 200;
-    animationInFlight.current = completeAnimation && total > 1;
     if (animRef.current) clearTimeout(animRef.current);
-    if (total > 1) {
-      setDisplayFrameIndex(0);
-      let i = 0;
-      const step = () => {
-        i += 1;
-        if (i < total) {
-          setDisplayFrameIndex(i);
-          animationInFlight.current = completeAnimation && i < total - 1;
-          animRef.current = setTimeout(step, interval);
-        }
-      };
-      animRef.current = setTimeout(step, interval);
-    } else {
-      setDisplayFrameIndex(0);
-    }
-    const s = next.state?.toUpperCase?.() ?? '';
-    if (s === 'WIN' || s === 'WON') setGameState('won');
-    else if (s === 'GAME_OVER' || s === 'LOSE' || s === 'LOST') setGameState('lost');
-    else setGameState('playing');
-  }, [meta, recoverable]);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const nativeFrames = next.frame ?? [];
+    // Research and contributed games already animate at the catalog's authored pace,
+    // including on load/retry/undo. Preserve those frames while sharing one timer and
+    // input lock with the reviewed games' presentation-only action transitions.
+    const nativePlayback = !reduced && nativeFrames.length > 1
+      && (recoverable || meta?.category === 'research');
+    const playback = nativePlayback
+      ? { frames: nativeFrames, intervalMs: 1000 / Math.max(1, meta?.defaultFps || 12) }
+      : actionPlayback(settledGridRef.current, nativeFrames, animate, reduced);
+    if (next.frame?.length) settledGridRef.current = next.frame.at(-1)!;
+    const frames = playback.frames.length ? playback.frames : settledGridRef.current ? [settledGridRef.current] : [];
+    setDisplayFrames(frames);
+    setDisplayFrameIndex(0);
+    animationBusyRef.current = frames.length > 1;
+    setIsAnimating(frames.length > 1);
+    const finish = () => {
+      animationBusyRef.current = false;
+      setIsAnimating(false);
+      animRef.current = null;
+      const state = next.state?.toUpperCase?.() ?? '';
+      if (state === 'WIN' || state === 'WON') setGameState('won');
+      else if (state === 'GAME_OVER' || state === 'LOSE' || state === 'LOST') setGameState('lost');
+      else setGameState('playing');
+    };
+    if (frames.length <= 1) { finish(); return; }
+    // Show native load/retry frames immediately; terminal overlays wait for the final
+    // frame so they cannot conceal the animation explaining the outcome.
+    setGameState('playing');
+    let index = 0;
+    const advance = () => {
+      index += 1;
+      setDisplayFrameIndex(index);
+      if (index === frames.length - 1) finish();
+      else animRef.current = setTimeout(advance, playback.intervalMs);
+    };
+    animRef.current = setTimeout(advance, playback.intervalMs);
+  }, [meta?.category, meta?.defaultFps, recoverable]);
 
   /**
    * @param silent live tick -- advances the game but is not recorded. A held key at 10-30fps
@@ -678,11 +697,12 @@ export default function CommunityGamePlay() {
     silent = false,
     proven = false,
   ) => {
-    if (actionInFlight.current || pyodide.isActing) return;
-    if ((actionAnimating || animationInFlight.current) && action !== 'RESET') return;
-    if (action !== 'RESET' && (gameState === 'won' || gameState === 'lost')) return;
+    // Lock synchronously, before React can render isActing. Rapid key events must
+    // never queue a second slide while the worker is still computing the first.
+    if (requestBusyRef.current || pyodide.isActing) return;
+    if (action !== 'RESET' && (animationBusyRef.current || gameState === 'won' || gameState === 'lost')) return;
     if (!proven && !canSend(action)) return;
-    actionInFlight.current = true;
+    requestBusyRef.current = true;
     try {
       const next = action === 'RESET'
         ? await (recoverable ? pyodide.retryLevel() : pyodide.reset())
@@ -705,17 +725,17 @@ export default function CommunityGamePlay() {
           action === 'ACTION6' && coords ? coords : null,
         );
       }
-      applyFrame(next);
+      applyFrame(next, action !== 'RESET' && !silent);
     } catch { /* surfaced through pyodide.error */ }
-    finally { actionInFlight.current = false; }
-  }, [pyodide, canSend, applyFrame, gameState, actionAnimating, recoverable]);
+    finally { requestBusyRef.current = false; }
+  }, [pyodide, canSend, applyFrame, gameState, recoverable]);
 
   const undo = useCallback(async () => {
-    if (!frame?.undo_depth || actionInFlight.current || pyodide.isActing || actionAnimating || animationInFlight.current) return;
-    actionInFlight.current = true;
+    if (!frame?.undo_depth || pyodide.isActing || requestBusyRef.current || animationBusyRef.current) return;
+    requestBusyRef.current = true;
     try { applyFrame(await pyodide.undo()); } catch { /* surfaced through pyodide.error */ }
-    finally { actionInFlight.current = false; }
-  }, [pyodide, frame, applyFrame, actionAnimating]);
+    finally { requestBusyRef.current = false; }
+  }, [pyodide, frame, applyFrame]);
 
   // ── The board as a click target ─────────────────────────────────────────────
   /**
@@ -776,9 +796,10 @@ export default function CommunityGamePlay() {
   /**
    * Which mouse button means "move me there" on this task, or null on the square boards
    * where the d-pad already says it. LEFT on the seven exotic tasks whose ACTION6 is not a
-   * coordinate action, RIGHT on g009/g013/g020 where it is -- see shared/arc3Topology.
+   * coordinate action, RIGHT on g009/g013 where it is -- see shared/arc3Topology.
    */
   const probeGesture = probeGestureFor(gameId);
+  const triangleArrows = TRIANGULAR_MOVEMENT_GAME_IDS.includes(gameId ?? '');
   const probeActive = probeGesture !== null && gameState === 'playing';
 
   /**
@@ -806,7 +827,7 @@ export default function CommunityGamePlay() {
   const probingRef = useRef(false);
 
   const probeAndMove = useCallback(async (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!probeActive || pyodide.isActing || probingRef.current) return;
+    if (!probeActive || pyodide.isActing || requestBusyRef.current || animationBusyRef.current || probingRef.current) return;
     if (!probeCandidates.length) return;
     const cell = cellFromPointer(e);
     if (!cell) return;
@@ -978,6 +999,10 @@ export default function CommunityGamePlay() {
     if (animRef.current) { clearTimeout(animRef.current); animRef.current = null; }
     heldRef.current = null;
     setFrame(null);
+    setDisplayFrames([]);
+    settledGridRef.current = null;
+    animationBusyRef.current = false;
+    setIsAnimating(false);
     setGameState('idle');
     setDisplayFrameIndex(0);
     setShowFeedback(false);
@@ -1007,6 +1032,7 @@ export default function CommunityGamePlay() {
   const statusColor = gameState === 'won' ? ARC.green : gameState === 'lost' ? ARC.red : ARC.dim;
 
   const levelsDone = frame?.levels_completed ?? frame?.score ?? 0;
+  const playHint = arc3PlayHint(gameId, levelsDone);
   const winLevels = frame?.win_levels ?? 0;
   const levelLabel = gameState === 'idle'
     ? 'ARC-AGI-3'
@@ -1019,7 +1045,7 @@ export default function CommunityGamePlay() {
     label,
     onPress: () => void act(action),
     unavailable: !canSend(action),
-    disabled: pyodide.isActing || actionAnimating || gameState !== 'playing',
+    disabled: pyodide.isActing || isAnimating || gameState !== 'playing',
   });
 
   /*
@@ -1094,6 +1120,11 @@ export default function CommunityGamePlay() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 gap-3">
+        {playHint && (
+          <p className="w-full max-w-[620px] text-[12px] leading-relaxed text-center" style={{ color: '#D8D8D8' }}>
+            {playHint}
+          </p>
+        )}
         {pyodide.error && (
           <div className="w-full max-w-[500px] px-4 py-2 flex items-center gap-2 text-[12px]"
                style={{ border: `1px solid ${ARC.red}`, color: ARC.red }}>
@@ -1125,7 +1156,7 @@ export default function CommunityGamePlay() {
           undo={{
             label: 'UNDO (Z)',
             onPress: () => void undo(),
-            disabled: !frame?.undo_depth || pyodide.isActing || actionAnimating,
+            disabled: !frame?.undo_depth || pyodide.isActing || isAnimating,
           }}
           reset={{
             label: recoverable ? 'RETRY LEVEL' : 'RESET',
@@ -1185,7 +1216,7 @@ export default function CommunityGamePlay() {
                 )}
                 <p className="text-[9.5px] max-w-[36ch] leading-relaxed" style={{ color: 'rgba(255,255,255,.32)' }}>
                   {recoverable ? "Explore freely. Unlimited retries keep completed levels saved."
-                    : "No instructions — that is the experiment."} Anonymous gameplay events are recorded. No account.
+                    : "Explore the rules as you play."} Anonymous gameplay events are recorded so human play can be compared to AI play. No account.
                 </p>
               </div>
             ) : (
@@ -1217,16 +1248,20 @@ export default function CommunityGamePlay() {
                 {probeActive && (
                   <div className="absolute left-0 right-0 bottom-0 px-3 py-1.5 text-[9.5px] tracking-[.4px] text-center pointer-events-none"
                        style={{ background: 'rgba(0,0,0,.55)', color: 'rgba(255,255,255,.62)' }}>
-                    {probeGesture === 'right'
-                      ? 'This board has more than four directions — right-click an adjacent tile to move there.'
-                      : 'This board has more than four directions — click an adjacent tile to move there.'}
+                    {triangleArrows
+                      ? 'Left/right follow the row. Up/down cross the adjacent vertical edge. You can also click a neighbour.'
+                      : probeGesture === 'right'
+                        ? 'Right-click an adjacent tile to move there.'
+                        : 'Click an adjacent tile to move there.'}
                   </div>
                 )}
                 {showHelp && (
                   <div className="absolute inset-0 p-5 flex flex-col justify-center gap-2 text-[10.5px] leading-relaxed"
                        style={{ background: 'rgba(0,0,0,.86)', color: 'rgba(255,255,255,.85)' }}>
                     <p style={{ color: '#FFF' }}>Controls</p>
-                    <p>Arrows or WASD — the d-pad.</p>
+                    <p>{triangleArrows
+                      ? 'Left/right follow the row. Up/down cross the vertical edge only when that neighbour is adjacent.'
+                      : 'Arrows or WASD — the d-pad.'}</p>
                     <p>Spacebar — ACTION5.</p>
                     <p>Click the board — that is ACTION6, sent at the cell you clicked.</p>
                     <p>Z — Undo, one move per press.</p>
@@ -1239,9 +1274,8 @@ export default function CommunityGamePlay() {
                     {probeActive && (
                       <p style={{ color: '#FFF' }}>
                         {probeGesture === 'right' ? 'Right-click' : 'Click'} an adjacent tile
-                        — this board has more than four directions, and the game itself is
-                        asked which control moves you onto the tile you picked. If none
-                        does, nothing happens and no move is spent.
+                        to move there. If the tile cannot be reached with one action,
+                        nothing happens and no move is spent.
                       </p>
                     )}
                     <p style={{ color: 'rgba(255,255,255,.5)' }}>
