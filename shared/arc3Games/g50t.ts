@@ -56,6 +56,12 @@ export const g50t: Arc3GameMetadata = {
       type: 'replay',
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
+    {
+      title: "G50T Mark's Official Human Replay",
+      url: 'https://arcprize.org/replay/58483738-cfaf-4e57-8c55-4c9c593bbab5',
+      type: 'replay',
+      description: "Mark's own official ARC Prize replay, human play (2026-09-15).",
+    },
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/arc3-levels/g50t/lvl1.png' },
