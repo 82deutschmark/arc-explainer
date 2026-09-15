@@ -371,7 +371,7 @@ client/src/components/puzzle/PromptConfiguration.tsx
 
 ## 10. Reference Documentation
 
-- ARC-AGI-3 API: https://three.arcprize.org/docs
+- ARC-AGI-3 API: https://docs.arcprize.org/rest_overview (the old https://three.arcprize.org/docs link now redirects to a marketing page, not docs)
 - OpenAI Agents SDK: `external/openai-agents-js/README.md`
 - Responses API: `docs/reference/api/ResponsesAPI.md`
 - How Agents Work: `docs/reference/HowAgentsWork.md`
