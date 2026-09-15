@@ -45,6 +45,12 @@ export const lp85: Arc3GameMetadata = {
       type: 'replay',
       description: 'Gameplay replay of LP85 (Loop and Pull)',
     },
+    {
+      title: "LP85 Mark's Official Human Replay",
+      url: 'https://arcprize.org/replay/129ddf21-d7ba-4ca0-9577-0cea2af042b6',
+      type: 'replay',
+      description: "Mark's own official ARC Prize replay, human play, score 76.39% (2026-09-15).",
+    },
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/lp85.png', notes: 'Align the big yellow block with the small yellow square slots.' },
