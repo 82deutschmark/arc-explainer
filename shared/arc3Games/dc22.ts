@@ -43,6 +43,12 @@ export const dc22: Arc3GameMetadata = {
       type: 'replay',
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
+    {
+      title: "DC22 Mark's Official Human Replay",
+      url: 'https://arcprize.org/replay/d13d39eb-6a87-4168-8406-12cd77eb637f',
+      type: 'replay',
+      description: "Mark's own official ARC Prize replay, human play, from the level 6 live-play session (2026-09-15).",
+    },
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/arc3-levels/dc22/lvl1.png' },
@@ -50,9 +56,14 @@ export const dc22: Arc3GameMetadata = {
     { level: 3, imageUrl: '/arc3-levels/dc22/lvl3.png' },
     { level: 4, imageUrl: '/arc3-levels/dc22/lvl4.png' },
     { level: 5, imageUrl: '/arc3-levels/dc22/lvl5.png' },
-    { level: 6, imageUrl: '/arc3-levels/dc22/lvl6.png' },
+    {
+      level: 6,
+      imageUrl: '/arc3-levels/dc22/lvl6.png',
+      caption: "Mid-play capture from Mark's own level 6 attempt (2026-09-15), not the auto-rendered opening frame like levels 1-5.",
+      notes: 'Cropped from a full console screenshot Mark sent while mid-run; shows the board after at least one panel press, not the level\'s starting state.',
+    },
   ],
   tags: ['platform-building', 'budget', 'panel', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: the original "adversarially verified" pass still missed that a wrong press can end the game outright, caught by a second, independent re-verification.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: the original "adversarially verified" pass still missed that a wrong press can end the game outright, caught by a second, independent re-verification. Level 6 screenshot replaced 2026-09-15 with a mid-play capture from Mark\'s own attempt; the original auto-rendered opening frame is gone (git history has it if it\'s ever needed back). LIVE PLAY, LEVEL 6 (2026-09-15): Mark sent two console screenshots seconds apart, same level, and comparing them shows the reshape mechanic actually firing: the right-side panel (the fixed column of pressable shapes -- a red bar, a magenta ledge, a grey cross with four colored dots, a yellow L-bracket, a small 2x2 four-color square, and a larger multicolor cluster) is pixel-identical in both, confirming it is a static button deck, not board state. The left play-field is not: an orange bar with a red-centered tile -- read here as the claw-and-track piece already described in mechanicsExplanation -- sits isolated mid-board in the first frame, and in the second frame the same piece has relocated to bridge the two top grey platforms, with the white walkable path reshaped to originate from that new junction. This is inferred from pixels only (no source read to confirm it is literally the claw/track and not some other reshaped element), but it is the first time this file has an actual before/after pair showing a single panel press change the board, rather than a static single-level screenshot -- worth confirming against source or against Mark directly before stating as fact in mechanicsExplanation.',
 };
