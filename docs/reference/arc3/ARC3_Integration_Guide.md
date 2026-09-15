@@ -308,6 +308,37 @@ console.log(`Score: ${result.summary.score}`);
 console.log(`Steps: ${result.summary.stepsTaken}`);
 ```
 
+## "Human Actions To Complete Game" Is Not a Measured Average
+
+Every `arcprize.org/tasks/<id>` page shows a headline stat, "Human Actions To
+Complete Game" (e.g. 730 for ka59), and repeats it as the `Actions` value on
+the "Humans" row of that same page's Model Performance table (alongside a
+`Score: 100%` and a linked example replay). It reads like an aggregate of real
+human playthroughs. **It is not measured at anything -- it is
+`sum(baseline_actions)` for that game, a static per-level constant, verified
+against three games (2026-09-15):**
+
+| Game | `baseline_actions` (`GET /api/games`, `X-API-Key` auth) | sum | shown on task page |
+| --- | --- | --- | --- |
+| ka59 | `[28,109,51,51,33,132,326]` | 730 | 730 |
+| g50t | `[78,175,179,230,96,54,67]` | 879 | 879 |
+| bp35 | `[21,48,44,38,33,87,86,131,163]` | 651 | 651 |
+
+Exact match, 3/3 -- not a coincidence. The "Humans" row's linked replay (for
+ka59: session `c714584f-...`, game build `ka59-9f096b4a`, scored `"Legacy"`,
+an older environment version than the current one) is a real, individually
+playable example run, but its own action count is unrelated to the 730/879/651
+figure sitting next to it on the same row -- that number is the same constant
+regardless of which example is linked or whether you are logged in.
+
+This does NOT mean `baseline_actions` itself is fake -- it is a real
+per-level par figure returned by the API and legitimately useful for framing
+one specific run (see the 9.7x CHANGELOG entries comparing a session's
+`level_actions` against `level_baseline_actions`, e.g. "454 against 789" for
+cd82). The mistake to avoid is treating the *headline task-page number* as if
+it were an average or median computed from actual human sessions -- it isn't;
+it is that same per-level constant, pre-summed.
+
 ## Resources
 
 - ARC-AGI-3 Website: https://three.arcprize.org
