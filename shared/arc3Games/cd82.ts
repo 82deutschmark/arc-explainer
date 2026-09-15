@@ -1,5 +1,6 @@
 /*
- * Author: Claude Sonnet 5; human replay added by Claude Opus 5, 2026-09-15
+ * Author: Claude Sonnet 5; human replay added by Claude Opus 5, 2026-09-15; its session
+ *         score backfilled onto the page by Claude Opus 5, 2026-09-15 (see CHANGELOG 9.82.0)
  * Date: 2026-09-11 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for CD82 (Compass Dye), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
@@ -8,6 +9,8 @@
  *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
  *          2026-09-15: a human win was added to resources[] -- the first non-agent
  *          replay on this game -- and its raw NDJSON recording committed under arc3/.
+ *          Later the same day its session score of 59.92 was added, having been held
+ *          off the page by 9.74.0 on a justification that measurement refuted.
  * SRP/DRY check: Pass - Single responsibility for CD82 game data.
  */
 
@@ -47,10 +50,10 @@ export const cd82: Arc3GameMetadata = {
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
     {
-      title: 'CD82 Human Replay (Win, 6/6 Levels)',
+      title: 'CD82 Human Replay (Win, 6/6 Levels, Score 59.92)',
       url: 'https://arcprize.org/replay/496ee425-9705-409f-8410-463a2229627e',
       type: 'replay',
-      description: 'A human playthrough, not an agent run -- the other two replays listed here are GPT-6 Astra. Published 2026-09-15: a win, all six levels cleared, 216 actions total and no mid-run resets, split 25/7/20/17/75/72 across levels 1-6. The raw 217-row NDJSON recording is committed at arc3/cd82-fb555c5d.496ee425-9705-409f-8410-463a2229627e.jsonl.',
+      description: 'A human playthrough, not an agent run -- the other two replays listed here are GPT-6 Astra. Published 2026-09-15: a win, all six levels cleared, score 59.92, 216 actions total and no mid-run resets, split 25/7/20/17/75/72 across levels 1-6. The score is the lowest of the six human runs on this site, and it is earned on exactly two levels: the run is comfortably under the per-level action baseline on levels 1-4 (25/55, 7/8, 20/41, 17/21) and then runs 75 against 23 on level 5 and 72 against 23 on level 6 -- 3.26x and 3.13x. The API\'s level_scores agree without being consulted: 115 on each of the first four levels and 9.40 and 10.20 on the last two. Overall that is 216 actions against a 171-action baseline, 1.26x, so this is the one run here that does NOT beat the baseline. A low score on this scale means levels run far over their own baseline; it is not a different unit from the 100s on the Human Records card beside it. The raw 217-row NDJSON recording is committed at arc3/cd82-fb555c5d.496ee425-9705-409f-8410-463a2229627e.jsonl.',
     },
   ],
   levelScreenshots: [
