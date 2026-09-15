@@ -4,7 +4,8 @@
  * Date: 2026-01-09 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for LS20 (Locksmith), including featured replay video details.
  *          Adversarially re-verified 2026-09-12: every level runs a hidden 42-step
- *          budget with a 3-life game-over system, level 6 has two doors to solve in
+ *          budget with a 3-life game-over system (BOTH of those claims are wrong; see the
+ *          2026-09-15 correction below), level 6 has two doors to solve in
  *          sequence, and the final level adds fog-of-war -- none of this was in the
  *          original write-up.
  *          2026-09-15: the 2026-09-12 reading of the life system was itself wrong. The
@@ -85,5 +86,5 @@ export const ls20: Arc3GameMetadata = {
     caption: 'Locksmith walkthrough replay captured Dec 2025',
   },
   isFullyDocumented: true,
-  notes: 'Corrected 2026-09-12 after a direct, adversarially-verified source read: added the hidden step budget, level 6\'s second door, and the final level\'s fog-of-war, none of which the original write-up mentioned. Corrected again 2026-09-15: that pass got the life system wrong in both directions -- the three lives are per LEVEL and refill on every level change and on RESET, and the THIRD loss on a level ends the run, not the fourth. The 42-unit meter is also only 42 moves on levels 1, 4 and 6; levels 2, 3, 5 and 7 drain two units a move. Both corrections are cited line by line against ls20-9607627b/ls20.py and confirmed frame-by-frame on a human winning recording in docs/2026-09-15-ls20-lives-and-step-budget.md. That win, added to resources[] the same day, is the first replay listed here on the current build; the older ls20-fa137e247ce6 links are human too, so neither entry here is an agent run -- the older ls20-fa137e247ce6 links, including the video, are from a build that has since been replaced.',
+  notes: 'Corrected 2026-09-12 after a direct, adversarially-verified source read: added the hidden step budget, level 6\'s second door, and the final level\'s fog-of-war, none of which the original write-up mentioned. Corrected again 2026-09-15: that pass got the life system wrong in both directions -- the three lives are per LEVEL and refill on every level change and on RESET, and the THIRD loss on a level ends the run, not the fourth. The 42-unit meter is also only 42 moves on levels 1, 4 and 6; levels 2, 3, 5 and 7 drain two units a move. Both corrections are cited line by line against ls20-9607627b/ls20.py and confirmed frame-by-frame on a human winning recording in docs/2026-09-15-ls20-lives-and-step-budget.md. That win, added to resources[] the same day, is the first replay listed here on the current build -- the older ls20-fa137e247ce6 links, including the video, are from a build that has since been replaced, and had EIGHT levels where this one has seven. Both listed replays are human; neither is an agent run.',
 };
