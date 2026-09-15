@@ -12,7 +12,7 @@
 # reference the old numbers.
 
 
-### Version 9.79.0  Sep 15, 2026
+### Version 9.78.0  Sep 15, 2026
 
 - **KA59 gets its first human replay — a win, all seven levels** (Author: Claude Opus 5)
   - **`shared/arc3Games/ka59.ts` `resources[]` gains a third `type: 'replay'` entry.** The two it already had are both GPT-6 Astra agent runs; this one is a human playthrough, so the description says so explicitly rather than leaving a reader to work out which of three links is which. It renders in the "Notable Playthroughs" card on `/arc3/games/ka59` beside the other two. Same shape as 9.74.0's cd82 entry and 9.75.0's cn04 entry.
@@ -22,6 +22,7 @@
   - **The raw recording is committed** at `arc3/ka59-38d34dbb.1333b2ee-cf42-40dc-8994-cff1a5a9c55d.jsonl`, matching the `<upstream_game_id>.<guid>.jsonl` convention of the ten files already there. **15,088,825 bytes, 599 NDJSON rows** — verified from the committed tree, not from disk — row 0 the initial RESET and the last row `state: WIN` with `levels_completed: 7`. Byte-identical to the `arc-3` decision-steps pull it was copied from. No file header: NDJSON has no comment syntax. As 9.74.0 recorded, nothing in the running site reads `arc3/` — `/api/arc3/recordings/:gameId/:recordingId` passes through to upstream (`server/routes/arc3.ts:27`) — and ka59 has no `/videos/arc3/*.mp4`, so this blob has no consumer today either. `du -sh arc3/` reports 90MB after the add (the ~75MB before is derived by subtraction, not measured), tracked plain with no LFS.
   - **`notes` corrected on one clause only.** It said the game had "the two replay links ARC Prize published"; that count is now three, with the human one identified. The rest of that string was checked rather than assumed before being left alone: `ls client/public/videos/arc3/ | grep -i ka59` returns nothing and `hints: []` is still empty, so "no replay video or hints exist yet" is still true; the 2026-09-12 special-block correction is untouched.
   - **Not touched: the landing-page hero carousel.** `ARC3_RECORDING_REPLAYS` in `client/src/pages/LandingPage.tsx` is a curated six-entry rotation; cd82 and cn04 were both left out of it on the same reasoning. Adding ka59 there is an editorial call, left to the owner.
+  - **A false positive in `scripts/changelog_version_guard.py`, found by tripping it.** The guard bumps a staged top entry that is not strictly greater than HEAD's top entry. It cannot tell a *new* colliding entry from an *edit to the entry you just committed* — amending the top entry in a follow-up commit trips it, and it renumbered this one 9.78.0 → 9.79.0 against a HEAD whose only 9.78.0 was this same entry, leaving a gap at 9.78.0. Restored with `--no-verify`, which the guard's own docstring sanctions for a deliberate number. Worth a guard fix (compare the entry's *body*, or skip when HEAD's top heading is identical to the staged one), not done here.
   - **Verification.** `npx tsc --noEmit -p tsconfig.json`: **12 errors before the change and 12 after** — the unchanged pre-existing baseline, none of them in `shared/arc3Games/`. `npx vitest run tests/unit`: **8 files, 114 tests, all passed.** No other suite was run and none is claimed.
 
 ### Version 9.77.0  Sep 15, 2026
