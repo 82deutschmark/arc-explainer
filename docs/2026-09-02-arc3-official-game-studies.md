@@ -110,7 +110,7 @@ a neighbour off the board. A rail cart ferries a piece between rooms. Its famous
 
 ---
 
-## The patterns worth stealing
+## The patterns worth copying
 
 **1. Every move should return a verdict.** `cn04` is the clearest case in the set: the win
 condition is printed on the pieces as a per-cell checklist that goes out one mark at a time,

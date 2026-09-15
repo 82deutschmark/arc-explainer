@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.77.0  Sep 15, 2026
+
+- **"Patterns worth stealing" becomes "patterns worth copying"** (Author: Claude Opus 5)
+  - One heading in `docs/2026-09-02-arc3-official-game-studies.md`, at the owner's instruction. The section reads design ideas off the official ARC-AGI-3 games and points at what our 50 synthetic games do instead; "stealing" was the wrong word for it.
+  - The file stays a byte-identical mirror of `arc3games/OFFICIAL_GAME_STUDIES.md`, which carries the same rename — verified identical after the edit. That copy is now proposed to **`sonpham-org/autoresearch-arena` PR #29** rather than sitting on the VoynichLabs fork, so the cn04 correction and the new `object-dependent-verb` axis are visible in the upstream repo instead of only in ours.
+  - Docs-only, nothing imports the file. `npx tsc --noEmit`: 12 errors, unchanged pre-existing baseline. `npx vitest run tests/unit`: 8 files, 114 tests, all passed.
+
 ### Version 9.76.0  Sep 15, 2026
 
 - **The cn04 correction reaches the study doc the wrong reading came from** (Author: Claude Opus 5)
