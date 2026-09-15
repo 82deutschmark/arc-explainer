@@ -1,11 +1,13 @@
 /*
- * Author: Claude Sonnet 5
+ * Author: Claude Sonnet 5; human replay added by Claude Opus 5, 2026-09-15
  * Date: 2026-09-11 (corrected against source 2026-09-12)
  * PURPOSE: Game metadata for CD82 (Compass Dye), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
  *          2026-09-12: a second paint tool gates in at level 3, and the win-check
  *          skips the target's two diagonals (80 of 100 cells actually matter).
  *          See docs/2026-09-11-arc3-public-set-additional-games-study.md.
+ *          2026-09-15: a human win was added to resources[] -- the first non-agent
+ *          replay on this game -- and its raw NDJSON recording committed under arc3/.
  * SRP/DRY check: Pass - Single responsibility for CD82 game data.
  */
 
@@ -44,6 +46,12 @@ export const cd82: Arc3GameMetadata = {
       type: 'replay',
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
+    {
+      title: 'CD82 Human Replay (Win, 6/6 Levels)',
+      url: 'https://arcprize.org/replay/496ee425-9705-409f-8410-463a2229627e',
+      type: 'replay',
+      description: 'A human playthrough, not an agent run -- the other two replays listed here are GPT-6 Astra. Published 2026-09-15: a win, all six levels cleared, 216 actions total and no mid-run resets, split 25/7/20/17/75/72 across levels 1-6. The raw 217-row NDJSON recording is committed at arc3/cd82-fb555c5d.496ee425-9705-409f-8410-463a2229627e.jsonl.',
+    },
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/arc3-levels/cd82/lvl1.png' },
@@ -55,5 +63,5 @@ export const cd82: Arc3GameMetadata = {
   ],
   tags: ['color-matching', 'compass', 'budget', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: the write-up omitted the level-3+ dab tool and overstated how strict the win-check is.',
+  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the three replay links in resources[] -- two ARC Prize published with the GPT-6 Astra results, plus a human win published 2026-09-15 (6/6 levels, 216 actions, no mid-run resets), whose raw recording is committed under arc3/. Corrected 2026-09-12 after an adversarially-verified direct source read: the write-up omitted the level-3+ dab tool and overstated how strict the win-check is.',
 };
