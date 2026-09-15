@@ -1,6 +1,6 @@
 """
-Author: Claude Opus 5 / Codex
-Date: 05-September-2026
+Author: Codex (GPT-6), with existing contributors
+Date: 2026-09-12
 PURPOSE: Derive a per-game mechanic digest for every published ARC-AGI-3 task in
 server/data/arc3-games/, so a reviewer can audit what a task IS without playing it blind
 or asking its author. Recognizes both enum-based authored games and numeric-dispatch
@@ -55,10 +55,10 @@ CATEGORIES = GAMES_DIR / "categories.json"
 # wrong -- every prose note downstream is written against these facts.
 EXPECTED_ACTION6 = {
     "xy-click": {
-        "g038", "g034", "g009", "g005",
-        "g023", "g013", "g006", "g020", "g042",
+        "g038", "g034", "g009", "g005", "g014",
+        "g023", "g013", "g006", "g020", "g042", "g021", "g028", "g171", "g178", "g018",
     },
-    "button": {"g015", "g019", "g025"},
+    "button": {"g015", "g019", "g025", "g027"},
 }
 
 # Module-level names worth reporting as board geometry, in the spellings the set uses.
@@ -333,6 +333,23 @@ def level_count(tree: ast.Module) -> int | None:
         ):
             direct = sequence_length(stmt.value, env)
             if direct:
+                # Appended authoring levels are part of the same shipped sequence.
+                # Count literal append/extend operations without executing game code.
+                name = stmt.targets[0].id
+                for later in tree.body:
+                    if not isinstance(later, ast.Expr) or not isinstance(later.value, ast.Call):
+                        continue
+                    call = later.value
+                    if not (isinstance(call.func, ast.Attribute) and isinstance(call.func.value, ast.Name)
+                            and call.func.value.id == name):
+                        continue
+                    if call.func.attr == "append" and len(call.args) == 1:
+                        direct += 1
+                    elif call.func.attr == "extend" and len(call.args) == 1:
+                        extra = sequence_length(call.args[0], env)
+                        if extra is None:
+                            return None
+                        direct += extra
                 return direct
             if isinstance(stmt.value, ast.Call) and isinstance(stmt.value.func, ast.Name):
                 builder = functions.get(stmt.value.func.id)
@@ -478,7 +495,7 @@ def selftest(entries: list[dict]) -> int:
     got_xy = {e["gameId"] for e in entries if e["action6"] == "xy-click"}
     got_btn = {e["gameId"] for e in entries if e["action6"] == "button"}
     ok = True
-    legacy_ids = {f"g{i:03d}" for i in range(50)}
+    legacy_ids = {f"g{i:03d}" for i in range(50)} | {"g171", "g178"}
     for label, expected, got in (
         ("xy-click", EXPECTED_ACTION6["xy-click"], got_xy & legacy_ids),
         ("button", EXPECTED_ACTION6["button"], got_btn & legacy_ids),

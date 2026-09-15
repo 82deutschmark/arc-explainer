@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from sprite_book import core, door, facing, figure, medallion, ring, speckle
 
 from arcengine import (
     ARCBaseGame,
@@ -13,6 +12,98 @@ from arcengine import (
     Level,
     Sprite,
 )
+
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def facing(body: int, visor: int, heading: tuple, cell: int = 4) -> list[list[int]]:
+    px = rounded(body, cell)
+    dx, dy = heading
+    last = cell - 1
+    if dy < 0:
+        px[0][1] = px[0][cell - 2] = visor
+    elif dy > 0:
+        px[last][1] = px[last][cell - 2] = visor
+    elif dx < 0:
+        px[1][0] = px[cell - 2][0] = visor
+    elif dx > 0:
+        px[1][last] = px[cell - 2][last] = visor
+    else:
+        px[1][1] = visor
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def door(frame_colour: int, bar: int | None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for y in range(cell):
+        px[y][0] = px[y][last] = frame_colour
+    for x in range(cell):
+        px[0][x] = frame_colour
+    if bar is not None:
+        for y in range(1, cell):
+            for x in range(1, last):
+                px[y][x] = bar
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
 
 TURF_TILE = 14
 PALE_BLOCK = 0
@@ -167,6 +258,30 @@ LEVELS_SPEC = [
 ]
 
 
+def _wide_room(dividers, start, stones, gate, keepers):
+    rows = [["#" if x in (0, 22) or y in (0, H - 1) else "."
+             for x in range(23)] for y in range(H)]
+    for x, gap in dividers:
+        for y in range(1, H - 1):
+            rows[y][x] = "." if y == gap else "#"
+    for (x, y), glyph in [(start, "P"), (gate, "X")] + [(c, "C") for c in stones]:
+        rows[y][x] = glyph
+    return {"rows": ["".join(r) for r in rows], "keepers": keepers,
+            "cairn": [(3 + i, 8) for i in range(len(stones))]}
+
+
+LEVELS_SPEC.extend([
+    _wide_room([(11, 5)], (3, 1), [(3, 7), (19, 3), (19, 7)], (3, 9), [
+        {"anchor": (11, 5), "offset": 0, "rounds": ["LLLLRRRR", "........"], "body": 3},
+        {"anchor": (17, 5), "offset": 2, "rounds": ["RRRRLLLL", "DDDUUU.."], "body": 3},
+    ]),
+    _wide_room([(8, 3), (15, 7)], (2, 1), [(3, 6), (20, 2), (20, 8)], (2, 9), [
+        {"anchor": (8, 3), "offset": 0, "rounds": ["LLLLRRRR", "........"], "body": 3},
+        {"anchor": (15, 7), "offset": 4, "rounds": ["RRRRLLLL", "........"], "body": 2},
+    ]),
+])
+
+
 def walls(spec) -> set:
     return {(x, y) for y, r in enumerate(spec["rows"])
             for x, c in enumerate(r) if c == "#"}
@@ -187,7 +302,7 @@ def round_cells(spec, keeper, path: str) -> list:
         cells.append((x, y))
         dx, dy = DIRS[ch]
         x, y = x + dx, y + dy
-        if (x, y) in blocked or not (0 <= x < W and 0 <= y < H):
+        if (x, y) in blocked or not (0 <= x < len(spec["rows"][0]) and 0 <= y < H):
             raise ValueError(f"round {path!r} from {keeper['anchor']} hits stone at {(x, y)}")
     if (x, y) != tuple(keeper["anchor"]):
         raise ValueError(f"round {path!r} from {keeper['anchor']} does not close")
@@ -207,12 +322,20 @@ def keeper_cells(level: int, phase: int, tick: int) -> tuple:
     return tuple(out)
 
 
+def body_cells(level, phase, tick):
+    return {keeper_cells(level, phase, tick - age)[i]
+            for i, keeper in enumerate(LEVELS_SPEC[level]["keepers"])
+            for age in range(1, keeper.get("body", 0) + 1)}
+
+
 def advance(level: int, pos, stones: frozenset, tick: int, move):
     spec = LEVELS_SPEC[level]
     blocked = walls(spec)
     dx, dy = move
     nx, ny = pos[0] + dx, pos[1] + dy
-    if not (0 <= nx < W and 0 <= ny < H) or (nx, ny) in blocked:
+    phase_before = len(spec["stones_all"]) - len(stones)
+    if not (0 <= nx < len(spec["rows"][0]) and 0 <= ny < H) or (nx, ny) in blocked \
+            or (nx, ny) in body_cells(level, phase_before, tick):
         nx, ny = pos
     new_pos = (nx, ny)
     new_stones = stones - {new_pos} if new_pos in stones else stones
@@ -220,7 +343,7 @@ def advance(level: int, pos, stones: frozenset, tick: int, move):
     ntick = tick + 1
     before = keeper_cells(level, phase, tick)
     after = keeper_cells(level, phase, ntick)
-    dead = new_pos in after
+    dead = new_pos in after or new_pos in body_cells(level, phase, ntick)
     if not dead:
         for b, a in zip(before, after):
             if b == new_pos and a == pos:
@@ -239,7 +362,7 @@ for _spec in LEVELS_SPEC:
 def thistles(spec) -> list:
     taken = set(spec["stones_all"]) | {spec["start"], spec["gate"]} | set(spec["cairn"])
     blocked = walls(spec)
-    return [(x, y) for y in range(H) for x in range(W)
+    return [(x, y) for y in range(H) for x in range(len(spec["rows"][0]))
             if (x * 5 + y * 3) % 11 == 0 and (x, y) not in blocked and (x, y) not in taken]
 
 
@@ -255,6 +378,11 @@ def _scent(age: int) -> list:
     if age < 1:
         px[1][2] = px[2][1] = SCENT_TRAIL
     return px
+
+
+def _body():
+    return [[13, 12, 12, 13], [12, 11, 12, 12],
+            [12, 12, 11, 12], [13, 12, 12, 13]]
 
 
 def _stone() -> list:
@@ -349,10 +477,10 @@ def build_levels() -> list:
             interaction=InteractionMode.INTANGIBLE, layer=3,
         ).set_position(sx * CELL, sy * CELL))
         for ki in range(len(spec["keepers"])):
-            for k in range(SCENT_LEN):
+            for k in range(max(SCENT_LEN, spec["keepers"][ki].get("body", 0))):
                 cx, cy = keeper_cells(li, 0, -1 - k)[ki]
                 sprites.append(Sprite(
-                    pixels=_scent(k), name=f"scent_{ki}_{k}",
+                    pixels=_body() if spec["keepers"][ki].get("body") else _scent(k), name=f"scent_{ki}_{k}",
                     blocking=BlockingMode.NOT_BLOCKED,
                     interaction=InteractionMode.INTANGIBLE, layer=0,
                 ).set_position(cx * CELL, cy * CELL))
@@ -362,16 +490,17 @@ def build_levels() -> list:
                 blocking=BlockingMode.NOT_BLOCKED,
                 interaction=InteractionMode.INTANGIBLE, layer=2,
             ).set_position(gx * CELL, gy * CELL))
-        levels.append(Level(sprites=sprites, grid_size=(W * CELL, H * CELL)))
+        levels.append(Level(sprites=sprites, grid_size=(min(64, len(spec["rows"][0]) * CELL), H * CELL)))
     return levels
 
 
-class G012(ARCBaseGame):
+class KeeperRound(ARCBaseGame):
 
     CAUGHT_FRAMES = 6
 
     def __init__(self) -> None:
         self._caught = 0
+
         self.pos = LEVELS_SPEC[0]["start"]
         self.stones = LEVELS_SPEC[0]["stones_all"]
         self.tick = 0
@@ -385,6 +514,8 @@ class G012(ARCBaseGame):
 
     def on_set_level(self, level: Level) -> None:
         spec = LEVELS_SPEC[self.level_index]
+        self.camera.width = min(64, len(spec["rows"][0]) * CELL)
+        self.camera.x = 0
         self.pos = spec["start"]
         self.stones = spec["stones_all"]
         self.tick = 0
@@ -412,12 +543,14 @@ class G012(ARCBaseGame):
             for s in level.get_sprites_by_name(f"keeper_{ki}"):
                 s.pixels = np.array(_keeper((ax - gx, ay - gy)))
                 s.set_position(gx * CELL, gy * CELL)
-            for k in range(SCENT_LEN):
+            for k in range(max(SCENT_LEN, spec["keepers"][ki].get("body", 0))):
                 tx, ty = keeper_cells(self.level_index, phase, self.tick - 1 - k)[ki]
                 for s in level.get_sprites_by_name(f"scent_{ki}_{k}"):
                     s.set_position(tx * CELL, ty * CELL)
         for s in level.get_sprites_by_name("poacher"):
             s.set_position(self.pos[0] * CELL, self.pos[1] * CELL)
+        self.camera.x = max(0, min(len(spec["rows"][0]) * CELL - self.camera.width,
+                                   self.pos[0] * CELL - self.camera.width // 2))
         for ci in range(len(spec["cairn"])):
             for s in level.get_sprites_by_name(f"banked_{ci}"):
                 s.pixels = np.array(_banked(ci < phase))

@@ -9,16 +9,17 @@ SRP/DRY check: Pass — calls the shared resolver and the production catalog ser
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFile } from 'node:fs/promises';
+import evolutionIds from '../shared/arc3EvolutionIds.json';
 import { ARC3_PUBLIC_IDS, canonicalGameId, publicGameId } from '../shared/arc3PublicIds.ts';
 import { Arc3MirrorCatalog } from '../server/services/arc3Mirror/Arc3MirrorCatalog.ts';
 import { contributedPlayVersion, usesAuthoredZKey, usesContributedRecovery } from '../shared/arc3ContributedControls.ts';
 
 test('practice recovery covers every contributed alias and has a distinct accepted telemetry hash', async () => {
-  for (const [legacy, alias] of Object.entries(ARC3_PUBLIC_IDS)) {
+  for (const [legacy, alias] of Object.entries(evolutionIds.published_public_ids)) {
     assert.ok(usesContributedRecovery(legacy));
     assert.ok(usesContributedRecovery(alias.toUpperCase()));
   }
-  for (const id of ['g026', 'ls20', 'unknown', undefined]) assert.ok(!usesContributedRecovery(id));
+  for (const id of ['g026', 'qx26', 'pk34', 'mt36', 'ls20', 'unknown', undefined]) assert.ok(!usesContributedRecovery(id));
   const hash = 'a'.repeat(64);
   const practice = await contributedPlayVersion(hash);
   assert.match(practice, /^[0-9a-f]{64}$/);
@@ -54,8 +55,8 @@ test('public IDs resolve both ways without changing storage IDs', () => {
     assert.equal(publicGameId(legacy), visible);
     assert.equal(publicGameId(visible), visible);
   }
-  assert.equal(Object.keys(ARC3_PUBLIC_IDS).length, 44);
-  assert.equal(publicGameId('g034'), 'g034');
+  assert.equal(Object.keys(ARC3_PUBLIC_IDS).length, 77);
+  assert.equal(publicGameId('g034'), 'pk34');
   assert.equal(publicGameId('ls20'), 'ls20');
   assert.equal(canonicalGameId('not-a-game'), 'not-a-game');
 });
@@ -81,5 +82,19 @@ test('only the four frozen revisions use their printed Z action binding', () => 
   }
   for (const id of [undefined, 'g034', 'ls20', 'g501', 'yc02', 'g543', 'gv00']) {
     assert.equal(usesAuthoredZKey(id), false);
+  }
+});
+
+test('reviewed original aliases serve the same source without contributed practice rules', async () => {
+  for (const [legacy, alias] of Object.entries(ARC3_PUBLIC_IDS)) {
+    if (Object.hasOwn(evolutionIds.published_public_ids, legacy)) continue;
+    assert.equal(usesContributedRecovery(legacy), false);
+    assert.equal(usesContributedRecovery(alias), false);
+    const original = await Arc3MirrorCatalog.getSource(legacy);
+    const renamed = await Arc3MirrorCatalog.getSource(alias);
+    assert.ok(original && renamed, alias);
+    assert.equal(renamed.sourceCode, original.sourceCode);
+    assert.equal(renamed.sourceVersion, original.sourceVersion);
+    assert.equal(renamed.gameId, legacy);
   }
 });

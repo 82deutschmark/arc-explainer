@@ -2,7 +2,8 @@
 
 import numpy as np
 
-from sprite_book import blink, core, figure, medallion, ring, rounded, speckle, studs
+from collections import deque
+
 
 from arcengine import (
     ARCBaseGame,
@@ -15,14 +16,95 @@ from arcengine import (
     Sprite,
 )
 
-FLOOR = 6
-WALL = 2
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def core(colour: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = colour
+    return px
+
+def figure(body: int, mark: int | None = None, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    mid = cell // 2
+    for x in range(1, cell - 1):
+        px[0][x] = body
+    for y in range(1, cell - 1):
+        for x in range(cell):
+            px[y][x] = body
+    px[cell - 1][0] = px[cell - 1][mid] = -1
+    for x in range(cell):
+        if px[cell - 1][x] != -1:
+            px[cell - 1][x] = body
+    px[cell - 1][1] = body
+    px[cell - 1][cell - 1] = body
+    if mark is not None and cell >= 4:
+        px[mid][mid] = mark
+    return px
+
+def medallion(rim: int, centre: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    last = cell - 1
+    for x in range(1, last):
+        px[0][x] = px[last][x] = rim
+    for y in range(1, last):
+        px[y][0] = px[y][last] = rim
+    for y in range(1, last):
+        for x in range(1, last):
+            px[y][x] = centre
+    return px
+
+def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    for y in range(cell):
+        for x in range(cell):
+            if (x * 7 + y * 13 + seed * 31) % 5 == 0:
+                px[y][x] = colour
+    return px
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+def blink(step: int, period: int = 3) -> bool:
+    return (step // period) % 2 == 0
+
+
+FLOOR = 5
+WALL = 5
 WALL_FLECK = 5
 WIRE = 9
-JUNCTION = 5
+JUNCTION = 3
 MARKER = 11
 PIP = 14
-SINK_RIM = JUNCTION
+SINK_RIM = 1
 SINK_FILL = 11
 SINK_PART_FILL = 12
 EMITTER = 11
@@ -35,122 +117,96 @@ METER_OFF = 5
 
 DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0))
 
-CONDUCT = set("=JSTE")
+CONDUCT = set("=JSTUE")
 
-LEVELS_SPEC = [
-    {"pips": [0], "fires": 2, "rows": [
-        "################",
-        "################",
-        "################",
-        "################",
-        "###..........###",
-        "###....S.....###",
-        "###....=.....###",
-        "###..E=J.....###",
-        "###....=.....###",
-        "###....S.....###",
-        "###..........###",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-    ]},
-    {"pips": [1], "fires": 2, "rows": [
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "###......T...###",
-        "###......=...###",
-        "###......=...###",
-        "###......=...###",
-        "###.E====J...###",
-        "###......=...###",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-    ]},
-    {"pips": [1, 0], "fires": 3, "rows": [
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "##.....S......##",
-        "##.....=......##",
-        "##.E===J==J==S##",
-        "##........=...##",
-        "##........S...##",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-    ]},
-    {"pips": [1, 0], "fires": 5, "rows": [
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "##....T....T..##",
-        "##....=....=..##",
-        "##....=....=..##",
-        "##....=....=..##",
-        "##....=....=..##",
-        "##.E==J====J=S##",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-    ]},
-    {"pips": [1, 2, 0], "fires": 7, "rows": [
-        "################",
-        "################",
-        "################",
-        "################",
-        "#..........T..##",
-        "#..........=..##",
-        "#......S...=..##",
-        "#......=...=..##",
-        "#..T...=...=..##",
-        "#..=...=...=..##",
-        "#E=J===J===J=S##",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-    ]},
-    {"pips": [1, 2, 2, 0], "fires": 11, "rows": [
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "#E=J==J==J==J=S#",
-        "#..=..=..=..=..#",
-        "#..=..=..=..=..#",
-        "#..S..T..S..T..#",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-        "################",
-    ]},
-]
+LEVELS_SPEC = [{'pips': [0],
+  'fires': 2,
+  'rows': ['..........',
+           '...S......',
+           '...=......',
+           '...=......',
+           '...=......',
+           'E==J......',
+           '...=......',
+           '...=......',
+           '...=......',
+           '...S......']},
+ {'pips': [1],
+  'fires': 2,
+  'rows': ['...T......',
+           '...=......',
+           '...=......',
+           '...=......',
+           '...=......',
+           'E==J......',
+           '...=......',
+           '...=......',
+           '...=......',
+           '...=......']},
+ {'pips': [1, 0],
+  'fires': 5,
+  'rows': ['..S.......',
+           '..=.......',
+           '..=.......',
+           '..=.......',
+           'E=J===J==S',
+           '......=...',
+           '......=...',
+           '......=...',
+           '......T...',
+           '..........']},
+ {'pips': [1, 0],
+  'fires': 5,
+  'rows': ['..........',
+           '..T.......',
+           '..=.......',
+           '..=...T...',
+           '..=...=...',
+           '..=...=...',
+           '..=...=...',
+           '..=...=...',
+           'E=J===J==S',
+           '..........']},
+ {'pips': [2, 1, 0],
+  'fires': 8,
+  'rows': ['........T.',
+           '........=.',
+           '........=.',
+           '.....T..=.',
+           '.....=..=.',
+           '..S..=..=.',
+           '..=..=..=.',
+           '..=..=..=.',
+           'E=J==J==JS',
+           '..........']},
+ {'pips': [2, 2, 2, 0],
+  'fires': 10,
+  'rows': ['..........',
+           'E=J=J=J=JS',
+           '..=.=.=.=.',
+           '..=.=.=.=.',
+           '..=.=.=.=.',
+           '..S.=.S.=.',
+           '....=...=.',
+           '....T...=.',
+           '........=.',
+           '........T.']},
+ {'rows': ['..........',
+           '..........',
+           'U=J==U....',
+           '..=...S...',
+           '..=...=...',
+           'E=J===J...',
+           '......=...',
+           '......=...',
+           '...U==J==U',
+           '..........'],
+  'pips': [0, 2, 2, 0],
+  'fires': 18}]
 
 N = len(LEVELS_SPEC[0]["rows"])
-CELL = 4
-NEED = {"S": 1, "T": 2}
+CELL = 6
+NEED = {"S": 1, "T": 2, "U": 3}
 PULSE_LIMIT = N * N
 
 
@@ -208,13 +264,13 @@ def fire_pulse(rows, settings, trail=None):
 
 def start_state(rows, pips, fires):
     return (tuple(0 for _ in cells_of(rows, "J")),
-            tuple(0 for _ in cells_of(rows, "ST")),
+            tuple(0 for _ in cells_of(rows, "STU")),
             tuple(pips), fires)
 
 
 def latched(rows, hits):
     return all(h >= NEED[rows[c[1]][c[0]]]
-               for c, h in zip(cells_of(rows, "ST"), hits))
+               for c, h in zip(cells_of(rows, "STU"), hits))
 
 
 def apply_fire(rows, state, trail=None):
@@ -224,7 +280,7 @@ def apply_fire(rows, state, trail=None):
     sink, settings = fire_pulse(rows, settings, trail)
     hits = list(hits)
     if sink is not None:
-        i = cells_of(rows, "ST").index(sink)
+        i = cells_of(rows, "STU").index(sink)
         hits[i] = min(hits[i] + 1, NEED[rows[sink[1]][sink[0]]])
     return (settings, tuple(hits), pips, fires - 1)
 
@@ -239,11 +295,35 @@ def apply_flip(rows, state, idx):
     return (tuple(settings), hits, tuple(pips), fires)
 
 
+PAD = 2
+
+def junction_entry(rows, cell):
+    queue = deque([(find_char(rows, 'E'), None)])
+    seen = set()
+    while queue:
+        cur, prev = queue.popleft()
+        if cur == cell:
+            return prev
+        if cur in seen:
+            continue
+        seen.add(cur)
+        queue.extend((n, cur) for n in neighbours(rows, cur) if n not in seen)
+    return None
+
+def ball(colour, center=None):
+    px = rounded(colour, CELL)
+    px[1][2] = 0
+    px[4][2:4] = [3, 3]
+    if center is not None:
+        px[2][2:4] = [center, center]
+        px[3][2:4] = [center, center]
+    return px
+
 def _stamp(frame, px, x, y):
     for j, row in enumerate(px):
         for i, v in enumerate(row):
             if v >= 0:
-                frame[y * CELL + j, x * CELL + i] = v
+                frame[PAD + y * CELL + j, PAD + x * CELL + i] = v
     return frame
 
 
@@ -261,12 +341,12 @@ def _wall_px(rows, x, y):
 
 def _wire_px(rows, x, y):
     px = [[-1] * CELL for _ in range(CELL)]
-    if conducts(rows, x - 1, y) or conducts(rows, x + 1, y):
-        for i in range(CELL):
-            px[1][i] = px[2][i] = WIRE
-    if conducts(rows, x, y - 1) or conducts(rows, x, y + 1):
-        for j in range(CELL):
-            px[j][1] = px[j][2] = WIRE
+    if conducts(rows, x-1, y) or conducts(rows, x+1, y):
+        px[2] = [3]*CELL
+        px[3] = [WIRE]*CELL
+    if conducts(rows, x, y-1) or conducts(rows, x, y+1):
+        for row in px:
+            row[2], row[3] = 3, WIRE
     return px
 
 
@@ -283,7 +363,7 @@ def build_levels() -> list[Level]:
                 elif c == "=":
                     px = _wire_px(rows, x, y)
                 elif c == "E":
-                    px = medallion(EMITTER, EMITTER_CORE, CELL)
+                    px = ball(EMITTER, EMITTER_CORE)
                 else:
                     continue
                 sprites.append(Sprite(
@@ -295,64 +375,41 @@ def build_levels() -> list[Level]:
     return levels
 
 
-class G178A(RenderableUserDisplay):
+class Overlay(RenderableUserDisplay):
 
-    def __init__(self, game: "G178") -> None:
+    def __init__(self, game: "Turnout") -> None:
         super().__init__()
         self._game = game
 
-    def render_interface(self, frame: np.ndarray) -> np.ndarray:
+    def render_interface(self, frame):
         g = self._game
-        rows = g.rows
-        settings = g.shown_settings
-        strobe = g.flash == 0 or blink(g.flash, 1)
-
-        for i, (x, y) in enumerate(cells_of(rows, "ST")):
-            need = NEED[rows[y][x]]
-            done = g.hits[i] >= need
-            if done and not (g.flash and g.flash_won and not strobe):
-                _stamp(frame, ring(SINK_FILL, CELL), x, y)
-                _stamp(frame, core(SINK_FILL, CELL), x, y)
-            else:
-                _stamp(frame, ring(SINK_RIM, CELL), x, y)
-                if not done and g.hits[i] > 0:
-                    frame[y * CELL + CELL - 2,
-                          x * CELL + 1:x * CELL + CELL - 1] = SINK_PART_FILL
-
-        for i, (x, y) in enumerate(cells_of(rows, "J")):
-            _stamp(frame, rounded(JUNCTION, CELL), x, y)
-            arms = junction_arms(rows, (x, y), g.entry_of(i))
-            if len(arms) == 2:
-                ax, ay = arms[settings[i] % 2]
-                dx, dy = ax - x, ay - y
-                sy = y * CELL + (0 if dy < 0 else CELL - 2 if dy > 0 else 1)
-                sx = x * CELL + (0 if dx < 0 else CELL - 2 if dx > 0 else 1)
-                frame[sy:sy + 2, sx:sx + 2] = MARKER
-
-        if g.flash and not g.flash_won and not strobe:
-            ex, ey = find_char(rows, "E")
-            _stamp(frame, ring(SINK_RIM, CELL), ex, ey)
-            _stamp(frame, core(SINK_RIM, CELL), ex, ey)
-
-        head = g.pulse_head
-        if head is not None:
-            _stamp(frame, core(PULSE, CELL), head[0], head[1])
-
-        px, py = g.player
-        _stamp(frame, figure(PLAYER, PLAYER_MARK, CELL), px, py)
-
-        for i, (x, y) in enumerate(cells_of(rows, "J")):
-            for p in range(g.pips[i]):
-                frame[y * CELL + (0 if p == 0 else CELL - 1), x * CELL] = PIP
-
-        lit = 0 if (g.flash and not g.flash_won and not strobe) else g.fires
-        budget = g.spec["fires"]
-        gap = max(3, (N * CELL - 10) // max(budget, 1))
-        studs(frame, budget, lit, METER_ON, METER_OFF, side="east", start=4, gap=gap)
+        for i, cell in enumerate(cells_of(g.rows, 'STU')):
+            need = NEED[g.rows[cell[1]][cell[0]]]
+            colour = SINK_FILL if g.hits[i] >= need else SINK_RIM
+            _stamp(frame, ball(colour, 5), *cell)
+            for k in range(need):
+                frame[PAD + cell[1]*CELL+3, PAD + cell[0]*CELL+2+k] = SINK_FILL if g.hits[i]>k else 3
+        for i, cell in enumerate(cells_of(g.rows, 'J')):
+            x,y=cell
+            _stamp(frame, ball(JUNCTION), x,y)
+            arms = junction_arms(g.rows, cell, g.entry_of(i))
+            ax,ay = arms[g.shown_settings[i] % 2]
+            dx,dy=ax-x,ay-y
+            for k in (1,2):
+                frame[PAD+y*CELL+2+dy*k, PAD+x*CELL+2+dx*k] = MARKER
+            for k in range(g.pips[i]):
+                frame[PAD+y*CELL+5, PAD+x*CELL+1+k] = PIP
+        if g.pulse_head is not None:
+            _stamp(frame, ball(PULSE, 0), *g.pulse_head)
+        for k in range(g.spec['fires']):
+            x = 2 + 3*k
+            frame[63, x:x+2] = METER_ON if k < g.fires else 3
+        if g.flash and g.flash%2:
+            frame[0, 2:62] = 14 if g.flash_won else 8
         return frame
 
 
-class G178(ARCBaseGame):
+class Turnout(ARCBaseGame):
 
     SETTLE_FRAMES = 6
 
@@ -361,7 +418,7 @@ class G178(ARCBaseGame):
         self.hits = ()
         self.pips = ()
         self.fires = 0
-        self.player = (0, 0)
+
         self._trail = ()
         self._pending = None
         self._step = 0
@@ -370,10 +427,10 @@ class G178(ARCBaseGame):
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=FLOOR, letter_box=5,
-            interfaces=[G178A(self)],
+            interfaces=[Overlay(self)],
         )
         super().__init__(game_id="g178", levels=build_levels(), camera=camera,
-                         available_actions=[1, 2, 3, 4, 5])
+                         available_actions=[6])
         self.on_set_level(self.current_level)
 
     @property
@@ -397,14 +454,12 @@ class G178(ARCBaseGame):
         return None
 
     def entry_of(self, idx):
-        junctions = cells_of(self.rows, "J")
-        x, y = junctions[idx]
-        return (x - 1, y)
+        return junction_entry(self.rows, cells_of(self.rows, 'J')[idx])
 
     def on_set_level(self, level: Level) -> None:
         (self.settings, self.hits, self.pips,
          self.fires) = start_state(self.rows, self.spec["pips"], self.spec["fires"])
-        self.player = find_char(self.rows, "E")
+
         self._trail = ()
         self._pending = None
         self._step = 0
@@ -448,28 +503,23 @@ class G178(ARCBaseGame):
             self._resolve()
             return
 
-        move = {GameAction.ACTION1: (0, -1), GameAction.ACTION2: (0, 1),
-                GameAction.ACTION3: (-1, 0), GameAction.ACTION4: (1, 0)}.get(
-                    self.action.id)
-        if move is not None:
-            nx, ny = self.player[0] + move[0], self.player[1] + move[1]
-            if 0 <= nx < N and 0 <= ny < N and self.rows[ny][nx] != "#":
-                self.player = (nx, ny)
-        elif self.action.id == GameAction.ACTION5:
-            state = (self.settings, self.hits, self.pips, self.fires)
-            here = self.rows[self.player[1]][self.player[0]]
-            nxt = None
-            if here == "E":
-                trail = []
-                nxt = apply_fire(self.rows, state, trail)
-                if nxt is not None and trail:
-                    self._pending, self._trail, self._step = nxt, tuple(trail), 0
-                    return
-            elif here == "J":
-                idx = cells_of(self.rows, "J").index(self.player)
-                nxt = apply_flip(self.rows, state, idx)
-            if nxt is not None:
-                self.settings, self.hits, self.pips, self.fires = nxt
-            self._resolve()
-            return
+        if self.action.id == GameAction.ACTION6:
+            point = self.camera.display_to_grid(self.action.data.get('x', -1), self.action.data.get('y', -1))
+            if point is not None:
+                x,y = point[0]//CELL, point[1]//CELL
+                if 0 <= x < N and 0 <= y < N:
+                    state = (self.settings, self.hits, self.pips, self.fires)
+                    nxt = None
+                    if self.rows[y][x] == 'E':
+                        trail=[]
+                        nxt=apply_fire(self.rows, state, trail)
+                        if nxt is not None and trail:
+                            self._pending,self._trail,self._step=nxt,tuple(trail),0
+                            return
+                    elif self.rows[y][x] == 'J':
+                        nxt=apply_flip(self.rows, state, cells_of(self.rows,'J').index((x,y)))
+                    if nxt is not None:
+                        self.settings,self.hits,self.pips,self.fires=nxt
+                        self._resolve()
+                        return
         self.complete_action()

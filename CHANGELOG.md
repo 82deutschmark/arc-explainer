@@ -12,6 +12,17 @@
 # reference the old numbers.
 
 
+### Version 9.73.0  Sep 14, 2026
+
+- **Four rounds of player feedback across 33 games and 245 levels.** All six locally published hex movement games return to squares, as does G043. G047 gains a clean white exploration board and direct beam feedback; G044 gains a scrolling cube net with paired seams and a minimap. G178 becomes mouse-only on black. G171 gains automatic pixel water flow and three mixing puzzles; G155 gains circular fog, currents, and magma; G050 gains coolant retrieval. Sound waves make G162's wake-up visible. Earlier speed, snake, folding, weighing, obstacle, painting, and ferry improvements remain, with 24 additional levels across the combined update. G006 gameplay is preserved.
+- **Cord tutorials, exact matching, and finer sliding.** G036 gains continuous tube shapes and two short opening lessons. G035 uses dark walls, larger artwork, and exact remaining-layer doors with shears. G018 adds rotating embroidered pieces and matching gates. G014 shows block height, depressions, sun direction, and pixel collapse. G024 gains four branching opening mazes, G010 gets a wider view, and G011 gains native one-pixel slides plus two fine collision maps. Synchronous request locking prevents rapid keys from queuing extra moves.
+- **Action animation throughout the community player.** Instant actions receive pixel trails and staged settling; native sequences remain intact. Reduced motion, reset, undo, and silent live ticks bypass added frames. Source-versioned control-map requests prevent stale controls after deployment. Short hints explain the most opaque controls and objectives.
+- **34 public names with compatible old links.** Two-letter/two-digit names resolve through one mapping. Canonical storage and telemetry identities remain stable.
+- **Validation:** all 237 canonical levels pass source and packaged engine replays; contributed G512's eight levels and all 44 contributed smoke checks pass. Focused mechanics checks, square conversions, animation tests, alias collision tests, 94-entry publication integrity, and production build pass. Full TypeScript checking reports 12 pre-existing errors outside changed files. G034's reported progression failure was not reproduced; comparison and mismatch feedback were added. See `docs/2026-09-12-game-feedback-plan.md`.
+- Author: Codex (GPT-6).
+
+- **Release integration** (Author: Codex, GPT-6): preserve the 25 research games, all 44 contributed names and the latest recovery fixes. Scope contributed practice mode to its own registry so naming the reviewed originals does not change their failure rules.
+
 ### Version 9.72.0  Sep 14, 2026
 
 - **Make KS01 exploration safe and recover failed contributed-game moves** (Author: Codex, GPT-6).

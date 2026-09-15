@@ -25,9 +25,9 @@ PIP_DIM = 3
 SLIP = {"A": 10, "B": 14, "C": 15, "D": 6}
 
 W, H = 20, 13
-CELL = 3
-XOFF = (64 - W * CELL) // 2
-YOFF = (64 - H * CELL) // 2
+CELL = 6
+VIEW_W, VIEW_H = 64, 48
+XOFF, YOFF = 0, 8
 
 DIRS = {
     GameAction.ACTION1: (0, -1),
@@ -231,8 +231,7 @@ LOCK_OPEN = ("#.#",
 
 
 def stencil(art, colour: int) -> np.ndarray:
-    return np.array([[colour if c == "#" else -1 for c in row] for row in art],
-                    dtype=np.int8)
+    return np.repeat(np.repeat(np.array([[colour if c == "#" else -1 for c in row] for row in art], dtype=np.int8), 2, axis=0), 2, axis=1)
 
 
 def quay_pixels(rows) -> list:
@@ -243,7 +242,7 @@ def quay_pixels(rows) -> list:
                 continue
             for r in range(CELL):
                 for c in range(CELL):
-                    px[y * CELL + r][x * CELL + c] = FLOOR
+                    px[y * CELL + r][x * CELL + c] = (3 if r == CELL - 1 or c == CELL - 1 else 1 if r == 0 else FLOOR)
     return px
 
 
@@ -278,40 +277,33 @@ def build_levels() -> list:
             blocking=BlockingMode.NOT_BLOCKED,
             interaction=InteractionMode.TANGIBLE, layer=2,
         ).set_position(0, 0))
-        levels.append(Level(sprites=pieces, grid_size=(W * CELL, H * CELL)))
+        levels.append(Level(sprites=pieces, grid_size=(VIEW_W, VIEW_H)))
     return levels
 
 
 class Instruments(RenderableUserDisplay):
 
-    PAD = 2
-    LAMP_W, LAMP_GAP, LAMP_X = 9, 3, 3
-    LAMP_Y, LAMP_H = PAD, YOFF - 2 * PAD
-    DOT, DOT_GAP, DOT_X = 4, 2, 40
-    DOT_Y = LAMP_Y + 2
-    BAR_Y = YOFF + H * CELL + 4
-    BAR_H, BAR_X = 4, XOFF
-    BAR_MAX = 64 - 2 * XOFF
-
-    def __init__(self, game: "Ferry") -> None:
+    def __init__(self, game):
         super().__init__()
         self._game = game
 
-    def render_interface(self, frame: np.ndarray) -> np.ndarray:
-        tick = self._game.tick
-        for i in range(3):
-            x = self.LAMP_X + i * (self.LAMP_W + self.LAMP_GAP)
-            frame[self.LAMP_Y:self.LAMP_Y + self.LAMP_H, x:x + self.LAMP_W] = (
-                PIP_LIT if i == tick % 3 else PIP_DIM)
-        if "D" in self._game.present:
+    def render_interface(self, frame):
+        g = self._game
+        frame[:8, :] = WATER
+        frame[56:, :] = WATER
+        for i, (a, b) in enumerate(BASE_CYCLE):
+            x = 2 + i * 12
+            frame[1:7, x:x+10] = 0 if i == g.tick % 3 else PIP_DIM
+            frame[2:6, x+1:x+4] = SLIP[a]
+            frame[2:6, x+6:x+9] = SLIP[b]
+            frame[3:5, x+4:x+6] = PIP_LIT if i == g.tick % 3 else WATER
+        if "D" in g.present:
             for i in range(4):
-                x = self.DOT_X + i * (self.DOT + self.DOT_GAP)
-                frame[self.DOT_Y:self.DOT_Y + self.DOT, x:x + self.DOT] = (
-                    PIP_LIT if i == tick % 4 else PIP_DIM)
-        left = max(0, min(self._game.moves_left, self.BAR_MAX))
-        if left:
-            frame[self.BAR_Y:self.BAR_Y + self.BAR_H,
-                  self.BAR_X:self.BAR_X + left] = PIP_LIT
+                x = 41 + i * 5
+                frame[2:6, x:x+3] = SLIP["D"] if i == g.tick % 4 else PIP_DIM
+        left = max(0, min(60, round(60 * g.moves_left / g.spec["budget"])))
+        frame[59:62, 2:62] = PIP_DIM
+        frame[59:62, 2:2+left] = PIP_LIT
         return frame
 
 
@@ -326,11 +318,11 @@ class Ferry(ARCBaseGame):
         self.present = slips_present(spec["rows"])
         self.slips: dict = {}
         camera = Camera(
-            width=W * CELL, height=H * CELL,
+            width=VIEW_W, height=VIEW_H,
             background=WATER, letter_box=WATER,
             interfaces=[Instruments(self)],
         )
-        super().__init__(game_id="g045", levels=build_levels(), camera=camera)
+        super().__init__(game_id="g045", levels=build_levels(), camera=camera, available_actions=[1, 2, 3, 4, 5])
 
     @property
     def spec(self) -> dict:
@@ -357,13 +349,39 @@ class Ferry(ARCBaseGame):
 
     def _sync(self) -> None:
         level = self.current_level
+        self.camera.x = max(0, min(W * CELL - VIEW_W, self.px * CELL - VIEW_W // 2))
+        self.camera.y = max(0, min(H * CELL - VIEW_H, self.py * CELL - VIEW_H // 2))
+        active = links(self.present, self.tick)
+        for name, (x, y) in self.slips.items():
+            for mouth in level.get_sprites_by_name(f"slip_{name}"):
+                face = np.full((CELL, CELL), -1, dtype=np.int8)
+                face[0, 1:5] = face[5, 1:5] = SLIP[name]
+                face[1:5, 0] = face[1:5, 5] = SLIP[name]
+                if name in active:
+                    face[2:4, 2:4] = SLIP[active[name]]
+                    face[1, 2:4] = face[4, 2:4] = 0
+                    face[2:4, 1] = face[2:4, 4] = 0
+                else:
+                    wait = next((n for n in range(1, 13) if name in links(self.present, self.tick + n)), 0)
+                    for n in range(min(wait, 4)):
+                        face[2 + n // 2, 2 + n % 2] = PIP_DIM
+                mouth.pixels = face
         hull = level.get_sprites_by_name("hull")
         if hull:
             hull[0].set_position(self.px * CELL, self.py * CELL)
         berth = level.get_sprites_by_name("berth")
         if berth:
             art = BERTH_LOCKED if self.cargo_left else BERTH_ARMED
-            berth[0].pixels[:, :] = stencil(art, GOAL)
+            face = np.full((CELL, CELL), -1, dtype=np.int8)
+            face[0, 1:5] = face[5, 1:5] = GOAL
+            face[1:5, 0] = face[1:5, 5] = GOAL
+            face[1, 1] = face[1, 4] = face[4, 1] = face[4, 4] = 11
+            if self.cargo_left:
+                face[2:4, 2:4] = 3
+            else:
+                face[2:4, 1:5] = 0
+                face[1:5, 2:4] = 0
+            berth[0].pixels[:, :] = face
         if self.spec.get("lock_beat") is not None:
             art = LOCK_OPEN if lock_open(self.spec, self.tick) else LOCK_SHUT
             for x, y in find_all(self.spec["rows"], "s"):
@@ -371,7 +389,8 @@ class Ferry(ARCBaseGame):
                     gate.pixels[:, :] = stencil(art, GATE)
 
     def step(self) -> None:
-        d = DIRS.get(self.action.id)
+        waiting = self.action.id == GameAction.ACTION5
+        d = (0, 0) if waiting else DIRS.get(self.action.id)
         if d is None:
             self.complete_action()
             return
@@ -387,7 +406,7 @@ class Ferry(ARCBaseGame):
             self.complete_action()
             return
 
-        if cell_walkable(spec, nx, ny, tick):
+        if not waiting and cell_walkable(spec, nx, ny, tick):
             self.px, self.py = nx, ny
             if ch in SLIP:
                 partner = links(self.present, tick).get(ch)

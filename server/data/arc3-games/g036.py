@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from sprite_book import fixture, ring, rounded, studs
 
 from arcengine import (
     ARCBaseGame,
@@ -15,12 +14,50 @@ from arcengine import (
     Sprite,
 )
 
-VOID = 13
-TRACK = 2
+
+def block(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour] * cell for _ in range(cell)]
+
+def rounded(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for (y, x) in ((0, 0), (0, cell - 1), (cell - 1, 0), (cell - 1, cell - 1)):
+        px[y][x] = -1
+    return px
+
+def ring(colour: int, cell: int = 4) -> list[list[int]]:
+    px = block(colour, cell)
+    for y in range(1, cell - 1):
+        for x in range(1, cell - 1):
+            px[y][x] = -1
+    return px
+
+def fixture(colours: tuple, phase: int, seed: int = 0, cell: int = 4) -> list[list[int]]:
+    px = [[-1] * cell for _ in range(cell)]
+    px[1][1] = px[cell - 2][cell - 2] = colours[(phase + seed) % len(colours)]
+    return px
+
+def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
+          start: int = 8, gap: int = 6):
+    h, w = frame.shape
+    for i in range(count):
+        top = start + i * gap
+        if top + 2 > h:
+            break
+        colour = on if i < filled else off
+        length = min(1 + i, w // 4)
+        if side == "east":
+            frame[top:top + 2, w - length:w] = colour
+        else:
+            frame[top:top + 2, 0:length] = colour
+    return frame
+
+
+VOID = 5
+TRACK = 3
 JUNCTION = 2
 WANT_H = 9
 WANT_V = 11
-CORD = 7
+CORD = 10
 UNDER = VOID
 PLAYER = 14
 END = 14
@@ -35,30 +72,120 @@ LO, HI = 1, N - 2
 UP, DOWN, LEFT, RIGHT = (0, -1), (0, 1), (-1, 0), (1, 0)
 DIRS = (UP, DOWN, LEFT, RIGHT)
 
-LEVELS_SPEC = [
-    {"cols": [8], "rows": [8], "cuts": [], "start": (1, 1), "end": (14, 14),
-     "marks": {(8, 8): "v"}, "undos": 4},
-    {"cols": [8], "rows": [8], "cuts": [], "start": (1, 1), "end": (14, 14),
-     "marks": {(8, 8): "h"}, "undos": 4},
-    {"cols": [8], "rows": [4, 12], "cuts": [], "start": (1, 12), "end": (14, 4),
-     "marks": {(8, 4): "h", (8, 12): "v"}, "undos": 4},
-    {"cols": [4, 12], "rows": [8], "cuts": [], "start": (1, 1), "end": (1, 8),
-     "marks": {(4, 8): "h", (12, 8): "h"}, "undos": 4},
-    {"cols": [4, 12], "rows": [4, 12], "cuts": [], "start": (1, 1), "end": (1, 4),
-     "marks": {(4, 4): "h", (4, 12): "h", (12, 4): "h", (12, 12): "v"}, "undos": 3},
-    {"cols": [4, 12], "rows": [4, 12], "cuts": [], "start": (14, 14), "end": (12, 14),
-     "marks": {(4, 4): "h", (4, 12): "v", (12, 4): "v", (12, 12): "v"}, "undos": 3},
-    {"cols": [4, 8, 12], "rows": [4, 12], "cuts": [], "start": (14, 12), "end": (1, 4),
-     "marks": {(4, 4): "h", (8, 4): "h", (12, 4): "h",
-               (4, 12): "v", (8, 12): "v", (12, 12): "v"}, "undos": 3},
-    {"cols": [4, 8, 12], "rows": [4, 8, 12], "cuts": [], "start": (14, 12), "end": (14, 8),
-     "marks": {(4, 4): "h", (8, 4): "h", (12, 4): "h",
-               (4, 8): "h", (8, 8): "h", (12, 8): "h",
-               (4, 12): "v", (8, 12): "v", (12, 12): "v"}, "undos": 2},
-]
+LEVELS_SPEC = [{'cols': [],
+  'rows': [],
+  'cuts': [],
+  'start': (4, 5),
+  'end': (7, 8),
+  'marks': {},
+  'undos': 4,
+  'track': [(4, 5), (5, 5), (6, 5), (7, 5), (7, 6), (7, 7), (7, 8)]},
+ {'cols': [5],
+  'rows': [5],
+  'cuts': [],
+  'start': (2, 5),
+  'end': (5, 8),
+  'marks': {(5, 5): 'v'},
+  'undos': 4,
+  'track': [(2, 2),
+            (2, 3),
+            (2, 4),
+            (2, 5),
+            (2, 6),
+            (2, 7),
+            (2, 8),
+            (3, 2),
+            (3, 5),
+            (3, 8),
+            (4, 2),
+            (4, 5),
+            (4, 8),
+            (5, 2),
+            (5, 3),
+            (5, 4),
+            (5, 5),
+            (5, 6),
+            (5, 7),
+            (5, 8),
+            (6, 2),
+            (6, 5),
+            (6, 8),
+            (7, 2),
+            (7, 5),
+            (7, 8),
+            (8, 2),
+            (8, 3),
+            (8, 4),
+            (8, 5),
+            (8, 6),
+            (8, 7),
+            (8, 8)]},
+ {'cols': [8],
+  'rows': [8],
+  'cuts': [],
+  'start': (1, 1),
+  'end': (14, 14),
+  'marks': {(8, 8): 'v'},
+  'undos': 4},
+ {'cols': [8],
+  'rows': [8],
+  'cuts': [],
+  'start': (1, 1),
+  'end': (14, 14),
+  'marks': {(8, 8): 'h'},
+  'undos': 4},
+ {'cols': [8],
+  'rows': [4, 12],
+  'cuts': [],
+  'start': (1, 12),
+  'end': (14, 4),
+  'marks': {(8, 4): 'h', (8, 12): 'v'},
+  'undos': 4},
+ {'cols': [4, 12],
+  'rows': [8],
+  'cuts': [],
+  'start': (1, 1),
+  'end': (1, 8),
+  'marks': {(4, 8): 'h', (12, 8): 'h'},
+  'undos': 4},
+ {'cols': [4, 12],
+  'rows': [4, 12],
+  'cuts': [],
+  'start': (1, 1),
+  'end': (1, 4),
+  'marks': {(4, 4): 'h', (4, 12): 'h', (12, 4): 'h', (12, 12): 'v'},
+  'undos': 3},
+ {'cols': [4, 12],
+  'rows': [4, 12],
+  'cuts': [],
+  'start': (14, 14),
+  'end': (12, 14),
+  'marks': {(4, 4): 'h', (4, 12): 'v', (12, 4): 'v', (12, 12): 'v'},
+  'undos': 3},
+ {'cols': [4, 8, 12],
+  'rows': [4, 12],
+  'cuts': [],
+  'start': (14, 12),
+  'end': (1, 4),
+  'marks': {(4, 4): 'h', (8, 4): 'h', (12, 4): 'h', (4, 12): 'v', (8, 12): 'v', (12, 12): 'v'},
+  'undos': 3},
+ {'cols': [4, 8, 12],
+  'rows': [4, 8, 12],
+  'cuts': [],
+  'start': (14, 12),
+  'end': (14, 8),
+  'marks': {(4, 4): 'h',
+            (8, 4): 'h',
+            (12, 4): 'h',
+            (4, 8): 'h',
+            (8, 8): 'h',
+            (12, 8): 'h',
+            (4, 12): 'v',
+            (8, 12): 'v',
+            (12, 12): 'v'},
+  'undos': 2}]
 
-DECOR_CELLS = ((0, 0), (N - 1, 0), (0, N - 1), (N - 1, N - 1),
-               (3, 3), (N - 5, 3), (3, N - 5), (N - 5, N - 5))
+DECOR_CELLS = ()
 
 
 def build_board(spec: dict) -> tuple[dict, dict]:
@@ -72,6 +199,8 @@ def build_board(spec: dict) -> tuple[dict, dict]:
     for y in spec["rows"]:
         for x in range(LO, HI + 1):
             track[(x, y)] = True
+    if "track" in spec:
+        track = {tuple(c): True for c in spec["track"]}
     for cell in spec["cuts"]:
         track.pop(tuple(cell), None)
 
@@ -152,16 +281,21 @@ def state_key(state: dict) -> tuple:
             tuple(sorted(state["cross"].items())))
 
 
-def _paving() -> list[list[int]]:
-    return rounded(TRACK, CELL)
+def _paving(cell, track) -> list[list[int]]:
+    px = [[TRACK]*CELL for _ in range(CELL)]
+    x,y=cell
+    for j,i,dx,dy in ((0,0,-1,-1),(0,3,1,-1),(3,0,-1,1),(3,3,1,1)):
+        if (x+dx,y) not in track and (x,y+dy) not in track: px[j][i]=-1
+    return px
 
 
 def _crossing(mark: str | None) -> list[list[int]]:
-    colour = JUNCTION if mark is None else (WANT_H if mark == "h" else WANT_V)
-    px = [[-1] * CELL for _ in range(CELL)]
-    for i in range(CELL):
-        px[i][i] = colour
-        px[i][CELL - 1 - i] = colour
+    colour = JUNCTION if mark is None else WANT_H if mark == 'h' else WANT_V
+    px=[[-1]*CELL for _ in range(CELL)]
+    if mark == 'h':
+        px[0]=[colour]*CELL;px[3]=[colour]*CELL
+    else:
+        for row in px: row[0]=row[3]=colour
     return px
 
 
@@ -180,7 +314,7 @@ def build_levels() -> list[Level]:
             ).set_position(cell[0] * CELL, cell[1] * CELL))
 
         for cell in sorted(track):
-            place(_paving(), f"t_{cell[0]}_{cell[1]}", cell, -1)
+            place(_paving(cell, track), f"t_{cell[0]}_{cell[1]}", cell, -1)
         for cell in sorted(junctions):
             place(_crossing(junctions[cell]), f"x_{cell[0]}_{cell[1]}", cell, 0)
         place(ring(END, CELL), "anchor", end, 0)
@@ -211,9 +345,9 @@ def _stamp(frame: np.ndarray, cell: tuple[int, int], pixels) -> None:
                 frame[py + y, px + x] = value
 
 
-class G036A(RenderableUserDisplay):
+class CordDisplay(RenderableUserDisplay):
 
-    def __init__(self, game: "G036") -> None:
+    def __init__(self, game: "Shoelace") -> None:
         super().__init__()
         self._game = game
 
@@ -252,6 +386,14 @@ class G036A(RenderableUserDisplay):
             else:
                 frame[frame == CORD] = END
 
+        for cell,mark in junctions.items():
+            if mark is not None:
+                _stamp(frame,cell,_crossing(mark))
+        if game.level_index == 1:
+            frame[12:14,45:55] = CORD
+            frame[20:30,49:51] = WANT_V
+            frame[18,49:51] = 0
+            frame[16,49] = 0
         for cell in DECOR_CELLS:
             if cell in game.track:
                 continue
@@ -263,7 +405,7 @@ class G036A(RenderableUserDisplay):
         return frame
 
 
-class G036(ARCBaseGame):
+class Shoelace(ARCBaseGame):
 
     CINCH_FRAMES = 6
 
@@ -279,7 +421,7 @@ class G036(ARCBaseGame):
         camera = Camera(
             width=N * CELL, height=N * CELL,
             background=VOID, letter_box=VOID,
-            interfaces=[G036A(self)],
+            interfaces=[CordDisplay(self)],
         )
         super().__init__(game_id="g036", levels=build_levels(), camera=camera,
                          available_actions=[1, 2, 3, 4, 5, 7])

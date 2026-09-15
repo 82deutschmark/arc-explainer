@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from sprite_book import hatch, weave
 
 from arcengine import (
     ARCBaseGame,
@@ -14,6 +13,14 @@ from arcengine import (
     RenderableUserDisplay,
     Sprite,
 )
+
+
+def weave(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 2 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
+def hatch(colour: int, cell: int = 4) -> list[list[int]]:
+    return [[colour if (x + y) % 3 == 0 else -1 for x in range(cell)] for y in range(cell)]
+
 
 FLOOR = 1
 WALL = 5
@@ -546,9 +553,9 @@ RACK_TOP, RACK_BOTTOM = 56, 61
 SOCKET_X = (22, 36)
 
 
-class G015A(RenderableUserDisplay):
+class HandRack(RenderableUserDisplay):
 
-    def __init__(self, game: "G015") -> None:
+    def __init__(self, game: "KitBash") -> None:
         super().__init__()
         self._game = game
 
@@ -570,16 +577,17 @@ class G015A(RenderableUserDisplay):
         return frame
 
 
-class G015(ARCBaseGame):
+class KitBash(ARCBaseGame):
 
     def __init__(self) -> None:
         self.state = initial_state(0)
         self._frames: list = []
         camera = Camera(
             width=64, height=64, background=WALL, letter_box=5,
-            interfaces=[G015A(self)],
+            interfaces=[HandRack(self)],
         )
-        super().__init__(game_id="g015", levels=build_levels(), camera=camera)
+        super().__init__(game_id="g015", levels=build_levels(), camera=camera,
+                         available_actions=[1, 2, 3, 4, 5, 6, 7])
 
     def _rearm(self) -> None:
         self.state = initial_state(self.level_index)
@@ -610,12 +618,13 @@ class G015(ARCBaseGame):
             return
 
         action = {
-            GameAction.ACTION1: "L",
-            GameAction.ACTION2: "R",
-            GameAction.ACTION3: "V",
-            GameAction.ACTION4: "TAKE",
+            GameAction.ACTION1: "V" if (self.state[0] + self.state[1]) % 2 else None,
+            GameAction.ACTION2: "V" if not (self.state[0] + self.state[1]) % 2 else None,
+            GameAction.ACTION3: "L",
+            GameAction.ACTION4: "R",
             GameAction.ACTION5: "FIRE",
-            GameAction.ACTION6: "WAIT",
+            GameAction.ACTION6: "TAKE",
+            GameAction.ACTION7: "WAIT",
         }.get(self.action.id)
 
         if action is None:

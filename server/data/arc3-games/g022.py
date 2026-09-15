@@ -36,10 +36,15 @@ TOUCHING = {
 }
 
 EDGE_KEY = {
-    GameAction.ACTION1: 0,
-    GameAction.ACTION2: 1,
-    GameAction.ACTION3: 2,
+    GameAction.ACTION3: 0,
+    GameAction.ACTION4: 1,
 }
+
+
+def edge_action(edge, x, y):
+    if edge == 2:
+        return GameAction.ACTION2 if (x + y) % 2 == 0 else GameAction.ACTION1
+    return (GameAction.ACTION3, GameAction.ACTION4)[edge]
 
 
 def edges_of(x, y):
@@ -313,7 +318,7 @@ def mould_of(index):
     raise AssertionError(f"level {index} has no mould")
 
 
-class G022(ARCBaseGame):
+class Ember(ARCBaseGame):
 
     def __init__(self):
         self.charge = 0
@@ -324,7 +329,7 @@ class G022(ARCBaseGame):
             background=WALL_SEAM, letter_box=KILN_WALL,
         )
         super().__init__(game_id="g022", levels=build_levels(), camera=camera,
-                         available_actions=[1, 2, 3])
+                         available_actions=[1, 2, 3, 4])
 
     def on_set_level(self, level):
         self.charge = 0
@@ -366,6 +371,8 @@ class G022(ARCBaseGame):
 
     def step(self):
         edge = EDGE_KEY.get(self.action.id)
+        if self.action.id == edge_action(2, *self.cell):
+            edge = 2
         if edge is not None:
             self.draught += 1
             self._advance(edge)

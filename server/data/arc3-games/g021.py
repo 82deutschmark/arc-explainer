@@ -138,6 +138,39 @@ LEVELS_SPEC = [
 ]
 
 
+LEVELS_SPEC.extend([
+    {"weights": (2, 3, 1), "target": 6, "volatile": (1,), "materials": True},
+    {"weights": (4, 2, 5, 1, 3), "target": 14, "volatile": (2,), "materials": True},
+])
+
+
+def material_ages(spec, placement, ages):
+    return tuple(min(3, age + (placement[i] != ROW)) if i in spec.get("volatile", ()) else 0
+                 for i, age in enumerate(ages))
+
+
+def material_weights(spec, ages):
+    return tuple(1 if i in spec.get("volatile", ()) and ages[i] >= 3 else w
+                 for i, w in enumerate(spec["weights"]))
+
+
+def crate_face(spec, i, ages):
+    w = spec["weights"][i]
+    if i in spec.get("volatile", ()):
+        face = ring(15)
+        for k in range(3 - ages[i]):
+            face[0][k] = 0
+        if ages[i] >= 3:
+            face[0][0] = face[0][3] = -1
+        return face
+    if spec.get("materials"):
+        face = ring(13 if w >= 4 else 10 if w <= 2 else CRATE)
+        if w >= 4:
+            face[1][1] = face[1][2] = face[2][1] = face[2][2] = 13
+        return face
+    return ring(CRATE)
+
+
 def _tiled(cell_px: list[list[int]], w_cells: int, h_cells: int) -> list[list[int]]:
     rows: list[list[int]] = []
     for _ in range(h_cells):
@@ -251,17 +284,27 @@ class BenchDisplay(RenderableUserDisplay):
         self._cord(frame, LEFT_CORD_X, left_y)
         self._cord(frame, RIGHT_CORD_X, right_y)
 
-        crate = ring(CRATE)
         left_slot = right_slot = 0
+        spec = LEVELS_SPEC[g.level_index]
+        g.crate_positions = []
         for i, place in enumerate(g.placement):
             if place == ROW:
-                _stamp(frame, 2 * i, HOME_Y, crate)
+                cx, cy = 2 * i, HOME_Y
             elif place == LEFT:
-                _stamp(frame, LEFT_PAN_X[left_slot % 4], PAN_ROWS[left_slot // 4], crate)
+                cx, cy = LEFT_PAN_X[left_slot % 4], PAN_ROWS[left_slot // 4]
                 left_slot += 1
             else:
-                _stamp(frame, RIGHT_PAN_X[right_slot % 4], PAN_ROWS[right_slot // 4], crate)
+                cx, cy = RIGHT_PAN_X[right_slot % 4], PAN_ROWS[right_slot // 4]
                 right_slot += 1
+            g.crate_positions.append((cx, cy))
+            face = crate_face(spec, i, g.ages)
+            if i == g.cursor:
+                face[3][0] = face[3][3] = CURSOR
+            _stamp(frame, cx, cy, face)
+        hairline(frame, (6, 35), (6, 41), PLATE)
+        hairline(frame, (6, 41), (11, 41), PLATE)
+        for i in range(len(g.weights)):
+            frame[59 - i:60, 3 + 3*i:5 + 3*i] = 2
 
         _stamp(frame, 2 * g.cursor, CURSOR_Y, figure(CURSOR))
 
@@ -284,6 +327,8 @@ class WeighStation(ARCBaseGame):
         self.weights = spec["weights"]
         self.target = spec["target"]
         self.placement = [ROW] * len(self.weights)
+        self.ages = (0,) * len(self.weights)
+        self.crate_positions = []
         self.cursor = 0
         self.locked = False
         self.flash = 0
@@ -296,7 +341,7 @@ class WeighStation(ARCBaseGame):
             game_id="g021",
             levels=build_levels(),
             camera=camera,
-            available_actions=[1, 2, 3, 4, 5],
+            available_actions=[1, 2, 3, 4, 5, 6],
         )
 
     def on_set_level(self, level: Level) -> None:
@@ -304,6 +349,8 @@ class WeighStation(ARCBaseGame):
         self.weights = spec["weights"]
         self.target = spec["target"]
         self.placement = [ROW] * len(self.weights)
+        self.ages = (0,) * len(self.weights)
+        self.crate_positions = []
         self.cursor = 0
         self.locked = False
         self.flash = 0
@@ -317,7 +364,7 @@ class WeighStation(ARCBaseGame):
         self.on_set_level(self.current_level)
 
     def pan_total(self, side: int) -> int:
-        return sum(w for w, p in zip(self.weights, self.placement) if p == side)
+        return sum(w for w, p in zip(material_weights(LEVELS_SPEC[self.level_index], self.ages), self.placement) if p == side)
 
     def tilt(self) -> int:
         diff = self.pan_total(LEFT) - self.pan_total(RIGHT)
@@ -338,9 +385,16 @@ class WeighStation(ARCBaseGame):
         action = self.action.id
         if action in (GameAction.ACTION1, GameAction.ACTION2,
                       GameAction.ACTION3, GameAction.ACTION4):
-            code = {GameAction.ACTION1: 1, GameAction.ACTION2: 2,
-                    GameAction.ACTION3: 3, GameAction.ACTION4: 4}[action]
+            code = {GameAction.ACTION1: 3, GameAction.ACTION2: 4,
+                    GameAction.ACTION3: 1, GameAction.ACTION4: 2}[action]
             self.placement, self.cursor = apply_move(self.placement, self.cursor, code)
+            self.ages = material_ages(LEVELS_SPEC[self.level_index], self.placement, self.ages)
+        elif action == GameAction.ACTION6:
+            data = self.action.data or {}
+            cell = (int(data.get("x", -1)) // CELL, int(data.get("y", -1)) // CELL)
+            if cell in self.crate_positions:
+                self.cursor = self.crate_positions.index(cell)
+                self.ages = material_ages(LEVELS_SPEC[self.level_index], self.placement, self.ages)
         elif action == GameAction.ACTION5:
             total = self.pan_total(LEFT)
             if total > 0:
