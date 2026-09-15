@@ -46,6 +46,12 @@ export const ft09: Arc3GameMetadata = {
       type: 'replay',
       description: 'Gameplay replay of FT09 (Functional Tiles)',
     },
+    {
+      title: "FT09 Mark's Official Human Replay",
+      url: 'https://arcprize.org/replay/99084b22-7e67-4e13-8d68-6095e944255f',
+      type: 'replay',
+      description: "Mark's own official ARC Prize replay, human play (2026-09-15).",
+    },
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/arc3-levels/ft09/lvl1.png', notes: 'Current 6-level build (ARCEngine, March 2026) -- see the note below on why this differs from the level 8/9 shots further down.' },
