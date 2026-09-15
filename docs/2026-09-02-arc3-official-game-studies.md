@@ -5,6 +5,9 @@ PURPOSE: What six official ARC-AGI-3 games actually do, read as a player rather 
          codebase, and what that says about the 50 synthetic games in this directory.
          Written to be consumed by the polishing loop alongside GLOWUP_RECIPE.md, and
          mirrored into arc-explainer so the site can serve it.
+         CORRECTED 15-September-2026: the `cn04` reading below, and two of the seven patterns
+         drawn from it, were wrong about level 5. See "Correction, 15-Sep-2026" under the
+         `cn04` entry. The correction is itself a finding about method, not just about cn04.
 SRP/DRY check: Pass. GLOWUP_RECIPE.md owns the rules a cycle must follow; this owns the
          evidence behind them and the design ideas not yet turned into rules. Nothing here
          restates a rule; where an idea has become one, this points at its name.
@@ -20,6 +23,13 @@ the obvious visual interpretation was the trap. Corrected readings are below.
 **All six readings are now checked.** The first pass lost two agents to a session limit; both
 were re-run. Notably `dc22`'s checker **actually played the game** rather than reading it, and
 still found the second half of it missing from the first description.
+
+**And "checked" was still not enough.** On 15-Sep-2026 a human won `cn04` and reported a level-5
+mechanic that neither the reading nor its refuter had found, and that a *third* pass had actively
+deleted as fabricated. Both readings here were done by reading source. `dc22`'s was the only one
+done by playing, and it is the only one that found a game's second half. That is the pattern: a
+source read finds the primitives, a playthrough finds what the primitives add up to on screen.
+See the correction under `cn04`.
 
 ---
 
@@ -45,10 +55,45 @@ only one hauling: a unit on the far side of an uncrossable line does your job fo
 cell per key you press. Later a second unit does the identical thing toward the wrong bay
 and will lift a crate out of your hands.
 
-**`cn04` — matching marks, not welding.** The welding read was wrong. Three to five loose
-parts, each printed with marks; you hold one at a time and slide, turn or stretch it until
+**`cn04` — matching marks, not welding.** The welding read was wrong. **Two to five** loose
+parts, each printed with marks; you hold one at a time and slide, turn or **grow** it until
 every mark meets a matching mark on another part. A mark goes dark the instant it is
-satisfied. In most levels **only the part in your hand shows its marks at all**.
+satisfied. From level 3 on, **only the part in your hand shows its colour and marks at all** —
+everything else is flattened to grey.
+
+> **Correction, 15-Sep-2026 — and the correction is the interesting part.**
+>
+> This reading said "slide, turn or stretch". A later re-verification pass grepped `cn04.py`
+> for a resize primitive, found none, and deleted "stretch" as a fabrication. **Both of those
+> passes were wrong, in opposite directions, and the deletion was the worse error.**
+>
+> What actually happens: Interact (`ACTION5`) is a 90° rotation on every part in **all of
+> levels 1–4**. From level 5 some parts are built as a **stack of nested variants of the same
+> shape sharing one spawn anchor**, and on those parts Interact **never rotates at all** — it
+> steps up the stack, so the part visibly **grows**. It always opens on the smallest variant,
+> the stepping **bounces** at the largest rather than wrapping, and the larger variants carry
+> marks the smaller ones do not have. Level 5's yellow part shows **3 marks at its starting
+> size and 7 at full extent**. Level 6 does it twice: a six-deep yellow stack and a four-deep
+> purple one. Levels 1–4 contain **zero** stacks.
+>
+> So there is no resize *action* and the part gets bigger anyway, because the growth is a
+> **sprite swap**. The original reading was describing something real; the re-verification
+> looked for an implementation of it, found none, and concluded the observation was invented.
+> **A documentation method that only trusts implementation primitives will keep deleting true
+> player-observed behaviour**, and that is a standing hazard for every game in this document,
+> not a one-off about `cn04`.
+>
+> Also still wrong after that pass: the part count. It was "corrected" from "three to five" to
+> "2 to 13", but 13 counts **sprite entries**, and levels 5 and 6 stack several entries on one
+> anchor. Distinct anchors per level are 2, 4, 3, 4, 4, 5 — the manipulable-part range is
+> **2 to 5**, so the original "three to five" was closer than its correction.
+>
+> Source, cited: `cn04.py:1066-1075` (the `ACTION5` branch — `if len(group) > 1: cycle else:
+> rotate(90)`), `:843-858` (stacks grouped by shared anchor, sorted by `layer`; in every stack
+> the only `visible=True` member is `layer=1`, the smallest), `:1111-1135` (the bouncing cycle),
+> `:677-775` (the level table). Found by a human win, guid
+> `f714032e-914d-4bb5-bc95-386dfacebca0` — WIN, 6/6, 454 actions, under the per-level action
+> baseline on all six levels.
 
 **`dc22` — building the floor you walk on.** A walker has to reach a goal, but most of the
 floor does not exist yet; you press buttons on a side panel that reshape platforms across the
@@ -71,7 +116,11 @@ a neighbour off the board. A rail cart ferries a piece between rooms. Its famous
 condition is printed on the pieces as a per-cell checklist that goes out one mark at a time,
 so you can always count what is left and see which cell is still wrong. Our games hide the
 rule and grade per room — you either open the door or you do not, and a wrong hypothesis
-returns silence, so the player wanders.
+returns silence, so the player wanders. **Narrowed 15-Sep-2026:** "you can always count what
+is left" holds through level 4 and **fails on levels 5 and 6**, where a stacked part's larger
+variants carry marks that are not on the board until the part is grown into them. The pattern
+still stands — a per-item checklist beats a per-room pass/fail — but `cn04` does not actually
+show you the whole checklist at all times, and this document said it did, twice.
 
 **2. Charge the clock for failure, not for time.** In `bp35` the thing chasing you only gains
 ground on moves where you did not make progress. Thinking is free; flailing costs. It reads
@@ -100,6 +149,19 @@ our boards wants anything, so each level has one plan, worked out once and then 
 which pieces carry which marks. That makes wandering almost impossible while keeping the
 puzzle hard. It is the opposite of our habit, which is to hide the goal and let the player
 discover it by failing.
+
+**Corrected 15-Sep-2026 — this was drawn from a false premise, and the true version is a better
+idea.** `cn04` does **not** show the whole win condition. On level 5, four of the yellow part's
+seven marks **do not exist on the board** until you grow the part, and nothing on screen says
+the part can grow. So the real move is not "show the goal, hide the arrangement" — it is
+**hold back part of the goal behind an action the player has been taught means something else.**
+Interact is a rotation across the whole of levels 1–4. An agent or a player who induces
+"Interact = rotate" from four levels of consistent evidence arrives at level 5 holding a rule
+that is **false, not incomplete**, and the board they are planning against is not the whole
+board. That is a rule *inversion* after a deliberate training period, and it is strictly harder
+and more interesting than withholding the goal outright — which, as pattern 6 originally said,
+just makes players wander. Our 50 have nothing like it: an action in our set means the same
+thing on every object from the first frame to the last.
 
 **7. Eventually, hand over the rulebook.** `tr87`'s late levels freeze both the question and
 the answer and let the player repair the broken dictionary that connects them. Same board,
