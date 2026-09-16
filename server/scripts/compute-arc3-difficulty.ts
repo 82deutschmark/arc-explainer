@@ -5,81 +5,49 @@
  *          real signal we have: the ARC Prize human leaderboard's action counts, not a
  *          guess. Everyone in the top 10 scores 100, so score can't rank anything; the
  *          fewest-actions number and how far the rest of the top 10 spreads out from it
- *          can. A wide spread means the "obvious" route still leaves a lot of room to
- *          play worse; a reset sitting in the top 10 means even a top player needed a
- *          do-over to get there.
+ *          can.
  *          Run with: npx tsx server/scripts/compute-arc3-difficulty.ts
  *          Prints a table; does not write any files. Apply the results to
  *          shared/arc3Games/*.ts by hand after reviewing them.
- * SRP/DRY check: Pass -- reuses getHumanLeaderboard() and the shared game registry
- *          rather than re-implementing the fetch. rankDifficulty() is exported so the
- *          same rule can be reused later instead of re-deriving it.
+ *          2026-09-16 (Claude Opus 5): the rule moved to shared/arc3Games/humanDifficulty.ts
+ *          and this script now only prints it. Two changes came with the move: the reset
+ *          rule is gone (a reset in the top 10 no longer bumps a game up a tier -- it is
+ *          what made tu93 "hard" while five of its top 10 tie at 185 actions), and rows
+ *          published before 2026-06-18 no longer count. The table also prints the owner
+ *          rating from his own scorecards (humanPlay.generated.json). The old exports
+ *          rankDifficulty() and signalFromLeaderboard() are removed; nothing imported them.
+ * SRP/DRY check: Pass -- reuses getHumanLeaderboard() (which now carries the recent-rows
+ *          stats), top10Difficulty() and getOwnerGameRating() from
+ *          shared/arc3Games/humanDifficulty.ts; no rating logic lives here any more.
  */
 
-import { getAllGames } from '../../shared/arc3Games';
-import { getHumanLeaderboard, type HumanLeaderboard } from '../services/arc3/arcPrizeLeaderboardService';
+import { getPublicDemoGameIdsInOrder, getGameById } from '../../shared/arc3Games';
+import { getOwnerGameRating, top10Difficulty } from '../../shared/arc3Games/humanDifficulty';
+import { getHumanLeaderboard } from '../services/arc3/arcPrizeLeaderboardService';
 
-export interface DifficultySignal {
-  fewestActions: number;
-  topSpread: number;
-  relativeSpread: number;
-  tiedAtFewest: number;
-  resetsInTop: number;
-  sampleSize: number;
-}
-
-/**
- * Easy/medium/hard from the top of the human leaderboard alone -- deliberately just two
- * numbers, not a weighted model. `relativeSpread` compares the top entry to the worst of
- * the sampled top-10 as a fraction of the fewest-actions count, since raw action counts
- * scale with how long a game is; a reset anywhere in that top 10 bumps the result up a
- * tier on its own, since a do-over from a top player is a stronger tell than a wide
- * spread with clean runs.
- */
-export function rankDifficulty(signal: DifficultySignal): 'easy' | 'medium' | 'hard' {
-  const hasResets = signal.resetsInTop > 0;
-  if (signal.relativeSpread >= 0.5 || signal.resetsInTop >= 2) return 'hard';
-  if (signal.relativeSpread >= 0.15 || hasResets) return 'medium';
-  return 'easy';
-}
-
-export function signalFromLeaderboard(board: HumanLeaderboard): DifficultySignal | null {
-  const wins = board.entries.filter((e) => e.actions > 0);
-  if (wins.length === 0 || board.fewestActions === null) return null;
-  const top = wins.slice(0, 10);
-  const actions = top.map((e) => e.actions);
-  return {
-    fewestActions: board.fewestActions,
-    topSpread: Math.max(...actions) - Math.min(...actions),
-    relativeSpread: (Math.max(...actions) - Math.min(...actions)) / board.fewestActions,
-    tiedAtFewest: top.filter((e) => e.actions === board.fewestActions).length,
-    resetsInTop: top.filter((e) => e.resets > 0).length,
-    sampleSize: top.length,
-  };
+function formatNumber(value: number | null, width: number): string {
+  return (value === null ? '-' : String(Math.round(value * 10) / 10)).padStart(width);
 }
 
 async function main() {
-  const games = getAllGames();
   const rows: string[] = [];
-  for (const game of games) {
-    const board = await getHumanLeaderboard(game.gameId);
+  for (const gameId of getPublicDemoGameIdsInOrder()) {
+    const current = getGameById(gameId)?.humanDifficulty ?? 'unknown';
+    const owner = getOwnerGameRating(gameId);
+    const ownerText = `owner=${owner.rating}${owner.summary ? '' : ' (not played yet)'}`;
+    const board = await getHumanLeaderboard(gameId);
     if (!board) {
-      rows.push(`${game.gameId.padEnd(6)} no leaderboard data`);
+      rows.push(`${gameId.padEnd(6)} no leaderboard data  ${ownerText}  (current: ${current})`);
       continue;
     }
-    const signal = signalFromLeaderboard(board);
-    if (!signal) {
-      rows.push(`${game.gameId.padEnd(6)} no winning runs`);
-      continue;
-    }
-    const difficulty = rankDifficulty(signal);
+    const { stats } = board;
     rows.push(
-      `${game.gameId.padEnd(6)} fewest=${String(signal.fewestActions).padStart(4)}  ` +
-        `spread=${String(signal.topSpread).padStart(4)}  ` +
-        `relSpread=${(signal.relativeSpread * 100).toFixed(0).padStart(3)}%  ` +
-        `tied=${signal.tiedAtFewest}  resetsInTop=${signal.resetsInTop}  n=${signal.sampleSize}  ` +
-        `-> ${difficulty}` +
-        `  (current: ${game.humanDifficulty})`,
+      `${gameId.padEnd(6)} kept=${stats.recentRows}/${stats.totalRows}  wins=${stats.recentWins}  ` +
+        `score=${stats.scoreMin ?? '-'}..${stats.scoreMax ?? '-'}  ` +
+        `fewest=${formatNumber(stats.fewestActions, 4)}  median=${formatNumber(stats.medianActions, 6)}  ` +
+        `most=${formatNumber(stats.mostActions, 4)}  ` +
+        `relSpread=${stats.relativeSpread === null ? '  -' : `${(stats.relativeSpread * 100).toFixed(0).padStart(3)}%`}  ` +
+        `-> top10=${top10Difficulty(stats)}  ${ownerText}  (current: ${current})`,
     );
   }
   console.log(rows.join('\n'));

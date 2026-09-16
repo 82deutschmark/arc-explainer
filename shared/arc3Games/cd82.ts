@@ -11,6 +11,11 @@
  *          replay on this game -- and its raw NDJSON recording committed under arc3/.
  *          Later the same day its session score of 59.92 was added, having been held
  *          off the page by 9.74.0 on a justification that measurement refuted.
+ *          2026-09-16 (Claude Opus 5): added mechanicsBreakdown traced in
+ *          cd82-fb555c5d/cd82.py and run in the engine. Existing facts kept; two small
+ *          fixes in mechanicsExplanation: the level-3 dab paints a 4-wide, 3-deep block in
+ *          the middle of the near edge (not a thin strip), and the 100-action budget is per
+ *          level and counts every action, with the 100th one losing the level.
  * SRP/DRY check: Pass - Single responsibility for CD82 game data.
  */
 
@@ -22,7 +27,74 @@ export const cd82: Arc3GameMetadata = {
   informalName: 'Compass Dye',
   description: 'Fire colored dye from 8 compass stations, plus a dab tool from level 3, to match most of a reference pattern on a grid.',
   simpleExplanation: 'You fire colored dye from eight stations around a small target square to recreate a reference pattern shown in the corner, before your move countdown runs out.',
-  mechanicsExplanation: 'You control a color-throwing rig built around a small 10x10 target square, cycling between eight fixed compass stations (N/NE/E/SE/S/SW/W/NW) around it. At each station you pick a color, then fire to wash half the target (cardinal stations) or a diagonal triangle of it (intercardinal stations) in that color. From level 3 on, the four cardinal stations also gain a second tool -- an arrow-dab that paints a thin edge strip in the current color -- because Fire alone can only ever lay down a full half or triangle and can\'t build the more intricate patterns those levels need. The goal is to reproduce a small reference pattern shown in the corner before a 100-move countdown runs out; the win-check is a bit forgiving, since it never checks the target\'s two diagonal lines of cells, across six levels of increasingly multi-region, multi-color targets.',
+  mechanicsExplanation: 'You control a color-throwing rig built around a small 10x10 target square, cycling between eight fixed compass stations (N/NE/E/SE/S/SW/W/NW) around it. At each station you pick a color, then fire to wash half the target (cardinal stations) or a diagonal triangle of it (intercardinal stations) in that color. From level 3 on, the four cardinal stations also gain a second tool -- an arrow-dab that paints a small block, 4 cells wide and 3 deep, in the middle of that station\'s edge in the current color -- because Fire alone can only ever lay down a full half or triangle and can\'t build the more intricate patterns those levels need. The goal is to reproduce a small reference pattern shown in the corner before a 100-action countdown runs out; the countdown restarts on each level and counts every action, including moves that go nowhere and clicks on nothing, and the 100th action loses the level. The win-check is a bit forgiving, since it never checks the target\'s two diagonal lines of cells, across six levels of increasingly multi-region, multi-color targets.',
+  mechanicsBreakdown: [
+    // ---- Level 1 ----
+    {
+      category: 'controls',
+      text: 'The arrow keys move the paint bucket around eight stations in a ring around the White 10x10 canvas: N, NE, E, SE, S, SW, W and NW. Each press steps to the neighboring station in that direction. A press that would cut through the middle or leave the ring does nothing, but still costs an action.',
+      source: 'cd82.py:393-412, 531-549',
+    },
+    {
+      category: 'controls',
+      text: 'Fire throws the bucket\'s paint at the canvas. A side station (N, E, S, W) paints the half of the canvas nearest it. A corner station (NE, SE, SW, NW) paints the triangle nearest it, including the diagonal line of cells.',
+      source: 'cd82.py:673-681, 709-738',
+    },
+    {
+      category: 'pieces',
+      text: 'Paint simply covers what was there. A later throw overwrites an earlier one wherever they overlap, so order matters.',
+      source: 'cd82.py:709-738',
+    },
+    {
+      category: 'controls',
+      text: 'Color swatches (small squares with a Darker Gray frame) sit along the top. Click one to load that color: a White bar moves under it and the bucket changes color. Each level starts at the N station with Purple loaded.',
+      source: 'cd82.py:447-463, 551-572, 258-270',
+    },
+    {
+      category: 'goal',
+      text: 'Make the canvas match the reference pattern in the top-left corner. The game only checks right after a throw or a dab, and it skips the canvas\'s two diagonal lines, so 80 of the 100 cells have to match.',
+      source: 'cd82.py:740-753, 704-707, 606-611',
+    },
+    {
+      category: 'budget',
+      text: 'Each level allows 100 actions. Everything counts: moves that go nowhere, clicks on nothing, color picks, throws. The 100th action loses the level, so you really get 99.',
+      source: 'cd82.py:431-432, 630-635',
+    },
+    {
+      category: 'feedback',
+      text: 'The countdown is a Darker Gray line along the bottom edge of the screen that turns Black from the right as you use actions.',
+      source: 'cd82.py:366-388, 631',
+    },
+    {
+      category: 'controls',
+      text: 'Clicking anything that is not a swatch (or, from level 3, the dab nozzle) does nothing but still costs an action. You cannot click the bucket to fire it.',
+      source: 'cd82.py:551-572, 663-669',
+    },
+    {
+      category: 'feedback',
+      text: 'A throw is animated: the bucket slides toward the canvas, the paint lands, and the bucket slides back.',
+      source: 'cd82.py:683-707',
+    },
+    {
+      category: 'other',
+      text: 'There is no undo. RESET clears the canvas back to White and refills the countdown.',
+      source: 'cd82.py:444, 447-463; arcengine/base_game.py:305-330',
+    },
+    // ---- Level 2 ----
+    {
+      introducedOnLevel: 2,
+      category: 'pieces',
+      text: 'Level 1 has two colors (White and Purple). Level 2 adds Orange. From level 3 there are seven: White, Purple, Orange, Yellow, Green, Red and Blue.',
+      source: 'cd82.py:264-265, 277-279, 292-298',
+    },
+    // ---- Level 3 ----
+    {
+      introducedOnLevel: 3,
+      category: 'pieces',
+      text: 'From level 3 a small nozzle in the current color appears next to the bucket whenever it is at a side station (N, E, S or W). Click the nozzle to dab a block 4 cells wide and 3 deep onto the middle of that side of the canvas. It never appears at corner stations.',
+      source: 'cd82.py:288, 459, 495-518, 560-565, 574-628',
+    },
+  ],
   category: 'evaluation',
   humanDifficulty: 'easy',
   aiDifficulty: 'medium',
