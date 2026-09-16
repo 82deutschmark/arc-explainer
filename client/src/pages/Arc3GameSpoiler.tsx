@@ -423,7 +423,7 @@ export default function Arc3GameSpoiler() {
               {game.levelScreenshots
                 .sort((a: LevelScreenshot, b: LevelScreenshot) => a.level - b.level)
                 .map((screenshot: LevelScreenshot) => (
-                  <div key={screenshot.level} className="border rounded-lg overflow-hidden bg-muted">
+                  <div key={screenshot.imageUrl} className="border rounded-lg overflow-hidden bg-muted">
                     <div className="p-3 bg-muted/80 border-b">
                       <p className="font-semibold text-sm">
                         Level {screenshot.level}
