@@ -253,7 +253,7 @@ export default function Arc3ArchiveGameSpoiler() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {game.levelScreenshots.map((screenshot) => (
-                <div key={screenshot.level} className="space-y-2">
+                <div key={screenshot.imageUrl} className="space-y-2">
                   <img 
                     src={screenshot.imageUrl} 
                     alt={`Level ${screenshot.level}`}

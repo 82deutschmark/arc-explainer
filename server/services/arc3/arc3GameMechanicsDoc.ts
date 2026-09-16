@@ -89,8 +89,9 @@ function formatGame(game: Arc3GameMetadata): string {
         return `- Level ${s.level}: ${SITE_ORIGIN}${s.imageUrl}${caption}`;
       });
     parts.push(
-      `### Level screenshots\n\nThe opening frame of each level, rendered from the game's own source — ` +
-        `the same pixels the game shows on entering that level, with nothing moved yet.\n\n${shots.join('\n')}\n`,
+      `### Level screenshots\n\nUnless a caption says otherwise, the opening frame of each level, rendered ` +
+        `from the game's own source — the same pixels the game shows on entering that level, with ` +
+        `nothing moved yet. Captioned entries may instead be captures of real play.\n\n${shots.join('\n')}\n`,
     );
   }
 
