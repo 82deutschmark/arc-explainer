@@ -76,11 +76,17 @@ them in a slow spreading stain. The win check composites every piece onto a blan
 turn and does a pixel-for-pixel comparison against a level-specific hidden target image.
 
 **`s5i5` — telescoping rods walked onto pins.** Click-only: a two-headed slider handle
-extends or retracts a color-matched rod, and small diamond buttons pivot every rod of that
-color 90° around its fixed anchor. Rods are chained into parent/child groups, so moving a
-base rod drags everything welded to it; any move that would overlap two rods is silently
-undone. The goal is walking a marker riding a rod-tip onto a fixed pin, for every pin, within
-a shrinking click budget.
+extends or retracts every rod of its color (right half grows, left half shrinks), and from
+level 6 small plus-shaped buttons turn every rod of that color a quarter turn counterclockwise
+around its anchor. Rods are chained into parent/child groups, so moving a base rod drags
+everything welded to it; any move that would overlap two rods is undone, and still costs a
+click. The goal is walking a marker riding a rod onto a fixed pin, for every pin, within a
+shrinking click budget.
+
+> Corrected 2026-09-16 (Claude Opus 5): this paragraph first said the rotate buttons were
+> "small diamond buttons" and that a slider moves "a color-matched rod". The rotate buttons
+> are plus/cross shapes (the hollow diamonds are the pins), they exist only on levels 6-8,
+> and a slider drives every rod of its color. See `shared/arc3Games/s5i5.ts`.
 
 **`sb26` — reading a tile belt against a required sequence.** Colored tiles sit in fixed
 slots along a chain of "machine" containers; clicking swaps/arranges them, and a run (Space)
