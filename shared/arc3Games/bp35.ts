@@ -33,6 +33,16 @@
  *            used it to reach the level 8 control tile) and separately "spreads" under
  *            a not-yet-understood rule -- do not conflate the two purple elements.
  *          See docs/2026-09-02-arc3-official-game-studies.md.
+ *          2026-09-16 (Claude Opus 5): added mechanicsBreakdown traced in
+ *          bp35-0a0ad940/bp35.py and run in the engine, and corrected the three text
+ *          fields to match. Owner-confirmed facts kept (spikes kill, the void animation is
+ *          only an animation, level 4's flip block starts above the view). Code settles
+ *          the level-8 "spreading": clicking a plain Purple block removes it and fills
+ *          every empty cell touching it with new Purple. Also corrected: the bar fills up
+ *          (64 actions on levels 1-6, 128 on 7-9) rather than draining; the chaser rises on
+ *          every other wasted move, not only after two failed moves in a row; Orange blocks
+ *          and the Light Pink plus exit exist from levels 3 and 1, not from level 8; level
+ *          5 does show its exit at the start.
  * SRP/DRY check: Pass - Single responsibility for BP35 game data.
  */
 
@@ -42,9 +52,137 @@ export const bp35: Arc3GameMetadata = {
   gameId: 'bp35',
   officialTitle: 'bp35',
   informalName: 'Buoyant Pontoons',
-  description: 'Steer left or right through a flooded shaft; every move automatically carries you further in whichever direction is currently "up" until you hit something solid, and a control tile lets you flip which way that is. The level world is bigger than the viewport shown at start -- the exit and the control tile are routinely off-screen, so every level requires scrolling/exploring to even locate them.',
-  simpleExplanation: 'You only ever move left or right — there is no up/down button. Instead, every sideways move automatically sucks you further in whatever direction is currently "up," and you can\'t opt out of it: move onto an open space and it keeps carrying you until you hit something solid. A red control tile flips which way is "up," so in some levels you sink instead of float -- and that tile is not always on screen when the level starts. On level 4, for example, it sits above the visible frame, so you have to float up first just to discover it exists before you can use it. A hypothesis that only worked on earlier levels (e.g. "always rise") breaks here, and finding the fix means exploring off-screen, not reasoning from what is visible. In levels 1 through 3 only, something rises toward you if you keep failing to gain height, and can end the level if it catches you — but that takes repeated failed moves in a row, so a normal playthrough basically never triggers it. What actually ends most runs is a fixed action budget, shown as a bar filling at the bottom of the screen. More generally: the game world in every level is larger than the viewport you\'re shown at the start. This game does not show you the exit up front on any level -- you have to scroll/explore beyond the starting frame just to find where you\'re going, not just to find the control tile. This is exactly the kind of thing a lot of AI models get wrong: they treat what\'s visible in the first frame as the whole world and reason/plan only over that, instead of treating the starting view as a partial window onto a bigger space that has to be actively explored.',
-  mechanicsExplanation: 'You steer only left and right; there is no direct vertical action. Every left/right step is automatically followed by a slide through any open space in whichever direction currently counts as "up," continuing until you hit something solid -- this is not optional floating, it is a forced pull you cannot decline. A red clickable control tile flips a real boolean that reverses this pull, so later levels can have you sinking instead of rising after the same left/right input. Critically, this control tile is not guaranteed to be visible in the starting viewport -- on level 4 it sits above the frame shown at level start, off-screen, and has to be discovered by floating up before a player even knows it exists. Levels can require the opposite parity from what worked before (level 4 requires sinking, not rising), so a fixed rise/sink hypothesis carried over from earlier levels fails until the off-screen tile is found and toggled. In levels 1-3 only, a background sprite rises one step whenever you fail to gain height on a move, and if it reaches your row the level ends in a loss -- but the code only checks this after a failed move, on top of needing height parity, so it requires repeated failed moves in a row and effectively never triggers in normal play; from level 4 on the check is removed entirely. Regardless of level, a fixed action budget (a bar at the bottom of the screen, roughly double the length in the later levels) drains with every action taken and ends the run at zero. A goal tile ends the level in a win the moment your auto-rise carries you onto it. A purple tile marked with a touch of yellow and white kills you when the auto-rise carries you onto it -- confirmed consistently in live play, not a passage. The death plays out as an animation that looks like being pulled/teleported into the void, but that is purely visual flair on an instant death, not an actual teleport to another location. This is a separate element from the plain, unmarked solid-purple blocks that appear from level 8 on: those behave as buildable/climbable bridge material and separately seem to spread under a rule not yet worked out -- the two purple elements should not be conflated.',
+  description: 'Steer left or right through a flooded shaft; every move automatically carries you further in whichever direction is currently "up" until you hit something solid, and a control tile lets you flip which way that is. The level world is bigger than the viewport shown at start -- the exit and the control tile are routinely off-screen, so nearly every level requires scrolling/exploring to even locate them (level 5 is the one level whose exit is in view at the start).',
+  simpleExplanation: 'You only move left and right. Whenever there is open space in the pull direction -- up, at the start of every level -- you get carried along until something solid stops you, and you cannot opt out. Click blocks to reshape the shaft: Green ones break, Orange ones switch between solid and see-through, Red ones flip the pull, and plain Purple ones break but grow into the empty cells around them. Reach the Light Pink plus, and never get carried into a Purple spike. The view shows only a slice of each level (about 10 rows of a shaft 32 to 50 rows tall), so the exit and the Red blocks usually start off-screen and you have to explore to find them.',
+  mechanicsExplanation: 'You steer only left and right; there is no up or down action. Every sideways step is followed by a forced slide through any open space in whichever direction currently pulls you (up at the start of every level), until something solid stops you. Levels are 11 cells wide and far taller than the view, which scrolls to follow you, so the exit and the Red flip blocks are usually off-screen at the start -- on level 4 the one you need sits just above the starting view. You win by stepping or sliding onto the Light Pink plus. Clicking reshapes the level: a Green block breaks; an Orange block turns into see-through Orange dots you slide through, and clicking those turns them solid again; a Red block (from level 4) flips the pull and is used up, so later levels have you sinking instead of rising; a plain Purple block (from level 8) breaks, but every empty cell touching it fills with new Purple, which is how Purple spreads and how you build bridges with it. Being carried into a Purple spike -- a Purple block with a Black frame and a Yellow and White stripe -- kills you instantly; the shrinking-into-nothing effect is only the death animation. Walking sideways into a spike just bumps. In levels 1-3 a Purple-and-Black mass sits below you and rises one row whenever you make a move that goes nowhere (a bump, or a sideways step with no slide) and your running count of moves and clicks is even; if it reaches your row you lose. It is gone from level 4 on. Every action, including clicks on nothing and Undo, fills one step of a bar along the bottom edge: 64 actions on levels 1-6 (Purple on White), 128 on levels 7-9 (Light Pink, then Purple over it). Filling it ends the attempt. Undo takes back one action, including a gravity flip, but still costs a step.',
+  mechanicsBreakdown: [
+    // ---- Level 1 ----
+    {
+      category: 'controls',
+      text: 'Four actions: Left, Right, Click and Undo. There is no up or down key.',
+      source: 'bp35.py:4479, 4512-4555',
+    },
+    {
+      category: 'controls',
+      text: 'You are a Blue ball. Left or Right moves you one cell sideways; the Yellow side of the ball shows which way you last moved.',
+      source: 'bp35.py:3325-3334, 4077-4090',
+    },
+    {
+      category: 'controls',
+      text: 'After a sideways step, if the cell in the pull direction is open you keep sliding that way until something solid stops you. You cannot stop partway. Every level starts with the pull pointing up.',
+      source: 'bp35.py:4100-4119, 4211-4221, 4040-4044',
+    },
+    {
+      category: 'controls',
+      text: 'Stepping into anything solid (a wall, a block, a spike) is a bump: the ball shakes in place and you do not move, but it still costs an action.',
+      source: 'bp35.py:4197-4209',
+    },
+    {
+      category: 'goal',
+      text: 'The exit is a Light Pink plus with a Black outline. Step sideways onto it or slide onto it to win the level.',
+      source: 'bp35.py:3380-3384, 4096-4099, 4222-4223',
+    },
+    {
+      category: 'pieces',
+      text: 'Black walls with Dark Gray specks are solid and nothing you do changes them.',
+      source: 'bp35.py:3300-3304, 4289-4401',
+    },
+    {
+      category: 'pieces',
+      text: 'Click a Green block and it shrinks away. If it was the block holding you back in the pull direction, you slide on through the gap right away.',
+      source: 'bp35.py:3235-3254, 4294-4304, 4231-4253',
+    },
+    {
+      category: 'controls',
+      text: 'Clicking anything else -- empty space, a wall, a spike, the exit, yourself -- does nothing, but it still costs an action. You can only click what is on screen.',
+      source: 'bp35.py:4289-4293, 4400-4401, 4541-4545',
+    },
+    {
+      category: 'feedback',
+      text: 'The level is 11 cells wide and 32 to 50 rows tall, but the view only shows about 10 rows. It scrolls up and down to follow you, showing a little more space in the direction you are being pulled. The exit is out of view at the start on every level except level 5.',
+      source: 'bp35.py:4040-4050, 4116-4119',
+    },
+    {
+      category: 'budget',
+      text: 'Every action fills one cell of a bar along the bottom edge of the screen: Purple filling a White row from the left. Moves, clicks on nothing and Undo all count. On levels 1-6 the level is lost when the bar hits 64.',
+      source: 'bp35.py:4404-4445, 4512-4555',
+    },
+    {
+      category: 'hazards',
+      text: 'On levels 1-3 a Purple-and-Black mass sits below you. It rises one row whenever you make a move that goes nowhere -- a bump, or a sideways step with no slide -- and your running count of moves and clicks is even. Clicks and slides never raise it. If it reaches your row, you lose.',
+      source: 'bp35.py:3370-3379, 4052-4075, 4102-4113, 4198-4209',
+    },
+    {
+      category: 'controls',
+      text: 'Undo puts the level back one action -- position, blocks and the pull direction -- but it still fills a cell of the bar, even when there is nothing left to undo.',
+      source: 'bp35.py:463-467, 4546-4550',
+    },
+    {
+      category: 'other',
+      text: 'RESET restarts the level and empties the bar.',
+      source: 'bp35.py:4551-4565; arcengine/base_game.py:305-330',
+    },
+    // ---- Level 2 ----
+    {
+      introducedOnLevel: 2,
+      category: 'hazards',
+      text: 'Purple spikes: a Purple block with a Black frame and a Yellow-White-Yellow stripe. If you are carried into one, you die -- the ball shrinks to a dot and vanishes, which is only the death animation. Stepping sideways onto a cell that has a spike right next to it in the pull direction counts too.',
+      source: 'bp35.py:3360-3369, 3438-3502, 4122-4152, 4224-4225',
+    },
+    {
+      introducedOnLevel: 2,
+      category: 'hazards',
+      text: 'Walking sideways straight into a spike is safe: it is only a bump.',
+      source: 'bp35.py:4100, 4197-4209',
+    },
+    // ---- Level 3 ----
+    {
+      introducedOnLevel: 3,
+      category: 'pieces',
+      text: 'Solid Orange block: click it and it turns into a see-through X of Orange dots that you walk and slide through. Click the dots and they turn back into a solid block.',
+      source: 'bp35.py:3275-3284, 3503-3560, 4340-4384, 4217',
+    },
+    // ---- Level 4 ----
+    {
+      introducedOnLevel: 4,
+      category: 'pieces',
+      text: 'Red block: click it and the pull reverses (up becomes down, or back again), the Red block is used up, and you slide the new way at once. It works from anywhere on screen, even when the Red block is buried inside a wall.',
+      source: 'bp35.py:3255-3274, 3561-3626, 4385-4399, 4231-4253',
+    },
+    {
+      introducedOnLevel: 4,
+      category: 'feedback',
+      text: 'Level 4 needs the pull reversed, and none of its Red blocks is in view at the start; the nearest sits just above the starting view.',
+      source: 'bp35.py:3561-3626, 4040-4050',
+    },
+    {
+      introducedOnLevel: 4,
+      category: 'hazards',
+      text: 'The rising Purple-and-Black mass is gone from level 4 on.',
+      source: 'bp35.py:4052-4054',
+    },
+    // ---- Level 5 ----
+    {
+      introducedOnLevel: 5,
+      category: 'hazards',
+      text: 'From level 5 some spikes have the stripe on the other edge, lying on floors for when you are sinking. They kill the same way.',
+      source: 'bp35.py:3365-3369, 3627-3692, 4224',
+    },
+    // ---- Level 7 ----
+    {
+      introducedOnLevel: 7,
+      category: 'budget',
+      text: 'From level 7 the bar allows 128 actions: the bottom row first fills Light Pink, then Purple fills over it. The level is lost when it reaches 128.',
+      source: 'bp35.py:4446-4460',
+    },
+    // ---- Level 8 ----
+    {
+      introducedOnLevel: 8,
+      category: 'pieces',
+      text: 'Plain Purple block (no stripe): solid. Clicking it breaks it, but every empty cell touching it -- above, below, left and right -- fills with a new Purple block. That is how Purple spreads, and how you grow it into a bridge.',
+      source: 'bp35.py:3305-3324, 3818-3884, 4305-4339',
+    },
+  ],
   category: 'evaluation',
   humanDifficulty: 'medium',
   aiDifficulty: 'very-hard',

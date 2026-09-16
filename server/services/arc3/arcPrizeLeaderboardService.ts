@@ -31,12 +31,28 @@
  *          actually publish get that far, so this cannot be used to bounce arbitrary
  *          strings off arcprize.org.
  *
+ *          2026-09-16 (Claude Opus 5): no old data. Each row now carries `recent` (published
+ *          on or after HUMAN_DATA_CUTOFF, 2026-06-18) and the board carries `stats` --
+ *          rows kept of 10, score min/max, fewest / median / most actions and relative
+ *          spread, all over recent wins only -- from computeTop10Stats() in
+ *          shared/arc3Games/humanDifficulty.ts. Old rows stay in `entries` so the page can
+ *          grey them out. `fewestActions` is now the recent-wins number too (it used to
+ *          include old rows), so the page shows no old number even before it reads `stats`.
+ *
  * SRP/DRY check: Pass -- one upstream read plus its cache. HTTP handling is in
  *          server/routes.ts, the leaderboard URL humans click is
- *          arcPrizeLeaderboardUrl() in shared/arc3Games, and no display logic lives here.
+ *          arcPrizeLeaderboardUrl() in shared/arc3Games, the recency cut and the stats are
+ *          the shared pure functions in shared/arc3Games/humanDifficulty.ts, and no display
+ *          logic lives here.
  */
 
 import { getGameById } from '../../../shared/arc3Games';
+import {
+  computeTop10Stats,
+  HUMAN_DATA_CUTOFF,
+  isOnOrAfterCutoff,
+  type Top10Stats,
+} from '../../../shared/arc3Games/humanDifficulty';
 import { logger } from '../../utils/logger';
 
 const LEADERBOARD_ENDPOINT = 'https://arcprize.org/api/leaderboards';
@@ -58,13 +74,20 @@ export interface HumanLeaderboardEntry {
   resets: number;
   endState: string;
   publishedAt: string | null;
+  /** Published on or after HUMAN_DATA_CUTOFF. False rows are old: shown greyed out, left out of `stats`. */
+  recent: boolean;
 }
 
 export interface HumanLeaderboard {
   gameId: string;
+  /** Every row the board returned, best first, old ones included (see `recent`). */
   entries: HumanLeaderboardEntry[];
-  /** Fewest actions among winning runs, or null when nobody has won it yet. */
+  /** Fewest actions among RECENT winning rows, or null when there are none. Same as stats.fewestActions. */
   fewestActions: number | null;
+  /** The recency cutoff the rows were marked against (ISO). */
+  recentCutoff: string;
+  /** Spread over recent winning rows only. */
+  stats: Top10Stats;
   fetchedAt: string;
 }
 
@@ -91,13 +114,16 @@ function normalizeEntry(raw: unknown): HumanLeaderboardEntry | null {
   const score = typeof row.score === 'number' ? row.score : null;
   const actions = typeof row.actions === 'number' ? row.actions : null;
   if (!userName || score === null || actions === null) return null;
+  const publishedAt = typeof row.published_at === 'string' ? row.published_at : null;
   return {
     userName,
     score,
     actions,
     resets: typeof row.resets === 'number' ? row.resets : 0,
     endState: typeof row.end_state === 'string' ? row.end_state : 'UNKNOWN',
-    publishedAt: typeof row.published_at === 'string' ? row.published_at : null,
+    publishedAt,
+    // An undated row cannot pass the cut, so it counts as old.
+    recent: isOnOrAfterCutoff(publishedAt),
   };
 }
 
@@ -127,11 +153,13 @@ async function fetchFromArcPrize(gameId: string): Promise<HumanLeaderboard> {
         return aWon - bWon || b.score - a.score || a.actions - b.actions;
       });
 
-    const wins = entries.filter((e) => e.endState === 'WIN');
+    const stats = computeTop10Stats(entries, HUMAN_DATA_CUTOFF);
     return {
       gameId,
       entries,
-      fewestActions: wins.length > 0 ? Math.min(...wins.map((e) => e.actions)) : null,
+      fewestActions: stats.fewestActions,
+      recentCutoff: HUMAN_DATA_CUTOFF,
+      stats,
       fetchedAt: new Date().toISOString(),
     };
   } finally {

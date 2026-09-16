@@ -18,6 +18,10 @@
  *          by server/services/arc3/arc3GameMechanicsDoc.ts and linked at the top for
  *          agents. Both read shared/arc3Games, so neither can drift from the other.
  *
+ *          2026-09-16 (Claude Opus 5): added the tutorial card right under the intro,
+ *          quoting François Chollet (from his recent post on X) in the owner's wording:
+ *          the 25 public games are the tutorial for the private set.
+ *
  * SRP/DRY check: Pass -- presentation + client-side filtering only, over the shared
  *          registry. Reuses shadcn Card, Badge and Input, and the getAllGames helper
  *          rather than re-sorting the registry locally. No mechanics text lives in this
@@ -27,7 +31,7 @@
 
 import React from 'react';
 import { Link } from 'wouter';
-import { BookOpen, FileText, ExternalLink, AlertTriangle, Gamepad2, Trophy, Search, X } from 'lucide-react';
+import { BookOpen, FileText, ExternalLink, AlertTriangle, Gamepad2, GraduationCap, Trophy, Search, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -93,6 +97,36 @@ function GameGridTile({ game }: { game: Arc3GameMetadata }) {
         <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{game.simpleExplanation}</p>
       </div>
     </Link>
+  );
+}
+
+/**
+ * What these 25 games are for, said before anything else on the page: they are the
+ * tutorial for the private set, in François Chollet's framing.
+ */
+function TutorialFramingCard({ gameCount }: { gameCount: number }) {
+  return (
+    <Card className="mb-6 border-2 border-foreground/15">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl flex items-center gap-2">
+          <GraduationCap className="h-5 w-5" />
+          These {gameCount} games are the tutorial
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm leading-relaxed">
+        <blockquote className="border-l-2 border-muted-foreground/30 pl-3">
+          <p className="text-base">
+            “This is the tutorial. These {gameCount} games, you should consider this the tutorial for the
+            private set.”
+          </p>
+          <footer className="mt-1 text-muted-foreground">— François Chollet</footer>
+        </blockquote>
+        <p>
+          They don't cover everything the private set will throw at you, but learn how these {gameCount} work
+          and you should be able to do okay on it.
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -194,6 +228,8 @@ export default function Arc3GamesIndex() {
           mechanics and control mapping on one page.
         </p>
       </div>
+
+      <TutorialFramingCard gameCount={live.length} />
 
       <div className="mb-8 space-y-3">
         <div className="relative">

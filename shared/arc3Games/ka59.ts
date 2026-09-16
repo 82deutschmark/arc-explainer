@@ -11,6 +11,14 @@
  *          replay on this game -- and its raw NDJSON recording committed under arc3/.
  *          Later the same day its session score of 84.57 was added, having been held off
  *          the page by 9.78.0 on a direction the owner never actually gave.
+ *          2026-09-16 (Claude Opus 5, mechanics breakdown pass): added mechanicsBreakdown,
+ *          read from ka59.py (build 38d34dbb) and run in the engine on levels 1, 3, 5 and 6.
+ *          Corrected the text: bumping a piece is not "several turns of continued pushing" --
+ *          one arrow press knocks it about 15 cells in a single move while your box stays put;
+ *          purple areas stop the box you drive but not a knocked piece, which slides on until
+ *          it is clear of the purple; bombs are fuses that fill one row per arrow press and
+ *          blast in one direction, then re-arm; the win check is that every frame is filled.
+ *          Levels 1-2 have no special block. Kept the per-level special block counts.
  * SRP/DRY check: Pass - Single responsibility for KA59 game data.
  */
 
@@ -20,9 +28,81 @@ export const ka59: Arc3GameMetadata = {
   gameId: 'ka59',
   officialTitle: 'ka59',
   informalName: 'Kinetic Assembly',
-  description: 'Chain-push boxes until each sits exactly in its outline frame; a bomb-knocked block (sometimes two at once) joins in later levels.',
-  simpleExplanation: 'You push boxes until each one sits exactly in its matching outline. Pushing into another box takes a few turns to move it along, and a special block can only be moved by being pushed or knocked into place.',
-  mechanicsExplanation: 'Click a box to select it, then push it with the arrow actions. Pushing into another movable object doesn\'t move it instantly -- it takes several turns of continued pushing, with recursive chain-pushing of anything further in line, before the push resolves. Every ordinary box must end up sitting exactly inside its matching outlined frame. A special block -- never directly selectable -- can only be repositioned by being pushed by a box or, in later levels, knocked around by a bomb\'s blast once its fuse burns down; most levels give you one of these blocks with its own frame to land in, but level 3 drops two of them at once outnumbering that level\'s single regular box, and level 5\'s special block has no frame at all, so where it ends up is never checked. A step budget ends the level in a loss if it runs out first.',
+  description: 'Drive one green box at a time and knock the other pieces around until every outline frame on the board holds a piece of its size. Bumping a piece sends it flying about 15 cells; from level 5, bombs on a fuse blast pieces too.',
+  simpleExplanation: 'Click a green box to pick it, then move it with the arrow keys, 3 cells at a time. Drive it into another piece and your box stays put while the other piece gets knocked about 15 cells away. Fill every dark gray outline frame with a piece that fits it exactly before your steps run out.',
+  mechanicsExplanation: 'Click a green box to select it (the selected box has a white center), then each arrow press moves it 3 cells. If the move would run into another piece -- another box, a yellow special block, or a bomb -- your box does not move; instead that piece is knocked about 15 cells in that direction in one go, shoving anything further in line along with it, until a wall stops it. Purple areas stop the box you are driving, but a knocked piece slides right across them, and one that would stop on purple keeps sliding until it is clear. The level is won the moment every dark gray outline frame holds a piece of exactly its size: the small frames want green boxes, the large ones want the yellow special blocks, which you can never select and can only move by knocking them. Levels 1 and 2 have no special block, level 3 has two, levels 4, 6 and 7 have one, and level 5 has one placed off the visible board with no frame, so it plays no part. From level 5, bombs fill with orange one row per arrow press; when the last row fills, the bomb shoots an orange blast out of one side that knocks whatever it hits, then turns dark red and starts filling again. Every click and every arrow press costs one step, whether or not anything moves: budgets are 100, 127, 100, 127, 100, 150 and 200. Run out and you lose.',
+  mechanicsBreakdown: [
+    {
+      category: 'controls',
+      text: 'Click a green box to select it. The selected box has a white center; the others have a dark center. Every click costs 1 step, even on empty floor or on the box that is already selected.',
+      source: 'ka59.py:41101-41112, 41136-41140, 41153-41156, 41448-41457',
+    },
+    {
+      category: 'controls',
+      text: 'Arrow keys move the selected box 3 cells. Every arrow press costs 1 step, including one where the box is blocked and does not move.',
+      source: 'ka59.py:41041, 41158-41178, 41380-41447',
+    },
+    {
+      category: 'controls',
+      text: 'There is no undo. RESET restarts the level with a full budget.',
+      source: 'ka59.py:41133, 41136-41151; arcengine/base_game.py:305-329',
+    },
+    {
+      category: 'pieces',
+      text: 'Driving into another piece does not move your box. Instead the piece you hit is knocked in that direction, 3 cells a frame for 5 frames (about 15 cells), all in one move. Anything in its way gets shoved along with it. If the piece at the far end of the line is against a wall, nothing in the line moves, and the knock is over.',
+      source: 'ka59.py:41042, 41180-41201, 41250-41260, 41319-41334, 41380-41390',
+    },
+    {
+      category: 'pieces',
+      text: 'Gray walls stop everything. Purple areas only stop the box you are driving: a knocked piece slides straight across purple, and if it would come to rest on purple it keeps sliding until it is clear. On level 1, a box sitting 12 cells left of the purple strip and knocked right travels 18 cells instead of 15 for that reason.',
+      source: 'ka59.py:41158-41178, 41180-41201, 41250-41255',
+    },
+    {
+      category: 'goal',
+      text: 'Dark gray outline frames are the targets. The level is won the moment every frame has a piece sitting exactly inside it, one cell in from the outline on all sides, so the piece has to be the frame\'s size. Pieces with no frame to fill do not matter.',
+      source: 'ka59.py:41093-41098, 41262-41273, 41458-41460',
+    },
+    {
+      category: 'feedback',
+      text: 'All green boxes have a green outline. On the selected box, any side that is touching another piece turns white, and a white line flashes on the side you bumped while the knocked piece slides away.',
+      source: 'ka59.py:41275-41304, 41306-41318, 41386-41390',
+    },
+    {
+      category: 'budget',
+      text: 'The bottom row is the step bar: dark gray for what is left, turning white from the right as you spend. Budgets are 100, 127, 100, 127, 100, 150 and 200 steps for levels 1 to 7. When it hits zero you lose, unless that last step completed the board.',
+      source: 'ka59.py:41051-41086, 41147-41151, 41458-41462, 40946, 40962, 40975, 40989, 41005, 41020, 41036',
+    },
+    {
+      introducedOnLevel: 2,
+      category: 'pieces',
+      text: 'Boxes and frames come in more shapes: 3x3, 3 wide by 6 tall, 6 wide by 3 tall, and 6x6. Each frame only counts a box of its own shape.',
+      source: 'ka59.py:40948-40963, 41093-41098',
+    },
+    {
+      introducedOnLevel: 3,
+      category: 'pieces',
+      text: 'Yellow special blocks (9x9) with their own larger frames. You cannot select them: the only way to move one is to knock it with a box (or, later, a bomb blast). Level 3 has two of them and only one green box.',
+      source: 'ka59.py:40964-40976, 41262-41273',
+    },
+    {
+      introducedOnLevel: 5,
+      category: 'hazards',
+      text: 'Bombs: dark red squares that fill with orange one row for every arrow press (clicks do not count). When the last row fills, the bomb shoots an orange blast out of the side the fill was heading toward, growing 3 cells a frame, and knocks anything it touches the same way, your own box included. Then the bomb goes dark red and starts filling again. Small bombs go off every 3 presses, big ones every 6.',
+      source: 'ka59.py:40991-41006, 41227-41248, 41335-41379',
+    },
+    {
+      introducedOnLevel: 5,
+      category: 'pieces',
+      text: 'Bombs are pieces too: drive into one and it gets knocked like anything else, so you can move a bomb to aim its blast.',
+      source: 'ka59.py:41089-41090, 41158-41178, 41180-41201',
+    },
+    {
+      introducedOnLevel: 5,
+      category: 'other',
+      text: 'Level 5\'s special block (a small blue one) is placed outside the visible board and has no frame, so it plays no part. The level itself is one green box, one frame and five bombs, with the box starting inside a purple pocket that the big bomb caps.',
+      source: 'ka59.py:40991-41006',
+    },
+  ],
   category: 'evaluation',
   humanDifficulty: 'medium',
   aiDifficulty: 'medium',

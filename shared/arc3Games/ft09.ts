@@ -7,6 +7,15 @@
  *          a target to match), the real win condition is scattered match/mismatch
  *          markers, every level has a click budget that can lose the game, and one
  *          tile type recolors several neighbors per click, not just itself.
+ *
+ * 2026-09-16 (Claude Opus 5, mechanics breakdown pass): added mechanicsBreakdown, read from
+ *          ft09.py (build 0d8bbf25) and run in the engine on all 6 levels. Rewrote the three
+ *          text fields to say exactly how a marker reads (white edge cell = that tile must be
+ *          the center color, gray = must not be, dark gray = no tile there), that only tile
+ *          clicks spend the budget, that the budget is fixed per level rather than shrinking,
+ *          and that the pink-dotted tiles on levels 5-6 recolor themselves plus the neighbors
+ *          their pink dots point at (level 6: every tile, and only the tile above). Hint 2
+ *          said every click counts; only tile clicks do.
  * SRP/DRY check: Pass - Single responsibility for FT09 game data.
  */
 
@@ -16,9 +25,92 @@ export const ft09: Arc3GameMetadata = {
   gameId: 'ft09',
   officialTitle: 'ft09',
   informalName: 'Functional Tiles',
-  description: 'Satisfy small color-matching and color-clashing markers scattered across the grid, under a shrinking click budget.',
-  simpleExplanation: 'Markers scattered across the board each want their neighboring tiles to either match or clash in color. Clicking a tile cycles its color; get every marker satisfied at once before you run out of clicks.',
-  mechanicsExplanation: 'Small marker sprites are scattered all over each level (not just in one corner), and each one demands that its neighboring tiles either match or clash in color. The level is won only once every single marker\'s rule holds at once -- there is no "dominant color" that overrides a conflicting one; one unsatisfied marker fails the whole level. The block of colors that sits near the top-right in most levels is not a target picture to copy -- it\'s just an ordered list of the colors that level actually uses (and each tile\'s default color). Clicking a tile normally advances it through that level\'s color list, a plain round-robin, though one special tile type recolors itself and up to four orthogonal neighbors at once in a single click. Every level also gives you a limited number of clicks, shown as a draining bar along the bottom edge; run out before every marker is satisfied and you lose the level outright.',
+  description: 'Click tiles to cycle their colors until every small marker on the board is satisfied, within a fixed click budget per level.',
+  simpleExplanation: 'The board is a grid of colored tiles with a few small marker squares mixed in. Each marker has a colored center and a border: a white border cell means the tile on that side must be the center color, a gray one means it must not be. Clicking a tile steps it to the next color. Satisfy every marker at once before your tile clicks run out.',
+  mechanicsExplanation: 'Every level is a grid of 3x3 tiles with a few 3x3 markers set in among them. A marker\'s center color is its target, and each of its eight border cells points at the tile on that side, diagonals included: white means that tile must be the target color, gray means it must be any other color, and dark gray (from level 5) means there is no tile on that side. Clicking a tile moves it to the next color in the level\'s list and wraps around; that list is shown as small swatches at the top right from level 2, and every tile starts on the first one. The level ends the moment every marker is satisfied. Only clicks on tiles cost anything: 32 on levels 1 and 2, 96 on levels 3 and 4, 128 on levels 5 and 6, shown as an orange bar along the bottom that gives way to yellow as you spend it. Run out before the board is solved and you lose. Level 1 shows three solved example boards and puts the real one in gray corner brackets that flash if you click outside the tiles. Level 4 is the only level with three colors in the cycle. Level 5 adds tiles with pink dots on their edges: clicking one recolors it and every neighbor a pink dot points at. On level 6 every tile has a single pink dot on its top edge, so a click recolors that tile and the tile above it. There is no undo; RESET restarts the level.',
+  mechanicsBreakdown: [
+    {
+      category: 'controls',
+      text: 'Click a tile (a solid 3x3 colored square) to move it to the next color in the level\'s color list. After the last color it wraps back to the first. Each tile click costs 1 from the budget.',
+      source: 'ft09.py:2369-2385, 2410-2424, 2431-2432',
+    },
+    {
+      category: 'controls',
+      text: 'Clicking anything that is not a tile (a marker, a gap, the background, the color swatches) does nothing and costs nothing.',
+      source: 'ft09.py:2386-2392',
+    },
+    {
+      category: 'controls',
+      text: 'Clicking is the only action. There is no undo. RESET restarts the level with a full budget.',
+      source: 'ft09.py:2306; arcengine/base_game.py:305-329',
+    },
+    {
+      category: 'goal',
+      text: 'Markers are small 3x3 squares set in among the tiles. The center color is the target. Each of the eight border cells points at the neighboring tile on that side, diagonals included.',
+      source: 'ft09.py:2436-2520',
+    },
+    {
+      category: 'goal',
+      text: 'A white border cell means the tile on that side must be the target color. A gray border cell means that tile must be any other color. Two markers can share a tile, and then both rules apply to it.',
+      source: 'ft09.py:2436-2520',
+    },
+    {
+      category: 'goal',
+      text: 'The level is won the moment every marker is satisfied at once, and the next level loads straight away. The click that solves it does not use up budget.',
+      source: 'ft09.py:2426-2429',
+    },
+    {
+      category: 'budget',
+      text: 'The bottom row is the click bar: orange for what is left, yellow for what you have spent. Budgets are 32, 32, 96, 96, 128 and 128 tile clicks, refilled at each new level. Hit zero before the board is solved and you lose.',
+      source: 'ft09.py:2064, 2093, 2133, 2169, 2220, 2260, 2272-2298, 2308-2312, 2431-2432',
+    },
+    {
+      category: 'other',
+      text: 'Level 1 is a lesson: three solved example boards, each a ring of tiles around a marker, and the real puzzle in the lower right inside gray corner brackets. It uses blue and red only.',
+      source: 'ft09.py:2040-2069',
+    },
+    {
+      category: 'feedback',
+      text: 'On level 1, clicking outside the tiles (anywhere but a tile or the marker) makes the gray corner brackets around the real puzzle flash white twice, pointing you at it. It costs nothing.',
+      source: 'ft09.py:2319-2322, 2355-2363, 2386-2390',
+    },
+    {
+      introducedOnLevel: 2,
+      category: 'feedback',
+      text: 'Small color swatches at the top right list the level\'s colors in click order. The first swatch is the color every tile starts in.',
+      source: 'ft09.py:2071-2098, 2341-2348',
+    },
+    {
+      introducedOnLevel: 2,
+      category: 'goal',
+      text: 'More than one marker on a board, so tiles between two markers have to suit both.',
+      source: 'ft09.py:2071-2098',
+    },
+    {
+      introducedOnLevel: 4,
+      category: 'pieces',
+      text: 'Three colors in the cycle (blue, red, orange), so a tile can take two clicks to reach the color you want.',
+      source: 'ft09.py:2140-2174',
+    },
+    {
+      introducedOnLevel: 5,
+      category: 'goal',
+      text: 'Dark gray border cells on a marker: there is no tile on that side, so there is nothing to check there.',
+      source: 'ft09.py:2176-2225, 2446-2449',
+    },
+    {
+      introducedOnLevel: 5,
+      category: 'pieces',
+      text: 'Tiles with pink dots on their edges. Clicking one recolors it and every neighboring tile a pink dot points at, each one step along the color list. Level 5 has three of these, each with four dots (up, down, left, right).',
+      source: 'ft09.py:2176-2225, 2377-2381, 2400-2424',
+    },
+    {
+      introducedOnLevel: 6,
+      category: 'pieces',
+      text: 'Every tile on level 6 has one pink dot on its top edge, so each click recolors that tile and the tile directly above it (if there is one).',
+      source: 'ft09.py:2227-2265, 2400-2424',
+    },
+  ],
   category: 'preview',
   humanDifficulty: 'easy',
   aiDifficulty: 'easy',
@@ -35,7 +127,7 @@ export const ft09: Arc3GameMetadata = {
     {
       id: 'ft09-hint-2',
       title: 'Color Cycling and a Hidden Click Budget',
-      content: 'Clicking a tile advances it through that level\'s fixed color list, wrapping back to the start -- a plain round-robin, not a smart toggle. One special tile type also recolors its neighbors, not just itself. Every level also caps your total clicks, shown as a draining bar; run out and you lose.',
+      content: 'Clicking a tile advances it through that level\'s fixed color list, wrapping back to the start -- a plain round-robin, not a smart toggle. One special tile type also recolors its neighbors, not just itself. Every level also caps your tile clicks (clicks anywhere else are free), shown as a draining bar; run out and you lose.',
       spoilerLevel: 1,
     }
   ],

@@ -3,6 +3,8 @@
  * Date: 2026-01-09
  * PURPOSE: TypeScript interfaces and types for Arc3 game metadata, including embedded replay videos.
  *          Extended to describe featured MP4 assets rendered on spoiler pages.
+ *          2026-09-16 (Claude Opus 5): added MechanicPoint + mechanicsBreakdown for the
+ *          per-game bullet list of every mechanic confirmed in source.
  * SRP/DRY check: Pass - Centralizes shared typing for ARC3 metadata consumers.
  */
 
@@ -66,6 +68,26 @@ export interface GameResource {
 }
 
 /**
+ * One mechanic, as a single bullet on the game page. Every bullet is something that was
+ * confirmed in the game's own source (external/ARCEngine/environment_files/<id>/<hash>/)
+ * or seen in a human run and then confirmed in source -- never a sprite-name guess.
+ * Added 2026-09-16 (Claude Opus 5) for the per-game mechanics breakdown.
+ */
+export interface MechanicPoint {
+  /**
+   * First level this mechanic appears on (1-based). Omit when it is there from level 1.
+   * The page groups bullets by this, so a reader sees "New on level 2" as its own list.
+   */
+  introducedOnLevel?: number;
+  /** What kind of mechanic this is -- used to order bullets inside a level group. */
+  category: 'controls' | 'goal' | 'pieces' | 'hazards' | 'budget' | 'feedback' | 'other';
+  /** The bullet itself: one plain-English sentence or two, no source jargon. */
+  text: string;
+  /** Where it was confirmed, e.g. "tu93.py:1450-1471" -- shown in small print. */
+  source?: string;
+}
+
+/**
  * Screenshot of a specific game level
  */
 export interface LevelScreenshot {
@@ -107,13 +129,21 @@ export interface Arc3GameMetadata {
   /** Detailed explanation of the game mechanics (full spoiler) */
   mechanicsExplanation?: string;
 
+  /**
+   * Every mechanic found in the game code, as bullets grouped by the level that
+   * introduces them. The complete list; `simpleExplanation` stays the short version.
+   */
+  mechanicsBreakdown?: MechanicPoint[];
+
   /** Category: preview (public from start) or evaluation (held back) */
   category: GameCategory;
 
   /**
-   * Difficulty for human players, derived from the ARC Prize human leaderboard's action
-   * counts (relative spread across the top 10, plus whether any of them needed a reset).
-   * See server/scripts/compute-arc3-difficulty.ts.
+   * RETIRED 2026-09-16 -- read only by the legacy archive pages. It was set by hand from a
+   * rule that rated a game 'hard' when 2+ of the top 10 had used a reset, which is why TU93
+   * read "hard". The live game page no longer shows it: it computes "Human (top 10)" and
+   * "Human (Mark)" from shared/arc3Games/humanDifficulty.ts (recent rows only, cut at
+   * 2026-06-18), and server/scripts/compute-arc3-difficulty.ts prints both beside this field.
    */
   humanDifficulty: DifficultyRating;
 

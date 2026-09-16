@@ -12,6 +12,24 @@
 # reference the old numbers.
 
 
+### Version 9.88.0  Sep 16, 2026
+
+- **ARC-3 game pages: every mechanic as bullets, action counts up top, two human difficulty ratings, and the tutorial framing** (Author: Claude Opus 5)
+  - **What and why.** The owner is playing through all 25 public games and kept finding things the pages missed. The TU93 page never mentioned the level-2 Red enemy you kill from the side and die to head-on. SU15 never explained the ring that shows the suction reach. Plan: `docs/2026-09-16-arc3-game-pages-glowup-plan.md`.
+  - **Every Mechanic.** New `MechanicPoint` / `mechanicsBreakdown` in `shared/arc3Games/types.ts` (exported from `index.ts`). All 25 public games in `shared/arc3Games/*.ts` got a bullet list read from the live build's source, grouped by the level that introduces each mechanic, with `file:line` sources. Five agents did five games each, running the engine where they could. Wrong text was fixed along the way. TU93's description, plain-English text and mechanics were rewritten: one hit kills, and there is no "worn down" lose condition. The level-7 follower copies your move from two turns back, not one. Enemies start on level 2, not level 7. The new game-page card renders these bullets right after In Plain English.
+  - **Dropped from every page: "RESET twice in a row sends you back to level 1."** That is what `arcengine/base_game.py` does locally, but the committed sp80 recording shows back-to-back RESETs keeping progress on the live site, so the claim is not stated anywhere.
+  - **Action counts up top** on every game page (`client/src/pages/Arc3GameSpoiler.tsx`): ARC baseline actions (from `metadata.json`), fewest and median top-10 actions, and Mark's best recent run.
+  - **Two human ratings replace one.**
+    - **"Human (top 10)"** uses the live ARC Prize board's action spread over rows published on or after 2026-06-18. It needs 3 or more recent wins, with cuts at 0.20 and 0.50, and the reset rule is gone. That rule alone made TU93 "hard"; TU93 now reads easy.
+    - **"Human (Mark)"** is calibrated to the owner's own median effort (actions against baseline, counting failed runs before the win) across his recent live-build scorecards.
+    - Every one of the 250 leaderboard rows scores 100; the Human Records card now says so and greys out rows older than 90 days.
+    - New files: `shared/arc3Games/humanDifficulty.ts` (pure functions), `shared/arc3Games/humanPlay.generated.json` (baselines plus recent runs: no user id, no cookie), `scripts/arc3/pull_human_scorecards.py` (cookie read from outside the repo, re-run by hand), and `tests/unit/shared/humanDifficulty.test.ts`.
+    - `arcPrizeLeaderboardService.ts` adds row recency and stats; `compute-arc3-difficulty.ts` now prints the new ratings.
+    - The per-game `humanDifficulty` field is retired: only the legacy archive pages read it.
+  - **Index page** (`client/src/pages/Arc3GamesIndex.tsx`): a card up top quoting François Chollet that the 25 games are the tutorial for the private set.
+  - **Not touched:** the AI difficulty badge (owner's call).
+  - **Verification.** `npx tsc --noEmit -p tsconfig.json`: 12 errors, the unchanged baseline. `npx vitest run tests/unit`: 9 files, 142 tests, all passed. Scorecards were re-pulled just before commit, which picked up the owner's TU93 win (297 actions).
+
 ### Version 9.87.0  Sep 16, 2026
 
 - **su15 has no numbered blocks, and the two legends that make it playable were never on the page** (Author: Claude Opus 5)
