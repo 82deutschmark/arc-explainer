@@ -100,12 +100,26 @@ instant its lit pattern matches a known sigil — teleport, grow/shrink, or a di
 fireball that destroys crystal obstacles. Spells are gated per level (drawing an unlocked
 sigil does nothing), and a shared move-and-click budget ends the level if exhausted.
 
-**`su15` — pulling blocks together until the count is exact.** A magnetic click pulls every
-nearby numbered block toward it; two same-tier blocks that touch fuse into the next tier,
-Suika-style, while diamond hazard critters merge among themselves and demote any block that
-touches one instead. Each level's win condition is an *exact* head-count of specific block
-and/or critter tiers sitting in a marked zone simultaneously — not a minimum. Undo is
-available but costs escalating steps each consecutive use.
+**`su15` — pulling blocks together until the count is exact.** A vacuum click pulls every
+piece within about 8 cells toward it; a touching cluster of same-size blocks caught by that
+click collapses into a single block one size up, while small lander-shaped creatures merge
+among themselves along their own three-step chain and knock any block that touches one down
+a size. Each level's win condition is an *exact* head-count of specific block and/or creature
+tiers sitting in the blue circles simultaneously — not a minimum, and the counts pool across
+every circle on the board. Two legends in the unclickable header strip carry the information
+you need: the size chain at top-left, and one life-size copy of each required piece at
+top-center. Undo is free; the escalating step cost is charged for driving two different-size
+pieces into each other.
+
+> Corrected 16-Sep-2026 (Claude Opus 5) against build `su15-1944f8ab`, after the site owner
+> cleared all 9 levels and reported the write-up did not match the game. This paragraph
+> previously said "nearby **numbered** block", "two same-tier blocks that touch fuse into the
+> next tier, Suika-style", "**diamond** hazard critters", "a marked zone", and "Undo is
+> available but costs escalating steps each consecutive use". Nothing in this game renders a
+> digit — the nine tiers differ only in size and color, and the sprite assets are merely
+> *named* `"0"`..`"8"`, which is the likely source of the error. Merging is per-cluster, not
+> pairwise. The Undo claim was already corrected in `shared/arc3Games/su15.ts` on 12-Sep-2026
+> but was left standing here. The two legends were never mentioned at all.
 
 **`tn36` — deducing an opcode table before the clock scrolls out.** Two side-by-side panels
 each hold a token, a bank of binary toggle switches, and a target marker; the switches'
@@ -158,7 +172,7 @@ letters, in order) and grounded in the mechanics above:
 | S5I5 | **S**liding **I**ndicator | Extending/rotating rods to walk a tip-mounted indicator marker onto each pin. |
 | SB26 | **S**equence **B**elt | A belt of tiles read in order against a required color sequence. |
 | SC25 | **S**igil **C**aster | Drawing a lit pattern (sigil) on a toggle grid auto-casts a spell. |
-| SU15 | **S**orting **U**rn | Pulling and merging numbered blocks until an exact tiered mix sits in the goal zone. |
+| SU15 | **S**ucking **U**p | Vacuum-pulling and merging same-size blocks until an exact mix sits in the blue circles. (Renamed 16-Sep-2026 at the owner's direction; was "Sorting Urn".) |
 | TN36 | **T**oggle **N**avigator | Toggling binary switches to compose the opcode that navigates a token onto its target. |
 | TU93 | **T**rail **U**nwind | Hazards that unwind and replay your own trail against you, while your move budget unwinds too. |
 
