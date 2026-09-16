@@ -1,0 +1,105 @@
+{
+ "1": [
+  "DOWN",
+  "LEFT",
+  "DOWN"
+ ],
+ "2": [
+  "RIGHT",
+  "DOWN",
+  "LEFT"
+ ],
+ "3": [
+  "RIGHT",
+  "DOWN",
+  "UP",
+  "LEFT",
+  "DOWN",
+  "LEFT",
+  "RIGHT",
+  "LEFT",
+  "UP",
+  "RIGHT",
+  "DOWN",
+  "RIGHT",
+  "LEFT",
+  "RIGHT",
+  "LEFT",
+  "UP"
+ ],
+ "4": [
+  "RIGHT",
+  "UP",
+  "LEFT",
+  "UP"
+ ],
+ "5": [
+  "RIGHT",
+  "UP",
+  "LEFT",
+  "DOWN",
+  "RIGHT",
+  "UP",
+  "LEFT",
+  "UP",
+  "DOWN",
+  "UP",
+  "DOWN",
+  "UP",
+  "DOWN",
+  "RIGHT"
+ ],
+ "6": [
+  "LEFT",
+  "UP",
+  "RIGHT",
+  "DOWN",
+  "LEFT",
+  "RIGHT",
+  "LEFT",
+  "UP"
+ ],
+ "7": [
+  "LEFT",
+  "RIGHT",
+  "UP",
+  "LEFT",
+  "DOWN",
+  "RIGHT",
+  "DOWN",
+  "LEFT",
+  "UP"
+ ],
+ "8": [
+  "DOWN",
+  "UP",
+  "RIGHT",
+  "LEFT",
+  "DOWN",
+  "UP",
+  "RIGHT",
+  "LEFT",
+  "DOWN",
+  "UP",
+  "RIGHT",
+  "DOWN",
+  "LEFT",
+  "UP",
+  "RIGHT",
+  "UP",
+  "LEFT"
+ ],
+ "9": [
+  "RIGHT",
+  "UP",
+  "LEFT",
+  "RIGHT",
+  "DOWN",
+  "LEFT",
+  "DOWN",
+  "RIGHT",
+  "UP",
+  "LEFT",
+  "DOWN"
+ ]
+}

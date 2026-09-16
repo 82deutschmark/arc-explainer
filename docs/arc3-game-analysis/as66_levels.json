@@ -1,0 +1,2085 @@
+{
+ "1": {
+  "fieldCols": 12,
+  "fieldRows": 12,
+  "cellPixels": 4,
+  "fieldOriginPx": [
+   8,
+   8
+  ],
+  "greenSideAtStart": "TOP",
+  "grid": [
+   "FFFFFF44FF4F",
+   "F4FFFFF444FF",
+   "FF44FF4484FF",
+   "FF444FFFFFFF",
+   "F44444FFFFFF",
+   "FF44FFFFF4FF",
+   "FFFFFFF444FF",
+   "FFFFFFF444FF",
+   "FFF0F0FF4F4F",
+   "FFF000FFFFFF",
+   "FFFFFFFFFFFF",
+   "FFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    6,
+    0
+   ],
+   [
+    7,
+    0
+   ],
+   [
+    10,
+    0
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    7,
+    1
+   ],
+   [
+    8,
+    1
+   ],
+   [
+    9,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    6,
+    2
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    9,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    9,
+    5
+   ],
+   [
+    7,
+    6
+   ],
+   [
+    8,
+    6
+   ],
+   [
+    9,
+    6
+   ],
+   [
+    7,
+    7
+   ],
+   [
+    8,
+    7
+   ],
+   [
+    9,
+    7
+   ],
+   [
+    8,
+    8
+   ],
+   [
+    10,
+    8
+   ]
+  ],
+  "enemies": [],
+  "cups": [
+   {
+    "pocket": [
+     4,
+     8
+    ],
+    "opening": "UP",
+    "backWallCenter": [
+     4,
+     9
+    ],
+    "requiredColor": null,
+    "whiteCells": [
+     [
+      3,
+      9
+     ],
+     [
+      5,
+      9
+     ],
+     [
+      3,
+      8
+     ],
+     [
+      5,
+      8
+     ]
+    ]
+   }
+  ],
+  "colorBars": [],
+  "playerBlocks": [
+   {
+    "color": 8,
+    "cell": [
+     8,
+     2
+    ]
+   }
+  ]
+ },
+ "2": {
+  "fieldCols": 12,
+  "fieldRows": 12,
+  "cellPixels": 4,
+  "fieldOriginPx": [
+   8,
+   8
+  ],
+  "greenSideAtStart": "LEFT",
+  "grid": [
+   "FFFFFFFFFFFF",
+   "FF4FFFFFFFFF",
+   "F4FFFFFFFFFF",
+   "FFFFFFF4FFFF",
+   "FFFFFF444FFF",
+   "FFFFFF444BFF",
+   "FFFFFF44FFFF",
+   "F00FFFFFFFFF",
+   "F0FFFF44FFFF",
+   "F00FF444FF4F",
+   "FFFFFFFFF4FF",
+   "FFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    2,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    7,
+    3
+   ],
+   [
+    6,
+    4
+   ],
+   [
+    7,
+    4
+   ],
+   [
+    8,
+    4
+   ],
+   [
+    6,
+    5
+   ],
+   [
+    7,
+    5
+   ],
+   [
+    8,
+    5
+   ],
+   [
+    6,
+    6
+   ],
+   [
+    7,
+    6
+   ],
+   [
+    6,
+    8
+   ],
+   [
+    7,
+    8
+   ],
+   [
+    5,
+    9
+   ],
+   [
+    6,
+    9
+   ],
+   [
+    7,
+    9
+   ],
+   [
+    10,
+    9
+   ],
+   [
+    9,
+    10
+   ]
+  ],
+  "enemies": [],
+  "cups": [
+   {
+    "pocket": [
+     2,
+     8
+    ],
+    "opening": "RIGHT",
+    "backWallCenter": [
+     1,
+     8
+    ],
+    "requiredColor": null,
+    "whiteCells": [
+     [
+      1,
+      7
+     ],
+     [
+      1,
+      9
+     ],
+     [
+      2,
+      7
+     ],
+     [
+      2,
+      9
+     ]
+    ]
+   }
+  ],
+  "colorBars": [],
+  "playerBlocks": [
+   {
+    "color": 11,
+    "cell": [
+     9,
+     5
+    ]
+   }
+  ]
+ },
+ "3": {
+  "fieldCols": 12,
+  "fieldRows": 12,
+  "cellPixels": 4,
+  "fieldOriginPx": [
+   8,
+   8
+  ],
+  "greenSideAtStart": "TOP",
+  "grid": [
+   "FCCCFFFF4FFF",
+   "FCCDFFFFFFFF",
+   "FCCCFFFFFFFF",
+   "FFF44F44FFFF",
+   "FFF4BFF4FFFF",
+   "FFF4FFFFFF4F",
+   "FFFFFF44FF4F",
+   "F44FFFFFFFFF",
+   "F4FF4FFFFFFF",
+   "FFFF000FF44F",
+   "FFFF0F0FFFFF",
+   "FFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    8,
+    0
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    6,
+    3
+   ],
+   [
+    7,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    7,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    10,
+    5
+   ],
+   [
+    6,
+    6
+   ],
+   [
+    7,
+    6
+   ],
+   [
+    10,
+    6
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    2,
+    7
+   ],
+   [
+    1,
+    8
+   ],
+   [
+    4,
+    8
+   ],
+   [
+    9,
+    9
+   ],
+   [
+    10,
+    9
+   ]
+  ],
+  "enemies": [
+   {
+    "topLeft": [
+     1,
+     0
+    ],
+    "size": 3,
+    "core": [
+     3,
+     1
+    ],
+    "heading": "RIGHT"
+   }
+  ],
+  "cups": [
+   {
+    "pocket": [
+     5,
+     10
+    ],
+    "opening": "DOWN",
+    "backWallCenter": [
+     5,
+     9
+    ],
+    "requiredColor": null,
+    "whiteCells": [
+     [
+      4,
+      9
+     ],
+     [
+      6,
+      9
+     ],
+     [
+      4,
+      10
+     ],
+     [
+      6,
+      10
+     ]
+    ]
+   }
+  ],
+  "colorBars": [],
+  "playerBlocks": [
+   {
+    "color": 11,
+    "cell": [
+     4,
+     4
+    ]
+   }
+  ]
+ },
+ "4": {
+  "fieldCols": 14,
+  "fieldRows": 12,
+  "cellPixels": 4,
+  "fieldOriginPx": [
+   4,
+   8
+  ],
+  "greenSideAtStart": "BOTTOM",
+  "grid": [
+   "FFFFFFFFFFFFFF",
+   "FFF4FFFF44FFFF",
+   "FF44FFFFF44FFF",
+   "FFFFFFFFFFFFFF",
+   "FF446FFFF4FFFF",
+   "FF444FFF44F4FF",
+   "F00FFFFFFF444F",
+   "FAFFFFFFFFF44F",
+   "F00FFF4AFFF4FF",
+   "FFF06044FF444F",
+   "FFF0F0FFFFF4FF",
+   "FFFFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    3,
+    1
+   ],
+   [
+    8,
+    1
+   ],
+   [
+    9,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    9,
+    2
+   ],
+   [
+    10,
+    2
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    9,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    8,
+    5
+   ],
+   [
+    9,
+    5
+   ],
+   [
+    11,
+    5
+   ],
+   [
+    10,
+    6
+   ],
+   [
+    11,
+    6
+   ],
+   [
+    12,
+    6
+   ],
+   [
+    11,
+    7
+   ],
+   [
+    12,
+    7
+   ],
+   [
+    6,
+    8
+   ],
+   [
+    11,
+    8
+   ],
+   [
+    6,
+    9
+   ],
+   [
+    7,
+    9
+   ],
+   [
+    10,
+    9
+   ],
+   [
+    11,
+    9
+   ],
+   [
+    12,
+    9
+   ],
+   [
+    11,
+    10
+   ]
+  ],
+  "enemies": [],
+  "cups": [
+   {
+    "pocket": [
+     2,
+     7
+    ],
+    "opening": "RIGHT",
+    "backWallCenter": [
+     1,
+     7
+    ],
+    "requiredColor": 10,
+    "whiteCells": [
+     [
+      1,
+      6
+     ],
+     [
+      1,
+      8
+     ],
+     [
+      2,
+      6
+     ],
+     [
+      2,
+      8
+     ]
+    ]
+   },
+   {
+    "pocket": [
+     4,
+     10
+    ],
+    "opening": "DOWN",
+    "backWallCenter": [
+     4,
+     9
+    ],
+    "requiredColor": 6,
+    "whiteCells": [
+     [
+      3,
+      9
+     ],
+     [
+      5,
+      9
+     ],
+     [
+      3,
+      10
+     ],
+     [
+      5,
+      10
+     ]
+    ]
+   }
+  ],
+  "colorBars": [],
+  "playerBlocks": [
+   {
+    "color": 10,
+    "cell": [
+     7,
+     8
+    ]
+   },
+   {
+    "color": 6,
+    "cell": [
+     4,
+     4
+    ]
+   }
+  ]
+ },
+ "5": {
+  "fieldCols": 18,
+  "fieldRows": 18,
+  "cellPixels": 3,
+  "fieldOriginPx": [
+   5,
+   5
+  ],
+  "greenSideAtStart": "LEFT",
+  "grid": [
+   "FFFFFFFFFFFFFFFFFF",
+   "FF4F44FFFFFFFFFFFF",
+   "CCC44444FFFF444FFF",
+   "CCC0044FFBFF444FFF",
+   "CDCFB44FFBFFFFFFFF",
+   "FFF00444FBFFFFFFFF",
+   "FFFFFCCCFFFFFFFFFF",
+   "FFFFFCDCFFFFFFF4FF",
+   "FFFF4CCCFF4FFFFF4F",
+   "FFF4444AFFFFFFFF4F",
+   "FF44444FFFFFFFF44F",
+   "FF44444FFFF44FF4FF",
+   "FFFF4CCCFFFF4FF4FF",
+   "FFFFFCDCFFFFFFFFFF",
+   "FFFFFCCCFFFCCCFFFF",
+   "FFFFFFFFFFFCDCFFFF",
+   "FFFFFFFFFFFCCCFFFF",
+   "FFFFFFFFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    2,
+    1
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    5,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    6,
+    2
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    12,
+    2
+   ],
+   [
+    13,
+    2
+   ],
+   [
+    14,
+    2
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    6,
+    3
+   ],
+   [
+    12,
+    3
+   ],
+   [
+    13,
+    3
+   ],
+   [
+    14,
+    3
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    6,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    6,
+    5
+   ],
+   [
+    7,
+    5
+   ],
+   [
+    15,
+    7
+   ],
+   [
+    4,
+    8
+   ],
+   [
+    10,
+    8
+   ],
+   [
+    16,
+    8
+   ],
+   [
+    3,
+    9
+   ],
+   [
+    4,
+    9
+   ],
+   [
+    5,
+    9
+   ],
+   [
+    6,
+    9
+   ],
+   [
+    16,
+    9
+   ],
+   [
+    2,
+    10
+   ],
+   [
+    3,
+    10
+   ],
+   [
+    4,
+    10
+   ],
+   [
+    5,
+    10
+   ],
+   [
+    6,
+    10
+   ],
+   [
+    15,
+    10
+   ],
+   [
+    16,
+    10
+   ],
+   [
+    2,
+    11
+   ],
+   [
+    3,
+    11
+   ],
+   [
+    4,
+    11
+   ],
+   [
+    5,
+    11
+   ],
+   [
+    6,
+    11
+   ],
+   [
+    11,
+    11
+   ],
+   [
+    12,
+    11
+   ],
+   [
+    15,
+    11
+   ],
+   [
+    4,
+    12
+   ],
+   [
+    12,
+    12
+   ],
+   [
+    15,
+    12
+   ]
+  ],
+  "enemies": [
+   {
+    "topLeft": [
+     0,
+     2
+    ],
+    "size": 3,
+    "core": [
+     1,
+     4
+    ],
+    "heading": "DOWN"
+   },
+   {
+    "topLeft": [
+     5,
+     6
+    ],
+    "size": 3,
+    "core": [
+     6,
+     7
+    ],
+    "heading": "STATIC"
+   },
+   {
+    "topLeft": [
+     5,
+     12
+    ],
+    "size": 3,
+    "core": [
+     6,
+     13
+    ],
+    "heading": "STATIC"
+   },
+   {
+    "topLeft": [
+     11,
+     14
+    ],
+    "size": 3,
+    "core": [
+     12,
+     15
+    ],
+    "heading": "STATIC"
+   }
+  ],
+  "cups": [
+   {
+    "pocket": [
+     3,
+     4
+    ],
+    "opening": "LEFT",
+    "backWallCenter": [
+     4,
+     4
+    ],
+    "requiredColor": 11,
+    "whiteCells": [
+     [
+      4,
+      3
+     ],
+     [
+      4,
+      5
+     ],
+     [
+      3,
+      3
+     ],
+     [
+      3,
+      5
+     ]
+    ]
+   }
+  ],
+  "colorBars": [
+   {
+    "color": 11,
+    "cells": [
+     [
+      9,
+      3
+     ],
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      5
+     ]
+    ]
+   }
+  ],
+  "playerBlocks": [
+   {
+    "color": 10,
+    "cell": [
+     7,
+     9
+    ]
+   }
+  ]
+ },
+ "6": {
+  "fieldCols": 13,
+  "fieldRows": 15,
+  "cellPixels": 3,
+  "fieldOriginPx": [
+   12,
+   9
+  ],
+  "greenSideAtStart": "RIGHT",
+  "grid": [
+   "FFFFFFFFFFFFF",
+   "FFFFFFFF999FF",
+   "FFFFFFFFFFFFF",
+   "F44FFFFFFF4FF",
+   "F444F4FF4444F",
+   "FFFFFFFF444FF",
+   "FFFFFFFFF4FFF",
+   "FFFFFFFFFFFFF",
+   "FFFFFFFFFFFFF",
+   "FF090F4F64FFF",
+   "FF0F0F44444FF",
+   "CCCFFFF44444F",
+   "CCDFFFF44444F",
+   "CCCFFFFFFF4FF",
+   "FFFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    10,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    8,
+    4
+   ],
+   [
+    9,
+    4
+   ],
+   [
+    10,
+    4
+   ],
+   [
+    11,
+    4
+   ],
+   [
+    8,
+    5
+   ],
+   [
+    9,
+    5
+   ],
+   [
+    10,
+    5
+   ],
+   [
+    9,
+    6
+   ],
+   [
+    6,
+    9
+   ],
+   [
+    9,
+    9
+   ],
+   [
+    6,
+    10
+   ],
+   [
+    7,
+    10
+   ],
+   [
+    8,
+    10
+   ],
+   [
+    9,
+    10
+   ],
+   [
+    10,
+    10
+   ],
+   [
+    7,
+    11
+   ],
+   [
+    8,
+    11
+   ],
+   [
+    9,
+    11
+   ],
+   [
+    10,
+    11
+   ],
+   [
+    11,
+    11
+   ],
+   [
+    7,
+    12
+   ],
+   [
+    8,
+    12
+   ],
+   [
+    9,
+    12
+   ],
+   [
+    10,
+    12
+   ],
+   [
+    11,
+    12
+   ],
+   [
+    10,
+    13
+   ]
+  ],
+  "enemies": [
+   {
+    "topLeft": [
+     0,
+     11
+    ],
+    "size": 3,
+    "core": [
+     2,
+     12
+    ],
+    "heading": "RIGHT"
+   }
+  ],
+  "cups": [
+   {
+    "pocket": [
+     3,
+     10
+    ],
+    "opening": "DOWN",
+    "backWallCenter": [
+     3,
+     9
+    ],
+    "requiredColor": 9,
+    "whiteCells": [
+     [
+      2,
+      9
+     ],
+     [
+      4,
+      9
+     ],
+     [
+      2,
+      10
+     ],
+     [
+      4,
+      10
+     ]
+    ]
+   }
+  ],
+  "colorBars": [
+   {
+    "color": 9,
+    "cells": [
+     [
+      8,
+      1
+     ],
+     [
+      9,
+      1
+     ],
+     [
+      10,
+      1
+     ]
+    ]
+   }
+  ],
+  "playerBlocks": [
+   {
+    "color": 6,
+    "cell": [
+     8,
+     9
+    ]
+   }
+  ]
+ },
+ "7": {
+  "fieldCols": 13,
+  "fieldRows": 10,
+  "cellPixels": 4,
+  "fieldOriginPx": [
+   6,
+   12
+  ],
+  "greenSideAtStart": "RIGHT",
+  "grid": [
+   "FFFFFFFFFFFFF",
+   "FFFFFFFFF4FFF",
+   "FF44FF9F4444F",
+   "F644FF9FF4FFF",
+   "F4444F9FF4FFF",
+   "FF44FFFFFFFFF",
+   "FFFFFFFFFFFFF",
+   "FFFFFFFFF090F",
+   "FFFFFFFFF0F0F",
+   "FFFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    9,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    8,
+    2
+   ],
+   [
+    9,
+    2
+   ],
+   [
+    10,
+    2
+   ],
+   [
+    11,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    9,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    9,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    3,
+    5
+   ]
+  ],
+  "enemies": [],
+  "cups": [
+   {
+    "pocket": [
+     10,
+     8
+    ],
+    "opening": "DOWN",
+    "backWallCenter": [
+     10,
+     7
+    ],
+    "requiredColor": 9,
+    "whiteCells": [
+     [
+      9,
+      7
+     ],
+     [
+      11,
+      7
+     ],
+     [
+      9,
+      8
+     ],
+     [
+      11,
+      8
+     ]
+    ]
+   }
+  ],
+  "colorBars": [
+   {
+    "color": 9,
+    "cells": [
+     [
+      6,
+      2
+     ],
+     [
+      6,
+      3
+     ],
+     [
+      6,
+      4
+     ]
+    ]
+   }
+  ],
+  "playerBlocks": [
+   {
+    "color": 6,
+    "cell": [
+     1,
+     3
+    ]
+   }
+  ]
+ },
+ "8": {
+  "fieldCols": 17,
+  "fieldRows": 17,
+  "cellPixels": 3,
+  "fieldOriginPx": [
+   6,
+   6
+  ],
+  "greenSideAtStart": "LEFT",
+  "grid": [
+   "FFFFFFFFFFFFFFFFF",
+   "FFFFFF9FFFFF4FFFF",
+   "F44FFF9FFFFF44FFF",
+   "F4FFFF9FFFFF4FFFF",
+   "FFFFFFFFFFFFFFFFF",
+   "FFFFFFFCCDFFFFFFF",
+   "FFFFFF4CCCFFFFFFF",
+   "F4FFFF4CCCFF4FFFF",
+   "F44FF444FFF44FFFF",
+   "F4FFFF4FFFFF4FFFF",
+   "FFFCCCFFFFFFFFFFF",
+   "FFFCCCFFFFFFFFFFF",
+   "F4BCCDFFFFFF4FFFF",
+   "F44FFFFFFFF44400F",
+   "FFFFFFFFFFFFFF9FF",
+   "FFFFFFFFFFFFFF00F",
+   "FFFFFFFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    12,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    12,
+    2
+   ],
+   [
+    13,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    12,
+    3
+   ],
+   [
+    6,
+    6
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    6,
+    7
+   ],
+   [
+    12,
+    7
+   ],
+   [
+    1,
+    8
+   ],
+   [
+    2,
+    8
+   ],
+   [
+    5,
+    8
+   ],
+   [
+    6,
+    8
+   ],
+   [
+    7,
+    8
+   ],
+   [
+    11,
+    8
+   ],
+   [
+    12,
+    8
+   ],
+   [
+    1,
+    9
+   ],
+   [
+    6,
+    9
+   ],
+   [
+    12,
+    9
+   ],
+   [
+    1,
+    12
+   ],
+   [
+    12,
+    12
+   ],
+   [
+    1,
+    13
+   ],
+   [
+    2,
+    13
+   ],
+   [
+    11,
+    13
+   ],
+   [
+    12,
+    13
+   ],
+   [
+    13,
+    13
+   ]
+  ],
+  "enemies": [
+   {
+    "topLeft": [
+     7,
+     5
+    ],
+    "size": 3,
+    "core": [
+     9,
+     5
+    ],
+    "heading": "UP_RIGHT"
+   },
+   {
+    "topLeft": [
+     3,
+     10
+    ],
+    "size": 3,
+    "core": [
+     5,
+     12
+    ],
+    "heading": "DOWN_RIGHT"
+   }
+  ],
+  "cups": [
+   {
+    "pocket": [
+     15,
+     14
+    ],
+    "opening": "RIGHT",
+    "backWallCenter": [
+     14,
+     14
+    ],
+    "requiredColor": 9,
+    "whiteCells": [
+     [
+      14,
+      13
+     ],
+     [
+      14,
+      15
+     ],
+     [
+      15,
+      13
+     ],
+     [
+      15,
+      15
+     ]
+    ]
+   }
+  ],
+  "colorBars": [
+   {
+    "color": 9,
+    "cells": [
+     [
+      6,
+      1
+     ],
+     [
+      6,
+      2
+     ],
+     [
+      6,
+      3
+     ]
+    ]
+   }
+  ],
+  "playerBlocks": [
+   {
+    "color": 11,
+    "cell": [
+     2,
+     12
+    ]
+   }
+  ]
+ },
+ "9": {
+  "fieldCols": 21,
+  "fieldRows": 17,
+  "cellPixels": 2,
+  "fieldOriginPx": [
+   11,
+   15
+  ],
+  "greenSideAtStart": "LEFT",
+  "grid": [
+   "FFFFFFFFFFFFFFFFFFFFF",
+   "FFFFFF44FFFFFF44FFFFF",
+   "FFFFFF44FBF9F444FFFFF",
+   "FF0F0F4FFBF9FF4FFFFFF",
+   "FF090FFFFBF9FFFFFFFFF",
+   "FFFFFFFFFFFFFFFFFFFFF",
+   "F444FFFFFFFFFFFFFFFFF",
+   "F44FFFFFFFFFFF44FFFFF",
+   "FFFFFFFFFFFFF444FFFFF",
+   "F44FFFFFFFFFFF44F444F",
+   "F44BFFFF4F00FFFFF444F",
+   "FF4FFFF44F0FFFFFFF44F",
+   "FFFFFFFFFF00FFFFFFFFF",
+   "FFFCCCFFFF44FFFFFFFFF",
+   "FFFCCDFFFF4AFFFFFF44F",
+   "FFFCCCFFFF444FFFF444F",
+   "FFFFFFFFFFFFFFFFFFFFF"
+  ],
+  "legend": {
+   "F": "purple floor (15)",
+   "4": "wall (darker gray 4)",
+   "0": "cup white",
+   "C/D": "enemy orange 12 / dark-red core 13",
+   "8/B/A/6/9": "block or marker colors: red 8, yellow 11, light blue 10, pink 6, blue 9"
+  },
+  "walls": [
+   [
+    6,
+    1
+   ],
+   [
+    7,
+    1
+   ],
+   [
+    14,
+    1
+   ],
+   [
+    15,
+    1
+   ],
+   [
+    6,
+    2
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    13,
+    2
+   ],
+   [
+    14,
+    2
+   ],
+   [
+    15,
+    2
+   ],
+   [
+    6,
+    3
+   ],
+   [
+    14,
+    3
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    6
+   ],
+   [
+    3,
+    6
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    2,
+    7
+   ],
+   [
+    14,
+    7
+   ],
+   [
+    15,
+    7
+   ],
+   [
+    13,
+    8
+   ],
+   [
+    14,
+    8
+   ],
+   [
+    15,
+    8
+   ],
+   [
+    1,
+    9
+   ],
+   [
+    2,
+    9
+   ],
+   [
+    14,
+    9
+   ],
+   [
+    15,
+    9
+   ],
+   [
+    17,
+    9
+   ],
+   [
+    18,
+    9
+   ],
+   [
+    19,
+    9
+   ],
+   [
+    1,
+    10
+   ],
+   [
+    2,
+    10
+   ],
+   [
+    8,
+    10
+   ],
+   [
+    17,
+    10
+   ],
+   [
+    18,
+    10
+   ],
+   [
+    19,
+    10
+   ],
+   [
+    2,
+    11
+   ],
+   [
+    7,
+    11
+   ],
+   [
+    8,
+    11
+   ],
+   [
+    18,
+    11
+   ],
+   [
+    19,
+    11
+   ],
+   [
+    10,
+    13
+   ],
+   [
+    11,
+    13
+   ],
+   [
+    10,
+    14
+   ],
+   [
+    18,
+    14
+   ],
+   [
+    19,
+    14
+   ],
+   [
+    10,
+    15
+   ],
+   [
+    11,
+    15
+   ],
+   [
+    12,
+    15
+   ],
+   [
+    17,
+    15
+   ],
+   [
+    18,
+    15
+   ],
+   [
+    19,
+    15
+   ]
+  ],
+  "enemies": [
+   {
+    "topLeft": [
+     3,
+     13
+    ],
+    "size": 3,
+    "core": [
+     5,
+     14
+    ],
+    "heading": "RIGHT"
+   }
+  ],
+  "cups": [
+   {
+    "pocket": [
+     3,
+     3
+    ],
+    "opening": "UP",
+    "backWallCenter": [
+     3,
+     4
+    ],
+    "requiredColor": 9,
+    "whiteCells": [
+     [
+      2,
+      4
+     ],
+     [
+      4,
+      4
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      4,
+      3
+     ]
+    ]
+   },
+   {
+    "pocket": [
+     11,
+     11
+    ],
+    "opening": "RIGHT",
+    "backWallCenter": [
+     10,
+     11
+    ],
+    "requiredColor": null,
+    "whiteCells": [
+     [
+      10,
+      10
+     ],
+     [
+      10,
+      12
+     ],
+     [
+      11,
+      10
+     ],
+     [
+      11,
+      12
+     ]
+    ]
+   }
+  ],
+  "colorBars": [
+   {
+    "color": 9,
+    "cells": [
+     [
+      11,
+      2
+     ],
+     [
+      11,
+      3
+     ],
+     [
+      11,
+      4
+     ]
+    ]
+   },
+   {
+    "color": 11,
+    "cells": [
+     [
+      9,
+      2
+     ],
+     [
+      9,
+      3
+     ],
+     [
+      9,
+      4
+     ]
+    ]
+   }
+  ],
+  "playerBlocks": [
+   {
+    "color": 11,
+    "cell": [
+     3,
+     10
+    ]
+   },
+   {
+    "color": 10,
+    "cell": [
+     11,
+     14
+    ]
+   }
+  ]
+ }
+}

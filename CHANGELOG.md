@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.90.0  Sep 16, 2026
+
+- **AS66 "Always Sliding": full mechanics recovered from the recording, plus two PRDs for the developers** (Author: Claude Fable 5.1)
+  - **Why.** AS66 was withdrawn from the public set and has no Python source anywhere we can reach (`environment_files/`, `arc-3/docs/static/games/src/` both empty for it). Boss wants it rebuilt on ARCEngine as a holdout, then glowed up into a scrolling-world version and a series of synthetic games that graft mechanics from the 25 documented games onto it.
+  - **What was found.** Boss's 27-Dec-2025 nine-level WIN (`public/replays/as66-821a4dcad9c2.db85123a-...jsonl`, 155 rows with per-step slide frames) is enough to reconstruct every level exactly. Read off it: torus wrap at the field edge, blocked presses are free, enemies step before the block and reverse at their start cell, corner-core enemies move diagonally and center-core ones are static, color bars recolor a block passing through, cups have a colored back-wall marker (white = any), several blocks move together and all must sit in matching cups at once, the orange perimeter meter is par (top row) plus a 2x-par grace (side columns) and filling it loses -- which is what killed the level-6 attempt, not an enemy. Per-level field sizes, cell pitch, par and the recorded solutions are tabulated.
+  - **Files.** `docs/plans/2026-09-16-as66-always-sliding-recreation-prd.md` (spec + acceptance tests), `docs/plans/2026-09-16-as66-glowup-synthetic-series-prd.md` (Always Sliding XL with a camera-followed world bigger than 64x64, and 20 synthetic entries each citing the public game it borrows from), `docs/arc3-game-analysis/as66_levels.json` (grids, walls, cups, bars, enemies, blocks for all nine levels), `as66_solutions.json` (winning presses per level), `as66-levels-contact-sheet.png`, and the two open questions in `as66-analysis.md` answered.
+  - **Site.** `/arc3/games/as66` was already hidden from the index and neighbour navigation by `WITHDRAWN_IDS`; it stays reachable by URL. No code change.
+
 ### Version 9.89.0  Sep 16, 2026
 
 - **ARC-3 pages: the owner is "Boss", action counts on every index tile, notes from play, and four fixes the agents flagged** (Author: Claude Opus 5)
