@@ -28,8 +28,7 @@
  *
  *          2026-09-16 (Claude Opus 5): each game now also carries its "Every mechanic" bullets
  *          (grouped by the level that introduces them), "Notes from play" (what a human saw,
- *          did, expected), and action counts (ARC baseline and Boss's recent runs) -- this
- *          document is read by the arc-3 training pipeline, not just by people.
+ *          did, expected), and action counts (ARC baseline and Boss's recent runs).
  * SRP/DRY check: Pass -- document generation only. Data lives in shared/arc3Games, HTTP
  *          serving lives in server/routes.ts, and the HTML rendering of the same objects
  *          stays in client/src/pages/Arc3GameSpoiler.tsx.

@@ -15,7 +15,7 @@
 ### Version 9.89.0  Sep 16, 2026
 
 - **ARC-3 pages: the owner is "Boss", action counts on every index tile, notes from play, and four fixes the agents flagged** (Author: Claude Opus 5)
-  - **Why.** These pages feed the arc-3 fine-tuning pipeline as well as human readers, so what Boss notices while playing has to be written down properly. He also rates games by how few actions they take to win.
+  - **Why.** These pages are for human readers, and good write-ups of what Boss notices while playing are also useful reference for us when building the separate arc-3 training pipeline (which does not read these pages). He also rates games by how few actions they take to win.
   - **Name.** Every reader-facing "Mark" is now "Boss": badges, stat labels, replay titles, captions and notes in `shared/arc3Games/*.ts`, `humanDifficulty.ts` (`OWNER_PLAYER`), `humanPlay.generated.json` (`player`), tests, and page comments. `scripts/arc3/pull_human_scorecards.py` now matches cards on the arcprize.org account name (`ARC3_HUMAN_ACCOUNT`, default "Mark") and labels runs with the player name (`ARC3_HUMAN_PLAYER`, default "Boss"). Older CHANGELOG entries are left as written.
   - **Actions to win, everywhere.**
     - **Index tiles** (`client/src/pages/Arc3GamesIndex.tsx`) show three numbers: the fewest actions on the top-10 board since 18 Jun 2026, Boss's best recent win (or his actions so far, starred, if not won), and ARC's baseline. A toggle sorts the grid by fewest actions.
