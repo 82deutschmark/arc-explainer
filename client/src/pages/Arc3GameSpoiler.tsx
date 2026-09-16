@@ -20,17 +20,20 @@
  *          full mechanics write-up, not buried under them. No content changed, just order.
  *          2026-09-16 (Claude Opus 5): action counts up top and two human ratings.
  *          - A stat strip under the description on every game page: ARC's baseline actions
- *            and Mark's actions (both from humanPlay.generated.json via getOwnerGameRating),
+ *            and Boss's actions (both from humanPlay.generated.json via getOwnerGameRating),
  *            and the fewest and median actions among recent top-10 wins (from the
  *            leaderboard route). The leaderboard query is now made once, in the page, and
  *            passed to the strip, the badge and HumanRecordsCard.
  *          - The single Human badge is now "Human (top 10)" (top10Difficulty over the
  *            board's recent-wins stats, computed here, not the stale per-game
- *            humanDifficulty field) and "Human (Mark)" (getOwnerGameRating). AI badge unchanged.
+ *            humanDifficulty field) and "Human (Boss)" (getOwnerGameRating). AI badge unchanged.
  *          - HumanRecordsCard shows score spread, fewest/median/most actions over recent
  *            wins, how many rows survived the 18 Jun 2026 cut, and greys out older rows.
  *          - New "Every Mechanic" card after In Plain English renders mechanicsBreakdown,
  *            grouped by the level that introduces each point. Renders nothing when absent.
+ *          - Later the same day: "Notes From Play" card after it renders playerObservations
+ *            (what a human saw, did, expected, and what happened) -- training material for
+ *            the arc-3 pipeline as much as a reader aid.
  * SRP/DRY check: Pass - Single responsibility (game detail display), reuses shared game metadata.
  *          All rating math lives in shared/arc3Games/humanDifficulty.ts; this file only
  *          formats its results. No new fetches: the one leaderboard query is shared.
@@ -73,6 +76,7 @@ import {
   type LevelScreenshot,
   type GameResource,
   type MechanicPoint,
+  type PlayerObservation,
 } from '../../../shared/arc3Games';
 import {
   getOwnerGameRating,
@@ -585,6 +589,54 @@ function EveryMechanicCard({ points }: { points: MechanicPoint[] | undefined }) 
   );
 }
 
+/**
+ * "Notes From Play": what a human actually noticed while playing, in the saw / did / expected
+ * / happened shape the arc-3 training pipeline asks for, with what the code says underneath.
+ * Ordered by level. Renders nothing when a game has no notes.
+ */
+function NotesFromPlayCard({ notes }: { notes: PlayerObservation[] | undefined }) {
+  if (!notes || notes.length === 0) return null;
+  const ordered = [...notes].sort((a, b) => (a.level ?? 0) - (b.level ?? 0));
+  const rows: { label: string; key: keyof PlayerObservation }[] = [
+    { label: 'Saw', key: 'saw' },
+    { label: 'Did', key: 'did' },
+    { label: 'Expected', key: 'expected' },
+    { label: 'What happened', key: 'happened' },
+    { label: 'In the code', key: 'inCode' },
+  ];
+
+  return (
+    <Card className="mb-12">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl flex items-center gap-2">
+          <User className="h-5 w-5" />
+          Notes From Play
+        </CardTitle>
+        <CardDescription>What a human noticed while actually playing, close to their own words.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        {ordered.map((note, index) => (
+          <div key={index} className="border-l-2 border-primary/30 pl-4">
+            <p className="text-xs text-muted-foreground mb-1.5">
+              {note.player} · {note.date}
+              {typeof note.level === 'number' ? ` · level ${note.level}` : ''}
+            </p>
+            <dl className="space-y-1.5">
+              {rows
+                .filter(({ key }) => typeof note[key] === 'string' && note[key])
+                .map(({ label, key }) => (
+                  <div key={key} className="grid grid-cols-[7.5rem_1fr] gap-2 text-sm">
+                    <dt className="font-semibold text-muted-foreground">{label}</dt>
+                    <dd className={key === 'inCode' ? 'text-muted-foreground' : ''}>{note[key]}</dd>
+                  </div>
+                ))}
+            </dl>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
 
 /**
  * Game not found component
@@ -818,6 +870,8 @@ export default function Arc3GameSpoiler() {
       </Card>
 
       <EveryMechanicCard points={game.mechanicsBreakdown} />
+
+      <NotesFromPlayCard notes={game.playerObservations} />
 
       {/* Screenshots -- lead with these. Pictures of the game and its levels come before
           records, replays, and write-ups, not after them. */}

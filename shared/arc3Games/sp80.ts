@@ -3,7 +3,7 @@
  * Date: 2026-01-09 (corrected against source 2026-09-12; breakdown added 2026-09-16)
  * PURPOSE: Game metadata for SP80 (Streaming Purple) with embedded streaming replay
  *          clip. A 2026-09-12 pixel-palette read of the source flagged the liquid as
- *          color 6 and argued for "Pink" over "Purple," but Mark called that rename
+ *          color 6 and argued for "Pink" over "Purple," but Boss called that rename
  *          out directly from having watched the actual gameplay video -- reverted;
  *          the name stays Streaming Purple. Kept: the containers are yellow, not
  *          white, and "the liquid falls straight down" only holds for 3 of the 6
@@ -240,5 +240,5 @@ export const sp80: Arc3GameMetadata = {
     caption: 'Streaming Purple capture showing animation when Action 5 triggers flow',
   },
   isFullyDocumented: true,
-  notes: 'Corrected 2026-09-12 after a direct source read: the containers are yellow, not white, and "falls straight down" only holds for 3 of the 6 levels, since the other 3 render the screen rotated 180 degrees. A separate rename to "Streaming Pink" was proposed the same day over the liquid\'s exact pixel color, but reverted -- Mark watched the actual gameplay video and confirmed it reads as purple; the name stays Streaming Purple.',
+  notes: 'Corrected 2026-09-12 after a direct source read: the containers are yellow, not white, and "falls straight down" only holds for 3 of the 6 levels, since the other 3 render the screen rotated 180 degrees. A separate rename to "Streaming Pink" was proposed the same day over the liquid\'s exact pixel color, but reverted -- Boss watched the actual gameplay video and confirmed it reads as purple; the name stays Streaming Purple.',
 };

@@ -179,7 +179,7 @@ let runSeq = 0;
 function run(gameId: string, state: string, actions: number, openAt: string, over: Partial<HumanPlayRun> = {}): HumanPlayRun {
   runSeq += 1;
   return {
-    player: 'Mark',
+    player: 'Boss',
     gameId,
     build: 'b',
     cardId: `card-${openAt}`,
@@ -199,7 +199,7 @@ function run(gameId: string, state: string, actions: number, openAt: string, ove
 }
 
 function calibrationAt(medianEffort: number | null): OwnerCalibration {
-  return { player: 'Mark', medianEffort, gamesWon: medianEffort === null ? 0 : 5, gamesPlayed: 5 };
+  return { player: 'Boss', medianEffort, gamesWon: medianEffort === null ? 0 : 5, gamesPlayed: 5 };
 }
 
 describe('summarizeOwnerGame', () => {
@@ -266,8 +266,8 @@ describe('computeOwnerCalibration', () => {
       summarizeOwnerGame([run('d', 'GAME_OVER', 5000, RECENT)], 100),
       null,
     ];
-    expect(computeOwnerCalibration('Mark', summaries)).toEqual({
-      player: 'Mark',
+    expect(computeOwnerCalibration('Boss', summaries)).toEqual({
+      player: 'Boss',
       medianEffort: 0.8,
       gamesWon: 3,
       gamesPlayed: 4,
@@ -276,7 +276,7 @@ describe('computeOwnerCalibration', () => {
 
   it('has no median with fewer than 3 won games', () => {
     const summaries = [summarizeOwnerGame([run('a', 'WIN', 50, RECENT)], 100), summarizeOwnerGame([run('b', 'WIN', 80, RECENT)], 100)];
-    expect(computeOwnerCalibration('Mark', summaries).medianEffort).toBeNull();
+    expect(computeOwnerCalibration('Boss', summaries).medianEffort).toBeNull();
   });
 });
 
@@ -332,10 +332,10 @@ describe('getOwnerGameRating', () => {
       pulls: [],
       runs: [run('a', 'WIN', 60, RECENT), run('b', 'WIN', 100, RECENT), run('c', 'WIN', 250, RECENT)],
     };
-    expect(getOwnerGameRating('a', 'Mark', data)).toMatchObject({ rating: 'easy', calibration: { medianEffort: 1 } });
-    expect(getOwnerGameRating('c', 'Mark', data).rating).toBe('very-hard');
-    expect(getOwnerGameRating('d', 'Mark', data)).toMatchObject({ rating: 'unknown', summary: null });
-    expect(getOwnerGameRating('zz99', 'Mark', data)).toMatchObject({ rating: 'unknown', baseline: null });
+    expect(getOwnerGameRating('a', 'Boss', data)).toMatchObject({ rating: 'easy', calibration: { medianEffort: 1 } });
+    expect(getOwnerGameRating('c', 'Boss', data).rating).toBe('very-hard');
+    expect(getOwnerGameRating('d', 'Boss', data)).toMatchObject({ rating: 'unknown', summary: null });
+    expect(getOwnerGameRating('zz99', 'Boss', data)).toMatchObject({ rating: 'unknown', baseline: null });
     expect(getOwnerGameRating('a', 'Someone else', data).rating).toBe('unknown');
   });
 });

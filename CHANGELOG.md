@@ -12,16 +12,36 @@
 # reference the old numbers.
 
 
+### Version 9.89.0  Sep 16, 2026
+
+- **ARC-3 pages: the owner is "Boss", action counts on every index tile, notes from play, and four fixes the agents flagged** (Author: Claude Opus 5)
+  - **Why.** These pages feed the arc-3 fine-tuning pipeline as well as human readers, so what Boss notices while playing has to be written down properly. He also rates games by how few actions they take to win.
+  - **Name.** Every reader-facing "Mark" is now "Boss": badges, stat labels, replay titles, captions and notes in `shared/arc3Games/*.ts`, `humanDifficulty.ts` (`OWNER_PLAYER`), `humanPlay.generated.json` (`player`), tests, and page comments. `scripts/arc3/pull_human_scorecards.py` now matches cards on the arcprize.org account name (`ARC3_HUMAN_ACCOUNT`, default "Mark") and labels runs with the player name (`ARC3_HUMAN_PLAYER`, default "Boss"). Older CHANGELOG entries are left as written.
+  - **Actions to win, everywhere.**
+    - **Index tiles** (`client/src/pages/Arc3GamesIndex.tsx`) show three numbers: the fewest actions on the top-10 board since 18 Jun 2026, Boss's best recent win (or his actions so far, starred, if not won), and ARC's baseline. A toggle sorts the grid by fewest actions.
+    - **New route** `GET /api/arc3/leaderboards/summary` (`server/routes.ts`) returns every public game's top-10 fewest and median from the existing cached service in one call.
+    - **games.md** (`server/services/arc3/arc3GameMechanicsDoc.ts`) gets an "Actions to win" line per game (baseline per level plus Boss's runs), and now also carries "Every mechanic" and "Notes from play".
+  - **Notes from play.** New `PlayerObservation` type and `playerObservations` field (`shared/arc3Games/types.ts`, exported from `index.ts`) in the saw / did / expected / what happened shape the pipeline asks for, plus what the code says. A "Notes From Play" card renders it on the game page. Filled in from Boss's reports this session:
+    - s5i5: the level 5 confusion, the plus-not-diamond button, and the level 7 overgrown rod with no undo.
+    - su15: the suction-radius animation, and why the "Sorting Urn" name was wrong.
+    - tu93: the level 2 red enemy that bites head-on and dies from the side.
+  - **The four flagged fixes.**
+    - `m0r0.ts` actionMappings: there is no drag; click picks a block from level 3 and the arrows move it. The missing ACTION5 (costs an action, does nothing; `available_actions=[1,2,3,4,5,6]` at `m0r0.py:693`) was added.
+    - `lp85.ts` hints 1-2: targets are four corner dots framing a slot. Loops cross and share slots, and from level 6 one button turns three or eight loops.
+    - `vc33.ts` level 7 now uses the live-build render `/arc3-levels/vc33/lvl7.png` instead of the 9-level preview screenshot.
+    - `ft09.ts` gains `levelCount: 6`, matching the six `Level(` entries and six `baseline_actions` in build 0d8bbf25.
+  - **Verification.** `npx tsc --noEmit -p tsconfig.json`: 12 errors, the unchanged baseline. `npx vitest run tests/unit`: 9 files, all passed. The games.md builder was run and its tu93 section read back.
+
 ### Version 9.88.0  Sep 16, 2026
 
 - **ARC-3 game pages: every mechanic as bullets, action counts up top, two human difficulty ratings, and the tutorial framing** (Author: Claude Opus 5)
   - **What and why.** The owner is playing through all 25 public games and kept finding things the pages missed. The TU93 page never mentioned the level-2 Red enemy you kill from the side and die to head-on. SU15 never explained the ring that shows the suction reach. Plan: `docs/2026-09-16-arc3-game-pages-glowup-plan.md`.
   - **Every Mechanic.** New `MechanicPoint` / `mechanicsBreakdown` in `shared/arc3Games/types.ts` (exported from `index.ts`). All 25 public games in `shared/arc3Games/*.ts` got a bullet list read from the live build's source, grouped by the level that introduces each mechanic, with `file:line` sources. Five agents did five games each, running the engine where they could. Wrong text was fixed along the way. TU93's description, plain-English text and mechanics were rewritten: one hit kills, and there is no "worn down" lose condition. The level-7 follower copies your move from two turns back, not one. Enemies start on level 2, not level 7. The new game-page card renders these bullets right after In Plain English.
   - **Dropped from every page: "RESET twice in a row sends you back to level 1."** That is what `arcengine/base_game.py` does locally, but the committed sp80 recording shows back-to-back RESETs keeping progress on the live site, so the claim is not stated anywhere.
-  - **Action counts up top** on every game page (`client/src/pages/Arc3GameSpoiler.tsx`): ARC baseline actions (from `metadata.json`), fewest and median top-10 actions, and Mark's best recent run.
+  - **Action counts up top** on every game page (`client/src/pages/Arc3GameSpoiler.tsx`): ARC baseline actions (from `metadata.json`), fewest and median top-10 actions, and Boss's best recent run.
   - **Two human ratings replace one.**
     - **"Human (top 10)"** uses the live ARC Prize board's action spread over rows published on or after 2026-06-18. It needs 3 or more recent wins, with cuts at 0.20 and 0.50, and the reset rule is gone. That rule alone made TU93 "hard"; TU93 now reads easy.
-    - **"Human (Mark)"** is calibrated to the owner's own median effort (actions against baseline, counting failed runs before the win) across his recent live-build scorecards.
+    - **"Human (Boss)"** is calibrated to the owner's own median effort (actions against baseline, counting failed runs before the win) across his recent live-build scorecards.
     - Every one of the 250 leaderboard rows scores 100; the Human Records card now says so and greys out rows older than 90 days.
     - New files: `shared/arc3Games/humanDifficulty.ts` (pure functions), `shared/arc3Games/humanPlay.generated.json` (baselines plus recent runs: no user id, no cookie), `scripts/arc3/pull_human_scorecards.py` (cookie read from outside the repo, re-run by hand), and `tests/unit/shared/humanDifficulty.test.ts`.
     - `arcPrizeLeaderboardService.ts` adds row recency and stats; `compute-arc3-difficulty.ts` now prints the new ratings.

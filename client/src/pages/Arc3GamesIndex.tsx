@@ -18,6 +18,10 @@
  *          by server/services/arc3/arc3GameMechanicsDoc.ts and linked at the top for
  *          agents. Both read shared/arc3Games, so neither can drift from the other.
  *
+ *          2026-09-16 (Claude Opus 5, later): every tile shows actions to win -- the fewest on
+ *          the top-10 board since 18 Jun 2026, Boss's own count, and ARC's baseline -- and the
+ *          grid can be sorted by fewest actions, because the owner rates a game as easier the
+ *          fewer actions it takes. Top-10 numbers come from /api/arc3/leaderboards/summary.
  *          2026-09-16 (Claude Opus 5): added the tutorial card right under the intro,
  *          quoting François Chollet (from his recent post on X) in the owner's wording:
  *          the 25 public games are the tutorial for the private set.
@@ -30,14 +34,51 @@
  */
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { BookOpen, FileText, ExternalLink, AlertTriangle, Gamepad2, GraduationCap, Trophy, Search, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
+import { getOwnerGameRating, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
+
+/** Per-game top-10 action counts (recent wins only), from /api/arc3/leaderboards/summary. */
+interface TopActionSummary {
+  fewestActions: number | null;
+  medianActions: number | null;
+  recentWins: number;
+}
+
+/** The three action counts a tile shows. Null where there is no number to show. */
+interface GameActionCounts {
+  topFewest: number | null;
+  owner: number | null;
+  ownerWon: boolean;
+  baseline: number | null;
+}
+
+function actionCountsFor(gameId: string, top: TopActionSummary | null | undefined): GameActionCounts {
+  const owner = getOwnerGameRating(gameId);
+  const summary = owner.summary;
+  return {
+    topFewest: top?.fewestActions ?? null,
+    owner: summary ? (summary.bestWin ? summary.bestWin.actions : summary.actionsSpent) : null,
+    ownerWon: Boolean(summary?.won),
+    baseline: owner.baseline?.baselineTotal ?? null,
+  };
+}
+
+/**
+ * Sort key for "fewest actions first": the top-10's fewest when there is one, else ARC's
+ * baseline, else last. The owner judges a game by how few actions it takes to beat.
+ */
+function actionsSortKey(counts: GameActionCounts): number {
+  return counts.topFewest ?? counts.baseline ?? Number.POSITIVE_INFINITY;
+}
 
 /** Lowercased, whitespace-collapsed haystack of every field a search should match. */
 function searchHaystack(game: Arc3GameMetadata): string {
@@ -63,7 +104,7 @@ function matchesQuery(game: Arc3GameMetadata, query: string): boolean {
 }
 
 /** The scannable card grid: one tile per game, linking straight to its own page. */
-function GameGridTile({ game }: { game: Arc3GameMetadata }) {
+function GameGridTile({ game, counts }: { game: Arc3GameMetadata; counts: GameActionCounts }) {
   const thumbnail = [...(game.levelScreenshots ?? [])].sort((a, b) => a.level - b.level)[0];
 
   return (
@@ -95,6 +136,31 @@ function GameGridTile({ game }: { game: Arc3GameMetadata }) {
         </div>
         <p className="text-sm font-medium mt-1 truncate">{game.informalName || game.officialTitle}</p>
         <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{game.simpleExplanation}</p>
+        <dl className="grid grid-cols-3 gap-1 mt-2 pt-2 border-t text-center">
+          <div title="Fewest actions to win on the ARC Prize top-10 board, wins since 18 Jun 2026">
+            <dd className="text-sm font-bold tabular-nums">{counts.topFewest ?? '—'}</dd>
+            <dt className="text-[10px] text-muted-foreground">top 10</dt>
+          </div>
+          <div
+            title={
+              counts.owner === null
+                ? `${OWNER_PLAYER} has not played this since 18 Jun 2026`
+                : counts.ownerWon
+                  ? `${OWNER_PLAYER}'s best recent win`
+                  : `${OWNER_PLAYER}'s actions so far, not won yet`
+            }
+          >
+            <dd className="text-sm font-bold tabular-nums">
+              {counts.owner ?? '—'}
+              {counts.owner !== null && !counts.ownerWon && <span className="text-muted-foreground font-normal">*</span>}
+            </dd>
+            <dt className="text-[10px] text-muted-foreground">{OWNER_PLAYER}</dt>
+          </div>
+          <div title="ARC Prize's baseline actions for the whole game">
+            <dd className="text-sm font-bold tabular-nums text-muted-foreground">{counts.baseline ?? '—'}</dd>
+            <dt className="text-[10px] text-muted-foreground">baseline</dt>
+          </div>
+        </dl>
       </div>
     </Link>
   );
@@ -200,7 +266,26 @@ export default function Arc3GamesIndex() {
   const withdrawn = all.filter((g) => WITHDRAWN_IDS.has(g.gameId));
 
   const [query, setQuery] = React.useState('');
-  const filteredLive = React.useMemo(() => live.filter((g) => matchesQuery(g, query)), [live, query]);
+  const [sortBy, setSortBy] = React.useState<'set' | 'fewest'>('set');
+
+  const { data: summary } = useQuery<{ data: { games: Record<string, TopActionSummary | null> } }>({
+    queryKey: ['/api/arc3/leaderboards/summary'],
+    staleTime: 60 * 60 * 1000,
+    retry: false,
+  });
+  const countsById = React.useMemo(() => {
+    const map = new Map<string, GameActionCounts>();
+    for (const game of live) map.set(game.gameId, actionCountsFor(game.gameId, summary?.data?.games?.[game.gameId]));
+    return map;
+  }, [live, summary]);
+
+  const filteredLive = React.useMemo(() => {
+    const matched = live.filter((g) => matchesQuery(g, query));
+    if (sortBy === 'set') return matched;
+    return [...matched].sort(
+      (a, b) => actionsSortKey(countsById.get(a.gameId)!) - actionsSortKey(countsById.get(b.gameId)!),
+    );
+  }, [live, query, sortBy, countsById]);
   const filteredWithdrawn = React.useMemo(
     () => withdrawn.filter((g) => matchesQuery(g, query)),
     [withdrawn, query],
@@ -253,16 +338,30 @@ export default function Arc3GamesIndex() {
             </button>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">
-          {isFiltering
-            ? `${filteredLive.length} of ${live.length} games match "${query.trim()}"`
-            : `Showing all ${live.length} games`}
-        </p>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-sm text-muted-foreground">
+            {isFiltering
+              ? `${filteredLive.length} of ${live.length} games match "${query.trim()}"`
+              : `Showing all ${live.length} games`}
+            {' · '}numbers are actions to win
+          </p>
+          <ToggleGroup
+            type="single"
+            size="sm"
+            variant="outline"
+            value={sortBy}
+            onValueChange={(value) => value && setSortBy(value as 'set' | 'fewest')}
+            aria-label="Sort games"
+          >
+            <ToggleGroupItem value="set">ARC order</ToggleGroupItem>
+            <ToggleGroupItem value="fewest">Fewest actions first</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
 
         {filteredLive.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-1">
             {filteredLive.map((game) => (
-              <GameGridTile key={game.gameId} game={game} />
+              <GameGridTile key={game.gameId} game={game} counts={countsById.get(game.gameId)!} />
             ))}
           </div>
         ) : (

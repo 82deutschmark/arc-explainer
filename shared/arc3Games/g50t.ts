@@ -1,9 +1,9 @@
 /*
  * Author: Claude Sonnet 5
- * Date: 2026-09-13 (renamed and reframed after Mark's own playthrough)
+ * Date: 2026-09-13 (renamed and reframed after Boss's own playthrough)
  * PURPOSE: Game metadata for G50T (Ghost Twin, formerly "Ghost Timer"), part of the
  *          ARC-AGI-3 public demo set (25 games as of Sep 2026).
- *          Renamed 2026-09-13 per Mark: "Timer" was the wrong headline -- the timer
+ *          Renamed 2026-09-13 per Boss: "Timer" was the wrong headline -- the timer
  *          bar is real (confirmed in code, drains on a fixed schedule, ends the run at
  *          zero) but it isn't what makes the game hard or interesting. The defining
  *          mechanic, confirmed by rereading G50t/qxlodtievc.move() and .pmlawcgvcp()
@@ -11,7 +11,7 @@
  *          action doesn't just "rewind" -- it walks you back to the start step by
  *          step, then clones your just-finished run into a ghost twin that owns that
  *          exact move list and replays it move-for-move alongside your next attempt.
- *          Mark's framing, confirmed against source: pressing it is like saying
+ *          Boss's framing, confirmed against source: pressing it is like saying
  *          "remember everything I just did, send me back to start, and spawn a twin
  *          that performs those exact moves and nothing else." Nothing in the level
  *          hints at this before you try it, so a blind first run can't be perfect --
@@ -162,10 +162,10 @@ export const g50t: Arc3GameMetadata = {
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
     {
-      title: "G50T Mark's Official Human Replay",
+      title: "G50T Boss's Official Human Replay",
       url: 'https://arcprize.org/replay/58483738-cfaf-4e57-8c55-4c9c593bbab5',
       type: 'replay',
-      description: "Mark's own official ARC Prize replay, human play (2026-09-15).",
+      description: "Boss's own official ARC Prize replay, human play (2026-09-15).",
     },
   ],
   levelScreenshots: [
@@ -179,5 +179,5 @@ export const g50t: Arc3GameMetadata = {
   ],
   tags: ['ghost-twin', 'move-recording', 'time-loop', 'timer', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Renamed 2026-09-13 from "Ghost Timer" to "Ghost Twin" by Mark, who played it: the timer bar is real but isn\'t the point, and the old name buried the actual mechanic -- an unexplained fifth action that records your moves and replays them via a cloned twin. Confirmed against g50t.py that move history is recorded and replayed exactly as Mark described. Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: "dodge patrols" and "a handful of ghosts" both overstated what most levels actually contain, and a teleport-tile mechanic in 3 levels was missing entirely.',
+  notes: 'Renamed 2026-09-13 from "Ghost Timer" to "Ghost Twin" by Boss, who played it: the timer bar is real but isn\'t the point, and the old name buried the actual mechanic -- an unexplained fifth action that records your moves and replays them via a cloned twin. Confirmed against g50t.py that move history is recorded and replayed exactly as Boss described. Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12 after an adversarially-verified direct source read: "dodge patrols" and "a handful of ghosts" both overstated what most levels actually contain, and a teleport-tile mechanic in 3 levels was missing entirely.',
 };

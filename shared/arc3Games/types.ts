@@ -4,7 +4,8 @@
  * PURPOSE: TypeScript interfaces and types for Arc3 game metadata, including embedded replay videos.
  *          Extended to describe featured MP4 assets rendered on spoiler pages.
  *          2026-09-16 (Claude Opus 5): added MechanicPoint + mechanicsBreakdown for the
- *          per-game bullet list of every mechanic confirmed in source.
+ *          per-game bullet list of every mechanic confirmed in source; later the same day,
+ *          PlayerObservation + playerObservations for what a human saw/did/expected in play.
  * SRP/DRY check: Pass - Centralizes shared typing for ARC3 metadata consumers.
  */
 
@@ -88,6 +89,31 @@ export interface MechanicPoint {
 }
 
 /**
+ * One thing a human noticed while actually playing -- written down in the shape the arc-3
+ * fine-tuning pipeline asks for: what they saw, what they did, what they thought would
+ * happen, and what the game really did. Kept close to the player's own words; `inCode` is
+ * what the game source says about it, when someone checked. Added 2026-09-16 (Claude Opus 5).
+ */
+export interface PlayerObservation {
+  /** Who played. The owner goes by "Boss". */
+  player: string;
+  /** Day it was reported, YYYY-MM-DD. */
+  date: string;
+  /** Level it happened on (1-based), when known. */
+  level?: number;
+  /** What they saw on screen. */
+  saw: string;
+  /** What they did about it. */
+  did?: string;
+  /** What they thought would happen, when they said. */
+  expected?: string;
+  /** What actually happened, or what the mechanic turned out to be. */
+  happened: string;
+  /** What the game source says about it, when checked. */
+  inCode?: string;
+}
+
+/**
  * Screenshot of a specific game level
  */
 export interface LevelScreenshot {
@@ -135,6 +161,12 @@ export interface Arc3GameMetadata {
    */
   mechanicsBreakdown?: MechanicPoint[];
 
+  /**
+   * What human players noticed while playing, in their own terms: saw / did / expected /
+   * happened. Training material for the arc-3 fine-tuning pipeline as much as a reader aid.
+   */
+  playerObservations?: PlayerObservation[];
+
   /** Category: preview (public from start) or evaluation (held back) */
   category: GameCategory;
 
@@ -142,7 +174,7 @@ export interface Arc3GameMetadata {
    * RETIRED 2026-09-16 -- read only by the legacy archive pages. It was set by hand from a
    * rule that rated a game 'hard' when 2+ of the top 10 had used a reset, which is why TU93
    * read "hard". The live game page no longer shows it: it computes "Human (top 10)" and
-   * "Human (Mark)" from shared/arc3Games/humanDifficulty.ts (recent rows only, cut at
+   * "Human (Boss)" from shared/arc3Games/humanDifficulty.ts (recent rows only, cut at
    * 2026-06-18), and server/scripts/compute-arc3-difficulty.ts prints both beside this field.
    */
   humanDifficulty: DifficultyRating;
