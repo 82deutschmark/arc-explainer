@@ -16,6 +16,7 @@
  *          and that the pink-dotted tiles on levels 5-6 recolor themselves plus the neighbors
  *          their pink dots point at (level 6: every tile, and only the tile above). Hint 2
  *          said every click counts; only tile clicks do.
+ *          2026-09-16 (Claude Opus 5, later): levelCount: 6 added (six Level() entries and six baselines in build 0d8bbf25).
  * SRP/DRY check: Pass - Single responsibility for FT09 game data.
  */
 
@@ -114,6 +115,7 @@ export const ft09: Arc3GameMetadata = {
   category: 'preview',
   humanDifficulty: 'easy',
   aiDifficulty: 'easy',
+  levelCount: 6,
   actionMappings: [
     { action: 'ACTION6', description: 'Click to change tile/color', commonName: 'Click' },
   ],
@@ -139,10 +141,10 @@ export const ft09: Arc3GameMetadata = {
       description: 'Gameplay replay of FT09 (Functional Tiles)',
     },
     {
-      title: "FT09 Mark's Official Human Replay",
+      title: "FT09 Boss's Official Human Replay",
       url: 'https://arcprize.org/replay/99084b22-7e67-4e13-8d68-6095e944255f',
       type: 'replay',
-      description: "Mark's own official ARC Prize replay, human play (2026-09-15).",
+      description: "Boss's own official ARC Prize replay, human play (2026-09-15).",
     },
   ],
   levelScreenshots: [

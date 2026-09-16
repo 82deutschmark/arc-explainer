@@ -65,6 +65,7 @@ import { Request, Response } from "express";
 import { buildArc3GameMechanicsDoc } from "./services/arc3/arc3GameMechanicsDoc.ts";
 import { buildArc3GameOgImage } from "./services/arc3/arc3GameOgImageService.ts";
 import { getHumanLeaderboard } from "./services/arc3/arcPrizeLeaderboardService.ts";
+import { getPublicDemoGameIdsInOrder } from "../shared/arc3Games/index.ts";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -389,6 +390,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
    * 404 rather than an empty list when there is nothing to show, so the client renders no
    * card at all instead of an empty one.
    */
+  /**
+   * Action counts from the human leaderboard for all 25 public games in one response, so the
+   * games index can show and sort by "fewest actions to win" without 25 requests. Reuses the
+   * per-game service and its cache; a game whose board is unavailable is simply null.
+   * Added 2026-09-16 (Claude Opus 5): the owner rates games by how few actions they take.
+   */
+  app.get("/api/arc3/leaderboards/summary", asyncHandler(async (_req: Request, res: Response) => {
+    const ids = getPublicDemoGameIdsInOrder();
+    const boards = await Promise.all(ids.map((id) => getHumanLeaderboard(id)));
+    const games: Record<string, { fewestActions: number | null; medianActions: number | null; recentWins: number } | null> = {};
+    ids.forEach((id, index) => {
+      const board = boards[index];
+      games[id] = board
+        ? { fewestActions: board.stats.fewestActions, medianActions: board.stats.medianActions, recentWins: board.stats.recentWins }
+        : null;
+    });
+    res.json(formatResponse.success({ games }));
+  }));
+
   app.get("/api/arc3/leaderboard/:gameId", asyncHandler(async (req: Request, res: Response) => {
     const board = await getHumanLeaderboard(String(req.params.gameId).toLowerCase());
     if (!board || board.entries.length === 0) {

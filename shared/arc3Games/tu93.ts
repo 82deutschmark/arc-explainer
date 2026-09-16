@@ -14,6 +14,7 @@
  *          were wrong: there is no "worn down" lose condition (the shrinking outline is the
  *          one-hit death burst), and the Dark Red follower copies your moves two turns
  *          late, not one.
+ *          2026-09-16 (Claude Opus 5, later): playerObservations added from Boss's report of the level 2 red enemy (bites head-on, dies from the side).
  * SRP/DRY check: Pass - Single responsibility for TU93 game data.
  */
 
@@ -166,6 +167,17 @@ export const tu93: Arc3GameMetadata = {
       category: 'hazards',
       text: 'Level 9 uses all three enemy kinds, and its Green exit sits on the pad right in front of a Red enemy\'s dot. Walking straight onto the exit gets you bitten; that Red enemy has to go first.',
       source: 'tu93.py:887-904',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      level: 2,
+      saw: 'Level 2 introduces an enemy: a red figure with a purple dot in it.',
+      did: 'Came at it straight on, then went around it and came at it from the side.',
+      happened: 'Straight on, it bites you and kills you. Going around and coming at it from the side, you bite it and destroy it. The page never mentioned this enemy at all, and it is a huge mechanic.',
+      inCode: 'The purple dot is the enemy\'s front. Finish a move on the pad the dot points at -- whether you walked straight at it or crossed in front of it -- and the dot turns yellow, it lunges onto your pad, and you die (tu93.py:1047-1048, 1090-1108). Step onto the pad it is standing on from the side or from behind and it is destroyed (tu93.py:1053-1088).',
     },
   ],
   category: 'evaluation',

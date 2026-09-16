@@ -27,6 +27,7 @@
  *          (the goal -- each rider level with a mark of its color -- was missing, and a gate
  *          needs the liquid exactly level with it, not "a gap closed enough"), fixed the
  *          click mapping and hint 2.
+ *          2026-09-16 (Claude Opus 5, later): level 7 screenshot now the live-build render, not the 9-level preview capture.
  * SRP/DRY check: Pass - Single responsibility for VC33 game data.
  */
 
@@ -151,7 +152,7 @@ export const vc33: Arc3GameMetadata = {
     { level: 4, imageUrl: '/arc3-levels/vc33/lvl4.png' },
     { level: 5, imageUrl: '/arc3-levels/vc33/lvl5.png' },
     { level: 6, imageUrl: '/arc3-levels/vc33/lvl6.png' },
-    { level: 7, imageUrl: '/vc33-lvl7.png', notes: 'Players sit atop the white hydraulic columns.' },
+    { level: 7, imageUrl: '/arc3-levels/vc33/lvl7.png' },
   ],
   tags: ['preview-set', 'hydraulics', 'physics'],
   thumbnailUrl: '/vc33.png',

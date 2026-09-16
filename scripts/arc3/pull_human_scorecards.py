@@ -4,7 +4,7 @@ Date: 2026-09-16
 PURPOSE: Build shared/arc3Games/humanPlay.generated.json -- the human play data behind the
          two human numbers on each public ARC-AGI-3 game page: ARC's own baseline action
          counts per level, and one human player's recent scorecard runs (today the owner,
-         who plays on arcprize.org as "Mark").
+         who goes by Boss and plays on the arcprize.org account "Mark").
 
          WHAT IT READS.
            1. external/ARCEngine/environment_files/<id>/<live hash>/metadata.json
@@ -56,7 +56,8 @@ PURPOSE: Build shared/arc3Games/humanPlay.generated.json -- the human play data 
              python3 scripts/arc3/pull_human_scorecards.py [--dry-run] [--out PATH]
          Env:
              ARC3_HUMAN_COOKIE_FILE  default ~/bubba-workspace/secrets/arcprize-boss-cookie.txt
-             ARC3_HUMAN_PLAYER       default Mark (must equal the cards' user_name)
+             ARC3_HUMAN_ACCOUNT      default Mark -- the arcprize.org user_name the cards must carry
+             ARC3_HUMAN_PLAYER       default Boss -- the name the site shows (the owner goes by Boss)
 SRP/DRY check: Pass -- one job: scorecards + baselines in, one committed JSON out. The
          endpoints and cookie flow follow ~/bubba-workspace/tools/arc3/pull_boss_scorecards.py
          (outside the repo, writes raw dumps). Live hashes are read from
@@ -200,7 +201,10 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="print the summary, write nothing")
     args = parser.parse_args()
 
-    player = os.environ.get("ARC3_HUMAN_PLAYER", "Mark")
+    # The arcprize.org account is named "Mark"; the owner goes by Boss, and Boss is what the
+    # site shows. Match cards on the account name, label runs with the player name.
+    account = os.environ.get("ARC3_HUMAN_ACCOUNT", "Mark")
+    player = os.environ.get("ARC3_HUMAN_PLAYER", "Boss")
     hashes = load_game_hashes()
     games = load_baselines(hashes)
     cookie = read_cookie()
@@ -227,8 +231,8 @@ def main() -> int:
             fail(f"list item {index} has no card_id")
         detail = get_json(f"/api/user/scorecards/{card_id}", cookie)
         user_name = detail.get("user_name")
-        if user_name != player:
-            fail(f"card {card_id} belongs to user_name {user_name!r}, expected {player!r} (set ARC3_HUMAN_PLAYER)")
+        if user_name != account:
+            fail(f"card {card_id} belongs to user_name {user_name!r}, expected {account!r} (set ARC3_HUMAN_ACCOUNT)")
         card_open = parse_iso(detail.get("open_at"))
         card_tags = detail.get("tags") or []
         for env in detail.get("environments") or []:

@@ -17,6 +17,7 @@
  *          starting row (engine runs and a collision probe). Appended the missing pieces: movable blue blocks picked by clicking
  *          (level 3+), traps also resetting blocks, merging side by side, and that the 150
  *          counts every action including clicks and the do-nothing fifth action.
+ *          2026-09-16 (Claude Opus 5, later): actionMappings fixed -- no drag (click picks a block, arrows move it) and the missing ACTION5 no-op added.
  * SRP/DRY check: Pass - Single responsibility for M0R0 game data.
  */
 
@@ -51,11 +52,12 @@ export const m0r0: Arc3GameMetadata = {
   aiDifficulty: 'hard',
   levelCount: 6,
   actionMappings: [
-    { action: 'ACTION1', description: 'Move pair Up', commonName: 'Up' },
-    { action: 'ACTION2', description: 'Move pair Down', commonName: 'Down' },
-    { action: 'ACTION3', description: 'Move pair apart/together', commonName: 'Left' },
-    { action: 'ACTION4', description: 'Move pair apart/together', commonName: 'Right' },
-    { action: 'ACTION6', description: 'Select/drag a block', commonName: 'Click' },
+    { action: 'ACTION1', description: 'Move both twins up (or the picked block up)', commonName: 'Up' },
+    { action: 'ACTION2', description: 'Move both twins down (or the picked block down)', commonName: 'Down' },
+    { action: 'ACTION3', description: 'One twin moves left, the other moves the mirror way (or the picked block moves left)', commonName: 'Left' },
+    { action: 'ACTION4', description: 'One twin moves right, the other moves the mirror way (or the picked block moves right)', commonName: 'Right' },
+    { action: 'ACTION5', description: 'Does nothing except use up one of the 150 actions', commonName: 'Space' },
+    { action: 'ACTION6', description: 'From level 3: click a blue block to pick it, so the arrows move that block one cell at a time; click anything else to go back to the twins. There is no dragging. Every click costs an action.', commonName: 'Click' },
   ],
   hints: [],
   resources: [

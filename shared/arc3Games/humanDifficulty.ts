@@ -39,7 +39,7 @@
  *          page can say that plainly.
  *
  *          RATING 2 -- OWNER (ownerDifficulty). Calibrated to one player's own scorecards
- *          (today the owner, "Mark"), so it reads "harder or easier than usual for this
+ *          (today the owner, Boss -- arcprize.org account "Mark"), so it reads "harder or easier than usual for this
  *          player", not an absolute scale. Runs are the generator's kept runs: actions > 0,
  *          opened on or after the cutoff, tagged human, on the live build.
  *            1. Order the player's runs on a game by card open time, then position in the
@@ -85,7 +85,7 @@ import humanPlayJson from './humanPlay.generated.json';
 export const HUMAN_DATA_CUTOFF = '2026-06-18T00:00:00Z';
 
 /** The owner's arcprize.org user name, as it appears on his scorecards. */
-export const OWNER_PLAYER = 'Mark';
+export const OWNER_PLAYER = 'Boss';
 
 export const TOP10_MIN_RECENT_WINS = 3;
 export const TOP10_EASY_BELOW = 0.2;

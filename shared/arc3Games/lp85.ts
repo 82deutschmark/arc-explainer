@@ -19,6 +19,7 @@
  *          there are several loops from level 2 (not one shared loop), and a target is four
  *          corner dots framing a slot the size of the moving square (not a small target
  *          square for a larger block). Added the step budget and stacked buttons.
+ *          2026-09-16 (Claude Opus 5, later): hints 1-2 corrected: targets are corner dots framing a slot; loops cross, and from level 6 one button turns 3 or 8 loops.
  * SRP/DRY check: Pass - Single responsibility for LP85 game data.
  */
 
@@ -63,13 +64,13 @@ export const lp85: Arc3GameMetadata = {
     {
       id: 'lp85-hint-1',
       title: 'Indicator Targets',
-      content: 'The small squares are not decorations; they are the exact slots for the larger blocks of the same color. Levels 3-4 add a second, orange pair alongside the yellow one -- match every color\'s target, not just yellow.',
+      content: 'A target is four small corner dots framing one slot, the same size as the squares. Get a yellow square into every yellow target and the level clears -- any yellow square fills any yellow target. Levels 3 and 4 add an orange square and an orange target; the orange square has to land in it too, and a yellow square does not count there.',
       spoilerLevel: 1,
     },
     {
       id: 'lp85-hint-2',
-      title: 'Two Buttons, One Loop',
-      content: 'Red and green only ever step the shared loop forward or backward by one position each press -- there is no swap or push mechanic hiding in later levels. Watch which blocks share a loop and count how many steps apart they need to end up.',
+      title: 'Buttons Turn Whole Loops',
+      content: 'A green arrowhead moves every square on its loop one slot forward and a red one moves them one slot back, and the loop wraps around. Loops cross, and a slot where two loops cross belongs to both -- that is how a yellow square gets from one loop to another. From level 6 one button spot can turn three or even eight loops at once (level 6 has only green buttons), so count what every loop on that click does, not just the one you are watching.',
       spoilerLevel: 2,
     }
   ],

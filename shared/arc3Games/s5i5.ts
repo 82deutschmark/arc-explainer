@@ -21,6 +21,7 @@
  *          at 0 budget). Kept every owner-confirmed fact. Two small wording fixes in
  *          mechanicsExplanation: light gray bars have no anchor end, and the slider buttons
  *          are not along the bottom on levels 1 and 8.
+ *          2026-09-16 (Claude Opus 5, later): playerObservations added from Boss's reports (level 5 confusion, plus-shaped button, level 7 overgrown rod).
  * SRP/DRY check: Pass - Single responsibility for S5I5 game data.
  */
 
@@ -55,6 +56,35 @@ export const s5i5: Arc3GameMetadata = {
     { introducedOnLevel: 6, category: 'pieces', text: 'A rod attached to another rod skips the turn that would fold it straight back over its parent: that click turns it a half turn instead.', source: 's5i5.py:2202-2212; engine run on level 6 (yellow and blue rods)' },
     { introducedOnLevel: 6, category: 'pieces', text: 'Level 6 has no purple border, so a rod can swing or grow partly off the board.', source: 's5i5.py:1855-1876; engine run: the level 6 blue rod turned to sit partly above the top edge' },
     { introducedOnLevel: 8, category: 'pieces', text: 'One rod can carry several rods at once: on level 8 a one-segment yellow rod has red, green, orange and blue rods attached on all four sides, and the yellow rotate button swings all four around it like a pinwheel.', source: 's5i5.py:1907-1941; engine run on level 8' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      level: 5,
+      saw: 'On level 5 the buttons had obviously changed from level 4, and something else had changed too.',
+      did: 'Clicked everywhere on the board looking for what the new rule was.',
+      happened: 'It made no sense: most clicks moved nothing. The buttons are only smaller versions of the same grow/shrink sliders (right half grows, left half shrinks). What changed is that the orange and green buttons each drive two rods in different parts of the board, and any click that would make any rod hit something is cancelled while still costing a click. The level also starts with the light blue marker already on its pin, and that rod is in the way -- it has to be pulled off its pin and put back at the end.',
+      inCode: 'The click budget is spent before the hit test in step(), and a collision restores every rod that moved. A breadth-first search over the real engine found a 28-click minimum for level 5, and no solution at all without shrinking the light blue rod.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      level: 6,
+      saw: 'The rotate button looks like a cross or a plus sign.',
+      happened: 'The write-up had called it a diamond. It is a plus; the hollow diamonds on the board are the pins you are aiming for.',
+      inCode: 'The rotate-button sprites are plus shapes and exist only on levels 6-8. Each click turns every rod of that color a quarter turn counterclockwise around its anchor.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      level: 7,
+      saw: 'After turning rods, the light blue rod had grown one segment too many.',
+      did: 'Tried shrinking it back.',
+      expected: 'Shrinking would give back the position he had before.',
+      happened: 'It did not: once a rod has been turned, shrinking it does not restore the earlier position, and he was left with a rod he could not fold into place. The undo key in the site player does nothing here -- RESET was the only way back.',
+      inCode: 'The game declares only ACTION6 (s5i5.py:2042) and has no undo of any kind.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
@@ -110,7 +140,7 @@ export const s5i5: Arc3GameMetadata = {
       title: 'S5I5 Human Replay -- Full 8/8 Clear (site owner, 16-Sep-2026)',
       url: 'https://arcprize.org/replay/850dee42-d148-44c4-91e7-efb149fd9542',
       type: 'replay',
-      description: 'Human run, WIN, all 8 levels in 507 actions with 5 resets, score 79.61. Level actions [13, 27, 49, 38, 49, 127, 115, 89] against baselines [20, 89, 106, 54, 162, 38, 86, 83] -- level 7 cost 115 against an 86 baseline. Provenance verified, not assumed: GET three.arcprize.org/api/sessions/850dee42-... returns tags ["human"] and card_id 339c8f8f-7235-4bcb-b4e8-0ff0a6458344, and that card appears under user_name "Mark" in GET arcprize.org/api/user/scorecards with the owner cookie, published 2026-09-16T18:57:55Z. The same card also holds the losing run that preceded it: GAME_OVER at 4 levels, 831 actions, 10 resets.',
+      description: 'Human run, WIN, all 8 levels in 507 actions with 5 resets, score 79.61. Level actions [13, 27, 49, 38, 49, 127, 115, 89] against baselines [20, 89, 106, 54, 162, 38, 86, 83] -- level 7 cost 115 against an 86 baseline. Provenance verified, not assumed: GET three.arcprize.org/api/sessions/850dee42-... returns tags ["human"] and card_id 339c8f8f-7235-4bcb-b4e8-0ff0a6458344, and that card appears under user_name "Boss" in GET arcprize.org/api/user/scorecards with the owner cookie, published 2026-09-16T18:57:55Z. The same card also holds the losing run that preceded it: GAME_OVER at 4 levels, 831 actions, 10 resets.',
     },
   ],
   levelScreenshots: [

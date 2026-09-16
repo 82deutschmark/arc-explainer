@@ -29,6 +29,7 @@
  *          chain is hidden on level 1 and shows only four tiers on levels 2-5 (not six);
  *          the foul penalty is not lowered by Undo; hint 5's level 9 clause (level 9 can
  *          only ever make one dark red creature); the notes' "alternates 32 and 48".
+ *          2026-09-16 (Claude Opus 5, later): playerObservations added from Boss's reports (suction-radius animation, why Sorting Urn was the wrong name).
  * SRP/DRY check: Pass - Single responsibility for SU15 game data.
  */
 
@@ -197,6 +198,22 @@ export const su15: Arc3GameMetadata = {
       category: 'hazards',
       text: 'A dark red creature chases twice as fast as the others, two cells per frame. Level 9 is the only level with enough light pink creatures (four) to make one.',
       source: 'su15.py:797-824, 1628-1636',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      saw: 'Every click plays a brief animation that shows roughly the radius that is about to get sucked up -- the kind of quick animation he suspects a lot of models ignore.',
+      did: 'Clicked, with pieces inside and outside that radius.',
+      happened: 'Everything inside the radius is pulled to the click point, and two similar objects inside it join and become the bigger object. None of this, including what the animation means, was explained anywhere on the page.',
+      inCode: 'Each click draws a thin white ring at the full 8-cell catch reach, which shrinks over about four frames while the pieces slide in (su15.py:1194-1215). Every caught same-size block that ends up overlapping fuses into ONE block of the next size up, so three small blocks give one bigger block, not a bigger block plus a spare.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      saw: 'The game was listed as "Sorting Urn".',
+      happened: 'That was not what it was. The game really is sucking things up, so it was renamed "Sucking Up".',
     },
   ],
   category: 'evaluation',

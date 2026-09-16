@@ -26,12 +26,17 @@
  *          of any mechanic text to drift, and a correction to a game file shows up in
  *          this document on the next request.
  *
+ *          2026-09-16 (Claude Opus 5): each game now also carries its "Every mechanic" bullets
+ *          (grouped by the level that introduces them), "Notes from play" (what a human saw,
+ *          did, expected), and action counts (ARC baseline and Boss's recent runs) -- this
+ *          document is read by the arc-3 training pipeline, not just by people.
  * SRP/DRY check: Pass -- document generation only. Data lives in shared/arc3Games, HTTP
  *          serving lives in server/routes.ts, and the HTML rendering of the same objects
  *          stays in client/src/pages/Arc3GameSpoiler.tsx.
  */
 
 import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata, type ActionMapping } from '../../../shared/arc3Games';
+import { getOwnerGameRating, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
 
 /** Public origin used for the absolute links in the document. */
 const SITE_ORIGIN = 'https://arc.markbarney.net';
@@ -71,12 +76,54 @@ function formatGame(game: Arc3GameMetadata): string {
   // -readable copy too: an agent reasoning about difficulty should read the real numbers
   // rather than our `difficulty` field, which is 'unknown' for most of the set.
   facts.push(`- **Official human leaderboard:** ${arcPrizeLeaderboardUrl(game.gameId)}`);
+  // Actions to win, from the committed scorecard snapshot (runs since 18 Jun 2026 on the live
+  // build). The top-10 fewest is live-only, so it stays on the web page and leaderboard link.
+  const owner = getOwnerGameRating(game.gameId);
+  if (owner.baseline) {
+    const summary = owner.summary;
+    const ownerText = !summary
+      ? 'not played since 18 Jun 2026'
+      : summary.bestWin
+        ? `best recent win ${summary.bestWin.actions} actions (${summary.recentRuns} recent run${summary.recentRuns === 1 ? '' : 's'})`
+        : `not won yet, ${summary.actionsSpent} actions over ${summary.recentRuns} run${summary.recentRuns === 1 ? '' : 's'}`;
+    facts.push(
+      `- **Actions to win:** ARC baseline ${owner.baseline.baselineTotal} (per level ${owner.baseline.baselineActions.join(', ')}); ${OWNER_PLAYER}: ${ownerText}`,
+    );
+  }
   parts.push(`${facts.join('\n')}\n`);
 
   parts.push(`**Objective.** ${game.description}\n`);
 
   if (game.mechanicsExplanation) {
     parts.push(`### Mechanics\n\n${game.mechanicsExplanation.trim()}\n`);
+  }
+
+  if (game.mechanicsBreakdown && game.mechanicsBreakdown.length > 0) {
+    const byLevel = new Map<number, string[]>();
+    for (const point of game.mechanicsBreakdown) {
+      const level = point.introducedOnLevel ?? 1;
+      const source = point.source ? ` _(${point.source})_` : '';
+      byLevel.set(level, [...(byLevel.get(level) ?? []), `- ${point.text}${source}`]);
+    }
+    const sections = [...byLevel.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([level, lines]) => `**${level === 1 ? 'From level 1' : `New on level ${level}`}**\n\n${lines.join('\n')}`);
+    parts.push(`### Every mechanic\n\n${sections.join('\n\n')}\n`);
+  }
+
+  if (game.playerObservations && game.playerObservations.length > 0) {
+    const notes = [...game.playerObservations]
+      .sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
+      .map((note) => {
+        const where = typeof note.level === 'number' ? `, level ${note.level}` : '';
+        const lines = [`- **${note.player}, ${note.date}${where}**`, `  - Saw: ${note.saw}`];
+        if (note.did) lines.push(`  - Did: ${note.did}`);
+        if (note.expected) lines.push(`  - Expected: ${note.expected}`);
+        lines.push(`  - What happened: ${note.happened}`);
+        if (note.inCode) lines.push(`  - In the code: ${note.inCode}`);
+        return lines.join('\n');
+      });
+    parts.push(`### Notes from play\n\n${notes.join('\n')}\n`);
   }
 
   parts.push(`### Controls\n\n${formatActions(game.actionMappings)}`);

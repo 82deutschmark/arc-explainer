@@ -154,7 +154,7 @@
   },
   "pulls": [
     {
-      "player": "Mark",
+      "player": "Boss",
       "pulledAt": "2026-09-16T21:14:19Z",
       "cardsListed": 50,
       "listCap": 50,
@@ -172,7 +172,7 @@
   ],
   "runs": [
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "ar25",
       "build": "0c556536",
       "cardId": "5a9e6106-6d65-4b8c-a9be-5a6734eacf11",
@@ -189,7 +189,7 @@
       "openAt": "2026-09-16T18:58:50.074929Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "bp35",
       "build": "0a0ad940",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -206,7 +206,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "bp35",
       "build": "0a0ad940",
       "cardId": "41c93ff4-cee4-4dfc-89af-a6f429ddd0ea",
@@ -223,7 +223,7 @@
       "openAt": "2026-09-12T22:13:16.623063Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "bp35",
       "build": "0a0ad940",
       "cardId": "81520dc5-74fa-4eac-90b0-fc0e4bad9ea7",
@@ -240,7 +240,7 @@
       "openAt": "2026-09-14T00:46:05.731273Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "cd82",
       "build": "fb555c5d",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -257,7 +257,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "cd82",
       "build": "fb555c5d",
       "cardId": "864c7631-c34e-4afa-991b-be33bd61e12c",
@@ -274,7 +274,7 @@
       "openAt": "2026-09-14T15:27:40.353Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "cd82",
       "build": "fb555c5d",
       "cardId": "4b6f6f4a-d26a-4305-9faa-c64b2f142a72",
@@ -291,7 +291,7 @@
       "openAt": "2026-09-14T18:24:09.559609Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "cn04",
       "build": "2fe56bfb",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -308,7 +308,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "cn04",
       "build": "2fe56bfb",
       "cardId": "5b1a78ef-d0e5-468b-b50c-102c255df2f8",
@@ -325,7 +325,7 @@
       "openAt": "2026-09-15T16:19:09.010661Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "dc22",
       "build": "fdcac232",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -342,7 +342,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "dc22",
       "build": "fdcac232",
       "cardId": "634f4896-7706-4e9e-abf0-77439a64dc28",
@@ -359,7 +359,7 @@
       "openAt": "2026-09-15T17:37:24.267603Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "ft09",
       "build": "0d8bbf25",
       "cardId": "7aafea23-d8c6-479a-8fe6-ce4112681aa0",
@@ -376,7 +376,7 @@
       "openAt": "2026-09-15T18:15:59.147078Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "g50t",
       "build": "5849a774",
       "cardId": "1f7a90e1-21db-4c7d-8d89-b1ba0331466c",
@@ -393,7 +393,7 @@
       "openAt": "2026-09-13T17:48:52.506124Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "g50t",
       "build": "5849a774",
       "cardId": "475182c6-6eb1-4d72-8cc8-22c432f3ce9f",
@@ -410,7 +410,7 @@
       "openAt": "2026-09-15T18:21:59.642079Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "ka59",
       "build": "38d34dbb",
       "cardId": "c60a39fc-5e20-4ea8-b823-0d8a3b3e0ed9",
@@ -427,7 +427,7 @@
       "openAt": "2026-09-15T21:45:24.871384Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "lf52",
       "build": "271a04aa",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -444,7 +444,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "lf52",
       "build": "271a04aa",
       "cardId": "74105ec5-d5b7-4ab7-9272-28341ef13a72",
@@ -461,7 +461,7 @@
       "openAt": "2026-09-12T19:19:08.010125Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "lp85",
       "build": "305b61c3",
       "cardId": "33a0c6c5-c906-4c66-87af-e9b683459db7",
@@ -478,7 +478,7 @@
       "openAt": "2026-09-15T22:01:38.482154Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "ls20",
       "build": "9607627b",
       "cardId": "ea61f075-ce39-4bd5-bd7e-68ec4ba946ee",
@@ -495,7 +495,7 @@
       "openAt": "2026-09-15T22:14:57.753051Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "m0r0",
       "build": "492f87ba",
       "cardId": "1adad378-c4d4-4d5d-95cb-724b9c82813d",
@@ -512,7 +512,7 @@
       "openAt": "2026-09-05T17:38:44.624649Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "m0r0",
       "build": "492f87ba",
       "cardId": "22ffb681-1b50-4aa7-aabb-dd66a4266a74",
@@ -529,7 +529,7 @@
       "openAt": "2026-09-15T22:29:35.346152Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "r11l",
       "build": "495a7899",
       "cardId": "23fd798a-111e-43e1-bf55-f742c014219f",
@@ -546,7 +546,7 @@
       "openAt": "2026-09-12T17:49:29.43976Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "re86",
       "build": "8af5384d",
       "cardId": "6f064cbd-33d9-4c26-bf31-49646d245a6b",
@@ -563,7 +563,7 @@
       "openAt": "2026-09-12T18:04:16.44405Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "s5i5",
       "build": "18d95033",
       "cardId": "d3bdd9b9-30d4-4a99-95d4-4c8e3a54dd4f",
@@ -580,7 +580,7 @@
       "openAt": "2026-09-16T17:44:02.762513Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "s5i5",
       "build": "18d95033",
       "cardId": "339c8f8f-7235-4bcb-b4e8-0ff0a6458344",
@@ -597,7 +597,7 @@
       "openAt": "2026-09-16T17:44:57.010854Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "s5i5",
       "build": "18d95033",
       "cardId": "339c8f8f-7235-4bcb-b4e8-0ff0a6458344",
@@ -614,7 +614,7 @@
       "openAt": "2026-09-16T17:44:57.010854Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "sb26",
       "build": "7fbdac44",
       "cardId": "f92ef767-9058-4209-a041-b43d0b588ff7",
@@ -631,7 +631,7 @@
       "openAt": "2026-09-16T19:20:44.303266Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "sc25",
       "build": "635fd71a",
       "cardId": "633ac1c5-e101-48d1-a574-58867abe5fd1",
@@ -648,7 +648,7 @@
       "openAt": "2026-09-12T16:02:47.698679Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "sk48",
       "build": "d8078629",
       "cardId": "2960fc79-9498-4aa1-a87a-02bb838f3aef",
@@ -665,7 +665,7 @@
       "openAt": "2026-09-11T20:52:45.964888Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "sp80",
       "build": "589a99af",
       "cardId": "ec71d1b1-e0ec-4f5c-81ee-e57cae9fff42",
@@ -682,7 +682,7 @@
       "openAt": "2026-09-02T18:02:10.208959Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "sp80",
       "build": "589a99af",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -699,7 +699,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "sp80",
       "build": "589a99af",
       "cardId": "affdd47d-5306-4f02-a501-e49fabfad9bf",
@@ -716,7 +716,7 @@
       "openAt": "2026-09-11T22:57:51.221399Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "su15",
       "build": "1944f8ab",
       "cardId": "33833464-625c-427b-823f-01b5f8882b38",
@@ -733,7 +733,7 @@
       "openAt": "2026-09-16T19:33:35.510426Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "tn36",
       "build": "ef4dde99",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -750,7 +750,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "tn36",
       "build": "ef4dde99",
       "cardId": "864c7631-c34e-4afa-991b-be33bd61e12c",
@@ -767,7 +767,7 @@
       "openAt": "2026-09-14T15:27:40.353Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "tn36",
       "build": "ef4dde99",
       "cardId": "5da6af3c-1c6b-42e6-b030-a4ed154b3140",
@@ -784,7 +784,7 @@
       "openAt": "2026-09-14T15:41:13.044047Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "tr87",
       "build": "cd924810",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -801,7 +801,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "tu93",
       "build": "0768757b",
       "cardId": "56d5f271-e209-405c-902a-1d6e63077e22",
@@ -818,7 +818,7 @@
       "openAt": "2026-09-16T19:48:06.786308Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "wa30",
       "build": "ee6fef47",
       "cardId": "1aaa7524-47e2-4189-94cc-cfa252c88669",
@@ -835,7 +835,7 @@
       "openAt": "2026-09-02T22:21:00.691946Z"
     },
     {
-      "player": "Mark",
+      "player": "Boss",
       "gameId": "wa30",
       "build": "ee6fef47",
       "cardId": "affdd47d-5306-4f02-a501-e49fabfad9bf",
