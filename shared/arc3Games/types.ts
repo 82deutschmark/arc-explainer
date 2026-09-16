@@ -89,9 +89,8 @@ export interface MechanicPoint {
 }
 
 /**
- * One thing a human noticed while actually playing -- written down in the shape the arc-3
- * fine-tuning pipeline asks for: what they saw, what they did, what they thought would
- * happen, and what the game really did. Kept close to the player's own words; `inCode` is
+ * One thing a human noticed while actually playing: what they saw, what they did, what they
+ * thought would happen, and what the game really did. Kept close to the player's own words; `inCode` is
  * what the game source says about it, when someone checked. Added 2026-09-16 (Claude Opus 5).
  */
 export interface PlayerObservation {
@@ -163,7 +162,7 @@ export interface Arc3GameMetadata {
 
   /**
    * What human players noticed while playing, in their own terms: saw / did / expected /
-   * happened. Training material for the arc-3 fine-tuning pipeline as much as a reader aid.
+   * happened. Written for human readers; also handy reference for our own tooling.
    */
   playerObservations?: PlayerObservation[];
 

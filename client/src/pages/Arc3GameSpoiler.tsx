@@ -32,8 +32,7 @@
  *          - New "Every Mechanic" card after In Plain English renders mechanicsBreakdown,
  *            grouped by the level that introduces each point. Renders nothing when absent.
  *          - Later the same day: "Notes From Play" card after it renders playerObservations
- *            (what a human saw, did, expected, and what happened) -- training material for
- *            the arc-3 pipeline as much as a reader aid.
+ *            (what a human saw, did, expected, and what happened).
  * SRP/DRY check: Pass - Single responsibility (game detail display), reuses shared game metadata.
  *          All rating math lives in shared/arc3Games/humanDifficulty.ts; this file only
  *          formats its results. No new fetches: the one leaderboard query is shared.
@@ -591,7 +590,7 @@ function EveryMechanicCard({ points }: { points: MechanicPoint[] | undefined }) 
 
 /**
  * "Notes From Play": what a human actually noticed while playing, in the saw / did / expected
- * / happened shape the arc-3 training pipeline asks for, with what the code says underneath.
+ * / happened, with what the code says underneath.
  * Ordered by level. Renders nothing when a game has no notes.
  */
 function NotesFromPlayCard({ notes }: { notes: PlayerObservation[] | undefined }) {
