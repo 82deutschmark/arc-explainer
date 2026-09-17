@@ -93,6 +93,78 @@ def outline(frame, box: tuple, colour: int):
             frame[y, x1 - 1] = colour
     return frame
 
+def begin_translation(game, names=(), position=None, repaint=None, limit=8):
+    game._translation_path = None
+    sprites = {s.name: (s.x, s.y) for s in game.current_level.get_sprites()
+               if any(s.name == n or (n.endswith('*') and s.name.startswith(n[:-1]))
+                      for n in names)}
+    game._translation_capture = (game.current_level, sprites,
+        (game.camera.x, game.camera.y), position, position() if position else None,
+        repaint, limit)
+
+def translation_position(game, position):
+    return getattr(game, '_translation_point', None) or position
+
+def advance_translation(game):
+    motion = getattr(game, '_translation_motion', None)
+    if motion is None:
+        return False
+    motion['frame'] += 1
+    t = motion['frame'] / motion['count']
+    def lerp(a, b):
+        return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+    for sprite, start, end in motion['sprites']:
+        sprite.set_position(*(motion['path'][motion['frame']-1] if motion['path'] else lerp(start, end)))
+    game.camera.x, game.camera.y = lerp(motion['camera'][0], motion['camera'][1])
+    if motion['point'] is not None:
+        game._translation_point = lerp(*motion['point'])
+    if motion['repaint'] is not None:
+        motion['repaint']()
+    if motion['frame'] == motion['count']:
+        game._translation_motion = None
+        game._translation_point = None
+        if motion['complete']:
+            game.complete_action()
+    return True
+
+def finish_translation(game, complete=True):
+    capture = getattr(game, '_translation_capture', None)
+    game._translation_capture = None
+    if capture is None or capture[0] is not game.current_level or game._next_level:
+        if complete:
+            game.complete_action()
+        return
+    level, previous, camera, position, point, repaint, limit = capture
+    sprites = []
+    distances = []
+    path = getattr(game, "_translation_path", None)
+    for sprite in level.get_sprites():
+        if sprite.name not in previous:
+            continue
+        start, end = previous[sprite.name], (sprite.x, sprite.y)
+        distance = max(abs(start[0] - end[0]), abs(start[1] - end[1]))
+        if distance or path:
+            sprites.append((sprite, start, end))
+            distances.append(distance)
+    points = (point, position()) if position else None
+    if points:
+        distances.append(max(abs(a-b) for a,b in zip(*points)))
+    count = len(path) if path else max(distances, default=0)
+    if count < 2 or (not path and count > limit):
+        if complete:
+            game.complete_action()
+        return
+    game._translation_motion = dict(frame=0, count=count, sprites=sprites,
+        camera=(camera, (game.camera.x, game.camera.y)), point=points, repaint=repaint,
+        complete=complete, path=path)
+    advance_translation(game)
+
+def clear_translation(game):
+    game._translation_path = None
+    game._translation_capture = None
+    game._translation_motion = None
+    game._translation_point = None
+
 
 OUTSIDE = 4
 FLOOR = 1
@@ -421,6 +493,7 @@ class Fold(ARCBaseGame):
         self._paint()
 
     def on_set_level(self, level: Level) -> None:
+        clear_translation(self)
         self.board, self.px, self.py = parse_level(LEVELS_SPEC[self.level_index])
         self.ply = [[1] * len(self.board[0]) for _ in self.board]
         self.armed = False
@@ -432,10 +505,12 @@ class Fold(ARCBaseGame):
         self._paint()
 
     def level_reset(self) -> None:
+        clear_translation(self)
         super().level_reset()
         self.on_set_level(self.current_level)
 
     def full_reset(self) -> None:
+        clear_translation(self)
         super().full_reset()
         self.on_set_level(self.current_level)
 
@@ -471,8 +546,7 @@ class Fold(ARCBaseGame):
             frame[idx * CELL, 0:w * CELL] = CREASE
 
     def _paint(self) -> None:
-        frame = self._sheet_frame(self.board, self.ply,
-                                  (self.px, self.py, self.armed))
+        frame = self._sheet_frame(self.board, self.ply)
         h, w = len(self.board), len(self.board[0])
         self.camera.width, self.camera.height = w * CELL, h * CELL
         if self.level_index in SEAM_LEVELS:
@@ -490,6 +564,8 @@ class Fold(ARCBaseGame):
                 outline(frame, (gx * CELL, gy * CELL, (gx+1) * CELL, (gy+1) * CELL), 8 if crushed else 0)
             self._crease_line(frame, self.orient, self.crease,
                               len(self.board), len(self.board[0]))
+        left, top = translation_position(self, (self.px * CELL, self.py * CELL))
+        _blit(frame, top, left, player_art(self.armed))
         self._show(frame)
 
     def _fold_views(self):
@@ -603,14 +679,14 @@ class Fold(ARCBaseGame):
             self.orient, self.crease = "V", 1
             self._stage, self._pending = None, None
             self._paint()
-            self.complete_action()
+            finish_translation(self)
             return
         if self._tick <= CRUSH_FRAMES:
             self._paint_crush(self._tick)
             return
         self._stage, self._pending = None, None
         self.level_reset()
-        self.complete_action()
+        finish_translation(self)
 
     def _walk(self, dx: int, dy: int) -> None:
         nx, ny = self.px + dx, self.py + dy
@@ -644,7 +720,7 @@ class Fold(ARCBaseGame):
         if (self.orient, self.crease) not in {(a, b) for a, b, _ in crease_choices(self.board, self.level_index in SEAM_LEVELS)}:
             self.armed = False
             self._paint()
-            self.complete_action()
+            finish_translation(self)
             return
         span = len(self.board[0]) if self.orient == "V" else len(self.board)
         pos = self.px if self.orient == "V" else self.py
@@ -657,6 +733,9 @@ class Fold(ARCBaseGame):
         self._advance()
 
     def step(self) -> None:
+        if advance_translation(self):
+            return
+        begin_translation(self, position=lambda: (self.px*CELL, self.py*CELL), repaint=self._paint, limit=CELL)
         self._beat += 1
         if self._stage:
             self._advance()
@@ -689,4 +768,4 @@ class Fold(ARCBaseGame):
             else:
                 self._walk({"L": -1, "R": 1}.get(key, 0), {"U": -1, "D": 1}.get(key, 0))
         self._paint()
-        self.complete_action()
+        finish_translation(self)

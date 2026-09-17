@@ -104,6 +104,78 @@ def speckle(colour: int, seed: int, cell: int = 4) -> list[list[int]]:
                 px[y][x] = colour
     return px
 
+def begin_translation(game, names=(), position=None, repaint=None, limit=8):
+    game._translation_path = None
+    sprites = {s.name: (s.x, s.y) for s in game.current_level.get_sprites()
+               if any(s.name == n or (n.endswith('*') and s.name.startswith(n[:-1]))
+                      for n in names)}
+    game._translation_capture = (game.current_level, sprites,
+        (game.camera.x, game.camera.y), position, position() if position else None,
+        repaint, limit)
+
+def translation_position(game, position):
+    return getattr(game, '_translation_point', None) or position
+
+def advance_translation(game):
+    motion = getattr(game, '_translation_motion', None)
+    if motion is None:
+        return False
+    motion['frame'] += 1
+    t = motion['frame'] / motion['count']
+    def lerp(a, b):
+        return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+    for sprite, start, end in motion['sprites']:
+        sprite.set_position(*(motion['path'][motion['frame']-1] if motion['path'] else lerp(start, end)))
+    game.camera.x, game.camera.y = lerp(motion['camera'][0], motion['camera'][1])
+    if motion['point'] is not None:
+        game._translation_point = lerp(*motion['point'])
+    if motion['repaint'] is not None:
+        motion['repaint']()
+    if motion['frame'] == motion['count']:
+        game._translation_motion = None
+        game._translation_point = None
+        if motion['complete']:
+            game.complete_action()
+    return True
+
+def finish_translation(game, complete=True):
+    capture = getattr(game, '_translation_capture', None)
+    game._translation_capture = None
+    if capture is None or capture[0] is not game.current_level or game._next_level:
+        if complete:
+            game.complete_action()
+        return
+    level, previous, camera, position, point, repaint, limit = capture
+    sprites = []
+    distances = []
+    path = getattr(game, "_translation_path", None)
+    for sprite in level.get_sprites():
+        if sprite.name not in previous:
+            continue
+        start, end = previous[sprite.name], (sprite.x, sprite.y)
+        distance = max(abs(start[0] - end[0]), abs(start[1] - end[1]))
+        if distance or path:
+            sprites.append((sprite, start, end))
+            distances.append(distance)
+    points = (point, position()) if position else None
+    if points:
+        distances.append(max(abs(a-b) for a,b in zip(*points)))
+    count = len(path) if path else max(distances, default=0)
+    if count < 2 or (not path and count > limit):
+        if complete:
+            game.complete_action()
+        return
+    game._translation_motion = dict(frame=0, count=count, sprites=sprites,
+        camera=(camera, (game.camera.x, game.camera.y)), point=points, repaint=repaint,
+        complete=complete, path=path)
+    advance_translation(game)
+
+def clear_translation(game):
+    game._translation_path = None
+    game._translation_capture = None
+    game._translation_motion = None
+    game._translation_point = None
+
 
 TURF_TILE = 14
 PALE_BLOCK = 0
@@ -513,6 +585,7 @@ class KeeperRound(ARCBaseGame):
                          available_actions=[1, 2, 3, 4, 5])
 
     def on_set_level(self, level: Level) -> None:
+        clear_translation(self)
         spec = LEVELS_SPEC[self.level_index]
         self.camera.width = min(64, len(spec["rows"][0]) * CELL)
         self.camera.x = 0
@@ -522,11 +595,13 @@ class KeeperRound(ARCBaseGame):
         self._caught = 0
 
     def level_reset(self) -> None:
+        clear_translation(self)
         super().level_reset()
         self.on_set_level(self.current_level)
         self._redraw()
 
     def full_reset(self) -> None:
+        clear_translation(self)
         super().full_reset()
         self.deaths = 0
         self.on_set_level(self.current_level)
@@ -562,13 +637,16 @@ class KeeperRound(ARCBaseGame):
             s.pixels = np.array(_gate(bool(self.stones)))
 
     def step(self) -> None:
+        if advance_translation(self):
+            return
+        begin_translation(self, ('poacher', 'keeper_*'), limit=CELL)
         if self._caught:
             self._caught -= 1
             for sp in self.current_level.get_sprites_by_name("poacher"):
                 sp.pixels = np.array(_poacher(lit=self._caught % 2 == 0))
             if self._caught == 0:
                 self.level_reset()
-                self.complete_action()
+                finish_translation(self)
             return
 
         move = {
@@ -579,7 +657,7 @@ class KeeperRound(ARCBaseGame):
             GameAction.ACTION5: (0, 0),
         }.get(self.action.id)
         if move is None:
-            self.complete_action()
+            finish_translation(self)
             return
 
         spec = LEVELS_SPEC[self.level_index]
@@ -600,4 +678,4 @@ class KeeperRound(ARCBaseGame):
         self._redraw()
         if not self.stones and self.pos == spec["gate"]:
             self.next_level()
-        self.complete_action()
+        finish_translation(self)
