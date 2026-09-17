@@ -5,6 +5,9 @@
  *          As of 2026-09-11, confirmed withdrawn from the ARC-AGI-3 public demo set --
  *          see the `notes` field below for the three independent sources. Content
  *          otherwise unchanged from the original preview-era spoiler page.
+ *          2026-09-17 (Claude Fable 5.1): AS66 -- "the lost game" -- has been recreated from
+ *          Boss's 27-Dec-2025 recording and is playable, by link only, at /arc3/play/as66.
+ *          Start at docs/reference/arc3/AS66_Lost_Game.md for everything about it.
  * SRP/DRY check: Pass - Single responsibility for AS66 game data.
  */
 
@@ -42,6 +45,12 @@ export const as66: Arc3GameMetadata = {
   ],
   resources: [
     {
+      title: 'Play the recreated AS66',
+      url: '/arc3/play/as66',
+      type: 'article',
+      description: 'The lost game, rebuilt from Boss\'s 27-Dec-2025 winning recording and checked against it frame for frame. Link-only: it is not listed in the gallery.',
+    },
+    {
       title: 'AS66 Replay',
       url: 'https://three.arcprize.org/replay/as66-821a4dcad9c2/db85123a-891c-4fde-8bd3-b85c6702575d',
       type: 'replay',
@@ -57,7 +66,7 @@ export const as66: Arc3GameMetadata = {
     { level: 8, imageUrl: '/as66-lvl8.png', notes: 'Watch out for red enemies here.' },
     { level: 9, imageUrl: '/as66-lvl9.png' },
   ],
-  tags: ['preview-set', 'movement', 'sliding'],
+  tags: ['preview-set', 'movement', 'sliding', 'withdrawn', 'lost-game', 'recreated', 'holdout'],
   thumbnailUrl: '/as66.png',
   video: {
     src: '/videos/arc3/as66-test.mp4',

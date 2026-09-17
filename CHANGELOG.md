@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.93.0  Sep 17, 2026
+
+- **AS66, the lost game, is playable by link at `/arc3/play/as66` and findable by any agent** (Author: Claude Fable 5.1)
+  - **Playable.** New fourth local source `holdout` in `server/services/arc3Mirror/Arc3MirrorCatalog.ts`, reading `server/data/arc3-holdout-games/` (`as66.py`, `manifest.json`, `README.md`) with the same local reader the arena and research sets use. Checked: the catalog lists `as66` with category `holdout` and serves its source; the file loads through a bare `exec` the way the browser player runs it; the 155-action replay test still passes; the three copies of the file are byte-identical.
+  - **Hidden.** `CommunityGallery.tsx` drops link-only categories before anything on the page sees them (no tile, chip, section or count). The landing page and "next task" pools are allowlists (`arc3TaskSets.ts`), so a new category is excluded without touching them, and the review queue is driven by the triage file, which does not contain it.
+  - **Findable.** `docs/reference/arc3/AS66_Lost_Game.md` is the one index: what the game is, how to play, where every file lives across the three repos, how to change it, and what not to do. Linked from the top of `ARC3_Games.md`; `shared/arc3Games/as66.ts` gains a "Play the recreated AS66" resource and `lost-game` / `withdrawn` / `recreated` / `holdout` tags.
+  - **Deliberately NOT done.** Not published to `sonpham-org/arc-3`. That catalog is what the fine-tune pipeline plays and trains on, and a holdout in the training catalog is not a holdout.
+  - **ARCEngine.** `external/ARCEngine` is a submodule of Boss's own GitHub copy; pointer moved to `4d38eac` (drops a `from __future__` import the browser's `exec` does not need).
 ### Version 9.92.0  Sep 16, 2026
 
 - **Fix animation in the feedback-revised games** (Author: Codex, GPT-6): audit all 32 games and retain the existing animation in the seven without movement defects. Add native rigid movement to 25 game sources (including the approved AK36), preserving turns, outcomes, scrolling and state cues. Follow KC24’s actual composed route and EO13’s straight multi-cell ride. Scope the website’s native-only playback to these 32 games, removing pixel scatter and fake border pulses for this set.

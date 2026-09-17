@@ -168,6 +168,14 @@ const SECTION_LABELS: { key: string; label: string; note: string; credit?: JSX.E
 const HIDDEN_FROM_BROWSE = new Set<string>(['ai-generated']);
 
 /**
+ * LINK-ONLY categories (2026-09-17, Claude Fable 5.1). Unlike HIDDEN_FROM_BROWSE these get no
+ * chip, no section and no count: they are dropped before anything in this page sees them.
+ * Today that is `holdout` -- as66, the withdrawn preview game recreated from a recording,
+ * playable at /arc3/play/as66 and nowhere else. A holdout you can browse to is not a holdout.
+ */
+const LINK_ONLY = new Set<string>(['holdout']);
+
+/**
  * Any category upstream invents that is not in the list above still renders, under its
  * own slug, after the known ones. `ai-generated` arrived with 571 games the day after
  * this page shipped and a hardcoded list dropped every one of them silently -- the page
@@ -305,7 +313,7 @@ export default function CommunityGallery() {
     staleTime: 60 * 60 * 1000,
   });
 
-  const games = useMemo(() => data?.data?.games ?? [], [data]);
+  const games = useMemo(() => (data?.data?.games ?? []).filter((g) => !LINK_ONLY.has(g.category)), [data]);
 
   /**
    * gameId -> its place in the review queue, which is newest generated work first.
