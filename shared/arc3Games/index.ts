@@ -40,7 +40,7 @@ import { tu93 } from './tu93';
 
 // Re-export all types for backward compatibility
 export * from './types';
-export type { Arc3GameMetadata, DifficultyRating, GameCategory, ActionMapping, GameHint, GameResource, LevelScreenshot, MechanicPoint, PlayerObservation } from './types';
+export type { Arc3GameMetadata, DifficultyRating, GameCategory, ActionMapping, GameHint, GameResource, LevelScreenshot, MechanicPoint, PlayerObservation, SymbolGlyph } from './types';
 
 /**
  * Complete database of ARC-AGI-3 game metadata and spoilers.

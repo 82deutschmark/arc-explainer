@@ -1,7 +1,8 @@
 /*
  * Author: Claude Sonnet 5; mechanics breakdown by Claude Opus 5, 2026-09-16
  * Date: 2026-09-11 (corrected against source 2026-09-12; breakdown added 2026-09-16;
- *       renamed, play notes and a level 5 capture added 2026-09-17)
+ *       renamed, play notes, captures, the named-rune legend and Boss's winning replay
+ *       added 2026-09-17)
  * PURPOSE: Game metadata for TR87 (Toggle Runes), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). A second, independent adversarial
  *          re-verification pass on 2026-09-12 found the original pass still missed
@@ -166,7 +167,38 @@ export const tr87: Arc3GameMetadata = {
       saw: 'On level 5 he is only allowed to select things up in the area that previously gave him the legend.',
       happened: 'The puzzle is inverted from here: the answer row is already right and frozen, and the dictionary itself is what you change.',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      saw: 'A run in progress, and then the arcprize.org site dropped his scorecard mid-game.',
+      did: 'Ground back through the levels from the start.',
+      happened: 'He won it on the replay: 6/6, score 100, 211 actions, no resets, under baseline on every level. Before that evening this game had never given him a single level.',
+    },
   ],
+  symbolGlyphs: [
+    { name: 'Butterfly', group: 'blue -- the sentence', imageUrl: '/arc3-levels/tr87/runes/butterfly.png', looksLike: 'two wings each side, pinched in the middle' },
+    { name: 'Fork', group: 'blue -- the sentence', imageUrl: '/arc3-levels/tr87/runes/fork.png', looksLike: 'a spine with two prongs off one side' },
+    { name: 'Gate', group: 'blue -- the sentence', imageUrl: '/arc3-levels/tr87/runes/gate.png', looksLike: 'two posts and a crossbar, with a notch in the middle' },
+    { name: 'I-Beam', group: 'blue -- the sentence', imageUrl: '/arc3-levels/tr87/runes/i-beam.png', looksLike: 'a bar at each end, joined through the middle' },
+    { name: 'Lightning', group: 'blue -- the sentence', imageUrl: '/arc3-levels/tr87/runes/lightning.png', looksLike: 'a bar with a step up one end and a step down the other' },
+    { name: 'Staircase', group: 'blue -- the sentence', imageUrl: '/arc3-levels/tr87/runes/staircase.png', looksLike: 'a bar, a step down, a bar' },
+    { name: 'Trident', group: 'blue -- the sentence', imageUrl: '/arc3-levels/tr87/runes/trident.png', looksLike: 'three prongs off a crossbar' },
+    { name: 'Flag', group: 'pink -- the middle language', imageUrl: '/arc3-levels/tr87/runes/flag.png', looksLike: 'a box with a short tail off one corner' },
+    { name: 'Ladder', group: 'pink -- the middle language', imageUrl: '/arc3-levels/tr87/runes/ladder.png', looksLike: 'two little boxes side by side, a stub out of each end' },
+    { name: 'Lantern', group: 'pink -- the middle language', imageUrl: '/arc3-levels/tr87/runes/lantern.png', looksLike: 'a box with a stub on top, like a handle' },
+    { name: 'Maze', group: 'pink -- the middle language', imageUrl: '/arc3-levels/tr87/runes/maze.png', looksLike: 'a box with a little maze inside it' },
+    { name: 'Pinwheel', group: 'pink -- the middle language', imageUrl: '/arc3-levels/tr87/runes/pinwheel.png', looksLike: 'two boxes offset diagonally, joined through the middle' },
+    { name: 'Ring', group: 'pink -- the middle language', imageUrl: '/arc3-levels/tr87/runes/ring.png', looksLike: 'a fat ring with a nick in it' },
+    { name: 'Snail', group: 'pink -- the middle language', imageUrl: '/arc3-levels/tr87/runes/snail.png', looksLike: 'a box with a smaller box curled inside it' },
+    { name: 'Comb', group: 'yellow -- the answer', imageUrl: '/arc3-levels/tr87/runes/comb.png', looksLike: 'a long back with broken-off teeth' },
+    { name: 'Corners', group: 'yellow -- the answer', imageUrl: '/arc3-levels/tr87/runes/corners.png', looksLike: 'two broken corners facing away from each other' },
+    { name: 'Fangs', group: 'yellow -- the answer', imageUrl: '/arc3-levels/tr87/runes/fangs.png', looksLike: 'two eyes on top, two fangs below' },
+    { name: 'Fence', group: 'yellow -- the answer', imageUrl: '/arc3-levels/tr87/runes/fence.png', looksLike: 'three rungs stacked with gaps' },
+    { name: 'Hooks', group: 'yellow -- the answer', imageUrl: '/arc3-levels/tr87/runes/hooks.png', looksLike: 'a bar with a hook at each end, pointing opposite ways' },
+    { name: 'Sparks', group: 'yellow -- the answer', imageUrl: '/arc3-levels/tr87/runes/sparks.png', looksLike: 'a dashed line with a dot off each side' },
+    { name: 'Window', group: 'yellow -- the answer', imageUrl: '/arc3-levels/tr87/runes/window.png', looksLike: 'a frame with a gap top and bottom and a speck in the middle' },
+  ],
+  symbolGlyphsNote: 'All 21 runes: 7 for each alphabet. Each strip is the same rune in all four ways it can appear, because the game gives every tile a random quarter-turn when the level loads and a turned rune is the same rune. Drawn from the game\'s own sprite table (the nxkictbbvzt sprites in tr87.py, build cd924810) by scripts/arc3/extract_tr87_runes.py. The names are ours, from Boss\'s play on 17-Sep-2026; the game names none of them.',
   category: 'evaluation',
   humanDifficulty: 'hard',
   aiDifficulty: 'hard',
@@ -191,12 +223,19 @@ export const tr87: Arc3GameMetadata = {
       type: 'replay',
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
+    {
+      title: 'TR87 Human Replay (Win, 6/6 Levels, Score 100)',
+      url: 'https://arcprize.org/replay/d6580644-057c-41c0-8f52-cc5888380db0',
+      type: 'replay',
+      description: 'Boss\'s playthrough, and his first TR87 clear -- before this the game had never given him a single level. Published 2026-09-17: a win, all six levels, score 100, 211 actions and no resets, split 37/31/39/36/28/40 against the game\'s baselines of 54/58/40/45/71/146 (414 total). Under baseline on every level, and level 6, the branching one with the doubled budget, took 40 actions against 146. An earlier run the same evening was lost when the site dropped his scorecard mid-game.',
+    },
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/arc3-levels/tr87/lvl1.png' },
     { level: 2, imageUrl: '/arc3-levels/tr87/lvl2.png' },
     { level: 3, imageUrl: '/arc3-levels/tr87/lvl3.png' },
     { level: 4, imageUrl: '/arc3-levels/tr87/lvl4.png' },
+    { level: 4, imageUrl: '/arc3-levels/tr87/lvl4-human.png', caption: 'human play, one rune short of the win', notes: 'Not an engine render: the arcprize.org player console during Boss\'s winning run, 17-Sep-2026. Three alphabets, eight dictionary entries, and the bracket on the last yellow tile -- the 3rd and 7th blue runes are both the Trident, so the last tile has to become the twin of the 3rd. This capture and the level 5 one are where the rune legend above was read from.' },
     { level: 4, imageUrl: '/arc3-levels/tr87/lvl5-human.png', caption: 'human play, level 4 at the moment it cleared', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026, caught on the transition -- the header already reads LEVEL 5/6 while the board is still the three-alphabet layout with the yellow answer row. Level 4 clears itself the instant the sequence is right, with no confirm press.' },
     { level: 5, imageUrl: '/arc3-levels/tr87/lvl5.png' },
     { level: 5, imageUrl: '/arc3-levels/tr87/lvl5-human-dictionary.png', caption: 'human play, the bracket up in the dictionary', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. Two alphabets, four entries (one of them one-to-many, one many-to-one), the pink answer row frozen, and the white bracket up on a dictionary entry\'s pink side -- the inverted puzzle of levels 5-6.' },

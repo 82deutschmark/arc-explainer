@@ -113,6 +113,23 @@ export interface PlayerObservation {
 }
 
 /**
+ * One named symbol a game is built on, with a tiny picture of every way it can appear.
+ * TR87 is the game this exists for: it gives every tile a random quarter-turn when the level
+ * loads, so one rune shows up four different ways and prose about it needs both a name and a
+ * picture of the turns. Added 2026-09-17 (Claude Opus 5) at Boss's request while playing it.
+ */
+export interface SymbolGlyph {
+  /** The name we use for it in prose, e.g. "Trident". */
+  name: string;
+  /** Which set it belongs to, in the game's own terms, e.g. "blue -- the sentence". */
+  group?: string;
+  /** Tiny PNG of the symbol in each way it can appear. */
+  imageUrl: string;
+  /** What it looks like, in plain words. */
+  looksLike: string;
+}
+
+/**
  * Screenshot of a specific game level
  */
 export interface LevelScreenshot {
@@ -165,6 +182,12 @@ export interface Arc3GameMetadata {
    * happened. Written for human readers; also handy reference for our own tooling.
    */
   playerObservations?: PlayerObservation[];
+
+  /** Named symbols this game is built on, each with a picture of every way it can appear. */
+  symbolGlyphs?: SymbolGlyph[];
+
+  /** One line under the symbol card: where the pictures came from, and what the turns mean. */
+  symbolGlyphsNote?: string;
 
   /** Category: preview (public from start) or evaluation (held back) */
   category: GameCategory;
