@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.99.1  Sep 17, 2026
+
+- **TR87: level 5 note and capture** (Author: Claude Opus 5): on level 5 Boss can only select up in the old legend area -- the inverted puzzle. Added his dictionary capture, and relabelled the earlier capture as level 4 on the transition (its header reads 5/6 while the board is still the three-alphabet one). `shared/arc3Games/tr87.ts`, `client/public/arc3-levels/tr87/lvl5-human-dictionary.png`.
+
 ### Version 9.99.0  Sep 17, 2026
 
 - **TR87: two more notes from Boss's play, and his level 5 capture** (Author: Claude Opus 5)
