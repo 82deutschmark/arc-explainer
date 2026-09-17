@@ -1,34 +1,42 @@
 """
-Author: Claude Fable 5.1
-Date: 2026-09-16
+Author: Claude Fable 5.1 (16-Sep-2026 recreation); Claude Opus 5 (17-Sep-2026 lap, crash and meter fixes)
+Date: 17-September-2026
 PURPOSE: AS66 "Always Sliding" -- a faithful ARCEngine recreation of the withdrawn ARC-AGI-3
          preview game. No source for the original exists; every rule here was read off Boss's
          27-Dec-2025 nine-level winning recording (arc-explainer:
          public/replays/as66-821a4dcad9c2.db85123a-891c-4fde-8bd3-b85c6702575d.jsonl) and is
-         written up in docs/plans/2026-09-16-as66-always-sliding-recreation-prd.md.
+         written up in docs/plans/2026-09-16-as66-always-sliding-recreation-prd.md. Level layouts
+         were also checked against Boss's screenshots (arc-explainer client/public/as66*.png:
+         level 1 and levels 3-9); all match.
 
          The game: colored one-cell blocks slide until they hit something; the field wraps at
          its edges like a torus; orange 3x3 enemies with a dark-red core patrol and kill on
          contact; colored 3-cell bars recolor a block that slides through them; every block must
          sit in a white cup whose back-wall marker is white or its own color. Four directions,
-         nine levels, a perimeter meter that shows par and, once its side columns are full, loses
-         the level.
+         nine levels, a perimeter meter that fills with every counted move; the move that fills
+         it loses the level.
 
          Rendering: the whole 64x64 frame is drawn into one canvas sprite from a cell model
          (walls, cups, bars, enemies, blocks) rather than one sprite per entity, because the
-         original's field sizes and cell pitches change per level and pixel-exact output against
-         the recording is the acceptance test. Collision uses the cell model, never sprites.
+         original's field sizes and cell pitches change per level. Collision uses the cell model,
+         never sprites. tests/games/test_as66.py replays the recording and every frame matches.
 
          Rules the recording forced that a first reading would not guess (keep them):
            * enemies step BEFORE the block slides (row 18 death geometry);
            * a press in the direction the green ring side already shows is a total no-op
              (rows 20, 36, 115, 116), while a blocked press in a new direction still counts:
              enemies step and the meter fills (rows 12, 114);
-           * a slide that loops the torus back to its own cell counts on the meter but does not
-             flip the green side or step enemies (rows 24, 30, 31);
+           * a lap -- a slide that carries the block all the way round the torus to its own cell --
+             plays like any move (ring flips, enemies step, block goes round), then on the frame
+             the block gets home the ring and enemies go back to how they stood; the move stays
+             charged (rows 24, 30, 31). Fixed 17-Sep: this was first read as "enemies do not
+             step", which matched only the last frame and could slide forever with two blocks;
            * enemies reverse at their start cell even when the cells behind it are free (L3);
            * the level-6 death at 16 counted moves with no contact is the meter: each level has a
-             move budget (15 12 18 10 20 16 20 28 30) and the move that fills the meter loses.
+             move budget (15 12 18 10 20 16 20 28 30) and the move that fills the meter loses;
+           * the winning move is not charged on the meter (all nine recorded clears).
+         Not in the recording, decided here: with two blocks, each stops when it gets home; if
+         the other block really moved, nothing is taken back.
 SRP/DRY check: Pass -- level data is parsed once by the same reader that produced
          docs/arc3-game-analysis/as66_levels.json; nothing here duplicates engine collision code.
 """
@@ -76,35 +84,35 @@ SIDE_OF_DIR = {"UP": "TOP", "DOWN": "BOTTOM", "LEFT": "LEFT", "RIGHT": "RIGHT"}
 # --------------------------------------------------------------------------------------
 LEVEL_SPECS: List[dict] = [
     dict(
-        par=5, budget=15, cell=4, origin=(8, 8), green="TOP",
+        par=3, budget=15, cell=4, origin=(8, 8), green="TOP",
         grid=[
             "FFFFFF44FF4F", "F4FFFFF444FF", "FF44FF4484FF", "FF444FFFFFFF", "F44444FFFFFF", "FF44FFFFF4FF",
             "FFFFFFF444FF", "FFFFFFF444FF", "FFF0F0FF4F4F", "FFF000FFFFFF", "FFFFFFFFFFFF", "FFFFFFFFFFFF",
         ],
     ),
     dict(
-        par=4, budget=12, cell=4, origin=(8, 8), green="LEFT",
+        par=3, budget=12, cell=4, origin=(8, 8), green="LEFT",
         grid=[
             "FFFFFFFFFFFF", "FF4FFFFFFFFF", "F4FFFFFFFFFF", "FFFFFFF4FFFF", "FFFFFF444FFF", "FFFFFF444BFF",
             "FFFFFF44FFFF", "F00FFFFFFFFF", "F0FFFF44FFFF", "F00FF444FF4F", "FFFFFFFFF4FF", "FFFFFFFFFFFF",
         ],
     ),
     dict(
-        par=6, budget=18, cell=4, origin=(8, 8), green="TOP",
+        par=7, budget=18, cell=4, origin=(8, 8), green="TOP",
         grid=[
             "FCCCFFFF4FFF", "FCCDFFFFFFFF", "FCCCFFFFFFFF", "FFF44F44FFFF", "FFF4BFF4FFFF", "FFF4FFFFFF4F",
             "FFFFFF44FF4F", "F44FFFFFFFFF", "F4FF4FFFFFFF", "FFFF000FF44F", "FFFF0F0FFFFF", "FFFFFFFFFFFF",
         ],
     ),
     dict(
-        par=3, budget=10, cell=4, origin=(4, 8), green="BOTTOM",
+        par=4, budget=10, cell=4, origin=(4, 8), green="BOTTOM",
         grid=[
             "FFFFFFFFFFFFFF", "FFF4FFFF44FFFF", "FF44FFFFF44FFF", "FFFFFFFFFFFFFF", "FF446FFFF4FFFF", "FF444FFF44F4FF",
             "F00FFFFFFF444F", "FAFFFFFFFFF44F", "F00FFF4AFFF4FF", "FFF06044FF444F", "FFF0F0FFFFF4FF", "FFFFFFFFFFFFFF",
         ],
     ),
     dict(
-        par=7, budget=20, cell=3, origin=(5, 5), green="LEFT",
+        par=13, budget=20, cell=3, origin=(5, 5), green="LEFT",
         grid=[
             "FFFFFFFFFFFFFFFFFF", "FF4F44FFFFFFFFFFFF", "CCC44444FFFF444FFF", "CCC0044FFBFF444FFF", "CDCFB44FFBFFFFFFFF",
             "FFF00444FBFFFFFFFF", "FFFFFCCCFFFFFFFFFF", "FFFFFCDCFFFFFFF4FF", "FFFF4CCCFF4FFFFF4F", "FFF4444AFFFFFFFF4F",
@@ -113,7 +121,7 @@ LEVEL_SPECS: List[dict] = [
         ],
     ),
     dict(
-        par=5, budget=16, cell=3, origin=(12, 9), green="RIGHT",
+        par=8, budget=16, cell=3, origin=(12, 9), green="RIGHT",
         grid=[
             "FFFFFFFFFFFFF", "FFFFFFFF999FF", "FFFFFFFFFFFFF", "F44FFFFFFF4FF", "F444F4FF4444F", "FFFFFFFF444FF",
             "FFFFFFFFF4FFF", "FFFFFFFFFFFFF", "FFFFFFFFFFFFF", "FF090F4F64FFF", "FF0F0F44444FF", "CCCFFFF44444F",
@@ -137,7 +145,7 @@ LEVEL_SPECS: List[dict] = [
         ],
     ),
     dict(
-        par=10, budget=30, cell=2, origin=(11, 15), green="LEFT",
+        par=11, budget=30, cell=2, origin=(11, 15), green="LEFT",
         grid=[
             "FFFFFFFFFFFFFFFFFFFFF", "FFFFFF44FFFFFF44FFFFF", "FFFFFF44FBF9F444FFFFF", "FF0F0F4FFBF9FF4FFFFFF",
             "FF090FFFFBF9FFFFFFFFF", "FFFFFFFFFFFFFFFFFFFFF", "F444FFFFFFFFFFFFFFFFF", "F44FFFFFFFFFFF44FFFFF",
@@ -291,14 +299,16 @@ class As66(ARCBaseGame):
         spec = {k: level.get_data(k) for k in ('par', 'budget', 'cell', 'origin', 'green', 'grid')}
         self._spec = spec
         self._model = parse_grid(spec["grid"])
-        self._par: int = spec["par"]  # human baseline, informational
+        self._par: int = spec["par"]  # fewest counted moves that clear the level (asserted by the whole-game sweep test)
         self._budget: int = spec["budget"]  # the move on which the meter fills and the level is lost
         self._cell: int = spec["cell"]
         self._origin: Cell = tuple(spec["origin"])  # type: ignore[assignment]
         self._green: str = spec["green"]
         self._moves = 0
-        self._meter_moves = 0  # the meter is redrawn on settle frames only, never on a death frame
+        self._meter_moves = 0  # the meter is redrawn on settle frames only, never on a death or winning frame
         self._sliding = False
+        self._lapped = False
+        self._before_move: Tuple[str, List[Tuple[Cell, Cell]], List[Tuple[Cell, int]]] = (self._green, [], [])
         self._canvas = level.get_sprites_by_name("canvas")[0]
         self._draw()
 
@@ -322,24 +332,22 @@ class As66(ARCBaseGame):
 
     # ---------------------------------------------------------------- move resolution
     def _begin_move(self, direction: str) -> None:
+        """Start a counted move: flip the ring, step the enemies, then slide.
+
+        Every move plays out the same way, laps included. What a lap takes back is decided at
+        settle time from the snapshot taken here (see _settle), never predicted up front: a
+        prediction made before the enemies step cannot see the lane they are about to open or
+        close, and an unpredicted lap used to slide forever.
+        """
         self._dir = DIRS[direction]
-        self._dir_name = direction
         self._moves += 1
-        self._looped = False
+        self._lapped = False
+        self._before_move = (self._green, [(e.pos, e.heading) for e in self._model.enemies], [(b.pos, b.color) for b in self._model.blocks])
         for b in self._model.blocks:
             b.start = b.pos
             b.moving = True
-        self._green_pending = SIDE_OF_DIR[direction]
 
-        # A slide that will loop the torus back to its start counts on the meter only.
-        loops = [self._would_loop(b) for b in self._model.blocks]
-        if loops and all(loops):
-            self._looped = True
-            self._sliding = True
-            self._slide_frame()
-            return
-
-        self._green = self._green_pending
+        self._green = SIDE_OF_DIR[direction]
         self._step_enemies()
         if self._any_enemy_on_block():
             self._draw()
@@ -350,7 +358,6 @@ class As66(ARCBaseGame):
             # blocked in a new direction: enemies stepped and the meter fills, one frame
             for b in self._model.blocks:
                 b.moving = False
-            self._meter_moves = self._moves
             self._settle()
             return
         self._sliding = True
@@ -361,21 +368,6 @@ class As66(ARCBaseGame):
         occupied = {o.pos for o in self._model.blocks if o is not b}
         nxt = self._wrap((b.pos[0] + self._dir[0], b.pos[1] + self._dir[1]))
         return nxt not in solid and nxt not in occupied
-
-    def _would_loop(self, b: Block) -> bool:
-        """True if sliding this block would carry it around the torus back to its own cell."""
-        solid = self._model.solid()
-        occupied = {o.pos for o in self._model.blocks if o is not b}
-        enemy_cells = {c for e in self._model.enemies for c in e.cells()}
-        pos = b.pos
-        for _ in range(max(self._model.cols, self._model.rows) + 1):
-            nxt = self._wrap((pos[0] + self._dir[0], pos[1] + self._dir[1]))
-            if nxt in solid or nxt in occupied or nxt in enemy_cells:
-                return False
-            pos = nxt
-            if pos == b.start:
-                return True
-        return False
 
     def _slide_frame(self) -> None:
         """Advance every moving block one cell (front-most first), render, and settle."""
@@ -388,6 +380,7 @@ class As66(ARCBaseGame):
         # front-most first along the direction of motion so trailing blocks stack behind
         moving.sort(key=lambda b: -(b.pos[0] * self._dir[0] + b.pos[1] * self._dir[1]))
         died = False
+        arrived_home = False
         for b in moving:
             occupied = {o.pos for o in self._model.blocks if o is not b}
             nxt = self._wrap((b.pos[0] + self._dir[0], b.pos[1] + self._dir[1]))
@@ -399,8 +392,12 @@ class As66(ARCBaseGame):
                 b.color = self._model.bars[nxt]
             if nxt in enemy_cells:
                 died = True
-            if self._looped and nxt == b.start:
+            if nxt == b.start:
+                # all the way round the torus and home: a block never passes its own start cell,
+                # so no slide can run longer than one lap
                 b.moving = False
+                self._lapped = True
+                arrived_home = True
             elif not self._can_step(b):
                 b.moving = False  # stops now; the next frame is the settle frame
         if died:
@@ -410,20 +407,30 @@ class As66(ARCBaseGame):
             self.lose()
             self.complete_action()
             return
-        if self._looped and not any(b.moving for b in self._model.blocks):
-            # a torus loop ends on the frame the block gets home, meter included
+        if arrived_home and not any(b.moving for b in self._model.blocks):
+            # a lap ends on the frame the block gets home (rows 24, 30, 31: 12 frames for a 12-cell lap)
             self._settle()
             return
         self._draw()
 
     def _settle(self) -> None:
+        """End a counted move: win, take back a lap that changed nothing, charge the meter, check the budget."""
         self._sliding = False
-        self._meter_moves = self._moves
-        self._draw()
         if self._all_cups_satisfied():
+            # the winning move is not charged: all nine recorded clears show the previous count
+            self._draw()
             self.next_level()  # win() is called by the engine on the last level
             self.complete_action()
             return
+        green_before, enemies_before, blocks_before = self._before_move
+        if self._lapped and [(b.pos, b.color) for b in self._model.blocks] == blocks_before:
+            # A lap that left every block where it was, same color, is taken back: the ring side
+            # and the enemies return to how they stood before the press. The move stays charged.
+            self._green = green_before
+            for e, (pos, heading) in zip(self._model.enemies, enemies_before):
+                e.pos, e.heading = pos, heading
+        self._meter_moves = self._moves
+        self._draw()
         if self._moves >= self._budget:
             self.lose()
         self.complete_action()

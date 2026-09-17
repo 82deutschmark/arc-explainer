@@ -1,6 +1,6 @@
 <!--
-Author: Claude Fable 5.1
-Date: 2026-09-16
+Author: Claude Fable 5.1 (16-Sep-2026); corrected by Claude Opus 5 (17-Sep-2026)
+Date: 2026-09-17
 PURPOSE: Product requirements for recreating AS66 "Always Sliding" -- the ARC-AGI-3 preview
          game that was withdrawn from the public set -- as an ARCEngine Python game, so it can
          serve as a held-out, semi-private task. Every rule below was read off Boss's own
@@ -14,7 +14,12 @@ SRP/DRY check: Pass -- this is the only spec for the faithful recreation. The gl
 # AS66 "Always Sliding" -- Recreation PRD
 
 **Owner:** Boss. **Implementer:** the developer assigned to `external/ARCEngine`.
-**Status:** BUILT -- `external/ARCEngine/games/official/as66.py` replays all 155 recorded actions pixel-for-pixel (`tests/games/test_as66.py`). Sections 3.7 and 9 were corrected against the implementation.
+**Status:** BUILT 16-Sep-2026 (Claude Fable 5.1); FIXED 17-Sep-2026 (Claude Opus 5). Every frame of
+every recorded action now matches, all nine level layouts match Boss's screenshots (level 1 and
+levels 3-9; level 2 has none), and no reachable position on any level crashes. The 17-Sep pass fixed
+the lap rule (3.6), a level 4 two-block crash, the meter on the winning move (3.7) and the stale
+par column (4). Fix plan: `external/ARCEngine/docs/plans/17-September-2026-as66-mechanics-fix-plan.md`.
+Tests: `external/ARCEngine/tests/games/test_as66.py` (section 6).
 
 ## 0. The one-paragraph brief
 
@@ -23,7 +28,7 @@ same conventions as `ls20.py` and `gw01.py`) that reproduces the withdrawn ARC-A
 AS66 frame-for-frame on its nine levels: a colored block slides until it hits something, the
 field wraps at its edges like a torus, orange patrol enemies kill on contact, colored bars
 recolor the block, and every block must sit in a white cup whose back wall matches its color.
-Nine levels, four actions, a perimeter par meter that doubles as a move budget. The layouts,
+Nine levels, four actions, a perimeter meter that is the move budget. The layouts,
 colors, pixel geometry and reference solutions are in
 [as66_levels.json](../arc3-game-analysis/as66_levels.json) and
 [as66_solutions.json](../arc3-game-analysis/as66_solutions.json); acceptance is that the
@@ -112,11 +117,12 @@ row 0 = initial RESET. "Counted move" = an action that moved anything.
   when... no: **the field edge is not a wall.** Leaving the field on one side re-enters on the
   opposite side (torus). Row 15: up from (9,5) to (9,0), wraps to (9,11), continues to (9,10).
   Row 24: a column with no obstacle loops all the way around and the block ends where it began.
-- A press whose first step is blocked is a no-op: one frame, no meter change, enemies do not move
-  (rows 20, 36, 115, 116).
+- A press in the direction the green ring side already shows is a no-op: one frame, no meter
+  change, enemies do not move (rows 20, 36, 115, 116). A blocked press in a *new* direction is not
+  free; see 3.7.
 - The green ring side moves to the side matching the direction just pressed (row 1 DOWN ->
-  BOTTOM, row 2 LEFT -> LEFT). It is a "last direction" indicator only. On a full-loop slide the
-  indicator did not change (row 24). Each level has its own starting side (table above).
+  BOTTOM, row 2 LEFT -> LEFT). It is a "last direction" indicator only. On a lap it flips for the
+  slide and flips back when the block gets home (row 24; see 3.6). Each level has its own starting side (table above).
 
 ### 3.3 Cups (the exit)
 - A cup is five white cells in a U: a 3-cell back wall and two legs, opening on one side, with
@@ -158,8 +164,11 @@ row 0 = initial RESET. "Counted move" = an action that moved anything.
   column 0 is open; L8 both enemies return exactly to their start corners and reverse). Diagonal
   enemies retrace the same diagonal, they do not billiard-bounce off one axis.
 - Enemies do not wrap and do not kill each other. Enemies never move on a no-op press.
-- Quirk observed twice (rows 24, 30-31): on a slide that loops the block back to its own cell,
-  the meter advanced but the enemy did not step. Decision in 9.4.
+- **Laps** (rows 24, 30, 31): a slide that carries the block all the way round the torus to its
+  own cell plays like any move. On the first frame the ring flips and the enemy steps; the block
+  goes round; on the frame it gets home the ring and the enemy are put back as they were. The move
+  stays charged on the meter. (Corrected 17-Sep: first read as "the enemy does not step", which
+  matched only the last frame.)
 
 ### 3.7 The perimeter meter and the move budget (corrected after implementation)
 - The meter is one 188-pixel path: it starts at the top center and grows both ways at once,
@@ -170,14 +179,15 @@ row 0 = initial RESET. "Counted move" = an action that moved anything.
   that fills the meter loses the level** (L6 row 93: 16th counted move, budget 16, no contact
   anywhere in the frame). A winning move is checked first.
 - The meter is redrawn on settle frames and on blocked-press frames, never on a death frame
-  (row 18 shows the previous move's meter).
+  (row 18 shows the previous move's meter) and never for the winning move (all nine recorded clears
+  show the count from before the move that cleared the level; corrected 17-Sep).
 - The meter resets on level clear and on RESET (rows 10, 56).
 - Bottom row: `round(64 * levels_completed / 9)` white pixels from the left, the rest black.
   Never resets on RESET.
 - Blocked presses: a press in the direction the green side already shows is a no-op (rows 20,
   36, 115, 116). A blocked press in a new direction counts: enemies step, the meter fills, the
-  green side flips, one frame (rows 12, 114). A slide that loops the torus back to its own cell
-  counts on the meter but flips nothing and moves no enemy (rows 24, 30, 31).
+  green side flips, one frame (rows 12, 114). A lap counts on the meter; its ring flip and enemy
+  step are put back when the block gets home (rows 24, 30, 31).
 
 ### 3.8 Level start
 - Each level starts with the block(s) at rest, enemies at their start cells with the core on the
@@ -190,30 +200,31 @@ Exact grids, walls, enemies, cups, bars and block starts for all nine levels are
 [as66_levels.json](../arc3-game-analysis/as66_levels.json) (field coordinates, x right, y down,
 origin at the field's top-left cell). Summary:
 
-| L | Field | Blocks (color @ cell) | Cups (pocket, opens, needs) | Bars | Enemies (top-left, heading) | Par |
+| L | Field | Blocks (color @ cell) | Cups (pocket, opens, needs) | Bars | Enemies (top-left, heading) | Fewest moves |
 |---|---|---|---|---|---|---|
-| 1 | 12x12 | red @ (8,2) | (4,8) UP, any | - | - | 5 |
-| 2 | 12x12 | yellow @ (9,5) | (2,8) RIGHT, any | - | - | 4 |
-| 3 | 12x12 | yellow @ (4,4) | (5,10) DOWN, any | - | (1,0) RIGHT, patrols x 1..5 | 6 |
-| 4 | 14x12 | light blue @ (7,8); pink @ (4,4) | (2,7) RIGHT needs light blue; (4,10) DOWN needs pink | - | - | 3 |
-| 5 | 18x18 | light blue @ (7,9) | (3,4) LEFT needs yellow | yellow (9,3)-(9,5) | (0,2) DOWN y 2..7; static at (5,6), (5,12), (11,14) | 7 |
-| 6 | 13x15 | pink @ (8,9) | (3,10) DOWN needs blue | blue (8,1)-(10,1) | (0,11) RIGHT x 0..4 | 5 |
+| 1 | 12x12 | red @ (8,2) | (4,8) UP, any | - | - | 3 |
+| 2 | 12x12 | yellow @ (9,5) | (2,8) RIGHT, any | - | - | 3 |
+| 3 | 12x12 | yellow @ (4,4) | (5,10) DOWN, any | - | (1,0) RIGHT, patrols x 1..5 | 7 |
+| 4 | 14x12 | light blue @ (7,8); pink @ (4,4) | (2,7) RIGHT needs light blue; (4,10) DOWN needs pink | - | - | 4 |
+| 5 | 18x18 | light blue @ (7,9) | (3,4) LEFT needs yellow | yellow (9,3)-(9,5) | (0,2) DOWN y 2..7; static at (5,6), (5,12), (11,14) | 13 |
+| 6 | 13x15 | pink @ (8,9) | (3,10) DOWN needs blue | blue (8,1)-(10,1) | (0,11) RIGHT x 0..4 | 8 |
 | 7 | 13x10 | pink @ (1,3) | (10,8) DOWN needs blue | blue (6,2)-(6,4) | - | 7 |
 | 8 | 17x17 | yellow @ (2,12) | (15,14) RIGHT needs blue | blue (6,1)-(6,3) | (7,5) UP_RIGHT to (9,3); (3,10) DOWN_RIGHT to (7,14) | 9 |
-| 9 | 21x17 | yellow @ (3,10); light blue @ (11,14) | (3,3) UP needs blue; (11,11) RIGHT any | blue (11,2)-(11,4); yellow (9,2)-(9,4) | (3,13) RIGHT x 3..7 | 10 |
+| 9 | 21x17 | yellow @ (3,10); light blue @ (11,14) | (3,3) UP needs blue; (11,11) RIGHT any | blue (11,2)-(11,4); yellow (9,2)-(9,4) | (3,13) RIGHT x 3..7 | 11 |
 
 Reference solutions (Boss's final successful attempt on each level, exactly as recorded, including
 the timing-wait moves he used against enemies) are in
 [as66_solutions.json](../arc3-game-analysis/as66_solutions.json). Level 1 is `DOWN, LEFT, DOWN`.
-Shorter solutions exist for the enemy levels; the recorded ones are the acceptance oracle, not
-the par.
+"Fewest moves" is the fewest counted moves that clear the level, found by exhaustive search of the
+recreation and asserted by the sweep test. It replaces a "Par" column (5 4 6 3 7 5 7 9 10) that came
+from the first, wrong meter theory; five of those were below what the level allows.
 
 ## 5. Engine mapping
 
 - File: `external/ARCEngine/games/official/as66.py`, class `As66(ARCBaseGame)`, registered in
   `games/official/__init__.py`. Header per `Mark's Coding Standards.md`. Also emit
-  `environment_files/as66/v1/as66.py` + `metadata.json` (`baseline_actions` = the par list
-  `[5,4,6,3,7,5,7,9,10]`, `default_fps: 5`) so it can be served the way the 25 public builds are.
+  `environment_files/as66/v1/as66.py` + `metadata.json` (`baseline_actions` = Boss's recorded
+  per-level solution lengths `[3,3,16,4,14,8,9,17,11]`, `default_fps: 5`) so it can be served the way the 25 public builds are.
 - `super().__init__("as66", levels, Camera(0,0,64,64, background=3, letter_box=3,
   interfaces=[meter, progress]), available_actions=[1,2,3,4,6], seed=seed)`.
 - One `Level` per row of the table, `data={"par": P, "cell": px, "origin": (x,y),
@@ -237,33 +248,45 @@ the par.
 
 ## 6. Acceptance tests (`tests/games/test_as66.py`)
 
-1. Replay `as66_solutions.json` from RESET: after each level's sequence `levels_completed`
-   increments; after level 9, `state == WIN`. Frames must be checked, not just state: compare the
-   last frame of every action against the recording's last frame for that row (the JSONL is the
-   fixture; rows 0-3, 56-63, 102-112, 132-153 are the clean runs with no resets in between).
-2. Death by sliding into an enemy: L3, replay rows 11-18 from the row-10 RESET -> `GAME_OVER`.
-3. Death by enemy stepping onto the block: L9 rows 134-141 -> `GAME_OVER`.
-4. Death by budget: L6 rows 78-93 -> `GAME_OVER` on the 16th counted move with no contact.
-5. No-op press costs nothing: L8 rows 115-116 leave the meter and enemies unchanged.
-6. Wrap: L3 row 15 ends at (9,10) after crossing the top edge.
-7. Recolor: L5 row 70 ends yellow; L7 row 109 ends blue.
-8. Click is free and inert; RESET restores the level and keeps the score.
-9. The level 8 enemies follow the exact 20-position path printed in this session (row 112-131
-   sequence: (7,5),(8,4),(9,3),(8,4),(7,5)... and (3,10)..(7,14)..(3,10)).
+Run from `external/ARCEngine`: `.venv/bin/python -m unittest tests.games.test_as66` (21 tests).
+Rewritten 17-Sep. The first version compared only the last frame of each action with 6 pixels of
+meter slack, which is how the lap misreading and the winning-move meter got through.
+
+1. **Against the recording.** Every recorded action replayed from the first RESET; every frame,
+   frame count, state and score must match. Exact pixels are not the goal in themselves; they are
+   the cheapest proof the mechanics are the recorded ones, since some rules only show mid-move.
+2. **One test per rule**, each from a level start, using the shortest sequence that shows it:
+   slide until stopped; wrap at the edge; a lap is charged but the ring and enemy go back; two
+   blocks where one laps and the other moves (the old level 4 crash); a press toward the ring side
+   is free; a blocked press in a new direction costs a move and steps enemies; a patrol reverses at
+   its start and at a wall; corner-core enemies move diagonally and retrace (the level 8 paths);
+   center-core enemies never move; sliding into an enemy loses; an enemy walking into a resting
+   block loses; a bar recolors a passing block; a wrong-colored block sits in a marked cup without
+   clearing; every press moves every block and all must be home; filling the meter loses; winning
+   on the last budget move wins; the winning move is not charged; RESET restores the level and
+   keeps the score; click is inert.
+3. **Whole-game sweep.** Every position reachable within each level's budget, all four presses from
+   each: nothing crashes, every level can be won, and the fewest winning moves equal the level's
+   `par` in `LEVEL_SPECS`.
 
 ## 7. Deliverables checklist
 
 - [x] `games/official/as66.py` + registration, `environment_files/as66/v1/`.
-- [x] `tests/games/test_as66.py` passing (`.venv/bin/python -m unittest tests.games.test_as66`).
-- [ ] `docs/plans/{date}-as66-implementation-plan.md` in ARCEngine per its standards before coding.
-- [ ] CHANGELOG entries in both repos.
-- [ ] Hand the build to Boss for a play-through against the screenshots before it is used as a holdout.
+- [x] `tests/games/test_as66.py` passing.
+- [x] Plan doc in ARCEngine: `docs/plans/17-September-2026-as66-mechanics-fix-plan.md`.
+- [x] CHANGELOG entries in both repos.
+- [x] Level layouts checked against Boss's screenshots (17-Sep, all match).
+- [ ] Boss plays it through.
 
 ## 8. What the recreation is for
 
 - Holdout task: a human-verified baseline exists (this recording), an agent baseline exists
-  (gpt-5-nano), and the source is otherwise unobtainable. Keep the build out of any public
+  (gpt-5-nano), and ARC Prize never published the source. Keep the build out of any public
   listing; the arc-explainer page stays URL-only.
+- Boss, 17-Sep: the code being on public GitHub does not matter (agents under test have no
+  internet). AS66 is semi-public, and its withdrawal suggests games like it are in the private
+  set, so it is worth training on or testing on. Which of the two is Boss's call; until he makes
+  it, it stays out of the `sonpham-org/arc-3` catalog.
 - Corpus: the `arc-3` decision-step corpus rejected AS66 records only because there was no
   source to cite (`2026-09-15-as66-the-withdrawn-26th-game.md` section 4a). This file becomes
   that source, which unlocks the matched human-vs-agent dataset described there.
@@ -276,10 +299,17 @@ the par.
 2. **Two blocks in one line.** Never happened. Decision: resolve blocks front-most first along
    the direction of motion each frame; a block treats another block as a wall. Two blocks can
    therefore end adjacent. A block may not enter a pocket another block occupies.
-3. **Meter fill on the winning move.** Untested. Implemented: check win before budget.
-4. **Enemy step on a full-loop slide.** Rows 24, 30, 31 show no enemy step on a loop that
-   returned the block to its start. Implemented as recorded (the replay test needs it): a loop
-   counts on the meter only.
+3. **Winning on the move that would fill the meter.** Untested in the recording. Implemented:
+   the win is checked first, so it wins. Consistent with the recording, where the winning move is
+   never charged on the meter.
+4. **Laps.** No longer a decision: see 3.6. The recording shows the enemy step and ring flip
+   mid-lap and both put back at the end. (The 16-Sep version skipped them; corrected 17-Sep.)
 5. **Enemy colliding with a bar or cup.** Bars and cups block enemies (treated as walls);
    otherwise identical.
 6. **Level 4's meter.** Resolved: budget 10, fill `round(188*m/10)` = 19/38/56 px. Exact.
+7. **Two blocks, one laps.** Never happened in the recording (the 16-Sep build crashed on it,
+   level 4). Decision: each block stops when it gets back to its own start cell, so no slide runs
+   longer than one lap. The ring and enemies are put back only if every block ended where it
+   started with its starting color; if the other block really moved, the move stands.
+8. **A lap through a color bar.** Never happened. The block comes home a different color, so by
+   rule 7 the move stands and nothing is put back.
