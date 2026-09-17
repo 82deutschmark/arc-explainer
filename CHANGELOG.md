@@ -12,6 +12,11 @@
 # reference the old numbers.
 
 
+### Version 9.92.0  Sep 16, 2026
+
+- **Fix animation in the feedback-revised games** (Author: Codex, GPT-6): audit all 32 games and retain the existing animation in the seven without movement defects. Add native rigid movement to 25 game sources (including the approved AK36), preserving turns, outcomes, scrolling and state cues. Follow KC24’s actual composed route and EO13’s straight multi-cell ride. Scope the website’s native-only playback to these 32 games, removing pixel scatter and fake border pulses for this set.
+- **Validation:** all 237 source campaign levels; 32 baseline/edited engine comparisons across 11,850 actions; four feedback suites; focused translation tests including two rejected mutations; eight playback tests. See the movement audit for exact coverage and remaining integration limits.
+
 ### Version 9.91.0  Sep 16, 2026
 
 - **AS66 "Always Sliding" rebuilt on ARCEngine and verified against the recording** (Author: Claude Fable 5.1)

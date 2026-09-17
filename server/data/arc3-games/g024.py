@@ -13,6 +13,80 @@ from arcengine import (
     Sprite,
 )
 
+
+def begin_translation(game, names=(), position=None, repaint=None, limit=8):
+    game._translation_path = None
+    sprites = {s.name: (s.x, s.y) for s in game.current_level.get_sprites()
+               if any(s.name == n or (n.endswith('*') and s.name.startswith(n[:-1]))
+                      for n in names)}
+    game._translation_capture = (game.current_level, sprites,
+        (game.camera.x, game.camera.y), position, position() if position else None,
+        repaint, limit)
+
+def translation_position(game, position):
+    return getattr(game, '_translation_point', None) or position
+
+def advance_translation(game):
+    motion = getattr(game, '_translation_motion', None)
+    if motion is None:
+        return False
+    motion['frame'] += 1
+    t = motion['frame'] / motion['count']
+    def lerp(a, b):
+        return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+    for sprite, start, end in motion['sprites']:
+        sprite.set_position(*(motion['path'][motion['frame']-1] if motion['path'] else lerp(start, end)))
+    game.camera.x, game.camera.y = lerp(motion['camera'][0], motion['camera'][1])
+    if motion['point'] is not None:
+        game._translation_point = lerp(*motion['point'])
+    if motion['repaint'] is not None:
+        motion['repaint']()
+    if motion['frame'] == motion['count']:
+        game._translation_motion = None
+        game._translation_point = None
+        if motion['complete']:
+            game.complete_action()
+    return True
+
+def finish_translation(game, complete=True):
+    capture = getattr(game, '_translation_capture', None)
+    game._translation_capture = None
+    if capture is None or capture[0] is not game.current_level or game._next_level:
+        if complete:
+            game.complete_action()
+        return
+    level, previous, camera, position, point, repaint, limit = capture
+    sprites = []
+    distances = []
+    path = getattr(game, "_translation_path", None)
+    for sprite in level.get_sprites():
+        if sprite.name not in previous:
+            continue
+        start, end = previous[sprite.name], (sprite.x, sprite.y)
+        distance = max(abs(start[0] - end[0]), abs(start[1] - end[1]))
+        if distance or path:
+            sprites.append((sprite, start, end))
+            distances.append(distance)
+    points = (point, position()) if position else None
+    if points:
+        distances.append(max(abs(a-b) for a,b in zip(*points)))
+    count = len(path) if path else max(distances, default=0)
+    if count < 2 or (not path and count > limit):
+        if complete:
+            game.complete_action()
+        return
+    game._translation_motion = dict(frame=0, count=count, sprites=sprites,
+        camera=(camera, (game.camera.x, game.camera.y)), point=points, repaint=repaint,
+        complete=complete, path=path)
+    advance_translation(game)
+
+def clear_translation(game):
+    game._translation_path = None
+    game._translation_capture = None
+    game._translation_motion = None
+    game._translation_point = None
+
+
 FLOOR = 1
 WALL = 13
 PAD = 14
@@ -201,7 +275,7 @@ def parse_level(rows):
     return geom, tokens, spawn, exit_cell, pads
 
 
-def resolve_move(geom, tokens, pos, stack, direction, carry_room):
+def resolve_move(geom, tokens, pos, stack, direction, carry_room, trace=None):
     state = {
         "pos": pos,
         "picked": [],
@@ -221,6 +295,8 @@ def resolve_move(geom, tokens, pos, stack, direction, carry_room):
         if not (0 <= nx < N and 0 <= ny < N) or geom[ny][nx] == "#":
             return
         state["pos"] = (nx, ny)
+        if trace is not None:
+            trace.append((nx, ny))
         cell = (nx, ny)
         if cell in tokens and cell not in taken and len(state["picked"]) < carry_room:
             taken.add(cell)
@@ -366,13 +442,16 @@ class Cuff(ARCBaseGame):
         self._sync()
 
     def on_set_level(self, level: Level) -> None:
+        clear_translation(self)
         self._load(self.level_index)
 
     def level_reset(self) -> None:
+        clear_translation(self)
         super().level_reset()
         self._load(self.level_index)
 
     def full_reset(self) -> None:
+        clear_translation(self)
         super().full_reset()
         self._load(self.level_index)
 
@@ -393,6 +472,9 @@ class Cuff(ARCBaseGame):
         ).set_position(self.pos[0] * CELL, self.pos[1] * CELL))
 
     def step(self) -> None:
+        if advance_translation(self):
+            return
+        begin_translation(self, ('player',), limit=CELL)
         direction = {
             GameAction.ACTION1: UP,
             GameAction.ACTION2: DOWN,
@@ -402,8 +484,13 @@ class Cuff(ARCBaseGame):
 
         if direction is not None:
             room = MAX_CARRY - len(self.stack)
+            trace = [self.pos]
             pos, picked, _ = resolve_move(
-                self.geom, self.tokens, self.pos, tuple(self.stack), direction, room)
+                self.geom, self.tokens, self.pos, tuple(self.stack), direction, room, trace)
+            self._translation_path = []
+            for start, end in zip(trace, trace[1:]):
+                for pixel in range(1, CELL+1):
+                    self._translation_path.append((start[0]*CELL+(end[0]-start[0])*pixel, start[1]*CELL+(end[1]-start[1])*pixel))
             self.pos = pos
             for cell in picked:
                 self.stack.append(self.tokens.pop(cell))
@@ -416,4 +503,4 @@ class Cuff(ARCBaseGame):
                 self.tokens[self.pos] = self.stack.pop()
                 self._sync()
 
-        self.complete_action()
+        finish_translation(self)
