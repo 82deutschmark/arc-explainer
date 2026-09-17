@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.99.0  Sep 17, 2026
+
+- **TR87: two more notes from Boss's play, and his level 5 capture** (Author: Claude Opus 5)
+  - **Level 4.** Most of these games make you press spacebar or some other action to confirm a sequence. TR87 has no confirm: the moment the sequence is right it lights up, flashes, animates and moves on.
+  - **Rotation.** The winning sequence is on screen with its symbols rotated, which is the counterintuitive part: a rune turned a quarter turn is the same rune, so a correct sequence can look nothing like the dictionary entry it came from. (The existing mechanics bullet already said tilt is random and meaningless; this is the player-side consequence of it.)
+  - **Files.** `shared/arc3Games/tr87.ts`, `client/public/arc3-levels/tr87/lvl5-human.png` (his player console, not an engine render).
+
 ### Version 9.98.0  Sep 17, 2026
 
 - **TR87 is "Toggle Runes", and a note from Boss's play** (Author: Claude Opus 5)

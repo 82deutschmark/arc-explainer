@@ -1,7 +1,7 @@
 /*
  * Author: Claude Sonnet 5; mechanics breakdown by Claude Opus 5, 2026-09-16
  * Date: 2026-09-11 (corrected against source 2026-09-12; breakdown added 2026-09-16;
- *       renamed and play note added 2026-09-17)
+ *       renamed, play notes and a level 5 capture added 2026-09-17)
  * PURPOSE: Game metadata for TR87 (Toggle Runes), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). A second, independent adversarial
  *          re-verification pass on 2026-09-12 found the original pass still missed
@@ -144,6 +144,21 @@ export const tr87: Arc3GameMetadata = {
       did: 'Played it having seen it before and knowing roughly what it is about.',
       happened: 'Once you know that much it is shockingly easy -- and it would have taken him literally forever if nobody had told him, because it just would not occur to you. He is still playing it badly. It is programmer talk turned into a game, working in abstractions: the top half of the screen always shows you the key, what the game wants, and in the bottom half you cycle through the runes with the arrow keys.',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      level: 4,
+      saw: 'In a lot of these games you have to press spacebar or some other action to confirm that the sequence you entered is the one you want.',
+      expected: 'A confirm press here too.',
+      happened: 'There is none. The moment the sequence is right it lights up, flashes, plays an animation and takes you to the next level. Bizarre.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      saw: 'The winning sequence is right there on screen, and the symbols in it are rotated.',
+      happened: 'That is the bizarre, counterintuitive part: a rune turned a quarter turn is still the same rune, so a sequence can be correct while looking nothing like the one in the dictionary. Every other kind of symbol reading a person does is orientation-sensitive, and here orientation is noise you have to learn to ignore.',
+      expected: 'A rule he could state. He cannot: he knows the game wants a certain sequence translated, and he cannot say why an answer that is not rotated the "correct" way is still correct -- but it is. He is playing this one by recognition, not by a rule he could write down.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
@@ -176,6 +191,7 @@ export const tr87: Arc3GameMetadata = {
     { level: 3, imageUrl: '/arc3-levels/tr87/lvl3.png' },
     { level: 4, imageUrl: '/arc3-levels/tr87/lvl4.png' },
     { level: 5, imageUrl: '/arc3-levels/tr87/lvl5.png' },
+    { level: 5, imageUrl: '/arc3-levels/tr87/lvl5-human.png', caption: 'human play, level 5', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026, just after level 4 cleared itself without a confirm press.' },
     { level: 6, imageUrl: '/arc3-levels/tr87/lvl6.png' },
   ],
   tags: ['translation', 'lookup-table', 'alphabet', 'public-demo-2026'],
