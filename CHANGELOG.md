@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.91.0  Sep 16, 2026
+
+- **AS66 "Always Sliding" rebuilt on ARCEngine and verified against the recording** (Author: Claude Fable 5.1)
+  - **What.** `external/ARCEngine/games/official/as66.py` (registered in `games/official/__init__.py`, copied to `environment_files/as66/v1/` with `metadata.json`). Nine levels, four directions plus an inert click, no undo.
+  - **Proof.** `external/ARCEngine/tests/games/test_as66.py` replays every one of the 155 recorded actions from `public/replays/as66-821a4dcad9c2.db85123a-...jsonl` and asserts each action's last frame is pixel-identical, with the same frame count, state and score. It passes. The recording's three deaths (enemy, enemy, meter) and the win reproduce.
+  - **Two rules corrected while building** (PRD section 3.7 updated): the meter is a single 188-pixel path growing from the top center both ways, filled to `round(188*m/budget)`, with per-level budgets 15/12/18/10/20/16/20/28/30 and the filling move a loss; and a torus loop back to the block's own cell counts on the meter without flipping the green side or stepping enemies.
+  - **Files.** `external/ARCEngine/games/official/{as66.py,__init__.py}`, `external/ARCEngine/environment_files/as66/v1/*`, `external/ARCEngine/tests/games/test_as66.py`, `external/ARCEngine/CHANGELOG.md`, `docs/plans/2026-09-16-as66-always-sliding-recreation-prd.md`.
+
 ### Version 9.90.0  Sep 16, 2026
 
 - **AS66 "Always Sliding": full mechanics recovered from the recording, plus two PRDs for the developers** (Author: Claude Fable 5.1)
