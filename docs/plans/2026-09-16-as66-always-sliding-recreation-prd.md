@@ -14,7 +14,7 @@ SRP/DRY check: Pass -- this is the only spec for the faithful recreation. The gl
 # AS66 "Always Sliding" -- Recreation PRD
 
 **Owner:** Boss. **Implementer:** the developer assigned to `external/ARCEngine`.
-**Status:** ready to build. Nothing in this document is a guess unless it is in section 9.
+**Status:** BUILT -- `external/ARCEngine/games/official/as66.py` replays all 155 recorded actions pixel-for-pixel (`tests/games/test_as66.py`). Sections 3.7 and 9 were corrected against the implementation.
 
 ## 0. The one-paragraph brief
 
@@ -161,19 +161,23 @@ row 0 = initial RESET. "Counted move" = an action that moved anything.
 - Quirk observed twice (rows 24, 30-31): on a slide that loops the block back to its own cell,
   the meter advanced but the enemy did not step. Decision in 9.4.
 
-### 3.7 Par meter and move budget
-- Each level has a par `P`. Each counted move fills `64/P` pixels of the top row (rounded so that
-  move `P` exactly fills it). Once the top row is full, each further move fills `63/(2P)` rows of
-  **both** side columns simultaneously (rows 1..63).
-- Measured par per level: L1 5, L2 4, L3 6, L4 3 (fills 19/38/56 then complete; treat par as 3
-  with the last step rounding), L5 7, L6 5, L7 7, L8 9, L9 10.
-- **The move that fills the sides ends the game in a loss** (L6 row 93: 16th counted move with
-  P=5, no collision anywhere in the frame; sides reached 63/63). Formula: lose when counted moves
-  reach `3P + 1`, unless that move clears the level (untested; adopt the ar25 convention: a
-  winning move wins).
-- The meter resets to zero on level clear and on RESET (rows 10, 56).
-- Bottom row: `round(64 * levels_completed / 9)` white pixels from the left (7, 14, 21, 28, 36,
-  43, 50, 57), the rest black. Never resets on RESET.
+### 3.7 The perimeter meter and the move budget (corrected after implementation)
+- The meter is one 188-pixel path: it starts at the top center and grows both ways at once,
+  along the top row (32 px each way) and then down each side column (rows 1..62). After `m`
+  counted moves it shows `round(188 * m / budget)` pixels, the left half taking the odd pixel.
+  Python's round (half to even) reproduces every recorded frame.
+- Per-level budgets, read off the fill rate: 15, 12, 18, 10, 20, 16, 20, 28, 30. **The move
+  that fills the meter loses the level** (L6 row 93: 16th counted move, budget 16, no contact
+  anywhere in the frame). A winning move is checked first.
+- The meter is redrawn on settle frames and on blocked-press frames, never on a death frame
+  (row 18 shows the previous move's meter).
+- The meter resets on level clear and on RESET (rows 10, 56).
+- Bottom row: `round(64 * levels_completed / 9)` white pixels from the left, the rest black.
+  Never resets on RESET.
+- Blocked presses: a press in the direction the green side already shows is a no-op (rows 20,
+  36, 115, 116). A blocked press in a new direction counts: enemies step, the meter fills, the
+  green side flips, one frame (rows 12, 114). A slide that loops the torus back to its own cell
+  counts on the meter but flips nothing and moves no enemy (rows 24, 30, 31).
 
 ### 3.8 Level start
 - Each level starts with the block(s) at rest, enemies at their start cells with the core on the
@@ -249,8 +253,8 @@ the par.
 
 ## 7. Deliverables checklist
 
-- [ ] `games/official/as66.py` + registration, `environment_files/as66/v1/`.
-- [ ] `tests/games/test_as66.py` passing under `python -m pytest`.
+- [x] `games/official/as66.py` + registration, `environment_files/as66/v1/`.
+- [x] `tests/games/test_as66.py` passing (`.venv/bin/python -m unittest tests.games.test_as66`).
 - [ ] `docs/plans/{date}-as66-implementation-plan.md` in ARCEngine per its standards before coding.
 - [ ] CHANGELOG entries in both repos.
 - [ ] Hand the build to Boss for a play-through against the screenshots before it is used as a holdout.
@@ -272,12 +276,10 @@ the par.
 2. **Two blocks in one line.** Never happened. Decision: resolve blocks front-most first along
    the direction of motion each frame; a block treats another block as a wall. Two blocks can
    therefore end adjacent. A block may not enter a pocket another block occupies.
-3. **Meter fill on the winning move.** Untested. Decision: check win before budget.
+3. **Meter fill on the winning move.** Untested. Implemented: check win before budget.
 4. **Enemy step on a full-loop slide.** Rows 24, 30, 31 show no enemy step on a loop that
-   returned the block to its start. Decision: do not replicate the quirk; enemies step on every
-   counted move. Note it in the file header so nobody "fixes" it back.
+   returned the block to its start. Implemented as recorded (the replay test needs it): a loop
+   counts on the meter only.
 5. **Enemy colliding with a bar or cup.** Bars and cups block enemies (treated as walls);
    otherwise identical.
-6. **Level 4's par.** The meter fills 19/38/56 px on three moves and the level was cleared on the
-   fourth. Use P=3 with the fill rule `min(64, round(64*m/3.375))` if pixel-exact frames are
-   required, else P=3 and accept a 3-pixel difference on that level's meter in the frame test.
+6. **Level 4's meter.** Resolved: budget 10, fill `round(188*m/10)` = 19/38/56 px. Exact.
