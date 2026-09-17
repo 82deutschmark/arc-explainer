@@ -19,6 +19,7 @@
  *          on levels 3, 4 and 9, so the helper is not always "on the far side"; the
  *          unverified "no move is ever unrecoverable" is dropped; added that a thief can be
  *          removed for good by facing it and pressing Action 5.
+ *          2026-09-17 (Claude Opus 5): Boss's level 3 play note and his mid-run capture.
  * SRP/DRY check: Pass - Single responsibility for WA30 game data.
  */
 
@@ -127,6 +128,16 @@ export const wa30: Arc3GameMetadata = {
       source: 'wa30.py:619-677, 934-962, 1142-1192',
     },
   ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      level: 3,
+      saw: 'On level 3 the boxes have to go on the area in the middle. That was not obvious at all.',
+      did: 'Put the boxes there, then walked around for a while waiting.',
+      happened: 'After that the orange helper does the rest, and you just have to trust it will do it correctly. There is literally nothing for the character to do on level 3 once the boxes are down. Weird, but interesting.',
+    },
+  ],
   category: 'evaluation',
   humanDifficulty: 'medium',
   aiDifficulty: 'very-hard',
@@ -157,6 +168,7 @@ export const wa30: Arc3GameMetadata = {
     { level: 1, imageUrl: '/arc3-levels/wa30/lvl1.png' },
     { level: 2, imageUrl: '/arc3-levels/wa30/lvl2.png' },
     { level: 3, imageUrl: '/arc3-levels/wa30/lvl3.png' },
+    { level: 3, imageUrl: '/arc3-levels/wa30/lvl3-human-handoff.png', caption: 'human play, boxes handed off to the orange helper', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. The player is on the left of the speckled middle line; the orange helper is on the right with a box, and two boxes are already inside the blue outline.' },
     { level: 4, imageUrl: '/arc3-levels/wa30/lvl4.png' },
     { level: 5, imageUrl: '/arc3-levels/wa30/lvl5.png' },
     { level: 6, imageUrl: '/arc3-levels/wa30/lvl6.png' },
