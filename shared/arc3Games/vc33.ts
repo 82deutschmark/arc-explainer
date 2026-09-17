@@ -28,6 +28,7 @@
  *          needs the liquid exactly level with it, not "a gap closed enough"), fixed the
  *          click mapping and hint 2.
  *          2026-09-16 (Claude Opus 5, later): level 7 screenshot now the live-build render, not the 9-level preview capture.
+ *          2026-09-17 (Claude Opus 5): Boss's level 5 play note (green down first, yellow later) and his mid-run capture.
  * SRP/DRY check: Pass - Single responsibility for VC33 game data.
  */
 
@@ -117,6 +118,16 @@ export const vc33: Arc3GameMetadata = {
       source: 'vc33.py:1687, 1999-2005, 2014-2023',
     },
   ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      level: 5,
+      saw: 'Level 5 of 7 is one of the levels turned 90 degrees counterclockwise since the preview, so the tanks run sideways. The yellow piece has to get through a gate and up to where it wants to be, and the gates only show up once you make them appear.',
+      did: 'Lost the level once. On the next try, put the green piece down first, then went back to work on the yellow piece.',
+      happened: 'That is the order the level wants: green has to go down first and yellow gets finished later. Devious.',
+    },
+  ],
   category: 'evaluation',
   humanDifficulty: 'medium',
   aiDifficulty: 'easy',
@@ -151,6 +162,7 @@ export const vc33: Arc3GameMetadata = {
     { level: 3, imageUrl: '/arc3-levels/vc33/lvl3.png' },
     { level: 4, imageUrl: '/arc3-levels/vc33/lvl4.png' },
     { level: 5, imageUrl: '/arc3-levels/vc33/lvl5.png' },
+    { level: 5, imageUrl: '/arc3-levels/vc33/lvl5-human-gates.png', caption: 'human play, green put down, yellow next', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. Green is already down in the bottom tank; yellow sits by the orange gate, still to be taken through and up.' },
     { level: 6, imageUrl: '/arc3-levels/vc33/lvl6.png' },
     { level: 7, imageUrl: '/arc3-levels/vc33/lvl7.png' },
   ],

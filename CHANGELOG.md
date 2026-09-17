@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.96.0  Sep 17, 2026
+
+- **Notes from play: VC33 level 5 and WA30 level 3, in Boss's words** (Author: Claude Opus 5)
+  - **Why.** Boss is narrating the games as he plays them. These entries record what he saw and did, as he told it. Nothing was checked against or added from the game source (no `inCode`).
+  - **VC33 level 5.** The level is rotated 90 degrees counterclockwise, the gates only show up once you make them appear, and green has to be put down first before yellow can be taken through the gate and up. He lost the level once before working this out.
+  - **WA30 level 3.** It was not obvious that the boxes go on the area in the middle. After that the orange helper does the rest, and the character has nothing left to do.
+  - **Files.** `shared/arc3Games/vc33.ts`, `shared/arc3Games/wa30.ts` (`playerObservations` plus one `levelScreenshots` entry each), `client/public/arc3-levels/vc33/lvl5-human-gates.png`, `client/public/arc3-levels/wa30/lvl3-human-handoff.png` (his player-console captures, not engine renders).
+
 ### Version 9.95.0  Sep 17, 2026
 
 - **AS66 is test-only: in the agent harness, never trained on** (Author: Claude Opus 5)
