@@ -21,6 +21,78 @@ def weave(colour: int, cell: int = 4) -> list[list[int]]:
 def hatch(colour: int, cell: int = 4) -> list[list[int]]:
     return [[colour if (x + y) % 3 == 0 else -1 for x in range(cell)] for y in range(cell)]
 
+def begin_translation(game, names=(), position=None, repaint=None, limit=8):
+    game._translation_path = None
+    sprites = {s.name: (s.x, s.y) for s in game.current_level.get_sprites()
+               if any(s.name == n or (n.endswith('*') and s.name.startswith(n[:-1]))
+                      for n in names)}
+    game._translation_capture = (game.current_level, sprites,
+        (game.camera.x, game.camera.y), position, position() if position else None,
+        repaint, limit)
+
+def translation_position(game, position):
+    return getattr(game, '_translation_point', None) or position
+
+def advance_translation(game):
+    motion = getattr(game, '_translation_motion', None)
+    if motion is None:
+        return False
+    motion['frame'] += 1
+    t = motion['frame'] / motion['count']
+    def lerp(a, b):
+        return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+    for sprite, start, end in motion['sprites']:
+        sprite.set_position(*(motion['path'][motion['frame']-1] if motion['path'] else lerp(start, end)))
+    game.camera.x, game.camera.y = lerp(motion['camera'][0], motion['camera'][1])
+    if motion['point'] is not None:
+        game._translation_point = lerp(*motion['point'])
+    if motion['repaint'] is not None:
+        motion['repaint']()
+    if motion['frame'] == motion['count']:
+        game._translation_motion = None
+        game._translation_point = None
+        if motion['complete']:
+            game.complete_action()
+    return True
+
+def finish_translation(game, complete=True):
+    capture = getattr(game, '_translation_capture', None)
+    game._translation_capture = None
+    if capture is None or capture[0] is not game.current_level or game._next_level:
+        if complete:
+            game.complete_action()
+        return
+    level, previous, camera, position, point, repaint, limit = capture
+    sprites = []
+    distances = []
+    path = getattr(game, "_translation_path", None)
+    for sprite in level.get_sprites():
+        if sprite.name not in previous:
+            continue
+        start, end = previous[sprite.name], (sprite.x, sprite.y)
+        distance = max(abs(start[0] - end[0]), abs(start[1] - end[1]))
+        if distance or path:
+            sprites.append((sprite, start, end))
+            distances.append(distance)
+    points = (point, position()) if position else None
+    if points:
+        distances.append(max(abs(a-b) for a,b in zip(*points)))
+    count = len(path) if path else max(distances, default=0)
+    if count < 2 or (not path and count > limit):
+        if complete:
+            game.complete_action()
+        return
+    game._translation_motion = dict(frame=0, count=count, sprites=sprites,
+        camera=(camera, (game.camera.x, game.camera.y)), point=points, repaint=repaint,
+        complete=complete, path=path)
+    advance_translation(game)
+
+def clear_translation(game):
+    game._translation_path = None
+    game._translation_capture = None
+    game._translation_motion = None
+    game._translation_point = None
+
 
 FLOOR = 1
 WALL = 5
@@ -484,11 +556,11 @@ def _part_face(kind: str) -> list:
 
 
 def _player_face(face_name: str, up: bool) -> list:
-    face = _tri(PLAYER, up)
+    face = _tri(PLAYER, True)
     if face_name == "L":
-        face[3 if up else 1][1] = PLAYER_MARK
+        face[3][1] = PLAYER_MARK
     elif face_name == "R":
-        face[3 if up else 1][3] = PLAYER_MARK
+        face[3][3] = PLAYER_MARK
     else:
         face[4 if up else 0][2] = PLAYER_MARK
     return face
@@ -515,7 +587,7 @@ TERRAIN_FACE = {
 }
 
 
-def _paint(index: int, state: tuple, drums=None) -> np.ndarray:
+def _paint(index: int, state: tuple, drums=None, player_position=None) -> np.ndarray:
     lv = LEVELS[index]
     px, py, face_name, _hands, status, own, _spent, opened = state
     if drums is None:
@@ -533,7 +605,11 @@ def _paint(index: int, state: tuple, drums=None) -> np.ndarray:
             _stamp(grid, qx, qy, _part_face(kind))
     for dx, dy, s, h in drums:
         _stamp(grid, dx, dy, _drum_face(s, h))
-    _stamp(grid, px, py, _player_face(face_name, up_cell(px, py)))
+    left, top = player_position or (PAD_X+px*CELL, PAD_Y+py*CELL)
+    for y, row in enumerate(_player_face(face_name, up_cell(px, py))):
+        for x, value in enumerate(row):
+            if value >= 0 and 0 <= top+y < 64 and 0 <= left+x < 64:
+                grid[top+y, left+x] = value
     return grid
 
 
@@ -595,22 +671,28 @@ class KitBash(ARCBaseGame):
         self._repaint(self.state[5])
 
     def on_set_level(self, level: Level) -> None:
+        clear_translation(self)
         self._rearm()
 
     def level_reset(self) -> None:
+        clear_translation(self)
         super().level_reset()
         self._rearm()
 
     def full_reset(self) -> None:
+        clear_translation(self)
         super().full_reset()
         self._rearm()
 
     def _repaint(self, drums) -> None:
         canvas = self.current_level.get_sprites_by_name("canvas")
         if canvas:
-            canvas[0].pixels = _paint(self.level_index, self.state, drums)
+            canvas[0].pixels = _paint(self.level_index, self.state, drums, translation_position(self, (PAD_X+self.state[0]*CELL, PAD_Y+self.state[1]*CELL)))
 
     def step(self) -> None:
+        if advance_translation(self):
+            return
+        begin_translation(self, position=lambda: (PAD_X+self.state[0]*CELL, PAD_Y+self.state[1]*CELL), repaint=lambda: self._repaint(self.state[5]), limit=CELL)
         if self._frames:
             self._repaint(self._frames.pop(0))
             if not self._frames:
@@ -628,7 +710,7 @@ class KitBash(ARCBaseGame):
         }.get(self.action.id)
 
         if action is None:
-            self.complete_action()
+            finish_translation(self)
             return
 
         trace: list = []
@@ -645,4 +727,4 @@ class KitBash(ARCBaseGame):
         self._repaint(self.state[5])
         if is_won(self.level_index, self.state):
             self.next_level()
-        self.complete_action()
+        finish_translation(self)

@@ -51,6 +51,78 @@ def studs(frame, count: int, filled: int, on: int, off: int, side: str = "east",
             frame[top:top + 2, 0:length] = colour
     return frame
 
+def begin_translation(game, names=(), position=None, repaint=None, limit=8):
+    game._translation_path = None
+    sprites = {s.name: (s.x, s.y) for s in game.current_level.get_sprites()
+               if any(s.name == n or (n.endswith('*') and s.name.startswith(n[:-1]))
+                      for n in names)}
+    game._translation_capture = (game.current_level, sprites,
+        (game.camera.x, game.camera.y), position, position() if position else None,
+        repaint, limit)
+
+def translation_position(game, position):
+    return getattr(game, '_translation_point', None) or position
+
+def advance_translation(game):
+    motion = getattr(game, '_translation_motion', None)
+    if motion is None:
+        return False
+    motion['frame'] += 1
+    t = motion['frame'] / motion['count']
+    def lerp(a, b):
+        return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+    for sprite, start, end in motion['sprites']:
+        sprite.set_position(*(motion['path'][motion['frame']-1] if motion['path'] else lerp(start, end)))
+    game.camera.x, game.camera.y = lerp(motion['camera'][0], motion['camera'][1])
+    if motion['point'] is not None:
+        game._translation_point = lerp(*motion['point'])
+    if motion['repaint'] is not None:
+        motion['repaint']()
+    if motion['frame'] == motion['count']:
+        game._translation_motion = None
+        game._translation_point = None
+        if motion['complete']:
+            game.complete_action()
+    return True
+
+def finish_translation(game, complete=True):
+    capture = getattr(game, '_translation_capture', None)
+    game._translation_capture = None
+    if capture is None or capture[0] is not game.current_level or game._next_level:
+        if complete:
+            game.complete_action()
+        return
+    level, previous, camera, position, point, repaint, limit = capture
+    sprites = []
+    distances = []
+    path = getattr(game, "_translation_path", None)
+    for sprite in level.get_sprites():
+        if sprite.name not in previous:
+            continue
+        start, end = previous[sprite.name], (sprite.x, sprite.y)
+        distance = max(abs(start[0] - end[0]), abs(start[1] - end[1]))
+        if distance or path:
+            sprites.append((sprite, start, end))
+            distances.append(distance)
+    points = (point, position()) if position else None
+    if points:
+        distances.append(max(abs(a-b) for a,b in zip(*points)))
+    count = len(path) if path else max(distances, default=0)
+    if count < 2 or (not path and count > limit):
+        if complete:
+            game.complete_action()
+        return
+    game._translation_motion = dict(frame=0, count=count, sprites=sprites,
+        camera=(camera, (game.camera.x, game.camera.y)), point=points, repaint=repaint,
+        complete=complete, path=path)
+    advance_translation(game)
+
+def clear_translation(game):
+    game._translation_path = None
+    game._translation_capture = None
+    game._translation_motion = None
+    game._translation_point = None
+
 
 VOID = 5
 TRACK = 3
@@ -368,14 +440,6 @@ class CordDisplay(RenderableUserDisplay):
                 for direction in arms:
                     _paint_arm(frame, cell, direction, CORD)
 
-        px, py = state["pos"][0] * CELL, state["pos"][1] * CELL
-        face = frame[py:py + CELL, px:px + CELL]
-        cut_a, cut_b = int(face[0, 0]), int(face[CELL - 1, CELL - 1])
-        face[:, :] = PLAYER
-        face[1:CELL - 1, 1:CELL - 1] = CORD
-        face[0, 0] = cut_a
-        face[CELL - 1, CELL - 1] = cut_b
-
         if game.cinch and game.cinch % 2 == 0:
             bad = failed_marks(state, junctions)
             if bad:
@@ -399,6 +463,14 @@ class CordDisplay(RenderableUserDisplay):
                 continue
             _stamp(frame, cell, fixture((WANT_H, WANT_V, TRACK),
                                         game.tick // 2, (cell[0] + cell[1]) % 3, CELL))
+
+        px, py = translation_position(game, (state["pos"][0] * CELL, state["pos"][1] * CELL))
+        face = frame[py:py + CELL, px:px + CELL]
+        cut_a, cut_b = int(face[0, 0]), int(face[CELL - 1, CELL - 1])
+        face[:, :] = PLAYER
+        face[1:CELL - 1, 1:CELL - 1] = CORD
+        face[0, 0] = cut_a
+        face[CELL - 1, CELL - 1] = cut_b
 
         studs(frame, game.level_undos, game.undos, PIP_ON, PIP_OFF,
               side="east", start=8, gap=6)
@@ -427,6 +499,7 @@ class Shoelace(ARCBaseGame):
                          available_actions=[1, 2, 3, 4, 5, 7])
 
     def on_set_level(self, level: Level) -> None:
+        clear_translation(self)
         spec = LEVELS_SPEC[self.level_index]
         self.track, self.junctions = build_board(spec)
         self.state = initial_state(spec)
@@ -436,10 +509,12 @@ class Shoelace(ARCBaseGame):
         self.cinch = 0
 
     def level_reset(self) -> None:
+        clear_translation(self)
         super().level_reset()
         self.on_set_level(self.current_level)
 
     def full_reset(self) -> None:
+        clear_translation(self)
         super().full_reset()
         self.on_set_level(self.current_level)
 
@@ -471,11 +546,14 @@ class Shoelace(ARCBaseGame):
             self.level_reset()
 
     def step(self) -> None:
+        if advance_translation(self):
+            return
+        begin_translation(self, position=lambda: (self.state['pos'][0]*CELL, self.state['pos'][1]*CELL), limit=CELL)
         if self.cinch:
             self.cinch -= 1
             if self.cinch == 0:
                 self._settle()
-                self.complete_action()
+                finish_translation(self)
             return
 
         self.tick += 1
@@ -493,4 +571,4 @@ class Shoelace(ARCBaseGame):
                 return
         elif action == GameAction.ACTION7:
             self.retract()
-        self.complete_action()
+        finish_translation(self)

@@ -15,6 +15,80 @@ from arcengine import (
     Sprite,
 )
 
+
+def begin_translation(game, names=(), position=None, repaint=None, limit=8):
+    game._translation_path = None
+    sprites = {s.name: (s.x, s.y) for s in game.current_level.get_sprites()
+               if any(s.name == n or (n.endswith('*') and s.name.startswith(n[:-1]))
+                      for n in names)}
+    game._translation_capture = (game.current_level, sprites,
+        (game.camera.x, game.camera.y), position, position() if position else None,
+        repaint, limit)
+
+def translation_position(game, position):
+    return getattr(game, '_translation_point', None) or position
+
+def advance_translation(game):
+    motion = getattr(game, '_translation_motion', None)
+    if motion is None:
+        return False
+    motion['frame'] += 1
+    t = motion['frame'] / motion['count']
+    def lerp(a, b):
+        return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+    for sprite, start, end in motion['sprites']:
+        sprite.set_position(*(motion['path'][motion['frame']-1] if motion['path'] else lerp(start, end)))
+    game.camera.x, game.camera.y = lerp(motion['camera'][0], motion['camera'][1])
+    if motion['point'] is not None:
+        game._translation_point = lerp(*motion['point'])
+    if motion['repaint'] is not None:
+        motion['repaint']()
+    if motion['frame'] == motion['count']:
+        game._translation_motion = None
+        game._translation_point = None
+        if motion['complete']:
+            game.complete_action()
+    return True
+
+def finish_translation(game, complete=True):
+    capture = getattr(game, '_translation_capture', None)
+    game._translation_capture = None
+    if capture is None or capture[0] is not game.current_level or game._next_level:
+        if complete:
+            game.complete_action()
+        return
+    level, previous, camera, position, point, repaint, limit = capture
+    sprites = []
+    distances = []
+    path = getattr(game, "_translation_path", None)
+    for sprite in level.get_sprites():
+        if sprite.name not in previous:
+            continue
+        start, end = previous[sprite.name], (sprite.x, sprite.y)
+        distance = max(abs(start[0] - end[0]), abs(start[1] - end[1]))
+        if distance or path:
+            sprites.append((sprite, start, end))
+            distances.append(distance)
+    points = (point, position()) if position else None
+    if points:
+        distances.append(max(abs(a-b) for a,b in zip(*points)))
+    count = len(path) if path else max(distances, default=0)
+    if count < 2 or (not path and count > limit):
+        if complete:
+            game.complete_action()
+        return
+    game._translation_motion = dict(frame=0, count=count, sprites=sprites,
+        camera=(camera, (game.camera.x, game.camera.y)), point=points, repaint=repaint,
+        complete=complete, path=path)
+    advance_translation(game)
+
+def clear_translation(game):
+    game._translation_path = None
+    game._translation_capture = None
+    game._translation_motion = None
+    game._translation_point = None
+
+
 BACKGROUND = 5
 WALL = 2
 FLOOR = 3
@@ -359,8 +433,8 @@ EDGE_PIXELS = {
 
 
 def _player_face(ptype, facing, up):
-    face = _hollow(TYPE_COLOUR[ptype], up)
-    for y, x in EDGE_PIXELS.get((up, facing), ()):
+    face = _hollow(TYPE_COLOUR[ptype], True)
+    for y, x in EDGE_PIXELS.get((up if facing == "V" else True, facing), ()):
         face[y][x] = MARK
     return face
 
@@ -381,7 +455,7 @@ DECOR_X = (3, 47, 55)
 DECOR_CYCLE = (WALL, WALL, WALL, WALL, WALL, WALL, FLOOR)
 
 
-def _paint(index, state, over=None, doom=None, dim=False):
+def _paint(index, state, over=None, doom=None, dim=False, player_position=None):
     rows = LEVELS_SPEC[index]["rows"]
     px, py, _, facing, ptype, own = state
     bodies = own
@@ -410,7 +484,11 @@ def _paint(index, state, over=None, doom=None, dim=False):
         payload = kinds[i] == "O"
         seated = payload and not dim and cell_at(rows, bx, by) == SOCK_C
         _stamp(grid, bx, by, _body_face(btype, up_cell(bx, by), payload, seated))
-    _stamp(grid, px, py, _player_face(ptype, facing, up_cell(px, py)))
+    left, top = player_position or (PAD_X+px*CELL, PAD_Y+py*CELL)
+    for y, row in enumerate(_player_face(ptype, facing, up_cell(px, py))):
+        for x, value in enumerate(row):
+            if value >= 0 and 0 <= top+y < 64 and 0 <= left+x < 64:
+                grid[top+y, left+x] = value
     return grid
 
 
@@ -473,13 +551,16 @@ class Cue(ARCBaseGame):
         self._repaint()
 
     def on_set_level(self, level: Level) -> None:
+        clear_translation(self)
         self._rearm()
 
     def level_reset(self) -> None:
+        clear_translation(self)
         super().level_reset()
         self._rearm()
 
     def full_reset(self) -> None:
+        clear_translation(self)
         super().full_reset()
         self.beat = 0
         self._rearm()
@@ -487,7 +568,7 @@ class Cue(ARCBaseGame):
     def _repaint(self, over=None, doom=None, dim=False) -> None:
         canvas = self.current_level.get_sprites_by_name("canvas")
         if canvas:
-            canvas[0].pixels = _paint(self.level_index, self.state, over, doom, dim)
+            canvas[0].pixels = _paint(self.level_index, self.state, over, doom, dim, translation_position(self, (PAD_X+self.state[0]*CELL, PAD_Y+self.state[1]*CELL)))
 
     def _resolve(self) -> None:
         rows = LEVELS_SPEC[self.level_index]["rows"]
@@ -497,9 +578,12 @@ class Cue(ARCBaseGame):
         if payload_lost(rows, self.state):
             self._doom = self.DOOM_FRAMES
             return
-        self.complete_action()
+        finish_translation(self)
 
     def step(self) -> None:
+        if advance_translation(self):
+            return
+        begin_translation(self, position=lambda: (PAD_X+self.state[0]*CELL, PAD_Y+self.state[1]*CELL), repaint=self._repaint, limit=CELL)
         if self._frames:
             self._repaint(self._frames.pop(0))
             if not self._frames:
@@ -511,7 +595,7 @@ class Cue(ARCBaseGame):
             self._repaint(dim=self._cheer % 2 == 1)
             if self._cheer == 0:
                 self.next_level()
-                self.complete_action()
+                finish_translation(self)
             return
 
         if self._doom:
@@ -519,13 +603,13 @@ class Cue(ARCBaseGame):
             self._repaint(doom=self._doom)
             if self._doom == 0:
                 self.level_reset()
-                self.complete_action()
+                finish_translation(self)
             return
 
         face = action_face(self.action.id, self.state[0], self.state[1])
 
         if face is None:
-            self.complete_action()
+            finish_translation(self)
             return
 
         rows = LEVELS_SPEC[self.level_index]["rows"]

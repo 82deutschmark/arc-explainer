@@ -1,11 +1,18 @@
 /*
 Author: Codex (GPT-6)
-Date: 2026-09-12
+Date: 2026-09-16
 PURPOSE: Presentation-only pixel animation for community games. Engine frames, action
 counts and observations remain untouched. Native multi-frame sequences keep their order;
-instant actions receive short pixel trails and a staggered settling transition.
+the 32 revised games use native intact-character frames. Legacy presentation for other
+games remains scoped outside that set.
 SRP/DRY check: Pass — pure frame-to-playback adapter shared with regression tests.
 */
+
+import { canonicalGameId } from './arc3PublicIds';
+
+const revisedGames = new Set('g009 g010 g011 g012 g013 g014 g015 g016 g017 g018 g019 g020 g021 g022 g024 g026 g027 g028 g034 g035 g036 g043 g044 g045 g046 g047 g050 g136 g155 g162 g171 g178'.split(' '));
+
+export const usesNativeTranslation = (id: string | undefined): boolean => !!id && revisedGames.has(canonicalGameId(id));
 
 export type PixelGrid = number[][];
 export interface ActionPlayback { frames: PixelGrid[]; intervalMs: number }
@@ -17,13 +24,17 @@ export function actionPlayback(
   frames: PixelGrid[],
   animate: boolean,
   reducedMotion = false,
+  nativeTranslation = false,
 ): ActionPlayback {
   const last = frames.at(-1);
   if (!last) return { frames: [], intervalMs: 0 };
   if (reducedMotion || !animate) return { frames: [last], intervalMs: 0 };
   if (frames.length > 1) {
-    return { frames, intervalMs: Math.max(16, Math.min(65, 1200 / frames.length)) };
+    return { frames, intervalMs: Math.max(16, Math.min(nativeTranslation ? 40 : 65, 1200 / frames.length)) };
   }
+  // Revised games supply real movement frames. Never scramble pixels, invent
+  // trails or pulse the border for a blocked move, wait, or state-only action.
+  if (nativeTranslation) return { frames: [last], intervalMs: 0 };
   if (!before || before.length !== last.length || before.some((r, y) => r.length !== last[y].length)) {
     return { frames: [last], intervalMs: 0 };
   }
