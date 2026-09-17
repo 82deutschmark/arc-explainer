@@ -12,6 +12,16 @@
 # reference the old numbers.
 
 
+### Version 9.94.0  Sep 17, 2026
+
+- **AS66 fixes: a level 4 crash, the lap rule, the winning-move meter, and real tests** (Author: Claude Opus 5)
+  - **Why.** A review of the 16-Sep rebuild found a crash on level 4 reachable by normal play at `/arc3/play/as66` ("Action took too many frames" when one of two blocks had a clear lane all the way round), and a misread rule: on a slide that goes all the way round the board, the recording shows the ring flip and the enemy step, then both go back when the block gets home. The rebuild skipped them. The old test compared only each action's last frame with 6 pixels of meter slack, so it passed anyway.
+  - **Game** (`external/ARCEngine/games/official/as66.py`, copied byte-identical to `environment_files/as66/v1/` and `server/data/arc3-holdout-games/`). Laps are found during the slide instead of predicted: a block stops when it reaches its own start cell, and a lap that changed nothing puts the ring and enemies back while keeping the move charged. The winning move is no longer charged on the meter (all nine recorded clears). `par` per level is now the true fewest moves (3 3 7 4 13 8 7 9 11) instead of numbers left from the first meter theory.
+  - **Tests** (`external/ARCEngine/tests/games/test_as66.py`, 21 tests, pass). Every frame of the recording matches exactly; one test per rule from a level start; and a sweep of every reachable position on every level (no crash, every level winnable, par correct).
+  - **Checked against Boss's screenshots** (`client/public/as66*.png`, level 1 and levels 3-9): every layout matches.
+  - **Docs.** PRD sections 0, 3.2, 3.6, 3.7, 4, 5, 6, 7, 8, 9 corrected; `docs/reference/arc3/AS66_Lost_Game.md` and `server/data/arc3-holdout-games/README.md` (it named the wrong gallery set) updated; play-link wording in `shared/arc3Games/as66.ts`. Plan: `external/ARCEngine/docs/plans/17-September-2026-as66-mechanics-fix-plan.md`.
+  - **Not done.** Still not in the `sonpham-org/arc-3` training catalog; Boss decides whether AS66 is trained on or kept for testing.
+
 ### Version 9.93.0  Sep 17, 2026
 
 - **AS66, the lost game, is playable by link at `/arc3/play/as66` and findable by any agent** (Author: Claude Fable 5.1)

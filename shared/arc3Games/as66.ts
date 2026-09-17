@@ -8,6 +8,7 @@
  *          2026-09-17 (Claude Fable 5.1): AS66 -- "the lost game" -- has been recreated from
  *          Boss's 27-Dec-2025 recording and is playable, by link only, at /arc3/play/as66.
  *          Start at docs/reference/arc3/AS66_Lost_Game.md for everything about it.
+ *          2026-09-17 (Claude Opus 5): play-link description now credits the screenshot check.
  * SRP/DRY check: Pass - Single responsibility for AS66 game data.
  */
 
@@ -48,7 +49,7 @@ export const as66: Arc3GameMetadata = {
       title: 'Play the recreated AS66',
       url: '/arc3/play/as66',
       type: 'article',
-      description: 'The lost game, rebuilt from Boss\'s 27-Dec-2025 winning recording and checked against it frame for frame. Link-only: it is not listed in the gallery.',
+      description: 'The lost game, rebuilt from Boss\'s 27-Dec-2025 winning recording and his level screenshots, checked against both. Link-only: it is not listed in the gallery.',
     },
     {
       title: 'AS66 Replay',
