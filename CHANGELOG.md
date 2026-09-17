@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.100.0  Sep 17, 2026
+
+- **TR87: all 21 runes named, with a picture of every turn, and Boss's first clear** (Author: Claude Opus 5)
+  - **Why.** TR87 turns every tile a random quarter-turn, so the same rune shows up four ways and nothing can be said about the game in prose until the runes have names. Boss asked for names and a tiny picture of each while playing.
+  - **The runes.** All 21 (7 blue, 7 pink, 7 yellow), drawn from the game's own sprite table by a new `scripts/arc3/extract_tr87_runes.py`. The first pass read them off Boss's two captures and got 19 -- every one matched a source sprite, and the two it never saw are the yellow Sparks and Window. Names are ours: Fork, Lightning, Gate, Trident, Butterfly, Staircase, I-Beam / Flag, Maze, Pinwheel, Snail, Lantern, Ring, Ladder / Comb, Corners, Hooks, Sparks, Window, Fence, Fangs.
+  - **New field.** `SymbolGlyph` + `symbolGlyphs`/`symbolGlyphsNote` in `shared/arc3Games/types.ts`, rendered by a "The Runes, Named" card in `client/src/pages/Arc3GameSpoiler.tsx`. Any game built on abstract shapes can use it.
+  - **Replay.** A win, 6/6, score 100, 211 actions, no resets, under baseline on every level -- his first TR87 clear, played twice because the site dropped the first scorecard mid-run.
+  - **Files.** `shared/arc3Games/{types.ts,index.ts,tr87.ts}`, `client/src/pages/Arc3GameSpoiler.tsx`, `scripts/arc3/extract_tr87_runes.py`, `client/public/arc3-levels/tr87/runes/*.png`, `client/public/arc3-levels/tr87/lvl4-human.png`. tsc: 12 errors, unchanged baseline.
+
 ### Version 9.99.1  Sep 17, 2026
 
 - **TR87: level 5 note and capture** (Author: Claude Opus 5): on level 5 Boss can only select up in the old legend area -- the inverted puzzle. Added his dictionary capture, and relabelled the earlier capture as level 4 on the transition (its header reads 5/6 while the board is still the three-alphabet one). `shared/arc3Games/tr87.ts`, `client/public/arc3-levels/tr87/lvl5-human-dictionary.png`.
