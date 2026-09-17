@@ -21,9 +21,10 @@ preview game, 26th game, holdout game, recreated game.
 - Boss recorded a full nine-level win on 27-Dec-2025. That recording was enough to rebuild it.
 - The rebuild replays every frame of that recording exactly, and its nine level layouts match
   Boss's screenshots. Mechanics were corrected on 17-Sep (laps, a level 4 crash, the meter).
-- It is kept as a **holdout** for now: playable by link, listed nowhere, and out of the training
-  catalog. Boss (17-Sep): public GitHub exposure does not matter, and it may be trained on or
-  tested on; that choice is his.
+- **Test only, never trained on** (Boss, 17-Sep). The agent harness in the `arc-3` repo can play
+  it from `datasets/test-only-games/`; it is never in the training catalog or any training data.
+  On this site it is playable by link and listed nowhere. Public GitHub exposure does not matter
+  (agents under test have no internet).
 
 ## Play it
 
@@ -51,6 +52,7 @@ white or its own color; the orange border is a move budget and filling it loses.
 | Boss's recording (the oracle) | `public/replays/as66-821a4dcad9c2.db85123a-891c-4fde-8bd3-b85c6702575d.jsonl` |
 | Boss's screenshots, video | `client/public/as66*.png`, `client/public/videos/arc3/as66-test.mp4` |
 | Spoiler page data (URL-only page `/arc3/games/as66`) | `shared/arc3Games/as66.ts` |
+| Copy the agent harness tests on | `arc-3` repo: `datasets/test-only-games/as66/v1/` (+ `README.md`: rule, how to run, baselines) |
 | Human vs agent runs (15 recordings) | `arc-3` repo: `docs/trace-findings/2026-09-15-as66-the-withdrawn-26th-game.md` |
 
 Run the proof (from `external/ARCEngine`):
@@ -61,12 +63,14 @@ Run the proof (from `external/ARCEngine`):
 
 ## If you change the game
 
-Edit the canonical file, then copy it over the other two. All three must stay byte-identical;
-the website copy is what people play and the test only covers the canonical one.
+Edit the canonical file, then copy it over the other three. All four must stay byte-identical;
+the website copy is what people play, the arc-3 copy is what agents are tested on, and the test
+only covers the canonical one.
 
 ```bash
 cp external/ARCEngine/games/official/as66.py server/data/arc3-holdout-games/as66.py
 cp external/ARCEngine/games/official/as66.py external/ARCEngine/environment_files/as66/v1/as66.py
+cp external/ARCEngine/environment_files/as66/v1/* ../arc-3/datasets/test-only-games/as66/v1/  # then a PR in arc-3
 ```
 
 The browser runs the file with a bare `exec`, so keep it a single file with no
@@ -74,9 +78,10 @@ The browser runs the file with a bare `exec`, so keep it a single file with no
 
 ## Do not
 
-- **Do not publish it to `sonpham-org/arc-3` (`docs/static/games/`).** That catalog is what the
-  fine-tune pipeline plays and trains on. A holdout that is in the training catalog is not a
-  holdout. If it is ever wanted there, that is Boss's call and it goes through a PR.
+- **Do not train on it.** Never put it in `arc-3`'s `docs/static/games/` (the catalog the
+  fine-tune pipeline plays and trains on), and never let an AS66 record, human or agent, into
+  any training data. Its only place in `arc-3` is `datasets/test-only-games/`. Anyone extracting
+  training data from a run that played it adds `as66` to `--exclude-games`.
 - Do not add it to the gallery, the landing page or the review queue.
 - Do not "fix" the odd rules (enemies move first; a press toward the green side does nothing;
   a slide all the way round the board puts the enemies and ring back when the block gets home;

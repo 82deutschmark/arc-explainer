@@ -41,6 +41,8 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          server/data/arc3-holdout-games/: link-only games, currently just as66, the
          withdrawn preview game recreated from a recording. Same local reader; hidden from
          browse by category. Never publish these upstream -- see that folder's README.
+         (17-Sep, Claude Opus 5: as66 is test-only; arc-3 keeps its harness copy in
+         datasets/test-only-games/, never in the training catalog.)
 
          The sources still fail INDEPENDENTLY. Each keeps its own manifest cache,
          source-path index and in-flight refresh, and each falls back to its own last good

@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.95.0  Sep 17, 2026
+
+- **AS66 is test-only: in the agent harness, never trained on** (Author: Claude Opus 5)
+  - **Why.** Boss's call, 17-Sep: hold AS66 back for testing agents in our harness, keep it out of training, and write it down so people know it is there.
+  - **arc-3** (`sonpham-org/arc-3#38`, merged): the build is at `datasets/test-only-games/as66/v1/` with a README (the rule, how to run it offline, baselines). The rule is also in `AGENTS.md`, `harnesses/README.md`, the `--exclude-games` help on `distill/extract_sft.py`, and at the top of the as66 trace finding. Checked there with `python3.13`: the offline arcade lists `as66-v1` and plays all nine levels to a win.
+  - **Here.** `docs/reference/arc3/AS66_Lost_Game.md` (new file row, four-copy sync, "do not train on it"), `server/data/arc3-holdout-games/README.md`, PRD section 8, and the source note in `server/services/arc3Mirror/Arc3MirrorCatalog.ts` now say test-only and point at the arc-3 copy.
+
 ### Version 9.94.0  Sep 17, 2026
 
 - **AS66 fixes: a level 4 crash, the lap rule, the winning-move meter, and real tests** (Author: Claude Opus 5)

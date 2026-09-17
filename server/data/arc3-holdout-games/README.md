@@ -21,6 +21,6 @@ and the nine level layouts match Boss's screenshots.
 - Everything about the game in one place: `docs/reference/arc3/AS66_Lost_Game.md`.
 - Spoiler page (also URL-only): `/arc3/games/as66`.
 
-Do NOT publish this game to `sonpham-org/arc-3` (`docs/static/games/`). That catalog is what
-the fine-tune pipeline plays and trains on; a holdout that is in the training catalog is not
-a holdout.
+Test only, never trained on (Boss, 17-Sep-2026). Its only place in `sonpham-org/arc-3` is
+`datasets/test-only-games/`, where the agent harness tests on it. Never put it in
+`docs/static/games/`: that catalog is what the fine-tune pipeline plays and trains on.
