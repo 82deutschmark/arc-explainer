@@ -97,11 +97,21 @@ def fail(message: str) -> None:
 
 
 def parse_iso(value: str | None) -> datetime | None:
-    """ISO timestamps from arcprize.org carry microseconds and a trailing Z."""
+    """ISO timestamps from arcprize.org carry a trailing Z and a fractional second whose
+    digit count is not fixed -- 6 digits on most cards, 5 on some (seen on the 12-Sep
+    r11l and re86 cards). Python 3.9's datetime.fromisoformat accepts only 3 or 6
+    fractional digits, so anything else raised ValueError and this returned None, and a
+    None card open_at is indistinguishable from "opened before the cutoff": two real,
+    in-window runs were being dropped and counted as beforeCutoff. Pad to 6 first.
+    Fixed 2026-09-17 (Claude Opus 5)."""
     if not value or not isinstance(value, str):
         return None
+    text = value.replace("Z", "+00:00")
+    match = re.match(r"^(.+\.)(\d{1,6})([+-]\d{2}:\d{2})$", text)
+    if match:
+        text = f"{match.group(1)}{match.group(2).ljust(6, '0')}{match.group(3)}"
     try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return datetime.fromisoformat(text)
     except ValueError:
         return None
 

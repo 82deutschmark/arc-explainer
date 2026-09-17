@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.101.0  Sep 17, 2026
+
+- **Human scorecards pulled; the 5-digit-microsecond drop is fixed** (Author: Claude Opus 5): `parse_iso` in `scripts/arc3/pull_human_scorecards.py` used `datetime.fromisoformat`, which on Python 3.9 accepts only 3 or 6 fractional-second digits. arcprize.org emits 5 on some cards, so the parse raised, the card's `open_at` came back `None`, and a `None` open time is indistinguishable from "before the cutoff" -- the r11l WIN (316 actions) and the re86 run were silently dropped and counted as `beforeCutoff`. Fractional seconds are now padded to 6 before parsing. Re-pulled: 47 runs kept (was 40), 7 new, none lost. New this session: **tr87 WIN 6/6 score 100.0 in 211 actions with zero resets** (baseline 414), **vc33 WIN 7/7 score 94.1**, **wa30 WIN 9/9 score 81.6**. Boss has now won 19 of the 25 public games; not yet won: lf52, re86, sc25, sk48, sp80, tn36. `scripts/arc3/pull_human_scorecards.py`, `shared/arc3Games/humanPlay.generated.json`.
+
 ### Version 9.100.0  Sep 17, 2026
 
 - **TR87: all 21 runes named, with a picture of every turn, and Boss's first clear** (Author: Claude Opus 5)
