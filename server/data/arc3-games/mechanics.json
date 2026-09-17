@@ -258,7 +258,7 @@
   "levels": 6,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 505,
+  "sourceLines": 583,
   "triage": {
    "status": "queued",
    "rank": 7
@@ -335,7 +335,7 @@
   "levels": 8,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 603,
+  "sourceLines": 681,
   "triage": {
    "status": "queued",
    "rank": 3
@@ -374,7 +374,7 @@
   "levels": 6,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 518,
+  "sourceLines": 600,
   "triage": {
    "status": "queued",
    "rank": 31
@@ -455,7 +455,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 648,
+  "sourceLines": 730,
   "triage": {
    "status": "queued",
    "rank": 26
@@ -493,7 +493,7 @@
   "levels": 9,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 607,
+  "sourceLines": 685,
   "triage": {
    "status": "queued",
    "rank": 2
@@ -531,7 +531,7 @@
   "levels": null,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 325,
+  "sourceLines": 405,
   "triage": {
    "status": "queued",
    "rank": 25
@@ -572,7 +572,7 @@
   "levels": 10,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 729,
+  "sourceLines": 807,
   "triage": {
    "status": "weak",
    "rank": null
@@ -614,7 +614,7 @@
   "levels": 5,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 515,
+  "sourceLines": 593,
   "triage": {
    "status": "queued",
    "rank": 15
@@ -655,7 +655,7 @@
   "levels": 6,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 495,
+  "sourceLines": 573,
   "triage": {
    "status": "weak",
    "rank": null
@@ -742,7 +742,7 @@
   "levels": 5,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 405,
+  "sourceLines": 485,
   "triage": {
    "status": "queued",
    "rank": 12
@@ -822,7 +822,7 @@
   "levels": 8,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 419,
+  "sourceLines": 506,
   "triage": {
    "status": "weak",
    "rank": null
@@ -909,7 +909,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 523,
+  "sourceLines": 603,
   "triage": {
    "status": "queued",
    "rank": 1
@@ -954,7 +954,7 @@
   "levels": 6,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 546,
+  "sourceLines": 630,
   "triage": {
    "status": "queued",
    "rank": 4
@@ -1002,7 +1002,7 @@
   "levels": 8,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 692,
+  "sourceLines": 771,
   "triage": {
    "status": "queued",
    "rank": 9
@@ -1274,7 +1274,7 @@
   "levels": 9,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 490,
+  "sourceLines": 570,
   "triage": {
    "status": "weak",
    "rank": null
@@ -1315,7 +1315,7 @@
   "levels": 10,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 496,
+  "sourceLines": 574,
   "triage": {
    "status": "queued",
    "rank": 29
@@ -1592,7 +1592,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 426,
+  "sourceLines": 506,
   "triage": {
    "status": "queued",
    "rank": 14
@@ -1629,7 +1629,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 478,
+  "sourceLines": 558,
   "triage": {
    "status": "weak",
    "rank": null
@@ -1667,7 +1667,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 427,
+  "sourceLines": 507,
   "triage": {
    "status": "queued",
    "rank": 5
@@ -1706,7 +1706,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 493,
+  "sourceLines": 571,
   "triage": {
    "status": "weak",
    "rank": null
@@ -1745,7 +1745,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 404,
+  "sourceLines": 482,
   "triage": {
    "status": "queued",
    "rank": 17
@@ -1781,7 +1781,7 @@
   "levels": 9,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 598,
+  "sourceLines": 677,
   "triage": {
    "status": "weak",
    "rank": null
@@ -1821,7 +1821,7 @@
   "levels": 7,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 605,
+  "sourceLines": 632,
   "triage": {
    "status": "queued",
    "rank": 13
@@ -1860,7 +1860,7 @@
   "levels": 8,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 609,
+  "sourceLines": 685,
   "triage": {
    "status": "queued",
    "rank": 22
@@ -1896,7 +1896,7 @@
   "levels": 6,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 502,
+  "sourceLines": 580,
   "triage": {
    "status": "queued",
    "rank": 24
