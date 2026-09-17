@@ -283,13 +283,16 @@ meter slack, which is how the lap misreading and the winning-move meter got thro
 - Holdout task: a human-verified baseline exists (this recording), an agent baseline exists
   (gpt-5-nano), and ARC Prize never published the source. Keep the build out of any public
   listing; the arc-explainer page stays URL-only.
-- Boss, 17-Sep: the code being on public GitHub does not matter (agents under test have no
-  internet). AS66 is semi-public, and its withdrawal suggests games like it are in the private
-  set, so it is worth training on or testing on. Which of the two is Boss's call; until he makes
-  it, it stays out of the `sonpham-org/arc-3` catalog.
+- **Boss's decision, 17-Sep: test only, never trained on.** AS66 is semi-public and its
+  withdrawal suggests games like it are in the private set, which is what makes it worth testing
+  agents on. The code being on public GitHub does not matter (agents under test have no
+  internet). The harness copy is in `arc-3` at `datasets/test-only-games/as66/v1/` (merged in
+  `sonpham-org/arc-3#38`), with the rule written into that folder's README, `AGENTS.md`,
+  `harnesses/README.md` and the `--exclude-games` help on `distill/extract_sft.py`.
 - Corpus: the `arc-3` decision-step corpus rejected AS66 records only because there was no
-  source to cite (`2026-09-15-as66-the-withdrawn-26th-game.md` section 4a). This file becomes
-  that source, which unlocks the matched human-vs-agent dataset described there.
+  source to cite (`2026-09-15-as66-the-withdrawn-26th-game.md` section 4a). The source now
+  exists, but under the test-only decision AS66 records still stay out of the corpus and every
+  other kind of training data.
 
 ## 9. Decisions on things the recording does not show
 
