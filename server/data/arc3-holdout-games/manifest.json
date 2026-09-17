@@ -1,0 +1,12 @@
+[
+  {
+    "id": "as66",
+    "title": "as66",
+    "class_name": "As66",
+    "src_file": "as66.py",
+    "category": "holdout",
+    "official": false,
+    "default_fps": 5,
+    "tile_scale": 4
+  }
+]

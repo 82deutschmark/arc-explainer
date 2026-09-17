@@ -37,6 +37,11 @@ PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, 
          server/data/arc3-research-games/. They use the same local reader, are separately
          labeled, and have no human-review or benchmark-validation claim.
 
+         SOURCE 4 (`holdout`, added 2026-09-17 by Claude Fable 5.1) is
+         server/data/arc3-holdout-games/: link-only games, currently just as66, the
+         withdrawn preview game recreated from a recording. Same local reader; hidden from
+         browse by category. Never publish these upstream -- see that folder's README.
+
          The sources still fail INDEPENDENTLY. Each keeps its own manifest cache,
          source-path index and in-flight refresh, and each falls back to its own last good
          copy; the merge tolerates one side being unreachable and serves the other. Only
@@ -131,6 +136,8 @@ const UPSTREAM = (process.env.ARC3_UPSTREAM ?? 'https://arc3.sonpham.net').repla
  */
 export const AUTHORED_DIR = path.join(process.cwd(), 'server', 'data', 'arc3-games');
 export const RESEARCH_DIR = path.join(process.cwd(), 'server', 'data', 'arc3-research-games');
+/** Link-only holdout games (AS66). Served for play, never browsed -- see the folder README. */
+export const HOLDOUT_DIR = path.join(process.cwd(), 'server', 'data', 'arc3-holdout-games');
 
 /** Son's Caddy sets max-age=300 on /static/. Matching it keeps us no staler than his CDN. */
 const MANIFEST_TTL_MS = 5 * 60 * 1000;
@@ -263,6 +270,21 @@ const SOURCES: MirrorSource[] = [
     key: 'research',
     kind: 'local',
     base: RESEARCH_DIR,
+    manifestPath: 'manifest.json',
+    srcPath: (entry) => entry.src_file,
+    headers: {},
+    manifestCache: null,
+    srcPathIndex: new Map(),
+    inFlight: null,
+  },
+  {
+    // SOURCE 4 (`holdout`): link-only games kept out of every browse and recommendation
+    // surface. Today that is one game, as66 -- the withdrawn preview game "Always Sliding",
+    // recreated from Boss's recording. Category `holdout` is hidden by the gallery and is
+    // not visitor-facing, so the only way in is /arc3/play/as66.
+    key: 'holdout',
+    kind: 'local',
+    base: HOLDOUT_DIR,
     manifestPath: 'manifest.json',
     srcPath: (entry) => entry.src_file,
     headers: {},

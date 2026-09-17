@@ -1,4 +1,6 @@
 # This is the source of truth for all ARC3 documentation!!!
+
+> **Looking for AS66, the lost game ("Always Sliding")?** It was withdrawn from the public set, has been recreated, and is playable by link. Start at [AS66_Lost_Game.md](AS66_Lost_Game.md).
 This is the only source of truth for information about ARC3 games and ARC3 documentation. 
 
 > Hand crafted environments that test interactive abstraction and reasoning
