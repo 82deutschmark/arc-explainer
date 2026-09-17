@@ -19,7 +19,7 @@
  *          on levels 3, 4 and 9, so the helper is not always "on the far side"; the
  *          unverified "no move is ever unrecoverable" is dropped; added that a thief can be
  *          removed for good by facing it and pressing Action 5.
- *          2026-09-17 (Claude Opus 5): Boss's level 3 play note and his mid-run capture.
+ *          2026-09-17 (Claude Opus 5): Boss's play notes (level 3 handoff, level 7 purple guy, helpers vs. opponents, level 9 time) and two captures.
  * SRP/DRY check: Pass - Single responsibility for WA30 game data.
  */
 
@@ -137,6 +137,27 @@ export const wa30: Arc3GameMetadata = {
       did: 'Put the boxes there, then walked around for a while waiting.',
       happened: 'After that the orange helper does the rest, and you just have to trust it will do it correctly. There is literally nothing for the character to do on level 3 once the boxes are down. Weird, but interesting.',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      level: 7,
+      saw: 'Level 7 was crazy, with a purple guy on the board.',
+      happened: 'He had not realized he could destroy the purple guy.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      saw: 'Some of the other moving objects work with you, and some work against you.',
+      happened: 'The whole game has been crazy. He doubts an AI will realize which of the moving objects are on its side and which are against it. Interesting.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      level: 9,
+      saw: 'Level 9, the final level.',
+      did: 'Did not make the optimal moves.',
+      happened: 'He had a lot of trouble running out of time. So far WA30 is the only game where running out of time has been a real problem for him as a human.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'medium',
@@ -163,6 +184,12 @@ export const wa30: Arc3GameMetadata = {
       type: 'replay',
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
+    {
+      title: 'WA30 Human Replay (Win, 9/9 Levels, Score 81.65)',
+      url: 'https://arcprize.org/replay/65d8cd9c-5256-40df-b6ef-a1476c6de720',
+      type: 'replay',
+      description: 'Boss\'s playthrough, not an agent run -- the other two replays listed here are GPT-6 Astra. Published 2026-09-17: a win, all nine levels cleared, score 81.65, 1,517 actions and 17 resets, split 26/56/292/54/109/60/190/140/590 across levels 1-9 against the game\'s baselines of 71/119/183/98/368/68/79/442/415 (1,843 total). Over baseline on three levels: 3 (292 against 183), 7 (190 against 79) and 9 (590 against 415), the final level where he had trouble running out of time.',
+    },
   ],
   levelScreenshots: [
     { level: 1, imageUrl: '/arc3-levels/wa30/lvl1.png' },
@@ -175,6 +202,7 @@ export const wa30: Arc3GameMetadata = {
     { level: 7, imageUrl: '/arc3-levels/wa30/lvl7.png' },
     { level: 8, imageUrl: '/arc3-levels/wa30/lvl8.png' },
     { level: 9, imageUrl: '/arc3-levels/wa30/lvl9.png' },
+    { level: 9, imageUrl: '/arc3-levels/wa30/lvl9-human-final.png', caption: 'human play, the final level', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run on level 9, 17-Sep-2026, the level where he had trouble running out of time.' },
   ],
   tags: ['sokoban', 'crate-pushing', 'public-demo-2026'],
   isFullyDocumented: false,

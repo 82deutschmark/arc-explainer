@@ -12,6 +12,15 @@
 # reference the old numbers.
 
 
+### Version 9.97.0  Sep 17, 2026
+
+- **More notes from play (VC33 level 6, WA30 levels 7 and 9), and Boss's WA30 win replay** (Author: Claude Opus 5)
+  - **Why.** Boss is still narrating as he plays. As in 9.96.0, the notes are his account as he gave it, with nothing added from the game source.
+  - **VC33 level 6.** Getting it right means reading the volume indicators (how much liquid is in each part) pixel-perfect. Insane and very confusing. His screenshot was taken out of frustration.
+  - **WA30.** Level 7 was crazy, and he hadn't realized he could destroy the purple guy. Across the game, some moving objects work with you and some work against you, and he doubts an AI will work out which is which. Level 9 is the only place in any game where running out of time has given him real trouble.
+  - **Replay.** `https://arcprize.org/replay/65d8cd9c-5256-40df-b6ef-a1476c6de720`: a win, 9/9 levels, score 81.65, 1,517 actions, 17 resets. The per-level actions and baselines come from the public `three.arcprize.org/api/sessions/<guid>` document for that run. He went over baseline on levels 3, 7 and 9, and his total came in under the baseline total (1,843).
+  - **Files.** `shared/arc3Games/vc33.ts`, `shared/arc3Games/wa30.ts`, `client/public/arc3-levels/vc33/lvl6-human-frustration.png`, `client/public/arc3-levels/wa30/lvl9-human-final.png`.
+
 ### Version 9.96.0  Sep 17, 2026
 
 - **Notes from play: VC33 level 5 and WA30 level 3, in Boss's words** (Author: Claude Opus 5)
