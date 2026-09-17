@@ -1,7 +1,8 @@
 /*
 Author: Codex (GPT-6), with existing contributors
-Date: 2026-09-14
-Update: Combine reviewed action playback and hints with native research animations,
+Date: 2026-09-16
+Update: Use native intact-character movement for the 32 feedback-revised games.
+Previous update: Combine reviewed action playback and hints with native research animations,
         contributed recovery, source-versioned controls and the official Z Undo binding.
 Previous update: Explain KS01 controls, show unlimited contributed retries and restore failed moves;
         finish pixel animations before accepting another action.
@@ -168,7 +169,7 @@ import { Arc3FeedbackPanel } from '@/components/arc3-community/Arc3FeedbackPanel
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
 import { PIPELINE_CATEGORY, isVisitorFacing, withinGroupOrder } from '@/lib/arc3TaskSets';
-import { actionPlayback, type PixelGrid } from '@shared/arc3ActionFrames';
+import { actionPlayback, usesNativeTranslation, type PixelGrid } from '@shared/arc3ActionFrames';
 import { arc3PlayHint } from '@shared/arc3PlayHints';
 import { PROBE_CANDIDATE_ACTIONS, TRIANGULAR_MOVEMENT_GAME_IDS, probeGestureFor } from '@shared/arc3Topology';
 import { ARC3_COLORS } from '@/utils/arc3Colors';
@@ -650,7 +651,7 @@ export default function CommunityGamePlay() {
       && (recoverable || meta?.category === 'research');
     const playback = nativePlayback
       ? { frames: nativeFrames, intervalMs: 1000 / Math.max(1, meta?.defaultFps || 12) }
-      : actionPlayback(settledGridRef.current, nativeFrames, animate, reduced);
+      : actionPlayback(settledGridRef.current, nativeFrames, animate, reduced, usesNativeTranslation(gameId));
     if (next.frame?.length) settledGridRef.current = next.frame.at(-1)!;
     const frames = playback.frames.length ? playback.frames : settledGridRef.current ? [settledGridRef.current] : [];
     setDisplayFrames(frames);
@@ -678,7 +679,7 @@ export default function CommunityGamePlay() {
       else animRef.current = setTimeout(advance, playback.intervalMs);
     };
     animRef.current = setTimeout(advance, playback.intervalMs);
-  }, [meta?.category, meta?.defaultFps, recoverable]);
+  }, [gameId, meta?.category, meta?.defaultFps, recoverable]);
 
   /**
    * @param silent live tick -- advances the game but is not recorded. A held key at 10-30fps

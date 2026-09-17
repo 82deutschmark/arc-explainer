@@ -347,12 +347,13 @@ def solved(rows, twins, state):
 FACE = CELL - 1
 
 
-def _stamp(frame, cell, face):
+def _stamp(frame, cell, face, offset=(0, 0)):
     x, y = cell
     for j, row in enumerate(face):
         for i, v in enumerate(row):
             if v >= 0:
-                frame[PAD+y * CELL + 1 + j, PAD+x * CELL + 1 + i] = v
+                frame[PAD+y * CELL + 1 + j + offset[1],
+                      PAD+x * CELL + 1 + i + offset[0]] = v
 
 
 def _wall_face(x, y):
@@ -474,17 +475,8 @@ class Overlay(RenderableUserDisplay):
         for s in sills(rows):
             _stamp(frame, s, _sill_socket(s in held))
 
-        for i, k in enumerate(g.keepers):
-            if g.dying and i == g.dying_who and g.dying % 2:
-                body = rounded(HAZARD, FACE)
-                body[FACE // 2][FACE // 2] = PLAYER
-                body[0][0] = -1
-            else:
-                body = _keeper_face(i == g.sel, pair_of.get(k))
-            _stamp(frame, k, body)
-
         if not (g.sealing and g.sealing % 2 == 0):
-            _stamp(frame, g.warder, _warder_face(g.heading))
+            _stamp(frame, g.warder, _warder_face(g.heading), g.motion_offset(2))
 
         for s in sills(rows):
             _stamp(frame, s, _sill_studs(s in held))
@@ -503,6 +495,19 @@ class Overlay(RenderableUserDisplay):
         if g.winning and g.winning % 2 == 0:
             for cell in pair_of:
                 _stamp(frame, cell, block(PLATE_HELD, FACE))
+
+        for i, k in enumerate(g.keepers):
+            x, y = k
+            ox, oy = g.motion_offset(i)
+            frame[PAD+y*CELL+1+oy:PAD+y*CELL+1+FACE+oy,
+                  PAD+x*CELL+1+ox:PAD+x*CELL+1+FACE+ox] = FLOOR
+            if g.dying and i == g.dying_who and g.dying % 2:
+                body = rounded(HAZARD, FACE)
+                body[FACE // 2][FACE // 2] = PLAYER
+                body[0][0] = -1
+            else:
+                body = _keeper_face(i == g.sel, None)
+            _stamp(frame, k, body, (ox, oy))
         return frame
 
 
@@ -550,6 +555,8 @@ class Quotient(ARCBaseGame):
         return (nxt[0] - self.warder[0], nxt[1] - self.warder[1])
 
     def on_set_level(self, level: Level) -> None:
+        self._motion_from = None
+        self._motion_progress = CELL
         self.twins = twin_map(self.spec["pairs"])
         self.dist = class_dist(self.rows, self.twins, avoid_spikes=True)
         self.keepers, self.sel, self.warder = start_state(self.rows)
@@ -566,7 +573,22 @@ class Quotient(ARCBaseGame):
         self.tick = 0
         self.on_set_level(self.current_level)
 
+    def motion_offset(self, index):
+        if self._motion_from is None:
+            return (0, 0)
+        previous = self._motion_from[index]
+        current = (*self.keepers, self.warder)[index]
+        remaining = CELL - self._motion_progress
+        return ((previous[0] - current[0]) * remaining,
+                (previous[1] - current[1]) * remaining)
+
     def step(self) -> None:
+        if self._motion_from is not None:
+            self._motion_progress += 1
+            if self._motion_progress >= CELL:
+                self._motion_from = None
+                self.complete_action()
+            return
         self.tick += 1
         for name in ("dying", "sealing"):
             if getattr(self, name):
@@ -588,6 +610,7 @@ class Quotient(ARCBaseGame):
                  GameAction.ACTION3: ("walk", (-1, 0)),
                  GameAction.ACTION4: ("walk", (1, 0))}.get(self.action.id)
         if order is not None:
+            previous = (*self.keepers, self.warder)
             state, outcome = advance(self.rows, self.twins, self.dist, self.state, order)
             self.keepers, self.sel, self.warder = state
             if outcome == "spiked":
@@ -601,5 +624,9 @@ class Quotient(ARCBaseGame):
                 return
             if solved(self.rows, self.twins, state):
                 self.winning = self.WINNING_FRAMES
+                return
+            if previous != (*self.keepers, self.warder):
+                self._motion_from = previous
+                self._motion_progress = 1
                 return
         self.complete_action()
