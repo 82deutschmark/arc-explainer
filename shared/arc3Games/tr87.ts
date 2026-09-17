@@ -1,7 +1,8 @@
 /*
  * Author: Claude Sonnet 5; mechanics breakdown by Claude Opus 5, 2026-09-16
- * Date: 2026-09-11 (corrected against source 2026-09-12; breakdown added 2026-09-16)
- * PURPOSE: Game metadata for TR87 (Tongue Runes), part of the ARC-AGI-3 public
+ * Date: 2026-09-11 (corrected against source 2026-09-12; breakdown added 2026-09-16;
+ *       renamed and play note added 2026-09-17)
+ * PURPOSE: Game metadata for TR87 (Toggle Runes), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). A second, independent adversarial
  *          re-verification pass on 2026-09-12 found the original pass still missed
  *          that levels 5-6 invert the puzzle (the answer is pre-solved and you repair
@@ -24,7 +25,7 @@ import { Arc3GameMetadata } from './types';
 export const tr87: Arc3GameMetadata = {
   gameId: 'tr87',
   officialTitle: 'tr87',
-  informalName: 'Tongue Runes',
+  informalName: 'Toggle Runes',
   description: 'Translate a phrase into a second alphabet using a wall of paired runes as your only dictionary -- in the last two levels, the answer is already right and you repair the dictionary instead.',
   simpleExplanation: 'You translate a phrase into a second alphabet by matching each symbol to its paired rune on the wall. In the last two levels the answer is already right, and you fix the wall of rune-pairs instead of translating.',
   mechanicsExplanation: 'The top half of the screen is a dictionary: entries of glyphs on colored tiles, each linked by a short line to its translation, with the tile color marking the alphabet. The bottom half holds the phrase (never editable) and your answer row. In levels 1-4 you move a white bracket along the answer row with Left/Right and step the glyph under it through its alphabet with Up/Down, until the answer is the phrase translated entry by entry. The tilt of a glyph is random and means nothing; only which letter it is counts. Level 2 adds entries that turn one glyph into several, level 3 adds entries that turn a group of glyphs into one, and level 4 hides the direct translation: you look the phrase up into a middle alphabet that only appears on the wall, then look that up again. In levels 5-6 the answer row is fixed and correct and the dictionary is scrambled instead: Left/Right step through the sides of the dictionary entries, and Up/Down change every glyph on the selected side by one letter together, until the wall translates the phrase into the answer. Level 6 also branches: each phrase glyph becomes two middle glyphs, each looked up on its own. A move budget (128 actions in levels 1-5, 256 in level 6) ticks down on every action, including a bare cursor move; run out and you lose.',
@@ -134,6 +135,16 @@ export const tr87: Arc3GameMetadata = {
       source: 'tr87.py:812-878, 1065-1079',
     },
   ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      level: 3,
+      saw: 'The only controls are up, down, left, right and RESET, and RESET is not something you should need in this game. Even on level 3 there is no solid rule he has been able to pin down. It is a lot like SB26: the game asks you for a certain code, only with freaky-looking symbols instead of colors. The symbols also do not always have to be pointed the right way.',
+      did: 'Played it having seen it before and knowing roughly what it is about.',
+      happened: 'Once you know that much it is shockingly easy -- and it would have taken him literally forever if nobody had told him, because it just would not occur to you. He is still playing it badly. It is programmer talk turned into a game, working in abstractions: the top half of the screen always shows you the key, what the game wants, and in the bottom half you cycle through the runes with the arrow keys.',
+    },
+  ],
   category: 'evaluation',
   humanDifficulty: 'hard',
   aiDifficulty: 'hard',
@@ -169,5 +180,5 @@ export const tr87: Arc3GameMetadata = {
   ],
   tags: ['translation', 'lookup-table', 'alphabet', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: the original "adversarially verified" pass still missed that levels 5-6 invert the puzzle, caught by a second, independent re-verification.',
+  notes: 'Renamed from "Tongue Runes" to "Toggle Runes" 2026-09-17 at Boss\'s call, playing it: you toggle the runes in a certain way, and that is what the game is about. Added 2026-09-11 when the informal-name registry was extended from the original 6 games to the full 25-game public demo set. No replay video or hints exist yet for this game -- only the level screenshots rendered from their own game source on 2026-09-12 and the two replay links ARC Prize published with the GPT-6 Astra results. Corrected 2026-09-12: the original "adversarially verified" pass still missed that levels 5-6 invert the puzzle, caught by a second, independent re-verification.',
 };

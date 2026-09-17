@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.98.0  Sep 17, 2026
+
+- **TR87 is "Toggle Runes", and a note from Boss's play** (Author: Claude Opus 5)
+  - **Rename.** `informalName` goes from "Tongue Runes" to "Toggle Runes", Boss's call while playing it: you have to toggle the runes in a certain way. The old name appeared nowhere else in the repo, so this is the one field plus the file header and `notes`.
+  - **Note from play (level 3).** Told as he gave it, nothing added from the game source: the only controls are the four arrows and RESET, and RESET should not be needed here; no solid rule has emerged for him even on level 3; it is a lot like SB26, asking for a code, with freaky symbols instead of colors, and the symbols need not point the right way. Knowing that much makes it shockingly easy, and without being told it would never occur to you. Programmer talk as a game: the key is always in the top half, and you cycle the runes in the bottom half with the arrows.
+  - **Files.** `shared/arc3Games/tr87.ts`.
+
 ### Version 9.97.0  Sep 17, 2026
 
 - **More notes from play (VC33 level 6, WA30 levels 7 and 9), and Boss's WA30 win replay** (Author: Claude Opus 5)
