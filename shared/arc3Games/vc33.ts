@@ -28,7 +28,7 @@
  *          needs the liquid exactly level with it, not "a gap closed enough"), fixed the
  *          click mapping and hint 2.
  *          2026-09-16 (Claude Opus 5, later): level 7 screenshot now the live-build render, not the 9-level preview capture.
- *          2026-09-17 (Claude Opus 5): Boss's level 5 play note (green down first, yellow later) and his mid-run capture.
+ *          2026-09-17 (Claude Opus 5): Boss's level 5 and 6 play notes (green down first, yellow later; pixel-perfect liquid) and his two captures.
  * SRP/DRY check: Pass - Single responsibility for VC33 game data.
  */
 
@@ -127,6 +127,13 @@ export const vc33: Arc3GameMetadata = {
       did: 'Lost the level once. On the next try, put the green piece down first, then went back to work on the yellow piece.',
       happened: 'That is the order the level wants: green has to go down first and yellow gets finished later. Devious.',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-17',
+      level: 6,
+      saw: 'Level 6 needs the volume indicators, which show how much liquid is in each part, read pixel-perfect.',
+      happened: 'Insane, and very confusing. He took a screenshot out of pure frustration.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'medium',
@@ -164,6 +171,7 @@ export const vc33: Arc3GameMetadata = {
     { level: 5, imageUrl: '/arc3-levels/vc33/lvl5.png' },
     { level: 5, imageUrl: '/arc3-levels/vc33/lvl5-human-gates.png', caption: 'human play, green put down, yellow next', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. Green is already down in the bottom tank; yellow sits by the orange gate, still to be taken through and up.' },
     { level: 6, imageUrl: '/arc3-levels/vc33/lvl6.png' },
+    { level: 6, imageUrl: '/arc3-levels/vc33/lvl6-human-frustration.png', caption: 'human play, taken out of frustration', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026, on the level he found needed the liquid read pixel-perfect.' },
     { level: 7, imageUrl: '/arc3-levels/vc33/lvl7.png' },
   ],
   tags: ['preview-set', 'hydraulics', 'physics'],
