@@ -16,6 +16,8 @@
  *          fixes in mechanicsExplanation: the level-3 dab paints a 4-wide, 3-deep block in
  *          the middle of the near edge (not a thin strip), and the 100-action budget is per
  *          level and counts every action, with the 100th one losing the level.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for CD82 game data.
  */
 
@@ -93,6 +95,14 @@ export const cd82: Arc3GameMetadata = {
       category: 'pieces',
       text: 'From level 3 a small nozzle in the current color appears next to the bucket whenever it is at a side station (N, E, S or W). Click the nozzle to dab a block 4 cells wide and 3 deep onto the middle of that side of the canvas. It never appears at corner stations.',
       source: 'cd82.py:288, 459, 495-518, 560-565, 574-628',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'Colors to stamp.',
+      happened: 'Easy. It is obvious you need to stamp the color, and that a certain color is going to be first in, first out.',
     },
   ],
   category: 'evaluation',

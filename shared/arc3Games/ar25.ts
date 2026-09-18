@@ -10,6 +10,9 @@
  *          ar25-0c556536/ar25.py and run in the engine, and tightened
  *          mechanicsExplanation: the pieces are Black, not colored; level 1's mirror is
  *          fixed; clicking to select is free; each mirror only slides across its own line.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5): Boss's own screenshots from Discord added as human captures.
  * SRP/DRY check: Pass - Single responsibility for AR25 game data.
  */
 
@@ -129,6 +132,22 @@ export const ar25: Arc3GameMetadata = {
       source: 'ar25.py:832-867, 1555-1618, 1814-1834',
     },
   ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'The first two levels.',
+      happened: 'He mostly understood them. Then it got far too complex, like very long or complicated Lego pieces: he could not group and count that many dots. He had played it before and got nowhere on the later levels.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      level: 7,
+      saw: 'Level 7.',
+      did: 'Copied the GPT-6 Astra replay.',
+      happened: 'Even copying the replay he could not tell whether he was close to winning. He had to cheat the last two levels, and even then it was hard and took an eternity.',
+    },
+  ],
   category: 'evaluation',
   humanDifficulty: 'easy',
   aiDifficulty: 'easy',
@@ -166,6 +185,7 @@ export const ar25: Arc3GameMetadata = {
     { level: 6, imageUrl: '/arc3-levels/ar25/lvl6.png' },
     { level: 7, imageUrl: '/arc3-levels/ar25/lvl7.png' },
     { level: 8, imageUrl: '/arc3-levels/ar25/lvl8.png' },
+    { level: 7, imageUrl: '/arc3-levels/ar25/lvl7-human.png', kind: 'human', caption: 'human play, copying the Astra replay', notes: 'Not an engine render: Boss\'s run, 16-Sep-2026.' },
   ],
   tags: ['mirrors', 'reflection', 'step-budget', 'public-demo-2026'],
   isFullyDocumented: false,

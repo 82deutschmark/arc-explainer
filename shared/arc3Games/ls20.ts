@@ -21,6 +21,8 @@
  *          it never named: refill pickups (level 2+), launch pads (level 3+), tiles that
  *          slide along hidden paths (level 5+), which bumps cost a step, and that a lost
  *          life also resets the key, the pickups and any door already opened.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for LS20 game data.
  */
 
@@ -55,6 +57,28 @@ export const ls20: Arc3GameMetadata = {
     { introducedOnLevel: 5, category: 'pieces', text: 'Some key-changing tiles move. Each time you move, they take one step along a hidden path, back and forth along a line or around a small square. If your move is blocked, they stay put.', source: 'ls20.py:1674-1762, 1851-1856, 1958-1959, 1967-1969; engine run on level 5: the rotation tile went 14, 19, 24, 19, 14 as the player moved' },
     { introducedOnLevel: 6, category: 'goal', text: 'Two doors, each wanting a different key. You can open them in either order, and the level ends when both are open.', source: 'ls20.py:1339-1346, 2042-2060; engine run on level 6: opened the second door first' },
     { introducedOnLevel: 7, category: 'hazards', text: 'Fog: everything more than 20 pixels from your block is black, doors included. The key box, the step meter and the lives stay visible.', source: 'ls20.py:1465, 1517-1551; engine run on level 7 render' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-15',
+      saw: 'Three red dots: your lives on each level. Every death costs one.',
+      did: 'Used reset.',
+      happened: 'Reset brings all three back. So on some levels, especially the last one, where you can easily run out of time, you want to reset rather than lose the game. Undo isn\'t available in the current version; reset is. He found the reset rules bizarre when the preview came out, and this is probably why agents do so badly here: they don\'t use reset to keep their lives.',
+      inCode: 'RESET restarts the level: the key, pickups and doors go back to the start, the step meter refills and all three lives come back.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-08-31',
+      saw: 'Lots of energy and three lives.',
+      happened: 'Room for a lot of exploration.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-15',
+      saw: 'The ls20 from the preview.',
+      happened: 'Today\'s ls20 is fundamentally a different game. Replays from before September don\'t reflect it.',
+    },
   ],
   category: 'preview',
   humanDifficulty: 'easy',

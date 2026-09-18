@@ -18,6 +18,9 @@
  *          not "5 on". Retracting drags the beads on the rod back with it.
  *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
  *          worded from what he said; the prose is left as it was.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5): Boss's own screenshots from Discord added as human captures.
  * SRP/DRY check: Pass - Single responsibility for SK48 game data.
  */
 
@@ -64,6 +67,39 @@ export const sk48: Arc3GameMetadata = {
       saw: 'Undo (ACTION7) is available.',
       happened: 'Undo is load-bearing here: one of three public games (with bp35 and lf52) where you realistically need it to finish, not a convenience.',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-11',
+      level: 2,
+      saw: 'The skewers at the bottom of the screen show the order the colored boxes are wanted in.',
+      did: 'Extended the long rod to spear the boxes.',
+      happened: 'It is an extendable meat skewer and the boxes are pieces of meat going onto it in a set order. It is physics: you can\'t just get up close to a box, you have to push it against the wall and spear it. Once speared it comes along with you on the rod, and it is solid, so you can use it to push the other boxes down.',
+      inCode: 'A bead that can\'t be pushed any further (board edge, wall, or another stuck bead) stays where it is and the rod slides through it. That is how a bead gets skewered.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-11',
+      level: 4,
+      saw: 'Level 4 starts with pieces already on the skewers.',
+      happened: 'The meat-skewer picture still explains it. The AI runs he read had called the rod a pen or a snake\'s tongue, and none of their guesses would handle this level.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-11',
+      level: 5,
+      saw: 'A black box blocks the skewer, with red boxes behind it.',
+      did: 'Clicked on everything on the screen.',
+      expected: 'Clicking would do something.',
+      happened: 'Clicking changed nothing. He worked the level out by experimenting.',
+      inCode: 'The black squares are walls: the tip can\'t extend into them and beads can\'t be pushed into them. Clicks only switch between rods you control, and there is just one until level 6, so clicking does nothing here.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-11',
+      level: 6,
+      saw: 'Level 6, right before the win.',
+      happened: 'Each skewer is matched to its own reference at the bottom. They are not always pairs of skewers, and a skewer does not have to match a partner.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
@@ -101,6 +137,16 @@ export const sk48: Arc3GameMetadata = {
     { level: 6, imageUrl: '/arc3-levels/sk48/lvl6.png' },
     { level: 7, imageUrl: '/arc3-levels/sk48/lvl7.png' },
     { level: 8, imageUrl: '/arc3-levels/sk48/lvl8.png' },
+    { level: 2, imageUrl: '/arc3-levels/sk48/lvl2-human-a.png', kind: 'human', caption: 'human play, the rod and a row of loose boxes', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 11-Sep-2026, one of five captures he sent to explain the skewer.' },
+    { level: 2, imageUrl: '/arc3-levels/sk48/lvl2-human-b.png', kind: 'human', caption: 'human play, boxes pushed ahead of the tip', notes: 'Not an engine render: same run, 11-Sep-2026.' },
+    { level: 2, imageUrl: '/arc3-levels/sk48/lvl2-human-c.png', kind: 'human', caption: 'human play, a box pushed to the wall and speared (Boss\'s arrow)', notes: 'Not an engine render: same run, 11-Sep-2026. The red arrow is Boss\'s, marking the box against the wall.' },
+    { level: 2, imageUrl: '/arc3-levels/sk48/lvl2-human-d.png', kind: 'human', caption: 'human play, speared boxes carried along the rod', notes: 'Not an engine render: same run, 11-Sep-2026.' },
+    { level: 3, imageUrl: '/arc3-levels/sk48/lvl3-human.png', kind: 'human', caption: 'human play', notes: 'Not an engine render: same run, 11-Sep-2026.' },
+    { level: 4, imageUrl: '/arc3-levels/sk48/lvl4-human.png', kind: 'human', caption: 'human play, pieces already on the skewers', notes: 'Not an engine render: Boss\'s run, 11-Sep-2026.' },
+    { level: 5, imageUrl: '/arc3-levels/sk48/lvl5-human.png', kind: 'human', caption: 'human play', notes: 'Not an engine render: Boss\'s run, 11-Sep-2026.' },
+    { level: 5, imageUrl: '/arc3-levels/sk48/lvl5-human-blocked.png', kind: 'human', caption: 'human play, the black box blocking the skewer', notes: 'Not an engine render: Boss\'s run, 11-Sep-2026, sent while he was stuck on it.' },
+    { level: 6, imageUrl: '/arc3-levels/sk48/lvl6-human.png', kind: 'human', caption: 'human play, two rods', notes: 'Not an engine render: Boss\'s run, 11-Sep-2026.' },
+    { level: 6, imageUrl: '/arc3-levels/sk48/lvl6-human-win.png', kind: 'human', caption: 'human play, right before the win', notes: 'Not an engine render: Boss\'s run, 11-Sep-2026.' },
   ],
   tags: ['skewer', 'threading', 'public-demo-2026'],
   isFullyDocumented: false,

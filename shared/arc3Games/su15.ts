@@ -30,6 +30,8 @@
  *          the foul penalty is not lowered by Undo; hint 5's level 9 clause (level 9 can
  *          only ever make one dark red creature); the notes' "alternates 32 and 48".
  *          2026-09-16 (Claude Opus 5, later): playerObservations added from Boss's reports (suction-radius animation, why Sorting Urn was the wrong name).
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for SU15 game data.
  */
 
@@ -214,6 +216,18 @@ export const su15: Arc3GameMetadata = {
       date: '2026-09-16',
       saw: 'The game was listed as "Sorting Urn".',
       happened: 'That was not what it was. The game really is sucking things up, so it was renamed "Sucking Up".',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      saw: 'Two legends: one in the top left showing what each shape becomes, one in the center showing what to bring to the blue circle.',
+      happened: 'You put the two together to know what to make and where to take it.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      saw: 'In later levels, little things like alien spaceships appear.',
+      happened: 'The cells, or asteroids, combine and merge, and the spaceships split them up again.',
     },
   ],
   category: 'evaluation',

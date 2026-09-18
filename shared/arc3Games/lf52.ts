@@ -16,6 +16,9 @@
  *          cart), and undo refunds the move it takes back.
  *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
  *          worded from what he said; the prose is left as it was.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5): Boss's own screenshots from Discord added as human captures.
  * SRP/DRY check: Pass - Single responsibility for LF52 game data.
  */
 
@@ -66,6 +69,35 @@ export const lf52: Arc3GameMetadata = {
       saw: 'Undo (ACTION7) is available.',
       happened: 'Undo is load-bearing here: one of three public games (with bp35 and sk48) where you realistically need it to finish, not a convenience.',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-12',
+      level: 1,
+      saw: 'Level 1.',
+      happened: 'It should take no more than 10 actions. He believes it can be done in 3.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-12',
+      level: 2,
+      saw: 'A car on the board.',
+      happened: 'You move the car with the direction keys. The AI runs never realize that, so they never solve level 2.',
+      inCode: 'Black track lines appear with a rail cart on them; each arrow press moves the cart one square along its track.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-12',
+      level: 3,
+      saw: 'Level 3.',
+      happened: 'Everything is side-scrolling: you have to go way off the original screen. It is like bp35, except bp35 scrolls up and down and this one scrolls sideways.',
+      inCode: 'From level 3 most boards are bigger than the screen, and the view slides along.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-12',
+      saw: 'Ten levels, each needing a lot more clicks than the last.',
+      happened: 'It is much more than peg solitaire. The later levels get bigger budgets because they take far more clicks. On the human leaderboard the gap between #1 and #10 is hundreds of actions, and a player without the right idea in the first couple of moves falls apart.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
@@ -105,6 +137,8 @@ export const lf52: Arc3GameMetadata = {
     { level: 8, imageUrl: '/arc3-levels/lf52/lvl8.png' },
     { level: 9, imageUrl: '/arc3-levels/lf52/lvl9.png' },
     { level: 10, imageUrl: '/arc3-levels/lf52/lvl10.png' },
+    { level: 2, imageUrl: '/arc3-levels/lf52/lvl2-human.png', kind: 'human', caption: 'human play, the cart on its track', notes: 'Not an engine render: the arcprize.org player console, 12-Sep-2026.' },
+    { level: 3, imageUrl: '/arc3-levels/lf52/lvl3-human.png', kind: 'human', caption: 'human play, the board running off the screen', notes: 'Not an engine render: the arcprize.org player console, 12-Sep-2026.' },
   ],
   tags: ['peg-solitaire', 'linked-rooms', 'public-demo-2026'],
   isFullyDocumented: false,

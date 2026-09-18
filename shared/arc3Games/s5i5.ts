@@ -24,6 +24,8 @@
  *          2026-09-16 (Claude Opus 5, later): playerObservations added from Boss's reports (level 5 confusion, plus-shaped button, level 7 overgrown rod).
  *          2026-09-18 (Claude Opus 5): human mid-play captures tagged `kind: 'human'` so the page
  *          and the private game dataset (/api/arc3/dataset) can tell them from engine renders.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for S5I5 game data.
  */
 
@@ -86,6 +88,13 @@ export const s5i5: Arc3GameMetadata = {
       expected: 'Shrinking would give back the position he had before.',
       happened: 'It did not: once a rod has been turned, shrinking it does not restore the earlier position, and he was left with a rod he could not fold into place. The undo key in the site player does nothing here -- RESET was the only way back.',
       inCode: 'The game declares only ACTION6 (s5i5.py:2042) and has no undo of any kind.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      level: 7,
+      saw: 'Level 7: colored crosses and stiff arms.',
+      happened: 'Demonic. You use the colored crosses to rotate the stiff arms, like an unfolding mechanical arm. He only got this far by watching GPT-6 Astra replays. It badly needs an undo, though undo might make it too easy: you can get completely stuck where only a reset gets you out, and with any exploration at all you will need reset on this level. A nightmare for his spatial reasoning.',
     },
   ],
   category: 'evaluation',

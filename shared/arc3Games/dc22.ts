@@ -18,6 +18,8 @@
  *          2026-09-18 (Claude Opus 5): human mid-play captures tagged `kind: 'human'` so the page
  *          and the private game dataset (/api/arc3/dataset) can tell them from engine renders.
  *          Level 6's engine render restored beside Boss's capture (now lvl6-human.png).
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for DC22 game data.
  */
 
@@ -158,6 +160,14 @@ export const dc22: Arc3GameMetadata = {
       category: 'goal',
       text: 'The yellow goal is not on the open board: it sits in a notch cut into the top of the panel, reached along gray tiles.',
       source: 'dc22.py:9776-9853',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-02',
+      saw: 'Pieces of floor that change when you press the panel buttons.',
+      happened: 'It seems to be building a path.',
     },
   ],
   category: 'evaluation',

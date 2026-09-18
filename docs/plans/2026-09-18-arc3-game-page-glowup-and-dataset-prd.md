@@ -52,10 +52,11 @@ SRP/DRY check: Pass -- brief only, no code. Everything it proposes reads from th
 8. **Human captures are tagged in the data** (`LevelScreenshot.kind: 'human'`, all 10 of them),
    so nothing guesses from captions. `capturedBy`/`capturedAt` are not added: the caption and
    notes already say it.
-9. **More play notes.** bp35's notes, which were buried in the prose, are now 8
-   `playerObservations`; lf52 and sk48 got Boss's Undo note. 29 notes on 11 games. Asked Boss
-   for notes on the games he won that have none: ar25, cd82, cn04, dc22, ft09, ka59, lp85,
-   ls20, m0r0, r11l; then "what's stumping me" notes on lf52, re86, sc25, sk48, sp80, tn36.
+9. **Play notes, all of them.** Everything Boss said about the games was collected from every chat
+   on the Mac Mini (Discord through Bubba, and the Claude Code sessions) and written into the game
+   files as `playerObservations`, plus his 18-Sep round-up on the games he had never written about.
+   63 notes, every live game has some. 14 of his Discord screenshots are now human captures (10 on
+   sk48). ka59 renamed Kick Away; g50t's ACTION5 is no longer called Rewind.
 
 ## The one-paragraph version
 

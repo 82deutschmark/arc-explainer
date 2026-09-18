@@ -30,6 +30,8 @@
  *          levels 1-2, the action limits and the top bar, and the two growing parts on level
  *          6 share one grow/shrink direction. Fixed the ACTION6 note: only a click on the
  *          growing part's single White dot grows it; clicking its body puts it down.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for CN04 game data.
  */
 
@@ -142,6 +144,24 @@ export const cn04: Arc3GameMetadata = {
       category: 'pieces',
       text: 'The two growing parts share one grow-or-shrink direction. Once one of them bounces back from its largest size, Interact on the other one shrinks it too, until it reaches its own smallest size and turns around.',
       source: 'cn04.py:875, 1133-1157',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-15',
+      level: 5,
+      saw: 'On level 5 one piece, the yellow one, grows instead of turning.',
+      did: 'Pressed spacebar on it.',
+      expected: 'Spacebar turns pieces, as on the earlier levels.',
+      happened: 'You have to grow the yellow piece all the way, or you never see the parts you need to attach to. Only 6 levels, but devious: looking at level 5 you don\'t have all the information you need to plan it, which would throw off any player who thinks they already know the game.',
+      inCode: 'On a growing part Interact never turns it: each press swaps it for the next bigger size. Level 5\'s yellow part has 5 sizes, and its missing marks are not on the board until you grow it.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-12',
+      saw: 'The pieces joining up.',
+      happened: 'It looks like welding, but it is really connecting pieces.',
     },
   ],
   category: 'evaluation',

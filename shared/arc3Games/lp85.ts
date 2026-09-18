@@ -20,6 +20,8 @@
  *          corner dots framing a slot the size of the moving square (not a small target
  *          square for a larger block). Added the step budget and stacked buttons.
  *          2026-09-16 (Claude Opus 5, later): hints 1-2 corrected: targets are corner dots framing a slot; loops cross, and from level 6 one button turns 3 or 8 loops.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for LP85 game data.
  */
 
@@ -53,6 +55,14 @@ export const lp85: Arc3GameMetadata = {
     { introducedOnLevel: 6, category: 'pieces', text: 'Level 6 has only green buttons, so every loop turns one way. Several loops share each button spot, so one click turns three or eight loops at once. One spot drives three loops that have only two slots each, so that click just swaps the squares in each pair.', source: 'lp85.py:1333-1455 and the level 6 loop maps; engine run: one click at the top-right button moved 24 squares and cost 1 step' },
     { introducedOnLevel: 7, category: 'pieces', text: 'On level 7 the red and green buttons in the middle each drive two loops at once: a straight row whose end square wraps back to the start, and a small four-slot square. A separate pair of buttons drives a three-slot loop that shares one slot with the row, so you can park a square off the row while the other two loops turn.', source: 'lp85.py:1457-1487 and the level 7 loop maps; engine run: one red click moved both loops' },
     { introducedOnLevel: 8, category: 'pieces', text: 'On level 8 one red and one green button each drive three loops at once, and three more loops have their own buttons. Some colored squares are not on any loop and never move.', source: 'lp85.py:1489-1581 and the level 8 loop maps' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'The tiny yellow boxes.',
+      happened: 'They show where it wants the yellow box. You are looping, and once you see that it is loop and pull, that is the whole game; it only gets more complex with the pulleys. One of the original preview games, and easy for him now.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',

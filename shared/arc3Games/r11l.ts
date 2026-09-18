@@ -27,6 +27,9 @@
  *          required" line above does not match the code -- the win check skips those
  *          outlines on every level (r11l.py:1763). Also narrowed description, which read as if
  *          every level needs a color match; only levels 5-6 do.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5): Boss's own screenshots from Discord added as human captures.
  * SRP/DRY check: Pass - Single responsibility for R11L game data.
  */
 
@@ -58,6 +61,22 @@ export const r11l: Arc3GameMetadata = {
     { introducedOnLevel: 5, category: 'pieces', text: 'The blobs\' bodies start plain white, and food pellets appear: small blobs, part white and part one color. When a move puts a body over a pellet, the pellet\'s colored pixels are painted onto the body in the same spots and the pellet is gone. Only the body eats, not the arms. Level 5 has 4 pellets and level 6 has 9.', source: 'r11l.py:464-476, 673-685, 1238-1241, 1260-1268, 1585-1599, 1731-1732; engine run on level 5: the body turned half red and the red pellet disappeared' },
     { introducedOnLevel: 5, category: 'pieces', text: 'A later pellet can paint over a color the body already ate, so the order you eat in matters.', source: 'r11l.py:1594-1596; engine run on level 5: blue was replaced by green, leaving red and green' },
     { introducedOnLevel: 5, category: 'goal', text: 'On levels 5 and 6 no outline has a blob of its own. An outline is filled when any body sits on it with exactly the same set of colors (white doesn\'t count), and the level is won when every real outline is filled.', source: 'r11l.py:1601-1618, 1769-1783; engine runs on levels 5 and 6: with one outline filled the level did not end, and with both real outlines filled level 5 advanced and level 6 won the game' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-12',
+      saw: 'A blob with limbs, food pellets, and a colored gate.',
+      did: 'Used the limbs to pull the body over the food.',
+      happened: 'It is an amoeba. You can\'t move the body directly; it always re-centers between the limbs. The body itself has to be over a pellet to eat it, and dragging a limb over a pellet does nothing. Eating changes the body\'s color, which is what gets it through the gate.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-12',
+      level: 5,
+      saw: 'Level 5.',
+      happened: 'Hard to tell what it wants. On the first levels the body is already the target color; from here you have to eat pellets to make it the right color or combination of colors.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
@@ -94,6 +113,7 @@ export const r11l: Arc3GameMetadata = {
     { level: 4, imageUrl: '/arc3-levels/r11l/lvl4.png' },
     { level: 5, imageUrl: '/arc3-levels/r11l/lvl5.png' },
     { level: 6, imageUrl: '/arc3-levels/r11l/lvl6.png' },
+    { level: 5, imageUrl: '/arc3-levels/r11l/lvl5-human.png', kind: 'human', caption: 'human play', notes: 'Not an engine render: Boss\'s screenshot of level 5, 12-Sep-2026, sent while working out what it wants.' },
   ],
   tags: ['click-puzzle', 'shape-matching', 'public-demo-2026'],
   isFullyDocumented: false,
