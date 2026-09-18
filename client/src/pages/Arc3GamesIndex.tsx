@@ -17,13 +17,14 @@
  *          Its machine-readable twin is /arc3/games.md, generated from the same registry
  *          by server/services/arc3/arc3GameMechanicsDoc.ts and linked at the top for
  *          agents. Both read shared/arc3Games, so neither can drift from the other.
+ *          2026-09-18 (Claude Opus 5): no 90-day cut on the top-10 numbers or Boss's count.
  *
  *          2026-09-16 (Claude Opus 5, later): every tile shows actions to win -- the fewest on
- *          the top-10 board since 18 Jun 2026, Boss's own count, and ARC's baseline -- and the
- *          grid can be sorted by fewest actions, because the owner rates a game as easier the
+ *          the top-10 board, Boss's own count, and ARC's baseline -- and the
+ *          grid can be sorted by fewest actions, because Boss rates a game as easier the
  *          fewer actions it takes. Top-10 numbers come from /api/arc3/leaderboards/summary.
  *          2026-09-16 (Claude Opus 5): added the tutorial card right under the intro,
- *          quoting François Chollet (from his recent post on X) in the owner's wording:
+ *          quoting François Chollet (from his recent post on X) in Boss's wording:
  *          the 25 public games are the tutorial for the private set.
  *
  * SRP/DRY check: Pass -- presentation + client-side filtering only, over the shared
@@ -46,11 +47,11 @@ import { usePageMeta } from '@/hooks/usePageMeta';
 import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
 import { getOwnerGameRating, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
 
-/** Per-game top-10 action counts (recent wins only), from /api/arc3/leaderboards/summary. */
+/** Per-game top-10 action counts (every winning row), from /api/arc3/leaderboards/summary. */
 interface TopActionSummary {
   fewestActions: number | null;
   medianActions: number | null;
-  recentWins: number;
+  wins: number;
 }
 
 /** The three action counts a tile shows. Null where there is no number to show. */
@@ -74,7 +75,7 @@ function actionCountsFor(gameId: string, top: TopActionSummary | null | undefine
 
 /**
  * Sort key for "fewest actions first": the top-10's fewest when there is one, else ARC's
- * baseline, else last. The owner judges a game by how few actions it takes to beat.
+ * baseline, else last. Boss judges a game by how few actions it takes to beat.
  */
 function actionsSortKey(counts: GameActionCounts): number {
   return counts.topFewest ?? counts.baseline ?? Number.POSITIVE_INFINITY;
@@ -137,16 +138,16 @@ function GameGridTile({ game, counts }: { game: Arc3GameMetadata; counts: GameAc
         <p className="text-sm font-medium mt-1 truncate">{game.informalName || game.officialTitle}</p>
         <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{game.simpleExplanation}</p>
         <dl className="grid grid-cols-3 gap-1 mt-2 pt-2 border-t text-center">
-          <div title="Fewest actions to win on the ARC Prize top-10 board, wins since 18 Jun 2026">
+          <div title="Fewest actions to win on the ARC Prize top-10 board">
             <dd className="text-sm font-bold tabular-nums">{counts.topFewest ?? '—'}</dd>
             <dt className="text-[10px] text-muted-foreground">top 10</dt>
           </div>
           <div
             title={
               counts.owner === null
-                ? `${OWNER_PLAYER} has not played this since 18 Jun 2026`
+                ? `${OWNER_PLAYER} has not played this yet`
                 : counts.ownerWon
-                  ? `${OWNER_PLAYER}'s best recent win`
+                  ? `${OWNER_PLAYER}'s best win`
                   : `${OWNER_PLAYER}'s actions so far, not won yet`
             }
           >

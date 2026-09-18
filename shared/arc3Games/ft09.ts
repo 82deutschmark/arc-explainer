@@ -19,6 +19,10 @@
  *          2026-09-16 (Claude Opus 5, later): levelCount: 6 added (six Level() entries and six baselines in build 0d8bbf25).
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
  *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5, later): the featured video and the ft09-b8377d4b7815 replay link are
+ *          marked as the ORIGINAL game (recorded 5 Jan 2026; the build id is printed in the video's
+ *          own footer), so the page shows the video open as "The original game".
+ *          No original-vs-today rows: nothing about how it differs is confirmed yet.
  * SRP/DRY check: Pass - Single responsibility for FT09 game data.
  */
 
@@ -145,10 +149,11 @@ export const ft09: Arc3GameMetadata = {
   ],
   resources: [
     {
-      title: 'FT09 Replay',
+      title: 'FT09 Replay (original game)',
       url: 'https://three.arcprize.org/replay/ft09-b8377d4b7815/39b51ef3-b565-43fe-b3a8-7374ca4c5058',
       type: 'replay',
-      description: 'Gameplay replay of FT09 (Functional Tiles)',
+      description: 'A run on the original FT09 (ft09-b8377d4b7815), before ARC Prize reworked it.',
+      originalGame: true,
     },
     {
       title: "FT09 Boss's Official Human Replay",
@@ -179,7 +184,13 @@ export const ft09: Arc3GameMetadata = {
   thumbnailUrl: '/ft09.png',
   video: {
     src: '/videos/arc3/ft09-b8377d4b7815.mp4',
-    caption: 'Functional Tiles replay showing the scattered color-matching markers in play',
+    caption: 'the scattered color-matching markers in play',
+    originalGame: {
+      build: 'ft09-b8377d4b7815',
+      recordedOn: '2026-01-05',
+      intro: 'This replay is the original FT09, before ARC Prize reworked it. FT09 changed less than VC33 or LS20, but this is still the original version, not today\'s game.',
+      changes: [],
+    },
   },
   isFullyDocumented: true,
   notes: 'Corrected 2026-09-12 after a direct, adversarially-verified source read: the original "dominant color" precedence framing had no code behind it at all. The real mechanic is independent, all-must-hold color markers scattered around the board, a per-level click budget that can lose the game, and a tile type that recolors several neighbors per click.',

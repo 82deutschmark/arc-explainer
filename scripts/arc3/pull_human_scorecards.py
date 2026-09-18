@@ -1,10 +1,10 @@
 """
 Author: Claude Opus 5
-Date: 2026-09-16
+Date: 2026-09-16 (date cutoff removed 2026-09-18)
 PURPOSE: Build shared/arc3Games/humanPlay.generated.json -- the human play data behind the
          two human numbers on each public ARC-AGI-3 game page: ARC's own baseline action
-         counts per level, and one human player's recent scorecard runs (today the owner,
-         who goes by Boss and plays on the arcprize.org account "Mark").
+         counts per level, and Boss's scorecard runs (he plays on the arcprize.org account
+         "Mark").
 
          WHAT IT READS.
            1. external/ARCEngine/environment_files/<id>/<live hash>/metadata.json
@@ -20,23 +20,22 @@ PURPOSE: Build shared/arc3Games/humanPlay.generated.json -- the human play data 
          WHICH RUNS ARE KEPT. A run is kept only if, checked in this order (the first
          failed check is the drop reason that gets counted):
            - actions > 0                         (dropped as zeroActions -- a card open)
-           - card open_at >= 2026-06-18T00:00Z   (beforeCutoff -- 90 days before 16 Sep)
            - card tags include "human"           (notHumanTag)
            - game is one of the 25 public games  (notPublicGame)
            - build hash (after the dash in the env id) is the live hash (wrongBuild)
-         The cutoff is the same constant as HUMAN_DATA_CUTOFF in
-         shared/arc3Games/humanDifficulty.ts. Change both together.
+         There is no date cutoff (removed 2026-09-18, Boss's call). The two things it was
+         there to keep out are handled by the checks above: runs on a game's original build
+         fall to wrongBuild, and AI-played cards fall to notHumanTag.
 
-         WHY 50 CARDS IS ENOUGH. The list endpoint caps at 50 and `at` does not page
-         (at=50 returns the same first rows as at=0 -- checked 16 Sep). It is sorted by
-         published_at, newest first, and a card is always published after it is opened, so
-         once the oldest listed card was published before the cutoff, every card opened on
-         or after the cutoff is already in the list. The script refuses to write if that is
-         not true (the oldest listed card is still inside the window), rather than silently
-         committing a partial set.
+         THE 50-CARD CAP. The list endpoint caps at 50 and `at` does not page (at=50
+         returns the same first rows as at=0 -- checked 16 Sep). It is sorted by
+         published_at, newest first. When the list comes back full, cards older than the
+         oldest listed one cannot be reached; the script prints a warning and records
+         cardsListed, listCap and oldestListedPublishedAt in the pull, so nothing downstream
+         may call this "all" of a player's runs.
 
          RUN ORDER. runs[] inside one environment of one card is in play order. Checked on
-         the owner's s5i5 card of 16 Sep by walking its recording: its three rows (0, 831
+         Boss's s5i5 card of 16 Sep by walking its recording: its three rows (0, 831
          and 507 actions) match, in order, the three stretches between full resets. All
          three rows share one guid -- guid is the play session, not the run -- so each kept
          run also records runIndex (its position in runs[]) to stay addressable.
@@ -49,7 +48,7 @@ PURPOSE: Build shared/arc3Games/humanPlay.generated.json -- the human play data 
          so another human's scorecards can be added later by running this with their
          cookie and ARC3_HUMAN_PLAYER set to their arcprize.org user name.
 
-         `score` is ARC-AGI-3's per-run efficiency score, not "levels cleared": the owner's
+         `score` is ARC-AGI-3's per-run efficiency score, not "levels cleared": Boss's
          9/9 su15 win scored 90.6.
 
          Usage:
@@ -57,7 +56,7 @@ PURPOSE: Build shared/arc3Games/humanPlay.generated.json -- the human play data 
          Env:
              ARC3_HUMAN_COOKIE_FILE  default ~/bubba-workspace/secrets/arcprize-boss-cookie.txt
              ARC3_HUMAN_ACCOUNT      default Mark -- the arcprize.org user_name the cards must carry
-             ARC3_HUMAN_PLAYER       default Boss -- the name the site shows (the owner goes by Boss)
+             ARC3_HUMAN_PLAYER       default Boss -- the name the site shows
 SRP/DRY check: Pass -- one job: scorecards + baselines in, one committed JSON out. The
          endpoints and cookie flow follow ~/bubba-workspace/tools/arc3/pull_boss_scorecards.py
          (outside the repo, writes raw dumps). Live hashes are read from
@@ -87,8 +86,7 @@ DEFAULT_COOKIE_FILE = "~/bubba-workspace/secrets/arcprize-boss-cookie.txt"
 
 BASE = "https://arcprize.org"
 LIST_LIMIT = 50
-CUTOFF = "2026-06-18T00:00:00Z"
-DROP_REASONS = ("zeroActions", "beforeCutoff", "notHumanTag", "notPublicGame", "wrongBuild")
+DROP_REASONS = ("zeroActions", "notHumanTag", "notPublicGame", "wrongBuild")
 
 
 def fail(message: str) -> None:
@@ -100,9 +98,8 @@ def parse_iso(value: str | None) -> datetime | None:
     """ISO timestamps from arcprize.org carry a trailing Z and a fractional second whose
     digit count is not fixed -- 6 digits on most cards, 5 on some (seen on the 12-Sep
     r11l and re86 cards). Python 3.9's datetime.fromisoformat accepts only 3 or 6
-    fractional digits, so anything else raised ValueError and this returned None, and a
-    None card open_at is indistinguishable from "opened before the cutoff": two real,
-    in-window runs were being dropped and counted as beforeCutoff. Pad to 6 first.
+    fractional digits, so anything else raised ValueError and this returned None, which
+    once dropped two real runs. Pad to 6 first.
     Fixed 2026-09-17 (Claude Opus 5)."""
     if not value or not isinstance(value, str):
         return None
@@ -185,12 +182,10 @@ def get_json(path: str, cookie: str):
     return None
 
 
-def drop_reason(run: dict, env_id: str, card_open: datetime | None, card_tags: list, hashes: dict[str, str]) -> str | None:
+def drop_reason(run: dict, env_id: str, card_tags: list, hashes: dict[str, str]) -> str | None:
     actions = run.get("actions")
     if not isinstance(actions, int) or actions <= 0:
         return "zeroActions"
-    if card_open is None or card_open < parse_iso(CUTOFF):
-        return "beforeCutoff"
     if "human" not in card_tags:
         return "notHumanTag"
     game_id, _, build = env_id.partition("-")
@@ -206,12 +201,12 @@ def int_list(value) -> list[int]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Pull recent human ARC-AGI-3 scorecard runs and ARC baselines into shared/arc3Games/humanPlay.generated.json")
+    parser = argparse.ArgumentParser(description="Pull human ARC-AGI-3 scorecard runs and ARC baselines into shared/arc3Games/humanPlay.generated.json")
     parser.add_argument("--out", default=str(DEFAULT_OUT))
     parser.add_argument("--dry-run", action="store_true", help="print the summary, write nothing")
     args = parser.parse_args()
 
-    # The arcprize.org account is named "Mark"; the owner goes by Boss, and Boss is what the
+    # The arcprize.org account is named "Mark"; he goes by Boss, and Boss is what the
     # site shows. Match cards on the account name, label runs with the player name.
     account = os.environ.get("ARC3_HUMAN_ACCOUNT", "Mark")
     player = os.environ.get("ARC3_HUMAN_PLAYER", "Boss")
@@ -225,16 +220,16 @@ def main() -> int:
         fail("scorecard list response has no items[]")
     published = sorted(filter(None, (parse_iso(c.get("published_at")) for c in cards)))
     oldest_published = published[0] if published else None
-    if len(cards) >= LIST_LIMIT and (oldest_published is None or oldest_published >= parse_iso(CUTOFF)):
-        fail(
-            f"the list is capped at {LIST_LIMIT} cards and the oldest one is still inside the window "
-            f"(published {oldest_published}); recent cards may be missing, so nothing was written"
+    if len(cards) >= LIST_LIMIT:
+        print(
+            f"[pull_human_scorecards] warning: the list is full ({LIST_LIMIT} cards); cards published "
+            f"before {oldest_published} cannot be reached and are not included",
+            file=sys.stderr,
         )
 
     kept: list[dict] = []
     drops = {reason: 0 for reason in DROP_REASONS}
     runs_seen = 0
-    cutoff_dt = parse_iso(CUTOFF)
     for index, card in enumerate(cards):
         card_id = card.get("card_id")
         if not isinstance(card_id, str) or not card_id:
@@ -243,14 +238,15 @@ def main() -> int:
         user_name = detail.get("user_name")
         if user_name != account:
             fail(f"card {card_id} belongs to user_name {user_name!r}, expected {account!r} (set ARC3_HUMAN_ACCOUNT)")
-        card_open = parse_iso(detail.get("open_at"))
+        if parse_iso(detail.get("open_at")) is None:
+            fail(f"card {card_id} has no parseable open_at ({detail.get('open_at')!r}); runs are ordered by it")
         card_tags = detail.get("tags") or []
         for env in detail.get("environments") or []:
             env_id = env.get("id") or ""
             for run_index, run in enumerate(env.get("runs") or []):
                 runs_seen += 1
                 run_env_id = run.get("id") or env_id
-                reason = drop_reason(run, run_env_id, card_open, card_tags, hashes)
+                reason = drop_reason(run, run_env_id, card_tags, hashes)
                 if reason:
                     drops[reason] += 1
                     continue
@@ -262,7 +258,6 @@ def main() -> int:
                         f"{run_env_id} run {run_index} on card {card_id}: level_baseline_actions "
                         f"{level_baseline} != metadata.json baseline_actions {baseline}"
                     )
-                assert card_open is not None and card_open >= cutoff_dt
                 kept.append({
                     "player": player,
                     "gameId": game_id,
@@ -303,7 +298,6 @@ def main() -> int:
         other_pulls = [p for p in previous.get("pulls", []) if p.get("player") != player]
 
     data = {
-        "cutoff": CUTOFF,
         "games": games,
         "pulls": sorted(other_pulls + [pull], key=lambda p: p["player"]),
         "runs": sorted(other_runs + kept, key=lambda r: (r["player"], r["gameId"], r["openAt"], r["cardId"], r["runIndex"])),

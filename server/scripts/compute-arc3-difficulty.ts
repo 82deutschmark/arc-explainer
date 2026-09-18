@@ -12,12 +12,11 @@
  *          2026-09-16 (Claude Opus 5): the rule moved to shared/arc3Games/humanDifficulty.ts
  *          and this script now only prints it. Two changes came with the move: the reset
  *          rule is gone (a reset in the top 10 no longer bumps a game up a tier -- it is
- *          what made tu93 "hard" while five of its top 10 tie at 185 actions), and rows
- *          published before 2026-06-18 no longer count. The table also prints the owner
- *          rating from his own scorecards (humanPlay.generated.json). The old exports
+ *          what made tu93 "hard" while five of its top 10 tie at 185 actions). The table
+ *          also prints Boss's rating from his own scorecards (humanPlay.generated.json).
+ *          2026-09-18: no date cutoff any more; every row on the board counts. The old exports
  *          rankDifficulty() and signalFromLeaderboard() are removed; nothing imported them.
- * SRP/DRY check: Pass -- reuses getHumanLeaderboard() (which now carries the recent-rows
- *          stats), top10Difficulty() and getOwnerGameRating() from
+ * SRP/DRY check: Pass -- reuses getHumanLeaderboard() (which carries the top-10 stats), top10Difficulty() and getOwnerGameRating() from
  *          shared/arc3Games/humanDifficulty.ts; no rating logic lives here any more.
  */
 
@@ -34,7 +33,7 @@ async function main() {
   for (const gameId of getPublicDemoGameIdsInOrder()) {
     const current = getGameById(gameId)?.humanDifficulty ?? 'unknown';
     const owner = getOwnerGameRating(gameId);
-    const ownerText = `owner=${owner.rating}${owner.summary ? '' : ' (not played yet)'}`;
+    const ownerText = `boss=${owner.rating}${owner.summary ? '' : ' (not played yet)'}`;
     const board = await getHumanLeaderboard(gameId);
     if (!board) {
       rows.push(`${gameId.padEnd(6)} no leaderboard data  ${ownerText}  (current: ${current})`);
@@ -42,7 +41,7 @@ async function main() {
     }
     const { stats } = board;
     rows.push(
-      `${gameId.padEnd(6)} kept=${stats.recentRows}/${stats.totalRows}  wins=${stats.recentWins}  ` +
+      `${gameId.padEnd(6)} rows=${stats.totalRows}  wins=${stats.wins}  ` +
         `score=${stats.scoreMin ?? '-'}..${stats.scoreMax ?? '-'}  ` +
         `fewest=${formatNumber(stats.fewestActions, 4)}  median=${formatNumber(stats.medianActions, 6)}  ` +
         `most=${formatNumber(stats.mostActions, 4)}  ` +

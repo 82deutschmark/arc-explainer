@@ -31,6 +31,10 @@
  *          2026-09-17 (Claude Opus 5): Boss's level 5 and 6 play notes (green down first, yellow later; pixel-perfect liquid) and his two captures.
  *          2026-09-18 (Claude Opus 5): human mid-play captures tagged `kind: 'human'` so the page
  *          and the private game dataset (/api/arc3/dataset) can tell them from engine renders.
+ *          2026-09-18 (Claude Opus 5, later): the featured video and the replay link are marked
+ *          as the ORIGINAL game (vc33-6ae7bf49eea5, recorded 5 Jan 2026), so the page shows
+ *          them open as "The original game". Every row of the original-vs-today table was
+ *          checked by eye against frames pulled from the MP4 and today's level renders.
  * SRP/DRY check: Pass - Single responsibility for VC33 game data.
  */
 
@@ -159,10 +163,11 @@ export const vc33: Arc3GameMetadata = {
   ],
   resources: [
     {
-      title: 'VC33 Replay',
+      title: 'VC33 Replay (original game)',
       url: 'https://three.arcprize.org/replay/vc33-6ae7bf49eea5/29409ce8-c164-447e-8810-828b96fa4ceb',
       type: 'replay',
-      description: 'Gameplay replay of VC33 (Volume Control)',
+      description: 'The same run as the video on this page, on the original 9-level VC33 (vc33-6ae7bf49eea5), before ARC Prize reworked it. It does not look like today\'s game.',
+      originalGame: true,
     },
   ],
   levelScreenshots: [
@@ -180,7 +185,35 @@ export const vc33: Arc3GameMetadata = {
   thumbnailUrl: '/vc33.png',
   video: {
     src: '/videos/arc3/vc33-6ae7bf49eea5.mp4',
-    caption: 'Volume Control replay highlighting hydraulic manipulation',
+    caption: 'gets as far as the last of its nine levels',
+    originalGame: {
+      build: 'vc33-6ae7bf49eea5',
+      recordedOn: '2026-01-05',
+      intro: 'This replay is the original VC33, before ARC Prize reworked it to be harder. Today\'s game no longer looks like this, so this recording is the best record of what it used to be. The original read plainly as water in glasses. Today\'s version turns some of the tanks on their side, which is a big part of what makes it harder to read.',
+      changes: [
+        { aspect: 'Levels', original: '9', today: '7' },
+        {
+          aspect: 'Which way is up',
+          original: 'Every level stands upright. The liquid rises from the floor like water in a glass.',
+          today: 'Some levels are turned on their side or upside down. The liquid settles right, left, down or up, depending on the level.',
+        },
+        {
+          aspect: 'Pumps',
+          original: 'Each wall has a blue pump on one side and a red pump on the other.',
+          today: 'Both pumps are blue.',
+        },
+        {
+          aspect: 'Riders',
+          original: 'Plain yellow, green and purple squares.',
+          today: 'Small gray caps on a yellow, green or purple base.',
+        },
+        {
+          aspect: 'Top bar',
+          original: 'Shrinks as you play, turning from green to yellow to red.',
+          today: 'The click budget: light pink for clicks left, darker gray for clicks used.',
+        },
+      ],
+    },
   },
   isFullyDocumented: true,
   notes: 'Orientation note added 2026-09-12 PM, from an eccentric chicken farmer who played this game at its original release: it used to read unambiguously as liquid, and the current build is a little more confusing because the columns aren\'t all drawn standing up anymore. Corrected 2026-09-12 after a direct, adversarially-verified source read: transit is a manual click-to-swap on a specific bar, not an automatic glide; blue squares never move liquid; and a per-level click budget that can lose the game was missing. Corrected again 2026-09-16 against the live build (5430563c): the blue squares are the pumps that move liquid, and no red or maroon piece exists in it. The red pumps are only in /vc33-lvl7.png, which is a screenshot of the original 9-level preview build, not the current 7-level game.',

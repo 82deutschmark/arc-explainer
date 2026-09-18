@@ -15,9 +15,13 @@
  *               to get a real scorecard on arcprize.org;
  *            2. the level strip: every level's opening frame, sticky, click to jump;
  *            3. at a glance: plain English with the four action counts, and the controls;
+ *            3b. for vc33, ls20, ft09 and sp80: "The original game", the replay video recorded
+ *               on the version ARC Prize later reworked, open on the page with an original-vs-
+ *               today table (added later on 2026-09-18, OriginalGameReplay);
  *            4. one section per level: pictures on the left, that level's rules and notes from
  *               play on the right;
- *            5. fold-outs: Human Records, and replays / sources / correction history.
+ *            5. fold-outs: Human Records, and replays and sources. The notes/corrections log
+ *               is no longer shown (Boss: it is a working log, not page content).
  *          The How It Works prose card is gone (it said the same as the rules, unchecked); it
  *          stays in the data for /arc3/games.md and is still shown for a game with no rule list.
  *          This file is now layout only; the pieces are in client/src/components/arc3/gamePage/
@@ -63,6 +67,7 @@ import { PlayNote } from '@/components/arc3/gamePage/PlayNote';
 import { FoldOut } from '@/components/arc3/gamePage/FoldOut';
 import { HumanRecordsBody, humanRecordsSummary } from '@/components/arc3/gamePage/HumanRecords';
 import { GameSources, gameSourcesSummary } from '@/components/arc3/gamePage/GameSources';
+import { OriginalGameReplay } from '@/components/arc3/gamePage/OriginalGameReplay';
 
 /**
  * Game not found component
@@ -354,6 +359,9 @@ export default function Arc3GameSpoiler() {
         </Card>
       )}
 
+      {/* 3b. The original game (only when the featured replay is of the original version) */}
+      <OriginalGameReplay game={game} />
+
       {/* 4. One section per level */}
       <div className="mb-12">
         {cut.levels.map((level) => (
@@ -375,7 +383,7 @@ export default function Arc3GameSpoiler() {
             <HumanRecordsBody gameId={game.gameId} board={board} />
           </FoldOut>
         )}
-        <FoldOut title="Replays, sources and correction history" summary={gameSourcesSummary(game)}>
+        <FoldOut title="Replays and sources" summary={gameSourcesSummary(game)}>
           <GameSources game={game} olderScreenshots={cut.extraScreenshots} />
         </FoldOut>
       </div>
