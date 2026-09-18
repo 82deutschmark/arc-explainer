@@ -2,7 +2,7 @@
  * Author: Claude Sonnet 5; human replay added by Claude Opus 5, 2026-09-15; its session
  *         score backfilled onto the page by Claude Opus 5, 2026-09-15 (see CHANGELOG 9.82.0)
  * Date: 2026-09-11 (corrected against source 2026-09-12)
- * PURPOSE: Game metadata for KA59 (Kinetic Assembly), part of the ARC-AGI-3 public
+ * PURPOSE: Game metadata for KA59 (Kick Away; was Kinetic Assembly), part of the ARC-AGI-3 public
  *          demo set (25 games as of Sep 2026). Mechanics adversarially re-verified
  *          2026-09-12: level 5's special block has no frame to check at all, and
  *          level 3 has two special blocks, not one.
@@ -19,6 +19,10 @@
  *          it is clear of the purple; bombs are fuses that fill one row per arrow press and
  *          blast in one direction, then re-arm; the win check is that every frame is filled.
  *          Levels 1-2 have no special block. Kept the per-level special block counts.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5): renamed Kinetic Assembly -> Kick Away at Boss's word: "that's really
+ *          what it feels like: you're kicking away." Same K-A initials as the id.
  * SRP/DRY check: Pass - Single responsibility for KA59 game data.
  */
 
@@ -27,7 +31,7 @@ import { Arc3GameMetadata } from './types';
 export const ka59: Arc3GameMetadata = {
   gameId: 'ka59',
   officialTitle: 'ka59',
-  informalName: 'Kinetic Assembly',
+  informalName: 'Kick Away',
   description: 'Drive one green box at a time and knock the other pieces around until every outline frame on the board holds a piece of its size. Bumping a piece sends it flying about 15 cells; from level 5, bombs on a fuse blast pieces too.',
   simpleExplanation: 'Click a green box to pick it, then move it with the arrow keys, 3 cells at a time. Drive it into another piece and your box stays put while the other piece gets knocked about 15 cells away. Fill every dark gray outline frame with a piece that fits it exactly before your steps run out.',
   mechanicsExplanation: 'Click a green box to select it (the selected box has a white center), then each arrow press moves it 3 cells. If the move would run into another piece -- another box, a yellow special block, or a bomb -- your box does not move; instead that piece is knocked about 15 cells in that direction in one go, shoving anything further in line along with it, until a wall stops it. Purple areas stop the box you are driving, but a knocked piece slides right across them, and one that would stop on purple keeps sliding until it is clear. The level is won the moment every dark gray outline frame holds a piece of exactly its size: the small frames want green boxes, the large ones want the yellow special blocks, which you can never select and can only move by knocking them. Levels 1 and 2 have no special block, level 3 has two, levels 4, 6 and 7 have one, and level 5 has one placed off the visible board with no frame, so it plays no part. From level 5, bombs fill with orange one row per arrow press; when the last row fills, the bomb shoots an orange blast out of one side that knocks whatever it hits, then turns dark red and starts filling again. Every click and every arrow press costs one step, whether or not anything moves: budgets are 100, 127, 100, 127, 100, 150 and 200. Run out and you lose.',
@@ -101,6 +105,14 @@ export const ka59: Arc3GameMetadata = {
       category: 'other',
       text: 'Level 5\'s special block (a small blue one) is placed outside the visible board and has no frame, so it plays no part. The level itself is one green box, one frame and five bombs, with the box starting inside a purple pocket that the big bomb caps.',
       source: 'ka59.py:40991-41006',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'Pieces to push around, Sokoban-like.',
+      happened: 'Pretty easy. It feels like kicking pieces away, which is where the name Kick Away comes from.',
     },
   ],
   category: 'evaluation',

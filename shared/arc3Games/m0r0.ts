@@ -18,6 +18,8 @@
  *          (level 3+), traps also resetting blocks, merging side by side, and that the 150
  *          counts every action including clicks and the do-nothing fifth action.
  *          2026-09-16 (Claude Opus 5, later): actionMappings fixed -- no drag (click picks a block, arrows move it) and the missing ACTION5 no-op added.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for M0R0 game data.
  */
 
@@ -46,6 +48,22 @@ export const m0r0: Arc3GameMetadata = {
     { introducedOnLevel: 4, category: 'hazards', text: 'Traps also send every blue block back to its starting cell.', source: 'm0r0.py:708, 717-719; engine run on level 4: a block moved one cell left went back after a twin hit a trap' },
     { introducedOnLevel: 5, category: 'pieces', text: 'Gates and buttons in green, orange and purple. A gate is a bar three cells long and blocks twins while it is closed. While a twin stands on a button, every gate of that color disappears and can be walked through. As soon as no twin is on that button, those gates come back.', source: 'm0r0.py:35-64, 123-150, 887-892, 894-924; engine run on level 5: green gate gone with a twin on the green button, back when it stepped off' },
     { introducedOnLevel: 6, category: 'pieces', text: 'Only a twin holds a gate open. A blue block can\'t be moved onto a button, and the gate check only looks at the twins anyway.', source: 'm0r0.py:784-794, 894-924; engine run on level 6: the block stopped one cell short of the green button' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'Two twins sliding around, a bit like the old as66.',
+      happened: 'One of the simplest games and easiest wins: you slide around and try to meet up with your twin. Models don\'t seem to have much trouble with it either.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      level: 2,
+      saw: 'Solid red areas, and dashed red-and-black ones.',
+      happened: 'Solid red is fine; the dashed red-and-black areas kill the character. They only show up on levels 2, 4 and 6, and red and black are harmless everywhere else, which will confuse anything that relies on measuring pixel colors.',
+      inCode: 'Traps are red cells with a black checkerboard. A twin that steps on one flashes yellow and both twins jump back to where the level started; the actions you spent stay spent.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',

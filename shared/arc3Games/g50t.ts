@@ -32,6 +32,10 @@
  *          into. Added what was missing: gates crush you, yellow gates toggle, level 1 allows
  *          one ghost and later levels two, and a rewind past that limit wipes every ghost.
  *          2026-09-18 (Claude Opus 5): Boss's play note, and both of his wins as replay links.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5): ACTION5 no longer labelled "Rewind"; Boss, 13-Sep: "Action 5 is NOT
+ *          rewind... it is what spawns the ghost image of the player."
  * SRP/DRY check: Pass - Single responsibility for G50T game data.
  */
 
@@ -145,6 +149,12 @@ export const g50t: Arc3GameMetadata = {
       did: 'Used the ghost twins to press the levers and panels, so his own player could get to the exit.',
       happened: 'It works, but it is weird. If you have never seen it before it just does not make sense, and it would never occur to a lot of people. He thinks many players get frustrated and leave. He won it twice (13 and 15 Sep, 7/7 both times, 533 and 536 actions). The public top 10 all won in 274-323 actions, against ARC\'s average of 879.',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-13',
+      saw: 'ACTION5.',
+      happened: 'It is not rewind. It is what spawns the ghost twin.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
@@ -155,7 +165,7 @@ export const g50t: Arc3GameMetadata = {
     { action: 'ACTION2', description: 'Move Down', commonName: 'Down' },
     { action: 'ACTION3', description: 'Move Left', commonName: 'Left' },
     { action: 'ACTION4', description: 'Move Right', commonName: 'Right' },
-    { action: 'ACTION5', description: 'Rewind (spawn a ghost)', commonName: 'Rewind' },
+    { action: 'ACTION5', description: 'Spawn a ghost twin: you go back to the start and the twin replays your moves', commonName: 'Ghost' },
   ],
   hints: [],
   resources: [

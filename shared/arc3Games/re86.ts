@@ -14,6 +14,8 @@
  *          would hit stays put while the other line keeps sliding -- and hollow squares
  *          squash thinner and longer rather than compress. Win check now says the dot
  *          must be covered by a piece of the same color.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for RE86 game data.
  */
 
@@ -48,6 +50,14 @@ export const re86: Arc3GameMetadata = {
     { introducedOnLevel: 6, category: 'pieces', text: 'Push a cross so one of its lines runs into a wall and it does not stop: the line that would hit stays where it is and the other line keeps moving, so the two lines now cross at a different point. Once they cross at the very end of a line, pushes that way are refused. This works both when a line hits the wall side-on and when its tip hits it end-on.', source: 're86.py:2004-2058; engine runs on level 6' },
     { introducedOnLevel: 6, category: 'pieces', text: 'A bent cross stays bent. Sliding it away moves it as it is, and only RESET straightens it. The white selection pixel stays in the middle of the piece\'s outer box, so on a bent cross it can sit off the lines.', source: 're86.py:2004-2058, 2092; engine run on level 6' },
     { introducedOnLevel: 6, category: 'pieces', text: 'Push a hollow square into a wall and it squashes: each push makes it 3 pixels thinner in the push direction and 3 pixels longer the other way, with the edge touching the wall staying put. At 4 pixels thick, pushes that way are refused. It never springs back before RESET.', source: 're86.py:1952-2003; engine run on level 6: 19x19 went to 16x22, 13x25, 10x28, 7x31, 4x34, then refused' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'What to do is pretty obvious.',
+      happened: 'It is just fiddly. He hasn\'t played it through, and hates games like this one.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'medium',

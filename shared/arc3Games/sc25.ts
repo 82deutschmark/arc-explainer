@@ -17,6 +17,8 @@
  *          block of the target's middle color (dark red or orange), not "every matching
  *          marked crystal"; the pickup is a small green square that takes 10 off the used
  *          count; each cast costs one extra action when the spell finishes.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for SC25 game data.
  */
 
@@ -58,6 +60,14 @@ export const sc25: Arc3GameMetadata = {
     { introducedOnLevel: 5, category: 'pieces', text: 'Small teleport pads appear: a solid purple dot. A small wizard teleports to the purple pad and a big one to the yellow pad, and the frame marks switch between yellow and purple as the wizard changes size.', source: 'sc25.py:2155-2171, 2186-2211; engine run on level 5' },
     { introducedOnLevel: 5, category: 'pieces', text: 'Orange blocks and a pink-framed target with an orange middle appear. Hitting that target removes only the orange blocks; the dark red target still removes only dark red blocks.', source: 'sc25.py:1537-1588, 2094-2102' },
     { introducedOnLevel: 6, category: 'pieces', text: 'Two big teleport pads: each big teleport goes to the next pad in turn, and the yellow frame moves to show where the next one will land.', source: 'sc25.py:2186-2211, 2173-2184; engine run on level 6' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'The game as a whole.',
+      happened: 'He would never have figured it out and had to cheat. Once you understand it is showing you a spell to cast, it is obvious.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'medium',

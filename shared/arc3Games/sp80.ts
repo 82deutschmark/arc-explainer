@@ -16,6 +16,8 @@
  *          four-failed-pour limit), fixed ACTION6 (a click selects a piece, it does not
  *          move one), added the arrow actions, and fixed hint 2 (there are no diagonal
  *          platforms; the redirectors are purple L pieces from level 5).
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for SP80 game data.
  */
 
@@ -190,6 +192,14 @@ export const sp80: Arc3GameMetadata = {
       category: 'pieces',
       text: 'A standing red bar, four cells tall. It splits streams the same way a lying bar does.',
       source: 'sp80.py:159-170, 391, 764-771',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'Purple streams that have to land in certain containers.',
+      happened: 'Frustrating and fiddly: you have to eyeball whether a stream will drop exactly where you want, and sometimes you can make a stream go a different way. He doesn\'t do well on games where you measure spatial distance. One of the original preview games.',
     },
   ],
   category: 'evaluation',

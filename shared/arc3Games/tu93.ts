@@ -15,6 +15,8 @@
  *          one-hit death burst), and the Dark Red follower copies your moves two turns
  *          late, not one.
  *          2026-09-16 (Claude Opus 5, later): playerObservations added from Boss's report of the level 2 red enemy (bites head-on, dies from the side).
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for TU93 game data.
  */
 
@@ -178,6 +180,12 @@ export const tu93: Arc3GameMetadata = {
       did: 'Came at it straight on, then went around it and came at it from the side.',
       happened: 'Straight on, it bites you and kills you. Going around and coming at it from the side, you bite it and destroy it. The page never mentioned this enemy at all, and it is a huge mechanic.',
       inCode: 'The purple dot is the enemy\'s front. Finish a move on the pad the dot points at -- whether you walked straight at it or crossed in front of it -- and the dot turns yellow, it lunges onto your pad, and you die (tu93.py:1047-1048, 1090-1108). Step onto the pad it is standing on from the side or from behind and it is destroyed (tu93.py:1053-1088).',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      saw: 'A small board.',
+      happened: 'One of the easier and more fun ones. You move two squares at a time, the animations matter, and to avoid some enemies you have to backtrack and take the least efficient route.',
     },
   ],
   category: 'evaluation',

@@ -17,6 +17,8 @@
  *          on level 1; the six-instruction chain starts on level 3, not the last level;
  *          the level 7 hazard breaks the token rather than freezing it; the "scrolling
  *          strip" is the blue bar along the top, 60 clicks on levels 1-5 and 121 on 6-7.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for TN36 game data.
  */
 
@@ -197,6 +199,14 @@ export const tn36: Arc3GameMetadata = {
       category: 'pieces',
       text: 'There is also a hidden save square under the block\'s starting spot. It shows up once the block moves off it, so you can move the start back there.',
       source: 'tn36.py:105-117, 1608, 2261-2267',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'Something like lab pipetting, or a piano.',
+      happened: 'It never made sense to him and he had to cheat. Level 7 looked close to impossible (his scorecard didn\'t finish there). A hard one; he doesn\'t know how anybody solves it.',
     },
   ],
   category: 'evaluation',

@@ -18,6 +18,8 @@
  *          2026-09-18 (Claude Opus 5): added playerObservations -- Boss's framing of the game
  *          after his second clear (8/8, 93.47), a coded band rather than a sorting band. It
  *          confirms the traced mechanics, it does not change them.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for SB26 game data.
  */
 
@@ -72,6 +74,12 @@ export const sb26: Arc3GameMetadata = {
       did: 'Played it and cleared it -- twice, most recently 8/8 at 93.47 in 174 actions with no resets.',
       happened: 'It is incredibly easy once you see that. He likens it to a coded band rather than a sorting band -- writing out old computer code on punch cards, where the card holds the instruction and the reader decides how the card gets read. The same framing he used on TR87: "the game asks you for a certain code," only with colors instead of runes.',
       inCode: 'Agrees with the stored mechanics: the hollow colored squares along the top are the required sequence read left to right (sb26.py:729-730, 915-933), and a run starts at the leftmost slot of the machine with the white corner marks and reads right (sb26.py:726-727, 745-747, 998-1021). The "abstractions" are the ring tiles -- reading jumps into the machine whose border matches the ring\'s color and returns after that machine\'s last slot, and rings nest. Confirmation of what was already traced, not a new mechanic.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-16',
+      saw: 'The colored boxes and the band.',
+      happened: 'Once you see it is like an extraction code, it is pretty easy; the hardest part is working out which colors go where. He lost one run by pressing reset twice by accident, which sends you back to level 1. Reset is a double-edged sword.',
     },
   ],
   category: 'evaluation',

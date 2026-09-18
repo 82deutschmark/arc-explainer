@@ -17,6 +17,8 @@
  *          their pink dots point at (level 6: every tile, and only the tile above). Hint 2
  *          said every click counts; only tile clicks do.
  *          2026-09-16 (Claude Opus 5, later): levelCount: 6 added (six Level() entries and six baselines in build 0d8bbf25).
+ *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
+ *          18-Sep round-up added to playerObservations, worded from what he said.
  * SRP/DRY check: Pass - Single responsibility for FT09 game data.
  */
 
@@ -110,6 +112,14 @@ export const ft09: Arc3GameMetadata = {
       category: 'pieces',
       text: 'Every tile on level 6 has one pink dot on its top edge, so each click recolors that tile and the tile directly above it (if there is one).',
       source: 'ft09.py:2227-2265, 2400-2424',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'Boxes, and the pattern it shows you.',
+      happened: 'It is obvious that it wants certain boxes colored certain ways. He has seen this one too often to judge it fresh, but models have no problem with it.',
     },
   ],
   category: 'preview',
