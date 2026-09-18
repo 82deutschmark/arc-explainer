@@ -15,6 +15,9 @@
  *          the white corner marks and whatever machines its rings lead to, not "every
  *          machine"; each run, move or swap costs exactly 1 of the 64 energy; undo is free
  *          but does not refund energy.
+ *          2026-09-18 (Claude Opus 5): added playerObservations -- Boss's framing of the game
+ *          after his second clear (8/8, 93.47), a coded band rather than a sorting band. It
+ *          confirms the traced mechanics, it does not change them.
  * SRP/DRY check: Pass - Single responsibility for SB26 game data.
  */
 
@@ -60,6 +63,16 @@ export const sb26: Arc3GameMetadata = {
     { introducedOnLevel: 7, category: 'pieces', text: 'Rings can be nested: a ring inside a machine that another ring leads to sends reading one machine deeper, and each machine hands reading back to the one that sent it. Level 7 was cleared reading three machines deep.', source: 'sb26.py:934-957, 979-990; engine run on level 7' },
     { introducedOnLevel: 8, category: 'goal', text: 'The goal is two rows of six squares: the top row is read left to right, then the second row.', source: 'sb26.py:637-686, 729-730' },
     { introducedOnLevel: 8, category: 'pieces', text: 'A red ring leads back into the red first machine itself, so reading can loop through it again.', source: 'sb26.py:637-686, 979-990; engine run: level 8 cleared with the red ring in the blue machine' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'The row across the top is showing you an order it wants to see the colored boxes in. That is pretty much all it is, and then it is abstractions: "here is what I want, and I am going to read the band like this."',
+      did: 'Played it and cleared it -- twice, most recently 8/8 at 93.47 in 174 actions with no resets.',
+      happened: 'It is incredibly easy once you see that. He likens it to a coded band rather than a sorting band -- writing out old computer code on punch cards, where the card holds the instruction and the reader decides how the card gets read. The same framing he used on TR87: "the game asks you for a certain code," only with colors instead of runes.',
+      inCode: 'Agrees with the stored mechanics: the hollow colored squares along the top are the required sequence read left to right (sb26.py:729-730, 915-933), and a run starts at the leftmost slot of the machine with the white corner marks and reads right (sb26.py:726-727, 745-747, 998-1021). The "abstractions" are the ring tiles -- reading jumps into the machine whose border matches the ring\'s color and returns after that machine\'s last slot, and rings nest. Confirmation of what was already traced, not a new mechanic.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'easy',
