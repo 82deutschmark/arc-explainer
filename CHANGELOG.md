@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.102.0  Sep 17, 2026
+
+- **Human scorecards re-pulled: sb26 WIN 93.5, and re86 doubles its best** (Author: Claude Opus 5): Boss dropped the replay for guid `11021704-a52f-4048-9f23-3eb10385c81e`. Re-ran `scripts/arc3/pull_human_scorecards.py` -- 49 runs kept (was 47), 2 new, none lost. **sb26 WIN 8/8, score 93.47, 174 actions against a 213 baseline, zero resets**; per level 13/15/24/15/19/22/39/27 against baselines 18/28/18/19/31/23/58/18, so under baseline on six of eight, over on levels 3 and 8. sb26 matters beyond the win: it is the single game driving our run-to-run score variance -- the model scores 2.78 at one level on four runs of five and 27.78 at four levels on the fifth, and pulling it drops our spread from 24% to 6%. Also new: **re86 2/8 levels in 64 actions**, his best on that game (was 1/8), still not a win. Unwon list unchanged at six: lf52, re86, sc25, sk48, sp80, tn36. `shared/arc3Games/humanPlay.generated.json`.
+
 ### Version 9.101.0  Sep 17, 2026
 
 - **Human scorecards pulled; the 5-digit-microsecond drop is fixed** (Author: Claude Opus 5): `parse_iso` in `scripts/arc3/pull_human_scorecards.py` used `datetime.fromisoformat`, which on Python 3.9 accepts only 3 or 6 fractional-second digits. arcprize.org emits 5 on some cards, so the parse raised, the card's `open_at` came back `None`, and a `None` open time is indistinguishable from "before the cutoff" -- the r11l WIN (316 actions) and the re86 run were silently dropped and counted as `beforeCutoff`. Fractional seconds are now padded to 6 before parsing. Re-pulled: 47 runs kept (was 40), 7 new, none lost. New this session: **tr87 WIN 6/6 score 100.0 in 211 actions with zero resets** (baseline 414), **vc33 WIN 7/7 score 94.1**, **wa30 WIN 9/9 score 81.6**. Boss has now won 19 of the 25 public games; not yet won: lf52, re86, sc25, sk48, sp80, tn36. `scripts/arc3/pull_human_scorecards.py`, `shared/arc3Games/humanPlay.generated.json`.
