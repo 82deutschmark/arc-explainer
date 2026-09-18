@@ -80,7 +80,8 @@ Both come from data that already exists.
 Mechanic", "Level Screenshots", "Notes From Play" and "How It Works" all at once.
 
 - Section header: "Level N", the step budget, ARC's baseline actions for that level, Boss's
-  actions for that level, and a two-line bar so you can see at a glance whether Boss beat the
+  actions for that level (on every game, won or not: for an unwon game, his best run's
+  actions on the levels he reached, and "not reached" past that), and a two-line bar so you can see at a glance whether Boss beat the
   baseline (blue) or blew past it (red). On dc22 that instantly shows level 5 is where the
   game got hard for him: 740 actions against a 324 baseline.
 - Left column, about 300px: the engine-rendered opening frame, labelled "Engine render".
@@ -272,6 +273,11 @@ Each step is its own commit and changelog entry.
 
 1. ~~JSON button public from day one?~~ Answered 18-Sep: **no.** Curate first, release later.
    The export runs, the route is admin-only, nothing is linked from the page.
-2. Hugging Face under your account or a shared org with Son?
-3. Should the per-level "Boss actions" show on pages for games you have not won, or only
-   the win?
+2. ~~Hugging Face under your account or a shared org with Son?~~ Answered 18-Sep: Boss's
+   own account, when the time comes. His words: that is the cart way ahead of the horse.
+   We have not learned to use this data ourselves yet. Nobody spends time on the release
+   until the in-house uses in Part 3 have produced a result.
+3. ~~Boss's per-level actions on games he has not won?~~ Answered 18-Sep: **show them on
+   every game page, won or not.** For an unwon game the level header shows his actions on
+   the levels he reached and his furthest level; he is grinding out the last six (lf52,
+   re86, sc25, sk48, sp80, tn36), so a later scorecard pull replaces the numbers in place.
