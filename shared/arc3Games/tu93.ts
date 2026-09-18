@@ -189,7 +189,7 @@ export const tu93: Arc3GameMetadata = {
     },
   ],
   category: 'evaluation',
-  humanDifficulty: 'hard',
+  humanDifficulty: 'easy',
   aiDifficulty: 'easy',
   levelCount: 9,
   actionMappings: [

@@ -100,7 +100,7 @@ export const lf52: Arc3GameMetadata = {
     },
   ],
   category: 'evaluation',
-  humanDifficulty: 'hard',
+  humanDifficulty: 'medium',
   aiDifficulty: 'very-hard',
   levelCount: 10,
   actionMappings: [

@@ -157,7 +157,7 @@ export const g50t: Arc3GameMetadata = {
     },
   ],
   category: 'evaluation',
-  humanDifficulty: 'hard',
+  humanDifficulty: 'easy',
   aiDifficulty: 'very-hard',
   levelCount: 7,
   actionMappings: [
