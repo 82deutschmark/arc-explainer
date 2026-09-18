@@ -18,6 +18,9 @@
  *          platforms; the redirectors are purple L pieces from level 5).
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
  *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5, later): the featured video and the sp80-0605ab9e5b2a replay link are
+ *          marked as the ORIGINAL game (recorded 4 Jan 2026; the build id is printed in the video's
+ *          own footer), so the page shows the video open as "The original game".
  * SRP/DRY check: Pass - Single responsibility for SP80 game data.
  */
 
@@ -229,10 +232,11 @@ export const sp80: Arc3GameMetadata = {
   ],
   resources: [
     {
-      title: 'SP80 Replay',
+      title: 'SP80 Replay (original game)',
       url: 'https://three.arcprize.org/replay/sp80-0605ab9e5b2a/212c541e-db90-40c3-9601-79049867dab2',
       type: 'replay',
-      description: 'Gameplay replay of SP80 (Streaming Purple)',
+      description: 'A run on the original SP80 (sp80-0605ab9e5b2a), before ARC Prize reworked it.',
+      originalGame: true,
     },
   ],
   levelScreenshots: [
@@ -247,7 +251,13 @@ export const sp80: Arc3GameMetadata = {
   thumbnailUrl: '/sp80.png',
   video: {
     src: '/videos/arc3/sp80-test.mp4',
-    caption: 'Streaming Purple capture showing animation when Action 5 triggers flow',
+    caption: 'the stream animating when Action 5 lets the liquid flow',
+    originalGame: {
+      build: 'sp80-0605ab9e5b2a',
+      recordedOn: '2026-01-04',
+      intro: 'This replay is the original SP80, before ARC Prize reworked it. SP80 changed less than VC33 or LS20, but this is still the original version, not today\'s game.',
+      changes: [],
+    },
   },
   isFullyDocumented: true,
   notes: 'Corrected 2026-09-12 after a direct source read: the containers are yellow, not white, and "falls straight down" only holds for 3 of the 6 levels, since the other 3 render the screen rotated 180 degrees. A separate rename to "Streaming Pink" was proposed the same day over the liquid\'s exact pixel color, but reverted -- Boss watched the actual gameplay video and confirmed it reads as purple; the name stays Streaming Purple.',

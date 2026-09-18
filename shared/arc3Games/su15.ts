@@ -32,6 +32,7 @@
  *          2026-09-16 (Claude Opus 5, later): playerObservations added from Boss's reports (suction-radius animation, why Sorting Urn was the wrong name).
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
  *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5): page text calls him Boss, not "the owner"/"site owner".
  * SRP/DRY check: Pass - Single responsibility for SU15 game data.
  */
 
@@ -277,10 +278,10 @@ export const su15: Arc3GameMetadata = {
   ],
   resources: [
     {
-      title: 'SU15 Human Win, 9/9 (site owner)',
+      title: 'SU15 Human Win, 9/9 (Boss)',
       url: 'https://arcprize.org/replay/23823a58-a8bb-42d5-b61b-1bb8c81a5b78',
       type: 'replay',
-      description: 'The site owner\'s own playthrough on 16-Sep-2026, tagged human on his arcprize scorecard: a WIN clearing all 9 levels in 293 actions with 8 resets, score 90.62. Played on build su15-1944f8ab, the same build the level renders and the mechanics above were read from.',
+      description: 'Boss\'s own playthrough on 16-Sep-2026, tagged human on his arcprize scorecard: a WIN clearing all 9 levels in 293 actions with 8 resets, score 90.62. Played on build su15-1944f8ab, the same build the level renders and the mechanics above were read from.',
     },
     {
       title: 'SU15 Standard-Harness Replay (GPT-6 Astra)',
@@ -308,5 +309,5 @@ export const su15: Arc3GameMetadata = {
   ],
   tags: ['merging', 'sorting', 'exact-count', 'public-demo-2026'],
   isFullyDocumented: false,
-  notes: 'Rewritten 2026-09-16 after the site owner cleared all 9 levels and reported that the page did not describe the game he had just played. The previous text called these "numbered blocks" -- they are not numbered, and nothing in this game renders a digit; the nine tiers differ only in size and color. It also never mentioned the two legends in the header strip, which are what make the game readable: the size chain at top-left and the delivery requirement at top-center. The creatures were called "diamond" critters; they are small lander-shaped glyphs. The step budget was described as shrinking; it is 32 or 48 depending on the level. Informal name changed from "Sorting Urn" to "Sucking Up" at the owner\'s direction, after the vacuum-pull click that is the game\'s only real verb. Level screenshots were rendered from the game\'s own source on 2026-09-12. An earlier 2026-09-12 pass corrected two other errors: Undo\'s cost claim was backwards, and the critter mechanic\'s scope and smallest-tier outcome were both wrong.',
+  notes: 'Rewritten 2026-09-16 after Boss cleared all 9 levels and reported that the page did not describe the game he had just played. The previous text called these "numbered blocks" -- they are not numbered, and nothing in this game renders a digit; the nine tiers differ only in size and color. It also never mentioned the two legends in the header strip, which are what make the game readable: the size chain at top-left and the delivery requirement at top-center. The creatures were called "diamond" critters; they are small lander-shaped glyphs. The step budget was described as shrinking; it is 32 or 48 depending on the level. Informal name changed from "Sorting Urn" to "Sucking Up" at Boss\'s direction, after the vacuum-pull click that is the game\'s only real verb. Level screenshots were rendered from the game\'s own source on 2026-09-12. An earlier 2026-09-12 pass corrected two other errors: Undo\'s cost claim was backwards, and the critter mechanic\'s scope and smallest-tier outcome were both wrong.',
 };

@@ -1,15 +1,15 @@
 /*
 Author: Claude Opus 5
-Date: 2026-09-16
+Date: 2026-09-16 (date cutoff removed 2026-09-18)
 PURPOSE: Lock the two human difficulty ratings and the top-10 stats in
-         shared/arc3Games/humanDifficulty.ts, rule by rule: the 2026-06-18 recency cut, no
-         reset rule on the top-10 rating (tu93 is the case that motivated removing it), the
-         spread cuts at 0.20 and 0.50, and the owner rating's calibration (best win plus
+         shared/arc3Games/humanDifficulty.ts, rule by rule: every row counts whatever its
+         date (the 2026-06-18 cut is gone), no reset rule on the top-10 rating (tu93 is the case that motivated removing it), the
+         spread cuts at 0.20 and 0.50, and Boss's rating calibration (best win plus
          failed attempts before the first win, against his own median; never below 'hard'
-         without a recent win; 'unknown' with no run). Also checks the committed
-         humanPlay.generated.json keeps its own promises (25 games, only recent live-build
-         runs with actions, no user id), without pinning numbers that change as the owner
-         keeps playing.
+         without a win; 'unknown' with no run). Also checks the committed
+         humanPlay.generated.json keeps its own promises (25 games, only live-build runs
+         with actions, no user id), without pinning numbers that change as Boss keeps
+         playing.
 SRP/DRY check: Pass -- tests only the pure functions and the generated file's invariants;
          the network pull (scripts/arc3/pull_human_scorecards.py) and the leaderboard
          fetch are not exercised here.
@@ -17,12 +17,10 @@ SRP/DRY check: Pass -- tests only the pure functions and the generated file's in
 
 import { describe, it, expect } from 'vitest';
 import {
-  HUMAN_DATA_CUTOFF,
   HUMAN_PLAY_DATA,
   computeOwnerCalibration,
   computeTop10Stats,
   getOwnerGameRating,
-  isOnOrAfterCutoff,
   median,
   ownerDifficulty,
   summarizeOwnerGame,
@@ -47,19 +45,6 @@ function statsWithSpread(fewest: number, most: number, wins = 3): Top10Stats {
   return computeTop10Stats([row(fewest), ...middle, row(most)]);
 }
 
-describe('isOnOrAfterCutoff', () => {
-  it('counts a row published exactly at the cutoff as recent', () => {
-    expect(isOnOrAfterCutoff(HUMAN_DATA_CUTOFF)).toBe(true);
-    expect(isOnOrAfterCutoff('2026-06-17T23:59:59.999999Z')).toBe(false);
-  });
-
-  it('treats a missing or unparseable date as old', () => {
-    expect(isOnOrAfterCutoff(null)).toBe(false);
-    expect(isOnOrAfterCutoff('')).toBe(false);
-    expect(isOnOrAfterCutoff('not a date')).toBe(false);
-  });
-});
-
 describe('median', () => {
   it('takes the middle value, or the mean of the two middle values', () => {
     expect(median([5, 1, 3])).toBe(3);
@@ -70,7 +55,7 @@ describe('median', () => {
 });
 
 describe('computeTop10Stats', () => {
-  it('keeps old rows in the count but out of every number', () => {
+  it('counts every winning row, whatever its date or lack of one', () => {
     const stats = computeTop10Stats([
       row(10, { publishedAt: OLD }),
       row(100),
@@ -79,19 +64,17 @@ describe('computeTop10Stats', () => {
       row(900, { publishedAt: null }),
     ]);
     expect(stats.totalRows).toBe(5);
-    expect(stats.recentRows).toBe(3);
-    expect(stats.recentWins).toBe(3);
-    expect(stats.fewestActions).toBe(100);
+    expect(stats.wins).toBe(5);
+    expect(stats.fewestActions).toBe(10);
     expect(stats.medianActions).toBe(120);
-    expect(stats.mostActions).toBe(150);
-    expect(stats.relativeSpread).toBeCloseTo(0.5);
-    expect(stats.cutoff).toBe(HUMAN_DATA_CUTOFF);
+    expect(stats.mostActions).toBe(900);
+    expect(stats.relativeSpread).toBeCloseTo(89);
   });
 
-  it('counts a recent non-win as kept but leaves it out of the action numbers', () => {
+  it('counts a non-win as a row but leaves it out of the action numbers', () => {
     const stats = computeTop10Stats([row(100), row(110), row(40, { endState: 'GAME_OVER', score: 12 })]);
-    expect(stats.recentRows).toBe(3);
-    expect(stats.recentWins).toBe(2);
+    expect(stats.totalRows).toBe(3);
+    expect(stats.wins).toBe(2);
     expect(stats.fewestActions).toBe(100);
     expect(stats.scoreMin).toBe(100);
   });
@@ -101,20 +84,20 @@ describe('computeTop10Stats', () => {
     expect(computeTop10Stats([row(1), row(2, { score: 91.5 })])).toMatchObject({ scoreMin: 91.5, scoreMax: 100 });
   });
 
-  it('has no spread with a single recent win', () => {
-    expect(computeTop10Stats([row(253), row(200, { publishedAt: OLD })])).toMatchObject({
-      recentWins: 1,
+  it('has no spread with a single win', () => {
+    expect(computeTop10Stats([row(253), row(200, { endState: 'GAME_OVER' })])).toMatchObject({
+      wins: 1,
       fewestActions: 253,
       mostActions: 253,
       relativeSpread: null,
     });
   });
 
-  it('returns nulls, not zeros, when no recent row is a win', () => {
-    const stats = computeTop10Stats([row(100, { publishedAt: OLD }), row(50, { endState: 'GAME_OVER' })]);
+  it('returns nulls, not zeros, when no row is a win', () => {
+    const stats = computeTop10Stats([row(100, { endState: 'NOT_FINISHED' }), row(50, { endState: 'GAME_OVER' })]);
     expect(stats).toMatchObject({
-      recentRows: 1,
-      recentWins: 0,
+      totalRows: 2,
+      wins: 0,
       scoreMin: null,
       scoreMax: null,
       fewestActions: null,
@@ -126,9 +109,9 @@ describe('computeTop10Stats', () => {
 });
 
 describe('top10Difficulty', () => {
-  it('is unknown with fewer than 3 recent wins, however wide the spread', () => {
+  it('is unknown with fewer than 3 wins, however wide the spread', () => {
     expect(top10Difficulty(computeTop10Stats([row(57), row(99)]))).toBe('unknown');
-    expect(top10Difficulty(computeTop10Stats([row(57, { publishedAt: OLD }), row(58), row(500)]))).toBe('unknown');
+    expect(top10Difficulty(computeTop10Stats([row(57, { endState: 'GAME_OVER' }), row(58), row(500)]))).toBe('unknown');
   });
 
   it('cuts at a relative spread of 0.20 and 0.50', () => {
@@ -148,7 +131,7 @@ describe('top10Difficulty', () => {
   it('rates tu93 easy from its 16 Sep 2026 board, where the reset rule had called it hard', () => {
     // tu93's live top 10 as fetched on 16 Sep 2026 (user names left out): every row scores
     // 100, five tie at 185, and four rows used resets -- which the old rule read as hard.
-    // Four rows were published on or after the cutoff: 185, 192, 193 and 212.
+    // Every row counts, old or new.
     const tu93: Top10RowInput[] = [
       row(185, { publishedAt: '2026-04-22T12:33:10.747043Z' }),
       row(185, { publishedAt: '2026-05-03T09:16:26.541947Z' }),
@@ -162,9 +145,9 @@ describe('top10Difficulty', () => {
       row(212, { publishedAt: '2026-07-13T14:13:14.683812Z', resets: 3 }),
     ];
     const stats = computeTop10Stats(tu93);
-    expect(stats.recentRows).toBe(4);
+    expect(stats.wins).toBe(10);
     expect(stats.fewestActions).toBe(185);
-    expect(stats.medianActions).toBe(192.5);
+    expect(stats.medianActions).toBe(188.5);
     expect(stats.mostActions).toBe(212);
     expect(stats.relativeSpread).toBeCloseTo(27 / 185);
     expect(top10Difficulty(stats)).toBe('easy');
@@ -208,7 +191,7 @@ describe('summarizeOwnerGame', () => {
   });
 
   it('adds failed attempts before the first win to the best win, in play order across and inside cards', () => {
-    // Shaped like the owner's s5i5 on 16 Sep: an unfinished card, then one card holding a
+    // Shaped like Boss's s5i5 on 16 Sep: an unfinished card, then one card holding a
     // GAME_OVER attempt and then the win (same guid, told apart by runIndex).
     const runs = [
       run('s5i5', 'WIN', 507, '2026-09-16T17:44:57Z', { cardId: 'c2', guid: 'g', runIndex: 2 }),
@@ -283,7 +266,7 @@ describe('computeOwnerCalibration', () => {
 describe('ownerDifficulty', () => {
   const calibration = calibrationAt(0.8);
 
-  it('is unknown with no recent run ("not played yet")', () => {
+  it('is unknown with no run ("not played yet")', () => {
     expect(ownerDifficulty([], 100, calibration)).toBe('unknown');
   });
 
@@ -322,7 +305,6 @@ describe('ownerDifficulty', () => {
 describe('getOwnerGameRating', () => {
   it('reads a custom data set end to end', () => {
     const data: HumanPlayData = {
-      cutoff: HUMAN_DATA_CUTOFF,
       games: {
         a: { build: 'b', levelCount: 1, baselineActions: [100], baselineTotal: 100 },
         b: { build: 'b', levelCount: 1, baselineActions: [100], baselineTotal: 100 },
@@ -349,11 +331,11 @@ describe('humanPlay.generated.json', () => {
     }
   });
 
-  it('only holds recent runs with actions, on the live build, and no user id', () => {
-    expect(HUMAN_PLAY_DATA.cutoff).toBe(HUMAN_DATA_CUTOFF);
+  it('only holds runs with actions, on the live build, and no user id', () => {
+    expect(HUMAN_PLAY_DATA).not.toHaveProperty('cutoff');
     for (const r of HUMAN_PLAY_DATA.runs) {
       expect(r.actions).toBeGreaterThan(0);
-      expect(isOnOrAfterCutoff(r.openAt)).toBe(true);
+      expect(Number.isNaN(Date.parse(r.openAt))).toBe(false);
       expect(r.build).toBe(HUMAN_PLAY_DATA.games[r.gameId].build);
       expect(r.levelBaselineActions).toEqual(HUMAN_PLAY_DATA.games[r.gameId].baselineActions);
       expect(Object.keys(r).sort()).toEqual(

@@ -23,6 +23,10 @@
  *          life also resets the key, the pickups and any door already opened.
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
  *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          2026-09-18 (Claude Opus 5, later): the featured video and the ls20-fa137e247ce6 replay link are
+ *          marked as the ORIGINAL game (recorded 4 Jan 2026 -- the old caption said Dec 2025, which was wrong; the build id is printed in the video's
+ *          own footer), so the page shows the video open as "The original game".
+ *          The one row, 8 levels then vs 7 now, is the one difference already cited above.
  * SRP/DRY check: Pass - Single responsibility for LS20 game data.
  */
 
@@ -111,10 +115,11 @@ export const ls20: Arc3GameMetadata = {
   ],
   resources: [
     {
-      title: 'LS20 Replay',
+      title: 'LS20 Replay (original game)',
       url: 'https://three.arcprize.org/replay/ls20-fa137e247ce6/7405808f-ec5b-4949-a252-a1451b946bae',
       type: 'replay',
-      description: 'A human playthrough on the older, now-replaced ls20-fa137e247ce6 build, published 2026-01-04: a win in 508 actions with one reset -- over EIGHT levels, not the current build\'s seven. From before per-level baselines existed for this game, so it has no baseline or score to compare (both are the -1 sentinel).',
+      description: 'A human win on the original LS20 (ls20-fa137e247ce6), published 4 Jan 2026: 508 actions, one reset, over EIGHT levels where today\'s game has seven. It is from before ARC set a per-level baseline for this game, so there is no baseline or score to compare it with.',
+      originalGame: true,
     },
     {
       title: 'LS20 Human Replay (Win, 7/7 Levels, Score 100)',
@@ -136,7 +141,12 @@ export const ls20: Arc3GameMetadata = {
   thumbnailUrl: '/ls20.png',
   video: {
     src: '/videos/arc3/ls20-fa137e247ce6.mp4',
-    caption: 'Locksmith walkthrough replay captured Dec 2025',
+    originalGame: {
+      build: 'ls20-fa137e247ce6',
+      recordedOn: '2026-01-04',
+      intro: 'This replay is the original LS20, before ARC Prize reworked it. In Boss\'s words, today\'s LS20 is fundamentally a different game, so this recording is the only way to see how the original played.',
+      changes: [{ aspect: 'Levels', original: '8', today: '7' }],
+    },
   },
   isFullyDocumented: true,
   notes: 'Corrected 2026-09-12 after a direct, adversarially-verified source read: added the hidden step budget, level 6\'s second door, and the final level\'s fog-of-war, none of which the original write-up mentioned. Corrected again 2026-09-15: that pass got the life system wrong in both directions -- the three lives are per LEVEL and refill on every level change and on RESET, and the THIRD loss on a level ends the run, not the fourth. The 42-unit meter is also only 42 moves on levels 1, 4 and 6; levels 2, 3, 5 and 7 drain two units a move. Both corrections are cited line by line against ls20-9607627b/ls20.py and confirmed frame-by-frame on a human winning recording in docs/2026-09-15-ls20-lives-and-step-budget.md. That win, added to resources[] the same day, is the first replay listed here on the current build -- the older ls20-fa137e247ce6 links, including the video, are from a build that has since been replaced, and had EIGHT levels where this one has seven. Both listed replays are human; neither is an agent run.',

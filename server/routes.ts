@@ -400,16 +400,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
    * Action counts from the human leaderboard for all 25 public games in one response, so the
    * games index can show and sort by "fewest actions to win" without 25 requests. Reuses the
    * per-game service and its cache; a game whose board is unavailable is simply null.
-   * Added 2026-09-16 (Claude Opus 5): the owner rates games by how few actions they take.
+   * Added 2026-09-16 (Claude Opus 5): Boss rates games by how few actions they take.
    */
   app.get("/api/arc3/leaderboards/summary", asyncHandler(async (_req: Request, res: Response) => {
     const ids = getPublicDemoGameIdsInOrder();
     const boards = await Promise.all(ids.map((id) => getHumanLeaderboard(id)));
-    const games: Record<string, { fewestActions: number | null; medianActions: number | null; recentWins: number } | null> = {};
+    const games: Record<string, { fewestActions: number | null; medianActions: number | null; wins: number } | null> = {};
     ids.forEach((id, index) => {
       const board = boards[index];
       games[id] = board
-        ? { fewestActions: board.stats.fewestActions, medianActions: board.stats.medianActions, recentWins: board.stats.recentWins }
+        ? { fewestActions: board.stats.fewestActions, medianActions: board.stats.medianActions, wins: board.stats.wins }
         : null;
     });
     res.json(formatResponse.success({ games }));

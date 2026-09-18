@@ -1,11 +1,14 @@
 /*
  * Author: Claude Opus 5
  * Date: 2026-09-18
- * PURPOSE: The "Replays, sources and correction history" fold-out of a game page: the featured
- *          replay video, replay links, other resources, screenshots from older builds (levels
- *          the live build does not have, like ft09's preview-era 8 and 9), tags, and the game
- *          file's notes, which hold its dated corrections. Everything the old page showed in
- *          full-width cards under the write-up, kept, just folded away.
+ * PURPOSE: The "Replays and sources" fold-out of a game page: the featured replay video,
+ *          replay links, other resources, screenshots from older builds (levels the live
+ *          build does not have, like ft09's preview-era 8 and 9) and tags.
+ *          An original-version replay video is not shown here: OriginalGameReplay shows it
+ *          open on the page. Replay links to the original version get an "original game" badge.
+ *          2026-09-18: the game file's `notes` (dated corrections and sourcing -- a working
+ *          log for whoever edits the write-up) are no longer shown here; Boss asked for them
+ *          off the page. They stay in the game files and in /arc3/games.md.
  * SRP/DRY check: Pass -- presentation of fields already on Arc3GameMetadata; the older-build
  *          screenshots are picked out by shared/arc3Games/gameLevels.ts.
  */
@@ -25,7 +28,14 @@ function ResourceLink({ resource }: { resource: GameResource }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-primary">{resource.title}</p>
+          <p className="text-sm font-medium text-primary">
+            {resource.title}
+            {resource.originalGame && (
+              <Badge variant="outline" className="ml-2 border-amber-500 align-middle text-[10px] text-amber-700 dark:text-amber-400">
+                original game
+              </Badge>
+            )}
+          </p>
           {resource.description && <p className="mt-0.5 text-xs text-muted-foreground">{resource.description}</p>}
         </div>
         <Badge variant="outline" className="shrink-0 capitalize">
@@ -44,8 +54,8 @@ export function gameSourcesSummary(game: Arc3GameMetadata): string {
     `${replays} ${replays === 1 ? 'replay' : 'replays'}`,
     `${game.resources.length - replays} other ${game.resources.length - replays === 1 ? 'link' : 'links'}`,
   ];
-  if (game.video) parts.unshift('replay video');
-  if (game.notes) parts.push('correction history');
+  // An original-version video is shown open on the page (OriginalGameReplay), not in here.
+  if (game.video && !game.video.originalGame) parts.unshift('replay video');
   return parts.join(', ');
 }
 
@@ -61,7 +71,7 @@ export function GameSources({
 
   return (
     <div className="space-y-6">
-      {game.video && (
+      {game.video && !game.video.originalGame && (
         <div className="space-y-2">
           <h4 className="text-sm font-semibold">Featured replay</h4>
           <video className="w-full rounded-md border" controls preload="metadata" poster={game.video.poster}>
@@ -132,13 +142,6 @@ export function GameSources({
               {tag}
             </Badge>
           ))}
-        </div>
-      )}
-
-      {game.notes && (
-        <div className="space-y-1">
-          <h4 className="text-sm font-semibold">Notes and corrections</h4>
-          <p className="text-xs leading-relaxed text-muted-foreground">{game.notes}</p>
         </div>
       )}
     </div>

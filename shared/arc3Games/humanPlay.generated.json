@@ -1,5 +1,4 @@
 {
-  "cutoff": "2026-06-18T00:00:00Z",
   "games": {
     "ar25": {
       "build": "0c556536",
@@ -155,18 +154,17 @@
   "pulls": [
     {
       "player": "Boss",
-      "pulledAt": "2026-09-18T01:02:03Z",
+      "pulledAt": "2026-09-18T18:07:04Z",
       "cardsListed": 50,
       "listCap": 50,
-      "oldestListedPublishedAt": "2026-01-07T02:57:24Z",
+      "oldestListedPublishedAt": "2026-01-08T17:58:04Z",
       "runsSeen": 180,
-      "runsKept": 49,
+      "runsKept": 51,
       "dropped": {
         "zeroActions": 124,
-        "beforeCutoff": 7,
-        "notHumanTag": 0,
-        "notPublicGame": 0,
-        "wrongBuild": 0
+        "notHumanTag": 1,
+        "notPublicGame": 1,
+        "wrongBuild": 3
       }
     }
   ],
@@ -481,6 +479,23 @@
       "player": "Boss",
       "gameId": "ls20",
       "build": "9607627b",
+      "cardId": "aab06e1b-1e37-43f3-b8fa-e5feed0f8be8",
+      "guid": "1ebf139f-1739-47a5-a7ff-5ae387f91f4e",
+      "runIndex": 1,
+      "state": "NOT_FINISHED",
+      "levelsCompleted": 3,
+      "levelCount": 7,
+      "actions": 101,
+      "resets": 0,
+      "score": 21.428571428571427,
+      "levelActions": [13, 47, 41, 0, 0, 0, 0],
+      "levelBaselineActions": [22, 123, 73, 84, 96, 192, 186],
+      "openAt": "2026-04-14T22:34:20.439639Z"
+    },
+    {
+      "player": "Boss",
+      "gameId": "ls20",
+      "build": "9607627b",
       "cardId": "ea61f075-ce39-4bd5-bd7e-68ec4ba946ee",
       "guid": "7537433d-75af-48fa-ad3d-45fd32b23c00",
       "runIndex": 0,
@@ -680,6 +695,23 @@
       "levelActions": [33, 7, 17, 189, 0, 0],
       "levelBaselineActions": [36, 6, 32, 83, 143, 50],
       "openAt": "2026-09-12T16:02:47.698679Z"
+    },
+    {
+      "player": "Boss",
+      "gameId": "sc25",
+      "build": "635fd71a",
+      "cardId": "9ee3ea0d-daa3-4161-b1a1-cef692108e95",
+      "guid": "3ada1559-afd3-4805-bbde-9df43b882cda",
+      "runIndex": 0,
+      "state": "NOT_FINISHED",
+      "levelsCompleted": 0,
+      "levelCount": 6,
+      "actions": 16,
+      "resets": 1,
+      "score": 0.0,
+      "levelActions": [16, 0, 0, 0, 0, 0],
+      "levelBaselineActions": [36, 6, 32, 83, 143, 50],
+      "openAt": "2026-09-18T01:01:13.144414Z"
     },
     {
       "player": "Boss",

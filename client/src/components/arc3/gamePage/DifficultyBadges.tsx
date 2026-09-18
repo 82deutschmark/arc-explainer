@@ -19,12 +19,12 @@ import {
   OWNER_HARD_AT,
   OWNER_VERY_HARD_AT,
   OWNER_MIN_WON_GAMES,
-  TOP10_MIN_RECENT_WINS,
+  TOP10_MIN_WINS,
   TOP10_EASY_BELOW,
   TOP10_HARD_AT,
   type OwnerGameRating,
 } from '@shared/arc3Games/humanDifficulty';
-import { CUTOFF_DAY, plural, type HumanLeaderboard } from './humanLeaderboard';
+import { plural, type HumanLeaderboard } from './humanLeaderboard';
 
 const DIFFICULTY_STYLES: Record<DifficultyRating, string> = {
   easy: 'bg-green-50 text-green-700 border-green-300',
@@ -44,10 +44,10 @@ const DIFFICULTY_LABELS: Record<DifficultyRating, string> = {
 
 /**
  * Separate difficulty signals, deliberately kept apart rather than averaged into one
- * badge: the top-10 rating comes from the ARC Prize human leaderboard, the owner rating
+ * badge: the top-10 rating comes from the ARC Prize human leaderboard, Boss's rating
  * from his own scorecards, and aiDifficulty from a dated snapshot of our own competition
  * run data. They disagree often enough (su15 is hard on the top-10 spread and medium for
- * the owner) that collapsing them into one number would hide the more interesting fact.
+ * Boss) that collapsing them into one number would hide the more interesting fact.
  *
  * `label` replaces the rating word (e.g. "Not played yet"); `note` is added after it in
  * brackets (e.g. "not won yet").
@@ -82,10 +82,10 @@ export function describeTop10Rating(
   boardFailed: boolean,
 ): { rating: DifficultyRating; note?: string; title: string } {
   const rule =
-    `From the ARC Prize human top-10 board for this game. Only rows that won and were published on or after ` +
-    `${CUTOFF_DAY} count. Spread = (most actions - fewest actions) / fewest actions across those rows: ` +
+    `From the ARC Prize human top-10 board for this game. Every row that won counts. ` +
+    `Spread = (most actions - fewest actions) / fewest actions across those rows: ` +
     `under ${TOP10_EASY_BELOW.toFixed(2)} is easy, under ${TOP10_HARD_AT.toFixed(2)} is medium, ` +
-    `${TOP10_HARD_AT.toFixed(2)} or more is hard. Fewer than ${TOP10_MIN_RECENT_WINS} recent wins gives unknown. ` +
+    `${TOP10_HARD_AT.toFixed(2)} or more is hard. Fewer than ${TOP10_MIN_WINS} wins gives unknown. ` +
     `Resets and scores are not used.`;
   if (!board) {
     return {
@@ -98,12 +98,12 @@ export function describeTop10Rating(
   const spread = stats.relativeSpread !== null ? `, spread ${stats.relativeSpread.toFixed(2)}` : '';
   return {
     rating,
-    note: rating === 'unknown' ? plural(stats.recentWins, 'recent win') : undefined,
-    title: `${rule} This game: ${plural(stats.recentWins, 'recent win')}${spread}.`,
+    note: rating === 'unknown' ? plural(stats.wins, 'win') : undefined,
+    title: `${rule} This game: ${plural(stats.wins, 'win')}${spread}.`,
   };
 }
 
-/** Rating, label, bracketed note and the exact tooltip for the owner's badge. */
+/** Rating, label, bracketed note and the exact tooltip for Boss's badge. */
 export function describeOwnerRating(owner: OwnerGameRating): {
   rating: DifficultyRating;
   label?: string;
@@ -113,8 +113,8 @@ export function describeOwnerRating(owner: OwnerGameRating): {
   const { summary, calibration } = owner;
   const medianEffort = calibration.medianEffort;
   const rule =
-    `From ${OWNER_PLAYER}'s own arcprize.org scorecards: runs with at least one action, opened on or after ` +
-    `${CUTOFF_DAY}, on the current game build. Effort = actions on his best win, plus actions on every run ` +
+    `From ${OWNER_PLAYER}'s own arcprize.org scorecards: human runs with at least one action, on the ` +
+    `current game build (runs on a game's original build are left out). Effort = actions on his best win, plus actions on every run ` +
     `that did not win before his first win, divided by ARC's baseline total for the game. ` +
     (medianEffort !== null
       ? `That is compared with his median effort over the ${calibration.gamesWon} games he has won (${medianEffort.toFixed(2)}): `
@@ -135,7 +135,7 @@ export function describeOwnerRating(owner: OwnerGameRating): {
       rating: owner.rating,
       note: 'not won yet',
       title:
-        `${rule} This game: not won yet, ${summary.actionsSpent} actions over ${plural(summary.recentRuns, 'run')} so far. ` +
+        `${rule} This game: not won yet, ${summary.actionsSpent} actions over ${plural(summary.runs, 'run')} so far. ` +
         `The rating says the game is unfinished for him, not how hard a win turned out to be.`,
     };
   }

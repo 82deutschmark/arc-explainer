@@ -7,6 +7,8 @@
  *          per-game bullet list of every mechanic confirmed in source; later the same day,
  *          PlayerObservation + playerObservations for what a human saw/did/expected in play.
  *          2026-09-18 (Claude Opus 5): LevelScreenshot.kind, 'engine' render vs 'human' capture.
+ *          Later the same day: GameVideo.originalGame / GameResource.originalGame, for
+ *          recordings of a game's original version (vc33, ls20, ft09, sp80).
  * SRP/DRY check: Pass - Centralizes shared typing for ARC3 metadata consumers.
  */
 
@@ -42,6 +44,29 @@ export interface GameVideo {
   caption?: string;
   /** Optional poster image shown before playback */
   poster?: string;
+  /**
+   * Set when the recording is of the game's ORIGINAL version -- the build ARC Prize later
+   * reworked -- rather than the game you can play today. The page then shows the video in
+   * its own open "The original game" section with this comparison, instead of folding it
+   * away. Added 2026-09-18 (Claude Opus 5).
+   */
+  originalGame?: OriginalGameRecording;
+}
+
+/**
+ * What an original-version recording is, and how that version differs from today's game.
+ * Only differences we can actually see or cite go in `changes`; a game with no confirmed
+ * difference beyond "it was reworked" leaves it empty.
+ */
+export interface OriginalGameRecording {
+  /** Build id shown in the recording, e.g. "vc33-6ae7bf49eea5". */
+  build: string;
+  /** When the recording was made, as a calendar day (ISO date), from its own timestamp. */
+  recordedOn: string;
+  /** One or two plain sentences under the heading. */
+  intro: string;
+  /** Side-by-side differences, original first. */
+  changes: { aspect: string; original: string; today: string }[];
 }
 
 /**
@@ -67,6 +92,8 @@ export interface GameResource {
   url: string;
   type: 'article' | 'video' | 'github' | 'discussion' | 'paper' | 'replay';
   description?: string;
+  /** True for a replay of the game's original version (see GameVideo.originalGame). */
+  originalGame?: boolean;
 }
 
 /**
@@ -95,7 +122,7 @@ export interface MechanicPoint {
  * what the game source says about it, when someone checked. Added 2026-09-16 (Claude Opus 5).
  */
 export interface PlayerObservation {
-  /** Who played. The owner goes by "Boss". */
+  /** Who played, as the page shows it: "Boss". */
   player: string;
   /** Day it was reported, YYYY-MM-DD. */
   date: string;

@@ -102,16 +102,15 @@ function formatGame(game: Arc3GameMetadata): string {
   // -readable copy too: an agent reasoning about difficulty should read the real numbers
   // rather than our `difficulty` field, which is 'unknown' for most of the set.
   facts.push(`- **Official human leaderboard:** ${arcPrizeLeaderboardUrl(game.gameId)}`);
-  // Actions to win, from the committed scorecard snapshot (runs since 18 Jun 2026 on the live
-  // build). The top-10 fewest is live-only, so it stays on the web page and leaderboard link.
+  // Actions to win, from the committed scorecard snapshot (human runs on the live build). The top-10 fewest is live-only, so it stays on the web page and leaderboard link.
   const owner = getOwnerGameRating(game.gameId);
   if (owner.baseline) {
     const summary = owner.summary;
     const ownerText = !summary
-      ? 'not played since 18 Jun 2026'
+      ? 'not played yet'
       : summary.bestWin
-        ? `best recent win ${summary.bestWin.actions} actions (${summary.recentRuns} recent run${summary.recentRuns === 1 ? '' : 's'})`
-        : `not won yet, ${summary.actionsSpent} actions over ${summary.recentRuns} run${summary.recentRuns === 1 ? '' : 's'}`;
+        ? `best win ${summary.bestWin.actions} actions (${summary.runs} run${summary.runs === 1 ? '' : 's'})`
+        : `not won yet, ${summary.actionsSpent} actions over ${summary.runs} run${summary.runs === 1 ? '' : 's'}`;
     facts.push(
       `- **Actions to win:** ARC baseline ${owner.baseline.baselineTotal} (per level ${owner.baseline.baselineActions.join(', ')}); ${OWNER_PLAYER}: ${ownerText}`,
     );

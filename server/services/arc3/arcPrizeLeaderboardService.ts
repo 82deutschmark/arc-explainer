@@ -31,28 +31,23 @@
  *          actually publish get that far, so this cannot be used to bounce arbitrary
  *          strings off arcprize.org.
  *
- *          2026-09-16 (Claude Opus 5): no old data. Each row now carries `recent` (published
- *          on or after HUMAN_DATA_CUTOFF, 2026-06-18) and the board carries `stats` --
- *          rows kept of 10, score min/max, fewest / median / most actions and relative
- *          spread, all over recent wins only -- from computeTop10Stats() in
- *          shared/arc3Games/humanDifficulty.ts. Old rows stay in `entries` so the page can
- *          grey them out. `fewestActions` is now the recent-wins number too (it used to
- *          include old rows), so the page shows no old number even before it reads `stats`.
+ *          2026-09-16 (Claude Opus 5): the board carries `stats` -- score min/max, fewest /
+ *          median / most actions and relative spread over the winning rows -- from
+ *          computeTop10Stats() in shared/arc3Games/humanDifficulty.ts.
+ *          2026-09-18 (Claude Opus 5): the board is shown exactly as ARC Prize shows it. The
+ *          90-day recency cut (rows before 2026-06-18 greyed out and left out of `stats`)
+ *          is gone, and rows keep the order the endpoint returns them in -- we no longer
+ *          re-sort, so the page cannot disagree with arcprize.org about who is where.
  *
  * SRP/DRY check: Pass -- one upstream read plus its cache. HTTP handling is in
  *          server/routes.ts, the leaderboard URL humans click is
- *          arcPrizeLeaderboardUrl() in shared/arc3Games, the recency cut and the stats are
- *          the shared pure functions in shared/arc3Games/humanDifficulty.ts, and no display
+ *          arcPrizeLeaderboardUrl() in shared/arc3Games, the stats are the shared pure
+ *          functions in shared/arc3Games/humanDifficulty.ts, and no display
  *          logic lives here.
  */
 
 import { getGameById } from '../../../shared/arc3Games';
-import {
-  computeTop10Stats,
-  HUMAN_DATA_CUTOFF,
-  isOnOrAfterCutoff,
-  type Top10Stats,
-} from '../../../shared/arc3Games/humanDifficulty';
+import { computeTop10Stats, type Top10Stats } from '../../../shared/arc3Games/humanDifficulty';
 import { logger } from '../../utils/logger';
 
 const LEADERBOARD_ENDPOINT = 'https://arcprize.org/api/leaderboards';
@@ -74,19 +69,15 @@ export interface HumanLeaderboardEntry {
   resets: number;
   endState: string;
   publishedAt: string | null;
-  /** Published on or after HUMAN_DATA_CUTOFF. False rows are old: shown greyed out, left out of `stats`. */
-  recent: boolean;
 }
 
 export interface HumanLeaderboard {
   gameId: string;
-  /** Every row the board returned, best first, old ones included (see `recent`). */
+  /** Every row the board returned, in ARC Prize's own order. */
   entries: HumanLeaderboardEntry[];
-  /** Fewest actions among RECENT winning rows, or null when there are none. Same as stats.fewestActions. */
+  /** Fewest actions among winning rows, or null when there are none. Same as stats.fewestActions. */
   fewestActions: number | null;
-  /** The recency cutoff the rows were marked against (ISO). */
-  recentCutoff: string;
-  /** Spread over recent winning rows only. */
+  /** Spread over the winning rows. */
   stats: Top10Stats;
   fetchedAt: string;
 }
@@ -114,16 +105,13 @@ function normalizeEntry(raw: unknown): HumanLeaderboardEntry | null {
   const score = typeof row.score === 'number' ? row.score : null;
   const actions = typeof row.actions === 'number' ? row.actions : null;
   if (!userName || score === null || actions === null) return null;
-  const publishedAt = typeof row.published_at === 'string' ? row.published_at : null;
   return {
     userName,
     score,
     actions,
     resets: typeof row.resets === 'number' ? row.resets : 0,
     endState: typeof row.end_state === 'string' ? row.end_state : 'UNKNOWN',
-    publishedAt,
-    // An undated row cannot pass the cut, so it counts as old.
-    recent: isOnOrAfterCutoff(publishedAt),
+    publishedAt: typeof row.published_at === 'string' ? row.published_at : null,
   };
 }
 
@@ -142,23 +130,16 @@ async function fetchFromArcPrize(gameId: string): Promise<HumanLeaderboard> {
     const payload = await response.json();
     if (!Array.isArray(payload)) throw new Error('leaderboard payload was not an array');
 
+    // Kept in the endpoint's order: the page shows the board as arcprize.org does.
     const entries = payload
       .map(normalizeEntry)
-      .filter((entry): entry is HumanLeaderboardEntry => entry !== null)
-      // Best first: fewest actions, and a win always beats a non-win. The endpoint already
-      // returns them this way; sorting anyway means the page does not depend on that.
-      .sort((a, b) => {
-        const aWon = a.endState === 'WIN' ? 0 : 1;
-        const bWon = b.endState === 'WIN' ? 0 : 1;
-        return aWon - bWon || b.score - a.score || a.actions - b.actions;
-      });
+      .filter((entry): entry is HumanLeaderboardEntry => entry !== null);
 
-    const stats = computeTop10Stats(entries, HUMAN_DATA_CUTOFF);
+    const stats = computeTop10Stats(entries);
     return {
       gameId,
       entries,
       fewestActions: stats.fewestActions,
-      recentCutoff: HUMAN_DATA_CUTOFF,
       stats,
       fetchedAt: new Date().toISOString(),
     };

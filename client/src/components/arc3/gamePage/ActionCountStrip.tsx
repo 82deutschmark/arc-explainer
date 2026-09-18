@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { getPlayerRuns, OWNER_PLAYER, type OwnerGameRating } from '@shared/arc3Games/humanDifficulty';
-import { CUTOFF_DAY, formatDay, plural, type HumanLeaderboard } from './humanLeaderboard';
+import { formatDay, plural, type HumanLeaderboard } from './humanLeaderboard';
 
 /** One number in the action strip: the number big, what it is small underneath. */
 function StatCell({
@@ -37,9 +37,9 @@ function StatCell({
 
 /**
  * The action counts, right under the title on every game page: ARC's baseline, the fewest
- * and median actions among recent top-10 wins, and the owner's own count.
+ * and median actions among top-10 wins, and Boss's own count.
  *
- * The baseline and the owner's numbers come from the committed humanPlay data, so they
+ * The baseline and Boss's numbers come from the committed humanPlay data, so they
  * always render. The two top-10 numbers come from the leaderboard route; when that is
  * loading or down, those two cells say so and the rest of the strip still shows.
  */
@@ -63,21 +63,19 @@ export function ActionCountStrip({
   if (!stats) {
     fewestDetail = boardMissingDetail;
     medianDetail = boardMissingDetail;
-  } else if (stats.recentWins === 0) {
-    fewestDetail = `no wins since ${CUTOFF_DAY}`;
-    medianDetail = `no wins since ${CUTOFF_DAY}`;
+  } else if (stats.wins === 0) {
+    fewestDetail = 'no wins on the board';
+    medianDetail = 'no wins on the board';
   } else {
-    fewestDetail = `best of ${plural(stats.recentWins, 'recent win')}`;
+    fewestDetail = `best of ${plural(stats.wins, 'win')}`;
     medianDetail =
-      stats.recentWins === 1
-        ? 'only 1 recent win'
-        : `${stats.fewestActions}–${stats.mostActions} across ${stats.recentWins} recent wins`;
+      stats.wins === 1 ? 'only 1 win' : `${stats.fewestActions}–${stats.mostActions} across ${stats.wins} wins`;
   }
 
   let ownerValue: React.ReactNode = '—';
   let ownerLabel = `${OWNER_PLAYER}'s actions`;
   let ownerDetail = 'not played yet';
-  let ownerTitle = `${OWNER_PLAYER} has no run on the current build of this game opened on or after ${CUTOFF_DAY}.`;
+  let ownerTitle = `${OWNER_PLAYER} has no run on the current build of this game.`;
   if (summary?.won && summary.bestWin) {
     const best = summary.bestWin;
     ownerValue = best.actions;
@@ -87,7 +85,7 @@ export function ActionCountStrip({
         ? `WIN, after ${plural(summary.failedBeforeFirstWin, 'run')} that did not win`
         : 'WIN';
     ownerTitle =
-      `${OWNER_PLAYER}'s fewest-action winning run on the current build since ${CUTOFF_DAY}: ` +
+      `${OWNER_PLAYER}'s fewest-action winning run on the current build: ` +
       `${best.actions} actions, ${best.levelsCompleted} of ${best.levelCount} levels, played ${formatDay(best.openAt)}.` +
       (summary.failedBeforeFirstWin > 0
         ? ` Before his first win he spent ${summary.failedActionsBeforeFirstWin} actions on ${plural(summary.failedBeforeFirstWin, 'run')} that did not win.`
@@ -98,10 +96,10 @@ export function ActionCountStrip({
     const levelCount = baseline?.levelCount ?? runs[0]?.levelCount;
     ownerValue = summary.actionsSpent;
     ownerLabel = `${OWNER_PLAYER}'s actions so far`;
-    ownerDetail = `not won yet, ${plural(summary.recentRuns, 'run')}`;
+    ownerDetail = `not won yet, ${plural(summary.runs, 'run')}`;
     ownerTitle =
-      `${OWNER_PLAYER} has not won this game on the current build since ${CUTOFF_DAY}. ` +
-      `${summary.actionsSpent} actions over ${plural(summary.recentRuns, 'run')} so far` +
+      `${OWNER_PLAYER} has not won this game on the current build. ` +
+      `${summary.actionsSpent} actions over ${plural(summary.runs, 'run')} so far` +
       (levelCount ? `; his furthest run cleared ${mostLevels} of ${levelCount} levels.` : '.');
   }
 
@@ -121,13 +119,13 @@ export function ActionCountStrip({
         value={stats?.fewestActions ?? '—'}
         label="Fewest human actions (top 10)"
         detail={fewestDetail}
-        title={`Fewest actions among ARC Prize top-10 rows that won and were published on or after ${CUTOFF_DAY}.`}
+        title="Fewest actions among the ARC Prize top-10 rows that won."
       />
       <StatCell
         value={stats?.medianActions ?? '—'}
         label="Top-10 median actions"
         detail={medianDetail}
-        title={`Median actions among ARC Prize top-10 rows that won and were published on or after ${CUTOFF_DAY}. With an even count it is the average of the middle two, so it can end in .5.`}
+        title="Median actions among the ARC Prize top-10 rows that won. With an even count it is the average of the middle two, so it can end in .5."
       />
       <StatCell value={ownerValue} label={ownerLabel} detail={ownerDetail} title={ownerTitle} />
     </div>
