@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.103.0  Sep 18, 2026
+- SB26 gets Boss's notes from play, its first. He frames it as a coded band, not a sorting
+  band: the top row is showing you the order it wants the colored boxes read in, and the
+  rings are the abstraction on top -- "here is what I want, and I am going to read the band
+  like this," the same punch-card framing he used on TR87. Filed as a playerObservation with
+  the source lines it agrees with; confirmation of the traced mechanics, not a new one.
+  Recorded after his second clear, 8/8 at 93.47 in 174 actions, no resets.
+
 ### Version 9.102.0  Sep 17, 2026
 
 - **Human scorecards re-pulled: sb26 WIN 93.5, and re86 doubles its best** (Author: Claude Opus 5): Boss dropped the replay for guid `11021704-a52f-4048-9f23-3eb10385c81e`. Re-ran `scripts/arc3/pull_human_scorecards.py` -- 49 runs kept (was 47), 2 new, none lost. **sb26 WIN 8/8, score 93.47, 174 actions against a 213 baseline, zero resets**; per level 13/15/24/15/19/22/39/27 against baselines 18/28/18/19/31/23/58/18, so under baseline on six of eight, over on levels 3 and 8. sb26 matters beyond the win: it is the single game driving our run-to-run score variance -- the model scores 2.78 at one level on four runs of five and 27.78 at four levels on the fifth, and pulling it drops our spread from 24% to 6%. Also new: **re86 2/8 levels in 64 actions**, his best on that game (was 1/8), still not a win. Unwon list unchanged at six: lf52, re86, sc25, sk48, sp80, tn36. `shared/arc3Games/humanPlay.generated.json`.
