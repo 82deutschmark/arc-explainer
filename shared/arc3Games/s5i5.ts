@@ -99,7 +99,7 @@ export const s5i5: Arc3GameMetadata = {
     },
   ],
   category: 'evaluation',
-  humanDifficulty: 'hard',
+  humanDifficulty: 'medium',
   aiDifficulty: 'hard',
   levelCount: 8,
   actionMappings: [

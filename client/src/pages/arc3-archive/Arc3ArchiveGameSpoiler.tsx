@@ -3,9 +3,13 @@
  * Date: 2026-01-31
  * PURPOSE: Archived game spoiler page showing detailed mechanics, hints, and level screenshots
  *          for a specific ARC3 preview game.
+ *          2026-09-18 (Claude Opus 5): a replay video of a game's original version (vc33, ls20,
+ *          ft09, sp80) is shown with the same "The original game" section as the live game
+ *          page (OriginalGameReplay), so it is never presented as today's game.
  * SRP/DRY check: Pass — single-purpose spoiler display for archived games.
  */
 
+import { OriginalGameReplay } from '@/components/arc3/gamePage/OriginalGameReplay';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, Link } from 'wouter';
 import { 
@@ -274,8 +278,9 @@ export default function Arc3ArchiveGameSpoiler() {
         </Card>
       )}
 
-      {/* Video */}
-      {game.video && (
+      {/* Video: an original-version recording gets the shared "The original game" section */}
+      {game.video?.originalGame && <OriginalGameReplay game={game} />}
+      {game.video && !game.video.originalGame && (
         <Card className="border-amber-500/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
