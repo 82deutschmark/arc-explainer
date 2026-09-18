@@ -20,6 +20,7 @@
  *          2026-09-16 (Claude Opus 5, later): actionMappings fixed -- no drag (click picks a block, arrows move it) and the missing ACTION5 no-op added.
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
  *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          Later 18-Sep: the trap note agreed with Boss -- a trap sends both twins back to the start, not a kill.
  * SRP/DRY check: Pass - Single responsibility for M0R0 game data.
  */
 
@@ -61,7 +62,7 @@ export const m0r0: Arc3GameMetadata = {
       date: '2026-09-18',
       level: 2,
       saw: 'Solid red areas, and dashed red-and-black ones.',
-      happened: 'Solid red is fine; the dashed red-and-black areas kill the character. They only show up on levels 2, 4 and 6, and red and black are harmless everywhere else, which will confuse anything that relies on measuring pixel colors.',
+      happened: 'Solid red is fine; the dashed red-and-black areas are traps that send you back to the start. They only show up on levels 2, 4 and 6, and red and black are harmless everywhere else, which will confuse anything that relies on measuring pixel colors.',
       inCode: 'Traps are red cells with a black checkerboard. A twin that steps on one flashes yellow and both twins jump back to where the level started; the actions you spent stay spent.',
     },
   ],

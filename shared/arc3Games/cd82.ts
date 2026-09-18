@@ -18,6 +18,8 @@
  *          level and counts every action, with the 100th one losing the level.
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
  *          18-Sep round-up added to playerObservations, worded from what he said.
+ *          Later 18-Sep: his cd82 note corrected with him -- the colors are not first in, first out (a later
+ *          throw paints over an earlier one); the weird part is the compass-direction controls.
  * SRP/DRY check: Pass - Single responsibility for CD82 game data.
  */
 
@@ -101,8 +103,9 @@ export const cd82: Arc3GameMetadata = {
     {
       player: 'Boss',
       date: '2026-09-18',
-      saw: 'Colors to stamp.',
-      happened: 'Easy. It is obvious you need to stamp the color, and that a certain color is going to be first in, first out.',
+      saw: 'A paint bucket that moves around the canvas like a compass, and colors to stamp.',
+      happened: 'Easy once you see you are stamping colors, and that the order you stamp them in matters. The weird part is the compass directions: the controls you expect to work don\'t really work at the start, and it was just weird to navigate around and move it.',
+      inCode: 'The arrow keys step the bucket around a ring of eight stations (N, NE, E, SE, S, SW, W, NW) to the neighbor in that direction; a press that would cut across the middle or leave the ring does nothing but still costs an action. A later throw paints over an earlier one wherever they overlap.',
     },
   ],
   category: 'evaluation',
