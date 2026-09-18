@@ -12,6 +12,8 @@ SRP/DRY check: Pass -- describes data written by scripts/arc3/pull_agent_scoreca
 
 # Winning AI runs as extra training data
 
+> **Do not train on Astra (Boss, 18-Sep-2026).** gpt-6-astra's text is its own shorthand, unreadable to humans. Every Astra record carries `source.doNotTrain: true`; filter those out. Keep them for costs and moves only.
+
 **Status 18-Sep-2026: pulled and checked. Backend only, not on the site. Not yet read by
 the training pipeline.**
 
