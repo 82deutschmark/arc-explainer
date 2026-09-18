@@ -23,11 +23,12 @@
 
 ---
 
-> **NEXT UP (approved by Boss 18-Sep-2026):** the ARC-3 game page glow-up. The dataset half
-> is done (`/api/arc3/dataset`, token-gated, fetched by arc-3). Read
-> `docs/plans/2026-09-18-arc3-game-page-glowup-and-dataset-prd.md` first, its Amendments
-> section before anything else; the mockup beside it,
-> `2026-09-18-arc3-game-page-mockup-dc22.html`, is the spec minus what the amendments cut.
+> **ARC-3 game pages (18-Sep-2026):** rebuilt level by level, and the same write-ups are served
+> as JSON to the arc-3 training repo (`/api/arc3/dataset`, token-gated). One level cut feeds
+> the page, the JSON and `/arc3/games.md`: `shared/arc3Games/gameLevels.ts`. Before changing
+> any of it read `docs/plans/2026-09-18-arc3-game-page-glowup-and-dataset-prd.md`, Amendments
+> first (Boss cut step budgets, code links and derived stats). Left: `corrections[]`, and
+> the public release only when Boss says so.
 
 ## 1. Mission & Critical Warnings
 

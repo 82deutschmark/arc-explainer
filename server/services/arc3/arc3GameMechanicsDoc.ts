@@ -29,14 +29,29 @@
  *          2026-09-16 (Claude Opus 5): each game now also carries its "Every mechanic" bullets
  *          (grouped by the level that introduces them), "Notes from play" (what a human saw,
  *          did, expected), and action counts (ARC baseline and Boss's recent runs).
- *          2026-09-18 (Claude Opus 5): SITE_ORIGIN exported for arc3GameDataset.ts.
+ *          2026-09-18 (Claude Opus 5): SITE_ORIGIN exported for arc3GameDataset.ts. Later the same
+ *          day: each game now reads level by level (pictures, the rules that start there, notes
+ *          from play, ARC's baseline and Boss's actions), cut by shared/arc3Games/gameLevels.ts,
+ *          like the rebuilt game page. The Mechanics prose stays as the short version.
  * SRP/DRY check: Pass -- document generation only. Data lives in shared/arc3Games, HTTP
  *          serving lives in server/routes.ts, and the HTML rendering of the same objects
  *          stays in client/src/pages/Arc3GameSpoiler.tsx.
  */
 
-import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata, type ActionMapping } from '../../../shared/arc3Games';
-import { getOwnerGameRating, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
+import {
+  arcPrizeLeaderboardUrl,
+  getAllGames,
+  type Arc3GameMetadata,
+  type ActionMapping,
+  type PlayerObservation,
+} from '../../../shared/arc3Games';
+import {
+  getArcBaseline,
+  getOwnerGameRating,
+  getPlayerRuns,
+  OWNER_PLAYER,
+} from '../../../shared/arc3Games/humanDifficulty';
+import { buildGameLevels, pickHeadlineRun, runOnLevel, screenshotKind } from '../../../shared/arc3Games/gameLevels';
 
 /** Public origin used for the absolute links in the document (and in the game dataset). */
 export const SITE_ORIGIN = 'https://arc.markbarney.net';
@@ -57,6 +72,17 @@ function formatActions(mappings: ActionMapping[]): string {
     return `- \`${m.action}\`${common}: ${m.description}${notes}`;
   });
   return `${rows.join('\n')}\n`;
+}
+
+/** One note from play as a nested Markdown list item. */
+function formatNote(note: PlayerObservation): string {
+  const where = typeof note.level === 'number' ? `, level ${note.level}` : '';
+  const lines = [`- **${note.player}, ${note.date}${where}**`, `  - Saw: ${note.saw}`];
+  if (note.did) lines.push(`  - Did: ${note.did}`);
+  if (note.expected) lines.push(`  - Expected: ${note.expected}`);
+  lines.push(`  - What happened: ${note.happened}`);
+  if (note.inCode) lines.push(`  - In the code: ${note.inCode}`);
+  return lines.join('\n');
 }
 
 function formatGame(game: Arc3GameMetadata): string {
@@ -98,48 +124,49 @@ function formatGame(game: Arc3GameMetadata): string {
     parts.push(`### Mechanics\n\n${game.mechanicsExplanation.trim()}\n`);
   }
 
-  if (game.mechanicsBreakdown && game.mechanicsBreakdown.length > 0) {
-    const byLevel = new Map<number, string[]>();
-    for (const point of game.mechanicsBreakdown) {
-      const level = point.introducedOnLevel ?? 1;
-      const source = point.source ? ` _(${point.source})_` : '';
-      byLevel.set(level, [...(byLevel.get(level) ?? []), `- ${point.text}${source}`]);
-    }
-    const sections = [...byLevel.entries()]
-      .sort(([a], [b]) => a - b)
-      .map(([level, lines]) => `**${level === 1 ? 'From level 1' : `New on level ${level}`}**\n\n${lines.join('\n')}`);
-    parts.push(`### Every mechanic\n\n${sections.join('\n\n')}\n`);
-  }
-
-  if (game.playerObservations && game.playerObservations.length > 0) {
-    const notes = [...game.playerObservations]
-      .sort((a, b) => (a.level ?? 0) - (b.level ?? 0))
-      .map((note) => {
-        const where = typeof note.level === 'number' ? `, level ${note.level}` : '';
-        const lines = [`- **${note.player}, ${note.date}${where}**`, `  - Saw: ${note.saw}`];
-        if (note.did) lines.push(`  - Did: ${note.did}`);
-        if (note.expected) lines.push(`  - Expected: ${note.expected}`);
-        lines.push(`  - What happened: ${note.happened}`);
-        if (note.inCode) lines.push(`  - In the code: ${note.inCode}`);
-        return lines.join('\n');
-      });
-    parts.push(`### Notes from play\n\n${notes.join('\n')}\n`);
-  }
-
   parts.push(`### Controls\n\n${formatActions(game.actionMappings)}`);
 
-  if (game.levelScreenshots && game.levelScreenshots.length > 0) {
-    const shots = [...game.levelScreenshots]
-      .sort((a, b) => a.level - b.level)
-      .map((s) => {
-        const caption = s.caption ? ` — ${s.caption}` : '';
-        return `- Level ${s.level}: ${SITE_ORIGIN}${s.imageUrl}${caption}`;
-      });
-    parts.push(
-      `### Level screenshots\n\nUnless a caption says otherwise, the opening frame of each level, rendered ` +
-        `from the game's own source — the same pixels the game shows on entering that level, with ` +
-        `nothing moved yet. Captioned entries may instead be captures of real play.\n\n${shots.join('\n')}\n`,
-    );
+  // Level by level, cut by shared/arc3Games/gameLevels.ts -- the same cut the game page and
+  // the private dataset use, so a rule, picture or note sits on the same level in all three.
+  const runs = getPlayerRuns(OWNER_PLAYER, game.gameId);
+  const headline = pickHeadlineRun(runs);
+  const cut = buildGameLevels(game, runs, getArcBaseline(game.gameId));
+
+  if (cut.observationsAnyLevel.length > 0) {
+    parts.push(`### Notes from play, whole game\n\n${cut.observationsAnyLevel.map(formatNote).join('\n')}\n`);
+  }
+
+  const levelBlocks = cut.levels.map((level) => {
+    const lines: string[] = [`#### Level ${level.level}\n`];
+    const numbers: string[] = [];
+    if (level.arcBaselineActions !== null) numbers.push(`ARC baseline ${level.arcBaselineActions} actions`);
+    if (headline) {
+      const onLevel = runOnLevel(headline, level.level - 1);
+      numbers.push(
+        `${OWNER_PLAYER} ${onLevel ? `${onLevel.actions}${onLevel.cleared ? '' : ' (stopped here)'}` : 'not reached'}`,
+      );
+    }
+    if (numbers.length > 0) lines.push(`${numbers.join(' · ')}\n`);
+    for (const shot of level.images) {
+      const kind = screenshotKind(shot) === 'human' ? 'Human capture (mid-play)' : 'Engine render (opening frame)';
+      const caption = shot.caption ? ` — ${shot.caption}` : '';
+      lines.push(`- ${kind}: ${SITE_ORIGIN}${shot.imageUrl}${caption}`);
+    }
+    if (level.images.length > 0) lines.push('');
+    if (level.newRules.length > 0) {
+      const rules = level.newRules.map((point) => `- ${point.text}${point.source ? ` _(${point.source})_` : ''}`);
+      lines.push(`**${level.level === 1 ? 'The rules from the start' : `New on level ${level.level}`}**\n\n${rules.join('\n')}\n`);
+    }
+    if (level.observations.length > 0) {
+      lines.push(`**Notes from play**\n\n${level.observations.map(formatNote).join('\n')}\n`);
+    }
+    return lines.join('\n');
+  });
+  parts.push(`### Level by level\n\n${levelBlocks.join('\n')}`);
+
+  if (cut.extraScreenshots.length > 0) {
+    const shots = cut.extraScreenshots.map((s) => `- Level ${s.level}: ${SITE_ORIGIN}${s.imageUrl}${s.caption ? ` — ${s.caption}` : ''}`);
+    parts.push(`### Screenshots from an older build\n\nLevels the current build does not have.\n\n${shots.join('\n')}\n`);
   }
 
   if (game.hints.length > 0) {

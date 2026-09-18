@@ -25,7 +25,8 @@
  *            - Frame-by-frame replays. arc-3 has those; each run carries its `guid`, the key
  *              into that corpus, and the arcprize.org replay URL.
  *            - Ratings and derived statistics. Only the numbers ARC and the scorecards report.
- * SRP/DRY check: Pass -- building the document only; HTTP lives in routes/arc3Dataset.ts.
+ * SRP/DRY check: Pass -- serialising only; HTTP lives in routes/arc3Dataset.ts and the level
+ *          cut in shared/arc3Games/gameLevels.ts (shared with the page and the markdown).
  *          Reuses getPublicDemoGameIdsInOrder (the as66 exclusion), getArcBaseline /
  *          getPlayerRuns / OWNER_PLAYER (scorecard data), and SITE_ORIGIN from the markdown
  *          export rather than restating any of them.
@@ -40,12 +41,8 @@ import {
   type MechanicPoint,
   type PlayerObservation,
 } from '../../../shared/arc3Games';
-import {
-  getArcBaseline,
-  getPlayerRuns,
-  OWNER_PLAYER,
-  type HumanPlayRun,
-} from '../../../shared/arc3Games/humanDifficulty';
+import { getArcBaseline, getPlayerRuns, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
+import { buildGameLevels, screenshotKind, type LevelRun } from '../../../shared/arc3Games/gameLevels';
 import { SITE_ORIGIN } from './arc3GameMechanicsDoc';
 
 /** Bumped whenever a field is renamed or removed; additions keep the version. */
@@ -101,6 +98,10 @@ export interface Arc3DatasetRun {
   guid: string;
   replayUrl: string;
   openedAt: string;
+  /**
+   * 'WIN' | 'GAME_OVER' | 'NOT_FINISHED', as arcprize.org reports it. Filter on WIN for
+   * demonstrations: some NOT_FINISHED runs are a few actions of looking around, then quitting.
+   */
   state: string;
   levelsCompleted: number;
   actions: number;
@@ -140,7 +141,7 @@ function toRule(point: MechanicPoint): Arc3DatasetRule {
 
 function toImage(shot: LevelScreenshot): Arc3DatasetImage {
   return {
-    kind: shot.kind ?? 'engine',
+    kind: screenshotKind(shot),
     url: new URL(shot.imageUrl, SITE_ORIGIN).toString(),
     caption: shot.caption ?? null,
     notes: shot.notes ?? null,
@@ -159,16 +160,8 @@ function toObservation(note: PlayerObservation): Arc3DatasetObservation {
   };
 }
 
-/**
- * What one run did on one level (0-based index), or null if it never got there. A run
- * reached every level it cleared, plus the one it was on when it ended (if it spent any
- * actions there). levelActions is zero-padded to the level count past that point.
- */
-function runOnLevel(run: HumanPlayRun, index: number): Arc3DatasetLevelRun | null {
-  const actions = run.levelActions[index] ?? 0;
-  if (index < run.levelsCompleted) return { guid: run.guid, actions, cleared: true };
-  if (index === run.levelsCompleted && actions > 0) return { guid: run.guid, actions, cleared: false };
-  return null;
+function toLevelRun(entry: LevelRun): Arc3DatasetLevelRun {
+  return { guid: entry.run.guid, actions: entry.actions, cleared: entry.cleared };
 }
 
 /** Null for an id that is not in the live public set (unknown ids and as66 alike). */
@@ -179,36 +172,17 @@ export function buildArc3GameDataset(gameId: string): Arc3GameDataset | null {
 
   const baseline = getArcBaseline(gameId);
   const runs = getPlayerRuns(OWNER_PLAYER, gameId);
-  const rules = game.mechanicsBreakdown ?? [];
-  const shots = game.levelScreenshots ?? [];
-  const notes = game.playerObservations ?? [];
-
-  // The live build's level count. Anything filed under a higher level is from an older build
-  // (ft09 keeps two preview-era shots of levels 8 and 9 from a 9-level build) and is left
-  // out, because a training record must describe the game the citations and runs refer to.
-  const levelCount =
-    game.levelCount ??
-    baseline?.levelCount ??
-    Math.max(1, ...rules.map((r) => r.introducedOnLevel ?? 1), ...shots.map((s) => s.level));
-
-  const levels: Arc3DatasetLevel[] = [];
-  for (let level = 1; level <= levelCount; level += 1) {
-    const index = level - 1;
-    levels.push({
-      level,
-      arcBaselineActions: baseline?.baselineActions[index] ?? null,
-      // Engine render first, then human captures, each group in registry order.
-      images: shots
-        .filter((s) => s.level === level)
-        .map(toImage)
-        .sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'engine' ? -1 : 1)),
-      newRules: rules.filter((r) => (r.introducedOnLevel ?? 1) === level).map(toRule),
-      observations: notes.filter((n) => n.level === level).map(toObservation),
-      runs: runs
-        .map((run) => runOnLevel(run, index))
-        .filter((r): r is Arc3DatasetLevelRun => r !== null),
-    });
-  }
+  // The level cut is shared with the game page and /arc3/games.md (shared/arc3Games/gameLevels.ts),
+  // including the rule that levels past the live build's count (ft09's preview-era 8 and 9) stay out.
+  const cut = buildGameLevels(game, runs, baseline);
+  const levels: Arc3DatasetLevel[] = cut.levels.map((level) => ({
+    level: level.level,
+    arcBaselineActions: level.arcBaselineActions,
+    images: level.images.map(toImage),
+    newRules: level.newRules.map(toRule),
+    observations: level.observations.map(toObservation),
+    runs: level.runs.map(toLevelRun),
+  }));
 
   return {
     schema: ARC3_GAME_DATASET_SCHEMA,
@@ -217,13 +191,13 @@ export function buildArc3GameDataset(gameId: string): Arc3GameDataset | null {
     officialTitle: game.officialTitle,
     build: baseline?.build ?? null,
     category: game.category,
-    levelCount,
+    levelCount: cut.levelCount,
     pageUrl: `${SITE_ORIGIN}/arc3/games/${game.gameId}`,
     description: game.description,
     plainEnglish: game.simpleExplanation,
     controls: game.actionMappings,
     levels,
-    observationsAnyLevel: notes.filter((n) => typeof n.level !== 'number').map(toObservation),
+    observationsAnyLevel: cut.observationsAnyLevel.map(toObservation),
     runs: runs.map((run) => ({
       player: run.player,
       guid: run.guid,
