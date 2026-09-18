@@ -31,6 +31,7 @@
  *          when they finish a step on your square; "goal chest" is a blue bracket you step
  *          into. Added what was missing: gates crush you, yellow gates toggle, level 1 allows
  *          one ghost and later levels two, and a rewind past that limit wipes every ghost.
+ *          2026-09-18 (Claude Opus 5): Boss's play note, and both of his wins as replay links.
  * SRP/DRY check: Pass - Single responsibility for G50T game data.
  */
 
@@ -136,6 +137,15 @@ export const g50t: Arc3GameMetadata = {
       source: 'g50t.py:1807-1843',
     },
   ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-18',
+      saw: 'You move to where you want your ghost twin to go, then press spacebar. You get sent back to where you started, and a ghost twin walks the exact path you just walked. You get three ghost twins.',
+      did: 'Used the ghost twins to press the levers and panels, so his own player could get to the exit.',
+      happened: 'It works, but it is weird. If you have never seen it before it just does not make sense, and it would never occur to a lot of people. He thinks many players get frustrated and leave. He won it twice (13 and 15 Sep, 7/7 both times, 533 and 536 actions). The public top 10 all won in 274-323 actions, against ARC\'s average of 879.',
+    },
+  ],
   category: 'evaluation',
   humanDifficulty: 'hard',
   aiDifficulty: 'very-hard',
@@ -162,10 +172,16 @@ export const g50t: Arc3GameMetadata = {
       description: 'ARC Prize published replay, provider-adapter harness, from the 2-Sep-2026 GPT-6 Astra results.',
     },
     {
-      title: "G50T Boss's Official Human Replay",
+      title: 'G50T Human Replay (Win, 7/7 Levels, Score 89.39)',
+      url: 'https://arcprize.org/replay/4f0689d0-7d06-4be7-91ac-31cb9a800b85',
+      type: 'replay',
+      description: 'Boss\'s first win, 13-Sep-2026, and his best score: all seven levels, 533 actions, 9 resets, split 43/67/68/55/173/62/65 against the game\'s baselines of 78/175/179/230/96/54/67 (879 total). Over baseline only on level 5 (173 against 96) and, just, level 6 (62 against 54).',
+    },
+    {
+      title: 'G50T Human Replay (Win, 7/7 Levels, Score 82.12)',
       url: 'https://arcprize.org/replay/58483738-cfaf-4e57-8c55-4c9c593bbab5',
       type: 'replay',
-      description: "Boss's own official ARC Prize replay, human play (2026-09-15).",
+      description: 'Boss\'s second win, 15-Sep-2026: all seven levels, 536 actions, 8 resets, split 17/31/74/94/186/91/43. Faster on the first four levels than his first win, slower on 5 and 6, so it scored lower.',
     },
   ],
   levelScreenshots: [

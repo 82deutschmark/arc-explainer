@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.103.1  Sep 18, 2026
+
+- **G50T: Boss's play note, and both of his wins linked** (Author: Claude Opus 5): Ghost Twin in his words -- walk where the twin should go, press spacebar, get sent back while the twin retraces your path, three twins, use them on levers and panels to open the exit; weird enough that most people would give up. His 13-Sep win (score 89.39, his best) is now linked beside the 15-Sep one. `shared/arc3Games/g50t.ts`.
+
 ### Version 9.103.0  Sep 18, 2026
 - SB26 gets Boss's notes from play, its first. He frames it as a coded band, not a sorting
   band: the top row is showing you the order it wants the colored boxes read in, and the
