@@ -1,0 +1,7457 @@
+{
+  "method": "Put dollar figures on ARC Prize's own runs of the 25 public ARC-AGI-3 games, which\n         ARC does not publish (its leaderboard and results pages give Semi-Private costs\n         only). Reads data/arc3-official-runs/sessions.jsonl (token usage per run, written by\n         pull_official_public_runs.py) and prices it two ways:\n\n           arcMethod  -- ARC's own published method: every input token at the list input\n                         price plus every output token at the list output price. Cached\n                         input gets no discount and there is no long-context surcharge.\n                         Source: arcprize/arc-agi-3-benchmarking, docs/runtime-state.md\n                         (\"Published v3 costs are reconstructed downstream from ARC-facing\n                         action token usage and configured input/output prices\") and\n                         runtime_models.action_metadata_from_model_response (input_tokens x\n                         input price + output_tokens x output price). This is the number to\n                         compare with ARC's Semi-Private costs.\n           billed     -- what the provider would charge for the same tokens: uncached input\n                         at the input price, cached input at the cache-read price, output at\n                         the output price, and for gpt-6-astra the long-context rule (a\n                         request over 272K input tokens: 2x input and cache, 1.5x output).\n                         Cache WRITES are not in ARC's logs, so `billedHigh` also shows the\n                         bound where every uncached input token is billed as a cache write.\n\n         Prices (USD per 1M tokens) were checked on 18-Sep-2026 against the provider page\n         (OpenAI, for gpt-6-astra) and OpenRouter's live /api/v1/models list (all seven).\n\n         Writes data/arc3-official-runs/costs.json and prints the per-config table, with\n         ARC's published Semi-Private cost for the same config beside it.\n\n         Usage: python scripts/arc3/official_run_costs.py",
+  "configs": {
+    "anthropic-claude-opus-5-high": {
+      "runs": 25,
+      "wins": 6,
+      "levels": 95,
+      "levelTotal": 183,
+      "moves": 10557,
+      "input": 1475036219,
+      "cached": 0,
+      "output": 41248121,
+      "reasoning": 0,
+      "longRequests": 0,
+      "requests": 10500,
+      "arcMethod": 8406.38,
+      "billed": 8406.38,
+      "billedHigh": 10250.18,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 294,
+          "arcMethod": 247.87,
+          "billed": 247.87,
+          "billedHigh": 304.41
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 64.89,
+          "billed": 64.89,
+          "billedHigh": 79.3
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 196,
+          "arcMethod": 148.22,
+          "billed": 148.22,
+          "billedHigh": 180.46
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "4/6",
+          "moves": 653,
+          "arcMethod": 479.7,
+          "billed": 479.7,
+          "billedHigh": 579.36
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "4/6",
+          "moves": 563,
+          "arcMethod": 499.09,
+          "billed": 499.09,
+          "billedHigh": 603.62
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 84,
+          "arcMethod": 68.23,
+          "billed": 68.23,
+          "billedHigh": 83.65
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 241.42,
+          "billed": 241.42,
+          "billedHigh": 287.85
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "3/7",
+          "moves": 601,
+          "arcMethod": 487.94,
+          "billed": 487.94,
+          "billedHigh": 597.82
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "1/10",
+          "moves": 419,
+          "arcMethod": 292.26,
+          "billed": 292.26,
+          "billedHigh": 354.98
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 108,
+          "arcMethod": 89.9,
+          "billed": 89.9,
+          "billedHigh": 109.94
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "2/7",
+          "moves": 594,
+          "arcMethod": 484.57,
+          "billed": 484.57,
+          "billedHigh": 595.81
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "3/6",
+          "moves": 270,
+          "arcMethod": 210.59,
+          "billed": 210.59,
+          "billedHigh": 255.05
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 117,
+          "arcMethod": 114.86,
+          "billed": 114.86,
+          "billedHigh": 134.49
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "6/8",
+          "moves": 1112,
+          "arcMethod": 916.4,
+          "billed": 916.4,
+          "billedHigh": 1126.38
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 388,
+          "arcMethod": 355.85,
+          "billed": 355.85,
+          "billedHigh": 429.95
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "7/8",
+          "moves": 200,
+          "arcMethod": 121.79,
+          "billed": 121.79,
+          "billedHigh": 149.24
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 129.82,
+          "billed": 129.82,
+          "billedHigh": 160.73
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "2/8",
+          "moves": 684,
+          "arcMethod": 580.74,
+          "billed": 580.74,
+          "billedHigh": 712.33
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 669,
+          "arcMethod": 470.26,
+          "billed": 470.26,
+          "billedHigh": 568.45
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "3/9",
+          "moves": 657,
+          "arcMethod": 517.28,
+          "billed": 517.28,
+          "billedHigh": 637.0
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "2/7",
+          "moves": 283,
+          "arcMethod": 250.34,
+          "billed": 250.34,
+          "billedHigh": 300.91
+        },
+        "tr87": {
+          "state": "GAME_OVER",
+          "levels": "4/6",
+          "moves": 488,
+          "arcMethod": 425.79,
+          "billed": 425.79,
+          "billedHigh": 518.41
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 217,
+          "arcMethod": 117.65,
+          "billed": 117.65,
+          "billedHigh": 139.22
+        },
+        "vc33": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 408,
+          "arcMethod": 359.99,
+          "billed": 359.99,
+          "billedHigh": 437.73
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "3/9",
+          "moves": 877,
+          "arcMethod": 730.92,
+          "billed": 730.92,
+          "billedHigh": 903.08
+        }
+      },
+      "model": "claude-opus-5",
+      "priceKey": "claude-opus-5",
+      "harness": "standard",
+      "effort": "high",
+      "resultsSlug": "anthropic-claude-opus-5",
+      "semiPrivateCost": 20657.37,
+      "prices": {
+        "input": 5.0,
+        "cached": 0.5,
+        "cacheWrite": 6.25,
+        "output": 25.0,
+        "long": null,
+        "source": "OpenRouter anthropic/claude-opus-5"
+      }
+    },
+    "openai-gpt-5-6-luna-high": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 0,
+      "levelTotal": 183,
+      "moves": 4365,
+      "input": 612795131,
+      "cached": 80096000,
+      "output": 14165366,
+      "reasoning": 13985211,
+      "longRequests": 11,
+      "requests": 4357,
+      "arcMethod": 139.56,
+      "billed": 125.14,
+      "billedHigh": 151.78,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 5.4,
+          "billed": 5.22,
+          "billedHigh": 6.42
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 2.99,
+          "billed": 2.75,
+          "billedHigh": 3.37
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 8.89,
+          "billed": 7.54,
+          "billedHigh": 9.18
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 3.97,
+          "billed": 3.87,
+          "billedHigh": 4.72
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 10.45,
+          "billed": 10.28,
+          "billedHigh": 12.57
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 215,
+          "arcMethod": 6.81,
+          "billed": 6.33,
+          "billedHigh": 7.56
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 10.34,
+          "billed": 7.58,
+          "billedHigh": 8.94
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 4.74,
+          "billed": 4.53,
+          "billedHigh": 5.57
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 4.31,
+          "billed": 4.04,
+          "billedHigh": 4.94
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 85,
+          "arcMethod": 2.84,
+          "billed": 2.67,
+          "billedHigh": 3.26
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 3.7,
+          "billed": 3.52,
+          "billedHigh": 4.32
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 4.38,
+          "billed": 4.25,
+          "billedHigh": 5.21
+        },
+        "r11l": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 3.97,
+          "billed": 3.51,
+          "billedHigh": 4.2
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 4.46,
+          "billed": 4.29,
+          "billedHigh": 5.25
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 3.42,
+          "billed": 3.24,
+          "billedHigh": 3.96
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 2.56,
+          "billed": 1.76,
+          "billedHigh": 2.12
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 5.03,
+          "billed": 2.76,
+          "billedHigh": 3.22
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 10.61,
+          "billed": 9.87,
+          "billedHigh": 12.07
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 195,
+          "arcMethod": 4.43,
+          "billed": 3.71,
+          "billedHigh": 4.5
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 3.35,
+          "billed": 2.51,
+          "billedHigh": 3.02
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 160,
+          "arcMethod": 4.96,
+          "billed": 4.77,
+          "billedHigh": 5.94
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 11.03,
+          "billed": 10.66,
+          "billedHigh": 12.73
+        },
+        "tu93": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 2.72,
+          "billed": 1.77,
+          "billedHigh": 2.05
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 1.06,
+          "billed": 0.88,
+          "billedHigh": 1.07
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 13.16,
+          "billed": 12.81,
+          "billedHigh": 15.58
+        }
+      },
+      "model": "gpt-5-6-luna",
+      "priceKey": "gpt-5.6-luna",
+      "harness": "standard",
+      "effort": "high",
+      "resultsSlug": "openai-gpt-5-6-luna",
+      "semiPrivateCost": 2482.44,
+      "prices": {
+        "input": 0.2,
+        "cached": 0.02,
+        "cacheWrite": 0.25,
+        "output": 1.2,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-luna"
+      }
+    },
+    "openai-gpt-5-6-luna-low": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 0,
+      "levelTotal": 183,
+      "moves": 4365,
+      "input": 610874486,
+      "cached": 76335872,
+      "output": 815876,
+      "reasoning": 661094,
+      "longRequests": 2,
+      "requests": 4343,
+      "arcMethod": 123.15,
+      "billed": 109.41,
+      "billedHigh": 136.14,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 5.02,
+          "billed": 4.85,
+          "billedHigh": 6.05
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 2.66,
+          "billed": 2.26,
+          "billedHigh": 2.81
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 8.03,
+          "billed": 7.31,
+          "billedHigh": 9.11
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 3.5,
+          "billed": 3.41,
+          "billedHigh": 4.25
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 9.4,
+          "billed": 9.23,
+          "billedHigh": 11.52
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 215,
+          "arcMethod": 5.4,
+          "billed": 5.38,
+          "billedHigh": 6.7
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 8.71,
+          "billed": 5.15,
+          "billedHigh": 6.31
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 4.31,
+          "billed": 4.01,
+          "billedHigh": 5.0
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 3.87,
+          "billed": 3.8,
+          "billedHigh": 4.74
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 85,
+          "arcMethod": 2.59,
+          "billed": 2.42,
+          "billedHigh": 3.01
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 3.39,
+          "billed": 3.22,
+          "billedHigh": 4.01
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 3.99,
+          "billed": 3.88,
+          "billedHigh": 4.84
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 3.34,
+          "billed": 2.64,
+          "billedHigh": 3.27
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 4.07,
+          "billed": 3.85,
+          "billedHigh": 4.8
+        },
+        "s5i5": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 3.04,
+          "billed": 2.87,
+          "billedHigh": 3.57
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 2.28,
+          "billed": 1.31,
+          "billedHigh": 1.61
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 4.43,
+          "billed": 2.24,
+          "billedHigh": 2.72
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 9.6,
+          "billed": 8.49,
+          "billedHigh": 10.57
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 195,
+          "arcMethod": 4.43,
+          "billed": 4.13,
+          "billedHigh": 5.15
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 3.01,
+          "billed": 2.43,
+          "billedHigh": 3.01
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 160,
+          "arcMethod": 4.96,
+          "billed": 4.71,
+          "billedHigh": 5.87
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 8.55,
+          "billed": 8.38,
+          "billedHigh": 10.47
+        },
+        "tu93": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 2.28,
+          "billed": 1.51,
+          "billedHigh": 1.85
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 0.94,
+          "billed": 0.77,
+          "billedHigh": 0.96
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 11.35,
+          "billed": 11.18,
+          "billedHigh": 13.95
+        }
+      },
+      "model": "gpt-5-6-luna",
+      "priceKey": "gpt-5.6-luna",
+      "harness": "standard",
+      "effort": "low",
+      "resultsSlug": "openai-gpt-5-6-luna",
+      "semiPrivateCost": 2307.49,
+      "prices": {
+        "input": 0.2,
+        "cached": 0.02,
+        "cacheWrite": 0.25,
+        "output": 1.2,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-luna"
+      }
+    },
+    "openai-gpt-5-6-luna-max": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 0,
+      "levelTotal": 183,
+      "moves": 3980,
+      "input": 562857629,
+      "cached": 92003584,
+      "output": 35358896,
+      "reasoning": 35201627,
+      "longRequests": 28,
+      "requests": 3978,
+      "arcMethod": 155.0,
+      "billed": 138.44,
+      "billedHigh": 161.98,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 6.51,
+          "billed": 6.13,
+          "billedHigh": 7.3
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 3.86,
+          "billed": 3.47,
+          "billedHigh": 4.02
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 11.35,
+          "billed": 10.47,
+          "billedHigh": 12.31
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 5.0,
+          "billed": 4.88,
+          "billedHigh": 5.73
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 12.12,
+          "billed": 11.93,
+          "billedHigh": 14.22
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 36,
+          "arcMethod": 1.69,
+          "billed": 1.34,
+          "billedHigh": 1.49
+        },
+        "g50t": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 13.3,
+          "billed": 9.72,
+          "billedHigh": 10.88
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 5.31,
+          "billed": 5.05,
+          "billedHigh": 6.1
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 5.62,
+          "billed": 5.07,
+          "billedHigh": 5.88
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 85,
+          "arcMethod": 3.72,
+          "billed": 3.48,
+          "billedHigh": 4.08
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 4.67,
+          "billed": 4.4,
+          "billedHigh": 5.19
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 5.2,
+          "billed": 5.08,
+          "billedHigh": 6.04
+        },
+        "r11l": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 6.43,
+          "billed": 5.72,
+          "billedHigh": 6.33
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 5.21,
+          "billed": 4.92,
+          "billedHigh": 5.85
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 5.21,
+          "billed": 4.98,
+          "billedHigh": 5.68
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 3.07,
+          "billed": 2.28,
+          "billedHigh": 2.67
+        },
+        "sc25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 6.12,
+          "billed": 3.61,
+          "billedHigh": 4.04
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 12.36,
+          "billed": 11.63,
+          "billedHigh": 13.84
+        },
+        "sp80": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 195,
+          "arcMethod": 4.67,
+          "billed": 3.87,
+          "billedHigh": 4.6
+        },
+        "su15": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 4.14,
+          "billed": 3.59,
+          "billedHigh": 4.24
+        },
+        "tn36": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 160,
+          "arcMethod": 6.77,
+          "billed": 6.22,
+          "billedHigh": 7.31
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 64,
+          "arcMethod": 2.87,
+          "billed": 2.55,
+          "billedHigh": 2.95
+        },
+        "tu93": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 3.41,
+          "billed": 2.37,
+          "billedHigh": 2.62
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 1.14,
+          "billed": 0.99,
+          "billedHigh": 1.18
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 15.24,
+          "billed": 14.68,
+          "billedHigh": 17.43
+        }
+      },
+      "model": "gpt-5-6-luna",
+      "priceKey": "gpt-5.6-luna",
+      "harness": "standard",
+      "effort": "max",
+      "resultsSlug": "openai-gpt-5-6-luna",
+      "semiPrivateCost": 3189.42,
+      "prices": {
+        "input": 0.2,
+        "cached": 0.02,
+        "cacheWrite": 0.25,
+        "output": 1.2,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-luna"
+      }
+    },
+    "openai-gpt-5-6-luna-medium": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 1,
+      "levelTotal": 183,
+      "moves": 4472,
+      "input": 626970981,
+      "cached": 77724928,
+      "output": 2427322,
+      "reasoning": 2246407,
+      "longRequests": 2,
+      "requests": 4451,
+      "arcMethod": 128.31,
+      "billed": 114.32,
+      "billedHigh": 141.78,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 5.09,
+          "billed": 4.92,
+          "billedHigh": 6.12
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 2.74,
+          "billed": 2.54,
+          "billedHigh": 3.15
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 8.04,
+          "billed": 6.37,
+          "billedHigh": 7.88
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 3.54,
+          "billed": 3.45,
+          "billedHigh": 4.29
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 9.52,
+          "billed": 9.36,
+          "billedHigh": 11.64
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 215,
+          "arcMethod": 5.61,
+          "billed": 5.6,
+          "billedHigh": 6.93
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 9.46,
+          "billed": 6.33,
+          "billedHigh": 7.74
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 4.37,
+          "billed": 4.2,
+          "billedHigh": 5.22
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 3.95,
+          "billed": 3.88,
+          "billedHigh": 4.84
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 221,
+          "arcMethod": 7.08,
+          "billed": 6.89,
+          "billedHigh": 8.56
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 3.26,
+          "billed": 2.84,
+          "billedHigh": 3.53
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 4.04,
+          "billed": 3.95,
+          "billedHigh": 4.92
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 3.34,
+          "billed": 2.66,
+          "billedHigh": 3.27
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 101,
+          "arcMethod": 3.08,
+          "billed": 2.93,
+          "billedHigh": 3.65
+        },
+        "s5i5": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 3.11,
+          "billed": 2.97,
+          "billedHigh": 3.68
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 2.32,
+          "billed": 1.33,
+          "billedHigh": 1.63
+        },
+        "sc25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 4.37,
+          "billed": 2.52,
+          "billedHigh": 3.06
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 9.7,
+          "billed": 8.77,
+          "billedHigh": 10.88
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 195,
+          "arcMethod": 4.26,
+          "billed": 3.65,
+          "billedHigh": 4.52
+        },
+        "su15": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 3.16,
+          "billed": 2.29,
+          "billedHigh": 2.83
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 160,
+          "arcMethod": 4.96,
+          "billed": 4.8,
+          "billedHigh": 5.98
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 8.66,
+          "billed": 8.48,
+          "billedHigh": 10.57
+        },
+        "tu93": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 2.28,
+          "billed": 1.59,
+          "billedHigh": 1.94
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 0.95,
+          "billed": 0.77,
+          "billedHigh": 0.96
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 11.41,
+          "billed": 11.21,
+          "billedHigh": 13.98
+        }
+      },
+      "model": "gpt-5-6-luna",
+      "priceKey": "gpt-5.6-luna",
+      "harness": "standard",
+      "effort": "medium",
+      "resultsSlug": "openai-gpt-5-6-luna",
+      "semiPrivateCost": 2379.13,
+      "prices": {
+        "input": 0.2,
+        "cached": 0.02,
+        "cacheWrite": 0.25,
+        "output": 1.2,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-luna"
+      }
+    },
+    "openai-gpt-5-6-luna-xhigh": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 0,
+      "levelTotal": 183,
+      "moves": 4365,
+      "input": 614104283,
+      "cached": 81007360,
+      "output": 25553228,
+      "reasoning": 25378507,
+      "longRequests": 15,
+      "requests": 4361,
+      "arcMethod": 153.48,
+      "billed": 138.9,
+      "billedHigh": 165.56,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 5.93,
+          "billed": 5.74,
+          "billedHigh": 6.94
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 3.43,
+          "billed": 3.17,
+          "billedHigh": 3.78
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 9.47,
+          "billed": 8.01,
+          "billedHigh": 9.58
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 4.32,
+          "billed": 4.22,
+          "billedHigh": 5.07
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 11.42,
+          "billed": 11.19,
+          "billedHigh": 13.49
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 215,
+          "arcMethod": 8.82,
+          "billed": 8.05,
+          "billedHigh": 9.25
+        },
+        "g50t": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 11.71,
+          "billed": 9.16,
+          "billedHigh": 10.42
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 5.04,
+          "billed": 4.82,
+          "billedHigh": 5.87
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 4.96,
+          "billed": 4.5,
+          "billedHigh": 5.32
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 85,
+          "arcMethod": 3.05,
+          "billed": 2.88,
+          "billedHigh": 3.47
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 3.99,
+          "billed": 3.7,
+          "billedHigh": 4.46
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 4.98,
+          "billed": 4.85,
+          "billedHigh": 5.81
+        },
+        "r11l": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 4.6,
+          "billed": 4.07,
+          "billedHigh": 4.74
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 4.68,
+          "billed": 4.51,
+          "billedHigh": 5.46
+        },
+        "s5i5": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 4.58,
+          "billed": 4.41,
+          "billedHigh": 5.11
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 3.0,
+          "billed": 2.38,
+          "billedHigh": 2.86
+        },
+        "sc25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 5.61,
+          "billed": 3.18,
+          "billedHigh": 3.64
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 11.61,
+          "billed": 11.12,
+          "billedHigh": 13.41
+        },
+        "sp80": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 195,
+          "arcMethod": 4.71,
+          "billed": 3.86,
+          "billedHigh": 4.6
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 3.91,
+          "billed": 3.52,
+          "billedHigh": 4.23
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 160,
+          "arcMethod": 5.62,
+          "billed": 5.36,
+          "billedHigh": 6.53
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 10.68,
+          "billed": 10.17,
+          "billedHigh": 12.24
+        },
+        "tu93": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 3.16,
+          "billed": 2.24,
+          "billedHigh": 2.55
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 0.99,
+          "billed": 0.84,
+          "billedHigh": 1.04
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 13.2,
+          "billed": 12.94,
+          "billedHigh": 15.69
+        }
+      },
+      "model": "gpt-5-6-luna",
+      "priceKey": "gpt-5.6-luna",
+      "harness": "standard",
+      "effort": "xhigh",
+      "resultsSlug": "openai-gpt-5-6-luna",
+      "semiPrivateCost": 2801.59,
+      "prices": {
+        "input": 0.2,
+        "cached": 0.02,
+        "cacheWrite": 0.25,
+        "output": 1.2,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-luna"
+      }
+    },
+    "openai-gpt-5-6-sol-high": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 30,
+      "levelTotal": 183,
+      "moves": 8873,
+      "input": 1271882741,
+      "cached": 199822080,
+      "output": 18204692,
+      "reasoning": 17915741,
+      "longRequests": 1,
+      "requests": 8815,
+      "arcMethod": 2725.81,
+      "billed": 2366.13,
+      "billedHigh": 2902.16,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "2/8",
+          "moves": 471,
+          "arcMethod": 160.8,
+          "billed": 154.54,
+          "billedHigh": 190.4
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 24.31,
+          "billed": 18.21,
+          "billedHigh": 22.4
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 80.51,
+          "billed": 54.84,
+          "billedHigh": 66.6
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 294,
+          "arcMethod": 77.19,
+          "billed": 74.01,
+          "billedHigh": 91.12
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 585,
+          "arcMethod": 196.96,
+          "billed": 184.3,
+          "billedHigh": 227.52
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "4/6",
+          "moves": 374,
+          "arcMethod": 123.41,
+          "billed": 116.43,
+          "billedHigh": 142.28
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 83.29,
+          "billed": 56.35,
+          "billedHigh": 67.97
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 612,
+          "arcMethod": 192.28,
+          "billed": 174.07,
+          "billedHigh": 214.01
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 38.4,
+          "billed": 36.44,
+          "billedHigh": 45.31
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "3/8",
+          "moves": 135,
+          "arcMethod": 45.76,
+          "billed": 43.42,
+          "billedHigh": 53.19
+        },
+        "ls20": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 650,
+          "arcMethod": 214.7,
+          "billed": 202.35,
+          "billedHigh": 249.6
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 584,
+          "arcMethod": 159.95,
+          "billed": 124.34,
+          "billedHigh": 152.51
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 274,
+          "arcMethod": 86.24,
+          "billed": 68.33,
+          "billedHigh": 83.08
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 236,
+          "arcMethod": 76.03,
+          "billed": 72.37,
+          "billedHigh": 89.84
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 32.9,
+          "billed": 29.01,
+          "billedHigh": 35.6
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 186,
+          "arcMethod": 51.51,
+          "billed": 26.81,
+          "billedHigh": 32.19
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "2/6",
+          "moves": 325,
+          "arcMethod": 93.47,
+          "billed": 61.28,
+          "billedHigh": 74.46
+        },
+        "sk48": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 919,
+          "arcMethod": 301.24,
+          "billed": 261.95,
+          "billedHigh": 322.4
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "2/6",
+          "moves": 145,
+          "arcMethod": 33.26,
+          "billed": 24.79,
+          "billedHigh": 30.18
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 32.58,
+          "billed": 22.45,
+          "billedHigh": 27.45
+        },
+        "tn36": {
+          "state": "NOT_FINISHED",
+          "levels": "2/7",
+          "moves": 342,
+          "arcMethod": 111.68,
+          "billed": 91.8,
+          "billedHigh": 111.57
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 108.04,
+          "billed": 106.2,
+          "billedHigh": 127.02
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 273,
+          "arcMethod": 52.01,
+          "billed": 32.37,
+          "billedHigh": 38.32
+        },
+        "vc33": {
+          "state": "GAME_OVER",
+          "levels": "3/7",
+          "moves": 386,
+          "arcMethod": 128.3,
+          "billed": 116.23,
+          "billedHigh": 142.48
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 672,
+          "arcMethod": 220.98,
+          "billed": 213.26,
+          "billedHigh": 264.67
+        }
+      },
+      "model": "gpt-5-6-sol",
+      "priceKey": "gpt-5.6-sol",
+      "harness": "standard",
+      "effort": "high",
+      "resultsSlug": "openai-gpt-5-6-sol",
+      "semiPrivateCost": 15176.07,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 10.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-sol"
+      }
+    },
+    "openai-gpt-5-6-sol-low": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 9,
+      "levelTotal": 183,
+      "moves": 5886,
+      "input": 830812947,
+      "cached": 146159104,
+      "output": 1470234,
+      "reasoning": 1352951,
+      "longRequests": 0,
+      "requests": 5851,
+      "arcMethod": 1676.33,
+      "billed": 1413.24,
+      "billedHigh": 1755.57,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 307,
+          "arcMethod": 97.81,
+          "billed": 92.91,
+          "billedHigh": 115.8
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 26.54,
+          "billed": 21.84,
+          "billedHigh": 27.14
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 81.84,
+          "billed": 65.56,
+          "billedHigh": 81.37
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 35.37,
+          "billed": 33.72,
+          "billedHigh": 42.0
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 94.94,
+          "billed": 87.83,
+          "billedHigh": 109.24
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 82,
+          "arcMethod": 24.55,
+          "billed": 20.69,
+          "billedHigh": 25.69
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 83.22,
+          "billed": 46.66,
+          "billedHigh": 57.1
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 608,
+          "arcMethod": 178.05,
+          "billed": 156.27,
+          "billedHigh": 194.38
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 36.34,
+          "billed": 34.59,
+          "billedHigh": 43.14
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 200,
+          "arcMethod": 63.37,
+          "billed": 59.85,
+          "billedHigh": 74.53
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 32.27,
+          "billed": 26.69,
+          "billedHigh": 33.18
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 588,
+          "arcMethod": 164.57,
+          "billed": 141.03,
+          "billedHigh": 175.25
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 269,
+          "arcMethod": 81.06,
+          "billed": 66.75,
+          "billedHigh": 82.86
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 39.92,
+          "billed": 37.51,
+          "billedHigh": 46.77
+        },
+        "s5i5": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 30.27,
+          "billed": 26.51,
+          "billedHigh": 32.93
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 24.07,
+          "billed": 14.58,
+          "billedHigh": 17.94
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 181,
+          "arcMethod": 50.57,
+          "billed": 35.98,
+          "billedHigh": 44.45
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 94.68,
+          "billed": 78.58,
+          "billedHigh": 97.59
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 301,
+          "arcMethod": 65.66,
+          "billed": 50.18,
+          "billedHigh": 62.16
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 30.38,
+          "billed": 23.05,
+          "billedHigh": 28.57
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 380,
+          "arcMethod": 113.95,
+          "billed": 86.78,
+          "billedHigh": 107.45
+        },
+        "tr87": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 85.72,
+          "billed": 79.8,
+          "billedHigh": 99.38
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 18.71,
+          "billed": 12.52,
+          "billedHigh": 15.4
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 9.41,
+          "billed": 7.68,
+          "billedHigh": 9.54
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 113.05,
+          "billed": 105.69,
+          "billedHigh": 131.71
+        }
+      },
+      "model": "gpt-5-6-sol",
+      "priceKey": "gpt-5.6-sol",
+      "harness": "standard",
+      "effort": "low",
+      "resultsSlug": "openai-gpt-5-6-sol",
+      "semiPrivateCost": 12805.6,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 10.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-sol"
+      }
+    },
+    "openai-gpt-5-6-sol-max": {
+      "runs": 25,
+      "wins": 1,
+      "levels": 48,
+      "levelTotal": 183,
+      "moves": 10619,
+      "input": 1490034016,
+      "cached": 204789504,
+      "output": 72524929,
+      "reasoning": 72164193,
+      "longRequests": 2,
+      "requests": 10536,
+      "arcMethod": 3705.32,
+      "billed": 3336.7,
+      "billedHigh": 3979.32,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "5/8",
+          "moves": 680,
+          "arcMethod": 273.49,
+          "billed": 268.31,
+          "billedHigh": 319.83
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 34.26,
+          "billed": 31.18,
+          "billedHigh": 37.07
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 52,
+          "arcMethod": 14.42,
+          "billed": 8.31,
+          "billedHigh": 9.73
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "4/6",
+          "moves": 911,
+          "arcMethod": 313.31,
+          "billed": 308.89,
+          "billedHigh": 370.42
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "2/6",
+          "moves": 427,
+          "arcMethod": 153.58,
+          "billed": 144.65,
+          "billedHigh": 175.38
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 152,
+          "arcMethod": 54.99,
+          "billed": 52.34,
+          "billedHigh": 62.77
+        },
+        "g50t": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 96.55,
+          "billed": 81.5,
+          "billedHigh": 95.31
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "1/7",
+          "moves": 562,
+          "arcMethod": 196.06,
+          "billed": 188.02,
+          "billedHigh": 226.88
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "1/10",
+          "moves": 413,
+          "arcMethod": 124.18,
+          "billed": 106.86,
+          "billedHigh": 127.04
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "5/8",
+          "moves": 373,
+          "arcMethod": 156.33,
+          "billed": 151.66,
+          "billedHigh": 179.95
+        },
+        "ls20": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 632,
+          "arcMethod": 232.22,
+          "billed": 219.96,
+          "billedHigh": 265.62
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 613,
+          "arcMethod": 196.89,
+          "billed": 164.84,
+          "billedHigh": 196.99
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "2/6",
+          "moves": 286,
+          "arcMethod": 100.91,
+          "billed": 79.14,
+          "billedHigh": 91.73
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "3/8",
+          "moves": 668,
+          "arcMethod": 251.27,
+          "billed": 232.48,
+          "billedHigh": 279.26
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 36.86,
+          "billed": 33.01,
+          "billedHigh": 39.7
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 205,
+          "arcMethod": 58.58,
+          "billed": 35.27,
+          "billedHigh": 41.49
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "3/6",
+          "moves": 506,
+          "arcMethod": 164.06,
+          "billed": 110.35,
+          "billedHigh": 129.83
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 109.0,
+          "billed": 99.73,
+          "billedHigh": 120.67
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "3/6",
+          "moves": 779,
+          "arcMethod": 232.95,
+          "billed": 201.57,
+          "billedHigh": 237.7
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 36.41,
+          "billed": 29.83,
+          "billedHigh": 35.61
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 374,
+          "arcMethod": 127.21,
+          "billed": 97.53,
+          "billedHigh": 114.39
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 344,
+          "arcMethod": 172.84,
+          "billed": 163.8,
+          "billedHigh": 188.54
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 271,
+          "arcMethod": 57.69,
+          "billed": 39.9,
+          "billedHigh": 45.93
+        },
+        "vc33": {
+          "state": "GAME_OVER",
+          "levels": "3/7",
+          "moves": 352,
+          "arcMethod": 125.99,
+          "billed": 104.88,
+          "billedHigh": 124.82
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 1009,
+          "arcMethod": 385.26,
+          "billed": 382.68,
+          "billedHigh": 462.68
+        }
+      },
+      "model": "gpt-5-6-sol",
+      "priceKey": "gpt-5.6-sol",
+      "harness": "standard",
+      "effort": "max",
+      "resultsSlug": "openai-gpt-5-6-sol",
+      "semiPrivateCost": 25064.11,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 10.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-sol"
+      }
+    },
+    "openai-gpt-5-6-sol-medium": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 12,
+      "levelTotal": 183,
+      "moves": 6839,
+      "input": 955354813,
+      "cached": 162688000,
+      "output": 5179705,
+      "reasoning": 4980379,
+      "longRequests": 0,
+      "requests": 6797,
+      "arcMethod": 1962.51,
+      "billed": 1669.67,
+      "billedHigh": 2066.0,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "2/8",
+          "moves": 407,
+          "arcMethod": 132.42,
+          "billed": 127.31,
+          "billedHigh": 158.31
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 24.62,
+          "billed": 18.57,
+          "billedHigh": 22.98
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 80.41,
+          "billed": 57.35,
+          "billedHigh": 70.61
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 35.04,
+          "billed": 32.99,
+          "billedHigh": 41.11
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 97.92,
+          "billed": 90.54,
+          "billedHigh": 111.87
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "2/6",
+          "moves": 128,
+          "arcMethod": 41.99,
+          "billed": 38.04,
+          "billedHigh": 46.98
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 81.77,
+          "billed": 56.09,
+          "billedHigh": 68.84
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 564,
+          "arcMethod": 167.99,
+          "billed": 147.63,
+          "billedHigh": 182.82
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "1/10",
+          "moves": 548,
+          "arcMethod": 134.06,
+          "billed": 126.4,
+          "billedHigh": 157.4
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 266,
+          "arcMethod": 85.82,
+          "billed": 81.97,
+          "billedHigh": 101.42
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 30.98,
+          "billed": 21.02,
+          "billedHigh": 25.85
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 612,
+          "arcMethod": 161.25,
+          "billed": 122.83,
+          "billedHigh": 151.74
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 32.03,
+          "billed": 26.98,
+          "billedHigh": 33.43
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 238,
+          "arcMethod": 75.18,
+          "billed": 72.05,
+          "billedHigh": 89.75
+        },
+        "s5i5": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 483,
+          "arcMethod": 155.81,
+          "billed": 133.18,
+          "billedHigh": 164.82
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 23.34,
+          "billed": 11.99,
+          "billedHigh": 14.59
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 48.68,
+          "billed": 30.06,
+          "billedHigh": 36.73
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 96.11,
+          "billed": 81.12,
+          "billedHigh": 100.5
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 324,
+          "arcMethod": 66.99,
+          "billed": 48.24,
+          "billedHigh": 59.22
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 29.25,
+          "billed": 21.61,
+          "billedHigh": 26.69
+        },
+        "tn36": {
+          "state": "NOT_FINISHED",
+          "levels": "1/7",
+          "moves": 399,
+          "arcMethod": 125.26,
+          "billed": 105.83,
+          "billedHigh": 130.85
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 92.41,
+          "billed": 86.65,
+          "billedHigh": 106.37
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 20.22,
+          "billed": 15.68,
+          "billedHigh": 19.2
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 9.51,
+          "billed": 7.77,
+          "billedHigh": 9.63
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 113.44,
+          "billed": 107.77,
+          "billedHigh": 134.3
+        }
+      },
+      "model": "gpt-5-6-sol",
+      "priceKey": "gpt-5.6-sol",
+      "harness": "standard",
+      "effort": "medium",
+      "resultsSlug": "openai-gpt-5-6-sol",
+      "semiPrivateCost": 12971.17,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 10.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-sol"
+      }
+    },
+    "openai-gpt-5-6-sol-xhigh": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 36,
+      "levelTotal": 183,
+      "moves": 8125,
+      "input": 1153021185,
+      "cached": 179545088,
+      "output": 32134825,
+      "reasoning": 31861019,
+      "longRequests": 1,
+      "requests": 8061,
+      "arcMethod": 2627.39,
+      "billed": 2304.21,
+      "billedHigh": 2790.95,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "2/8",
+          "moves": 410,
+          "arcMethod": 149.53,
+          "billed": 144.15,
+          "billedHigh": 175.33
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 25.33,
+          "billed": 19.63,
+          "billedHigh": 23.92
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 103,
+          "arcMethod": 29.74,
+          "billed": 16.71,
+          "billedHigh": 19.69
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 160,
+          "arcMethod": 46.52,
+          "billed": 44.39,
+          "billedHigh": 53.46
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 343,
+          "arcMethod": 119.52,
+          "billed": 110.23,
+          "billedHigh": 134.69
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "4/6",
+          "moves": 296,
+          "arcMethod": 102.44,
+          "billed": 96.26,
+          "billedHigh": 116.47
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 87.78,
+          "billed": 64.42,
+          "billedHigh": 76.47
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "1/7",
+          "moves": 566,
+          "arcMethod": 187.9,
+          "billed": 171.67,
+          "billedHigh": 208.6
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "1/10",
+          "moves": 130,
+          "arcMethod": 35.7,
+          "billed": 30.06,
+          "billedHigh": 36.51
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "5/8",
+          "moves": 382,
+          "arcMethod": 147.46,
+          "billed": 143.98,
+          "billedHigh": 173.27
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "2/7",
+          "moves": 567,
+          "arcMethod": 193.85,
+          "billed": 171.91,
+          "billedHigh": 209.52
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 189,
+          "arcMethod": 56.13,
+          "billed": 45.18,
+          "billedHigh": 54.48
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 195,
+          "arcMethod": 63.19,
+          "billed": 48.91,
+          "billedHigh": 58.43
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "2/8",
+          "moves": 492,
+          "arcMethod": 170.58,
+          "billed": 162.8,
+          "billedHigh": 199.89
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 33.91,
+          "billed": 30.11,
+          "billedHigh": 36.73
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 23.92,
+          "billed": 13.21,
+          "billedHigh": 15.91
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "2/6",
+          "moves": 224,
+          "arcMethod": 63.55,
+          "billed": 34.61,
+          "billedHigh": 40.97
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 978,
+          "arcMethod": 344.14,
+          "billed": 317.55,
+          "billedHigh": 385.96
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "3/6",
+          "moves": 554,
+          "arcMethod": 150.95,
+          "billed": 127.05,
+          "billedHigh": 152.11
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 33.84,
+          "billed": 24.71,
+          "billedHigh": 29.87
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "2/7",
+          "moves": 385,
+          "arcMethod": 128.7,
+          "billed": 97.89,
+          "billedHigh": 115.88
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 77,
+          "arcMethod": 32.47,
+          "billed": 28.1,
+          "billedHigh": 32.62
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 270,
+          "arcMethod": 51.39,
+          "billed": 31.02,
+          "billedHigh": 36.06
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "3/7",
+          "moves": 348,
+          "arcMethod": 123.61,
+          "billed": 111.77,
+          "billedHigh": 135.45
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 661,
+          "arcMethod": 225.24,
+          "billed": 217.86,
+          "billedHigh": 268.64
+        }
+      },
+      "model": "gpt-5-6-sol",
+      "priceKey": "gpt-5.6-sol",
+      "harness": "standard",
+      "effort": "xhigh",
+      "resultsSlug": "openai-gpt-5-6-sol",
+      "semiPrivateCost": 19216.38,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 10.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-sol"
+      }
+    },
+    "openai-gpt-5-6-terra-high": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 6,
+      "levelTotal": 183,
+      "moves": 5402,
+      "input": 757907711,
+      "cached": 118536192,
+      "output": 7159774,
+      "reasoning": 6987171,
+      "longRequests": 1,
+      "requests": 5370,
+      "arcMethod": 1601.73,
+      "billed": 1388.37,
+      "billedHigh": 1708.05,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 51.75,
+          "billed": 49.97,
+          "billedHigh": 61.86
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 28.63,
+          "billed": 25.73,
+          "billedHigh": 31.75
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 80.43,
+          "billed": 55.53,
+          "billedHigh": 67.76
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 37.25,
+          "billed": 36.23,
+          "billedHigh": 44.69
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 99.04,
+          "billed": 96.69,
+          "billedHigh": 119.3
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 71,
+          "arcMethod": 23.94,
+          "billed": 21.34,
+          "billedHigh": 26.05
+        },
+        "g50t": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 93.0,
+          "billed": 56.06,
+          "billedHigh": 68.1
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 44.67,
+          "billed": 37.91,
+          "billedHigh": 46.4
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 39.19,
+          "billed": 38.23,
+          "billedHigh": 47.67
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 211,
+          "arcMethod": 78.62,
+          "billed": 76.3,
+          "billedHigh": 92.21
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 33.63,
+          "billed": 27.42,
+          "billedHigh": 33.65
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 645,
+          "arcMethod": 184.59,
+          "billed": 161.1,
+          "billedHigh": 198.67
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 35.12,
+          "billed": 26.01,
+          "billedHigh": 31.54
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 41.0,
+          "billed": 39.18,
+          "billedHigh": 48.61
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 31.5,
+          "billed": 28.58,
+          "billedHigh": 35.36
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 189,
+          "arcMethod": 55.53,
+          "billed": 36.62,
+          "billedHigh": 44.54
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 53.32,
+          "billed": 42.38,
+          "billedHigh": 51.92
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 99.43,
+          "billed": 87.52,
+          "billedHigh": 107.75
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 359,
+          "arcMethod": 80.93,
+          "billed": 69.72,
+          "billedHigh": 85.94
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 30.07,
+          "billed": 24.7,
+          "billedHigh": 30.41
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 457,
+          "arcMethod": 145.11,
+          "billed": 127.97,
+          "billedHigh": 157.4
+        },
+        "tr87": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 89.42,
+          "billed": 87.31,
+          "billedHigh": 107.96
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 21.08,
+          "billed": 14.96,
+          "billedHigh": 18.08
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 9.56,
+          "billed": 7.82,
+          "billedHigh": 9.68
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 114.93,
+          "billed": 113.11,
+          "billedHigh": 140.78
+        }
+      },
+      "model": "gpt-5-6-terra",
+      "priceKey": "gpt-5.6-terra",
+      "harness": "standard",
+      "effort": "high",
+      "resultsSlug": "openai-gpt-5-6-terra",
+      "semiPrivateCost": 5881.39,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 12.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-terra"
+      }
+    },
+    "openai-gpt-5-6-terra-low": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 2,
+      "levelTotal": 183,
+      "moves": 4101,
+      "input": 561148752,
+      "cached": 78849280,
+      "output": 414012,
+      "reasoning": 362223,
+      "longRequests": 0,
+      "requests": 4075,
+      "arcMethod": 1127.27,
+      "billed": 985.34,
+      "billedHigh": 1226.49,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 49.61,
+          "billed": 47.76,
+          "billedHigh": 59.62
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 27.1,
+          "billed": 24.84,
+          "billedHigh": 30.95
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 86,
+          "arcMethod": 24.36,
+          "billed": 15.33,
+          "billedHigh": 18.89
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 34.86,
+          "billed": 33.88,
+          "billedHigh": 42.28
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 93.06,
+          "billed": 90.91,
+          "billedHigh": 113.5
+        },
+        "ft09": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 215,
+          "arcMethod": 58.13,
+          "billed": 46.83,
+          "billedHigh": 58.05
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 87.08,
+          "billed": 54.17,
+          "billedHigh": 66.7
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 43.07,
+          "billed": 41.27,
+          "billedHigh": 51.51
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "1/10",
+          "moves": 514,
+          "arcMethod": 129.47,
+          "billed": 120.53,
+          "billedHigh": 150.29
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 206,
+          "arcMethod": 65.01,
+          "billed": 62.81,
+          "billedHigh": 78.33
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 32.23,
+          "billed": 27.95,
+          "billedHigh": 34.8
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 39.77,
+          "billed": 38.74,
+          "billedHigh": 48.37
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 32.8,
+          "billed": 27.88,
+          "billedHigh": 34.68
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 39.81,
+          "billed": 38.01,
+          "billedHigh": 47.44
+        },
+        "s5i5": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 80,
+          "arcMethod": 23.66,
+          "billed": 21.76,
+          "billedHigh": 27.12
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 24.92,
+          "billed": 19.86,
+          "billedHigh": 24.66
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 49.71,
+          "billed": 38.14,
+          "billedHigh": 47.28
+        },
+        "sk48": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 94.28,
+          "billed": 85.23,
+          "billedHigh": 106.22
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 195,
+          "arcMethod": 40.88,
+          "billed": 34.56,
+          "billedHigh": 42.97
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 30.17,
+          "billed": 22.08,
+          "billedHigh": 27.34
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 160,
+          "arcMethod": 48.1,
+          "billed": 44.25,
+          "billedHigh": 55.17
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 59,
+          "arcMethod": 17.14,
+          "billed": 15.38,
+          "billedHigh": 19.17
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 22.91,
+          "billed": 17.45,
+          "billedHigh": 21.63
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 9.4,
+          "billed": 7.66,
+          "billedHigh": 9.52
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 36,
+          "arcMethod": 9.73,
+          "billed": 8.04,
+          "billedHigh": 9.99
+        }
+      },
+      "model": "gpt-5-6-terra",
+      "priceKey": "gpt-5.6-terra",
+      "harness": "standard",
+      "effort": "low",
+      "resultsSlug": "openai-gpt-5-6-terra",
+      "semiPrivateCost": 5068.48,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 12.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-terra"
+      }
+    },
+    "openai-gpt-5-6-terra-max": {
+      "runs": 24,
+      "wins": 0,
+      "levels": 15,
+      "levelTotal": 176,
+      "moves": 6812,
+      "input": 973894617,
+      "cached": 125301760,
+      "output": 47349934,
+      "reasoning": 47049643,
+      "longRequests": 4,
+      "requests": 6795,
+      "arcMethod": 2515.99,
+      "billed": 2290.45,
+      "billedHigh": 2714.74,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "2/8",
+          "moves": 492,
+          "arcMethod": 201.7,
+          "billed": 197.79,
+          "billedHigh": 236.11
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 33.59,
+          "billed": 30.57,
+          "billedHigh": 36.56
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 92.94,
+          "billed": 71.47,
+          "billedHigh": 85.0
+        },
+        "cn04": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 366,
+          "arcMethod": 117.67,
+          "billed": 115.49,
+          "billedHigh": 137.38
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 114.71,
+          "billed": 111.14,
+          "billedHigh": 133.54
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "3/6",
+          "moves": 182,
+          "arcMethod": 73.44,
+          "billed": 69.4,
+          "billedHigh": 82.66
+        },
+        "g50t": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 102.71,
+          "billed": 74.27,
+          "billedHigh": 85.93
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "1/7",
+          "moves": 582,
+          "arcMethod": 214.92,
+          "billed": 200.58,
+          "billedHigh": 238.79
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 47.82,
+          "billed": 43.18,
+          "billedHigh": 51.43
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 198,
+          "arcMethod": 88.87,
+          "billed": 85.84,
+          "billedHigh": 100.55
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 39.79,
+          "billed": 35.69,
+          "billedHigh": 42.77
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 628,
+          "arcMethod": 210.38,
+          "billed": 170.15,
+          "billedHigh": 199.96
+        },
+        "r11l": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 42.02,
+          "billed": 34.05,
+          "billedHigh": 40.02
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "2/8",
+          "moves": 633,
+          "arcMethod": 259.63,
+          "billed": 256.45,
+          "billedHigh": 306.26
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "2/8",
+          "moves": 671,
+          "arcMethod": 268.14,
+          "billed": 254.13,
+          "billedHigh": 303.64
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 25.1,
+          "billed": 13.31,
+          "billedHigh": 15.39
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 53,
+          "arcMethod": 18.57,
+          "billed": 13.71,
+          "billedHigh": 16.09
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 117.96,
+          "billed": 105.74,
+          "billedHigh": 125.95
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 302,
+          "arcMethod": 80.63,
+          "billed": 69.74,
+          "billedHigh": 82.22
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 38.97,
+          "billed": 28.69,
+          "billedHigh": 33.71
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 153.63,
+          "billed": 146.57,
+          "billedHigh": 166.05
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 26.0,
+          "billed": 21.65,
+          "billedHigh": 24.85
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 11.32,
+          "billed": 9.2,
+          "billedHigh": 10.96
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 135.49,
+          "billed": 131.63,
+          "billedHigh": 158.94
+        }
+      },
+      "model": "gpt-5-6-terra",
+      "priceKey": "gpt-5.6-terra",
+      "harness": "standard",
+      "effort": "max",
+      "resultsSlug": "openai-gpt-5-6-terra",
+      "semiPrivateCost": 7918.31,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 12.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-terra"
+      }
+    },
+    "openai-gpt-5-6-terra-medium": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 3,
+      "levelTotal": 183,
+      "moves": 4891,
+      "input": 682461751,
+      "cached": 95812864,
+      "output": 1302230,
+      "reasoning": 1189836,
+      "longRequests": 0,
+      "requests": 4853,
+      "arcMethod": 1380.55,
+      "billed": 1208.09,
+      "billedHigh": 1501.41,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 49.97,
+          "billed": 48.16,
+          "billedHigh": 60.03
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 26.6,
+          "billed": 24.18,
+          "billedHigh": 30.11
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 77.39,
+          "billed": 53.95,
+          "billedHigh": 66.53
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 35.4,
+          "billed": 34.4,
+          "billedHigh": 42.79
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 94.12,
+          "billed": 91.91,
+          "billedHigh": 114.48
+        },
+        "ft09": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 215,
+          "arcMethod": 62.5,
+          "billed": 48.05,
+          "billedHigh": 59.42
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 88.51,
+          "billed": 57.6,
+          "billedHigh": 70.87
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 43.04,
+          "billed": 40.01,
+          "billedHigh": 49.78
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 38.68,
+          "billed": 35.46,
+          "billedHigh": 44.17
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 211,
+          "arcMethod": 66.31,
+          "billed": 64.13,
+          "billedHigh": 79.92
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 32.45,
+          "billed": 28.42,
+          "billedHigh": 35.34
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 40.32,
+          "billed": 39.29,
+          "billedHigh": 48.92
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 33.27,
+          "billed": 27.92,
+          "billedHigh": 34.66
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 271,
+          "arcMethod": 85.4,
+          "billed": 83.55,
+          "billedHigh": 104.26
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 30.85,
+          "billed": 28.15,
+          "billedHigh": 34.99
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 90,
+          "arcMethod": 23.1,
+          "billed": 12.58,
+          "billedHigh": 15.33
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 51.18,
+          "billed": 37.55,
+          "billedHigh": 46.34
+        },
+        "sk48": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 96.06,
+          "billed": 88.97,
+          "billedHigh": 110.84
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 454,
+          "arcMethod": 99.12,
+          "billed": 86.02,
+          "billedHigh": 106.9
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 30.11,
+          "billed": 23.47,
+          "billedHigh": 29.07
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 160,
+          "arcMethod": 46.6,
+          "billed": 38.61,
+          "billedHigh": 47.95
+        },
+        "tr87": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 85.32,
+          "billed": 83.5,
+          "billedHigh": 104.15
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 21.14,
+          "billed": 12.56,
+          "billedHigh": 15.38
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 9.43,
+          "billed": 7.7,
+          "billedHigh": 9.56
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 113.68,
+          "billed": 111.94,
+          "billedHigh": 139.62
+        }
+      },
+      "model": "gpt-5-6-terra",
+      "priceKey": "gpt-5.6-terra",
+      "harness": "standard",
+      "effort": "medium",
+      "resultsSlug": "openai-gpt-5-6-terra",
+      "semiPrivateCost": 5895.31,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 12.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-terra"
+      }
+    },
+    "openai-gpt-5-6-terra-xhigh": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 11,
+      "levelTotal": 183,
+      "moves": 6787,
+      "input": 977442460,
+      "cached": 145784576,
+      "output": 26865018,
+      "reasoning": 26649686,
+      "longRequests": 3,
+      "requests": 6755,
+      "arcMethod": 2277.27,
+      "billed": 2014.85,
+      "billedHigh": 2430.68,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 54.69,
+          "billed": 52.93,
+          "billedHigh": 64.74
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 31.07,
+          "billed": 28.59,
+          "billedHigh": 34.91
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 88.58,
+          "billed": 68.29,
+          "billedHigh": 82.65
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 37.6,
+          "billed": 36.55,
+          "billedHigh": 44.94
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 105.64,
+          "billed": 102.99,
+          "billedHigh": 125.63
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "1/6",
+          "moves": 67,
+          "arcMethod": 22.76,
+          "billed": 20.89,
+          "billedHigh": 25.32
+        },
+        "g50t": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 89.28,
+          "billed": 57.23,
+          "billedHigh": 68.46
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 46.23,
+          "billed": 39.94,
+          "billedHigh": 48.51
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 43.9,
+          "billed": 39.63,
+          "billedHigh": 48.12
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 213,
+          "arcMethod": 90.31,
+          "billed": 87.51,
+          "billedHigh": 103.61
+        },
+        "ls20": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 647,
+          "arcMethod": 217.44,
+          "billed": 193.9,
+          "billedHigh": 235.83
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 47.56,
+          "billed": 46.25,
+          "billedHigh": 55.81
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 188,
+          "arcMethod": 66.2,
+          "billed": 53.6,
+          "billedHigh": 63.78
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 278,
+          "arcMethod": 101.85,
+          "billed": 99.93,
+          "billedHigh": 121.37
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 476,
+          "arcMethod": 178.31,
+          "billed": 164.56,
+          "billedHigh": 198.38
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 189,
+          "arcMethod": 53.7,
+          "billed": 32.99,
+          "billedHigh": 39.27
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 181,
+          "arcMethod": 55.34,
+          "billed": 40.18,
+          "billedHigh": 48.58
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 1093,
+          "arcMethod": 383.89,
+          "billed": 336.54,
+          "billedHigh": 408.1
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 323,
+          "arcMethod": 74.68,
+          "billed": 61.14,
+          "billedHigh": 73.86
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 31.54,
+          "billed": 24.66,
+          "billedHigh": 30.09
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 447,
+          "arcMethod": 156.35,
+          "billed": 142.89,
+          "billedHigh": 173.23
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 146.15,
+          "billed": 138.73,
+          "billedHigh": 158.07
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 20.93,
+          "billed": 15.3,
+          "billedHigh": 18.25
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 10.69,
+          "billed": 8.95,
+          "billedHigh": 10.81
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 122.55,
+          "billed": 120.68,
+          "billedHigh": 148.35
+        }
+      },
+      "model": "gpt-5-6-terra",
+      "priceKey": "gpt-5.6-terra",
+      "harness": "standard",
+      "effort": "xhigh",
+      "resultsSlug": "openai-gpt-5-6-terra",
+      "semiPrivateCost": 6804.04,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.2,
+        "cacheWrite": 2.5,
+        "output": 12.0,
+        "long": null,
+        "source": "OpenRouter openai/gpt-5.6-terra"
+      }
+    },
+    "openai-gpt-6-astra-high": {
+      "runs": 25,
+      "wins": 11,
+      "levels": 132,
+      "levelTotal": 183,
+      "moves": 14141,
+      "input": 2015523108,
+      "cached": 352117601,
+      "output": 5203161,
+      "reasoning": 4237166,
+      "longRequests": 4,
+      "requests": 14034,
+      "arcMethod": 20415.39,
+      "billed": 17252.23,
+      "billedHigh": 21411.99,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 270,
+          "arcMethod": 416.64,
+          "billed": 387.8,
+          "billedHigh": 483.0
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 256,
+          "arcMethod": 222.06,
+          "billed": 154.91,
+          "billedHigh": 190.9
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 113,
+          "arcMethod": 162.92,
+          "billed": 115.02,
+          "billedHigh": 142.15
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 357,
+          "arcMethod": 510.06,
+          "billed": 487.63,
+          "billedHigh": 607.05
+        },
+        "dc22": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 842,
+          "arcMethod": 1336.42,
+          "billed": 1235.62,
+          "billedHigh": 1539.27
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 109.12,
+          "billed": 95.79,
+          "billedHigh": 119.23
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 340.8,
+          "billed": 299.17,
+          "billedHigh": 371.62
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "6/7",
+          "moves": 1573,
+          "arcMethod": 2433.83,
+          "billed": 1968.15,
+          "billedHigh": 2439.68
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "3/10",
+          "moves": 485,
+          "arcMethod": 543.78,
+          "billed": 420.93,
+          "billedHigh": 520.02
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 106,
+          "arcMethod": 162.68,
+          "billed": 148.33,
+          "billedHigh": 184.73
+        },
+        "ls20": {
+          "state": "GAME_OVER",
+          "levels": "4/7",
+          "moves": 808,
+          "arcMethod": 1158.28,
+          "billed": 881.78,
+          "billedHigh": 1091.94
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 1376,
+          "arcMethod": 2147.28,
+          "billed": 1987.34,
+          "billedHigh": 2474.71
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 100,
+          "arcMethod": 139.6,
+          "billed": 98.66,
+          "billedHigh": 121.6
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "7/8",
+          "moves": 1624,
+          "arcMethod": 2092.93,
+          "billed": 1508.7,
+          "billedHigh": 1859.54
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 258,
+          "arcMethod": 406.06,
+          "billed": 383.99,
+          "billedHigh": 478.6
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 135,
+          "arcMethod": 143.54,
+          "billed": 89.72,
+          "billedHigh": 110.44
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "4/6",
+          "moves": 824,
+          "arcMethod": 1186.3,
+          "billed": 827.42,
+          "billedHigh": 1021.81
+        },
+        "sk48": {
+          "state": "GAME_OVER",
+          "levels": "4/8",
+          "moves": 1490,
+          "arcMethod": 2354.57,
+          "billed": 2071.98,
+          "billedHigh": 2573.34
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 177,
+          "arcMethod": 214.81,
+          "billed": 183.58,
+          "billedHigh": 227.78
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "6/9",
+          "moves": 246,
+          "arcMethod": 340.1,
+          "billed": 287.96,
+          "billedHigh": 357.03
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "5/7",
+          "moves": 425,
+          "arcMethod": 572.94,
+          "billed": 435.17,
+          "billedHigh": 536.72
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 199,
+          "arcMethod": 290.73,
+          "billed": 253.88,
+          "billedHigh": 315.19
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 98,
+          "arcMethod": 77.42,
+          "billed": 42.69,
+          "billedHigh": 52.09
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "6/7",
+          "moves": 1099,
+          "arcMethod": 1735.35,
+          "billed": 1584.28,
+          "billedHigh": 1968.77
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "6/9",
+          "moves": 815,
+          "arcMethod": 1317.17,
+          "billed": 1301.71,
+          "billedHigh": 1624.78
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "standard",
+      "effort": "high",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 40704.722830000006,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-high-provider-adapter": {
+      "runs": 25,
+      "wins": 25,
+      "levels": 183,
+      "levelTotal": 183,
+      "moves": 7085,
+      "input": 901138267,
+      "cached": 447253876,
+      "output": 831782,
+      "reasoning": 772857,
+      "longRequests": 2,
+      "requests": 7078,
+      "arcMethod": 9052.97,
+      "billed": 5033.31,
+      "billedHigh": 6169.43,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 257,
+          "arcMethod": 323.41,
+          "billed": 117.45,
+          "billedHigh": 140.9
+        },
+        "bp35": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 488,
+          "arcMethod": 739.39,
+          "billed": 678.19,
+          "billedHigh": 845.05
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 83,
+          "arcMethod": 94.88,
+          "billed": 51.73,
+          "billedHigh": 63.19
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 215,
+          "arcMethod": 265.27,
+          "billed": 96.27,
+          "billedHigh": 115.44
+        },
+        "dc22": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 442,
+          "arcMethod": 545.74,
+          "billed": 208.81,
+          "billedHigh": 251.38
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 93.12,
+          "billed": 32.07,
+          "billedHigh": 38.23
+        },
+        "g50t": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 296,
+          "arcMethod": 482.08,
+          "billed": 418.26,
+          "billedHigh": 520.76
+        },
+        "ka59": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 339,
+          "arcMethod": 388.63,
+          "billed": 187.54,
+          "billedHigh": 228.68
+        },
+        "lf52": {
+          "state": "WIN",
+          "levels": "10/10",
+          "moves": 770,
+          "arcMethod": 1037.14,
+          "billed": 779.77,
+          "billedHigh": 963.58
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 94,
+          "arcMethod": 115.06,
+          "billed": 45.16,
+          "billedHigh": 54.38
+        },
+        "ls20": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 468,
+          "arcMethod": 548.09,
+          "billed": 215.75,
+          "billedHigh": 260.14
+        },
+        "m0r0": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 228,
+          "arcMethod": 284.47,
+          "billed": 109.73,
+          "billedHigh": 132.14
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 79,
+          "arcMethod": 91.21,
+          "billed": 58.36,
+          "billedHigh": 71.94
+        },
+        "re86": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 616,
+          "arcMethod": 738.93,
+          "billed": 283.71,
+          "billedHigh": 341.74
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 247,
+          "arcMethod": 310.46,
+          "billed": 113.6,
+          "billedHigh": 136.31
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 134.53,
+          "billed": 104.36,
+          "billedHigh": 129.35
+        },
+        "sc25": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 140,
+          "arcMethod": 163.29,
+          "billed": 83.32,
+          "billedHigh": 101.82
+        },
+        "sk48": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 433,
+          "arcMethod": 574.25,
+          "billed": 322.71,
+          "billedHigh": 395.94
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 144,
+          "arcMethod": 158.93,
+          "billed": 63.76,
+          "billedHigh": 76.95
+        },
+        "su15": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 104,
+          "arcMethod": 160.22,
+          "billed": 149.92,
+          "billedHigh": 186.89
+        },
+        "tn36": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 311,
+          "arcMethod": 367.49,
+          "billed": 201.5,
+          "billedHigh": 246.53
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 148,
+          "arcMethod": 162.9,
+          "billed": 62.42,
+          "billedHigh": 75.14
+        },
+        "tu93": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 218,
+          "arcMethod": 353.08,
+          "billed": 307.46,
+          "billedHigh": 382.7
+        },
+        "vc33": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 182,
+          "arcMethod": 182.11,
+          "billed": 76.57,
+          "billedHigh": 92.64
+        },
+        "wa30": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 584,
+          "arcMethod": 738.33,
+          "billed": 264.91,
+          "billedHigh": 317.6
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "provider-adapter",
+      "effort": "high",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 18816.63138,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-low": {
+      "runs": 25,
+      "wins": 4,
+      "levels": 98,
+      "levelTotal": 183,
+      "moves": 20802,
+      "input": 3003322142,
+      "cached": 434283549,
+      "output": 1671820,
+      "reasoning": 331792,
+      "longRequests": 0,
+      "requests": 20599,
+      "arcMethod": 30116.81,
+      "billed": 26208.26,
+      "billedHigh": 32630.86,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 318,
+          "arcMethod": 487.07,
+          "billed": 453.98,
+          "billedHigh": 566.32
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 288,
+          "arcMethod": 241.98,
+          "billed": 84.74,
+          "billedHigh": 101.48
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 364.05,
+          "billed": 234.72,
+          "billedHigh": 289.6
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 1190,
+          "arcMethod": 1697.0,
+          "billed": 1673.7,
+          "billedHigh": 2090.26
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 3423,
+          "arcMethod": 5194.51,
+          "billed": 4293.59,
+          "billedHigh": 5338.83
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 109.1,
+          "billed": 95.76,
+          "billedHigh": 119.24
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 337.45,
+          "billed": 293.36,
+          "billedHigh": 365.08
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "6/7",
+          "moves": 2226,
+          "arcMethod": 3396.89,
+          "billed": 2721.46,
+          "billedHigh": 3381.01
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "2/10",
+          "moves": 707,
+          "arcMethod": 844.09,
+          "billed": 761.8,
+          "billedHigh": 949.59
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 167,
+          "arcMethod": 260.96,
+          "billed": 245.29,
+          "billedHigh": 306.01
+        },
+        "ls20": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 635,
+          "arcMethod": 969.53,
+          "billed": 849.63,
+          "billedHigh": 1058.32
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "3/6",
+          "moves": 551,
+          "arcMethod": 785.18,
+          "billed": 756.2,
+          "billedHigh": 943.97
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "2/6",
+          "moves": 282,
+          "arcMethod": 346.93,
+          "billed": 245.31,
+          "billedHigh": 303.44
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "6/8",
+          "moves": 2511,
+          "arcMethod": 3892.31,
+          "billed": 3462.56,
+          "billedHigh": 4312.81
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 299,
+          "arcMethod": 467.63,
+          "billed": 437.56,
+          "billedHigh": 545.77
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 149,
+          "arcMethod": 165.09,
+          "billed": 92.89,
+          "billedHigh": 114.01
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "2/6",
+          "moves": 183,
+          "arcMethod": 243.42,
+          "billed": 156.01,
+          "billedHigh": 192.51
+        },
+        "sk48": {
+          "state": "GAME_OVER",
+          "levels": "4/8",
+          "moves": 1531,
+          "arcMethod": 2351.98,
+          "billed": 2111.84,
+          "billedHigh": 2631.56
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 1377,
+          "arcMethod": 1622.47,
+          "billed": 1311.62,
+          "billedHigh": 1629.4
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "3/9",
+          "moves": 636,
+          "arcMethod": 831.44,
+          "billed": 744.92,
+          "billedHigh": 928.28
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "5/7",
+          "moves": 394,
+          "arcMethod": 514.98,
+          "billed": 325.01,
+          "billedHigh": 400.38
+        },
+        "tr87": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 1174,
+          "arcMethod": 1838.01,
+          "billed": 1788.3,
+          "billedHigh": 2232.54
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 98,
+          "arcMethod": 74.36,
+          "billed": 40.74,
+          "billedHigh": 49.92
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "5/7",
+          "moves": 338,
+          "arcMethod": 525.83,
+          "billed": 491.0,
+          "billedHigh": 612.5
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "6/9",
+          "moves": 1585,
+          "arcMethod": 2554.55,
+          "billed": 2536.26,
+          "billedHigh": 3168.03
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "standard",
+      "effort": "low",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 38166.47030000001,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-low-provider-adapter": {
+      "runs": 25,
+      "wins": 25,
+      "levels": 183,
+      "levelTotal": 183,
+      "moves": 7595,
+      "input": 970661742,
+      "cached": 488730946,
+      "output": 4898087,
+      "reasoning": 4842133,
+      "longRequests": 2,
+      "requests": 7587,
+      "arcMethod": 9951.52,
+      "billed": 5561.36,
+      "billedHigh": 6768.17,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 256,
+          "arcMethod": 323.83,
+          "billed": 114.86,
+          "billedHigh": 137.05
+        },
+        "bp35": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 516,
+          "arcMethod": 868.05,
+          "billed": 809.77,
+          "billedHigh": 992.41
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 96,
+          "arcMethod": 110.95,
+          "billed": 62.69,
+          "billedHigh": 76.48
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 234,
+          "arcMethod": 294.02,
+          "billed": 103.63,
+          "billedHigh": 123.46
+        },
+        "dc22": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 445,
+          "arcMethod": 555.39,
+          "billed": 205.94,
+          "billedHigh": 245.7
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 77,
+          "arcMethod": 96.17,
+          "billed": 32.85,
+          "billedHigh": 39.1
+        },
+        "g50t": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 313,
+          "arcMethod": 512.66,
+          "billed": 459.77,
+          "billedHigh": 568.16
+        },
+        "ka59": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 332,
+          "arcMethod": 384.26,
+          "billed": 185.07,
+          "billedHigh": 224.14
+        },
+        "lf52": {
+          "state": "WIN",
+          "levels": "10/10",
+          "moves": 809,
+          "arcMethod": 1118.26,
+          "billed": 842.11,
+          "billedHigh": 1033.75
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 131,
+          "arcMethod": 162.3,
+          "billed": 55.36,
+          "billedHigh": 65.9
+        },
+        "ls20": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 440,
+          "arcMethod": 523.07,
+          "billed": 206.12,
+          "billedHigh": 247.31
+        },
+        "m0r0": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 309,
+          "arcMethod": 385.14,
+          "billed": 144.46,
+          "billedHigh": 172.82
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 79,
+          "arcMethod": 93.66,
+          "billed": 58.73,
+          "billedHigh": 71.91
+        },
+        "re86": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 619,
+          "arcMethod": 778.43,
+          "billed": 316.94,
+          "billedHigh": 381.38
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 251,
+          "arcMethod": 318.91,
+          "billed": 112.22,
+          "billedHigh": 133.79
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 135.88,
+          "billed": 106.98,
+          "billedHigh": 132.21
+        },
+        "sc25": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 146,
+          "arcMethod": 171.35,
+          "billed": 98.94,
+          "billedHigh": 120.74
+        },
+        "sk48": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 545,
+          "arcMethod": 727.63,
+          "billed": 409.76,
+          "billedHigh": 499.42
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 164,
+          "arcMethod": 182.77,
+          "billed": 76.22,
+          "billedHigh": 91.74
+        },
+        "su15": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 140,
+          "arcMethod": 209.7,
+          "billed": 191.56,
+          "billedHigh": 237.38
+        },
+        "tn36": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 227,
+          "arcMethod": 256.31,
+          "billed": 134.07,
+          "billedHigh": 163.6
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 153,
+          "arcMethod": 175.25,
+          "billed": 68.57,
+          "billedHigh": 82.21
+        },
+        "tu93": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 214,
+          "arcMethod": 357.6,
+          "billed": 311.67,
+          "billedHigh": 385.7
+        },
+        "vc33": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 202,
+          "arcMethod": 214.68,
+          "billed": 91.28,
+          "billedHigh": 110.13
+        },
+        "wa30": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 773,
+          "arcMethod": 995.22,
+          "billed": 361.8,
+          "billedHigh": 431.69
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "provider-adapter",
+      "effort": "low",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 21297.922310000005,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-max": {
+      "runs": 25,
+      "wins": 12,
+      "levels": 137,
+      "levelTotal": 183,
+      "moves": 10904,
+      "input": 1544507382,
+      "cached": 264467257,
+      "output": 17452023,
+      "reasoning": 16520584,
+      "longRequests": 2,
+      "requests": 10816,
+      "arcMethod": 16317.67,
+      "billed": 13941.5,
+      "billedHigh": 17142.41,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 261,
+          "arcMethod": 408.61,
+          "billed": 383.25,
+          "billedHigh": 475.78
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 259,
+          "arcMethod": 274.77,
+          "billed": 211.62,
+          "billedHigh": 257.29
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 138,
+          "arcMethod": 201.32,
+          "billed": 126.06,
+          "billedHigh": 153.44
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 215,
+          "arcMethod": 299.23,
+          "billed": 276.79,
+          "billedHigh": 342.23
+        },
+        "dc22": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 918,
+          "arcMethod": 1490.65,
+          "billed": 1348.75,
+          "billedHigh": 1667.68
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 111.06,
+          "billed": 99.07,
+          "billedHigh": 122.9
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 359.99,
+          "billed": 357.54,
+          "billedHigh": 440.94
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "6/7",
+          "moves": 785,
+          "arcMethod": 1250.35,
+          "billed": 1029.58,
+          "billedHigh": 1262.54
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "3/10",
+          "moves": 470,
+          "arcMethod": 588.02,
+          "billed": 479.43,
+          "billedHigh": 586.03
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 88,
+          "arcMethod": 136.47,
+          "billed": 123.37,
+          "billedHigh": 152.84
+        },
+        "ls20": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 861,
+          "arcMethod": 1336.61,
+          "billed": 1120.33,
+          "billedHigh": 1380.21
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "5/6",
+          "moves": 741,
+          "arcMethod": 1206.26,
+          "billed": 1095.23,
+          "billedHigh": 1348.55
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 83,
+          "arcMethod": 115.71,
+          "billed": 77.88,
+          "billedHigh": 94.75
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "7/8",
+          "moves": 840,
+          "arcMethod": 1256.96,
+          "billed": 1040.81,
+          "billedHigh": 1277.99
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 242,
+          "arcMethod": 388.04,
+          "billed": 371.21,
+          "billedHigh": 460.91
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 129.95,
+          "billed": 80.36,
+          "billedHigh": 98.3
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "4/6",
+          "moves": 774,
+          "arcMethod": 1132.14,
+          "billed": 769.1,
+          "billedHigh": 937.57
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "4/8",
+          "moves": 733,
+          "arcMethod": 1208.27,
+          "billed": 1048.03,
+          "billedHigh": 1287.99
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 196,
+          "arcMethod": 240.5,
+          "billed": 200.57,
+          "billedHigh": 246.86
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "5/9",
+          "moves": 293,
+          "arcMethod": 428.24,
+          "billed": 353.14,
+          "billedHigh": 429.59
+        },
+        "tn36": {
+          "state": "NOT_FINISHED",
+          "levels": "5/7",
+          "moves": 380,
+          "arcMethod": 564.97,
+          "billed": 418.55,
+          "billedHigh": 505.45
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 167,
+          "arcMethod": 252.55,
+          "billed": 216.41,
+          "billedHigh": 265.73
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 232,
+          "arcMethod": 194.13,
+          "billed": 109.52,
+          "billedHigh": 130.28
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "6/7",
+          "moves": 607,
+          "arcMethod": 1008.62,
+          "billed": 896.03,
+          "billedHigh": 1098.69
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "8/9",
+          "moves": 1032,
+          "arcMethod": 1734.24,
+          "billed": 1708.88,
+          "billedHigh": 2117.88
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "standard",
+      "effort": "max",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 26097.501720000007,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-max-provider-adapter": {
+      "runs": 25,
+      "wins": 25,
+      "levels": 183,
+      "levelTotal": 183,
+      "moves": 6485,
+      "input": 812875909,
+      "cached": 394690212,
+      "output": 886258,
+      "reasoning": 826970,
+      "longRequests": 0,
+      "requests": 6481,
+      "arcMethod": 8173.07,
+      "billed": 4620.86,
+      "billedHigh": 5666.32,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 253,
+          "arcMethod": 317.29,
+          "billed": 121.32,
+          "billedHigh": 145.88
+        },
+        "bp35": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 430,
+          "arcMethod": 661.1,
+          "billed": 608.49,
+          "billedHigh": 757.96
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 84,
+          "arcMethod": 87.63,
+          "billed": 48.44,
+          "billedHigh": 59.35
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 217,
+          "arcMethod": 271.02,
+          "billed": 104.07,
+          "billedHigh": 124.92
+        },
+        "dc22": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 434,
+          "arcMethod": 543.65,
+          "billed": 205.07,
+          "billedHigh": 246.52
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 92.08,
+          "billed": 33.24,
+          "billedHigh": 39.8
+        },
+        "g50t": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 290,
+          "arcMethod": 433.0,
+          "billed": 393.96,
+          "billedHigh": 491.07
+        },
+        "ka59": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 303,
+          "arcMethod": 320.98,
+          "billed": 156.43,
+          "billedHigh": 190.59
+        },
+        "lf52": {
+          "state": "WIN",
+          "levels": "10/10",
+          "moves": 738,
+          "arcMethod": 990.81,
+          "billed": 748.68,
+          "billedHigh": 928.14
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 109,
+          "arcMethod": 135.66,
+          "billed": 54.1,
+          "billedHigh": 65.02
+        },
+        "ls20": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 370,
+          "arcMethod": 416.52,
+          "billed": 174.59,
+          "billedHigh": 211.07
+        },
+        "m0r0": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 220,
+          "arcMethod": 275.15,
+          "billed": 105.95,
+          "billedHigh": 127.38
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 99,
+          "arcMethod": 119.37,
+          "billed": 75.06,
+          "billedHigh": 92.22
+        },
+        "re86": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 546,
+          "arcMethod": 668.97,
+          "billed": 264.32,
+          "billedHigh": 318.55
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 243,
+          "arcMethod": 304.5,
+          "billed": 116.19,
+          "billedHigh": 139.54
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 133.48,
+          "billed": 103.61,
+          "billedHigh": 128.62
+        },
+        "sc25": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 132,
+          "arcMethod": 139.02,
+          "billed": 74.95,
+          "billedHigh": 91.75
+        },
+        "sk48": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 346,
+          "arcMethod": 444.49,
+          "billed": 255.62,
+          "billedHigh": 313.51
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 152,
+          "arcMethod": 168.36,
+          "billed": 69.21,
+          "billedHigh": 83.49
+        },
+        "su15": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 108,
+          "arcMethod": 172.24,
+          "billed": 164.97,
+          "billedHigh": 205.17
+        },
+        "tn36": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 134,
+          "arcMethod": 134.7,
+          "billed": 63.66,
+          "billedHigh": 77.48
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 134,
+          "arcMethod": 145.24,
+          "billed": 55.73,
+          "billedHigh": 67.06
+        },
+        "tu93": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 191,
+          "arcMethod": 276.72,
+          "billed": 262.91,
+          "billedHigh": 327.74
+        },
+        "vc33": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 196,
+          "arcMethod": 214.08,
+          "billed": 92.97,
+          "billedHigh": 112.47
+        },
+        "wa30": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 557,
+          "arcMethod": 707.01,
+          "billed": 267.33,
+          "billedHigh": 321.03
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "provider-adapter",
+      "effort": "max",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 17331.95327,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-medium": {
+      "runs": 25,
+      "wins": 10,
+      "levels": 123,
+      "levelTotal": 183,
+      "moves": 18202,
+      "input": 2627725573,
+      "cached": 443583536,
+      "output": 2128481,
+      "reasoning": 793829,
+      "longRequests": 2,
+      "requests": 18018,
+      "arcMethod": 26383.68,
+      "billed": 22395.0,
+      "billedHigh": 27856.16,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 267,
+          "arcMethod": 409.76,
+          "billed": 384.63,
+          "billedHigh": 479.83
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 261,
+          "arcMethod": 213.45,
+          "billed": 133.27,
+          "billedHigh": 164.15
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 239,
+          "arcMethod": 336.23,
+          "billed": 221.52,
+          "billedHigh": 273.43
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 322,
+          "arcMethod": 454.04,
+          "billed": 433.17,
+          "billedHigh": 540.3
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 4219,
+          "arcMethod": 6451.27,
+          "billed": 5430.98,
+          "billedHigh": 6754.81
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 91,
+          "arcMethod": 133.01,
+          "billed": 119.67,
+          "billedHigh": 149.09
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 338.25,
+          "billed": 293.49,
+          "billedHigh": 365.02
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "5/7",
+          "moves": 898,
+          "arcMethod": 1343.04,
+          "billed": 1078.75,
+          "billedHigh": 1339.96
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "2/10",
+          "moves": 477,
+          "arcMethod": 570.09,
+          "billed": 514.55,
+          "billedHigh": 641.21
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 144,
+          "arcMethod": 223.63,
+          "billed": 206.83,
+          "billedHigh": 257.88
+        },
+        "ls20": {
+          "state": "GAME_OVER",
+          "levels": "4/7",
+          "moves": 1099,
+          "arcMethod": 1519.55,
+          "billed": 1065.82,
+          "billedHigh": 1318.52
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 1845,
+          "arcMethod": 2803.37,
+          "billed": 2562.62,
+          "billedHigh": 3194.36
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 96,
+          "arcMethod": 128.34,
+          "billed": 81.04,
+          "billedHigh": 99.79
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "6/8",
+          "moves": 2429,
+          "arcMethod": 3724.14,
+          "billed": 3237.01,
+          "billedHigh": 4028.23
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 258,
+          "arcMethod": 403.58,
+          "billed": 380.17,
+          "billedHigh": 474.25
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 127.3,
+          "billed": 78.49,
+          "billedHigh": 96.64
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "4/6",
+          "moves": 866,
+          "arcMethod": 1237.19,
+          "billed": 878.43,
+          "billedHigh": 1086.94
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "3/8",
+          "moves": 922,
+          "arcMethod": 1429.15,
+          "billed": 1264.06,
+          "billedHigh": 1573.89
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 545,
+          "arcMethod": 648.47,
+          "billed": 509.68,
+          "billedHigh": 632.13
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "6/9",
+          "moves": 263,
+          "arcMethod": 348.3,
+          "billed": 298.29,
+          "billedHigh": 371.01
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 369,
+          "arcMethod": 486.14,
+          "billed": 368.7,
+          "billedHigh": 456.55
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 338,
+          "arcMethod": 505.23,
+          "billed": 469.44,
+          "billedHigh": 584.48
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 260,
+          "arcMethod": 196.99,
+          "billed": 92.68,
+          "billedHigh": 112.67
+        },
+        "vc33": {
+          "state": "GAME_OVER",
+          "levels": "5/7",
+          "moves": 551,
+          "arcMethod": 858.92,
+          "billed": 814.26,
+          "billedHigh": 1015.74
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "6/9",
+          "moves": 929,
+          "arcMethod": 1494.26,
+          "billed": 1477.44,
+          "billedHigh": 1845.31
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "standard",
+      "effort": "medium",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 48090.34598999999,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-medium-provider-adapter": {
+      "runs": 25,
+      "wins": 25,
+      "levels": 183,
+      "levelTotal": 183,
+      "moves": 7021,
+      "input": 890422129,
+      "cached": 450794304,
+      "output": 5227163,
+      "reasoning": 5174436,
+      "longRequests": 0,
+      "requests": 7014,
+      "arcMethod": 9165.58,
+      "billed": 5108.43,
+      "billedHigh": 6207.5,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 262,
+          "arcMethod": 330.5,
+          "billed": 110.36,
+          "billedHigh": 131.15
+        },
+        "bp35": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 458,
+          "arcMethod": 768.33,
+          "billed": 713.3,
+          "billedHigh": 874.9
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 101,
+          "arcMethod": 112.31,
+          "billed": 59.12,
+          "billedHigh": 72.1
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 236,
+          "arcMethod": 294.82,
+          "billed": 106.18,
+          "billedHigh": 126.69
+        },
+        "dc22": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 444,
+          "arcMethod": 555.39,
+          "billed": 213.93,
+          "billedHigh": 255.29
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 92.8,
+          "billed": 32.28,
+          "billedHigh": 38.47
+        },
+        "g50t": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 289,
+          "arcMethod": 461.96,
+          "billed": 405.29,
+          "billedHigh": 500.27
+        },
+        "ka59": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 334,
+          "arcMethod": 367.08,
+          "billed": 173.75,
+          "billedHigh": 210.58
+        },
+        "lf52": {
+          "state": "WIN",
+          "levels": "10/10",
+          "moves": 737,
+          "arcMethod": 1066.35,
+          "billed": 820.78,
+          "billedHigh": 997.77
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 105,
+          "arcMethod": 130.54,
+          "billed": 42.22,
+          "billedHigh": 50.0
+        },
+        "ls20": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 458,
+          "arcMethod": 532.11,
+          "billed": 209.63,
+          "billedHigh": 251.85
+        },
+        "m0r0": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 260,
+          "arcMethod": 326.24,
+          "billed": 119.14,
+          "billedHigh": 142.32
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 79,
+          "arcMethod": 93.14,
+          "billed": 56.53,
+          "billedHigh": 69.08
+        },
+        "re86": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 598,
+          "arcMethod": 725.68,
+          "billed": 283.58,
+          "billedHigh": 340.49
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 244,
+          "arcMethod": 310.44,
+          "billed": 106.56,
+          "billedHigh": 126.99
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 135.1,
+          "billed": 105.13,
+          "billedHigh": 129.99
+        },
+        "sc25": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 166,
+          "arcMethod": 186.21,
+          "billed": 96.49,
+          "billedHigh": 117.39
+        },
+        "sk48": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 472,
+          "arcMethod": 628.8,
+          "billed": 357.15,
+          "billedHigh": 435.66
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 139,
+          "arcMethod": 158.68,
+          "billed": 66.03,
+          "billedHigh": 79.56
+        },
+        "su15": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 123,
+          "arcMethod": 204.55,
+          "billed": 196.94,
+          "billedHigh": 244.04
+        },
+        "tn36": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 144,
+          "arcMethod": 148.65,
+          "billed": 66.67,
+          "billedHigh": 80.77
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 158,
+          "arcMethod": 178.48,
+          "billed": 66.48,
+          "billedHigh": 79.49
+        },
+        "tu93": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 221,
+          "arcMethod": 380.86,
+          "billed": 327.72,
+          "billedHigh": 406.03
+        },
+        "vc33": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 186,
+          "arcMethod": 194.59,
+          "billed": 83.41,
+          "billedHigh": 100.62
+        },
+        "wa30": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 608,
+          "arcMethod": 781.98,
+          "billed": 289.77,
+          "billedHigh": 345.99
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "provider-adapter",
+      "effort": "medium",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 19284.776630000004,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-none": {
+      "runs": 25,
+      "wins": 10,
+      "levels": 123,
+      "levelTotal": 183,
+      "moves": 20764,
+      "input": 2971223746,
+      "cached": 461131052,
+      "output": 1180582,
+      "reasoning": 0,
+      "longRequests": 0,
+      "requests": 20588,
+      "arcMethod": 29771.27,
+      "billed": 25621.09,
+      "billedHigh": 31896.32,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 279,
+          "arcMethod": 426.58,
+          "billed": 397.64,
+          "billedHigh": 496.07
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 263,
+          "arcMethod": 208.79,
+          "billed": 64.92,
+          "billedHigh": 77.11
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 173,
+          "arcMethod": 235.87,
+          "billed": 145.28,
+          "billedHigh": 178.96
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 516,
+          "arcMethod": 765.78,
+          "billed": 722.12,
+          "billedHigh": 901.14
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 4064,
+          "arcMethod": 6073.86,
+          "billed": 4867.44,
+          "billedHigh": 6048.4
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 108.89,
+          "billed": 95.55,
+          "billedHigh": 119.01
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "2/7",
+          "moves": 1637,
+          "arcMethod": 1461.29,
+          "billed": 1228.81,
+          "billedHigh": 1528.19
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "5/7",
+          "moves": 876,
+          "arcMethod": 1303.5,
+          "billed": 1043.36,
+          "billedHigh": 1296.46
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "2/10",
+          "moves": 353,
+          "arcMethod": 422.85,
+          "billed": 379.92,
+          "billedHigh": 473.52
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 130,
+          "arcMethod": 200.77,
+          "billed": 184.73,
+          "billedHigh": 230.36
+        },
+        "ls20": {
+          "state": "GAME_OVER",
+          "levels": "4/7",
+          "moves": 1042,
+          "arcMethod": 1485.2,
+          "billed": 1139.7,
+          "billedHigh": 1414.12
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 1422,
+          "arcMethod": 2226.46,
+          "billed": 2124.52,
+          "billedHigh": 2652.03
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 147,
+          "arcMethod": 193.29,
+          "billed": 133.46,
+          "billedHigh": 165.03
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "6/8",
+          "moves": 2481,
+          "arcMethod": 3766.94,
+          "billed": 3217.65,
+          "billedHigh": 4004.54
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 283,
+          "arcMethod": 446.23,
+          "billed": 412.72,
+          "billedHigh": 514.76
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 163,
+          "arcMethod": 169.69,
+          "billed": 100.71,
+          "billedHigh": 123.85
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 246.67,
+          "billed": 165.15,
+          "billedHigh": 204.12
+        },
+        "sk48": {
+          "state": "GAME_OVER",
+          "levels": "3/8",
+          "moves": 1376,
+          "arcMethod": 2128.26,
+          "billed": 1887.06,
+          "billedHigh": 2351.4
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 361,
+          "arcMethod": 431.99,
+          "billed": 349.16,
+          "billedHigh": 433.88
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "4/9",
+          "moves": 634,
+          "arcMethod": 852.82,
+          "billed": 743.22,
+          "billedHigh": 925.71
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "5/7",
+          "moves": 496,
+          "arcMethod": 631.11,
+          "billed": 401.47,
+          "billedHigh": 494.79
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 287,
+          "arcMethod": 431.41,
+          "billed": 391.59,
+          "billedHigh": 488.15
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 98,
+          "arcMethod": 74.37,
+          "billed": 38.41,
+          "billedHigh": 46.95
+        },
+        "vc33": {
+          "state": "GAME_OVER",
+          "levels": "4/7",
+          "moves": 756,
+          "arcMethod": 1187.11,
+          "billed": 1120.28,
+          "billedHigh": 1398.03
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "8/9",
+          "moves": 2672,
+          "arcMethod": 4291.56,
+          "billed": 4266.2,
+          "billedHigh": 5329.74
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "standard",
+      "effort": "none",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 49791.11317000001,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-none-provider-adapter": {
+      "runs": 25,
+      "wins": 24,
+      "levels": 179,
+      "levelTotal": 183,
+      "moves": 8197,
+      "input": 1050873256,
+      "cached": 536688644,
+      "output": 7541020,
+      "reasoning": 7482298,
+      "longRequests": 16,
+      "requests": 8184,
+      "arcMethod": 10885.78,
+      "billed": 6125.58,
+      "billedHigh": 7427.03,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 256,
+          "arcMethod": 328.79,
+          "billed": 114.82,
+          "billedHigh": 136.93
+        },
+        "bp35": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 470,
+          "arcMethod": 843.69,
+          "billed": 841.69,
+          "billedHigh": 1027.52
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 98,
+          "arcMethod": 105.2,
+          "billed": 58.18,
+          "billedHigh": 71.03
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 226,
+          "arcMethod": 286.12,
+          "billed": 104.9,
+          "billedHigh": 125.18
+        },
+        "dc22": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 479,
+          "arcMethod": 607.27,
+          "billed": 228.64,
+          "billedHigh": 273.23
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 89,
+          "arcMethod": 112.39,
+          "billed": 41.81,
+          "billedHigh": 50.06
+        },
+        "g50t": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 350,
+          "arcMethod": 576.03,
+          "billed": 490.86,
+          "billedHigh": 606.22
+        },
+        "ka59": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 325,
+          "arcMethod": 366.88,
+          "billed": 174.74,
+          "billedHigh": 211.73
+        },
+        "lf52": {
+          "state": "WIN",
+          "levels": "10/10",
+          "moves": 741,
+          "arcMethod": 1055.57,
+          "billed": 813.87,
+          "billedHigh": 992.28
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 130,
+          "arcMethod": 162.41,
+          "billed": 57.3,
+          "billedHigh": 68.26
+        },
+        "ls20": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 493,
+          "arcMethod": 594.15,
+          "billed": 243.93,
+          "billedHigh": 291.83
+        },
+        "m0r0": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 267,
+          "arcMethod": 330.2,
+          "billed": 128.9,
+          "billedHigh": 154.56
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 95,
+          "arcMethod": 115.75,
+          "billed": 67.09,
+          "billedHigh": 81.79
+        },
+        "re86": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 676,
+          "arcMethod": 837.83,
+          "billed": 328.54,
+          "billedHigh": 394.66
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 254,
+          "arcMethod": 327.89,
+          "billed": 121.7,
+          "billedHigh": 145.55
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 135.43,
+          "billed": 105.53,
+          "billedHigh": 130.44
+        },
+        "sc25": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 146,
+          "arcMethod": 164.88,
+          "billed": 82.75,
+          "billedHigh": 100.32
+        },
+        "sk48": {
+          "state": "GAME_OVER",
+          "levels": "4/8",
+          "moves": 1314,
+          "arcMethod": 1819.44,
+          "billed": 1002.76,
+          "billedHigh": 1208.51
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 130,
+          "arcMethod": 152.72,
+          "billed": 70.45,
+          "billedHigh": 85.14
+        },
+        "su15": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 107,
+          "arcMethod": 160.51,
+          "billed": 149.37,
+          "billedHigh": 184.96
+        },
+        "tn36": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 180,
+          "arcMethod": 189.87,
+          "billed": 99.71,
+          "billedHigh": 121.21
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 179,
+          "arcMethod": 210.79,
+          "billed": 82.97,
+          "billedHigh": 99.45
+        },
+        "tu93": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 206,
+          "arcMethod": 329.73,
+          "billed": 302.76,
+          "billedHigh": 373.69
+        },
+        "vc33": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 203,
+          "arcMethod": 213.68,
+          "billed": 87.35,
+          "billedHigh": 104.99
+        },
+        "wa30": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 659,
+          "arcMethod": 858.57,
+          "billed": 324.95,
+          "billedHigh": 387.49
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "provider-adapter",
+      "effort": "none",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 23456.663940000002,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-xhigh": {
+      "runs": 25,
+      "wins": 10,
+      "levels": 130,
+      "levelTotal": 183,
+      "moves": 15918,
+      "input": 2288122015,
+      "cached": 418585708,
+      "output": 10223291,
+      "reasoning": 9161625,
+      "longRequests": 2,
+      "requests": 15807,
+      "arcMethod": 23392.38,
+      "billed": 19629.06,
+      "billedHigh": 24303.71,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 265,
+          "arcMethod": 411.41,
+          "billed": 383.81,
+          "billedHigh": 477.54
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 258,
+          "arcMethod": 245.15,
+          "billed": 180.0,
+          "billedHigh": 221.34
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 150,
+          "arcMethod": 210.57,
+          "billed": 122.7,
+          "billedHigh": 149.99
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 296,
+          "arcMethod": 433.08,
+          "billed": 411.1,
+          "billedHigh": 511.38
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "5/6",
+          "moves": 1944,
+          "arcMethod": 3027.99,
+          "billed": 2560.53,
+          "billedHigh": 3171.58
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 109.67,
+          "billed": 96.34,
+          "billedHigh": 119.8
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 345.38,
+          "billed": 283.49,
+          "billedHigh": 350.31
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "6/7",
+          "moves": 1673,
+          "arcMethod": 2629.26,
+          "billed": 2137.31,
+          "billedHigh": 2642.63
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "3/10",
+          "moves": 560,
+          "arcMethod": 674.9,
+          "billed": 555.29,
+          "billedHigh": 686.01
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 93,
+          "arcMethod": 142.37,
+          "billed": 128.05,
+          "billedHigh": 159.17
+        },
+        "ls20": {
+          "state": "GAME_OVER",
+          "levels": "5/7",
+          "moves": 1418,
+          "arcMethod": 2080.7,
+          "billed": 1591.82,
+          "billedHigh": 1966.75
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "5/6",
+          "moves": 1350,
+          "arcMethod": 2144.85,
+          "billed": 2019.66,
+          "billedHigh": 2511.38
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 88,
+          "arcMethod": 120.38,
+          "billed": 75.87,
+          "billedHigh": 92.73
+        },
+        "re86": {
+          "state": "NOT_FINISHED",
+          "levels": "7/8",
+          "moves": 1484,
+          "arcMethod": 2009.81,
+          "billed": 1547.99,
+          "billedHigh": 1906.62
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 245,
+          "arcMethod": 388.16,
+          "billed": 367.31,
+          "billedHigh": 457.26
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 128.01,
+          "billed": 79.32,
+          "billedHigh": 97.5
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "4/6",
+          "moves": 805,
+          "arcMethod": 1169.11,
+          "billed": 789.95,
+          "billedHigh": 972.1
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "3/8",
+          "moves": 811,
+          "arcMethod": 1287.18,
+          "billed": 1122.99,
+          "billedHigh": 1391.06
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 251,
+          "arcMethod": 309.37,
+          "billed": 268.25,
+          "billedHigh": 332.21
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "4/9",
+          "moves": 239,
+          "arcMethod": 324.8,
+          "billed": 282.01,
+          "billedHigh": 348.32
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "5/7",
+          "moves": 355,
+          "arcMethod": 505.13,
+          "billed": 385.25,
+          "billedHigh": 472.96
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 188,
+          "arcMethod": 277.52,
+          "billed": 240.68,
+          "billedHigh": 297.84
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 199,
+          "arcMethod": 156.73,
+          "billed": 80.69,
+          "billedHigh": 97.25
+        },
+        "vc33": {
+          "state": "GAME_OVER",
+          "levels": "4/7",
+          "moves": 723,
+          "arcMethod": 1089.34,
+          "billed": 773.97,
+          "billedHigh": 953.47
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "8/9",
+          "moves": 1934,
+          "arcMethod": 3171.5,
+          "billed": 3144.67,
+          "billedHigh": 3916.51
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "standard",
+      "effort": "xhigh",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 37317.38768,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "openai-gpt-6-astra-xhigh-provider-adapter": {
+      "runs": 25,
+      "wins": 25,
+      "levels": 183,
+      "levelTotal": 183,
+      "moves": 6817,
+      "input": 862382702,
+      "cached": 428158214,
+      "output": 566026,
+      "reasoning": 507384,
+      "longRequests": 4,
+      "requests": 6810,
+      "arcMethod": 8652.13,
+      "billed": 4811.55,
+      "billedHigh": 5900.25,
+      "games": {
+        "ar25": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 254,
+          "arcMethod": 315.16,
+          "billed": 118.35,
+          "billedHigh": 142.29
+        },
+        "bp35": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 479,
+          "arcMethod": 745.58,
+          "billed": 688.47,
+          "billedHigh": 858.26
+        },
+        "cd82": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 85,
+          "arcMethod": 103.81,
+          "billed": 53.91,
+          "billedHigh": 65.92
+        },
+        "cn04": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 208,
+          "arcMethod": 259.06,
+          "billed": 97.84,
+          "billedHigh": 117.51
+        },
+        "dc22": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 431,
+          "arcMethod": 536.05,
+          "billed": 203.07,
+          "billedHigh": 244.38
+        },
+        "ft09": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 75,
+          "arcMethod": 92.78,
+          "billed": 34.4,
+          "billedHigh": 41.32
+        },
+        "g50t": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 299,
+          "arcMethod": 464.08,
+          "billed": 412.33,
+          "billedHigh": 513.82
+        },
+        "ka59": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 327,
+          "arcMethod": 354.57,
+          "billed": 176.22,
+          "billedHigh": 214.96
+        },
+        "lf52": {
+          "state": "WIN",
+          "levels": "10/10",
+          "moves": 716,
+          "arcMethod": 934.46,
+          "billed": 685.09,
+          "billedHigh": 848.87
+        },
+        "lp85": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 100,
+          "arcMethod": 122.69,
+          "billed": 48.33,
+          "billedHigh": 58.19
+        },
+        "ls20": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 428,
+          "arcMethod": 497.34,
+          "billed": 202.21,
+          "billedHigh": 244.26
+        },
+        "m0r0": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 217,
+          "arcMethod": 269.44,
+          "billed": 100.23,
+          "billedHigh": 120.38
+        },
+        "r11l": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 101,
+          "arcMethod": 115.0,
+          "billed": 71.88,
+          "billedHigh": 88.49
+        },
+        "re86": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 588,
+          "arcMethod": 705.76,
+          "billed": 270.7,
+          "billedHigh": 325.88
+        },
+        "s5i5": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 246,
+          "arcMethod": 307.03,
+          "billed": 114.48,
+          "billedHigh": 137.45
+        },
+        "sb26": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 124,
+          "arcMethod": 134.16,
+          "billed": 104.39,
+          "billedHigh": 129.45
+        },
+        "sc25": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 134,
+          "arcMethod": 148.4,
+          "billed": 78.85,
+          "billedHigh": 96.58
+        },
+        "sk48": {
+          "state": "WIN",
+          "levels": "8/8",
+          "moves": 451,
+          "arcMethod": 592.38,
+          "billed": 342.28,
+          "billedHigh": 419.98
+        },
+        "sp80": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 154,
+          "arcMethod": 169.98,
+          "billed": 68.5,
+          "billedHigh": 82.56
+        },
+        "su15": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 97,
+          "arcMethod": 155.6,
+          "billed": 149.74,
+          "billedHigh": 186.61
+        },
+        "tn36": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 155,
+          "arcMethod": 160.06,
+          "billed": 73.02,
+          "billedHigh": 88.67
+        },
+        "tr87": {
+          "state": "WIN",
+          "levels": "6/6",
+          "moves": 145,
+          "arcMethod": 160.43,
+          "billed": 62.61,
+          "billedHigh": 75.42
+        },
+        "tu93": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 205,
+          "arcMethod": 345.28,
+          "billed": 296.68,
+          "billedHigh": 369.24
+        },
+        "vc33": {
+          "state": "WIN",
+          "levels": "7/7",
+          "moves": 202,
+          "arcMethod": 207.63,
+          "billed": 89.2,
+          "billedHigh": 107.99
+        },
+        "wa30": {
+          "state": "WIN",
+          "levels": "9/9",
+          "moves": 596,
+          "arcMethod": 755.39,
+          "billed": 268.74,
+          "billedHigh": 321.76
+        }
+      },
+      "model": "gpt-6-astra",
+      "priceKey": "gpt-6-astra",
+      "harness": "provider-adapter",
+      "effort": "xhigh",
+      "resultsSlug": "openai-gpt-6-astra",
+      "semiPrivateCost": 18147.191119999996,
+      "prices": {
+        "input": 10.0,
+        "cached": 1.0,
+        "cacheWrite": 12.5,
+        "output": 50.0,
+        "long": [
+          2.0,
+          1.5
+        ],
+        "source": "developers.openai.com/api/docs/models/gpt-6-astra; OpenRouter openai/gpt-6-astra"
+      }
+    },
+    "xai-grok-4-5-high": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 7,
+      "levelTotal": 183,
+      "moves": 5624,
+      "input": 1421595407,
+      "cached": 266478976,
+      "output": 857194,
+      "reasoning": 4139537,
+      "longRequests": 2861,
+      "requests": 5577,
+      "arcMethod": 2848.33,
+      "billed": 2395.32,
+      "billedHigh": 2395.32,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 82.12,
+          "billed": 76.99,
+          "billedHigh": 76.99
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 43.05,
+          "billed": 38.57,
+          "billedHigh": 38.57
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 141.59,
+          "billed": 100.83,
+          "billedHigh": 100.83
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 58.12,
+          "billed": 55.15,
+          "billedHigh": 55.15
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 160.68,
+          "billed": 151.57,
+          "billedHigh": 151.57
+        },
+        "ft09": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 215,
+          "arcMethod": 119.25,
+          "billed": 100.63,
+          "billedHigh": 100.63
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 206.99,
+          "billed": 137.08,
+          "billedHigh": 137.08
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 572,
+          "arcMethod": 285.82,
+          "billed": 254.92,
+          "billedHigh": 254.92
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 55.71,
+          "billed": 46.89,
+          "billedHigh": 46.89
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 199,
+          "arcMethod": 107.28,
+          "billed": 97.23,
+          "billedHigh": 97.23
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 55.14,
+          "billed": 43.28,
+          "billedHigh": 43.28
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 67.25,
+          "billed": 63.18,
+          "billedHigh": 63.18
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 274,
+          "arcMethod": 143.91,
+          "billed": 111.56,
+          "billedHigh": 111.56
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 66.2,
+          "billed": 61.0,
+          "billedHigh": 61.0
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 50.24,
+          "billed": 44.19,
+          "billedHigh": 44.19
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 187,
+          "arcMethod": 95.65,
+          "billed": 60.27,
+          "billedHigh": 60.27
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 95.82,
+          "billed": 67.2,
+          "billedHigh": 67.2
+        },
+        "sk48": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 168.43,
+          "billed": 149.84,
+          "billedHigh": 149.84
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 312,
+          "arcMethod": 127.31,
+          "billed": 88.08,
+          "billedHigh": 88.08
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 236,
+          "arcMethod": 118.98,
+          "billed": 110.55,
+          "billedHigh": 110.55
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 369,
+          "arcMethod": 205.2,
+          "billed": 180.12,
+          "billedHigh": 180.12
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 143.36,
+          "billed": 135.5,
+          "billedHigh": 135.5
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 45.79,
+          "billed": 28.94,
+          "billedHigh": 28.94
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 13.78,
+          "billed": 8.38,
+          "billedHigh": 8.38
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 190.68,
+          "billed": 183.38,
+          "billedHigh": 183.38
+        }
+      },
+      "model": "grok-4.5",
+      "priceKey": "grok-4.5",
+      "harness": "standard",
+      "effort": "high",
+      "resultsSlug": "xai-grok-4-5",
+      "semiPrivateCost": 6892.87,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.3,
+        "cacheWrite": null,
+        "output": 6.0,
+        "long": null,
+        "source": "OpenRouter x-ai/grok-4.5"
+      }
+    },
+    "xai-grok-4-5-low": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 5,
+      "levelTotal": 183,
+      "moves": 4982,
+      "input": 1283122082,
+      "cached": 219472384,
+      "output": 480265,
+      "reasoning": 1659351,
+      "longRequests": 3156,
+      "requests": 4951,
+      "arcMethod": 2569.13,
+      "billed": 2196.02,
+      "billedHigh": 2196.02,
+      "games": {
+        "ar25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 83.7,
+          "billed": 76.2,
+          "billedHigh": 76.2
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 45.52,
+          "billed": 35.48,
+          "billedHigh": 35.48
+        },
+        "cd82": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 145.58,
+          "billed": 106.31,
+          "billedHigh": 106.31
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 58.36,
+          "billed": 54.94,
+          "billedHigh": 54.94
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 161.97,
+          "billed": 153.49,
+          "billedHigh": 153.49
+        },
+        "ft09": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 271,
+          "arcMethod": 152.91,
+          "billed": 132.47,
+          "billedHigh": 132.47
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 204.13,
+          "billed": 137.08,
+          "billedHigh": 137.08
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 140,
+          "arcMethod": 74.71,
+          "billed": 63.32,
+          "billedHigh": 63.32
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 70.33,
+          "billed": 65.25,
+          "billedHigh": 65.25
+        },
+        "lp85": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 232,
+          "arcMethod": 122.92,
+          "billed": 114.8,
+          "billedHigh": 114.8
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 55.3,
+          "billed": 46.37,
+          "billedHigh": 46.37
+        },
+        "m0r0": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 150,
+          "arcMethod": 67.04,
+          "billed": 63.2,
+          "billedHigh": 63.2
+        },
+        "r11l": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 58.51,
+          "billed": 41.07,
+          "billedHigh": 41.07
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 67.25,
+          "billed": 61.57,
+          "billedHigh": 61.57
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 51.06,
+          "billed": 44.91,
+          "billedHigh": 44.91
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 175,
+          "arcMethod": 90.08,
+          "billed": 62.29,
+          "billedHigh": 62.29
+        },
+        "sc25": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 92.4,
+          "billed": 60.44,
+          "billedHigh": 60.44
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 169.22,
+          "billed": 141.3,
+          "billedHigh": 141.3
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 195,
+          "arcMethod": 79.09,
+          "billed": 72.28,
+          "billedHigh": 72.28
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 229,
+          "arcMethod": 114.5,
+          "billed": 107.86,
+          "billedHigh": 107.86
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 370,
+          "arcMethod": 205.9,
+          "billed": 194.77,
+          "billedHigh": 194.77
+        },
+        "tr87": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 142.06,
+          "billed": 133.64,
+          "billedHigh": 133.64
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 45.33,
+          "billed": 28.73,
+          "billedHigh": 28.73
+        },
+        "vc33": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 35,
+          "arcMethod": 13.83,
+          "billed": 8.44,
+          "billedHigh": 8.44
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 197.43,
+          "billed": 189.81,
+          "billedHigh": 189.81
+        }
+      },
+      "model": "grok-4.5",
+      "priceKey": "grok-4.5",
+      "harness": "standard",
+      "effort": "low",
+      "resultsSlug": "xai-grok-4-5",
+      "semiPrivateCost": 8718.48,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.3,
+        "cacheWrite": null,
+        "output": 6.0,
+        "long": null,
+        "source": "OpenRouter x-ai/grok-4.5"
+      }
+    },
+    "xai-grok-4-5-medium": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 7,
+      "levelTotal": 183,
+      "moves": 5982,
+      "input": 1528041835,
+      "cached": 277810816,
+      "output": 864079,
+      "reasoning": 4079785,
+      "longRequests": 2894,
+      "requests": 5947,
+      "arcMethod": 3061.27,
+      "billed": 2588.99,
+      "billedHigh": 2588.99,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 160,
+          "arcMethod": 82.66,
+          "billed": 76.57,
+          "billedHigh": 76.57
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 45.53,
+          "billed": 36.15,
+          "billedHigh": 36.15
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 148.04,
+          "billed": 107.64,
+          "billedHigh": 107.64
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 145,
+          "arcMethod": 58.94,
+          "billed": 55.19,
+          "billedHigh": 55.19
+        },
+        "dc22": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 295,
+          "arcMethod": 161.52,
+          "billed": 150.33,
+          "billedHigh": 150.33
+        },
+        "ft09": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 215,
+          "arcMethod": 117.02,
+          "billed": 77.89,
+          "billedHigh": 77.89
+        },
+        "g50t": {
+          "state": "GAME_OVER",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 201.1,
+          "billed": 138.5,
+          "billedHigh": 138.5
+        },
+        "ka59": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 560,
+          "arcMethod": 274.48,
+          "billed": 245.15,
+          "billedHigh": 245.15
+        },
+        "lf52": {
+          "state": "GAME_OVER",
+          "levels": "1/10",
+          "moves": 426,
+          "arcMethod": 193.37,
+          "billed": 177.63,
+          "billedHigh": 177.63
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "1/8",
+          "moves": 200,
+          "arcMethod": 108.6,
+          "billed": 101.62,
+          "billedHigh": 101.62
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 54.91,
+          "billed": 45.04,
+          "billedHigh": 45.04
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 613,
+          "arcMethod": 304.88,
+          "billed": 234.82,
+          "billedHigh": 234.82
+        },
+        "r11l": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 59.48,
+          "billed": 43.69,
+          "billedHigh": 43.69
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 130,
+          "arcMethod": 65.67,
+          "billed": 60.54,
+          "billedHigh": 60.54
+        },
+        "s5i5": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 51.47,
+          "billed": 44.25,
+          "billedHigh": 44.25
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 156,
+          "arcMethod": 77.91,
+          "billed": 59.24,
+          "billedHigh": 59.24
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 98.72,
+          "billed": 76.02,
+          "billedHigh": 76.02
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 168.37,
+          "billed": 141.24,
+          "billedHigh": 141.24
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 195,
+          "arcMethod": 80.67,
+          "billed": 74.66,
+          "billedHigh": 74.66
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 110,
+          "arcMethod": 54.97,
+          "billed": 47.0,
+          "billedHigh": 47.0
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 368,
+          "arcMethod": 202.21,
+          "billed": 184.41,
+          "billedHigh": 184.41
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 145.74,
+          "billed": 133.42,
+          "billedHigh": 133.42
+        },
+        "tu93": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 49.46,
+          "billed": 36.46,
+          "billedHigh": 36.46
+        },
+        "vc33": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 114,
+          "arcMethod": 57.65,
+          "billed": 51.69,
+          "billedHigh": 51.69
+        },
+        "wa30": {
+          "state": "NOT_FINISHED",
+          "levels": "0/9",
+          "moves": 355,
+          "arcMethod": 197.9,
+          "billed": 189.82,
+          "billedHigh": 189.82
+        }
+      },
+      "model": "grok-4.5",
+      "priceKey": "grok-4.5",
+      "harness": "standard",
+      "effort": "medium",
+      "resultsSlug": "xai-grok-4-5",
+      "semiPrivateCost": 8458.3,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.3,
+        "cacheWrite": null,
+        "output": 6.0,
+        "long": null,
+        "source": "OpenRouter x-ai/grok-4.5"
+      }
+    },
+    "xai-grok-4-6-xhigh": {
+      "runs": 25,
+      "wins": 0,
+      "levels": 25,
+      "levelTotal": 183,
+      "moves": 8481,
+      "input": 1236289157,
+      "cached": 160798336,
+      "output": 914459,
+      "reasoning": 46773503,
+      "longRequests": 49,
+      "requests": 8439,
+      "arcMethod": 2478.07,
+      "billed": 2236.87,
+      "billedHigh": 2236.87,
+      "games": {
+        "ar25": {
+          "state": "GAME_OVER",
+          "levels": "2/8",
+          "moves": 414,
+          "arcMethod": 130.01,
+          "billed": 123.2,
+          "billedHigh": 123.2
+        },
+        "bp35": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 105,
+          "arcMethod": 26.04,
+          "billed": 23.8,
+          "billedHigh": 23.8
+        },
+        "cd82": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 275,
+          "arcMethod": 78.88,
+          "billed": 62.13,
+          "billedHigh": 62.13
+        },
+        "cn04": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 288,
+          "arcMethod": 71.42,
+          "billed": 69.88,
+          "billedHigh": 69.88
+        },
+        "dc22": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 659,
+          "arcMethod": 211.41,
+          "billed": 204.12,
+          "billedHigh": 204.12
+        },
+        "ft09": {
+          "state": "GAME_OVER",
+          "levels": "4/6",
+          "moves": 433,
+          "arcMethod": 129.7,
+          "billed": 120.49,
+          "billedHigh": 120.49
+        },
+        "g50t": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 390,
+          "arcMethod": 87.42,
+          "billed": 62.16,
+          "billedHigh": 62.16
+        },
+        "ka59": {
+          "state": "NOT_FINISHED",
+          "levels": "1/7",
+          "moves": 565,
+          "arcMethod": 167.87,
+          "billed": 160.05,
+          "billedHigh": 160.05
+        },
+        "lf52": {
+          "state": "NOT_FINISHED",
+          "levels": "0/10",
+          "moves": 160,
+          "arcMethod": 38.79,
+          "billed": 35.3,
+          "billedHigh": 35.3
+        },
+        "lp85": {
+          "state": "GAME_OVER",
+          "levels": "4/8",
+          "moves": 271,
+          "arcMethod": 86.54,
+          "billed": 83.34,
+          "billedHigh": 83.34
+        },
+        "ls20": {
+          "state": "NOT_FINISHED",
+          "levels": "0/7",
+          "moves": 110,
+          "arcMethod": 30.51,
+          "billed": 24.1,
+          "billedHigh": 24.1
+        },
+        "m0r0": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 689,
+          "arcMethod": 192.48,
+          "billed": 173.5,
+          "billedHigh": 173.5
+        },
+        "r11l": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 110,
+          "arcMethod": 32.65,
+          "billed": 25.99,
+          "billedHigh": 25.99
+        },
+        "re86": {
+          "state": "GAME_OVER",
+          "levels": "4/8",
+          "moves": 955,
+          "arcMethod": 300.53,
+          "billed": 278.8,
+          "billedHigh": 278.8
+        },
+        "s5i5": {
+          "state": "GAME_OVER",
+          "levels": "0/8",
+          "moves": 100,
+          "arcMethod": 30.7,
+          "billed": 28.78,
+          "billedHigh": 28.78
+        },
+        "sb26": {
+          "state": "NOT_FINISHED",
+          "levels": "1/8",
+          "moves": 158,
+          "arcMethod": 39.72,
+          "billed": 24.62,
+          "billedHigh": 24.62
+        },
+        "sc25": {
+          "state": "GAME_OVER",
+          "levels": "0/6",
+          "moves": 180,
+          "arcMethod": 55.63,
+          "billed": 46.92,
+          "billedHigh": 46.92
+        },
+        "sk48": {
+          "state": "NOT_FINISHED",
+          "levels": "0/8",
+          "moves": 305,
+          "arcMethod": 97.87,
+          "billed": 84.73,
+          "billedHigh": 84.73
+        },
+        "sp80": {
+          "state": "GAME_OVER",
+          "levels": "1/6",
+          "moves": 328,
+          "arcMethod": 71.25,
+          "billed": 56.55,
+          "billedHigh": 56.55
+        },
+        "su15": {
+          "state": "GAME_OVER",
+          "levels": "1/9",
+          "moves": 227,
+          "arcMethod": 61.45,
+          "billed": 44.1,
+          "billedHigh": 44.1
+        },
+        "tn36": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 369,
+          "arcMethod": 103.77,
+          "billed": 89.14,
+          "billedHigh": 89.14
+        },
+        "tr87": {
+          "state": "NOT_FINISHED",
+          "levels": "0/6",
+          "moves": 270,
+          "arcMethod": 85.69,
+          "billed": 80.85,
+          "billedHigh": 80.85
+        },
+        "tu93": {
+          "state": "GAME_OVER",
+          "levels": "0/9",
+          "moves": 95,
+          "arcMethod": 18.91,
+          "billed": 14.14,
+          "billedHigh": 14.14
+        },
+        "vc33": {
+          "state": "GAME_OVER",
+          "levels": "1/7",
+          "moves": 111,
+          "arcMethod": 34.77,
+          "billed": 32.32,
+          "billedHigh": 32.32
+        },
+        "wa30": {
+          "state": "GAME_OVER",
+          "levels": "2/9",
+          "moves": 914,
+          "arcMethod": 294.07,
+          "billed": 287.85,
+          "billedHigh": 287.85
+        }
+      },
+      "model": "grok-4.6",
+      "priceKey": "grok-4.6",
+      "harness": "standard",
+      "effort": "xhigh",
+      "resultsSlug": "xai-grok-4-6",
+      "semiPrivateCost": 5612,
+      "prices": {
+        "input": 2.0,
+        "cached": 0.5,
+        "cacheWrite": null,
+        "output": 6.0,
+        "long": null,
+        "source": "OpenRouter x-ai/grok-4.6"
+      }
+    }
+  }
+}
