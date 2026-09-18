@@ -12,6 +12,8 @@ SRP/DRY check: Pass -- reports numbers written by scripts/arc3/pull_official_pub
 
 # ARC's own runs on the public games: what they cost, and the data they give us
 
+> **Do not train on Astra (Boss, 18-Sep-2026).** gpt-6-astra's text is its own shorthand, unreadable to humans. Every Astra record carries `source.doNotTrain: true`; filter those out. Keep them for costs and moves only.
+
 **Status 18-Sep-2026: all 799 public-set runs from ARC's results pages pulled and checked.
 Backend only.**
 

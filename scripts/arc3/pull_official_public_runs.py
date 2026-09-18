@@ -66,7 +66,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from pull_agent_scorecard import split_levels  # noqa: E402
+from pull_agent_scorecard import do_not_train, split_levels  # noqa: E402
 from pull_human_scorecards import load_game_hashes  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
@@ -288,7 +288,7 @@ def write_outputs(hashes: dict[str, str]) -> None:
             won.append({
                 "source": {"resultsSlug": slug, "model": run.get("model"), "config": run["config"],
                            "harness": run["harness"], "effort": effort, "cardId": run.get("cardId"),
-                           "publishedAt": run.get("publishedAt")},
+                           "publishedAt": run.get("publishedAt"), "doNotTrain": do_not_train(run.get("model"))},
                 "gameId": run["gameId"], "build": run["build"], "liveBuild": live,
                 "envId": run["envId"], "guid": run["guid"],
                 "level": level["level"], "levelCount": run["levelCount"],

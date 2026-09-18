@@ -70,6 +70,17 @@ RAW_ROOT = REPO / "data" / "arc3-agent-runs" / "raw"
 LEVELS_ROOT = REPO / "data" / "arc3-agent-runs"
 USER_AGENT = "arc-explainer/pull_agent_scorecard (hobby project)"
 
+# Boss, 18-Sep-2026: gpt-6-astra's text is its own shorthand, unreadable to humans, and would
+# pollute the training corpus. Its records stay (moves, costs, provenance) but are flagged.
+DO_NOT_TRAIN_MODELS = ("gpt-6-astra",)
+
+
+def do_not_train(model: str | None) -> bool:
+    """True for records whose model text must not go into training. Shared with
+    pull_official_public_runs.py."""
+    name = (model or "").lower().split("/")[-1]
+    return any(name.startswith(prefix) for prefix in DO_NOT_TRAIN_MODELS)
+
 
 def fail(message: str) -> None:
     print(f"[pull_agent_scorecard] {message}", file=sys.stderr)
@@ -224,6 +235,7 @@ def main() -> int:
         "sourceUrl": args.source_url,
         "publishedAt": card.get("published_at"),
         "competitionMode": card.get("competition_mode"),
+        "doNotTrain": do_not_train(args.model),
     }
 
     level_records: list[dict] = []
