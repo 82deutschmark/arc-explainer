@@ -6,6 +6,7 @@
  *          2026-09-16 (Claude Opus 5): added MechanicPoint + mechanicsBreakdown for the
  *          per-game bullet list of every mechanic confirmed in source; later the same day,
  *          PlayerObservation + playerObservations for what a human saw/did/expected in play.
+ *          2026-09-18 (Claude Opus 5): LevelScreenshot.kind, 'engine' render vs 'human' capture.
  * SRP/DRY check: Pass - Centralizes shared typing for ARC3 metadata consumers.
  */
 
@@ -137,6 +138,13 @@ export interface LevelScreenshot {
   level: number;
   /** Image URL relative to public folder (e.g., '/ft09-lvl8.png') */
   imageUrl: string;
+  /**
+   * 'engine' = the level's opening frame rendered from the game code (the default when
+   * omitted). 'human' = a screenshot a person took mid-play, so it shows the board partway
+   * through, not the start. Set on every human capture so the page and the dataset can label
+   * them without guessing from the caption. Added 2026-09-18 (Claude Opus 5).
+   */
+  kind?: 'engine' | 'human';
   /** Optional caption or description */
   caption?: string;
   /** Optional notes about this specific level */

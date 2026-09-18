@@ -9,15 +9,52 @@ PURPOSE: Product brief for two things Boss asked for on 18-Sep-2026 while lookin
          Written for a non-technical project manager first, and for the assistant who builds it
          second. The mockup beside it (2026-09-18-arc3-game-page-mockup-dc22.html) uses only
          real data from shared/arc3Games/dc22.ts and humanPlay.generated.json.
+Amended 18-Sep-2026 (Claude Opus 5) with Boss's decisions after reading it; see Amendments.
 SRP/DRY check: Pass -- brief only, no code. Everything it proposes reads from the one registry
          in shared/arc3Games that the pages and /arc3/games.md already read; nothing is copied.
 -->
 
 # The game pages: glow-up and dataset
 
-> **Status 18-Sep-2026: approved by Boss, not started. This is the top item for the next
-> assistant on arc-explainer.** The mockup beside this file is the spec ("exactly what I
-> want"). Build order is at the bottom. The JSON export stays unreleased until curated.
+> **Status 18-Sep-2026: approved by Boss. Step 1 (the JSON) is DONE; the page rebuild is
+> next.** The mockup beside this file is the spec ("exactly what I want"), minus what the
+> amendments below cut. Read the amendments first: they override the parts of the brief
+> they name. The JSON is private (token-gated) until curated; our own pipeline fetches it.
+
+## Amendments, 18-Sep-2026 (Boss, after reading the brief)
+
+1. **The pipeline fetches the JSON from day one, with the arc3 admin token.** Not public, not
+   linked from any page, but not locked away either. Live at `GET /api/arc3/dataset` (all 25)
+   and `GET /api/arc3/dataset/:gameId`, header `X-ARC3-Admin-Token` =
+   `ARC3_COMMUNITY_ADMIN_TOKEN` (on the Mac Mini: keychain service
+   `arc3-community-admin-token`). Checked 18-Sep: the keychain value matches production.
+   NOT `middleware/apiKeyAuth.ts`, which is do-not-use and ships published keys.
+2. **One source, no copies.** arc-explainer's `shared/arc3Games` is the only place the
+   write-ups are edited. arc-3 pulls with `tools/fetch_explainer_games.py` into a gitignored
+   folder and never commits a copy. The dataset is built per request from the registry, so
+   there is no export script or `dist/` folder to go stale; the release step can add one.
+3. **No per-level step budget.** `levelBudgets` is dropped, from the types, the page header
+   and the dataset. Boss: noise, numbers for the sake of numbers. The same goes for the
+   Boss-vs-baseline bar in the level header: show his actions and ARC's baseline as plain
+   numbers, no chart, no derived statistics anywhere.
+4. **No GitHub code links.** The game code lives in ARC's engine package, not in a repo we
+   publish, so `sourceUrl` is dropped. Each rule keeps its plain citation
+   (`dc22.py:10663-10708`), and the dataset gives the `build` hash it refers to.
+5. **as66 is never in the dataset.** It is test-only in the arc-3 harness.
+6. **One document per game with `levels[]`, not one flat record per level.** Game fields are
+   not repeated 6-9 times, and each rule appears once, on the level that introduces it
+   (`newRules`; rules in force on level N = `newRules` of levels 1..N). The shape is in
+   `server/services/arc3/arc3GameDataset.ts`.
+7. **Only the live build's levels.** Screenshots filed under a higher level than the game has
+   today (ft09's two preview-era shots of levels 8 and 9) stay on the page but are not in the
+   dataset.
+8. **Human captures are tagged in the data** (`LevelScreenshot.kind: 'human'`, all 10 of them),
+   so nothing guesses from captions. `capturedBy`/`capturedAt` are not added: the caption and
+   notes already say it.
+9. **More play notes.** bp35's notes, which were buried in the prose, are now 8
+   `playerObservations`; lf52 and sk48 got Boss's Undo note. 29 notes on 11 games. Asked Boss
+   for notes on the games he won that have none: ar25, cd82, cn04, dc22, ft09, ka59, lp85,
+   ls20, m0r0, r11l; then "what's stumping me" notes on lf52, re86, sc25, sk48, sp80, tn36.
 
 ## The one-paragraph version
 
@@ -79,11 +116,11 @@ Both come from data that already exists.
 **Band 4, one section per level.** This is the body of the page and replaces "Every
 Mechanic", "Level Screenshots", "Notes From Play" and "How It Works" all at once.
 
-- Section header: "Level N", the step budget, ARC's baseline actions for that level, Boss's
-  actions for that level (on every game, won or not: for an unwon game, his best run's
-  actions on the levels he reached, and "not reached" past that), and a two-line bar so you can see at a glance whether Boss beat the
-  baseline (blue) or blew past it (red). On dc22 that instantly shows level 5 is where the
-  game got hard for him: 740 actions against a 324 baseline.
+- Section header: "Level N", ARC's baseline actions for that level, and Boss's actions for
+  that level as a plain number (on every game, won or not: for an unwon game, his best run's
+  actions on the levels he reached, and "not reached" past that). No step budget and no bar
+  (amendment 3). On dc22 the numbers alone show level 5 is where it got hard for him: 740
+  actions against a 324 baseline.
 - Left column, about 300px: the engine-rendered opening frame, labelled "Engine render".
   Underneath it, any human captures for that level (Boss's mid-play screenshots), labelled
   "Human capture" with the date and what state the board is in. Those captures are the gold
@@ -122,11 +159,11 @@ All in `shared/arc3Games/types.ts`, all optional so no game breaks:
 
 | field | why |
 | --- | --- |
-| `LevelScreenshot.kind: 'engine' \| 'human'` | so the page can label renders vs captures without guessing from the caption |
-| `LevelScreenshot.capturedBy`, `capturedAt` | who and when, for the caption and the dataset |
-| `MechanicPoint.sourceUrl` (derived, not typed by hand) | the GitHub link, built from the game id, build hash and cited line range |
+| `LevelScreenshot.kind: 'engine' \| 'human'` (**done**) | so the page can label renders vs captures without guessing from the caption |
+| ~~`LevelScreenshot.capturedBy`, `capturedAt`~~ (**cut, amendment 8**) | who and when, for the caption and the dataset |
+| ~~`MechanicPoint.sourceUrl`~~ | **cut, amendment 4**: no code links |
 | `corrections: { date, text }[]` | replaces the run-on `notes` string, one entry per dated correction; `notes` keeps anything undated |
-| `levelBudgets?: number[]` | the per-level step budget, today buried inside a rule's text; needed for the level header and the dataset |
+| ~~`levelBudgets?: number[]`~~ | **cut, amendment 3**: no step budgets |
 
 `humanPlay.generated.json` already has per-level actions and baselines per run, so the level
 header needs no new data.
@@ -242,13 +279,11 @@ files change weekly.
 
 Each step is its own commit and changelog entry.
 
-1. **Export script and JSON route.** `scripts/arc3/export_game_dataset.ts` writes
-   `dist/arc3-dataset/<date>/games.jsonl` plus images; `GET /api/arc3/games/:id.json` returns
-   that game's records, **admin-gated and not linked from any page** until the dataset has
-   been curated. Both read `shared/arc3Games` only. Add the raw grid to the level render
-   script's output so the export has it.
-2. **Type additions** from Part 2, plus a one-off migration of each game's `notes` into
-   `corrections[]`. Keep `notes` for undated text.
+1. ~~Export script and JSON route.~~ **Done 18-Sep** as amended above: the route builds per
+   request, no export script. The raw 64x64 grid is not added: arc-3 has the engine and can
+   render any level's grid itself.
+2. **Type additions.** `kind` is done. Left: a one-off migration of each game's `notes` into
+   `corrections[]`, for the page's fold-out. Keep `notes` for undated text.
 3. **Page rebuild** per the mockup. New components under `client/src/components/arc3/`:
    `LevelStrip`, `LevelSection`, `MechanicRow`, `PlayNote`. The page file shrinks to layout.
    Update `arc3GameMechanicsDoc.ts` so the markdown export also goes level by level.
@@ -256,8 +291,9 @@ Each step is its own commit and changelog entry.
 5. **Curation pass, then dataset card and release.** Before anything is public: every
    record spot-checked against its page, every citation opened, every run GUID resolved
    against the replay corpus. Then README, licence, Hugging Face upload. Boss signs off.
-6. **Hand-off note to arc-3**: a short file in `docs/trace-findings/` there saying the
-   export exists, the URL, the record shape, and the three uses above.
+6. ~~Hand-off note to arc-3.~~ **Done 18-Sep**: `tools/fetch_explainer_games.py` there carries
+   the URL, the token and the record shape; its AGENTS.md repo map names arc-explainer as the
+   only place the write-ups are edited.
 
 ## Verification
 

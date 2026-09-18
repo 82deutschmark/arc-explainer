@@ -15,6 +15,8 @@
  *          track on the board (levels 5-6), not the panel; the pads only teleport when you press
  *          pink while standing on one; the token-revealed button starts on level 2, not level 5.
  *          Also confirmed the level 6 live-play note in `notes` (see the dated line there).
+ *          2026-09-18 (Claude Opus 5): human mid-play captures tagged `kind: 'human'` so the page
+ *          and the private game dataset (/api/arc3/dataset) can tell them from engine renders.
  * SRP/DRY check: Pass - Single responsibility for DC22 game data.
  */
 
@@ -198,6 +200,7 @@ export const dc22: Arc3GameMetadata = {
     {
       level: 6,
       imageUrl: '/arc3-levels/dc22/lvl6.png',
+      kind: 'human',
       caption: "Mid-play capture from Boss's own level 6 attempt (2026-09-15), not the auto-rendered opening frame like levels 1-5.",
       notes: 'Cropped from a full console screenshot Boss sent while mid-run; shows the board after at least one panel press, not the level\'s starting state.',
     },

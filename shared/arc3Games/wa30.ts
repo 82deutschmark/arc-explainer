@@ -20,6 +20,8 @@
  *          unverified "no move is ever unrecoverable" is dropped; added that a thief can be
  *          removed for good by facing it and pressing Action 5.
  *          2026-09-17 (Claude Opus 5): Boss's play notes (level 3 handoff, level 7 purple guy, helpers vs. opponents, level 9 time) and two captures.
+ *          2026-09-18 (Claude Opus 5): human mid-play captures tagged `kind: 'human'` so the page
+ *          and the private game dataset (/api/arc3/dataset) can tell them from engine renders.
  * SRP/DRY check: Pass - Single responsibility for WA30 game data.
  */
 
@@ -195,14 +197,14 @@ export const wa30: Arc3GameMetadata = {
     { level: 1, imageUrl: '/arc3-levels/wa30/lvl1.png' },
     { level: 2, imageUrl: '/arc3-levels/wa30/lvl2.png' },
     { level: 3, imageUrl: '/arc3-levels/wa30/lvl3.png' },
-    { level: 3, imageUrl: '/arc3-levels/wa30/lvl3-human-handoff.png', caption: 'human play, boxes handed off to the orange helper', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. The player is on the left of the speckled middle line; the orange helper is on the right with a box, and two boxes are already inside the blue outline.' },
+    { level: 3, imageUrl: '/arc3-levels/wa30/lvl3-human-handoff.png', kind: 'human', caption: 'human play, boxes handed off to the orange helper', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. The player is on the left of the speckled middle line; the orange helper is on the right with a box, and two boxes are already inside the blue outline.' },
     { level: 4, imageUrl: '/arc3-levels/wa30/lvl4.png' },
     { level: 5, imageUrl: '/arc3-levels/wa30/lvl5.png' },
     { level: 6, imageUrl: '/arc3-levels/wa30/lvl6.png' },
     { level: 7, imageUrl: '/arc3-levels/wa30/lvl7.png' },
     { level: 8, imageUrl: '/arc3-levels/wa30/lvl8.png' },
     { level: 9, imageUrl: '/arc3-levels/wa30/lvl9.png' },
-    { level: 9, imageUrl: '/arc3-levels/wa30/lvl9-human-final.png', caption: 'human play, the final level', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run on level 9, 17-Sep-2026, the level where he had trouble running out of time.' },
+    { level: 9, imageUrl: '/arc3-levels/wa30/lvl9-human-final.png', kind: 'human', caption: 'human play, the final level', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run on level 9, 17-Sep-2026, the level where he had trouble running out of time.' },
   ],
   tags: ['sokoban', 'crate-pushing', 'public-demo-2026'],
   isFullyDocumented: false,

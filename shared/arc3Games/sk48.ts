@@ -16,6 +16,8 @@
  *          block the extension -- the rod slides through it and skewers it; extension is
  *          only stopped by the board edge or a wall. Walls exist on levels 5 and 6 only,
  *          not "5 on". Retracting drags the beads on the rod back with it.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
+ *          worded from what he said; the prose is left as it was.
  * SRP/DRY check: Pass - Single responsibility for SK48 game data.
  */
 
@@ -54,6 +56,14 @@ export const sk48: Arc3GameMetadata = {
     { introducedOnLevel: 5, category: 'hazards', text: 'Solid black wall squares appear on levels 5 and 6. The tip can\'t extend into one and beads can\'t be pushed into one.', source: 'sk48.py:450, 498, 960-971' },
     { introducedOnLevel: 6, category: 'controls', text: 'Two rods you control, pink and purple. Click a rod\'s handle, or its reference in the bottom strip, to switch to it. Switching is free, and clicking anything else does nothing.', source: 'sk48.py:746-756; engine run on level 7' },
     { introducedOnLevel: 6, category: 'pieces', text: 'The purple rod hangs down from the top and slides left and right along a rail across the top. The two rods pass straight through each other.', source: 'sk48.py:467-520, 792-797; engine run on level 7' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-14',
+      saw: 'Undo (ACTION7) is available.',
+      happened: 'Undo is load-bearing here: one of three public games (with bp35 and lf52) where you realistically need it to finish, not a convenience.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
