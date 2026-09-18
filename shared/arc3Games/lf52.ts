@@ -14,6 +14,8 @@
  *          several carts and every arrow press moves all of them, the restart button is a
  *          separate icon that only appears after certain dead-end hops (it is not part of the
  *          cart), and undo refunds the move it takes back.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
+ *          worded from what he said; the prose is left as it was.
  * SRP/DRY check: Pass - Single responsibility for LF52 game data.
  */
 
@@ -56,6 +58,14 @@ export const lf52: Arc3GameMetadata = {
     { introducedOnLevel: 8, category: 'pieces', text: 'Blue pegs (blue circles). They can be picked, can hop, and can be hopped over like any peg, but a blue peg never comes off and never removes anything it jumps.', source: 'lf52.py:4412-4421, 5391-5396; engine runs: blue over blue on level 8, green over blue and blue over green on level 9' },
     { introducedOnLevel: 8, category: 'goal', text: 'Blue pegs don\'t count toward the goal. Levels 8-10 are won when one green peg is left, however many blue pegs are still on the board.', source: 'lf52.py:5171-5173, 5375-5377, 5572' },
     { introducedOnLevel: 10, category: 'feedback', text: 'Level 10\'s board runs off the bottom of the screen and the view never moves. A column of five carts carrying blue pegs starts mostly below the edge and comes into view as you push the carts up.', source: 'lf52.py:4959-5000; 5162-5163 (start offset); 5307-5308 (the cart-carry pan is zero on level 10); 5433-5521 (no landing pan on level 10), and those are the only view-pan calls; engine run: 4 Up presses raised the column from rows 9-13 to rows 5-9 with the view offset unchanged' },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-14',
+      saw: 'Undo (ACTION7) is available.',
+      happened: 'Undo is load-bearing here: one of three public games (with bp35 and sk48) where you realistically need it to finish, not a convenience.',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',

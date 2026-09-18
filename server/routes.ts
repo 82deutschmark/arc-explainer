@@ -4,6 +4,7 @@
  * Author: Cascade (ChatGPT)
  * Date: 2026-02-10
  * PURPOSE: Main routes configuration file for the API, including SnakeBench model insights routing.
+ *          2026-09-18 (Claude Opus 5): mounts the token-gated /api/arc3/dataset router.
  * SRP/DRY check: Pass - route registration only.
  */
 
@@ -41,6 +42,7 @@ import modelsRouter from "./routes/models.js";
 import scorecardRoutes from './routes/scorecard.ts';
 import metricsRouter from './routes/metricsRoutes.ts';
 import arc3Router from "./routes/arc3";
+import arc3DatasetRouter from "./routes/arc3Dataset";
 import arc3ArchiveRouter from "./routes/arc3Archive";
 import arc3MirrorRouter from "./routes/arc3Mirror";
 import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
@@ -100,6 +102,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Models API routes
   app.use("/api/models", modelsRouter);
+
+  // Private game dataset for the arc-3 training repo (token-gated). Mounted ahead of the
+  // playground router so /api/arc3/dataset never falls into it.
+  app.use("/api/arc3/dataset", arc3DatasetRouter);
 
   // ARC3 playground routes
   app.use("/api/arc3", arc3Router);

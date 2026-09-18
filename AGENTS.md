@@ -23,10 +23,11 @@
 
 ---
 
-> **NEXT UP (approved by Boss 18-Sep-2026, not started):** the ARC-3 game page glow-up and
-> per-level dataset. Read `docs/plans/2026-09-18-arc3-game-page-glowup-and-dataset-prd.md`
-> first; the mockup beside it, `2026-09-18-arc3-game-page-mockup-dc22.html`, is the spec.
-> The dataset export stays admin-only and unlinked until it has been curated.
+> **NEXT UP (approved by Boss 18-Sep-2026):** the ARC-3 game page glow-up. The dataset half
+> is done (`/api/arc3/dataset`, token-gated, fetched by arc-3). Read
+> `docs/plans/2026-09-18-arc3-game-page-glowup-and-dataset-prd.md` first, its Amendments
+> section before anything else; the mockup beside it,
+> `2026-09-18-arc3-game-page-mockup-dc22.html`, is the spec minus what the amendments cut.
 
 ## 1. Mission & Critical Warnings
 

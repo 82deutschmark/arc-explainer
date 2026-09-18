@@ -29,6 +29,8 @@
  *          click mapping and hint 2.
  *          2026-09-16 (Claude Opus 5, later): level 7 screenshot now the live-build render, not the 9-level preview capture.
  *          2026-09-17 (Claude Opus 5): Boss's level 5 and 6 play notes (green down first, yellow later; pixel-perfect liquid) and his two captures.
+ *          2026-09-18 (Claude Opus 5): human mid-play captures tagged `kind: 'human'` so the page
+ *          and the private game dataset (/api/arc3/dataset) can tell them from engine renders.
  * SRP/DRY check: Pass - Single responsibility for VC33 game data.
  */
 
@@ -169,9 +171,9 @@ export const vc33: Arc3GameMetadata = {
     { level: 3, imageUrl: '/arc3-levels/vc33/lvl3.png' },
     { level: 4, imageUrl: '/arc3-levels/vc33/lvl4.png' },
     { level: 5, imageUrl: '/arc3-levels/vc33/lvl5.png' },
-    { level: 5, imageUrl: '/arc3-levels/vc33/lvl5-human-gates.png', caption: 'human play, green put down, yellow next', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. Green is already down in the bottom tank; yellow sits by the orange gate, still to be taken through and up.' },
+    { level: 5, imageUrl: '/arc3-levels/vc33/lvl5-human-gates.png', kind: 'human', caption: 'human play, green put down, yellow next', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. Green is already down in the bottom tank; yellow sits by the orange gate, still to be taken through and up.' },
     { level: 6, imageUrl: '/arc3-levels/vc33/lvl6.png' },
-    { level: 6, imageUrl: '/arc3-levels/vc33/lvl6-human-frustration.png', caption: 'human play, taken out of frustration', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026, on the level he found needed the liquid read pixel-perfect.' },
+    { level: 6, imageUrl: '/arc3-levels/vc33/lvl6-human-frustration.png', kind: 'human', caption: 'human play, taken out of frustration', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026, on the level he found needed the liquid read pixel-perfect.' },
     { level: 7, imageUrl: '/arc3-levels/vc33/lvl7.png' },
   ],
   tags: ['preview-set', 'hydraulics', 'physics'],

@@ -29,6 +29,7 @@
  *          2026-09-16 (Claude Opus 5): each game now also carries its "Every mechanic" bullets
  *          (grouped by the level that introduces them), "Notes from play" (what a human saw,
  *          did, expected), and action counts (ARC baseline and Boss's recent runs).
+ *          2026-09-18 (Claude Opus 5): SITE_ORIGIN exported for arc3GameDataset.ts.
  * SRP/DRY check: Pass -- document generation only. Data lives in shared/arc3Games, HTTP
  *          serving lives in server/routes.ts, and the HTML rendering of the same objects
  *          stays in client/src/pages/Arc3GameSpoiler.tsx.
@@ -37,8 +38,8 @@
 import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata, type ActionMapping } from '../../../shared/arc3Games';
 import { getOwnerGameRating, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
 
-/** Public origin used for the absolute links in the document. */
-const SITE_ORIGIN = 'https://arc.markbarney.net';
+/** Public origin used for the absolute links in the document (and in the game dataset). */
+export const SITE_ORIGIN = 'https://arc.markbarney.net';
 
 /**
  * as66 is kept in the registry for its historical preview-era content but was withdrawn

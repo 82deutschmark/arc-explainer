@@ -18,6 +18,8 @@
  *          selected dictionary side through its alphabet; added the one-to-many (level 2),
  *          many-to-one (level 3), two-step (level 4) and branching (level 6) translation
  *          rules; the action mappings now say what each arrow does.
+ *          2026-09-18 (Claude Opus 5): human mid-play captures tagged `kind: 'human'` so the page
+ *          and the private game dataset (/api/arc3/dataset) can tell them from engine renders.
  * SRP/DRY check: Pass - Single responsibility for TR87 game data.
  */
 
@@ -235,10 +237,10 @@ export const tr87: Arc3GameMetadata = {
     { level: 2, imageUrl: '/arc3-levels/tr87/lvl2.png' },
     { level: 3, imageUrl: '/arc3-levels/tr87/lvl3.png' },
     { level: 4, imageUrl: '/arc3-levels/tr87/lvl4.png' },
-    { level: 4, imageUrl: '/arc3-levels/tr87/lvl4-human.png', caption: 'human play, one rune short of the win', notes: 'Not an engine render: the arcprize.org player console during Boss\'s winning run, 17-Sep-2026. Three alphabets, eight dictionary entries, and the bracket on the last yellow tile -- the 3rd and 7th blue runes are both the Trident, so the last tile has to become the twin of the 3rd. This capture and the level 5 one are where the rune legend above was read from.' },
-    { level: 4, imageUrl: '/arc3-levels/tr87/lvl5-human.png', caption: 'human play, level 4 at the moment it cleared', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026, caught on the transition -- the header already reads LEVEL 5/6 while the board is still the three-alphabet layout with the yellow answer row. Level 4 clears itself the instant the sequence is right, with no confirm press.' },
+    { level: 4, imageUrl: '/arc3-levels/tr87/lvl4-human.png', kind: 'human', caption: 'human play, one rune short of the win', notes: 'Not an engine render: the arcprize.org player console during Boss\'s winning run, 17-Sep-2026. Three alphabets, eight dictionary entries, and the bracket on the last yellow tile -- the 3rd and 7th blue runes are both the Trident, so the last tile has to become the twin of the 3rd. This capture and the level 5 one are where the rune legend above was read from.' },
+    { level: 4, imageUrl: '/arc3-levels/tr87/lvl5-human.png', kind: 'human', caption: 'human play, level 4 at the moment it cleared', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026, caught on the transition -- the header already reads LEVEL 5/6 while the board is still the three-alphabet layout with the yellow answer row. Level 4 clears itself the instant the sequence is right, with no confirm press.' },
     { level: 5, imageUrl: '/arc3-levels/tr87/lvl5.png' },
-    { level: 5, imageUrl: '/arc3-levels/tr87/lvl5-human-dictionary.png', caption: 'human play, the bracket up in the dictionary', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. Two alphabets, four entries (one of them one-to-many, one many-to-one), the pink answer row frozen, and the white bracket up on a dictionary entry\'s pink side -- the inverted puzzle of levels 5-6.' },
+    { level: 5, imageUrl: '/arc3-levels/tr87/lvl5-human-dictionary.png', kind: 'human', caption: 'human play, the bracket up in the dictionary', notes: 'Not an engine render: the arcprize.org player console during Boss\'s run, 17-Sep-2026. Two alphabets, four entries (one of them one-to-many, one many-to-one), the pink answer row frozen, and the white bracket up on a dictionary entry\'s pink side -- the inverted puzzle of levels 5-6.' },
     { level: 6, imageUrl: '/arc3-levels/tr87/lvl6.png' },
   ],
   tags: ['translation', 'lookup-table', 'alphabet', 'public-demo-2026'],

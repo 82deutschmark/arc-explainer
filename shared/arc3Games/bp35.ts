@@ -43,6 +43,8 @@
  *          every other wasted move, not only after two failed moves in a row; Orange blocks
  *          and the Light Pink plus exit exist from levels 3 and 1, not from level 8; level
  *          5 does show its exit at the start.
+ *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
+ *          worded from what he said; the prose is left as it was.
  * SRP/DRY check: Pass - Single responsibility for BP35 game data.
  */
 
@@ -181,6 +183,69 @@ export const bp35: Arc3GameMetadata = {
       category: 'pieces',
       text: 'Plain Purple block (no stripe): solid. Clicking it breaks it, but every empty cell touching it -- above, below, left and right -- fills with a new Purple block. That is how Purple spreads, and how you grow it into a bridge.',
       source: 'bp35.py:3305-3324, 3818-3884, 4305-4339',
+    },
+  ],
+  playerObservations: [
+    {
+      player: 'Boss',
+      date: '2026-09-12',
+      saw: 'The rising purple-and-black mass under you on the first levels.',
+      happened: 'It basically never fires in normal play; he never saw it reach him.',
+      inCode: 'It rises one row only after a move that goes nowhere while your move count is even, and it is gone from level 4 on.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-13',
+      level: 2,
+      saw: 'The shaft splits into branches.',
+      did: 'Stepped left or right and let the forced slide carry him.',
+      happened: 'Which way you step, combined with the slide, decides which branch you end up in, and whether you land on a purple tile or a green one.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-13',
+      level: 4,
+      saw: 'What worked on the earlier levels does not work: this level needs you to sink, not rise.',
+      did: 'Floated up and explored past the edge of the starting view.',
+      happened: 'The tile that flips the pull sits above the visible frame at the start, so you have to go looking before you know it exists. His read: a human explores and finds it; an agent that sticks with what worked on earlier levels probably does not.',
+      inCode: 'Red blocks flip the pull from level 4 on; level 4\'s sits just above the starting view.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-13',
+      level: 6,
+      saw: 'No flip tile anywhere near the start.',
+      did: 'Went all the way down to the bottom of the map, then all the way back up to the opposite corner.',
+      happened: 'The red tile was in that far corner. Finding the flip tile costs more on every level: just above the start on level 4, a long round trip on level 6.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-13',
+      level: 8,
+      saw: 'A new mass of plain solid purple blocks, with no yellow and white marks, plus orange circle tiles, orange checkered tiles and a pink plus.',
+      did: 'Used the plain purple as bridge material to reach the level\'s flip tile.',
+      happened: 'The purple spread after some of his mistakes, and some mistakes could not be fixed by playing on: they needed Undo or a full Reset.',
+      inCode: 'Clicking a plain purple block removes it and fills every empty cell touching it with new purple.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-13',
+      saw: 'A purple tile marked with a bit of yellow and white. Being carried onto it plays what looks like a teleport into the void.',
+      happened: 'It is an instant death, every time he hit one, on every level. The void effect is only the death animation; nothing teleports.',
+      inCode: 'Being carried into a purple spike calls lose(); walking sideways into one only bumps.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-13',
+      saw: 'The exit and the flip tile are never on screen at the start.',
+      happened: 'Every level means exploring the whole map to find them. He thinks that exploring, more than any single mechanic, is what makes this game hard for an agent and not for a person.',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-14',
+      saw: 'Every left or right press sets off the slide, and you often cannot see where it will carry you.',
+      did: 'Used Undo to back out of bad slides.',
+      happened: 'Undo is what makes it finishable: the only way to take back a slide onto a spike or into a wasted detour. One of three public games (with lf52 and sk48) where Undo is load-bearing, not a convenience.',
     },
   ],
   category: 'evaluation',

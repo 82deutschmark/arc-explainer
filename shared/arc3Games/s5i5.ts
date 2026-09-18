@@ -22,6 +22,8 @@
  *          mechanicsExplanation: light gray bars have no anchor end, and the slider buttons
  *          are not along the bottom on levels 1 and 8.
  *          2026-09-16 (Claude Opus 5, later): playerObservations added from Boss's reports (level 5 confusion, plus-shaped button, level 7 overgrown rod).
+ *          2026-09-18 (Claude Opus 5): human mid-play captures tagged `kind: 'human'` so the page
+ *          and the private game dataset (/api/arc3/dataset) can tell them from engine renders.
  * SRP/DRY check: Pass - Single responsibility for S5I5 game data.
  */
 
@@ -151,8 +153,8 @@ export const s5i5: Arc3GameMetadata = {
     { level: 5, imageUrl: '/arc3-levels/s5i5/lvl5.png', notes: 'Smaller slider buttons, same controls. Orange and green each drive two rods; one marker starts already on its pin.' },
     { level: 6, imageUrl: '/arc3-levels/s5i5/lvl6.png', notes: 'First level with the plus-shaped rotate buttons.' },
     { level: 7, imageUrl: '/arc3-levels/s5i5/lvl7.png', notes: 'The hardest level for a human player. The rods behave like an unfolding mechanical arm, swung a quarter turn at a time by the plus buttons, and a rod grown one segment too far can leave you unable to seat it -- there is no undo on this game, only RESET. The two captures below are from a human clear on 16-Sep-2026, which spent 115 actions here against an 86-action baseline.' },
-    { level: 7, imageUrl: '/arc3-levels/s5i5/lvl7-human-overextended.png', caption: 'human play, light blue rod overgrown by one segment', notes: 'Not an engine render: the arcprize.org player console during a human run, 16-Sep-2026. The light blue rod runs right from a cross button near the top left, one segment longer than it should be, and will not flip into position from here. The UNDO (Z) key visible in the console is greyed out and has nothing behind it on this game.' },
-    { level: 7, imageUrl: '/arc3-levels/s5i5/lvl7-human-arm.png', caption: 'human play, the arm part-unfolded', notes: 'Not an engine render: the same human run at a different point. Red and orange lie horizontal across the top with their markers on them, blue runs down the left, yellow up the right, green along the bottom -- the unfolding-arm shape this level is built around.' },
+    { level: 7, imageUrl: '/arc3-levels/s5i5/lvl7-human-overextended.png', kind: 'human', caption: 'human play, light blue rod overgrown by one segment', notes: 'Not an engine render: the arcprize.org player console during a human run, 16-Sep-2026. The light blue rod runs right from a cross button near the top left, one segment longer than it should be, and will not flip into position from here. The UNDO (Z) key visible in the console is greyed out and has nothing behind it on this game.' },
+    { level: 7, imageUrl: '/arc3-levels/s5i5/lvl7-human-arm.png', kind: 'human', caption: 'human play, the arm part-unfolded', notes: 'Not an engine render: the same human run at a different point. Red and orange lie horizontal across the top with their markers on them, blue runs down the left, yellow up the right, green along the bottom -- the unfolding-arm shape this level is built around.' },
     { level: 8, imageUrl: '/arc3-levels/s5i5/lvl8.png' },
   ],
   tags: ['rods', 'point-and-click', 'chained-pieces', 'public-demo-2026'],
