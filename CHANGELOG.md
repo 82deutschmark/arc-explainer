@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.104.0  Sep 18, 2026
+
+- **Game pages: glow-up brief and dataset plan, with a dc22 mockup** (Author: Claude Fable 5.1): Boss looked at /arc3/games/dc22 and asked for two things: a page that reads level by level with the picture beside the rules instead of walls of text, and a way to turn the same curated game knowledge (553 rule entries, 527 cited to source, 50 of his runs, his play notes, every level's screenshot) into a dataset that our training side actually reads and that we can share. Today nothing in arc-3 or autoresearch-arena reads these files. The brief makes the level the unit of both the page and the dataset, exported from the one registry in `shared/arc3Games`. Docs only, no code. `docs/plans/2026-09-18-arc3-game-page-glowup-and-dataset-prd.md`, `docs/plans/2026-09-18-arc3-game-page-mockup-dc22.html`.
+
 ### Version 9.103.1  Sep 18, 2026
 
 - **G50T: Boss's play note, and both of his wins linked** (Author: Claude Opus 5): Ghost Twin in his words -- walk where the twin should go, press spacebar, get sent back while the twin retraces your path, three twins, use them on levers and panels to open the exit; weird enough that most people would give up. His 13-Sep win (score 89.39, his best) is now linked beside the 15-Sep one. `shared/arc3Games/g50t.ts`.

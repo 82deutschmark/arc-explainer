@@ -23,6 +23,11 @@
 
 ---
 
+> **NEXT UP (approved by Boss 18-Sep-2026, not started):** the ARC-3 game page glow-up and
+> per-level dataset. Read `docs/plans/2026-09-18-arc3-game-page-glowup-and-dataset-prd.md`
+> first; the mockup beside it, `2026-09-18-arc3-game-page-mockup-dc22.html`, is the spec.
+> The dataset export stays admin-only and unlinked until it has been curated.
+
 ## 1. Mission & Critical Warnings
 
 - Always understand state transitions: as soon as an action begins, collapse/disable prior controls and reveal live streaming states. Never leave static or bloated UI stuck on screen.
