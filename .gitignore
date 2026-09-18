@@ -41,3 +41,7 @@ media/
 # Raw ARC-AGI-3 recordings pulled by scripts/arc3/pull_agent_scorecard.py (~100 MB per card).
 # The derived per-level file next to it is committed; these stay local.
 data/arc3-agent-runs/raw/
+
+# Per-run cache from scripts/arc3/pull_official_public_runs.py (model text for every move of
+# every run; large). sessions.jsonl and levels-won.jsonl.gz beside it are committed.
+data/arc3-official-runs/cache/

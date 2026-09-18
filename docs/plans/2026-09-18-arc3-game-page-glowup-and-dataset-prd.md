@@ -224,7 +224,9 @@ the first thing to try.
 **C+. AI winning runs (added 18-Sep, backend only).** A public gpt-6-astra scorecard that
 won all 25 games is in `data/arc3-agent-runs/`: 183 won levels, 6,732 moves and 1,436 notes
 where the agent wrote down what it was testing. Same shape as C, one record per level. Not
-shown on the site. See `2026-09-18-arc3-agent-winning-runs.md`.
+shown on the site. See `2026-09-18-arc3-agent-winning-runs.md`. ARC's own 799 public-set runs
+(every leaderboard model) add 2,149 cleared levels with the model's text per move, in
+`data/arc3-official-runs/levels-won.jsonl.gz`; see `2026-09-18-arc3-official-public-runs-and-costs.md`.
 
 Fairness note, stated once: everything here is about the 25 public games, which ARC calls the
 tutorial. Training on them is allowed and expected. It will not teach the model the private

@@ -97,5 +97,5 @@ python scripts/arc3/pull_agent_scorecard.py <card_id> --team "<who>" --agent "<h
 It downloads only what's missing, and writes nothing if a build or a per-level move count
 doesn't match the card. Each card gets its own file.
 
-Next candidate: ARC's own Astra Provider Adapter runs on the public games (see `docs/astra/`).
-Those need their scorecard ids.
+ARC's own runs on the public games (799 of them, every model on the ARC-AGI-3 leaderboard) are
+pulled separately: see `2026-09-18-arc3-official-public-runs-and-costs.md`.

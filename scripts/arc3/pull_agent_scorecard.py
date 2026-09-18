@@ -143,31 +143,33 @@ def move_label(action_input: dict) -> str:
     return name
 
 
-def parse_recording(path: Path, level_count: int) -> tuple[list[dict], str, int]:
-    """Split one recording into levels. Returns (levels, final_state, reset_moves).
+def split_levels(records: list[dict], level_count: int, note_of=note_text) -> tuple[list[dict], str, int]:
+    """Split one recording's step records (each line's `data`, opening RESET first) into
+    levels. Returns (levels, final_state, reset_moves). Raises ValueError on a move past
+    the last level. Shared with pull_official_public_runs.py, which passes its own note_of.
 
     A move belongs to the level that was being played when it was sent: the previous
-    line's levels_completed + 1. A RESET mid-game is a move too (the card counts it)."""
-    lines = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
-    if not lines:
-        fail(f"{path.name} has no lines")
+    record's levels_completed + 1. A RESET mid-game is a move too (the card counts it).
+    Consecutive moves with the same note are one step."""
+    if not records:
+        raise ValueError("recording has no lines")
     levels = [
         {"level": n, "moves": 0, "steps": [], "firstLine": None, "lastLine": None, "cleared": False}
         for n in range(1, level_count + 1)
     ]
-    previous_completed = int(lines[0]["data"].get("levels_completed") or 0)
+    previous_completed = int(records[0].get("levels_completed") or 0)
     reset_moves = 0
-    for index in range(1, len(lines)):
-        data = lines[index]["data"]
+    for index in range(1, len(records)):
+        data = records[index]
         action = data.get("action_input") or {}
         level_number = previous_completed + 1
         if not 1 <= level_number <= level_count:
-            fail(f"{path.name} line {index}: move on level {level_number} of {level_count}")
+            raise ValueError(f"line {index}: move on level {level_number} of {level_count}")
         level = levels[level_number - 1]
         label = move_label(action)
         if action.get("id") == "RESET":
             reset_moves += 1
-        note = note_text(action.get("reasoning"))
+        note = note_of(action.get("reasoning"))
         steps = level["steps"]
         if steps and steps[-1]["note"] == note:
             steps[-1]["moves"].append(label)
@@ -181,7 +183,17 @@ def parse_recording(path: Path, level_count: int) -> tuple[list[dict], str, int]
             for cleared in range(previous_completed, min(completed, level_count)):
                 levels[cleared]["cleared"] = True
         previous_completed = completed
-    return levels, str(lines[-1]["data"].get("state")), reset_moves
+    return levels, str(records[-1].get("state")), reset_moves
+
+
+def parse_recording(path: Path, level_count: int) -> tuple[list[dict], str, int]:
+    """Read a downloaded recording and split it into levels (see split_levels)."""
+    lines = [json.loads(line)["data"] for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    try:
+        return split_levels(lines, level_count)
+    except ValueError as error:
+        fail(f"{path.name}: {error}")
+        raise
 
 
 def main() -> int:
