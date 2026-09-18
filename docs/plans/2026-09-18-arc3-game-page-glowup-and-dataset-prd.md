@@ -221,6 +221,11 @@ winning turns, except a human made them and there are 19 games won instead of 11
 This is the most direct route to the 2,000-turn target and nobody has walked it yet. It is
 the first thing to try.
 
+**C+. AI winning runs (added 18-Sep, backend only).** A public gpt-6-astra scorecard that
+won all 25 games is in `data/arc3-agent-runs/`: 183 won levels, 6,732 moves and 1,436 notes
+where the agent wrote down what it was testing. Same shape as C, one record per level. Not
+shown on the site. See `2026-09-18-arc3-agent-winning-runs.md`.
+
 Fairness note, stated once: everything here is about the 25 public games, which ARC calls the
 tutorial. Training on them is allowed and expected. It will not teach the model the private
 games' rules. It teaches how to reason about a new screen, which is the skill being tested.

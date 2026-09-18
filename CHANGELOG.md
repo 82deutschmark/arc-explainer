@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.110.0  Sep 18, 2026
+
+- **Backend training data: winning AI runs on all 25 public games** (Author: Claude Opus 5): Pulled a public gpt-6-astra (high) scorecard (25/25 games, 183/183 levels, 6,732 moves) whose ARC recordings carry the agent's one-line note before each batch of moves -- reasoning paired with winning moves, which the training corpus lacks (stuck at 381 turns because it keeps only levels our own model beat). Backend only; nothing is shown on the site. New `scripts/arc3/pull_agent_scorecard.py` pulls any public AI card with no login (card from `/api/v3/scorecards/<id>`, recordings from `/api/recordings/<env>/<guid>`) and writes nothing if a build differs from our live `GAME_HASHES` or a per-level move count differs from the card; all 25 matched. Output: `data/arc3-agent-runs/<card>.levels.jsonl`, one record per won level with notes grouped with their moves (1,436 notes). Raw recordings (~340 MB) stay in gitignored `data/arc3-agent-runs/raw/`. Colour check with the method in `docs/astra/reasoning-trace-audit.md`: 44.4% of the notes' colour-at-(x,y) claims are right against a 4.3% random baseline (ARC's own Astra traces: 5.8% against 11.6%). Note for the training pipeline: `docs/plans/2026-09-18-arc3-agent-winning-runs.md`; pointer added to the dataset brief. Files: `scripts/arc3/pull_agent_scorecard.py`, `data/arc3-agent-runs/`, `.gitignore`, `docs/plans/2026-09-18-arc3-agent-winning-runs.md`, `docs/plans/2026-09-18-arc3-game-page-glowup-and-dataset-prd.md`.
+
 ### Version 9.109.0  Sep 18, 2026
 
 - **The original games get their own section; the human leaderboard shows what ARC Prize shows** (Author: Claude Opus 5). Four fixes from Boss:

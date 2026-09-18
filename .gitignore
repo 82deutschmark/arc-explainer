@@ -37,3 +37,7 @@ docs/astra/astra-data/
 # the app referenced. The 118MB zip is why this repo had git-lfs at all -- see CHANGELOG
 # 9.67.0. Still on disk locally; history is unchanged, so old commits keep their copies.
 media/
+
+# Raw ARC-AGI-3 recordings pulled by scripts/arc3/pull_agent_scorecard.py (~100 MB per card).
+# The derived per-level file next to it is committed; these stay local.
+data/arc3-agent-runs/raw/
