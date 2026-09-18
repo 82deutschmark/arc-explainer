@@ -155,15 +155,15 @@
   "pulls": [
     {
       "player": "Boss",
-      "pulledAt": "2026-09-17T23:11:11Z",
+      "pulledAt": "2026-09-18T01:02:03Z",
       "cardsListed": 50,
       "listCap": 50,
-      "oldestListedPublishedAt": "2026-01-07T02:57:13Z",
-      "runsSeen": 175,
-      "runsKept": 47,
+      "oldestListedPublishedAt": "2026-01-07T02:57:24Z",
+      "runsSeen": 180,
+      "runsKept": 49,
       "dropped": {
-        "zeroActions": 120,
-        "beforeCutoff": 8,
+        "zeroActions": 124,
+        "beforeCutoff": 7,
         "notHumanTag": 0,
         "notPublicGame": 0,
         "wrongBuild": 0
@@ -564,6 +564,23 @@
     },
     {
       "player": "Boss",
+      "gameId": "re86",
+      "build": "8af5384d",
+      "cardId": "d27d78b1-c189-4f6f-9114-21582b62cb54",
+      "guid": "833cf420-b1fb-466a-9fff-86cb2d48c988",
+      "runIndex": 0,
+      "state": "NOT_FINISHED",
+      "levelsCompleted": 2,
+      "levelCount": 8,
+      "actions": 64,
+      "resets": 0,
+      "score": 8.333333333333332,
+      "levelActions": [24, 40, 0, 0, 0, 0, 0, 0],
+      "levelBaselineActions": [26, 42, 86, 108, 189, 139, 424, 241],
+      "openAt": "2026-09-18T00:47:07.550679Z"
+    },
+    {
+      "player": "Boss",
       "gameId": "s5i5",
       "build": "18d95033",
       "cardId": "d3bdd9b9-30d4-4a99-95d4-4c8e3a54dd4f",
@@ -629,6 +646,23 @@
       "levelActions": [10, 15, 25, 15, 24, 20, 17, 17],
       "levelBaselineActions": [18, 28, 18, 19, 31, 23, 58, 18],
       "openAt": "2026-09-16T19:20:44.303266Z"
+    },
+    {
+      "player": "Boss",
+      "gameId": "sb26",
+      "build": "7fbdac44",
+      "cardId": "d27d78b1-c189-4f6f-9114-21582b62cb54",
+      "guid": "11021704-a52f-4048-9f23-3eb10385c81e",
+      "runIndex": 0,
+      "state": "WIN",
+      "levelsCompleted": 8,
+      "levelCount": 8,
+      "actions": 174,
+      "resets": 0,
+      "score": 93.47474109784716,
+      "levelActions": [13, 15, 24, 15, 19, 22, 39, 27],
+      "levelBaselineActions": [18, 28, 18, 19, 31, 23, 58, 18],
+      "openAt": "2026-09-18T00:47:07.550679Z"
     },
     {
       "player": "Boss",
