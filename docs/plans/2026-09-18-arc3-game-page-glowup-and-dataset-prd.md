@@ -16,8 +16,9 @@ SRP/DRY check: Pass -- brief only, no code. Everything it proposes reads from th
 
 # The game pages: glow-up and dataset
 
-> **Status 18-Sep-2026: approved by Boss. Step 1 (the JSON) is DONE; the page rebuild is
-> next.** The mockup beside this file is the spec ("exactly what I want"), minus what the
+> **Status 18-Sep-2026: approved by Boss. Steps 1, 3, 4 and 6 are DONE (the JSON, the page
+> rebuild, the dc22 level 6 render, the arc-3 fetch script). Left: the `corrections[]`
+> migration (step 2) and, when Boss says so, curation and release (step 5).** The mockup beside this file is the spec ("exactly what I want"), minus what the
 > amendments below cut. Read the amendments first: they override the parts of the brief
 > they name. The JSON is private (token-gated) until curated; our own pipeline fetches it.
 
@@ -284,10 +285,15 @@ Each step is its own commit and changelog entry.
    render any level's grid itself.
 2. **Type additions.** `kind` is done. Left: a one-off migration of each game's `notes` into
    `corrections[]`, for the page's fold-out. Keep `notes` for undated text.
-3. **Page rebuild** per the mockup. New components under `client/src/components/arc3/`:
-   `LevelStrip`, `LevelSection`, `MechanicRow`, `PlayNote`. The page file shrinks to layout.
-   Update `arc3GameMechanicsDoc.ts` so the markdown export also goes level by level.
-4. **Re-render** every game's opening frames so no level is missing its engine render.
+3. ~~Page rebuild.~~ **Done 18-Sep.** Components in `client/src/components/arc3/gamePage/`;
+   the page file is layout only (1254 -> 415 lines). The level cut lives in
+   `shared/arc3Games/gameLevels.ts` and is shared by the page, the dataset and the markdown
+   export, which now also reads level by level. Differences from the mockup: no budget, no
+   bars, no code links (amendments 3 and 4), and the mockup's dc22 level 6 "Notes from play"
+   box is not there, because it was drawn from the prose `notes`, not from anything Boss said
+   in saw / did / expected form.
+4. ~~Re-render.~~ **Done 18-Sep.** dc22 level 6 was the only live-set gap; its engine render is
+   back and Boss's capture sits beside it. (as66, withdrawn, has never had levels 1 and 2.)
 5. **Curation pass, then dataset card and release.** Before anything is public: every
    record spot-checked against its page, every citation opened, every run GUID resolved
    against the replay corpus. Then README, licence, Hugging Face upload. Boss signs off.
