@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.112.0  Sep 19, 2026
+
+- **Gallery: one "Additional games" section, theredbluepill's arc-interactive by name, and the generator dump off the page** (Author: Claude Opus 5): Son Pham's call, three changes to how `/arc3/gallery` groups tasks.
+  - **One section for our finished work.** The research collection (25), reviewed set (50), built in-house (34) and contributed glow-ups (44) render as one section, "Additional games" (153): reviewed first, then glow-ups, hand-made, research. The categories themselves are untouched; upstream slugs, the visitor allowlist and the review queue still key on them. `sectionOf()` in `client/src/lib/arc3TaskSets.ts` maps them to the section, and the gallery's sections, chips, counts and `?category=` deep links all go through it (`?category=arena` and `?category=research` land on the merged section). `withinGroupOrder()` gains a third rule (blocks in rank order, id inside), and "Next task" walks the section instead of the category, so the strip and the Next button are still one list. Consequence: a visitor walking Next from a reviewed game now reaches the research collection at the end. The visitor allowlist (landing tiles, default `/play` queue) is unchanged and still leaves research out.
+  - **The community section is named after its source**: "theredbluepill's arc-interactive". The landing page's prose matches. The MIT credit line is unchanged.
+  - **"Fresh off the pipeline" is off the page.** `ai-generated` moves from HIDDEN_FROM_BROWSE to LINK_ONLY: no chip, no section, no count. It stays in the catalog (the catalog-layer warning in HIDDEN_FROM_BROWSE still holds), so `/arc3/review` and old `/arc3/play/<id>` links keep loading.
+  - Files: `client/src/lib/arc3TaskSets.ts`, `client/src/pages/arc3-community/CommunityGallery.tsx`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/pages/arc3-community/SyntheticLanding.tsx`, `CHANGELOG.md`.
+
 ### Version 9.111.1  Sep 18, 2026
 
 - **Astra records flagged do-not-train** (Author: Claude Opus 5): Boss read the gpt-6-astra text and it is its own shorthand, unreadable to humans; it would pollute the corpus. `do_not_train()` in `scripts/arc3/pull_agent_scorecard.py` (shared with `pull_official_public_runs.py`) sets `source.doNotTrain: true` on every gpt-6-astra record: 1,837 in `data/arc3-official-runs/levels-won.jsonl.gz` and all 183 in `data/arc3-agent-runs/75d9c8e7-….levels.jsonl`. Opus 5, Sol, Terra, Luna and Grok records stay trainable. Costs unchanged. Notes in both docs/plans write-ups.
