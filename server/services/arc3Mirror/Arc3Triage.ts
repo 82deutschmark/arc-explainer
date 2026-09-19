@@ -1,7 +1,8 @@
 /*
 Author: Claude Opus 5
 Date: 2026-08-31 (revised 2026-09-01: second batch, generation as a field, and the
-      illegible verdict)
+      illegible verdict; 2026-09-19: the generated batch retired from the queue, see
+      RETIRED_GENERATIONS)
 PURPOSE: The review ordering for the 621 probed tasks — which are worth a human's
          time, which are duplicates of another, and which fall over to random input.
          571 are the qNNN-v1 generated set; 50 are the reviewed set the arena
@@ -194,8 +195,23 @@ const BY_ID = new Map<string, TriageEntry>(DATA.games.map((g) => [g.gameId, g]))
  * work and the least evidenced. The gap is deliberate: at 801 it would tie with the
  * generator's next batch and interleave two sets that were measured differently.
  */
+/**
+ * RETIRED: the generator's own batch, generations 1-800 -- the 571 qNNN-v1 tasks, 305 of
+ * them queued. Son Pham, 19-Sep-2026: "Remove Fresh Off The Pipeline bro. They are slop",
+ * and then, of this queue, "pull those 571 too". So the queue, and next() with it, no
+ * longer hands them to anyone; the gallery already dropped them (LINK_ONLY in
+ * CommunityGallery). Their verdicts stay in all() and get(), and the catalog still serves
+ * them, so an old /arc3/play/<id> link still loads and still explains itself.
+ *
+ * By generation, not by id shape: see WHY `generation` IS A FIELD above. The arena batch
+ * is 1000 and stays.
+ */
+const RETIRED_GENERATIONS = { from: 1, to: 800 };
+const isRetired = (g: TriageEntry): boolean =>
+  g.generation >= RETIRED_GENERATIONS.from && g.generation <= RETIRED_GENERATIONS.to;
+
 const QUEUE: TriageEntry[] = DATA.games
-  .filter((g) => g.status === 'queued')
+  .filter((g) => g.status === 'queued' && !isRetired(g))
   .sort((a, b) =>
     b.generation - a.generation
     || (a.rank ?? Number.MAX_SAFE_INTEGER) - (b.rank ?? Number.MAX_SAFE_INTEGER));

@@ -35,7 +35,9 @@ SRP/DRY check: Pass - owns the category constants and the two predicates over th
          stays with the pages that route. No fetching here.
 */
 
-/** Our own generation pipeline: unreviewed, and the set /arc3/review exists to judge. */
+/** Our own generation pipeline: unreviewed. Off the site since 19-Sep-2026 -- out of the
+ *  gallery (LINK_ONLY) and out of /arc3/review's queue (Arc3Triage RETIRED_GENERATIONS);
+ *  reachable only by an old direct link. */
 export const PIPELINE_CATEGORY = 'ai-generated';
 
 /** The reviewed tasks: agent-generated, then played and revised until they hold up.
