@@ -17,6 +17,7 @@
  *          Its machine-readable twin is /arc3/games.md, generated from the same registry
  *          by server/services/arc3/arc3GameMechanicsDoc.ts and linked at the top for
  *          agents. Both read shared/arc3Games, so neither can drift from the other.
+ *          2026-09-19 (Claude Opus 5): Slippery Seven badge on tiles and entries.
  *          2026-09-18 (Claude Opus 5): no 90-day cut on the top-10 numbers or Boss's count.
  *
  *          2026-09-16 (Claude Opus 5, later): every tile shows actions to win -- the fewest on
@@ -46,6 +47,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { arcPrizeLeaderboardUrl, getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
 import { getOwnerGameRating, OWNER_PLAYER } from '../../../shared/arc3Games/humanDifficulty';
+import { SlipperySevenBadge } from '@/components/arc3/SlipperySevenBadge';
 
 /** Per-game top-10 action counts (every winning row), from /api/arc3/leaderboards/summary. */
 interface TopActionSummary {
@@ -136,6 +138,7 @@ function GameGridTile({ game, counts }: { game: Arc3GameMetadata; counts: GameAc
           )}
         </div>
         <p className="text-sm font-medium mt-1 truncate">{game.informalName || game.officialTitle}</p>
+        <SlipperySevenBadge gameId={game.gameId} className="mt-1 text-[10px] px-1.5 py-0" />
         <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{game.simpleExplanation}</p>
         <dl className="grid grid-cols-3 gap-1 mt-2 pt-2 border-t text-center">
           <div title="Fewest actions to win on the ARC Prize top-10 board">
@@ -220,6 +223,7 @@ function GameEntry({ game }: { game: Arc3GameMetadata }) {
               {typeof game.levelCount === 'number' && (
                 <Badge variant="outline">{game.levelCount} levels</Badge>
               )}
+              <SlipperySevenBadge gameId={game.gameId} />
             </div>
           </div>
           <div className="flex items-center gap-2">

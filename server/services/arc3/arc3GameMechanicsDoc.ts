@@ -33,6 +33,8 @@
  *          day: each game now reads level by level (pictures, the rules that start there, notes
  *          from play, ARC's baseline and Boss's actions), cut by shared/arc3Games/gameLevels.ts,
  *          like the rebuilt game page. The Mechanics prose stays as the short version.
+ *          2026-09-19 (Claude Opus 5): a "Slippery Seven" fact line for the seven games in
+ *          shared/arc3Games/slipperySeven.ts.
  * SRP/DRY check: Pass -- document generation only. Data lives in shared/arc3Games, HTTP
  *          serving lives in server/routes.ts, and the HTML rendering of the same objects
  *          stays in client/src/pages/Arc3GameSpoiler.tsx.
@@ -52,6 +54,7 @@ import {
   OWNER_PLAYER,
 } from '../../../shared/arc3Games/humanDifficulty';
 import { buildGameLevels, pickHeadlineRun, runOnLevel, screenshotKind } from '../../../shared/arc3Games/gameLevels';
+import { getSlipperySevenEntry } from '../../../shared/arc3Games/slipperySeven';
 
 /** Public origin used for the absolute links in the document (and in the game dataset). */
 export const SITE_ORIGIN = 'https://arc.markbarney.net';
@@ -97,6 +100,8 @@ function formatGame(game: Arc3GameMetadata): string {
   if (typeof game.winScore === 'number') facts.push(`- **Win score:** ${game.winScore}`);
   if (typeof game.maxActions === 'number') facts.push(`- **Max actions:** ${game.maxActions}`);
   if (game.tags.length > 0) facts.push(`- **Tags:** ${game.tags.join(', ')}`);
+  const slippery = getSlipperySevenEntry(game.gameId);
+  if (slippery) facts.push(`- **Slippery Seven:** yes. ${slippery.reason}`);
   facts.push(`- **Write-up:** ${SITE_ORIGIN}/arc3/games/${game.gameId}`);
   // How humans actually do on this exact task, from ARC Prize. Worth having in the machine
   // -readable copy too: an agent reasoning about difficulty should read the real numbers
