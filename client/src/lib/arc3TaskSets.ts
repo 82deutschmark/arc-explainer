@@ -1,6 +1,9 @@
 /*
 Author: Claude Opus 5
 Date: 2026-09-07
+Update: 2026-09-19 (Claude Opus 5) -- sectionOf(): four categories now share one gallery
+        section, "Additional games", and withinGroupOrder() orders inside it, so the strip
+        and "Next task" still walk the same list.
 PURPOSE: One definition of which ARC-AGI-3 tasks a visitor may be handed, shared by every
          surface that resolves "what should this person play next".
 
@@ -45,6 +48,46 @@ export const GLOWUP_CATEGORY = 'contributed-glowup';
 /** Built in-house: hand-made by the two of us. The gallery calls them "Built in-house";
  *  they are the only tasks on the site a person wrote from nothing. */
 export const CUSTOM_CATEGORY = 'custom';
+
+/** The research collection: new five-level tasks, not yet reviewed. Opt-in for visitors --
+ *  not in VISITOR_CATEGORIES -- but walkable once a player opens one. */
+export const RESEARCH_CATEGORY = 'research';
+
+/**
+ * ONE SECTION, FOUR CATEGORIES.
+ *
+ * 19-Sep-2026, Son Pham: "Research collection, Contributed glow up and built in house and
+ * reviewed set should all be merged together into one categories called additional game."
+ * The categories stay what they are -- upstream's slugs, the visitor allowlist below and
+ * the review queue all still key on them -- and the gallery shows the four as one section.
+ *
+ * The gallery's sections and chips, and "Next task"'s group, all go through sectionOf(),
+ * because the strip a player sees and the walk the Next button takes must be the same list
+ * (see withinGroupOrder).
+ */
+export const ADDITIONAL_SECTION = 'additional';
+
+const SECTION_OF: Record<string, string> = {
+  [AUTHORED_CATEGORY]: ADDITIONAL_SECTION,
+  [GLOWUP_CATEGORY]: ADDITIONAL_SECTION,
+  [CUSTOM_CATEGORY]: ADDITIONAL_SECTION,
+  [RESEARCH_CATEGORY]: ADDITIONAL_SECTION,
+};
+
+/** Inside "Additional games", the most finished work first: reviewed, glowed up, hand-made,
+ *  then the unreviewed research collection. Other sections hold one category each. */
+const RANK_IN_SECTION: Record<string, number> = {
+  [AUTHORED_CATEGORY]: 0,
+  [GLOWUP_CATEGORY]: 1,
+  [CUSTOM_CATEGORY]: 2,
+  [RESEARCH_CATEGORY]: 3,
+};
+
+/** The gallery section a category renders under: its own slug unless merged above. */
+export function sectionOf(category: string | undefined): string {
+  const slug = category ?? '';
+  return SECTION_OF[slug] ?? slug;
+}
 
 /**
  * THE ALLOWLIST. Categories a visitor may be handed, and nothing else.
@@ -107,7 +150,7 @@ export interface Groupable extends Categorised { gameId: string }
  * it so that Next task is literally next task in the group." He plays g0xx and g5xx in id
  * order, and the site was not handing them over that way.
  *
- * TWO RULES, AND WHICH APPLIES DEPENDS ON THE GROUP:
+ * THREE RULES, AND WHICH APPLIES DEPENDS ON THE GROUP (the third since 19-Sep):
  *
  * 1. The pipeline set keeps the review queue's order — newest generated work first, with
  *    the near-duplicates and the random-mashable held back. That order is the server's
@@ -123,6 +166,10 @@ export interface Groupable extends Categorised { gameId: string }
  *    the catalog's incidental order is deliberate: `custom` is already out of order
  *    upstream (tl01, pr01, ng01, eh01 are appended), and any future append would break
  *    the rest silently.
+ *
+ * 3. A MERGED SECTION ("Additional games", see sectionOf) runs its categories as blocks,
+ *    in RANK_IN_SECTION order, each block by id. Without it the four would interleave by id
+ *    (ac02 before g001), burying the reviewed set that should lead.
  */
 export function withinGroupOrder(
   a: Groupable,
@@ -133,5 +180,9 @@ export function withinGroupOrder(
     const byQueue = (queuePlace.get(a.gameId) ?? Infinity) - (queuePlace.get(b.gameId) ?? Infinity);
     if (byQueue !== 0) return byQueue;
   }
+  // 3. A merged section (sectionOf) keeps its categories in blocks, best first; a group of
+  //    one category ties here and falls through to the id, exactly as before.
+  const byRank = (RANK_IN_SECTION[a.category ?? ''] ?? 0) - (RANK_IN_SECTION[b.category ?? ''] ?? 0);
+  if (byRank !== 0) return byRank;
   return a.gameId.localeCompare(b.gameId);
 }

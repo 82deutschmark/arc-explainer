@@ -1,7 +1,9 @@
 /*
 Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-16
-Update: Use native intact-character movement for the 32 feedback-revised games.
+Update: 2026-09-19 (Claude Opus 5) -- "Next task" walks the gallery section (sectionOf), so the
+        four categories merged into "Additional games" are one walk, in the strip's order.
+Previous update: Use native intact-character movement for the 32 feedback-revised games.
 Previous update: Combine reviewed action playback and hints with native research animations,
         contributed recovery, source-versioned controls and the official Z Undo binding.
 Previous update: Explain KS01 controls, show unlimited contributed retries and restore failed moves;
@@ -168,7 +170,7 @@ import { Arc3Console, type ConsoleButton } from '@/components/arc3-community/Arc
 import { Arc3FeedbackPanel } from '@/components/arc3-community/Arc3FeedbackPanel';
 import { usePyodideGame, type PyodideFrameData } from '@/hooks/usePyodideGame';
 import { humanPlay } from '@/lib/humanPlayTelemetry';
-import { PIPELINE_CATEGORY, isVisitorFacing, withinGroupOrder } from '@/lib/arc3TaskSets';
+import { PIPELINE_CATEGORY, RESEARCH_CATEGORY, isVisitorFacing, sectionOf, withinGroupOrder } from '@/lib/arc3TaskSets';
 import { actionPlayback, usesNativeTranslation, type PixelGrid } from '@shared/arc3ActionFrames';
 import { arc3PlayHint } from '@shared/arc3PlayHints';
 import { PROBE_CANDIDATE_ACTIONS, TRIANGULAR_MOVEMENT_GAME_IDS, probeGestureFor } from '@shared/arc3Topology';
@@ -461,8 +463,11 @@ export default function CommunityGamePlay() {
      */
     // Opening the experimental collection opts into walking its 25 tasks. This does
     // not add unreviewed games to the default visitor recommendation pool.
-    const group = (!reviewing && (mine === 'research' || isVisitorFacing({ category: mine })))
-      ? games.filter((g) => g.category === mine)
+    // 19-Sep: the group is the gallery SECTION, not the category -- research, arena, custom
+    // and contributed-glowup are one "Additional games" strip, so Next walks all of it, in
+    // the strip's order, and a player inside it can reach the research collection too.
+    const group = (!reviewing && (mine === RESEARCH_CATEGORY || isVisitorFacing({ category: mine })))
+      ? games.filter((g) => sectionOf(g.category) === sectionOf(mine))
         .sort((a, b) => withinGroupOrder(a, b, queuePlace))
       : [];
 

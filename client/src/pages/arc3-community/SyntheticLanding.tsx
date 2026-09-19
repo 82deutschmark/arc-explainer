@@ -534,7 +534,7 @@ export default function SyntheticLanding() {
               until they hold up, six to eight levels each, and still being iterated — plus
               {' '}{customCount} we made by hand and {glowupCount} community tasks that have
               been through the same treatment. Everything else we mirror, including the
-              official 25 and a 252-task community catalog, is in the{' '}
+              official 25 and theredbluepill's 252-task arc-interactive catalog, is in the{' '}
               <Link href="/arc3/gallery" className="underline" style={{ color: ARC.dim }}>
                 gallery
               </Link>.
