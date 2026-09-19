@@ -7,6 +7,7 @@
  *          (`sc25` -> `sc25-635fd71a`), so it is resolved at render time from
  *          /api/arc3-mirror/games, and when the catalog has no match the button is not rendered.
  *          2026-09-16 (Claude Opus 5): action counts up top and two human ratings (top 10, Boss).
+ *          2026-09-19 (Claude Opus 5): Slippery Seven badge in the header.
  *          2026-09-18 (Claude Opus 5): REBUILT LEVEL BY LEVEL, per the glow-up brief
  *          (docs/plans/2026-09-18-arc3-game-page-glowup-and-dataset-prd.md) and its dc22 mockup.
  *          Boss's complaint: the rules and the pictures were in two different places, and the
@@ -58,6 +59,7 @@ import { getArcBaseline, getOwnerGameRating, getPlayerRuns, OWNER_PLAYER } from 
 import { buildGameLevels, pickHeadlineRun, runOnLevel } from '@shared/arc3Games/gameLevels';
 import type { HumanLeaderboard } from '@/components/arc3/gamePage/humanLeaderboard';
 import { ActionCountStrip } from '@/components/arc3/gamePage/ActionCountStrip';
+import { SlipperySevenBadge } from '@/components/arc3/SlipperySevenBadge';
 import { DifficultyBadge, describeOwnerRating, describeTop10Rating } from '@/components/arc3/gamePage/DifficultyBadges';
 import { ControlsCard } from '@/components/arc3/gamePage/ControlsCard';
 import { SymbolLegendCard } from '@/components/arc3/gamePage/SymbolLegendCard';
@@ -278,6 +280,7 @@ export default function Arc3GameSpoiler() {
                 difficulty={game.aiDifficulty}
                 title="Snapshot from our own competition run data -- not live, not every run"
               />
+              <SlipperySevenBadge gameId={game.gameId} />
               <Badge variant="outline" className="font-mono font-normal">
                 {cut.levelCount} {cut.levelCount === 1 ? 'level' : 'levels'}
                 {baseline ? ` · build ${baseline.build}` : ''}

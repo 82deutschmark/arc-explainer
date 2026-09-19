@@ -12,6 +12,9 @@
 # reference the old numbers.
 
 
+### Version 9.114.0  Sep 19, 2026
+
+- **The Slippery Seven get a badge** (Author: Claude Opus 5). Boss asked for the seven games our agents have the most trouble with to be marked on the site. The list comes from the arc-3 repo write-up `docs/trace-findings/2026-09-17-the-slippery-seven.md`: dc22, g50t, m0r0, sc25, sk48, tn36 and tr87 scored zero in all four passes of the Qwen 27B run on 16 Sept. Each of the seven now has a "Slippery Seven" badge on its /arc3/games tile and entry and in its game page header. Hovering it says why the game is on the list (hard for every model, hard for both models, or only the 27B fails it). /arc3/games.md gets the same line. It is a different list from the 12 Sept Flash-Next "bottom seven" and from the AI difficulty rating. New `shared/arc3Games/slipperySeven.ts` and `client/src/components/arc3/SlipperySevenBadge.tsx`; wired into `client/src/pages/{Arc3GamesIndex,Arc3GameSpoiler}.tsx` and `server/services/arc3/arc3GameMechanicsDoc.ts`.
 ### Version 9.113.0  Sep 19, 2026
 
 - **The generator's 571 are off the review queue too** (Author: Claude Opus 5): Son Pham, after 9.112.0 took them off the gallery: "pull those 571 too". `Arc3Triage` now leaves the generated batch (generations 1-800, 305 of them queued) out of `queue()` and `next()`, via `RETIRED_GENERATIONS`, so `/arc3/review`, "Next task" for a reviewer and anything else that walks the queue now hand out only the 36 queued reviewed tasks. The verdicts stay in `all()` and `get()`, and the catalog still serves the tasks, so an old `/arc3/play/<id>` link still loads; its "Next task" moves on into the reviewed set. The review page's footer counted the old triage ("341 of 621 generated tasks are worth playing"); it now counts the queue it walks. Files: `server/services/arc3Mirror/Arc3Triage.ts`, `client/src/pages/arc3-community/Arc3Review.tsx`, `client/src/lib/arc3TaskSets.ts`, `CHANGELOG.md`.
