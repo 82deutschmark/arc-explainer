@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.113.0  Sep 19, 2026
+
+- **The generator's 571 are off the review queue too** (Author: Claude Opus 5): Son Pham, after 9.112.0 took them off the gallery: "pull those 571 too". `Arc3Triage` now leaves the generated batch (generations 1-800, 305 of them queued) out of `queue()` and `next()`, via `RETIRED_GENERATIONS`, so `/arc3/review`, "Next task" for a reviewer and anything else that walks the queue now hand out only the 36 queued reviewed tasks. The verdicts stay in `all()` and `get()`, and the catalog still serves the tasks, so an old `/arc3/play/<id>` link still loads; its "Next task" moves on into the reviewed set. The review page's footer counted the old triage ("341 of 621 generated tasks are worth playing"); it now counts the queue it walks. Files: `server/services/arc3Mirror/Arc3Triage.ts`, `client/src/pages/arc3-community/Arc3Review.tsx`, `client/src/lib/arc3TaskSets.ts`, `CHANGELOG.md`.
+
 ### Version 9.112.0  Sep 19, 2026
 
 - **Gallery: one "Additional games" section, theredbluepill's arc-interactive by name, and the generator dump off the page** (Author: Claude Opus 5): Son Pham's call, three changes to how `/arc3/gallery` groups tasks.

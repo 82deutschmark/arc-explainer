@@ -1,9 +1,12 @@
 /*
 Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-14
+Update: 2026-09-19 (Claude Opus 5) -- the generated set is retired from the review queue
+        (RETIRED_GENERATIONS in Arc3Triage), so /arc3/review walks what is left; the
+        footer counts that instead of the old triage totals.
 PURPOSE: Resolves "just give me something to play" and redirects into it. Two routes, two
          audiences, and the audience decides which set is in scope:
-           /arc3/review — a reviewer working through the generated set. Whole queue.
+           /arc3/review — a reviewer working through the review queue. Whole queue.
            /play        — a visitor. Reviewed tasks only, matching the front page.
          Picks the highest-ranked task in scope that nobody has played.
 
@@ -100,7 +103,7 @@ export default function Arc3Review() {
     if (target) setLocation(`/arc3/play/${publicGameId(target)}`, { replace: true });
   }, [target, setLocation]);
 
-  const totals = review?.data?.totals;
+  const queued = review?.data?.games?.length;
   const waiting = isLoading || statsLoading || catalogLoading;
 
   return (
@@ -126,12 +129,12 @@ export default function Arc3Review() {
         </>
       )}
 
-      {totals && (
+      {/* The triage totals (341 of 621 worth playing, and why) described the generated set,
+          which left the queue on 19-Sep. Count the queue that is actually walked. */}
+      {queued !== undefined && (
         <p className="text-[11px] text-center max-w-[420px]" style={{ color: ARC.faint }}>
-          {totals.queued} of {totals.probed} generated tasks are worth playing.
-          {' '}{totals.duplicate} are near-copies of another, {totals.weak} fall over to
-          random input, and {totals.illegible} cannot be won by anyone — their goal is
-          never drawn on screen — so none of those are in the queue.
+          {queued} task{queued === 1 ? '' : 's'} in the review queue. The generator's own
+          set was taken off the site on 19 September 2026.
         </p>
       )}
     </div>
