@@ -24,6 +24,9 @@ HOSTILE, WARDEN = 0, 1
 WARD_BODY, WARD_CORE = 10, 9
 BOOTS, BLADE, ANCHOR = 0, 1, 2
 GEAR_HUE = (14, 8, 11)
+WEIGHT = (1, 1, 2)
+CURSED_WEIGHT, CARRY = 3, 3
+CURSE_HUE = 1
 RUBBLE = 2
 PROP_HUE = (6, 7, 10, 11, 12, 15, 14)
 PLATE = (6, 7, 10, 11, 12, 15, 14)
@@ -54,7 +57,7 @@ SPECS = [
          gates=[],
          exit=(2,0,8,6,SQUARE,GOLD),
          marks=[(0,0,8,8,0), (1,1,3,3,1), (2,1,3,8,2), (0,1,8,3,3)],
-         gear=[(0,1,8,8,BOOTS)],
+         gear=[(0,1,8,8,BOOTS,0)],
          rubble=[(1,1,5,6), (1,1,5,7), (1,1,6,7)],
          props=[(0,0,6,6,"#ff2d95"), (1,0,4,8,"#00e5ff"), (2,1,6,4,"#b14bff"), (0,1,9,8,"#9dff3c")],
          foes=[(1,1,2,6,1,0,8,HOSTILE)]),
@@ -66,7 +69,7 @@ SPECS = [
          gates=[((0,0),(0,1),(4, 5))],
          exit=(2,1,6,8,SQUARE,CYAN),
          marks=[(1,0,3,3,4), (2,0,8,8,5), (0,0,8,8,0), (0,1,3,3,1), (0,2,8,3,2), (1,2,3,8,6), (2,2,3,3,7)],
-         gear=[(0,1,8,8,BOOTS), (2,0,4,4,ANCHOR)],
+         gear=[(0,1,8,8,BOOTS,0), (2,0,4,4,ANCHOR,0), (1,2,3,3,BOOTS,1)],
          rubble=[(0,2,5,5), (0,2,6,5), (1,2,7,7)],
          props=[(0,0,5,9,"#ffd400"), (0,1,6,7,"#ff2d95"), (1,2,4,4,"#00e5ff"), (2,2,8,9,"#b14bff"), (1,0,8,3,"#ff6a00")],
          foes=[(0,1,6,2,0,1,8,HOSTILE), (1,2,2,6,1,0,8,HOSTILE), (1,2,4,4,0,1,6,WARDEN)]),
@@ -78,7 +81,7 @@ SPECS = [
          gates=[((0,0),(0,1),(4, 5, 6))],
          exit=(3,2,8,6,CIRCLE,PINK),
          marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0), (0,1,8,3,1), (0,2,8,8,2), (1,2,3,3,7), (2,2,8,3,8), (3,0,3,3,9), (3,1,8,8,10)],
-         gear=[(0,1,3,3,BOOTS), (1,1,8,8,BLADE), (2,2,3,9,ANCHOR)],
+         gear=[(0,1,3,3,BOOTS,0), (1,1,8,8,BLADE,0), (2,2,3,9,ANCHOR,0), (1,2,5,3,BLADE,1), (3,0,8,3,ANCHOR,1)],
          rubble=[(1,2,5,5), (1,2,6,5), (0,2,8,9), (2,2,4,4)],
          props=[(0,0,5,9,"#ffd400"), (1,0,3,4,"#ff6a00"), (0,2,7,8,"#ff2d95"), (2,2,7,7,"#9dff3c"), (3,0,7,8,"#00e5ff"), (1,1,3,9,"#b14bff")],
          foes=[(1,0,2,6,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (2,2,2,6,1,0,8,HOSTILE), (1,0,4,4,0,1,6,WARDEN), (2,2,4,4,0,1,6,WARDEN)]),
@@ -91,7 +94,7 @@ SPECS = [
          gates=[((0,0),(0,1),(4, 5))],
          exit=(3,2,8,6,TRI,GOLD),
          marks=[(1,0,3,3,4), (2,0,8,8,5), (0,0,8,8,0), (0,1,8,3,1), (0,2,3,3,2), (1,1,3,8,6), (1,2,6,6,7), (2,1,3,3,8), (2,2,3,8,9), (3,0,6,6,10), (3,1,3,3,11)],
-         gear=[(0,1,6,3,BOOTS), (1,2,8,4,BLADE), (2,2,4,9,ANCHOR)],
+         gear=[(0,1,6,3,BOOTS,0), (1,2,8,4,BLADE,0), (2,2,4,9,ANCHOR,0), (0,2,8,5,BOOTS,1), (3,1,8,3,BLADE,1)],
          rubble=[(1,1,5,5), (1,1,6,5), (2,2,7,4), (0,2,8,8)],
          props=[(0,0,5,9,"#ffd400"), (1,0,4,8,"#ff6a00"), (2,1,7,7,"#ff2d95"), (1,2,8,3,"#00e5ff"), (3,1,6,6,"#b14bff"), (0,1,4,9,"#9dff3c")],
          foes=[(1,0,2,9,1,0,8,HOSTILE), (2,1,2,2,0,1,8,HOSTILE), (1,2,2,6,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (1,2,4,4,0,1,6,WARDEN)]),
@@ -104,7 +107,7 @@ SPECS = [
          gates=[((0,0),(0,1),(4, 5, 6))],
          exit=(3,3,8,6,CIRCLE,PINK),
          marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0), (0,1,3,3,1), (0,2,8,8,2), (0,3,8,3,7), (1,3,3,3,8), (2,1,3,8,9), (2,2,3,3,10), (2,3,8,8,11), (3,0,6,6,12), (3,1,3,3,13)],
-         gear=[(0,1,4,4,BOOTS), (1,1,7,7,BLADE), (2,2,6,6,ANCHOR), (1,3,3,9,BLADE)],
+         gear=[(0,1,4,4,BOOTS,0), (1,1,7,7,BLADE,0), (2,2,6,6,ANCHOR,0), (1,3,3,9,BLADE,0), (0,2,8,3,ANCHOR,1), (2,3,8,5,BOOTS,1)],
          rubble=[(0,2,5,6), (0,2,6,6), (2,2,4,8), (1,3,8,4), (2,1,6,9)],
          props=[(0,0,5,9,"#ffd400"), (1,0,4,4,"#ff6a00"), (2,1,7,4,"#ff2d95"), (0,3,6,6,"#00e5ff"), (2,3,4,9,"#b14bff"), (3,0,5,5,"#9dff3c")],
          foes=[(1,0,2,9,1,0,8,HOSTILE), (2,1,2,2,0,1,8,HOSTILE), (0,2,6,2,0,1,8,HOSTILE), (2,3,2,6,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (2,3,4,4,0,1,6,WARDEN), (1,0,4,7,0,1,4,WARDEN)]),
@@ -117,7 +120,7 @@ SPECS = [
          gates=[((0,0),(0,1),(4, 5, 6))],
          exit=(4,2,8,6,CIRCLE,PINK),
          marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0), (0,1,3,3,1), (0,2,8,8,2), (0,3,8,3,7), (1,3,3,3,8), (2,1,3,3,9), (2,2,8,3,10), (2,3,3,8,11), (3,0,3,3,12), (3,1,8,8,13), (4,0,6,6,14), (4,1,3,3,15)],
-         gear=[(0,1,4,9,BOOTS), (1,1,8,4,BLADE), (2,2,4,4,ANCHOR), (1,3,8,8,BLADE), (3,1,5,5,ANCHOR)],
+         gear=[(0,1,4,9,BOOTS,0), (1,1,8,4,BLADE,0), (2,2,4,4,ANCHOR,0), (1,3,8,8,BLADE,0), (3,1,5,5,ANCHOR,0), (0,2,8,5,BOOTS,1), (2,3,5,3,BLADE,1), (4,1,8,8,ANCHOR,1)],
          rubble=[(0,2,5,7), (0,2,6,7), (1,3,4,5), (2,1,7,8), (3,2,6,6), (2,2,9,3)],
          props=[(0,0,5,9,"#ffd400"), (1,0,4,4,"#ff6a00"), (2,1,5,3,"#ff2d95"), (0,3,6,6,"#00e5ff"), (2,3,8,4,"#b14bff"), (4,1,6,6,"#9dff3c"), (3,0,8,8,"#ff4f6d")],
          foes=[(1,0,2,9,1,0,8,HOSTILE), (2,1,2,2,0,1,8,HOSTILE), (0,2,6,2,0,1,8,HOSTILE), (2,3,2,6,1,0,8,HOSTILE), (3,1,2,9,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (2,3,4,4,0,1,6,WARDEN), (1,0,4,7,0,1,4,WARDEN), (3,1,4,7,0,1,4,WARDEN)]),
@@ -200,7 +203,8 @@ class World:
             ox, oy = at(c, r, x, y)
             self.foes.append(dict(ox=ox, oy=oy, dx=dx, dy=dy, ln=ln, kind=kind))
 
-        self.gear = [dict(pos=at(c, r, x, y), kind=k) for c, r, x, y, k in spec.get("gear", [])]
+        self.gear = [dict(pos=at(c, r, x, y), kind=k, cursed=bool(cu))
+                     for c, r, x, y, k, cu in spec.get("gear", [])]
         self.rubble = {at(c, r, x, y) for c, r, x, y in spec.get("rubble", [])}
         self.props = [dict(pos=at(c, r, x, y), hue=PROP_HUE[i % len(PROP_HUE)])
                       for i, (c, r, x, y, _hex) in enumerate(spec.get("props", []))]
@@ -351,6 +355,10 @@ class Window(RenderableUserDisplay):
                     patch[0, 3] = GEAR_HUE[BLADE]
                 if ANCHOR in b["gear"]:
                     patch[0, 0] = GEAR_HUE[ANCHOR]
+                if b["curses"]:
+                    patch[3, 1] = CURSE_HUE
+                if g._overloaded(b):
+                    patch[3, 2] = CURSE_HUE
 
         if g.hit:
             frame[0, :] = FOE_CORE
@@ -391,10 +399,11 @@ class Crawler(ARCBaseGame):
 
     def _enter(self, index: int) -> None:
         wd = self.world = WORLDS[index]
-        self.bodies = [dict(x=wd.start[0], y=wd.start[1], key=list(wd.start_key), gear=[])]
+        self.bodies = [dict(x=wd.start[0], y=wd.start[1], key=list(wd.start_key),
+                            gear=[], curses=[])]
         if wd.second:
             self.bodies.append(dict(x=wd.second[0], y=wd.second[1],
-                                    key=list(wd.second_key), gear=[]))
+                                    key=list(wd.second_key), gear=[], curses=[]))
         self.taken = set()
         self.dead = set()
         self.active = 0
@@ -440,6 +449,14 @@ class Crawler(ARCBaseGame):
     @staticmethod
     def _has(body, kind: int) -> bool:
         return kind in body["gear"]
+
+    @staticmethod
+    def _burden(body) -> int:
+        return (sum(WEIGHT[k] for k in body["gear"])
+                + len(body["curses"]) * CURSED_WEIGHT)
+
+    def _overloaded(self, body) -> bool:
+        return self._burden(body) > CARRY
 
     def passable(self, x: int, y: int, who: int) -> bool:
         wd = self.world
@@ -562,7 +579,9 @@ class Crawler(ARCBaseGame):
             for gp in wd.gear:
                 if gp["pos"] == (nx, ny) and id(gp) not in self.taken:
                     self.taken.add(id(gp))
-                    if gp["kind"] not in me["gear"]:
+                    if gp["cursed"]:
+                        me["curses"].append(gp["kind"])
+                    elif gp["kind"] not in me["gear"]:
                         me["gear"].append(gp["kind"])
             gnum = wd.marks.get((nx, ny))
             if gnum is not None and gnum not in self.lit:
@@ -581,6 +600,11 @@ class Crawler(ARCBaseGame):
             self._resolve_foes()
             if self._caught():
                 self._send_back()
+            elif self._overloaded(me):
+                self._step_foes()
+                self._resolve_foes()
+                if self._caught():
+                    self._send_back()
         self._follow()
         self._sync()
         self.complete_action()
