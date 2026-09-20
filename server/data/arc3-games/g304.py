@@ -20,6 +20,12 @@ BODY, IDLE = 0, 2
 FOE_BODY, FOE_CORE = 12, 13
 MARK_OFF, MARK_ON = 15, 14
 KEY_HUE = (6, 10, 11)
+HOSTILE, WARDEN = 0, 1
+WARD_BODY, WARD_CORE = 10, 9
+BOOTS, BLADE, ANCHOR = 0, 1, 2
+GEAR_HUE = (14, 8, 11)
+RUBBLE = 2
+PROP_HUE = (6, 7, 10, 11, 12, 15, 14)
 PLATE = (6, 7, 10, 11, 12, 15, 14)
 
 CELL = 4
@@ -48,85 +54,73 @@ SPECS = [
          gates=[],
          exit=(2,0,8,6,SQUARE,GOLD),
          marks=[(0,0,8,8,0), (1,1,3,3,1), (2,1,3,8,2), (0,1,8,3,3)],
-         foes=[(1,1,2,6,1,0,8)]),
+         gear=[(0,1,8,8,BOOTS)],
+         rubble=[(1,1,5,6), (1,1,5,7), (1,1,6,7)],
+         props=[(0,0,6,6,"#ff2d95"), (1,0,4,8,"#00e5ff"), (2,1,6,4,"#b14bff"), (0,1,9,8,"#9dff3c")],
+         foes=[(1,1,2,6,1,0,8,HOSTILE)]),
     dict(cols=3, rows=3, roomW=12, roomH=12, gap=3,
-         links=[((0,0),(1,0)), ((1,0),(2,0)), ((0,0),(0,1)), ((0,1),(0,2)),
-                ((0,2),(1,2)), ((1,2),(2,2)), ((2,0),(2,1))],
+         links=[((0,0),(1,0)), ((1,0),(2,0)), ((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(1,2)), ((1,2),(2,2)), ((2,0),(2,1))],
          start=(0,0,3,3), startKey=(CIRCLE, PINK),
-         tiles=[(0,2,3,3,"s",TRI), (2,2,8,8,"c",GOLD),
-                (1,2,6,6,"s",SQUARE), (0,1,6,6,"c",CYAN)],
+         tiles=[(0,2,3,3,"s",TRI), (2,2,8,8,"c",GOLD), (1,2,6,6,"s",SQUARE), (0,1,6,6,"c",CYAN)],
          doors=[((2,0),(2,1),TRI,GOLD)],
-         gates=[((0,0),(0,1),(4,5))],
+         gates=[((0,0),(0,1),(4, 5))],
          exit=(2,1,6,8,SQUARE,CYAN),
-         marks=[(1,0,3,3,4), (2,0,8,8,5), (0,0,8,8,0), (0,1,3,3,1),
-                (0,2,8,3,2), (1,2,3,8,6), (2,2,3,3,7)],
-         foes=[(0,1,6,2,0,1,8), (1,2,2,6,1,0,8)]),
+         marks=[(1,0,3,3,4), (2,0,8,8,5), (0,0,8,8,0), (0,1,3,3,1), (0,2,8,3,2), (1,2,3,8,6), (2,2,3,3,7)],
+         gear=[(0,1,8,8,BOOTS), (2,0,4,4,ANCHOR)],
+         rubble=[(0,2,5,5), (0,2,6,5), (1,2,7,7)],
+         props=[(0,0,5,9,"#ffd400"), (0,1,6,7,"#ff2d95"), (1,2,4,4,"#00e5ff"), (2,2,8,9,"#b14bff"), (1,0,8,3,"#ff6a00")],
+         foes=[(0,1,6,2,0,1,8,HOSTILE), (1,2,2,6,1,0,8,HOSTILE), (1,2,4,4,0,1,6,WARDEN)]),
     dict(cols=4, rows=3, roomW=12, roomH=12, gap=3,
-         links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)),
-                ((0,2),(1,2)), ((1,2),(2,2)), ((2,0),(3,0)), ((3,0),(3,1)), ((3,1),(3,2))],
+         links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(1,2)), ((1,2),(2,2)), ((2,0),(3,0)), ((3,0),(3,1)), ((3,1),(3,2))],
          start=(0,0,3,3), startKey=(CIRCLE, PINK),
-         tiles=[(0,2,3,3,"s",SQUARE), (1,1,6,6,"c",CYAN),
-                (3,0,6,9,"c",PINK),   (1,2,8,3,"s",CIRCLE),
-                (2,2,6,6,"c",GOLD),   (0,1,3,8,"s",TRI)],
+         tiles=[(0,2,3,3,"s",SQUARE), (1,1,6,6,"c",CYAN), (3,0,6,9,"c",PINK), (1,2,8,3,"s",CIRCLE), (2,2,6,6,"c",GOLD), (0,1,3,8,"s",TRI)],
          doors=[((2,0),(3,0),SQUARE,CYAN), ((3,1),(3,2),TRI,GOLD)],
-         gates=[((0,0),(0,1),(4,5,6))],
+         gates=[((0,0),(0,1),(4, 5, 6))],
          exit=(3,2,8,6,CIRCLE,PINK),
-         marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0),
-                (0,1,8,3,1), (0,2,8,8,2), (1,2,3,3,7), (2,2,8,3,8),
-                (3,0,3,3,9), (3,1,8,8,10)],
-         foes=[(1,0,2,6,1,0,8), (0,1,6,2,0,1,8), (2,2,2,6,1,0,8)]),
+         marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0), (0,1,8,3,1), (0,2,8,8,2), (1,2,3,3,7), (2,2,8,3,8), (3,0,3,3,9), (3,1,8,8,10)],
+         gear=[(0,1,3,3,BOOTS), (1,1,8,8,BLADE), (2,2,3,9,ANCHOR)],
+         rubble=[(1,2,5,5), (1,2,6,5), (0,2,8,9), (2,2,4,4)],
+         props=[(0,0,5,9,"#ffd400"), (1,0,3,4,"#ff6a00"), (0,2,7,8,"#ff2d95"), (2,2,7,7,"#9dff3c"), (3,0,7,8,"#00e5ff"), (1,1,3,9,"#b14bff")],
+         foes=[(1,0,2,6,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (2,2,2,6,1,0,8,HOSTILE), (1,0,4,4,0,1,6,WARDEN), (2,2,4,4,0,1,6,WARDEN)]),
     dict(cols=4, rows=3, roomW=12, roomH=12, gap=3,
-         links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)),
-                ((0,2),(1,2)), ((1,2),(2,2)), ((2,1),(2,2)),
-                ((2,0),(3,0)), ((3,0),(3,1)), ((3,1),(3,2))],
+         links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(1,2)), ((1,2),(2,2)), ((2,1),(2,2)), ((2,0),(3,0)), ((3,0),(3,1)), ((3,1),(3,2))],
          start=(0,0,3,3), startKey=(CIRCLE, PINK),
          second=(0,2,3,8), secondKey=(CIRCLE, PINK),
-         tiles=[(1,1,6,6,"s",SQUARE), (2,1,6,6,"c",CYAN),
-                (0,1,3,3,"s",TRI),    (2,2,8,8,"c",GOLD)],
+         tiles=[(1,1,6,6,"s",SQUARE), (2,1,6,6,"c",CYAN), (0,1,3,3,"s",TRI), (2,2,8,8,"c",GOLD)],
          doors=[((2,0),(3,0),SQUARE,CYAN)],
-         gates=[((0,0),(0,1),(4,5))],
+         gates=[((0,0),(0,1),(4, 5))],
          exit=(3,2,8,6,TRI,GOLD),
-         marks=[(1,0,3,3,4), (2,0,8,8,5), (0,0,8,8,0), (0,1,8,3,1),
-                (0,2,3,3,2), (1,1,3,8,6), (1,2,6,6,7), (2,1,3,3,8),
-                (2,2,3,8,9), (3,0,6,6,10), (3,1,3,3,11)],
-         foes=[(1,0,2,9,1,0,8), (2,1,2,2,0,1,8), (1,2,2,6,1,0,8), (0,1,6,2,0,1,8)]),
+         marks=[(1,0,3,3,4), (2,0,8,8,5), (0,0,8,8,0), (0,1,8,3,1), (0,2,3,3,2), (1,1,3,8,6), (1,2,6,6,7), (2,1,3,3,8), (2,2,3,8,9), (3,0,6,6,10), (3,1,3,3,11)],
+         gear=[(0,1,6,3,BOOTS), (1,2,8,4,BLADE), (2,2,4,9,ANCHOR)],
+         rubble=[(1,1,5,5), (1,1,6,5), (2,2,7,4), (0,2,8,8)],
+         props=[(0,0,5,9,"#ffd400"), (1,0,4,8,"#ff6a00"), (2,1,7,7,"#ff2d95"), (1,2,8,3,"#00e5ff"), (3,1,6,6,"#b14bff"), (0,1,4,9,"#9dff3c")],
+         foes=[(1,0,2,9,1,0,8,HOSTILE), (2,1,2,2,0,1,8,HOSTILE), (1,2,2,6,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (1,2,4,4,0,1,6,WARDEN)]),
     dict(cols=4, rows=4, roomW=12, roomH=12, gap=3,
-         links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)),
-                ((0,2),(0,3)), ((0,3),(1,3)), ((1,3),(2,3)), ((2,2),(2,3)), ((2,1),(2,2)),
-                ((2,0),(3,0)), ((3,0),(3,1)), ((3,1),(3,2)), ((3,2),(3,3))],
+         links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(0,3)), ((0,3),(1,3)), ((1,3),(2,3)), ((2,2),(2,3)), ((2,1),(2,2)), ((2,0),(3,0)), ((3,0),(3,1)), ((3,1),(3,2)), ((3,2),(3,3))],
          start=(0,0,3,3), startKey=(CIRCLE, PINK),
          second=(0,3,3,8), secondKey=(CIRCLE, PINK),
-         tiles=[(1,1,6,6,"s",TRI),   (2,1,6,6,"c",GOLD),
-                (0,2,3,3,"s",SQUARE),(1,3,6,6,"c",CYAN),
-                (2,2,8,8,"c",PINK),  (0,1,8,8,"s",CIRCLE)],
+         tiles=[(1,1,6,6,"s",TRI), (2,1,6,6,"c",GOLD), (0,2,3,3,"s",SQUARE), (1,3,6,6,"c",CYAN), (2,2,8,8,"c",PINK), (0,1,8,8,"s",CIRCLE)],
          doors=[((2,0),(3,0),TRI,GOLD), ((3,1),(3,2),SQUARE,CYAN)],
-         gates=[((0,0),(0,1),(4,5,6))],
+         gates=[((0,0),(0,1),(4, 5, 6))],
          exit=(3,3,8,6,CIRCLE,PINK),
-         marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0),
-                (0,1,3,3,1), (0,2,8,8,2), (0,3,8,3,7), (1,3,3,3,8),
-                (2,1,3,8,9), (2,2,3,3,10), (2,3,8,8,11), (3,0,6,6,12),
-                (3,1,3,3,13)],
-         foes=[(1,0,2,9,1,0,8), (2,1,2,2,0,1,8), (0,2,6,2,0,1,8),
-               (2,3,2,6,1,0,8), (0,1,6,2,0,1,8)]),
+         marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0), (0,1,3,3,1), (0,2,8,8,2), (0,3,8,3,7), (1,3,3,3,8), (2,1,3,8,9), (2,2,3,3,10), (2,3,8,8,11), (3,0,6,6,12), (3,1,3,3,13)],
+         gear=[(0,1,4,4,BOOTS), (1,1,7,7,BLADE), (2,2,6,6,ANCHOR), (1,3,3,9,BLADE)],
+         rubble=[(0,2,5,6), (0,2,6,6), (2,2,4,8), (1,3,8,4), (2,1,6,9)],
+         props=[(0,0,5,9,"#ffd400"), (1,0,4,4,"#ff6a00"), (2,1,7,4,"#ff2d95"), (0,3,6,6,"#00e5ff"), (2,3,4,9,"#b14bff"), (3,0,5,5,"#9dff3c")],
+         foes=[(1,0,2,9,1,0,8,HOSTILE), (2,1,2,2,0,1,8,HOSTILE), (0,2,6,2,0,1,8,HOSTILE), (2,3,2,6,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (2,3,4,4,0,1,6,WARDEN), (1,0,4,7,0,1,4,WARDEN)]),
     dict(cols=5, rows=4, roomW=12, roomH=12, gap=3,
-         links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)),
-                ((0,2),(0,3)), ((0,3),(1,3)), ((1,3),(2,3)), ((2,2),(2,3)), ((2,1),(2,2)),
-                ((2,0),(3,0)), ((3,0),(4,0)), ((3,0),(3,1)), ((3,1),(3,2)), ((3,2),(3,3)),
-                ((4,0),(4,1)), ((4,1),(4,2)), ((4,2),(4,3))],
+         links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(0,3)), ((0,3),(1,3)), ((1,3),(2,3)), ((2,2),(2,3)), ((2,1),(2,2)), ((2,0),(3,0)), ((3,0),(4,0)), ((3,0),(3,1)), ((3,1),(3,2)), ((3,2),(3,3)), ((4,0),(4,1)), ((4,1),(4,2)), ((4,2),(4,3))],
          start=(0,0,3,3), startKey=(CIRCLE, PINK),
          second=(0,3,3,8), secondKey=(CIRCLE, PINK),
-         tiles=[(1,1,6,6,"s",SQUARE), (2,2,6,6,"c",CYAN),
-                (0,2,3,3,"c",GOLD),   (1,3,6,6,"s",TRI),
-                (2,1,8,8,"c",PINK),   (0,1,8,3,"s",CIRCLE)],
+         tiles=[(1,1,6,6,"s",SQUARE), (2,2,6,6,"c",CYAN), (0,2,3,3,"c",GOLD), (1,3,6,6,"s",TRI), (2,1,8,8,"c",PINK), (0,1,8,3,"s",CIRCLE)],
          doors=[((2,0),(3,0),SQUARE,CYAN), ((3,0),(4,0),TRI,GOLD)],
-         gates=[((0,0),(0,1),(4,5,6))],
+         gates=[((0,0),(0,1),(4, 5, 6))],
          exit=(4,2,8,6,CIRCLE,PINK),
-         marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0),
-                (0,1,3,3,1), (0,2,8,8,2), (0,3,8,3,7), (1,3,3,3,8),
-                (2,1,3,3,9), (2,2,8,3,10), (2,3,3,8,11), (3,0,3,3,12),
-                (3,1,8,8,13), (4,0,6,6,14), (4,1,3,3,15)],
-         foes=[(1,0,2,9,1,0,8), (2,1,2,2,0,1,8), (0,2,6,2,0,1,8),
-               (2,3,2,6,1,0,8), (3,1,2,9,1,0,8), (0,1,6,2,0,1,8)]),
+         marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0), (0,1,3,3,1), (0,2,8,8,2), (0,3,8,3,7), (1,3,3,3,8), (2,1,3,3,9), (2,2,8,3,10), (2,3,3,8,11), (3,0,3,3,12), (3,1,8,8,13), (4,0,6,6,14), (4,1,3,3,15)],
+         gear=[(0,1,4,9,BOOTS), (1,1,8,4,BLADE), (2,2,4,4,ANCHOR), (1,3,8,8,BLADE), (3,1,5,5,ANCHOR)],
+         rubble=[(0,2,5,7), (0,2,6,7), (1,3,4,5), (2,1,7,8), (3,2,6,6), (2,2,9,3)],
+         props=[(0,0,5,9,"#ffd400"), (1,0,4,4,"#ff6a00"), (2,1,5,3,"#ff2d95"), (0,3,6,6,"#00e5ff"), (2,3,8,4,"#b14bff"), (4,1,6,6,"#9dff3c"), (3,0,8,8,"#ff4f6d")],
+         foes=[(1,0,2,9,1,0,8,HOSTILE), (2,1,2,2,0,1,8,HOSTILE), (0,2,6,2,0,1,8,HOSTILE), (2,3,2,6,1,0,8,HOSTILE), (3,1,2,9,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (2,3,4,4,0,1,6,WARDEN), (1,0,4,7,0,1,4,WARDEN), (3,1,4,7,0,1,4,WARDEN)]),
 ]
 
 
@@ -202,9 +196,14 @@ class World:
             self.grid[cc[1]][cc[0]] = "."
 
         self.foes = []
-        for c, r, x, y, dx, dy, ln in spec["foes"]:
+        for c, r, x, y, dx, dy, ln, kind in spec["foes"]:
             ox, oy = at(c, r, x, y)
-            self.foes.append(dict(ox=ox, oy=oy, dx=dx, dy=dy, ln=ln))
+            self.foes.append(dict(ox=ox, oy=oy, dx=dx, dy=dy, ln=ln, kind=kind))
+
+        self.gear = [dict(pos=at(c, r, x, y), kind=k) for c, r, x, y, k in spec.get("gear", [])]
+        self.rubble = {at(c, r, x, y) for c, r, x, y in spec.get("rubble", [])}
+        self.props = [dict(pos=at(c, r, x, y), hue=PROP_HUE[i % len(PROP_HUE)])
+                      for i, (c, r, x, y, _hex) in enumerate(spec.get("props", []))]
 
     def solid(self, x: int, y: int) -> bool:
         return not (0 <= x < self.w and 0 <= y < self.h) or self.grid[y][x] == "#"
@@ -257,6 +256,11 @@ class Window(RenderableUserDisplay):
                     continue
                 patch[:] = FLOOR
 
+                if (wx, wy) in wd.rubble:
+                    patch[:] = RUBBLE
+                    patch[0, 0] = FLOOR
+                    patch[3, 3] = FLOOR
+
                 tile = wd.tiles.get((wx, wy))
                 if tile:
                     fam, val = tile
@@ -296,12 +300,41 @@ class Window(RenderableUserDisplay):
                     for px, py in _shape_pips(wd.exit_key[0]):
                         patch[py, px] = KEY_HUE[wd.exit_key[1]]
 
+        for i, q in enumerate(wd.props):
+            sx, sy = q["pos"][0] - g.cam_x, q["pos"][1] - g.cam_y
+            if 0 <= sx < VIEW and 0 <= sy < VIEW:
+                patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
+                patch[:] = q["hue"]
+                patch[1:3, 1:3] = VOID if (g.beat + i) % 4 < 2 else q["hue"]
+
+        for gp in wd.gear:
+            if id(gp) in g.taken:
+                continue
+            sx, sy = gp["pos"][0] - g.cam_x, gp["pos"][1] - g.cam_y
+            if 0 <= sx < VIEW and 0 <= sy < VIEW:
+                patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
+                patch[:] = FLOOR
+                hue = GEAR_HUE[gp["kind"]]
+                if gp["kind"] == BOOTS:
+                    patch[2:4, :] = hue
+                elif gp["kind"] == BLADE:
+                    patch[:, 1:3] = hue
+                else:
+                    patch[0, :] = hue
+                    patch[:, 1:3] = hue
+
         for f in g.foes:
+            if id(f) in g.dead:
+                continue
             sx, sy = f["x"] - g.cam_x, f["y"] - g.cam_y
             if 0 <= sx < VIEW and 0 <= sy < VIEW:
                 patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-                patch[:] = FOE_BODY
-                patch[1:3, 1:3] = FOE_CORE
+                ward = f["kind"] == WARDEN
+                patch[:] = WARD_BODY if ward else FOE_BODY
+                patch[1:3, 1:3] = WARD_CORE if ward else FOE_CORE
+                if ward:
+                    patch[0, 0] = VOID
+                    patch[3, 3] = VOID
 
         for i, b in enumerate(g.bodies):
             sx, sy = b["x"] - g.cam_x, b["y"] - g.cam_y
@@ -309,22 +342,22 @@ class Window(RenderableUserDisplay):
                 patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
                 patch[:] = BODY if i == g.active else IDLE
                 patch[1:3, 1:3] = KEY_HUE[b["key"][1]]
+                for px, py in _shape_pips(b["key"][0]):
+                    patch[py, px] = VOID
+                if BOOTS in b["gear"]:
+                    patch[3, 0] = GEAR_HUE[BOOTS]
+                    patch[3, 3] = GEAR_HUE[BOOTS]
+                if BLADE in b["gear"]:
+                    patch[0, 3] = GEAR_HUE[BLADE]
+                if ANCHOR in b["gear"]:
+                    patch[0, 0] = GEAR_HUE[ANCHOR]
 
-        self._paint_hud(frame)
-        return frame
-
-    def _paint_hud(self, frame) -> None:
-        g = self._g
-        key = g.bodies[g.active]["key"]
-        frame[0:8, 0:8] = VOID
-        frame[1:7, 1:7] = KEY_HUE[key[1]]
-        for px, py in _shape_pips(key[0]):
-            frame[2 + py * 2:4 + py * 2, 2 + px * 2:4 + px * 2] = VOID
         if g.hit:
             frame[0, :] = FOE_CORE
             frame[SCREEN - 1, :] = FOE_CORE
             frame[:, 0] = FOE_CORE
             frame[:, SCREEN - 1] = FOE_CORE
+        return frame
 
 
 def _shape_pips(shape: int):
@@ -349,6 +382,7 @@ class Crawler(ARCBaseGame):
         self.foes = []
         self.flash = 0
         self.hit = 0
+        self.beat = 0
         camera = Camera(width=SCREEN, height=SCREEN, background=VOID, letter_box=VOID,
                         interfaces=[Window(self)])
         super().__init__(game_id="g304", levels=build_levels(), camera=camera,
@@ -357,16 +391,20 @@ class Crawler(ARCBaseGame):
 
     def _enter(self, index: int) -> None:
         wd = self.world = WORLDS[index]
-        self.bodies = [dict(x=wd.start[0], y=wd.start[1], key=list(wd.start_key))]
+        self.bodies = [dict(x=wd.start[0], y=wd.start[1], key=list(wd.start_key), gear=[])]
         if wd.second:
-            self.bodies.append(dict(x=wd.second[0], y=wd.second[1], key=list(wd.second_key)))
+            self.bodies.append(dict(x=wd.second[0], y=wd.second[1],
+                                    key=list(wd.second_key), gear=[]))
+        self.taken = set()
+        self.dead = set()
         self.active = 0
         self.opened = set()
         self.lit = set()
         self.lit_order = []
         self.foes = [dict(x=f["ox"], y=f["oy"], ox=f["ox"], oy=f["oy"],
-                          dx=f["dx"], dy=f["dy"], ln=f["ln"], t=0, back=False)
-                     for f in wd.foes]
+                          dx=f["dx"], dy=f["dy"], ln=f["ln"], t=0, back=False,
+                          kind=f["kind"])
+                     for i, f in enumerate(wd.foes)]
         self.flash = 0
         self.hit = 0
         self._follow(snap=True)
@@ -399,9 +437,15 @@ class Crawler(ARCBaseGame):
     def gate_open(self, need) -> bool:
         return all(n in self.lit for n in need)
 
+    @staticmethod
+    def _has(body, kind: int) -> bool:
+        return kind in body["gear"]
+
     def passable(self, x: int, y: int, who: int) -> bool:
         wd = self.world
         if wd.solid(x, y):
+            return False
+        if (x, y) in wd.rubble and not self._has(self.bodies[who], BOOTS):
             return False
         door = wd.doors.get((x, y))
         if door and (x, y) not in self.opened:
@@ -411,8 +455,20 @@ class Crawler(ARCBaseGame):
             return False
         return True
 
+    def _resolve_foes(self) -> None:
+        for w in self.foes:
+            if w["kind"] != WARDEN or id(w) in self.dead:
+                continue
+            for f in self.foes:
+                if f is w or f["kind"] != HOSTILE or id(f) in self.dead:
+                    continue
+                if f["x"] == w["x"] and f["y"] == w["y"]:
+                    self.dead.add(id(f))
+
     def _step_foes(self) -> None:
         for f in self.foes:
+            if id(f) in self.dead:
+                continue
             f["t"] += -1 if f["back"] else 1
             if f["t"] >= f["ln"]:
                 f["t"] = f["ln"]
@@ -428,7 +484,16 @@ class Crawler(ARCBaseGame):
 
     def _caught(self) -> bool:
         me = self.bodies[self.active]
-        return any(f["x"] == me["x"] and f["y"] == me["y"] for f in self.foes)
+        for f in self.foes:
+            if id(f) in self.dead or (f["x"], f["y"]) != (me["x"], me["y"]):
+                continue
+            if self._has(me, BLADE):
+                self.dead.add(id(f))
+                me["gear"] = [k for k in me["gear"] if k != BLADE]
+                self.hit = 1
+                return False
+            return f["kind"] == HOSTILE
+        return False
 
     def _send_back(self) -> None:
         me = self.bodies[self.active]
@@ -439,7 +504,8 @@ class Crawler(ARCBaseGame):
             me["x"], me["y"] = wd.start
         else:
             me["x"], me["y"] = wd.second
-        me["key"] = list(wd.start_key if self.active == 0 else wd.second_key)
+        if not self._has(me, ANCHOR):
+            me["key"] = list(wd.start_key if self.active == 0 else wd.second_key)
         self.hit = 1
         self._follow(snap=True)
 
@@ -452,6 +518,7 @@ class Crawler(ARCBaseGame):
             return
 
         self.hit = 0
+        self.beat += 1
         wd = self.world
         aid = self.action.id
         me = self.bodies[self.active]
@@ -460,6 +527,7 @@ class Crawler(ARCBaseGame):
             if len(self.bodies) > 1:
                 self.active = (self.active + 1) % len(self.bodies)
             self._step_foes()
+            self._resolve_foes()
             if self._caught():
                 self._send_back()
             self._follow()
@@ -478,6 +546,10 @@ class Crawler(ARCBaseGame):
                       if i != self.active and (b["x"], b["y"]) == (nx, ny)), None)
         if other is not None:
             self.active = other
+        elif any(f["kind"] == WARDEN and id(f) not in self.dead
+                 and (f["x"], f["y"]) == (nx, ny) for f in self.foes) \
+                and not self._has(me, BLADE):
+            pass
         elif self.passable(nx, ny, self.active):
             door = wd.doors.get((nx, ny))
             if door and (nx, ny) not in self.opened:
@@ -487,6 +559,11 @@ class Crawler(ARCBaseGame):
             if tile:
                 fam, val = tile
                 me["key"][1 if fam == "c" else 0] = val
+            for gp in wd.gear:
+                if gp["pos"] == (nx, ny) and id(gp) not in self.taken:
+                    self.taken.add(id(gp))
+                    if gp["kind"] not in me["gear"]:
+                        me["gear"].append(gp["kind"])
             gnum = wd.marks.get((nx, ny))
             if gnum is not None and gnum not in self.lit:
                 self.lit.add(gnum)
@@ -501,6 +578,7 @@ class Crawler(ARCBaseGame):
             self._send_back()
         else:
             self._step_foes()
+            self._resolve_foes()
             if self._caught():
                 self._send_back()
         self._follow()
