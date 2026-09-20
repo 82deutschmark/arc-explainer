@@ -39,12 +39,20 @@ tile, just wrong. After adding or changing any `.py`, run all four:
 ```bash
 PYTHONPATH=external/ARCEngine /opt/homebrew/bin/python3.13 scripts/arc3/render_authored_frames.py
 python3 scripts/arc3/build_authored_manifest.py
-python3 scripts/arc3/mechanic_digest.py
+python3 scripts/arc3/mechanic_digest.py --write
 python3 scripts/arc3/build_games_registry.py
 ```
 
-Commit their output **in the same commit** as the `.py` change. Re-running them is a
-no-op, so a clean `git status` afterwards is the check that you ran them.
+Commit their output **in the same commit** as the `.py` change.
+
+Without `--write` the digest prints to stdout and writes nothing, so `mechanics.json` stays
+stale and the integrity gate fails on it — which reads like a generator problem and is a
+missing flag.
+
+Re-running them is *mostly* a no-op. The frame renderer can rewrite PNGs whose pixels are
+identical, depending on the image library on your machine, so a dirty tree afterwards is not
+proof that something changed. Decode and compare before you commit a frame you did not mean
+to touch.
 
 `categories.json` is the exception: it is hand-edited on purpose, one line per game.
 
