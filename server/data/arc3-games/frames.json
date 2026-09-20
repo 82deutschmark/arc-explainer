@@ -349,6 +349,13 @@
     "inkFraction": 0.0532,
     "width": 64
   },
+  "g304": {
+    "backgroundColour": 4,
+    "distinctColours": 11,
+    "height": 64,
+    "inkFraction": 0.4023,
+    "width": 64
+  },
   "g500": {
     "backgroundColour": 5,
     "distinctColours": 11,

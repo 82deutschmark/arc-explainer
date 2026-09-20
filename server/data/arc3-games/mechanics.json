@@ -1977,6 +1977,41 @@
   "category": "Propagation / Circuits"
  },
  {
+  "gameId": "g304",
+  "className": "Crawler",
+  "availableActions": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "availableActionsSource": "declared",
+  "actionsReferenced": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "action6": null,
+  "action6Advertised": false,
+  "action6Inert": false,
+  "actionLabels": {},
+  "geometry": {
+   "CELL": 4
+  },
+  "levels": null,
+  "winLevels": null,
+  "callsLose": false,
+  "sourceLines": 508,
+  "triage": null,
+  "mechanic": "A world up to 74x59 cells behind the 64x64 frame, which follows the avatar, so a screen position denotes a different world cell after the view has moved. The avatar carries one key, drawn as a colour in an eight-pixel corner patch with pips for its shape. Floor plates restate it: one family sets its colour, another its shape. Locks test colour and shape together and stay open once passed. Purple plates light green when walked, and a gate opens only when every rune colour it shows in its quadrants is lit somewhere in the world. Orange patrols with a dark red core walk fixed lanes, one step per move, reversing at each end. Six levels.",
+  "controls": "ACTION1-4 walk the active avatar one cell. ACTION5 hands control to the other avatar on the levels that have two, from anywhere on the map; walking into the idle body does the same. There is no click: the engine's clickable-target list reports world coordinates with no camera offset subtracted, so on a scrolling world a human clicking the frame and an agent taking the offered coordinate would not be sending the same thing.",
+  "goal": "Enter the exit cell holding the key it shows, in both colour and shape. Being caught by a patrol returns the active avatar to the last rune it lit, or to its start, with the key it began the level on; locks and gates already opened stay open, so a catch costs a long walk and never the run. From level four a second avatar keeps its own key, which is how a key reaches the exit after the first body has spent its own on a lock. Solver routes run 288 to 942 moves.",
+  "category": "Memory / Hidden State"
+ },
+ {
   "gameId": "g500",
   "className": "G500",
   "availableActions": [

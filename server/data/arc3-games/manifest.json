@@ -450,6 +450,15 @@
     "tile_scale": 4
   },
   {
+    "id": "g304",
+    "class_name": "Crawler",
+    "src_file": "g304.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
     "id": "g500",
     "class_name": "G500",
     "src_file": "g500.py",
