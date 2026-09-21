@@ -17,7 +17,8 @@
  *          only stopped by the board edge or a wall. Walls exist on levels 5 and 6 only,
  *          not "5 on". Retracting drags the beads on the rod back with it.
  *          2026-09-21 (Claude Opus 5): four more of Boss's screenshots (levels 1-4, 21-Sep); later
- *          the same day a level 6 one and his note that clicking only matters from level 6.
+ *          the same day a level 6 one and his note that clicking only matters from level 6, then
+ *          level 7: his screenshot, his note, and a mechanics bullet that the rods share one green.
  *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
  *          worded from what he said; the prose is left as it was.
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
@@ -61,6 +62,7 @@ export const sk48: Arc3GameMetadata = {
     { introducedOnLevel: 5, category: 'hazards', text: 'Solid black wall squares appear on levels 5 and 6. The tip can\'t extend into one and beads can\'t be pushed into one.', source: 'sk48.py:450, 498, 960-971' },
     { introducedOnLevel: 6, category: 'controls', text: 'Two rods you control, pink and purple. Click a rod\'s handle, or its reference in the bottom strip, to switch to it. Switching is free, and clicking anything else does nothing.', source: 'sk48.py:746-756; engine run on level 7' },
     { introducedOnLevel: 6, category: 'pieces', text: 'The purple rod hangs down from the top and slides left and right along a rail across the top. The two rods pass straight through each other.', source: 'sk48.py:467-520, 792-797; engine run on level 7' },
+    { introducedOnLevel: 7, category: 'goal', text: 'The two rods have to share a bead. The board has one green bead, two blue and two red, and both references want green in the middle: pink wants blue, green, blue and purple wants red, green, red. The one green has to end up where the two rods cross, counting for both.', source: 'sk48.py:499-549 (level 7 layout and references). Not run in the engine: the bead counts and references are read from the level data.' },
   ],
   playerObservations: [
     {
@@ -110,6 +112,14 @@ export const sk48: Arc3GameMetadata = {
       did: 'Clicked to switch which skewer he was using.',
       happened: 'Clicking does nothing in this game until level 6 of 8. From there it is how you switch skewers.',
       inCode: 'Matches the source: level 6 is the first with two rods you control, and a click on a rod\'s handle or its reference switches to it (sk48.py:746).',
+    },
+    {
+      player: 'Boss',
+      date: '2026-09-21',
+      level: 7,
+      saw: 'Pink and purple skewers, and both of them need green.',
+      happened: 'Level 7 is insane: the two skewers have to work together because they share the green peas.',
+      inCode: 'Matches the level data: one green bead on the board, and both references want green in the middle (sk48.py:499-549).',
     },
   ],
   category: 'evaluation',
@@ -163,6 +173,7 @@ export const sk48: Arc3GameMetadata = {
     { level: 3, imageUrl: '/arc3-levels/sk48/lvl3-human-0921.png', kind: 'human', caption: 'human play, a second run', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
     { level: 4, imageUrl: '/arc3-levels/sk48/lvl4-human-0921.png', kind: 'human', caption: 'human play, a second run, two reference rods', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
     { level: 6, imageUrl: '/arc3-levels/sk48/lvl6-human-0921.png', kind: 'human', caption: 'human play, a second run, pink and purple skewers', notes: 'Not an engine render: sent by Boss on 21-Sep-2026, when he pointed out that clicking only matters from level 6.' },
+    { level: 7, imageUrl: '/arc3-levels/sk48/lvl7-human-0921.png', kind: 'human', caption: 'human play, a second run, one green for two skewers', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
   ],
   tags: ['skewer', 'threading', 'public-demo-2026'],
   isFullyDocumented: false,
