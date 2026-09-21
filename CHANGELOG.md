@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.114.2  Sep 21, 2026
+
+- **sk48: Boss's level 6 note and screenshot** (Author: Claude Opus 5). Clicking does nothing until level 6 of 8, where you click to switch between the pink and purple skewers, each wanting different colors. Added to his play notes (checked against the source) with his level 6 screenshot. `shared/arc3Games/sk48.ts`, `client/public/arc3-levels/sk48/lvl6-human-0921.png`.
+
 ### Version 9.114.1  Sep 21, 2026
 
 - **sk48: four more of Boss's screenshots** (Author: Claude Opus 5). Levels 1, 2 and 3 from his Discord messages to Bubba today, level 4 from a coding session. Shown on the sk48 page as human play next to the engine renders. `shared/arc3Games/sk48.ts`, `client/public/arc3-levels/sk48/lvl{1,2,3,4}-human-0921.png`.
