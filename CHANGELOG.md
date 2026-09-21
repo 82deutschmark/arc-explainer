@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.114.1  Sep 21, 2026
+
+- **sk48: four more of Boss's screenshots** (Author: Claude Opus 5). Levels 1, 2 and 3 from his Discord messages to Bubba today, level 4 from a coding session. Shown on the sk48 page as human play next to the engine renders. `shared/arc3Games/sk48.ts`, `client/public/arc3-levels/sk48/lvl{1,2,3,4}-human-0921.png`.
+
 ### Version 9.114.0  Sep 19, 2026
 
 - **The Slippery Seven get a badge** (Author: Claude Opus 5). Boss asked for the seven games our agents have the most trouble with to be marked on the site. The list comes from the arc-3 repo write-up `docs/trace-findings/2026-09-17-the-slippery-seven.md`: dc22, g50t, m0r0, sc25, sk48, tn36 and tr87 scored zero in all four passes of the Qwen 27B run on 16 Sept. Each of the seven now has a "Slippery Seven" badge on its /arc3/games tile and entry and in its game page header. Hovering it says why the game is on the list (hard for every model, hard for both models, or only the 27B fails it). /arc3/games.md gets the same line. It is a different list from the 12 Sept Flash-Next "bottom seven" and from the AI difficulty rating. New `shared/arc3Games/slipperySeven.ts` and `client/src/components/arc3/SlipperySevenBadge.tsx`; wired into `client/src/pages/{Arc3GamesIndex,Arc3GameSpoiler}.tsx` and `server/services/arc3/arc3GameMechanicsDoc.ts`.

@@ -16,6 +16,7 @@
  *          block the extension -- the rod slides through it and skewers it; extension is
  *          only stopped by the board edge or a wall. Walls exist on levels 5 and 6 only,
  *          not "5 on". Retracting drags the beads on the rod back with it.
+ *          2026-09-21 (Claude Opus 5): four more of Boss's screenshots (levels 1-4, 21-Sep).
  *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
  *          worded from what he said; the prose is left as it was.
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
@@ -147,6 +148,10 @@ export const sk48: Arc3GameMetadata = {
     { level: 5, imageUrl: '/arc3-levels/sk48/lvl5-human-blocked.png', kind: 'human', caption: 'human play, the black box blocking the skewer', notes: 'Not an engine render: Boss\'s run, 11-Sep-2026, sent while he was stuck on it.' },
     { level: 6, imageUrl: '/arc3-levels/sk48/lvl6-human.png', kind: 'human', caption: 'human play, two rods', notes: 'Not an engine render: Boss\'s run, 11-Sep-2026.' },
     { level: 6, imageUrl: '/arc3-levels/sk48/lvl6-human-win.png', kind: 'human', caption: 'human play, right before the win', notes: 'Not an engine render: Boss\'s run, 11-Sep-2026.' },
+    { level: 1, imageUrl: '/arc3-levels/sk48/lvl1-human-0921.png', kind: 'human', caption: 'human play, a second run', notes: 'Not an engine render: the arcprize.org player console, sent by Boss on 21-Sep-2026.' },
+    { level: 2, imageUrl: '/arc3-levels/sk48/lvl2-human-0921.png', kind: 'human', caption: 'human play, a second run', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
+    { level: 3, imageUrl: '/arc3-levels/sk48/lvl3-human-0921.png', kind: 'human', caption: 'human play, a second run', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
+    { level: 4, imageUrl: '/arc3-levels/sk48/lvl4-human-0921.png', kind: 'human', caption: 'human play, a second run, two reference rods', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
   ],
   tags: ['skewer', 'threading', 'public-demo-2026'],
   isFullyDocumented: false,
