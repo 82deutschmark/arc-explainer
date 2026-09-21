@@ -19,7 +19,8 @@
  *          2026-09-21 (Claude Opus 5): four more of Boss's screenshots (levels 1-4, 21-Sep); later
  *          the same day a level 6 one and his note that clicking only matters from level 6, then
  *          level 7: his screenshot, his note, and a mechanics bullet that the rods share one green;
- *          then level 8 the same way (pink can't reach the bottom, purple has to fetch the green).
+ *          then level 8 the same way (pink can't reach the bottom, purple has to fetch the green),
+ *          and Boss's winning replay under resources.
  *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
  *          worded from what he said; the prose is left as it was.
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
@@ -146,6 +147,12 @@ export const sk48: Arc3GameMetadata = {
   ],
   hints: [],
   resources: [
+    {
+      title: 'SK48 Boss\'s winning replay',
+      url: 'https://arcprize.org/replay/7f07c3de-ec0a-412c-a710-2e19b3303581',
+      type: 'replay',
+      description: 'Boss\'s first sk48 win, 21-Sep-2026: all 8 levels, 856 actions. The level 1-8 screenshots from that day are from this session.',
+    },
     {
       title: 'SK48 Standard-Harness Replay (GPT-6 Astra)',
       url: 'https://arcprize.org/replay/549f92a6-c1d5-4990-a3c4-91323c1fc8e8',

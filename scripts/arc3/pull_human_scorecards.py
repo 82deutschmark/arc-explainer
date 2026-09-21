@@ -32,7 +32,10 @@ PURPOSE: Build shared/arc3Games/humanPlay.generated.json -- the human play data 
          published_at, newest first. When the list comes back full, cards older than the
          oldest listed one cannot be reached; the script prints a warning and records
          cardsListed, listCap and oldestListedPublishedAt in the pull, so nothing downstream
-         may call this "all" of a player's runs.
+         may call this "all" of a player's runs. Runs already in the file from cards that
+         have since fallen off the list are carried over (runsCarriedOver in the pull) if
+         they are still on the live build -- added 2026-09-21 (Claude Opus 5), after a pull
+         dropped twelve of Boss's older runs once his newest 50 cards pushed them off.
 
          RUN ORDER. runs[] inside one environment of one card is in play order. Checked on
          Boss's s5i5 card of 16 Sep by walking its recording: its three rows (0, 831
@@ -296,6 +299,18 @@ def main() -> int:
         previous = json.loads(out_path.read_text(encoding="utf-8"))
         other_runs = [r for r in previous.get("runs", []) if r.get("player") != player]
         other_pulls = [p for p in previous.get("pulls", []) if p.get("player") != player]
+        # Carry over this player's earlier runs from cards that have fallen off the 50-card
+        # list, so a new pull never forgets old play. Only runs still on the live build.
+        listed_ids = {c.get("card_id") for c in cards}
+        carried = [
+            r for r in previous.get("runs", [])
+            if r.get("player") == player
+            and r.get("cardId") not in listed_ids
+            and hashes.get(r.get("gameId")) == r.get("build")
+        ]
+        kept.extend(carried)
+        pull["runsCarriedOver"] = len(carried)
+        pull["runsKept"] = len(kept)
 
     data = {
         "games": games,

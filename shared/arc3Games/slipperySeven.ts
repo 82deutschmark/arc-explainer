@@ -10,6 +10,7 @@
  *          header (client/src/components/arc3/SlipperySevenBadge.tsx).
  *          NOT the 2026-09-12 Flash-Next "bottom seven" (only sk48, g50t, tn36 overlap) and not
  *          the aiDifficulty field, which comes from a different data snapshot.
+ *          2026-09-21: sk48 line updated -- Boss won it (replay 7f07c3de, 856 actions).
  * SRP/DRY check: Pass -- one list, one place; no existing field in shared/arc3Games covered it.
  */
 
@@ -19,7 +20,7 @@ export interface SlipperySevenEntry {
   reason: string;
 }
 
-const HARD_FOR_EVERY_MODEL = 'Hard for every model we have tried -- and Boss has not won it yet either.';
+const HARD_FOR_EVERY_MODEL = 'Hard for every model we have tried. Boss won it on 21 Sept 2026.';
 const HARD_FOR_BOTH = 'Hard for both models; the 27B does even worse on it.';
 const TWENTY_SEVEN_B_ONLY = 'Only the 27B fails it -- Flash-Next clears levels on it regularly.';
 
