@@ -16,7 +16,8 @@
  *          block the extension -- the rod slides through it and skewers it; extension is
  *          only stopped by the board edge or a wall. Walls exist on levels 5 and 6 only,
  *          not "5 on". Retracting drags the beads on the rod back with it.
- *          2026-09-21 (Claude Opus 5): four more of Boss's screenshots (levels 1-4, 21-Sep).
+ *          2026-09-21 (Claude Opus 5): four more of Boss's screenshots (levels 1-4, 21-Sep); later
+ *          the same day a level 6 one and his note that clicking only matters from level 6.
  *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
  *          worded from what he said; the prose is left as it was.
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
@@ -101,6 +102,15 @@ export const sk48: Arc3GameMetadata = {
       saw: 'Level 6, right before the win.',
       happened: 'Each skewer is matched to its own reference at the bottom. They are not always pairs of skewers, and a skewer does not have to match a partner.',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-21',
+      level: 6,
+      saw: 'Two skewers to work with, pink and purple, and each one wants different colors.',
+      did: 'Clicked to switch which skewer he was using.',
+      happened: 'Clicking does nothing in this game until level 6 of 8. From there it is how you switch skewers.',
+      inCode: 'Matches the source: level 6 is the first with two rods you control, and a click on a rod\'s handle or its reference switches to it (sk48.py:746).',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
@@ -152,6 +162,7 @@ export const sk48: Arc3GameMetadata = {
     { level: 2, imageUrl: '/arc3-levels/sk48/lvl2-human-0921.png', kind: 'human', caption: 'human play, a second run', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
     { level: 3, imageUrl: '/arc3-levels/sk48/lvl3-human-0921.png', kind: 'human', caption: 'human play, a second run', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
     { level: 4, imageUrl: '/arc3-levels/sk48/lvl4-human-0921.png', kind: 'human', caption: 'human play, a second run, two reference rods', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
+    { level: 6, imageUrl: '/arc3-levels/sk48/lvl6-human-0921.png', kind: 'human', caption: 'human play, a second run, pink and purple skewers', notes: 'Not an engine render: sent by Boss on 21-Sep-2026, when he pointed out that clicking only matters from level 6.' },
   ],
   tags: ['skewer', 'threading', 'public-demo-2026'],
   isFullyDocumented: false,
