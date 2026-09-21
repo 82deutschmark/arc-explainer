@@ -12,6 +12,11 @@
 # reference the old numbers.
 
 
+### Version 9.114.5  Sep 21, 2026
+
+- **Boss beat sk48** (Author: Claude Opus 5). His replay (7f07c3de, 21-Sep-2026) is a WIN: all 8 levels, 856 actions, tagged human. Re-pulled his scorecards so his sk48 numbers and rating on the site count the win (the same pull also brings in his lf52 win of 20-Sep, 1,163 actions); added the replay to the sk48 page; the Slippery Seven hover for sk48 no longer says he hasn't won it. `shared/arc3Games/{humanPlay.generated.json,sk48.ts,slipperySeven.ts}`, `scripts/arc3/pull_human_scorecards.py`.
+  - **The pull no longer forgets old runs.** arcprize.org only lists a player's newest 50 scorecards, so this pull at first dropped twelve of Boss's older unfinished runs (dc22, m0r0, tn36, tr87 and others), which would have shifted his ratings. The script now carries over runs already in the file from cards that fell off the list, as long as they are on the live build, and records how many in `runsCarriedOver`. Result: 56 runs, none lost.
+
 ### Version 9.114.4  Sep 21, 2026
 
 - **sk48 level 8: pink can't reach the bottom, purple has to help** (Author: Claude Opus 5). Boss's note and his right-before-the-win screenshot. The level data agrees: pink's rail is two segments long, and the green bead starts low on the board below the purple rod. Added as a level 8 mechanics bullet (from the level data, not an engine run), his play note, and the screenshot. `shared/arc3Games/sk48.ts`, `client/public/arc3-levels/sk48/lvl8-human-win-0921.png`.

@@ -154,18 +154,19 @@
   "pulls": [
     {
       "player": "Boss",
-      "pulledAt": "2026-09-18T18:07:04Z",
+      "pulledAt": "2026-09-21T19:02:39Z",
       "cardsListed": 50,
       "listCap": 50,
-      "oldestListedPublishedAt": "2026-01-08T17:58:04Z",
-      "runsSeen": 180,
-      "runsKept": 51,
+      "oldestListedPublishedAt": "2026-09-11T22:23:53Z",
+      "runsSeen": 158,
+      "runsKept": 56,
       "dropped": {
-        "zeroActions": 124,
-        "notHumanTag": 1,
-        "notPublicGame": 1,
-        "wrongBuild": 3
-      }
+        "zeroActions": 114,
+        "notHumanTag": 0,
+        "notPublicGame": 0,
+        "wrongBuild": 0
+      },
+      "runsCarriedOver": 12
     }
   ],
   "runs": [
@@ -460,6 +461,40 @@
     },
     {
       "player": "Boss",
+      "gameId": "lf52",
+      "build": "271a04aa",
+      "cardId": "89aa5874-1e6b-4ccd-ad5c-4ea39a1ac0fb",
+      "guid": "498415af-31f4-4e8b-a801-e5f0c8b319fd",
+      "runIndex": 0,
+      "state": "NOT_FINISHED",
+      "levelsCompleted": 2,
+      "levelCount": 10,
+      "actions": 99,
+      "resets": 0,
+      "score": 5.454545454545454,
+      "levelActions": [9, 50, 40, 0, 0, 0, 0, 0, 0, 0],
+      "levelBaselineActions": [32, 81, 60, 71, 205, 148, 244, 109, 164, 225],
+      "openAt": "2026-09-20T18:02:47.610204Z"
+    },
+    {
+      "player": "Boss",
+      "gameId": "lf52",
+      "build": "271a04aa",
+      "cardId": "89aa5874-1e6b-4ccd-ad5c-4ea39a1ac0fb",
+      "guid": "550c9c3f-3140-465b-b50f-977183635b89",
+      "runIndex": 1,
+      "state": "WIN",
+      "levelsCompleted": 10,
+      "levelCount": 10,
+      "actions": 1163,
+      "resets": 2,
+      "score": 100.0,
+      "levelActions": [8, 39, 50, 60, 266, 284, 175, 73, 122, 86],
+      "levelBaselineActions": [32, 81, 60, 71, 205, 148, 244, 109, 164, 225],
+      "openAt": "2026-09-20T18:02:47.610204Z"
+    },
+    {
+      "player": "Boss",
       "gameId": "lp85",
       "build": "305b61c3",
       "cardId": "33a0c6c5-c906-4c66-87af-e9b683459db7",
@@ -729,6 +764,57 @@
       "levelActions": [93, 45, 59, 86, 511, 95, 0, 0],
       "levelBaselineActions": [61, 177, 101, 103, 230, 181, 125, 92],
       "openAt": "2026-09-11T20:52:45.964888Z"
+    },
+    {
+      "player": "Boss",
+      "gameId": "sk48",
+      "build": "d8078629",
+      "cardId": "b5e49d84-ca6f-4fd8-9992-17c6ac2b7545",
+      "guid": "7d878fdc-ef8f-40cd-8ef2-a24c95a1c574",
+      "runIndex": 0,
+      "state": "NOT_FINISHED",
+      "levelsCompleted": 4,
+      "levelCount": 8,
+      "actions": 167,
+      "resets": 0,
+      "score": 27.77777777777778,
+      "levelActions": [18, 44, 37, 68, 0, 0, 0, 0],
+      "levelBaselineActions": [61, 177, 101, 103, 230, 181, 125, 92],
+      "openAt": "2026-09-19T15:51:28.657627Z"
+    },
+    {
+      "player": "Boss",
+      "gameId": "sk48",
+      "build": "d8078629",
+      "cardId": "c7d8d951-d3b4-4bf4-a595-8c028be5aa9b",
+      "guid": "9524392e-018b-40d6-a58e-2ecc5bca9297",
+      "runIndex": 0,
+      "state": "NOT_FINISHED",
+      "levelsCompleted": 0,
+      "levelCount": 8,
+      "actions": 1,
+      "resets": 0,
+      "score": 0.0,
+      "levelActions": [1, 0, 0, 0, 0, 0, 0, 0],
+      "levelBaselineActions": [61, 177, 101, 103, 230, 181, 125, 92],
+      "openAt": "2026-09-19T21:01:26.382066Z"
+    },
+    {
+      "player": "Boss",
+      "gameId": "sk48",
+      "build": "d8078629",
+      "cardId": "6e51292d-85f6-4a44-9bef-8003f099233e",
+      "guid": "7f07c3de-ec0a-412c-a710-2e19b3303581",
+      "runIndex": 0,
+      "state": "WIN",
+      "levelsCompleted": 8,
+      "levelCount": 8,
+      "actions": 856,
+      "resets": 6,
+      "score": 84.74206197836902,
+      "levelActions": [16, 50, 38, 62, 132, 298, 160, 100],
+      "levelBaselineActions": [61, 177, 101, 103, 230, 181, 125, 92],
+      "openAt": "2026-09-21T18:32:49.250243Z"
     },
     {
       "player": "Boss",
