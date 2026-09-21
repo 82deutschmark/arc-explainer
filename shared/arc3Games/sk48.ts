@@ -18,7 +18,8 @@
  *          not "5 on". Retracting drags the beads on the rod back with it.
  *          2026-09-21 (Claude Opus 5): four more of Boss's screenshots (levels 1-4, 21-Sep); later
  *          the same day a level 6 one and his note that clicking only matters from level 6, then
- *          level 7: his screenshot, his note, and a mechanics bullet that the rods share one green.
+ *          level 7: his screenshot, his note, and a mechanics bullet that the rods share one green;
+ *          then level 8 the same way (pink can't reach the bottom, purple has to fetch the green).
  *          2026-09-18 (Claude Opus 5): Boss's play notes moved out of the prose into playerObservations,
  *          worded from what he said; the prose is left as it was.
  *          2026-09-18 (Claude Opus 5): Boss's play notes from Discord (#arc-3, via Bubba) and from his
@@ -63,6 +64,7 @@ export const sk48: Arc3GameMetadata = {
     { introducedOnLevel: 6, category: 'controls', text: 'Two rods you control, pink and purple. Click a rod\'s handle, or its reference in the bottom strip, to switch to it. Switching is free, and clicking anything else does nothing.', source: 'sk48.py:746-756; engine run on level 7' },
     { introducedOnLevel: 6, category: 'pieces', text: 'The purple rod hangs down from the top and slides left and right along a rail across the top. The two rods pass straight through each other.', source: 'sk48.py:467-520, 792-797; engine run on level 7' },
     { introducedOnLevel: 7, category: 'goal', text: 'The two rods have to share a bead. The board has one green bead, two blue and two red, and both references want green in the middle: pink wants blue, green, blue and purple wants red, green, red. The one green has to end up where the two rods cross, counting for both.', source: 'sk48.py:499-549 (level 7 layout and references). Not run in the engine: the bead counts and references are read from the level data.' },
+    { introducedOnLevel: 8, category: 'pieces', text: 'Pink\'s rail shrinks to two segments, so the pink rod can barely slide up or down and can\'t get to the lower half of the board. The green bead starts down there, straight below the purple rod, so only purple can bring it up. Pink wants blue then green; purple wants red then orange.', source: 'sk48.py:551-600 (level 8 layout: pink rail pieces at rows 22 and 28 only, green bead at column 29 row 38, purple rod at column 29). Not run in the engine.' },
   ],
   playerObservations: [
     {
@@ -121,6 +123,14 @@ export const sk48: Arc3GameMetadata = {
       happened: 'Level 7 is insane: the two skewers have to work together because they share the green peas.',
       inCode: 'Matches the level data: one green bead on the board, and both references want green in the middle (sk48.py:499-549).',
     },
+    {
+      player: 'Boss',
+      date: '2026-09-21',
+      level: 8,
+      saw: 'The purple skewer can reach the bottom of the board; the pink one on the left can\'t.',
+      happened: 'The fiendish part: you absolutely have to work with the other skewer to win level 8.',
+      inCode: 'Matches the level data: pink\'s rail is only two segments long here, and the green bead starts low on the board, straight below the purple rod (sk48.py:551-600).',
+    },
   ],
   category: 'evaluation',
   humanDifficulty: 'hard',
@@ -174,6 +184,7 @@ export const sk48: Arc3GameMetadata = {
     { level: 4, imageUrl: '/arc3-levels/sk48/lvl4-human-0921.png', kind: 'human', caption: 'human play, a second run, two reference rods', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
     { level: 6, imageUrl: '/arc3-levels/sk48/lvl6-human-0921.png', kind: 'human', caption: 'human play, a second run, pink and purple skewers', notes: 'Not an engine render: sent by Boss on 21-Sep-2026, when he pointed out that clicking only matters from level 6.' },
     { level: 7, imageUrl: '/arc3-levels/sk48/lvl7-human-0921.png', kind: 'human', caption: 'human play, a second run, one green for two skewers', notes: 'Not an engine render: sent by Boss on 21-Sep-2026.' },
+    { level: 8, imageUrl: '/arc3-levels/sk48/lvl8-human-win-0921.png', kind: 'human', caption: 'human play, right before the win', notes: 'Not an engine render: sent by Boss on 21-Sep-2026, the last move before he cleared level 8.' },
   ],
   tags: ['skewer', 'threading', 'public-demo-2026'],
   isFullyDocumented: false,

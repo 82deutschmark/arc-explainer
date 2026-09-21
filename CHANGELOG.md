@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.114.4  Sep 21, 2026
+
+- **sk48 level 8: pink can't reach the bottom, purple has to help** (Author: Claude Opus 5). Boss's note and his right-before-the-win screenshot. The level data agrees: pink's rail is two segments long, and the green bead starts low on the board below the purple rod. Added as a level 8 mechanics bullet (from the level data, not an engine run), his play note, and the screenshot. `shared/arc3Games/sk48.ts`, `client/public/arc3-levels/sk48/lvl8-human-win-0921.png`.
+
 ### Version 9.114.3  Sep 21, 2026
 
 - **sk48 level 7: the two skewers share one green** (Author: Claude Opus 5). Boss's note and screenshot: on level 7 the pink and purple skewers have to work together because they share the green. The level data agrees: one green bead on the board, and both references want green in the middle, so it has to sit where the rods cross. Added as a level 7 mechanics bullet (from the level data, not an engine run), his play note, and his screenshot. `shared/arc3Games/sk48.ts`, `client/public/arc3-levels/sk48/lvl7-human-0921.png`.
