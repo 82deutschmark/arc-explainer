@@ -15,11 +15,11 @@ from arcengine import (
     Sprite,
 )
 
-VOID, FLOOR, WALL = 5, 4, 3
-BODY, IDLE = 0, 2
+VOID, FLOOR, WALL = 5, 1, 4
+BODY, IDLE = 0, 3
 FOE_BODY, FOE_CORE = 12, 13
 MARK_OFF, MARK_ON = 15, 14
-KEY_HUE = (6, 10, 11)
+KEY_HUE = (7, 9, 8)
 HOSTILE, WARDEN = 0, 1
 WARD_BODY, WARD_CORE = 10, 9
 BOOTS, BLADE, ANCHOR = 0, 1, 2
@@ -109,7 +109,7 @@ SPECS = [
          marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0), (0,1,3,3,1), (0,2,8,8,2), (0,3,8,3,7), (1,3,3,3,8), (2,1,3,8,9), (2,2,3,3,10), (2,3,8,8,11), (3,0,6,6,12), (3,1,3,3,13)],
          gear=[(0,1,4,4,BOOTS,0), (1,1,7,7,BLADE,0), (2,2,6,6,ANCHOR,0), (1,3,3,9,BLADE,0), (0,2,8,3,ANCHOR,1), (2,3,8,5,BOOTS,1)],
          rubble=[(0,2,5,6), (0,2,6,6), (2,2,4,8), (1,3,8,4), (2,1,6,9)],
-         props=[(0,0,5,9,"#ffd400"), (1,0,4,4,"#ff6a00"), (2,1,7,4,"#ff2d95"), (0,3,6,6,"#00e5ff"), (2,3,4,9,"#b14bff"), (3,0,5,5,"#9dff3c")],
+         props=[(0,0,8,9,"#ffd400"), (1,0,4,4,"#ff6a00"), (2,1,7,4,"#ff2d95"), (0,3,6,6,"#00e5ff"), (2,3,4,9,"#b14bff"), (3,0,5,5,"#9dff3c")],
          foes=[(1,0,2,9,1,0,8,HOSTILE), (2,1,2,2,0,1,8,HOSTILE), (0,2,6,2,0,1,8,HOSTILE), (2,3,2,6,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (2,3,4,4,0,1,6,WARDEN), (1,0,4,7,0,1,4,WARDEN)]),
     dict(cols=5, rows=4, roomW=12, roomH=12, gap=3,
          links=[((0,0),(1,0)), ((1,0),(2,0)), ((1,0),(1,1)), ((0,0),(0,1)), ((0,1),(0,2)), ((0,2),(0,3)), ((0,3),(1,3)), ((1,3),(2,3)), ((2,2),(2,3)), ((2,1),(2,2)), ((2,0),(3,0)), ((3,0),(4,0)), ((3,0),(3,1)), ((3,1),(3,2)), ((3,2),(3,3)), ((4,0),(4,1)), ((4,1),(4,2)), ((4,2),(4,3))],
@@ -122,7 +122,7 @@ SPECS = [
          marks=[(1,0,3,3,4), (2,0,8,8,5), (1,1,3,8,6), (0,0,8,8,0), (0,1,3,3,1), (0,2,8,8,2), (0,3,8,3,7), (1,3,3,3,8), (2,1,3,3,9), (2,2,8,3,10), (2,3,3,8,11), (3,0,3,3,12), (3,1,8,8,13), (4,0,6,6,14), (4,1,3,3,15)],
          gear=[(0,1,4,9,BOOTS,0), (1,1,8,4,BLADE,0), (2,2,4,4,ANCHOR,0), (1,3,8,8,BLADE,0), (3,1,5,5,ANCHOR,0), (0,2,8,5,BOOTS,1), (2,3,5,3,BLADE,1), (4,1,8,8,ANCHOR,1)],
          rubble=[(0,2,5,7), (0,2,6,7), (1,3,4,5), (2,1,7,8), (3,2,6,6), (2,2,9,3)],
-         props=[(0,0,5,9,"#ffd400"), (1,0,4,4,"#ff6a00"), (2,1,5,3,"#ff2d95"), (0,3,6,6,"#00e5ff"), (2,3,8,4,"#b14bff"), (4,1,6,6,"#9dff3c"), (3,0,8,8,"#ff4f6d")],
+         props=[(0,0,8,9,"#ffd400"), (1,0,4,4,"#ff6a00"), (2,1,5,3,"#ff2d95"), (0,3,6,6,"#00e5ff"), (2,3,8,4,"#b14bff"), (4,1,6,6,"#9dff3c"), (3,0,8,8,"#ff4f6d")],
          foes=[(1,0,2,9,1,0,8,HOSTILE), (2,1,2,2,0,1,8,HOSTILE), (0,2,6,2,0,1,8,HOSTILE), (2,3,2,6,1,0,8,HOSTILE), (3,1,2,9,1,0,8,HOSTILE), (0,1,6,2,0,1,8,HOSTILE), (2,3,4,4,0,1,6,WARDEN), (1,0,4,7,0,1,4,WARDEN), (3,1,4,7,0,1,4,WARDEN)]),
 ]
 
@@ -308,8 +308,12 @@ class Window(RenderableUserDisplay):
             sx, sy = q["pos"][0] - g.cam_x, q["pos"][1] - g.cam_y
             if 0 <= sx < VIEW and 0 <= sy < VIEW:
                 patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-                patch[:] = q["hue"]
-                patch[1:3, 1:3] = VOID if (g.beat + i) % 4 < 2 else q["hue"]
+                lit = (g.beat % 2 == 0) if i == 0 else ((g.beat + i) % 4 < 2)
+                patch[0, 1:3] = q["hue"]
+                patch[3, 1:3] = q["hue"]
+                patch[1:3, 0] = q["hue"]
+                patch[1:3, 3] = q["hue"]
+                patch[1:3, 1:3] = q["hue"] if lit else VOID
 
         for gp in wd.gear:
             if id(gp) in g.taken:
@@ -317,7 +321,6 @@ class Window(RenderableUserDisplay):
             sx, sy = gp["pos"][0] - g.cam_x, gp["pos"][1] - g.cam_y
             if 0 <= sx < VIEW and 0 <= sy < VIEW:
                 patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-                patch[:] = FLOOR
                 hue = GEAR_HUE[gp["kind"]]
                 if gp["kind"] == BOOTS:
                     patch[2:4, :] = hue
@@ -334,17 +337,27 @@ class Window(RenderableUserDisplay):
             if 0 <= sx < VIEW and 0 <= sy < VIEW:
                 patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
                 ward = f["kind"] == WARDEN
-                patch[:] = WARD_BODY if ward else FOE_BODY
+                hue = WARD_BODY if ward else FOE_BODY
+                floor = patch.copy()
+                patch[:] = hue
                 patch[1:3, 1:3] = WARD_CORE if ward else FOE_CORE
                 if ward:
-                    patch[0, 0] = VOID
-                    patch[3, 3] = VOID
+                    patch[0, 0] = floor[0, 0]
+                    patch[3, 3] = floor[3, 3]
+                else:
+                    patch[0, 3] = floor[0, 3]
+                    patch[3, 0] = floor[3, 0]
 
         for i, b in enumerate(g.bodies):
             sx, sy = b["x"] - g.cam_x, b["y"] - g.cam_y
             if 0 <= sx < VIEW and 0 <= sy < VIEW:
                 patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
+                floor = patch.copy()
                 patch[:] = BODY if i == g.active else IDLE
+                patch[0, 0] = floor[0, 0]
+                patch[0, 3] = floor[0, 3]
+                patch[3, 0] = floor[3, 0]
+                patch[3, 3] = floor[3, 3]
                 patch[1:3, 1:3] = KEY_HUE[b["key"][1]]
                 for px, py in _shape_pips(b["key"][0]):
                     patch[py, px] = VOID
