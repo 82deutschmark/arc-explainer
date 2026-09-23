@@ -459,6 +459,33 @@
     "tile_scale": 4
   },
   {
+    "id": "g305",
+    "class_name": "Shrines",
+    "src_file": "g305.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g306",
+    "class_name": "Seasons",
+    "src_file": "g306.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
+    "id": "g309",
+    "class_name": "Cartographer",
+    "src_file": "g309.py",
+    "category": "arena",
+    "official": false,
+    "default_fps": 10,
+    "tile_scale": 4
+  },
+  {
     "id": "g500",
     "class_name": "G500",
     "src_file": "g500.py",

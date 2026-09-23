@@ -3,7 +3,7 @@
 
 # ARC-AGI-3 authored games
 
-The 95 tasks authored in this project, one row each. Structure and geometry are
+The 98 tasks authored in this project, one row each. Structure and geometry are
 derived from the game sources by `scripts/arc3/mechanic_digest.py`; the descriptions are
 human prose checked against the source; the previews are level 1 as the player first meets
 it, rendered by `scripts/arc3/render_authored_frames.py`.
@@ -43,6 +43,8 @@ want a blind first play from.
 | g046 | Memory / Hidden State | 16x16 | 7 | Restored seven square patrol rooms. Filled pink patrols are current sightings; hollow dark-pink patrols are remembered positions outside sight. | ![g046](/api/arc3-mirror/frames/g046.png) | • 1-4: Movement • 5: Action |
 | g047 | Memory / Hidden State | 12x12 | 7 | White exploration map with a visible red player and persistent revealed terrain. Four colored stations cast visible straight sight lines. | ![g047](/api/arc3-mirror/frames/g047.png) | • 1-4: Movement • 5: Action |
 | g304 | Memory / Hidden State | ?  (cell 4px) | ? | A world up to 74x59 cells behind the 64x64 frame, which follows the avatar, so a screen position denotes a different world cell after the view has moved. The body is its own readout: its border is the avatar, its middle is the key it carries (colour for colour, pips for shape) and its corners are its gear. | ![g304](/api/arc3-mirror/frames/g304.png) | • 1-4: Movement • 5: Action |
+| g305 | Memory / Hidden State | ?  (cell 4px) | 6 | An overworld three windows by three behind the 64x64 frame, which follows the avatar. Four buildings each hold one plate. | ![g305](/api/arc3-mirror/frames/g305.png) | • 1-4: Movement |
+| g309 | Memory / Hidden State | ?  (cell 4px) | 5 | A large map under fog behind the 64x64 frame, which follows the avatar. Walking lifts the fog in a radius around the body, through walls, and it never falls again. | ![g309](/api/arc3-mirror/frames/g309.png) | • 1-4: Movement |
 | g028 | Orientation / Folding | 16x16 | 8 | Fold geometry with key/lock overlays. A smaller first lesson teaches one fold. | ![g028](/api/arc3-mirror/frames/g028.png) | • 1-4: Movement • 5: Action • 6: Click a cell • 7: Undo |
 | g007 | Orientation / Rolling | 16x16 | 8 | Bloxorz. A 1x2 block that stands upright or lies flat, rolled around a 16x16 floor with holes in it. | ![g007](/api/arc3-mirror/frames/g007.png) | • 1-4: Movement • *(offers 6, reads nothing)* |
 | g031 | Orientation / Rolling | 16x16 | 7 | Stamping a key. You carry a shape that you can turn a quarter at a time, and mirrors on the board flip your handedness -- after passing one, Left moves you right and your shape is the mirror image. | ![g031](/api/arc3-mirror/frames/g031.png) | • 1-4: Movement • 5: Action • *(offers 6, reads nothing)* |
@@ -67,6 +69,7 @@ want a blind first play from.
 | g026 | Timing / Cycles | 14x14 | 7 | Timed moving voices create danger only where their loops overlap. Shared cells have persistent corner marks and become a bright crossed hazard while active. | ![g026](/api/arc3-mirror/frames/g026.png) | • 1-4: Movement • 5: Action |
 | g041 | Timing / Cycles | ?  (cell 6px) | ? | A rotating maze. The board is a wheel whose mouths are linked in pairs; entering one puts you out at its partner and turns the whole frame by a recorded number of quarter-turns. | ![g041](/api/arc3-mirror/frames/g041.png) | • 1-4: Movement |
 | g045 | Timing / Cycles | ?  (cell 6px) | 7 | Timed portal pairs on a scrolling harbour of six-pixel cells. The top strip displays the three-phase connection schedule and separate four-phase D clock. | ![g045](/api/arc3-mirror/frames/g045.png) | • 1-4: Movement • 5: Action |
+| g306 | Timing / Cycles | ?  (cell 4px) | 3 | A map several windows across behind the 64x64 frame, whose rules tick over on a calendar counted in the player's own actions. A mere is water in thaw and ice in frost; a drift is gravel in thaw and glare ice in frost; a pass is open ground in thaw and shut by snow in frost. | ![g306](/api/arc3-mirror/frames/g306.png) | • 1-4: Movement • 5: Action |
 | g500 | Unclassified | ?  (cell ?px) | 8 | Move the eye to change which puppets can see it. Pink moths advance only when hidden; yellow suns advance only when seen. | ![g500](/api/arc3-mirror/frames/g500.png) | • 1-4: Movement • 5: Action • 6: Click a cell • 7: Undo |
 | g501 | Unclassified | ?  (cell ?px) | 8 | Soot-and-Brass Afterimage Foundry. Observation is an actuator: each visible turbine receives the chosen vane program, but its program is usable only after the iris closes and hides it. | ![g501](/api/arc3-mirror/frames/g501.png) | • 1-4: Movement • 5: Action • 6: Click a cell |
 | g502 | Unclassified | ?  (cell ?px) | 8 | The numbered spots around the ring are nodes. Each shows its current number on the left and its target on the right; a check mark means they match. | ![g502](/api/arc3-mirror/frames/g502.png) | • 1-4: Movement • 5: Action • 6: Button |
