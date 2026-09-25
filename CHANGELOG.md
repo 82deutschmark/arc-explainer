@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.115.1  Sep 25, 2026
+
+- **The Notes button pulses, and giving up is fine** (Author: Claude Opus 5.5). Boss: these games are confusing and we want people to say so. The Notes button on the console now glows on and off until the player sends a note (a steady glow for people who have turned off motion). And since moving on is fine, the form's Skip and the thank-you after a send both offer the next task mid-run, not only after the run is over. `client/src/components/arc3-community/Arc3Console.tsx`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/index.css`.
+
 ### Version 9.115.0  Sep 25, 2026
 
 - **The notes panel on the play page is always open** (Author: Claude Opus 5.5). Boss: if the panel is hidden behind the Notes button, players never learn the feedback form is there, and it is the most valuable thing on the page. It now shows beside the game for the whole run. The Notes button scrolls to it instead of toggling it, the mid-run Skip is gone, and "Back to the task" after a send clears the form for another note rather than closing it. At game over it still scrolls into view and still offers Skip to the next task. `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
