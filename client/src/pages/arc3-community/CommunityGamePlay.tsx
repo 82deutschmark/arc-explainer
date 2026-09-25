@@ -1,6 +1,11 @@
 /*
 Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-16
+Update: 2026-09-25 (Claude Opus 5.5) -- per Boss, the notes/feedback panel is ALWAYS open for the
+        whole run, not hidden behind the Notes button: a closed panel meant players never knew
+        the feedback form existed, and that form is the most valuable thing on the page. The
+        Notes button now just scrolls to it; the mid-run Skip is gone; "Back to the task"
+        after a send resets the form for another note instead of closing it.
 Update: 2026-09-19 (Claude Opus 5) -- "Next task" walks the gallery section (sectionOf), so the
         four categories merged into "Additional games" are one walk, in the strip's order.
 Previous update: Use native intact-character movement for the 32 feedback-revised games.
@@ -345,9 +350,10 @@ export default function CommunityGamePlay() {
   // HELP is a control on the official deck. It explains the CONTROLS only -- never the
   // task -- so it cannot leak the mechanic.
   const [showHelp, setShowHelp] = useState(false);
-  // Feedback is the qualitative half of the cull decision, so it is reachable mid-run
-  // (a scratchpad for what you are trying) and offered again when the run ends.
-  const [showFeedback, setShowFeedback] = useState(false);
+  // Feedback is the qualitative half of the cull decision and the most valuable thing on
+  // this page, so the panel is always open during a run. Bumping this remounts it as a
+  // fresh form after a send, so a player can leave another note.
+  const [feedbackRound, setFeedbackRound] = useState(0);
   /** The frame cell under the pointer, so the board can show where a click would land.
    *  Null whenever the pointer is off the board or ACTION6 is not a spatial click here. */
   const [hoverCell, setHoverCell] = useState<{ x: number; y: number } | null>(null);
@@ -903,18 +909,23 @@ export default function CommunityGamePlay() {
   /** The run is over — won or lost. Both ends offer feedback and both ends move on. */
   const runOver = gameState === 'won' || gameState === 'lost';
 
-  const showFeedbackPanel = gameState !== 'idle' && (showFeedback || runOver);
+  const showFeedbackPanel = gameState !== 'idle';
 
-  // The console alone fills a laptop viewport, so a panel appended below it opens
-  // off-screen and is never seen. Bring it into view when it appears.
+  const scrollToFeedback = useCallback(() => {
+    feedbackRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, []);
+
+  // On a phone the panel stacks below the console, off-screen. When the run ends, bring it
+  // into view -- that is the moment we most want the note. Not on load: jumping past the
+  // game before anyone has played it would be worse.
   useEffect(() => {
-    if (!showFeedbackPanel) return;
+    if (!runOver) return;
     const t = setTimeout(
       () => feedbackRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
       120,
     );
     return () => clearTimeout(t);
-  }, [showFeedbackPanel]);
+  }, [runOver]);
 
   // ── Canvas ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -1011,7 +1022,7 @@ export default function CommunityGamePlay() {
     setIsAnimating(false);
     setGameState('idle');
     setDisplayFrameIndex(0);
-    setShowFeedback(false);
+    setFeedbackRound(0);
     setShowHelp(false);
     setLive(false);
     setRevealEarned(false);
@@ -1176,15 +1187,15 @@ export default function CommunityGamePlay() {
           }}
           select={{
             // On the official deck this is SELECT. A real-time task needs the live
-            // toggle there; every other task uses it for the notes scratchpad, so the
-            // control is never dead weight.
+            // toggle there; every other task uses it to jump to the always-open notes
+            // panel, so the control is never dead weight.
             label: meta?.isLive ? 'Live' : 'Notes',
             onPress: () => {
               if (meta?.isLive) setLive((v) => !v);
-              else setShowFeedback((v) => !v);
+              else scrollToFeedback();
             },
             disabled: gameState === 'idle',
-            active: meta?.isLive ? live : showFeedback,
+            active: meta?.isLive ? live : false,
           }}
           screen={
             gameState === 'idle' ? (
@@ -1276,7 +1287,7 @@ export default function CommunityGamePlay() {
                     <p>C — ACTION7, which a few of these tasks read.</p>
                     <p>{recoverable ? 'Retry level restarts only this level. Completed levels stay complete during this run.'
                       : 'RESET is a button only — no key, so it cannot happen by accident.'}</p>
-                    <p>Notes opens a scratchpad — tell us if a task seems broken.</p>
+                    <p>Notes, beside the game, is where you tell us what you think — especially if a task seems broken.</p>
                     {probeActive && (
                       <p style={{ color: '#FFF' }}>
                         {probeGesture === 'right' ? 'Right-click' : 'Click'} an adjacent tile
@@ -1349,11 +1360,11 @@ export default function CommunityGamePlay() {
             {/* onDone was undefined at game over — the panel opens off `gameState` there,
                 not off `showFeedback` — so sending feedback ended at "Thanks" and left the
                 player parked on a task they had finished. Finishing the form IS the end of
-                the run, so it hands them the next task. Mid-run it is still just a
-                scratchpad and closing it returns you to the game you are playing. */}
+                the run, so it hands them the next task. Mid-run it cannot be closed --
+                it stays open as the scratchpad, and a send resets it for another note. */}
             <Arc3FeedbackPanel
               compact
-              key={gameId}
+              key={`${gameId}:${feedbackRound}`}
               /* THE REVEAL. Sending feedback is what earns it: the reviewer's reading of
                  the task is recorded BEFORE they are told what it was, which is the only
                  order in which their reading is worth anything. Supplying this also stops
@@ -1372,19 +1383,15 @@ export default function CommunityGamePlay() {
                 <MechanicReveal
                   entry={reveal}
                   onNext={runOver && nextGameId ? goNext : undefined}
-                  onBack={runOver ? undefined : () => setShowFeedback(false)}
+                  onBack={runOver ? undefined : () => setFeedbackRound((n) => n + 1)}
                 />
               }
               gameId={gameId ?? ''}
               reachedLevel={levelsDone}
               outcome={gameState === 'won' ? 'completed' : gameState === 'lost' ? 'lost' : 'in_progress'}
               sourceVersion={pyodide.sourceVersion}
-              doneLabel={runOver ? 'Skip \u2192 next task' : 'Skip'}
-              onDone={
-                runOver
-                  ? (nextGameId ? goNext : undefined)
-                  : () => setShowFeedback(false)
-              }
+              doneLabel="Skip \u2192 next task"
+              onDone={runOver && nextGameId ? goNext : undefined}
             />
           </div>
         )}

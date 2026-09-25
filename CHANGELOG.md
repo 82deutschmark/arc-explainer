@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.115.0  Sep 25, 2026
+
+- **The notes panel on the play page is always open** (Author: Claude Opus 5.5). Boss: if the panel is hidden behind the Notes button, players never learn the feedback form is there, and it is the most valuable thing on the page. It now shows beside the game for the whole run. The Notes button scrolls to it instead of toggling it, the mid-run Skip is gone, and "Back to the task" after a send clears the form for another note rather than closing it. At game over it still scrolls into view and still offers Skip to the next task. `client/src/pages/arc3-community/CommunityGamePlay.tsx`.
+
 ### Version 9.114.5  Sep 21, 2026
 
 - **Boss beat sk48** (Author: Claude Opus 5). His replay (7f07c3de, 21-Sep-2026) is a WIN: all 8 levels, 856 actions, tagged human. Re-pulled his scorecards so his sk48 numbers and rating on the site count the win (the same pull also brings in his lf52 win of 20-Sep, 1,163 actions); added the replay to the sk48 page; the Slippery Seven hover for sk48 no longer says he hasn't won it. `shared/arc3Games/{humanPlay.generated.json,sk48.ts,slipperySeven.ts}`, `scripts/arc3/pull_human_scorecards.py`.
