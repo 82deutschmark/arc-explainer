@@ -315,6 +315,23 @@
   animation: slow-bounce 2s infinite;
 }
 
+/* ARC-3 console: a control that is calling for attention (the Notes button, 25-Sep-2026).
+   A white glow that swells and fades, so it reads as "press me" on any shell colour. */
+@keyframes console-call {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,.0), 0 2px 0 rgba(0,0,0,.35); }
+  50% { box-shadow: 0 0 0 4px rgba(255,255,255,.55), 0 0 14px 4px rgba(255,255,255,.45), 0 2px 0 rgba(0,0,0,.35); }
+}
+@keyframes console-call-text {
+  0%, 100% { color: rgba(255,255,255,.92); }
+  50% { color: #FFF; text-shadow: 0 0 8px rgba(255,255,255,.9); }
+}
+.console-call { animation: console-call 1.4s ease-in-out infinite; }
+.console-call-text { animation: console-call-text 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .console-call { animation: none; box-shadow: 0 0 0 3px rgba(255,255,255,.6); }
+  .console-call-text { animation: none; color: #FFF; }
+}
+
 @keyframes worm-float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-4px); }

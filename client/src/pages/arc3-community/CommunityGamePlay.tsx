@@ -6,6 +6,9 @@ Update: 2026-09-25 (Claude Opus 5.5) -- per Boss, the notes/feedback panel is AL
         the feedback form existed, and that form is the most valuable thing on the page. The
         Notes button now just scrolls to it; the mid-run Skip is gone; "Back to the task"
         after a send resets the form for another note instead of closing it.
+        Same day: the Notes button pulses until the player sends a note -- these tasks are
+        confusing and we want to hear so. Giving up is fine too, so the form's Skip and the
+        post-send reveal offer the next task mid-run, not only once the run is over.
 Update: 2026-09-19 (Claude Opus 5) -- "Next task" walks the gallery section (sectionOf), so the
         four categories merged into "Additional games" are one walk, in the strip's order.
 Previous update: Use native intact-character movement for the 32 feedback-revised games.
@@ -1196,6 +1199,7 @@ export default function CommunityGamePlay() {
             },
             disabled: gameState === 'idle',
             active: meta?.isLive ? live : false,
+            pulse: !meta?.isLive && !revealEarned,
           }}
           screen={
             gameState === 'idle' ? (
@@ -1382,7 +1386,7 @@ export default function CommunityGamePlay() {
               afterSent={
                 <MechanicReveal
                   entry={reveal}
-                  onNext={runOver && nextGameId ? goNext : undefined}
+                  onNext={nextGameId ? goNext : undefined}
                   onBack={runOver ? undefined : () => setFeedbackRound((n) => n + 1)}
                 />
               }
@@ -1391,7 +1395,7 @@ export default function CommunityGamePlay() {
               outcome={gameState === 'won' ? 'completed' : gameState === 'lost' ? 'lost' : 'in_progress'}
               sourceVersion={pyodide.sourceVersion}
               doneLabel="Skip \u2192 next task"
-              onDone={runOver && nextGameId ? goNext : undefined}
+              onDone={nextGameId ? goNext : undefined}
             />
           </div>
         )}

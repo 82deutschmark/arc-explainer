@@ -1,6 +1,8 @@
 /*
 Author: Claude Opus 5
 Date: 2026-09-01
+Update: 2026-09-25 (Claude Opus 5.5) -- a control can `pulse` to call for attention; the play
+        page uses it on Notes, because the feedback form is the thing we most want pressed.
 PURPOSE: The ARC-AGI-3 handheld console shell, reproducing arcprize.org/tasks/<id>.
          A moulded body, an inset CRT screen with scanlines, a d-pad, and two columns
          of labelled controls (SPACEBAR / CLICK / UNDO, RESET / HELP / SELECT).
@@ -39,6 +41,8 @@ export interface ConsoleButton {
    *  full control layout on every task, so the panel does not reflow per game. */
   unavailable?: boolean;
   active?: boolean;
+  /** Glows on and off to draw the eye. For a control we want pressed, not for state. */
+  pulse?: boolean;
 }
 
 const SCREEN_BG = '#0B0B0B';
@@ -136,10 +140,11 @@ function PillRow({ button, tone, shell }: {
   shell: ShellColors;
 }) {
   const dead = !button || button.disabled || button.unavailable;
+  const calling = !dead && !!button?.pulse;
   return (
     <div className="flex items-center justify-end gap-2" style={{ opacity: button?.unavailable ? 0.4 : 1 }}>
       <span
-        className="text-[9.5px] tracking-[0.5px] uppercase select-none"
+        className={`text-[9.5px] tracking-[0.5px] uppercase select-none ${calling ? 'console-call-text' : ''}`}
         style={{ color: dead ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.92)' }}
       >
         {button?.label ?? ''}
@@ -149,14 +154,14 @@ function PillRow({ button, tone, shell }: {
         onClick={() => button?.onPress()}
         disabled={dead}
         aria-label={button?.label}
-        className="w-[42px] h-[17px] rounded-full transition-transform active:translate-y-[1px] shrink-0"
+        className={`w-[42px] h-[17px] rounded-full transition-transform active:translate-y-[1px] shrink-0 ${calling ? 'console-call' : ''}`}
         style={{
           background: button?.active
             ? '#FFF'
             : tone === 'shell'
               ? `linear-gradient(${shell.pill}, ${shell.pillDark})`
               : 'linear-gradient(#3E3E3E, #232323)',
-          boxShadow: dead ? 'none' : '0 2px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.15)',
+          boxShadow: dead ? 'none' : calling ? undefined : '0 2px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.15)',
           cursor: dead ? 'default' : 'pointer',
         }}
       />
