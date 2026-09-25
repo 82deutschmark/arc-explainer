@@ -15,13 +15,16 @@ from arcengine import (
     Sprite,
 )
 
-VOID, STONE_HUE, GROUND_HUE, ROUGH_HUE = 5, 3, 4, 2
-SEAL_HUE = (8, 9, 14, 15)
-PLATE_OFF, PLATE_ON = 7, 11
+VOID, STONE_HUE, GROUND_HUE, FLECK_HUE = 5, 14, 11, 12
+SEAL_HUE = (8, 9, 13, 15)
+PLATE_OFF, PLATE_ON = 7, 0
 SANCTUM_HUE = 10
-BODY = 0
-FOE_BODY, FOE_CORE = 12, 13
-PROP_HUE = (6, 7, 10, 11, 12, 15)
+BODY = 5
+FOE_BODY = 6
+PROP_HUE = (6, 7, 10, 0, 12, 15)
+
+BODY_SHAPE = ((0, 1, 1, 0), (1, 1, 1, 1), (0, 1, 1, 0), (1, 0, 0, 1))
+FOE_SHAPE = ((1, 0, 0, 1), (1, 1, 1, 1), (0, 1, 1, 0), (1, 0, 0, 1))
 
 CELL = 4
 VIEW = 16
@@ -182,6 +185,13 @@ def build_levels() -> list[Level]:
             for _ in ARRANGEMENTS]
 
 
+def _stamp(patch: np.ndarray, shape: tuple, hue: int) -> None:
+    for r, row in enumerate(shape):
+        for c, on in enumerate(row):
+            if on:
+                patch[r, c] = hue
+
+
 class Window(RenderableUserDisplay):
 
     def __init__(self, game: "Shrines") -> None:
@@ -201,11 +211,12 @@ class Window(RenderableUserDisplay):
                 ch = GROUND.at(wx, wy)
                 if ch == STONE_CH:
                     patch[:] = STONE_HUE
-                    dec = _hash(wx, wy, 11)
-                    if dec % 9 == 0:
-                        patch[1:3, 1:3] = VOID
                     continue
-                patch[:] = ROUGH_HUE if ch == ROUGH_CH else GROUND_HUE
+                patch[:] = GROUND_HUE
+                if ch == ROUGH_CH:
+                    dec = _hash(wx, wy, 5)
+                    patch[dec % 4, (dec >> 3) % 4] = FLECK_HUE
+                    patch[(dec >> 6) % 4, (dec >> 9) % 4] = FLECK_HUE
 
                 colour = lv.seals.get((wx, wy))
                 if colour is not None and colour not in g.lit:
@@ -232,20 +243,18 @@ class Window(RenderableUserDisplay):
             sx, sy = f["x"] - g.cam_x, f["y"] - g.cam_y
             if 0 <= sx < VIEW and 0 <= sy < VIEW:
                 patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-                patch[:] = FOE_BODY
-                patch[1:3, 1:3] = FOE_CORE
+                _stamp(patch, FOE_SHAPE, FOE_BODY)
 
         sx, sy = g.x - g.cam_x, g.y - g.cam_y
         if 0 <= sx < VIEW and 0 <= sy < VIEW:
             patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-            patch[:] = BODY
-            patch[1:3, 1:3] = VOID
+            _stamp(patch, BODY_SHAPE, BODY)
 
         if g.hit:
-            frame[0, :] = FOE_CORE
-            frame[SCREEN - 1, :] = FOE_CORE
-            frame[:, 0] = FOE_CORE
-            frame[:, SCREEN - 1] = FOE_CORE
+            frame[0, :] = FOE_BODY
+            frame[SCREEN - 1, :] = FOE_BODY
+            frame[:, 0] = FOE_BODY
+            frame[:, SCREEN - 1] = FOE_BODY
         return frame
 
 
