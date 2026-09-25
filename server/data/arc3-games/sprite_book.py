@@ -276,6 +276,82 @@ def creep(current: int, target: int) -> int:
     return current + (1 if target > current else -1)
 
 
+def pixel_art(rows: tuple, colours: dict) -> list[list[int]]:
+    return [[-1 if ch == "." else colours[ch] for ch in row] for row in rows]
+
+
+def tree(canopy: int, shade: int, trunk: int) -> list[list[int]]:
+    return pixel_art(("..kkkk..", ".kggggk.", "kggggggk", "kggggggk",
+                      "kggggggk", ".kggggk.", "..kttk..", "...tt..."),
+                     {"k": shade, "g": canopy, "t": trunk})
+
+
+def pine(canopy: int, shade: int, trunk: int) -> list[list[int]]:
+    return pixel_art(("...kk...", "..kggk..", "..kggk..", ".kggggk.",
+                      ".kggggk.", "kggggggk", "kkkkkkkk", "...tt..."),
+                     {"k": shade, "g": canopy, "t": trunk})
+
+
+def pond(water: int, crest: int, phase: int = 0) -> list[list[int]]:
+    rows = ["..wwww..", ".wwwwww.", "wwwwwwww", "wwwwwwww",
+            "wwwwwwww", ".wwwwww.", "..wwww..", "........"]
+    out = pixel_art(tuple(rows), {"w": water})
+    for y, x in ((1, 3), (3, 5), (4, 1)):
+        xx = (x + phase) % 8
+        if out[y][xx] != -1:
+            out[y][xx] = crest
+    return out
+
+
+def bush(leaf: int, shade: int) -> list[list[int]]:
+    return pixel_art(("....", ".kk.", "kggk", "kkkk"), {"g": leaf, "k": shade})
+
+
+def stones(light: int, dark: int) -> list[list[int]]:
+    return pixel_art(("....", ".ld.", "lldd", "...."), {"l": light, "d": dark})
+
+
+def brick(face: int, mortar: int, row: int = 0) -> list[list[int]]:
+    return pixel_art(("fffm", "mmmm", "fmff", "mmmm") if row % 2 == 0
+                     else ("fmff", "mmmm", "fffm", "mmmm"), {"f": face, "m": mortar})
+
+
+def gate(colour: int) -> list[list[int]]:
+    return pixel_art(("cccc", "c.c.", "c.c.", "cccc"), {"c": colour})
+
+
+def altar(rim: int, hollow: int, flame: int | None = None) -> list[list[int]]:
+    if flame is None:
+        return pixel_art((".rr.", "rhhr", "rhhr", ".rr."), {"r": rim, "h": hollow})
+    return pixel_art((".f..", "rffr", "rhhr", ".rr."), {"r": rim, "h": hollow, "f": flame})
+
+
+def doorway(frame: int, dark: int) -> list[list[int]]:
+    return pixel_art((".ff.", "fddf", "fddf", "fddf"), {"f": frame, "d": dark})
+
+
+def walker(colour: int) -> list[list[int]]:
+    return pixel_art((".cc.", "cccc", ".cc.", "c..c"), {"c": colour})
+
+
+def critter(colour: int) -> list[list[int]]:
+    return pixel_art(("c..c", "cccc", ".cc.", "c..c"), {"c": colour})
+
+
+def flower(petal: int, centre: int, stem: int, open_: bool) -> list[list[int]]:
+    if open_:
+        return pixel_art((".p..", "pcp.", ".p..", "s..."), {"p": petal, "c": centre, "s": stem})
+    return pixel_art(("....", ".p..", ".s..", "s..."), {"p": petal, "s": stem})
+
+
+def stamp(frame, x: int, y: int, sprite) -> None:
+    h, w = len(frame), len(frame[0])
+    for r, row in enumerate(sprite):
+        for c, v in enumerate(row):
+            if v >= 0 and 0 <= y + r < h and 0 <= x + c < w:
+                frame[y + r][x + c] = v
+
+
 def _selftest() -> int:
     import numpy as np
 
@@ -374,3 +450,80 @@ def _selftest() -> int:
 if __name__ == "__main__":
     import sys
     sys.exit(_selftest())
+
+
+def begin_translation(game, names=(), position=None, repaint=None, limit=8):
+    game._translation_path = None
+    sprites = {s.name: (s.x, s.y) for s in game.current_level.get_sprites()
+               if any(s.name == n or (n.endswith('*') and s.name.startswith(n[:-1]))
+                      for n in names)}
+    game._translation_capture = (game.current_level, sprites,
+        (game.camera.x, game.camera.y), position, position() if position else None,
+        repaint, limit)
+
+
+def translation_position(game, position):
+    return getattr(game, '_translation_point', None) or position
+
+
+def advance_translation(game):
+    motion = getattr(game, '_translation_motion', None)
+    if motion is None:
+        return False
+    motion['frame'] += 1
+    t = motion['frame'] / motion['count']
+    def lerp(a, b):
+        return tuple(round(x + (y - x) * t) for x, y in zip(a, b))
+    for sprite, start, end in motion['sprites']:
+        sprite.set_position(*(motion['path'][motion['frame']-1] if motion['path'] else lerp(start, end)))
+    game.camera.x, game.camera.y = lerp(motion['camera'][0], motion['camera'][1])
+    if motion['point'] is not None:
+        game._translation_point = lerp(*motion['point'])
+    if motion['repaint'] is not None:
+        motion['repaint']()
+    if motion['frame'] == motion['count']:
+        game._translation_motion = None
+        game._translation_point = None
+        if motion['complete']:
+            game.complete_action()
+    return True
+
+
+def finish_translation(game, complete=True):
+    capture = getattr(game, '_translation_capture', None)
+    game._translation_capture = None
+    if capture is None or capture[0] is not game.current_level or game._next_level:
+        if complete:
+            game.complete_action()
+        return
+    level, previous, camera, position, point, repaint, limit = capture
+    sprites = []
+    distances = []
+    path = getattr(game, "_translation_path", None)
+    for sprite in level.get_sprites():
+        if sprite.name not in previous:
+            continue
+        start, end = previous[sprite.name], (sprite.x, sprite.y)
+        distance = max(abs(start[0] - end[0]), abs(start[1] - end[1]))
+        if distance or path:
+            sprites.append((sprite, start, end))
+            distances.append(distance)
+    points = (point, position()) if position else None
+    if points:
+        distances.append(max(abs(a-b) for a,b in zip(*points)))
+    count = len(path) if path else max(distances, default=0)
+    if count < 2 or (not path and count > limit):
+        if complete:
+            game.complete_action()
+        return
+    game._translation_motion = dict(frame=0, count=count, sprites=sprites,
+        camera=(camera, (game.camera.x, game.camera.y)), point=points, repaint=repaint,
+        complete=complete, path=path)
+    advance_translation(game)
+
+
+def clear_translation(game):
+    game._translation_path = None
+    game._translation_capture = None
+    game._translation_motion = None
+    game._translation_point = None

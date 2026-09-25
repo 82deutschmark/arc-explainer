@@ -358,9 +358,9 @@
   },
   "g305": {
     "backgroundColour": 14,
-    "distinctColours": 6,
+    "distinctColours": 8,
     "height": 64,
-    "inkFraction": 0.4297,
+    "inkFraction": 0.4326,
     "width": 64
   },
   "g306": {
