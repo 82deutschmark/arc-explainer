@@ -281,8 +281,8 @@ def pixel_art(rows: tuple, colours: dict) -> list[list[int]]:
 
 
 def tree(canopy: int, shade: int, trunk: int) -> list[list[int]]:
-    return pixel_art(("..kkkk..", ".kggggk.", "kggggggk", "kggggggk",
-                      "kggggggk", ".kggggk.", "..kttk..", "...tt..."),
+    return pixel_art((".kk.kk..", "kggkggk.", "kgggggkk", "kggggggk",
+                      "kggggggk", ".kkggkk.", "..kttk..", ".tt..tt."),
                      {"k": shade, "g": canopy, "t": trunk})
 
 
@@ -340,8 +340,36 @@ def critter(colour: int) -> list[list[int]]:
 
 def flower(petal: int, centre: int, stem: int, open_: bool) -> list[list[int]]:
     if open_:
-        return pixel_art((".p..", "pcp.", ".p..", "s..."), {"p": petal, "c": centre, "s": stem})
-    return pixel_art(("....", ".p..", ".s..", "s..."), {"p": petal, "s": stem})
+        return pixel_art((".p.p", "..c.", ".p.p", "...."), {"p": petal, "c": centre})
+    return pixel_art(("....", "..p.", ".s.s", "...."), {"p": petal, "s": stem})
+
+
+def thorns(colour: int) -> list[list[int]]:
+    return pixel_art(("c.c.", ".ccc", "ccc.", ".c.c"), {"c": colour})
+
+
+def lantern(flame: int, frame_: int) -> list[list[int]]:
+    return pixel_art((".kk.", "kffk", "kffk", ".kk."), {"f": flame, "k": frame_})
+
+
+def boot(leather: int) -> list[list[int]]:
+    return pixel_art((".b..", ".b..", ".bb.", ".bbb"), {"b": leather})
+
+
+def waves(sea: int, crest: int, seed: int) -> list[list[int]]:
+    px = [[sea] * 4 for _ in range(4)]
+    if seed % 3 == 0:
+        y, x = (seed >> 2) % 3, (seed >> 4) % 3
+        px[y][x] = crest
+        px[y][x + 1] = crest
+    return px
+
+
+def shallows(water: int, foam: int, seed: int) -> list[list[int]]:
+    px = [[water] * 4 for _ in range(4)]
+    px[seed % 4][(seed >> 2) % 4] = foam
+    px[(seed >> 4) % 4][(seed >> 6) % 4] = foam
+    return px
 
 
 def stamp(frame, x: int, y: int, sprite) -> None:
