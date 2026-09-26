@@ -372,6 +372,48 @@ def shallows(water: int, foam: int, seed: int) -> list[list[int]]:
     return px
 
 
+def rune_ring(colour: int, glow: int | None = None) -> list[list[int]]:
+    if glow is None:
+        return pixel_art((".rr.", "r..r", "r..r", ".rr."), {"r": colour})
+    return pixel_art((".rr.", "rggr", "rggr", ".rr."), {"r": colour, "g": glow})
+
+
+def wall_torch(flame: int, tip: int, bowl: int, phase: int) -> list[list[int]]:
+    rows = ("t.f.", ".ff.", "bbbb", ".bb.") if phase % 2 == 0 else (".t.f", ".ff.", "bbbb", ".bb.")
+    return pixel_art(rows, {"f": flame, "t": tip, "b": bowl})
+
+
+def sword(blade: int, hilt: int) -> list[list[int]]:
+    return pixel_art(("...b", "..b.", "hb..", ".h.."), {"b": blade, "h": hilt})
+
+
+def anchor_shape(colour: int) -> list[list[int]]:
+    return pixel_art((".c..", "ccc.", ".c..", "c.c."), {"c": colour})
+
+
+def crystal(colour: int, bright: bool) -> list[list[int]]:
+    return pixel_art(("..c.", ".ccc", "..c.", "....") if bright
+                     else ("....", "..c.", "..c.", "...."), {"c": colour})
+
+
+def boulder(face: int, light: int) -> list[list[int]]:
+    return pixel_art((".ll.", "lllf", "llff", ".ff."), {"l": light, "f": face})
+
+
+def keyed_door(colour: int, pips, hole: int) -> list[list[int]]:
+    px = pixel_art((".cc.", "cccc", "cccc", "cccc"), {"c": colour})
+    for x, y in pips:
+        px[y][x] = hole
+    return px
+
+
+def stair(frame_: int, dark: int, pips, mark: int) -> list[list[int]]:
+    px = pixel_art((".ff.", "fddf", "fddf", "fddf"), {"f": frame_, "d": dark})
+    for x, y in pips:
+        px[min(3, y + 1)][x] = mark
+    return px
+
+
 def stamp(frame, x: int, y: int, sprite) -> None:
     h, w = len(frame), len(frame[0])
     for r, row in enumerate(sprite):
