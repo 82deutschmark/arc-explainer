@@ -34,6 +34,7 @@ GATE_RUNES = {4: 11, 5: 14, 6: 12}
 PLAIN_RUNE = 13
 GLOW = 0
 TORCH_FLAME, TORCH_TIP, TORCH_BOWL = 12, 11, 13
+EARTH = 13
 PROP_HUE = (7, 9, 8, 11, 14, 12, 6)
 CORNERS = ((-1, -1, 0, 0), (1, -1, 3, 0), (-1, 1, 0, 3), (1, 1, 3, 3))
 
@@ -282,6 +283,14 @@ class Window(RenderableUserDisplay):
                 X, Y = sx * CELL, sy * CELL
                 patch = frame[Y:Y + CELL, X:X + CELL]
                 if solid(wx, wy):
+                    near = any(not solid(wx + a, wy + b)
+                               for a in (-1, 0, 1) for b in (-1, 0, 1))
+                    if not near:
+                        patch[:] = VOID
+                        k = _hash(wx, wy, 41)
+                        if k % 3 == 0:
+                            patch[k % 4, (k >> 2) % 4] = EARTH
+                        continue
                     stamp(patch, 0, 0, brick(WALL, VOID, wy))
                     for dx, dy, px, py in CORNERS:
                         if not solid(wx + dx, wy) and not solid(wx, wy + dy):
