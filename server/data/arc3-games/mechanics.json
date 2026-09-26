@@ -2072,7 +2072,7 @@
   "levels": 3,
   "winLevels": null,
   "callsLose": false,
-  "sourceLines": 613,
+  "sourceLines": 635,
   "triage": null,
   "mechanic": "A map several windows across behind the 64x64 frame, whose rules tick over on a calendar counted in the player's own actions. A mere is water in thaw and ice in frost; a drift is gravel in thaw and glare ice in frost; a pass is open ground in thaw and shut by snow in frost. The first two are free in one season and want their own gear in the other; the pass wants only the season, and no gear opens it. There is one raft and one pair of cleats in the whole game. Gear is heavy, and a body over the carry limit gives the world two steps for every one of its own, so an overloaded body burns the year at double rate. A season that turns while the body is on water washes it back to the bank the crossing began from, which makes a deep crossing a thing to time rather than to walk. Gear carries across levels. Three levels built so far, of six planned.",
   "controls": "ACTION1-4 walk one cell, and every action passes time. ACTION5 makes camp: it sets down the piece the body is holding where it stands, and walking back into that spot picks it up again. There is no click: the engine offers clickable targets in world coordinates with no camera offset subtracted, so on a scrolling world a click would not mean the same thing to a human and an agent.",

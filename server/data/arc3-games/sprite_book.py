@@ -414,6 +414,31 @@ def stair(frame_: int, dark: int, pips, mark: int) -> list[list[int]]:
     return px
 
 
+def raft(wood: int, gap: int) -> list[list[int]]:
+    return pixel_art(("wwww", "gggg", "wwww", "...."), {"w": wood, "g": gap})
+
+
+def cleats(steel: int) -> list[list[int]]:
+    return pixel_art(("....", "s...", "ssss", "s.s."), {"s": steel})
+
+
+def tent(canvas: int, inside: int) -> list[list[int]]:
+    return pixel_art(("..t.", ".tit", "tiit", "tttt"), {"t": canvas, "i": inside})
+
+
+def cairn(stone: int) -> list[list[int]]:
+    return pixel_art(("..s.", ".ss.", ".sss", "ssss"), {"s": stone})
+
+
+def rock(face: int, crack: int, seed: int) -> list[list[int]]:
+    px = [[face] * 4 for _ in range(4)]
+    if seed % 4 == 0:
+        y, x = 1 + (seed >> 3) % 2, (seed >> 5) % 3
+        px[y][x] = crack
+        px[y][x + 1] = crack
+    return px
+
+
 def stamp(frame, x: int, y: int, sprite) -> None:
     h, w = len(frame), len(frame[0])
     for r, row in enumerate(sprite):
