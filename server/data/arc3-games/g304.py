@@ -15,21 +15,27 @@ from arcengine import (
     Sprite,
 )
 
-VOID, FLOOR, WALL = 5, 1, 4
+from sprite_book import (anchor_shape, boot, boulder, brick, critter, crystal, keyed_door,
+                         rune_ring, stair, stamp, sword, wall_torch, walker)
+
+VOID, FLOOR, WALL = 5, 5, 15
 BODY, IDLE = 0, 3
-FOE_BODY, FOE_CORE = 12, 13
-MARK_OFF, MARK_ON = 15, 14
+FOE_BODY = 6
 KEY_HUE = (7, 9, 8)
 HOSTILE, WARDEN = 0, 1
-WARD_BODY, WARD_CORE = 10, 9
+WARD_BODY = 10
 BOOTS, BLADE, ANCHOR = 0, 1, 2
-GEAR_HUE = (14, 8, 11)
+GEAR_HUE = (13, 1, 2)
 WEIGHT = (1, 1, 2)
 CURSED_WEIGHT, CARRY = 3, 3
-CURSE_HUE = 1
-RUBBLE = 2
-PROP_HUE = (6, 7, 10, 11, 12, 15, 14)
-PLATE = (6, 7, 10, 11, 12, 15, 14)
+CURSE_HUE = 3
+RUBBLE, RUBBLE_LIGHT = 4, 2
+GATE_RUNES = {4: 11, 5: 14, 6: 12}
+PLAIN_RUNE = 13
+GLOW = 0
+TORCH_FLAME, TORCH_TIP, TORCH_BOWL = 12, 11, 13
+PROP_HUE = (7, 9, 8, 11, 14, 12, 6)
+CORNERS = ((-1, -1, 0, 0), (1, -1, 3, 0), (-1, 1, 0, 3), (1, 1, 3, 3))
 
 CELL = 4
 VIEW = 16
@@ -38,7 +44,8 @@ SCREEN = VIEW * CELL
 CIRCLE, SQUARE, TRI = 0, 1, 2
 PINK, CYAN, GOLD = 0, 1, 2
 
-RUNE_HUE = (6, 7, 10, 11, 12, 15, 14, 9, 8, 1, 0, 13, 2, 11, 10, 6)
+def rune_hue(gnum: int) -> int:
+    return GATE_RUNES.get(gnum, PLAIN_RUNE)
 
 
 def _hash(x: int, y: int, salt: int) -> int:
@@ -209,6 +216,27 @@ class World:
         self.props = [dict(pos=at(c, r, x, y), hue=PROP_HUE[i % len(PROP_HUE)])
                       for i, (c, r, x, y, _hex) in enumerate(spec.get("props", []))]
 
+        used = ({self.start, self.exit} | set(self.tiles) | set(self.marks)
+                | set(self.rubble) | {gp["pos"] for gp in self.gear}
+                | {q["pos"] for q in self.props}
+                | {(f["ox"] + f["dx"] * k, f["oy"] + f["dy"] * k)
+                   for f in self.foes for k in range(f["ln"] + 1)})
+        if self.second:
+            used.add(self.second)
+        self.nooks = []
+        for r in range(spec["rows"]):
+            for c in range(spec["cols"]):
+                x0, y0 = self.rx(c), self.ry(r)
+                x1, y1 = x0 + spec["roomW"] - 1, y0 + spec["roomH"] - 1
+                for cx, cy, sx, sy in ((x0, y0, 1, 1), (x1, y0, -1, 1),
+                                       (x0, y1, 1, -1), (x1, y1, -1, -1)):
+                    cell = (cx, cy)
+                    if not any((cx + a, cy + b) in used
+                               for a in (-1, 0, 1) for b in (-1, 0, 1)):
+                        self.nooks.append(cell)
+        for x, y in self.nooks:
+            self.grid[y][x] = "#"
+
     def solid(self, x: int, y: int) -> bool:
         return not (0 <= x < self.w and 0 <= y < self.h) or self.grid[y][x] == "#"
 
@@ -245,108 +273,90 @@ class Window(RenderableUserDisplay):
         g = self._g
         wd = g.world
         frame[:] = VOID
+        solid = wd.solid
         for sy in range(VIEW):
             for sx in range(VIEW):
                 wx, wy = sx + g.cam_x, sy + g.cam_y
                 if not (0 <= wx < wd.w and 0 <= wy < wd.h):
                     continue
-                patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-                if wd.grid[wy][wx] == "#":
-                    patch[:] = WALL
-                    dec = _hash(wx, wy, g.level_index + 1)
-                    if dec % 5 == 0:
-                        patch[:] = PLATE[(dec >> 5) % len(PLATE)]
-                        patch[1:3, 1:3] = VOID
+                X, Y = sx * CELL, sy * CELL
+                patch = frame[Y:Y + CELL, X:X + CELL]
+                if solid(wx, wy):
+                    stamp(patch, 0, 0, brick(WALL, VOID, wy))
+                    for dx, dy, px, py in CORNERS:
+                        if not solid(wx + dx, wy) and not solid(wx, wy + dy):
+                            patch[py, px] = FLOOR
+                    if (not solid(wx, wy + 1)
+                            and _hash(wx, wy, g.level_index + 1) % 6 == 0):
+                        stamp(patch, 0, 0, wall_torch(TORCH_FLAME, TORCH_TIP, TORCH_BOWL,
+                                                      g.beat + wx))
                     continue
                 patch[:] = FLOOR
+                for dx, dy, px, py in CORNERS:
+                    if solid(wx + dx, wy) and solid(wx, wy + dy):
+                        patch[py, px] = WALL
 
                 if (wx, wy) in wd.rubble:
-                    patch[:] = RUBBLE
-                    patch[0, 0] = FLOOR
-                    patch[3, 3] = FLOOR
+                    stamp(patch, 0, 0, boulder(RUBBLE, RUBBLE_LIGHT))
 
                 tile = wd.tiles.get((wx, wy))
                 if tile:
                     fam, val = tile
                     if fam == "c":
-                        patch[:] = KEY_HUE[val]
-                        patch[1:3, 1:3] = FLOOR
+                        stamp(patch, 0, 0, [[-1, KEY_HUE[val], KEY_HUE[val], -1],
+                                            [KEY_HUE[val]] * 4, [KEY_HUE[val]] * 4,
+                                            [-1, KEY_HUE[val], KEY_HUE[val], -1]])
                     else:
-                        patch[:] = 1
-                        patch[1:3, 1:3] = FLOOR
+                        stamp(patch, 0, 0, [[-1, 0, 0, -1], [0] * 4, [0] * 4, [-1, 0, 0, -1]])
                         for px, py in _shape_pips(val):
                             patch[py, px] = VOID
 
                 gnum = wd.marks.get((wx, wy))
                 if gnum is not None:
-                    on = gnum in g.lit
-                    patch[:] = MARK_ON if on else MARK_OFF
-                    patch[1:3, 1:3] = RUNE_HUE[gnum % len(RUNE_HUE)]
+                    stamp(patch, 0, 0, rune_ring(rune_hue(gnum),
+                                                 GLOW if gnum in g.lit else None))
 
                 door = wd.doors.get((wx, wy))
                 if door and (wx, wy) not in g.opened:
-                    patch[:] = KEY_HUE[door[1]]
-                    patch[1:3, 1:3] = VOID
-                    for px, py in _shape_pips(door[0]):
-                        patch[py, px] = KEY_HUE[door[1]]
+                    stamp(patch, 0, 0, keyed_door(KEY_HUE[door[1]], _shape_pips(door[0]),
+                                                  VOID))
 
                 gate = wd.gates.get((wx, wy))
                 if gate and not g.gate_open(gate):
-                    patch[:] = MARK_OFF
+                    stamp(patch, 0, 0, brick(WALL, VOID, wy))
                     for k, need in enumerate(gate[:4]):
                         qx, qy = (k % 2) * 2, (k // 2) * 2
                         patch[qy:qy + 2, qx:qx + 2] = (
-                            RUNE_HUE[need % len(RUNE_HUE)] if need in g.lit else VOID)
+                            rune_hue(need) if need in g.lit else VOID)
+                        patch[qy + (k // 2 == 0), qx + (k % 2 == 0)] = rune_hue(need)
 
                 if (wx, wy) == wd.exit:
-                    patch[:] = KEY_HUE[wd.exit_key[1]]
-                    patch[1:3, 1:3] = VOID
-                    for px, py in _shape_pips(wd.exit_key[0]):
-                        patch[py, px] = KEY_HUE[wd.exit_key[1]]
+                    stamp(patch, 0, 0, stair(KEY_HUE[wd.exit_key[1]], VOID,
+                                             _shape_pips(wd.exit_key[0]),
+                                             KEY_HUE[wd.exit_key[1]]))
+
+        def at(cell):
+            return (cell[0] - g.cam_x) * CELL, (cell[1] - g.cam_y) * CELL
 
         for i, q in enumerate(wd.props):
-            sx, sy = q["pos"][0] - g.cam_x, q["pos"][1] - g.cam_y
-            if 0 <= sx < VIEW and 0 <= sy < VIEW:
-                patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-                lit = (g.beat % 2 == 0) if i == 0 else ((g.beat + i) % 4 < 2)
-                patch[0, 1:3] = q["hue"]
-                patch[3, 1:3] = q["hue"]
-                patch[1:3, 0] = q["hue"]
-                patch[1:3, 3] = q["hue"]
-                patch[1:3, 1:3] = q["hue"] if lit else VOID
+            bright = (g.beat % 2 == 0) if i == 0 else ((g.beat + i) % 4 < 2)
+            stamp(frame, *at(q["pos"]), crystal(q["hue"], bright))
 
         for gp in wd.gear:
             if id(gp) in g.taken:
                 continue
-            sx, sy = gp["pos"][0] - g.cam_x, gp["pos"][1] - g.cam_y
-            if 0 <= sx < VIEW and 0 <= sy < VIEW:
-                patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-                hue = GEAR_HUE[gp["kind"]]
-                if gp["kind"] == BOOTS:
-                    patch[2:4, :] = hue
-                elif gp["kind"] == BLADE:
-                    patch[:, 1:3] = hue
-                else:
-                    patch[0, :] = hue
-                    patch[:, 1:3] = hue
+            hue = GEAR_HUE[gp["kind"]]
+            art = (boot(hue) if gp["kind"] == BOOTS
+                   else sword(hue, GEAR_HUE[BOOTS]) if gp["kind"] == BLADE
+                   else anchor_shape(hue))
+            stamp(frame, *at(gp["pos"]), art)
 
         for f in g.foes:
             if id(f) in g.dead:
                 continue
-            sx, sy = f["x"] - g.cam_x, f["y"] - g.cam_y
-            if 0 <= sx < VIEW and 0 <= sy < VIEW:
-                patch = frame[sy * CELL:(sy + 1) * CELL, sx * CELL:(sx + 1) * CELL]
-                ward = f["kind"] == WARDEN
-                hue = WARD_BODY if ward else FOE_BODY
-                floor = patch.copy()
-                patch[:] = hue
-                patch[1:3, 1:3] = WARD_CORE if ward else FOE_CORE
-                if ward:
-                    patch[0, 0] = floor[0, 0]
-                    patch[3, 3] = floor[3, 3]
-                else:
-                    patch[0, 3] = floor[0, 3]
-                    patch[3, 0] = floor[3, 0]
+            ward = f["kind"] == WARDEN
+            stamp(frame, *at((f["x"], f["y"])),
+                  walker(WARD_BODY) if ward else critter(FOE_BODY))
 
         for i, b in enumerate(g.bodies):
             sx, sy = b["x"] - g.cam_x, b["y"] - g.cam_y
@@ -374,10 +384,10 @@ class Window(RenderableUserDisplay):
                     patch[3, 2] = CURSE_HUE
 
         if g.hit:
-            frame[0, :] = FOE_CORE
-            frame[SCREEN - 1, :] = FOE_CORE
-            frame[:, 0] = FOE_CORE
-            frame[:, SCREEN - 1] = FOE_CORE
+            frame[0, :] = FOE_BODY
+            frame[SCREEN - 1, :] = FOE_BODY
+            frame[:, 0] = FOE_BODY
+            frame[:, SCREEN - 1] = FOE_BODY
         return frame
 
 
