@@ -1,6 +1,8 @@
 """
 Author: Codex (GPT-6), with existing contributors
-Date: 2026-09-12
+Date: 2026-09-30
+Update: GPT-6 / Codex -- consume the production catalog's bundled payloads rather than
+        rebuilding support registration in Python, preventing serving/verification drift.
 PURPOSE: Verify the click-to-move probe under the contract the BROWSER actually runs it
          under, not under a friendlier one. The Pyodide worker gets ONE exec'd Python
          string, no filesystem and no import machinery, so a check that imports the game
@@ -10,9 +12,8 @@ PURPOSE: Verify the click-to-move probe under the contract the BROWSER actually 
            1. EXTRACTS the probe body verbatim from client/public/pyodide-game-worker.js
               between the PROBE_PY markers. There is exactly one copy of the algorithm and
               this file does not re-implement it.
-           2. REBUILDS the served string the way server/services/arc3Mirror/
-              Arc3MirrorCatalog.ts bundleSupportModules() does -- support modules inlined
-              as base64 into sys.modules, game body byte-identical below -- and execs it in
+           2. EXPORTS the served string through server/services/arc3Mirror/
+              Arc3MirrorCatalog.ts using export_served_games.ts and execs it in
               a namespace with the games directory kept OFF sys.path, so a missing inline
               fails here rather than in a player's browser.
            3. ROUND-TRIPS every direction each game can actually move: apply the candidate
@@ -33,7 +34,8 @@ PURPOSE: Verify the click-to-move probe under the contract the BROWSER actually 
          Pyodide 0.27.4, execs the REAL worker file and replays the fixture. CPython here
          and WASM there must give the same answers, or one of them is not the shipped
          algorithm.
-         Needs Python >= 3.12 and `pip install arcengine` (the PUBLISHED wheel -- the
+         Needs Node with the repository's tsx dependency, Python >= 3.12 and
+         `pip install arcengine` (the PUBLISHED wheel -- the
          vendored external/ARCEngine differs in GameAction, which is the difference that
          made the board render with dead controls in September).
 
@@ -43,10 +45,10 @@ SRP/DRY check: Pass -- verification only. The algorithm lives in the worker; thi
 
 from __future__ import annotations
 
-import base64
 import copy
 import json
-import re
+import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -62,10 +64,7 @@ MECHANICS = GAMES_DIR / "mechanics.json"
 # copy the client uses; this list must match it.
 EXOTIC = ["g009", "g015", "g022", "g027"]
 
-IMPORT_RE = re.compile(
-    r"^[ \t]*(?:from[ \t]+([A-Za-z_][A-Za-z0-9_]*)[ \t]+import|import[ \t]+([A-Za-z_][A-Za-z0-9_]*))",
-    re.M,
-)
+SERVED_GAMES: dict[str, dict] = {}
 
 
 def probe_source() -> str:
@@ -77,54 +76,25 @@ def probe_source() -> str:
 
 
 def bundle(game_id: str) -> str:
-    """Mirror of bundleSupportModules(): the exact string the worker execs."""
-    game_files = {p.name for p in GAMES_DIR.glob("g*.py")}
-    body = (GAMES_DIR / f"{game_id}.py").read_text()
-    emitted: dict[str, str] = {}
+    """The production payload, not a second implementation of the bundler."""
+    if game_id not in SERVED_GAMES:
+        load_served_games([game_id])
+    return SERVED_GAMES[game_id]["sourceCode"]
 
-    def visit(src: str, chain: list[str]) -> None:
-        for m in IMPORT_RE.finditer(src):
-            name = m.group(1) or m.group(2)
-            if name in emitted or name in chain:
-                continue
-            rel = f"{name}.py"
-            if rel in game_files:
-                continue
-            path = GAMES_DIR / rel
-            if not path.exists():
-                continue
-            mod = path.read_text()
-            visit(mod, chain + [name])
-            emitted[name] = mod
 
-    visit(body, [])
-    if not emitted:
-        return body
-
-    blocks = []
-    for name, mod in emitted.items():
-        b64 = base64.b64encode(mod.encode()).decode()
-        file = json.dumps(f"{name}.py")
-        blocks.append(
-            f"_arc3_mod = _arc3_types.ModuleType({json.dumps(name)})\n"
-            f"_arc3_mod.__file__ = {file}\n"
-            f'exec(compile(_arc3_b64.b64decode("{b64}").decode("utf-8"), {file}, "exec"), _arc3_mod.__dict__)\n'
-            f"_arc3_sys.modules[{json.dumps(name)}] = _arc3_mod"
-        )
-    preamble = "\n".join(
-        [
-            "import sys as _arc3_sys, types as _arc3_types, base64 as _arc3_b64",
-            *blocks,
-            "del _arc3_sys, _arc3_types, _arc3_b64, _arc3_mod",
-            "",
-        ]
+def load_served_games(ids: list[str]) -> None:
+    """Batch the real catalog reads and retain payloads for repeated probe boots."""
+    result = subprocess.run(
+        ["node", "--import", "tsx", "scripts/arc3/export_served_games.ts", *ids],
+        cwd=REPO, env={**os.environ, "LOG_LEVEL": "error"},
+        text=True, capture_output=True, check=True, timeout=120,
     )
-    return preamble + body
+    SERVED_GAMES.update((game["gameId"], game) for game in json.loads(result.stdout))
 
 
 def class_name(game_id: str) -> str:
-    entry = next(e for e in json.loads(MECHANICS.read_text()) if e["gameId"] == game_id)
-    return entry["className"]
+    bundle(game_id)
+    return SERVED_GAMES[game_id]["className"]
 
 
 ALL_CANDIDATES = False
@@ -470,6 +440,7 @@ def main() -> int:
         fixture_dir = Path(argv[1])
         argv = argv[2:]
     ids = argv or EXOTIC
+    load_served_games(ids)
     rows = [run_game(i) for i in ids]
     if fixture_dir is not None:
         fixture_dir.mkdir(parents=True, exist_ok=True)

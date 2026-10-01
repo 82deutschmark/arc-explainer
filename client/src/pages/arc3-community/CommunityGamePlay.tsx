@@ -1,6 +1,8 @@
 /*
 Author: Codex (GPT-6), with existing contributors
-Date: 2026-09-16
+Date: 2026-09-30
+Update: GPT-6 / Codex -- show the actual load failure without attributing Python source
+        errors to WebAssembly or CDN access.
 Update: 2026-09-25 (Claude Opus 5.5) -- per Boss, the notes/feedback panel is ALWAYS open for the
         whole run, not hidden behind the Notes button: a closed panel meant players never knew
         the feedback form existed, and that form is the most valuable thing on the page. The
@@ -1149,8 +1151,7 @@ export default function CommunityGamePlay() {
           <div className="w-full max-w-[500px] px-4 py-2 flex items-center gap-2 text-[12px]"
                style={{ border: `1px solid ${ARC.red}`, color: ARC.red }}>
             <AlertTriangle className="w-4 h-4 shrink-0" />
-            This task could not start in your browser ({pyodide.error}). It needs
-            WebAssembly and access to the Pyodide CDN.
+            This task could not start in your browser ({pyodide.error}). Press Start to try again.
           </div>
         )}
 

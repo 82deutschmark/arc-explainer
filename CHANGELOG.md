@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.116.1  Sep 30, 2026
+
+- **Arena glow-up games start again** (Author: GPT-6 / Codex). Fixes the shared mirror loader that inserted executable support registration before Python future imports, preventing g304, g305, g306 and g309 from starting. Compiles the unchanged game body separately in the worker namespace and keeps support-module compiler flags isolated. The probe verifier now consumes production-served payloads instead of duplicating the bundler; load errors retain the real cause and retry instruction. All 124 local game payloads execute, six games render/act/reset against their authored behavior, and the production build passes. Full TypeScript checking still reports unrelated existing diagnostics. Extended browser checks were deferred at Boss's request to ship. Files: `server/services/arc3Mirror/Arc3MirrorCatalog.ts`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `scripts/arc3/{export_served_games.ts,verify_probe_move.py}`, `tests/arc3MirrorBundles.test.ts`; details in `docs/2026-09-30-arc3-game-bundle-repair-plan.md`.
+
 ### Version 9.116.0  Sep 30, 2026
 
 - **Complete human-inspired ARC-3 reasoning traces** (Author: GPT-6 / Codex). Expands all 66 of Mark Barney's play notes into complete situation → hypothesis → action → expectation → outcome → revision → next-move traces using screenshots and game mechanics. Missing steps are explicitly reconstructed, with the original source records preserved. Ships 44 training and 22 validation trajectories, 132 chronological decision targets, and 78 images. Re-executes the recorded OY Labs winning moves on all 25 current game builds: 183 levels cleared and 6,732 actual before/action/after transitions bundled as independent demonstration evidence, without the agent's original shorthand. Source hashes, replay chains, game splits and future-outcome separation are checked; ten focused tests and the new scripts' strict TypeScript check pass. The generated release is committed for other assistants, with an autoresearch-arena handoff. See `data/arc3-human-reasoning/README.md` and `docs/2026-09-30-arc3-human-reasoning-dataset-plan.md`.

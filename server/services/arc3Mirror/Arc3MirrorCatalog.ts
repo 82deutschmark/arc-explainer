@@ -1,6 +1,8 @@
 /*
 Author: Codex (GPT-6), with existing contributors
-Date: 2026-09-14
+Date: 2026-09-30
+Update: Compile bundled games separately from support registration so future imports
+        stay valid, preserving the authoring bytes and the worker's game namespace.
 Update: Add the independently validated research collection using the existing local-source
         reader, ownership checks, source hashing and thumbnail/player contracts.
 PURPOSE: Mirrors the ARC-AGI-3 synthetic game catalogs the play surface serves, from THREE
@@ -471,8 +473,9 @@ function importedModuleNames(code: string): string[] {
  *
  * This resolves the modules against the publishing directory and prepends each as a real
  * entry in `sys.modules`, dependencies first, so the game's own import statement finds a
- * module instead of a hole. The game body is served byte-identical below the preamble;
- * nothing rewrites the game.
+ * module instead of a hole. The unchanged game body is compiled separately after module
+ * registration: prepending executable Python to a game's future imports makes Python
+ * reject the whole payload before any support module can be registered.
  *
  * A name qualifies only if `<base>/<name>.py` exists AND is not itself a published game.
  * Both halves matter: the first leaves stdlib, numpy and arcengine alone, the second stops
@@ -482,7 +485,7 @@ function importedModuleNames(code: string): string[] {
  * arbitrary Python -- quotes, backslashes and triple-quoted docstrings included -- and
  * hand-escaping that is a bug waiting to happen.
  */
-async function bundleSupportModules(source: MirrorSource, code: string): Promise<string> {
+async function bundleSupportModules(source: MirrorSource, code: string, filename: string): Promise<string> {
   // Only a local source has a directory to resolve against. An http catalog serves what
   // its publisher chose to serve, and guessing at sibling URLs there would turn one 404
   // into a broken game.
@@ -519,23 +522,26 @@ async function bundleSupportModules(source: MirrorSource, code: string): Promise
     return [
       `_arc3_mod = _arc3_types.ModuleType(${JSON.stringify(name)})`,
       `_arc3_mod.__file__ = ${file}`,
-      `exec(compile(_arc3_b64.b64decode("${b64}").decode("utf-8"), ${file}, "exec"), _arc3_mod.__dict__)`,
+      `exec(compile(_arc3_b64.b64decode("${b64}").decode("utf-8"), ${file}, "exec", dont_inherit=True), _arc3_mod.__dict__)`,
       `_arc3_sys.modules[${JSON.stringify(name)}] = _arc3_mod`,
     ].join('\n');
   });
 
-  const preamble = [
+  const gameB64 = Buffer.from(code, 'utf-8').toString('base64');
+  return [
     `# --- support modules inlined by arc3Mirror: ${[...emitted.keys()].join(', ')} ---`,
     `# The Pyodide worker execs one string with no import machinery. See`,
     `# bundleSupportModules() in server/services/arc3Mirror/Arc3MirrorCatalog.ts.`,
     `import sys as _arc3_sys, types as _arc3_types, base64 as _arc3_b64`,
     ...blocks,
+    // Separate compilation preserves future declarations and original traceback lines.
+    // Reuse globals() so the worker can instantiate the class and deepcopy its objects.
+    `exec(compile(_arc3_b64.b64decode("${gameB64}").decode("utf-8"), ${JSON.stringify(filename)}, "exec", dont_inherit=True), globals())`,
     `del _arc3_sys, _arc3_types, _arc3_b64, _arc3_mod`,
     `# --- end support modules ---`,
     '',
   ].join('\n');
 
-  return preamble + code;
 }
 
 export class Arc3MirrorCatalog {
@@ -692,7 +698,7 @@ export class Arc3MirrorCatalog {
 
     // Bundled before the version is taken, not after: sourceVersion is what the client
     // caches and reports against, so it has to describe the string the client receives.
-    served = await bundleSupportModules(owner, served);
+    served = await bundleSupportModules(owner, served, srcPath);
 
     return { gameId, sourceCode: served, className: game.className, sourceVersion: sourceVersionOf(served) };
   }
