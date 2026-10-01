@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.116.0  Sep 30, 2026
+
+- **Complete human-inspired ARC-3 reasoning traces** (Author: GPT-6 / Codex). Expands all 66 of Mark Barney's play notes into complete situation → hypothesis → action → expectation → outcome → revision → next-move traces using screenshots and game mechanics. Missing steps are explicitly reconstructed, with the original source records preserved. Ships 44 training and 22 validation trajectories, 132 chronological decision targets, and 78 images. Re-executes the recorded OY Labs winning moves on all 25 current game builds: 183 levels cleared and 6,732 actual before/action/after transitions bundled as independent demonstration evidence, without the agent's original shorthand. Source hashes, replay chains, game splits and future-outcome separation are checked; ten focused tests and the new scripts' strict TypeScript check pass. The generated release is committed for other assistants, with an autoresearch-arena handoff. See `data/arc3-human-reasoning/README.md` and `docs/2026-09-30-arc3-human-reasoning-dataset-plan.md`.
+
 ### Version 9.115.1  Sep 25, 2026
 
 - **The Notes button pulses, and giving up is fine** (Author: Claude Opus 5.5). Boss: these games are confusing and we want people to say so. The Notes button on the console now glows on and off until the player sends a note (a steady glow for people who have turned off motion). And since moving on is fine, the form's Skip and the thank-you after a send both offer the next task mid-run, not only after the run is over. `client/src/components/arc3-community/Arc3Console.tsx`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/index.css`.

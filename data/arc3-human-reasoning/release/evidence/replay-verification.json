@@ -1,0 +1,1199 @@
+{
+  "schema": "arc-explainer/arc3-replay-evidence/v1",
+  "arcengineVersion": "0.9.3",
+  "actionSource": "data/arc3-agent-runs/75d9c8e7-ade9-4a8f-a747-6acbea51bb1b.levels.jsonl",
+  "actionSourceSha256": "47d66b488734c1ff812737c15a6f8bd975d69d0e24f3eaee19b5046277033544",
+  "agentTextIncluded": false,
+  "games": [
+    {
+      "gameId": "ar25",
+      "build": "0c556536",
+      "runGuid": "74077944-f734-4895-adce-ae20e4d916fc",
+      "gameCodeSha256": "b965d2faaa4a4d9119c20eb51af0fb2b657fb52fb9884919863a48f2230c4272",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 17,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 11,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 40,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 22,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 31,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 53,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 37,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 47,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "ar25.transitions.jsonl.gz",
+      "transitionsSha256": "0c7a31e159cb3041aa20cd805ab5a155fb427608bb8e2fd58de0663b4a185783"
+    },
+    {
+      "gameId": "bp35",
+      "build": "0a0ad940",
+      "runGuid": "bcd43d66-ac98-43c2-8221-f6e872c7d1c2",
+      "gameCodeSha256": "e9aecb52c629c3e742276c2db04b81f91555051d8617b6cbc58bac410824867f",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 15,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 43,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 34,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 23,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 31,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 100,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 55,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 42,
+          "cleared": true
+        },
+        {
+          "level": 9,
+          "actions": 80,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "bp35.transitions.jsonl.gz",
+      "transitionsSha256": "b3938f18adae3168195bdb904e9902b0e155ef42d8d8d7a9f1e10711be453939"
+    },
+    {
+      "gameId": "cd82",
+      "build": "fb555c5d",
+      "runGuid": "20fcc634-9e4e-4c3d-a638-b577b0301cd1",
+      "gameCodeSha256": "dafeabff60a3a99b5c93629f8da0d8f555b873ef16a522247d6197b1b3addbcb",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 13,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 6,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 19,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 13,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 16,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "cd82.transitions.jsonl.gz",
+      "transitionsSha256": "1da2b018787d385eda444fe7d6700c3e111b517bea172ab79645ebe39fde3c6e"
+    },
+    {
+      "gameId": "cn04",
+      "build": "2fe56bfb",
+      "runGuid": "cd3a47ef-0a45-46a0-aae0-9f9f7b4ff8e7",
+      "gameCodeSha256": "29977e145a0374b5842d360507f045029c3f4b22373612152e713c14691e01dc",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 29,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 24,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 33,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 48,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 39,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "cn04.transitions.jsonl.gz",
+      "transitionsSha256": "65eeb0e691e0807ed7b0a305f6f9eb7620519e3827aa64a5dee1a39e3b47c64d"
+    },
+    {
+      "gameId": "dc22",
+      "build": "fdcac232",
+      "runGuid": "20d26669-51a5-4d89-9e35-9fc329abc363",
+      "gameCodeSha256": "74abe3523bd6bc8a0948991caa0ca71855e38542ba2123653a03485e064f252e",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 22,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 43,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 45,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 64,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 118,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 150,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "dc22.transitions.jsonl.gz",
+      "transitionsSha256": "f7248642e28acd8bbbe1662b10b8638fe706285b0ed166eef7c64f6047e98add"
+    },
+    {
+      "gameId": "ft09",
+      "build": "0d8bbf25",
+      "runGuid": "2ad74623-b639-46bc-b86a-81d14c4b5cab",
+      "gameCodeSha256": "aa5b54f48a29da9f276c3df0dc04de728002f523384ab868c85d56d819cd0783",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 4,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 7,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 16,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 21,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 13,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "ft09.transitions.jsonl.gz",
+      "transitionsSha256": "f554d1367a048e8752de9b8e24d7d58ac1f85e1981354799ba2bc1b42a63926d"
+    },
+    {
+      "gameId": "g50t",
+      "build": "5849a774",
+      "runGuid": "4dbaf973-d3af-4aac-a325-0f0f8a4041e6",
+      "gameCodeSha256": "6f21f2065744e484ac38534f940158034e69f39add3b10a3d9fd258de7293aa9",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 28,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 31,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 64,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 31,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 50,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 50,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 43,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "g50t.transitions.jsonl.gz",
+      "transitionsSha256": "9d78b4b01aa2d7bec3e347c98afa57269221f40b015b09802604fd25a80b80b8"
+    },
+    {
+      "gameId": "ka59",
+      "build": "38d34dbb",
+      "runGuid": "9c9af5ce-b61a-4b87-ace9-8650e84907d6",
+      "gameCodeSha256": "3e8341f4c317ceb9992ca54e8ad453ee4e8a04547b27a907f4a560a9a30d857e",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 25,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 48,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 34,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 42,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 20,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 47,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 109,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "ka59.transitions.jsonl.gz",
+      "transitionsSha256": "f2627210d192eb0d79d85d61e9f36acb7595323a320d08d60acc56e6cbab5205"
+    },
+    {
+      "gameId": "lf52",
+      "build": "271a04aa",
+      "runGuid": "79127723-14e2-4d3d-a60c-9a45e99e6575",
+      "gameCodeSha256": "a6b01973a0905a447f6b92d77745719ebb001f9f94ff5bb0076200ef16839030",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 9,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 44,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 46,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 50,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 90,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 91,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 144,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 70,
+          "cleared": true
+        },
+        {
+          "level": 9,
+          "actions": 116,
+          "cleared": true
+        },
+        {
+          "level": 10,
+          "actions": 50,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "lf52.transitions.jsonl.gz",
+      "transitionsSha256": "6172fc36dd55cfde306fca23b285606b11a6e7ff000ec5a1d0db6e6743324fbf"
+    },
+    {
+      "gameId": "lp85",
+      "build": "305b61c3",
+      "runGuid": "320e870c-f647-4afb-8ba6-70cd496b540c",
+      "gameCodeSha256": "7d10baec7dd29d07e574bd47ee1ec7912542a72632077a5446798221f41c4ae9",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 7,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 8,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 16,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 11,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 19,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 20,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "lp85.transitions.jsonl.gz",
+      "transitionsSha256": "ef8672b1cf6676d7eb4e2f2bec0c3653059a514eb52a9e83419bad94273428cd"
+    },
+    {
+      "gameId": "ls20",
+      "build": "9607627b",
+      "runGuid": "0a9dfe50-1421-45c9-8041-773c58b6b85b",
+      "gameCodeSha256": "298c810da2850d557c95d92a2cbd846df29a45d7134e20888617bedf5dafcd92",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 15,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 45,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 43,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 51,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 48,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 82,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 81,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "ls20.transitions.jsonl.gz",
+      "transitionsSha256": "a04e72994e9503bba17c61e35df33c16eb1154073ff27c9d46e9bd0fdb6270be"
+    },
+    {
+      "gameId": "m0r0",
+      "build": "492f87ba",
+      "runGuid": "b3c4fd9b-d852-422c-9fe0-35271646bd6d",
+      "gameCodeSha256": "fc3954236f712759c2a5baaada09bb3244e217e022086dc9ec8f6e6fe101d797",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 15,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 23,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 65,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 13,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 64,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 51,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "m0r0.transitions.jsonl.gz",
+      "transitionsSha256": "a016606c4d40bddbfb295b4ac4d5a32aeb4e82a89896fd6894b5fa39a5508db8"
+    },
+    {
+      "gameId": "r11l",
+      "build": "495a7899",
+      "runGuid": "fcf46cc2-5c17-4726-9d64-85e56a0039f2",
+      "gameCodeSha256": "95d58ebaa8c758e905821bb4f5881d47166c8f5aec158bfea7585902c01040d0",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 4,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 9,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 12,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 13,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 17,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 16,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "r11l.transitions.jsonl.gz",
+      "transitionsSha256": "22c1f0bd2fedf013676633ddb43e7181f86b236e3ef911f8c823acf07aadabe5"
+    },
+    {
+      "gameId": "re86",
+      "build": "8af5384d",
+      "runGuid": "e77ef5ea-f632-4b56-abdd-5d857634c408",
+      "gameCodeSha256": "cf3c1520e17f0b70e7a3cea0e680601a591befce306b4dd1926c735a7d3b65e8",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 20,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 36,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 189,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 44,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 63,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 68,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 125,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 183,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "re86.transitions.jsonl.gz",
+      "transitionsSha256": "62bb48c9956419109dfff1300c7caac5a860ddfc4b91399e4b9d3b5e85ed4c1c"
+    },
+    {
+      "gameId": "s5i5",
+      "build": "18d95033",
+      "runGuid": "345b0563-a565-432f-90c5-084882e935ff",
+      "gameCodeSha256": "341f85bac1fb5ca7a3315a367405c3c993a57ce4dd0ff01cc8aaa72bf6c6ed34",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 13,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 26,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 37,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 30,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 30,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 25,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 46,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 36,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "s5i5.transitions.jsonl.gz",
+      "transitionsSha256": "b67fb948e328c0c319f20e46ed571669d156a485b0ff5699ceaa875a2a4a547a"
+    },
+    {
+      "gameId": "sb26",
+      "build": "7fbdac44",
+      "runGuid": "44be6362-a967-4e92-8595-11b82f139e42",
+      "gameCodeSha256": "dbb4877853a8d30f84e28d26f4a3d6ad7d2d1018602e82ccb5a62284043984f3",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 9,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 15,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 15,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 15,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 17,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 19,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 17,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 17,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "sb26.transitions.jsonl.gz",
+      "transitionsSha256": "4197fe0f68398bd53267e65bd5db126cfcb85b06ac84da6dd26d0b6bc0068f3b"
+    },
+    {
+      "gameId": "sc25",
+      "build": "635fd71a",
+      "runGuid": "e495099e-151b-41ec-b146-c1be2f71a589",
+      "gameCodeSha256": "871a507cf340d1e4a3271205a71bb5433f20c2b0e427f7ce40da47060cdd4392",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 23,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 5,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 12,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 23,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 39,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 35,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "sc25.transitions.jsonl.gz",
+      "transitionsSha256": "e2838e741254c8aa2a4b3fe900d464723c4aa15d4a406fe3a96abb93269047ed"
+    },
+    {
+      "gameId": "sk48",
+      "build": "d8078629",
+      "runGuid": "45d858f8-5c84-4994-87dc-f4a88502bdf8",
+      "gameCodeSha256": "b6ca05eed7ba81fe5a6a26c58410fa7daddf2039d3d1c42f600aaf9f6f0111e3",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 34,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 38,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 49,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 117,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 83,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 53,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 47,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "sk48.transitions.jsonl.gz",
+      "transitionsSha256": "45327be092100b0d94be39907f01a50f3b5cc66b65af36a76c7a66abc8dead40"
+    },
+    {
+      "gameId": "sp80",
+      "build": "589a99af",
+      "runGuid": "28db70d6-cd9c-446e-bf30-9a829c12e5ba",
+      "gameCodeSha256": "2306d62311a3cc027250217d86cb4e012898edc7647a7c291ade23f36c9b9715",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 9,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 9,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 11,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 31,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 33,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 36,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "sp80.transitions.jsonl.gz",
+      "transitionsSha256": "aaab0032e275d1c358dc4e78cb8314eea48dbf0ba715f813beeb233ef6f78bd2"
+    },
+    {
+      "gameId": "su15",
+      "build": "1944f8ab",
+      "runGuid": "f6101e88-def8-4e76-a78a-9427745a2385",
+      "gameCodeSha256": "a5f91f7c963d6ca6447dae0ab21342b48a3f511601c40dfa8e972bdc59b4651e",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 11,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 13,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 15,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 9,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 28,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 9,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 6,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 11,
+          "cleared": true
+        },
+        {
+          "level": 9,
+          "actions": 12,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "su15.transitions.jsonl.gz",
+      "transitionsSha256": "93b51649abe4504104a1beb2bef8415c29bd88ffce87351b79b4a53a7ea9b12a"
+    },
+    {
+      "gameId": "tn36",
+      "build": "ef4dde99",
+      "runGuid": "22761359-7720-4a5c-acab-4432719a35c5",
+      "gameCodeSha256": "43c30052cdeb230017eb1ec23877050d96297756b86071417868ec61138c9fb7",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 10,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 19,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 10,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 19,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 32,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 44,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "tn36.transitions.jsonl.gz",
+      "transitionsSha256": "3e4284803e65f1f8648ea7b947ff22026aaa03956a896404b441728c720b0e23"
+    },
+    {
+      "gameId": "tr87",
+      "build": "cd924810",
+      "runGuid": "34c9120b-2214-46e2-96e3-45e78d759390",
+      "gameCodeSha256": "3274657a6499af5c7a52390d58a5c5441497ed70b84388e418fdfa6c9601e305",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 17,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 26,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 26,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 21,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 24,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "tr87.transitions.jsonl.gz",
+      "transitionsSha256": "7206f8b613ada0374c1e4f25238f5ef39cb8f1d01b2bad0025a3cae07ff568b4"
+    },
+    {
+      "gameId": "tu93",
+      "build": "0768757b",
+      "runGuid": "3893f733-e1bd-4827-93b6-6ff8e64171ee",
+      "gameCodeSha256": "80e41888f9f7b1a0c03e02c0aff3814e0fd68eb5b35ef22bb3649c87fc60a23f",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 18,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 15,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 19,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 18,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 29,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 30,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 14,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 23,
+          "cleared": true
+        },
+        {
+          "level": 9,
+          "actions": 29,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "tu93.transitions.jsonl.gz",
+      "transitionsSha256": "511d46f09ee9634f96c40be303be63aa7059eeedf9371a66e41b65a847be36cf"
+    },
+    {
+      "gameId": "vc33",
+      "build": "5430563c",
+      "runGuid": "c8995261-2fa7-48b4-9fc6-e1624a20697f",
+      "gameCodeSha256": "8afa9f55054b2a2460b6c44ec5c66e120f6d6f4c2289e24d50832a68d1e3fcfd",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 8,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 7,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 24,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 35,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 49,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 20,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 49,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "vc33.transitions.jsonl.gz",
+      "transitionsSha256": "d101b4fb2bf5b40368e764124d1dfe631de43e477b117e338aa48e396e893404"
+    },
+    {
+      "gameId": "wa30",
+      "build": "ee6fef47",
+      "runGuid": "6503caa5-73c0-4b5e-9fdf-9d5d8e6eb176",
+      "gameCodeSha256": "0c8b63caee2d092d6c0750fd74e417de682d09973b549046394dadf0437b1477",
+      "levels": [
+        {
+          "level": 1,
+          "actions": 27,
+          "cleared": true
+        },
+        {
+          "level": 2,
+          "actions": 48,
+          "cleared": true
+        },
+        {
+          "level": 3,
+          "actions": 74,
+          "cleared": true
+        },
+        {
+          "level": 4,
+          "actions": 54,
+          "cleared": true
+        },
+        {
+          "level": 5,
+          "actions": 103,
+          "cleared": true
+        },
+        {
+          "level": 6,
+          "actions": 46,
+          "cleared": true
+        },
+        {
+          "level": 7,
+          "actions": 44,
+          "cleared": true
+        },
+        {
+          "level": 8,
+          "actions": 127,
+          "cleared": true
+        },
+        {
+          "level": 9,
+          "actions": 62,
+          "cleared": true
+        }
+      ],
+      "finalState": "WIN",
+      "transitionsFile": "wa30.transitions.jsonl.gz",
+      "transitionsSha256": "6aaef7777053a0afdabdabbdedf377183a035fa6dbeff26928cf96d988693714"
+    }
+  ]
+}
