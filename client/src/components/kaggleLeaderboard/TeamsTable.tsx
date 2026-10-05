@@ -3,7 +3,7 @@
  * Date: 2026-10-05
  * PURPOSE: "All teams" -- the whole board, searchable by team or member name, with a
  *          "moved today" filter, medal dots on rank, a heavier rule under each medal cut
- *          line, today's rank change, and a star to add a team to the watch chart. Our team
+ *          line, today's rank change, Kaggle profile links on team and member names, and a star to add a team to the watch chart. Our team
  *          is highlighted and pinned to the top of an unfiltered view. Paged so four
  *          thousand rows do not render at once.
  * SRP/DRY check: Pass - reads BoardModel; uses shadcn Table, Input, Checkbox, Button.
@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { MEDAL_COLOR, fmt, type BoardModel } from './boardData';
+import { MemberLinks, TeamName } from './TeamName';
 
 const PAGE = 100;
 
@@ -113,11 +114,13 @@ export function TeamsTable({ model, watched, onToggleWatch }: Props) {
                 <TableCell className={`py-1.5 text-right font-mono text-xs tabular-nums ${delta > 0 ? 'text-emerald-600 dark:text-emerald-400' : delta < 0 ? 'text-red-600 dark:text-red-400' : ''}`}>
                   {delta ? `${delta > 0 ? '▲' : '▼'} ${Math.abs(delta)}` : ''}
                 </TableCell>
-                <TableCell className="max-w-[280px] truncate py-1.5" title={r[2]}>{r[2]}</TableCell>
+                <TableCell className="max-w-[280px] truncate py-1.5"><TeamName row={r} /></TableCell>
                 <TableCell className="py-1.5 text-right font-mono tabular-nums">{fmt(r[4])}</TableCell>
                 <TableCell className="py-1.5 text-right font-mono tabular-nums">{r[5]}</TableCell>
                 <TableCell className="hidden whitespace-nowrap py-1.5 text-muted-foreground md:table-cell">{r[3].slice(0, 16).replace('T', ' ')}</TableCell>
-                <TableCell className="hidden max-w-[240px] truncate py-1.5 text-muted-foreground lg:table-cell" title={r[6]}>{r[6].replaceAll(',', ', ')}</TableCell>
+                <TableCell className="hidden max-w-[240px] truncate py-1.5 text-muted-foreground lg:table-cell" >
+                  <MemberLinks row={r} />
+                </TableCell>
               </TableRow>
             );
           })}

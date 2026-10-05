@@ -1,75 +1,85 @@
 /**
  * Author: Claude Opus 5.5
  * Date: 2026-10-05
- * PURPOSE: "Teams we are watching" -- score over the last 75 days for each starred team, as
- *          step lines (a score only changes when a team submits), with a removable chip per
- *          team showing its current rank and score. Our team is always drawn in the site
- *          blue and slightly thicker. Hover lists every watched team's score at that date.
- * SRP/DRY check: Pass - marks only; frame, gridlines and tooltip come from ChartFrame;
- *          the starred list itself is owned by useWatchlist.
+ * PURPOSE: "Teams we are watching" -- score over the chosen window for each starred team,
+ *          as step lines (a score only changes when a team submits), each labelled at its
+ *          end. Every team keeps its own colour however the list changes; ours is always the
+ *          site blue and drawn thicker. Up to eight lines (ours plus seven), the most a
+ *          colour-blind-safe palette can keep apart; extra stars stay in the list and are
+ *          drawn when a slot frees up. Chips link each team to Kaggle and remove it.
+ * SRP/DRY check: Pass - marks only; frame, crosshair, tooltip and end labels come from
+ *          ChartFrame; the starred list is owned by useWatchlist.
  */
 
 import { X } from 'lucide-react';
-import { ChartFrame, PAD, W, niceMax, polyPoints, Swatch } from './ChartFrame';
-import { DAY_MS, US_COLOR, WATCH_PALETTE, fmt, shortDate, trailAt, type BoardModel } from './boardData';
+import { ChartFrame, EndLabels, PAD, TipRow, W, niceTicks, polyPoints, stepPoints } from './ChartFrame';
+import { fmt, rangeBounds, seriesColors, timeTicks, trailAt, type BoardModel, type TimeRange } from './boardData';
+import { TeamName } from './TeamName';
 
 const H = 340;
-const WINDOW_DAYS = 75;
+const MAX_LINES = 8;
 
 interface Props {
   model: BoardModel;
   ids: string[];
+  range: TimeRange;
   onRemove: (id: string) => void;
 }
 
-export function WatchlistChart({ model, ids: allIds, onRemove }: Props) {
+export function WatchlistChart({ model, ids: allIds, range, onRemove }: Props) {
   const { latest, history, byId } = model;
+  const ourId = latest.ourTeamId;
   // Only teams still on the board and with a kept trail (top 300 and us) can be drawn.
-  const ids = allIds.filter((id) => history.trails[id] && byId.has(id));
+  const drawable = allIds.filter((id) => history.trails[id] && byId.has(id));
+  const ids = [...drawable.filter((id) => id === ourId), ...drawable.filter((id) => id !== ourId)].slice(0, MAX_LINES);
+  const hidden = drawable.length - ids.length;
   if (!ids.length) {
     return <p className="text-sm text-muted-foreground">No teams starred yet. Use the stars in the table below.</p>;
   }
 
+  const [t0, tEnd] = rangeBounds(range, model);
   const now = Date.parse(latest.fetched);
-  const t0 = now - WINDOW_DAYS * DAY_MS;
-  const colorOf = new Map(ids.map((id, i) => [id, id === latest.ourTeamId ? US_COLOR : WATCH_PALETTE[i % WATCH_PALETTE.length]]));
-  const ymax = niceMax(Math.max(...ids.map((id) => byId.get(id)![4])));
-  const x = (t: number) => PAD.L + ((t - t0) / (now - t0)) * (W - PAD.L - PAD.R);
-  const y = (v: number) => PAD.T + (1 - v / ymax) * (H - PAD.T - PAD.B);
-  const ticks = [0, 0.25, 0.5, 0.75, 1].map(
-    (f) => [x(t0 + f * (now - t0)), shortDate(t0 + f * (now - t0)), f === 0 ? 'start' : f === 1 ? 'end' : 'middle'] as [number, string, 'start' | 'middle' | 'end'],
-  );
+  const t1 = Math.min(tEnd, now); // trails stop at the latest save; no runway here
+  const colorOf = seriesColors(ids, ourId);
 
-  /** Step path inside the window: flat until each change, then up (or down) to it. */
-  const stepPath = (id: string): Array<[number, number]> => {
-    const path: Array<[number, number]> = [];
-    let before: number | null = null;
-    for (const [iso, v] of history.trails[id].pts) {
-      const t = Date.parse(iso);
-      if (t < t0) { before = v; continue; }
-      if (!path.length && before != null) path.push([t0, before]);
-      if (path.length) path.push([t, path[path.length - 1][1]]);
-      path.push([t, v]);
-    }
-    if (!path.length && before != null) path.push([t0, before]);
-    if (path.length) path.push([now, path[path.length - 1][1]]);
-    return path;
-  };
+  const series = ids.map((id) => {
+    const pts: Array<[number, number]> = [];
+    const start = trailAt(history, id, t0);
+    if (start) pts.push([t0, start[1]]);
+    for (const p of history.trails[id].pts) if (Date.parse(p[0]) >= t0) pts.push([Date.parse(p[0]), p[1]]);
+    pts.push([now, byId.get(id)![4]]);
+    return { id, pts, color: colorOf.get(id)! };
+  });
 
-  const tooltipAt = (gx: number) => {
-    const t = t0 + ((gx - PAD.L) / (W - PAD.L - PAD.R)) * (now - t0);
-    const rows = ids
-      .map((id) => [id, trailAt(history, id, t)] as const)
-      .filter((r): r is readonly [string, [string, number, number]] => r[1] != null)
-      .sort((a, b) => b[1][1] - a[1][1]);
-    return (
-      <>
-        <b className="block">{new Date(t).toLocaleDateString()}</b>
-        {rows.map(([id, p]) => (
-          <div key={id}>{byId.get(id)?.[2] ?? history.trails[id].name}: {fmt(p[1])} (#{p[2]})</div>
-        ))}
-      </>
-    );
+  const values = series.flatMap((s) => s.pts.map((p) => p[1]));
+  const vmin = Math.min(...values), vmax = Math.max(...values);
+  const pad = Math.max(0.5, (vmax - vmin) * 0.06);
+  const ylo = Math.max(0, vmin - pad), yhi = vmax + pad;
+  const plotR = W - PAD.R - 40; // team names are longer than line names
+  const x = (t: number) => PAD.L + ((t - t0) / Math.max(1, t1 - t0)) * (plotR - PAD.L);
+  const y = (v: number) => PAD.T + (1 - (v - ylo) / (yhi - ylo)) * (H - PAD.T - PAD.B);
+  const yTicks = niceTicks(ylo, yhi, 5).map((v) => [y(v), String(v)] as [number, string]);
+
+  const short = (name: string) => (name.length > 18 ? `${name.slice(0, 17)}…` : name);
+
+  const hover = (gx: number) => {
+    const t = Math.min(t1, t0 + ((gx - PAD.L) / (plotR - PAD.L)) * (t1 - t0));
+    const at = series
+      .map((s) => ({ s, p: trailAt(history, s.id, t) }))
+      .filter((r): r is { s: (typeof series)[number]; p: [string, number, number] } => r.p != null)
+      .sort((a, b) => b.p[1] - a.p[1]);
+    return {
+      x: x(t),
+      dots: at.map(({ s, p }) => ({ y: y(p[1]), color: s.color })),
+      body: (
+        <>
+          <div className="mb-1 font-semibold">{new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
+          {at.map(({ s, p }) => (
+            <TipRow key={s.id} color={s.color} name={byId.get(s.id)![2]} value={`${fmt(p[1])} · #${p[2]}`} strong={s.id === ourId} />
+          ))}
+        </>
+      ),
+    };
   };
 
   return (
@@ -78,30 +88,35 @@ export function WatchlistChart({ model, ids: allIds, onRemove }: Props) {
         {ids.map((id) => {
           const r = byId.get(id)!;
           return (
-            <span key={id} className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5">
-              <Swatch color={colorOf.get(id)!} />
-              {r[2]} · #{r[0]} · {fmt(r[4])}
-              <button type="button" className="ml-0.5 text-muted-foreground hover:text-foreground" title="Stop watching" aria-label={`Stop watching ${r[2]}`} onClick={() => onRemove(id)}>
+            <span key={id} className="inline-flex items-center gap-1.5 rounded-full border py-0.5 pl-2 pr-1">
+              <span className="inline-block h-2 w-2 rounded-full" style={{ background: colorOf.get(id) }} />
+              <TeamName row={r} className="max-w-[180px] truncate" />
+              <span className="font-mono text-muted-foreground">#{r[0]}</span>
+              <button type="button" className="rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground" title="Stop watching" aria-label={`Stop watching ${r[2]}`} onClick={() => onRemove(id)}>
                 <X className="h-3 w-3" />
               </button>
             </span>
           );
         })}
+        {hidden > 0 && <span className="self-center text-muted-foreground">+{hidden} more starred (eight lines at most)</span>}
       </div>
-      <ChartFrame height={H} label="Watched teams, score over time" ymax={ymax} y={y} xTicks={ticks} tooltipAt={tooltipAt}>
-        {ids.map((id) => {
-          const pts = stepPath(id);
-          return pts.length > 1 ? (
-            <polyline
-              key={id}
-              points={polyPoints(pts.map(([t, v]) => [x(t), y(v)]))}
-              fill="none"
-              style={{ stroke: colorOf.get(id) }}
-              strokeWidth={id === latest.ourTeamId ? 3 : 2}
-              strokeLinejoin="round"
-            />
-          ) : null;
-        })}
+      <ChartFrame height={H} label="Watched teams, score over time" yTicks={yTicks} xTicks={timeTicks(t0, t1, x)} padRight={W - plotR} hover={hover}>
+        {series.map((s) => (
+          <polyline
+            key={s.id}
+            points={polyPoints(stepPoints(s.pts).map(([t, v]) => [x(t), y(v)]))}
+            fill="none"
+            style={{ stroke: s.color }}
+            strokeWidth={s.id === ourId ? 3 : 2}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+        ))}
+        <EndLabels
+          x={x(now)}
+          bottom={H - PAD.B}
+          items={series.map((s) => ({ y: y(s.pts[s.pts.length - 1][1]), text: s.id === ourId ? 'Us' : short(byId.get(s.id)![2]), color: s.color, bold: s.id === ourId }))}
+        />
       </ChartFrame>
     </>
   );

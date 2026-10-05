@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { fmt, whenText, type BoardModel } from './boardData';
 import type { KaggleBoardEvent } from '@shared/types';
+import { TeamName } from './TeamName';
 
 const FIRST_PAGE = 30;
 
@@ -47,7 +48,7 @@ export function MovesFeed({ model }: { model: BoardModel }) {
               className={`flex flex-wrap items-baseline gap-x-3 gap-y-0.5 border-b px-1 py-1.5 text-sm ${e.id === ourId ? 'bg-primary/10' : ''}`}
             >
               <span className="min-w-[88px] text-xs text-muted-foreground">{whenText(e.t)}</span>
-              <span className="font-semibold">{e.name}</span>
+              <TeamName row={model.byId.get(e.id)} name={e.name} className="font-semibold" />
               <span className="font-mono text-xs tabular-nums">
                 {e.from == null ? `new at ${fmt(e.to)}` : `${fmt(e.from)} → ${fmt(e.to)} (${gain! >= 0 ? '+' : ''}${fmt(gain!)})`}
               </span>

@@ -3,8 +3,9 @@
  * Date: 2026-10-05
  * PURPOSE: Public page for the ARC Prize 2026 ARC-AGI-3 Kaggle leaderboard, at
  *          /kaggle-leaderboard. Every team on the public board, the medal cut lines, our
- *          team always highlighted, today's movers, a feed of score changes, starred-team
- *          trails, the race over time, and the full searchable table.
+ *          team always highlighted: the contested pack by rank, where scores bunch up,
+ *          today's movers, scores and our rank over a chosen window, starred-team trails, a
+ *          feed of score changes, and the full searchable table. Names link to Kaggle.
  *
  *          Moved here on 05-Oct-2026 from arc3.sonpham.net/leaderboard.html, which sits
  *          behind a Google sign-in beside private research. Everything shown is already
@@ -18,14 +19,17 @@
  *          Unrelated to pages/Leaderboards.tsx, which ranks models on ARC puzzles.
  */
 
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { KAGGLE_URL, ago, useKaggleBoard } from '@/components/kaggleLeaderboard/boardData';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { KAGGLE_URL, TIME_RANGES, ago, useKaggleBoard, type TimeRange } from '@/components/kaggleLeaderboard/boardData';
 import { BoardTiles } from '@/components/kaggleLeaderboard/BoardTiles';
-import { ScoreByRankChart } from '@/components/kaggleLeaderboard/ScoreByRankChart';
+import { MedalRaceChart } from '@/components/kaggleLeaderboard/MedalRaceChart';
+import { ScoreCrowdChart } from '@/components/kaggleLeaderboard/ScoreCrowdChart';
+import { OurRankChart } from '@/components/kaggleLeaderboard/OurRankChart';
 import { TodayRecap } from '@/components/kaggleLeaderboard/TodayRecap';
 import { WatchlistChart } from '@/components/kaggleLeaderboard/WatchlistChart';
 import { MovesFeed } from '@/components/kaggleLeaderboard/MovesFeed';
@@ -33,9 +37,9 @@ import { RaceChart } from '@/components/kaggleLeaderboard/RaceChart';
 import { TeamsTable } from '@/components/kaggleLeaderboard/TeamsTable';
 import { useWatchlist } from '@/components/kaggleLeaderboard/useWatchlist';
 
-function Section({ title, note, children }: { title: string; note?: string; children: ReactNode }) {
+function Section({ title, note, children }: { title: string; note?: ReactNode; children: ReactNode }) {
   return (
-    <Card>
+    <Card className="min-w-0">
       <CardHeader className="pb-3 pt-4">
         <CardTitle className="text-base">{title}</CardTitle>
         {note && <CardDescription className="text-xs">{note}</CardDescription>}
@@ -55,9 +59,10 @@ export default function KaggleLeaderboard() {
 
   const { model, isLoading, error, isEmpty } = useKaggleBoard();
   const watch = useWatchlist(model);
+  const [range, setRange] = useState<TimeRange>('since-aug');
 
   return (
-    <div className="mx-auto max-w-[1400px] space-y-3 px-3 py-3 sm:px-4">
+    <div className="kaggle-lb mx-auto max-w-[1400px] space-y-3 px-3 py-3 sm:px-4">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h1 className="text-xl font-semibold">ARC-AGI-3 Kaggle leaderboard</h1>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -87,28 +92,56 @@ export default function KaggleLeaderboard() {
         <>
           <BoardTiles model={model} />
 
-          <Section title="Score by rank" note="Each dot is a team. The shaded bands are the medal zones on the public board right now.">
-            <ScoreByRankChart model={model} />
+          <Section
+            title="The race for medals"
+            note="Score against rank for the contested part of the board. Shaded bands are the medal zones on the public board right now; hover any team."
+          >
+            <MedalRaceChart model={model} />
           </Section>
 
-          <Section title="Today so far" note="The board now against where it stood at the end of the previous day (UTC).">
-            <TodayRecap model={model} />
-          </Section>
-
-          <div className="grid gap-3 xl:grid-cols-2">
-            <Section title="Teams we are watching" note="Star any team in the table to add it. Stars are kept in this browser.">
-              <WatchlistChart model={model} ids={watch.ids} onRemove={watch.toggle} />
+          <div className="grid gap-3 xl:grid-cols-[3fr_2fr]">
+            <Section title="Where the scores bunch up" note="Teams at each score, coloured by the medal zone that score earns. A tall column means a small gain passes many teams.">
+              <ScoreCrowdChart model={model} />
             </Section>
-            <Section title="The race over time" note="Leader, the three medal lines and our score. The dashed line is the close, 2 November.">
-              <RaceChart model={model} />
+            <Section title="Today so far" note="The board now against where it stood at the end of the previous day (UTC).">
+              <TodayRecap model={model} />
             </Section>
           </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+            <h2 className="text-base font-semibold">Over time</h2>
+            <ToggleGroup
+              type="single"
+              size="sm"
+              variant="outline"
+              value={range}
+              onValueChange={(v) => v && setRange(v as TimeRange)}
+              aria-label="Time window for the charts below"
+            >
+              {TIME_RANGES.map(([value, label]) => (
+                <ToggleGroupItem key={value} value={value} className="h-7 px-2.5 text-xs">{label}</ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
+
+          <div className="grid gap-3 xl:grid-cols-2">
+            <Section title="Scores over time" note="The leader, the three medal lines and our score. Grey runs to the close on 2 November.">
+              <RaceChart model={model} range={range} />
+            </Section>
+            <Section title="Our rank against the medal cut-offs" note="Rank 1 at the top. The zones shift down as more teams join, since each medal is a share of the field.">
+              <OurRankChart model={model} range={range} />
+            </Section>
+          </div>
+
+          <Section title="Teams we are watching" note="Star any team in the table to add it. Stars are kept in this browser.">
+            <WatchlistChart model={model} ids={watch.ids} range={range} onRemove={watch.toggle} />
+          </Section>
 
           <Section title="Recent moves">
             <MovesFeed model={model} />
           </Section>
 
-          <Section title="All teams">
+          <Section title="All teams" note="Team names open the first member's Kaggle profile; every member name links to its own.">
             <TeamsTable model={model} watched={watch.ids} onToggleWatch={watch.toggle} />
           </Section>
 

@@ -41,8 +41,41 @@ export const MEDAL_COLOR: Record<Medal, string> = {
 };
 /** Our team, everywhere. The site's primary blue, so it follows the theme. */
 export const US_COLOR = 'var(--primary)';
-/** Watched-team lines other than ours. */
-export const WATCH_PALETTE = ['#e07a5f', '#3d9970', '#b07cd8', '#d99a1e', '#2ba3b5', '#d0587e', '#7a8f2e', '#6c7ae0', '#c4673a', '#4f9d8e'];
+/**
+ * Lines for other watched teams: slots 2-8 of the validated categorical palette (slot 1,
+ * blue, is ours). Defined as CSS variables on .kaggle-lb in index.css with their own dark
+ * steps. Seven slots, so at most seven other teams are drawn at once.
+ */
+export const SERIES = ['--kl-2', '--kl-3', '--kl-4', '--kl-5', '--kl-6', '--kl-7', '--kl-8'].map((v) => `var(${v})`);
+
+/**
+ * Colour follows the team, not its position in the list: each team hashes to a preferred
+ * slot and takes the next free one on a clash, so starring or removing one team does not
+ * repaint the others.
+ */
+export function seriesColors(ids: string[], ourId: string): Map<string, string> {
+  const out = new Map<string, string>();
+  const used = new Set<number>();
+  for (const id of ids) {
+    if (id === ourId) { out.set(id, US_COLOR); continue; }
+    let h = 0;
+    for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    let slot = h % SERIES.length;
+    for (let k = 0; k < SERIES.length && used.has(slot); k++) slot = (slot + 1) % SERIES.length;
+    used.add(slot);
+    out.set(id, SERIES[slot]);
+  }
+  return out;
+}
+
+/** Kaggle's medal cut ranks for a board of n teams (same rule as the snapshot script). */
+export function medalRanksFor(n: number) {
+  return { gold: Math.min(n, 10 + Math.floor(n * 0.002)), silver: Math.max(1, Math.floor(n * 0.05)), bronze: Math.max(1, Math.floor(n * 0.1)) };
+}
+
+/** A Kaggle user's public profile. */
+export const profileUrl = (username: string) => `https://www.kaggle.com/${encodeURIComponent(username)}`;
+export const membersOf = (row: KaggleBoardRow | undefined) => (row ? row[6].split(',').map((m) => m.trim()).filter(Boolean) : []);
 
 export interface BoardModel {
   latest: KaggleBoardLatest;
@@ -169,4 +202,36 @@ export function useKaggleBoard(): BoardQuery {
     error: board.error as Error | null,
     isEmpty: !!board.data && !board.data.latest,
   };
+}
+
+/** The one time window shared by every over-time chart on the page. */
+export type TimeRange = 'week' | 'month' | 'since-aug' | 'all';
+export const TIME_RANGES: Array<[TimeRange, string]> = [
+  ['week', 'Past week'],
+  ['month', 'Past month'],
+  ['since-aug', 'Since August'],
+  ['all', 'Whole contest'],
+];
+
+/**
+ * [start, end] in ms for a window. Short windows end at the latest save; long ones run on
+ * to the close so the remaining runway shows.
+ */
+export function rangeBounds(range: TimeRange, model: BoardModel): [number, number] {
+  const now = Date.parse(model.latest.fetched);
+  const first = model.history.snaps.length ? Date.parse(model.history.snaps[0].t) : now - 30 * DAY_MS;
+  switch (range) {
+    case 'week': return [now - 7 * DAY_MS, now];
+    case 'month': return [now - 30 * DAY_MS, now];
+    case 'since-aug': return [Date.parse('2026-08-01T00:00:00Z'), Math.max(now, CLOSE_MS)];
+    case 'all': return [first, Math.max(now, CLOSE_MS)];
+  }
+}
+
+/** Date ticks across a window, five of them. */
+export function timeTicks(t0: number, t1: number, x: (t: number) => number): Array<[number, string, 'start' | 'middle' | 'end']> {
+  return [0, 0.25, 0.5, 0.75, 1].map((f) => {
+    const t = t0 + f * (t1 - t0);
+    return [x(t), shortDate(t), f === 0 ? 'start' : f === 1 ? 'end' : 'middle'];
+  });
 }

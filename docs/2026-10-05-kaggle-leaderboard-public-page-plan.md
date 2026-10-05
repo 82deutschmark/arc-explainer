@@ -22,7 +22,7 @@ and never land on the research site.
 - **Serving.** One gzipped GET for everything that changes (5 minute cache), one for the
   static backfill (1 day cache). In-memory gzip cache, cleared on push.
 - **Standing.** Each board push records our row into `kaggle_leaderboard_snapshots`, which
-  keeps the landing page's live placing current (its old daily pusher was retired 05-Oct).
+  keeps the landing page's live placing current every half hour.
 - **Page.** Compact title row, tiles straight under it, then the arc-3 sections. SVG charts
   ported by hand, colours from theme variables.
 

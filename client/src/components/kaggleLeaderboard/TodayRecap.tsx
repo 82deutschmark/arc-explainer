@@ -10,6 +10,7 @@
 
 import { fmt, type BoardModel } from './boardData';
 import type { KaggleBoardRow } from '@shared/types';
+import { TeamName } from './TeamName';
 
 function List({ title, rows, value, ourId }: { title: string; rows: KaggleBoardRow[]; value: (r: KaggleBoardRow) => string; ourId: string }) {
   return (
@@ -21,7 +22,7 @@ function List({ title, rows, value, ourId }: { title: string; rows: KaggleBoardR
         <ol className="text-sm">
           {rows.map((r) => (
             <li key={r[1]} className={`flex justify-between gap-2.5 border-b py-1 ${r[1] === ourId ? 'font-semibold text-primary' : ''}`}>
-              <span className="truncate">{r[2]}</span>
+              <TeamName row={r} className="truncate" />
               <span className="whitespace-nowrap font-mono text-xs tabular-nums">{value(r)}</span>
             </li>
           ))}

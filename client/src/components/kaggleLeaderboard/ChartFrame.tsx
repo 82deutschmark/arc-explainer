@@ -1,102 +1,118 @@
 /**
  * Author: Claude Opus 5.5
  * Date: 2026-10-05
- * PURPOSE: The shared frame for the leaderboard page's three hand-drawn SVG charts (score
- *          by rank, the race over time, watched teams): fixed viewBox that scales to the
- *          card width, horizontal score gridlines every ten points, axis labels, and a
- *          hover layer that turns the pointer position into chart coordinates and shows a
- *          small tooltip. Each chart supplies only its own marks and its tooltip text.
+ * PURPOSE: The shared frame for the leaderboard page's hand-drawn SVG charts: a fixed
+ *          viewBox that scales to the card width, hairline gridlines at caller-chosen
+ *          ticks, axis labels, and a hover layer. On hover a chart returns where the
+ *          pointer snaps to, what to say, and which points to ring; the frame draws a
+ *          vertical crosshair, ringed dots on each series, and a tooltip that stays inside
+ *          the card. Charts supply only their own marks.
  *
- *          Colours come from the site's theme variables through inline styles, so the
- *          charts follow light and dark mode without listening for theme changes (the old
- *          arc-3 page read computed colours once and had to redraw on every theme flip).
- * SRP/DRY check: Pass - the three charts were three copies of this scaffolding in the
- *          original page; here it exists once. No chart library, per the port plan.
+ *          Colours come from the site's theme variables via inline styles, so the charts
+ *          follow light and dark mode with no redraw logic.
+ * SRP/DRY check: Pass - every chart on the page shares this scaffolding; no chart library,
+ *          per the port plan.
  */
 
 import { useRef, useState, type ReactNode } from 'react';
 
 export const W = 960;
-export const PAD = { L: 48, R: 16, T: 14, B: 32 };
+export const PAD = { L: 52, R: 120, T: 16, B: 34 };
 
 export const AXIS_TEXT = { fill: 'var(--muted-foreground)', fontSize: 11 } as const;
+export const LABEL_TEXT = { fill: 'var(--foreground)', fontSize: 12 } as const;
+export const GRID = { stroke: 'var(--border)' } as const;
 
-/** Round a top score up to the next ten, never below ten. */
-export const niceMax = (v: number) => Math.max(10, Math.ceil(v / 10) * 10);
+export type Anchor = 'start' | 'middle' | 'end';
+
+export interface HoverResult {
+  /** SVG x the crosshair snaps to. */
+  x: number;
+  body: ReactNode;
+  /** Points to ring on the crosshair, e.g. each series' value at that time. */
+  dots?: Array<{ y: number; color: string }>;
+}
 
 interface ChartFrameProps {
   height: number;
   label: string;
-  /** Top of the score axis; gridlines are drawn every ten points from zero. */
-  ymax: number;
-  /** Maps a score to an SVG y. */
-  y: (score: number) => number;
-  /** X-axis tick labels as [svg x, text, anchor]. */
-  xTicks: Array<[number, string, 'start' | 'middle' | 'end']>;
+  /** Horizontal gridlines: [svg y, label]. */
+  yTicks: Array<[number, string]>;
+  /** X-axis labels: [svg x, label, anchor]. */
+  xTicks: Array<[number, string, Anchor]>;
   xTitle?: string;
-  /** Turns an SVG-space x inside the plot into tooltip content, or null for none. */
-  tooltipAt?: (svgX: number) => ReactNode | null;
+  /** Right padding override, for charts with no end labels. */
+  padRight?: number;
+  hover?: (svgX: number, svgY: number) => HoverResult | null;
   children: ReactNode;
 }
 
-export function ChartFrame({ height, label, ymax, y, xTicks, xTitle, tooltipAt, children }: ChartFrameProps) {
+export function ChartFrame({ height, label, yTicks, xTicks, xTitle, padRight = PAD.R, hover, children }: ChartFrameProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [tip, setTip] = useState<{ x: number; y: number; body: ReactNode } | null>(null);
-  const plotW = W - PAD.L - PAD.R;
-  const plotH = height - PAD.T - PAD.B;
+  const [state, setState] = useState<{ px: number; py: number; hit: HoverResult } | null>(null);
+  const plotRight = W - padRight;
 
-  const grid: number[] = [];
-  for (let v = 0; v <= ymax; v += 10) grid.push(v);
-
-  const onMove = (e: React.MouseEvent<SVGRectElement>) => {
-    if (!tooltipAt || !svgRef.current) return;
+  const onMove = (e: React.PointerEvent<SVGRectElement>) => {
+    if (!hover || !svgRef.current) return;
     const bb = svgRef.current.getBoundingClientRect();
-    const body = tooltipAt((e.clientX - bb.left) * (W / bb.width));
-    setTip(body ? { x: e.clientX - bb.left, y: e.clientY - bb.top, body } : null);
+    const k = W / bb.width;
+    const hit = hover((e.clientX - bb.left) * k, (e.clientY - bb.top) * k);
+    setState(hit ? { px: e.clientX - bb.left, py: e.clientY - bb.top, hit } : null);
   };
 
   return (
-    <div className="relative">
-      <svg ref={svgRef} viewBox={`0 0 ${W} ${height}`} role="img" aria-label={label} className="block h-auto w-full">
-        {grid.map((v) => (
-          <g key={v}>
-            <line x1={PAD.L} x2={W - PAD.R} y1={y(v)} y2={y(v)} style={{ stroke: 'var(--border)' }} />
-            <text x={PAD.L - 6} y={y(v) + 4} textAnchor="end" style={AXIS_TEXT}>{v}</text>
+    <div className="relative select-none">
+      <svg ref={svgRef} viewBox={`0 0 ${W} ${height}`} role="img" aria-label={label} className="block h-auto w-full overflow-visible">
+        {yTicks.map(([y, text]) => (
+          <g key={`${y}-${text}`}>
+            <line x1={PAD.L} x2={plotRight} y1={y} y2={y} style={GRID} />
+            <text x={PAD.L - 8} y={y + 4} textAnchor="end" style={AXIS_TEXT}>{text}</text>
           </g>
         ))}
         {xTicks.map(([x, text, anchor]) => (
-          <text key={`${x}-${text}`} x={x} y={height - PAD.B + 17} textAnchor={anchor} style={AXIS_TEXT}>{text}</text>
+          <text key={`${x}-${text}`} x={x} y={height - PAD.B + 18} textAnchor={anchor} style={AXIS_TEXT}>{text}</text>
         ))}
         {xTitle && (
-          <text x={(PAD.L + W - PAD.R) / 2} y={height - 2} textAnchor="middle" style={AXIS_TEXT}>{xTitle}</text>
+          <text x={(PAD.L + plotRight) / 2} y={height - 2} textAnchor="middle" style={AXIS_TEXT}>{xTitle}</text>
         )}
         {children}
+        {state && (
+          <g pointerEvents="none">
+            <line x1={state.hit.x} x2={state.hit.x} y1={PAD.T} y2={height - PAD.B} style={{ stroke: 'var(--muted-foreground)' }} strokeOpacity={0.5} />
+            {state.hit.dots?.map((d, i) => (
+              <circle key={i} cx={state.hit.x} cy={d.y} r={4.5} style={{ fill: d.color, stroke: 'var(--card)' }} strokeWidth={2} />
+            ))}
+          </g>
+        )}
         <rect
           x={PAD.L}
-          y={PAD.T}
-          width={plotW}
-          height={plotH}
+          y={0}
+          width={plotRight - PAD.L}
+          height={height - PAD.B}
           fill="transparent"
-          onMouseMove={onMove}
-          onMouseLeave={() => setTip(null)}
+          onPointerMove={onMove}
+          onPointerLeave={() => setState(null)}
         />
       </svg>
-      {tip && <ChartTooltip x={tip.x} y={tip.y} width={svgRef.current?.clientWidth ?? 0}>{tip.body}</ChartTooltip>}
+      {state && (
+        <ChartTooltip x={state.px} y={state.py} width={svgRef.current?.clientWidth ?? 0}>
+          {state.hit.body}
+        </ChartTooltip>
+      )}
     </div>
   );
 }
 
 function ChartTooltip({ x, y, width, children }: { x: number; y: number; width: number; children: ReactNode }) {
-  // Keep the box inside the chart: flip to the left of the pointer near the right edge.
-  const flip = x > width - 270;
+  // Flip to the left of the pointer in the right half so the box never leaves the card.
+  const flip = x > width / 2;
   return (
     <div
-      className="pointer-events-none absolute z-10 max-w-[260px] rounded-md border bg-popover px-2.5 py-1.5 text-xs text-popover-foreground shadow-md"
+      className="pointer-events-none absolute z-10 min-w-[160px] max-w-[280px] rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md"
       style={{
-        left: flip ? undefined : x + 12,
-        right: flip ? width - x + 12 : undefined,
-        top: Math.max(4, y - 12),
-        transform: 'translateY(-100%)',
+        left: flip ? undefined : x + 14,
+        right: flip ? width - x + 14 : undefined,
+        top: Math.max(0, y - 16),
       }}
     >
       {children}
@@ -104,10 +120,70 @@ function ChartTooltip({ x, y, width, children }: { x: number; y: number; width: 
   );
 }
 
+/** One line of a tooltip: colour key, name, value. Text stays in text colours. */
+export function TipRow({ color, name, value, strong }: { color?: string; name: ReactNode; value: ReactNode; strong?: boolean }) {
+  return (
+    <div className={`flex items-center justify-between gap-3 ${strong ? 'font-semibold' : ''}`}>
+      <span className="flex min-w-0 items-center gap-1.5">
+        {color && <span className="inline-block h-2 w-2 shrink-0 rounded-full" style={{ background: color }} />}
+        <span className="truncate">{name}</span>
+      </span>
+      <span className="font-mono tabular-nums">{value}</span>
+    </div>
+  );
+}
+
 /** Points to an SVG polyline string. */
 export const polyPoints = (pts: Array<[number, number]>) => pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
 
-/** A small coloured line swatch for legends and chips. */
-export function Swatch({ color }: { color: string }) {
-  return <span className="mr-1.5 inline-block w-4 border-t-[3px] align-middle" style={{ borderColor: color }} />;
+/** Step path: hold each value until the next point (scores change only on submission). */
+export function stepPoints(pts: Array<[number, number]>): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  for (const p of pts) {
+    if (out.length) out.push([p[0], out[out.length - 1][1]]);
+    out.push(p);
+  }
+  return out;
+}
+
+/** Evenly spaced "nice" ticks covering [lo, hi], roughly `count` of them. */
+export function niceTicks(lo: number, hi: number, count = 5): number[] {
+  const raw = (hi - lo) / Math.max(1, count);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= raw) ?? 10 * mag;
+  const out: number[] = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(Number(v.toFixed(6)));
+  return out;
+}
+
+/**
+ * Spread end-of-line labels so none overlap, keeping each as close to its line as it can.
+ * Returns the label y for each input y, in the same order.
+ */
+export function spreadLabels(ys: number[], minGap = 14, top = PAD.T, bottom = Infinity): number[] {
+  const order = ys.map((y, i) => [y, i] as const).sort((a, b) => a[0] - b[0]);
+  const placed: number[] = [];
+  for (const [y] of order) placed.push(Math.max(y, (placed[placed.length - 1] ?? top - minGap) + minGap));
+  // If pushed past the bottom, slide the whole stack back up.
+  const over = placed.length ? placed[placed.length - 1] - bottom : 0;
+  if (over > 0) for (let i = 0; i < placed.length; i++) placed[i] -= over;
+  const out = new Array<number>(ys.length);
+  order.forEach(([, i], k) => { out[i] = placed[k]; });
+  return out;
+}
+
+/** Labelled line ends: a short leader from the line's last point to its label. */
+export function EndLabels({ items, x, bottom }: { items: Array<{ y: number; text: string; color: string; bold?: boolean }>; x: number; bottom: number }) {
+  const ys = spreadLabels(items.map((i) => i.y), 14, PAD.T, bottom);
+  return (
+    <g>
+      {items.map((it, i) => (
+        <g key={it.text}>
+          <polyline points={polyPoints([[x + 2, it.y], [x + 10, ys[i]], [x + 14, ys[i]]])} fill="none" style={{ stroke: it.color }} strokeWidth={1} />
+          <circle cx={x} cy={it.y} r={4} style={{ fill: it.color, stroke: 'var(--card)' }} strokeWidth={2} />
+          <text x={x + 17} y={ys[i] + 4} style={{ ...LABEL_TEXT, fontWeight: it.bold ? 700 : 500 }}>{it.text}</text>
+        </g>
+      ))}
+    </g>
+  );
 }
