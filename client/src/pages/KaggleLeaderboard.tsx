@@ -3,7 +3,7 @@
  * Date: 2026-10-05
  * PURPOSE: Public page for the ARC Prize 2026 ARC-AGI-3 Kaggle leaderboard, at
  *          /kaggle-leaderboard. Every team on the public board, the medal cut lines, our
- *          team always highlighted: the contested pack by rank, where scores bunch up,
+ *          team always highlighted: the contested pack by rank, this week's storylines, where scores bunch up,
  *          today's movers, scores and our rank over a chosen window, starred-team trails, a
  *          feed of score changes, and the full searchable table. Names link to Kaggle.
  *
@@ -36,6 +36,7 @@ import { MovesFeed } from '@/components/kaggleLeaderboard/MovesFeed';
 import { RaceChart } from '@/components/kaggleLeaderboard/RaceChart';
 import { TeamsTable } from '@/components/kaggleLeaderboard/TeamsTable';
 import { useWatchlist } from '@/components/kaggleLeaderboard/useWatchlist';
+import { HeadlineFacts, StoryGrid } from '@/components/kaggleLeaderboard/Storylines';
 
 function Section({ title, note, children }: { title: string; note?: ReactNode; children: ReactNode }) {
   return (
@@ -97,6 +98,13 @@ export default function KaggleLeaderboard() {
             note="Score against rank for the contested part of the board. Shaded bands are the medal zones on the public board right now; hover any team."
           >
             <MedalRaceChart model={model} />
+          </Section>
+
+          <Section title="This week's storylines" note="Who is rocketing up, who is sinking, who is grinding, and who is one submission from gold.">
+            <HeadlineFacts model={model} />
+            <div className="mt-6">
+              <StoryGrid model={model} />
+            </div>
           </Section>
 
           <div className="grid gap-3 xl:grid-cols-[3fr_2fr]">
