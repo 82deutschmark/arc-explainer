@@ -8,6 +8,7 @@ PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations a
          the front door for the synthetic-game playtest programme (see
          docs/28-Aug-2026-synthetic-games-arc3-integration-plan.md). The previous resource-hub
          landing page is preserved verbatim at "/home" and is still linked from the header.
+         2026-10-05 (Claude Opus 5.5): /kaggle-leaderboard, the public Kaggle board page.
 SRP/DRY check: Pass - kept as a routing table only; reuses the existing wouter Redirect
          component already used by the legacy /arc3/archive routes.
 */
@@ -25,6 +26,7 @@ import PuzzleAnalyst from "@/pages/PuzzleAnalyst";
 import PuzzleBrowser from "@/pages/PuzzleBrowser";
 import AnalyticsOverview from "@/pages/AnalyticsOverview";
 import Leaderboards from "@/pages/Leaderboards";
+import KaggleLeaderboard from "@/pages/KaggleLeaderboard";
 import PuzzleDiscussion from "@/pages/PuzzleDiscussion";
 import SaturnVisualSolver from "@/pages/SaturnVisualSolver";
 import GroverSolver from "@/pages/GroverSolver";
@@ -139,6 +141,7 @@ function Router() {
         <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
         <Route path="/leaderboards" component={Leaderboards} />
+        <Route path="/kaggle-leaderboard" component={KaggleLeaderboard} />
 
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />

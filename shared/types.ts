@@ -2,6 +2,7 @@
  * Author: Cascade
  * Date: 2026-01-12
  * PURPOSE: Shared TypeScript interfaces and schemas across ARC Explainer (ARC3, Worm Arena, streaming APIs).
+ *          2026-10-05 (Claude Opus 5.5): KaggleBoard* types for the public Kaggle leaderboard page.
  * SRP/DRY check: Pass — centralized type registry only.
  */
 
@@ -1776,4 +1777,74 @@ export interface KaggleStanding {
   isStale: boolean;
   /** Hours after which `current` is considered stale. Echoed so the client need not guess. */
   staleAfterHours: number;
+}
+
+/**
+ * The full public Kaggle board, for the public /kaggle-leaderboard page (Claude Opus 5.5,
+ * 05-Oct-2026). These mirror, field for field, the files written by
+ * scripts/leaderboard_snapshot.py in the arc-3 repo, which the Mac Mini pushes to
+ * POST /api/kaggle/board every 30 minutes. Times are ISO-8601 UTC strings throughout.
+ */
+
+/**
+ * One team, as a positional tuple to keep a 4,000-row board small:
+ * [rank, teamId, name, lastSubmission, score, submissionCount, members (comma list),
+ *  rankAtStartOfDay | null, scoreAtStartOfDay | null]. "Start of day" is the end of the
+ * previous UTC day; null means the team was not on the board then.
+ */
+export type KaggleBoardRow = [
+  number, string, string, string, number, number, string, number | null, number | null,
+];
+
+export interface KaggleBoardLatest {
+  fetched: string;
+  teams: number;
+  medalRanks: { gold: number; silver: number; bronze: number };
+  ourTeamId: string;
+  rows: KaggleBoardRow[];
+}
+
+/** One saved snapshot's headline numbers. Medal lines are the scores AT those ranks. */
+export interface KaggleBoardSnap {
+  t: string;
+  teams: number;
+  top: number;
+  gold: number | null;
+  silver: number | null;
+  bronze: number | null;
+}
+
+/** A team's score/rank over time; points are [t, score, rank], added only on change. */
+export interface KaggleBoardTrail {
+  name: string;
+  pts: Array<[string, number, number]>;
+}
+
+export interface KaggleBoardHistory {
+  snaps: KaggleBoardSnap[];
+  trails: Record<string, KaggleBoardTrail>;
+}
+
+/** A score change between two snapshots. from/rankFrom are null for a newly listed team. */
+export interface KaggleBoardEvent {
+  t: string;
+  id: string;
+  name: string;
+  from: number | null;
+  to: number;
+  rankFrom: number | null;
+  rankTo: number;
+}
+
+/** Pre-history rebuilt from a third-party daily poller, before our own saves began. */
+export interface KaggleBoardBackfill extends KaggleBoardHistory {
+  events: KaggleBoardEvent[];
+}
+
+/** GET /api/kaggle/:competition/board. Null for any document never pushed. */
+export interface KaggleBoardPayload {
+  competition: string;
+  latest: KaggleBoardLatest | null;
+  history: KaggleBoardHistory | null;
+  events: KaggleBoardEvent[] | null;
 }

@@ -26,6 +26,13 @@ PURPOSE: HTTP layer for our standing on a public Kaggle competition leaderboard 
 
          The read route never calls Kaggle. See KaggleStandingRepository for why the
          fetch lives on the Mac Mini and pushes here.
+
+         FULL BOARD (Claude Opus 5.5, 2026-10-05). The public /kaggle-leaderboard page needs
+         every team plus history, not just our standing. The arc-3 repo's half-hourly
+         snapshot job pushes its documents to POST /board (same token, same closed-by-
+         default rule); GET /:competition/board and /:competition/board/backfill serve
+         them gzipped and cacheable. Each push also records our own standing, so the
+         landing page's live placing keeps updating from the same job.
 SRP/DRY check: Pass - HTTP only; every query lives in KaggleStandingRepository. Reuses
          asyncHandler + formatResponse like every other router, and express-rate-limit as
          arc3HumanPlay.ts does. No existing router covers external competition standings.
@@ -37,6 +44,11 @@ import { asyncHandler } from '../middleware/asyncHandler';
 import { formatResponse } from '../utils/responseFormatter';
 import { requireArc3AdminToken } from '../middleware/arc3AdminToken';
 import { kaggleStandingRepository } from '../repositories/KaggleStandingRepository.js';
+import {
+  kaggleBoardRepository,
+  type KaggleBoardDocumentName,
+} from '../repositories/KaggleBoardRepository.js';
+import { gzipSync } from 'zlib';
 
 const router = Router();
 
@@ -182,6 +194,193 @@ router.get(
     // the payload carries capturedAt, so a cached copy still dates itself honestly.
     res.set('Cache-Control', 'public, max-age=300');
     return res.json(formatResponse.success(standing));
+  }),
+);
+
+// ---------------------------------------------------------------------------------------
+// Full board: push from the Mac Mini, public read for /kaggle-leaderboard.
+// ---------------------------------------------------------------------------------------
+
+type JsonObject = Record<string, unknown>;
+
+function isObject(value: unknown): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Shape checks for each pushed document. Deliberately shallow: the snapshot script owns
+ * the format, and this only refuses things that would break the page outright (a wrong
+ * file in the wrong slot, a truncated board).
+ */
+const DOCUMENT_CHECKS: Record<KaggleBoardDocumentName, (doc: unknown) => string | null> = {
+  latest: (doc) => {
+    if (!isObject(doc)) return 'latest must be an object';
+    if (typeof doc.fetched !== 'string' || Number.isNaN(Date.parse(doc.fetched))) return 'latest.fetched must be an ISO timestamp';
+    if (typeof doc.ourTeamId !== 'string') return 'latest.ourTeamId must be a string';
+    const medals = doc.medalRanks;
+    if (!isObject(medals) || !['gold', 'silver', 'bronze'].every((k) => Number.isInteger(medals[k]))) {
+      return 'latest.medalRanks needs integer gold, silver and bronze';
+    }
+    // Same floor as the snapshot script: fewer rows than this means Kaggle returned a stub.
+    if (!Array.isArray(doc.rows) || doc.rows.length < 100 || !doc.rows.every(Array.isArray)) {
+      return 'latest.rows must be an array of at least 100 rows';
+    }
+    return null;
+  },
+  history: (doc) =>
+    isObject(doc) && Array.isArray(doc.snaps) && isObject(doc.trails) ? null : 'history needs snaps[] and trails{}',
+  events: (doc) => (Array.isArray(doc) ? null : 'events must be an array'),
+  backfill: (doc) =>
+    isObject(doc) && Array.isArray(doc.snaps) && isObject(doc.trails) && Array.isArray(doc.events)
+      ? null
+      : 'backfill needs snaps[], trails{} and events[]',
+};
+
+/**
+ * Gzipped copies of what GET serves, per competition. The data changes every 30 minutes
+ * and is a megabyte or more, so re-reading and re-compressing it per request is waste.
+ * Short TTL so a second server instance (or a missed invalidation) still catches up fast;
+ * a push clears the entry immediately.
+ */
+const PAYLOAD_TTL_MS = 60_000;
+interface CachedPayload {
+  loadedAt: number;
+  raw: Buffer;
+  gzip: Buffer;
+}
+const payloadCache = new Map<string, CachedPayload>();
+
+function cachePayload(key: string, text: string): CachedPayload {
+  const raw = Buffer.from(text, 'utf8');
+  const entry = { loadedAt: Date.now(), raw, gzip: gzipSync(raw) };
+  payloadCache.set(key, entry);
+  return entry;
+}
+
+function freshPayload(key: string): CachedPayload | null {
+  const hit = payloadCache.get(key);
+  return hit && Date.now() - hit.loadedAt < PAYLOAD_TTL_MS ? hit : null;
+}
+
+/** Send prebuilt JSON, gzipped when the client accepts it. No compression middleware exists. */
+function sendJson(req: Request, res: Response, payload: CachedPayload, cacheControl: string) {
+  res.set('Content-Type', 'application/json; charset=utf-8');
+  res.set('Cache-Control', cacheControl);
+  res.set('Vary', 'Accept-Encoding');
+  if (/\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''))) {
+    res.set('Content-Encoding', 'gzip');
+    return res.send(payload.gzip);
+  }
+  return res.send(payload.raw);
+}
+
+/**
+ * POST /api/kaggle/board
+ *
+ * Body: { competition, documents: { latest, history, events, backfill? } }, each document
+ * exactly as the arc-3 snapshot script wrote it. latest is required; the rest are optional
+ * so backfill (static, ~1 MB) need not ride along on every push.
+ */
+router.post(
+  '/board',
+  pushLimiter,
+  requirePushToken,
+  asyncHandler(async (req: Request, res: Response) => {
+    const body = req.body ?? {};
+    const competition = optionalString(body.competition, 255);
+    if (!competition || !COMPETITION_SLUG.test(competition)) {
+      return res.status(400).json(formatResponse.error('bad_competition', 'competition must be a Kaggle slug.'));
+    }
+    const documents = isObject(body.documents) ? body.documents : {};
+    if (!('latest' in documents)) {
+      return res.status(400).json(formatResponse.error('missing_latest', 'documents.latest is required.'));
+    }
+
+    const toSave: Array<{ name: KaggleBoardDocumentName; body: string }> = [];
+    for (const name of Object.keys(DOCUMENT_CHECKS) as KaggleBoardDocumentName[]) {
+      if (!(name in documents)) continue;
+      const problem = DOCUMENT_CHECKS[name](documents[name]);
+      if (problem) return res.status(400).json(formatResponse.error('bad_document', problem));
+      toSave.push({ name, body: JSON.stringify(documents[name]) });
+    }
+
+    const latest = documents.latest as JsonObject;
+    const capturedAt = new Date(latest.fetched as string).toISOString();
+    const stored = await kaggleBoardRepository.saveDocuments(competition, capturedAt, toSave);
+    for (const key of [competition, `${competition}:backfill`]) payloadCache.delete(key);
+
+    // Our own row feeds the landing page's live placing too. Non-fatal: the board is this
+    // route's job, and a standing hiccup must not make the pusher think the board failed.
+    // Row layout: [rank, teamId, name, lastSubmission, score, submissions, members, ...].
+    try {
+      const rows = latest.rows as unknown[][];
+      const ours = rows.find((r) => r[1] === latest.ourTeamId);
+      const rank = ours ? optionalInt(ours[0]) : null;
+      if (ours && rank !== null && rank >= 1) {
+        await kaggleStandingRepository.record({
+          competition,
+          capturedAt,
+          rank,
+          score: optionalNumber(ours[4]),
+          teamId: String(latest.ourTeamId),
+          teamName: optionalString(ours[2], 255),
+          teamCount: optionalInt(latest.teams),
+          leaderScore: optionalNumber(rows[0]?.[4]),
+          submissions: optionalInt(ours[5]),
+          topTeams: null,
+        });
+      }
+    } catch (error) {
+      console.warn('[kaggle-board] standing record failed:', error instanceof Error ? error.message : error);
+    }
+
+    return res.json(formatResponse.success({ competition, capturedAt, stored, documents: toSave.map((d) => d.name) }));
+  }),
+);
+
+/**
+ * GET /api/kaggle/:competition/board  (public)
+ *
+ * { competition, latest, history, events } with null for anything never pushed. One
+ * request for everything that changes; backfill is separate because it never changes and
+ * can be cached for a day.
+ */
+router.get(
+  '/:competition/board',
+  asyncHandler(async (req: Request, res: Response) => {
+    const competition = String(req.params.competition ?? '');
+    if (!COMPETITION_SLUG.test(competition)) {
+      return res.status(400).json(formatResponse.error('bad_competition', 'competition must be a Kaggle slug.'));
+    }
+    let payload = freshPayload(competition);
+    if (!payload) {
+      const docs = await kaggleBoardRepository.getDocuments(competition, ['latest', 'history', 'events']);
+      const text = (name: string) => docs.find((d) => d.name === name)?.body ?? 'null';
+      payload = cachePayload(
+        competition,
+        `{"competition":${JSON.stringify(competition)},"latest":${text('latest')},"history":${text('history')},"events":${text('events')}}`,
+      );
+    }
+    // Five minutes, as for /standing: the board moves every 30, and latest.fetched dates it.
+    return sendJson(req, res, payload, 'public, max-age=300');
+  }),
+);
+
+/** GET /api/kaggle/:competition/board/backfill  (public) -- the static pre-history, or null. */
+router.get(
+  '/:competition/board/backfill',
+  asyncHandler(async (req: Request, res: Response) => {
+    const competition = String(req.params.competition ?? '');
+    if (!COMPETITION_SLUG.test(competition)) {
+      return res.status(400).json(formatResponse.error('bad_competition', 'competition must be a Kaggle slug.'));
+    }
+    const key = `${competition}:backfill`;
+    let payload = freshPayload(key);
+    if (!payload) {
+      const [doc] = await kaggleBoardRepository.getDocuments(competition, ['backfill']);
+      payload = cachePayload(key, doc?.body ?? 'null');
+    }
+    return sendJson(req, res, payload, 'public, max-age=86400');
   }),
 );
 

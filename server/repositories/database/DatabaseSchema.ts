@@ -6,6 +6,7 @@ PURPOSE: Database schema initialization and migration utilities for ARC Explaine
          older installs can be upgraded without manual SQL steps.
          Integration points: called from server startup using the configured pg Pool.
 SRP/DRY check: Pass - verified community-games schema changes are additive and keep existing tables intact.
+2026-10-05 (Claude Opus 5.5): added kaggle_board_documents for the public /kaggle-leaderboard page.
 */
 
 import { Pool, PoolClient } from 'pg';
@@ -42,6 +43,7 @@ export class DatabaseSchema {
       await this.createReArcSubmissionsTable(client);
       await this.createVisitorStatsTable(client);
       await this.createKaggleLeaderboardSnapshotsTable(client);
+      await this.createKaggleBoardDocumentsTable(client);
       // community_games / community_game_sessions removed 2026-08-30: the catalog is now
       // mirrored from arc3.sonpham.net (the source of truth) rather than stored here, and
       // the submission pipeline that wrote these tables is gone. Anonymous human-play
@@ -580,6 +582,29 @@ export class DatabaseSchema {
    *
    * top_teams is JSONB because it is displayed, never queried.
    */
+  /**
+   * The full public Kaggle board, as the Mac Mini's half-hourly snapshot job last saw it.
+   * Added 05-Oct-2026 (Claude Opus 5.5) for the public /kaggle-leaderboard page.
+   *
+   * One row per (competition, document): latest, history, events, backfill. The snapshot
+   * script on the Mac Mini already accumulates history and events itself, so this table
+   * only ever holds the NEWEST copy of each document and is overwritten on every push.
+   * body is TEXT, not JSONB: it is served verbatim and never queried, and JSONB would cost
+   * a parse on write and a re-serialise on every read of a megabyte of data.
+   */
+  private static async createKaggleBoardDocumentsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS kaggle_board_documents (
+        competition VARCHAR(255) NOT NULL,
+        name VARCHAR(32) NOT NULL,
+        captured_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        body TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (competition, name)
+      )
+    `);
+  }
+
   private static async createKaggleLeaderboardSnapshotsTable(client: PoolClient): Promise<void> {
     await client.query(`
       CREATE TABLE IF NOT EXISTS kaggle_leaderboard_snapshots (
