@@ -15,7 +15,7 @@ and never land on the research site.
 ## Decisions
 - **Data path.** The site cannot read Kaggle itself (the CLI login expires). The Mac Mini's
   existing half-hourly job (`scripts/leaderboard_publish.sh` in arc-3, run from
-  `~/.cache/arc3-leaderboard-bot`) keeps its state where it is and now also runs
+  `~/.cache/arc3-leaderboard-bot`) keeps its state in `~/.cache/arc3-leaderboard-data` and runs
   `scripts/leaderboard_push_explainer.py`, which POSTs latest/history/events/backfill to
   `/api/kaggle/board` with the existing ARC3 admin token from the keychain. Non-fatal.
 - **Storage.** `kaggle_board_documents`, one row per document, overwritten on each push.
@@ -30,5 +30,7 @@ and never land on the research site.
 - [x] Server table, repository, push and read routes
 - [x] Page, sections, route, nav link
 - [x] Push step in the arc-3 job
-- [ ] Later, Boss's call: point arc-3's Leaderboard tab here and stop arc-3 committing
-      snapshots to git (the bloat noted in the handoff).
+- [x] Cut-over (Boss, 05-Oct): arc-3's Leaderboard tab on every page links here and its old
+      leaderboard.html forwards here; the old page code and data files are gone from arc-3.
+      The job keeps its state in ~/.cache/arc3-leaderboard-data (LEADERBOARD_DATA_DIR) and
+      no longer commits to arc-3. The arc-3 Sprints tile reads /api/kaggle/.../board.
