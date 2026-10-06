@@ -28,3 +28,7 @@ Both repositories deploy from production `main`. Destinations: `https://arc.mark
 ## Follow-up: compact chart
 
 Boss requested a chart about games, not the people who played them. Removed the 25 record-holder disclosures and their names, tightened the rows, and reduced the explanatory copy. Both pages retain the same counts and differences. Additional verification was skipped at the user’s request.
+
+## Follow-up: human average
+
+Added the arithmetic mean of score 100 / WIN action counts in each saved top-10 human leaderboard. Display uses whole-action half-up rounding; bars use the unrounded mean and share a scale with the best counts. Scope is explicitly top-10 winning entries, not all humans. No further verification pass requested.

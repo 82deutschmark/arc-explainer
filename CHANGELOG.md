@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.118.3  Oct 5, 2026
+
+- **Human average beside each game's best** (Author: GPT-6 / Codex). Adds a Human avg (top 10) column and paired bars to `/human-records.html` on both sites. Computes the arithmetic mean from score 100 / WIN entries in the existing official snapshot, rounded half-up to whole actions for display. Clearly labels this as the average of published top-10 wins, not all human players. Keeps ranking by best and the existing difference column; no player names.
+
 ### Version 9.118.2  Oct 5, 2026
 
 - **Compact game action chart** (Author: GPT-6 / Codex). Removes all record-holder names and expandable player rows from `/human-records.html`, tightens row spacing, and reduces the introduction and footer to the context needed to compare games. The 25 action counts and differences are unchanged. Published on both sites at the user's request; no additional verification pass, as requested.
