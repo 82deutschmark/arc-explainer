@@ -32,3 +32,7 @@ Boss requested a chart about games, not the people who played them. Removed the 
 ## Follow-up: human average
 
 Added the arithmetic mean of score 100 / WIN action counts in each saved top-10 human leaderboard. Display uses whole-action half-up rounding; bars use the unrounded mean and share a scale with the best counts. Scope is explicitly top-10 winning entries, not all humans. No further verification pass requested.
+
+## Comparison correction
+
+The useful gap is within each game: displayed top-10 average minus best. Removed the cross-game r11l comparison and named the top-10 scope directly in the column.

@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.118.4  Oct 5, 2026
+
+- **Compare each game with itself** (Author: GPT-6 / Codex). Replaces the difference from r11l with top-10 average minus best for the same game. Labels the average explicitly in the column and legend, avoiding a claim about typical performance across all humans. Gap uses the displayed rounded average so the displayed subtraction agrees.
+
 ### Version 9.118.3  Oct 5, 2026
 
 - **Human average beside each game's best** (Author: GPT-6 / Codex). Adds a Human avg (top 10) column and paired bars to `/human-records.html` on both sites. Computes the arithmetic mean from score 100 / WIN entries in the existing official snapshot, rounded half-up to whole actions for display. Clearly labels this as the average of published top-10 wins, not all human players. Keeps ranking by best and the existing difference column; no player names.
