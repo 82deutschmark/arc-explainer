@@ -40,3 +40,15 @@ The useful gap is within each game: displayed top-10 average minus best. Removed
 ## Follow-up: AI comparison
 
 Fetched the task pages' public POST `/api/models` source for all 25 games, using the observed request schema (`game_id`, empty `models`, `runners`, `configs`). Stores all returned runs in the adjacent JSON snapshot. Displays the best verified published score per model/game, with all metrics taken from that run and its replay; ties use fewer actions then session ID. Model configurations may vary, so these are best published results rather than one controlled configuration across all games. Six named model columns show initially and all 16 can be selected. Human action counts remain alongside the AI columns. Scores are action efficiency; completed levels and WIN are separate. No deployment polling or post-push verification, as requested.
+
+## Iteration: useful comparisons
+
+The page now uses shared `static/human-ai-comparison.css` and `.js` assets on both sites, reading the existing dated source snapshots.
+
+- Separate highest-score and fewest-winning-actions modes. A partial or failed run can never enter the winning-actions comparison.
+- Sort any human/model column using unrounded values. Show the additional AI winning actions relative to the human best for that same game.
+- Model-specific configuration selectors support fixed settings across games, while Best available retains the published-record comparison.
+- Filter by human action budget, game ID, and win coverage among selected models. Missing configurations do not become evidence of failure. Header win counts cover all available games for that setting.
+- Inspect every published configuration in a dialog, with exact score, completion, actions, date, game version and replay. Highlight the run supplying the cell; explicitly flag cases where a higher-scoring partial run hides another winning run.
+- Preserve the comparison in URL parameters for reopening/sharing. Keep model names and game IDs visible while scrolling, and remove the need for hover to discover configurations.
+- No deployment polling or post-push verification. This is the first requested improvement pass, ready for further user feedback.

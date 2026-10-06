@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.118.6  Oct 5, 2026
+
+- **Explore where models struggle** (Author: GPT-6 / Codex). Reworks the human/AI comparison into a sortable, filterable view with two explicit metrics: highest published score and fewest actions in a full-game win. Adds human action budgets, game search, selected-model win filters, fixed configuration selection per model, and win counts across the full game set. Clicking any result opens all published configurations with exact scores, completion, actions, versions and replay links; the cell's chosen run is highlighted. Flags a win in another configuration when the highest-scoring run is partial (present for Gemini on m0r0). Winning action gaps use the human best for the same game; failures and missing results never count as cheap wins. Settings are preserved in the URL. Shared static CSS/JS on both sites reads the existing dated snapshots. No deployment polling or post-push verification, per user preference.
+
 ### Version 9.118.5  Oct 5, 2026
 
 - **Human and AI comparison across all 25 games** (Author: GPT-6 / Codex). Expands `/human-records.html` into a comparison table: human best, top-10 mean and their gap beside 16 published AI models. Six model columns appear initially; readers can select any combination or show all. Each AI cell selects one highest-scoring verified published run for that model/game, with fewer actions then stable session ID breaking ties. Score, actual completion, action count and replay all come from that same run; configuration and exact score are in the tooltip. Explicitly distinguishes action-efficiency score from completion and notes that configurations may vary. All 25 official game result sets are saved in `static/ai-game-results-2026-10-05.json` on both sites. User requested pushing without deployment polling or post-push verification.
