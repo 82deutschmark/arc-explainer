@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.118.1  Oct 5, 2026
+
+- **Best known human action counts** (Author: GPT-6 / Codex). Publishes `/human-records.html`, linked from `/arc3/games`, with all 25 public games ranked by their lowest published human full-game winning action count, differences from the shortest game, joint record holders, source links and downloadable upstream evidence. Every number was independently re-fetched from ARC Prize's human API; differences are calculated from 57 and the totals sum to 5,502. The dated snapshot distinguishes published records from proven theoretical optima and has an identical copy on arc3.sonpham.net. No baseline fallback or per-level inference. Plan: `docs/2026-10-05-human-best-actions-plan.md`.
+
 ### Version 9.118.0  Oct 5, 2026
 
 - **ARC-3 landing page now leads with the leaderboard** (Author: Claude Opus 5.5). Boss: we're not leaning on the synthetic games as much; make the landing page about the leaderboard drama and link the leaderboard. The hero now has a "Full leaderboard" button and a live "Where we stand" card (rank, score, week's change, distance to the next medal line, best-ever placing, all dated). A new "This week on the leaderboard" section shows headline facts (the leader's reign and margin, how far the gold line moved, new teams), the medal-race chart, and story lists computed from the half-hourly board save: rocketing up, sinking (with how long a team has been quiet), grinding up, biggest single jumps, new faces in the top 100, and on the bubble below gold. Nothing is typed in by hand. The same storylines are also on /kaggle-leaderboard. The harness section stays; the practice games shrink to one small section; the "play this one" ask, hero tile grid and coverage counts are gone. KaggleStanding is replaced by OurStandingCard, which keeps its date and staleness rules. Files: `client/src/pages/arc3-community/SyntheticLanding.tsx`, `client/src/components/arc3/OurStandingCard.tsx` (new), `client/src/components/arc3/KaggleStanding.tsx` (removed), `client/src/components/kaggleLeaderboard/{storyData.ts,Storylines.tsx}` (new), `client/src/pages/KaggleLeaderboard.tsx`.

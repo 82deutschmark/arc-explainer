@@ -1,0 +1,2848 @@
+{
+  "retrievedAt": "2026-10-06T01:42:54.817539+00:00",
+  "source": "https://arcprize.org/arc-agi/3/leaderboard",
+  "scope": "Best published 100% WIN rows on the human leaderboards, ai=false",
+  "games": [
+    {
+      "game": "r11l",
+      "actions": 57,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-10T18:17:42.866354Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 57,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-20T06:27:43.912179Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 57,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-10T18:17:42.866354Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 57,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-20T06:27:43.912179Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 57,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-18T14:49:40.641367Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 64,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-07T19:54:18.7559Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 67,
+          "resets": 0
+        },
+        {
+          "user_name": "opfromthestart",
+          "published_at": "2026-05-03T19:11:06.775009Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 94,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-03T01:30:54.599167Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 96,
+          "resets": 0
+        },
+        {
+          "user_name": "sleepy_swartz",
+          "published_at": "2026-05-24T20:26:17.401394Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 97,
+          "resets": 0
+        },
+        {
+          "user_name": "Travis R. Meyer",
+          "published_at": "2026-05-24T22:42:58.178926Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 99,
+          "resets": 0
+        },
+        {
+          "user_name": "Alex Chuang",
+          "published_at": "2026-08-16T20:42:51.445576Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 99,
+          "resets": 0
+        },
+        {
+          "user_name": "KraheFrosch",
+          "published_at": "2026-05-26T18:54:29.604983Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 103,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=r11l"
+    },
+    {
+      "game": "su15",
+      "actions": 61,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-09-06T00:42:15.570261Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 61,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-09-11T08:20:01.737191Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 61,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-09-06T00:42:15.570261Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 61,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-09-11T08:20:01.737191Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 61,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-07T19:54:18.7559Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 81,
+          "resets": 0
+        },
+        {
+          "user_name": "fervent_grothendieck",
+          "published_at": "2026-07-25T22:21:13.452329Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 121,
+          "resets": 0
+        },
+        {
+          "user_name": "xenodochial_lalande",
+          "published_at": "2026-07-24T19:54:37.335091Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 134,
+          "resets": 0
+        },
+        {
+          "user_name": "David Spies",
+          "published_at": "2026-05-15T12:54:43.129666Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 147,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-22T08:41:21.888589Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 150,
+          "resets": 3
+        },
+        {
+          "user_name": "beautiful_dijkstra",
+          "published_at": "2026-05-19T04:41:19.516475Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 154,
+          "resets": 1
+        },
+        {
+          "user_name": "Mino",
+          "published_at": "2026-05-11T17:57:22.440613Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 156,
+          "resets": 1
+        },
+        {
+          "user_name": "wonderful_meitner",
+          "published_at": "2026-05-10T16:27:47.339447Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 167,
+          "resets": 2
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=su15"
+    },
+    {
+      "game": "cd82",
+      "actions": 69,
+      "leaders": [
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-16T13:26:16.263424Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-19T11:19:56.707072Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "RyanX-Atlas-AGI-V2",
+          "published_at": "2026-04-25T05:32:58.608602Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-14T11:22:27.753691Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:35:35.910865Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-09T09:52:38.480929Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "sweiss93",
+          "published_at": "2026-08-03T20:31:16.474979Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "Soumo",
+          "published_at": "2026-08-24T15:26:19.24369Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-16T13:26:16.263424Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-19T11:19:56.707072Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "RyanX-Atlas-AGI-V2",
+          "published_at": "2026-04-25T05:32:58.608602Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-14T11:22:27.753691Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:35:35.910865Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-09T09:52:38.480929Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "sweiss93",
+          "published_at": "2026-08-03T20:31:16.474979Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "Soumo",
+          "published_at": "2026-08-24T15:26:19.24369Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 69,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-25T19:57:38.407991Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 70,
+          "resets": 0
+        },
+        {
+          "user_name": "mathmonkeyliu",
+          "published_at": "2026-05-24T05:32:59.256825Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 71,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=cd82"
+    },
+    {
+      "game": "ft09",
+      "actions": 75,
+      "leaders": [
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-15T03:13:45.903231Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-18T04:58:55.501515Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T08:56:40.49799Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "Soumo",
+          "published_at": "2026-05-15T04:28:04.205372Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "mathmonkeyliu",
+          "published_at": "2026-05-21T03:07:25.34725Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:39:38.358882Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-15T03:13:45.903231Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-18T04:58:55.501515Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T08:56:40.49799Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "Soumo",
+          "published_at": "2026-05-15T04:28:04.205372Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "mathmonkeyliu",
+          "published_at": "2026-05-21T03:07:25.34725Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:39:38.358882Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 75,
+          "resets": 0
+        },
+        {
+          "user_name": "intelligent_elgamal",
+          "published_at": "2026-08-09T05:57:46.791217Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 77,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-15T00:22:12.978159Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 78,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-18T14:41:11.804346Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 80,
+          "resets": 0
+        },
+        {
+          "user_name": "carasuma",
+          "published_at": "2026-04-24T22:16:08.655104Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 81,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=ft09"
+    },
+    {
+      "game": "lp85",
+      "actions": 79,
+      "leaders": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:04:35.095321Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 79,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:50:13.340755Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 79,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:04:35.095321Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 79,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:50:13.340755Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 79,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-06-04T13:29:47.398675Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 93,
+          "resets": 0
+        },
+        {
+          "user_name": "David Spies",
+          "published_at": "2026-05-14T16:30:44.492014Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 108,
+          "resets": 0
+        },
+        {
+          "user_name": "loving_perlman",
+          "published_at": "2026-05-14T06:16:40.677287Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 139,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-15T08:45:37.90045Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 142,
+          "resets": 0
+        },
+        {
+          "user_name": "Takao Morita",
+          "published_at": "2026-07-15T15:01:31.599671Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 144,
+          "resets": 0
+        },
+        {
+          "user_name": "tiago89",
+          "published_at": "2026-07-31T06:10:19.110435Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 164,
+          "resets": 0
+        },
+        {
+          "user_name": "Soumo",
+          "published_at": "2026-05-15T14:02:04.923393Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 179,
+          "resets": 0
+        },
+        {
+          "user_name": "oasis_in_the_desert_of_space",
+          "published_at": "2026-04-14T20:10:41.125439Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 187,
+          "resets": 1
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=lp85"
+    },
+    {
+      "game": "tn36",
+      "actions": 85,
+      "leaders": [
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-07T19:54:18.7559Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 85,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-07T20:20:47.710002Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 85,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-16T19:48:03.659315Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 85,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-07T19:54:18.7559Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 85,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-07T20:20:47.710002Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 85,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-16T19:48:03.659315Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 85,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-03T23:25:05.448747Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 103,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-20T09:52:52.296879Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 105,
+          "resets": 0
+        },
+        {
+          "user_name": "sleepy_brattain",
+          "published_at": "2026-06-28T23:24:40.504327Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 118,
+          "resets": 0
+        },
+        {
+          "user_name": "unruffled_emi",
+          "published_at": "2026-08-13T21:25:40.034689Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 158,
+          "resets": 0
+        },
+        {
+          "user_name": "Mithil Vakde",
+          "published_at": "2026-07-13T13:44:51.508421Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 164,
+          "resets": 0
+        },
+        {
+          "user_name": "awa",
+          "published_at": "2026-09-05T02:21:52.353143Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 171,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-22T09:06:16.343033Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=tn36"
+    },
+    {
+      "game": "sp80",
+      "actions": 86,
+      "leaders": [
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-07T15:36:05.370192Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 86,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-07T17:42:54.725122Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 86,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-18T11:28:17.293957Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 86,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-07T15:36:05.370192Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 86,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-07T17:42:54.725122Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 86,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-18T11:28:17.293957Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 86,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-19T13:08:29.023771Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 103,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-22T08:02:38.881262Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 119,
+          "resets": 2
+        },
+        {
+          "user_name": "Yarflam",
+          "published_at": "2026-04-16T17:44:50.466763Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 136,
+          "resets": 0
+        },
+        {
+          "user_name": "jovial_lovelace",
+          "published_at": "2026-07-04T04:09:14.575316Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 141,
+          "resets": 0
+        },
+        {
+          "user_name": "sweiss93",
+          "published_at": "2026-08-04T11:32:04.466681Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 146,
+          "resets": 0
+        },
+        {
+          "user_name": "brave_hodgkin",
+          "published_at": "2026-09-24T05:16:02.420132Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 172,
+          "resets": 0
+        },
+        {
+          "user_name": "Riaki9908",
+          "published_at": "2026-05-26T20:43:02.958427Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 176,
+          "resets": 1
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=sp80"
+    },
+    {
+      "game": "tr87",
+      "actions": 118,
+      "leaders": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-14T11:51:07.998856Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 118,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T10:04:33.776442Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 118,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-14T11:51:07.998856Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 118,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T10:04:33.776442Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 118,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-22T11:49:34.873088Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 119,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-03T04:44:40.117818Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 143,
+          "resets": 0
+        },
+        {
+          "user_name": "Riaki9908",
+          "published_at": "2026-06-06T20:46:37.184245Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 188,
+          "resets": 0
+        },
+        {
+          "user_name": "Yarflam",
+          "published_at": "2026-04-16T18:18:07.038896Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 196,
+          "resets": 0
+        },
+        {
+          "user_name": "Mark",
+          "published_at": "2026-09-17T22:58:16.558204Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 211,
+          "resets": 0
+        },
+        {
+          "user_name": "Mino",
+          "published_at": "2026-05-11T17:57:22.440613Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 246,
+          "resets": 0
+        },
+        {
+          "user_name": "Thanh",
+          "published_at": "2026-09-11T12:54:24.190478Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 259,
+          "resets": 1
+        },
+        {
+          "user_name": "pssup",
+          "published_at": "2026-04-21T12:28:19.657372Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 260,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=tr87"
+    },
+    {
+      "game": "sc25",
+      "actions": 121,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T10:00:19.2117Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 121,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-05T08:01:13.568813Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 121,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-07T15:36:05.370192Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 121,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T10:00:19.2117Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 121,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-05T08:01:13.568813Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 121,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-07T15:36:05.370192Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 121,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-19T07:01:39.998517Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 123,
+          "resets": 0
+        },
+        {
+          "user_name": "Mega1001",
+          "published_at": "2026-07-15T13:49:42.830941Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 123,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-22T06:40:19.95963Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 131,
+          "resets": 0
+        },
+        {
+          "user_name": "laughing_archimedes",
+          "published_at": "2026-08-06T01:59:36.736874Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 133,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-03T18:09:59.817338Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 135,
+          "resets": 0
+        },
+        {
+          "user_name": "Marcus Reid",
+          "published_at": "2026-04-27T07:17:40.961374Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 148,
+          "resets": 0
+        },
+        {
+          "user_name": "Mithil Vakde",
+          "published_at": "2026-07-13T13:17:52.676182Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 158,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=sc25"
+    },
+    {
+      "game": "sb26",
+      "actions": 124,
+      "leaders": [
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-19T06:43:56.836827Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:13:27.230737Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "opfromthestart",
+          "published_at": "2026-05-03T19:11:06.775009Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:59:28.129141Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "wisdom",
+          "published_at": "2026-06-03T07:08:47.041018Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-19T06:43:56.836827Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:13:27.230737Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "opfromthestart",
+          "published_at": "2026-05-03T19:11:06.775009Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:59:28.129141Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "wisdom",
+          "published_at": "2026-06-03T07:08:47.041018Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 124,
+          "resets": 0
+        },
+        {
+          "user_name": "Micrograx",
+          "published_at": "2026-04-16T04:49:00.414359Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 125,
+          "resets": 0
+        },
+        {
+          "user_name": "David Spies",
+          "published_at": "2026-05-15T15:21:50.360822Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 126,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-03T02:27:09.720011Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 126,
+          "resets": 0
+        },
+        {
+          "user_name": "Aviator",
+          "published_at": "2026-09-09T09:49:50.540465Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 126,
+          "resets": 0
+        },
+        {
+          "user_name": "nice_heyrovsky",
+          "published_at": "2026-05-11T09:17:28.694814Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 129,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=sb26"
+    },
+    {
+      "game": "vc33",
+      "actions": 167,
+      "leaders": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:16:46.12302Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 167,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T10:07:27.895171Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 167,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:16:46.12302Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 167,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T10:07:27.895171Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 167,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-22T13:32:14.942185Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 169,
+          "resets": 0
+        },
+        {
+          "user_name": "Riaki9908",
+          "published_at": "2026-05-19T09:02:34.630989Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 177,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-19T12:10:26.039777Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 184,
+          "resets": 0
+        },
+        {
+          "user_name": "sleepy_brattain",
+          "published_at": "2026-06-07T15:00:43.312427Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 190,
+          "resets": 0
+        },
+        {
+          "user_name": "intelligent_elgamal",
+          "published_at": "2026-08-09T05:25:14.649032Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 193,
+          "resets": 0
+        },
+        {
+          "user_name": "Yarflam",
+          "published_at": "2026-04-15T21:01:48.099158Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 201,
+          "resets": 0
+        },
+        {
+          "user_name": "Mithil Vakde",
+          "published_at": "2026-07-13T14:22:56.100465Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 202,
+          "resets": 0
+        },
+        {
+          "user_name": "Mino",
+          "published_at": "2026-05-11T17:57:22.440613Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 207,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=vc33"
+    },
+    {
+      "game": "cn04",
+      "actions": 173,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:36:46.041661Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-06-04T12:16:53.436289Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-06T06:39:53.269188Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-09T09:52:38.480929Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:36:46.041661Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-06-04T12:16:53.436289Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-06T06:39:53.269188Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-09T09:52:38.480929Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 173,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-23T04:16:58.56229Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 175,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-25T20:25:09.403501Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 184,
+          "resets": 0
+        },
+        {
+          "user_name": "Riaki9908",
+          "published_at": "2026-06-06T19:57:13.623015Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 189,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-05T01:15:33.640489Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 192,
+          "resets": 0
+        },
+        {
+          "user_name": "David Courtis",
+          "published_at": "2026-06-21T00:37:32.157788Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 231,
+          "resets": 0
+        },
+        {
+          "user_name": "pssup",
+          "published_at": "2026-04-23T06:01:51.234192Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 239,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=cn04"
+    },
+    {
+      "game": "m0r0",
+      "actions": 179,
+      "leaders": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-04T03:22:27.263176Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 179,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:53:10.620458Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 179,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-04T03:22:27.263176Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 179,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:53:10.620458Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 179,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-18T12:50:25.677954Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 195,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-19T13:35:12.105669Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 215,
+          "resets": 0
+        },
+        {
+          "user_name": "Alex Chuang",
+          "published_at": "2026-08-16T20:15:57.038903Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 234,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-14T19:25:04.424764Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 240,
+          "resets": 0
+        },
+        {
+          "user_name": "opfromthestart",
+          "published_at": "2026-05-03T19:11:06.775009Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 261,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-22T04:38:53.200964Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 285,
+          "resets": 0
+        },
+        {
+          "user_name": "trusting_maxwell",
+          "published_at": "2026-07-16T20:10:17.212296Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 302,
+          "resets": 0
+        },
+        {
+          "user_name": "Daniel Solis",
+          "published_at": "2026-08-02T16:47:38.330206Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 338,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=m0r0"
+    },
+    {
+      "game": "tu93",
+      "actions": 185,
+      "leaders": [
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-22T12:33:10.747043Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:16:26.541947Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T10:06:22.981336Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-13T04:26:30.359336Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "sweiss93",
+          "published_at": "2026-08-03T22:16:52.160301Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-22T12:33:10.747043Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:16:26.541947Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T10:06:22.981336Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-13T04:26:30.359336Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "sweiss93",
+          "published_at": "2026-08-03T22:16:52.160301Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 185,
+          "resets": 0
+        },
+        {
+          "user_name": "awa",
+          "published_at": "2026-09-05T09:15:38.65534Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 192,
+          "resets": 1
+        },
+        {
+          "user_name": "Riaki9908",
+          "published_at": "2026-05-19T09:16:13.371099Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 193,
+          "resets": 1
+        },
+        {
+          "user_name": "N C",
+          "published_at": "2026-06-23T01:15:34.659894Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 193,
+          "resets": 0
+        },
+        {
+          "user_name": "gkamradt",
+          "published_at": "2026-06-16T21:32:06.339689Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 203,
+          "resets": 1
+        },
+        {
+          "user_name": "Mithil Vakde",
+          "published_at": "2026-07-13T14:13:14.683812Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 212,
+          "resets": 3
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=tu93"
+    },
+    {
+      "game": "sk48",
+      "actions": 213,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-10T10:17:45.777468Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 213,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-18T15:31:34.179195Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 213,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-10T10:17:45.777468Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 213,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-18T15:31:34.179195Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 213,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-08T01:06:03.510603Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 214,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-19T09:29:44.79646Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 261,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-05T01:15:33.640489Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 375,
+          "resets": 0
+        },
+        {
+          "user_name": "Bennet Ble\u00dfmann",
+          "published_at": "2026-07-14T21:10:42.387135Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 472,
+          "resets": 0
+        },
+        {
+          "user_name": "Mithil Vakde",
+          "published_at": "2026-07-11T22:38:29.817184Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 487,
+          "resets": 2
+        },
+        {
+          "user_name": "condescending_sinoussi",
+          "published_at": "2026-08-26T00:53:57.414584Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 491,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-22T07:26:43.757559Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 523,
+          "resets": 1
+        },
+        {
+          "user_name": "blank_it",
+          "published_at": "2026-06-24T17:01:53.188271Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 528,
+          "resets": 2
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=sk48"
+    },
+    {
+      "game": "s5i5",
+      "actions": 240,
+      "leaders": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-14T15:32:11.651534Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 240,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:58:13.342828Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 240,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-14T15:32:11.651534Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 240,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:58:13.342828Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 240,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-18T18:12:49.466632Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 244,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-04T16:51:35.518211Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 278,
+          "resets": 0
+        },
+        {
+          "user_name": "opfromthestart",
+          "published_at": "2026-05-03T19:11:06.775009Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 288,
+          "resets": 0
+        },
+        {
+          "user_name": "Devansh Rajpoot",
+          "published_at": "2026-08-14T08:41:55.818882Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 294,
+          "resets": 0
+        },
+        {
+          "user_name": "Ironat",
+          "published_at": "2026-05-01T21:45:24.047621Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 301,
+          "resets": 1
+        },
+        {
+          "user_name": "carasuma",
+          "published_at": "2026-04-24T22:16:08.655104Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 305,
+          "resets": 1
+        },
+        {
+          "user_name": "sleepy_swartz",
+          "published_at": "2026-05-25T13:20:06.848222Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 319,
+          "resets": 0
+        },
+        {
+          "user_name": "KycoK_Ov4arku",
+          "published_at": "2026-04-15T13:21:01.634829Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 323,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=s5i5"
+    },
+    {
+      "game": "ka59",
+      "actions": 242,
+      "leaders": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-15T20:50:39.86587Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 242,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-19T16:26:54.686289Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 242,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-15T20:50:39.86587Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 242,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-19T16:26:54.686289Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 242,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-08T04:09:13.179243Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 248,
+          "resets": 0
+        },
+        {
+          "user_name": "mathmonkeyliu",
+          "published_at": "2026-05-21T02:31:09.322097Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 262,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-05-06T18:05:07.617344Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 263,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-05-07T01:54:16.190574Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 266,
+          "resets": 0
+        },
+        {
+          "user_name": "Soumo",
+          "published_at": "2026-05-15T06:00:16.847586Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 284,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-04T15:52:10.135735Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 291,
+          "resets": 0
+        },
+        {
+          "user_name": "friendly_heisenberg",
+          "published_at": "2026-04-21T02:35:53.152341Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 296,
+          "resets": 0
+        },
+        {
+          "user_name": "popsecret",
+          "published_at": "2026-06-05T09:43:36.411125Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 299,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=ka59"
+    },
+    {
+      "game": "ar25",
+      "actions": 253,
+      "leaders": [
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-14T21:47:35.988052Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-16T09:44:13.843468Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T08:55:35.436325Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "intelligent_hoover",
+          "published_at": "2026-05-24T04:57:45.786056Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:31:32.757577Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-09T09:48:38.45224Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "sweiss93",
+          "published_at": "2026-08-03T20:08:24.365264Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-14T21:47:35.988052Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-16T09:44:13.843468Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T08:55:35.436325Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "intelligent_hoover",
+          "published_at": "2026-05-24T04:57:45.786056Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:31:32.757577Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-09T09:48:38.45224Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "sweiss93",
+          "published_at": "2026-08-03T20:08:24.365264Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 253,
+          "resets": 0
+        },
+        {
+          "user_name": "mathmonkeyliu",
+          "published_at": "2026-05-20T11:08:55.939296Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 255,
+          "resets": 0
+        },
+        {
+          "user_name": "Riaki9908",
+          "published_at": "2026-05-19T09:05:54.307748Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 265,
+          "resets": 0
+        },
+        {
+          "user_name": "carasuma",
+          "published_at": "2026-04-22T00:12:51.464627Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 268,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=ar25"
+    },
+    {
+      "game": "g50t",
+      "actions": 274,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-07-02T13:42:49.411851Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 274,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-07-07T06:09:08.045009Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 274,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-07-02T13:42:49.411851Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 274,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-07-07T06:09:08.045009Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 274,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-18T05:11:05.905115Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 285,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-25T06:58:07.475175Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 285,
+          "resets": 0
+        },
+        {
+          "user_name": "mathmonkeyliu",
+          "published_at": "2026-05-21T03:24:48.98949Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 287,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-19T12:40:26.959384Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 288,
+          "resets": 0
+        },
+        {
+          "user_name": "Riaki9908",
+          "published_at": "2026-06-06T18:53:25.705195Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 291,
+          "resets": 1
+        },
+        {
+          "user_name": "Soumo",
+          "published_at": "2026-05-15T05:14:00.121995Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 300,
+          "resets": 0
+        },
+        {
+          "user_name": "Yarflam",
+          "published_at": "2026-04-15T18:34:25.529122Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 309,
+          "resets": 0
+        },
+        {
+          "user_name": "Matthew",
+          "published_at": "2026-07-12T19:42:18.119306Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 323,
+          "resets": 2
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=g50t"
+    },
+    {
+      "game": "ls20",
+      "actions": 309,
+      "leaders": [
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-19T11:45:02.393425Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 309,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:11:07.644622Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 309,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:52:09.350006Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 309,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-19T11:45:02.393425Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 309,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-05-03T09:11:07.644622Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 309,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:52:09.350006Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 309,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-16T05:20:08.270877Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 313,
+          "resets": 0
+        },
+        {
+          "user_name": "Lazzerwalf",
+          "published_at": "2026-05-21T08:05:55.677083Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 317,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-18T22:14:49.094992Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 319,
+          "resets": 0
+        },
+        {
+          "user_name": "vladushonok64",
+          "published_at": "2026-09-05T07:15:32.827022Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 321,
+          "resets": 0
+        },
+        {
+          "user_name": "nostalgic_hofstadter",
+          "published_at": "2026-08-10T18:00:07.556511Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 323,
+          "resets": 0
+        },
+        {
+          "user_name": "wisdom",
+          "published_at": "2026-06-03T06:38:03.658652Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 338,
+          "resets": 0
+        },
+        {
+          "user_name": "Aviator",
+          "published_at": "2026-09-09T09:49:50.540465Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 338,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=ls20"
+    },
+    {
+      "game": "bp35",
+      "actions": 322,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-10T11:29:23.95212Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 322,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-19T23:54:44.759Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 322,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-10T11:29:23.95212Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 322,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-19T23:54:44.759Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 322,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-22T13:48:17.537638Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 326,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-16T13:12:56.378211Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 327,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-09T09:52:38.480929Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 335,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-18T14:26:09.62143Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 337,
+          "resets": 0
+        },
+        {
+          "user_name": "har_har_very_funny",
+          "published_at": "2026-07-02T22:42:33.469374Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 342,
+          "resets": 0
+        },
+        {
+          "user_name": "Yarflam",
+          "published_at": "2026-04-15T18:47:51.811586Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 352,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-05T01:15:33.640489Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 388,
+          "resets": 0
+        },
+        {
+          "user_name": "sleepy_cori",
+          "published_at": "2026-08-31T14:13:16.101627Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 397,
+          "resets": 3
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=bp35"
+    },
+    {
+      "game": "dc22",
+      "actions": 416,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-07-02T12:39:35.464247Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 416,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-07-07T07:18:34.097283Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 416,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-07-02T12:39:35.464247Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 416,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-07-07T07:18:34.097283Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 416,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-06-03T09:15:10.957965Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 420,
+          "resets": 0
+        },
+        {
+          "user_name": "TryingweirdgamesIguess",
+          "published_at": "2026-04-15T02:48:25.626372Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 439,
+          "resets": 0
+        },
+        {
+          "user_name": "Soumo",
+          "published_at": "2026-05-15T03:19:15.138237Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 442,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-05T01:15:33.640489Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 443,
+          "resets": 0
+        },
+        {
+          "user_name": "Riaki9908",
+          "published_at": "2026-06-06T20:31:43.518515Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 445,
+          "resets": 0
+        },
+        {
+          "user_name": "friendly_dewdney",
+          "published_at": "2026-07-24T20:01:38.37276Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 458,
+          "resets": 0
+        },
+        {
+          "user_name": "blibble_fish",
+          "published_at": "2026-04-18T22:03:48.022331Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 463,
+          "resets": 0
+        },
+        {
+          "user_name": "Devansh Rajpoot",
+          "published_at": "2026-08-14T11:43:15.621996Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 470,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=dc22"
+    },
+    {
+      "game": "wa30",
+      "actions": 506,
+      "leaders": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-22T06:16:14.642231Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 506,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-07-09T15:04:45.660139Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 506,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-22T06:16:14.642231Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 506,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-07-09T15:04:45.660139Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 506,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-05-25T05:02:30.439052Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 543,
+          "resets": 0
+        },
+        {
+          "user_name": "FuFront-AI-RyanX-Atlas-AGI",
+          "published_at": "2026-06-08T01:06:03.510603Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 545,
+          "resets": 0
+        },
+        {
+          "user_name": "Koodol",
+          "published_at": "2026-05-07T02:53:58.144658Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 588,
+          "resets": 0
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-05T16:06:18.209895Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 611,
+          "resets": 0
+        },
+        {
+          "user_name": "keen_rhodes",
+          "published_at": "2026-08-27T23:23:15.852867Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 642,
+          "resets": 0
+        },
+        {
+          "user_name": "awa",
+          "published_at": "2026-09-05T06:41:56.968736Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 644,
+          "resets": 0
+        },
+        {
+          "user_name": "JohnLuxe",
+          "published_at": "2026-06-20T23:29:16.899762Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 651,
+          "resets": 0
+        },
+        {
+          "user_name": "modest_cannon",
+          "published_at": "2026-07-07T22:07:22.232168Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 665,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=wa30"
+    },
+    {
+      "game": "re86",
+      "actions": 507,
+      "leaders": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:56:49.289284Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 507,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-18T17:02:57.473225Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 507,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-06-01T09:56:49.289284Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 507,
+          "resets": 0
+        },
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-06-18T17:02:57.473225Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 507,
+          "resets": 0
+        },
+        {
+          "user_name": "sweiss93",
+          "published_at": "2026-08-03T15:32:45.667175Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 510,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-06-03T14:02:56.549493Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 523,
+          "resets": 0
+        },
+        {
+          "user_name": "optimistic_varahamihira",
+          "published_at": "2026-06-19T14:41:00.059604Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 576,
+          "resets": 0
+        },
+        {
+          "user_name": "AstroStuff",
+          "published_at": "2026-09-29T12:03:39.035289Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 618,
+          "resets": 1
+        },
+        {
+          "user_name": "Alex Chuang",
+          "published_at": "2026-08-16T21:02:43.717189Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 619,
+          "resets": 0
+        },
+        {
+          "user_name": "Ironat",
+          "published_at": "2026-05-01T21:30:47.795723Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 625,
+          "resets": 0
+        },
+        {
+          "user_name": "skyKate",
+          "published_at": "2026-09-08T09:05:58.316692Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 647,
+          "resets": 1
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-05T01:15:33.640489Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 667,
+          "resets": 0
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=re86"
+    },
+    {
+      "game": "lf52",
+      "actions": 641,
+      "leaders": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-07-11T12:04:44.045261Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 641,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-07-22T13:43:01.571281Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 641,
+          "resets": 0
+        }
+      ],
+      "entries": [
+        {
+          "user_name": "Smart Manoj",
+          "published_at": "2026-07-11T12:04:44.045261Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 641,
+          "resets": 0
+        },
+        {
+          "user_name": "Peter_Findley",
+          "published_at": "2026-07-22T13:43:01.571281Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 641,
+          "resets": 0
+        },
+        {
+          "user_name": "Hider1alduha",
+          "published_at": "2026-04-18T08:31:19.439974Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 689,
+          "resets": 0
+        },
+        {
+          "user_name": "Yarflam",
+          "published_at": "2026-04-16T16:47:33.011006Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 710,
+          "resets": 0
+        },
+        {
+          "user_name": "Mithil Vakde",
+          "published_at": "2026-07-12T06:04:56.490165Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 747,
+          "resets": 0
+        },
+        {
+          "user_name": "neuro630",
+          "published_at": "2026-07-17T04:50:17.207803Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 838,
+          "resets": 2
+        },
+        {
+          "user_name": "Eugene_Dvorochkin",
+          "published_at": "2026-06-05T17:19:25.322156Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 841,
+          "resets": 0
+        },
+        {
+          "user_name": "elegant_dirac",
+          "published_at": "2026-04-19T13:20:17.858662Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 854,
+          "resets": 0
+        },
+        {
+          "user_name": "loving_perlman",
+          "published_at": "2026-05-09T02:07:48.133563Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 901,
+          "resets": 3
+        },
+        {
+          "user_name": "skyKate",
+          "published_at": "2026-09-10T14:03:52.282168Z",
+          "score": 100,
+          "end_state": "WIN",
+          "actions": 918,
+          "resets": 6
+        }
+      ],
+      "source": "https://arcprize.org/arc-agi/3/leaderboard?task=lf52"
+    }
+  ]
+}

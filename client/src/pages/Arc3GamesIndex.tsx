@@ -1,6 +1,6 @@
 /*
- * Author: Claude Opus 5; modernized into a searchable landing page by Claude Sonnet 5, 2026-09-12
- * Date: 2026-09-12 (searchable landing page added 2026-09-12)
+ * Author: Claude Opus 5; Claude Sonnet 5; GPT-6 / Codex
+ * Date: 2026-10-05 (GPT-6 / Codex: link the verified human action record chart)
  * PURPOSE: The canonical index of the official ARC-AGI-3 game set at /arc3/games -- the
  *          front door for "what are these 25 games", which is now also the nav's lead
  *          ARC-3 link instead of the deprecated agent playground. A live search box over
@@ -18,6 +18,8 @@
  *          by server/services/arc3/arc3GameMechanicsDoc.ts and linked at the top for
  *          agents. Both read shared/arc3Games, so neither can drift from the other.
  *          2026-09-19 (Claude Opus 5): Slippery Seven badge on tiles and entries.
+ *          2026-10-05 (GPT-6 / Codex): direct link to /human-records.html, a dated
+ *          best-known human full-game ranking with upstream evidence and checked gaps.
  *          2026-09-18 (Claude Opus 5): no 90-day cut on the top-10 numbers or Boss's count.
  *
  *          2026-09-16 (Claude Opus 5, later): every tile shows actions to win -- the fewest on
@@ -320,6 +322,12 @@ export default function Arc3GamesIndex() {
       </div>
 
       <TutorialFramingCard gameCount={live.length} />
+
+      <p className="mb-6 text-sm">
+        <a href="/human-records.html" className="underline underline-offset-4">
+          Best known human action counts — all 25 games, shortest wins first
+        </a>
+      </p>
 
       <div className="mb-8 space-y-3">
         <div className="relative">
