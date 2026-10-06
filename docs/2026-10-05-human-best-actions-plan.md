@@ -24,3 +24,7 @@ User authorized publishing the chart to both ARC Explainer and arc3.sonpham.net.
 ## Publication
 
 Both repositories deploy from production `main`. Destinations: `https://arc.markbarney.net/human-records.html` and `https://arc3.sonpham.net/human-records.html`. The arc-3 page has one exact public route; no private route or data access changes.
+
+## Follow-up: compact chart
+
+Boss requested a chart about games, not the people who played them. Removed the 25 record-holder disclosures and their names, tightened the rows, and reduced the explanatory copy. Both pages retain the same counts and differences. Additional verification was skipped at the user’s request.

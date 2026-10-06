@@ -7,144 +7,141 @@ SRP/DRY check: Pass — static presentation derived from the adjacent official A
 <meta name="description" content="All 25 public ARC-AGI-3 games ranked by the fewest published human actions for a full-game win. Verified October 5, 2026.">
 <style>
 :root { color-scheme:light dark; --bg:light-dark(#fafaf8,#141716); --fg:light-dark(#202821,#e8eee9); --muted:light-dark(#59645c,#acb9af); --line:light-dark(#d8dfd9,#35423a); --bar:light-dark(#287957,#79c6a2); }
-*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif} main{max-width:880px;margin:auto;padding:28px 24px 60px} a{color:inherit;text-underline-offset:3px} nav{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;margin-bottom:28px} h1{font-size:clamp(24px,4vw,36px);line-height:1.15;margin:0 0 14px;font-weight:650} p{max-width:72ch} .subtitle,.note{color:var(--muted)} .subtitle{margin:0 0 24px} .lead{font-size:18px} table{width:100%;border-collapse:collapse;margin-top:24px;font-variant-numeric:tabular-nums} thead th{color:var(--muted);font-size:13px;font-weight:500;padding:0 0 12px;border-bottom:1px solid var(--line);text-align:left} th[scope=row]{font-weight:500;white-space:nowrap;width:100px} tbody th,tbody td{padding-top:10px} .rank{display:inline-block;width:24px;color:var(--muted);font-size:13px} .plot{padding-left:18px;padding-right:20px;width:100%} .bar{height:14px;background:var(--bar)} .number{text-align:right;white-space:nowrap;min-width:62px} .extra{padding-left:20px;color:var(--muted);min-width:94px} .record-detail td{padding:0 0 5px;border-bottom:1px solid var(--line)} details{font-size:13px;color:var(--muted)} summary{cursor:pointer;width:fit-content;padding:3px 0} details p{margin:6px 0 12px;overflow-wrap:anywhere} footer{margin-top:26px;font-size:14px} .axis td{padding:8px 0;color:var(--muted);font-size:12px}.scale{display:flex;justify-content:space-between;margin:0 20px 0 18px}.source-links{display:flex;gap:18px;flex-wrap:wrap} @media(max-width:480px){main{padding:22px 14px 40px}.plot{padding-left:10px;padding-right:10px}.number{min-width:42px}.extra{min-width:78px;padding-left:10px}th[scope=row]{width:80px}.rank{width:20px}.scale{margin:0 10px}nav{gap:12px}}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif} main{max-width:880px;margin:auto;padding:28px 24px 60px} a{color:inherit;text-underline-offset:3px} nav{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;margin-bottom:28px} h1{font-size:clamp(24px,4vw,36px);line-height:1.15;margin:0 0 14px;font-weight:650} p{max-width:72ch} .subtitle,.note{color:var(--muted)} .subtitle{margin:0 0 24px} .lead{font-size:18px} table{width:100%;border-collapse:collapse;margin-top:18px;font-variant-numeric:tabular-nums} thead th{color:var(--muted);font-size:13px;font-weight:500;padding:0 0 12px;border-bottom:1px solid var(--line);text-align:left} th[scope=row]{font-weight:500;white-space:nowrap;width:100px} tbody th,tbody td{padding-top:5px;padding-bottom:5px} .rank{display:inline-block;width:24px;color:var(--muted);font-size:13px} .plot{padding-left:18px;padding-right:20px;width:100%} .bar{height:14px;background:var(--bar)} .number{text-align:right;white-space:nowrap;min-width:62px} .extra{padding-left:20px;color:var(--muted);min-width:94px} footer{margin-top:26px;font-size:14px} .axis td{padding:8px 0;color:var(--muted);font-size:12px}.scale{display:flex;justify-content:space-between;margin:0 20px 0 18px}.source-links{display:flex;gap:18px;flex-wrap:wrap} @media(max-width:480px){main{padding:22px 14px 40px}.plot{padding-left:10px;padding-right:10px}.number{min-width:42px}.extra{min-width:78px;padding-left:10px}th[scope=row]{width:80px}.rank{width:20px}.scale{margin:0 10px}nav{gap:12px}}
 </style></head><body><main>
 <nav aria-label="Sites"><a href="https://arc3.sonpham.net/">ARC-3 games</a><a href="https://arc.markbarney.net/arc3/games">ARC Explainer games</a><a href="https://arcprize.org/arc-agi/3/leaderboard">Official human leaderboard ↗</a></nav>
-<h1>Best known human action counts</h1>
-<p class="subtitle">25 public ARC-AGI-3 games · verified October 5, 2026</p>
-<p class="lead"><strong>r11l is shortest: 57 actions.</strong> Next are su15 (61) and cd82 (69). Seven games have published wins below 100 actions.</p>
-<p>Each count is the fewest actions in a published <strong>100% full-game human win</strong>. These are optimized records after repeated attempts, not first-play baselines. “Best known” does not prove a shorter solution is impossible.</p>
+<h1>Fewest actions to win</h1>
+<p class="subtitle">Best published human full-game wins · 25 public games · October 5, 2026</p>
 <table aria-label="Best human full-game action counts, shortest first">
 <thead><tr><th scope="col">Game</th><th scope="col">Actions to win</th><th scope="col" class="number">Best</th><th scope="col" class="number extra">Extra vs<br>r11l</th></tr></thead><tbody>
 <tr data-game="r11l" data-actions="57" data-extra="0">
  <th scope="row"><span class="rank">1.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=r11l" target="_blank" rel="noopener">r11l</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:8.892356%"></div></td>
  <td class="number">57</td><td class="number extra">—</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for r11l</summary><p>Peter_Findley (2026-06-10); Smart Manoj (2026-06-20)</p></details></td></tr>
+ </tr>
 <tr data-game="su15" data-actions="61" data-extra="4">
  <th scope="row"><span class="rank">2.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=su15" target="_blank" rel="noopener">su15</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:9.516381%"></div></td>
  <td class="number">61</td><td class="number extra">+4</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for su15</summary><p>Peter_Findley (2026-09-06); Smart Manoj (2026-09-11)</p></details></td></tr>
+ </tr>
 <tr data-game="cd82" data-actions="69" data-extra="12">
  <th scope="row"><span class="rank">3.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=cd82" target="_blank" rel="noopener">cd82</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:10.764431%"></div></td>
  <td class="number">69</td><td class="number extra">+12</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for cd82</summary><p>Hider1alduha (2026-04-16); TryingweirdgamesIguess (2026-04-19); RyanX-Atlas-AGI-V2 (2026-04-25); Smart Manoj (2026-05-14); Peter_Findley (2026-06-01); FuFront-AI-RyanX-Atlas-AGI (2026-06-09); sweiss93 (2026-08-03); Soumo (2026-08-24)</p></details></td></tr>
+ </tr>
 <tr data-game="ft09" data-actions="75" data-extra="18">
  <th scope="row"><span class="rank">4.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=ft09" target="_blank" rel="noopener">ft09</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:11.700468%"></div></td>
  <td class="number">75</td><td class="number extra">+18</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for ft09</summary><p>TryingweirdgamesIguess (2026-04-15); Hider1alduha (2026-04-18); Smart Manoj (2026-05-03); Soumo (2026-05-15); mathmonkeyliu (2026-05-21); Peter_Findley (2026-06-01)</p></details></td></tr>
+ </tr>
 <tr data-game="lp85" data-actions="79" data-extra="22">
  <th scope="row"><span class="rank">5.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=lp85" target="_blank" rel="noopener">lp85</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:12.324493%"></div></td>
  <td class="number">79</td><td class="number extra">+22</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for lp85</summary><p>Smart Manoj (2026-05-03); Peter_Findley (2026-06-01)</p></details></td></tr>
+ </tr>
 <tr data-game="tn36" data-actions="85" data-extra="28">
  <th scope="row"><span class="rank">6.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=tn36" target="_blank" rel="noopener">tn36</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:13.260530%"></div></td>
  <td class="number">85</td><td class="number extra">+28</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for tn36</summary><p>FuFront-AI-RyanX-Atlas-AGI (2026-06-07); Peter_Findley (2026-06-07); Smart Manoj (2026-06-16)</p></details></td></tr>
+ </tr>
 <tr data-game="sp80" data-actions="86" data-extra="29">
  <th scope="row"><span class="rank">7.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=sp80" target="_blank" rel="noopener">sp80</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:13.416537%"></div></td>
  <td class="number">86</td><td class="number extra">+29</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for sp80</summary><p>FuFront-AI-RyanX-Atlas-AGI (2026-06-07); Peter_Findley (2026-06-07); Smart Manoj (2026-06-18)</p></details></td></tr>
+ </tr>
 <tr data-game="tr87" data-actions="118" data-extra="61">
  <th scope="row"><span class="rank">8.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=tr87" target="_blank" rel="noopener">tr87</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:18.408736%"></div></td>
  <td class="number">118</td><td class="number extra">+61</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for tr87</summary><p>Smart Manoj (2026-05-14); Peter_Findley (2026-06-01)</p></details></td></tr>
+ </tr>
 <tr data-game="sc25" data-actions="121" data-extra="64">
  <th scope="row"><span class="rank">9.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=sc25" target="_blank" rel="noopener">sc25</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:18.876755%"></div></td>
  <td class="number">121</td><td class="number extra">+64</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for sc25</summary><p>Peter_Findley (2026-06-01); Smart Manoj (2026-06-05); FuFront-AI-RyanX-Atlas-AGI (2026-06-07)</p></details></td></tr>
+ </tr>
 <tr data-game="sb26" data-actions="124" data-extra="67">
  <th scope="row"><span class="rank">10.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=sb26" target="_blank" rel="noopener">sb26</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:19.344774%"></div></td>
  <td class="number">124</td><td class="number extra">+67</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for sb26</summary><p>Hider1alduha (2026-04-19); Smart Manoj (2026-05-03); opfromthestart (2026-05-03); Peter_Findley (2026-06-01); wisdom (2026-06-03)</p></details></td></tr>
+ </tr>
 <tr data-game="vc33" data-actions="167" data-extra="110">
  <th scope="row"><span class="rank">11.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=vc33" target="_blank" rel="noopener">vc33</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:26.053042%"></div></td>
  <td class="number">167</td><td class="number extra">+110</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for vc33</summary><p>Smart Manoj (2026-05-03); Peter_Findley (2026-06-01)</p></details></td></tr>
+ </tr>
 <tr data-game="cn04" data-actions="173" data-extra="116">
  <th scope="row"><span class="rank">12.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=cn04" target="_blank" rel="noopener">cn04</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:26.989080%"></div></td>
  <td class="number">173</td><td class="number extra">+116</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for cn04</summary><p>Peter_Findley (2026-06-01); Hider1alduha (2026-06-04); Smart Manoj (2026-06-06); FuFront-AI-RyanX-Atlas-AGI (2026-06-09)</p></details></td></tr>
+ </tr>
 <tr data-game="m0r0" data-actions="179" data-extra="122">
  <th scope="row"><span class="rank">13.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=m0r0" target="_blank" rel="noopener">m0r0</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:27.925117%"></div></td>
  <td class="number">179</td><td class="number extra">+122</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for m0r0</summary><p>Smart Manoj (2026-05-04); Peter_Findley (2026-06-01)</p></details></td></tr>
+ </tr>
 <tr data-game="tu93" data-actions="185" data-extra="128">
  <th scope="row"><span class="rank">14.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=tu93" target="_blank" rel="noopener">tu93</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:28.861154%"></div></td>
  <td class="number">185</td><td class="number extra">+128</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for tu93</summary><p>Hider1alduha (2026-04-22); Smart Manoj (2026-05-03); Peter_Findley (2026-06-01); Eugene_Dvorochkin (2026-06-13); sweiss93 (2026-08-03)</p></details></td></tr>
+ </tr>
 <tr data-game="sk48" data-actions="213" data-extra="156">
  <th scope="row"><span class="rank">15.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=sk48" target="_blank" rel="noopener">sk48</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:33.229329%"></div></td>
  <td class="number">213</td><td class="number extra">+156</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for sk48</summary><p>Peter_Findley (2026-06-10); Smart Manoj (2026-06-18)</p></details></td></tr>
+ </tr>
 <tr data-game="s5i5" data-actions="240" data-extra="183">
  <th scope="row"><span class="rank">16.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=s5i5" target="_blank" rel="noopener">s5i5</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:37.441498%"></div></td>
  <td class="number">240</td><td class="number extra">+183</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for s5i5</summary><p>Smart Manoj (2026-05-14); Peter_Findley (2026-06-01)</p></details></td></tr>
+ </tr>
 <tr data-game="ka59" data-actions="242" data-extra="185">
  <th scope="row"><span class="rank">17.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=ka59" target="_blank" rel="noopener">ka59</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:37.753510%"></div></td>
  <td class="number">242</td><td class="number extra">+185</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for ka59</summary><p>Smart Manoj (2026-06-15); Peter_Findley (2026-06-19)</p></details></td></tr>
+ </tr>
 <tr data-game="ar25" data-actions="253" data-extra="196">
  <th scope="row"><span class="rank">18.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=ar25" target="_blank" rel="noopener">ar25</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:39.469579%"></div></td>
  <td class="number">253</td><td class="number extra">+196</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for ar25</summary><p>TryingweirdgamesIguess (2026-04-14); Hider1alduha (2026-04-16); Smart Manoj (2026-05-03); intelligent_hoover (2026-05-24); Peter_Findley (2026-06-01); FuFront-AI-RyanX-Atlas-AGI (2026-06-09); sweiss93 (2026-08-03)</p></details></td></tr>
+ </tr>
 <tr data-game="g50t" data-actions="274" data-extra="217">
  <th scope="row"><span class="rank">19.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=g50t" target="_blank" rel="noopener">g50t</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:42.745710%"></div></td>
  <td class="number">274</td><td class="number extra">+217</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for g50t</summary><p>Peter_Findley (2026-07-02); Smart Manoj (2026-07-07)</p></details></td></tr>
+ </tr>
 <tr data-game="ls20" data-actions="309" data-extra="252">
  <th scope="row"><span class="rank">20.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=ls20" target="_blank" rel="noopener">ls20</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:48.205928%"></div></td>
  <td class="number">309</td><td class="number extra">+252</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for ls20</summary><p>Hider1alduha (2026-04-19); Smart Manoj (2026-05-03); Peter_Findley (2026-06-01)</p></details></td></tr>
+ </tr>
 <tr data-game="bp35" data-actions="322" data-extra="265">
  <th scope="row"><span class="rank">21.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=bp35" target="_blank" rel="noopener">bp35</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:50.234009%"></div></td>
  <td class="number">322</td><td class="number extra">+265</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for bp35</summary><p>Peter_Findley (2026-06-10); Smart Manoj (2026-06-19)</p></details></td></tr>
+ </tr>
 <tr data-game="dc22" data-actions="416" data-extra="359">
  <th scope="row"><span class="rank">22.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=dc22" target="_blank" rel="noopener">dc22</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:64.898596%"></div></td>
  <td class="number">416</td><td class="number extra">+359</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for dc22</summary><p>Peter_Findley (2026-07-02); Smart Manoj (2026-07-07)</p></details></td></tr>
+ </tr>
 <tr data-game="wa30" data-actions="506" data-extra="449">
  <th scope="row"><span class="rank">23.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=wa30" target="_blank" rel="noopener">wa30</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:78.939158%"></div></td>
  <td class="number">506</td><td class="number extra">+449</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for wa30</summary><p>Smart Manoj (2026-06-22); Peter_Findley (2026-07-09)</p></details></td></tr>
+ </tr>
 <tr data-game="re86" data-actions="507" data-extra="450">
  <th scope="row"><span class="rank">24.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=re86" target="_blank" rel="noopener">re86</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:79.095164%"></div></td>
  <td class="number">507</td><td class="number extra">+450</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for re86</summary><p>Peter_Findley (2026-06-01); Smart Manoj (2026-06-18)</p></details></td></tr>
+ </tr>
 <tr data-game="lf52" data-actions="641" data-extra="584">
  <th scope="row"><span class="rank">25.</span> <a href="https://arcprize.org/arc-agi/3/leaderboard?task=lf52" target="_blank" rel="noopener">lf52</a></th>
  <td class="plot" aria-hidden="true"><div class="bar" style="width:100.000000%"></div></td>
  <td class="number">641</td><td class="number extra">+584</td>
- </tr><tr class="record-detail"><td colspan="4"><details><summary>Record holders for lf52</summary><p>Smart Manoj (2026-07-11); Peter_Findley (2026-07-22)</p></details></td></tr>
+ </tr>
 <tr class="axis" aria-hidden="true"><td></td><td><div class="scale"><span>0</span><span>641 actions</span></div></td><td></td><td></td></tr>
 </tbody></table>
-<footer><p><strong>Math checked:</strong> extra actions = each record − 57. ls20: 309 − 57 = 252. lf52: 641 − 57 = 584. All 25 best counts total <strong>5,502 actions</strong>, matching the top all-games human total when fetched.</p>
-<p class="note">This dated snapshot is for the public tutorial games. Counts cover entire games, which have different numbers of levels; a shorter record alone does not measure discovery difficulty. The human leaderboard endpoint provides no per-level counts. Record holders shown are those tied for best in the returned top ten; dates are their publication dates in UTC.</p>
-<p class="note">Fetched October 5, 2026 at 9:42 PM EDT. Source: ARC Prize’s human leaderboard (ai=false); only score 100 and WIN rows are included.</p>
-<div class="source-links"><a href="./static/human-records-2026-10-05.json" download>Download fetched leaderboard data (JSON)</a><a href="https://arcprize.org/arc-agi/3/leaderboard">Check current records ↗</a></div>
+<footer>
+<p class="note">Extra = actions above the shortest game (r11l, 57). Best published records, not proven theoretical minimums.</p>
+<div class="source-links"><a href="https://arcprize.org/arc-agi/3/leaderboard">Source: ARC Prize human leaderboard ↗</a><a href="./static/human-records-2026-10-05.json" download>Source data</a></div>
 </footer></main></body></html>

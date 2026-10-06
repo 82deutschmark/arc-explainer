@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.118.2  Oct 5, 2026
+
+- **Compact game action chart** (Author: GPT-6 / Codex). Removes all record-holder names and expandable player rows from `/human-records.html`, tightens row spacing, and reduces the introduction and footer to the context needed to compare games. The 25 action counts and differences are unchanged. Published on both sites at the user's request; no additional verification pass, as requested.
+
 ### Version 9.118.1  Oct 5, 2026
 
 - **Best known human action counts** (Author: GPT-6 / Codex). Publishes `/human-records.html`, linked from `/arc3/games`, with all 25 public games ranked by their lowest published human full-game winning action count, differences from the shortest game, joint record holders, source links and downloadable upstream evidence. Every number was independently re-fetched from ARC Prize's human API; differences are calculated from 57 and the totals sum to 5,502. The dated snapshot distinguishes published records from proven theoretical optima and has an identical copy on arc3.sonpham.net. No baseline fallback or per-level inference. Plan: `docs/2026-10-05-human-best-actions-plan.md`.
