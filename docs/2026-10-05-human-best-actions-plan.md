@@ -36,3 +36,7 @@ Added the arithmetic mean of score 100 / WIN action counts in each saved top-10 
 ## Comparison correction
 
 The useful gap is within each game: displayed top-10 average minus best. Removed the cross-game r11l comparison and named the top-10 scope directly in the column.
+
+## Follow-up: AI comparison
+
+Fetched the task pages' public POST `/api/models` source for all 25 games, using the observed request schema (`game_id`, empty `models`, `runners`, `configs`). Stores all returned runs in the adjacent JSON snapshot. Displays the best verified published score per model/game, with all metrics taken from that run and its replay; ties use fewer actions then session ID. Model configurations may vary, so these are best published results rather than one controlled configuration across all games. Six named model columns show initially and all 16 can be selected. Human action counts remain alongside the AI columns. Scores are action efficiency; completed levels and WIN are separate. No deployment polling or post-push verification, as requested.

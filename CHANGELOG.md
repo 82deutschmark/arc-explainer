@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.118.5  Oct 5, 2026
+
+- **Human and AI comparison across all 25 games** (Author: GPT-6 / Codex). Expands `/human-records.html` into a comparison table: human best, top-10 mean and their gap beside 16 published AI models. Six model columns appear initially; readers can select any combination or show all. Each AI cell selects one highest-scoring verified published run for that model/game, with fewer actions then stable session ID breaking ties. Score, actual completion, action count and replay all come from that same run; configuration and exact score are in the tooltip. Explicitly distinguishes action-efficiency score from completion and notes that configurations may vary. All 25 official game result sets are saved in `static/ai-game-results-2026-10-05.json` on both sites. User requested pushing without deployment polling or post-push verification.
+
 ### Version 9.118.4  Oct 5, 2026
 
 - **Compare each game with itself** (Author: GPT-6 / Codex). Replaces the difference from r11l with top-10 average minus best for the same game. Labels the average explicitly in the column and legend, avoiding a claim about typical performance across all humans. Gap uses the displayed rounded average so the displayed subtraction agrees.

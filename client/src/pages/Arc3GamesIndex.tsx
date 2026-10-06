@@ -1,6 +1,6 @@
 /*
  * Author: Claude Opus 5; Claude Sonnet 5; GPT-6 / Codex
- * Date: 2026-10-05 (GPT-6 / Codex: link the verified human action record chart)
+ * Date: 2026-10-05 (GPT-6 / Codex: link human action counts and published AI results)
  * PURPOSE: The canonical index of the official ARC-AGI-3 game set at /arc3/games -- the
  *          front door for "what are these 25 games", which is now also the nav's lead
  *          ARC-3 link instead of the deprecated agent playground. A live search box over
@@ -325,7 +325,7 @@ export default function Arc3GamesIndex() {
 
       <p className="mb-6 text-sm">
         <a href="/human-records.html" className="underline underline-offset-4">
-          Best known human action counts — all 25 games, shortest wins first
+          Human and AI comparison — action counts and published scores for 16 models
         </a>
       </p>
 
