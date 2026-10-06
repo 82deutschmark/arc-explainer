@@ -189,3 +189,27 @@ test('meta tag replacement removes default tags and inserts new ones', () => {
   assert.ok(!result.includes('META_TAGS_START'), 'Should not contain start marker');
   assert.ok(!result.includes('META_TAGS_END'), 'Should not contain end marker');
 });
+
+// 2026-10-06 (Claude Opus 5.5): /analytics is the page ARC Prize links to. It must be
+// served with its own title, canonical link, structured data and readable body text,
+// not the home page's.
+test('analytics route gets its own title, canonical, JSON-LD and crawlable body', async () => {
+  const { injectMetaTagsIntoHtml } = await import('../server/middleware/metaTagInjector.js');
+  const html = '<head><!-- META_TAGS_START --><title>Home</title><!-- META_TAGS_END --></head><body><div id="root"></div></body>';
+  const out = injectMetaTagsIntoHtml(html, '/analytics');
+  const entry = ROUTE_META_TAGS['/analytics'];
+  assert.ok(entry, '/analytics must have an entry');
+  assert.ok(out.includes(`<title>${entry.title}</title>`), 'title');
+  assert.ok(!out.includes('<title>Home</title>'), 'home title replaced');
+  assert.ok(out.includes('<link rel="canonical" href="https://arc.markbarney.net/analytics" />'), 'canonical');
+  assert.ok(out.includes('application/ld+json'), 'JSON-LD');
+  const ld = out.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  assert.ok(ld && JSON.parse(ld[1])['@graph'], 'JSON-LD parses');
+  assert.ok(/<div id="root">\s*<main>[\s\S]*<h1>ARC-AGI Model Analytics<\/h1>/.test(out), 'crawlable body inside #root');
+});
+
+test('routes without body text leave #root empty', async () => {
+  const { injectMetaTagsIntoHtml } = await import('../server/middleware/metaTagInjector.js');
+  const html = '<head><!-- META_TAGS_START --><!-- META_TAGS_END --></head><body><div id="root"></div></body>';
+  assert.ok(injectMetaTagsIntoHtml(html, '/re-arc').includes('<div id="root"></div>'));
+});

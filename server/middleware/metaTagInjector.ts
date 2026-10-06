@@ -1,8 +1,11 @@
 /**
- * Author: Codex (GPT-6), with existing contributors
- * Date: 2026-09-12
- * PURPOSE: Middleware for injecting route-specific meta tags for link unfurling.
+ * Author: Codex (GPT-6), with existing contributors; search additions by Claude Opus 5.5
+ * Date: 2026-09-12 (updated 2026-10-06)
+ * PURPOSE: Middleware for injecting route-specific meta tags for link unfurling and search.
  *          Now supports dynamic puzzle routes with OG image generation.
+ *          2026-10-06: every injected page also gets a canonical link and og:site_name,
+ *          plus the entry's keywords, JSON-LD and crawlable body text when it has them
+ *          (see RouteMetaTags in shared/routes.ts).
  * SRP/DRY check: Pass - Single responsibility: meta tag injection. No duplication found.
  */
 
@@ -50,10 +53,18 @@ function escapeAttribute(value: string): string {
  * Generate meta description, title, Open Graph and Twitter Card meta tags HTML
  */
 function generateMetaTags(tags: RouteMetaTags): string {
+  // JSON-LD sits inside a <script>; "</" would end it early, so escape it.
+  const jsonLd = tags.jsonLd
+    ? `<script type="application/ld+json">${JSON.stringify(tags.jsonLd).replace(/<\//g, '<\\/')}</script>`
+    : '';
   return `
     <meta name="description" content="${tags.description}" />
+    <link rel="canonical" href="${tags.url}" />
+    ${tags.keywords ? `<meta name="keywords" content="${tags.keywords}" />` : ''}
+    ${jsonLd}
 
     <!-- Open Graph / Facebook -->
+    <meta property="og:site_name" content="ARC Explainer" />
     <meta property="og:type" content="${tags.type || 'website'}" />
     <meta property="og:url" content="${tags.url}" />
     <meta property="og:title" content="${tags.title}" />
@@ -86,7 +97,7 @@ export function injectMetaTagsIntoHtml(html: string, requestPath: string): strin
   // Generate and inject meta tags, replacing the entire default section
   const metaTags = generateMetaTags(routeMetaTags);
   const metaTagRegex = /<!-- META_TAGS_START -->[\s\S]*?<!-- META_TAGS_END -->/;
-  return html.replace(metaTagRegex, metaTags);
+  return injectBodyHtml(html.replace(metaTagRegex, metaTags), routeMetaTags);
 }
 
 /**
@@ -121,7 +132,19 @@ async function generatePuzzleMetaTags(taskId: string): Promise<RouteMetaTags | n
 function injectDynamicMetaTags(html: string, tags: RouteMetaTags): string {
   const metaTags = generateMetaTags(tags);
   const metaTagRegex = /<!-- META_TAGS_START -->[\s\S]*?<!-- META_TAGS_END -->/;
-  return html.replace(metaTagRegex, metaTags);
+  const out = html.replace(metaTagRegex, metaTags);
+  return injectBodyHtml(out, tags);
+}
+
+/**
+ * Put the entry's crawlable summary inside #root. React's createRoot replaces it on first
+ * render, so visitors never see it; crawlers and link previews that do not run the app do.
+ * The default home-page head has no canonical link, so without this a crawler reading the
+ * raw HTML of any route saw an empty <div> under the home page's description.
+ */
+function injectBodyHtml(html: string, tags: RouteMetaTags): string {
+  if (!tags.bodyHtml) return html;
+  return html.replace('<div id="root"></div>', `<div id="root">${tags.bodyHtml.trim()}</div>`);
 }
 
 /**

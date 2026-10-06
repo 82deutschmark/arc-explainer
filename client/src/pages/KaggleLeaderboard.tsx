@@ -52,9 +52,11 @@ function Section({ title, note, children }: { title: string; note?: ReactNode; c
 
 export default function KaggleLeaderboard() {
   usePageMeta({
-    title: 'ARC-AGI-3 Kaggle Leaderboard – ARC Explainer',
+    // Matches the server-rendered entry in shared/routes.ts.
+    title: 'ARC Prize 2026 ARC-AGI-3 Kaggle Leaderboard: Live Standings & History',
     description:
-      'Every team on the ARC Prize 2026 ARC-AGI-3 public Kaggle leaderboard, with medal lines, daily movers, score history and the race to the close.',
+      'Every team on the ARC-AGI-3 Kaggle public leaderboard, saved every half hour: medal lines, '
+      + 'who is climbing, who is sinking, score history and the race to the close.',
     canonicalPath: '/kaggle-leaderboard',
   });
 

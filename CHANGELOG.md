@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.118.7  Oct 6, 2026
+
+- **Analytics page search and archive notice** (Author: Claude Opus 5.5). ARC Prize links to /analytics, but the server never had search details for it, so search engines and link previews saw the home page's title and description and an empty page. It now has its own title, description, canonical link, structured data and readable page text in the raw HTML. Boss: ARC Prize no longer publishes these results to Hugging Face, so the page and its search copy now say it is an archive, with a notice linking ARC-AGI-3 visitors to the Kaggle leaderboard, the official game guides and the landing page. The injector now adds a canonical link and site name to every page it handles, plus keywords, structured data and page text where an entry has them. /kaggle-leaderboard got the same treatment and joined the sitemap; the home description follows the landing page's switch to the leaderboard. Files: `shared/routes.ts`, `server/middleware/metaTagInjector.ts`, `client/src/pages/AnalyticsOverview.tsx`, `client/src/pages/KaggleLeaderboard.tsx`, `client/public/sitemap.xml`, `tests/metaTagInjector.test.ts`.
+
 ### Version 9.118.6  Oct 5, 2026
 
 - **Explore where models struggle** (Author: GPT-6 / Codex). Reworks the human/AI comparison into a sortable, filterable view with two explicit metrics: highest published score and fewest actions in a full-game win. Adds human action budgets, game search, selected-model win filters, fixed configuration selection per model, and win counts across the full game set. Clicking any result opens all published configurations with exact scores, completion, actions, versions and replay links; the cell's chosen run is highlighted. Flags a win in another configuration when the highest-scoring run is partial (present for Gemini on m0r0). Winning action gaps use the human best for the same game; failures and missing results never count as cheap wins. Settings are preserved in the URL. Shared static CSS/JS on both sites reads the existing dated snapshots. No deployment polling or post-push verification, per user preference.

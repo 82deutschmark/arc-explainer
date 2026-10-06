@@ -17,6 +17,9 @@
  * - Added TODO comments for future metric badges (cost, time, tokens)
  * 
  * Uses proper shadcn/ui components and follows established patterns.
+ * 2026-10-06 (Claude Opus 5.5): search title/description now match the server-rendered
+ * entry for /analytics in shared/routes.ts (ARC Prize links here); H1 names the subject;
+ * an archive notice links ARC-AGI-3 visitors to the live pages (results no longer published).
  * SRP and DRY check: Pass - Single responsibility of displaying analytics, reuses existing components
  * shadcn/ui: Pass - Uses proper shadcn/ui components throughout (Card, Badge, Button, Select, etc.)
  */
@@ -129,9 +132,12 @@ type DatasetOption = DatasetInfo & { displayName: string };
 export default function AnalyticsOverview() {
 
   usePageMeta({
-    title: 'ARC Explainer – Analytics Dashboard',
+    // Same strings as the server-rendered entry in shared/routes.ts, so the tab title does
+    // not change under a visitor (or a crawler that runs scripts) once the app loads.
+    title: 'ARC-AGI Model Analytics (Archive): LLM Results on ARC-AGI-1 & 2 | ARC Explainer',
     description:
-      'Analyze model accuracy, coverage, cost, and reliability across ARC1, ARC2, ARC-Heavy, and ConceptARC datasets.',
+      "Archive of ARC Prize's published LLM evaluation results on ARC-AGI-1 and ARC-AGI-2: "
+      + 'accuracy, cost and reliability per model and puzzle. For ARC-AGI-3, see our live leaderboard and game guides.',
     canonicalPath: '/analytics',
   });
 
@@ -286,14 +292,37 @@ export default function AnalyticsOverview() {
             <div>
               <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
                 <BarChart3 className="h-8 w-8" />
-                Analytics Dashboard
+                ARC-AGI Model Analytics
               </h1>
               <p className="text-lg text-gray-600">
-                We ingest the ARC Prize team's official results which are posted at https://huggingface.co/arcprize and try to make them more visually appealing and interactive.
+                LLM accuracy, cost and reliability on ARC-AGI-1 and ARC-AGI-2, from the ARC Prize
+                team's results as published at{' '}
+                <a href="https://huggingface.co/arcprize" target="_blank" rel="noreferrer" className="underline">
+                  huggingface.co/arcprize
+                </a>
+                , made interactive.
               </p>
             </div>
           </div>
         </header>
+
+        {/* ARC Prize links here from arcprize.org, but stopped publishing these results to
+            Hugging Face (Boss, 06-Oct-2026). Say it is an archive, and send anyone who came
+            for ARC-AGI-3 to the live pages before they read a stale table. */}
+        <Card className="border-amber-300 bg-amber-50">
+          <CardContent className="flex flex-col gap-2 p-3 text-sm text-left text-gray-800 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              <span className="font-semibold">This is an archive.</span> ARC Prize no longer publishes new
+              results to Hugging Face, so these numbers stop where their releases did.
+            </p>
+            <p className="flex flex-wrap gap-x-4 gap-y-1 font-medium">
+              <span className="text-gray-600">ARC-AGI-3:</span>
+              <a href="/kaggle-leaderboard" className="underline">Kaggle leaderboard</a>
+              <a href="/arc3/games" className="underline">Every official game</a>
+              <a href="/" className="underline">Our ARC-AGI-3 work</a>
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Evaluation harness explanation */}
         <Card className="border-blue-200 bg-blue-50/70">
