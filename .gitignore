@@ -45,3 +45,6 @@ data/arc3-agent-runs/raw/
 # Per-run cache from scripts/arc3/pull_official_public_runs.py (model text for every move of
 # every run; large). sessions.jsonl and levels-won.jsonl.gz beside it are committed.
 data/arc3-official-runs/cache/
+
+# Pinned Human ARC source is fetched by scripts/build-human-arc.mjs
+/external/human-arc/

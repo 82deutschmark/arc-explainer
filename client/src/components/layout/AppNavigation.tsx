@@ -1,4 +1,10 @@
 /**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Build and serve the independently maintained Human ARC frontend under /human-arc/.
+ * SRP/DRY check: Pass — separate build and middleware reuse the existing deployment and navigation.
+ */
+/**
  * Author: Claude Opus 5; ARC-3 dropdown modernized by Claude Sonnet 5, 2026-09-12
  * Date: 2026-08-29 (ARC-3 dropdown modernized 2026-09-12; Kaggle Leaderboard link added 2026-10-05 by Claude Opus 5.5)
  * PURPOSE: ARC-3-forward top navigation. The primary row is the ARC-AGI-3 flow a visitor
@@ -71,6 +77,8 @@ import {
 
 // Type definitions for discriminated union
 interface NavLink {
+  /** Load a separate application instead of using the host SPA router. */
+  fullPage?: boolean;
   type: 'link';
   title: string;
   href: string;
@@ -206,6 +214,13 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
     icon: Archive,
     description: 'Puzzle-era analysis, scoring, and datasets',
     sections: [
+      {
+        label: 'Learn & Play',
+        items: [{
+          type: 'link', title: 'Human ARC', href: '/human-arc/', fullPage: true,
+          icon: Users, description: 'Try ARC puzzles and compare your reasoning with AI',
+        }],
+      },
       {
         label: 'Analysis',
         items: [
@@ -561,9 +576,10 @@ export function AppNavigation() {
                           </DropdownMenuLabel>
                           {section.items.map(child => {
                             const isChildActive = isActiveRoute(child.href, child.exact);
+                            const ChildLink = child.fullPage ? 'a' : Link;
                             return (
                               <DropdownMenuItem key={child.href} asChild>
-                                <Link
+                                <ChildLink
                                   href={child.href}
                                   className={cn(
                                     'block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors',
@@ -583,7 +599,7 @@ export function AppNavigation() {
                                       )}
                                     </div>
                                   </div>
-                                </Link>
+                                </ChildLink>
                               </DropdownMenuItem>
                             );
                           })}

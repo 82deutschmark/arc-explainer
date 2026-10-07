@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.119.0  Oct 7, 2026
+
+- **Human ARC on ARC Explainer** (Author: Codex). Hosts the independently maintained Human ARC app at `/human-arc/`, with a full-page navigation entry in ARC 1 & 2. A pinned GitHub revision is built with public PlayFab configuration alongside the host; dedicated middleware preserves nested page refreshes, returns 404 for missing assets, and keeps the two SPA routers separate. Existing PlayFab services remain in use; guest identities stored on the old origin do not migrate automatically. See `docs/2026-10-07-human-arc-hosting.md`.
+
 ### Version 9.118.7  Oct 6, 2026
 
 - **Analytics page search and archive notice** (Author: Claude Opus 5.5). ARC Prize links to /analytics, but the server never had search details for it, so search engines and link previews saw the home page's title and description and an empty page. It now has its own title, description, canonical link, structured data and readable page text in the raw HTML. Boss: ARC Prize no longer publishes these results to Hugging Face, so the page and its search copy now say it is an archive, with a notice linking ARC-AGI-3 visitors to the Kaggle leaderboard, the official game guides and the landing page. The injector now adds a canonical link and site name to every page it handles, plus keywords, structured data and page text where an entry has them. /kaggle-leaderboard got the same treatment and joined the sitemap; the home description follows the landing page's switch to the leaderboard. Files: `shared/routes.ts`, `server/middleware/metaTagInjector.ts`, `client/src/pages/AnalyticsOverview.tsx`, `client/src/pages/KaggleLeaderboard.tsx`, `client/public/sitemap.xml`, `tests/metaTagInjector.test.ts`.

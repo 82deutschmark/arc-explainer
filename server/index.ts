@@ -1,4 +1,10 @@
 /**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Build and serve the independently maintained Human ARC frontend under /human-arc/.
+ * SRP/DRY check: Pass — separate build and middleware reuse the existing deployment and navigation.
+ */
+/**
  * Author: gpt-5-codex
  * Date: 2025-10-16T00:00:00Z
  * PURPOSE: Bootstraps the Express server, wiring middleware, routes, static serving, and startup diagnostics.
@@ -6,6 +12,7 @@
  */
 
 import 'dotenv/config';
+import { mountHumanArc } from './middleware/humanArc';
 import express, { type Request, Response, NextFunction } from "express";
 import cors from 'cors';
 import { registerRoutes } from "./routes";
@@ -58,6 +65,9 @@ if (streamingConfig.frontendAdvertises && !streamingConfig.enabled) {
 }
 
 const app = express();
+
+// Human ARC is a separate frontend, mounted before either SPA catch-all.
+mountHumanArc(app);
 
 // Configure CORS - Allow all origins
 const corsOptions = {
