@@ -1,5 +1,5 @@
 /*
-Author: GPT-6 / Codex
+Author: GPT-6.1 Sol / Codex
 Date: 2026-10-07
 PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
@@ -94,6 +94,7 @@ import Arc3MechanicGuide from "@/pages/arc3-community/Arc3MechanicGuide";
 // The canonical one-link index of the official game set. Its machine-readable twin is
 // /arc3/games.md, served from server/routes.ts off the same registry.
 import Arc3GamesIndex from "@/pages/Arc3GamesIndex";
+import Arc3SlipperySeven from "@/pages/Arc3SlipperySeven";
 
 function LegacyArc3GameRedirect() {
   const params = useParams<{ gameId: string }>();
@@ -181,6 +182,7 @@ function Router() {
         {/* ARC3 - Story & explainer page (primary landing) */}
         <Route path="/arc3" component={Arc3Story} />
         <Route path="/arc3/games" component={Arc3GamesIndex} />
+        <Route path="/arc3/slippery-seven" component={Arc3SlipperySeven} />
         <Route path="/arc3/games/:gameId" component={Arc3GameSpoiler} />
         {/* ARC3 Community - game play, gallery, uploads (secondary) */}
         <Route path="/arc3/playground" component={ARC3AgentPlayground} />

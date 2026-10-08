@@ -1,5 +1,5 @@
 /**
- * Author: Codex
+ * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-07
  * PURPOSE: Keep the competition leaderboard directly visible in the primary navigation,
  *          with named mobile controls and resource/reference links in the existing menus.
@@ -198,6 +198,13 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
             href: '/arc3/games',
             icon: Search,
             description: 'Search every official game by name, ID, or mechanic — full spoilers',
+          },
+          {
+            type: 'link',
+            title: 'Slippery Seven',
+            href: '/arc3/slippery-seven',
+            icon: Search,
+            description: 'Seven games from the Qwen 27B research run, with guides and screenshots',
           },
           {
             type: 'link',

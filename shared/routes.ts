@@ -1,5 +1,5 @@
 /**
- * Author: GPT-6 / Codex
+ * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-07
  * PURPOSE: Centralized route meta tags configuration for social media link unfurling and
  *          search. Imported by server middleware for meta tag injection.
@@ -10,6 +10,8 @@
  *          landing page's 05-Oct pivot to the leaderboard.
  * SRP/DRY check: Pass - Single source of truth for route meta tags
  */
+
+import { SLIPPERY_SEVEN } from './arc3Games/slipperySeven';
 
 export interface RouteMetaTags {
   title: string;
@@ -67,6 +69,15 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
     // unlike /arc3/gallery below, which is ours and must not lead with somebody else's work.
     image: 'https://arc.markbarney.net/api/arc3/og-image/r11l',
     type: 'website',
+  },
+
+  '/arc3/slippery-seven': {
+    title: 'The Slippery Seven — ARC-AGI-3 game guides',
+    description: 'Seven games that resisted all four passes of the September 16, 2026 Qwen 27B run. Explore screenshots and the guide for each game.',
+    url: `${SITE}/arc3/slippery-seven`,
+    image: `${SITE}/api/arc3/og-image/sk48`,
+    type: 'website',
+    bodyHtml: '<h1>The Slippery Seven</h1><p>Seven games. Four passes each. No levels cleared in the September 16, 2026 Qwen 27B experiment. This name records that research run; other models have cleared levels on several of these games.</p>' + '<ul>' + SLIPPERY_SEVEN.map(({ gameId }) => `<li><a href="/arc3/games/${gameId}">${gameId}</a></li>`).join('') + '</ul>',
   },
 
   '/arc3/gallery': {

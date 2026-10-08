@@ -1,5 +1,5 @@
 /*
- * Author: GPT-6 / Codex; Claude Opus 5; Claude Sonnet 5
+ * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-07
  * PURPOSE: The canonical index of the official ARC-AGI-3 game set at /arc3/games -- the
  *          front door for "what are these 25 games", which is now also the nav's lead
@@ -321,7 +321,10 @@ export default function Arc3GamesIndex() {
 
       <TutorialFramingCard gameCount={live.length} />
 
-      <p className="mb-6 text-sm">
+      <p className="mb-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <Link href="/arc3/slippery-seven" className="underline underline-offset-4">
+          The Slippery Seven — the seven games and their research context
+        </Link>
         <a href="/human-records.html" className="underline underline-offset-4">
           Human and AI comparison — action counts and published scores for 16 models
         </a>

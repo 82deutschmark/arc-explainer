@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.120.4  Oct 7, 2026
+
+- **Dedicated Slippery Seven page** (Author: GPT-6.1 Sol / Codex). Adds `/arc3/slippery-seven` with the seven existing game IDs, screenshots, descriptions and links to their guides. Explains the dated Qwen 27B experiment that named the group and distinguishes the separate Flash-Next cohort. Reuses the shared membership and game registries; adds ARC-3 navigation, games-index discovery, share metadata and sitemap inclusion.
+
 ### Version 9.120.3  Oct 7, 2026
 
 - **Keep the first navigation link fully visible on narrow phones** (Author: Codex). Gives the scrolling menu its content width so Radix's centered layout cannot clip the beginning of Leaderboard at 320px.
