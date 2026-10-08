@@ -3,9 +3,13 @@
  * Date: 2026-10-07
  * PURPOSE: Shared URL, indexing, safe HTML and structured-data policy for server responses
  *          and SPA navigation. Content remains in the existing route and game registries.
+ *          08-Oct-2026 (Claude Opus 5.5): short ARC Daily breadcrumb names, the newspaper
+ *          card as the fallback for /news/* in-app routes, and socialMetaEntries() so the
+ *          server head and the browser writer emit the same Open Graph/Twitter tags.
  * SRP/DRY check: Pass — one canonical origin and metadata serialization contract.
  */
 import { ROUTE_META_TAGS, type RouteMetaTags } from './routes';
+import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, NEWS_SECTION_CARD_ALT, NEWS_SECTION_CARD_PATH } from './news';
 export const SITE_ORIGIN = 'https://arc.markbarney.net';
 export const DEFAULT_IMAGE = `${SITE_ORIGIN}/og-preview.png`;
 export const INDEX_ROBOTS = 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1';
@@ -41,7 +45,8 @@ export function pageBreadcrumbs(tags: RouteMetaTags): { name: string; url: strin
   if (game) items.push({ name: 'Game guides', url: `${SITE_ORIGIN}/arc3/games` });
   if (route.startsWith('/news/')) items.push({ name: 'The ARC Daily', url: `${SITE_ORIGIN}/news` });
   if (route.startsWith('/news/competitors/')) items.push({ name: 'Competitor notebook', url: `${SITE_ORIGIN}/news/competitors` });
-  items.push({ name: game ? game[1] : tags.title.replace(/ \| ARC Explainer$/, ''), url: tags.url });
+  const name = route === '/news' ? NEWS_NAME : tags.title.replace(/ \| (?:ARC Explainer|The ARC Daily)$/, '');
+  items.push({ name: game ? game[1] : name, url: tags.url });
   return items;
 }
 export function structuredData(tags: RouteMetaTags): Record<string, unknown> {
@@ -71,8 +76,33 @@ export function discoveryHtml(): string {
   return `<nav aria-label="Explore ARC Explainer"><ul>${DISCOVERY_LINKS.map(([url, name]) => `<li><a href="${url}">${name}</a></li>`).join('')}</ul></nav>`;
 }
 export function completeMeta(tags: RouteMetaTags): RouteMetaTags {
-  return { ...tags, image: tags.image || DEFAULT_IMAGE, imageAlt: tags.imageAlt || (tags.image ? tags.title : 'ARC Explainer — puzzles, games and results') };
+  return { ...tags, image: tags.image || DEFAULT_IMAGE, imageAlt: tags.imageAlt || (tags.image ? tags.title : 'ARC Explainer — puzzles, games and results'),
+    ...(!tags.image ? { imageWidth: 1200, imageHeight: 630 } : {}) };
 }
+/**
+ * Every Open Graph / Twitter tag for a page, as [attribute, name, content]. The server head
+ * and the browser writer both use this list, so in-app navigation can never leave a tag
+ * from the previous page behind or emit one the crawler did not see.
+ */
+export function socialMetaEntries(input: RouteMetaTags): ['property' | 'name', string, string][] {
+  const tags = completeMeta(input);
+  const article = tags.type === 'article';
+  const entries: ['property' | 'name', string, string | undefined][] = [
+    ['property', 'og:site_name', 'ARC Explainer'], ['property', 'og:locale', 'en_US'],
+    ['property', 'og:type', tags.type || 'website'], ['property', 'og:url', tags.url],
+    ['property', 'og:title', tags.title], ['property', 'og:description', tags.description],
+    ['property', 'og:image', tags.image], ['property', 'og:image:alt', tags.imageAlt],
+    ['property', 'og:image:width', tags.imageWidth?.toString()], ['property', 'og:image:height', tags.imageHeight?.toString()],
+    ['property', 'article:published_time', article ? tags.publishedTime : undefined],
+    ['property', 'article:section', article ? tags.section : undefined],
+    ['name', 'twitter:card', 'summary_large_image'], ['name', 'twitter:url', tags.url],
+    ['name', 'twitter:title', tags.title], ['name', 'twitter:description', tags.description],
+    ['name', 'twitter:image', tags.image], ['name', 'twitter:image:alt', tags.imageAlt],
+  ];
+  return entries.filter((entry): entry is ['property' | 'name', string, string] => !!entry[2]);
+}
+/** Names socialMetaEntries can emit, so the browser can remove ones a new page lacks. */
+export const SOCIAL_META_NAMES = ['og:image:width', 'og:image:height', 'article:published_time', 'article:section'] as const;
 /** Dynamic tool routes are valid app screens, not independent search landing pages. */
 export function clientRouteMeta(value: string): RouteMetaTags {
   const route = redirectPath(value) || normalizePath(value);
@@ -84,10 +114,12 @@ export function clientRouteMeta(value: string): RouteMetaTags {
     || /^\/puzzle\/(?:saturn|grover|beetree|poetiq)\/[^/]+$/.test(route)
     || /^\/task\/[^/]+(?:\/efficiency)?$/.test(route)
     || /^\/worm-arena\/live\/[^/]+$/.test(route);
+  const news = route.startsWith('/news/');
   const title = game ? `${game[1]} — ARC-AGI-3 game guide` : puzzle ? `ARC puzzle ${puzzle[1]}` : play ? `${play[1]} — ARC-AGI-3 task` : tool ? 'ARC Explainer interactive workspace' : 'Page not found | ARC Explainer';
   return completeMeta({ title, description: game ? 'Game mechanics, level screenshots and notes from play.' : puzzle ? 'Explore this ARC puzzle and its model answers.' : play ? 'Explore an interactive reasoning task without instructions.' : tool ? 'Use ARC Explainer’s interactive analysis tools.' : 'This address does not match an ARC Explainer page. Explore the resource hub or game guides.',
     url: `${SITE_ORIGIN}${route}`, noindex: !game && !puzzle,
-    image: game ? `${SITE_ORIGIN}/api/arc3/og-image/${game[1]}` : puzzle ? `${SITE_ORIGIN}/api/og-image/${puzzle[1]}` : undefined });
+    image: game ? `${SITE_ORIGIN}/api/arc3/og-image/${game[1]}` : puzzle ? `${SITE_ORIGIN}/api/og-image/${puzzle[1]}` : news ? `${SITE_ORIGIN}${NEWS_SECTION_CARD_PATH}` : undefined,
+    ...(news ? { imageAlt: NEWS_SECTION_CARD_ALT, imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : {}) });
 }
 export function isDynamicAppRoute(route: string): boolean {
   return /^\/(?:discussion|elo|test-solution|debate|council)\/[^/]+$/.test(route)

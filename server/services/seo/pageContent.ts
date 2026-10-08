@@ -3,6 +3,8 @@
  * Date: 2026-10-07
  * PURPOSE: Build crawler-readable public page summaries and official game guides from
  *          the existing route, puzzle and game registries without a second content store.
+ *          08-Oct-2026 (Claude Opus 5.5): sitemap lastmod for ARC Daily URLs from their
+ *          recorded publication/check times; every other route stays undated.
  * SRP/DRY check: Pass — gameLevels owns level grouping; no authored rules are changed.
  */
 import { ROUTE_META_TAGS, type RouteMetaTags } from '../../../shared/routes';
@@ -10,7 +12,7 @@ import { SITE_ORIGIN, clientRouteMeta, completeMeta, escapeHtml as esc, isDynami
 import { getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
 import { buildGameLevels } from '../../../shared/arc3Games/gameLevels';
 import { getArcBaseline } from '../../../shared/arc3Games/humanDifficulty';
-import { resolveNewsMeta, newsSitemapUrls } from '../news/newsPresentation';
+import { resolveNewsMeta, newsSitemapEntries, newsSitemapUrls } from '../news/newsPresentation';
 import { puzzleLoader } from '../puzzleLoader';
 
 const paragraphs = (text?: string) => text ? `<p>${esc(text).replace(/\n\n/g, '</p><p>')}</p>` : '';
@@ -80,6 +82,8 @@ export function sitemapUrls(): string[] {
     ...puzzleLoader.getAvailablePuzzleIds().filter(id => /^[A-Za-z0-9_-]{1,128}$/.test(id)).map(id => `${SITE_ORIGIN}/puzzle/${id}`),
   ])];
 }
+/** Only news URLs carry lastmod: they are the pages with a real, recorded change time. */
 export function generateSitemap(): string {
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls().map(url => `  <url><loc>${esc(url)}</loc></url>`).join('\n')}\n</urlset>\n`;
+  const lastmod = new Map(newsSitemapEntries().filter(entry => entry.lastmod).map(entry => [entry.url, entry.lastmod!]));
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls().map(url => `  <url><loc>${esc(url)}</loc>${lastmod.has(url) ? `<lastmod>${esc(lastmod.get(url)!)}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
 }

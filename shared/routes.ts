@@ -9,10 +9,13 @@
  *          crawler that does not run JavaScript still sees a real page. Added /analytics
  *          (ARC Prize links to it) and /kaggle-leaderboard; root copy follows the
  *          landing page's 05-Oct pivot to the leaderboard.
+ *          08-Oct-2026 (Claude Opus 5.5): image size and Open Graph article fields; the two
+ *          ARC Daily index routes use the newspaper's own share card.
  * SRP/DRY check: Pass - Single source of truth for route meta tags
  */
 
 import { SLIPPERY_SEVEN } from './arc3Games/slipperySeven';
+import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_SECTION_CARD_ALT, NEWS_SECTION_CARD_PATH } from './news';
 
 export interface RouteMetaTags {
   title: string;
@@ -33,6 +36,12 @@ export interface RouteMetaTags {
    * stale, since nobody reviews this copy (see the ROOT_META note below).
    */
   bodyHtml?: string;
+  /** Pixel size of `image`, when known; lets unfurlers lay the card out before fetching it. */
+  imageWidth?: number;
+  imageHeight?: number;
+  /** Open Graph article fields (`og:type` article only). */
+  publishedTime?: string;
+  section?: string;
 }
 
 const SITE = 'https://arc.markbarney.net';
@@ -47,13 +56,16 @@ function breadcrumb(name: string, path: string) {
   };
 }
 
+/** The ARC Daily's own masthead card instead of the site-wide preview image. */
+const NEWS_CARD = { image: `${SITE}${NEWS_SECTION_CARD_PATH}`, imageAlt: NEWS_SECTION_CARD_ALT, imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT };
+
 /**
  * Route meta tags for link unfurling (Discord, Twitter, Slack, etc.)
  * Organized by feature area - add new routes near related routes
  */
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
-  '/news': { title: 'The ARC Daily — ARC-AGI competition news', description: 'Morning and evening sports-page coverage of the ARC-AGI-2 and ARC-AGI-3 Kaggle races: the moves, the contenders and the stories behind the box scores.', url: `${SITE}/news` },
-  '/news/competitors': { title: 'Competitor notebook | The ARC Daily', description: 'The ARC Daily’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors` },
+  '/news': { title: 'The ARC Daily — ARC Prize 2026 Kaggle leaderboard news', description: 'Morning and evening reports on the ARC Prize 2026 Kaggle races for ARC-AGI-3 and ARC-AGI-2: leaderboard moves, contenders and sourced competitor notes.', url: `${SITE}/news`, ...NEWS_CARD },
+  '/news/competitors': { title: 'Competitor notebook | The ARC Daily', description: 'The ARC Daily’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/home': {
     title: 'ARC Explainer Resource Hub — games, guides and results',
     description: 'Find Human ARC, Space Force Mission Control, ARC-AGI-3 game guides, human and AI results, and archived benchmark analyses.',

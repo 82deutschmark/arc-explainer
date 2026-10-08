@@ -3,13 +3,14 @@
  * Date: 2026-10-07
  * PURPOSE: Serve canonical URLs, generated sitemap, accurate HTTP status and initial
  *          HTML metadata/content for the SPA. Uses the same policy as client navigation.
+ *          08-Oct-2026 (Claude Opus 5.5): social tags come from shared socialMetaEntries().
  * SRP/DRY check: Pass — page content and shared SEO policy live in their own modules.
  */
 import type { Request, Response, NextFunction } from 'express';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { RouteMetaTags } from '../../shared/routes';
-import { breadcrumbsHtml, completeMeta, discoveryHtml, escapeHtml as esc, INDEX_ROBOTS, normalizePath, redirectPath, structuredData } from '../../shared/seo';
+import { breadcrumbsHtml, completeMeta, discoveryHtml, escapeHtml as esc, INDEX_ROBOTS, normalizePath, redirectPath, socialMetaEntries, structuredData } from '../../shared/seo';
 import { generateSitemap, resolvePageMeta } from '../services/seo/pageContent';
 
 export function generateMetaTags(input: RouteMetaTags): string {
@@ -22,13 +23,7 @@ export function generateMetaTags(input: RouteMetaTags): string {
     `<title>${esc(tags.title)}</title>`, meta('description', tags.description),
     `<link rel="canonical" href="${esc(tags.url)}" />`,
     meta('robots', tags.noindex ? 'noindex,follow' : INDEX_ROBOTS),
-    meta('og:site_name', 'ARC Explainer', true), meta('og:locale', 'en_US', true),
-    meta('og:type', tags.type || 'website', true), meta('og:url', tags.url, true),
-    meta('og:title', tags.title, true), meta('og:description', tags.description, true),
-    meta('og:image', tags.image!, true), meta('og:image:alt', tags.imageAlt!, true),
-    meta('twitter:card', 'summary_large_image'), meta('twitter:url', tags.url),
-    meta('twitter:title', tags.title), meta('twitter:description', tags.description),
-    meta('twitter:image', tags.image!), meta('twitter:image:alt', tags.imageAlt!),
+    ...socialMetaEntries(tags).map(([attribute, name, content]) => meta(name, content, attribute === 'property')),
     `<script id="page-structured-data" type="application/ld+json">${json(structuredData(tags))}</script>`,
     `<script id="page-meta" type="application/json">${json(bootstrap)}</script>`,
   ].join('\n    ');

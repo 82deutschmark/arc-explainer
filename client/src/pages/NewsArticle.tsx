@@ -3,12 +3,13 @@
  * Date: 2026-10-07
  * PURPOSE: Permanent ARC Daily article view with evidence timestamps, linked section
  *          sources, box scores and competition-scoped competitor links.
+ *          08-Oct-2026 (Claude Opus 5.5): head metadata and share card from shared/news.ts.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
-import { SITE_ORIGIN, DEFAULT_IMAGE } from '@shared/seo';
-import { competitorPath, articleStructuredData } from '@shared/news';
+import { SITE_ORIGIN } from '@shared/seo';
+import { competitorPath, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
@@ -19,9 +20,12 @@ export default function NewsArticle() {
   const { articleId } = useParams<{ articleId: string }>();
   const query = useNews();
   const article = query.data?.articles.find(item => item.id === articleId);
-  const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN, DEFAULT_IMAGE) : undefined, [article]);
+  const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : undefined, [article]);
   const missing = !!query.data && !article;
-  usePageMeta({ title: article ? `${article.headline} | The ARC Daily` : 'Dispatch | The ARC Daily', description: article?.dek, canonicalPath: `/news/${articleId}`, noindex: !article, type: 'article', jsonLd });
+  // Same title, description, card and article fields as the server-rendered head.
+  usePageMeta({ title: article ? articleTitle(article) : 'Dispatch | The ARC Daily', description: article ? articleDescription(article) : undefined, canonicalPath: `/news/${articleId}`, noindex: !article, type: 'article', jsonLd,
+    image: article ? { image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : undefined,
+    article: article ? { publishedTime: article.publishedAt, section: competitionName(article.competition) } : undefined });
   const competitors = article ? (query.data?.competitors ?? []).filter(record => record.competition === article.competition && article.teamIds.includes(record.teamId)) : [];
 
   return <NewsPaper date={article?.date}>

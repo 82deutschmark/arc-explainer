@@ -12,6 +12,14 @@
 # reference the old numbers.
 
 
+### Version 9.124.0  Oct 8, 2026
+
+- **ARC Daily share cards** (Author: Claude Opus 5.5, Bubba). Links to `/news` articles now unfurl with their own 1200x630 newspaper card (masthead, competition and edition, headline, dek, top three of that edition's box score) instead of the site-wide "ARC-AGI Explainer" image. The front page and competitor notebook get a masthead card with the latest headline from each competition. Rendered on the server by satori (text as vector paths) and the existing sharp with committed OFL IBM Plex fonts, so the Alpine container needs no system fonts. Article card URLs carry a content version and are cached as immutable.
+- **Search metadata.** One shared helper (`shared/news.ts`) now gives server HTML and the React pages the same titles, descriptions, image and alt text; in-app navigation no longer writes the default image back. Titles keep " | The ARC Daily" only when they fit 65 characters; article descriptions get a dated competition/edition lead-in when it fits 160. Adds og:image size, article published time and section.
+- **Structured data.** NewsArticle uses the card as an ImageObject, adds a publisher logo and de-duplicates citations. `/news` and the notebook are CollectionPages with ItemLists; breadcrumbs use short names.
+- **Discovery.** Sitemap `lastmod` for news URLs only, from recorded publication and check times. RSS gains an atom self link, build date, categories and a media image per item. Crawler HTML prints competition names and Eastern dates instead of raw codes.
+- **Validation:** production build; news/SEO integration tests updated and passing (card size and drawn-content checks, headers, 404s, JSON-LD, lastmod, RSS); newsroom Python tests pass; TypeScript diagnostics identical to main. One pre-existing failure in `tests/integration/ogImage.test.ts` is unchanged. Plan and before/after notes: `docs/plans/2026-10-08-arc-daily-seo-share-cards.md`.
+
 ### Version 9.123.0  Oct 8, 2026
 
 - **Readable medal race** (Author: Codex). Replaces the compressed, vertically clipped rank curve with a gold-cutoff focus, clear cutoff values and a boundary gap. Medal-field and full-board controls preserve the actual score range; responsive axes and a separate team detail panel support pointer, touch and keyboard inspection on both ARC-2 and ARC-3.

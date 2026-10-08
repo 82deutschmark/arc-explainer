@@ -104,7 +104,7 @@ describe('SEO delivery', () => {
       expect(response.headers.get('location')).toBe(`${to}?ref=test`);
     }
   });
-  it('generates only unique, canonical, existing sitemap URLs without fictional lastmod dates', async () => {
+  it('generates only unique, canonical, existing sitemap URLs, dated only where a real change time exists', async () => {
     const response = await fetch(`${base}/sitemap.xml`);
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('xml');
@@ -121,7 +121,13 @@ describe('SEO delivery', () => {
       expect(status, route).toBe(200);
       expect(tags.noindex, route).not.toBe(true);
     }
-    expect(generateSitemap()).not.toContain('<lastmod>');
+    // Only ARC Daily URLs carry lastmod, taken from recorded publication / check times.
+    const dated = [...generateSitemap().matchAll(/<loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod>/g)];
+    expect(dated.length).toBeGreaterThan(0);
+    for (const [, url, lastmod] of dated) {
+      expect(new URL(url).pathname.startsWith('/news'), url).toBe(true);
+      expect(Number.isFinite(Date.parse(lastmod)), url).toBe(true);
+    }
     const id = puzzleLoader.getAvailablePuzzleIds()[0];
     expect(id).toBeTruthy();
     expect((await fetch(`${base}/puzzle/${id}`)).status).toBe(200);

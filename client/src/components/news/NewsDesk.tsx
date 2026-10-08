@@ -3,31 +3,24 @@
  * Date: 2026-10-07
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
+ *          08-Oct-2026 (Claude Opus 5.5): newsDate/competitionName now live in shared/news.ts.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
-import { NEWS_NAME, newsArticlePath, competitorPath, type NewsArticle, type NewsIndex, type NewsCompetition, type CompetitorRecord } from '@shared/news';
+import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, type NewsArticle, type NewsIndex, type CompetitorRecord } from '@shared/news';
 import './news.css';
 
 export function useNews() {
   return useQuery<NewsIndex>({ queryKey: ['/api/news'], staleTime: 60_000 });
 }
 
-export function newsDate(value: string, withTime = false): string {
-  // Date-only edition labels must not roll back a day when displayed in Eastern Time.
-  const date = new Date(value.length === 10 ? `${value}T12:00:00Z` : value);
-  if (!Number.isFinite(date.getTime())) return 'Date unavailable';
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric',
-    ...(withTime ? { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' } as const : {}),
-  }).format(date);
-}
+// Date labels and competition names moved to shared/news.ts on 08-Oct-2026 so server HTML,
+// share cards and these views print them identically.
+export { newsDate, competitionName };
 
-export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key].label;
 export const sortedArticles = (articles: NewsArticle[]) => [...articles].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
 
 export function NewsPaper({ children, frontPage = false, date }: { children: ReactNode; frontPage?: boolean; date?: string }) {
@@ -64,7 +57,7 @@ export function NewsStatus({ loading, error, retry }: { loading: boolean; error:
 }
 
 export function EditionLabel({ article }: { article: NewsArticle }) {
-  return <div className="news-kicker"><span>{competitionName(article.competition)}</span><span>{article.id.endsWith('-preview') ? 'Launch preview' : article.edition === 'morning' ? 'Morning edition' : 'Evening edition'}</span></div>;
+  return <div className="news-kicker"><span>{competitionName(article.competition)}</span><span>{editionLabel(article)}</span></div>;
 }
 
 export function StoryPreview({ article, lead = false }: { article: NewsArticle; lead?: boolean }) {
