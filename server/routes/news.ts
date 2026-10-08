@@ -1,17 +1,30 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Date: 2026-10-07; 08-October-2026
  * PURPOSE: Read-only public archive and immutable reporting evidence for ARC Daily.
+ *          08-Oct-2026: serves the newspaper's share cards (newsCardImage.ts). Article
+ *          card URLs carry a content version (shared/news.ts articleCardPath), so they are
+ *          cached as immutable; the section card follows the latest editions and is not.
  * SRP/DRY check: Pass — all publication is via reviewed git data; no public write API.
  */
-import type { Express } from 'express';
+import type { Express, Response } from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
 import { getNewsIndex, NEWS_DIRECTORY } from '../services/news/newsStore';
 import { newsRss } from '../services/news/newsPresentation';
+import { buildArticleCard, buildSectionCard } from '../services/news/newsCardImage';
+const sendCard = (res: Response, card: Buffer | null, cacheControl: string) => card
+  ? res.type('image/png').set('Cache-Control', cacheControl).send(card)
+  : res.status(404).set('Cache-Control', 'no-store').json({ error: 'Preview image not found' });
 export function mountNews(app: Express) {
   app.get('/api/news', (_req, res, next) => {
     try { res.set('Cache-Control', 'public, max-age=60').json(getNewsIndex()); } catch (error) { next(error); }
+  });
+  app.get('/api/news/og-image.png', async (_req, res, next) => {
+    try { sendCard(res, await buildSectionCard(), 'public, max-age=1800'); } catch (error) { next(error); }
+  });
+  app.get('/api/news/og-image/:id.png', async (req, res, next) => {
+    try { sendCard(res, await buildArticleCard(req.params.id), 'public, max-age=31536000, immutable'); } catch (error) { next(error); }
   });
   app.get('/api/news/:id/evidence', (req, res, next) => {
     try {

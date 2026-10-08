@@ -122,6 +122,7 @@
     "react-resizable-panels": "^2.1.7",
     "react-router-dom": "^7.7.1",
     "recharts": "^2.15.2",
+    "satori": "^0.41.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "ts-trueskill": "^5.1.0",
