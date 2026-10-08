@@ -1,0 +1,182 @@
+{
+  "baselineAt": null,
+  "competition": "arc-2",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants. No usable observation exists at the comparison baseline.",
+  "dataAsOf": "2026-10-08T09:43:16Z",
+  "date": "2026-10-08",
+  "dek": "The dawn snapshot shows a crowded lead group and one recorded move below it, while the missing midnight baseline limits overnight comparisons.",
+  "discord": "**ARC-AGI-2 | Morning edition — October 8**\n\nTufa Labs leads the public board at 83.61. rabbithole follows at 80.56, Yi-Chia Chen at 77.22 and nvbanana at 76.67: the front four are 6.94 points apart. ALbert RUehlman is fifth at 66.81.\n\nOne observed score event moved Jack Cole from 26th to 17th at 10:42 p.m. Eastern. The feed has no usable UTC midnight baseline, so a net overnight gain or current rank for Jack Cole cannot be inferred from that event. The provisional public gold line is 37.36 across 2,558 teams. Final medals depend on the private board.\n\nStandings observed at 5:43 a.m. Eastern; later evaluations may change them. [Full report](https://arc.markbarney.net/news/2026-10-08-morning-arc-2)",
+  "edition": "morning",
+  "generatedBy": "gpt-6-sol",
+  "headline": "Tufa Labs leads an ARC-AGI-2 front four split by seven points",
+  "id": "2026-10-08-morning-arc-2",
+  "publishedAt": "2026-10-08T10:00:14Z",
+  "sections": [
+    {
+      "heading": "Four teams at the front",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Tufa Labs leads the ARC-AGI-2 public board at 83.61 in the 5:43 a.m. Eastern snapshot. rabbithole is second at 80.56, Yi-Chia Chen third at 77.22 and nvbanana fourth at 76.67. Just 6.94 points separate first from fourth. ALbert RUehlman is fifth at 66.81, a larger gap of 9.86 points behind fourth place. These are current positions, not verified overnight changes: the feed has no usable observation at the UTC midnight comparison baseline."
+    },
+    {
+      "heading": "A move recorded below the leaders",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The feed records Jack Cole moving from 26th at 33.61 to 17th at 36.94 in a score event observed at 10:42 p.m. Eastern. That is a recorded move, not proof of a net overnight gain or a current 17th-place standing. The closing snapshot puts _hans sixth at 60.42, Dawid Kopiczko seventh at 55.00, Majkel1337 eighth at 48.33, ARC Raiders ninth at 47.22 and Khaotic Sethesis tenth at 45.83."
+    },
+    {
+      "heading": "What the morning board can tell us",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The public gold line is 37.36 among 2,558 teams in the closing observation. Jan Disselhoff stands 1,585th at 14.17 in that snapshot. Without a usable midnight baseline, the board does not establish which leading teams gained or lost ground overnight. The observation was made before the 6 a.m. issue cutoff, and further submission evaluations may alter these standings. Public medal bands remain provisional; private results decide final medals."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-08T10:00:14Z",
+      "id": "board",
+      "title": "ARC-2 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15486939-0",
+      "title": "ARC-AGI-3 public team roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15507730-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15507730-1",
+      "title": "The ARChitects — 2025 technical report",
+      "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": null,
+      "score": 83.61,
+      "scoreChange": null,
+      "teamId": "16756524"
+    },
+    {
+      "name": "rabbithole",
+      "rank": 2,
+      "rankChange": null,
+      "score": 80.56,
+      "scoreChange": null,
+      "teamId": "15789060"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 3,
+      "rankChange": null,
+      "score": 77.22,
+      "scoreChange": null,
+      "teamId": "15501171"
+    },
+    {
+      "name": "nvbanana",
+      "rank": 4,
+      "rankChange": null,
+      "score": 76.67,
+      "scoreChange": null,
+      "teamId": "15486939"
+    },
+    {
+      "name": "ALbert RUehlman",
+      "rank": 5,
+      "rankChange": null,
+      "score": 66.81,
+      "scoreChange": null,
+      "teamId": "16671221"
+    },
+    {
+      "name": "_hans",
+      "rank": 6,
+      "rankChange": null,
+      "score": 60.42,
+      "scoreChange": null,
+      "teamId": "16768245"
+    },
+    {
+      "name": "Dawid Kopiczko",
+      "rank": 7,
+      "rankChange": null,
+      "score": 55,
+      "scoreChange": null,
+      "teamId": "16461211"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 8,
+      "rankChange": null,
+      "score": 48.33,
+      "scoreChange": null,
+      "teamId": "16373916"
+    },
+    {
+      "name": "ARC Raiders",
+      "rank": 9,
+      "rankChange": null,
+      "score": 47.22,
+      "scoreChange": null,
+      "teamId": "15526034"
+    },
+    {
+      "name": "Khaotic Sethesis",
+      "rank": 10,
+      "rankChange": null,
+      "score": 45.83,
+      "scoreChange": null,
+      "teamId": "15648732"
+    },
+    {
+      "name": "Mark Barney",
+      "rank": 565,
+      "rankChange": null,
+      "score": 30.97,
+      "scoreChange": null,
+      "teamId": "17023174"
+    },
+    {
+      "name": "Son Pham",
+      "rank": 784,
+      "rankChange": null,
+      "score": 30.14,
+      "scoreChange": null,
+      "teamId": "15605185"
+    },
+    {
+      "name": "Jan Disselhoff",
+      "rank": 1585,
+      "rankChange": null,
+      "score": 14.17,
+      "scoreChange": null,
+      "teamId": "15507730"
+    }
+  ],
+  "teamIds": [
+    "16756524",
+    "15789060",
+    "15501171",
+    "15486939",
+    "16671221",
+    "16768245",
+    "16461211",
+    "16373916",
+    "15526034",
+    "15648732",
+    "15507730"
+  ]
+}
