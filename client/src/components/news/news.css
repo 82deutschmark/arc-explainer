@@ -1,7 +1,7 @@
 /* Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-08
  * PURPOSE: ARC Daily's responsive editorial layout. The Explainer palette and typography
- * carry the front page, articles and sourced competitor notebook as one publication.
+ * carry the front page, archive-card gallery, articles and sourced competitor notebook.
  * SRP/DRY check: Pass — one stylesheet serves every newspaper route.
  */
 .arc-daily { --news-ink: #24221e; --news-rule: #b8afa0; --news-red: #922f25; color: var(--news-ink); background: #e7e1d6; min-height: 75vh; padding: 24px 16px 52px; font-family: Georgia, 'Times New Roman', serif; }
@@ -148,6 +148,14 @@
 .news-explore-grid strong { display: block; margin: 17px 0 9px; font-size: 22px; font-weight: 800; line-height: 1.1; letter-spacing: -.035em; }
 .news-explore-grid p { font-size: 13px; line-height: 1.5; color: #4a4a4a; }
 .news-explore-grid em { display: block; margin-top: auto; padding-top: 18px; color: var(--news-red); font-size: 11px; font-style: normal; font-weight: 700; }
+.news-people-archive { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .7fr); min-height: 280px; gap: 24px; margin-top: 22px; overflow: hidden; background: #111; color: #fff; }
+.news-people-archive-copy { align-self: center; padding: 32px 0 32px 34px; }
+.news-people-archive h2 { margin: 9px 0 12px; font-size: clamp(28px, 3vw, 39px); font-weight: 800; letter-spacing: -.045em; line-height: 1.1; }
+.news-people-archive p { max-width: 610px; color: #d4d4d4; font-size: 15px; line-height: 1.6; }
+.news-people-archive .news-read { color: #fff !important; }
+.news-people-archive-art { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 6px; overflow: hidden; padding: 20px 18px 0 0; text-decoration: none; }
+.news-people-archive-art img { display: block; width: 100%; aspect-ratio: 848 / 1264; object-fit: cover; border: 1px solid #5b5b5b; box-shadow: 0 8px 24px #0008; }
+.news-people-archive-art:hover img { filter: brightness(1.13); }
 .news-directory-grid { gap: 12px; margin: 18px 0; }
 .news-notebook-entry { display: flex; flex-direction: column; min-height: 250px; margin: 0; padding: 19px; border: 1px solid var(--news-rule); background: var(--news-soft); }
 .news-notebook-entry h3 { font-size: 23px; font-weight: 800; letter-spacing: -.04em; }
@@ -171,7 +179,7 @@
 .news-filter input, .news-filter button { border-color: var(--news-rule); }
 .news-filter button[aria-pressed='true'] { background: var(--news-ink); color: #fff; }
 @media (max-width: 1050px) { .news-explore-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 800px) { .news-intro { grid-template-columns: 1fr; } .news-intro-link { justify-self: start; } .news-front-grid { grid-template-columns: 1fr; } .news-sidebar { border-left: 0; padding-left: 0; } }
+@media (max-width: 800px) { .news-intro { grid-template-columns: 1fr; } .news-intro-link { justify-self: start; } .news-front-grid, .news-people-archive { grid-template-columns: 1fr; } .news-sidebar { border-left: 0; padding-left: 0; } .news-people-archive-copy { padding: 28px 26px 0; } .news-people-archive-art { max-width: 560px; padding: 0 26px 20px; } }
 @media (max-width: 600px) {
   .arc-daily { padding: 0 10px 35px; }
   .news-paper { padding: 17px 5px 24px; }

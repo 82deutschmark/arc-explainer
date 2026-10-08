@@ -1,6 +1,6 @@
 # The ARC Daily reporter
 
-The scheduled **GPT-6 SOL** run is the journalist. This helper makes no model API
+The scheduled **GPT-6 Sol** run is the journalist. This helper makes no model API
 calls. Use the signed-in Codex subscription. Publish a morning edition at **6 am
 America/New_York** and an evening edition at **6 pm America/New_York**; the timezone
 handles daylight saving. The site is authorized for publication. Discord text is

@@ -6,6 +6,7 @@
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
  *          and sourced notebook previews align with the ARC Explainer landing page.
  *          The masthead now names both contests and links the established ARC Discord.
+ *          The footer uses the public GPT-6 Sol model spelling.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import type { ReactNode } from 'react';
@@ -48,7 +49,7 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
         </header>
         {children}
         <footer className="news-footer">
-          <strong>{NEWS_NAME}</strong><span>ARC Daily • GPT-6 SOL</span>
+          <strong>{NEWS_NAME}</strong><span>ARC Daily • GPT-6 Sol</span>
           <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard.</p>
           <Link href="/home">An ARC Explainer publication →</Link>
         </footer>

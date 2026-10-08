@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex
-# Date: 2026-10-07
-# PURPOSE: Prepare auditable ARC Daily evidence, validate GPT-6 SOL prose, and publish
+# Date: 2026-10-08
+# PURPOSE: Prepare auditable ARC Daily evidence, validate GPT-6 Sol prose, and publish
 # immutable JSON articles and competitor observations consumed by shared/news.ts.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
 """Deterministic newsroom plumbing. The scheduled model writes the journalism."""

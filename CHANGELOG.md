@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.126.2  Oct 8, 2026
+
+- **Hall of Fame cards on The ARC Daily** (Author: GPT-6.1 Sol / Codex). Links the newspaper to ARC Explainer's illustrated Hall of Fame with three existing archive cards, while keeping current Kaggle competitor dossiers separate and sourced. Corrects the visible reporter model spelling to GPT-6 Sol in the site and reporter guidance; the scheduled model ID and article records are unchanged. Client build, 18 news/SEO tests and desktop/narrow visual checks passed. Scope: `docs/2026-10-08-arc-daily-landing-plan.md`.
+
 ### Version 9.126.1  Oct 8, 2026
 
 - **Repair archived puzzle analytics** (Author: Codex). Difficult-puzzle accuracy now counts fully correct scored attempts instead of trustworthiness, excludes unknown outcomes, and avoids feedback duplication. Dataset and actual test-count filters apply before ranking/limit, including tasks shared between ARC editions. Restore metadata and canonical examiner/saved-attempt links, cost/time sorting, confidence percentage units, retry behavior and an accessible expand control. Clearly label the mixed archive and sample counts.
@@ -51,9 +55,9 @@
 
 ### Version 9.122.0  Oct 7, 2026
 
-- **The ARC Daily** (Author: GPT-6.1 Sol / Codex; launch reporting: GPT-6 SOL). Adds a separate newspaper at `/news`, permanent article pages and a sourced competitor notebook. Keeps the existing leaderboard design as the live box scores. Articles include dated observations, coverage limits, source links and archived reporting evidence.
+- **The ARC Daily** (Author: GPT-6.1 Sol / Codex; launch reporting: GPT-6 Sol). Adds a separate newspaper at `/news`, permanent article pages and a sourced competitor notebook. Keeps the existing leaderboard design as the live box scores. Articles include dated observations, coverage limits, source links and archived reporting evidence.
 - **Search and sharing.** Full article and competitor text is delivered in initial HTML, with NewsArticle structured data, canonical metadata, sitemap discovery and RSS. The same article schema follows browser navigation.
-- **Subscription newsroom.** Python 3.13 prepares independent ARC-2/ARC-3 evidence and validates immutable articles written by scheduled GPT-6 SOL Codex runs. Morning compares with UTC midnight; evening uses the previous Eastern evening. Sparse history is labelled, identities remain competition-specific, and the notebook retains cited public background across editions. No paid model API or public publishing endpoint.
+- **Subscription newsroom.** Python 3.13 prepares independent ARC-2/ARC-3 evidence and validates immutable articles written by scheduled GPT-6 Sol Codex runs. Morning compares with UTC midnight; evening uses the previous Eastern evening. Sparse history is labelled, identities remain competition-specific, and the notebook retains cited public background across editions. No paid model API or public publishing endpoint.
 - **Validation:** production client/server bundles, 25 focused news/SEO tests and 9 newsroom tests pass. Existing unrelated TypeScript diagnostics remain; no new diagnostics.
 
 ### Version 9.121.0  Oct 7, 2026

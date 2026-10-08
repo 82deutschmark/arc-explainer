@@ -2,7 +2,8 @@
  * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-08
  * PURPOSE: ARC Daily landing page for both Kaggle contests, with ARC-AGI-3 as the
- *          lead, separate ARC-AGI-2 coverage, sourced cards and community/resource links.
+ *          lead, separate ARC-AGI-2 coverage, sourced cards, existing Hall of Fame art,
+ *          and community/resource links.
  * SRP/DRY check: Pass — uses shared newspaper presentation, query and news contract.
  */
 import { Link } from 'wouter';
@@ -48,6 +49,14 @@ export default function News() {
           <Link href="/arc3/games"><span>05 / The rules</span><strong>Official game guides</strong><p>See pictures, per-level notes and play records for the 25 public ARC-AGI-3 games.</p><em>Browse guides ↗</em></Link>
           <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer"><span>06 / The community</span><strong>ARC Discord</strong><p>Join the official ARC Prize community to discuss the contests and the games.</p><em>Join the conversation ↗</em></a>
         </div>
+      </section>
+      <section className="news-people-archive" aria-label="ARC Hall of Fame cards">
+        <div className="news-people-archive-copy"><span className="news-eyebrow">From the ARC Explainer archive</span><h2>The people behind the puzzles.</h2><p>The illustrated Hall of Fame collects past ARC contributors and prize stories. The dossiers below follow the current Kaggle teams with their own sourced records.</p><Link href="/hall-of-fame" className="news-read">Browse the Hall of Fame cards →</Link></div>
+        <Link href="/hall-of-fame" className="news-people-archive-art" aria-label="Explore the illustrated ARC Hall of Fame">
+          <img src="/ARChitechts.png" alt="Historical ARChitects team card" loading="lazy" />
+          <img src="/jfPuget3.png" alt="Historical Jean-François Puget card" loading="lazy" />
+          <img src="/dries.png" alt="Historical Dries Smit card" loading="lazy" />
+        </Link>
       </section>
       <section className="news-competitor-section" aria-label="ARC-AGI-3 competitor notebook">
         <div className="news-section-heading"><div><span className="news-eyebrow">People and teams</span><h2>The competitor notebook</h2></div><p>Short, sourced dossiers. Team identities stay tied to the competition where they were observed.</p></div>

@@ -30,3 +30,9 @@ Make `/news` an ARC-AGI-3 Kaggle contest daily in the visual language of the ARC
 ## Editorial follow-up, 8 October
 
 The publication keeps the name **The ARC Daily** and covers ARC-AGI-3 and ARC-AGI-2 as separate contests. The front page may lead with ARC-AGI-3 while still giving ARC-AGI-2 its own story and direct chart link. Add the established ARC Prize Discord invite to the page. Use dates in visible article furniture; keep exact observation times in archived evidence. The reporter workflow now calls for specific, lively sports writing rather than timestamp-led prose.
+
+## Archive cards and model credit, 8 October
+
+The newspaper links to the existing illustrated Hall of Fame and shows three of its archive cards as a visual route into that gallery. These cards represent past ARC contributors and prize stories. Current Kaggle team dossiers remain separate and use their own cited identities and facts. The visible reporter credit and instructions spell the model **GPT-6 Sol**; the scheduled model identifier remains `gpt-6-sol`.
+
+The client build and 18 focused news/SEO tests passed. The archive strip was inspected at 1440px and 500px. The site reuses the gallery's existing image files and `/hall-of-fame` route.
