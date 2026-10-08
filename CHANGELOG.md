@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.127.0  Oct 8, 2026
+
+- **VoynichLabs sponsors The ARC Daily** (Author: GPT-6.1 Sol / Codex). The newspaper masthead and footer disclose the sponsor. Clearly labeled house advertisements on the front page and article rail link to VoynichLabs and its published AI music videos. The sponsor units use a distinct display style and leave reporting content and source lists unchanged. Client build, 18 focused news/SEO tests and desktop/phone/rail layout checks passed. Scope and limits: `docs/2026-10-08-arc-daily-sponsorship-plan.md`.
+
 
 ### Version 9.126.2  Oct 8, 2026
 

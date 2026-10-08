@@ -6,7 +6,8 @@
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
  *          and sourced notebook previews align with the ARC Explainer landing page.
  *          The masthead now names both contests and links the established ARC Discord.
- *          The footer uses the public GPT-6 Sol model spelling.
+ *          The footer uses the public GPT-6 Sol model spelling. The shared shell
+ *          discloses the publication's VoynichLabs sponsorship.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import type { ReactNode } from 'react';
@@ -14,6 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, type NewsArticle, type NewsIndex, type CompetitorRecord } from '@shared/news';
+import { SponsorDisclosure } from './SponsorPlacement';
 import './news.css';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
@@ -35,6 +37,7 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
       <div className="news-paper">
         <header className="news-masthead">
           <div className="news-topline"><span><Link href="/home">ARC Explainer</Link> / The competition desk</span><span>ARC-AGI-3 &amp; ARC-AGI-2</span></div>
+          <SponsorDisclosure />
           {frontPage ? <div className="news-name">{NEWS_NAME}</div> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
           <div className="news-motto">The moves. The margins. The race.</div>
           <div className="news-edition-line"><span>{date ? newsDate(date) : 'The competition newspaper'}</span><span>Two Kaggle contests. One daily paper.</span></div>
@@ -50,7 +53,7 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
         {children}
         <footer className="news-footer">
           <strong>{NEWS_NAME}</strong><span>ARC Daily • GPT-6 Sol</span>
-          <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard.</p>
+          <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>
           <Link href="/home">An ARC Explainer publication →</Link>
         </footer>
       </div>

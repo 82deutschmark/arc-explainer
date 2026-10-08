@@ -1,7 +1,8 @@
 /* Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-08
  * PURPOSE: ARC Daily's responsive editorial layout. The Explainer palette and typography
- * carry the front page, archive-card gallery, articles and sourced competitor notebook.
+ * carry the front page, archive-card gallery, articles, sourced competitor notebook
+ * and disclosed VoynichLabs sponsor placements.
  * SRP/DRY check: Pass — one stylesheet serves every newspaper route.
  */
 .arc-daily { --news-ink: #24221e; --news-rule: #b8afa0; --news-red: #922f25; color: var(--news-ink); background: #e7e1d6; min-height: 75vh; padding: 24px 16px 52px; font-family: Georgia, 'Times New Roman', serif; }
@@ -195,4 +196,37 @@
   .news-secondary .news-story + .news-story { border-left: 0; border-top: 1px solid var(--news-rule); padding: 22px 0 0; }
   .news-archive li { grid-template-columns: 1fr; gap: 5px; }
   .news-archive-date span { display: inline; margin-left: 8px; }
+}
+
+/* Display advertising is visually distinct from reporting and always names the sponsor. */
+.news-sponsor-disclosure { display: flex; justify-content: flex-end; gap: 5px; margin-top: 8px; font: 700 10px 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .07em; text-transform: uppercase; }
+.news-sponsor-disclosure a { color: var(--news-red); }
+.news-ad { margin: 26px 0 0; color: #f7f7f3; background: #111b20; border: 1px solid #314048; }
+.news-ad-label { padding: 8px 16px; border-bottom: 1px solid #536068; color: #d1d8d9; font: 700 10px 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; }
+.news-ad-label span { color: #dc8b59; padding: 0 5px; }
+.news-ad-body { display: grid; grid-template-columns: 86px minmax(0, 1fr) auto; align-items: center; gap: 22px; padding: 20px 24px; }
+.news-ad-mark { display: grid; place-items: center; width: 74px; height: 74px; border: 1px solid #db8859; border-radius: 50%; color: #f2a56d; font-size: 36px; }
+.news-ad-brand { display: block; color: #f1a06f; font: 800 12px 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .18em; }
+.news-ad h2 { margin: 6px 0 5px; color: #fff; font-size: clamp(22px, 2.4vw, 32px); font-weight: 800; letter-spacing: -.045em; line-height: 1.08; }
+.news-ad p { margin: 0; color: #cad1d1; font-size: 13px; line-height: 1.45; }
+.news-ad-actions { display: flex; flex-direction: column; align-items: stretch; gap: 8px; min-width: 160px; }
+.news-ad-actions a { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid #d98759; color: #fff; font: 700 11px 'SF Mono', Menlo, Consolas, monospace; text-decoration: none; }
+.news-ad-actions a:first-child { color: #111b20; background: #f1a06f; border-color: #f1a06f; }
+.news-ad-actions a:hover { color: #111b20; background: #fff; border-color: #fff; text-decoration: none; }
+.news-ad-rail { margin: 30px 0 24px; }
+.news-ad-rail .news-ad-body { display: block; padding: 20px; }
+.news-ad-rail .news-ad-mark { width: 52px; height: 52px; margin-bottom: 18px; font-size: 27px; }
+.news-ad-rail h2 { font-size: 25px; }
+.news-ad-rail .news-ad-actions { margin-top: 20px; }
+@media (max-width: 900px) {
+  .news-ad-banner .news-ad-body { grid-template-columns: 64px minmax(0, 1fr); }
+  .news-ad-banner .news-ad-mark { width: 60px; height: 60px; font-size: 30px; }
+  .news-ad-banner .news-ad-actions { grid-column: 2; flex-direction: row; flex-wrap: wrap; }
+}
+@media (max-width: 600px) {
+  .news-sponsor-disclosure { justify-content: flex-start; font-size: 9px; }
+  .news-ad-banner .news-ad-body { display: block; padding: 18px; }
+  .news-ad-banner .news-ad-mark { float: right; margin-left: 10px; }
+  .news-ad-banner .news-ad-actions { margin-top: 18px; }
+  .news-ad-banner .news-ad-actions a { flex: 1 1 160px; }
 }

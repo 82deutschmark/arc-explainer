@@ -5,6 +5,7 @@
  *          sources, box scores and competition-scoped competitor links.
  *          08-Oct-2026: head metadata and share card from shared/news.ts; visible
  *          publication and source labels use dates while exact times stay in evidence.
+ *          The article rail carries a disclosed VoynichLabs advertisement.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
 import { Link, useParams } from 'wouter';
@@ -14,6 +15,7 @@ import { competitorPath, articleStructuredData, articleTitle, articleDescription
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
 const points = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 4 });
 
@@ -61,6 +63,7 @@ export default function NewsArticle() {
           <h2 className="news-section-title">How this report was checked</h2>
           <div className="news-note"><p><strong>Board date</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf)}</time></p><p><strong>Comparison</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
           <a className="news-read" href={`/api/news/${article.id}/evidence`}>Exact observations and reporting data →</a>
+          <SponsorPlacement format="rail" />
           <h2 className="news-section-title">Sources</h2>
           <ol className="news-source-list">{article.sources.map(source => <li key={source.id}><a href={source.url}>{source.title} ↗</a><span>Checked {newsDate(source.accessedAt)}</span></li>)}</ol>
           {!!competitors.length && <><h2 className="news-section-title">Names in this edition</h2><ul className="news-observations">{competitors.map(competitor => <li key={competitor.id}><Link href={competitorPath(competitor.id)}>{competitor.name} →</Link></li>)}</ul></>}

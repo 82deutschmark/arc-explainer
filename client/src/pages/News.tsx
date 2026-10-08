@@ -3,12 +3,13 @@
  * Date: 2026-10-08
  * PURPOSE: ARC Daily landing page for both Kaggle contests, with ARC-AGI-3 as the
  *          lead, separate ARC-AGI-2 coverage, sourced cards, existing Hall of Fame art,
- *          and community/resource links.
+ *          and community/resource links, plus disclosed VoynichLabs display advertising.
  * SRP/DRY check: Pass — uses shared newspaper presentation, query and news contract.
  */
 import { Link } from 'wouter';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ARC_DISCORD_URL, ArticleArchive, NewsPaper, NewsStatus, NotebookEntry, StoryPreview, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
 export default function News() {
   const query = useNews();
@@ -24,6 +25,7 @@ export default function News() {
       <div className="news-intro-copy"><span className="news-eyebrow">ARC Explainer / Competition desk</span><h1>The daily story of ARC-AGI-3 and ARC-AGI-2.</h1><p>Follow both Kaggle contests: the leaders, the challengers, and the moves that change the field. ARC-AGI-3 leads the front page; each contest has its own report and live board.</p></div>
       <a className="news-intro-link" href="/kaggle-leaderboard#medal-race">Explore the ARC-AGI-3 race <span aria-hidden="true">↗</span></a>
     </section>
+    <SponsorPlacement format="banner" />
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && <>
       <div className="news-front-grid">
