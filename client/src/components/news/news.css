@@ -141,7 +141,7 @@
 .news-section-heading { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 30px; padding: 0 0 19px; border-bottom: 2px solid var(--news-ink); }
 .news-section-heading h2 { margin: 7px 0 0; font-size: clamp(28px, 3vw, 40px); font-weight: 800; letter-spacing: -.045em; line-height: 1.1; }
 .news-section-heading p { max-width: 410px; color: #4a4a4a; font-size: 14px; line-height: 1.55; }
-.news-explore-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.news-explore-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
 .news-explore-grid > a { display: flex; flex-direction: column; min-height: 230px; padding: 18px; border: 1px solid var(--news-rule); background: var(--news-soft); text-decoration: none; }
 .news-explore-grid > a:hover { border-color: var(--news-red); text-decoration: none; background: #fff; }
 .news-explore-grid span { color: var(--news-red); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; }

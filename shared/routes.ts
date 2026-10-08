@@ -11,7 +11,7 @@
  *          landing page's 05-Oct pivot to the leaderboard.
  *          08-Oct-2026 (Claude Opus 5.5): image size and Open Graph article fields; the two
  *          ARC Daily index routes use the newspaper's own share card. The front-page
- *          description now leads with ARC-AGI-3 and its linked results.
+ *          description now names both Kaggle contests and their linked results.
  * SRP/DRY check: Pass - Single source of truth for route meta tags
  */
 
@@ -65,7 +65,7 @@ const NEWS_CARD = { image: `${SITE}${NEWS_SECTION_CARD_PATH}`, imageAlt: NEWS_SE
  * Organized by feature area - add new routes near related routes
  */
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
-  '/news': { title: 'The ARC Daily — ARC-AGI-3 Kaggle contest daily', description: 'ARC-AGI-3 Kaggle contest reporting, leaderboard graphics, human records and sourced competitor profiles. ARC-AGI-2 editions are covered separately.', url: `${SITE}/news`, ...NEWS_CARD },
+  '/news': { title: 'The ARC Daily — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', url: `${SITE}/news`, ...NEWS_CARD },
   '/news/competitors': { title: 'Competitor notebook | The ARC Daily', description: 'The ARC Daily’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/home': {
     title: 'ARC Explainer Resource Hub — games, guides and results',

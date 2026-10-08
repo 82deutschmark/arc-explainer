@@ -5,6 +5,7 @@
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
  *          and sourced notebook previews align with the ARC Explainer landing page.
+ *          The masthead now names both contests and links the established ARC Discord.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import type { ReactNode } from 'react';
@@ -13,6 +14,9 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, type NewsArticle, type NewsIndex, type CompetitorRecord } from '@shared/news';
 import './news.css';
+
+/** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
+export const ARC_DISCORD_URL = 'https://discord.gg/9b77dPAmcA';
 
 export function useNews() {
   return useQuery<NewsIndex>({ queryKey: ['/api/news'], staleTime: 60_000 });
@@ -29,16 +33,17 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
     <div className="arc-daily">
       <div className="news-paper">
         <header className="news-masthead">
-          <div className="news-topline"><span><Link href="/home">ARC Explainer</Link> / The competition desk</span><span>ARC-AGI-3 Kaggle contest daily</span></div>
+          <div className="news-topline"><span><Link href="/home">ARC Explainer</Link> / The competition desk</span><span>ARC-AGI-3 &amp; ARC-AGI-2</span></div>
           {frontPage ? <div className="news-name">{NEWS_NAME}</div> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
           <div className="news-motto">The moves. The margins. The race.</div>
-          <div className="news-edition-line"><span>{date ? newsDate(date) : 'The competition newspaper'}</span><span>Morning &amp; evening · 6 am / 6 pm Eastern</span></div>
+          <div className="news-edition-line"><span>{date ? newsDate(date) : 'The competition newspaper'}</span><span>Two Kaggle contests. One daily paper.</span></div>
           <nav className="news-nav" aria-label="ARC Daily sections">
             <Link href="/news">Front page</Link>
             <Link href="/news/competitors">Competitor notebook</Link>
             <a href="/kaggle-leaderboard#medal-race">Leaderboard graphics ↗</a>
             <a href="/human-records.html">Human &amp; AI records ↗</a>
             <Link href="/kaggle-leaderboard/arc-2">ARC-2 desk ↗</Link>
+            <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">ARC Discord ↗</a>
           </nav>
         </header>
         {children}
@@ -67,7 +72,7 @@ export function StoryPreview({ article, lead = false }: { article: NewsArticle; 
     <EditionLabel article={article} />
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
-    <div className="news-byline">ARC Daily • GPT-6 SOL <span>· {newsDate(article.date)}</span></div>
+    <div className="news-byline">The ARC Daily sports desk <span>· {newsDate(article.date)}</span></div>
     {lead && article.sections[0] && <p className="news-lead-excerpt">{article.sections[0].text}</p>}
     <Link href={newsArticlePath(article.id)} className="news-read">Read the dispatch →</Link>
   </article>;

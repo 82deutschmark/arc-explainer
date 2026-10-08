@@ -1,13 +1,13 @@
 /**
  * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-08
- * PURPOSE: ARC-AGI-3-first daily landing page with separate ARC-AGI-2 coverage,
- *          sourced competitor cards, and direct routes into Explainer's results and guides.
+ * PURPOSE: ARC Daily landing page for both Kaggle contests, with ARC-AGI-3 as the
+ *          lead, separate ARC-AGI-2 coverage, sourced cards and community/resource links.
  * SRP/DRY check: Pass — uses shared newspaper presentation, query and news contract.
  */
 import { Link } from 'wouter';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { ArticleArchive, NewsPaper, NewsStatus, NotebookEntry, StoryPreview, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { ARC_DISCORD_URL, ArticleArchive, NewsPaper, NewsStatus, NotebookEntry, StoryPreview, sortedArticles, useNews } from '@/components/news/NewsDesk';
 
 export default function News() {
   const query = useNews();
@@ -16,12 +16,12 @@ export default function News() {
   const arc2Articles = articles.filter(article => article.competition === 'arc-2');
   const lead = arc3Articles[0];
   const competitors = [...(query.data?.competitors ?? [])].filter(record => record.competition === 'arc-3').sort((a, b) => b.facts.length - a.facts.length || a.name.localeCompare(b.name));
-  usePageMeta({ title: 'The ARC Daily — ARC-AGI-3 Kaggle contest daily', description: 'ARC-AGI-3 Kaggle contest reporting, leaderboard graphics, human records and sourced competitor profiles. ARC-AGI-2 editions are covered separately.', canonicalPath: '/news' });
+  usePageMeta({ title: 'The ARC Daily — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', canonicalPath: '/news' });
 
   return <NewsPaper frontPage date={lead?.date}>
     <section className="news-intro" aria-label="About The ARC Daily">
-      <div className="news-intro-copy"><span className="news-eyebrow">ARC Explainer / Competition desk</span><h1>The ARC-AGI-3 Kaggle contest daily.</h1><p>Follow the public race, meet the people on the board, and go straight to the charts and game records behind the story.</p></div>
-      <a className="news-intro-link" href="/kaggle-leaderboard#medal-race">Explore the medal race <span aria-hidden="true">↗</span></a>
+      <div className="news-intro-copy"><span className="news-eyebrow">ARC Explainer / Competition desk</span><h1>The daily story of ARC-AGI-3 and ARC-AGI-2.</h1><p>Follow both Kaggle contests: the leaders, the challengers, and the moves that change the field. ARC-AGI-3 leads the front page; each contest has its own report and live board.</p></div>
+      <a className="news-intro-link" href="/kaggle-leaderboard#medal-race">Explore the ARC-AGI-3 race <span aria-hidden="true">↗</span></a>
     </section>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && <>
@@ -38,13 +38,15 @@ export default function News() {
           <Link href="/kaggle-leaderboard/arc-2" className="news-read">Explore the ARC-AGI-2 board →</Link>
         </aside>
       </div>
-      <section className="news-explore" aria-label="Explore ARC-AGI-3">
-        <div className="news-section-heading"><div><span className="news-eyebrow">Beyond the headlines</span><h2>Explore the race</h2></div><p>Live charts and dated records put each dispatch in context.</p></div>
+      <section className="news-explore" aria-label="Explore the contests and community">
+        <div className="news-section-heading"><div><span className="news-eyebrow">Beyond the headlines</span><h2>Explore the contests</h2></div><p>Live charts, game records and the ARC community put each dispatch in context.</p></div>
         <div className="news-explore-grid">
-          <a href="/kaggle-leaderboard#medal-race"><span>01 / The field</span><strong>Medal race graphic</strong><p>See where teams stand around the public cutoffs, then widen the view to the full board.</p><em>Open chart ↗</em></a>
-          <a href="/kaggle-leaderboard#score-history"><span>02 / The trend</span><strong>Score history</strong><p>Trace the leader, medal lines and changing scores through saved leaderboard snapshots.</p><em>Open graphics ↗</em></a>
-          <a href="/human-records.html"><span>03 / The games</span><strong>Human &amp; AI records</strong><p>Compare published human action counts with AI scores, full wins and replay links for the public games.</p><em>Explore records ↗</em></a>
-          <Link href="/arc3/games"><span>04 / The rules</span><strong>Official game guides</strong><p>See pictures, per-level notes and play records for the 25 public ARC-AGI-3 games.</p><em>Browse guides ↗</em></Link>
+          <a href="/kaggle-leaderboard#medal-race"><span>01 / ARC-AGI-3</span><strong>Medal race graphic</strong><p>See where teams stand around the public cutoffs, then widen the view to the full board.</p><em>Open chart ↗</em></a>
+          <a href="/kaggle-leaderboard#score-history"><span>02 / ARC-AGI-3</span><strong>Score history</strong><p>Trace the leader, medal lines and changing scores through saved leaderboard snapshots.</p><em>Open graphics ↗</em></a>
+          <a href="/kaggle-leaderboard/arc-2#medal-race"><span>03 / ARC-AGI-2</span><strong>ARC-AGI-2 leaderboard</strong><p>Follow its separate public standings, medal race, score history and full field.</p><em>Open board ↗</em></a>
+          <a href="/human-records.html"><span>04 / The games</span><strong>Human &amp; AI records</strong><p>Compare published human action counts with AI scores, full wins and replay links for the public games.</p><em>Explore records ↗</em></a>
+          <Link href="/arc3/games"><span>05 / The rules</span><strong>Official game guides</strong><p>See pictures, per-level notes and play records for the 25 public ARC-AGI-3 games.</p><em>Browse guides ↗</em></Link>
+          <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer"><span>06 / The community</span><strong>ARC Discord</strong><p>Join the official ARC Prize community to discuss the contests and the games.</p><em>Join the conversation ↗</em></a>
         </div>
       </section>
       <section className="news-competitor-section" aria-label="ARC-AGI-3 competitor notebook">

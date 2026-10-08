@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.126.0  Oct 8, 2026
+
+- **Both contests in The ARC Daily** (Author: GPT-6.1 Sol / Codex). Keeps the publication name and makes the front page explicitly cover ARC-AGI-3 and ARC-AGI-2, with a direct ARC-AGI-2 chart link alongside the ARC-AGI-3 graphics. Adds the site's established official ARC Discord invite in navigation and the resource shelf. Article bylines and reporting notes now show dates; exact observation times remain in the archived evidence. The reporter guide asks future editions for more specific sports journalism and clock times only when they affect the story. Client build and 17 focused news/SEO tests passed. Scope: `docs/2026-10-08-arc-daily-landing-plan.md`.
+
 ### Version 9.125.0  Oct 8, 2026
 
 - **ARC Daily landing page** (Author: GPT-6.1 Sol / Codex). Makes ARC-AGI-3 the front-page headline and lead, gives ARC-AGI-2 its own desk, and brings the publication into ARC Explainer's white, charcoal and magenta style. Adds a landing shelf linking to existing medal and score-history graphics, human and AI records, public game guides and background pages. Competitor previews now show observed members and two cited facts, without adding or merging identities. Stable anchors on the existing leaderboard charts support the deep links after the board loads. Verified with a client build, 17 news/SEO integration tests, static layout renders at desktop and narrow widths, and a clean diff check. Repository-wide TypeScript checking still reports existing errors outside the edited files. Scope: `docs/2026-10-08-arc-daily-landing-plan.md`.

@@ -7,7 +7,7 @@
  *          page and notebook are CollectionPages listing their entries; readable Eastern
  *          dates and competition names in the crawler body; sitemap lastmod from real
  *          publication/check times; RSS self link, build date, categories and card images.
- *          Front-page crawler text follows the ARC-AGI-3-first landing page and its resources.
+ *          Front-page crawler text names both contests and their public resources.
  * SRP/DRY check: Pass — plain rendering only; content and validation remain in newsStore,
  *          wording and card URLs in shared/news.ts, card pixels in newsCardImage.ts.
  */
@@ -41,7 +41,7 @@ export function newsArticleMeta(article: NewsArticle): RouteMetaTags {
   const jsonLd = articleStructuredData(article, SITE_ORIGIN);
   const bodyHtml = `<main><article><p>${kicker(article)}</p>
     <h1>${esc(article.headline)}</h1><p>${esc(article.dek)}</p><p>ARC Daily sports desk · Written with GPT-6 SOL</p>
-    <p>Published ${timeTag(article.publishedAt)}. Data as of ${timeTag(article.dataAsOf)}.</p>
+    <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, false)}. Exact source observations remain in the archived reporting data.</p>
     ${article.sections.map(section => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${newlineText(section.text)}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
     <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td>${stat.rank}</td><td>${stat.score}</td><td>${rankChange(stat)}</td><td>${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
     <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">The ARC Daily front page</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
@@ -56,7 +56,7 @@ function competitorMeta(record: CompetitorRecord, articles: NewsArticle[]): Rout
   return completeMeta({ ...ROUTE_META_TAGS['/news/competitors'], title: competitorTitle(record), description,
     url: `${SITE_ORIGIN}${competitorPath(record.id)}`, bodyHtml: `<main><h1>${esc(record.name)}</h1><p>${esc(description)}</p>
     <p>Competition: ${esc(competitionName(record.competition))}. Team ID: ${esc(record.teamId)}.</p>
-    <p>First observed by the newspaper: ${timeTag(record.firstObservedAt)}. Last checked: ${timeTag(record.lastObservedAt)}. Observation dates are not competition join dates.</p>
+    <p>First observed by the newspaper: ${timeTag(record.firstObservedAt, false)}. Last checked: ${timeTag(record.lastObservedAt, false)}. Observation dates are not competition join dates.</p>
     <h2>Public team roster</h2><ul>${record.members.map(member => `<li><a href="https://www.kaggle.com/${encodeURIComponent(member)}">${esc(member)}</a></li>`).join('')}</ul>
     ${record.aliases.length ? `<h2>Observed names</h2><p>${record.aliases.map(esc).join(', ')}</p>` : ''}
     <h2>What is on the record</h2>${record.facts.length ? record.facts.map(fact => `<p>${esc(fact.text)} <a href="${esc(fact.sourceUrl)}">${esc(fact.sourceTitle)}</a> (checked ${timeTag(fact.checkedAt, false)})</p>`).join('') : '<p>No sourced background notes have been added yet.</p>'}
@@ -66,7 +66,7 @@ function competitorMeta(record: CompetitorRecord, articles: NewsArticle[]): Rout
 function frontPageMeta(articles: NewsArticle[]): RouteMetaTags {
   const tags = completeMeta(ROUTE_META_TAGS['/news']);
   return { ...tags, jsonLd: collection(tags, articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))),
-    bodyHtml: `<main><h1>${NEWS_NAME}: the ARC-AGI-3 Kaggle contest daily</h1><p>Morning and evening reporting from recorded public leaderboard observations and cited sources. ARC-AGI-2 is covered as a separate competition.</p><p><a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">Score history</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 standings</a></p>${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
+    bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Morning and evening stories from both Kaggle competitions, grounded in recorded public leaderboard observations and cited sources.</p><p><a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a></p>${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
 }
 function notebookMeta(competitors: CompetitorRecord[]): RouteMetaTags {
   const tags = completeMeta(ROUTE_META_TAGS['/news/competitors']);

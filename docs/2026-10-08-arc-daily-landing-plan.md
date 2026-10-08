@@ -26,3 +26,7 @@ Make `/news` an ARC-AGI-3 Kaggle contest daily in the visual language of the ARC
 - News and SEO integration suites passed: 17 tests.
 - Static layout preview inspected at 1440px and 500px. The preview used sample headlines solely to check spacing and breakpoints; the published page still reads live archive data.
 - TypeScript reports pre-existing diagnostics in unrelated server and test files; none point to this change.
+
+## Editorial follow-up, 8 October
+
+The publication keeps the name **The ARC Daily** and covers ARC-AGI-3 and ARC-AGI-2 as separate contests. The front page may lead with ARC-AGI-3 while still giving ARC-AGI-2 its own story and direct chart link. Add the established ARC Prize Discord invite to the page. Use dates in visible article furniture; keep exact observation times in archived evidence. The reporter workflow now calls for specific, lively sports writing rather than timestamp-led prose.

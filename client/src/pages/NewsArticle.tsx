@@ -1,9 +1,10 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Permanent ARC Daily article view with evidence timestamps, linked section
  *          sources, box scores and competition-scoped competitor links.
- *          08-Oct-2026 (Claude Opus 5.5): head metadata and share card from shared/news.ts.
+ *          08-Oct-2026: head metadata and share card from shared/news.ts; visible
+ *          publication and source labels use dates while exact times stay in evidence.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
 import { Link, useParams } from 'wouter';
@@ -37,7 +38,7 @@ export default function NewsArticle() {
         <EditionLabel article={article} />
         <h1 className="news-article-title">{article.headline}</h1>
         <p className="news-dek">{article.dek}</p>
-        <p className="news-byline">ARC Daily • GPT-6 SOL <span>· Published <time dateTime={article.publishedAt}>{newsDate(article.publishedAt, true)}</time></span></p>
+        <p className="news-byline">The ARC Daily sports desk <span>· <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
       </header>
       <div className="news-article-grid">
         <div>
@@ -57,11 +58,11 @@ export default function NewsArticle() {
           <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>
         </div>
         <aside className="news-sidebar" aria-label="Reporting notes and sources">
-          <h2 className="news-section-title">The reporting ledger</h2>
-          <div className="news-note"><p><strong>Data as of</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf, true)}</time></p><p><strong>Compared with</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt, true)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
-          <a className="news-read" href={`/api/news/${article.id}/evidence`}>Archived reporting data →</a>
+          <h2 className="news-section-title">How this report was checked</h2>
+          <div className="news-note"><p><strong>Board date</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf)}</time></p><p><strong>Comparison</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
+          <a className="news-read" href={`/api/news/${article.id}/evidence`}>Exact observations and reporting data →</a>
           <h2 className="news-section-title">Sources</h2>
-          <ol className="news-source-list">{article.sources.map(source => <li key={source.id}><a href={source.url}>{source.title} ↗</a><span>Checked {newsDate(source.accessedAt, true)}</span></li>)}</ol>
+          <ol className="news-source-list">{article.sources.map(source => <li key={source.id}><a href={source.url}>{source.title} ↗</a><span>Checked {newsDate(source.accessedAt)}</span></li>)}</ol>
           {!!competitors.length && <><h2 className="news-section-title">Names in this edition</h2><ul className="news-observations">{competitors.map(competitor => <li key={competitor.id}><Link href={competitorPath(competitor.id)}>{competitor.name} →</Link></li>)}</ul></>}
         </aside>
       </div>

@@ -1,9 +1,10 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Competition-scoped competitor notebook showing sourced facts, observed
  *          aliases and members, observation dates and the team's published coverage.
- *          08-Oct-2026 (Claude Opus 5.5): title and description from shared/news.ts, matching server HTML.
+ *          08-Oct-2026: title and description from shared/news.ts, matching server HTML;
+ *          observed identity dates show without routine clock times.
  * SRP/DRY check: Pass — identity and claims come from shared NewsIndex records only.
  */
 import { Link, useParams } from 'wouter';
@@ -25,7 +26,7 @@ export default function NewsCompetitor() {
     {missing && <section className="news-status"><h1 className="news-article-title">No notebook published yet</h1><p>The desk has not published a record for this competition team.</p><Link href="/news/competitors" className="news-read">Browse the competitor notebook →</Link></section>}
     {competitor && <>
       <header className="news-directory-header"><div className="news-kicker">{competitionName(competitor.competition)} · Competitor notebook</div><h1>{competitor.name}</h1><p>A record of sourced facts and observed identities, with dispatches from the competition desk.</p></header>
-      <div className="news-identity"><span><strong>Competition</strong><br /><code>{KAGGLE_COMPETITIONS[competitor.competition].slug}</code></span><span><strong>Kaggle team ID</strong><br />{competitor.teamId}</span><span><strong>First observed</strong><br />{newsDate(competitor.firstObservedAt, true)}</span><span><strong>Last observed</strong><br />{newsDate(competitor.lastObservedAt, true)}</span></div>
+      <div className="news-identity"><span><strong>Competition</strong><br /><code>{KAGGLE_COMPETITIONS[competitor.competition].slug}</code></span><span><strong>Kaggle team ID</strong><br />{competitor.teamId}</span><span><strong>First observed</strong><br />{newsDate(competitor.firstObservedAt)}</span><span><strong>Last observed</strong><br />{newsDate(competitor.lastObservedAt)}</span></div>
       <div className="news-article-grid">
         <section><h2 className="news-section-title">On the record</h2>
           {competitor.facts.length ? <ul className="news-facts">{competitor.facts.map((fact, index) => <li key={`${fact.sourceUrl}-${index}`}><p>{fact.text}</p><div className="news-fact-source"><a href={fact.sourceUrl}>{fact.sourceTitle} ↗</a><br />Checked {newsDate(fact.checkedAt)}</div></li>)}</ul> : <p className="news-muted">No sourced background facts have been added. Observed competition names and members are recorded alongside.</p>}

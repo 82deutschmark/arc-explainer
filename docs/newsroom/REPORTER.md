@@ -72,14 +72,31 @@ section requires valid `sourceIds`; use `board` for the leaderboard. Write plain
 text, no raw HTML. The publisher inserts the fixed metadata, source list and stats.
 If a full article is supplied, its fixed fields must match the brief exactly.
 
-Write lively sports journalism: the lead changing hands, a move into a medal band,
-a gap narrowing, a rival holding station, or a quiet day worth explaining. Cover the
-whole field. Keep the pinned teams in perspective. A record, comeback, streak or
-rivalry needs evidence across the relevant period. Do not invent quotes, motives,
-biographies, affiliations, techniques, suspicion or allegations. Do not infer
-NVIDIA affiliation from a name. Different competition team IDs are different
+The ARC Daily covers **both ARC-AGI-3 and ARC-AGI-2**. Write a separate issue for
+each ready competition and give each its own headline and context. ARC-AGI-3 may
+lead the front page, but ARC-AGI-2 is part of the paper, not an afterthought.
+
+Write like a good sports reporter: open with the most consequential verified move
+or with the leader holding off the field. Tell the reader who leads, which
+challengers matter, what actually changed, and what remains open. Use concrete,
+energetic verbs and varied section openings. Do not just recite the box score or
+repeat the same rank in every paragraph. A quiet board can still have a clear,
+short account. Avoid stock drama unsupported by the evidence: a record, comeback,
+streak, rivalry or decisive finish needs observations across the relevant period.
+
+Keep exact snapshot, baseline, source-check and publication **times** in the fixed
+metadata and archived evidence. In the headline, dek, article prose and Discord
+draft, mention a clock time only when the sequence or cutoff is itself material to
+the story. Usually a date, “overnight,” or “since the previous close” is enough.
+Do not lead paragraphs with “as of” timestamps or describe routine data-collection
+mechanics unless they explain a genuine coverage limit. Never imply every morning
+submission has finished evaluating.
+
+Cover the whole field and keep pinned teams in perspective. Do not invent quotes,
+motives, biographies, affiliations, techniques, suspicion or allegations. Do not
+infer NVIDIA affiliation from a name. Different competition team IDs are different
 records. Any connection between them requires sourced matching membership/profile
-information. Do not claim morning submissions have all finished evaluating.
+information.
 
 The numeric table is mechanically verified. **The helper cannot certify arbitrary
 prose as true.** Before publication, check every number, comparison, named identity
