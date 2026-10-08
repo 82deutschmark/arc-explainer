@@ -1,7 +1,7 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-05
- * PURPOSE: "Scores over time" -- the leader, the three medal lines and our own score over
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-07
+ * PURPOSE: "Scores over time" -- the leader, the three medal lines and the pinned team’s score over
  *          the chosen window, each line labelled at its end with its current value (labels
  *          spread apart with short leaders where lines converge, as the medal lines do).
  *          When the window runs to the close, a marker shows how much time is left. The
@@ -11,7 +11,7 @@
  */
 
 import { ChartFrame, EndLabels, PAD, TipRow, W, AXIS_TEXT, niceTicks, polyPoints, stepPoints } from './ChartFrame';
-import { CLOSE_MS, MEDAL_COLOR, US_COLOR, fmt, rangeBounds, snapNearest, timeTicks, trailAt, type BoardModel, type TimeRange } from './boardData';
+import { MEDAL_COLOR, US_COLOR, fmt, rangeBounds, snapNearest, timeTicks, trailAt, type BoardModel, type TimeRange } from './boardData';
 import type { KaggleBoardSnap } from '@shared/types';
 
 const H = 340;
@@ -60,7 +60,7 @@ export function RaceChart({ model, range }: { model: BoardModel; range: TimeRang
 
   const ends = [
     ...lines.filter((l) => l.pts.length).map((l) => ({ y: y(l.pts[l.pts.length - 1][1]), text: `${l.name.replace(' line', '')} ${fmt(l.pts[l.pts.length - 1][1])}`, color: l.color })),
-    ...(ourPts.length ? [{ y: y(ourPts[ourPts.length - 1][1]), text: `Us ${fmt(ourPts[ourPts.length - 1][1])}`, color: US_COLOR, bold: true }] : []),
+    ...(ourPts.length ? [{ y: y(ourPts[ourPts.length - 1][1]), text: `Pinned ${fmt(ourPts[ourPts.length - 1][1])}`, color: US_COLOR, bold: true }] : []),
   ];
 
   const hover = (gx: number) => {
@@ -71,7 +71,7 @@ export function RaceChart({ model, range }: { model: BoardModel; range: TimeRang
     const ts = Date.parse(s.t);
     const ours = trailAt(model.history, ourId, ts);
     const rowsAt = SERIES.map(([name, color, get]) => ({ name, color, v: get(s) })).filter((r) => r.v != null) as Array<{ name: string; color: string; v: number }>;
-    if (ours) rowsAt.push({ name: `Us (#${ours[2]})`, color: US_COLOR, v: ours[1] });
+    if (ours) rowsAt.push({ name: `${model.ourRow?.[2] ?? ourTrail?.name ?? "Pinned team"} (#${ours[2]})`, color: US_COLOR, v: ours[1] });
     rowsAt.sort((a, b) => b.v - a.v);
     return {
       x: x(ts),
@@ -86,8 +86,9 @@ export function RaceChart({ model, range }: { model: BoardModel; range: TimeRang
     };
   };
 
-  const showClose = CLOSE_MS <= t1 && CLOSE_MS > tLast;
-  const daysLeft = Math.ceil((CLOSE_MS - tLast) / 864e5);
+  const close = model.competition.closeAt ? Date.parse(model.competition.closeAt) : tLast;
+  const showClose = close <= t1 && close > tLast;
+  const daysLeft = Math.ceil((close - tLast) / 864e5);
 
   return (
     <>
@@ -95,14 +96,14 @@ export function RaceChart({ model, range }: { model: BoardModel; range: TimeRang
         {lines.map((l) => (
           <span key={l.name} className="inline-flex items-center gap-1.5"><span className="inline-block w-4 border-t-2" style={{ borderColor: l.color }} />{l.name}</span>
         ))}
-        {ourPts.length > 0 && <span className="inline-flex items-center gap-1.5"><span className="inline-block w-4 border-t-[3px]" style={{ borderColor: US_COLOR }} />Us</span>}
+        {ourPts.length > 0 && <span className="inline-flex items-center gap-1.5"><span className="inline-block w-4 border-t-[3px]" style={{ borderColor: US_COLOR }} />Pinned team</span>}
       </div>
-      <ChartFrame height={H} label="Leader, medal lines and our score over time" yTicks={yTicks} xTicks={timeTicks(t0, t1, x)} hover={hover}>
+      <ChartFrame height={H} label="Leader, medal lines and pinned team score over time" yTicks={yTicks} xTicks={timeTicks(t0, t1, x)} hover={hover}>
         {showClose && (
           <g>
-            <rect x={x(tLast)} y={PAD.T} width={x(CLOSE_MS) - x(tLast)} height={H - PAD.T - PAD.B} style={{ fill: 'var(--muted)' }} opacity={0.6} />
-            <line x1={x(CLOSE_MS)} x2={x(CLOSE_MS)} y1={PAD.T} y2={H - PAD.B} style={{ stroke: 'var(--muted-foreground)' }} />
-            <text x={x(CLOSE_MS) - 6} y={H - PAD.B - 8} textAnchor="end" style={AXIS_TEXT}>close · {daysLeft} days left</text>
+            <rect x={x(tLast)} y={PAD.T} width={x(close) - x(tLast)} height={H - PAD.T - PAD.B} style={{ fill: 'var(--muted)' }} opacity={0.6} />
+            <line x1={x(close)} x2={x(close)} y1={PAD.T} y2={H - PAD.B} style={{ stroke: 'var(--muted-foreground)' }} />
+            <text x={x(close) - 6} y={H - PAD.B - 8} textAnchor="end" style={AXIS_TEXT}>close · {daysLeft} days left</text>
           </g>
         )}
         {lines.map((l) =>

@@ -1,7 +1,7 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-05
- * PURPOSE: "Teams we are watching" -- score over the chosen window for each starred team,
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-07
+ * PURPOSE: "Watchlist" -- score over the chosen window for each starred team,
  *          as step lines (a score only changes when a team submits), each labelled at its
  *          end. Every team keeps its own colour however the list changes; ours is always the
  *          site blue and drawn thicker. Up to eight lines (ours plus seven), the most a
@@ -27,6 +27,7 @@ interface Props {
 }
 
 export function WatchlistChart({ model, ids: allIds, range, onRemove }: Props) {
+  if (model.history.snaps.length < 2) return <p className="text-sm text-muted-foreground">History will appear after another saved snapshot.</p>;
   const { latest, history, byId } = model;
   const ourId = latest.ourTeamId;
   // Only teams still on the board and with a kept trail (top 300 and us) can be drawn.
@@ -92,9 +93,9 @@ export function WatchlistChart({ model, ids: allIds, range, onRemove }: Props) {
               <span className="inline-block h-2 w-2 rounded-full" style={{ background: colorOf.get(id) }} />
               <TeamName row={r} className="max-w-[180px] truncate" />
               <span className="font-mono text-muted-foreground">#{r[0]}</span>
-              <button type="button" className="rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground" title="Stop watching" aria-label={`Stop watching ${r[2]}`} onClick={() => onRemove(id)}>
+              {!model.competition.pinnedTeamIds.includes(id) && <button type="button" className="rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground" title="Stop watching" aria-label={`Stop watching ${r[2]}`} onClick={() => onRemove(id)}>
                 <X className="h-3 w-3" />
-              </button>
+              </button>}
             </span>
           );
         })}
@@ -115,7 +116,7 @@ export function WatchlistChart({ model, ids: allIds, range, onRemove }: Props) {
         <EndLabels
           x={x(now)}
           bottom={H - PAD.B}
-          items={series.map((s) => ({ y: y(s.pts[s.pts.length - 1][1]), text: s.id === ourId ? 'Us' : short(byId.get(s.id)![2]), color: s.color, bold: s.id === ourId }))}
+          items={series.map((s) => ({ y: y(s.pts[s.pts.length - 1][1]), text: short(byId.get(s.id)![2]), color: s.color, bold: s.id === ourId }))}
         />
       </ChartFrame>
     </>

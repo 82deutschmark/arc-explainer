@@ -1,9 +1,9 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-05
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-07
  * PURPOSE: "All teams" -- the whole board, searchable by team or member name, with a
  *          "moved today" filter, medal dots on rank, a heavier rule under each medal cut
- *          line, today's rank change, Kaggle profile links on team and member names, and a star to add a team to the watch chart. Our team
+ *          line, today's rank change, Kaggle profile links on team and member names, and a star to add a team to the watch chart. The featured team
  *          is highlighted and pinned to the top of an unfiltered view. Paged so four
  *          thousand rows do not render at once.
  * SRP/DRY check: Pass - reads BoardModel; uses shadcn Table, Input, Checkbox, Button.
@@ -31,8 +31,7 @@ export function TeamsTable({ model, watched, onToggleWatch }: Props) {
   const [query, setQuery] = useState('');
   const [moversOnly, setMoversOnly] = useState(false);
   const [shown, setShown] = useState(PAGE);
-  const { latest, ourRow, history } = model;
-  const ourId = latest.ourTeamId;
+  const { latest, history } = model;
   const cutColor = useMemo(() => {
     const m = latest.medalRanks;
     return new Map([[m.gold, MEDAL_COLOR.gold], [m.silver, MEDAL_COLOR.silver], [m.bronze, MEDAL_COLOR.bronze]]);
@@ -49,7 +48,14 @@ export function TeamsTable({ model, watched, onToggleWatch }: Props) {
     [latest, q, moversOnly],
   );
   const page = rows.slice(0, shown);
-  if (ourRow && !q && !moversOnly && !page.includes(ourRow)) page.unshift(ourRow);
+  // Keep pinned teams first without duplicating their ranked rows.
+  if (!q && !moversOnly) {
+    for (const row of [...model.pinnedRows].reverse()) {
+      const index = page.indexOf(row);
+      if (index >= 0) page.splice(index, 1);
+      page.unshift(row);
+    }
+  }
 
   return (
     <>
@@ -85,7 +91,7 @@ export function TeamsTable({ model, watched, onToggleWatch }: Props) {
           {page.map((r) => {
             const medal = model.medalOf(r[0]);
             const delta = r[7] != null ? r[7] - r[0] : 0;
-            const isOurs = r[1] === ourId;
+            const isOurs = model.competition.pinnedTeamIds.includes(r[1]);
             const tracked = !!history.trails[r[1]];
             const starred = watched.includes(r[1]);
             const edge = cutColor.get(r[0]);
@@ -98,10 +104,10 @@ export function TeamsTable({ model, watched, onToggleWatch }: Props) {
                 <TableCell className="py-1.5 pr-0">
                   <button
                     type="button"
-                    disabled={!tracked}
+                    disabled={!tracked || isOurs}
                     onClick={() => onToggleWatch(r[1])}
-                    title={tracked ? (starred ? 'Stop watching' : 'Watch this team') : 'Only the top 300 and our team are tracked over time'}
-                    aria-label={starred ? `Stop watching ${r[2]}` : `Watch ${r[2]}`}
+                    title={isOurs ? 'Pinned team' : tracked ? (starred ? 'Stop watching' : 'Watch this team') : 'Only the top 300 and the pinned team are tracked over time'}
+                    aria-label={isOurs ? `Pinned team: ${r[2]}` : starred ? `Stop watching ${r[2]}` : `Watch ${r[2]}`}
                     className="disabled:opacity-25"
                   >
                     <Star className="h-4 w-4" style={starred ? { fill: MEDAL_COLOR.gold, color: MEDAL_COLOR.gold } : { color: 'var(--muted-foreground)' }} />

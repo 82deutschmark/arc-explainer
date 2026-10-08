@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-05
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-07
  * PURPOSE: Data layer for the public /kaggle-leaderboard page. Fetches the full ARC-AGI-3
  *          Kaggle board (GET /api/kaggle/:competition/board) and its static pre-history
  *          (GET .../board/backfill), merges the two the way the original arc-3 page did,
@@ -13,6 +13,7 @@
  *          the BoardModel returned here and none of them fetch on their own.
  */
 
+import { KAGGLE_COMPETITIONS, kaggleLeaderboardUrl, type KaggleCompetition } from '@shared/kaggleCompetitions';
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type {
@@ -25,10 +26,9 @@ import type {
   KaggleBoardSnap,
 } from '@shared/types';
 
-export const COMPETITION = 'arc-prize-2026-arc-agi-3';
-export const KAGGLE_URL = `https://www.kaggle.com/competitions/${COMPETITION}/leaderboard`;
-/** Competition close; medals are settled on the private board then. */
-export const CLOSE_MS = Date.parse('2026-11-02T00:00:00Z');
+// ARC-3 defaults preserve the landing page's existing imports.
+export const COMPETITION = KAGGLE_COMPETITIONS['arc-3'].slug;
+export const KAGGLE_URL = kaggleLeaderboardUrl(KAGGLE_COMPETITIONS['arc-3']);
 const DAY_MS = 864e5;
 
 export type Medal = 'gold' | 'silver' | 'bronze';
@@ -78,11 +78,13 @@ export const profileUrl = (username: string) => `https://www.kaggle.com/${encode
 export const membersOf = (row: KaggleBoardRow | undefined) => (row ? row[6].split(',').map((m) => m.trim()).filter(Boolean) : []);
 
 export interface BoardModel {
+  competition: KaggleCompetition;
   latest: KaggleBoardLatest;
   history: KaggleBoardHistory;
   /** Oldest first. */
   events: KaggleBoardEvent[];
   ourRow: KaggleBoardRow | null;
+  pinnedRows: KaggleBoardRow[];
   byId: Map<string, KaggleBoardRow>;
   medalOf: (rank: number) => Medal | null;
 }
@@ -158,17 +160,17 @@ export interface BoardQuery {
   isEmpty: boolean;
 }
 
-export function useKaggleBoard(): BoardQuery {
+export function useKaggleBoard(competition: KaggleCompetition = KAGGLE_COMPETITIONS['arc-3']): BoardQuery {
   const board = useQuery({
-    queryKey: ['kaggle-board', COMPETITION],
-    queryFn: () => getJson<KaggleBoardPayload>(`/api/kaggle/${COMPETITION}/board`),
+    queryKey: ['kaggle-board', competition.slug],
+    queryFn: () => getJson<KaggleBoardPayload>(`/api/kaggle/${competition.slug}/board`),
     staleTime: 5 * 60 * 1000,
     // The job saves every 30 minutes; checking every 10 keeps an open tab honest.
     refetchInterval: 10 * 60 * 1000,
   });
   const backfill = useQuery({
-    queryKey: ['kaggle-board-backfill', COMPETITION],
-    queryFn: () => getJson<KaggleBoardBackfill | null>(`/api/kaggle/${COMPETITION}/board/backfill`),
+    queryKey: ['kaggle-board-backfill', competition.slug],
+    queryFn: () => getJson<KaggleBoardBackfill | null>(`/api/kaggle/${competition.slug}/board/backfill`),
     staleTime: Infinity,
   });
 
@@ -185,14 +187,16 @@ export function useKaggleBoard(): BoardQuery {
     const byId = new Map(latest.rows.map((r) => [r[1], r] as const));
     const { gold, silver, bronze } = latest.medalRanks;
     return {
+      competition,
       latest,
       history: merged.history,
       events: merged.events,
       ourRow: byId.get(latest.ourTeamId) ?? null,
+      pinnedRows: competition.pinnedTeamIds.map((id) => byId.get(id)).filter((r): r is KaggleBoardRow => !!r),
       byId,
       medalOf: (rank) => (rank <= gold ? 'gold' : rank <= silver ? 'silver' : rank <= bronze ? 'bronze' : null),
     };
-  }, [board.data, backfill.data]);
+  }, [board.data, backfill.data, competition]);
 
   return {
     model,
@@ -210,7 +214,7 @@ export const TIME_RANGES: Array<[TimeRange, string]> = [
   ['week', 'Past week'],
   ['month', 'Past month'],
   ['since-aug', 'Since August'],
-  ['all', 'Whole contest'],
+  ['all', 'All saved history'],
 ];
 
 /**
@@ -219,12 +223,13 @@ export const TIME_RANGES: Array<[TimeRange, string]> = [
  */
 export function rangeBounds(range: TimeRange, model: BoardModel): [number, number] {
   const now = Date.parse(model.latest.fetched);
+  const close = model.competition.closeAt ? Date.parse(model.competition.closeAt) : now;
   const first = model.history.snaps.length ? Date.parse(model.history.snaps[0].t) : now - 30 * DAY_MS;
   switch (range) {
     case 'week': return [now - 7 * DAY_MS, now];
     case 'month': return [now - 30 * DAY_MS, now];
-    case 'since-aug': return [Date.parse('2026-08-01T00:00:00Z'), Math.max(now, CLOSE_MS)];
-    case 'all': return [first, Math.max(now, CLOSE_MS)];
+    case 'since-aug': return [Date.parse('2026-08-01T00:00:00Z'), Math.max(now, close)];
+    case 'all': return [first, Math.max(now, close)];
   }
 }
 

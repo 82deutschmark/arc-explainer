@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Sonnet 4.5; search fields by Claude Opus 5.5; resource hub by Codex
- * Date: 2025-12-30 (updated 2026-10-07)
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-07
  * PURPOSE: Centralized route meta tags configuration for social media link unfurling and
  *          search. Imported by server middleware for meta tag injection.
  *          2026-10-06: entries can now carry keywords, structured data (JSON-LD) and a
@@ -200,6 +200,40 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
         hour: the gold, silver and bronze lines, who is rocketing up, who is sinking, score and
         rank history, and the full searchable table with links to each team on Kaggle.</p>
         <p>Source: <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard">Kaggle public leaderboard</a>.
+        Medals are settled on the private board at the close.</p>
+      </main>`,
+  },
+
+  '/kaggle-leaderboard/arc-2': {
+    title: 'ARC Prize 2026 ARC-AGI-2 Kaggle Leaderboard: Live Standings & History',
+    description:
+      'Every team on the ARC-AGI-2 Kaggle public leaderboard, saved every half hour: medal lines, '
+      + "who is climbing, who is sinking, score history and the race to the close.",
+    url: `${SITE}/kaggle-leaderboard/arc-2`,
+    type: 'website',
+    keywords: 'ARC Prize 2026, ARC-AGI-2, Kaggle leaderboard, ARC Prize leaderboard, Kaggle competition standings',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebPage',
+          '@id': `${SITE}/kaggle-leaderboard/arc-2`,
+          url: `${SITE}/kaggle-leaderboard/arc-2`,
+          name: 'ARC-AGI-2 Kaggle Leaderboard',
+          isPartOf: WEBSITE_REF,
+          isBasedOn: 'https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard',
+          inLanguage: 'en',
+        },
+        breadcrumb('Kaggle Leaderboard', '/kaggle-leaderboard/arc-2'),
+      ],
+    },
+    bodyHtml: `
+      <main>
+        <h1>ARC-AGI-2 Kaggle leaderboard</h1>
+        <p>Every team on the ARC Prize 2026 ARC-AGI-2 public Kaggle leaderboard, read every half
+        hour: the gold, silver and bronze lines, who is rocketing up, who is sinking, score and
+        rank history, and the full searchable table with links to each team on Kaggle.</p>
+        <p>Source: <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard">Kaggle public leaderboard</a>.
         Medals are settled on the private board at the close.</p>
       </main>`,
   },

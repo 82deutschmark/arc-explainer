@@ -1,9 +1,9 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-05
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-07
  * PURPOSE: "The race for medals" -- score against rank for the part of the board that is
  *          actually contested, drawn as the board's staircase with the gold, silver and
- *          bronze zones shaded and our team called out with how far it is to the next
+ *          bronze zones shaded and the pinned team called out with how far it is to the next
  *          medal line, in points and in teams to pass.
  *
  *          WHY NOT EVERY TEAM. On 05-Oct-2026 roughly three quarters of the board sat near
@@ -132,7 +132,7 @@ export function MedalRaceChart({ model }: { model: BoardModel }) {
               textAnchor={x(ourRow[0]) > plotR - 260 ? 'end' : 'start'}
               style={{ ...LABEL_TEXT, fontWeight: 700 }}
             >
-              Us · #{ourRow[0]} · {fmt(ourRow[4])}
+              Pinned · #{ourRow[0]} · {fmt(ourRow[4])}
             </text>
             {callout && (
               <text
@@ -149,7 +149,7 @@ export function MedalRaceChart({ model }: { model: BoardModel }) {
       </ChartFrame>
       <p className="mt-1 text-xs text-muted-foreground">
         Showing the top {lastRank.toLocaleString()} of {n.toLocaleString()} teams; the rest score {fmt(shown[shown.length - 1][4])} or less.
-        {ourRow && ourRow[0] > lastRank && <> We are #{ourRow[0]} with {fmt(ourRow[4])}, below this view.</>}
+        {ourRow && ourRow[0] > lastRank && <> The pinned team is #{ourRow[0]} with {fmt(ourRow[4])}, below this view.</>}
       </p>
     </>
   );

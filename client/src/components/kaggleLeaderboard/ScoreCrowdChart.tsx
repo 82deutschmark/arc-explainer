@@ -1,9 +1,9 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-05
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-07
  * PURPOSE: "Where the scores bunch up" -- how many teams sit at each score across the
  *          contested range, as columns coloured by the medal zone that score lands in, with
- *          the three medal lines and our own score marked. It answers the question the rank
+ *          the three medal lines and the pinned team’s score marked. It answers the question the rank
  *          table cannot: what is a point worth here? In a crowded band a fraction of a point
  *          passes dozens of teams. Hover gives each column's count, rank range and places
  *          per point.
@@ -64,7 +64,7 @@ export function ScoreCrowdChart({ model }: { model: BoardModel }) {
           <TipRow name="Teams" value={bin.length} />
           {bin.length > 0 && <TipRow name="Ranks" value={`#${Math.min(...ranks)} to #${Math.max(...ranks)}`} />}
           <TipRow name="Places per point here" value={Math.round(bin.length / binW)} />
-          {ourRow && ourRow[4] >= from && ourRow[4] < from + binW && <div className="mt-1 font-semibold">We are in this column.</div>}
+          {ourRow && ourRow[4] >= from && ourRow[4] < from + binW && <div className="mt-1 font-semibold">{ourRow[2]} is in this column.</div>}
         </>
       ),
     };
@@ -102,7 +102,7 @@ export function ScoreCrowdChart({ model }: { model: BoardModel }) {
         {ourRow && ourRow[4] >= lo && ourRow[4] < hi && (
           <g>
             <line x1={x(ourRow[4])} x2={x(ourRow[4])} y1={PAD.T + 4} y2={H - PAD.B} style={{ stroke: US_COLOR }} strokeWidth={2} />
-            <text x={x(ourRow[4]) + 5} y={PAD.T + 10 + 3 * 13} textAnchor="start" style={{ ...LABEL_TEXT, fontWeight: 700 }}>Us {fmt(ourRow[4])}</text>
+            <text x={x(ourRow[4]) + 5} y={PAD.T + 10 + 3 * 13} textAnchor="start" style={{ ...LABEL_TEXT, fontWeight: 700 }}>Pinned {fmt(ourRow[4])}</text>
           </g>
         )}
       </ChartFrame>

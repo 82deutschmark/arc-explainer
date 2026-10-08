@@ -157,4 +157,8 @@
   <url>
     <loc>https://arc.markbarney.net/arc3/games/wa30</loc>
   </url>
+  <url>
+    <loc>https://arc.markbarney.net/kaggle-leaderboard/arc-2</loc>
+    <changefreq>hourly</changefreq>
+  </url>
 </urlset>

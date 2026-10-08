@@ -1,12 +1,12 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-05
- * PURPOSE: "Our rank against the medal cut-offs" -- our place on the board over the chosen
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-07
+ * PURPOSE: "Pinned team against the medal cut-offs" -- the pinned place on the board over the chosen
  *          window, with the gold, silver and bronze zones drawn as bands whose edges move as
  *          the field grows (cut ranks are a share of the team count). Rank 1 is at the top
  *          on a log scale, so a climb reads as going up and the narrow gold zone is still
- *          visible. This is the chart for "are we in the medals, and which way are we
- *          heading", which a score chart cannot show because everyone's scores rise.
+ *          visible. It shows medal-zone position and direction, which a score chart alone
+ *          cannot show because everyone's scores rise.
  * SRP/DRY check: Pass - marks only; frame, crosshair and tooltip come from ChartFrame;
  *          medal ranks use the same rule as the snapshot script (medalRanksFor).
  */
@@ -17,9 +17,10 @@ import { MEDAL_COLOR, US_COLOR, medalRanksFor, rangeBounds, snapNearest, timeTic
 const H = 300;
 
 export function OurRankChart({ model, range }: { model: BoardModel; range: TimeRange }) {
+  if (model.history.snaps.length < 2) return <p className="text-sm text-muted-foreground">History will appear after another saved snapshot.</p>;
   const ourId = model.latest.ourTeamId;
   const trail = model.history.trails[ourId];
-  if (!trail?.pts.length) return <p className="text-sm text-muted-foreground">No rank history for our team yet.</p>;
+  if (!trail?.pts.length) return <p className="text-sm text-muted-foreground">No rank history for the pinned team yet.</p>;
 
   const [t0, t1] = rangeBounds(range, model);
   const tLast = Date.parse(model.latest.fetched);
@@ -67,7 +68,7 @@ export function OurRankChart({ model, range }: { model: BoardModel; range: TimeR
       body: (
         <>
           <div className="mb-1 font-semibold">{new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
-          {p && <TipRow color={US_COLOR} name="Our rank" value={`#${p[2]}`} strong />}
+          {p && <TipRow color={US_COLOR} name={model.ourRow?.[2] ?? trail.name} value={`#${p[2]}`} strong />}
           <TipRow color={MEDAL_COLOR.gold} name="Gold to" value={`#${c.gold}`} />
           <TipRow color={MEDAL_COLOR.silver} name="Silver to" value={`#${c.silver}`} />
           <TipRow color={MEDAL_COLOR.bronze} name="Bronze to" value={`#${c.bronze}`} />
@@ -81,7 +82,7 @@ export function OurRankChart({ model, range }: { model: BoardModel; range: TimeR
   const nowRank = ours[ours.length - 1][1];
 
   return (
-    <ChartFrame height={H} label="Our rank over time against the medal zones" yTicks={yTicks} xTicks={timeTicks(t0, t1, x)} hover={hover}>
+    <ChartFrame height={H} label="Pinned team rank over time against the medal zones" yTicks={yTicks} xTicks={timeTicks(t0, t1, x)} hover={hover}>
       <polygon points={band(null, g)} fill={MEDAL_COLOR.gold} opacity={0.16} />
       <polygon points={band(g, sv)} fill={MEDAL_COLOR.silver} opacity={0.16} />
       <polygon points={band(sv, b)} fill={MEDAL_COLOR.bronze} opacity={0.16} />
@@ -98,7 +99,7 @@ export function OurRankChart({ model, range }: { model: BoardModel; range: TimeR
           <text x={x(best[0]) + 8} y={y(best[1]) - 6} style={AXIS_TEXT}>best in view #{best[1]}</text>
         </g>
       )}
-      <EndLabels items={[{ y: y(nowRank), text: `Us #${nowRank}`, color: US_COLOR, bold: true }]} x={x(tLast)} bottom={H - PAD.B} />
+      <EndLabels items={[{ y: y(nowRank), text: `Pinned #${nowRank}`, color: US_COLOR, bold: true }]} x={x(tLast)} bottom={H - PAD.B} />
     </ChartFrame>
   );
 }

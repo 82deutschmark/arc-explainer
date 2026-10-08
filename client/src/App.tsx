@@ -1,5 +1,5 @@
 /*
-Author: Codex / Cascade (ChatGPT) / Claude Opus 5
+Author: GPT-6 / Codex
 Date: 2026-10-07
 PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
@@ -141,7 +141,8 @@ function Router() {
         <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
         <Route path="/leaderboards" component={Leaderboards} />
-        <Route path="/kaggle-leaderboard" component={KaggleLeaderboard} />
+        <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>
+        <Route path="/kaggle-leaderboard"><KaggleLeaderboard key="arc-3" competitionKey="arc-3" /></Route>
 
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />
