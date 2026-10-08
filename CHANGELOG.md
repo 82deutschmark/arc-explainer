@@ -12,6 +12,11 @@
 # reference the old numbers.
 
 
+### Version 9.124.1  Oct 8, 2026
+
+- **Publish the ARC Prize public website audit** (Author: Codex). Hosts the reviewed October 8 report, screenshots, 19 prioritized findings, coding-assistant instructions and compact public evidence at `/reports/arc-prize-audit-2026-10-08/audit.html`. Adds Resource Hub discovery and public repository links so the report can be shared without a ZIP. Reuses static serving and the existing full-page resource-link pattern; no scoring or data-service behavior changes.
+- **Validation:** production Vite build passes; publication anchors, downloads, JSON and referenced evidence files checked; published text checked for local paths and credential patterns.
+
 ### Version 9.124.0  Oct 8, 2026
 
 - **ARC Daily share cards** (Author: Claude Opus 5.5, Bubba). Links to `/news` articles now unfurl with their own 1200x630 newspaper card (masthead, competition and edition, headline, dek, top three of that edition's box score) instead of the site-wide "ARC-AGI Explainer" image. The front page and competitor notebook get a masthead card with the latest headline from each competition. Rendered on the server by satori (text as vector paths) and the existing sharp with committed OFL IBM Plex fonts, so the Alpine container needs no system fonts. Article card URLs carry a content version and are cached as immutable.

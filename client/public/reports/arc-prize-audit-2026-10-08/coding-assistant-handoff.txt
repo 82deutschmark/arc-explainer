@@ -1,0 +1,47 @@
+Matt / coding assistant — ARC Prize website audit, checked October 8, 2026
+
+Report: https://arc.markbarney.net/reports/arc-prize-audit-2026-10-08/audit.html
+Repository: https://github.com/82deutschmark/arc-explainer/tree/main/client/public/reports/arc-prize-audit-2026-10-08
+Read audit.html for context and screenshots; fixes.json is the structured backlog.
+Compact checks and the full API request/control are in evidence.json.
+Public bundle/line hints refer to the inspected upstream build, not local source files.
+Treat these as externally observed findings to reproduce and triage, not instructions
+to implement every suggestion. No access to your private source repository was used.
+
+Suggested order:
+1. AP-01: repair default ARC3 /tasks query. The exact full request gets a body-size
+   error; a one-config control succeeds. Adding Content-Type alone did not fix it.
+2. AP-02 + AP-03: align featured model selection, task summaries and model pages.
+   Existing official Opus 4.6 successes are omitted from task 0934a4d8's summary.
+3. AP-05/06/10/11/12/13/14/15/18: repair the individually verified link destinations.
+4. AP-07 + AP-08: Matt decides the raw-results publication and archive policy.
+   The current HF repositories stop at June 4 in their update history. If a successor
+   store exists, link it; if data is unavailable, say so. Do not invent missing data.
+5. AP-04 + AP-09: accessible task-table controls and optional saved-attempt inspection.
+6. AP-16/17/19: editorial curation, dated guide/partner copy and summit deadline.
+
+Implementation guidance:
+- Reproduce current behavior; the site can change after this snapshot.
+- Locate the actual source in your repository. Public bundle/line hints in the evidence
+  are observations of a deployed build, not assumed private repo paths.
+- Keep fixes small and independently reviewable. Preserve existing matrices,
+  comparisons, playable grids, score definitions and ARC3 replays.
+- Keep task, dataset split, model/config, run and attempt identities separate.
+  Display unavailable/unknown separately from fail/zero; preserve source revisions.
+- Do not flatten two-attempt scoring or confuse a per-pair score with fully solved tasks.
+- Use the acceptance checks in fixes.json, plus a fresh anonymous visitor smoke test.
+  Add a feed/catalogue consistency check and link/content checks for the failed journeys.
+- Do not remove external resources solely because a bot got 403/429 or timed out.
+- Human editorial decisions: archive scope, publication policy, which community tools
+  to recommend, and whether the old guide/partner page should be updated or dated.
+
+Corrections from earlier notes:
+- The individual task page loaded in this fresh pass. The prior blank-page error is
+  not a confirmed current defect. The ARC3 All Tasks error is separately reproduced.
+- Five of six Lab42 resource links work; only the editor failed in this check.
+- Older reports and o3 raw files still exist. Their navigation/published links need work.
+- The official site already has per-task matrices and ARC3 replay links.
+- ARC Explainer is already listed as ARC-AGI Puzzle Explorer. The proposed additions
+  concern its deeper task tools and distinct resources, not a claim of total omission.
+
+The audit did not change ARC Prize or send messages. This report is published on ARC Explainer at Mark’s request.

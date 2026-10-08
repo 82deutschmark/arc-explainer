@@ -1,0 +1,1408 @@
+{
+  "checked_date": "2026-10-08",
+  "scope": "Compact public evidence accompanying the dated audit. URLs and content hashes identify upstream sources; full third-party HTML and datasets are not republished.",
+  "browser_observations": {
+    "checked_date": "2026-10-08",
+    "method": "Anonymous live Codex browser; read-only navigation, filters, sorting, and display controls. No model inference, submissions, account creation, or payments.",
+    "official": [
+      {
+        "url": "https://arcprize.org/tasks?v=3",
+        "observation": "Default All Tasks and returning from ARC2 both show Failed to load ARC-AGI-3 session data. Footer misleadingly says Showing 1–25 of 25 although no task rows rendered.",
+        "screenshot": "screenshots/all-tasks-arc3-error.jpg"
+      },
+      {
+        "url": "https://arcprize.org/tasks?v=2",
+        "observation": "All first 25 rows show N/A for all five default featured models. Selecting GPT 5.2 alone populates pass/fail and cost. Human panel and task links remain usable.",
+        "screenshot": "screenshots/all-tasks-arc2-na.jpg"
+      },
+      {
+        "url": "https://arcprize.org/tasks/0934a4d8",
+        "observation": "Fresh page loads training grids, editable test grid, task metadata and all 74 model-summary rows. No current browser error reproduced. Table has provider, model ID, dataset, passed, total cost; no links in its rows or filters in its section. Pointer cost sorting works; headers have no focusable controls. At 375 CSS px viewport the table scrolls within its container; page itself does not overflow. Grid pairs have an explicit scroll hint.",
+        "screenshots": [
+          "screenshots/task-model-table-desktop.jpg",
+          "screenshots/task-model-table-mobile.jpg",
+          "screenshots/task-play-mobile.jpg"
+        ],
+        "qualification": "The October 7 blank viewer / $ is not defined observation was not reproduced. Do not classify it as a confirmed current outage. Playground uses width × height; details tooltip explicitly defines rows × columns. This is a consistency issue, not incorrect dimensions."
+      }
+    ],
+    "arc_explainer": [
+      {
+        "url": "https://arc.markbarney.net/puzzle/0934a4d8",
+        "observation": "220 saved records, 22 correct and 198 incorrect. Opened explanation-86110 (Opus 4.8 high attempt2, correct) and explanation-86107 (low attempt2, incorrect). Both show predicted and expected grids, available response text, recorded cost, duration and tokens. Show Mismatches changes to Hide Mismatches and marks wrong cells in the failed grid. Copy Link and raw DB record controls are available. No inference was run.",
+        "screenshots": [
+          "screenshots/explainer-attempt-detail.jpg",
+          "screenshots/explainer-predicted-expected.jpg",
+          "screenshots/explainer-failed-mismatches.jpg"
+        ],
+        "qualification": "Saved/import dates are not necessarily original evaluation dates. Empty reasoning panels and fixed 50% confidence display are not evidence of original model reasoning/confidence. Archive mixes official/community/local records."
+      },
+      {
+        "url": "https://arc.markbarney.net/task/0934a4d8/efficiency",
+        "observation": "22 successful records with Time, Cost and Tokens sorting. Cost sorting changes row order and places five records with missing cost at the end, shown as dashes. Links/navigation back to task and full solution controls are exposed.",
+        "screenshot": "screenshots/explainer-task-efficiency.jpg"
+      },
+      {
+        "url": "https://arc.markbarney.net/analytics",
+        "observation": "Default ARC2 Opus 4.6 max attempt1 shows 77 correct, 40 incorrect, 3 not attempted. Separate success/failure averages: success about $1.59 and 13 minutes; failure about $2.56 and 23 minutes. Clearly labels HF archive cutoff and mixed provenance.",
+        "screenshot": "screenshots/explainer-analytics.jpg"
+      },
+      {
+        "url": "https://arc.markbarney.net/model-comparison?model1=claude-opus-4-6-thinking-120K-max-attempt1&model2=claude-opus-4-6-thinking-120K-max-attempt2&dataset=evaluation2",
+        "observation": "Compare Models opens shareable URL. Attempt union distinguishes average puzzle score from pair-weighted rate and fully solved puzzles: 83/120 fully solved, 119/167 pairs correct. Shows each attempt's correct/incorrect/missing counts and puzzle matrix.",
+        "evidence": "explainer-comparison-browser.txt",
+        "qualification": "Useful inspection features do not make every stored run comparable. Do not recommend copying the unexplained default confidence column."
+      }
+    ]
+  },
+  "coverage": {
+    "sitemap_urls": 72,
+    "sitemap_regular_routes": 34,
+    "sitemap_blog_articles": 38,
+    "additional_internal_urls_checked": 103,
+    "additional_nonreplay_routes": 25,
+    "replay_shells_sampled": 78,
+    "internal_discovered_total": 338,
+    "internal_not_fetched": 235,
+    "unchecked_breakdown": {
+      "remaining_replay_links": 199,
+      "individual_task_links": 36
+    },
+    "page_get_status_counts": {
+      "200": 172,
+      "308": 1,
+      "404": 2
+    },
+    "catalog_entries": 246,
+    "catalog_unique_primary_hrefs": 245,
+    "catalog_primary_hrefs_checked": 245,
+    "unique_resource_and_core_target_gets": 410,
+    "target_get_status_counts": {
+      "530": 1,
+      "200": 383,
+      "403": 18,
+      "429": 5,
+      "404": 3
+    },
+    "supplemental_final_gets": 4,
+    "youtube_watch_status": {
+      "OK": 94,
+      "private_LOGIN_REQUIRED": 1
+    },
+    "catalog_categories": {
+      "start-here": 5,
+      "understanding-intelligence-arc-agi": 64,
+      "approaches-to-solving-arc": 90,
+      "tools-playgrounds": 16,
+      "code-datasets": 35,
+      "competition-solutions-writeups": 17,
+      "courses-tutorials": 19
+    }
+  },
+  "model_query_reproduction": [
+    {
+      "url": "https://arcprize.org/api/models",
+      "method": "POST",
+      "request": {
+        "game_id": "",
+        "models": [],
+        "runners": [],
+        "configs": [
+          "anthropic-claude-opus-5-high",
+          "anthropic-opus-4-6-max-effort",
+          "anthropic-opus-4-7-high",
+          "anthropic-opus-4-8-high",
+          "google-gemini-3-1-pro-preview",
+          "google-gemini-3-8-flash-high",
+          "google-gemini-3-8-flash-high-provider-adapter",
+          "google-gemini-3-8-flash-low",
+          "google-gemini-3-8-flash-low-provider-adapter",
+          "google-gemini-3-8-flash-medium",
+          "google-gemini-3-8-flash-medium-provider-adapter",
+          "openai-gpt-5-4-2026-03-05-high",
+          "openai-gpt-5-5-2026-04-23-high",
+          "openai-gpt-5-6-luna-high",
+          "openai-gpt-5-6-luna-low",
+          "openai-gpt-5-6-luna-max",
+          "openai-gpt-5-6-luna-medium",
+          "openai-gpt-5-6-luna-xhigh",
+          "openai-gpt-5-6-sol-high",
+          "openai-gpt-5-6-sol-low",
+          "openai-gpt-5-6-sol-max",
+          "openai-gpt-5-6-sol-medium",
+          "openai-gpt-5-6-sol-xhigh",
+          "openai-gpt-5-6-terra-high",
+          "openai-gpt-5-6-terra-low",
+          "openai-gpt-5-6-terra-max",
+          "openai-gpt-5-6-terra-medium",
+          "openai-gpt-5-6-terra-xhigh",
+          "openai-gpt-6-1-sol-high",
+          "openai-gpt-6-1-sol-high-provider-adapter",
+          "openai-gpt-6-1-sol-low",
+          "openai-gpt-6-1-sol-max",
+          "openai-gpt-6-1-sol-max-provider-adapter",
+          "openai-gpt-6-1-sol-medium",
+          "openai-gpt-6-1-sol-xhigh",
+          "openai-gpt-6-1-sol-xhigh-provider-adapter",
+          "openai-gpt-6-luna-high",
+          "openai-gpt-6-luna-high-provider-adapter",
+          "openai-gpt-6-luna-low",
+          "openai-gpt-6-luna-low-provider-adapter",
+          "openai-gpt-6-luna-max",
+          "openai-gpt-6-luna-max-provider-adapter",
+          "openai-gpt-6-luna-medium",
+          "openai-gpt-6-luna-medium-provider-adapter",
+          "openai-gpt-6-luna-none",
+          "openai-gpt-6-luna-none-provider-adapter",
+          "openai-gpt-6-luna-xhigh",
+          "openai-gpt-6-luna-xhigh-provider-adapter",
+          "openai-gpt-6-sol-high",
+          "openai-gpt-6-sol-high-provider-adapter",
+          "openai-gpt-6-sol-low",
+          "openai-gpt-6-sol-low-provider-adapter",
+          "openai-gpt-6-sol-max",
+          "openai-gpt-6-sol-medium",
+          "openai-gpt-6-sol-medium-provider-adapter",
+          "openai-gpt-6-sol-none",
+          "openai-gpt-6-sol-none-provider-adapter",
+          "openai-gpt-6-sol-xhigh",
+          "openai-gpt-6-sol-xhigh-provider-adapter",
+          "xai-grok-4-20-beta-0309-reasoning",
+          "xai-grok-4-6-xhigh"
+        ]
+      },
+      "bodyBytes": 1984,
+      "status": 500,
+      "responseSummary": "error decoding json: http: request body too large\n"
+    },
+    {
+      "url": "https://arcprize.org/api/models",
+      "method": "POST",
+      "request": {
+        "game_id": "",
+        "models": [],
+        "runners": [],
+        "configs": [
+          "anthropic-claude-opus-5-high"
+        ]
+      },
+      "bodyBytes": 82,
+      "status": 200,
+      "responseSummary": {
+        "type": "list",
+        "count": 25,
+        "firstKeys": [
+          "session_id",
+          "game_id",
+          "game_version",
+          "published_at",
+          "score",
+          "model",
+          "runner",
+          "config",
+          "verified_publish",
+          "levels_completed",
+          "actions",
+          "resets",
+          "state",
+          "completed",
+          "number_of_levels"
+        ]
+      }
+    }
+  ],
+  "task_feed_coverage": {
+    "rows": 20061,
+    "uniqueModelIds": 42,
+    "tasks": 514,
+    "datasets": {
+      "v1_public_eval": 15405,
+      "v2_public_eval": 4656
+    },
+    "featured": [
+      {
+        "id": "anthropic-opus-4-8-high",
+        "displayName": "Claude Opus 4.8 (High)",
+        "matchingRows": 0
+      },
+      {
+        "id": "xai-grok-4-20-beta-0309-reasoning",
+        "displayName": "Grok 4.20 (Beta Reasoning)",
+        "matchingRows": 0
+      },
+      {
+        "id": "google-gemini-3-1-pro-preview",
+        "displayName": "Gemini 3.1 Pro (Preview)",
+        "matchingRows": 0
+      },
+      {
+        "id": "openai-gpt-5-5-2026-04-23-high",
+        "displayName": "GPT-5.5 (High)",
+        "matchingRows": 0
+      },
+      {
+        "id": "anthropic-claude-opus-5-high",
+        "displayName": "Claude Opus 5 (High)",
+        "matchingRows": 0
+      }
+    ],
+    "missingCatalogMatches": 1,
+    "sampleMissingCatalogueIds": [
+      "QwQ-32B-Fireworks"
+    ]
+  },
+  "official_hf_successful_attempts": {
+    "url": "https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/resolve/main/claude-opus-4-6-thinking-120K-high/0934a4d8.json",
+    "type": "list",
+    "pairCount": 1,
+    "attempts": [
+      {
+        "attempt": "attempt_1",
+        "keys": [
+          "answer",
+          "metadata",
+          "correct"
+        ],
+        "correct": true,
+        "pair_index": null,
+        "metadataKeys": [
+          "model",
+          "provider",
+          "start_timestamp",
+          "end_timestamp",
+          "choices",
+          "reasoning_summary",
+          "kwargs",
+          "usage",
+          "cost",
+          "task_id",
+          "pair_index",
+          "test_id",
+          "tool_calls",
+          "num_turns"
+        ]
+      },
+      {
+        "attempt": "attempt_2",
+        "keys": [
+          "answer",
+          "metadata",
+          "correct"
+        ],
+        "correct": true,
+        "pair_index": null,
+        "metadataKeys": [
+          "model",
+          "provider",
+          "start_timestamp",
+          "end_timestamp",
+          "choices",
+          "reasoning_summary",
+          "kwargs",
+          "usage",
+          "cost",
+          "task_id",
+          "pair_index",
+          "test_id",
+          "tool_calls",
+          "num_turns"
+        ]
+      }
+    ]
+  },
+  "archive_checks": [
+    {
+      "url": "https://huggingface.co/api/datasets/arcprize/arc_agi_v1_public_eval",
+      "final_url": "https://huggingface.co/api/datasets/arcprize/arc_agi_v1_public_eval",
+      "status": 200,
+      "bytes": 1565465,
+      "sha256": "551f6f50e49a43d1ca4eeeef4484165445f63ddb53ba5603f98db054691eeb7e",
+      "observation": {
+        "lastModified": "2026-06-04T16:43:53.000Z",
+        "sha": "3e9c9d1a8402aff82356815c106cecaea65cb7d9",
+        "file_count": 27678,
+        "top_folders": [
+          "QwQ-32B-Fireworks",
+          "claude-3-haiku",
+          "claude-haiku-4-5-20251001",
+          "claude-haiku-4-5-20251001-thinking-16k",
+          "claude-haiku-4-5-20251001-thinking-1k",
+          "claude-haiku-4-5-20251001-thinking-32k",
+          "claude-haiku-4-5-20251001-thinking-8k",
+          "claude-opus-4-5-20251101-thinking-16k",
+          "claude-opus-4-5-20251101-thinking-1k",
+          "claude-opus-4-5-20251101-thinking-32k",
+          "claude-opus-4-5-20251101-thinking-64k",
+          "claude-opus-4-5-20251101-thinking-8k",
+          "claude-opus-4-5-20251101-thinking-none",
+          "claude-opus-4-6-thinking-120K-high",
+          "claude-opus-4-6-thinking-120K-low",
+          "claude-opus-4-6-thinking-120K-max",
+          "claude-opus-4-6-thinking-120K-medium",
+          "claude-opus-4-8-high",
+          "claude-opus-4-8-low",
+          "claude-opus-4-8-max",
+          "claude-opus-4-8-medium",
+          "claude-sonnet-4-5-20250929",
+          "claude-sonnet-4-5-20250929-thinking-16k",
+          "claude-sonnet-4-5-20250929-thinking-1k",
+          "claude-sonnet-4-5-20250929-thinking-32k",
+          "claude-sonnet-4-5-20250929-thinking-8k",
+          "deepseek-v3.2",
+          "gemini-3-1-pro-preview",
+          "gemini-3-deep-think-preview",
+          "gemini-3-flash-preview-thinking-high",
+          "gemini-3-flash-preview-thinking-low",
+          "gemini-3-flash-preview-thinking-medium",
+          "gemini-3-flash-preview-thinking-minimal",
+          "gemini-3-pro-preview",
+          "glm-5",
+          "gpt-3-5-turbo",
+          "gpt-4",
+          "gpt-4-1-2025-04-14",
+          "gpt-4-1-mini-2025-04-14",
+          "gpt-4-1-nano-2025-04-14",
+          "gpt-4-5-2025-02-27",
+          "gpt-4o",
+          "gpt-5-1-2025-11-13-thinking-high",
+          "gpt-5-1-2025-11-13-thinking-low",
+          "gpt-5-1-2025-11-13-thinking-medium",
+          "gpt-5-1-2025-11-13-thinking-none",
+          "gpt-5-2-2025-12-11-thinking-high",
+          "gpt-5-2-2025-12-11-thinking-low",
+          "gpt-5-2-2025-12-11-thinking-medium",
+          "gpt-5-2-2025-12-11-thinking-none",
+          "gpt-5-2-2025-12-11-thinking-xhigh",
+          "gpt-5-2-pro-2025-12-11-high",
+          "gpt-5-2-pro-2025-12-11-medium",
+          "gpt-5-2-pro-2025-12-11-xhigh",
+          "gpt-5-4-high",
+          "gpt-5-4-low",
+          "gpt-5-4-medium",
+          "gpt-5-4-mini-high",
+          "gpt-5-4-mini-low",
+          "gpt-5-4-mini-medium",
+          "gpt-5-4-mini-xhigh",
+          "gpt-5-4-nano-high",
+          "gpt-5-4-nano-low",
+          "gpt-5-4-nano-medium",
+          "gpt-5-4-nano-xhigh",
+          "gpt-5-4-pro-xhigh",
+          "gpt-5-pro-2025-10-06",
+          "grok-4-fast-reasoning",
+          "grok-4.20-beta-0309b-reasoning",
+          "grok-4.20-multi-agent-beta-0309-xhigh",
+          "kimi-k2.5",
+          "minimax-m2.5",
+          "public_eval",
+          "qwen3-235b-a22b-instruct-2507",
+          "qwen3.5-0.8b",
+          "qwen3.5-9b"
+        ],
+        "gpt6_files": []
+      }
+    },
+    {
+      "url": "https://huggingface.co/api/datasets/arcprize/arc_agi_v2_public_eval",
+      "final_url": "https://huggingface.co/api/datasets/arcprize/arc_agi_v2_public_eval",
+      "status": 200,
+      "bytes": 468527,
+      "sha256": "bfdb7c4bc21d5bbd9dd81213f922900a70b12ad66c283c4eaa608bd50984f210",
+      "observation": {
+        "lastModified": "2026-06-04T16:45:03.000Z",
+        "sha": "026789c1c12a4c34580a32e84dcaf5630d7e8f31",
+        "file_count": 8116,
+        "top_folders": [
+          "claude-3-haiku",
+          "claude-haiku-4-5-20251001",
+          "claude-haiku-4-5-20251001-thinking-16k",
+          "claude-haiku-4-5-20251001-thinking-1k",
+          "claude-haiku-4-5-20251001-thinking-32k",
+          "claude-haiku-4-5-20251001-thinking-8k",
+          "claude-opus-4-5-20251101-thinking-16k",
+          "claude-opus-4-5-20251101-thinking-1k",
+          "claude-opus-4-5-20251101-thinking-32k",
+          "claude-opus-4-5-20251101-thinking-64k",
+          "claude-opus-4-5-20251101-thinking-8k",
+          "claude-opus-4-5-20251101-thinking-none",
+          "claude-opus-4-6-thinking-120K-high",
+          "claude-opus-4-6-thinking-120K-low",
+          "claude-opus-4-6-thinking-120K-max",
+          "claude-opus-4-6-thinking-120K-medium",
+          "claude-opus-4-8-high",
+          "claude-opus-4-8-low",
+          "claude-opus-4-8-max",
+          "claude-opus-4-8-medium",
+          "claude-sonnet-4-5-20250929",
+          "claude-sonnet-4-5-20250929-thinking-16k",
+          "claude-sonnet-4-5-20250929-thinking-1k",
+          "claude-sonnet-4-5-20250929-thinking-32k",
+          "claude-sonnet-4-5-20250929-thinking-8k",
+          "deepseek-v3.2",
+          "gemini-3-1-pro-preview",
+          "gemini-3-deep-think-preview",
+          "gemini-3-flash-preview-thinking-high",
+          "gemini-3-flash-preview-thinking-low",
+          "gemini-3-flash-preview-thinking-medium",
+          "gemini-3-flash-preview-thinking-minimal",
+          "gemini-3-pro-preview",
+          "glm-5",
+          "gpt-3-5-turbo",
+          "gpt-4",
+          "gpt-4-1-2025-04-14",
+          "gpt-4-1-mini-2025-04-14",
+          "gpt-4-1-nano-2025-04-14",
+          "gpt-4o",
+          "gpt-5-1-2025-11-13-thinking-high",
+          "gpt-5-1-2025-11-13-thinking-low",
+          "gpt-5-1-2025-11-13-thinking-medium",
+          "gpt-5-1-2025-11-13-thinking-none",
+          "gpt-5-2-2025-12-11-thinking-high",
+          "gpt-5-2-2025-12-11-thinking-low",
+          "gpt-5-2-2025-12-11-thinking-medium",
+          "gpt-5-2-2025-12-11-thinking-none",
+          "gpt-5-2-2025-12-11-thinking-xhigh",
+          "gpt-5-2-pro-2025-12-11-high",
+          "gpt-5-2-pro-2025-12-11-medium",
+          "gpt-5-4-high",
+          "gpt-5-4-low",
+          "gpt-5-4-medium",
+          "gpt-5-4-mini-high",
+          "gpt-5-4-mini-low",
+          "gpt-5-4-mini-medium",
+          "gpt-5-4-mini-xhigh",
+          "gpt-5-4-nano-high",
+          "gpt-5-4-nano-low",
+          "gpt-5-4-nano-medium",
+          "gpt-5-4-nano-xhigh",
+          "gpt-5-4-pro-xhigh",
+          "gpt-5-pro-2025-10-06",
+          "grok-4-fast-reasoning",
+          "grok-4.20-beta-0309b-reasoning",
+          "grok-4.20-multi-agent-beta-0309-xhigh",
+          "kimi-k2.5",
+          "minimax-m2.5",
+          "qwen3-235b-a22b-instruct-2507",
+          "qwen3.5-4b",
+          "qwen3.5-9b"
+        ],
+        "gpt6_files": []
+      }
+    },
+    {
+      "url": "https://huggingface.co/api/datasets?author=arcprize&limit=100",
+      "final_url": "https://huggingface.co/api/datasets?author=arcprize&limit=100",
+      "status": 200,
+      "bytes": 2072,
+      "sha256": "cb5bd50b4fa2099e90964318e5297e70fc2d18161d79d1d66017b4d8c3192bf4",
+      "observation": [
+        {
+          "id": "arcprize/arc_agi_v1_public_eval",
+          "lastModified": "2026-06-04T16:43:53.000Z",
+          "private": false,
+          "gated": false
+        },
+        {
+          "id": "arcprize/arc_agi_v2_public_eval",
+          "lastModified": "2026-06-04T16:45:03.000Z",
+          "private": false,
+          "gated": false
+        },
+        {
+          "id": "arcprize/arc_agi_2_human_testing",
+          "lastModified": "2025-05-22T21:01:42.000Z",
+          "private": false,
+          "gated": false
+        }
+      ]
+    },
+    {
+      "url": "https://api.github.com/repos/arcprize/arc-agi-benchmarking/git/trees/main?recursive=1",
+      "final_url": "https://api.github.com/repos/arcprize/arc-agi-benchmarking/git/trees/main?recursive=1",
+      "status": 200,
+      "bytes": 31135,
+      "sha256": "be0385f3876ec13979015437fb955a16eb7585fcd768f8b9a9f58c989ab5838a",
+      "observation": {
+        "truncated": false,
+        "paths": [
+          ".env.example",
+          ".github",
+          ".github/workflows",
+          ".github/workflows/claude.yml",
+          ".github/workflows/python-tests.yml",
+          ".github/workflows/trigger-benchmarks.yml",
+          ".gitignore",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "LICENSE.md",
+          "Makefile",
+          "README.md",
+          "cli",
+          "cli/run_all.py",
+          "cli/run_configs.py",
+          "cli/submission_cli.py",
+          "data",
+          "data/sample",
+          "data/sample/submissions",
+          "data/sample/submissions/example_model",
+          "data/sample/submissions/example_model/66e6c45b.json",
+          "data/sample/task_lists",
+          "data/sample/task_lists/sample_tasks.txt",
+          "data/sample/tasks",
+          "data/sample/tasks/00576224.json",
+          "data/sample/tasks/66e6c45b.json",
+          "docs",
+          "docs/examples",
+          "docs/examples/prompt_example_o3.md",
+          "docs/examples/prompt_example_v2.md",
+          "main.py",
+          "provider_config.yml",
+          "pyproject.toml",
+          "pytest.ini",
+          "results",
+          "results/random-baseline-sample",
+          "results/random-baseline-sample/results.json",
+          "scripts",
+          "scripts/detect_config_changes.py",
+          "src",
+          "src/arc_agi_benchmarking",
+          "src/arc_agi_benchmarking/__init__.py",
+          "src/arc_agi_benchmarking/adapters",
+          "src/arc_agi_benchmarking/adapters/__init__.py",
+          "src/arc_agi_benchmarking/adapters/anthropic.py",
+          "src/arc_agi_benchmarking/adapters/claudeagentsdk.py",
+          "src/arc_agi_benchmarking/adapters/codexcli.py",
+          "src/arc_agi_benchmarking/adapters/dashscope.py",
+          "src/arc_agi_benchmarking/adapters/deepseek.py",
+          "src/arc_agi_benchmarking/adapters/fireworks.py",
+          "src/arc_agi_benchmarking/adapters/gemini.py",
+          "src/arc_agi_benchmarking/adapters/grok.py",
+          "src/arc_agi_benchmarking/adapters/groq.py",
+          "src/arc_agi_benchmarking/adapters/hugging_face_fireworks.py",
+          "src/arc_agi_benchmarking/adapters/mulerouter.py",
+          "src/arc_agi_benchmarking/adapters/open_ai.py",
+          "src/arc_agi_benchmarking/adapters/openai_base.py",
+          "src/arc_agi_benchmarking/adapters/openrouter.py",
+          "src/arc_agi_benchmarking/adapters/provider.py",
+          "src/arc_agi_benchmarking/adapters/random.py",
+          "src/arc_agi_benchmarking/adapters/together.py",
+          "src/arc_agi_benchmarking/adapters/xai.py",
+          "src/arc_agi_benchmarking/errors.py",
+          "src/arc_agi_benchmarking/models.yml",
+          "src/arc_agi_benchmarking/prompts",
+          "src/arc_agi_benchmarking/prompts/prompt_manager.py",
+          "src/arc_agi_benchmarking/prompts/system_prompt.txt",
+          "src/arc_agi_benchmarking/resilience",
+          "src/arc_agi_benchmarking/resilience/__init__.py",
+          "src/arc_agi_benchmarking/resilience/circuit_breaker.py",
+          "src/arc_agi_benchmarking/resilience/timeout.py",
+          "src/arc_agi_benchmarking/schemas.py",
+          "src/arc_agi_benchmarking/scoring",
+          "src/arc_agi_benchmarking/scoring/__init__.py",
+          "src/arc_agi_benchmarking/scoring/__main__.py",
+          "src/arc_agi_benchmarking/scoring/scoring.py",
+          "src/arc_agi_benchmarking/tests",
+          "src/arc_agi_benchmarking/tests/test_anthropic.py",
+          "src/arc_agi_benchmarking/tests/test_claudeagentsdk.py",
+          "src/arc_agi_benchmarking/tests/test_codexcli.py",
+          "src/arc_agi_benchmarking/tests/test_correct_field.py",
+          "src/arc_agi_benchmarking/tests/test_custom_base_url.py",
+          "src/arc_agi_benchmarking/tests/test_detect_config_changes.py",
+          "src/arc_agi_benchmarking/tests/test_e2e_providers.py",
+          "src/arc_agi_benchmarking/tests/test_gemini_continuation.py",
+          "src/arc_agi_benchmarking/tests/test_gemini_sdk.py",
+          "src/arc_agi_benchmarking/tests/test_google_provider_alias.py",
+          "src/arc_agi_benchmarking/tests/test_logging.py",
+          "src/arc_agi_benchmarking/tests/test_logging_utils.py",
+          "src/arc_agi_benchmarking/tests/test_metrics.py",
+          "src/arc_agi_benchmarking/tests/test_openai_providers.py",
+          "src/arc_agi_benchmarking/tests/test_parsing.py",
+          "src/arc_agi_benchmarking/tests/test_preflight.py",
+          "src/arc_agi_benchmarking/tests/test_rate_limiter.py",
+          "src/arc_agi_benchmarking/tests/test_raw_api_logging.py",
+          "src/arc_agi_benchmarking/tests/test_request_rate_limiting.py",
+          "src/arc_agi_benchmarking/tests/test_resilience.py",
+          "src/arc_agi_benchmarking/tests/test_run_all_retries.py",
+          "src/arc_agi_benchmarking/tests/test_run_configs.py",
+          "src/arc_agi_benchmarking/tests/test_scoring.py",
+          "src/arc_agi_benchmarking/tests/test_submission_resume.py",
+          "src/arc_agi_benchmarking/tests/test_together.py",
+          "src/arc_agi_benchmarking/tests/test_viewer.py",
+          "src/arc_agi_benchmarking/utils",
+          "src/arc_agi_benchmarking/utils/__init__.py",
+          "src/arc_agi_benchmarking/utils/__main__.py",
+          "src/arc_agi_benchmarking/utils/concurrency_limiter.py",
+          "src/arc_agi_benchmarking/utils/generate_tasks_list.py",
+          "src/arc_agi_benchmarking/utils/logging_utils.py",
+          "src/arc_agi_benchmarking/utils/metrics.py",
+          "src/arc_agi_benchmarking/utils/parsing.py",
+          "src/arc_agi_benchmarking/utils/preflight.py",
+          "src/arc_agi_benchmarking/utils/rate_limiter.py",
+          "src/arc_agi_benchmarking/utils/submission_exists.py",
+          "src/arc_agi_benchmarking/utils/task_utils.py",
+          "src/arc_agi_benchmarking/utils/update_kwargs.py",
+          "src/arc_agi_benchmarking/utils/update_model_name_and_config.py",
+          "src/arc_agi_benchmarking/utils/update_pricing.py",
+          "src/arc_agi_benchmarking/utils/validate_data.py",
+          "src/arc_agi_benchmarking/utils/viewer.py",
+          "uv.lock"
+        ]
+      }
+    },
+    {
+      "url": "https://api.github.com/repos/arcprizeorg/model_baseline/contents/results",
+      "final_url": "https://api.github.com/repositories/877410068/contents/results",
+      "status": 200,
+      "bytes": 852,
+      "sha256": "7089f7a37da14ef8344f190221c4fe34b0452531d2d7ba10e0e056f7ae53fae3",
+      "observation": [
+        {
+          "name": "random-baseline-sample",
+          "path": "results/random-baseline-sample",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/main/results/random-baseline-sample"
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/arcprizeorg/model_baseline/blob/main/prompt_example_o3.md",
+      "final_url": "https://github.com/arcprize/arc-agi-benchmarking/blob/main/prompt_example_o3.md",
+      "status": 404
+    },
+    {
+      "url": "https://api.github.com/repos/arcprize/arc-agi-benchmarking/contents/results?ref=4af6b3a0df1321c540e9302a732e883941388272",
+      "final_url": "https://api.github.com/repos/arcprize/arc-agi-benchmarking/contents/results?ref=4af6b3a0df1321c540e9302a732e883941388272",
+      "status": 200,
+      "bytes": 10059,
+      "sha256": "49058104fb4988196c9baa9a16745f5ddb31fb68673ff2ba8b01c5752eb45b01",
+      "observation": [
+        {
+          "name": "claude-3-5-haiku-20241022",
+          "path": "results/claude-3-5-haiku-20241022",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/claude-3-5-haiku-20241022"
+        },
+        {
+          "name": "claude-3-haiku-20240307",
+          "path": "results/claude-3-haiku-20240307",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/claude-3-haiku-20240307"
+        },
+        {
+          "name": "claude_sonnet_20241022",
+          "path": "results/claude_sonnet_20241022",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/claude_sonnet_20241022"
+        },
+        {
+          "name": "open_ai_o1_high_20241217",
+          "path": "results/open_ai_o1_high_20241217",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/open_ai_o1_high_20241217"
+        },
+        {
+          "name": "open_ai_o1_low_20241217",
+          "path": "results/open_ai_o1_low_20241217",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/open_ai_o1_low_20241217"
+        },
+        {
+          "name": "open_ai_o1_med_20241217",
+          "path": "results/open_ai_o1_med_20241217",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/open_ai_o1_med_20241217"
+        },
+        {
+          "name": "open_ai_o1_mini_20241217",
+          "path": "results/open_ai_o1_mini_20241217",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/open_ai_o1_mini_20241217"
+        },
+        {
+          "name": "open_ai_o1_preview_20241217",
+          "path": "results/open_ai_o1_preview_20241217",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/open_ai_o1_preview_20241217"
+        },
+        {
+          "name": "open_ai_o3_high_20241220",
+          "path": "results/open_ai_o3_high_20241220",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/open_ai_o3_high_20241220"
+        },
+        {
+          "name": "open_ai_o3_low_20241220",
+          "path": "results/open_ai_o3_low_20241220",
+          "url": "https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results/open_ai_o3_low_20241220"
+        }
+      ]
+    },
+    {
+      "url": "https://raw.githubusercontent.com/arcprize/arc-agi-benchmarking/main/docs/examples/prompt_example_o3.md",
+      "final_url": "https://raw.githubusercontent.com/arcprize/arc-agi-benchmarking/main/docs/examples/prompt_example_o3.md",
+      "status": 200,
+      "bytes": 1300,
+      "sha256": "f1d1c319b750a9e8364d7b8db820666a75cca7371dba3e9f05b06f1b2744dae5"
+    },
+    {
+      "url": "https://arcprize.org/media/data/models.json",
+      "final_url": "https://arcprize.org/media/data/models.json",
+      "status": 200,
+      "bytes": 152559,
+      "sha256": "885ea7b52e8f70ad6f7fada467e0bedc964bd35668c2a7b5a65c8b2975aee6aa"
+    },
+    {
+      "url": "https://arcprize.org/media/data/evaluations.json",
+      "final_url": "https://arcprize.org/media/data/evaluations.json",
+      "status": 200,
+      "bytes": 226907,
+      "sha256": "9a568172a0b254954239c6bc329c15c3028caf7168b26b63dbf0f2c3b9310055"
+    },
+    {
+      "url": "https://arcprize.org/results/openai-gpt-6-astra",
+      "final_url": "https://arcprize.org/results/openai-gpt-6-astra",
+      "status": 200,
+      "bytes": 1136965,
+      "sha256": "3eb5055f4a37df5a8ec3af3c44a02cf7cfe5949cb1cbedfd905934414e387b03"
+    },
+    {
+      "url": "https://arcprize.org/blog/oai-o3-pub-breakthrough",
+      "final_url": "https://arcprize.org/blog/oai-o3-pub-breakthrough",
+      "status": 200,
+      "bytes": 78963,
+      "sha256": "25e4354107dcdc6360cb1b560892d80dee61bbe583934764cd99da6088ff299f"
+    },
+    {
+      "url": "https://arcprize.org/scripts/task/task-detail.js",
+      "final_url": "https://arcprize.org/scripts/task/task-detail.js",
+      "status": 200,
+      "bytes": 57860,
+      "sha256": "ca9ab6bfe130af402c960d3db8aa1b7d3ede90baad08ba6536e93f359b2e550d"
+    },
+    {
+      "url": "https://arcprize.org/media/data/task/task-modelstats/0934a4d8.json",
+      "final_url": "https://arcprize.org/media/data/task/task-modelstats/0934a4d8.json",
+      "status": 200,
+      "bytes": 13749,
+      "sha256": "9f7b67a19bb5e27069a5fcfc9ae1fcd8801a1c536b9889ed32512133b9941569",
+      "observation": {
+        "keys": [
+          "taskId",
+          "datasets",
+          "models"
+        ],
+        "model_keys": [
+          "provider",
+          "modelId",
+          "dataset",
+          "passed",
+          "totalCost"
+        ],
+        "rows": 74,
+        "model_ids": [
+          "QwQ-32B-Fireworks",
+          "claude-haiku-4-5-20251001",
+          "claude-haiku-4-5-20251001-thinking-16k",
+          "claude-haiku-4-5-20251001-thinking-1k",
+          "claude-haiku-4-5-20251001-thinking-32k",
+          "claude-haiku-4-5-20251001-thinking-8k",
+          "claude-opus-4-5-20251101-thinking-16k",
+          "claude-opus-4-5-20251101-thinking-1k",
+          "claude-opus-4-5-20251101-thinking-32k",
+          "claude-opus-4-5-20251101-thinking-64k",
+          "claude-opus-4-5-20251101-thinking-8k",
+          "claude-opus-4-5-20251101-thinking-none",
+          "claude-sonnet-4-5-20250929",
+          "claude-sonnet-4-5-20250929-thinking-16k",
+          "claude-sonnet-4-5-20250929-thinking-1k",
+          "claude-sonnet-4-5-20250929-thinking-32k",
+          "claude-sonnet-4-5-20250929-thinking-8k",
+          "gemini-3-deep-think-preview",
+          "gemini-3-flash-preview-thinking-high",
+          "gemini-3-flash-preview-thinking-low",
+          "gemini-3-flash-preview-thinking-medium",
+          "gemini-3-flash-preview-thinking-minimal",
+          "gemini-3-pro-preview",
+          "gpt-4-1-2025-04-14",
+          "gpt-4-1-mini-2025-04-14",
+          "gpt-4-1-nano-2025-04-14",
+          "gpt-4-5-2025-02-27",
+          "gpt-5-1-2025-11-13-thinking-high",
+          "gpt-5-1-2025-11-13-thinking-low",
+          "gpt-5-1-2025-11-13-thinking-medium",
+          "gpt-5-1-2025-11-13-thinking-none",
+          "gpt-5-2-2025-12-11-thinking-high",
+          "gpt-5-2-2025-12-11-thinking-low",
+          "gpt-5-2-2025-12-11-thinking-medium",
+          "gpt-5-2-2025-12-11-thinking-none",
+          "gpt-5-2-2025-12-11-thinking-xhigh",
+          "gpt-5-2-pro-2025-12-11-high",
+          "gpt-5-2-pro-2025-12-11-medium",
+          "gpt-5-pro-2025-10-06",
+          "grok-4-fast-reasoning",
+          "qwen3-235b-a22b-instruct-2507"
+        ]
+      }
+    },
+    {
+      "url": "https://api.github.com/orgs/arcprize/repos?per_page=100",
+      "status": 200
+    },
+    {
+      "url": "https://raw.githubusercontent.com/arcprize/arc-agi-benchmarking/main/README.md",
+      "status": 200,
+      "final_url": "https://raw.githubusercontent.com/arcprize/arc-agi-benchmarking/main/README.md"
+    },
+    {
+      "url": "https://arcprize.org/_next/static/chunks/app/results/%5Bgroup_id%5D/page-5bc31420bee9ca61.js",
+      "status": 200,
+      "final_url": "https://arcprize.org/_next/static/chunks/app/results/%5Bgroup_id%5D/page-5bc31420bee9ca61.js"
+    },
+    {
+      "url": "https://arcprize.org/results",
+      "status": 200,
+      "final_url": "https://arcprize.org/results"
+    },
+    {
+      "url": "https://arcprize.org/blog/openai-o1-results-arc-prize",
+      "status": 200,
+      "final_url": "https://arcprize.org/blog/openai-o1-results-arc-prize"
+    },
+    {
+      "url": "https://arcprize.org/blog/r1-zero-r1-results-analysis",
+      "status": 200,
+      "final_url": "https://arcprize.org/blog/r1-zero-r1-results-analysis"
+    },
+    {
+      "url": "https://arcprize.org/blog/analyzing-o3-with-arc-agi",
+      "status": 200,
+      "final_url": "https://arcprize.org/blog/analyzing-o3-with-arc-agi"
+    },
+    {
+      "url": "https://arcprize.org/scripts/leaderboard/leaderboard-table.js",
+      "status": 200,
+      "final_url": "https://arcprize.org/scripts/leaderboard/leaderboard-table.js"
+    },
+    {
+      "url": "https://arcprize.org/media/data/task/models-taskdata_json.gz",
+      "status": 200,
+      "final_url": "https://arcprize.org/media/data/task/models-taskdata_json.gz",
+      "observation": {
+        "rows": 20061,
+        "model_ids": [
+          "QwQ-32B-Fireworks",
+          "claude-haiku-4-5-20251001",
+          "claude-haiku-4-5-20251001-thinking-16k",
+          "claude-haiku-4-5-20251001-thinking-1k",
+          "claude-haiku-4-5-20251001-thinking-32k",
+          "claude-haiku-4-5-20251001-thinking-8k",
+          "claude-opus-4-5-20251101-thinking-16k",
+          "claude-opus-4-5-20251101-thinking-1k",
+          "claude-opus-4-5-20251101-thinking-32k",
+          "claude-opus-4-5-20251101-thinking-64k",
+          "claude-opus-4-5-20251101-thinking-8k",
+          "claude-opus-4-5-20251101-thinking-none",
+          "claude-sonnet-4-5-20250929",
+          "claude-sonnet-4-5-20250929-thinking-16k",
+          "claude-sonnet-4-5-20250929-thinking-1k",
+          "claude-sonnet-4-5-20250929-thinking-32k",
+          "claude-sonnet-4-5-20250929-thinking-8k",
+          "gemini-3-deep-think-preview",
+          "gemini-3-flash-preview-thinking-high",
+          "gemini-3-flash-preview-thinking-low",
+          "gemini-3-flash-preview-thinking-medium",
+          "gemini-3-flash-preview-thinking-minimal",
+          "gemini-3-pro-preview",
+          "gpt-4-1-2025-04-14",
+          "gpt-4-1-mini-2025-04-14",
+          "gpt-4-1-nano-2025-04-14",
+          "gpt-4-5-2025-02-27",
+          "gpt-5-1-2025-11-13-thinking-high",
+          "gpt-5-1-2025-11-13-thinking-low",
+          "gpt-5-1-2025-11-13-thinking-medium",
+          "gpt-5-1-2025-11-13-thinking-none",
+          "gpt-5-2-2025-12-11-thinking-high",
+          "gpt-5-2-2025-12-11-thinking-low",
+          "gpt-5-2-2025-12-11-thinking-medium",
+          "gpt-5-2-2025-12-11-thinking-none",
+          "gpt-5-2-2025-12-11-thinking-xhigh",
+          "gpt-5-2-pro-2025-12-11-high",
+          "gpt-5-2-pro-2025-12-11-medium",
+          "gpt-5-2-pro-2025-12-11-xhigh",
+          "gpt-5-pro-2025-10-06",
+          "grok-4-fast-reasoning",
+          "qwen3-235b-a22b-instruct-2507"
+        ],
+        "keys": [
+          "taskId",
+          "provider",
+          "modelId",
+          "dataset",
+          "passed",
+          "totalCost"
+        ]
+      }
+    },
+    {
+      "url": "https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/resolve/main/gpt-4o/00576224.json",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/resolve-cache/datasets/arcprize/arc_agi_v1_public_eval/3e9c9d1a8402aff82356815c106cecaea65cb7d9/gpt-4o%2F00576224.json?%2Fdatasets%2Farcprize%2Farc_agi_v1_public_eval%2Fresolve%2Fmain%2Fgpt-4o%2F00576224.json=&etag=%2224be0dbfa474e06680092075f29ee4dbff3e4e57%22",
+      "observation": {
+        "type": "list",
+        "sample": {
+          "attempt_1": {
+            "answer": [
+              [
+                3,
+                2,
+                3,
+                2,
+                3,
+                2
+              ],
+              [
+                7,
+                8,
+                7,
+                8,
+                7,
+                8
+              ],
+              [
+                2,
+                3,
+                2,
+                3,
+                2,
+                3
+              ],
+              [
+                8,
+                7,
+                8,
+                7,
+                8,
+                7
+              ],
+              [
+                3,
+                2,
+                3,
+                2,
+                3,
+                2
+              ],
+              [
+                7,
+                8,
+                7,
+                8,
+                7,
+                8
+              ]
+            ],
+            "metadata": {
+              "model": "gpt-4o",
+              "provider": "openai",
+              "start_timestamp": "2026-03-17T16:02:20.129625+00:00",
+              "end_timestamp": "2026-03-17T16:02:22.443010+00:00",
+              "choices": [
+                {
+                  "index": 0,
+                  "message": {
+                    "role": "user",
+                    "content": "You are participating in a puzzle solving competition. You are an expert at solving puzzles.\n\nBelow is a list of input and output pairs with a pattern. Your goal is to identify the pattern or transformation in the training examples that maps the input to the output, then apply that pattern to the test input to give a final output.\n\nRespond in the format of the training output examples\n\n--Training Examples--\n--Example 0-- \n\n INPUT: \n\n[[8, 6], [6, 4]]\n\nOUTPUT: \n\n[[8, 6, 8, 6, 8, 6], [6, 4, 6, 4, 6, 4], [6, 8, 6, 8, 6, 8], [4, 6, 4, 6, 4, 6], [8, 6, 8, 6, 8, 6], [6, 4, 6, 4, 6, 4]]\n\n--Example 1-- \n\n INPUT: \n\n[[7, 9], [4, 3]]\n\nOUTPUT: \n\n[[7, 9, 7, 9, 7, 9], [4, 3, 4, 3, 4, 3], [9, 7, 9, 7, 9, 7], [3, 4, 3, 4, 3, 4], [7, 9, 7, 9, 7, 9], [4, 3, 4, 3, 4, 3]]\n\n\n--End of Training Examples--\n\n--Test Input--\n[[3, 2], [7, 8]]\n--End of Test Input--\n\nYour response:"
+                  }
+                },
+                {
+                  "index": 1,
+                  "message": {
+                    "role": "assistant",
+                    "content": "[[3, 2, 3, 2, 3, 2], [7, 8, 7, 8, 7, 8], [2, 3, 2, 3, 2, 3], [8, 7, 8, 7, 8, 7], [3, 2, 3, 2, 3, 2], [7, 8, 7, 8, 7, 8]]"
+                  }
+                }
+              ],
+              "reasoning_summary": null,
+              "kwargs": {
+                "stream": true,
+                "max_output_tokens": 8000
+              },
+              "usage": {
+                "prompt_tokens": 382,
+                "completion_tokens": 109,
+                "total_tokens": 491,
+                "prompt_tokens_details": null,
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "accepted_prediction_tokens": 109,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "cost": {
+                "prompt_cost": 0.0009550000000000001,
+                "completion_cost": 0.00109,
+                "reasoning_cost": 0.0,
+                "total_cost": 0.002045
+              },
+              "task_id": "00576224",
+              "pair_index": 0,
+              "test_id": "gpt-4o",
+              "tool_calls": null,
+              "num_turns": null
+            },
+            "correct": true
+          },
+          "attempt_2": {
+            "answer": [
+              [
+                3,
+                2,
+                3,
+                2,
+                3,
+                2
+              ],
+              [
+                7,
+                8,
+                7,
+                8,
+                7,
+                8
+              ],
+              [
+                2,
+                3,
+                2,
+                3,
+                2,
+                3
+              ],
+              [
+                8,
+                7,
+                8,
+                7,
+                8,
+                7
+              ],
+              [
+                3,
+                2,
+                3,
+                2,
+                3,
+                2
+              ],
+              [
+                7,
+                8,
+                7,
+                8,
+                7,
+                8
+              ]
+            ],
+            "metadata": {
+              "model": "gpt-4o",
+              "provider": "openai",
+              "start_timestamp": "2026-03-17T16:02:22.443544+00:00",
+              "end_timestamp": "2026-03-17T16:02:24.831589+00:00",
+              "choices": [
+                {
+                  "index": 0,
+                  "message": {
+                    "role": "user",
+                    "content": "You are participating in a puzzle solving competition. You are an expert at solving puzzles.\n\nBelow is a list of input and output pairs with a pattern. Your goal is to identify the pattern or transformation in the training examples that maps the input to the output, then apply that pattern to the test input to give a final output.\n\nRespond in the format of the training output examples\n\n--Training Examples--\n--Example 0-- \n\n INPUT: \n\n[[8, 6], [6, 4]]\n\nOUTPUT: \n\n[[8, 6, 8, 6, 8, 6], [6, 4, 6, 4, 6, 4], [6, 8, 6, 8, 6, 8], [4, 6, 4, 6, 4, 6], [8, 6, 8, 6, 8, 6], [6, 4, 6, 4, 6, 4]]\n\n--Example 1-- \n\n INPUT: \n\n[[7, 9], [4, 3]]\n\nOUTPUT: \n\n[[7, 9, 7, 9, 7, 9], [4, 3, 4, 3, 4, 3], [9, 7, 9, 7, 9, 7], [3, 4, 3, 4, 3, 4], [7, 9, 7, 9, 7, 9], [4, 3, 4, 3, 4, 3]]\n\n\n--End of Training Examples--\n\n--Test Input--\n[[3, 2], [7, 8]]\n--End of Test Input--\n\nYour response:"
+                  }
+                },
+                {
+                  "index": 1,
+                  "message": {
+                    "role": "assistant",
+                    "content": "[[3, 2, 3, 2, 3, 2], [7, 8, 7, 8, 7, 8], [2, 3, 2, 3, 2, 3], [8, 7, 8, 7, 8, 7], [3, 2, 3, 2, 3, 2], [7, 8, 7, 8, 7, 8]]"
+                  }
+                }
+              ],
+              "reasoning_summary": null,
+              "kwargs": {
+                "stream": true,
+                "max_output_tokens": 8000
+              },
+              "usage": {
+                "prompt_tokens": 382,
+                "completion_tokens": 109,
+                "total_tokens": 491,
+                "prompt_tokens_details": null,
+                "completion_tokens_details": {
+                  "reasoning_tokens": 0,
+                  "accepted_prediction_tokens": 109,
+                  "rejected_prediction_tokens": 0
+                }
+              },
+              "cost": {
+                "prompt_cost": 0.0009550000000000001,
+                "completion_cost": 0.00109,
+                "reasoning_cost": 0.0,
+                "total_cost": 0.002045
+              },
+              "task_id": "00576224",
+              "pair_index": 0,
+              "test_id": "gpt-4o",
+              "tool_calls": null,
+              "num_turns": null
+            },
+            "correct": true
+          }
+        }
+      }
+    },
+    {
+      "url": "https://arcprize.org/blog/astra",
+      "status": 200,
+      "final_url": "https://arcprize.org/blog/astra"
+    }
+  ],
+  "link_findings": [
+    {
+      "id": "LINK-01",
+      "priority": "P2",
+      "title": "Lab42 editor is unavailable",
+      "source_page": "https://arcprize.org/resources",
+      "anchor_label": "ARC Playground and Editor By Lab42",
+      "target_url": "https://arc-editor.lab42.global/",
+      "symptom": "HTTP 530; response is exactly error code: 1016 (Cloudflare origin DNS error). This is a server failure, not the 403 bot checks seen elsewhere.",
+      "fix": "Repair with the owner, or mark unavailable/remove the playable-tool card and offer a verified alternative. Keep the five working Lab42 articles.",
+      "acceptance_check": "Open Tools & Playgrounds and follow the card in a clean browser; actual puzzle/editor controls must load, not merely HTTP 200.",
+      "replacement_url": null,
+      "evidence": {
+        "status": 530,
+        "final_url": "https://arc-editor.lab42.global/",
+        "checked_at": "2026-10-08T14:50:54.186974+00:00",
+        "title": null,
+        "curl_exit": 0,
+        "error": ""
+      }
+    },
+    {
+      "id": "LINK-02",
+      "priority": "P2",
+      "title": "Technical guide links to a moved scoring file",
+      "source_page": "https://arcprize.org/guide/1",
+      "anchor_label": "Github (Development → Test)",
+      "target_url": "https://github.com/arcprizeorg/model_baseline/blob/main/src/scoring/scoring.py",
+      "symptom": "Redirects to arcprize/arc-agi-benchmarking with obsolete /src/scoring/scoring.py, then HTTP 404 File not found.",
+      "fix": "Update the file link to the current package path; prefer a release/commit permalink if the guide needs stable semantics.",
+      "acceptance_check": "Follow Github from the guide and verify the scoring implementation is displayed.",
+      "replacement_url": "https://github.com/arcprize/arc-agi-benchmarking/blob/main/src/arc_agi_benchmarking/scoring/scoring.py",
+      "evidence": {
+        "status": 404,
+        "final_url": "https://github.com/arcprize/arc-agi-benchmarking/blob/main/src/scoring/scoring.py",
+        "checked_at": "2026-10-08T14:51:17.175793+00:00",
+        "title": "File not found · GitHub",
+        "curl_exit": 0,
+        "error": ""
+      }
+    },
+    {
+      "id": "LINK-03",
+      "priority": "P2",
+      "title": "Old donation URL redirects to nonexistent www hostname",
+      "source_page": "https://arcprize.org/sitemap.xml",
+      "anchor_label": "Sitemap URL /blog/donate",
+      "target_url": "https://arcprize.org/blog/donate",
+      "symptom": "HTTP 308 Location https://www.arcprize.org/donate, then curl cannot resolve hostname. Independent Google Public DNS returns Status 3 / NXDOMAIN; saved www-dns-google.json.",
+      "fix": "Redirect directly to canonical /donate and publish canonical URLs in the sitemap. Optionally configure www DNS and host redirect if it is intended to work.",
+      "acceptance_check": "A fresh GET to /blog/donate must finish at the working donation page with no DNS error, and sitemap must advertise the canonical page.",
+      "replacement_url": "https://arcprize.org/donate",
+      "evidence": {
+        "status": 308,
+        "final_url": "https://www.arcprize.org/donate",
+        "checked_at": "2026-10-08T13:46:20.549808+00:00",
+        "title": null,
+        "curl_exit": 6,
+        "error": "curl: (6) Could not resolve host: www.arcprize.org"
+      }
+    },
+    {
+      "id": "LINK-04",
+      "priority": "P2",
+      "title": "Preview learnings article points to a removed archive route",
+      "source_page": "https://arcprize.org/blog/arc-agi-3-preview-30-day-learnings",
+      "anchor_label": "archived competition page",
+      "target_url": "https://arcprize.org/archive/arc-agi-3-preview-agents/",
+      "symptom": "Redirects to the slashless path, which returns HTTP 404.",
+      "fix": "Fix the article href and add a permanent redirect for the old public URL.",
+      "acceptance_check": "Click the article link and directly load the old path; both should reach the archive with its closed-competition banner.",
+      "replacement_url": "https://arcprize.org/competitions/arc-agi-3-preview-agents/archive",
+      "evidence": {
+        "status": 404,
+        "final_url": "https://arcprize.org/archive/arc-agi-3-preview-agents",
+        "checked_at": "2026-10-08T13:46:24.077495+00:00",
+        "title": "ARC Prize",
+        "curl_exit": 0,
+        "error": ""
+      }
+    },
+    {
+      "id": "LINK-05",
+      "priority": "P2",
+      "title": "ARC-AGI-2 announcement omits /blog in an article link",
+      "source_page": "https://arcprize.org/blog/announcing-arc-agi-2-and-arc-prize-2025",
+      "anchor_label": "pinpoint the exact moment in late 2024",
+      "target_url": "https://arcprize.org/oai-o3-pub-breakthrough",
+      "symptom": "HTTP 404. The intended article at /blog/oai-o3-pub-breakthrough returns200 and contains the expected content.",
+      "fix": "Correct href; optionally redirect the bad route for shared/cached copies.",
+      "acceptance_check": "Follow the link from the announcement and verify the OpenAI o3 breakthrough article heading.",
+      "replacement_url": "https://arcprize.org/blog/oai-o3-pub-breakthrough",
+      "evidence": {
+        "status": 404,
+        "final_url": "https://arcprize.org/oai-o3-pub-breakthrough",
+        "checked_at": "2026-10-08T13:46:24.948137+00:00",
+        "title": "ARC Prize",
+        "curl_exit": 0,
+        "error": ""
+      }
+    },
+    {
+      "id": "LINK-06",
+      "priority": "P2",
+      "title": "Curated video is private despite HTTP 200",
+      "source_page": "https://arcprize.org/resources",
+      "anchor_label": "Googlers React To Dwarkesh Patel & Francois Chollet - ARC Challenge On Path To Be Beaten",
+      "target_url": "https://youtu.be/gRTUsq9DTmE?si=o6tW6PDOP7pbEcvZ",
+      "symptom": "YouTube document returns200 but its player reports playabilityStatus LOGIN_REQUIRED, reason Private video. Logged-out visitors cannot watch the recommendation.",
+      "fix": "Replace with an owner-approved public upload or mark unavailable/remove the resource.",
+      "acceptance_check": "Follow the resource signed out and verify playable video content, not an HTTP-only success.",
+      "replacement_url": null,
+      "evidence": {
+        "status": 200,
+        "final_url": "https://www.youtube.com/watch?si=o6tW6PDOP7pbEcvZ&v=gRTUsq9DTmE&feature=youtu.be",
+        "checked_at": "2026-10-08T14:52:29.975122+00:00",
+        "title": "- YouTube",
+        "curl_exit": 0,
+        "error": ""
+      }
+    },
+    {
+      "id": "LINK-07",
+      "priority": "P3",
+      "title": "Donor profile target currently returns404",
+      "source_page": "https://arcprize.org/donate",
+      "anchor_label": "Jeremy Jones (sponsor card)",
+      "target_url": "https://www.jonestrauber.com/about",
+      "symptom": "Current direct GET returns404 with Fastbreak branding and This page could not be found. A search tool still has a seven-month-old About page cached, so do not use cached content as proof it works.",
+      "fix": "Ask the donor for their current public destination, or remove the link while preserving their attribution.",
+      "acceptance_check": "Follow the donor card in a browser; target must show the intended donor profile. Recheck before editing in case the destination has recovered.",
+      "replacement_url": null,
+      "evidence": {
+        "status": 404,
+        "final_url": "https://www.jonestrauber.com/about",
+        "checked_at": "2026-10-08T14:51:42.707815+00:00",
+        "title": "404: This page could not be found.Fastbreak | Early-Stage Venture",
+        "curl_exit": 0,
+        "error": ""
+      }
+    }
+  ],
+  "inconclusive": [
+    {
+      "url": "https://blog.jovian.ai/finishing-2nd-in-kaggles-abstraction-and-reasoning-challenge-24e59c07b50a",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.link/arc_groq",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.link/cvr7tg4",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.sh/H0HKgZz",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.sh/MeWCkqy",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.sh/RkKoWqv",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.sh/YP0WWev",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.sh/c5JB6Dg",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.sh/chAWtYe",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://dub.sh/uesI8NV",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://escholarship.org/uc/item/3r6807ct",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://escholarship.org/uc/item/90f1p4kf",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://medium.com/swlh/a-commentary-on-the-abstraction-and-reasoning-challenge-kaggle-competition-16ba30fac0ec",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://nyaspubs.onlinelibrary.wiley.com/doi/abs/10.1111/nyas.14619",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://nyaspubs.onlinelibrary.wiley.com/doi/abs/10.1111/nyas.14995",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://openai.com/index/how-two-settings-tripled-our-arc-agi-3-scores/",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://openreview.net/pdf?id=-gjy2V1ko6t",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://openreview.net/pdf?id=rCzfIruU5x5",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://openreview.net/pdf?id=z4IG090qt2",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://www.engineering.columbia.edu/faculty-staff/directory/vishal-misra",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://www.every.org/arc-prize-foundation?donateTo=arc-prize-foundation",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S1566253522002214",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://x.ai/",
+      "reason": "Bot/security or rate-limit response; not a confirmed broken link."
+    },
+    {
+      "url": "https://www.linkedin.com/in/mikeknoop/",
+      "reason": "Direct GET404 Profile Not Found; independent fetch429. LinkedIn may vary for signed-out/bot traffic, so verify manually before calling it broken."
+    },
+    {
+      "url": "https://ekinakyurek.github.io/papers/ttt.pdf",
+      "reason": "Public response200; audit stopped download at3MB. HTTP reachability checked, full document/body not reviewed."
+    },
+    {
+      "url": "https://pub.tik.ee.ethz.ch/students/2023-FS/MA-2023-11.pdf",
+      "reason": "Public response200; audit stopped download at3MB. HTTP reachability checked, full document/body not reviewed."
+    },
+    {
+      "url": "https://schema-harness.github.io/",
+      "reason": "Public response200; audit stopped download at3MB. HTTP reachability checked, full document/body not reviewed."
+    }
+  ]
+}
