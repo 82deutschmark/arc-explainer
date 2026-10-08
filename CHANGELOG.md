@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.123.0  Oct 8, 2026
+
+- **Readable medal race** (Author: Codex). Replaces the compressed, vertically clipped rank curve with a gold-cutoff focus, clear cutoff values and a boundary gap. Medal-field and full-board controls preserve the actual score range; responsive axes and a separate team detail panel support pointer, touch and keyboard inspection on both ARC-2 and ARC-3.
+- **Fresh comparison scores.** Persists model/dataset selections instead of result payloads and fetches scores on each page entry, preventing old scoring results from surviving a correction in browser storage.
+- **Accurate archive context.** Dates the observed June 4 Hugging Face update cutoff and identifies the mix of official imports, community and local runs instead of assuming publication has permanently stopped or every record shares one harness.
+- **Validation:** 27 focused tests, production client/server bundles, real-data desktop/mobile chart interactions and the corrected comparison score. Scope and verification: `docs/plans/2026-10-07-results-and-medal-chart.md`.
+
 ### Version 9.122.0  Oct 7, 2026
 
 - **The ARC Daily** (Author: GPT-6.1 Sol / Codex; launch reporting: GPT-6 SOL). Adds a separate newspaper at `/news`, permanent article pages and a sourced competitor notebook. Keeps the existing leaderboard design as the live box scores. Articles include dated observations, coverage limits, source links and archived reporting evidence.

@@ -1,8 +1,9 @@
 /**
- * Author: GPT-6.1 Sol / Codex
+ * Author: GPT-6 Codex
  * Date: 2026-10-07
  * PURPOSE: Centralized public route descriptions and indexing policy for server HTML,
- *          browser navigation, discovery links and the generated sitemap.
+ *          browser navigation, discovery links and the generated sitemap. Analytics archive
+ *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
  *          2026-10-06: entries can now carry keywords, structured data (JSON-LD) and a
  *          crawlable HTML summary that is served inside #root until the app renders, so a
  *          crawler that does not run JavaScript still sees a real page. Added /analytics
@@ -109,8 +110,8 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   // ARC Prize links straight to this page from arcprize.org, so it is the site's most
   // important search entry. Until 06-Oct-2026 it had no entry here and every crawler and
   // link preview saw the generic home-page title and description.
-  // ARCHIVE (Boss, 06-Oct-2026): ARC Prize no longer publishes results to Hugging Face, so
-  // the copy says archive and sends ARC-AGI-3 visitors to the live pages.
+  // ARCHIVE: source APIs checked 07-Oct-2026 list 04-Jun-2026 as the last update.
+  // Keep that observation dated; it does not establish a permanent publication stop.
   '/analytics': {
     title: 'ARC-AGI Model Analytics (Archive): LLM Results on ARC-AGI-1 & 2 | ARC Explainer',
     description:
@@ -148,13 +149,19 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
         <h1>ARC-AGI Model Analytics</h1>
         <p>An interactive archive of the ARC Prize team's evaluation results for large language
         models on ARC-AGI-1 and ARC-AGI-2, as they were published at
-        <a href="https://huggingface.co/arcprize">huggingface.co/arcprize</a>. ARC Prize no
-        longer publishes new results there.</p>
+        <a href="https://huggingface.co/arcprize">huggingface.co/arcprize</a>.</p>
+        <p>When checked on October 7, 2026, the
+        <a href="https://huggingface.co/api/datasets/arcprize/arc_agi_v1_public_eval">ARC-AGI-1</a>
+        and <a href="https://huggingface.co/api/datasets/arcprize/arc_agi_v2_public_eval">ARC-AGI-2</a>
+        Hugging Face result datasets both listed June 4, 2026 as their last update.
+        This page explores imported records.</p>
         <p>Looking for ARC-AGI-3? See the live <a href="/kaggle-leaderboard">ARC Prize 2026
         Kaggle leaderboard</a>, the <a href="/arc3/games">mechanics of every official ARC-AGI-3
         game</a>, or <a href="/">what we are doing on ARC-AGI-3</a>.</p>
-        <p>Every model is run through the same harness: the same input grids and prompt for each
-        puzzle, the output parsed and scored by the same rules, with cost and timing recorded.</p>
+        <p>This archive combines official ARC Prize results imported from Hugging Face with community
+        and local runs. Prompts, reasoning settings, available attempts and dataset coverage can differ;
+        compare matching configurations and coverage. For ARC Prize’s evaluation and scoring code, see its
+        <a href="https://github.com/arcprize/arc-agi-benchmarking">open-source benchmarking harness</a>.</p>
         <h2>What you can do here</h2>
         <ul>
           <li>Pick a model and a dataset (ARC-AGI-1, ARC-AGI-2 and others) and see which puzzles it solved, failed or skipped.</li>

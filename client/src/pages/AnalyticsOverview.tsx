@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6 Codex
  * Date: 2026-10-07
- * PURPOSE: Archive analytics with backward-compatible union cost/coverage types used by scoring pages.
+ * PURPOSE: Archive analytics with dated source-update context, mixed-run provenance and backward-compatible
+ *          union cost/coverage types used by scoring pages.
  * SRP/DRY check: Pass — cost metrics reuse the shared API contract.
  *
  * Author: Cascade using Claude Sonnet 4.5
@@ -24,7 +25,8 @@
  * Uses proper shadcn/ui components and follows established patterns.
  * 2026-10-06 (Claude Opus 5.5): search title/description now match the server-rendered
  * entry for /analytics in shared/routes.ts (ARC Prize links here); H1 names the subject;
- * an archive notice links ARC-AGI-3 visitors to the live pages (results no longer published).
+ * an archive notice links ARC-AGI-3 visitors to the live pages; the 2026-10-07 update
+ * states observed source dates without assuming publication has permanently stopped.
  * SRP and DRY check: Pass - Single responsibility of displaying analytics, reuses existing components
  * shadcn/ui: Pass - Uses proper shadcn/ui components throughout (Card, Badge, Button, Select, etc.)
  */
@@ -313,14 +315,18 @@ export default function AnalyticsOverview() {
           </div>
         </header>
 
-        {/* ARC Prize links here from arcprize.org, but stopped publishing these results to
-            Hugging Face (Boss, 06-Oct-2026). Say it is an archive, and send anyone who came
-            for ARC-AGI-3 to the live pages before they read a stale table. */}
+        {/* Dated metadata from the two source dataset APIs, checked 07-Oct-2026.
+            An observed last update does not establish that future releases have stopped. */}
         <Card className="border-amber-300 bg-amber-50">
           <CardContent className="flex flex-col gap-2 p-3 text-sm text-left text-gray-800 sm:flex-row sm:items-center sm:justify-between">
             <p>
-              <span className="font-semibold">This is an archive.</span> ARC Prize no longer publishes new
-              results to Hugging Face, so these numbers stop where their releases did.
+              <span className="font-semibold">This is an archive.</span> When checked on October 7, 2026,
+              ARC Prize’s{' '}
+              <a href="https://huggingface.co/api/datasets/arcprize/arc_agi_v1_public_eval" target="_blank" rel="noreferrer" className="underline">ARC-AGI-1</a>
+              {' '}and{' '}
+              <a href="https://huggingface.co/api/datasets/arcprize/arc_agi_v2_public_eval" target="_blank" rel="noreferrer" className="underline">ARC-AGI-2</a>
+              {' '}Hugging Face result datasets both listed June 4, 2026 as their last update.
+              This page explores imported records.
             </p>
             <p className="flex flex-wrap gap-x-4 gap-y-1 font-medium">
               <span className="text-gray-600">ARC-AGI-3:</span>
@@ -338,13 +344,12 @@ export default function AnalyticsOverview() {
               How it works:
             </p>
             <p>
-              For each puzzle in those datasets, the harness feeds the same input grids and prompt scaffolding into
-              each LLM, then parses the model's output and scores it with the same rules before storing the
-              results, costs, and timings.
+              This archive combines official ARC Prize results imported from Hugging Face with community
+              and local runs. Prompts, reasoning settings, available attempts and dataset coverage can differ;
+              compare matching configurations and coverage.
             </p>
             <p>
-              The ARC Prize team uses this scaffolding to test all LLMs on the public HuggingFace ARC datasets.
-              You can inspect or reuse the exact evaluation code in the open-source harness here:
+              For ARC Prize’s evaluation and scoring code, see its open-source benchmarking harness:
               {" "}
               <a
                 href="https://github.com/arcprize/arc-agi-benchmarking"

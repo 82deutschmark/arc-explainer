@@ -1,13 +1,10 @@
 /**
- * Author: Cascade
- * Date: 2025-12-16T00:00:00Z (updated 2025-12-17)
- * PURPOSE: Compact, info-focused multi-model comparison dashboard. Displays performance metrics in dense tables,
- *          reuses ModelPerformancePanel and NewModelComparisonResults components. Inline model add/remove with
- *          minimal whitespace and clear controls.
- *          NOTE: Removed client-side "attempt union" scoring fallback; this page now requires backend union stats.
- *          Refactor note: Reuses shared compareService to avoid duplicating /api/metrics/compare request-building
- *          and error parsing.
- * SRP/DRY check: Pass - Uses backend metrics for scoring; client only handles selection and presentation.
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
+ * PURPOSE: Compare up to four models using fresh backend scoring on each page entry.
+ *          Persist only the selected models and dataset; never restore saved scores after
+ *          scoring changes. Reuses comparison panels, compareService and selectionCache.
+ * SRP/DRY check: Pass - Backend owns scoring; the page owns selection and presentation.
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,16 +22,13 @@ import { detectModelOrigin } from '@/utils/modelOriginDetection';
 import { Badge } from '@/components/ui/badge';
 import { fetchMetricsCompare } from '@/services/metrics/compareService';
 import { formatCostSmart } from '@shared/utils/formatters';
+import {
+  COMPARISON_CACHE_KEY,
+  createComparisonSelectionCache,
+  readComparisonSelection,
+} from '@/services/metrics/comparisonSelectionCache';
 
 const MAX_MODELS = 4;
-const COMPARISON_CACHE_KEY = 'arc-comparison-data';
-const COMPARISON_CACHE_VERSION = '2025-11-02-model-comparison-refresh';
-
-interface CachedComparisonEnvelope {
-  version: string;
-  data: ModelComparisonResult;
-}
-
 export default function ModelComparisonPage() {
   usePageMeta({
     title: 'ARC Explainer – Model Comparison',
@@ -43,54 +37,30 @@ export default function ModelComparisonPage() {
     canonicalPath: '/model-comparison',
   });
   const [, navigate] = useLocation();
-  const [loadingInitial, setLoadingInitial] = useState(false);
+  const [loadingInitial, setLoadingInitial] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [fatalError, setFatalError] = useState<string | null>(null);
   const [inlineError, setInlineError] = useState<string | null>(null);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [modelToAdd, setModelToAdd] = useState('');
-  const [hasRefreshedFromCache, setHasRefreshedFromCache] = useState(false);
   const [showUnionDialog, setShowUnionDialog] = useState(false);
 
-  const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(() => {
-    const envelopeFromHistory = window.history.state?.comparisonData as CachedComparisonEnvelope | null;
-    if (envelopeFromHistory?.version === COMPARISON_CACHE_VERSION) {
-      const stateData = envelopeFromHistory.data;
-      if (stateData?.summary && Array.isArray(stateData.details)) {
-        try {
-          localStorage.setItem(
-            COMPARISON_CACHE_KEY,
-            JSON.stringify({ version: COMPARISON_CACHE_VERSION, data: stateData })
-          );
-        } catch (error) {
-          console.warn('Failed to persist comparison data from history state.', error);
-        }
-        return stateData;
-      }
-    }
-
+  // Cached selections can restore a visit without a query string. Cached results
+  // cannot: their denominators or scoring rules may have changed since that visit.
+  const [initialSelection] = useState(() => {
+    let stored: string | null = null;
     try {
-      const stored = localStorage.getItem(COMPARISON_CACHE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as CachedComparisonEnvelope | null;
-        if (
-          parsed?.version === COMPARISON_CACHE_VERSION &&
-          parsed.data?.summary &&
-          Array.isArray(parsed.data.details)
-        ) {
-          return parsed.data;
-        }
-
-        // Version mismatch – clear stale cache
-        localStorage.removeItem(COMPARISON_CACHE_KEY);
-      }
+      stored = localStorage.getItem(COMPARISON_CACHE_KEY);
     } catch (error) {
-      console.warn('Failed to read comparison data from localStorage.', error);
-      localStorage.removeItem(COMPARISON_CACHE_KEY);
+      console.warn('Failed to read comparison selection.', error);
     }
-
-    return null;
+    return readComparisonSelection(
+      window.location.search,
+      window.history.state?.comparisonData,
+      stored,
+    );
   });
+  const [comparisonData, setComparisonData] = useState<ModelComparisonResult | null>(null);
 
   const {
     models: availableModels,
@@ -140,17 +110,17 @@ export default function ModelComparisonPage() {
         succeeded = true;
 
         try {
-          const envelope: CachedComparisonEnvelope = {
-            version: COMPARISON_CACHE_VERSION,
-            data,
-          };
+          const envelope = createComparisonSelectionCache({
+            dataset,
+            modelNames: trimmed.slice(0, MAX_MODELS),
+          });
           localStorage.setItem(COMPARISON_CACHE_KEY, JSON.stringify(envelope));
           window.history.replaceState(
             { ...window.history.state, comparisonData: envelope },
             document.title
           );
         } catch (storageError) {
-          console.warn('Failed to persist comparison data.', storageError);
+          console.warn('Failed to persist comparison selection.', storageError);
         }
       } catch (error) {
         const message =
@@ -184,52 +154,24 @@ export default function ModelComparisonPage() {
   );
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const datasetFromUrl = urlParams.get('dataset');
-    const modelsFromUrl = ['model1', 'model2', 'model3', 'model4']
-      .map((key) => urlParams.get(key))
-      .filter((name): name is string => Boolean(name && name.trim()));
-
-    // If no URL params but we already have comparison data, keep showing cached results.
-    if (!datasetFromUrl || modelsFromUrl.length === 0) {
-      if (!comparisonData) {
-        setFatalError(
-          'Missing required parameters. Please run a comparison from the Analytics page.',
+    // Always revalidate on entry, even when URL parameters match a previous visit.
+    // The loading screen stays visible until the fresh request succeeds or fails.
+    if (!initialSelection) {
+      setFatalError('Missing required parameters. Please run a comparison from the Analytics page.');
+      setLoadingInitial(false);
+      try {
+        localStorage.removeItem(COMPARISON_CACHE_KEY);
+        window.history.replaceState(
+          { ...window.history.state, comparisonData: null },
+          document.title,
         );
+      } catch (error) {
+        console.warn('Failed to clear obsolete comparison cache.', error);
       }
       return;
     }
-
-    const currentDataset = comparisonData?.summary?.dataset ?? null;
-    const currentModels =
-      comparisonData?.summary?.modelPerformance?.map((item) => item.modelName) ?? [];
-
-    const setsDiffer = () => {
-      if (currentModels.length !== modelsFromUrl.length) {
-        return true;
-      }
-      const currentSet = new Set(currentModels);
-      for (const name of modelsFromUrl) {
-        if (!currentSet.has(name)) {
-          return true;
-        }
-      }
-      return false;
-    };
-
-    const datasetChanged = !currentDataset || currentDataset !== datasetFromUrl;
-    const modelsChanged = setsDiffer();
-
-    if (!datasetChanged && !modelsChanged) {
-      return;
-    }
-
-    void requestComparisonData(
-      modelsFromUrl,
-      datasetFromUrl,
-      comparisonData ? 'update' : 'initial',
-    );
-  }, [comparisonData, requestComparisonData]);
+    void requestComparisonData(initialSelection.modelNames, initialSelection.dataset, 'initial');
+  }, [initialSelection, requestComparisonData]);
 
   useEffect(() => {
     if (!comparisonData?.summary?.modelPerformance) {
@@ -242,30 +184,6 @@ export default function ModelComparisonPage() {
   }, [comparisonData]);
 
   const dataset = comparisonData?.summary?.dataset ?? null;
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasDatasetParam = Boolean(urlParams.get('dataset'));
-
-    // When a dataset is specified in the URL, we let the URL drive the data
-    // and skip the cache refresh behavior.
-    if (!comparisonData || hasRefreshedFromCache || hasDatasetParam) {
-      return;
-    }
-
-    const datasetName = comparisonData.summary?.dataset;
-    const modelsToRefresh = comparisonData.summary?.modelPerformance
-      ?.map((item) => item.modelName)
-      .filter((name): name is string => Boolean(name && name.trim())) ?? [];
-
-    if (!datasetName || modelsToRefresh.length === 0) {
-      setHasRefreshedFromCache(true);
-      return;
-    }
-
-    setHasRefreshedFromCache(true);
-    void requestComparisonData(modelsToRefresh, datasetName, 'update');
-  }, [comparisonData, hasRefreshedFromCache, requestComparisonData]);
 
   const addableModels = useMemo(() => {
     const filtered = availableModels.filter(
@@ -412,7 +330,7 @@ export default function ModelComparisonPage() {
     return `${(ms / 1000).toFixed(2)} s`;
   };
 
-  if (loadingInitial && !comparisonData) {
+  if (loadingInitial) {
     return (
       <div className="container mx-auto p-6 max-w-7xl">
         <div className="flex items-center justify-center min-h-[400px]">

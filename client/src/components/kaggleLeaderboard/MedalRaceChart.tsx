@@ -1,156 +1,179 @@
 /**
- * Author: GPT-6 / Codex
+ * Author: GPT-6 Codex
  * Date: 2026-10-07
- * PURPOSE: "The race for medals" -- score against rank for the part of the board that is
- *          actually contested, drawn as the board's staircase with the gold, silver and
- *          bronze zones shaded and the pinned team called out with how far it is to the next
- *          medal line, in points and in teams to pass.
- *
- *          WHY NOT EVERY TEAM. On 05-Oct-2026 roughly three quarters of the board sat near
- *          zero, and the original arc-3 chart spent most of its width on them with a log
- *          rank axis that squashed the medal zones into the left edge. Here the rank axis is
- *          linear and stops a little past the bronze line, and the score axis starts just
- *          under the last team shown, so the tight pack around the medal lines is readable.
- *          Teams scoring above the axis (a runaway leader) are drawn as arrows on the top
- *          edge with their score, so nothing is hidden.
- * SRP/DRY check: Pass - marks only; frame, crosshair and tooltip come from ChartFrame.
+ * PURPOSE: A readable medal race: cutoff summaries, a gold-boundary focus by default,
+ *          wider rank views, and exact scores without a clipped ceiling. Responsive SVG
+ *          coordinates keep labels at normal text size on phones. Pointer, touch and
+ *          keyboard inspection share a detail panel outside the plot.
+ * SRP/DRY check: Pass — reads BoardModel; reuses medal colors, team links, chart math and
+ *          shadcn controls. Shared ChartFrame remains unchanged for other charts.
  */
-
-import { ChartFrame, PAD, TipRow, W, AXIS_TEXT, LABEL_TEXT, niceTicks, polyPoints, type Anchor } from './ChartFrame';
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { niceTicks, polyPoints } from './ChartFrame';
 import { MEDAL_COLOR, US_COLOR, fmt, type BoardModel, type Medal } from './boardData';
+import { TeamName } from './TeamName';
+import { medalBoundary, medalRaceWindow, nearestRankIndex, rankTickValues, type MedalRaceView } from './medalRaceData';
 
-const H = 400;
-const RIGHT = 24;
+const HEIGHT = 280;
+const PAD = { left: 44, right: 14, top: 14, bottom: 34 };
+const MEDALS: Medal[] = ['gold', 'silver', 'bronze'];
+const VIEWS: Array<[MedalRaceView, string]> = [['gold', 'Gold race'], ['medals', 'Medal field'], ['all', 'Full board']];
 
 export function MedalRaceChart({ model }: { model: BoardModel }) {
-  const { latest, ourRow } = model;
-  const rows = latest.rows;
-  const mr = latest.medalRanks;
-  const n = latest.teams;
+  const [view, setView] = useState<MedalRaceView>('gold');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [width, setWidth] = useState(760);
+  const plotRef = useRef<HTMLDivElement>(null);
+  const instructionsId = useId();
+  const { latest } = model;
+  const window = useMemo(() => medalRaceWindow(latest, view), [latest, view]);
 
-  // Show a little past bronze, and past us if we are further down.
-  const lastRank = Math.min(n, Math.ceil(Math.max(mr.bronze * 1.35, (ourRow?.[0] ?? 0) * 1.1)));
-  const shown = rows.slice(0, lastRank);
-  // Clip the top so one runaway score does not flatten the pack: cap at the 4th-best score.
-  const capRef = rows[Math.min(3, rows.length - 1)][4];
-  const yTop = Math.ceil(capRef + 1);
-  const yBottom = Math.max(0, Math.floor(shown[shown.length - 1][4] - 1));
-  const plotR = W - RIGHT;
-  const x = (rank: number) => PAD.L + ((rank - 0.5) / lastRank) * (plotR - PAD.L);
-  const y = (score: number) => PAD.T + (1 - (Math.min(score, yTop) - yBottom) / (yTop - yBottom)) * (H - PAD.T - PAD.B);
+  useEffect(() => {
+    const element = plotRef.current;
+    if (!element) return;
+    const measure = () => setWidth(Math.max(1, Math.round(element.getBoundingClientRect().width)));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [!!window]);
 
-  const yTicks = niceTicks(yBottom, yTop, 6).map((v) => [y(v), String(v)] as [number, string]);
-  const xTicks: Array<[number, string, Anchor]> = [[x(1), '1', 'middle']];
-  for (const t of niceTicks(0, lastRank, 6)) if (t >= 50 && x(t) < plotR - 20) xTicks.push([x(t), String(t), 'middle']);
+  if (!window) return <p className="text-sm text-muted-foreground">No ranked scores are available in this snapshot.</p>;
 
-  // The staircase: each team holds its score across its own rank slot.
-  const stair: Array<[number, number]> = [];
-  for (const r of shown) {
-    stair.push([x(r[0] - 0.5), y(r[4])], [x(r[0] + 0.5), y(r[4])]);
-  }
-  const area = `${polyPoints(stair)} ${x(lastRank + 0.5).toFixed(1)},${H - PAD.B} ${x(0.5).toFixed(1)},${H - PAD.B}`;
+  const { rows, shown, rankMin, rankMax, scoreMin, scoreMax } = window;
+  const gold = medalBoundary(rows, latest.medalRanks.gold);
+  const selectedIndex = shown.findIndex((row) => row[1] === selectedId);
+  const activeIndex = selectedIndex >= 0 ? selectedIndex : nearestRankIndex(shown, latest.medalRanks.gold);
+  const active = shown[activeIndex];
+  const pinnedIds = new Set(model.pinnedRows.map((row) => row[1]));
+  const plotRight = width - PAD.right;
+  const plotBottom = HEIGHT - PAD.bottom;
+  const plotWidth = Math.max(1, plotRight - PAD.left);
+  const x = (rank: number) => PAD.left + (rank - rankMin) / (rankMax - rankMin) * plotWidth;
+  const y = (score: number) => PAD.top + (scoreMax - score) / (scoreMax - scoreMin) * (plotBottom - PAD.top);
+  const clampX = (rank: number) => Math.max(PAD.left, Math.min(plotRight, x(rank)));
+  const scoreTicks = niceTicks(scoreMin, scoreMax, 5);
+  const rankTicks = rankTickValues(shown[0][0], shown[shown.length - 1][0], width < 500 ? 4 : 7);
+  const stair: Array<[number, number]> = shown.flatMap((row) => [[x(row[0] - 0.5), y(row[4])], [x(row[0] + 0.5), y(row[4])]]);
+  const area = [...stair, [x(rankMax), plotBottom], [x(rankMin), plotBottom]] as Array<[number, number]>;
+  const medal = model.medalOf(active[0]);
+  const activeColor = pinnedIds.has(active[1]) ? US_COLOR : 'var(--foreground)';
 
-  const zones: Array<[Medal, number, number]> = [
-    ['gold', 1, mr.gold],
-    ['silver', mr.gold + 1, mr.silver],
-    ['bronze', mr.silver + 1, mr.bronze],
-  ];
-  const clipped = rows.filter((r) => r[4] > yTop);
-
-  // Our callout: points and teams to the next medal line above us.
-  let callout: { text: string; targetY: number; medal: Medal } | null = null;
-  if (ourRow) {
-    const next = (['bronze', 'silver', 'gold'] as Medal[]).find((m) => ourRow[0] > mr[m]);
-    const target: Medal | null = next ?? null;
-    if (target) {
-      const line = rows[mr[target] - 1][4];
-      callout = {
-        medal: target,
-        targetY: y(line),
-        text: `+${fmt(line - ourRow[4])} to ${target} · ${ourRow[0] - mr[target]} teams to pass`,
-      };
-    }
-  }
-
-  const hover = (gx: number) => {
-    const rank = Math.round((gx - PAD.L) / (plotR - PAD.L) * lastRank + 0.5);
-    const r = rows[Math.min(lastRank, Math.max(1, rank)) - 1];
-    if (!r) return null;
-    const medal = model.medalOf(r[0]);
-    const near = rows.filter((o) => Math.abs(o[4] - r[4]) <= 0.25).length - 1;
-    return {
-      x: x(r[0]),
-      dots: [{ y: y(r[4]), color: r[1] === latest.ourTeamId ? US_COLOR : 'var(--foreground)' }],
-      body: (
-        <>
-          <div className="mb-1 font-semibold">{r[2]}</div>
-          <TipRow name="Rank" value={`#${r[0]}${medal ? ` · ${medal}` : ''}`} />
-          <TipRow name="Score" value={fmt(r[4])} />
-          <TipRow name="Submissions" value={r[5]} />
-          <div className="mt-1 text-muted-foreground">{near} other teams within a quarter point</div>
-        </>
-      ),
-    };
+  const selectIndex = (index: number) => setSelectedId(shown[Math.max(0, Math.min(shown.length - 1, index))][1]);
+  const inspectPointer = (event: PointerEvent<SVGRectElement>) => {
+    if (!plotRef.current) return;
+    const box = plotRef.current.getBoundingClientRect();
+    const gx = (event.clientX - box.left) * width / box.width;
+    selectIndex(nearestRankIndex(shown, rankMin + (gx - PAD.left) / plotWidth * (rankMax - rankMin)));
+  };
+  const inspectKeyboard = (event: KeyboardEvent<HTMLDivElement>) => {
+    const index = event.key === 'Home' ? 0 : event.key === 'End' ? shown.length - 1
+      : event.key === 'ArrowLeft' || event.key === 'ArrowDown' ? activeIndex - 1
+        : event.key === 'ArrowRight' || event.key === 'ArrowUp' ? activeIndex + 1 : null;
+    if (index !== null) { event.preventDefault(); selectIndex(index); }
   };
 
   return (
-    <>
-      <ChartFrame height={H} label="Score by rank, medal zones" yTicks={yTicks} xTicks={xTicks} xTitle="rank" padRight={RIGHT} hover={hover}>
-        {zones.map(([name, a, b]) => (
-          <g key={name}>
-            <rect x={x(a - 0.5)} y={PAD.T} width={Math.max(0, x(b + 0.5) - x(a - 0.5))} height={H - PAD.T - PAD.B} fill={MEDAL_COLOR[name]} opacity={0.12} />
-            <line x1={x(b + 0.5)} x2={x(b + 0.5)} y1={PAD.T} y2={H - PAD.B} stroke={MEDAL_COLOR[name]} strokeWidth={1.5} />
-            <text x={x(b + 0.5) - 5} y={PAD.T + 14} textAnchor="end" style={{ ...AXIS_TEXT, fontWeight: 600 }}>
-              {name} · {fmt(rows[b - 1][4])}
-            </text>
-          </g>
-        ))}
-        <polygon points={area} style={{ fill: 'var(--foreground)' }} opacity={0.06} />
-        <polyline points={polyPoints(stair)} fill="none" style={{ stroke: 'var(--foreground)' }} strokeOpacity={0.75} strokeWidth={1.5} strokeLinejoin="round" />
-        {clipped.map((r, i) => (
-          <g key={r[1]}>
-            <path d={`M${x(r[0])} ${PAD.T + 2} l-4 7 h8 z`} style={{ fill: 'var(--foreground)' }} />
-            {i === 0 && (
-              <text x={x(r[0]) + 8} y={PAD.T + 9} style={AXIS_TEXT}>
-                {clipped.length === 1 ? `leader ${fmt(r[4])}, off the top` : `${clipped.length} teams above ${yTop}, leader ${fmt(r[4])}`}
-              </text>
-            )}
-          </g>
-        ))}
-        {ourRow && ourRow[0] <= lastRank && (
-          <g>
-            {callout && (
-              <>
-                <line x1={x(ourRow[0])} x2={x(ourRow[0])} y1={y(ourRow[4]) - 9} y2={callout.targetY} style={{ stroke: US_COLOR }} strokeWidth={1.5} />
-                <line x1={x(ourRow[0]) - 5} x2={x(ourRow[0]) + 5} y1={callout.targetY} y2={callout.targetY} style={{ stroke: US_COLOR }} strokeWidth={1.5} />
-              </>
-            )}
-            <circle cx={x(ourRow[0])} cy={y(ourRow[4])} r={6} style={{ fill: US_COLOR, stroke: 'var(--card)' }} strokeWidth={2} />
-            <text
-              x={x(ourRow[0]) + (x(ourRow[0]) > plotR - 260 ? -12 : 12)}
-              y={y(ourRow[4]) + 22}
-              textAnchor={x(ourRow[0]) > plotR - 260 ? 'end' : 'start'}
-              style={{ ...LABEL_TEXT, fontWeight: 700 }}
-            >
-              Pinned · #{ourRow[0]} · {fmt(ourRow[4])}
-            </text>
-            {callout && (
-              <text
-                x={x(ourRow[0]) + (x(ourRow[0]) > plotR - 260 ? -12 : 12)}
-                y={y(ourRow[4]) + 38}
-                textAnchor={x(ourRow[0]) > plotR - 260 ? 'end' : 'start'}
-                style={AXIS_TEXT}
-              >
-                {callout.text}
-              </text>
-            )}
-          </g>
-        )}
-      </ChartFrame>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Showing the top {lastRank.toLocaleString()} of {n.toLocaleString()} teams; the rest score {fmt(shown[shown.length - 1][4])} or less.
-        {ourRow && ourRow[0] > lastRank && <> The pinned team is #{ourRow[0]} with {fmt(ourRow[4])}, below this view.</>}
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3 border-b pb-3">
+        {MEDALS.map((name) => {
+          const row = medalBoundary(rows, latest.medalRanks[name]).cutoff;
+          return (
+            <div key={name} className="min-w-0 border-l-[3px] pl-2.5" style={{ borderColor: MEDAL_COLOR[name] }}>
+              <div className="min-h-8 text-xs font-medium capitalize sm:min-h-0">{name} cutoff</div>
+              <div className="mt-0.5 font-mono text-xl font-semibold tabular-nums sm:text-2xl">{row ? fmt(row[4]) : '—'}</div>
+              <div className="text-xs text-muted-foreground">rank #{latest.medalRanks[name].toLocaleString()}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <ToggleGroup type="single" variant="outline" value={view} onValueChange={(value) => {
+          if (value) { setView(value as MedalRaceView); setSelectedId(null); }
+        }} aria-label="Medal race rank range" className="grid w-full grid-cols-3 gap-0 sm:flex sm:w-auto">
+          {VIEWS.map(([value, label]) => <ToggleGroupItem key={value} value={value} className="h-11 min-w-0 rounded-none px-2 text-xs first:rounded-l-md last:rounded-r-md sm:px-3 sm:text-sm">{label}</ToggleGroupItem>)}
+        </ToggleGroup>
+        <span className="text-xs text-muted-foreground">{shown.length.toLocaleString()} teams in view</span>
+      </div>
+
+      <p className="text-sm leading-relaxed">
+        {gold.gap != null && gold.outside && gold.cutoff ? (
+          gold.gap > 0 ? <><strong className="font-mono tabular-nums">{fmt(gold.gap)} points</strong> separate #{gold.cutoff[0]} and #{gold.outside[0]} at the gold cutoff.</>
+            : gold.gap === 0 ? <>The teams at #{gold.cutoff[0]} and #{gold.outside[0]} are <strong>tied on score</strong> at the gold cutoff. Their ranks determine the displayed zone.</>
+              : <>The gold-boundary scores are out of rank order in this snapshot.</>
+        ) : <>The gold cutoff is rank #{latest.medalRanks.gold}; both boundary scores are not available in this snapshot.</>}
       </p>
-    </>
+
+      <div>
+        <div className="mb-1 flex justify-between gap-3 text-xs text-muted-foreground">
+          <span>Score · points</span>
+          <span>Ranks {shown[0][0].toLocaleString()}–{shown[shown.length - 1][0].toLocaleString()}</span>
+        </div>
+        <div ref={plotRef} role="slider" tabIndex={0} aria-label="Inspect teams by rank"
+          aria-orientation="horizontal" aria-valuemin={shown[0][0]} aria-valuemax={shown[shown.length - 1][0]}
+          aria-valuenow={active[0]} aria-valuetext={`Rank ${active[0]}, ${active[2]}, ${fmt(active[4])} points${medal ? `, ${medal} zone` : ''}`}
+          aria-describedby={instructionsId} onKeyDown={inspectKeyboard}
+          className="min-w-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+          <svg viewBox={`0 0 ${width} ${HEIGHT}`} width="100%" height={HEIGHT} aria-hidden="true" className="block overflow-hidden">
+            {MEDALS.map((name, index) => {
+              const start = index === 0 ? 0.5 : latest.medalRanks[MEDALS[index - 1]] + 0.5;
+              const end = latest.medalRanks[name] + 0.5;
+              const boundary = medalBoundary(rows, latest.medalRanks[name]).cutoff;
+              return <g key={name}>
+                <rect x={clampX(start)} y={PAD.top} width={Math.max(0, clampX(end) - clampX(start))} height={plotBottom - PAD.top} fill={MEDAL_COLOR[name]} opacity={0.09} />
+                {end > rankMin && end < rankMax && <line x1={x(end)} x2={x(end)} y1={PAD.top} y2={plotBottom} stroke={MEDAL_COLOR[name]} strokeWidth={1.5} />}
+                {boundary && boundary[4] >= scoreMin && boundary[4] <= scoreMax && <line x1={PAD.left} x2={plotRight} y1={y(boundary[4])} y2={y(boundary[4])} stroke={MEDAL_COLOR[name]} strokeDasharray="4 4" strokeOpacity={0.65} />}
+              </g>;
+            })}
+            {scoreTicks.map((value) => <g key={value}>
+              <line x1={PAD.left} x2={plotRight} y1={y(value)} y2={y(value)} stroke="var(--border)" strokeOpacity={0.7} />
+              <text x={PAD.left - 8} y={y(value) + 4} textAnchor="end" fontSize={12} fill="var(--muted-foreground)">{Number(value.toFixed(3))}</text>
+            </g>)}
+            <polygon points={polyPoints(area)} fill="var(--foreground)" opacity={0.035} />
+            <polyline points={polyPoints(stair)} fill="none" stroke="var(--foreground)" strokeOpacity={0.8} strokeWidth={1.8} strokeLinejoin="round" />
+            {shown.length <= 60 && shown.map((row) => <circle key={row[1]} cx={x(row[0])} cy={y(row[4])} r={2.5} fill="var(--foreground)" />)}
+            {shown.filter((row) => pinnedIds.has(row[1])).map((row) => <circle key={row[1]} cx={x(row[0])} cy={y(row[4])} r={4.5} fill="var(--card)" stroke={US_COLOR} strokeWidth={2} />)}
+            <line x1={x(active[0])} x2={x(active[0])} y1={PAD.top} y2={plotBottom} stroke="var(--muted-foreground)" strokeDasharray="3 3" strokeOpacity={0.6} />
+            <circle cx={x(active[0])} cy={y(active[4])} r={5} fill={activeColor} stroke="var(--card)" strokeWidth={2} />
+            {rankTicks.map((rank, index) => <text key={rank} x={x(rank)} y={HEIGHT - 10}
+              textAnchor={index === 0 ? 'start' : index === rankTicks.length - 1 ? 'end' : 'middle'}
+              fontSize={12} fill="var(--muted-foreground)">#{rank.toLocaleString()}</text>)}
+            <rect x={PAD.left} y={PAD.top} width={plotWidth} height={plotBottom - PAD.top} fill="transparent"
+              style={{ touchAction: 'pan-y' }} onPointerDown={inspectPointer}
+              onPointerMove={(event) => { if (event.pointerType === 'mouse' || event.buttons > 0) inspectPointer(event); }} />
+          </svg>
+        </div>
+      </div>
+
+      <div className="flex min-h-[76px] items-center gap-3 rounded-md border bg-muted/25 px-3 py-2.5">
+        <div className="min-w-0 flex-1">
+          <div className="mb-1 text-xs text-muted-foreground">#{active[0].toLocaleString()} · {medal ? `${medal} zone` : 'outside medal zones'}{pinnedIds.has(active[1]) && ' · pinned'}</div>
+          <TeamName row={active} className="break-words text-sm font-semibold" />
+        </div>
+        <div className="shrink-0 text-right">
+          <div className="font-mono text-lg font-semibold tabular-nums">{fmt(active[4])}</div>
+          <div className="text-xs text-muted-foreground">{active[5].toLocaleString()} submissions</div>
+        </div>
+        <div className="hidden gap-1 sm:flex">
+          <Button type="button" variant="outline" size="icon" disabled={activeIndex === 0} onClick={() => selectIndex(activeIndex - 1)} aria-label="Inspect previous team"><ChevronLeft /></Button>
+          <Button type="button" variant="outline" size="icon" disabled={activeIndex === shown.length - 1} onClick={() => selectIndex(activeIndex + 1)} aria-label="Inspect next team"><ChevronRight /></Button>
+        </div>
+      </div>
+
+      <div className="space-y-1 text-xs leading-relaxed text-muted-foreground">
+        <p id={instructionsId}>Hover or tap the chart to inspect a team. With the chart focused, use the arrow keys; Home and End jump to the edges.</p>
+        <p>
+          {shown[0][0] > rows[0][0] && <>Ranks {rows[0][0]}–{shown[0][0] - 1} are above this view. Leader: <TeamName row={rows[0]} /> ({fmt(rows[0][4])} points). </>}
+          {shown[shown.length - 1][0] < rows[rows.length - 1][0] && <>Ranks {(shown[shown.length - 1][0] + 1).toLocaleString()}–{rows[rows.length - 1][0].toLocaleString()} are below this view. </>}
+          {shown.length < rows.length ? <>Choose Full board to see all {rows.length.toLocaleString()} recorded teams. </> : <>All {rows.length.toLocaleString()} recorded teams are shown. </>}
+          The score axis adjusts to each view.
+        </p>
+        {model.pinnedRows.length > 0 && <p><span className="mr-1 inline-block h-2 w-2 rounded-full border-2 align-middle" style={{ borderColor: US_COLOR }} />Pinned: {model.pinnedRows.map((row, i) => <span key={row[1]}>{i > 0 && '; '}<TeamName row={row} /> #{row[0]} · {fmt(row[4])}{!shown.some((shownRow) => shownRow[1] === row[1]) && ' (outside this view)'}</span>)}.</p>}
+      </div>
+    </div>
   );
 }

@@ -112,7 +112,7 @@ export default function KaggleLeaderboard({ competitionKey = 'arc-3' }: { compet
 
           <Section
             title="The race for medals"
-            note="Score against rank for the contested part of the board. Shaded bands are the medal zones on the public board right now; hover any team."
+            note="Start at the gold cutoff, then widen the view. These are public-board standings; final medals are decided on the private board."
           >
             <MedalRaceChart model={model} />
           </Section>
