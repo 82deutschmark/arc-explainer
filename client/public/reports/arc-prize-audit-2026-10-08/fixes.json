@@ -26,7 +26,7 @@
       "reproduction": [
         "Open /tasks anonymously with its default ARC3 tab.",
         "Observe the session-data error and the misleading 1–25 of 25 footer.",
-        "Reproduce the recorded full-config request and one-config control in models-post-compact-check.json."
+        "Reproduce the recorded full-config request and one-config control in evidence.json (model_query_reproduction)."
       ],
       "proposed_fix": "Agree on an all-config query contract, bounded batching/selection, or a sufficient validated body limit; retain useful error handling. Do not assume adding Content-Type is sufficient.",
       "acceptance_checks": [

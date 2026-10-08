@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.124.2  Oct 8, 2026
+
+- **Public evidence navigation** (Author: Codex). Points the audit’s API reproduction step to the hosted `evidence.json` request/control section instead of the original local evidence filename.
+
 ### Version 9.124.1  Oct 8, 2026
 
 - **Publish the ARC Prize public website audit** (Author: Codex). Hosts the reviewed October 8 report, screenshots, 19 prioritized findings, coding-assistant instructions and compact public evidence at `/reports/arc-prize-audit-2026-10-08/audit.html`. Adds Resource Hub discovery and public repository links so the report can be shared without a ZIP. Reuses static serving and the existing full-page resource-link pattern; no scoring or data-service behavior changes.
