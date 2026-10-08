@@ -1,7 +1,8 @@
 /**
  * Author: Codex
  * Date: 2026-10-07
- * PURPOSE: Link Human ARC and the current resource directory from the shared site navigation.
+ * PURPOSE: Keep the competition leaderboard directly visible in the primary navigation,
+ *          with named mobile controls and resource/reference links in the existing menus.
  * SRP/DRY check: Pass — maintains one navigation configuration with full-page links where needed.
  */
 /**
@@ -77,6 +78,8 @@ import {
 
 // Type definitions for discriminated union
 interface NavLink {
+  /** Keep high-priority destinations readable when other mobile labels collapse. */
+  alwaysShowLabel?: boolean;
   /** Load a separate application instead of using the host SPA router. */
   fullPage?: boolean;
   type: 'link';
@@ -129,6 +132,14 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
   {
     type: 'link',
     markerBefore: '🟦',
+    title: 'Leaderboard',
+    href: '/kaggle-leaderboard',
+    icon: Trophy,
+    alwaysShowLabel: true,
+    description: 'ARC-3 and ARC-2 public competition standings',
+  },
+  {
+    type: 'link',
     title: 'Play',
     // /play, not the gallery. Playing the queue is the one thing this site asks of a
     // visitor, and the gallery is a browsing surface that made them choose first -- three
@@ -482,23 +493,13 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
 ];
 
 /**
- * The ARC-3 projects worth leaving for.
- *
- * ARC-Interactive is here first among the community ones because we are the ones in its
- * debt: 252 of the tasks in our gallery are theredbluepill's, mirrored under the MIT
- * licence, and until 01-Sep the site credited nobody. The gallery section carries the
- * licence notice, but a credit that only appears once you scroll to the right section of
- * one page is not the credit a quarter of our catalog has earned. It goes in the chrome.
+ * External references retained in the top bar. Community game attribution and licence
+ * notices live with the catalog entries; they do not all need primary navigation links.
  *
  * arc3.sonpham.net is Son Pham's sibling catalog, built on the same Pyodide/ARCEngine
  * architecture this repo runs -- see docs/sonpham-arc3-pyodide-architecture.md.
  */
 const externalLinks: ExternalNavLink[] = [
-  {
-    title: 'ARC-Interactive',
-    href: 'https://github.com/theredbluepill/arc-interactive',
-    description: "theredbluepill's community game repo — 252 of our tasks are his, under MIT",
-  },
   {
     title: 'ARC Prize',
     href: 'https://arcprize.org/arc-agi/3/',
@@ -556,6 +557,7 @@ export function AppNavigation() {
                   <NavigationMenuLink asChild>
                     <Link
                       href={item.href}
+                      aria-label={item.title}
                       className={cn(
                         navigationMenuTriggerStyle(),
                         // px-3 overrides the cva's px-4 through twMerge: at px-4 the six
@@ -564,20 +566,21 @@ export function AppNavigation() {
                         isActiveRoute(item.href, item.exact) && 'bg-accent text-accent-foreground',
                       )}
                     >
-                      <item.icon className="h-4 w-4" />
-                      <span className="hidden sm:inline">{item.title}</span>
+                      <item.icon className="h-4 w-4" aria-hidden="true" />
+                      <span className={item.alwaysShowLabel ? 'inline' : 'hidden sm:inline'}>{item.title}</span>
                     </Link>
                   </NavigationMenuLink>
                 ) : (
                   <DropdownMenu>
                     <DropdownMenuTrigger
+                      aria-label={item.title}
                       className={cn(
                         navigationMenuTriggerStyle(),
                         'flex items-center gap-2 px-3 font-normal text-muted-foreground',
                         isDropdownActive(item) && 'bg-accent text-accent-foreground font-medium',
                       )}
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4" aria-hidden="true" />
                       <span className="hidden sm:inline">{item.title}</span>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="min-w-[280px] p-1">

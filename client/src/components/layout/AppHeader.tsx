@@ -1,8 +1,9 @@
 /**
- * Author: Claude Code using Sonnet 4.5 / Claude Haiku 4.5 / Claude Opus 5
- * Date: 2025-11-11 / 2025-12-24 / 2026-08-29
+ * Author: Codex / Claude Code using Sonnet 4.5 / Claude Haiku 4.5 / Claude Opus 5
+ * Date: 2026-10-07
  * PURPOSE: Compact app header with ARC-inspired colorful branding. Zero margins for
  * edge-to-edge layout. Includes the OpenRouter sync banner and the full AppNavigation.
+ * On phones the navigation gets its own row so the Leaderboard label stays readable.
  * 2026-08-29: the subtitle leads with ARC-3 and marks 1 & 2 as archive. The old resource
  * hub is still at /home, linked from the "ARC 1 & 2" nav dropdown.
  * 2026-09-03: the brand mark resolves to the landing page on every host -- not because
@@ -26,7 +27,7 @@ export function AppHeader() {
     <>
       <OpenRouterSyncBanner />
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-12 items-center justify-between gap-4 px-4">
+      <div className="flex min-h-12 flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1 sm:h-12 sm:flex-nowrap sm:py-0">
         {/* The mark goes to the landing page, which is what `/` now renders on every host
             (see the root Route in App.tsx). It briefly needed a host-aware helper, because
             `/` meant the landing on one host and a redirect to /arc3/gallery on the other
@@ -66,7 +67,7 @@ export function AppHeader() {
 
         {/* min-w-0, not overflow-x-auto: AppNavigation owns the scroll container now, so the
             right rail stays pinned instead of being pushed out of view. */}
-        <div className="flex flex-1 min-w-0 items-center justify-end">
+        <div className="flex w-full min-w-0 items-center justify-end sm:w-auto sm:flex-1">
           <AppNavigation />
         </div>
       </div>

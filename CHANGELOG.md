@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.120.2  Oct 7, 2026
+
+- **Leaderboard in the top bar** (Author: Codex). Adds a direct, labeled Leaderboard link to the primary navigation and removes ARC-Interactive from the external top-bar links at Mark's request. On phones the navigation has its own row so the label remains readable; collapsed icon controls now have accessible names. Reuses the existing competition route and leaves leaderboard behavior unchanged.
+
 ### Version 9.120.1  Oct 7, 2026
 
 - **Find the resources from ARC-3** (Author: Codex). Adds the Resource Hub and Human & AI Results to the ARC-3 menu and labels the homepage footer link clearly. Removes the hub's redundant nested main landmark. No leaderboard behavior changed.
