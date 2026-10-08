@@ -1,12 +1,13 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-07; 08-October-2026
+ * Date: 2026-10-08
  * PURPOSE: Server-readable newspaper, article and notebook HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
  *          08-Oct-2026: per-article share cards and Open Graph article fields; the front
  *          page and notebook are CollectionPages listing their entries; readable Eastern
  *          dates and competition names in the crawler body; sitemap lastmod from real
  *          publication/check times; RSS self link, build date, categories and card images.
+ *          Front-page crawler text follows the ARC-AGI-3-first landing page and its resources.
  * SRP/DRY check: Pass — plain rendering only; content and validation remain in newsStore,
  *          wording and card URLs in shared/news.ts, card pixels in newsCardImage.ts.
  */
@@ -65,7 +66,7 @@ function competitorMeta(record: CompetitorRecord, articles: NewsArticle[]): Rout
 function frontPageMeta(articles: NewsArticle[]): RouteMetaTags {
   const tags = completeMeta(ROUTE_META_TAGS['/news']);
   return { ...tags, jsonLd: collection(tags, articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))),
-    bodyHtml: `<main><h1>${NEWS_NAME}</h1><p>The ARC Prize 2026 competition sports page. Morning and evening editions on the ARC-AGI-3 and ARC-AGI-2 Kaggle leaderboards, written with GPT-6 SOL from recorded public leaderboard data and cited sources.</p><p><a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="/kaggle-leaderboard">ARC-AGI-3 box scores</a> · <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 box scores</a></p>${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
+    bodyHtml: `<main><h1>${NEWS_NAME}: the ARC-AGI-3 Kaggle contest daily</h1><p>Morning and evening reporting from recorded public leaderboard observations and cited sources. ARC-AGI-2 is covered as a separate competition.</p><p><a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">Score history</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 standings</a></p>${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
 }
 function notebookMeta(competitors: CompetitorRecord[]): RouteMetaTags {
   const tags = completeMeta(ROUTE_META_TAGS['/news/competitors']);

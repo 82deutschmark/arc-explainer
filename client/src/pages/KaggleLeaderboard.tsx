@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Public page for the ARC Prize 2026 ARC-AGI-3 Kaggle leaderboard, at
  *          /kaggle-leaderboard. Every team on the public board, the medal cut lines, the pinned
  *          team always highlighted: the contested pack by rank, this week's storylines, where scores bunch up,
@@ -17,11 +17,12 @@
  * SRP/DRY check: Pass - composition only. Data and merging live in
  *          components/kaggleLeaderboard/boardData.ts; each section is its own component.
  *          Unrelated to pages/Leaderboards.tsx, which ranks models on ARC puzzles.
+ *          Stable anchors expose the existing medal and score charts to ARC Daily readers.
  */
 
 import { KAGGLE_COMPETITIONS, kaggleLeaderboardUrl, type KaggleCompetitionKey } from '@shared/kaggleCompetitions';
 import { Link } from 'wouter';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -41,9 +42,9 @@ import { TeamsTable } from '@/components/kaggleLeaderboard/TeamsTable';
 import { useWatchlist } from '@/components/kaggleLeaderboard/useWatchlist';
 import { HeadlineFacts, StoryGrid } from '@/components/kaggleLeaderboard/Storylines';
 
-function Section({ title, note, children }: { title: string; note?: ReactNode; children: ReactNode }) {
+function Section({ id, title, note, children }: { id?: string; title: string; note?: ReactNode; children: ReactNode }) {
   return (
-    <Card className="min-w-0">
+    <Card id={id} className="min-w-0 scroll-mt-20">
       <CardHeader className="pb-3 pt-4">
         <CardTitle className="text-base">{title}</CardTitle>
         {note && <CardDescription className="text-xs">{note}</CardDescription>}
@@ -65,6 +66,14 @@ export default function KaggleLeaderboard({ competitionKey = 'arc-3' }: { compet
   });
 
   const { model, isLoading, error, isEmpty } = useKaggleBoard(competition);
+  const anchored = useRef(false);
+  // These cards mount after the board query; honor a direct newspaper link once they exist.
+  useEffect(() => {
+    if (model && !anchored.current && ['#medal-race', '#score-history'].includes(window.location.hash)) {
+      anchored.current = true;
+      requestAnimationFrame(() => document.getElementById(window.location.hash.slice(1))?.scrollIntoView());
+    }
+  }, [model]);
   const watch = useWatchlist(model, competition.slug);
   const [range, setRange] = useState<TimeRange>(competitionKey === 'arc-3' ? 'since-aug' : 'all');
   const hasWeek = !!model?.history.snaps.some((s) => Date.parse(s.t) <= Date.parse(model.latest.fetched) - 7 * 864e5);
@@ -111,6 +120,7 @@ export default function KaggleLeaderboard({ competitionKey = 'arc-3' }: { compet
           </Section>
 
           <Section
+            id="medal-race"
             title="The race for medals"
             note="Start at the gold cutoff, then widen the view. These are public-board standings; final medals are decided on the private board."
           >
@@ -150,7 +160,7 @@ export default function KaggleLeaderboard({ competitionKey = 'arc-3' }: { compet
           </div>
 
           <div className="grid gap-3 xl:grid-cols-2">
-            <Section title="Scores over time" note={`The leader and three medal lines${model.ourRow ? ", with the pinned team’s score" : ""}.${competition.closeAt ? ` Grey runs to the close on ${new Date(competition.closeAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' })}.` : ""}`}>
+            <Section id="score-history" title="Scores over time" note={`The leader and three medal lines${model.ourRow ? ", with the pinned team’s score" : ""}.${competition.closeAt ? ` Grey runs to the close on ${new Date(competition.closeAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' })}.` : ""}`}>
               <RaceChart model={model} range={range} />
             </Section>
             {model.ourRow && <Section title="Pinned team against the medal cut-offs" note="Rank 1 at the top. The zones shift down as more teams join, since each medal is a share of the field.">

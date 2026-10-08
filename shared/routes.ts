@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Centralized public route descriptions and indexing policy for server HTML,
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
@@ -10,7 +10,8 @@
  *          (ARC Prize links to it) and /kaggle-leaderboard; root copy follows the
  *          landing page's 05-Oct pivot to the leaderboard.
  *          08-Oct-2026 (Claude Opus 5.5): image size and Open Graph article fields; the two
- *          ARC Daily index routes use the newspaper's own share card.
+ *          ARC Daily index routes use the newspaper's own share card. The front-page
+ *          description now leads with ARC-AGI-3 and its linked results.
  * SRP/DRY check: Pass - Single source of truth for route meta tags
  */
 
@@ -64,7 +65,7 @@ const NEWS_CARD = { image: `${SITE}${NEWS_SECTION_CARD_PATH}`, imageAlt: NEWS_SE
  * Organized by feature area - add new routes near related routes
  */
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
-  '/news': { title: 'The ARC Daily — ARC Prize 2026 Kaggle leaderboard news', description: 'Morning and evening reports on the ARC Prize 2026 Kaggle races for ARC-AGI-3 and ARC-AGI-2: leaderboard moves, contenders and sourced competitor notes.', url: `${SITE}/news`, ...NEWS_CARD },
+  '/news': { title: 'The ARC Daily — ARC-AGI-3 Kaggle contest daily', description: 'ARC-AGI-3 Kaggle contest reporting, leaderboard graphics, human records and sourced competitor profiles. ARC-AGI-2 editions are covered separately.', url: `${SITE}/news`, ...NEWS_CARD },
   '/news/competitors': { title: 'Competitor notebook | The ARC Daily', description: 'The ARC Daily’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/home': {
     title: 'ARC Explainer Resource Hub — games, guides and results',

@@ -12,6 +12,9 @@
 # reference the old numbers.
 
 
+### Version 9.125.0  Oct 8, 2026
+
+- **ARC Daily landing page** (Author: GPT-6.1 Sol / Codex). Makes ARC-AGI-3 the front-page headline and lead, gives ARC-AGI-2 its own desk, and brings the publication into ARC Explainer's white, charcoal and magenta style. Adds a landing shelf linking to existing medal and score-history graphics, human and AI records, public game guides and background pages. Competitor previews now show observed members and two cited facts, without adding or merging identities. Stable anchors on the existing leaderboard charts support the deep links after the board loads. Verified with a client build, 17 news/SEO integration tests, static layout renders at desktop and narrow widths, and a clean diff check. Repository-wide TypeScript checking still reports existing errors outside the edited files. Scope: `docs/2026-10-08-arc-daily-landing-plan.md`.
 ### Version 9.124.2  Oct 8, 2026
 
 - **Public evidence navigation** (Author: Codex). Points the audit’s API reproduction step to the hosted `evidence.json` request/control section instead of the original local evidence filename.
@@ -20,7 +23,6 @@
 
 - **Publish the ARC Prize public website audit** (Author: Codex). Hosts the reviewed October 8 report, screenshots, 19 prioritized findings, coding-assistant instructions and compact public evidence at `/reports/arc-prize-audit-2026-10-08/audit.html`. Adds Resource Hub discovery and public repository links so the report can be shared without a ZIP. Reuses static serving and the existing full-page resource-link pattern; no scoring or data-service behavior changes.
 - **Validation:** production Vite build passes; publication anchors, downloads, JSON and referenced evidence files checked; published text checked for local paths and credential patterns.
-
 ### Version 9.124.0  Oct 8, 2026
 
 - **ARC Daily share cards** (Author: Claude Opus 5.5, Bubba). Links to `/news` articles now unfurl with their own 1200x630 newspaper card (masthead, competition and edition, headline, dek, top three of that edition's box score) instead of the site-wide "ARC-AGI Explainer" image. The front page and competitor notebook get a masthead card with the latest headline from each competition. Rendered on the server by satori (text as vector paths) and the existing sharp with committed OFL IBM Plex fonts, so the Alpine container needs no system fonts. Article card URLs carry a content version and are cached as immutable.

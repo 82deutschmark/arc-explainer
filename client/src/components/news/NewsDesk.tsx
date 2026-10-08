@@ -1,9 +1,10 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
- *          08-Oct-2026 (Claude Opus 5.5): newsDate/competitionName now live in shared/news.ts.
+ *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
+ *          and sourced notebook previews align with the ARC Explainer landing page.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import type { ReactNode } from 'react';
@@ -28,15 +29,16 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
     <div className="arc-daily">
       <div className="news-paper">
         <header className="news-masthead">
-          <div className="news-topline"><span>The independent competition desk</span><span>ARC-AGI-2 &amp; ARC-AGI-3</span></div>
-          {frontPage ? <h1 className="news-name">{NEWS_NAME}</h1> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
+          <div className="news-topline"><span><Link href="/home">ARC Explainer</Link> / The competition desk</span><span>ARC-AGI-3 Kaggle contest daily</span></div>
+          {frontPage ? <div className="news-name">{NEWS_NAME}</div> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
           <div className="news-motto">The moves. The margins. The race.</div>
           <div className="news-edition-line"><span>{date ? newsDate(date) : 'The competition newspaper'}</span><span>Morning &amp; evening · 6 am / 6 pm Eastern</span></div>
           <nav className="news-nav" aria-label="ARC Daily sections">
             <Link href="/news">Front page</Link>
             <Link href="/news/competitors">Competitor notebook</Link>
-            <Link href="/kaggle-leaderboard">ARC-3 standings ↗</Link>
-            <Link href="/kaggle-leaderboard/arc-2">ARC-2 standings ↗</Link>
+            <a href="/kaggle-leaderboard#medal-race">Leaderboard graphics ↗</a>
+            <a href="/human-records.html">Human &amp; AI records ↗</a>
+            <Link href="/kaggle-leaderboard/arc-2">ARC-2 desk ↗</Link>
           </nav>
         </header>
         {children}
@@ -73,10 +75,11 @@ export function StoryPreview({ article, lead = false }: { article: NewsArticle; 
 
 export function NotebookEntry({ competitor }: { competitor: CompetitorRecord }) {
   return <article className="news-notebook-entry">
-    <div className="news-kicker">{competitionName(competitor.competition)} · Team {competitor.teamId}</div>
+    <div className="news-kicker">{competitionName(competitor.competition)} <span>Team {competitor.teamId}</span></div>
     <h3><Link href={competitorPath(competitor.id)}>{competitor.name}</Link></h3>
-    <p>{competitor.facts[0]?.text || 'A record of observed names, members and competition coverage.'}</p>
-    <Link href={competitorPath(competitor.id)} className="news-read">Open the notebook →</Link>
+    {!!competitor.members.length && <p className="news-card-members">Observed members: {competitor.members.slice(0, 3).join(', ')}{competitor.members.length > 3 ? ` +${competitor.members.length - 3} more` : ''}</p>}
+    {competitor.facts.length ? <ul className="news-card-facts">{competitor.facts.slice(0, 2).map((fact, index) => <li key={`${fact.sourceUrl}-${index}`}><p>{fact.text}</p><a className="news-card-source" href={fact.sourceUrl}>Source: {fact.sourceTitle} ↗</a></li>)}</ul> : <p>Observed team identity and competition coverage.</p>}
+    <Link href={competitorPath(competitor.id)} className="news-read">Open the full dossier →</Link>
   </article>;
 }
 
