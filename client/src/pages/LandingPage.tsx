@@ -2,6 +2,7 @@
  * Author: GPT-6.1 Sol / Codex; Codex
  * Date: 2026-10-07
  * PURPOSE: Directory of playable ARC tools, game guides and recorded results.
+ *          Includes the separate ARC Daily newspaper and competitor notebook.
  * SRP/DRY check: Pass — reuses shared Card components and router links.
  */
 import { ROUTE_META_TAGS } from '@shared/routes';
@@ -28,6 +29,7 @@ const sections: { title: string; description: string; resources: Resource[] }[] 
       { title: 'Human and AI results', href: '/human-records.html', fullPage: true, description: 'Compare dated published human records and AI runs, with scores, actions and replay links.' },
       { title: 'Community games', href: '/arc3/gallery', description: 'Play original community tasks built on ARCEngine. Discover the rules through interaction.' },
       { title: 'Kaggle leaderboard', href: '/kaggle-leaderboard', description: 'Explore public competition standings. Public standings are not final private results.' },
+      { title: 'The ARC Daily', href: '/news', description: 'Morning and evening competition reports, with sourced competitor notebooks for ARC-AGI-2 and ARC-AGI-3.' },
       { title: 'ARC-AGI-3 background', href: '/arc3', description: 'Benchmark history, scoring and links to official sources.' },
     ],
   },

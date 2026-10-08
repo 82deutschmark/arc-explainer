@@ -7,6 +7,7 @@
  */
 
 import 'dotenv/config';
+import { mountNews } from './routes/news';
 import { mountHumanArc } from './middleware/humanArc';
 import express, { type Request, Response, NextFunction } from "express";
 import cors from 'cors';
@@ -171,6 +172,8 @@ const initServer = async () => {
       logger.warn(`Contributor sync failed (non-fatal): ${error instanceof Error ? error.message : String(error)}`, 'startup');
     }
   }
+  mountNews(app);
+
   // Register API routes FIRST
   const server = await registerRoutes(app);
 

@@ -1,0 +1,548 @@
+[
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "text": "The observed nvbanana roster contains cpmpml and darraghdog. Those two handles also appear in NVARC3 on the ARC-AGI-3 board; these remain separate competition entries.",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "ARC-AGI-3 public team roster",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      }
+    ],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-15486939",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "cpmpml",
+      "darraghdog"
+    ],
+    "name": "nvbanana",
+    "teamId": "15486939"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-15501171",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "threerabbits"
+    ],
+    "name": "Yi-Chia Chen",
+    "teamId": "15501171"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "text": "The ARChitects’ own 2025 solution write-up credits Jan Disselhoff under the Kaggle handle insanitycheck, alongside David Hartmann (dvhrtm) and Daniel Franzen (dfranzen).",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "sourceTitle": "The ARChitects — 2025 team solution",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      },
+      {
+        "text": "The team’s 2025 technical report lists Jan Disselhoff at Johannes Gutenberg University Mainz.",
+        "sourceUrl": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/",
+        "sourceTitle": "The ARChitects — 2025 technical report",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      }
+    ],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-15507730",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "insanitycheck"
+    ],
+    "name": "Jan Disselhoff",
+    "teamId": "15507730"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-15526034",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "keithtyser",
+      "mitubant",
+      "ngyzly"
+    ],
+    "name": "ARC Raiders",
+    "teamId": "15526034"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-15605185",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "sonphamorg"
+    ],
+    "name": "Son Pham",
+    "teamId": "15605185"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-15648732",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "khahuras",
+      "sethmoudry"
+    ],
+    "name": "Khaotic Sethesis",
+    "teamId": "15648732"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-15789060",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "cookizesong",
+      "xiezejian",
+      "yuhuake240506"
+    ],
+    "name": "rabbithole",
+    "teamId": "15789060"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-16373916",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "majkel1337"
+    ],
+    "name": "Majkel1337",
+    "teamId": "16373916"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-16461211",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "dawkopi"
+    ],
+    "name": "Dawid Kopiczko",
+    "teamId": "16461211"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-16671221",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "albertruehlman"
+    ],
+    "name": "ALbert RUehlman",
+    "teamId": "16671221"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-16756524",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "driessmit1",
+      "jeroencottaar",
+      "pressman1",
+      "stefano1283"
+    ],
+    "name": "Tufa Labs",
+    "teamId": "16756524"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-16768245",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "deepdreamer"
+    ],
+    "name": "_hans",
+    "teamId": "16768245"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:47Z",
+    "id": "arc-2-17023174",
+    "lastObservedAt": "2026-10-08T03:42:47Z",
+    "members": [
+      "markbarney"
+    ],
+    "name": "Mark Barney",
+    "teamId": "17023174"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-15486995",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "dlorah",
+      "driessmit1",
+      "infinitecreativity",
+      "jeroencottaar",
+      "pressman1",
+      "stefano1283"
+    ],
+    "name": "Tufa Labs",
+    "teamId": "15486995"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-15499660",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "threerabbits"
+    ],
+    "name": "Yi-Chia Chen",
+    "teamId": "15499660"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "text": "The ARChitects’ own 2025 solution write-up credits Jan Disselhoff under the Kaggle handle insanitycheck, alongside David Hartmann (dvhrtm) and Daniel Franzen (dfranzen).",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "sourceTitle": "The ARChitects — 2025 team solution",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      },
+      {
+        "text": "The team’s 2025 technical report lists Jan Disselhoff at Johannes Gutenberg University Mainz.",
+        "sourceUrl": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/",
+        "sourceTitle": "The ARChitects — 2025 technical report",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      }
+    ],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-15501006",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "insanitycheck"
+    ],
+    "name": "Jan Disselhoff",
+    "teamId": "15501006"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-15504445",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "albertorkive"
+    ],
+    "name": "Alberto Luengo",
+    "teamId": "15504445"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-15510098",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "thomasgamet"
+    ],
+    "name": "ThomasG",
+    "teamId": "15510098"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-15605182",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "markbarney",
+      "scizical",
+      "sonphamorg"
+    ],
+    "name": "Son & Mark & Ronen",
+    "teamId": "15605182"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-15641620",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "rachidcaich"
+    ],
+    "name": "Rachid Caich",
+    "teamId": "15641620"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "text": "NVIDIA’s December 2025 report identifies Ivan Sorokin and Jean-Francois Puget as NVIDIA researchers who competed as NVARC in the 2025 ARC Prize.",
+        "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+        "sourceTitle": "NVIDIA — 2025 NVARC competition report",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      },
+      {
+        "text": "The 2025 NVARC team write-up credits sorokin and cpmpml. Both handles appear in the observed roster of the distinct 2026 NVARC3 entry. This does not establish an affiliation for every current member.",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc",
+        "sourceTitle": "NVARC — 2025 team write-up",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      }
+    ],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-15770880",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "cpmpml",
+      "darraghdog",
+      "eladsarafian",
+      "galkaplun",
+      "sorokin",
+      "yeyinzhu"
+    ],
+    "name": "NVARC3",
+    "teamId": "15770880"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16021367",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "dwellement0baser",
+      "fses91",
+      "gklambauer",
+      "lukasaichberger"
+    ],
+    "name": "the last dance 🕺",
+    "teamId": "16021367"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "text": "The ARChitects’ own 2025 solution write-up credits David Hartmann under the Kaggle handle dvhrtm, alongside Jan Disselhoff (insanitycheck) and Daniel Franzen (dfranzen).",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "sourceTitle": "The ARChitects — 2025 team solution",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      },
+      {
+        "text": "The team’s 2025 technical report lists David Hartmann at Lambda, Inc.",
+        "sourceUrl": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/",
+        "sourceTitle": "The ARChitects — 2025 technical report",
+        "checkedAt": "2026-10-08T03:38:00Z"
+      }
+    ],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16032816",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "dvhrtm",
+      "sbrodehl"
+    ],
+    "name": "David Hartmann",
+    "teamId": "16032816"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16132261",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "cmechevalier",
+      "richardcsaky"
+    ],
+    "name": "artificialagencylab.com",
+    "teamId": "16132261"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16153655",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "michaeltgao"
+    ],
+    "name": "mtg",
+    "teamId": "16153655"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16273949",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "mikelou1"
+    ],
+    "name": "mikelou1",
+    "teamId": "16273949"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16371045",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "lordhansolo"
+    ],
+    "name": "Lord Han Solo",
+    "teamId": "16371045"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16460810",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "nithinkumarrc"
+    ],
+    "name": "Nithin Kumar R C ",
+    "teamId": "16460810"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16569113",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "isakatsuyoshi",
+      "konbu17",
+      "pompom555",
+      "refv00",
+      "tanakaai24"
+    ],
+    "name": "復活の混テキスト",
+    "teamId": "16569113"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16768259",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "deepdreamer"
+    ],
+    "name": "_hans",
+    "teamId": "16768259"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16805955",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "denialguo",
+      "jaydenszeto123",
+      "snoopydoo"
+    ],
+    "name": "dreach.ai",
+    "teamId": "16805955"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16916278",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "cranberry128"
+    ],
+    "name": "Charles Ran",
+    "teamId": "16916278"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16950895",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "lucaluo925"
+    ],
+    "name": "Haoyuan Luo",
+    "teamId": "16950895"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16958599",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "majkel1337"
+    ],
+    "name": "Majkel1337",
+    "teamId": "16958599"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-08T03:42:46Z",
+    "id": "arc-3-16971639",
+    "lastObservedAt": "2026-10-08T03:42:46Z",
+    "members": [
+      "lavinwins"
+    ],
+    "name": "Koris Lab",
+    "teamId": "16971639"
+  }
+]

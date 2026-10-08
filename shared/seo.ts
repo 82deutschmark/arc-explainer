@@ -39,6 +39,8 @@ export function pageBreadcrumbs(tags: RouteMetaTags): { name: string; url: strin
   const items = [{ name: 'Home', url: `${SITE_ORIGIN}/` }];
   const game = route.match(/^\/arc3\/games\/([a-z0-9_-]+)$/);
   if (game) items.push({ name: 'Game guides', url: `${SITE_ORIGIN}/arc3/games` });
+  if (route.startsWith('/news/')) items.push({ name: 'The ARC Daily', url: `${SITE_ORIGIN}/news` });
+  if (route.startsWith('/news/competitors/')) items.push({ name: 'Competitor notebook', url: `${SITE_ORIGIN}/news/competitors` });
   items.push({ name: game ? game[1] : tags.title.replace(/ \| ARC Explainer$/, ''), url: tags.url });
   return items;
 }
@@ -59,7 +61,7 @@ export function breadcrumbsHtml(tags: RouteMetaTags): string {
   return crumbs.length ? `<nav aria-label="Breadcrumb">${crumbs.map((crumb, index) => index === crumbs.length - 1 ? `<span aria-current="page">${escapeHtml(crumb.name)}</span>` : `<a href="${escapeHtml(new URL(crumb.url).pathname)}">${escapeHtml(crumb.name)}</a>`).join(' / ')}</nav>` : '';
 }
 export const DISCOVERY_LINKS = [
-  ['/', 'Home'], ['/home', 'Resource hub'], ['/kaggle-leaderboard', 'ARC-AGI-3 leaderboard'],
+  ['/', 'Home'], ['/news', 'The ARC Daily'], ['/home', 'Resource hub'], ['/kaggle-leaderboard', 'ARC-AGI-3 leaderboard'],
   ['/kaggle-leaderboard/arc-2', 'ARC-AGI-2 leaderboard'], ['/arc3/games', 'Game guides'],
   ['/arc3/slippery-seven', 'Slippery Seven'], ['/arc3/gallery', 'Community tasks'],
   ['/arc3/hypotheses', 'Research'], ['/browser', 'ARC puzzles'], ['/analytics', 'Model results archive'],

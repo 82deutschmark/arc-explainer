@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.122.0  Oct 7, 2026
+
+- **The ARC Daily** (Author: GPT-6.1 Sol / Codex; launch reporting: GPT-6 SOL). Adds a separate newspaper at `/news`, permanent article pages and a sourced competitor notebook. Keeps the existing leaderboard design as the live box scores. Articles include dated observations, coverage limits, source links and archived reporting evidence.
+- **Search and sharing.** Full article and competitor text is delivered in initial HTML, with NewsArticle structured data, canonical metadata, sitemap discovery and RSS. The same article schema follows browser navigation.
+- **Subscription newsroom.** Python 3.13 prepares independent ARC-2/ARC-3 evidence and validates immutable articles written by scheduled GPT-6 SOL Codex runs. Morning compares with UTC midnight; evening uses the previous Eastern evening. Sparse history is labelled, identities remain competition-specific, and the notebook retains cited public background across editions. No paid model API or public publishing endpoint.
+- **Validation:** production client/server bundles, 25 focused news/SEO tests and 9 newsroom tests pass. Existing unrelated TypeScript diagnostics remain; no new diagnostics.
+
 ### Version 9.121.0  Oct 7, 2026
 
 - **Site-wide SEO and discovery pass** (Author: GPT-6.1 Sol / Codex). Extends the existing Express metadata system to every static SPA route, with 35 indexable public hubs, readable initial game-guide HTML from the shared registry, a generated sitemap for public routes and 1,626 locally available puzzles, one preferred canonical origin, real redirects, and HTTP 404 responses for unknown pages, official games, puzzles and missing assets. Administrative and session pages receive server-side noindex; the synthetic answer key remains unlisted.

@@ -3,6 +3,7 @@
  * Date: 2026-10-07
  * PURPOSE: Keep the competition leaderboard directly visible in the primary navigation,
  *          with named mobile controls and resource/reference links in the existing menus.
+ *          Gives the separate ARC Daily newspaper a direct News entry.
  * SRP/DRY check: Pass — maintains one navigation configuration with full-page links where needed.
  */
 /**
@@ -74,6 +75,7 @@ import {
   Worm,
   Zap,
   BookOpen,
+  Newspaper,
 } from 'lucide-react';
 
 // Type definitions for discriminated union
@@ -129,6 +131,14 @@ interface ExternalNavLink {
  * survivor was left over from.
  */
 const navigationItems: (NavItem & { markerBefore?: string })[] = [
+  {
+    type: 'link',
+    title: 'News',
+    href: '/news',
+    icon: Newspaper,
+    alwaysShowLabel: true,
+    description: 'The ARC Daily: morning and evening competition reports',
+  },
   {
     type: 'link',
     markerBefore: '🟦',

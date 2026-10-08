@@ -1,14 +1,18 @@
 /**
- * Author: GPT-6 / Codex
+ * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-07
  * PURPOSE: Compact competitor cards for the live leaders, familiar contenders and pinned
  *          team. Reads current names and facts from BoardModel, reuses Kaggle profile links
  *          and the visitor watchlist, and draws only observed score history without filling
  *          gaps to the present for teams no longer covered by the top-300 collector.
+ *          A discreet text link opens the separate competition-scoped news notebook.
  * SRP/DRY check: Pass — presentation only; no duplicate data fetching or stored standings.
  */
 
 import { Star } from 'lucide-react';
+import { Link } from 'wouter';
+import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
+import { competitorPath } from '@shared/news';
 import { Card } from '@/components/ui/card';
 import { fmt, MEDAL_COLOR, type BoardModel } from './boardData';
 import { TeamName } from './TeamName';
@@ -51,6 +55,7 @@ export function FeaturedTeams({ model, watched, onToggleWatch }: {
   watched: string[];
   onToggleWatch: (id: string) => void;
 }) {
+  const competitionKey = Object.entries(KAGGLE_COMPETITIONS).find(([, competition]) => competition.slug === model.competition.slug)?.[0];
   const ids = [...new Set([
     ...model.latest.rows.slice(0, 3).map((r) => r[1]),
     ...model.competition.featuredTeamIds,
@@ -91,6 +96,7 @@ export function FeaturedTeams({ model, watched, onToggleWatch }: {
               </div>
               <ScoreTrail model={model} id={id} />
               <p className="text-[10px] text-muted-foreground">Last submission: {submitted ? `${submitted.slice(0, 16).replace('T', ' ')} UTC` : 'unavailable'}</p>
+              {competitionKey && <Link href={competitorPath(`${competitionKey}-${id}`)} className="text-[10px] text-muted-foreground underline underline-offset-2">Competitor notebook →</Link>}
             </div>
           </Card>
         );

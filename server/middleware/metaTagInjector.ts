@@ -61,6 +61,7 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
 }
 export async function metaTagInjector(req: Request, res: Response, next: NextFunction): Promise<void> {
   if (!['GET', 'HEAD'].includes(req.method) || req.path === '/api' || req.path.startsWith('/api/')) return next();
+  try {
   const { tags, status } = resolvePageMeta(normalizePath(req.path));
   // Match registered routes first: session/game identifiers may legitimately contain dots.
   // Missing scripts/images must never be answered with a successful HTML shell.
@@ -68,7 +69,6 @@ export async function metaTagInjector(req: Request, res: Response, next: NextFun
     res.status(404).set('X-Robots-Tag', 'noindex').type('text').send('Resource not found');
     return;
   }
-  try {
     const html = await fs.readFile(path.join(process.cwd(), 'dist/public/index.html'), 'utf8');
     res.status(status).set('Cache-Control', 'no-cache');
     if (tags.noindex) res.set('X-Robots-Tag', 'noindex, follow');

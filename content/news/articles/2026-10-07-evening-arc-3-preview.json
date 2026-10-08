@@ -1,0 +1,239 @@
+{
+  "baselineAt": "2026-10-06T21:40:54Z",
+  "competition": "arc-3",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants. Launch/manual preview, actual cutoff 2026-10-08T03:44:37Z; this is not the scheduled edition.",
+  "dataAsOf": "2026-10-08T03:42:46Z",
+  "date": "2026-10-07",
+  "dek": "A five-member team vaults into the top ten while the leaders hold their scores; other verified moves redraw the field below.",
+  "discord": "**ARC-AGI-3 | Late launch preview — October 7**\n\nA five-member team now called 復活の混テキスト tore through the public field: 170th to seventh, 30.51 to 38.15, between mtg and artificialagencylab.com. The top two held station: Tufa Labs first at 55.89 and Yi-Chia Chen second at 48.59. Majkel1337 stands third at 42.66.\n\n_hans also climbed from 40th to 15th, while NVARC3 and Lord Han Solo sit ninth and tenth on unchanged scores across the comparison points. The provisional public gold line rose from 34.30 to 34.74. Final medals depend on the private board.\n\nStandings recorded at 11:42 pm Eastern; it is not the scheduled 6 pm edition. [Read the full report](https://arc.markbarney.net/news/2026-10-07-evening-arc-3-preview)",
+  "edition": "evening",
+  "generatedBy": "gpt-6-sol",
+  "headline": "A charge from 170th to seventh jolts the ARC-AGI-3 chase",
+  "id": "2026-10-07-evening-arc-3-preview",
+  "publishedAt": "2026-10-08T03:44:37Z",
+  "sections": [
+    {
+      "heading": "The break into seventh",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The team now listed as 復活の混テキスト delivered the clearest verified swing in this launch preview. At the previous comparison snapshot it was 170th with 30.51. At the late October 7 snapshot it stood seventh with 38.15: a gain of 163 places and 7.64 points. The team ID stayed the same even though its display name changed. The move puts it between sixth-place mtg at 38.33 and eighth-place artificialagencylab.com at 37.94."
+    },
+    {
+      "heading": "The leaders and the crowded gold line",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Tufa Labs remains first at 55.89, and Yi-Chia Chen second at 48.59. Majkel1337 is third at 42.66, although the available history does not establish its full movement over the comparison period. The last dance 🕺 is fourth at 39.30. NVARC3 sits ninth at 37.51 and Lord Han Solo tenth at 36.61; each kept the same score across the available comparison points while its rank slipped two places. The provisional public gold cutoff moved from 34.30 to 34.74. Final results will be decided on the private leaderboard."
+    },
+    {
+      "heading": "Movement through the field",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "_hans rose from 40th to 15th as its score went from 33.00 to 35.69. Rachid Caich climbed from 171st to 40th, and Nithin Kumar R C from 280th to 44th. David Hartmann stayed on 29.83 while moving from 246th to 288th as the field reshuffled. Jan Disselhoff is 508th at 28.23 in the closing snapshot; the available historical coverage does not support a day comparison for that entry. This is a manual launch preview using standings recorded at 11:42 pm Eastern, not the scheduled 6 pm edition."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-08T03:44:37Z",
+      "id": "board",
+      "title": "ARC-3 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 55.89,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 48.59,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 3,
+      "rankChange": null,
+      "score": 42.66,
+      "scoreChange": null,
+      "teamId": "16958599"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 4,
+      "rankChange": -1,
+      "score": 39.3,
+      "scoreChange": 0.0,
+      "teamId": "16021367"
+    },
+    {
+      "name": "dreach.ai",
+      "rank": 5,
+      "rankChange": -1,
+      "score": 39.11,
+      "scoreChange": 0.0,
+      "teamId": "16805955"
+    },
+    {
+      "name": "mtg",
+      "rank": 6,
+      "rankChange": -1,
+      "score": 38.33,
+      "scoreChange": 0.0,
+      "teamId": "16153655"
+    },
+    {
+      "name": "復活の混テキスト",
+      "rank": 7,
+      "rankChange": 163,
+      "score": 38.15,
+      "scoreChange": 7.64,
+      "teamId": "16569113"
+    },
+    {
+      "name": "artificialagencylab.com",
+      "rank": 8,
+      "rankChange": -2,
+      "score": 37.94,
+      "scoreChange": 0.0,
+      "teamId": "16132261"
+    },
+    {
+      "name": "NVARC3",
+      "rank": 9,
+      "rankChange": -2,
+      "score": 37.51,
+      "scoreChange": 0.0,
+      "teamId": "15770880"
+    },
+    {
+      "name": "Lord Han Solo",
+      "rank": 10,
+      "rankChange": -2,
+      "score": 36.61,
+      "scoreChange": 0.0,
+      "teamId": "16371045"
+    },
+    {
+      "name": "_hans",
+      "rank": 15,
+      "rankChange": 25,
+      "score": 35.69,
+      "scoreChange": 2.69,
+      "teamId": "16768259"
+    },
+    {
+      "name": "Son & Mark & Ronen",
+      "rank": 26,
+      "rankChange": -3,
+      "score": 33.74,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "Rachid Caich",
+      "rank": 40,
+      "rankChange": 131,
+      "score": 33.21,
+      "scoreChange": 2.7,
+      "teamId": "15641620"
+    },
+    {
+      "name": "Nithin Kumar R C ",
+      "rank": 44,
+      "rankChange": 236,
+      "score": 33.12,
+      "scoreChange": 3.64,
+      "teamId": "16460810"
+    },
+    {
+      "name": "Haoyuan Luo",
+      "rank": 66,
+      "rankChange": 41,
+      "score": 32.31,
+      "scoreChange": 0.89,
+      "teamId": "16950895"
+    },
+    {
+      "name": "Koris Lab",
+      "rank": 77,
+      "rankChange": 45,
+      "score": 31.95,
+      "scoreChange": 0.73,
+      "teamId": "16971639"
+    },
+    {
+      "name": "ThomasG",
+      "rank": 103,
+      "rankChange": 178,
+      "score": 31.62,
+      "scoreChange": 2.15,
+      "teamId": "15510098"
+    },
+    {
+      "name": "mikelou1",
+      "rank": 113,
+      "rankChange": 161,
+      "score": 31.54,
+      "scoreChange": 2.04,
+      "teamId": "16273949"
+    },
+    {
+      "name": "Charles Ran",
+      "rank": 142,
+      "rankChange": 35,
+      "score": 31.19,
+      "scoreChange": 0.73,
+      "teamId": "16916278"
+    },
+    {
+      "name": "Alberto Luengo",
+      "rank": 190,
+      "rankChange": 49,
+      "score": 30.68,
+      "scoreChange": 0.81,
+      "teamId": "15504445"
+    },
+    {
+      "name": "David Hartmann",
+      "rank": 288,
+      "rankChange": -42,
+      "score": 29.83,
+      "scoreChange": 0.0,
+      "teamId": "16032816"
+    },
+    {
+      "name": "Jan Disselhoff",
+      "rank": 508,
+      "rankChange": null,
+      "score": 28.23,
+      "scoreChange": null,
+      "teamId": "15501006"
+    }
+  ],
+  "teamIds": [
+    "16569113",
+    "16153655",
+    "16132261",
+    "15486995",
+    "15499660",
+    "16958599",
+    "16021367",
+    "15770880",
+    "16371045",
+    "16768259",
+    "15641620",
+    "16460810",
+    "16032816",
+    "15501006"
+  ]
+}

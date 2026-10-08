@@ -1,0 +1,239 @@
+{
+  "accessedAt": "2026-10-08T03:44:37Z",
+  "articleId": "2026-10-07-evening-arc-2-preview",
+  "baselineSnapshot": null,
+  "baselineTargetAt": "2026-10-06T22:00:00Z",
+  "briefSha256": "dc44ef39619b6d5362763dd49fdbdb748b5b195d23d82f49dd121a75ddb11dcf",
+  "closingSnapshot": {
+    "bronze": 31.81,
+    "gold": 37.36,
+    "silver": 32.22,
+    "t": "2026-10-08T03:42:47Z",
+    "teams": 2556,
+    "top": 83.61
+  },
+  "comparisons": {
+    "15486939": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        76.67,
+        4
+      ],
+      "start": null
+    },
+    "15501171": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        77.22,
+        3
+      ],
+      "start": null
+    },
+    "15507730": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        14.17,
+        1585
+      ],
+      "start": null
+    },
+    "15526034": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        47.22,
+        9
+      ],
+      "start": null
+    },
+    "15605185": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        30.14,
+        784
+      ],
+      "start": null
+    },
+    "15648732": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        45.83,
+        10
+      ],
+      "start": null
+    },
+    "15789060": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        80.56,
+        2
+      ],
+      "start": null
+    },
+    "16373916": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        48.33,
+        8
+      ],
+      "start": null
+    },
+    "16461211": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        55,
+        7
+      ],
+      "start": null
+    },
+    "16671221": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        66.81,
+        5
+      ],
+      "start": null
+    },
+    "16756524": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        83.61,
+        1
+      ],
+      "start": null
+    },
+    "16768245": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        60.42,
+        6
+      ],
+      "start": null
+    },
+    "17023174": {
+      "end": [
+        "2026-10-08T03:42:47Z",
+        30.97,
+        565
+      ],
+      "start": null
+    }
+  },
+  "competitorFacts": [],
+  "cutoffAt": "2026-10-08T03:44:37Z",
+  "events": [
+    {
+      "from": 33.61,
+      "id": "15487968",
+      "name": "Jack Cole",
+      "rankFrom": 26,
+      "rankTo": 17,
+      "t": "2026-10-08T02:42:42Z",
+      "to": 36.94
+    }
+  ],
+  "latestAt": "2026-10-08T03:42:47Z",
+  "observations": {
+    "15486939": {
+      "members": [
+        "cpmpml",
+        "darraghdog"
+      ],
+      "name": "nvbanana",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "15501171": {
+      "members": [
+        "threerabbits"
+      ],
+      "name": "Yi-Chia Chen",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "15507730": {
+      "members": [
+        "insanitycheck"
+      ],
+      "name": "Jan Disselhoff",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "15526034": {
+      "members": [
+        "keithtyser",
+        "mitubant",
+        "ngyzly"
+      ],
+      "name": "ARC Raiders",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "15605185": {
+      "members": [
+        "sonphamorg"
+      ],
+      "name": "Son Pham",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "15648732": {
+      "members": [
+        "khahuras",
+        "sethmoudry"
+      ],
+      "name": "Khaotic Sethesis",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "15789060": {
+      "members": [
+        "cookizesong",
+        "xiezejian",
+        "yuhuake240506"
+      ],
+      "name": "rabbithole",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "16373916": {
+      "members": [
+        "majkel1337"
+      ],
+      "name": "Majkel1337",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "16461211": {
+      "members": [
+        "dawkopi"
+      ],
+      "name": "Dawid Kopiczko",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "16671221": {
+      "members": [
+        "albertruehlman"
+      ],
+      "name": "ALbert RUehlman",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "16756524": {
+      "members": [
+        "driessmit1",
+        "jeroencottaar",
+        "pressman1",
+        "stefano1283"
+      ],
+      "name": "Tufa Labs",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "16768245": {
+      "members": [
+        "deepdreamer"
+      ],
+      "name": "_hans",
+      "observedAt": "2026-10-08T03:42:47Z"
+    },
+    "17023174": {
+      "members": [
+        "markbarney"
+      ],
+      "name": "Mark Barney",
+      "observedAt": "2026-10-08T03:42:47Z"
+    }
+  },
+  "sourceSha256": "743fdf21c3b50970d3f6660afa4b83e28d6b59669f7b11db29b2b0fb4a84dd9f",
+  "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+}

@@ -41,8 +41,10 @@ interface PageMetaOptions {
   description?: string;
   canonicalPath?: string;
   noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+  type?: string;
 }
-export function usePageMeta({ title, description, canonicalPath, noindex }: PageMetaOptions): void {
+export function usePageMeta({ title, description, canonicalPath, noindex, jsonLd, type }: PageMetaOptions): void {
   useEffect(() => {
     const route = normalizePath(window.location.pathname);
     const base = currentMeta?.url === `${SITE_ORIGIN}${route}` ? currentMeta : clientRouteMeta(route);
@@ -53,8 +55,10 @@ export function usePageMeta({ title, description, canonicalPath, noindex }: Page
       ...(!isRegistered && description ? { description } : {}),
       ...(!isRegistered && canonicalPath ? { url: `${SITE_ORIGIN}${normalizePath(canonicalPath)}` } : {}),
       ...(noindex !== undefined ? { noindex } : {}),
+      ...(jsonLd ? { jsonLd } : {}),
+      ...(type ? { type } : {}),
     });
-  }, [title, description, canonicalPath, noindex]);
+  }, [title, description, canonicalPath, noindex, jsonLd, type]);
 }
 
 /** Bridge older title-only page effects into the shared metadata writer. */

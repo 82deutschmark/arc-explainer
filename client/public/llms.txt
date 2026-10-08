@@ -4,6 +4,10 @@
 
 ## Start here
 
+- [The ARC Daily](https://arc.markbarney.net/news): sourced morning and evening competition reporting, separate from the live box scores.
+- [Competitor notebook](https://arc.markbarney.net/news/competitors): dated public backgrounds and distinct competition identities.
+- [ARC Daily RSS](https://arc.markbarney.net/news/feed.xml): permanent article links and summaries.
+
 - [Resource hub](https://arc.markbarney.net/home): public sections and related projects.
 - [ARC-AGI-3 Kaggle leaderboard](https://arc.markbarney.net/kaggle-leaderboard): public standings, team history and changes. Public medal bands are not final private results.
 - [ARC-AGI-2 Kaggle leaderboard](https://arc.markbarney.net/kaggle-leaderboard/arc-2): separate competition data and history.

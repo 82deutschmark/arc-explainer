@@ -1,0 +1,164 @@
+{
+  "baselineAt": null,
+  "competition": "arc-2",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants. No usable observation exists at the comparison baseline. Launch/manual preview, actual cutoff 2026-10-08T03:44:37Z; this is not the scheduled edition.",
+  "dataAsOf": "2026-10-08T03:42:47Z",
+  "date": "2026-10-07",
+  "dek": "Our opening snapshot shows four teams within seven points, with a wider gap behind fourth place.",
+  "discord": "**ARC-AGI-2 | Late launch preview — October 7**\n\nFour teams crowd the front of the public board. Tufa Labs leads at 83.61, followed by rabbithole at 80.56, Yi-Chia Chen at 77.22 and nvbanana at 76.67. Less than seven points cover first through fourth; fifth-place ALbert RUehlman is farther back at 66.81.\n\n_hans sits sixth, Dawid Kopiczko seventh, and Majkel1337 eighth. The public gold line is 37.36 across 2,556 teams. Final medals depend on the private board.\n\nThis is our opening ARC-AGI-2 snapshot, captured at 11:42 pm Eastern. It cannot establish who climbed or fell today; this is a manual preview, not the scheduled 6 pm edition. [Read the full report](https://arc.markbarney.net/news/2026-10-07-evening-arc-2-preview)",
+  "edition": "evening",
+  "generatedBy": "gpt-6-sol",
+  "headline": "Tufa Labs sets the pace in a tight ARC-AGI-2 top four",
+  "id": "2026-10-07-evening-arc-2-preview",
+  "publishedAt": "2026-10-08T03:44:37Z",
+  "sections": [
+    {
+      "heading": "Four at the front",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Tufa Labs leads the public board at 83.61, with rabbithole second at 80.56. Yi-Chia Chen holds third at 77.22, and nvbanana is close behind in fourth at 76.67. First through fourth are separated by 6.94 points. The next gap is larger: ALbert RUehlman is fifth at 66.81, 9.86 points behind nvbanana. That gives the top of this opening snapshot a clear front pack, but it says nothing yet about who gained ground today."
+    },
+    {
+      "heading": "The rest of the top ten",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "_hans is sixth at 60.42, followed by Dawid Kopiczko at 55.00. Majkel1337 holds eighth at 48.33, ARC Raiders ninth at 47.22, and Khaotic Sethesis tenth at 45.83. Eighth through tenth are separated by 2.50 points. The public gold line is 37.36 in a field of 2,556 teams. Jan Disselhoff stands 1,585th at 14.17 in this snapshot."
+    },
+    {
+      "heading": "The limit of this opener",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "This is a manual launch preview captured at 11:42 pm Eastern on October 7, not the scheduled 6 pm edition. The ARC-AGI-2 feed has no usable observation at the comparison baseline, so ranks and scores here are current standings only. There is no verified day-over-day climb, fall, or change in score to report. Public medal bands are provisional; the private leaderboard will determine final results."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-08T03:44:37Z",
+      "id": "board",
+      "title": "ARC-2 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": null,
+      "score": 83.61,
+      "scoreChange": null,
+      "teamId": "16756524"
+    },
+    {
+      "name": "rabbithole",
+      "rank": 2,
+      "rankChange": null,
+      "score": 80.56,
+      "scoreChange": null,
+      "teamId": "15789060"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 3,
+      "rankChange": null,
+      "score": 77.22,
+      "scoreChange": null,
+      "teamId": "15501171"
+    },
+    {
+      "name": "nvbanana",
+      "rank": 4,
+      "rankChange": null,
+      "score": 76.67,
+      "scoreChange": null,
+      "teamId": "15486939"
+    },
+    {
+      "name": "ALbert RUehlman",
+      "rank": 5,
+      "rankChange": null,
+      "score": 66.81,
+      "scoreChange": null,
+      "teamId": "16671221"
+    },
+    {
+      "name": "_hans",
+      "rank": 6,
+      "rankChange": null,
+      "score": 60.42,
+      "scoreChange": null,
+      "teamId": "16768245"
+    },
+    {
+      "name": "Dawid Kopiczko",
+      "rank": 7,
+      "rankChange": null,
+      "score": 55,
+      "scoreChange": null,
+      "teamId": "16461211"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 8,
+      "rankChange": null,
+      "score": 48.33,
+      "scoreChange": null,
+      "teamId": "16373916"
+    },
+    {
+      "name": "ARC Raiders",
+      "rank": 9,
+      "rankChange": null,
+      "score": 47.22,
+      "scoreChange": null,
+      "teamId": "15526034"
+    },
+    {
+      "name": "Khaotic Sethesis",
+      "rank": 10,
+      "rankChange": null,
+      "score": 45.83,
+      "scoreChange": null,
+      "teamId": "15648732"
+    },
+    {
+      "name": "Mark Barney",
+      "rank": 565,
+      "rankChange": null,
+      "score": 30.97,
+      "scoreChange": null,
+      "teamId": "17023174"
+    },
+    {
+      "name": "Son Pham",
+      "rank": 784,
+      "rankChange": null,
+      "score": 30.14,
+      "scoreChange": null,
+      "teamId": "15605185"
+    },
+    {
+      "name": "Jan Disselhoff",
+      "rank": 1585,
+      "rankChange": null,
+      "score": 14.17,
+      "scoreChange": null,
+      "teamId": "15507730"
+    }
+  ],
+  "teamIds": [
+    "16756524",
+    "15789060",
+    "15501171",
+    "15486939",
+    "16671221",
+    "16768245",
+    "16461211",
+    "16373916",
+    "15526034",
+    "15648732",
+    "15507730"
+  ]
+}

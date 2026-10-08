@@ -10,6 +10,7 @@ import { SITE_ORIGIN, clientRouteMeta, completeMeta, escapeHtml as esc, isDynami
 import { getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
 import { buildGameLevels } from '../../../shared/arc3Games/gameLevels';
 import { getArcBaseline } from '../../../shared/arc3Games/humanDifficulty';
+import { resolveNewsMeta, newsSitemapUrls } from '../news/newsPresentation';
 import { puzzleLoader } from '../puzzleLoader';
 
 const paragraphs = (text?: string) => text ? `<p>${esc(text).replace(/\n\n/g, '</p><p>')}</p>` : '';
@@ -33,6 +34,8 @@ function gameBody(game: Arc3GameMetadata): string {
     <p><a href="/arc3/games">All official game guides</a> · <a href="/arc3/slippery-seven">The Slippery Seven</a> · <a href="/human-records.html">Human and AI results</a></p></main>`;
 }
 export function resolvePageMeta(route: string): { tags: RouteMetaTags; status: number } {
+  const news = resolveNewsMeta(route);
+  if (news) return news;
   if (Object.hasOwn(ROUTE_META_TAGS, route)) {
     const tags = { ...ROUTE_META_TAGS[route] };
     if (route === '/arc3/games') {
@@ -70,6 +73,7 @@ export function resolvePageMeta(route: string): { tags: RouteMetaTags; status: n
 }
 export function sitemapUrls(): string[] {
   return [...new Set([
+    ...newsSitemapUrls(),
     ...Object.entries(ROUTE_META_TAGS).filter(([, tags]) => !tags.noindex).map(([, tags]) => tags.url),
     `${SITE_ORIGIN}/human-arc/`, `${SITE_ORIGIN}/human-records.html`,
     ...getAllGames().map(game => `${SITE_ORIGIN}/arc3/games/${game.gameId}`),

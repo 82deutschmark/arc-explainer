@@ -6,6 +6,7 @@ PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations a
          including ARC3 community submission review tooling under the admin section.
          Loads secondary route modules on demand so the front page does not download
          every solver, replay viewer, editor and admin screen before becoming usable.
+         ARC Daily news and competitor notebooks are separate lazy routes.
          2026-08-28: "/" now redirects to the ARC-AGI-3 community game gallery, which is
          the front door for the synthetic-game playtest programme (see
          docs/28-Aug-2026-synthetic-games-arc3-integration-plan.md). The resource
@@ -37,6 +38,10 @@ const PuzzleBrowser = lazy(() => import("@/pages/PuzzleBrowser"));
 const AnalyticsOverview = lazy(() => import("@/pages/AnalyticsOverview"));
 const Leaderboards = lazy(() => import("@/pages/Leaderboards"));
 const KaggleLeaderboard = lazy(() => import("@/pages/KaggleLeaderboard"));
+const News = lazy(() => import("@/pages/News"));
+const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
+const NewsCompetitors = lazy(() => import("@/pages/NewsCompetitors"));
+const NewsCompetitor = lazy(() => import("@/pages/NewsCompetitor"));
 const PuzzleDiscussion = lazy(() => import("@/pages/PuzzleDiscussion"));
 const SaturnVisualSolver = lazy(() => import("@/pages/SaturnVisualSolver"));
 const GroverSolver = lazy(() => import("@/pages/GroverSolver"));
@@ -156,6 +161,10 @@ function Router() {
         <Route path="/leaderboards" component={Leaderboards} />
         <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>
         <Route path="/kaggle-leaderboard"><KaggleLeaderboard key="arc-3" competitionKey="arc-3" /></Route>
+        <Route path="/news" component={News} />
+        <Route path="/news/competitors" component={NewsCompetitors} />
+        <Route path="/news/competitors/:competitorId" component={NewsCompetitor} />
+        <Route path="/news/:articleId" component={NewsArticle} />
 
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />
         <Route path="/puzzle/saturn/:taskId" component={SaturnVisualSolver} />

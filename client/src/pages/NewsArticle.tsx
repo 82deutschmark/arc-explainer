@@ -1,0 +1,67 @@
+/**
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
+ * PURPOSE: Permanent ARC Daily article view with evidence timestamps, linked section
+ *          sources, box scores and competition-scoped competitor links.
+ * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
+ */
+import { Link, useParams } from 'wouter';
+import { useMemo } from 'react';
+import { SITE_ORIGIN, DEFAULT_IMAGE } from '@shared/seo';
+import { competitorPath, articleStructuredData } from '@shared/news';
+import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
+import { usePageMeta } from '@/hooks/usePageMeta';
+import { ArticleArchive, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
+
+const points = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 4 });
+
+export default function NewsArticle() {
+  const { articleId } = useParams<{ articleId: string }>();
+  const query = useNews();
+  const article = query.data?.articles.find(item => item.id === articleId);
+  const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN, DEFAULT_IMAGE) : undefined, [article]);
+  const missing = !!query.data && !article;
+  usePageMeta({ title: article ? `${article.headline} | The ARC Daily` : 'Dispatch | The ARC Daily', description: article?.dek, canonicalPath: `/news/${articleId}`, noindex: !article, type: 'article', jsonLd });
+  const competitors = article ? (query.data?.competitors ?? []).filter(record => record.competition === article.competition && article.teamIds.includes(record.teamId)) : [];
+
+  return <NewsPaper date={article?.date}>
+    <Link className="news-back" href="/news">← Back to the front page</Link>
+    <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
+    {missing && <section className="news-status"><h1 className="news-article-title">Dispatch not found</h1><p>This edition is not in the published archive.</p><Link href="/news" className="news-read">Browse published editions →</Link></section>}
+    {article && <article>
+      <header className="news-article-header">
+        <EditionLabel article={article} />
+        <h1 className="news-article-title">{article.headline}</h1>
+        <p className="news-dek">{article.dek}</p>
+        <p className="news-byline">ARC Daily • GPT-6 SOL <span>· Published <time dateTime={article.publishedAt}>{newsDate(article.publishedAt, true)}</time></span></p>
+      </header>
+      <div className="news-article-grid">
+        <div>
+          <div className="news-prose">{article.sections.map((section, index) => <section key={index}>
+            {section.heading && <h2>{section.heading}</h2>}
+            <p>{section.text}</p>
+            {!!section.sourceIds.length && <div className="news-section-sources">{section.sourceIds.map(id => {
+              const source = article.sources.find(item => item.id === id);
+              return source ? <a key={id} href={source.url}>{source.title} ↗</a> : null;
+            })}</div>}
+          </section>)}</div>
+          {!!article.stats.length && <div className="news-boxscore-wrap" tabIndex={0} role="region" aria-label="Scrollable edition box score">
+            <table className="news-boxscore"><caption>The box score</caption><thead><tr><th scope="col">Team</th><th scope="col">Rank</th><th scope="col">Score</th><th scope="col">Rank change</th><th scope="col">Score change</th></tr></thead>
+              <tbody>{article.stats.map(stat => <tr key={stat.teamId}><td>{stat.name}</td><td>#{stat.rank}</td><td>{points(stat.score)}</td><td>{stat.rankChange == null ? 'Not available' : stat.rankChange === 0 ? 'Unchanged' : `${stat.rankChange > 0 ? '↑' : '↓'} ${Math.abs(stat.rankChange)}`}</td><td>{stat.scoreChange == null ? 'Not available' : `${stat.scoreChange > 0 ? '+' : ''}${points(stat.scoreChange)}`}</td></tr>)}</tbody>
+            </table><p className="news-muted">Scores and movement recorded for this edition, not live standings.</p>
+          </div>}
+          <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>
+        </div>
+        <aside className="news-sidebar" aria-label="Reporting notes and sources">
+          <h2 className="news-section-title">The reporting ledger</h2>
+          <div className="news-note"><p><strong>Data as of</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf, true)}</time></p><p><strong>Compared with</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt, true)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
+          <a className="news-read" href={`/api/news/${article.id}/evidence`}>Archived reporting data →</a>
+          <h2 className="news-section-title">Sources</h2>
+          <ol className="news-source-list">{article.sources.map(source => <li key={source.id}><a href={source.url}>{source.title} ↗</a><span>Checked {newsDate(source.accessedAt, true)}</span></li>)}</ol>
+          {!!competitors.length && <><h2 className="news-section-title">Names in this edition</h2><ul className="news-observations">{competitors.map(competitor => <li key={competitor.id}><Link href={competitorPath(competitor.id)}>{competitor.name} →</Link></li>)}</ul></>}
+        </aside>
+      </div>
+      <ArticleArchive articles={sortedArticles(query.data?.articles ?? []).filter(item => item.id !== article.id).slice(0, 8)} heading="More from the desk" />
+    </article>}
+  </NewsPaper>;
+}

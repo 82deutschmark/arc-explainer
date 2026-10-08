@@ -51,6 +51,8 @@ function breadcrumb(name: string, path: string) {
  * Organized by feature area - add new routes near related routes
  */
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
+  '/news': { title: 'The ARC Daily — ARC-AGI competition news', description: 'Morning and evening sports-page coverage of the ARC-AGI-2 and ARC-AGI-3 Kaggle races: the moves, the contenders and the stories behind the box scores.', url: `${SITE}/news` },
+  '/news/competitors': { title: 'Competitor notebook | The ARC Daily', description: 'The ARC Daily’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors` },
   '/home': {
     title: 'ARC Explainer Resource Hub — games, guides and results',
     description: 'Find Human ARC, Space Force Mission Control, ARC-AGI-3 game guides, human and AI results, and archived benchmark analyses.',
