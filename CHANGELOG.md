@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.120.3  Oct 7, 2026
+
+- **Keep the first navigation link fully visible on narrow phones** (Author: Codex). Gives the scrolling menu its content width so Radix's centered layout cannot clip the beginning of Leaderboard at 320px.
+
 ### Version 9.120.2  Oct 7, 2026
 
 - **Leaderboard in the top bar** (Author: Codex). Adds a direct, labeled Leaderboard link to the primary navigation and removes ARC-Interactive from the external top-bar links at Mark's request. On phones the navigation has its own row so the label remains readable; collapsed icon controls now have accessible names. Reuses the existing competition route and leaves leaderboard behavior unchanged.

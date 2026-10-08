@@ -537,7 +537,9 @@ export function AppNavigation() {
           hid the two external links and the repo link entirely. Scrolling here instead means
           the ARC-3 row stays flush left and it is the archive dropdowns that scroll away. */}
       <div className="min-w-0 overflow-x-auto">
-        <NavigationMenu>
+        {/* Keep the menu at its content width so centered Radix children cannot overflow
+            the left edge of this scroll container on narrow phones. */}
+        <NavigationMenu className="min-w-max">
         <NavigationMenuList className="flex items-center">
           {navigationItems.map(item => {
             const key = item.type === 'link' ? item.href : item.title;
