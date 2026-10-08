@@ -1,0 +1,429 @@
+{
+  "baselineAt": "2026-10-07T21:42:22Z",
+  "competition": "arc-3",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants.",
+  "dataAsOf": "2026-10-08T21:50:49Z",
+  "date": "2026-10-08",
+  "dek": "復活の混テキスト climbed from 198th to eighth since the prior evening observation; Yi-Chia Chen now sits just behind Tufa Labs.",
+  "discord": "ARC-AGI-3 evening: 復活の混テキスト vaulted from 198th to eighth on the observed 6 p.m. Eastern comparison, scoring 38.15. Tufa Labs leads at 55.89, but Yi-Chia Chen is now just 0.12 behind. NVARC3 sits ninth; Lord Han Solo is 11th. Public medal positions remain provisional. Full report: https://arc.markbarney.net/news/2026-10-08-evening-arc-3",
+  "edition": "evening",
+  "generatedBy": "gpt-6-sol",
+  "headline": "A new top-eight contender shakes ARC-AGI-3 while the lead narrows to a whisker",
+  "id": "2026-10-08-evening-arc-3",
+  "publishedAt": "2026-10-08T22:03:24Z",
+  "sections": [
+    {
+      "heading": "A rush into the front pack",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "The team listed as 復活の混テキスト made a striking verified move into the top ten: its public score rose from 30.51 at the prior evening observation to 38.15, carrying it from 198th to eighth. That places it in the provisional public gold band. The public gold cutoff rose from 34.43 to 35.44 over the same observed window, so the pace of the field rose too."
+    },
+    {
+      "heading": "Two scores at the summit",
+      "sourceIds": [
+        "board",
+        "fact-15486995-0"
+      ],
+      "text": "Tufa Labs leads at 55.89, with Yi-Chia Chen second at 55.77, a gap of 0.12 points at the latest snapshot. The brief has no usable prior-evening comparison for Chen, so her current proximity does not establish when that gap closed. Majkel1337 is third at 42.66; the last dance 🕺 and dreach.ai follow in fourth and fifth. Tufa Labs was also named by ARC Prize as the first-place open-source solution in the June milestone, a separate result from this evening’s standings."
+    },
+    {
+      "heading": "Pressure around the medal line",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "artificialagencylab.com rose from seventh to sixth on a 38.62 score, while _hans reached tenth at 37.07. NVARC3 is ninth at 37.51; Lord Han Solo is just outside the top ten in 11th at 36.61. Son & Mark & Ronen reached 17th at 35.45, one hundredth above the current public gold score cutoff, after a verified rise from 25th and 33.74 at the prior evening observation. David Hartmann is 319th at 29.83, and Jan Disselhoff is 558th at 28.23. These are public, provisional positions; the private leaderboard will decide final medals."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-08T22:03:24Z",
+      "id": "board",
+      "title": "ARC-3 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-15486995-0",
+      "title": "ARC Prize — ARC-AGI-3 Milestone 1 results",
+      "url": "https://arcprize.org/blog/arc-prize-2026-milestone-1"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-15486995-1",
+      "title": "Tufa Labs — Duck Harness technical overview",
+      "url": "https://tufalabs.ai/research/duck-harness/"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-15486995-2",
+      "title": "Tufa Labs — team profiles",
+      "url": "https://tufalabs.ai/team/"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-15499660-0",
+      "title": "Yi-Chia Chen — Kaggle profile",
+      "url": "https://www.kaggle.com/threerabbits"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-15499660-1",
+      "title": "Yi-Chia Chen — Eedi third-place solution write-up",
+      "url": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/writeups/waseda-pochi-3rd-place-solution-with-magic-boost"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15501006-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15501006-1",
+      "title": "The ARChitects — 2025 technical report",
+      "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15770880-0",
+      "title": "NVIDIA — 2025 NVARC competition report",
+      "url": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15770880-1",
+      "title": "NVARC — 2025 team write-up",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-15770880-2",
+      "title": "NVIDIA — 2025 NVARC solution report",
+      "url": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16021367-0",
+      "title": "Lukas Aichberger — Kaggle profile",
+      "url": "https://www.kaggle.com/lukasaichberger"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16021367-1",
+      "title": "JKU — Lukas Aichberger research profile",
+      "url": "https://research.jku.at/en/persons/lukas-aichberger/"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16021367-2",
+      "title": "fses91 — Kaggle profile",
+      "url": "https://www.kaggle.com/fses91"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16021367-3",
+      "title": "Mykyta Ielanskyi — Kaggle profile",
+      "url": "https://www.kaggle.com/dwellement0baser"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16021367-4",
+      "title": "JKU — Mykyta Ielanskyi research profile",
+      "url": "https://research.jku.at/en/persons/mykyta-ielanskyi/"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-16032816-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-16032816-1",
+      "title": "The ARChitects — 2025 technical report",
+      "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16132261-0",
+      "title": "Richard Csaky — Kaggle profile",
+      "url": "https://www.kaggle.com/richardcsaky"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16132261-1",
+      "title": "Artificial Agency Lab — research and ARC-AGI-3 project",
+      "url": "https://artificialagencylab.com/"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16132261-2",
+      "title": "Manifund — Artificial Agency ARC-AGI-3 project proposal",
+      "url": "https://manifund.org/projects/4-month-proof-of-concept-for-curiosity-driven-agents-on-arc-agi-3"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16132261-3",
+      "title": "Richard Csaky — ARC-AGI-3 Milestone 2 notebook",
+      "url": "https://www.kaggle.com/code/richardcsaky/arc-agi-3-milestone-2-submission"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16153655-0",
+      "title": "Michael — Kaggle profile",
+      "url": "https://www.kaggle.com/michaeltgao"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16371045-0",
+      "title": "Lord Han Solo — Kaggle profile",
+      "url": "https://www.kaggle.com/lordhansolo"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16371045-1",
+      "title": "Lord Han Solo — Milestone 2 Kaggle notebook",
+      "url": "https://www.kaggle.com/code/lordhansolo/built-on-tufa-labs-duck-harness-milestone-2"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16569113-0",
+      "title": "Tanaka Ai24 — ARC-AGI-3 Kaggle notebook",
+      "url": "https://www.kaggle.com/code/tanakaai24/arc3-qwen3-6-duck-lb117-safety-v1"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16569113-1",
+      "title": "Tanaka Ai24 — ARC-AGI-3 Pathfinder notebook",
+      "url": "https://www.kaggle.com/code/tanakaai24/arc-agi-3-pathfinder-v2"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16768259-0",
+      "title": "_hans — Kaggle profile",
+      "url": "https://www.kaggle.com/deepdreamer"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16768259-1",
+      "title": "_hans — public Kaggle notebook",
+      "url": "https://www.kaggle.com/code/deepdreamer/a-silver-solution-33rd"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16805955-0",
+      "title": "Jayden Szeto — Kaggle profile",
+      "url": "https://www.kaggle.com/jaydenszeto123"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16805955-1",
+      "title": "Daniel Guo — Kaggle profile",
+      "url": "https://www.kaggle.com/denialguo"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16805955-2",
+      "title": "Hayley — Kaggle profile",
+      "url": "https://www.kaggle.com/snoopydoo"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16805955-3",
+      "title": "Jayden Szeto — BirdCLEF+ 2026 notebook",
+      "url": "https://www.kaggle.com/code/jaydenszeto123/birdclef2026-v3"
+    },
+    {
+      "accessedAt": "2026-10-08T13:46:44Z",
+      "id": "fact-16958599-0",
+      "title": "Majkel1337 — Kaggle profile",
+      "url": "https://www.kaggle.com/majkel1337"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 55.89,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": null,
+      "score": 55.77,
+      "scoreChange": null,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 42.66,
+      "scoreChange": 0.0,
+      "teamId": "16958599"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 4,
+      "rankChange": 0,
+      "score": 39.3,
+      "scoreChange": 0.0,
+      "teamId": "16021367"
+    },
+    {
+      "name": "dreach.ai",
+      "rank": 5,
+      "rankChange": 0,
+      "score": 39.11,
+      "scoreChange": 0.0,
+      "teamId": "16805955"
+    },
+    {
+      "name": "artificialagencylab.com",
+      "rank": 6,
+      "rankChange": 1,
+      "score": 38.62,
+      "scoreChange": 0.68,
+      "teamId": "16132261"
+    },
+    {
+      "name": "mtg",
+      "rank": 7,
+      "rankChange": -1,
+      "score": 38.33,
+      "scoreChange": 0.0,
+      "teamId": "16153655"
+    },
+    {
+      "name": "復活の混テキスト",
+      "rank": 8,
+      "rankChange": 190,
+      "score": 38.15,
+      "scoreChange": 7.64,
+      "teamId": "16569113"
+    },
+    {
+      "name": "NVARC3",
+      "rank": 9,
+      "rankChange": -1,
+      "score": 37.51,
+      "scoreChange": 0.0,
+      "teamId": "15770880"
+    },
+    {
+      "name": "_hans",
+      "rank": 10,
+      "rankChange": 4,
+      "score": 37.07,
+      "scoreChange": 1.38,
+      "teamId": "16768259"
+    },
+    {
+      "name": "Lord Han Solo",
+      "rank": 11,
+      "rankChange": -2,
+      "score": 36.61,
+      "scoreChange": 0.0,
+      "teamId": "16371045"
+    },
+    {
+      "name": "AI_hwlee",
+      "rank": 12,
+      "rankChange": 9,
+      "score": 36.54,
+      "scoreChange": 2.42,
+      "teamId": "15513620"
+    },
+    {
+      "name": "Son & Mark & Ronen",
+      "rank": 17,
+      "rankChange": 8,
+      "score": 35.45,
+      "scoreChange": 1.71,
+      "teamId": "15605182"
+    },
+    {
+      "name": "MJVinay",
+      "rank": 37,
+      "rankChange": 90,
+      "score": 33.42,
+      "scoreChange": 2.08,
+      "teamId": "15632509"
+    },
+    {
+      "name": "ekusiadadus",
+      "rank": 60,
+      "rankChange": 134,
+      "score": 32.79,
+      "scoreChange": 2.23,
+      "teamId": "17034786"
+    },
+    {
+      "name": "Giovanny Rodríguez",
+      "rank": 68,
+      "rankChange": 25,
+      "score": 32.54,
+      "scoreChange": 0.81,
+      "teamId": "16459830"
+    },
+    {
+      "name": "lvisdd",
+      "rank": 72,
+      "rankChange": 160,
+      "score": 32.34,
+      "scoreChange": 2.1,
+      "teamId": "17018987"
+    },
+    {
+      "name": "amosokello451",
+      "rank": 98,
+      "rankChange": 141,
+      "score": 31.83,
+      "scoreChange": 1.66,
+      "teamId": "15493226"
+    },
+    {
+      "name": "laomei chen",
+      "rank": 109,
+      "rankChange": 84,
+      "score": 31.66,
+      "scoreChange": 1.07,
+      "teamId": "16966323"
+    },
+    {
+      "name": "David Hartmann",
+      "rank": 319,
+      "rankChange": -39,
+      "score": 29.83,
+      "scoreChange": 0.0,
+      "teamId": "16032816"
+    },
+    {
+      "name": "Jan Disselhoff",
+      "rank": 558,
+      "rankChange": null,
+      "score": 28.23,
+      "scoreChange": null,
+      "teamId": "15501006"
+    }
+  ],
+  "teamIds": [
+    "16569113",
+    "15486995",
+    "15499660",
+    "16958599",
+    "16021367",
+    "16805955",
+    "16132261",
+    "16768259",
+    "15770880",
+    "16371045",
+    "15605182",
+    "16032816",
+    "15501006"
+  ]
+}

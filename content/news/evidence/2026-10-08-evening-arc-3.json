@@ -1,0 +1,1623 @@
+{
+  "accessedAt": "2026-10-08T22:03:24Z",
+  "articleId": "2026-10-08-evening-arc-3",
+  "baselineSnapshot": {
+    "bronze": 28.87,
+    "gold": 34.43,
+    "silver": 30.51,
+    "t": "2026-10-07T21:42:22Z",
+    "teams": 3939,
+    "top": 55.89
+  },
+  "baselineTargetAt": "2026-10-07T22:00:00Z",
+  "briefSha256": "cf61749f1bad2eeeae914b1c19e7899a72417e530499b8387cf0affde00b1a43",
+  "closingSnapshot": {
+    "bronze": 29.24,
+    "gold": 35.44,
+    "silver": 30.82,
+    "t": "2026-10-08T21:50:49Z",
+    "teams": 4003,
+    "top": 55.89
+  },
+  "comparisons": {
+    "15486995": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        55.89,
+        1
+      ],
+      "start": [
+        "2026-10-04T18:30:56Z",
+        55.89,
+        1
+      ]
+    },
+    "15493226": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        31.83,
+        98
+      ],
+      "start": [
+        "2026-10-07T21:42:22Z",
+        30.17,
+        239
+      ]
+    },
+    "15499660": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        55.77,
+        2
+      ],
+      "start": null
+    },
+    "15501006": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        28.23,
+        558
+      ],
+      "start": null
+    },
+    "15513620": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        36.54,
+        12
+      ],
+      "start": [
+        "2026-10-07T19:42:12Z",
+        34.12,
+        21
+      ]
+    },
+    "15605182": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        35.45,
+        17
+      ],
+      "start": [
+        "2026-10-07T19:42:12Z",
+        33.74,
+        25
+      ]
+    },
+    "15632509": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        33.42,
+        37
+      ],
+      "start": [
+        "2026-10-07T19:42:12Z",
+        31.34,
+        127
+      ]
+    },
+    "15770880": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        37.51,
+        9
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        37.51,
+        8
+      ]
+    },
+    "16021367": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        39.3,
+        4
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        39.3,
+        4
+      ]
+    },
+    "16032816": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        29.83,
+        319
+      ],
+      "start": [
+        "2026-10-07T21:42:22Z",
+        29.83,
+        280
+      ]
+    },
+    "16132261": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        38.62,
+        6
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        37.94,
+        7
+      ]
+    },
+    "16153655": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        38.33,
+        7
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        38.33,
+        6
+      ]
+    },
+    "16371045": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        36.61,
+        11
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        36.61,
+        9
+      ]
+    },
+    "16459830": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        32.54,
+        68
+      ],
+      "start": [
+        "2026-10-07T19:42:12Z",
+        31.73,
+        93
+      ]
+    },
+    "16569113": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        38.15,
+        8
+      ],
+      "start": [
+        "2026-10-07T21:42:22Z",
+        30.51,
+        198
+      ]
+    },
+    "16768259": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        37.07,
+        10
+      ],
+      "start": [
+        "2026-10-07T11:41:45Z",
+        35.69,
+        14
+      ]
+    },
+    "16805955": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        39.11,
+        5
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        39.11,
+        5
+      ]
+    },
+    "16958599": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        42.66,
+        3
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        42.66,
+        3
+      ]
+    },
+    "16966323": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        31.66,
+        109
+      ],
+      "start": [
+        "2026-10-07T21:42:22Z",
+        30.59,
+        193
+      ]
+    },
+    "17018987": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        32.34,
+        72
+      ],
+      "start": [
+        "2026-10-07T21:42:22Z",
+        30.24,
+        232
+      ]
+    },
+    "17034786": {
+      "end": [
+        "2026-10-08T21:50:49Z",
+        32.79,
+        60
+      ],
+      "start": [
+        "2026-10-07T21:42:22Z",
+        30.56,
+        194
+      ]
+    }
+  },
+  "competitorFacts": [
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15486995-0",
+      "sourceTitle": "ARC Prize — ARC-AGI-3 Milestone 1 results",
+      "sourceUrl": "https://arcprize.org/blog/arc-prize-2026-milestone-1",
+      "teamId": "15486995",
+      "text": "ARC Prize named Tufa Labs and its Duck agent the first-place open-source solution for the June 2026 ARC-AGI-3 Milestone 1 prize."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15486995-1",
+      "sourceTitle": "Tufa Labs — Duck Harness technical overview",
+      "sourceUrl": "https://tufalabs.ai/research/duck-harness/",
+      "teamId": "15486995",
+      "text": "Tufa Labs says its public Duck harness lets an LLM inspect game grids as image and text, write Python in a REPL, and keep context short by evicting older messages. This describes the published Milestone 1 system, not an unverified current submission."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15486995-2",
+      "sourceTitle": "Tufa Labs — team profiles",
+      "sourceUrl": "https://tufalabs.ai/team/",
+      "teamId": "15486995",
+      "text": "Tufa Labs lists Dries Smit, Isaiah Pressman and Jeroen Cottaar among its AI researchers, with research interests spanning reinforcement learning, self-play and Bayesian methods."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15499660-0",
+      "sourceTitle": "Yi-Chia Chen — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/threerabbits",
+      "teamId": "15499660",
+      "text": "Yi-Chia Chen’s Kaggle profile lists her as a Competitions Master and a double-degree student at National Taiwan University and Waseda University."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15499660-1",
+      "sourceTitle": "Yi-Chia Chen — Eedi third-place solution write-up",
+      "sourceUrl": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/writeups/waseda-pochi-3rd-place-solution-with-magic-boost",
+      "teamId": "15499660",
+      "text": "Yi-Chia Chen authored a Kaggle write-up for a third-place solution in Eedi — Mining Misconceptions in Mathematics."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15501006-0",
+      "sourceTitle": "The ARChitects — 2025 team solution",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+      "teamId": "15501006",
+      "text": "The ARChitects’ own 2025 solution write-up credits Jan Disselhoff under the Kaggle handle insanitycheck, alongside David Hartmann (dvhrtm) and Daniel Franzen (dfranzen)."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15501006-1",
+      "sourceTitle": "The ARChitects — 2025 technical report",
+      "sourceUrl": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/",
+      "teamId": "15501006",
+      "text": "The team’s 2025 technical report lists Jan Disselhoff at Johannes Gutenberg University Mainz."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15770880-0",
+      "sourceTitle": "NVIDIA — 2025 NVARC competition report",
+      "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+      "teamId": "15770880",
+      "text": "NVIDIA’s December 2025 report identifies Ivan Sorokin and Jean-Francois Puget as NVIDIA researchers who competed as NVARC in the 2025 ARC Prize."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15770880-1",
+      "sourceTitle": "NVARC — 2025 team write-up",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc",
+      "teamId": "15770880",
+      "text": "The 2025 NVARC team write-up credits sorokin and cpmpml. Both handles appear in the observed roster of the distinct 2026 NVARC3 entry. This does not establish an affiliation for every current member."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15770880-2",
+      "sourceTitle": "NVIDIA — 2025 NVARC solution report",
+      "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+      "teamId": "15770880",
+      "text": "NVIDIA describes the separate 2025 NVARC ARC-AGI-2 solution as using synthetic data generation, test-time training and a fine-tuned 4B model. This is historical background, not a claim about the 2026 NVARC3 agent."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-0",
+      "sourceTitle": "Lukas Aichberger — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+      "teamId": "16021367",
+      "text": "The rostered lukasaichberger Kaggle profile identifies its owner as Lukas Aichberger and links to his research website."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-1",
+      "sourceTitle": "JKU — Lukas Aichberger research profile",
+      "sourceUrl": "https://research.jku.at/en/persons/lukas-aichberger/",
+      "teamId": "16021367",
+      "text": "Johannes Kepler University Linz lists Lukas Aichberger at its Institute for Machine Learning and credits him on research about reasoning models and uncertainty evaluation."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-2",
+      "sourceTitle": "fses91 — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/fses91",
+      "teamId": "16021367",
+      "text": "Another rostered account, fses91, describes itself on Kaggle only as Florian; the public profile does not establish a surname."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-3",
+      "sourceTitle": "Mykyta Ielanskyi — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+      "teamId": "16021367",
+      "text": "The rostered dwellement0baser Kaggle profile identifies its owner as Mykyta Ielanskyi."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-4",
+      "sourceTitle": "JKU — Mykyta Ielanskyi research profile",
+      "sourceUrl": "https://research.jku.at/en/persons/mykyta-ielanskyi/",
+      "teamId": "16021367",
+      "text": "Johannes Kepler University Linz lists Mykyta Ielanskyi at its Institute for Machine Learning. Its research record credits him and Lukas Aichberger together on a 2026 paper about reward redistribution for reasoning models."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-16032816-0",
+      "sourceTitle": "The ARChitects — 2025 team solution",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+      "teamId": "16032816",
+      "text": "The ARChitects’ own 2025 solution write-up credits David Hartmann under the Kaggle handle dvhrtm, alongside Jan Disselhoff (insanitycheck) and Daniel Franzen (dfranzen)."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-16032816-1",
+      "sourceTitle": "The ARChitects — 2025 technical report",
+      "sourceUrl": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/",
+      "teamId": "16032816",
+      "text": "The team’s 2025 technical report lists David Hartmann at Lambda, Inc."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16132261-0",
+      "sourceTitle": "Richard Csaky — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/richardcsaky",
+      "teamId": "16132261",
+      "text": "The rostered richardcsaky Kaggle profile displays the name Richard Csaky."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16132261-1",
+      "sourceTitle": "Artificial Agency Lab — research and ARC-AGI-3 project",
+      "sourceUrl": "https://artificialagencylab.com/",
+      "teamId": "16132261",
+      "text": "Artificial Agency Lab says it built an ARC-AGI-3 agent combining structured grids and image observations with persistent context updates, keeping model weights fixed; it reports an eighth-place June milestone result."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16132261-2",
+      "sourceTitle": "Manifund — Artificial Agency ARC-AGI-3 project proposal",
+      "sourceUrl": "https://manifund.org/projects/4-month-proof-of-concept-for-curiosity-driven-agents-on-arc-agi-3",
+      "teamId": "16132261",
+      "text": "A public ARC-AGI-3 project proposal names Richard Csaky as research lead and Côme Chevalier for engineering. The proposal describes an intended curiosity-driven proof of concept, not a verified method of the current Kaggle submission."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16132261-3",
+      "sourceTitle": "Richard Csaky — ARC-AGI-3 Milestone 2 notebook",
+      "sourceUrl": "https://www.kaggle.com/code/richardcsaky/arc-agi-3-milestone-2-submission",
+      "teamId": "16132261",
+      "text": "Richard Csaky’s Kaggle account published an “ARC-AGI-3 milestone 2 submission” notebook."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16153655-0",
+      "sourceTitle": "Michael — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/michaeltgao",
+      "teamId": "16153655",
+      "text": "The sole rostered michaeltgao Kaggle account displays the public name Michael; the profile does not establish a surname."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16371045-0",
+      "sourceTitle": "Lord Han Solo — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/lordhansolo",
+      "teamId": "16371045",
+      "text": "The Kaggle account and team both use the public name Lord Han Solo. The profile itself does not supply a verified personal name."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16371045-1",
+      "sourceTitle": "Lord Han Solo — Milestone 2 Kaggle notebook",
+      "sourceUrl": "https://www.kaggle.com/code/lordhansolo/built-on-tufa-labs-duck-harness-milestone-2",
+      "teamId": "16371045",
+      "text": "Lord Han Solo published a Kaggle notebook titled “Built on Tufa Labs duck harness - Milestone 2,” explicitly crediting that earlier public harness in the notebook title."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16569113-0",
+      "sourceTitle": "Tanaka Ai24 — ARC-AGI-3 Kaggle notebook",
+      "sourceUrl": "https://www.kaggle.com/code/tanakaai24/arc3-qwen3-6-duck-lb117-safety-v1",
+      "teamId": "16569113",
+      "text": "Roster member tanakaai24 has published a Kaggle ARC-AGI-3 notebook titled “ARC3 Qwen3.6 Duck LB117 Safety V1.” Its title alone does not establish the method behind the team’s current score."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16569113-1",
+      "sourceTitle": "Tanaka Ai24 — ARC-AGI-3 Pathfinder notebook",
+      "sourceUrl": "https://www.kaggle.com/code/tanakaai24/arc-agi-3-pathfinder-v2",
+      "teamId": "16569113",
+      "text": "The same Kaggle account has also published “ARC-AGI-3 Pathfinder v2,” another public notebook about the contest."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16768259-0",
+      "sourceTitle": "_hans — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/deepdreamer",
+      "teamId": "16768259",
+      "text": "The current _hans team is associated in the board roster with Kaggle handle deepdreamer, whose public profile also displays _hans."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16768259-1",
+      "sourceTitle": "_hans — public Kaggle notebook",
+      "sourceUrl": "https://www.kaggle.com/code/deepdreamer/a-silver-solution-33rd",
+      "teamId": "16768259",
+      "text": "The deepdreamer Kaggle account published a notebook titled “A silver solution(33rd).” That public work is separate from the current ARC-AGI-3 submission."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16805955-0",
+      "sourceTitle": "Jayden Szeto — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/jaydenszeto123",
+      "teamId": "16805955",
+      "text": "The rostered jaydenszeto123 Kaggle account displays the name Jayden Szeto."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16805955-1",
+      "sourceTitle": "Daniel Guo — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/denialguo",
+      "teamId": "16805955",
+      "text": "The rostered denialguo Kaggle account displays the name Daniel Guo."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16805955-2",
+      "sourceTitle": "Hayley — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/snoopydoo",
+      "teamId": "16805955",
+      "text": "The rostered snoopydoo Kaggle account displays the name Hayley, without a surname."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16805955-3",
+      "sourceTitle": "Jayden Szeto — BirdCLEF+ 2026 notebook",
+      "sourceUrl": "https://www.kaggle.com/code/jaydenszeto123/birdclef2026-v3",
+      "teamId": "16805955",
+      "text": "Jayden Szeto’s Kaggle account also has a public BirdCLEF+ 2026 notebook titled “BIRDCLEF2026 V3.” This is background work, not a claim about dreach.ai’s ARC-AGI-3 method."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16958599-0",
+      "sourceTitle": "Majkel1337 — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/majkel1337",
+      "teamId": "16958599",
+      "text": "The Majkel1337 team’s sole rostered Kaggle account also displays Majkel1337 as its public profile name."
+    }
+  ],
+  "cutoffAt": "2026-10-08T22:00:00Z",
+  "events": [
+    {
+      "from": 24.9,
+      "id": "17029357",
+      "name": "xk 3gww",
+      "rankFrom": 878,
+      "rankTo": 244,
+      "t": "2026-10-07T22:12:24Z",
+      "to": 30.13
+    },
+    {
+      "from": null,
+      "id": "16382070",
+      "name": "kostopr4v",
+      "rankFrom": null,
+      "rankTo": 346,
+      "t": "2026-10-07T22:42:26Z",
+      "to": 29.26
+    },
+    {
+      "from": 26.89,
+      "id": "15491318",
+      "name": "@🤞@",
+      "rankFrom": 688,
+      "rankTo": 220,
+      "t": "2026-10-07T23:12:28Z",
+      "to": 30.36
+    },
+    {
+      "from": 24.81,
+      "id": "17024432",
+      "name": "carbonapi",
+      "rankFrom": 890,
+      "rankTo": 263,
+      "t": "2026-10-07T23:12:28Z",
+      "to": 29.98
+    },
+    {
+      "from": 26.63,
+      "id": "16482421",
+      "name": "senkin13",
+      "rankFrom": 719,
+      "rankTo": 316,
+      "t": "2026-10-07T23:12:28Z",
+      "to": 29.51
+    },
+    {
+      "from": 3.91,
+      "id": "16727198",
+      "name": "blurrylogic",
+      "rankFrom": 1120,
+      "rankTo": 391,
+      "t": "2026-10-07T23:12:28Z",
+      "to": 28.96
+    },
+    {
+      "from": 27.28,
+      "id": "16946210",
+      "name": "Desih Nurseha",
+      "rankFrom": 641,
+      "rankTo": 299,
+      "t": "2026-10-07T23:42:30Z",
+      "to": 29.68
+    },
+    {
+      "from": 27.57,
+      "id": "16012508",
+      "name": "iwance",
+      "rankFrom": 603,
+      "rankTo": 446,
+      "t": "2026-10-07T23:42:30Z",
+      "to": 28.54
+    },
+    {
+      "from": null,
+      "id": "17031907",
+      "name": "JIAERYU",
+      "rankFrom": null,
+      "rankTo": 222,
+      "t": "2026-10-08T00:12:31Z",
+      "to": 30.34
+    },
+    {
+      "from": 0.66,
+      "id": "16688319",
+      "name": "kid william",
+      "rankFrom": 2000,
+      "rankTo": 155,
+      "t": "2026-10-08T00:42:33Z",
+      "to": 30.98
+    },
+    {
+      "from": 30.51,
+      "id": "16569113",
+      "name": "Tanaka Ai24",
+      "rankFrom": 199,
+      "rankTo": 7,
+      "t": "2026-10-08T01:12:35Z",
+      "to": 38.15
+    },
+    {
+      "from": 26.9,
+      "id": "16844880",
+      "name": "BaqirHabeeb",
+      "rankFrom": 697,
+      "rankTo": 247,
+      "t": "2026-10-08T01:12:35Z",
+      "to": 30.14
+    },
+    {
+      "from": 1.5,
+      "id": "17018036",
+      "name": "HONGYUFAN712",
+      "rankFrom": 1582,
+      "rankTo": 396,
+      "t": "2026-10-08T01:12:35Z",
+      "to": 28.94
+    },
+    {
+      "from": 27.94,
+      "id": "17015222",
+      "name": "zzx Hee",
+      "rankFrom": 544,
+      "rankTo": 458,
+      "t": "2026-10-08T01:12:35Z",
+      "to": 28.5
+    },
+    {
+      "from": 28.16,
+      "id": "17030203",
+      "name": "manbuhjm",
+      "rankFrom": 517,
+      "rankTo": 153,
+      "t": "2026-10-08T01:42:37Z",
+      "to": 31.02
+    },
+    {
+      "from": 2.53,
+      "id": "16514026",
+      "name": "X1Aguu",
+      "rankFrom": 1429,
+      "rankTo": 418,
+      "t": "2026-10-08T01:42:37Z",
+      "to": 28.8
+    },
+    {
+      "from": 27.37,
+      "id": "17031247",
+      "name": "Lee Dusty",
+      "rankFrom": 639,
+      "rankTo": 378,
+      "t": "2026-10-08T03:12:43Z",
+      "to": 29.08
+    },
+    {
+      "from": null,
+      "id": "16966058",
+      "name": "Navaneedam",
+      "rankFrom": null,
+      "rankTo": 43,
+      "t": "2026-10-08T03:42:46Z",
+      "to": 33.15
+    },
+    {
+      "from": 30.93,
+      "id": "16916278",
+      "name": "Charles Ran",
+      "rankFrom": 161,
+      "rankTo": 142,
+      "t": "2026-10-08T03:42:46Z",
+      "to": 31.19
+    },
+    {
+      "from": null,
+      "id": "17054175",
+      "name": "Dwnrt Absrd",
+      "rankFrom": null,
+      "rankTo": 422,
+      "t": "2026-10-08T03:42:46Z",
+      "to": 28.79
+    },
+    {
+      "from": 34.12,
+      "id": "15513620",
+      "name": "AI_hwlee",
+      "rankFrom": 22,
+      "rankTo": 11,
+      "t": "2026-10-08T04:12:48Z",
+      "to": 36.54
+    },
+    {
+      "from": 29.37,
+      "id": "16760837",
+      "name": "yktori",
+      "rankFrom": 337,
+      "rankTo": 24,
+      "t": "2026-10-08T04:12:48Z",
+      "to": 33.97
+    },
+    {
+      "from": 31.73,
+      "id": "16459830",
+      "name": "Giovanny Rodríguez",
+      "rankFrom": 96,
+      "rankTo": 63,
+      "t": "2026-10-08T05:12:54Z",
+      "to": 32.54
+    },
+    {
+      "from": 27.29,
+      "id": "15540981",
+      "name": "Quintilis Academy",
+      "rankFrom": 651,
+      "rankTo": 167,
+      "t": "2026-10-08T05:12:54Z",
+      "to": 30.91
+    },
+    {
+      "from": 48.59,
+      "id": "15499660",
+      "name": "Yi-Chia Chen",
+      "rankFrom": 2,
+      "rankTo": 2,
+      "t": "2026-10-08T05:42:56Z",
+      "to": 55.77
+    },
+    {
+      "from": 28.43,
+      "id": "15497833",
+      "name": "Tony Li",
+      "rankFrom": 476,
+      "rankTo": 418,
+      "t": "2026-10-08T05:42:56Z",
+      "to": 28.84
+    },
+    {
+      "from": 2.5,
+      "id": "16778036",
+      "name": "Hironari",
+      "rankFrom": 1447,
+      "rankTo": 422,
+      "t": "2026-10-08T05:42:56Z",
+      "to": 28.8
+    },
+    {
+      "from": 3.57,
+      "id": "16617637",
+      "name": "No Name",
+      "rankFrom": 1191,
+      "rankTo": 372,
+      "t": "2026-10-08T06:12:58Z",
+      "to": 29.15
+    },
+    {
+      "from": 0,
+      "id": "16818093",
+      "name": "Grigorii Kirgizov",
+      "rankFrom": 3942,
+      "rankTo": 494,
+      "t": "2026-10-08T06:12:58Z",
+      "to": 28.34
+    },
+    {
+      "from": 26.38,
+      "id": "16892784",
+      "name": "Yasuhiro Manai",
+      "rankFrom": 768,
+      "rankTo": 140,
+      "t": "2026-10-08T06:43:01Z",
+      "to": 31.24
+    },
+    {
+      "from": 37.94,
+      "id": "16132261",
+      "name": "artificialagencylab.com",
+      "rankFrom": 8,
+      "rankTo": 6,
+      "t": "2026-10-08T07:13:03Z",
+      "to": 38.62
+    },
+    {
+      "from": 26.92,
+      "id": "16760493",
+      "name": "SparseTech",
+      "rankFrom": 707,
+      "rankTo": 343,
+      "t": "2026-10-08T07:13:03Z",
+      "to": 29.33
+    },
+    {
+      "from": 27.52,
+      "id": "15908708",
+      "name": "vbnnn",
+      "rankFrom": 629,
+      "rankTo": 375,
+      "t": "2026-10-08T07:13:03Z",
+      "to": 29.15
+    },
+    {
+      "from": 4.7,
+      "id": "16777399",
+      "name": "Jovian Game Studios",
+      "rankFrom": 1088,
+      "rankTo": 411,
+      "t": "2026-10-08T07:13:03Z",
+      "to": 28.87
+    },
+    {
+      "from": 30.17,
+      "id": "15493226",
+      "name": "amosokello451",
+      "rankFrom": 247,
+      "rankTo": 91,
+      "t": "2026-10-08T07:43:06Z",
+      "to": 31.83
+    },
+    {
+      "from": 26.03,
+      "id": "15495286",
+      "name": "Yusuraume",
+      "rankFrom": 809,
+      "rankTo": 171,
+      "t": "2026-10-08T07:43:06Z",
+      "to": 30.9
+    },
+    {
+      "from": 33.21,
+      "id": "15497811",
+      "name": "Nick2187",
+      "rankFrom": 40,
+      "rankTo": 29,
+      "t": "2026-10-08T08:43:11Z",
+      "to": 33.7
+    },
+    {
+      "from": 35.69,
+      "id": "16768259",
+      "name": "_hans",
+      "rankFrom": 16,
+      "rankTo": 10,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 37.07
+    },
+    {
+      "from": 28.93,
+      "id": "16881414",
+      "name": "Arhan canli",
+      "rankFrom": 406,
+      "rankTo": 34,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 33.49
+    },
+    {
+      "from": 30.71,
+      "id": "16713070",
+      "name": "Abu Kayyisah Basyid",
+      "rankFrom": 191,
+      "rankTo": 132,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 31.34
+    },
+    {
+      "from": 24.78,
+      "id": "16426674",
+      "name": "Growingduck",
+      "rankFrom": 923,
+      "rankTo": 193,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 30.72
+    },
+    {
+      "from": 22.34,
+      "id": "16274224",
+      "name": "Ananta Verma",
+      "rankFrom": 1010,
+      "rankTo": 209,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 30.5
+    },
+    {
+      "from": 30.06,
+      "id": "15609019",
+      "name": "cha7ura",
+      "rankFrom": 263,
+      "rankTo": 246,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 30.23
+    },
+    {
+      "from": 22.49,
+      "id": "16864844",
+      "name": "Salem Bin Kenaid",
+      "rankFrom": 1005,
+      "rankTo": 260,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 30.13
+    },
+    {
+      "from": 29.21,
+      "id": "16429787",
+      "name": "Yelarys Yertaiuly",
+      "rankFrom": 369,
+      "rankTo": 321,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 29.6
+    },
+    {
+      "from": 28.48,
+      "id": "17034154",
+      "name": "kkkk",
+      "rankFrom": 477,
+      "rankTo": 438,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 28.76
+    },
+    {
+      "from": 28.35,
+      "id": "16650515",
+      "name": "Ya Xu",
+      "rankFrom": 496,
+      "rankTo": 475,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 28.51
+    },
+    {
+      "from": 26.79,
+      "id": "16480531",
+      "name": "tyz123456",
+      "rankFrom": 726,
+      "rankTo": 488,
+      "t": "2026-10-08T09:13:13Z",
+      "to": 28.45
+    },
+    {
+      "from": 30.24,
+      "id": "17018987",
+      "name": "lvisdd",
+      "rankFrom": 245,
+      "rankTo": 68,
+      "t": "2026-10-08T09:43:15Z",
+      "to": 32.34
+    },
+    {
+      "from": 27.98,
+      "id": "16665002",
+      "name": "APEX LABS",
+      "rankFrom": 564,
+      "rankTo": 324,
+      "t": "2026-10-08T09:43:15Z",
+      "to": 29.57
+    },
+    {
+      "from": null,
+      "id": "16833157",
+      "name": "Jack Chen lalala",
+      "rankFrom": null,
+      "rankTo": 342,
+      "t": "2026-10-08T09:43:15Z",
+      "to": 29.41
+    },
+    {
+      "from": 28.53,
+      "id": "16759803",
+      "name": "PavelLiashkov",
+      "rankFrom": 469,
+      "rankTo": 365,
+      "t": "2026-10-08T09:43:15Z",
+      "to": 29.27
+    },
+    {
+      "from": 24,
+      "id": "17047408",
+      "name": "XIAO MA",
+      "rankFrom": 963,
+      "rankTo": 377,
+      "t": "2026-10-08T09:43:15Z",
+      "to": 29.2
+    },
+    {
+      "from": 28.73,
+      "id": "16853937",
+      "name": "NIMI",
+      "rankFrom": 445,
+      "rankTo": 118,
+      "t": "2026-10-08T10:13:18Z",
+      "to": 31.53
+    },
+    {
+      "from": 28.98,
+      "id": "16897768",
+      "name": "DNCWON",
+      "rankFrom": 406,
+      "rankTo": 134,
+      "t": "2026-10-08T10:13:18Z",
+      "to": 31.34
+    },
+    {
+      "from": 27.99,
+      "id": "17032868",
+      "name": "Haotian Li",
+      "rankFrom": 564,
+      "rankTo": 360,
+      "t": "2026-10-08T10:13:18Z",
+      "to": 29.29
+    },
+    {
+      "from": 27.46,
+      "id": "17034560",
+      "name": "wuyan-nox",
+      "rankFrom": 651,
+      "rankTo": 36,
+      "t": "2026-10-08T10:43:20Z",
+      "to": 33.37
+    },
+    {
+      "from": 26.61,
+      "id": "15488945",
+      "name": "Changyuan Zhou",
+      "rankFrom": 751,
+      "rankTo": 218,
+      "t": "2026-10-08T10:43:20Z",
+      "to": 30.48
+    },
+    {
+      "from": 22.18,
+      "id": "15488649",
+      "name": "Tanmay",
+      "rankFrom": 1018,
+      "rankTo": 276,
+      "t": "2026-10-08T10:43:20Z",
+      "to": 30.03
+    },
+    {
+      "from": 28.3,
+      "id": "16871335",
+      "name": "Yongjiehi Shi",
+      "rankFrom": 516,
+      "rankTo": 163,
+      "t": "2026-10-08T11:13:23Z",
+      "to": 31.05
+    },
+    {
+      "from": 28.02,
+      "id": "16878835",
+      "name": "Mo Hau",
+      "rankFrom": 563,
+      "rankTo": 34,
+      "t": "2026-10-08T11:43:26Z",
+      "to": 33.49
+    },
+    {
+      "from": 30.56,
+      "id": "17034786",
+      "name": "ekusiadadus",
+      "rankFrom": 210,
+      "rankTo": 59,
+      "t": "2026-10-08T11:43:26Z",
+      "to": 32.79
+    },
+    {
+      "from": 28.35,
+      "id": "16878501",
+      "name": "unreal",
+      "rankFrom": 508,
+      "rankTo": 330,
+      "t": "2026-10-08T11:43:26Z",
+      "to": 29.58
+    },
+    {
+      "from": 27.84,
+      "id": "16805935",
+      "name": "Shuhan Yang",
+      "rankFrom": 594,
+      "rankTo": 414,
+      "t": "2026-10-08T11:43:26Z",
+      "to": 28.99
+    },
+    {
+      "from": 27.52,
+      "id": "17042729",
+      "name": "KSSAYUKSS",
+      "rankFrom": 646,
+      "rankTo": 135,
+      "t": "2026-10-08T12:13:28Z",
+      "to": 31.36
+    },
+    {
+      "from": 3.79,
+      "id": "15489992",
+      "name": "songling",
+      "rankFrom": 1175,
+      "rankTo": 466,
+      "t": "2026-10-08T12:43:31Z",
+      "to": 28.61
+    },
+    {
+      "from": 4.33,
+      "id": "16040819",
+      "name": "Munshi-PremChand",
+      "rankFrom": 1116,
+      "rankTo": 186,
+      "t": "2026-10-08T13:43:38Z",
+      "to": 30.83
+    },
+    {
+      "from": 22.74,
+      "id": "16940628",
+      "name": "Erdem Gündüz",
+      "rankFrom": 1011,
+      "rankTo": 257,
+      "t": "2026-10-08T13:43:38Z",
+      "to": 30.22
+    },
+    {
+      "from": 27.88,
+      "id": "15505443",
+      "name": "Trideca",
+      "rankFrom": 587,
+      "rankTo": 409,
+      "t": "2026-10-08T13:43:38Z",
+      "to": 29.04
+    },
+    {
+      "from": 0.17,
+      "id": "15571858",
+      "name": "chaojiwudiwujie",
+      "rankFrom": 2906,
+      "rankTo": 109,
+      "t": "2026-10-08T14:49:57Z",
+      "to": 31.65
+    },
+    {
+      "from": 3.8,
+      "id": "16977000",
+      "name": "saeki hikaru",
+      "rankFrom": 1176,
+      "rankTo": 234,
+      "t": "2026-10-08T14:49:57Z",
+      "to": 30.42
+    },
+    {
+      "from": 29.29,
+      "id": "16839026",
+      "name": "Anjan B",
+      "rankFrom": 372,
+      "rankTo": 300,
+      "t": "2026-10-08T14:49:57Z",
+      "to": 29.89
+    },
+    {
+      "from": 27.16,
+      "id": "17035589",
+      "name": "amyluuu",
+      "rankFrom": 702,
+      "rankTo": 320,
+      "t": "2026-10-08T14:49:57Z",
+      "to": 29.73
+    },
+    {
+      "from": 28.91,
+      "id": "15512938",
+      "name": "hjw10086",
+      "rankFrom": 429,
+      "rankTo": 353,
+      "t": "2026-10-08T14:49:57Z",
+      "to": 29.44
+    },
+    {
+      "from": 23.48,
+      "id": "15530528",
+      "name": "yiyu0716",
+      "rankFrom": 997,
+      "rankTo": 340,
+      "t": "2026-10-08T15:19:59Z",
+      "to": 29.57
+    },
+    {
+      "from": 3.42,
+      "id": "16558484",
+      "name": "MAIDANG",
+      "rankFrom": 1247,
+      "rankTo": 343,
+      "t": "2026-10-08T15:19:59Z",
+      "to": 29.54
+    },
+    {
+      "from": 28.64,
+      "id": "16970537",
+      "name": "Jack Labs",
+      "rankFrom": 468,
+      "rankTo": 363,
+      "t": "2026-10-08T15:19:59Z",
+      "to": 29.4
+    },
+    {
+      "from": 27.66,
+      "id": "17029655",
+      "name": "WUGAWUGA2",
+      "rankFrom": 632,
+      "rankTo": 479,
+      "t": "2026-10-08T15:19:59Z",
+      "to": 28.57
+    },
+    {
+      "from": 30.59,
+      "id": "16966323",
+      "name": "laomei chen",
+      "rankFrom": 214,
+      "rankTo": 107,
+      "t": "2026-10-08T15:50:01Z",
+      "to": 31.66
+    },
+    {
+      "from": null,
+      "id": "17051597",
+      "name": "qwfrog",
+      "rankFrom": null,
+      "rankTo": 418,
+      "t": "2026-10-08T15:50:01Z",
+      "to": 29.03
+    },
+    {
+      "from": 29.95,
+      "id": "15494539",
+      "name": "Snow",
+      "rankFrom": 293,
+      "rankTo": 220,
+      "t": "2026-10-08T16:20:04Z",
+      "to": 30.5
+    },
+    {
+      "from": 28.29,
+      "id": "15564509",
+      "name": "Shubham Sahu2003",
+      "rankFrom": 532,
+      "rankTo": 451,
+      "t": "2026-10-08T16:20:04Z",
+      "to": 28.84
+    },
+    {
+      "from": null,
+      "id": "17034186",
+      "name": "guoweic",
+      "rankFrom": null,
+      "rankTo": 77,
+      "t": "2026-10-08T16:50:07Z",
+      "to": 32.2
+    },
+    {
+      "from": 27.32,
+      "id": "17031866",
+      "name": "Tuhan Umeyir Agay",
+      "rankFrom": 686,
+      "rankTo": 246,
+      "t": "2026-10-08T17:20:09Z",
+      "to": 30.35
+    },
+    {
+      "from": 28.2,
+      "id": "15567149",
+      "name": "Vinit",
+      "rankFrom": 553,
+      "rankTo": 366,
+      "t": "2026-10-08T17:20:09Z",
+      "to": 29.39
+    },
+    {
+      "from": 28.42,
+      "id": "16739770",
+      "name": "Sehajvir singh",
+      "rankFrom": 517,
+      "rankTo": 391,
+      "t": "2026-10-08T17:20:09Z",
+      "to": 29.25
+    },
+    {
+      "from": 26.77,
+      "id": "15487284",
+      "name": "Team_Haumea",
+      "rankFrom": 762,
+      "rankTo": 216,
+      "t": "2026-10-08T17:50:14Z",
+      "to": 30.64
+    },
+    {
+      "from": 31.34,
+      "id": "15632509",
+      "name": "MJVinay",
+      "rankFrom": 143,
+      "rankTo": 37,
+      "t": "2026-10-08T18:20:23Z",
+      "to": 33.42
+    },
+    {
+      "from": 25.67,
+      "id": "16809203",
+      "name": "Parth Garg",
+      "rankFrom": 874,
+      "rankTo": 466,
+      "t": "2026-10-08T18:20:23Z",
+      "to": 28.78
+    },
+    {
+      "from": 29.61,
+      "id": "16991828",
+      "name": "stefanoclss",
+      "rankFrom": 336,
+      "rankTo": 120,
+      "t": "2026-10-08T18:50:29Z",
+      "to": 31.6
+    },
+    {
+      "from": 0.11,
+      "id": "16989440",
+      "name": "megan Park",
+      "rankFrom": 3277,
+      "rankTo": 154,
+      "t": "2026-10-08T18:50:29Z",
+      "to": 31.24
+    },
+    {
+      "from": 30.41,
+      "id": "17017495",
+      "name": "giyogoio hlrlqll",
+      "rankFrom": 238,
+      "rankTo": 178,
+      "t": "2026-10-08T18:50:29Z",
+      "to": 30.98
+    },
+    {
+      "from": 26.64,
+      "id": "16656755",
+      "name": "CULT",
+      "rankFrom": 780,
+      "rankTo": 285,
+      "t": "2026-10-08T19:20:35Z",
+      "to": 30.07
+    },
+    {
+      "from": null,
+      "id": "17043289",
+      "name": "Fantasy",
+      "rankFrom": null,
+      "rankTo": 349,
+      "t": "2026-10-08T19:50:38Z",
+      "to": 29.53
+    },
+    {
+      "from": 25.09,
+      "id": "17032185",
+      "name": "panyuhao",
+      "rankFrom": 938,
+      "rankTo": 158,
+      "t": "2026-10-08T20:50:43Z",
+      "to": 31.22
+    },
+    {
+      "from": 30.24,
+      "id": "17027470",
+      "name": "darasty",
+      "rankFrom": 260,
+      "rankTo": 232,
+      "t": "2026-10-08T20:50:43Z",
+      "to": 30.47
+    },
+    {
+      "from": 1.7,
+      "id": "16933815",
+      "name": "lucy cheng",
+      "rankFrom": 1584,
+      "rankTo": 258,
+      "t": "2026-10-08T20:50:43Z",
+      "to": 30.31
+    },
+    {
+      "from": 29.28,
+      "id": "16990316",
+      "name": "Abdullah AlMohammedi",
+      "rankFrom": 391,
+      "rankTo": 122,
+      "t": "2026-10-08T21:20:46Z",
+      "to": 31.57
+    },
+    {
+      "from": 33.74,
+      "id": "15605182",
+      "name": "Son & Mark & Ronen",
+      "rankFrom": 27,
+      "rankTo": 17,
+      "t": "2026-10-08T21:50:49Z",
+      "to": 35.45
+    },
+    {
+      "from": 29.37,
+      "id": "16160324",
+      "name": "gyuyoung",
+      "rankFrom": 376,
+      "rankTo": 149,
+      "t": "2026-10-08T21:50:49Z",
+      "to": 31.31
+    },
+    {
+      "from": null,
+      "id": "17032223",
+      "name": "xuechuang",
+      "rankFrom": null,
+      "rankTo": 453,
+      "t": "2026-10-08T21:50:49Z",
+      "to": 28.86
+    }
+  ],
+  "latestAt": "2026-10-08T21:50:49Z",
+  "observations": {
+    "15486995": {
+      "members": [
+        "dlorah",
+        "driessmit1",
+        "infinitecreativity",
+        "jeroencottaar",
+        "pressman1",
+        "stefano1283"
+      ],
+      "name": "Tufa Labs",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "15493226": {
+      "members": [
+        "amosokello451",
+        "nancyadhiambo"
+      ],
+      "name": "amosokello451",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "15499660": {
+      "members": [
+        "threerabbits"
+      ],
+      "name": "Yi-Chia Chen",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "15501006": {
+      "members": [
+        "insanitycheck"
+      ],
+      "name": "Jan Disselhoff",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "15513620": {
+      "members": [
+        "leeheewon01"
+      ],
+      "name": "AI_hwlee",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "15605182": {
+      "members": [
+        "markbarney",
+        "scizical",
+        "sonphamorg"
+      ],
+      "name": "Son & Mark & Ronen",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "15632509": {
+      "members": [
+        "mallajayanthvinay"
+      ],
+      "name": "MJVinay",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "15770880": {
+      "members": [
+        "cpmpml",
+        "darraghdog",
+        "eladsarafian",
+        "galkaplun",
+        "sorokin",
+        "yeyinzhu"
+      ],
+      "name": "NVARC3",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16021367": {
+      "members": [
+        "dwellement0baser",
+        "fses91",
+        "gklambauer",
+        "lukasaichberger"
+      ],
+      "name": "the last dance 🕺",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16032816": {
+      "members": [
+        "dvhrtm",
+        "sbrodehl"
+      ],
+      "name": "David Hartmann",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16132261": {
+      "members": [
+        "cmechevalier",
+        "richardcsaky"
+      ],
+      "name": "artificialagencylab.com",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16153655": {
+      "members": [
+        "michaeltgao"
+      ],
+      "name": "mtg",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16371045": {
+      "members": [
+        "lordhansolo"
+      ],
+      "name": "Lord Han Solo",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16459830": {
+      "members": [
+        "giovannyrodrguez"
+      ],
+      "name": "Giovanny Rodríguez",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16569113": {
+      "members": [
+        "isakatsuyoshi",
+        "konbu17",
+        "pompom555",
+        "refv00",
+        "tanakaai24",
+        "yuto0712"
+      ],
+      "name": "復活の混テキスト",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16768259": {
+      "members": [
+        "deepdreamer"
+      ],
+      "name": "_hans",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16805955": {
+      "members": [
+        "denialguo",
+        "jaydenszeto123",
+        "snoopydoo"
+      ],
+      "name": "dreach.ai",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16958599": {
+      "members": [
+        "majkel1337"
+      ],
+      "name": "Majkel1337",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "16966323": {
+      "members": [
+        "laomeichen"
+      ],
+      "name": "laomei chen",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "17018987": {
+      "members": [
+        "lvisdd"
+      ],
+      "name": "lvisdd",
+      "observedAt": "2026-10-08T21:50:49Z"
+    },
+    "17034786": {
+      "members": [
+        "daisukesuda"
+      ],
+      "name": "ekusiadadus",
+      "observedAt": "2026-10-08T21:50:49Z"
+    }
+  },
+  "sourceSha256": "0407f508ea9c9e237ad579ad275b97af588c392cc3d9761b251c176e5f31057e",
+  "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+}
