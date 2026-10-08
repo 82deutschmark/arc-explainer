@@ -1,12 +1,14 @@
 /**
- * Author: Buffy the Base Agent
- * Date: 2025-10-08T00:12:00Z (updated 2025-12-17)
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Model Browser showing one model's results across all puzzles in a dataset (mirrors AnalyticsOverview UI).
  * Adds: Clicking a PuzzleID in Not Attempted triggers analyze+save with the selected model using the standard solver prompt.
  * SRP/DRY check: Pass - Single responsibility page, reuses existing hooks/components (shadcn/ui, ClickablePuzzleBadge, performance hooks).
  * shadcn/ui: Pass - Uses Card, Select and related shadcn/ui components.
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useMemo, useState } from 'react';
 import { Database, BarChart3 } from 'lucide-react';
 
@@ -66,7 +68,7 @@ export default function ModelBrowser() {
   }, [availableModels, selectedModel]);
 
   React.useEffect(() => {
-    document.title = 'Model Browser - ARC Explainer';
+    setPageTitle('Model Browser - ARC Explainer');
     window.scrollTo(0, 0);
   }, []);
 

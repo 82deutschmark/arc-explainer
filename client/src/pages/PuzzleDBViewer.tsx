@@ -1,8 +1,8 @@
 /**
  * PuzzleDBViewer.tsx
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-21 (Updated - Major UI overhaul)
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Displays Arc 1 and Arc 2 evaluation puzzles that NO LLM has solved correctly (0% accuracy).
  * Shows exact puzzle IDs organized by dataset with ARC2-Eval as top priority for research focus.
  * Uses useWorstPerformingPuzzles hook with zeroAccuracyOnly filter to query unsolved puzzles.
@@ -22,8 +22,10 @@
  *
  * SRP/DRY check: Pass - Single responsibility (display unsolved eval puzzles), reuses existing hooks and PuzzleCard component
  * shadcn/ui: Pass - Uses shadcn/ui components with compact styling
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useState, useMemo } from 'react';
 import { Link } from 'wouter';
 import { Database, Grid, AlertTriangle, XCircle, Loader2, Search, AlertCircle } from 'lucide-react';
@@ -94,7 +96,7 @@ function getCorrectAttempts(totalExplanations: number, avgAccuracy: number) {
 export default function PuzzleDBViewer() {
   // Set page title
   React.useEffect(() => {
-    document.title = 'Unsolved ARC Evaluation Puzzles - ARC Explainer';
+    setPageTitle('Unsolved ARC Evaluation Puzzles - ARC Explainer');
   }, []);
 
   // State for filtering

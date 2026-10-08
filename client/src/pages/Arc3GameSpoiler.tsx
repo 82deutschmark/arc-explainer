@@ -1,5 +1,5 @@
 /*
- * Author: GPT-6 / Codex; Cascade (ChatGPT); Claude Opus 5; Claude Sonnet 5
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; Cascade (ChatGPT); Claude Opus 5; Claude Sonnet 5
  * Date: 2026-10-07
  * PURPOSE: Individual game page for the ARC-AGI-3 public games, at /arc3/games/:gameId.
  *          Withdrawn entries retain historical content with a partial-documentation label
@@ -164,12 +164,13 @@ export default function Arc3GameSpoiler() {
 
   usePageMeta({
     title: game
-      ? `ARC Explainer – ${game.informalName || game.gameId} (ARC-AGI-3 Game)`
+      ? `${game.gameId} — ARC-AGI-3 game mechanics | ARC Explainer`
       : `ARC Explainer – Game Not Found`,
     description: game
-      ? `Spoilers, mechanics, and any hints or resources we've documented so far for ARC-AGI-3 game ${game.gameId}${game.informalName ? ` (${game.informalName})` : ''}. ${game.description}`
+      ? game.simpleExplanation || game.description
       : `Game not found in the ARC-AGI-3 database.`,
     canonicalPath: `/arc3/games/${gameId}`,
+    noindex: !game,
   });
 
   /**

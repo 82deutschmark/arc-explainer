@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-11-14T00:00:00Z / Updated 2025-11-20
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Puzzle Trading Cards page - displays ARC puzzles as 1980s-style baseball trading cards.
  * Shows named puzzles with their grids, nicknames, win/loss records against LLMs, and detailed stats.
  * Based on PuzzleBrowser page structure but focused on trading card display.
@@ -17,8 +17,10 @@
  * - Datasets now ordered by importance: Eval datasets first, then training datasets
  *
  * SRP/DRY check: Pass - Reuses usePuzzleStats hook, PuzzleTradingCard component, and existing UI patterns
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useState, useMemo, useEffect } from 'react';
 import { usePuzzleStats } from '@/hooks/usePuzzleStats';
 import { PuzzleTradingCard } from '@/components/puzzle/PuzzleTradingCard';
@@ -36,7 +38,7 @@ export default function PuzzleTradingCards() {
 
   // Set page title
   useEffect(() => {
-    document.title = 'ARC Puzzle Trading Cards';
+    setPageTitle('ARC Puzzle Trading Cards');
   }, []);
 
   // Filter and sort puzzles

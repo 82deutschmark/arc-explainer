@@ -1,70 +1,69 @@
 /**
- * Author: Cascade
- * Date: 2025-11-18
- * PURPOSE: Shared hook for setting per-page SEO/AEO metadata:
- *          document title, meta description, and canonical URL based on route.
- *          Helps search engines and LLM crawlers understand each page.
- * SRP/DRY check: Pass — single responsibility for head/meta management, reused across pages.
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
+ * PURPOSE: Apply the shared page metadata contract to the browser, including social
+ *          tags and structured data. Page hooks can refine dynamic routes without
+ *          leaking a previous page's canonical, image or indexing directives.
+ * SRP/DRY check: Pass — shared/seo owns URL policy and schema generation.
  */
-
 import { useEffect } from 'react';
+import type { RouteMetaTags } from '@shared/routes';
+import { ROUTE_META_TAGS } from '@shared/routes';
+import { clientRouteMeta, completeMeta, INDEX_ROBOTS, normalizePath, SITE_ORIGIN, structuredData } from '@shared/seo';
+let currentMeta: RouteMetaTags | undefined;
 
-const CANONICAL_ORIGIN = "https://arc.markbarney.net";
-
+export function applyPageMetadata(input: RouteMetaTags): void {
+  const tags = completeMeta(input);
+  currentMeta = tags;
+  document.title = tags.title;
+  const setMeta = (name: string, value: string, property = false) => {
+    const attribute = property ? 'property' : 'name';
+    const matches = [...document.head.querySelectorAll<HTMLMetaElement>(`meta[${attribute}="${name}"]`)];
+    const tag = matches.shift() || document.createElement('meta');
+    matches.forEach(duplicate => duplicate.remove());
+    tag.setAttribute(attribute, name);
+    tag.content = value;
+    if (!tag.parentNode) document.head.appendChild(tag);
+  };
+  setMeta('description', tags.description);
+  setMeta('robots', tags.noindex ? 'noindex,follow' : INDEX_ROBOTS);
+  for (const [key, value] of Object.entries({ 'og:site_name': 'ARC Explainer', 'og:locale': 'en_US', 'og:type': tags.type || 'website', 'og:url': tags.url, 'og:title': tags.title, 'og:description': tags.description, 'og:image': tags.image!, 'og:image:alt': tags.imageAlt! })) setMeta(key, value, true);
+  for (const [key, value] of Object.entries({ 'twitter:card': 'summary_large_image', 'twitter:url': tags.url, 'twitter:title': tags.title, 'twitter:description': tags.description, 'twitter:image': tags.image!, 'twitter:image:alt': tags.imageAlt! })) setMeta(key, value);
+  let canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+  canonical.href = tags.url;
+  let schema = document.getElementById('page-structured-data');
+  if (!schema) { schema = document.createElement('script'); schema.id = 'page-structured-data'; schema.setAttribute('type', 'application/ld+json'); document.head.appendChild(schema); }
+  schema.textContent = JSON.stringify(structuredData(tags));
+}
 interface PageMetaOptions {
   title?: string;
   description?: string;
-  canonicalPath?: string; // e.g. "/analytics"; if omitted, leaves canonical as-is
-  /** Ask crawlers not to index this page. Added for the ARC-AGI-3 mechanic guide, which
-   *  is a full answer key to tasks the play surface needs people to meet blind: a search
-   *  result for it would quietly poison the human baseline the site exists to collect.
-   *  This keeps it out of indexes; it is NOT access control -- the route stays public. */
+  canonicalPath?: string;
   noindex?: boolean;
 }
-
 export function usePageMeta({ title, description, canonicalPath, noindex }: PageMetaOptions): void {
   useEffect(() => {
-    if (title) {
-      document.title = title;
-    }
-
-    if (description) {
-      const meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-      if (meta) {
-        meta.setAttribute('content', description);
-      }
-    }
-
-    if (canonicalPath) {
-      const href = `${CANONICAL_ORIGIN}${canonicalPath}`;
-      let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-
-      if (!link) {
-        link = document.createElement('link');
-        link.setAttribute('rel', 'canonical');
-        document.head.appendChild(link);
-      }
-
-      link.setAttribute('href', href);
-    }
-
-    // index.html already ships a <meta name="robots"> with the site-wide directive, so
-    // APPENDING a second one leaves two contradictory tags in the head and hands the
-    // decision to whichever crawler is reading. Mutate the existing tag instead, and put
-    // its old value back on unmount -- this is a single-page app, so a noindex left behind
-    // would follow the user onto every page they visit next and de-index the site.
-    if (!noindex) return;
-    const existing = document.querySelector<HTMLMetaElement>('meta[name="robots"]');
-    const tag = existing ?? document.createElement('meta');
-    const previous = existing?.getAttribute('content') ?? null;
-    if (!existing) {
-      tag.setAttribute('name', 'robots');
-      document.head.appendChild(tag);
-    }
-    tag.setAttribute('content', 'noindex, nofollow');
-    return () => {
-      if (previous === null) tag.remove();
-      else tag.setAttribute('content', previous);
-    };
+    const route = normalizePath(window.location.pathname);
+    const base = currentMeta?.url === `${SITE_ORIGIN}${route}` ? currentMeta : clientRouteMeta(route);
+    // Registered static pages use the same prose on the server and in the browser.
+    const isRegistered = Object.hasOwn(ROUTE_META_TAGS, route);
+    applyPageMetadata({ ...base,
+      ...(!isRegistered && title ? { title } : {}),
+      ...(!isRegistered && description ? { description } : {}),
+      ...(!isRegistered && canonicalPath ? { url: `${SITE_ORIGIN}${normalizePath(canonicalPath)}` } : {}),
+      ...(noindex !== undefined ? { noindex } : {}),
+    });
   }, [title, description, canonicalPath, noindex]);
+}
+
+/** Bridge older title-only page effects into the shared metadata writer. */
+export function setPageTitle(title: string): void {
+  const route = normalizePath(window.location.pathname);
+  if (Object.hasOwn(ROUTE_META_TAGS, route)) {
+    applyPageMetadata(clientRouteMeta(route));
+  } else {
+    const base = currentMeta?.url === `${SITE_ORIGIN}${route}` ? currentMeta : clientRouteMeta(route);
+    applyPageMetadata({ ...base, title });
+  }
 }

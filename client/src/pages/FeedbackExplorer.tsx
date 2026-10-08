@@ -1,12 +1,14 @@
 /**
- * Author: Cascade (OpenAI GPT-4.1)
- * Date: 2025-10-26
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: FeedbackExplorer page centralizes researcher workflows for inspecting
  * user feedback quality signals, combining summary statistics, filters, and
  * drilldowns into individual feedback items.
  * SRP/DRY check: Pass — Reuses existing feedback hooks, summary, and viewer components.
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import { formatDistanceToNow } from 'date-fns';
@@ -108,7 +110,7 @@ function buildQueryFilters(filters: FilterState): FeedbackFilters {
 
 export default function FeedbackExplorer() {
   React.useEffect(() => {
-    document.title = 'Feedback Explorer';
+    setPageTitle('Feedback Explorer');
   }, []);
   const [filters, setFilters] = useState<FilterState>({
     puzzleId: '',

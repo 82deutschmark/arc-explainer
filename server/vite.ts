@@ -1,6 +1,6 @@
 /**
- * Author: Cascade (Updated 2025-12-18)
- * Date: 2025-12-18
+ * Author: GPT-6.1 Sol / Codex; Cascade (Updated 2025-12-18)
+ * Date: 2026-10-07; 2025-12-18
  * PURPOSE: Vite dev server middleware setup for Express. Configures HMR WebSocket to work
  * correctly when Vite runs in middleware mode behind Express (localhost:5000), ensuring
  * the client connects to the correct port instead of defaulting to 5173.
@@ -20,7 +20,7 @@ const importViteConfig = async () => {
   return config.default;
 };
 import { nanoid } from "nanoid";
-import { injectMetaTagsIntoHtml } from "./middleware/metaTagInjector.js";
+import { injectMetaTagsIntoHtml, seoRouting } from "./middleware/metaTagInjector.js";
 
 const viteLogger = createLogger('info'); // Specify log level to fix argument error
 
@@ -65,6 +65,7 @@ export async function setupVite(app: Express, server: Server) {
     appType: "custom",
   });
 
+  app.use(seoRouting);
   app.use(vite.middlewares);
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;

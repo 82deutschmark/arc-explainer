@@ -1,14 +1,9 @@
 /**
- * Author: Codex
+ * Author: GPT-6.1 Sol / Codex; existing contributors
  * Date: 2026-10-07
- * PURPOSE: Build and serve the independently maintained Human ARC frontend under /human-arc/.
- * SRP/DRY check: Pass — separate build and middleware reuse the existing deployment and navigation.
- */
-/**
- * Author: gpt-5-codex
- * Date: 2025-10-16T00:00:00Z
- * PURPOSE: Bootstraps the Express server, wiring middleware, routes, static serving, and startup diagnostics.
- * SRP/DRY check: Pass — initialization and environment checks consolidated in a single entry point.
+ * PURPOSE: Bootstrap APIs, Human ARC and the host SPA, with canonical redirects and
+ *          generated discovery documents ahead of static serving and SEO HTML delivery.
+ * SRP/DRY check: Pass — application startup composes the existing feature middleware.
  */
 
 import 'dotenv/config';
@@ -27,7 +22,7 @@ import { logger } from './utils/logger.ts';
 import { resolveStreamingConfig } from '@shared/config/streaming';
 import { databaseMaintenance } from './maintenance/dbCleanup.js';
 import { syncContributors } from './scripts/seedContributors.ts';
-import { metaTagInjector } from './middleware/metaTagInjector.js';
+import { metaTagInjector, seoRouting } from './middleware/metaTagInjector.js';
 import './services/poetiq/PoetiqAgentsRunner.ts';
 
 // Fix for ES modules and bundled code - get the actual current directory
@@ -190,6 +185,8 @@ const initServer = async () => {
     const staticPath = path.join(process.cwd(), "dist", "public");
 
     logger.info(`Production mode: serving static files from ${staticPath}`, 'server');
+
+    app.use(seoRouting);
 
     // Serve static files (e.g., assets, css, js)
     // Use explicit index: false to prevent express from serving index.html directly

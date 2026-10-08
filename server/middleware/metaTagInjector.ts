@@ -1,260 +1,80 @@
 /**
- * Author: Codex (GPT-6), with existing contributors; search additions by Claude Opus 5.5
- * Date: 2026-09-12 (updated 2026-10-06)
- * PURPOSE: Middleware for injecting route-specific meta tags for link unfurling and search.
- *          Now supports dynamic puzzle routes with OG image generation.
- *          2026-10-06: every injected page also gets a canonical link and og:site_name,
- *          plus the entry's keywords, JSON-LD and crawlable body text when it has them
- *          (see RouteMetaTags in shared/routes.ts).
- * SRP/DRY check: Pass - Single responsibility: meta tag injection. No duplication found.
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
+ * PURPOSE: Serve canonical URLs, generated sitemap, accurate HTTP status and initial
+ *          HTML metadata/content for the SPA. Uses the same policy as client navigation.
+ * SRP/DRY check: Pass — page content and shared SEO policy live in their own modules.
  */
+import type { Request, Response, NextFunction } from 'express';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import type { RouteMetaTags } from '../../shared/routes';
+import { breadcrumbsHtml, completeMeta, discoveryHtml, escapeHtml as esc, INDEX_ROBOTS, normalizePath, redirectPath, structuredData } from '../../shared/seo';
+import { generateSitemap, resolvePageMeta } from '../services/seo/pageContent';
 
-import { Request, Response, NextFunction } from 'express';
-import { publicGameId } from '../../shared/arc3PublicIds.js';
-import fs from 'fs';
-import path from 'path';
-import { ROUTE_META_TAGS, ROOT_META_BY_HOST, RouteMetaTags } from '../../shared/routes.js';
-import { getGameById } from '../../shared/arc3Games/index.js';
-import { puzzleLoader } from '../services/puzzleLoader.js';
-import { logger } from '../utils/logger.js';
-
-// Pattern for matching puzzle routes: /puzzle/:taskId or /puzzle/:taskId/...
-const PUZZLE_ROUTE_PATTERN = /^\/puzzle\/([a-f0-9]{8})(?:\/.*)?$/i;
-
-// ARC-AGI-3 community task pages: /arc3/play/:gameId
-const ARC3_PLAY_PATTERN = /^\/arc3\/play\/([A-Za-z0-9_.-]{1,64})$/;
-
-// Official-game explainer pages: /arc3/games/:gameId. Note this is the OPPOSITE surface to
-// /arc3/play above -- that one unfurls a task to be met blind and says nothing about it,
-// this one is the write-up and is meant to advertise exactly what the game is.
-const ARC3_GAME_PAGE_PATTERN = /^\/arc3\/games\/([A-Za-z0-9_-]{2,16})$/;
-
-// Base URL for generating absolute URLs
-const BASE_URL = process.env.BASE_URL || 'https://arc.markbarney.net';
-
-/**
- * Escape a value going into a double-quoted HTML attribute.
- *
- * Applied to the ARC3 game strings below because they come from the shared registry and
- * are written as prose -- a description with a quotation mark in it would otherwise close
- * the attribute early and drop the rest of the tag. Deliberately NOT applied inside
- * generateMetaTags: the hand-written entries in shared/routes.ts may already contain
- * entities, and escaping those again would render a literal `&amp;` to readers.
- */
-function escapeAttribute(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+export function generateMetaTags(input: RouteMetaTags): string {
+  const tags = completeMeta(input);
+  const meta = (name: string, content: string, property = false) => `<meta ${property ? 'property' : 'name'}="${name}" content="${esc(content)}" />`;
+  const json = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c');
+  // The bootstrap contains metadata only, never a duplicate of the full page HTML.
+  const { bodyHtml, ...bootstrap } = tags;
+  return [
+    `<title>${esc(tags.title)}</title>`, meta('description', tags.description),
+    `<link rel="canonical" href="${esc(tags.url)}" />`,
+    meta('robots', tags.noindex ? 'noindex,follow' : INDEX_ROBOTS),
+    meta('og:site_name', 'ARC Explainer', true), meta('og:locale', 'en_US', true),
+    meta('og:type', tags.type || 'website', true), meta('og:url', tags.url, true),
+    meta('og:title', tags.title, true), meta('og:description', tags.description, true),
+    meta('og:image', tags.image!, true), meta('og:image:alt', tags.imageAlt!, true),
+    meta('twitter:card', 'summary_large_image'), meta('twitter:url', tags.url),
+    meta('twitter:title', tags.title), meta('twitter:description', tags.description),
+    meta('twitter:image', tags.image!), meta('twitter:image:alt', tags.imageAlt!),
+    `<script id="page-structured-data" type="application/ld+json">${json(structuredData(tags))}</script>`,
+    `<script id="page-meta" type="application/json">${json(bootstrap)}</script>`,
+  ].join('\n    ');
 }
-
-/**
- * Generate meta description, title, Open Graph and Twitter Card meta tags HTML
- */
-function generateMetaTags(tags: RouteMetaTags): string {
-  // JSON-LD sits inside a <script>; "</" would end it early, so escape it.
-  const jsonLd = tags.jsonLd
-    ? `<script type="application/ld+json">${JSON.stringify(tags.jsonLd).replace(/<\//g, '<\\/')}</script>`
-    : '';
-  return `
-    <meta name="description" content="${tags.description}" />
-    <link rel="canonical" href="${tags.url}" />
-    ${tags.keywords ? `<meta name="keywords" content="${tags.keywords}" />` : ''}
-    ${jsonLd}
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:site_name" content="ARC Explainer" />
-    <meta property="og:type" content="${tags.type || 'website'}" />
-    <meta property="og:url" content="${tags.url}" />
-    <meta property="og:title" content="${tags.title}" />
-    <meta property="og:description" content="${tags.description}" />
-    ${tags.image ? `<meta property="og:image" content="${tags.image}" />` : ''}
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="${tags.url}" />
-    <meta property="twitter:title" content="${tags.title}" />
-    <meta property="twitter:description" content="${tags.description}" />
-    ${tags.image ? `<meta property="twitter:image" content="${tags.image}" />` : ''}
-
-    <title>${tags.title}</title>
-  `.trim();
+export function injectPageHtml(html: string, tags: RouteMetaTags): string {
+  const body = tags.bodyHtml || `<main><h1>${esc(tags.title.replace(/ \| ARC Explainer$/, ''))}</h1><p>${esc(tags.description)}</p></main>`;
+  return html.replace(/<!-- META_TAGS_START -->[\s\S]*?<!-- META_TAGS_END -->/, () => generateMetaTags(tags))
+    .replace('<div id="root"></div>', () => `<div id="root">${breadcrumbsHtml(tags)}${body}${discoveryHtml()}</div>`);
 }
-
-/**
- * Inject meta tags into HTML string based on request path
- */
 export function injectMetaTagsIntoHtml(html: string, requestPath: string): string {
-  // Check if this route has custom meta tags
-  const routeMetaTags = ROUTE_META_TAGS[requestPath];
-
-  // Return unchanged if no custom meta tags for this route
-  if (!routeMetaTags) {
-    return html;
-  }
-
-  // Generate and inject meta tags, replacing the entire default section
-  const metaTags = generateMetaTags(routeMetaTags);
-  const metaTagRegex = /<!-- META_TAGS_START -->[\s\S]*?<!-- META_TAGS_END -->/;
-  return injectBodyHtml(html.replace(metaTagRegex, metaTags), routeMetaTags);
+  return injectPageHtml(html, resolvePageMeta(redirectPath(requestPath) || normalizePath(requestPath)).tags);
 }
-
-/**
- * Generate meta tags for dynamic puzzle routes
- */
-async function generatePuzzleMetaTags(taskId: string): Promise<RouteMetaTags | null> {
-  try {
-    const metadata = puzzleLoader.getPuzzleMetadata(taskId);
-    if (!metadata) {
-      return null;
-    }
-
-    const puzzleUrl = `${BASE_URL}/puzzle/${taskId}`;
-    const ogImageUrl = `${BASE_URL}/api/og-image/${taskId}`;
-
-    return {
-      title: `ARC Puzzle ${taskId} - ARC Explainer`,
-      description: `Explore ARC puzzle ${taskId}: ${metadata.source} puzzle with ${metadata.testCaseCount} test case(s). Max grid size: ${metadata.maxGridSize}x${metadata.maxGridSize}.`,
-      url: puzzleUrl,
-      image: ogImageUrl,
-      type: 'article',
-    };
-  } catch (error) {
-    logger.error(`Failed to generate puzzle meta tags for ${taskId}: ${error instanceof Error ? error.message : String(error)}`, 'metaTagInjector');
-    return null;
-  }
-}
-
-/**
- * Inject meta tags into HTML for dynamic puzzle routes
- */
-function injectDynamicMetaTags(html: string, tags: RouteMetaTags): string {
-  const metaTags = generateMetaTags(tags);
-  const metaTagRegex = /<!-- META_TAGS_START -->[\s\S]*?<!-- META_TAGS_END -->/;
-  const out = html.replace(metaTagRegex, metaTags);
-  return injectBodyHtml(out, tags);
-}
-
-/**
- * Put the entry's crawlable summary inside #root. React's createRoot replaces it on first
- * render, so visitors never see it; crawlers and link previews that do not run the app do.
- * The default home-page head has no canonical link, so without this a crawler reading the
- * raw HTML of any route saw an empty <div> under the home page's description.
- */
-function injectBodyHtml(html: string, tags: RouteMetaTags): string {
-  if (!tags.bodyHtml) return html;
-  return html.replace('<div id="root"></div>', `<div id="root">${tags.bodyHtml.trim()}</div>`);
-}
-
-/**
- * Meta tag injection middleware (production only)
- * Supports both static routes (from ROUTE_META_TAGS) and dynamic puzzle routes
- */
-export async function metaTagInjector(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
-  // Skip in development mode (Vite handles serving)
-  if (process.env.NODE_ENV !== 'production') {
-    next();
+/** Must run before express.static: aliases and sitemap cannot be shadowed by old files. */
+export function seoRouting(req: Request, res: Response, next: NextFunction): void {
+  if (!['GET', 'HEAD'].includes(req.method)) return next();
+  const route = normalizePath(req.path);
+  if (route === '/sitemap.xml') {
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.type('application/xml').send(generateSitemap());
     return;
   }
-
-  const requestPath = req.path;
-  const host = (req.hostname || '').toLowerCase();
-
-  // "/" renders a different page per host, so it cannot be described by a single entry:
-  // arc3.markbarney.net is the synthetic-programme landing, arc.markbarney.net leads
-  // with the task gallery. Without this, sharing either host unfurled as the other.
-  let routeMetaTags: RouteMetaTags | null | undefined =
-    requestPath === '/' ? ROOT_META_BY_HOST[host] : undefined;
-
-  // Then static route meta tags
-  if (!routeMetaTags) routeMetaTags = ROUTE_META_TAGS[requestPath];
-
-  // Then a community task, which unfurls with its own opening frame.
-  if (!routeMetaTags) {
-    const playMatch = requestPath.match(ARC3_PLAY_PATTERN);
-    if (playMatch) {
-      const gameId = publicGameId(playMatch[1]);
-      routeMetaTags = {
-        title: `${gameId.toUpperCase()} — an ARC-AGI-3 task`,
-        description:
-          // No score AND no claim about AI here on purpose -- see ROOT_META_BY_HOST in
-          // shared/routes.ts. Meta strings are the stalest copy on the site: nobody reads
-          // them in review, so a frontier number is wrong within weeks and a claim about
-          // what AI can't do is wrong within months. This one said "very hard for the best
-          // AI" until 07-Sep-2026, well after the landing page dropped the same sentence.
-          'Explore an interactive ARC-AGI-3 puzzle. '
-          + 'Five minutes, no account.',
-        url: `https://${host || 'arc.markbarney.net'}/arc3/play/${gameId}`,
-        image: `${BASE_URL}/api/arc3-mirror/games/${encodeURIComponent(gameId)}/thumbnail?size=512`,
-        type: 'article',
-      };
-    }
-  }
-
-  // Then an official game's write-up, which unfurls with a frame from the game itself.
-  if (!routeMetaTags) {
-    const gamePageMatch = requestPath.match(ARC3_GAME_PAGE_PATTERN);
-    if (gamePageMatch) {
-      const gameId = gamePageMatch[1].toLowerCase();
-      const game = getGameById(gameId);
-      // An unknown id falls through to the site default rather than unfurling a page that
-      // renders "game not found".
-      if (game) {
-        const name = game.informalName || game.gameId;
-        routeMetaTags = {
-          title: escapeAttribute(`${name} (${game.gameId}) - ARC-AGI-3 game mechanics`),
-          description: escapeAttribute(game.description),
-          url: `https://${host || 'arc.markbarney.net'}/arc3/games/${gameId}`,
-          // The game's own level-1 frame, framed to 1200x630 -- see
-          // server/services/arc3/arc3GameOgImageService.ts. The raw 256px PNG would unfurl
-          // as a thumbnail.
-          image: `${BASE_URL}/api/arc3/og-image/${gameId}`,
-          type: 'article',
-        };
-      }
-    }
-  }
-
-  // If no static route, check for dynamic puzzle route
-  if (!routeMetaTags) {
-    const puzzleMatch = requestPath.match(PUZZLE_ROUTE_PATTERN);
-    if (puzzleMatch) {
-      const taskId = puzzleMatch[1].toLowerCase();
-      routeMetaTags = await generatePuzzleMetaTags(taskId);
-    }
-  }
-
-  // Skip if no meta tags to inject
-  if (!routeMetaTags) {
-    next();
+  if (req.path.startsWith('/api/') || req.path.startsWith('/human-arc')) return next();
+  const target = redirectPath(route);
+  if (target || (route !== req.path && !path.extname(route))) {
+    const query = req.originalUrl.includes('?') ? req.originalUrl.slice(req.originalUrl.indexOf('?')) : '';
+    res.redirect(308, `${target || route}${query}`);
     return;
   }
-
-  // Read the built index.html
-  const indexPath = path.join(process.cwd(), 'dist', 'public', 'index.html');
-
+  next();
+}
+export async function metaTagInjector(req: Request, res: Response, next: NextFunction): Promise<void> {
+  if (!['GET', 'HEAD'].includes(req.method) || req.path === '/api' || req.path.startsWith('/api/')) return next();
+  const { tags, status } = resolvePageMeta(normalizePath(req.path));
+  // Match registered routes first: session/game identifiers may legitimately contain dots.
+  // Missing scripts/images must never be answered with a successful HTML shell.
+  if (status === 404 && /\.[a-z0-9]+$/i.test(req.path)) {
+    res.status(404).set('X-Robots-Tag', 'noindex').type('text').send('Resource not found');
+    return;
+  }
   try {
-    let html = fs.readFileSync(indexPath, 'utf-8');
-
-    // Inject meta tags (use dynamic injection for puzzle routes)
-    html = injectDynamicMetaTags(html, routeMetaTags);
-
-    // Send the modified HTML
-    res.setHeader('Content-Type', 'text/html');
-    res.send(html);
+    const html = await fs.readFile(path.join(process.cwd(), 'dist/public/index.html'), 'utf8');
+    res.status(status).set('Cache-Control', 'no-cache');
+    if (tags.noindex) res.set('X-Robots-Tag', 'noindex, follow');
+    res.type('html').send(injectPageHtml(html, tags));
   } catch (error) {
-    logger.error(`Error injecting meta tags: ${error instanceof Error ? error.message : String(error)}`, 'metaTagInjector');
-    // Fall back to normal behavior
-    next();
+    // A broken build is a server error, not a generic successful page.
+    next(error);
   }
 }
-
-/**
- * Export for testing and documentation
- */
-export { generateMetaTags };

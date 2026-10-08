@@ -1,12 +1,14 @@
 /**
- * Author: Claude Code using Opus 4.5
- * Date: 2025-12-06
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: ARC Hall of Fame page - information-dense display of ARC contributors as trading cards.
  * Updated for ARC Prize 2025 results announcement (December 5, 2025).
  * Features compact card grid layout, Hall of Fame header, and external resource links.
  * SRP/DRY check: Pass - Reuses useArcContributors hook, HumanTradingCard component, and existing UI patterns
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import { useArcContributors } from '@/hooks/useArcContributors';
@@ -36,7 +38,7 @@ export default function HumanTradingCards() {
   const [animationComplete, setAnimationComplete] = useState(false);
 
   useEffect(() => {
-    document.title = 'ARC Hall of Fame';
+    setPageTitle('ARC Hall of Fame');
   }, []);
 
   const handleAnimationComplete = () => {

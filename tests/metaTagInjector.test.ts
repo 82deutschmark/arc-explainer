@@ -1,6 +1,6 @@
 /**
- * Author: GPT-5 Codex
- * Date: 2026-01-08T20:25:33-05:00
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Unit tests for meta tag injection and route metadata defaults.
  * SRP/DRY check: Pass - Focused middleware helpers only.
  */
@@ -18,6 +18,7 @@ import { strict as assert } from 'node:assert';
 import { test } from 'vitest';
 import { generateMetaTags } from '../server/middleware/metaTagInjector.js';
 import { ROUTE_META_TAGS } from '../shared/routes.js';
+import { escapeHtml } from '../shared/seo';
 
 test('generateMetaTags creates Open Graph meta tags', () => {
   const tags = {
@@ -70,7 +71,7 @@ test('generateMetaTags includes image tags when image is provided', () => {
   assert.ok(result.includes('twitter:image'), 'Should include twitter:image');
 });
 
-test('generateMetaTags omits image tags when image is not provided', () => {
+test('generateMetaTags supplies the default PNG card when image is not provided', () => {
   const tags = {
     title: 'Test Title',
     description: 'Test Description',
@@ -79,8 +80,8 @@ test('generateMetaTags omits image tags when image is not provided', () => {
 
   const result = generateMetaTags(tags);
 
-  assert.ok(!result.includes('og:image'), 'Should not include og:image');
-  assert.ok(!result.includes('twitter:image'), 'Should not include twitter:image');
+  assert.ok(result.includes('og-preview.png'), 'Should include the site PNG fallback');
+  assert.ok(result.includes('twitter:image'), 'Should include the Twitter fallback');
 });
 
 test('ROUTE_META_TAGS includes /re-arc route', () => {
@@ -102,9 +103,9 @@ test('generateMetaTags escapes HTML in content', () => {
 
   const result = generateMetaTags(tags);
 
-  // The content attribute values are wrapped in quotes, so they should be safe
-  assert.ok(result.includes('Test <script>alert("xss")</script>'), 'Should preserve content in meta tags');
-  assert.ok(result.includes('Description with "quotes"'), 'Should handle quotes in content');
+  // Prose must be escaped, including quotes inside double-quoted attributes.
+  assert.ok(result.includes('Test &lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;'), 'Should escape markup');
+  assert.ok(result.includes('Description with &quot;quotes&quot;'), 'Should escape attribute quotes');
 });
 
 test('generateMetaTags uses "website" as default type when not provided', () => {
@@ -199,17 +200,19 @@ test('analytics route gets its own title, canonical, JSON-LD and crawlable body'
   const out = injectMetaTagsIntoHtml(html, '/analytics');
   const entry = ROUTE_META_TAGS['/analytics'];
   assert.ok(entry, '/analytics must have an entry');
-  assert.ok(out.includes(`<title>${entry.title}</title>`), 'title');
+  assert.ok(out.includes(`<title>${escapeHtml(entry.title)}</title>`), 'title');
   assert.ok(!out.includes('<title>Home</title>'), 'home title replaced');
   assert.ok(out.includes('<link rel="canonical" href="https://arc.markbarney.net/analytics" />'), 'canonical');
   assert.ok(out.includes('application/ld+json'), 'JSON-LD');
-  const ld = out.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  const ld = out.match(/<script[^>]*type="application\/ld\+json">([\s\S]*?)<\/script>/);
   assert.ok(ld && JSON.parse(ld[1])['@graph'], 'JSON-LD parses');
-  assert.ok(/<div id="root">\s*<main>[\s\S]*<h1>ARC-AGI Model Analytics<\/h1>/.test(out), 'crawlable body inside #root');
+  assert.ok(/<div id="root">[\s\S]*<main>[\s\S]*<h1>ARC-AGI Model Analytics<\/h1>/.test(out), 'crawlable body inside #root');
 });
 
-test('routes without body text leave #root empty', async () => {
+test('routes without custom body text get a descriptive fallback', async () => {
   const { injectMetaTagsIntoHtml } = await import('../server/middleware/metaTagInjector.js');
   const html = '<head><!-- META_TAGS_START --><!-- META_TAGS_END --></head><body><div id="root"></div></body>';
-  assert.ok(injectMetaTagsIntoHtml(html, '/re-arc').includes('<div id="root"></div>'));
+  const out = injectMetaTagsIntoHtml(html, '/re-arc');
+  assert.ok(out.includes('<h1>RE-ARC Bench - Test Your ARC Solver</h1>'));
+  assert.ok(!out.includes('<div id="root"></div>'));
 });

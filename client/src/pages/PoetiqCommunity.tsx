@@ -1,12 +1,14 @@
 /**
- * Author: Cascade using Claude Sonnet 4.5
- * Date: 2025-11-26
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Poetiq Community Solver landing page - Merged with Explainer for comprehensive audit view.
  *          Includes detailed breakdown of Poetiq's "Meta-System" and Pareto claims.
  *
  * SRP/DRY check: Pass - Single page for community progress and methodology explanation
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import {
@@ -90,7 +92,7 @@ export default function PoetiqCommunity() {
   const [numExperts, setNumExperts] = useState('2');
 
   useEffect(() => {
-    document.title = 'Poetiq Integration Audit';
+    setPageTitle('Poetiq Integration Audit');
   }, []);
 
   useEffect(() => {

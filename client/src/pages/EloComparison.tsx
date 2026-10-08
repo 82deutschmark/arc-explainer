@@ -1,8 +1,8 @@
 /**
  * EloComparison.tsx
  *
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-16
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: LMArena-style explanation comparison page where users vote on explanation quality
  * SRP and DRY check: Pass - Reuses existing PuzzleGrid and AnalysisResultCard components,
  * only adds voting logic. Follows established page patterns from PuzzleExaminer.
@@ -12,8 +12,10 @@
  * - Reuses AnalysisResultCard with eloMode prop to hide model identifying info
  * - Minimal new code - just voting interface and session management
  * - Follows established hook patterns and API integration
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useState } from 'react';
 import { useParams, Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,7 +47,7 @@ export default function EloComparison() {
 
   // Set page title
   React.useEffect(() => {
-    document.title = finalPuzzleId ? `Compare Explanations - Puzzle ${finalPuzzleId}` : 'Compare Explanations';
+    setPageTitle(finalPuzzleId ? `Compare Explanations - Puzzle ${finalPuzzleId}` : 'Compare Explanations');
   }, [finalPuzzleId]);
 
   // State for voting interface

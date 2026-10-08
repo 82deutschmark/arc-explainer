@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.121.0  Oct 7, 2026
+
+- **Site-wide SEO and discovery pass** (Author: GPT-6.1 Sol / Codex). Extends the existing Express metadata system to every static SPA route, with 35 indexable public hubs, readable initial game-guide HTML from the shared registry, a generated sitemap for public routes and 1,626 locally available puzzles, one preferred canonical origin, real redirects, and HTTP 404 responses for unknown pages, official games, puzzles and missing assets. Administrative and session pages receive server-side noindex; the synthetic answer key remains unlisted.
+- **Consistent browser metadata and navigation.** Titles, descriptions, social cards, robots and JSON-LD update together on navigation. Visible breadcrumbs match schema; the resource hub links every public section. Removes the nonexistent SearchAction and duplicate keywords, adds a PNG share-card fallback, refreshes llms.txt, and restores browser zoom. Human/AI comparison receives canonical and sharing tags.
+- **Smaller initial download.** Splits 61 secondary route modules into lazy chunks without changing route registrations; the entry JavaScript falls from roughly 3 MB to 453 KB. Retains the main landing page and navigation while screens load.
+- **Validation:** client/server production builds, 26 focused tests, all 223 referenced game screenshots, generated sitemap route validation and local browser navigation checks. Repository-wide TypeScript diagnostics remain in unchanged files; no new diagnostics. Details and limits: `docs/SEO-AUDIT-2026-10-07.md`.
+
 ### Version 9.120.4  Oct 7, 2026
 
 - **Dedicated Slippery Seven page** (Author: GPT-6.1 Sol / Codex). Adds `/arc3/slippery-seven` with the seven existing game IDs, screenshots, descriptions and links to their guides. Explains the dated Qwen 27B experiment that named the group and distinguishes the separate Flash-Next cohort. Reuses the shared membership and game registries; adds ARC-3 navigation, games-index discovery, share metadata and sitemap inclusion.

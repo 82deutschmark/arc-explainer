@@ -1,11 +1,13 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-10-31
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * Updated: 2025-12-25 - Added BYOK support for production environment
  * PURPOSE: Coordinates the Puzzle Examiner page layout, orchestrating data fetching, controls, and result surfaces.
  * SRP/DRY check: Pass - verified the page keeps orchestration concerns separated from child components that render UI.
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'wouter';
 import { Loader2, ChevronDown, Brain } from 'lucide-react';
@@ -106,7 +108,7 @@ export default function PuzzleExaminer() {
   React.useEffect(() => {
     const puzzleName = getPuzzleName(taskId);
     const title = puzzleName ? `${taskId} - ${puzzleName}` : `ARC Puzzle ${taskId}`;
-    document.title = taskId ? title : 'ARC Puzzle Examiner';
+    setPageTitle(taskId ? title : 'ARC Puzzle Examiner');
   }, [taskId]);
 
   // Emoji view overrides color-only mode

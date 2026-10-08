@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Sonnet 4, Cascade using Claude Sonnet 4.5
- * Date: 2025-09-28, Updated 2025-10-10
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: PuzzleFeedback page allows users to test their own predicted grid solutions against ARC puzzles.
  * Reuses existing grid visualization and validation components for consistent UX with AI model results.
  * Users can paste grid arrays like [[0,8,8,8,0],[8,0,0,0,8]] and see immediate correct/incorrect feedback.
@@ -18,8 +18,10 @@
  * SRP and DRY check: Pass - Reuses existing validation logic, grid visualization, and puzzle lookup patterns.
  * shadcn/ui: Pass - Uses existing shadcn/ui components throughout.
  * Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { usePuzzle } from '@/hooks/usePuzzle';
@@ -131,7 +133,7 @@ export default function PuzzleFeedback() {
 
 // Set page title
   React.useEffect(() => {
-    document.title = puzzleId ? `Test Solution - ${formatPuzzleDisplay(puzzleId)}` : 'Test Your Solution';
+    setPageTitle(puzzleId ? `Test Solution - ${formatPuzzleDisplay(puzzleId)}` : 'Test Your Solution');
   }, [puzzleId]);
 
   // Fetch puzzle data when puzzleId changes

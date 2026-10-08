@@ -1,16 +1,18 @@
 /**
  * client/src/pages/GroverSolver.tsx
  * 
- * Author: Sonnet 4.5
- * Date: 2025-10-09
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Grover Iterative Solver page - shows real-time iteration progress,
  * code generation, execution results, and grading scores. Displays quantum-inspired
  * amplitude amplification process with best/worst program tracking.
  * 
  * SRP/DRY check: Pass - UI only, delegates to useGroverProgress hook
  * shadcn/ui: Pass - Uses shadcn components throughout
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React from 'react';
 import { useParams, Link } from 'wouter';
 import { Loader2, ArrowLeft, Rocket, Settings, Brain, XCircle, Eye } from 'lucide-react';
@@ -37,7 +39,7 @@ export default function GroverSolver() {
 
   // Set page title
   React.useEffect(() => {
-    document.title = taskId ? `Grover Solver - ${taskId}` : 'Grover Iterative Solver';
+    setPageTitle(taskId ? `Grover Solver - ${taskId}` : 'Grover Iterative Solver');
   }, [taskId]);
 
   const isRunning = state.status === 'running';

@@ -1,8 +1,8 @@
 /**
  * EloLeaderboard.tsx
  *
- * Author: Cascade
- * Date: 2025-09-15
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Displays rankings and statistics for AI model explanation quality using ELO ratings
  * Reuses existing UI components and follows established patterns from ModelExaminer and PuzzleOverview
  *
@@ -10,8 +10,11 @@
  * - Reuses Card, Badge, and table components from existing codebase
  * - Follows established API patterns with useQuery
  * - Minimal new code - leverages existing design system
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
+ * SRP/DRY check: Pass — page behavior is unchanged; shared metadata owns title synchronization.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,7 +44,7 @@ interface EloLeaderboardData {
 export default function EloLeaderboard() {
   // Set page title
   React.useEffect(() => {
-    document.title = 'ELO Leaderboard - ARC Puzzle Explainer';
+    setPageTitle('ELO Leaderboard - ARC Puzzle Explainer');
   }, []);
 
   const { data: leaderboardData, isLoading, error } = useQuery<EloLeaderboardData>({

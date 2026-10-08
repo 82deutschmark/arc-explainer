@@ -1,15 +1,17 @@
 /**
  * PuzzleDiscussion.tsx - AI Progressive Reasoning Interface
  *
- * Author: Cascade using Sonnet 4.5
- * Date: 2025-10-08
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Progressive reasoning refinement through AI self-conversation.
  * One model refines its own analysis across multiple iterations with full context chaining.
  * REFACTORED: Now reuses AnalysisResultListCard and existing components instead of custom tables.
  * SRP/DRY check: Pass - Orchestration only, delegates to existing UI components
  * shadcn/ui: Pass - Uses shadcn/ui components throughout
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useEffect, useMemo, useState } from 'react';
 import type { ExplanationData } from '@/types/puzzle';
 import { useParams, Link, useLocation } from 'wouter';
@@ -58,7 +60,7 @@ export default function PuzzleDiscussion() {
 
   // Page title
   useEffect(() => {
-    document.title = taskId ? `Discussion - ${formatPuzzleDisplay(taskId)}` : 'Discussion';
+    setPageTitle(taskId ? `Discussion - ${formatPuzzleDisplay(taskId)}` : 'Discussion');
   }, [taskId]);
 
   // Data hooks

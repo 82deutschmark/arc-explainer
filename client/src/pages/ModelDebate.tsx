@@ -1,8 +1,8 @@
 /**
  * ModelDebate.tsx - REFACTORED
  *
- * Author: Claude Code using Sonnet 4.5 (Updated 2025-12-02)
- * Date: 2025-09-29 (Layout optimized: 2025-12-02)
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Clean orchestration-only component for Model Debate page. Manages debate state,
  * streaming analysis, and challenge generation. Uses container layout with proper spacing
  * to eliminate excessive white space while maintaining readability.
@@ -10,8 +10,10 @@
  * SRP/DRY check: Pass - Pure orchestration, delegates all concerns to focused components
  * shadcn/ui: Pass - Uses shadcn/ui components throughout focused child components
  * Updated 2026-08-28 (Claude Opus 5): hub links retargeted from "/" to "/home", since "/" now redirects to the ARC-AGI-3 game gallery.
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { AnalysisResult, ExplanationData } from '@/types/puzzle';
@@ -52,7 +54,7 @@ export default function ModelDebate() {
 
   // Page title management
   useEffect(() => {
-    document.title = taskId ? `Model Debate - Puzzle ${taskId}` : 'Model Debate';
+    setPageTitle(taskId ? `Model Debate - Puzzle ${taskId}` : 'Model Debate');
   }, [taskId]);
 
   // Data hooks

@@ -1,9 +1,10 @@
 /**
- * Author: Codex
+ * Author: GPT-6.1 Sol / Codex; Codex
  * Date: 2026-10-07
  * PURPOSE: Directory of playable ARC tools, game guides and recorded results.
  * SRP/DRY check: Pass — reuses shared Card components and router links.
  */
+import { ROUTE_META_TAGS } from '@shared/routes';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -73,6 +74,14 @@ export default function LandingPage() {
           </section>
         ))}
       </div>
+      <nav aria-label="All public sections" className="mt-10 border-t pt-6">
+        <h2 className="text-xl font-semibold">Explore all public sections</h2>
+        <ul className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
+          {Object.entries(ROUTE_META_TAGS).filter(([, meta]) => !meta.noindex).map(([href, meta]) => (
+            <li key={href}><Link href={href} className="underline underline-offset-4">{meta.title.replace(/ \| ARC Explainer$/, '')}</Link></li>
+          ))}
+        </ul>
+      </nav>
     </div>
   );
 }

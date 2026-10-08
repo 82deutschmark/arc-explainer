@@ -1,8 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-07
- * PURPOSE: Centralized route meta tags configuration for social media link unfurling and
- *          search. Imported by server middleware for meta tag injection.
+ * PURPOSE: Centralized public route descriptions and indexing policy for server HTML,
+ *          browser navigation, discovery links and the generated sitemap.
  *          2026-10-06: entries can now carry keywords, structured data (JSON-LD) and a
  *          crawlable HTML summary that is served inside #root until the app renders, so a
  *          crawler that does not run JavaScript still sees a real page. Added /analytics
@@ -15,6 +15,9 @@ import { SLIPPERY_SEVEN } from './arc3Games/slipperySeven';
 
 export interface RouteMetaTags {
   title: string;
+  /** Unlisted tools and transient sessions must not enter search indexes. */
+  noindex?: boolean;
+  imageAlt?: string;
   description: string;
   url: string;
   image?: string;
@@ -56,8 +59,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
     bodyHtml: '<h1>ARC Explainer Resource Hub</h1><p>Independent community games, guides and results by Mark Barney.</p><ul><li><a href="/human-arc/">Human ARC puzzles and assessments</a></li><li><a href="https://sfmc.markbarney.net/">Space Force Mission Control</a></li><li><a href="/arc3/games">ARC-AGI-3 game guides</a></li><li><a href="/human-records.html">Human and AI results</a></li><li><a href="/analytics">Hugging Face results archive</a></li></ul>',
   },
   // ==================== ARC-AGI-3 ====================
-  // Keyed by host for "/" because the root differs per host: arc3.markbarney.net is the
-  // synthetic-programme landing, arc.markbarney.net leads with the task gallery.
+  // Both public hosts share the same landing page and preferred canonical origin.
   '/arc3/games': {
     title: 'ARC-AGI-3 Game Mechanics - every official game, explained',
     description:
@@ -83,8 +85,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/arc3/gallery': {
     title: 'ARC-AGI-3 Tasks — play one, no instructions',
     description:
-      'Interactive reasoning tasks that explain nothing. Easy for a person, very hard for '
-      + 'the best AI. Pick one and work out what it does.',
+      'Play community-made ARC-AGI-3 reasoning tasks without instructions. Explore the board, try actions and work out each task’s rules.',
     url: 'https://arc.markbarney.net/arc3/gallery',
     // OUR game, not an official one. This was ls20-9607627b -- an ARC Prize Foundation
     // task -- so every share of this site led with somebody else's work as the picture.
@@ -94,27 +95,11 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
     type: 'website',
   },
 
-  '/arc3/upload': {
-    title: 'Submit an ARC-AGI-3 task',
-    description:
-      'Contribute a task to the community set: one Python file on the official ARCEngine, '
-      + 'reviewed before it goes live.',
-    url: 'https://arc.markbarney.net/arc3/upload',
-    type: 'website',
-  },
-
   // ==================== RE-ARC Benchmark ====================
   '/re-arc': {
     title: 'RE-ARC Bench - Test Your ARC Solver',
     description: 'Generate fresh ARC puzzles and evaluate your solver with verifiable results',
     url: 'https://arc.markbarney.net/re-arc',
-    type: 'website',
-  },
-
-  '/re-arc/leaderboard': {
-    title: 'RE-ARC Bench Leaderboard',
-    description: 'Generate fresh ARC puzzles and evaluate your solver with verifiable results',
-    url: 'https://arc.markbarney.net/re-arc/leaderboard',
     type: 'website',
   },
 
@@ -258,34 +243,71 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
 };
 /**
  * Meta for "/" by host. Both hosts render the same landing page now, so the copy is
- * shared; only the canonical url differs, which is the whole reason this is still keyed
- * by host rather than folded into ROUTE_META_TAGS.
+ * shared, with arc.markbarney.net as the preferred canonical origin for both.
  */
 const ROOT_META: Omit<RouteMetaTags, 'url'> = {
-  // Matches the page's H1, and makes no claim about AI for the same reason it does not.
-  // This string is the Slack unfurl, the search result and the share card -- the stalest
-  // copy on the site and the hardest to notice has gone stale. It carried "Very hard for
-  // the best AI in the world" until 07-Sep-2026, three weeks after the body prose dropped
-  // exactly that claim, and by then the chart further down the same page showed the
-  // adapter harness at 100% on all 25 environments. The page was arguing with its title.
-  //
-  // IT IS NOT THE PLACE FOR THE ASK. It briefly read "Come and roast our tasks", which is
-  // a fine throwaway line inside a paragraph and the wrong thing to be the page's whole
-  // public identity -- this is what a search result, a shared link and every unfurl show
-  // before anyone has read a word. The title says what the page IS. The ask lives on the
-  // page, where someone has already arrived and the tone has somewhere to sit.
-  title: "We're doing ARC-AGI-3.",
-  // 05-Oct-2026: the landing page now leads with the Kaggle leaderboard, not the
-  // practice games. Still no figures and no claim about AI.
-  description:
-    'Two people doing ARC-AGI-3 in spare evenings: our live place on the ARC Prize 2026 '
-    + 'Kaggle leaderboard, who is climbing and sinking this week, and what we are building.',
-  // See the note on /arc3/gallery above: ours, not the Foundation's.
-  image: 'https://arc.markbarney.net/api/arc3-mirror/games/g012/thumbnail?size=512',
+  title: 'ARC Explainer — ARC-AGI games, guides and Kaggle standings',
+  description: 'Follow the ARC Prize Kaggle leaderboards, explore ARC-AGI-3 game guides and research, and try interactive reasoning tasks.',
   type: 'website',
+  bodyHtml: `<main><h1>We're doing ARC-AGI-3.</h1><p>Two people working on ARC-AGI-3 in spare evenings: following the Kaggle competition, building an agent and testing interactive reasoning tasks.</p><p>Explore the <a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a> and <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>, with team standings, score history and changes over time.</p><p><a href="/arc3/gallery">Try a community task</a>, read the <a href="/arc3/games">official game guides (spoilers)</a>, explore <a href="/arc3/hypotheses">research on model reasoning</a> or visit the <a href="/home">resource hub</a>.</p></main>`,
 };
 
+// Both hosts now render the same site. Share one preferred origin, including at root.
 export const ROOT_META_BY_HOST: Record<string, RouteMetaTags> = {
-  'arc3.markbarney.net': { ...ROOT_META, url: 'https://arc3.markbarney.net/' },
-  'arc.markbarney.net': { ...ROOT_META, url: 'https://arc.markbarney.net/' },
+  'arc3.markbarney.net': { ...ROOT_META, url: `${SITE}/` },
+  'arc.markbarney.net': { ...ROOT_META, url: `${SITE}/` },
 };
+ROUTE_META_TAGS['/'] = ROOT_META_BY_HOST['arc.markbarney.net'];
+
+/** Descriptive metadata for every remaining static SPA route. Interactive tools keep
+ * their own URLs but are deliberately absent from the search sitemap. */
+const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
+  ['/browser', 'ARC puzzle browser', 'Browse ARC-AGI grid puzzles by dataset and grid size, then open a puzzle to explore its examples and model answers.'],
+  ['/trading-cards', 'ARC puzzle trading cards', 'Explore ARC puzzles as visual trading cards and open each puzzle for examples and analysis.'],
+  ['/hall-of-fame', 'ARC community hall of fame', 'Meet contributors to the ARC community and explore their puzzle-solving work.'],
+  ['/hall-of-fame/johan-land', 'Johan Land — ARC community tribute', 'Explore Johan Land’s contribution to ARC puzzle solving and the results collected on ARC Explainer.'],
+  ['/discussion', 'ARC puzzle discussions', 'Explore community discussions of ARC puzzles, model explanations and reasoning strategies.'],
+  ['/leaderboards', 'ARC model leaderboards', 'Compare recorded ARC model results by accuracy, reliability and cost. These are model evaluations, separate from the Kaggle competition standings.'],
+  ['/models', 'ARC model results browser', 'Browse language models evaluated on ARC puzzles and explore their recorded performance.'],
+  ['/elo/leaderboard', 'ARC explanation Elo leaderboard', 'Explore model rankings from pairwise comparisons of ARC puzzle explanations.'],
+  ['/feedback', 'ARC explanation feedback', 'Browse feedback on model-generated ARC puzzle explanations and explore the associated puzzles.'],
+  ['/model-comparison', 'Compare ARC model results', 'Compare recorded model performance across ARC puzzles and datasets.'],
+  ['/scoring', 'How ARC model accuracy is scored', 'Understand how ARC Explainer combines recorded Hugging Face evaluation results and scores model answers.'],
+  ['/about', 'About ARC Explainer', 'Learn about ARC Explainer, its puzzle-analysis tools, community game guides and benchmark resources.'],
+  ['/cc', 'Claude Code guide for ARC', 'A guide to using Claude Code in ARC puzzle-analysis workflows.'],
+  ['/llm-reasoning', 'Language-model reasoning on ARC puzzles', 'Explore how language models approach ARC puzzles and the tools used to examine their reasoning.'],
+  ['/llm-reasoning/advanced', 'Advanced ARC reasoning tools', 'Explore advanced workflows for investigating language-model reasoning on ARC puzzles.'],
+  ['/arc3', 'ARC-AGI-3 explained', 'An introduction to the interactive ARC-AGI-3 benchmark, its games and the challenge of learning unfamiliar rules through actions.'],
+  ['/arc3/hypotheses', 'What a model guesses from one game frame', 'Research on local-model hypotheses about unseen ARC-AGI-3 frames and the effects of LM Studio thinking controls.'],
+  ['/re-arc/submissions', 'RE-ARC benchmark submissions', 'Explore submitted RE-ARC benchmark results and their verifiable evaluation records.'],
+  ['/snakebench', 'SnakeBench on ARC Explainer', 'Explore the upstream SnakeBench project, where language models compete in Snake.'],
+  ['/worm-arena', 'Worm Arena — language models play Snake', 'Watch and compare language models playing Snake in Worm Arena, ARC Explainer’s local SnakeBench-based arena.'],
+  ['/worm-arena/matches', 'Worm Arena match archive', 'Browse recorded Worm Arena matches and inspect how language models played Snake.'],
+  ['/worm-arena/models', 'Worm Arena models', 'Explore the language models represented in Worm Arena and their recorded match results.'],
+  ['/worm-arena/stats', 'Worm Arena statistics', 'Explore recorded match statistics and model performance in Worm Arena.'],
+  ['/worm-arena/skill-analysis', 'Worm Arena skill analysis', 'Examine model skill estimates and supporting match results from Worm Arena.'],
+  ['/worm-arena/distributions', 'Worm Arena rating distributions', 'Compare model rating distributions and uncertainty in Worm Arena.'],
+  ['/worm-arena/rules', 'Worm Arena rules', 'Read the rules and mechanics for language-model Snake matches in Worm Arena.'],
+  ['/play', 'Play an ARC-AGI-3 task', 'Start a community reasoning task without instructions and discover its rules by playing.', true],
+  ['/arc3/playground', 'ARC-AGI-3 agent playground', 'Run an interactive ARC-AGI-3 agent experiment.', true],
+  ['/arc3/archive/playground', 'Archived ARC-AGI-3 playground', 'The earlier ARC-AGI-3 experiment interface.', true],
+  ['/arc3/mechanics', 'Community task mechanics', 'Unlisted reference for community task mechanics.', true],
+  ['/kaggle-readiness', 'Kaggle readiness validation', 'Validate an ARC submission workflow.', true],
+  ['/puzzles/database', 'ARC puzzle database tools', 'Inspect stored ARC puzzle records.', true],
+  ['/model-config', 'Model configuration', 'Manage ARC Explainer model settings.', true],
+  ['/admin', 'Administration', 'ARC Explainer administrative tools.', true],
+  ['/admin/models', 'Model administration', 'Manage ARC Explainer model configuration.', true],
+  ['/admin/ingest-hf', 'Hugging Face ingestion', 'Import model evaluation records.', true],
+  ['/admin/openrouter', 'OpenRouter administration', 'Manage model catalog integration.', true],
+  ['/elo', 'Compare ARC explanations', 'Compare two model explanations of an ARC puzzle.', true],
+  ['/test-solution', 'Test an ARC solution', 'Check a proposed solution to an ARC puzzle.', true],
+  ['/debate', 'ARC model debate', 'Start a model debate about an ARC puzzle.', true],
+  ['/council', 'ARC model council', 'Run a multi-model discussion of an ARC puzzle.', true],
+  ['/dataset-viewer', 'RE-ARC dataset viewer', 'Inspect a generated RE-ARC dataset.', true],
+  ['/poetiq', 'Poetiq ARC solver', 'Explore the Poetiq ARC solver workflow.', true],
+  ['/puzzle/beetree', 'Beetree ARC solver', 'Start a Beetree ARC solver session.', true],
+  ['/worm-arena/live', 'Live Worm Arena match', 'Watch a live language-model Snake match.', true],
+];
+for (const [route, name, description, noindex] of ADDITIONAL_PAGES) {
+  ROUTE_META_TAGS[route] = { title: `${name} | ARC Explainer`, description, url: `${SITE}${route}`, noindex };
+}

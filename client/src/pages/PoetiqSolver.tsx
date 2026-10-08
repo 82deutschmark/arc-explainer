@@ -1,14 +1,16 @@
 /**
- * Author: Cascade (Claude Sonnet 4)
- * Date: 2025-11-25
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * Updated: 2025-12-03 - Migrated to SSE streaming, compact dashboard layout
  * PURPOSE: Poetiq Iterative Code-Generation Solver page.
  *          Single horizontal control bar at top, full-width content below.
  *          Compact data-dense layout with live SSE streaming.
  * 
  * SRP/DRY check: Pass - UI orchestration, delegates to specialized components
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'wouter';
 import { Loader2, Activity, Timer, Layers, Copy, Check, Eye, EyeOff, Code2, Server, Brain, ListTree, FileJson, ScrollText, Coins, TerminalSquare, Download } from 'lucide-react';
@@ -69,7 +71,7 @@ export default function PoetiqSolver() {
 
   // Set page title
   useEffect(() => {
-    document.title = taskId ? `Poetiq Solver - ${taskId}` : 'Poetiq Solver';
+    setPageTitle(taskId ? `Poetiq Solver - ${taskId}` : 'Poetiq Solver');
   }, [taskId]);
 
   // Check for auto-start config from community page (sessionStorage)

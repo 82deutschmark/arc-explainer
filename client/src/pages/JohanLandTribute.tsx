@@ -1,14 +1,16 @@
 /**
- * Author: Cascade (GPT-5.2)
- * Date: 2026-02-07
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: Dedicated tribute page for Johan Land (@beetree / @LandJohan), a longtime friend
  *          of the ARC Explainer project. Celebrates his new SOTA public submission to ARC-AGI
  *          (V1: 94.5%, V2: 72.9%) based on GPT-5.2 bespoke refinement ensemble. Hosts his
  *          paper PDF, embeds official ARC Prize verification tweets, and links to his solver
  *          which is already integrated into this project as the Beetree Ensemble Solver.
  * SRP/DRY check: Pass - Single-responsibility tribute/profile page, reuses existing UI patterns.
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useEffect } from 'react';
 import { Link } from 'wouter';
 import {
@@ -41,7 +43,7 @@ export default function JohanLandTribute() {
   useTwitterEmbed();
 
   useEffect(() => {
-    document.title = 'Johan Land - ARC-AGI Grand Master | ARC Explainer';
+    setPageTitle('Johan Land - ARC-AGI Grand Master | ARC Explainer');
     const meta = [
       ['property', 'og:title', 'Johan Land - ARC-AGI Grand Master | ARC Explainer'],
       ['property', 'og:description', 'New SOTA public submission: 94.5% V1, 72.9% V2. Bespoke GPT-5.2 ensemble verified by ARC Prize.'],

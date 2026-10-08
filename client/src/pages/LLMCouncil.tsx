@@ -1,12 +1,14 @@
 /**
- * Author: Cascade (ChatGPT)
- * Date: 2026-01-02
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
  * PURPOSE: LLM Council page for multi-model consensus evaluation of ARC puzzles.
  *          Runs assessments via single-response API (no SSE) and keeps the latest result visible.
  *          Handles URL parameter :taskId for direct puzzle linking.
  * SRP/DRY check: Pass - Council assessment UI still maintains single responsibility for UX + result display.
+ * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
+import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, Link } from 'wouter';
@@ -126,7 +128,7 @@ export default function LLMCouncil() {
 
   // Set page title
   useEffect(() => {
-    document.title = 'LLM Council - ARC Puzzle Assessment';
+    setPageTitle('LLM Council - ARC Puzzle Assessment');
   }, []);
 
   // Check council health with dynamic polling interval

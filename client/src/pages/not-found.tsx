@@ -1,12 +1,16 @@
-import React from "react";
+/**
+ * Author: GPT-6.1 Sol / Codex
+ * Date: 2026-10-07
+ * PURPOSE: Give visitors useful recovery links for an unknown URL and keep its metadata unindexed.
+ * SRP/DRY check: Pass — shared metadata hook owns browser head updates.
+ */
+import { Link } from "wouter";
+import { usePageMeta } from "@/hooks/usePageMeta";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 
 export default function NotFound() {
-  // Set page title
-  React.useEffect(() => {
-    document.title = '404 - Page Not Found';
-  }, []);
+  usePageMeta({ title: 'Page not found | ARC Explainer', noindex: true });
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
@@ -18,7 +22,12 @@ export default function NotFound() {
           </div>
 
           <p className="mt-4 text-sm text-gray-600">
-            Did you forget to add the page to the router?
+            This address does not match a page on ARC Explainer.
+          </p>
+          <p className="mt-4 flex flex-wrap gap-4 text-sm">
+            <Link href="/home" className="underline">Resource hub</Link>
+            <Link href="/arc3/games" className="underline">Game guides</Link>
+            <Link href="/kaggle-leaderboard" className="underline">Kaggle leaderboard</Link>
           </p>
         </CardContent>
       </Card>
