@@ -200,7 +200,26 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "ARC Prize — ARC-AGI-3 Milestone 1 results",
+        "sourceUrl": "https://arcprize.org/blog/arc-prize-2026-milestone-1",
+        "text": "ARC Prize named Tufa Labs and its Duck agent the first-place open-source solution for the June 2026 ARC-AGI-3 Milestone 1 prize."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Tufa Labs — Duck Harness technical overview",
+        "sourceUrl": "https://tufalabs.ai/research/duck-harness/",
+        "text": "Tufa Labs says its public Duck harness lets an LLM inspect game grids as image and text, write Python in a REPL, and keep context short by evicting older messages. This describes the published Milestone 1 system, not an unverified current submission."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Tufa Labs — team profiles",
+        "sourceUrl": "https://tufalabs.ai/team/",
+        "text": "Tufa Labs lists Dries Smit, Isaiah Pressman and Jeroen Cottaar among its AI researchers, with research interests spanning reinforcement learning, self-play and Bayesian methods."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15486995",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -246,7 +265,20 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Yi-Chia Chen — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/threerabbits",
+        "text": "Yi-Chia Chen’s Kaggle profile lists her as a Competitions Master and a double-degree student at National Taiwan University and Waseda University."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Yi-Chia Chen — Eedi third-place solution write-up",
+        "sourceUrl": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/writeups/waseda-pochi-3rd-place-solution-with-magic-boost",
+        "text": "Yi-Chia Chen authored a Kaggle write-up for a third-place solution in Eedi — Mining Misconceptions in Mathematics."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15499660",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -364,6 +396,12 @@
         "sourceTitle": "NVARC — 2025 team write-up",
         "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc",
         "text": "The 2025 NVARC team write-up credits sorokin and cpmpml. Both handles appear in the observed roster of the distinct 2026 NVARC3 entry. This does not establish an affiliation for every current member."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "NVIDIA — 2025 NVARC solution report",
+        "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+        "text": "NVIDIA describes the separate 2025 NVARC ARC-AGI-2 solution as using synthetic data generation, test-time training and a fine-tuned 4B model. This is historical background, not a claim about the 2026 NVARC3 agent."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
@@ -383,7 +421,38 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Lukas Aichberger — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+        "text": "The rostered lukasaichberger Kaggle profile identifies its owner as Lukas Aichberger and links to his research website."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "JKU — Lukas Aichberger research profile",
+        "sourceUrl": "https://research.jku.at/en/persons/lukas-aichberger/",
+        "text": "Johannes Kepler University Linz lists Lukas Aichberger at its Institute for Machine Learning and credits him on research about reasoning models and uncertainty evaluation."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "fses91 — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/fses91",
+        "text": "Another rostered account, fses91, describes itself on Kaggle only as Florian; the public profile does not establish a surname."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Mykyta Ielanskyi — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+        "text": "The rostered dwellement0baser Kaggle profile identifies its owner as Mykyta Ielanskyi."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "JKU — Mykyta Ielanskyi research profile",
+        "sourceUrl": "https://research.jku.at/en/persons/mykyta-ielanskyi/",
+        "text": "Johannes Kepler University Linz lists Mykyta Ielanskyi at its Institute for Machine Learning. Its research record credits him and Lukas Aichberger together on a 2026 paper about reward redistribution for reasoning models."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16021367",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -426,7 +495,32 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Richard Csaky — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/richardcsaky",
+        "text": "The rostered richardcsaky Kaggle profile displays the name Richard Csaky."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Artificial Agency Lab — research and ARC-AGI-3 project",
+        "sourceUrl": "https://artificialagencylab.com/",
+        "text": "Artificial Agency Lab says it built an ARC-AGI-3 agent combining structured grids and image observations with persistent context updates, keeping model weights fixed; it reports an eighth-place June milestone result."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Manifund — Artificial Agency ARC-AGI-3 project proposal",
+        "sourceUrl": "https://manifund.org/projects/4-month-proof-of-concept-for-curiosity-driven-agents-on-arc-agi-3",
+        "text": "A public ARC-AGI-3 project proposal names Richard Csaky as research lead and Côme Chevalier for engineering. The proposal describes an intended curiosity-driven proof of concept, not a verified method of the current Kaggle submission."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Richard Csaky — ARC-AGI-3 Milestone 2 notebook",
+        "sourceUrl": "https://www.kaggle.com/code/richardcsaky/arc-agi-3-milestone-2-submission",
+        "text": "Richard Csaky’s Kaggle account published an “ARC-AGI-3 milestone 2 submission” notebook."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16132261",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -440,7 +534,14 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Michael — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/michaeltgao",
+        "text": "The sole rostered michaeltgao Kaggle account displays the public name Michael; the profile does not establish a surname."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16153655",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -466,7 +567,20 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Lord Han Solo — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/lordhansolo",
+        "text": "The Kaggle account and team both use the public name Lord Han Solo. The profile itself does not supply a verified personal name."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Lord Han Solo — Milestone 2 Kaggle notebook",
+        "sourceUrl": "https://www.kaggle.com/code/lordhansolo/built-on-tufa-labs-duck-harness-milestone-2",
+        "text": "Lord Han Solo published a Kaggle notebook titled “Built on Tufa Labs duck harness - Milestone 2,” explicitly crediting that earlier public harness in the notebook title."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16371045",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -505,7 +619,20 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Tanaka Ai24 — ARC-AGI-3 Kaggle notebook",
+        "sourceUrl": "https://www.kaggle.com/code/tanakaai24/arc3-qwen3-6-duck-lb117-safety-v1",
+        "text": "Roster member tanakaai24 has published a Kaggle ARC-AGI-3 notebook titled “ARC3 Qwen3.6 Duck LB117 Safety V1.” Its title alone does not establish the method behind the team’s current score."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Tanaka Ai24 — ARC-AGI-3 Pathfinder notebook",
+        "sourceUrl": "https://www.kaggle.com/code/tanakaai24/arc-agi-3-pathfinder-v2",
+        "text": "The same Kaggle account has also published “ARC-AGI-3 Pathfinder v2,” another public notebook about the contest."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16569113",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -536,7 +663,20 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "_hans — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/deepdreamer",
+        "text": "The current _hans team is associated in the board roster with Kaggle handle deepdreamer, whose public profile also displays _hans."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "_hans — public Kaggle notebook",
+        "sourceUrl": "https://www.kaggle.com/code/deepdreamer/a-silver-solution-33rd",
+        "text": "The deepdreamer Kaggle account published a notebook titled “A silver solution(33rd).” That public work is separate from the current ARC-AGI-3 submission."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16768259",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -549,7 +689,32 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Jayden Szeto — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/jaydenszeto123",
+        "text": "The rostered jaydenszeto123 Kaggle account displays the name Jayden Szeto."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Daniel Guo — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/denialguo",
+        "text": "The rostered denialguo Kaggle account displays the name Daniel Guo."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Hayley — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/snoopydoo",
+        "text": "The rostered snoopydoo Kaggle account displays the name Hayley, without a surname."
+      },
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Jayden Szeto — BirdCLEF+ 2026 notebook",
+        "sourceUrl": "https://www.kaggle.com/code/jaydenszeto123/birdclef2026-v3",
+        "text": "Jayden Szeto’s Kaggle account also has a public BirdCLEF+ 2026 notebook titled “BIRDCLEF2026 V3.” This is background work, not a claim about dreach.ai’s ARC-AGI-3 method."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16805955",
     "lastObservedAt": "2026-10-08T09:43:15Z",
@@ -590,7 +755,14 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T13:46:44Z",
+        "sourceTitle": "Majkel1337 — Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/majkel1337",
+        "text": "The Majkel1337 team’s sole rostered Kaggle account also displays Majkel1337 as its public profile name."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16958599",
     "lastObservedAt": "2026-10-08T09:43:15Z",
