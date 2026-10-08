@@ -16,7 +16,7 @@ import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInje
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import sharp from 'sharp';
 import { articleCardPath, articleTitle, NEWS_SECTION_CARD_PATH, TITLE_BUDGET } from '../../shared/news';
-import { cardText, renderArticleCard } from '../../server/services/news/newsCardImage';
+import { articleCardSvg, cardText, renderArticleCard } from '../../server/services/news/newsCardImage';
 const metaContent = (html: string, key: string) => html.match(new RegExp(`(?:property|name)="${key}" content="([^"]*)"`))?.[1];
 const unescape = (value = '') => value.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 /** A blank or flat image passes a size check; a drawn card has many distinct shades. */
@@ -136,6 +136,11 @@ it('gives the front page and notebook the newspaper card and list structured dat
     expect(page.mainEntity.itemListElement.length).toBeGreaterThan(0);
     expect((html.match(/<h1[\s>]/g) ?? []).length).toBe(1);
   }
+});
+it('draws card text as paths, so the container needs no system fonts', async () => {
+  const svg = await articleCardSvg(getNewsIndex().articles[0]);
+  expect(svg).not.toMatch(/<text|font-family/);
+  expect((svg.match(/<path/g) ?? []).length).toBeGreaterThan(10);
 });
 it('keeps cards drawable for names and headlines outside the card fonts', async () => {
   expect(cardText('the last dance 🕺')).toBe('the last dance');

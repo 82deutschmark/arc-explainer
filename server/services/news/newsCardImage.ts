@@ -131,13 +131,15 @@ function sectionCard(articles: NewsArticle[]): Node {
     box({ borderTop: `1px solid ${RULE}`, paddingTop: 12, flexDirection: 'column' }, footer('Box scores, contenders and sourced competitor notes')));
 }
 
+const renderSvg = (node: Node) => satori(node as Parameters<typeof satori>[0], { width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, fonts: loadFonts() });
 async function render(node: Node): Promise<Buffer> {
-  const svg = await satori(node as Parameters<typeof satori>[0], { width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, fonts: loadFonts() });
-  return sharp(Buffer.from(svg)).flatten({ background: PAPER }).png({ compressionLevel: 9 }).toBuffer();
+  return sharp(Buffer.from(await renderSvg(node))).flatten({ background: PAPER }).png({ compressionLevel: 9 }).toBuffer();
 }
 
 /** Uncached render of one article's card; also used by tests with synthetic articles. */
 export const renderArticleCard = (article: NewsArticle) => render(articleCard(article));
+/** The intermediate SVG, for the test that proves it needs no system fonts (no <text>). */
+export const articleCardSvg = (article: NewsArticle) => renderSvg(articleCard(article));
 
 const cache = new Map<string, Buffer>();
 async function cached(key: string, node: () => Node, label: string): Promise<Buffer | null> {
