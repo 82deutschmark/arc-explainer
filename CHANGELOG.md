@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.126.1  Oct 8, 2026
+
+- **Repair archived puzzle analytics** (Author: Codex). Difficult-puzzle accuracy now counts fully correct scored attempts instead of trustworthiness, excludes unknown outcomes, and avoids feedback duplication. Dataset and actual test-count filters apply before ranking/limit, including tasks shared between ARC editions. Restore metadata and canonical examiner/saved-attempt links, cost/time sorting, confidence percentage units, retry behavior and an accessible expand control. Clearly label the mixed archive and sample counts.
+- **Retire obsolete rankings.** `/leaderboards` returns HTTP 410 with noindex and a retirement notice; remove its navigation and discovery links. Current Kaggle boards and saved attempts remain available.
+- **Correct the public audit examples.** Replace the empty reasoning screenshot with populated reasoning and output captures, each deep-linked to attempt 73914. Add the historical Opus 4.5 attempt 56958, make restored raw ARC1/2 publication the main request, and identify news and synthetic games as distinct curation candidates. Keep the structured backlog and brief aligned.
+- **Validation:** production client/server builds; SEO and real disposable-PostgreSQL regression checks. Plan: `docs/2026-10-08-audit-example-and-retired-rankings.md`.
+
 ### Version 9.126.0  Oct 8, 2026
 
 - **Both contests in The ARC Daily** (Author: GPT-6.1 Sol / Codex). Keeps the publication name and makes the front page explicitly cover ARC-AGI-3 and ARC-AGI-2, with a direct ARC-AGI-2 chart link alongside the ARC-AGI-3 graphics. Adds the site's established official ARC Discord invite in navigation and the resource shelf. Article bylines and reporting notes now show dates; exact observation times remain in the archived evidence. The reporter guide asks future editions for more specific sports journalism and clock times only when they affect the story. Client build and 17 focused news/SEO tests passed. Scope: `docs/2026-10-08-arc-daily-landing-plan.md`.

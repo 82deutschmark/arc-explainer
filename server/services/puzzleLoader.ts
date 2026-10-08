@@ -1,4 +1,9 @@
 /**
+ * Author: Codex
+ * Date: 2026-10-08
+ * PURPOSE: Preserve shared dataset membership on opt-in analytics catalog queries.
+ * SRP/DRY check: Pass — uses the existing data-source configuration and metadata.
+ *
  * PuzzleLoader.ts - Service to load ARC puzzle data from local directories
  * 
  * This module handles loading puzzle data from multiple sources with priority:
@@ -301,6 +306,7 @@ export class PuzzleLoader {
     prioritizeExplained?: boolean;
     source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
     multiTestFilter?: 'single' | 'multi';
+    includeSharedPuzzles?: boolean;
   }): PuzzleInfo[] {
     let puzzles = Array.from(this.puzzleMetadata.values());
     
@@ -320,6 +326,7 @@ export class PuzzleLoader {
     prioritizeExplained?: boolean;
     source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
     multiTestFilter?: 'single' | 'multi';
+    includeSharedPuzzles?: boolean;
   }): PuzzleInfo[] {
     if (filters.maxGridSize !== undefined) {
       puzzles = puzzles.filter(p => p.maxGridSize <= filters.maxGridSize!);
@@ -332,7 +339,16 @@ export class PuzzleLoader {
     }
 
     if (filters.source) {
-      puzzles = puzzles.filter(p => p.source === filters.source);
+      if (filters.includeSharedPuzzles) {
+        // A task can belong to both ARC editions. Its preferred catalog label must
+        // not remove it from an explicitly selected dataset's analytics.
+        const source = this.dataSources.find(item => item.source === filters.source);
+        const ids = new Set(source ? fs.readdirSync(source.directory)
+          .filter(file => file.endsWith('.json')).map(file => path.basename(file, '.json')) : []);
+        puzzles = puzzles.filter(p => ids.has(p.id)).map(p => ({ ...p, source: filters.source! }));
+      } else {
+        puzzles = puzzles.filter(p => p.source === filters.source);
+      }
     }
     if (filters.multiTestFilter === 'single') {
       puzzles = puzzles.filter(p => p.testCaseCount === 1);

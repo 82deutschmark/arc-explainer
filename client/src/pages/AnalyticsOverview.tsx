@@ -1,8 +1,8 @@
 /**
  * Author: GPT-6 Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Archive analytics with dated source-update context, mixed-run provenance and backward-compatible
- *          union cost/coverage types used by scoring pages.
+ *          union cost/coverage types and accessible archived puzzle ranking controls.
  * SRP/DRY check: Pass — cost metrics reuse the shared API contract.
  *
  * Author: Cascade using Claude Sonnet 4.5
@@ -763,6 +763,8 @@ export default function AnalyticsOverview() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsDifficultPuzzlesCollapsed(!isDifficultPuzzlesCollapsed)}
+                aria-label={isDifficultPuzzlesCollapsed ? "Show hardest puzzles" : "Hide hardest puzzles"}
+                aria-expanded={!isDifficultPuzzlesCollapsed}
                 className="h-8 w-8 p-0"
               >
                 {isDifficultPuzzlesCollapsed ? (
@@ -773,7 +775,7 @@ export default function AnalyticsOverview() {
               </Button>
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Puzzles with the lowest LLM accuracy rates - these are the hardest challenges for AI models
+              Lowest success rates among scored attempts in this archive; models and coverage vary.
             </p>
           </CardHeader>
           {!isDifficultPuzzlesCollapsed && (

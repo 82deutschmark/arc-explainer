@@ -8,6 +8,21 @@ Public bundle/line hints refer to the inspected upstream build, not local source
 Treat these as externally observed findings to reproduce and triage, not instructions
 to implement every suggestion. No access to your private source repository was used.
 
+Central request from Mark: restore public ARC1/2 raw-attempt publication, or link its
+replacement. Without new downloadable attempts, ARC Explainer cannot ingest new
+results or provide its existing reasoning/grid/statistics tools for newer models.
+AP-07 is the main owner decision; the order below separates that decision from
+immediate website repairs. A cutoff notice helps clarity but does not restore ingestion.
+
+Exact working examples (reasoning panels are populated):
+https://arc.markbarney.net/task/221dfab4?highlight=73914
+Opus 4.6 max first attempt: 2/2 tests correct.
+https://arc.markbarney.net/task/221dfab4?highlight=56958
+Opus 4.5 32k first attempt: 0/2 tests correct; November 2025 saved record.
+
+Distinct curation candidates: https://arc.markbarney.net/news and
+https://arc.markbarney.net/arc3/gallery (community/research synthetic games).
+
 Suggested order:
 1. AP-01: repair default ARC3 /tasks query. The exact full request gets a body-size
    error; a one-config control succeeds. Adding Content-Type alone did not fix it.

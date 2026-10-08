@@ -1,11 +1,11 @@
 /**
  * DifficultPuzzlesSection.tsx
  *
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-06
+ * Author: Codex
+ * Date: 2026-10-08
  * PURPOSE: Displays puzzles with the lowest LLM accuracy rates. Extracted from PuzzleDiscussion
  * to properly belong in Analytics section. Provides advanced filtering by accuracy, dataset source,
- * test type, and includes rich metrics display for comprehensive puzzle difficulty analysis.
+ * test type, canonical task links, and includes rich metrics display for comprehensive puzzle difficulty analysis.
  * SRP/DRY check: Pass - Single responsibility (display difficult puzzles), reuses existing hooks and components
  * shadcn/ui: Pass - Uses shadcn/ui components (Card, Button, Badge, Select, Slider, Input, Alert)
  */
@@ -28,14 +28,14 @@ export function DifficultPuzzlesSection() {
   const [compactView, setCompactView] = useState<boolean>(false);
   const [accuracyRange, setAccuracyRange] = useState<[number, number]>([0, 100]);
   const [zeroAccuracyOnly, setZeroAccuracyOnly] = useState<boolean>(false);
-  const [selectedSource, setSelectedSource] = useState<'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC' | 'all'>('all');
+  const [selectedSource, setSelectedSource] = useState<'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC' | 'all'>('ARC2-Eval');
   const [multiTestFilter, setMultiTestFilter] = useState<'single' | 'multi' | 'all'>('all');
   const [showRichMetrics, setShowRichMetrics] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
 
-  const { puzzles, total, isLoading, error } = useWorstPerformingPuzzles(
+  const { puzzles, total, isLoading, error, refetch } = useWorstPerformingPuzzles(
     selectedLimit,
     sortBy,
     accuracyRange[0],
@@ -73,7 +73,8 @@ export function DifficultPuzzlesSection() {
       <Alert className="border-red-500 bg-red-50">
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription>
-          Failed to load worst-performing puzzles. Please check your connection and try again.
+          Could not load the recorded puzzle results.
+          <Button variant="outline" size="sm" className="ml-3" onClick={() => refetch()}>Try again</Button>
         </AlertDescription>
       </Alert>
     );
@@ -91,14 +92,14 @@ export function DifficultPuzzlesSection() {
   };
 
   const getConfidenceBadgeColor = (confidence: number) => {
-    if (confidence < 0.1) return 'bg-red-100 text-red-800 border-red-200';
-    if (confidence < 0.25) return 'bg-orange-100 text-orange-800 border-orange-200';
-    if (confidence < 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    if (confidence < 10) return 'bg-red-100 text-red-800 border-red-200';
+    if (confidence < 25) return 'bg-orange-100 text-orange-800 border-orange-200';
+    if (confidence < 40) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
     return 'bg-green-100 text-green-800 border-green-200';
   };
 
   const formatConfidence = (confidence: number) => {
-    return (confidence * 100).toFixed(2) + '%';
+    return confidence.toFixed(1) + '%';
   };
 
   return (
@@ -108,10 +109,12 @@ export function DifficultPuzzlesSection() {
         <div className="flex items-start gap-3">
           <TrendingDown className="h-5 w-5 text-orange-600 mt-0.5" />
           <div>
-            <h3 className="font-semibold text-slate-800 mb-2">Most Challenging Puzzles</h3>
+            <h3 className="font-semibold text-slate-800 mb-2">Lowest Recorded Success Rates</h3>
             <p>
-              This section shows puzzles where LLMs have the most difficulty - sorted by lowest accuracy rates.
-              These are the hardest puzzles for AI models to solve correctly, with 0% accuracy puzzles at the top.
+              Ranked by the share of scored, saved attempts that solved every test in a puzzle.
+              Unscored records are excluded. This mixes models and settings in the archive;
+              it is not a controlled measure of puzzle difficulty or an official benchmark score.
+              Check the attempt counts: a puzzle tried once is weak evidence.
             </p>
           </div>
         </div>
@@ -192,7 +195,7 @@ export function DifficultPuzzlesSection() {
                 className="px-3 py-2 border border-gray-200 rounded-md text-sm"
               >
                 <option value="accuracy">Lowest Accuracy</option>
-                <option value="confidence">Lowest Confidence (1-25%)</option>
+                <option value="confidence">Lowest Recorded Confidence</option>
                 <option value="feedback">Most Negative Feedback</option>
                 <option value="cost">Highest Cost</option>
                 <option value="processing_time">Slowest Processing</option>
@@ -477,7 +480,7 @@ export function DifficultPuzzlesSection() {
             Most Difficult Puzzles
             {!isLoading && (
               <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                {searchQuery.trim() ? `${filteredPuzzles.length} of ${total}` : `${total} found`}
+                {searchQuery.trim() ? `${filteredPuzzles.length} of ${total}` : `${total} shown`}
               </Badge>
             )}
             {selectedSource !== 'all' && (
@@ -502,7 +505,7 @@ export function DifficultPuzzlesSection() {
             )}
           </CardTitle>
           <p className="text-sm text-gray-600">
-            Puzzles with lowest LLM accuracy rates - sorted by {sortBy === 'composite' ? 'composite difficulty' : sortBy}
+            Saved attempts, sorted by {sortBy === 'composite' ? 'composite difficulty' : sortBy}
             {selectedSource === 'ARC2-Eval' && (
               <span className="text-green-700 font-medium"> • Focus: ARC 2 Evaluation Dataset</span>
             )}
@@ -519,7 +522,7 @@ export function DifficultPuzzlesSection() {
               <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-400" />
               <p className="text-gray-600">No analyzed puzzles found.</p>
               <p className="text-sm text-gray-500 mt-2">
-                Run some AI analyses first!
+                Try a different dataset or widen the filters. Search only filters the displayed results.
               </p>
             </div>
           ) : (
@@ -538,7 +541,7 @@ export function DifficultPuzzlesSection() {
                         </code>
                         <div className="text-xs flex items-center gap-1">
                           <Grid3X3 className="h-3 w-3" />
-                          {puzzle.maxGridSize ? `${puzzle.maxGridSize}x${puzzle.maxGridSize}` : 'Unknown'}
+                          {puzzle.maxGridSize ? `Max dimension: ${puzzle.maxGridSize}` : 'Size unavailable'}
                           {puzzle.source && (
                             <Badge variant="outline" className={`text-xs ${
                               puzzle.source === 'ARC1' ? 'bg-blue-50 text-blue-700' :
@@ -557,7 +560,7 @@ export function DifficultPuzzlesSection() {
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-red-500" />
-                          <span className="text-sm font-medium text-red-700">LLM Difficulty</span>
+                          <span className="text-sm font-medium text-red-700">Recorded success</span>
                         </div>
 
                         <div className="flex flex-wrap gap-1">
@@ -575,7 +578,7 @@ export function DifficultPuzzlesSection() {
                               {puzzle.performanceData.negativeFeedback} negative
                             </Badge>
                           )}
-                          {puzzle.performanceData?.lowestNonZeroConfidence !== undefined && (
+                          {puzzle.performanceData?.lowestNonZeroConfidence != null && (
                             <Badge
                               variant="outline"
                               className={`text-xs ${getConfidenceBadgeColor(puzzle.performanceData.lowestNonZeroConfidence)}`}
@@ -663,15 +666,15 @@ export function DifficultPuzzlesSection() {
 
                       <div className="flex gap-2">
                         <Button asChild size="sm" className="flex-1 bg-red-600 hover:bg-red-700">
-                          <Link href={`/examine/${puzzle.id}`}>
+                          <Link href={`/puzzle/${puzzle.id}`}>
                             <Eye className="h-4 w-4 mr-1" />
-                            Analyze Puzzle
+                            Examine Puzzle
                           </Link>
                         </Button>
                         <Button asChild size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
-                          <Link href={`/puzzle/${puzzle.id}/view`}>
+                          <Link href={`/task/${puzzle.id}`}>
                             <MessageSquare className="h-4 w-4 mr-1" />
-                            View Database
+                            Saved Attempts
                           </Link>
                         </Button>
                       </div>

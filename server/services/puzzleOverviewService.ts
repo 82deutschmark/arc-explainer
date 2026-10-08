@@ -4,10 +4,14 @@
  * Service for handling puzzle overview data processing.
  * Extracts complex overview logic from controller including sorting, pagination, and data enrichment.
  * 
- * @author Claude Code
+ * Author: Codex
+ * Date: 2026-10-08
+ * PURPOSE: Filter difficult puzzles before ranking and enrich from the existing metadata catalog.
+ * SRP/DRY check: Pass — reuses puzzleLoader metadata and MetricsRepository aggregation.
  */
 
 import { repositoryService } from '../repositories/RepositoryService';
+import { puzzleLoader } from './puzzleLoader';
 import { puzzleService } from './puzzleService';
 import { puzzleFilterService } from './puzzleFilterService';
 import { logger } from '../utils/logger';
@@ -293,35 +297,19 @@ export class PuzzleOverviewService {
       return [];
     }
 
-    // If source filtering is requested, we need to get the puzzle list first to get the source-filtered puzzles
-    let sourceFilteredPuzzleIds: string[] | undefined = undefined;
-    if (filters?.source) {
-      try {
-        const allPuzzles = await puzzleService.getPuzzleList({ source: filters.source });
-        sourceFilteredPuzzleIds = allPuzzles.map(p => p.id);
-        logger.debug(`Found ${sourceFilteredPuzzleIds.length} puzzles from source ${filters.source}`, 'puzzle-overview-service');
-      } catch (error) {
-        logger.warn(`Failed to get puzzles for source ${filters.source}: ${error instanceof Error ? error.message : String(error)}`, 'puzzle-overview-service');
-      }
-    }
-
-    // PHASE 2 FIX: getWorstPerformingPuzzles moved to MetricsRepository (analytics work, not CRUD)
-    const worstPuzzles = await repositoryService.metrics.getWorstPerformingPuzzles(limit * 3, sortBy, filters);
-    
-    // Filter by source if needed and enrich with metadata
-    let puzzlesToProcess = worstPuzzles;
-    if (sourceFilteredPuzzleIds) {
-      puzzlesToProcess = worstPuzzles.filter(p => sourceFilteredPuzzleIds!.includes(p.puzzleId));
-      logger.debug(`Filtered to ${puzzlesToProcess.length} puzzles matching source ${filters?.source}`, 'puzzle-overview-service');
-    }
-
-    // Take only the requested limit after source filtering
-    puzzlesToProcess = puzzlesToProcess.slice(0, limit);
+    // Use the task catalog for dataset/test-count filters before SQL ranks and limits.
+    // Loading a full task here loses metadata such as maxGridSize and wastes bandwidth.
+    const catalog = puzzleLoader.getPuzzleList({ source: filters?.source, multiTestFilter: filters?.multiTestFilter, includeSharedPuzzles: true });
+    const metadataById = new Map(catalog.map(puzzle => [puzzle.id, puzzle]));
+    const puzzlesToProcess = await repositoryService.metrics.getWorstPerformingPuzzles(limit, sortBy, {
+      ...filters, puzzleIds: catalog.map(puzzle => puzzle.id),
+    });
 
     const enrichedPuzzles = await Promise.all(
       puzzlesToProcess.map(async (puzzleData) => {
         try {
-          const puzzleMetadata = await puzzleService.getPuzzleById(puzzleData.puzzleId);
+          const puzzleMetadata = metadataById.get(puzzleData.puzzleId);
+          if (!puzzleMetadata) throw new Error("Puzzle missing from catalog");
           
           // Build performance data with base metrics
           const basePerformanceData = {

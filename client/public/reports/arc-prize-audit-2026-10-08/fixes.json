@@ -205,9 +205,10 @@
         "Open the Astra results page and its linked Astra blog post.",
         "Look for the matching ARC1/2 answer grids, model responses and run metadata for a reported task."
       ],
-      "proposed_fix": "Link the current canonical raw-attempt store from model result pages and HF dataset cards. If publication is paused or withheld, state coverage, last update, and availability explicitly. Publish public-evaluation artifacts when allowed. Preserve historical links.",
+      "proposed_fix": "Restore publication of public-evaluation ARC1/2 raw attempts on Hugging Face, or document and link a successor store. Include submitted grids, released responses/reasoning where available, task/dataset/model/run/attempt identities and source revisions so downstream tools can ingest them. If publication cannot resume, give explicit coverage/cutoff and availability notices; a notice clarifies the gap but does not restore ingestion. Preserve historical links.",
       "acceptance_checks": [
-        "For a post-June model, a reader can either download the documented public ARC1/2 run artifacts or see a clear explicit unavailability/cutoff notice. HF cards identify any successor source."
+        "For a post-June model, a reader can either download the documented public ARC1/2 run artifacts or see a clear explicit unavailability/cutoff notice. HF cards identify any successor source.",
+        "For a newly published public-evaluation model, an independent tool can download and parse at least one successful and one failed attempt with stable identities and documented coverage. Any withheld fields are explicitly marked, not fabricated."
       ],
       "sources": [
         "https://arcprize.org/results/openai-gpt-6-astra",
@@ -215,7 +216,9 @@
         "https://huggingface.co/api/datasets/arcprize/arc_agi_v2_public_eval",
         "https://huggingface.co/api/datasets?author=arcprize&limit=100",
         "https://github.com/arcprize/arc-agi-benchmarking",
-        "https://arcprize.org/blog/astra"
+        "https://arcprize.org/blog/astra",
+        "https://arc.markbarney.net/task/221dfab4?highlight=73914",
+        "https://arc.markbarney.net/task/221dfab4?highlight=56958"
       ],
       "evidence_files": [
         "evidence.json",
@@ -223,7 +226,8 @@
       ],
       "qualification": "This is an observed four-month repository update gap, not proof of a permanent shutdown. An unlinked or private store may exist; publication policy needs the maintainers decision. ARC3 replay links are already present and must not be included in the missing-raw-data claim.",
       "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
+      "decision": "For Matt to triage; not yet approved or implemented.",
+      "impact": "ARC Explainer cannot ingest the newer attempts or extend its existing reasoning/grid inspection and statistics to those newer models without the underlying records. Mark identifies this as the main request, separate from the immediate website bug priorities."
     },
     {
       "id": "AP-08",
@@ -269,7 +273,8 @@
       "reproduction": [
         "Inspect a task Model Performance table.",
         "Try opening the original attempt behind a Pass/Fail row.",
-        "Compare with the existing public HF attempt-file structure."
+        "Compare with the existing public HF attempt-file structure.",
+        "Open the exact ARC Explainer comparison links: #73914 is Opus 4.6 with populated reasoning and 2/2 correct; #56958 is Opus 4.5 with populated reasoning and 0/2 correct, recorded in November 2025."
       ],
       "proposed_fix": "Start with source-artifact links. Then add a read-only saved-attempt drawer: submitted and expected grids per test, mismatch highlighting, available final response, recorded cost/time/tokens, and stable run/attempt links. Preserve dataset, model configuration and source revision. Keep unknown values distinct from zero; do not imply unavailable reasoning was recorded.",
       "acceptance_checks": [
@@ -281,7 +286,9 @@
       "sources": [
         "https://arcprize.org/tasks/0934a4d8",
         "https://arcprize.org/scripts/task/task-detail.js",
-        "https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/resolve/main/gpt-4o/00576224.json"
+        "https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/resolve/main/gpt-4o/00576224.json",
+        "https://arc.markbarney.net/task/221dfab4?highlight=73914",
+        "https://arc.markbarney.net/task/221dfab4?highlight=56958"
       ],
       "evidence_files": [
         "evidence.json",
@@ -469,7 +476,7 @@
         "Start at Resources as a parent, teacher or beginner looking for something immediately playable.",
         "Try to distinguish a game, task examiner, tutorial, research paper and dated result archive."
       ],
-      "proposed_fix": "Add resource type, audience, ARC version, access requirements and last-reviewed date. Consider a small “Start here / Play / Examine model answers” collection. Evaluate Mark’s individual tools alongside existing choices using the same criteria; acceptance is an editorial choice.",
+      "proposed_fix": "Add resource type, audience, ARC version, access requirements and last-reviewed date. Consider a small “Start here / Play / Examine model answers” collection. Evaluate Mark’s individual tools alongside existing choices using the same criteria; acceptance is an editorial choice. Review The ARC Daily news page and the curated synthetic ARC-3 game catalog as distinct entries, alongside the saved-attempt viewer and existing play/guide resources. Label synthetic games as community/research resources, not official hidden evaluation games.",
       "acceptance_checks": [
         "A visitor can find a reviewed beginner/family-friendly activity and understand login, cost, device and reading requirements before opening it.",
         "Analytical tools are discoverable separately from papers and videos.",
@@ -480,7 +487,10 @@
         "https://arc.markbarney.net/analytics",
         "https://arc.markbarney.net/puzzle/0934a4d8",
         "https://arc.markbarney.net/arc3/games",
-        "https://sfmc.markbarney.net/"
+        "https://sfmc.markbarney.net/",
+        "https://arc.markbarney.net/news",
+        "https://arc.markbarney.net/arc3/gallery",
+        "https://arc.markbarney.net/task/221dfab4?highlight=73914"
       ],
       "evidence_files": [
         "evidence.json",

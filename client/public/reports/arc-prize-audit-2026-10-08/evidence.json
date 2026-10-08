@@ -1404,5 +1404,29 @@
       "url": "https://schema-harness.github.io/",
       "reason": "Public response200; audit stopped download at3MB. HTTP reachability checked, full document/body not reviewed."
     }
+  ],
+  "saved_attempt_examples": [
+    {
+      "url": "https://arc.markbarney.net/task/221dfab4?highlight=73914",
+      "task": "221dfab4",
+      "model": "claude-opus-4-6-thinking-120K-max-attempt1",
+      "reasoning_panel": "populated; verified in browser",
+      "tests_correct": 2,
+      "tests_total": 2,
+      "screenshots": [
+        "screenshots/explainer-221dfab4-73914-reasoning.jpg",
+        "screenshots/explainer-221dfab4-73914-outputs.jpg"
+      ]
+    },
+    {
+      "url": "https://arc.markbarney.net/task/221dfab4?highlight=56958",
+      "task": "221dfab4",
+      "model": "claude-opus-4-5-20251101-thinking-32k-attempt1",
+      "displayed_record_date": "2025-11-24",
+      "reasoning_panel": "populated; verified in browser",
+      "tests_correct": 0,
+      "tests_total": 2,
+      "qualification": "Displayed record date is not asserted to be original evaluation date."
+    }
   ]
 }

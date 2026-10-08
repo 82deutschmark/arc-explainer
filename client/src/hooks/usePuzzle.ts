@@ -2,6 +2,7 @@
  * Author: Cascade using GPT-4
  * Date: 2025-10-10T11:28:38-04:00
  * PURPOSE: Custom React hooks for puzzle data fetching and management.
+ * Date: 2026-10-08; updated by Codex to expose retry for difficult-puzzle errors.
  * Provides hooks for loading individual puzzles, puzzle lists, and worst-performing puzzles.
  * Uses TanStack Query for efficient data fetching, caching, and state management.
  * SRP and DRY check: Pass - Each hook has a single responsibility (puzzle data, list data, worst-performing data)
@@ -175,7 +176,7 @@ export function useWorstPerformingPuzzles(
   const queryString = queryParams.toString();
   const url = `/api/puzzle/worst-performing?${queryString}`;
   
-  const { data: responseData, isLoading, error } = useQuery<APIResponse<WorstPerformingResponse>>({
+  const { data: responseData, isLoading, error, refetch } = useQuery<APIResponse<WorstPerformingResponse>>({
     queryKey: [url],
     queryFn: async () => {
       const response = await apiRequest('GET', url);
@@ -202,5 +203,6 @@ export function useWorstPerformingPuzzles(
     total,
     isLoading,
     error,
+    refetch,
   };
 }

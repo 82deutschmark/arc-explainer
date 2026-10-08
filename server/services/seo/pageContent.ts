@@ -1,10 +1,11 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Author: GPT-6.1 Sol / Codex; Codex
+ * Date: 2026-10-08
  * PURPOSE: Build crawler-readable public page summaries and official game guides from
  *          the existing route, puzzle and game registries without a second content store.
  *          08-Oct-2026 (Claude Opus 5.5): sitemap lastmod for ARC Daily URLs from their
  *          recorded publication/check times; every other route stays undated.
+ *          Returns 410 for retired model rankings with shared noindex metadata.
  * SRP/DRY check: Pass — gameLevels owns level grouping; no authored rules are changed.
  */
 import { ROUTE_META_TAGS, type RouteMetaTags } from '../../../shared/routes';
@@ -40,6 +41,11 @@ export function resolvePageMeta(route: string): { tags: RouteMetaTags; status: n
   if (news) return news;
   if (Object.hasOwn(ROUTE_META_TAGS, route)) {
     const tags = { ...ROUTE_META_TAGS[route] };
+    // Old bookmarks must not receive successful ranking pages or enter search indexes.
+    if (route === '/leaderboards') {
+      tags.bodyHtml = `<main><h1>Model rankings retired</h1>${paragraphs(tags.description)}<p><a href="/kaggle-leaderboard">Current Kaggle standings</a> · <a href="/analytics">Recorded puzzle results archive</a> · <a href="/home">Resource Hub</a></p></main>`;
+      return { tags: completeMeta(tags), status: 410 };
+    }
     if (route === '/arc3/games') {
       tags.bodyHtml = `<main><h1>ARC-AGI-3 Game Mechanics</h1><p>Guides to the 25 public demonstration games, plus separately labeled preview history. These are spoilers; the private competition games have different mechanics.</p><p><a href="/arc3/slippery-seven">The Slippery Seven</a> · <a href="/human-records.html">Human and AI results</a> · <a href="/arc3/games.md">Markdown reference</a></p><ul>${getAllGames().map((game: Arc3GameMetadata) => `<li>${gameLink(game.gameId)}${game.gameId === 'as66' ? ' (withdrawn preview)' : ''} — ${esc(game.simpleExplanation)}</li>`).join('')}</ul></main>`;
     }

@@ -1,8 +1,9 @@
 /**
  * Author: GPT-6 Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Aggregate analytics and compare models, scoring two attempts against authoritative
  *          dataset tasks with shared harness math and consistent recorded cost coverage.
+ *          Difficult-puzzle accuracy uses scored outcomes with feedback aggregated per attempt.
  * SRP/DRY check: Pass — delegates dataset reads and score arithmetic to their existing owners.
  *
  * Metrics Repository Implementation
@@ -1395,6 +1396,7 @@ export class MetricsRepository extends BaseRepository {
       source?: 'ARC1' | 'ARC1-Eval' | 'ARC2' | 'ARC2-Eval' | 'ARC-Heavy' | 'ConceptARC';
       multiTestFilter?: 'single' | 'multi';
       includeRichMetrics?: boolean;
+      puzzleIds?: string[];
     }
   ): Promise<any[]> {
     if (!this.isConnected()) {
@@ -1403,8 +1405,13 @@ export class MetricsRepository extends BaseRepository {
 
     try {
       // Build the HAVING clause based on filters
+      // An attempt succeeds only when its full output (all tests for multi-test runs)
+      // is correct. Unscored records are excluded, never silently treated as failures.
+      const correctness = `CASE WHEN COALESCE(e.has_multiple_predictions, false)
+        THEN e.multi_test_all_correct ELSE e.is_prediction_correct END`;
+      const accuracy = `AVG((${correctness})::int)`;
       let havingConditions = ['COUNT(DISTINCT e.id) > 0'];
-      const queryParams = [limit, sortBy];
+      const queryParams: unknown[] = [limit, sortBy];
       let paramIndex = 3;
 
       if (filters?.zeroAccuracyOnly) {
@@ -1416,13 +1423,13 @@ export class MetricsRepository extends BaseRepository {
       } else {
         // Apply accuracy range filters if provided
         if (filters?.minAccuracy !== undefined) {
-          havingConditions.push(`AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) >= $${paramIndex}`);
+          havingConditions.push(`${accuracy} >= $${paramIndex}`);
           queryParams.push(filters.minAccuracy);
           paramIndex++;
         }
 
         if (filters?.maxAccuracy !== undefined) {
-          havingConditions.push(`AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) <= $${paramIndex}`);
+          havingConditions.push(`${accuracy} <= $${paramIndex}`);
           queryParams.push(filters.maxAccuracy);
           paramIndex++;
         }
@@ -1439,34 +1446,21 @@ export class MetricsRepository extends BaseRepository {
                 WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
                   OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
               ) > 0 OR
-              AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) < 0.5 OR
-              COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') > 0
+              ${accuracy} < 0.5 OR
+              COALESCE(SUM(f.negative_feedback), 0) > 0
             )`);
           }
         }
       }
 
-      // Add source filtering and rich metrics to the query
-      let whereConditions = ['e.puzzle_id IS NOT NULL'];
-
-      if (filters?.source) {
-        // We need to join with puzzle metadata to filter by source
-        // For now, we'll use a subquery to get puzzles from the puzzle service
-        // This is a temporary approach until we have puzzle metadata in the database
-        whereConditions.push(`e.puzzle_id IN (
-          SELECT DISTINCT puzzle_id
-          FROM explanations
-          WHERE puzzle_id IS NOT NULL
-        )`);
+      const whereConditions = ['e.puzzle_id IS NOT NULL', `(${correctness}) IS NOT NULL`];
+      if (filters?.puzzleIds) {
+        whereConditions.push(`e.puzzle_id = ANY($${paramIndex}::text[])`);
+        queryParams.push(filters.puzzleIds);
+        paramIndex++;
       }
-
-      if (filters?.multiTestFilter) {
-        if (filters.multiTestFilter === 'single') {
-          whereConditions.push('e.has_multiple_predictions = false OR e.has_multiple_predictions IS NULL');
-        } else if (filters.multiTestFilter === 'multi') {
-          whereConditions.push('e.has_multiple_predictions = true');
-        }
-      }
+      // Source and actual task test-count filters are resolved by the service before
+      // aggregation/limit. has_multiple_predictions describes a record, not a task.
 
       // Build rich metrics selection based on flag
       // OPTIMIZATION: Use COUNT(DISTINCT) instead of STRING_AGG to avoid temp disk overflow
@@ -1483,8 +1477,8 @@ export class MetricsRepository extends BaseRepository {
         MIN(CASE WHEN e.confidence > 0 THEN e.confidence END) as lowest_non_zero_confidence,
         COUNT(DISTINCT e.model_name) as models_attempted_count,
         COUNT(DISTINCT e.reasoning_effort) FILTER (WHERE e.reasoning_effort IS NOT NULL) as reasoning_efforts_count,` : `
-        NULL as avg_cost,
-        NULL as avg_processing_time,`;
+        AVG(e.estimated_cost) as avg_cost,
+        AVG(e.api_processing_time_ms) as avg_processing_time,`;
 
       const result = await this.query(`
         SELECT *
@@ -1497,11 +1491,11 @@ export class MetricsRepository extends BaseRepository {
               WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
                 OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
             ) as wrong_count,
-            AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) as avg_accuracy,
+            ${accuracy} as avg_accuracy,
             AVG(e.confidence) as avg_confidence,
             COUNT(DISTINCT e.id) as total_explanations,
-            COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') as negative_feedback,
-            COUNT(f.id) as total_feedback,
+            COALESCE(SUM(f.negative_feedback), 0) as negative_feedback,
+            COALESCE(SUM(f.total_feedback), 0) as total_feedback,
             MAX(e.created_at) as latest_analysis,
             MIN(e.id) FILTER (
               WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
@@ -1512,12 +1506,16 @@ export class MetricsRepository extends BaseRepository {
                 WHERE (COALESCE(e.has_multiple_predictions, false) = false AND COALESCE(e.is_prediction_correct, false) = false)
                   OR (COALESCE(e.has_multiple_predictions, false) = true AND COALESCE(e.multi_test_all_correct, false) = false)
               ) * 5.0 +
-              CASE WHEN AVG(COALESCE(e.trustworthiness_score, e.multi_test_average_accuracy, 0)) < 0.6 THEN 10.0 ELSE 0.0 END +
+              CASE WHEN ${accuracy} < 0.6 THEN 10.0 ELSE 0.0 END +
               CASE WHEN AVG(e.confidence) < 50 THEN 3.0 ELSE 0.0 END +
-              COUNT(f.id) FILTER (WHERE f.feedback_type = 'not_helpful') * 2.0
+              COALESCE(SUM(f.negative_feedback), 0) * 2.0
             ) as composite_score
           FROM explanations e
-          LEFT JOIN feedback f ON e.id = f.explanation_id
+          LEFT JOIN (
+            SELECT explanation_id, COUNT(*) AS total_feedback,
+              COUNT(*) FILTER (WHERE feedback_type = 'not_helpful') AS negative_feedback
+            FROM feedback GROUP BY explanation_id
+          ) f ON e.id = f.explanation_id
           WHERE ${whereConditions.join(' AND ')}
           GROUP BY e.puzzle_id
           HAVING ${havingConditions.join(' AND ')}
@@ -1528,7 +1526,8 @@ export class MetricsRepository extends BaseRepository {
           CASE WHEN $2 = 'confidence' THEN performance_data.avg_confidence END ASC NULLS LAST,
           CASE WHEN $2 = 'feedback' THEN performance_data.negative_feedback END DESC NULLS LAST,
           CASE WHEN $2 = 'cost' THEN performance_data.avg_cost END DESC NULLS LAST,
-          CASE WHEN $2 = 'processing_time' THEN performance_data.avg_processing_time END DESC NULLS LAST
+          CASE WHEN $2 = 'processing_time' THEN performance_data.avg_processing_time END DESC NULLS LAST,
+          performance_data.total_explanations DESC, performance_data.puzzle_id ASC
         LIMIT $1
       `, queryParams);
 
@@ -1573,7 +1572,7 @@ export class MetricsRepository extends BaseRepository {
       });
     } catch (error) {
       logger.error(`Error getting worst-performing puzzles: ${error instanceof Error ? error.message : String(error)}`, 'metrics-repository');
-      return [];
+      throw error;
     }
   }
 

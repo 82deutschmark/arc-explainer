@@ -1,8 +1,9 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Author: GPT-6.1 Sol / Codex; Codex
+ * Date: 2026-10-08
  * PURPOSE: Exercise real production HTML delivery, redirects, sitemap and route coverage
  *          against local registries and the built shell, without external services.
+ *          Covers retired rankings returning 410 and disappearing from public discovery.
  * SRP/DRY check: Pass — uses production middleware and actual game/puzzle content.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -86,6 +87,29 @@ describe('SEO delivery', () => {
       expect(response.headers.get('x-robots-tag'), route).toContain('noindex');
     }
     expect((await fetch(`${base}/api/does-not-exist`)).status).toBe(404);
+  });
+  it('retires model rankings for old bookmarks and crawlers while keeping current results available', async () => {
+    for (const method of ['GET', 'HEAD']) {
+      for (const path of ['/leaderboards', '/leaderboards/?tab=trustworthiness']) {
+        const response = await fetch(`${base}${path}`, { method });
+        expect(response.status).toBe(410);
+        expect(response.headers.get('x-robots-tag')).toContain('noindex');
+        if (method === 'GET') {
+          const html = await response.text();
+          expect(html).toContain('Model rankings retired');
+          expect(html).toContain('content="noindex,follow"');
+          expect(html).not.toContain('Avg trustworthiness');
+        }
+      }
+    }
+    expect(sitemapUrls()).not.toContain(`${SITE_ORIGIN}/leaderboards`);
+    for (const path of ['/home', '/analytics']) {
+      const html = await (await fetch(`${base}${path}`)).text();
+      expect(html).not.toContain('href="/leaderboards"');
+    }
+    for (const path of ['/kaggle-leaderboard', '/kaggle-leaderboard/arc-2', '/analytics']) {
+      expect((await fetch(`${base}${path}`)).status).toBe(200);
+    }
   });
   it('excludes tools from indexing in raw HTML and headers, while keeping them usable', async () => {
     for (const route of ['/admin', '/admin/models', '/arc3/mechanics', '/worm-arena/live/session-123', '/worm-arena/live/session.v2', '/puzzle/saturn/007bbfb7']) {

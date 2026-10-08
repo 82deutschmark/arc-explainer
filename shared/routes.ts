@@ -1,9 +1,10 @@
 /**
- * Author: GPT-6 Codex
+ * Author: GPT-6 Codex; Codex
  * Date: 2026-10-08
  * PURPOSE: Centralized public route descriptions and indexing policy for server HTML,
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
+ *          Retires the obsolete model/trustworthiness leaderboard from public discovery.
  *          2026-10-06: entries can now carry keywords, structured data (JSON-LD) and a
  *          crawlable HTML summary that is served inside #root until the app renders, so a
  *          crawler that does not run JavaScript still sees a real page. Added /analytics
@@ -181,8 +182,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
           <li>Compare accuracy, cost per task and reliability across models.</li>
           <li>Open any puzzle to see the grids and every model's answer.</li>
         </ul>
-        <p>Related: <a href="/leaderboards">model leaderboards</a>,
-        <a href="/model-comparison">head-to-head model comparison</a>,
+        <p>Related: <a href="/model-comparison">head-to-head model comparison</a>,
         <a href="/scoring">official scoring</a>, <a href="/browser">browse every puzzle</a>.</p>
       </main>`,
   },
@@ -289,7 +289,7 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/hall-of-fame', 'ARC community hall of fame', 'Meet contributors to the ARC community and explore their puzzle-solving work.'],
   ['/hall-of-fame/johan-land', 'Johan Land — ARC community tribute', 'Explore Johan Land’s contribution to ARC puzzle solving and the results collected on ARC Explainer.'],
   ['/discussion', 'ARC puzzle discussions', 'Explore community discussions of ARC puzzles, model explanations and reasoning strategies.'],
-  ['/leaderboards', 'ARC model leaderboards', 'Compare recorded ARC model results by accuracy, reliability and cost. These are model evaluations, separate from the Kaggle competition standings.'],
+  ['/leaderboards', 'Model rankings retired', 'The old model and trustworthiness rankings have been retired because their measures and data are outdated.', true],
   ['/models', 'ARC model results browser', 'Browse language models evaluated on ARC puzzles and explore their recorded performance.'],
   ['/elo/leaderboard', 'ARC explanation Elo leaderboard', 'Explore model rankings from pairwise comparisons of ARC puzzle explanations.'],
   ['/feedback', 'ARC explanation feedback', 'Browse feedback on model-generated ARC puzzle explanations and explore the associated puzzles.'],

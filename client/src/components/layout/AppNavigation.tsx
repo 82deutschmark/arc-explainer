@@ -1,9 +1,10 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Author: GPT-6.1 Sol / Codex; Codex
+ * Date: 2026-10-08
  * PURPOSE: Keep the competition leaderboard directly visible in the primary navigation,
  *          with named mobile controls and resource/reference links in the existing menus.
  *          Gives the separate ARC Daily newspaper a direct News entry.
+ *          Removes the retired model/trustworthiness leaderboard from public navigation.
  * SRP/DRY check: Pass — maintains one navigation configuration with full-page links where needed.
  */
 /**
@@ -52,7 +53,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
   Archive,
-  Award,
   Brain,
   CheckCircle,
   CircuitBoard,
@@ -271,13 +271,6 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
             href: '/analytics',
             icon: Database,
             description: 'Model performance analytics across the puzzle datasets',
-          },
-          {
-            type: 'link',
-            title: 'Leaderboards',
-            href: '/leaderboards',
-            icon: Award,
-            description: 'Rankings across accuracy, trustworthiness, and feedback',
           },
           {
             type: 'link',
