@@ -46,7 +46,7 @@ const sections: { title: string; description: string; resources: Resource[] }[] 
 
 export default function LandingPage() {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <header className="mb-10 max-w-3xl space-y-3">
         <p className="text-sm font-medium text-muted-foreground">ARC Explainer</p>
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Resource Hub</h1>
@@ -73,6 +73,6 @@ export default function LandingPage() {
           </section>
         ))}
       </div>
-    </main>
+    </div>
   );
 }

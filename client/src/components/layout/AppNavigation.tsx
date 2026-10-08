@@ -159,6 +159,19 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
     description: 'Spoilers, reference and research behind the ARC-AGI-3 work',
     sections: [
       {
+        label: 'Resources',
+        items: [
+          {
+            type: 'link', title: 'Resource Hub', href: '/home', icon: Grid3X3,
+            description: 'Games, guides, human puzzles and results archives',
+          },
+          {
+            type: 'link', title: 'Human & AI Results', href: '/human-records.html', fullPage: true,
+            icon: Users, description: 'Published public-game records, scores, action counts and replays',
+          },
+        ],
+      },
+      {
         label: 'Spoilers',
         items: [
           {

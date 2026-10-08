@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.120.1  Oct 7, 2026
+
+- **Find the resources from ARC-3** (Author: Codex). Adds the Resource Hub and Human & AI Results to the ARC-3 menu and labels the homepage footer link clearly. Removes the hub's redundant nested main landmark. No leaderboard behavior changed.
+
 ### Version 9.120.0  Oct 7, 2026
 
 - **Public ARC-2 and ARC-3 leaderboards with competitor cards** (Author: GPT-6 / Codex). Leads `/kaggle-leaderboard` with competition-wide figures, replaces “our” and “us” labels with neutral pinned-team labels, and keeps the featured team highlighted and first in the unfiltered table. New watchlists compare the leaders and medal cutoffs alongside the pinned team; saved visitor selections are preserved. Adds baseball-card-style competitor cards for the live leaders and requested familiar contenders, with current standings, UTC daily changes, watchlist stars and observed-only 14-day score trails. Limited history is labelled rather than projected to today. Adds `/kaggle-leaderboard/arc-2` through the same components, separate data queries, names, pins and browser watchlists; new boards explicitly wait for daily and weekly comparison history. Pins both existing ARC-2 entries and fixes the competition close to 23:59 UTC on November 2. Uses the existing API and chart components without changing collection or scoring. Files: `client/src/pages/KaggleLeaderboard.tsx`, `client/src/components/kaggleLeaderboard/{FeaturedTeams,BoardTiles,OurRankChart,RaceChart,MedalRaceChart,ScoreCrowdChart,WatchlistChart,TeamsTable,useWatchlist}`; details in `docs/2026-10-07-neutral-kaggle-leaderboard-plan.md`.

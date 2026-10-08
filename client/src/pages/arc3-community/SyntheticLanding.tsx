@@ -430,7 +430,7 @@ export default function SyntheticLanding() {
               are playable here, and a blind player must not wander into it. */}
           <Link href="/arc3" className="underline">Reference (spoilers)</Link>
           <span className="mx-2 opacity-50">·</span>
-          <Link href="/home" className="underline">ARC Explainer</Link>
+          <Link href="/home" className="underline">Resource Hub</Link>
         </footer>
       </div>
     </div>
