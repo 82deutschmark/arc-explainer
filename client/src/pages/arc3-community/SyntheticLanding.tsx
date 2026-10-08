@@ -1,8 +1,10 @@
 /*
-Author: Claude Opus 5.5 (2026-10-05 pivot); Codex (GPT-6) and earlier contributors
-Date: 2026-10-05
+Author: GPT-6 / Codex; Claude Opus 5.5 and earlier contributors
+Date: 2026-10-07
 PURPOSE: Landing page served as the root of arc3.markbarney.net. ONE audience: someone
          with no background who wants to know what we are doing and how the race is going.
+         2026-10-07: distinguish visible notes from opaque reasoning state, credit ARC
+         Prize's Astra analysis, and describe score gaps without claiming completion.
 
          ── 2026-10-05: THE PAGE LEADS WITH THE LEADERBOARD, NOT THE PRACTICE GAMES ─────
 
@@ -234,7 +236,7 @@ export default function SyntheticLanding() {
                   ARC-AGI-3 is a set of little games with no instructions. You get a screen, a
                   few buttons, and nothing else; you press things, watch what changes, and work
                   out the goal.{' '}
-                  <strong style={{ color: ARC.text }}>Most people manage in a couple of minutes.</strong>{' '}
+                  <strong style={{ color: ARC.text }}>Every official environment was solved by human testers.</strong>{' '}
                   The competition is to build an agent that does the same.
                 </p>
                 {/* No numbers in this paragraph: every figure about the race lives in the
@@ -317,24 +319,30 @@ export default function SyntheticLanding() {
                 published, sourced from the data file, never retyped here. */}
             <p>
               On {ASTRA_SOURCE.published} ARC Prize published a set of runs that made this
-              unusually vivid. The same model was pointed at the same {ENV_TOTAL} ARC-AGI-3
-              environments twice. The only thing that changed between the two was the
-              harness — whether the model's own working state was carried from one request
-              to the next, or thrown away and rebuilt each turn.
+              unusually vivid. The same model played the same {ENV_TOTAL} public ARC-AGI-3
+              environments under two harnesses, each at six reasoning settings. The Standard
+              harness carries forward visible notes chosen by the model. The Provider Adapter
+              also preserves opaque reasoning state between requests and uses compaction to
+              manage longer conversations.
             </p>
             <p>
-              On <strong style={{ color: ARC.text }}>{WORST_ENV.env}</strong>, the throw-it-away
-              path never got above{' '}
+              On <strong style={{ color: ARC.text }}>{WORST_ENV.env}</strong>, the Standard
+              harness never scored above{' '}
               <strong style={{ color: ARC.text }}>{(WORST_ENV.standard * 100).toFixed(1)}%</strong>{' '}
-              — not at any of the six reasoning settings, including the most expensive one.
-              Let it keep its state, and it solves the environment. Same weights, same
-              puzzle. Turning up the thinking did nothing; letting it remember did
-              everything. That pattern holds on {ENVS_WITH_GAP} of the {ENV_TOTAL}.
+              across those six settings; the Provider Adapter reached 100%. Its best score
+              was higher on {ENVS_WITH_GAP} of the {ENV_TOTAL} environments. These are
+              action-efficiency scores, not completion percentages. The comparison shows
+              that harness configuration matters, but does not isolate which feature caused
+              each improvement.
             </p>
             <p>
-              That's our reading, not anyone's finding — ARC Prize put the numbers up and said
-              nothing about what they meant. It's also, more selfishly, the bit we spend our
-              evenings on.
+              ARC Prize discusses these results in{' '}
+              <a href="https://arcprize.org/blog/astra" target="_blank" rel="noreferrer" className="underline">
+                its Astra analysis
+              </a>
+              , including why it reports both harnesses. Our interest is practical: how much
+              better can an agent use the information it has already gathered? That is the
+              bit we spend our evenings on.
             </p>
           </div>
           <HarnessGapChart />

@@ -1,12 +1,14 @@
 /*
- * Author: Cascade (Claude Opus 4.6 thinking); updated by Claude Fable 5; updated by Claude Opus 5;
- *         updated by Claude Sonnet 5
- * Date: 2026-03-29 (updated 2026-07-30, 2026-09-12)
+ * Author: GPT-6 / Codex; Cascade; Claude Fable 5; Claude Opus 5; Claude Sonnet 5
+ * Date: 2026-10-07
  * PURPOSE: ARC-AGI-3 reference and history page. Dense, dark-themed layout modeled on
  *          ClaudeCodeGuide.tsx (/cc). Presents useful links up top, brief explainer prose,
  *          compact timeline table, preview-era game reference tables, environment-construction
  *          breakdown, RHAE scoring spec, leaderboard policy, duck harness section, and
  *          external resources.
+ *          Corrected the original preview membership against ARC Prize's August 2025
+ *          retrospective, distinguished withdrawn AS66, and separated attempt time from
+ *          successful completion time in the technical report's human-testing figures.
  *          Content is restricted to facts documented in the official ARC-AGI-3 Technical
  *          Report (arcprize.org/media/ARC_AGI_3_Technical_Report.pdf, April 22 2026, read in
  *          full 2026-07-30), this repo's own analysis files, game metadata (shared/arc3Games/),
@@ -103,10 +105,10 @@ const RELEASE_SCORES = [
   ['xAI', 'Grok-4.20 (Beta 0309 Reasoning)', '0.10%'],
 ];
 
-/* Timeline rows. Facts from the technical report, ARC3-HISTORY-PAGE-BRIEF.md, and repo git history. */
+/* Preview history: https://arcprize.org/blog/arc-agi-3-preview-30-day-learnings. */
 const TIMELINE = [
-  { when: 'Jul–Aug 2025', what: 'Preview agent competition runs for 30 days (July 18 – August 19). Three public environments — ls20 (Locksmith), as66 (Always Sliding), ft09 (Functional Tiles) — with three more held back as a hidden evaluation set.' },
-  { when: 'August 2025', what: 'Evaluation set revealed: lp85 (Loop and Pull), sp80 (Streaming Purple), vc33 (Volume Control). Six games total now documented on this site.' },
+  { when: 'Jul–Aug 2025', what: 'The public preview launches on July 17 with ls20 (Locksmith), ft09 (Functional Tiles), and vc33 (Volume Control). ARC Prize publishes its 30-day retrospective on August 19; three additional environments were held back for evaluation.' },
+  { when: 'Later in 2025', what: 'This site documents three additional preview-era environments: as66 (Always Sliding), lp85 (Loop and Pull), and sp80 (Streaming Purple), bringing the historical collection to six.' },
   { when: 'Late 2025', what: 'StochasticGoose (Dries Smit, Tufa Labs) wins the preview competition with 12.58% and 18 levels completed, using a four-layer CNN with reinforcement learning to predict which actions change the frame. Blind Squirrel takes second at 6.71% by building a directed state graph.' },
   { when: 'March 2026', what: 'ARCEngine open-sourced with 40+ games. as66 is notably absent from the new catalog. Son Pham launches arc3.sonpham.net as the community play/agent harness.' },
   { when: 'April 22, 2026', what: 'ARC-AGI-3 technical report published: 135 environments across three sets, RHAE scoring, and the first official leaderboard — every frontier model under 1%.' },
@@ -125,15 +127,15 @@ interface PreviewGame {
 /* Preview set — the 3 games public from the start of the preview period */
 const PREVIEW_SET: PreviewGame[] = [
   { id: 'ls20', name: 'Locksmith', input: 'D-pad (Up/Down/Left/Right)', difficulty: 'Hard' },
-  { id: 'as66', name: 'Always Sliding', input: 'D-pad (Up/Down/Left/Right)', difficulty: 'Easy', note: 'Missing from March 2026 catalog' },
   { id: 'ft09', name: 'Functional Tiles', input: 'Click', difficulty: 'Medium' },
+  { id: 'vc33', name: 'Volume Control', input: 'Click', difficulty: 'Medium' },
 ];
 
-/* Evaluation set — held back, revealed after the preview period */
+/* Other preview-era games documented here; no unsupported exact release date. */
 const EVAL_SET: PreviewGame[] = [
+  { id: 'as66', name: 'Always Sliding', input: 'D-pad (Up/Down/Left/Right)', difficulty: 'Easy', note: 'Withdrawn from the public demo set' },
   { id: 'lp85', name: 'Loop and Pull', input: 'Click', difficulty: 'Hard' },
   { id: 'sp80', name: 'Streaming Purple', input: 'Click + Interact', difficulty: 'Medium' },
-  { id: 'vc33', name: 'Volume Control', input: 'Click', difficulty: 'Medium' },
 ];
 
 const RESOURCES = [
@@ -393,15 +395,15 @@ export default function Arc3Story() {
             </p>
           </div>
           <p className="text-xs text-slate-500 mb-5">
-            The six games documented during the preview competition. Click a game ID for mechanics, screenshots, and analysis.
+            The six preview-era games documented here. Click a game ID for mechanics, screenshots, and analysis.
             Games have been updated since this period — our documentation reflects the preview-era versions.
           </p>
           <GameTable games={PREVIEW_SET} label="Preview set (public from the start)" />
-          <GameTable games={EVAL_SET} label="Evaluation set (revealed after the preview)" />
+          <GameTable games={EVAL_SET} label="Other preview-era games documented here" />
           <Note>
-            <strong className="text-slate-400">as66</strong> did not appear in the March 2026 ARCEngine catalog.
-            It may be held back for evaluation, or retired. Our documentation of that game may cover content
-            no longer publicly available.
+            <strong className="text-slate-400">as66</strong> is no longer in the official public demo set.
+            Its write-up is historical and incomplete. We do not know whether ARC Prize retained it in a
+            private set or retired it entirely.
           </Note>
         </section>
 
@@ -414,8 +416,8 @@ export default function Arc3Story() {
           <h2 className="text-xl font-semibold text-slate-100 mb-2">The Full Public Demo Set (25 games, 2026)</h2>
           <p className="text-sm text-slate-400 mb-4">
             Every game in the current public demo set — the community front door described in the
-            dataset table below, current as of the March 2026 ARCEngine catalog. The six
-            preview/evaluation games above are the historical subset of these 25.
+            dataset table below. Five of the six historical games above remain in these 25;
+            as66 is excluded.
           </p>
           <Link
             href="/arc3/games"
@@ -683,8 +685,9 @@ export default function Arc3Story() {
 
           <div className="mt-5">
             <Note>
-              Every frontier model is under 1%. Humans clear these environments completely, cold, in a
-              median of 7.4 minutes.
+              At release, every frontier model in this table scored under 1%. In the human study,
+              successful first attempts took a median of 8.1 minutes; the median across all attempts,
+              including unsuccessful ones, was 7.4 minutes (report §5.3.1).
             </Note>
           </div>
         </section>

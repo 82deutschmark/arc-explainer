@@ -1,13 +1,13 @@
 /**
- * Author: Cascade
- * Date: 2025-12-16 (updated 2025-12-17)
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
  * PURPOSE: Visualization page for official ARC Prize team evaluation harness results (posted on Hugging Face).
  * Clarifies that ARC Explainer is a visualization tool for raw JSON data on the public evaluation set (not semi-private).
  * Explains union scoring at user level: two independent attempts per puzzle; for each test pair, either attempt being correct
  * counts the pair as solved; each puzzle score is the fraction of its test pairs solved; dataset score is the average of puzzle
  * scores (each puzzle weighted equally). Also explains why the "Test Pairs" metric differs and why users see numbers like
  * 117 solved test pairs out of 166 total.
- * Reuses: parseAttemptModelName(), compareService + useAttemptUnionComparison().
+ * Reuses: parseAttemptModelName(), compareService + useAttemptUnionComparison(); displays recorded costs for both scored attempts.
  * Prominent attribution: Hugging Face link, ARC Prize team credit, clarification this is not a personal evaluation tool.
  * SRP/DRY check: Pass - Orchestrates focused components/hooks; avoids duplicated request-building and UI blocks.
  * shadcn/ui: Pass - Uses Card, Select, Badge, Progress, Alert, Button, Table.
@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
-import { useAvailableModels, useModelDatasetMetrics } from '@/hooks/useModelDatasetPerformance';
+import { useAvailableModels } from '@/hooks/useModelDatasetPerformance';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { parseAttemptModelName } from '@/utils/modelComparison';
 import { useAttemptUnionComparison } from '@/hooks/useAttemptUnionComparison';
@@ -114,15 +114,6 @@ export default function HuggingFaceUnionAccuracy() {
     return options;
   }, [attemptGroups]);
 
-  // Get cost metrics for selected model
-  const selectedModelName = useMemo(() => {
-    if (!selectedAttemptPair) return null;
-    const selectedPair = attemptPairOptions.find((opt) => opt.value === selectedAttemptPair);
-    return selectedPair?.modelNames[0] || null;
-  }, [selectedAttemptPair, attemptPairOptions]);
-
-  const { metrics: costMetrics } = useModelDatasetMetrics(selectedModelName, selectedDataset);
-
   // Auto-select first pair (which is ordered to prefer GPT-5.2 High)
   useEffect(() => {
     if (!selectedAttemptPair && attemptPairOptions.length > 0) {
@@ -146,6 +137,9 @@ export default function HuggingFaceUnionAccuracy() {
     dataset: selectedDataset,
     attemptModelNames: selectedAttemptModelNames,
   });
+
+  const costMetrics = unionMetrics?.costMetrics;
+  const formatCost = (cost: number | null) => cost === null ? '—' : `$${cost.toFixed(4)}`;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -208,34 +202,40 @@ export default function HuggingFaceUnionAccuracy() {
             {costMetrics && (
               <Card className="shadow-sm border-green-200 bg-green-50/30">
                 <CardContent className="p-3">
-                  {/* Keep existing layout by reusing the original cost block semantics */}
-                  <div className="text-base font-semibold text-gray-900 mb-2">Cost & Performance Metrics</div>
+                  {/* Cost and timing use the exact same latest rows as the two-attempt score. */}
+                  <div className="text-base font-semibold text-gray-900 mb-2">Recorded Cost & Timing — Both Attempts</div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div className="bg-white rounded p-2 border border-green-100">
-                      <div className="text-xs text-gray-600 mb-1">Total Cost</div>
+                      <div className="text-xs text-gray-600 mb-1">Recorded Total Cost</div>
                       <div className="text-lg font-bold text-gray-900">
-                        ${costMetrics.overall.totalCost.toFixed(4)}
+                        {formatCost(costMetrics.recordedTotalCost)}
                       </div>
                     </div>
                     <div className="bg-white rounded p-2 border border-green-100">
-                      <div className="text-xs text-gray-600 mb-1">Cost per Puzzle</div>
+                      <div className="text-xs text-gray-600 mb-1">Mean Cost per Recorded Attempt</div>
                       <div className="text-lg font-bold text-gray-900">
-                        ${costMetrics.overall.avgCost.toFixed(4)}
+                        {formatCost(costMetrics.avgRecordedCostPerAttempt)}
                       </div>
                     </div>
                     <div className="bg-white rounded p-2 border border-green-100">
-                      <div className="text-xs text-gray-600 mb-1">Cost per Correct</div>
+                      <div className="text-xs text-gray-600 mb-1">Cost per Fully Solved Puzzle</div>
                       <div className="text-lg font-bold text-green-700">
-                        ${costMetrics.correct.avgCost.toFixed(4)}
+                        {formatCost(costMetrics.costPerSolvedPuzzle)}
                       </div>
                     </div>
                     <div className="bg-white rounded p-2 border border-green-100">
-                      <div className="text-xs text-gray-600 mb-1">Avg Time</div>
+                      <div className="text-xs text-gray-600 mb-1">Mean Time per Recorded Attempt</div>
                       <div className="text-lg font-bold text-gray-900">
-                        {(costMetrics.overall.avgTime / 1000).toFixed(2)}s
+                        {costMetrics.avgRecordedTimeMs === null ? '—' : `${(costMetrics.avgRecordedTimeMs / 1000).toFixed(2)}s`}
                       </div>
                     </div>
                   </div>
+                  <p className="mt-2 text-xs text-gray-600">
+                    Cost metadata: {costMetrics.costedAttempts}/{costMetrics.totalAttempts} stored attempts.
+                    {' '}Timing metadata: {costMetrics.timedAttempts}/{costMetrics.totalAttempts}.
+                    {' '}Cost per fully solved puzzle includes both attempts and is shown only when all stored attempts have cost data.
+                    {' '}Missing values are shown as —; absent attempts and unrecorded costs are not estimated.
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -246,7 +246,7 @@ export default function HuggingFaceUnionAccuracy() {
         {!loading && !unionMetrics && !error && (
           <Card className="shadow-sm">
             <CardContent className="p-4 text-center">
-              <p className="text-base text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. By default, it has been set to Claude Haiku 4.5 with maximum thinking enabled. That was the same model who coded this page. (With a LOT of human oversight!)</p>
+              <p className="text-base text-gray-500">Select a dataset and a model pair above to see their performance on the public evaluation set. The selected model pair will load automatically.</p>
             </CardContent>
           </Card>
         )}

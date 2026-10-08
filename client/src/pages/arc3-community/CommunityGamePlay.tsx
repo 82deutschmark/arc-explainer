@@ -1,6 +1,7 @@
 /*
 Author: Codex (GPT-6), with existing contributors
-Date: 2026-09-30
+Date: 2026-10-07
+Update: GPT-6 / Codex -- render the next-task arrow as a character, not a literal escape.
 Update: GPT-6 / Codex -- show the actual load failure without attributing Python source
         errors to WebAssembly or CDN access.
 Update: 2026-09-25 (Claude Opus 5.5) -- per Boss, the notes/feedback panel is ALWAYS open for the
@@ -1395,7 +1396,7 @@ export default function CommunityGamePlay() {
               reachedLevel={levelsDone}
               outcome={gameState === 'won' ? 'completed' : gameState === 'lost' ? 'lost' : 'in_progress'}
               sourceVersion={pyodide.sourceVersion}
-              doneLabel="Skip \u2192 next task"
+              doneLabel="Skip → next task"
               onDone={nextGameId ? goNext : undefined}
             />
           </div>

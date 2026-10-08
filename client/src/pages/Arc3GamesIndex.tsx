@@ -1,10 +1,12 @@
 /*
- * Author: Claude Opus 5; Claude Sonnet 5; GPT-6 / Codex
- * Date: 2026-10-05 (GPT-6 / Codex: link human action counts and published AI results)
+ * Author: GPT-6 / Codex; Claude Opus 5; Claude Sonnet 5
+ * Date: 2026-10-07
  * PURPOSE: The canonical index of the official ARC-AGI-3 game set at /arc3/games -- the
  *          front door for "what are these 25 games", which is now also the nav's lead
- *          ARC-3 link instead of the deprecated agent playground. A live search box over
- *          a scannable card grid lets a reader find one game by name/id/tag/mechanic
+ *          ARC-3 link instead of the deprecated agent playground.
+ *          The public-set framing cites the technical report directly, without an
+ *          unverified quotation or a promise of transfer to private games.
+ *          A live search box over a scannable card grid lets a reader find one game by name/id/tag/mechanic
  *          without scrolling a 25-entry page; the grid links through to that game's own
  *          page (screenshots, replays, human records) rather than scrolling here.
  *
@@ -26,9 +28,8 @@
  *          the top-10 board, Boss's own count, and ARC's baseline -- and the
  *          grid can be sorted by fewest actions, because Boss rates a game as easier the
  *          fewer actions it takes. Top-10 numbers come from /api/arc3/leaderboards/summary.
- *          2026-09-16 (Claude Opus 5): added the tutorial card right under the intro,
- *          quoting François Chollet (from his recent post on X) in Boss's wording:
- *          the 25 public games are the tutorial for the private set.
+ *          2026-09-16 (Claude Opus 5): added the tutorial card right under the intro.
+ *          2026-10-07 (GPT-6 / Codex): replaced its unsourced quote with a report citation.
  *
  * SRP/DRY check: Pass -- presentation + client-side filtering only, over the shared
  *          registry. Reuses shadcn Card, Badge and Input, and the getAllGames helper
@@ -173,8 +174,7 @@ function GameGridTile({ game, counts }: { game: Arc3GameMetadata; counts: GameAc
 }
 
 /**
- * What these 25 games are for, said before anything else on the page: they are the
- * tutorial for the private set, in François Chollet's framing.
+ * Describe the demonstration set using the report, without attributing an unsourced quote.
  */
 function TutorialFramingCard({ gameCount }: { gameCount: number }) {
   return (
@@ -182,21 +182,19 @@ function TutorialFramingCard({ gameCount }: { gameCount: number }) {
       <CardHeader className="pb-2">
         <CardTitle className="text-xl flex items-center gap-2">
           <GraduationCap className="h-5 w-5" />
-          These {gameCount} games are the tutorial
+          These {gameCount} games introduce the format
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm leading-relaxed">
-        <blockquote className="border-l-2 border-muted-foreground/30 pl-3">
-          <p className="text-base">
-            “This is the tutorial. These {gameCount} games, you should consider this the tutorial for the
-            private set.”
-          </p>
-          <footer className="mt-1 text-muted-foreground">— François Chollet</footer>
-        </blockquote>
         <p>
-          They don't cover everything the private set will throw at you, but learn how these {gameCount} work
-          and you should be able to do okay on it.
+          The public games are a way to learn the interface and explore how ARC-AGI-3 works.
+          The private games are deliberately harder and use different mechanics, so mastering
+          these games does not establish performance on the competition set.
         </p>
+        <a href="https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf#page=10"
+           target="_blank" rel="noopener noreferrer" className="inline-block underline">
+          ARC Prize technical report, section 3.6: environment selection
+        </a>
       </CardContent>
     </Card>
   );

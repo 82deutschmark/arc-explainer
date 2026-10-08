@@ -1,4 +1,9 @@
 /**
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
+ * PURPOSE: Archive analytics with backward-compatible union cost/coverage types used by scoring pages.
+ * SRP/DRY check: Pass — cost metrics reuse the shared API contract.
+ *
  * Author: Cascade using Claude Sonnet 4.5
  * Date: 2025-10-10T19:00:00-04:00 (Updated for MAXIMUM density; updated 2025-12-17)
  * PURPOSE: Analytics dashboard showing ACCURATE model performance statistics with MAXIMUM information density.
@@ -83,6 +88,8 @@ export interface AttemptUnionStats {
   puzzlesCounted: number;
   puzzlesFullySolved: number;
   puzzlesFullySolvedIds?: string[];
+  attemptedPuzzleCount?: number;
+  costMetrics?: import('@shared/attemptUnionMetrics').AttemptUnionCostMetrics;
 
   // Dataset-level denominators (stable across models; returned by backend)
   datasetTotalPuzzles?: number;
@@ -775,7 +782,6 @@ export default function AnalyticsOverview() {
     </div>
   );
 }
-
 
 
 

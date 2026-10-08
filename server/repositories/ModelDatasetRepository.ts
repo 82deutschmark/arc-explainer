@@ -1,12 +1,13 @@
 /**
  *
- * Author: Cascade (FIXED THE CRITICAL LOGIC ERROR + ARCHITECTURE FIX 2025-10-10)
- * Date: 2025-09-26T20:43:42-04:00 (updated 2025-10-10, 2025-12-16)
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
  * PURPOSE: CANONICAL SOURCE for all dataset operations including:
  * - Model performance queries on ANY ARC dataset
  * - Dataset discovery (filesystem-based)
  * - Puzzle ID retrieval from datasets (single source of truth)
  * - Dataset-level denominators (total puzzles + total test pairs) for stable UI metrics
+ * - Authoritative per-task test counts for scoring; invalid tasks fail closed instead of shrinking denominators
  * 
  * ARCHITECTURE FIX (2025-10-10): 
  * - getPuzzleIdsFromDataset() now PUBLIC (was private)
@@ -87,6 +88,7 @@ export class ModelDatasetRepository extends BaseRepository {
   // once shipped with the repo, so this is safe and avoids re-reading hundreds of files
   // on every metrics request.
   private datasetTotalsCache = new Map<string, DatasetTotals>();
+  private testPairCountsCache = new Map<string, ReadonlyMap<string, number>>();
 
   // NOTE: The user explicitly wants ARC2 eval to display as 120 puzzles even though
   // local filesystem counts can sometimes differ due to dataset packaging.
@@ -230,6 +232,24 @@ export class ModelDatasetRepository extends BaseRepository {
     this.datasetTotalsCache.set(datasetName, totals);
     logger.info(`Dataset totals computed: dataset=${datasetName}, totalPuzzles=${totalPuzzles}, totalTestPairs=${totalTestPairs}`, 'dataset');
     return totals;
+  }
+
+  /** Exact task counts for scoring. Never substitute a display override or stored-answer length. */
+  public getDatasetTestPairCounts(datasetName: string): ReadonlyMap<string, number> {
+    const cached = this.testPairCountsCache.get(datasetName);
+    if (cached) return cached;
+    const puzzleIds = this.getPuzzleIdsFromDataset(datasetName);
+    if (puzzleIds.length === 0) throw new Error(`No tasks available to score in dataset ${datasetName}`);
+    const counts = new Map<string, number>();
+    for (const puzzleId of puzzleIds) {
+      const task = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data', datasetName, `${puzzleId}.json`), 'utf-8'));
+      if (!Array.isArray(task.test) || task.test.length < 1) {
+        throw new Error(`Dataset task ${datasetName}/${puzzleId} has no valid test cases`);
+      }
+      counts.set(puzzleId, task.test.length);
+    }
+    this.testPairCountsCache.set(datasetName, counts);
+    return counts;
   }
   /**
    * Get model performance on ANY dataset - completely dynamic!

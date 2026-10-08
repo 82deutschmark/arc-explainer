@@ -1,10 +1,12 @@
 /*
- * Author: Cascade (ChatGPT); withdrawal note added by Claude Sonnet 5, 2026-09-11
- * Date: 2026-01-09 (note added 2026-09-11)
+ * Author: GPT-6 / Codex; Cascade (ChatGPT); Claude Sonnet 5
+ * Date: 2026-10-07
  * PURPOSE: Game metadata for AS66 (Always Sliding) plus curated replay video reference.
  *          As of 2026-09-11, confirmed withdrawn from the ARC-AGI-3 public demo set --
  *          see the `notes` field below for the three independent sources. Content
  *          otherwise unchanged from the original preview-era spoiler page.
+ *          Documentation is marked partial: per-level rule entries and the first two
+ *          screenshots are absent. No game mechanics or training eligibility change.
  *          2026-09-17 (Claude Fable 5.1): AS66 -- "the lost game" -- has been recreated from
  *          Boss's 27-Dec-2025 recording and is playable, by link only, at /arc3/play/as66.
  *          Start at docs/reference/arc3/AS66_Lost_Game.md for everything about it.
@@ -21,7 +23,7 @@ export const as66: Arc3GameMetadata = {
   description: 'Navigate a sliding block to the exit while matching required colors and avoiding enemies.',
   simpleExplanation: 'You slide a block in one direction until it hits something. Get it to the exit while matching the exit\'s required color, and avoid enemies that kill you on contact.',
   mechanicsExplanation: 'The player block always slides in the chosen direction until it hits an obstacle. Collision with orange or red enemies results in instant death and level failure. To exit, you must match the color expected by the door area, which is typically marked as a white U-shaped area. Special objects in the field can change your block\'s color.',
-  category: 'preview',
+  category: 'evaluation',
   humanDifficulty: 'easy',
   aiDifficulty: 'unknown',
   actionMappings: [
@@ -73,6 +75,6 @@ export const as66: Arc3GameMetadata = {
     src: '/videos/arc3/as66-test.mp4',
     caption: 'Full Always Sliding clear demonstrating Action timing',
   },
-  isFullyDocumented: true,
+  isFullyDocumented: false,
   notes: 'Updated with strategic intel about enemy lethality and exit conditions. WITHDRAWN FROM THE PUBLIC DEMO SET as of Sep 2026 (confirmed 2026-09-11 via arcprize.org/tasks -- the live ARC-AGI-3 Public Demo listing shows 25 games and AS66 is not one of them; client/src/data/astraHarnessGap.ts, ARC Prize\'s own 2-Sep-2026 published results, lists the same 25 without AS66; and the 2026-08-31 ARCEngine environment_files download batch pulled those same 25 codes, not AS66). Where it moved (semi-private or private) is not verifiable -- those sets are never published. Kept here as historical preview-era content; see docs/2026-09-11-arc3-25-game-names-plan.md.',
 };

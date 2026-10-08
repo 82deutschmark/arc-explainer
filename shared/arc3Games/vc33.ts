@@ -1,8 +1,10 @@
 /*
- * Author: Cascade (ChatGPT); corrected by Claude Sonnet 5, 2026-09-12; orientation note
+ * Author: GPT-6 / Codex; Cascade (ChatGPT); corrected by Claude Sonnet 5, 2026-09-12; orientation note
  *         added 2026-09-12 PM; mechanics breakdown by Claude Opus 5, 2026-09-16
- * Date: 2026-01-09 (corrected against source 2026-09-12; breakdown added 2026-09-16)
+ * Date: 2026-10-07
  * PURPOSE: Game metadata for VC33 with featured replay video metadata.
+ *          2026-10-07: original public-preview classification corrected against ARC Prize's
+ *          August 2025 retrospective; mechanics, source citations and levels unchanged.
  *          Adversarially re-verified 2026-09-12: player-square transit needs a manual
  *          click on a specific bar (it's a two-way swap, not an automatic glide),
  *          blue squares don't move liquid at all (only red/maroon do), and every
@@ -141,7 +143,7 @@ export const vc33: Arc3GameMetadata = {
       happened: 'Insane, and very confusing. He took a screenshot out of pure frustration.',
     },
   ],
-  category: 'evaluation',
+  category: 'preview',
   humanDifficulty: 'medium',
   aiDifficulty: 'easy',
   actionMappings: [

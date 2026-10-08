@@ -1,8 +1,8 @@
 /**
- * Author: Cascade
- * Date: 2025-12-17
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
  * PURPOSE: Shared attempt-union metrics card used by ModelComparisonDialog and the Hugging Face union page.
- *          Extracted to eliminate duplicated union metrics UI and to enforce one canonical presentation.
+ *          Displays full selected-dataset scores and counts from the shared authoritative task scorer.
  * SRP/DRY check: Pass - Single responsibility presentational component.
  * shadcn/ui: Pass - Uses shadcn/ui Card/Badge/Progress.
  */
@@ -26,6 +26,7 @@ export interface AttemptUnionMetrics {
   totalTestPairs?: number;
   puzzlesCounted?: number;
   puzzlesFullySolved?: number;
+  attemptedPuzzleCount?: number;
 
   // Dataset-level denominators (stable across models; returned by backend)
   datasetTotalPuzzles?: number;
@@ -86,7 +87,7 @@ export const AttemptUnionCard: React.FC<{
               <div className="text-4xl font-bold text-blue-700">
                 {metrics.unionAccuracyPercentage.toFixed(1)}%
               </div>
-              <p className="text-base text-gray-600 mt-0.5">Official harness score (average of puzzle scores)</p>
+              <p className="text-base text-gray-600 mt-0.5">Full-dataset score (ARC scoring method)</p>
             </div>
             <div className="flex items-start gap-2">
               {unionPuzzleIds.length > 0 && (
@@ -110,8 +111,8 @@ export const AttemptUnionCard: React.FC<{
           <div className="grid grid-cols-3 gap-2 mb-3">
             <div className="bg-blue-100 rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-blue-700">{metrics.unionAccuracyPercentage.toFixed(1)}%</div>
-              <div className="text-sm font-medium text-blue-800">Harness Score</div>
-              <div className="text-xs text-gray-600">Official ARC-AGI metric</div>
+              <div className="text-sm font-medium text-blue-800">Dataset Score</div>
+              <div className="text-xs text-gray-600">Average across {puzzlesCounted} puzzles</div>
             </div>
             <div className="bg-green-100 rounded-lg p-3 text-center">
               <div className="text-2xl font-bold text-green-700">
@@ -158,7 +159,7 @@ export const AttemptUnionCard: React.FC<{
 
             <div className="grid gap-2 md:grid-cols-3">
               <div className="bg-blue-50 border border-blue-200 rounded p-2">
-                <div className="font-semibold text-blue-900">Harness Score (official)</div>
+                <div className="font-semibold text-blue-900">Dataset Score (ARC method)</div>
                 <div className="text-gray-700 mt-1">
                   Compute a score for each puzzle, then average puzzle scores.
                 </div>
@@ -228,18 +229,15 @@ export const AttemptUnionCard: React.FC<{
             </div>
 
             <div className="border-t border-gray-200 pt-3 space-y-2 bg-amber-50 rounded p-3 border-l-4 border-l-amber-600">
-              <div className="font-semibold text-amber-900">⚠️ Critical: Arc Explainer's stricter scoring (DIFFERENT from official harness)</div>
+              <div className="font-semibold text-amber-900">Dataset coverage</div>
               <div className="text-gray-700 leading-relaxed">
-                <strong>Important distinction:</strong> ARC Explainer calculates scores against <strong>ALL puzzles in the dataset</strong> (120 for ARC2-Eval),
-                not just the ones the model attempted. This is MORE STRICT than the official ARC-AGI harness.
-                <br /><br />
-                <strong>Official harness:</strong> Only counts attempted puzzles. A model that solves 1 puzzle out of 120 scores 1/1 = 100%.
-                <br /><br />
-                <strong>Arc Explainer (this page):</strong> Counts all 120 required puzzles. A model that solves 1 puzzle out of 120 scores (1.0 + 0 + 0 + ... + 0) / 120 ≈ 0.83%.
-                Unattempted puzzles count as zero.
+                The score includes all <strong>{puzzlesCounted} puzzles</strong> and their <strong>{totalPairs} test pairs</strong> in the selected dataset.
+                A test pair without a recorded correct answer counts as unsolved, including missing attempts.
+                Each puzzle uses the number of test pairs in its original task file.
               </div>
               <div className="text-gray-700 leading-relaxed text-sm">
-                This ensures you see how a model performs against the <strong>complete required task set</strong>, not just the puzzles it happened to attempt.
+                {metrics.attemptedPuzzleCount !== undefined && <>Recorded attempts cover {metrics.attemptedPuzzleCount} of {puzzlesCounted} puzzles. </>}
+                These are scores recomputed from the records available here; incomplete imports can differ from the source evaluation.
               </div>
             </div>
 
@@ -322,7 +320,7 @@ export const AttemptUnionCard: React.FC<{
               {metrics.unionAccuracyPercentage.toFixed(1)}%
             </CardTitle>
             <CardDescription className="mt-2">
-              Official harness score (average of puzzle scores)
+              Full-dataset score (ARC scoring method)
             </CardDescription>
           </div>
           <Zap className="h-6 w-6 text-blue-500 shrink-0 mt-1" aria-hidden="true" />

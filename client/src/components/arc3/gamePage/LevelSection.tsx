@@ -1,6 +1,6 @@
 /*
- * Author: Claude Opus 5
- * Date: 2026-09-18
+ * Author: GPT-6 / Codex; Claude Opus 5
+ * Date: 2026-10-07
  * PURPOSE: One level of a game page. Header: "Level N", ARC's baseline actions and Boss's
  *          actions on that level, as plain numbers (no budget, no bar: brief amendment 3).
  *          Left: the engine render of the level's opening frame, then any human captures, each
@@ -8,6 +8,8 @@
  *          the start"), only the new ones after that ("New on level N") -- and that level's
  *          notes from play. Replaces the old Every Mechanic / Level Screenshots / Notes From Play
  *          / How It Works cards, which showed the rules and the pictures in different places.
+ *          Missing rule entries are described as undocumented, never proof that a level
+ *          introduces no mechanics. The shared level data remains unchanged.
  * SRP/DRY check: Pass -- layout of one GameLevel from shared/arc3Games/gameLevels.ts; rule and
  *          note rendering are MechanicRow and PlayNote.
  */
@@ -116,7 +118,7 @@ export function LevelSection({
               </ul>
             ) : (
               <p className="mt-1 text-sm text-muted-foreground">
-                {first ? 'No rules written up for this game yet.' : 'Nothing new on this level: the rules from earlier levels still apply.'}
+                {first ? 'No rules written up for this game yet.' : 'No additional rules documented for this level yet.'}
               </p>
             )}
           </div>

@@ -1,9 +1,11 @@
 /**
- * Author: Claude Opus 5
- * Date: 2026-09-06
+ * Author: GPT-6 / Codex; Claude Opus 5
+ * Date: 2026-10-07
  * PURPOSE: The GPT-6 Astra harness gap, drawn: for each of the 25 ARC-AGI-3 public-demo
  *          environments, how far the Standard harness got against how far the Provider
  *          Adapter harness got. Same model, same weights, different scaffolding.
+ *          Labels distinguish action-efficiency scores from game completion, and the
+ *          caption links ARC Prize's analysis alongside the unchanged dated source data.
  *
  *          WHY THIS IS ON A LANDING PAGE AT ALL. Harness engineering is what the two people
  *          behind this site actually do in their spare time, and this is the most striking
@@ -80,7 +82,7 @@ export default function HarnessGapChart() {
       <div className="overflow-x-auto">
         <svg viewBox={`0 0 ${W} ${height}`} width="100%" style={{ minWidth: 460, display: 'block' }}
              role="img"
-             aria-label={`Astra's best score on each of ${ENV_TOTAL} ARC-AGI-3 public demo environments, under two harnesses. The Provider Adapter harness solves every environment; the Standard harness falls short on ${ENVS_WITH_GAP}.`}>
+             aria-label={`Astra's best action-efficiency score on each of ${ENV_TOTAL} ARC-AGI-3 public demo environments, under two harnesses. The Provider Adapter reaches 100% on every environment; its best score exceeds the Standard harness on ${ENVS_WITH_GAP}.`}>
           <text x={LABEL_W} y={10} style={{ fontFamily: MONO, fontSize: 9, fill: ARC.faint }}>0%</text>
           <text x={LABEL_W + plotW} y={10} textAnchor="end"
                 style={{ fontFamily: MONO, fontSize: 9, fill: ARC.faint }}>100%</text>
@@ -123,8 +125,11 @@ export default function HarnessGapChart() {
         <a href={ASTRA_SOURCE.url} target="_blank" rel="noreferrer" className="underline">
           ARC Prize
         </a>
-        , who publish the results without interpretation; the reading above is ours. Watch any
-        of it yourself —{' '}
+        . These are action-efficiency scores, not completion percentages. Read{' '}
+        <a href="https://arcprize.org/blog/astra" target="_blank" rel="noreferrer" className="underline">
+          ARC Prize's analysis
+        </a>{' '}
+        or compare the replays —{' '}
         <a href={`${REPLAY_BASE}${ASTRA_ENV_RESULTS[0].standardReplay}`} target="_blank"
            rel="noreferrer" className="underline">
           {ASTRA_ENV_RESULTS[0].env} on the standard harness

@@ -1,10 +1,11 @@
 /**
- * Author: Claude Code using Sonnet 4.5
- * Date: 2025-10-06
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
  * PURPOSE: TrustworthinessLeaderboard Component
  *
  * Displays models ranked by trustworthiness (how well confidence predicts correctness).
- * Uses data from TrustworthinessRepository via /api/puzzle/performance-stats
+ * Uses data from TrustworthinessRepository via /api/puzzle/performance-stats.
+ * Confidence is already a 0–100 percentage; trustworthiness remains a 0–1 score.
  *
  * Key Features:
  * - Shows trustworthiness rankings with reliability metrics
@@ -124,9 +125,14 @@ export function TrustworthinessLeaderboard({
   };
 
   const formatCost = (cost: number) => {
-    if (cost < 0.01) return `$${(cost * 1000).toFixed(2)}m`;
-    return `$${cost.toFixed(3)}`;
+    return `$${cost.toFixed(cost < 0.01 ? 5 : 3)}`;
   };
+
+  // The API explicitly stores percentages, including values below 1%. Do not
+  // guess units from magnitude or turn 0.5% into 50%; invalid values are unknown.
+  const formatConfidence = (confidence: number | null | undefined) =>
+    confidence != null && Number.isFinite(confidence) && confidence >= 0 && confidence <= 100
+      ? `${confidence.toFixed(1)}%` : '—';
 
   const overallTrust = performanceStats?.overallTrustworthiness;
   const overallTrustText =
@@ -174,7 +180,7 @@ export function TrustworthinessLeaderboard({
               {((model.avgTrustworthiness ?? 0) * 100).toFixed(1)}%
             </div>
             <div className="text-right font-mono text-[11px] text-gray-600" title="Average reported confidence">
-              {((model.avgConfidence ?? 0) * 100).toFixed(1)}%
+              {formatConfidence(model.avgConfidence)}
             </div>
           </li>
         ))}

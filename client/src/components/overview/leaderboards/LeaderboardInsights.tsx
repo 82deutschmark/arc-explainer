@@ -1,9 +1,10 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-10-23
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
  * PURPOSE: Insight callouts for the leaderboards dashboard. Surfaces noteworthy models derived from
  *          AccuracyRepository (accuracy stats), MetricsRepository (reliability), and FeedbackRepository
- *          (helpful feedback ratios), plus overconfidence risk alerts.
+ *          (helpful feedback ratios), plus overconfidence risk alerts. Accuracy callouts describe
+ *          the observed sample without declaring a benchmark champion from unequal coverage.
  * SRP/DRY check: Pass — derives insight text from supplied data; no external side effects.
  */
 
@@ -104,8 +105,8 @@ export function LeaderboardInsights({
     bestAccuracyModel && {
       id: 'accuracy-champion',
       icon: <Trophy className="h-5 w-5 text-amber-500" />,
-      title: 'Accuracy champion',
-      detail: `${bestAccuracyModel.modelName} leads with ${bestAccuracyModel.accuracyPercentage.toFixed(1)}% correctness over ${bestAccuracyModel.totalAttempts.toLocaleString()} attempts.`,
+      title: 'Highest observed accuracy',
+      detail: `${bestAccuracyModel.modelName}: ${bestAccuracyModel.accuracyPercentage.toFixed(1)}% correct across ${bestAccuracyModel.totalAttempts.toLocaleString()} recorded ${bestAccuracyModel.totalAttempts === 1 ? 'attempt' : 'attempts'}. Samples cover different puzzles and settings; this is not a benchmark ranking.`,
       tone: 'bg-amber-50 text-amber-900 border-amber-200',
     },
     riskiestModel && {

@@ -1,13 +1,13 @@
 /**
- * Author: Cascade
- * Date: 2025-12-17
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
  * PURPOSE: Dedicated hook for fetching attempt-union comparison results (2 attempts of the same base model)
  *          using /api/metrics/compare via the shared compareService.
  *
  *          This hook centralizes:
  *          - when/why we fetch (auto-fetch on dataset + attempt-model changes)
  *          - where attemptUnionStats live in the response
- *          - how to derive the union puzzle IDs used by the UI
+ *          - the authoritative per-test union solved IDs used by the UI, including complementary attempts
  *
  * SRP/DRY check: Pass - One responsibility: fetch + extract union comparison view-model.
  */
@@ -106,7 +106,7 @@ export const useAttemptUnionComparison = (
       return {
         comparisonResult,
         unionMetrics,
-        unionPuzzleIds: computeUnionPuzzleIds(comparisonResult),
+        unionPuzzleIds: unionMetrics.puzzlesFullySolvedIds ?? computeUnionPuzzleIds(comparisonResult),
       };
     },
     // This is relatively expensive and should remain stable once fetched.

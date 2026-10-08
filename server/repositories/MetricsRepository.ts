@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
+ * PURPOSE: Aggregate analytics and compare models, scoring two attempts against authoritative
+ *          dataset tasks with shared harness math and consistent recorded cost coverage.
+ * SRP/DRY check: Pass — delegates dataset reads and score arithmetic to their existing owners.
+ *
  * Metrics Repository Implementation
  * 
  * Aggregates analytics from AccuracyRepository, TrustworthinessRepository, FeedbackRepository,
@@ -47,6 +53,8 @@ import type { BasicTrustworthinessStats, ModelTrustworthinessMap } from './Trust
 import type { ModelFeedbackMap } from './FeedbackRepository.ts';
 import { queryCache, CacheKeys, CacheTTL } from '../utils/queryCache.ts';
 import { timeQuery, Operations } from '../utils/performanceMonitor.ts';
+import { computeStoredAttemptUnion, type StoredHarnessAttempt } from '../utils/harnessScoring.ts';
+import type { AttemptUnionCostMetrics } from '../../shared/attemptUnionMetrics.ts';
 
 export interface GeneralModelStats {
   totalExplanations: number;
@@ -172,6 +180,8 @@ export interface AttemptUnionStats {
   puzzlesCounted: number;
   puzzlesFullySolved: number;
   puzzlesFullySolvedIds?: string[];
+  attemptedPuzzleCount?: number;
+  costMetrics?: AttemptUnionCostMetrics;
 
   // Dataset-level denominators (stable across models; used for UI display)
   datasetTotalPuzzles?: number;
@@ -769,23 +779,17 @@ export class MetricsRepository extends BaseRepository {
   private computeAttemptUnionStats(
     details: PuzzleComparisonDetail[],
     models: string[],
-    totalPuzzles: number,
-    datasetTotals: { totalPuzzles: number; totalTestPairs: number } | null,
-    puzzleRows: Array<{
-      puzzle_id: string;
-      model_name: string;
-      is_correct: boolean | null;
-      multi_test_results?: unknown;
-    }>,
+    testPairCounts: ReadonlyMap<string, number> | null,
+    puzzleRows: StoredHarnessAttempt[],
   ): AttemptUnionStats[] {
-    if (details.length === 0 || models.length < 2) {
+    if (details.length === 0 || models.length < 2 || !testPairCounts) {
       return [];
     }
 
     // Parse model names to identify attempt groups
-    const attemptGroups = new Map<string, { modelName: string; attemptNumber: number; index: number }[]>();
+    const attemptGroups = new Map<string, { modelName: string; attemptNumber: number }[]>();
     
-    models.forEach((modelName, index) => {
+    models.forEach((modelName) => {
       const parsed = this.parseAttemptModelName(modelName);
       if (parsed) {
         if (!attemptGroups.has(parsed.baseModelName)) {
@@ -794,7 +798,6 @@ export class MetricsRepository extends BaseRepository {
         attemptGroups.get(parsed.baseModelName)!.push({
           modelName,
           attemptNumber: parsed.attemptNumber,
-          index,
         });
       }
     });
@@ -807,99 +810,24 @@ export class MetricsRepository extends BaseRepository {
         // Sort by attempt number to ensure consistent ordering
         attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
         
-        // Use the first two attempts for union calculation
-        const modelIndices = attempts.slice(0, 2).map(a => a.index);
-        const attemptModelNames = attempts.slice(0, 2).map(a => a.modelName);
-        
-        let unionCorrectCount = 0;
-        let totalTestPairs = 0;
-        let taskScoreSum = 0;
-        let tasksCounted = 0;
-        let puzzlesFullySolved = 0;
-        const puzzlesFullySolvedIds: string[] = [];
-
-        // Iterate through each puzzle and check per-pair correctness (ARC harness style)
-        for (const detail of details) {
-          const puzzleId = detail.puzzleId;
-
-          // Gather per-attempt results for this puzzle
-          const attemptPairs: boolean[][] = modelIndices.map(idx => {
-            const modelName = models[idx];
-            const row = puzzleRows.find(r => r.puzzle_id === puzzleId && r.model_name === modelName);
-
-            if (!row) return [];
-
-            // Parse multi_test_results if present
-            let parsedResults: any[] = [];
-            if (Array.isArray(row.multi_test_results)) {
-              parsedResults = row.multi_test_results as any[];
-            } else if (typeof row.multi_test_results === 'string') {
-              try {
-                const parsed = JSON.parse(row.multi_test_results);
-                if (Array.isArray(parsed)) {
-                  parsedResults = parsed;
-                }
-              } catch (err) {
-                logger.warn(`Failed to parse multi_test_results for ${modelName} on ${puzzleId}: ${String(err)}`, 'metrics');
-              }
-            }
-
-            if (parsedResults.length > 0) {
-              return parsedResults.map((r: any) => r?.isPredictionCorrect === true);
-            }
-
-            // Fallback to single-test correctness if no multi-test data
-            if (typeof row.is_correct === 'boolean') {
-              return [row.is_correct];
-            }
-
-            return [];
-          });
-
-          const pairsForPuzzle = Math.max(...attemptPairs.map(p => p.length), 0);
-          if (pairsForPuzzle === 0) {
-            continue;
-          }
-
-          totalTestPairs += pairsForPuzzle;
-
-          let unionSolvedPairsForPuzzle = 0;
-
-          for (let i = 0; i < pairsForPuzzle; i++) {
-            const anyAttemptCorrect = attemptPairs.some(pairs => pairs[i] === true);
-            if (anyAttemptCorrect) {
-              unionCorrectCount++;
-              unionSolvedPairsForPuzzle++;
-            }
-          }
-
-          if (unionSolvedPairsForPuzzle === pairsForPuzzle) {
-            puzzlesFullySolved++;
-            puzzlesFullySolvedIds.push(puzzleId);
-          }
-
-          taskScoreSum += pairsForPuzzle > 0 ? unionSolvedPairsForPuzzle / pairsForPuzzle : 0;
-          tasksCounted++;
-        }
-
-        const unionAccuracyPercentage = tasksCounted > 0 
-          ? Math.round(((taskScoreSum / tasksCounted) * 100) * 100) / 100  // Round to 2 decimal places
-          : 0;
-
+        // Score only two distinct attempts, using every task's actual test count.
+        const attemptModelNames = [...new Set(attempts.map(a => a.modelName))].slice(0, 2);
+        if (attemptModelNames.length !== 2) continue;
+        const score = computeStoredAttemptUnion(testPairCounts, attemptModelNames as [string, string], puzzleRows);
         attemptUnionStats.push({
           baseModelName,
           attemptModelNames,
-          totalPuzzles,
-          totalTestPairs,
-          unionCorrectCount,
-          unionAccuracyPercentage,
-          puzzlesCounted: tasksCounted,
-          puzzlesFullySolved,
-          puzzlesFullySolvedIds,
-
-          // Expose dataset-level totals so the UI can display stable denominators
-          datasetTotalPuzzles: datasetTotals?.totalPuzzles,
-          datasetTotalTestPairs: datasetTotals?.totalTestPairs,
+          totalPuzzles: score.puzzlesCounted,
+          totalTestPairs: score.pairWeightedTotalPairs,
+          unionCorrectCount: score.pairWeightedCorrectPairs,
+          unionAccuracyPercentage: this.round(score.harnessScore * 100, 2),
+          puzzlesCounted: score.puzzlesCounted,
+          puzzlesFullySolved: score.puzzlesFullySolved,
+          puzzlesFullySolvedIds: score.puzzlesFullySolvedIds,
+          attemptedPuzzleCount: score.attemptedPuzzleCount,
+          costMetrics: score.costMetrics,
+          datasetTotalPuzzles: score.puzzlesCounted,
+          datasetTotalTestPairs: score.pairWeightedTotalPairs,
         });
       }
     }
@@ -974,15 +902,21 @@ export class MetricsRepository extends BaseRepository {
       
       const query = `
         SELECT DISTINCT ON (puzzle_id, model_name)
+          id,
           puzzle_id,
           model_name,
           (is_prediction_correct = TRUE OR multi_test_all_correct = TRUE) as is_correct,
+          is_prediction_correct,
+          multi_test_all_correct,
           multi_test_results,
+          estimated_cost,
+          api_processing_time_ms,
           created_at
         FROM explanations
         WHERE model_name = ANY($1::text[]) 
         AND puzzle_id = ANY($2::text[])
-        ORDER BY puzzle_id, model_name, created_at DESC
+        AND rebutting_explanation_id IS NULL
+        ORDER BY puzzle_id, model_name, created_at DESC, id DESC
       `;
 
       const result = await this.query(query, [models, puzzleIds]);
@@ -1074,13 +1008,13 @@ export class MetricsRepository extends BaseRepository {
 
       logger.info(`Comparison complete: ${summary.allCorrect} all correct, ${summary.allIncorrect} all incorrect, ${summary.allNotAttempted} not attempted`, 'metrics');
 
-      // Dataset-level denominators (stable across models). We compute once per dataset and
-      // return it with attempt-union stats so UI denominators don't collapse to 1-of-1.
       const { default: modelDatasetRepo } = await import('./ModelDatasetRepository.ts');
-      const datasetTotals = modelDatasetRepo.getDatasetTotals(dataset);
-
-      // Compute attempt union statistics for attempt models
-      const attemptUnionStats = this.computeAttemptUnionStats(details, models, puzzleIds.length, datasetTotals, filteredRows);
+      // The database-wide "all" view has no single benchmark task set. Keep its
+      // comparison matrix, but only publish benchmark union scores for a dataset.
+      const hasAttemptModels = models.filter(model => this.parseAttemptModelName(model)).length >= 2;
+      const testPairCounts = hasAttemptModels && dataset !== 'all'
+        ? modelDatasetRepo.getDatasetTestPairCounts(dataset) : null;
+      const attemptUnionStats = this.computeAttemptUnionStats(details, models, testPairCounts, filteredRows);
 
       // Compute enriched per-model performance metrics
       const modelPerformance = await this.getModelPerformanceOnDataset(models, puzzleIds);

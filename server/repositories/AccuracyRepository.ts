@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 Codex
+ * Date: 2026-10-07
+ * PURPOSE: Accuracy queries with full-dataset two-attempt scoring using task test counts
+ *          and the same stored-attempt scorer as model comparisons.
+ * SRP/DRY check: Pass — shared scorer and canonical dataset accessor replace duplicate math.
+ *
  * Accuracy Repository Implementation
  *
  * Handles PURE PUZZLE-SOLVING ACCURACY operations only.
@@ -38,7 +44,7 @@ import { logger } from '../utils/logger.ts';
 import { MetricsQueryBuilder } from './utils/MetricsQueryBuilder.ts';
 import { ANALYSIS_CRITERIA, CONFIDENCE_THRESHOLDS } from '../constants/metricsConstants.ts';
 import { normalizeModelName } from '../utils/modelNormalizer.ts';
-import { computeDatasetUnionScores, type HarnessPuzzleAttemptPairs } from '../utils/harnessScoring.ts';
+import { computeStoredAttemptUnion } from '../utils/harnessScoring.ts';
 
 export interface PureAccuracyStats {
   totalSolverAttempts: number;
@@ -326,110 +332,27 @@ export class AccuracyRepository extends BaseRepository {
       };
     }
 
-    // Helper: extract per-test-pair correctness into a boolean array.
-    // Matches the parsing behavior used in MetricsRepository so the UI and endpoint stay consistent.
-    const extractPairResults = (row: {
-      is_prediction_correct: boolean | null;
-      multi_test_results: unknown;
-    }): boolean[] => {
-      if (Array.isArray(row.multi_test_results)) {
-        return (row.multi_test_results as any[]).map((r: any) => r?.isPredictionCorrect === true);
-      }
-
-      if (typeof row.multi_test_results === 'string') {
-        try {
-          const parsed = JSON.parse(row.multi_test_results);
-          if (Array.isArray(parsed)) {
-            return (parsed as any[]).map((r: any) => r?.isPredictionCorrect === true);
-          }
-        } catch {
-          // Fall through to single-test fallback.
-        }
-      }
-
-      if (typeof row.is_prediction_correct === 'boolean') {
-        return [row.is_prediction_correct];
-      }
-
-      return [];
-    };
-
     try {
       const query = `
         SELECT DISTINCT ON (puzzle_id, model_name)
+          id,
           puzzle_id,
           model_name,
           is_prediction_correct,
+          multi_test_all_correct,
           multi_test_results,
-          num_test_pairs,
           created_at
         FROM explanations
         WHERE puzzle_id = ANY($1)
           AND model_name = ANY($2)
           AND rebutting_explanation_id IS NULL
-        ORDER BY puzzle_id, model_name, created_at DESC
+        ORDER BY puzzle_id, model_name, created_at DESC, id DESC
       `;
 
-      const models = [attempt1ModelName, attempt2ModelName];
+      const models: [string, string] = [attempt1ModelName, attempt2ModelName];
       const result = await this.query(query, [puzzleIds, models]);
-
-      const byPuzzle = new Map<string, {
-        attempt1?: { pairs: boolean[]; numPairs?: number | null };
-        attempt2?: { pairs: boolean[]; numPairs?: number | null };
-      }>();
-
-      for (const row of result.rows as any[]) {
-        const puzzleId = row.puzzle_id as string;
-        const modelName = row.model_name as string;
-
-        const entry = byPuzzle.get(puzzleId) ?? {};
-        const pairs = extractPairResults({
-          is_prediction_correct: row.is_prediction_correct,
-          multi_test_results: row.multi_test_results,
-        });
-
-        const numPairs = (typeof row.num_test_pairs === 'number' ? row.num_test_pairs : null) as number | null;
-
-        if (modelName === attempt1ModelName) {
-          entry.attempt1 = { pairs, numPairs };
-        }
-
-        if (modelName === attempt2ModelName) {
-          entry.attempt2 = { pairs, numPairs };
-        }
-
-        byPuzzle.set(puzzleId, entry);
-      }
-
-      const puzzles: HarnessPuzzleAttemptPairs[] = [];
-
-      for (const puzzleId of puzzleIds) {
-        const entry = byPuzzle.get(puzzleId);
-        const a1Pairs = entry?.attempt1?.pairs ?? [];
-        const a2Pairs = entry?.attempt2?.pairs ?? [];
-
-        const inferredNumPairs = Math.max(a1Pairs.length, a2Pairs.length, 0);
-        const declaredNumPairs = Math.max(
-          entry?.attempt1?.numPairs ?? 0,
-          entry?.attempt2?.numPairs ?? 0,
-          0,
-        );
-
-        const numPairs = Math.max(inferredNumPairs, declaredNumPairs, 0);
-
-        // FIXED (v5.11.0): Include unattempted puzzles as 0-score (not skipped).
-        // A model that attempts only 1 puzzle and solves it should score 1/120 (not 100%).
-        // Unattempted puzzles with no pairs are assigned numPairs=1 by computePuzzleUnionScore,
-        // resulting in puzzleScore = 0/1 = 0.0, which correctly pulls down the average.
-
-        puzzles.push({
-          attempt1Pairs: a1Pairs,
-          attempt2Pairs: a2Pairs,
-          numPairs: numPairs > 0 ? numPairs : 1, // Unattempted puzzles default to 1 test pair
-        });
-      }
-
-      const datasetScores = computeDatasetUnionScores(puzzles);
+      const testPairCounts = modelDatasetRepo.getDatasetTestPairCounts(dataset);
+      const datasetScores = computeStoredAttemptUnion(testPairCounts, models, result.rows);
 
       const harnessScorePercentage = Math.round((datasetScores.harnessScore * 100) * 100) / 100;
       const pairWeightedAccuracyPercentage = Math.round((datasetScores.pairWeightedAccuracy * 100) * 100) / 100;

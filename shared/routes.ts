@@ -1,6 +1,6 @@
 /**
- * Author: Claude Code using Sonnet 4.5; search fields and /analytics by Claude Opus 5.5
- * Date: 2025-12-30 (updated 2026-10-06)
+ * Author: Claude Code using Sonnet 4.5; search fields by Claude Opus 5.5; resource hub by Codex
+ * Date: 2025-12-30 (updated 2026-10-07)
  * PURPOSE: Centralized route meta tags configuration for social media link unfurling and
  *          search. Imported by server middleware for meta tag injection.
  *          2026-10-06: entries can now carry keywords, structured data (JSON-LD) and a
@@ -46,6 +46,13 @@ function breadcrumb(name: string, path: string) {
  * Organized by feature area - add new routes near related routes
  */
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
+  '/home': {
+    title: 'ARC Explainer Resource Hub — games, guides and results',
+    description: 'Find Human ARC, Space Force Mission Control, ARC-AGI-3 game guides, human and AI results, and archived benchmark analyses.',
+    url: `${SITE}/home`,
+    type: 'website',
+    bodyHtml: '<h1>ARC Explainer Resource Hub</h1><p>Independent community games, guides and results by Mark Barney.</p><ul><li><a href="/human-arc/">Human ARC puzzles and assessments</a></li><li><a href="https://sfmc.markbarney.net/">Space Force Mission Control</a></li><li><a href="/arc3/games">ARC-AGI-3 game guides</a></li><li><a href="/human-records.html">Human and AI results</a></li><li><a href="/analytics">Hugging Face results archive</a></li></ul>',
+  },
   // ==================== ARC-AGI-3 ====================
   // Keyed by host for "/" because the root differs per host: arc3.markbarney.net is the
   // synthetic-programme landing, arc.markbarney.net leads with the task gallery.

@@ -12,6 +12,13 @@
 # reference the old numbers.
 
 
+### Version 9.119.1  Oct 7, 2026
+
+- **Public site audit cleanup** (Author: Codex). Recomputes two-attempt scores over the complete selected dataset using actual task test counts, handles missing/duplicate records consistently, and reports combined recorded costs with coverage. Corrects confidence units and replaces small-sample champion claims with qualified observed results.
+- Corrects ARC-3 preview history, human attempt timing, harness descriptions and attribution. Marks AS66 documentation as partial, labels its retired availability, avoids inventing missing rules, and fixes the Skip arrow.
+- Replaces the stale `/home` page with a resource directory for Human ARC, Space Force Mission Control, game guides and archives. About links to the hosted Human ARC app. Updates its pinned revision with working guest profile navigation, useful missing-page recovery and supported puzzle-performance wording.
+- Validation and scope: `docs/plans/2026-10-07-public-site-cleanup.md`; original findings retained under `docs/audits/`.
+
 ### Version 9.119.0  Oct 7, 2026
 
 - **Human ARC on ARC Explainer** (Author: Codex). Hosts the independently maintained Human ARC app at `/human-arc/`, with a full-page navigation entry in ARC 1 & 2. A pinned GitHub revision is built with public PlayFab configuration alongside the host; dedicated middleware preserves nested page refreshes, returns 404 for missing assets, and keeps the two SPA routers separate. Existing PlayFab services remain in use; guest identities stored on the old origin do not migrate automatically. See `docs/2026-10-07-human-arc-hosting.md`.

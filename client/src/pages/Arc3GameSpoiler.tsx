@@ -1,7 +1,9 @@
 /*
- * Author: Cascade (ChatGPT); updated by Claude Opus 5, 2026-09-12; updated by Claude Sonnet 5, 2026-09-12
- * Date: 2026-02-10 (last updated 2026-09-18)
+ * Author: GPT-6 / Codex; Cascade (ChatGPT); Claude Opus 5; Claude Sonnet 5
+ * Date: 2026-10-07
  * PURPOSE: Individual game page for the ARC-AGI-3 public games, at /arc3/games/:gameId.
+ *          Withdrawn entries retain historical content with a partial-documentation label
+ *          and no invitation to earn an official scorecard on an unavailable public game.
  *          2026-09-12: the Play button goes into the blind play surface. The play id is NOT the
  *          page id: the mirror publishes the official games under a versioned id
  *          (`sc25` -> `sc25-635fd71a`), so it is resolved at render time from
@@ -54,7 +56,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { arcPrizeLeaderboardUrl, getAdjacentGameIds, getGameById, type Arc3GameMetadata } from '@shared/arc3Games';
+import { arcPrizeLeaderboardUrl, getAdjacentGameIds, getGameById, getPublicDemoGameIdsInOrder, type Arc3GameMetadata } from '@shared/arc3Games';
 import { getArcBaseline, getOwnerGameRating, getPlayerRuns, OWNER_PLAYER } from '@shared/arc3Games/humanDifficulty';
 import { buildGameLevels, pickHeadlineRun, runOnLevel } from '@shared/arc3Games/gameLevels';
 import type { HumanLeaderboard } from '@/components/arc3/gamePage/humanLeaderboard';
@@ -217,6 +219,7 @@ export default function Arc3GameSpoiler() {
   const headline = pickHeadlineRun(runs);
   const cut = buildGameLevels(game, runs, baseline);
   const hasRules = (game.mechanicsBreakdown?.length ?? 0) > 0;
+  const isPublicDemo = getPublicDemoGameIdsInOrder().includes(game.gameId);
   const recordsSummary = humanRecordsSummary(board);
 
   return (
@@ -246,6 +249,9 @@ export default function Arc3GameSpoiler() {
                 <span title="Fully documented">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
                 </span>
+              )}
+              {game.isFullyDocumented === false && (
+                <Badge variant="outline">Partial documentation</Badge>
               )}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -307,6 +313,7 @@ export default function Arc3GameSpoiler() {
         </div>
         <p className="mt-3 max-w-[75ch] text-base text-muted-foreground">{game.description}</p>
         <p className="mt-4 border-l-4 border-amber-500 bg-amber-50 px-3 py-2 text-sm text-foreground/80 dark:bg-amber-950/30">
+          {isPublicDemo ? <>
           Want a real scorecard? Play this game on the official site: go to{' '}
           <a href="https://arcprize.org/platform" target="_blank" rel="noopener noreferrer" className="font-semibold underline">
             arcprize.org/platform
@@ -314,6 +321,10 @@ export default function Arc3GameSpoiler() {
           , log in with a Google or GitHub account (the only two options, and the login is easy to miss), and play
           as a human. Your scorecard is then locked to you. That is where the replays and {OWNER_PLAYER}'s numbers on
           this page come from.
+          </> : <>
+            This game is no longer in the official public demo set. This page preserves its
+            historical notes and recordings; it does not offer a current official scorecard.
+          </>}
         </p>
       </header>
 

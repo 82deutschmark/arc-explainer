@@ -1,13 +1,13 @@
 /*
-Author: Cascade (ChatGPT) / Claude Opus 5
-Date: 2026-02-10 / 2026-08-28
+Author: Codex / Cascade (ChatGPT) / Claude Opus 5
+Date: 2026-10-07
 PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
          including ARC3 community submission review tooling under the admin section.
          2026-08-28: "/" now redirects to the ARC-AGI-3 community game gallery, which is
          the front door for the synthetic-game playtest programme (see
-         docs/28-Aug-2026-synthetic-games-arc3-integration-plan.md). The previous resource-hub
-         landing page is preserved verbatim at "/home" and is still linked from the header.
+         docs/28-Aug-2026-synthetic-games-arc3-integration-plan.md). The resource
+         directory lives at "/home" and is linked from the header.
          2026-10-05 (Claude Opus 5.5): /kaggle-leaderboard, the public Kaggle board page.
 SRP/DRY check: Pass - kept as a routing table only; reuses the existing wouter Redirect
          component already used by the legacy /arc3/archive routes.
@@ -128,7 +128,7 @@ function Router() {
             is, and the two hosts disagreed about what "home" means, which is how the
             brand mark ended up as a second link to the gallery. One front door, one
             explanation, both hosts. /synthetic stays as an alias because it has been
-            linked; the resource hub is unchanged at /home. */}
+            linked; the resource hub lives at /home. */}
         <Route path="/" component={SyntheticLanding} />
         <Route path="/synthetic" component={SyntheticLanding} />
         <Route path="/home" component={LandingPage} />

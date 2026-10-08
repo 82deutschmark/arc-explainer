@@ -1,8 +1,8 @@
 /**
  * Author: Codex
  * Date: 2026-10-07
- * PURPOSE: Build and serve the independently maintained Human ARC frontend under /human-arc/.
- * SRP/DRY check: Pass — separate build and middleware reuse the existing deployment and navigation.
+ * PURPOSE: Link Human ARC and the current resource directory from the shared site navigation.
+ * SRP/DRY check: Pass — maintains one navigation configuration with full-page links where needed.
  */
 /**
  * Author: Claude Opus 5; ARC-3 dropdown modernized by Claude Sonnet 5, 2026-09-12
@@ -288,7 +288,7 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
             title: 'Resource Hub',
             href: '/home',
             icon: Grid3X3,
-            description: 'The original puzzle-browser landing page',
+            description: 'Games, guides, human puzzles and results archives',
           },
           {
             type: 'link',

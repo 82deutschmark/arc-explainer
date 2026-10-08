@@ -1,0 +1,144 @@
+{
+  "date": "2026-10-07 (America/New_York)",
+  "commit": "d78ef0606e64f84ed373ca775042106d8e53d6f4",
+  "findings": [
+    {
+      "priority": "First",
+      "title": "Homepage gives ARC Prize unfair credit and oversimplifies the harness result",
+      "url": "https://arc.markbarney.net/",
+      "evidence": "The homepage and chart caption say ARC Prize offered no interpretation. The official Astra article has an Analysis section and Two Harnesses, Two Questions. Standard preserves selected visible notes; Provider Adapter additionally preserves opaque reasoning state and uses compaction.",
+      "impact": "This is the most avoidable credibility problem when sharing the site with the ARC Prize team.",
+      "repair": "Keep the comparison and chart, credit the published analysis, describe both harnesses accurately, and label the causal interpretation as an interpretation.",
+      "source": "client/src/pages/arc3-community/SyntheticLanding.tsx:319; client/src/components/arc3/HarnessGapChart.tsx:126",
+      "reference": "https://arcprize.org/blog/astra"
+    },
+    {
+      "priority": "First",
+      "title": "Scoring mixes an available-results score with full-dataset counts",
+      "url": "https://arc.markbarney.net/scoring",
+      "evidence": "Default GPT-5.2 High displays 61.8%, 41/120 fully solved puzzles and 63/167 pairs. The API and source show the score averages 76 puzzles. The explanation says all 120 count and missing puzzles score zero. These are incompatible descriptions. Model Comparison uses the same calculation.",
+      "impact": "Visitors cannot reproduce the headline score from the scope the page claims.",
+      "repair": "First label the actual available-results subset and its coverage, and remove the incorrect full-dataset/stricter-scoring assertion. Before publishing a corrected full-dataset score, reconcile each task against authoritative test.length; do not merely change the aggregate denominator.",
+      "source": "server/repositories/MetricsRepository.ts:847-886; client/src/components/analytics/AttemptUnionCard.tsx:233",
+      "reference": ""
+    },
+    {
+      "priority": "First",
+      "title": "Confidence is displayed above 100%",
+      "url": "https://arc.markbarney.net/leaderboards",
+      "evidence": "Trustworthiness leaders show Grover confidence 7410.0%, Qwen 7070.0%, and several entries at 5000.0%. The renderer multiplies the already-percent confidence field by 100.",
+      "impact": "An immediately visible numerical error makes the broader analytics look unreliable.",
+      "repair": "Format confidence on its documented 0\u2013100 scale, separately from the 0\u20131 trustworthiness score. Add a focused regression check for these two units.",
+      "source": "client/src/components/overview/leaderboards/TrustworthinessLeaderboard.tsx:177",
+      "reference": ""
+    },
+    {
+      "priority": "First",
+      "title": "AS66 is called fully documented while its rule descriptions are missing",
+      "url": "https://arc.markbarney.net/arc3/games/as66",
+      "evidence": "The page shows Fully documented, then No rules written up for this game yet. Subsequent levels turn empty rule arrays into a statement that nothing new occurs. It also gives the generic official-play instruction despite the game being withdrawn.",
+      "impact": "A reader cannot distinguish documented sameness from missing knowledge.",
+      "repair": "Mark documentation partial, say no additional rules are documented when that is all the data establishes, and use retired-game-specific guidance. Do not invent the missing mechanics. The official human leaderboard link was reachable with no entries; this is not reported as a broken link.",
+      "source": "shared/arc3Games/as66.ts:76; client/src/components/arc3/gamePage/LevelSection.tsx:119",
+      "reference": ""
+    },
+    {
+      "priority": "Next",
+      "title": "Scoring costs describe only the first attempt beside combined results",
+      "url": "https://arc.markbarney.net/scoring",
+      "evidence": "The score combines two attempts; Total Cost comes from modelNames[0]. Cost per Correct is the average cost of successful runs, not all spending divided by successes. The default view showed $89.4147 total and $0.3891 per correct.",
+      "impact": "The presentation can suggest an efficiency comparison that its cost scope does not support.",
+      "repair": "Label existing figures as first-attempt metrics and define the successful-run mean, or calculate both attempts consistently. Do not silently relabel one calculation as another.",
+      "source": "client/src/pages/HuggingFaceUnionAccuracy.tsx:125-130,212-229",
+      "reference": ""
+    },
+    {
+      "priority": "Next",
+      "title": "One observation is promoted as an accuracy championship",
+      "url": "https://arc.markbarney.net/leaderboards",
+      "evidence": "The insight calls poetiq-gpt-5.1-codex-mini the accuracy champion at 100% across one attempt.",
+      "impact": "The underlying count is shown, but the editorial winner claim overstates the evidence.",
+      "repair": "Use descriptive wording and show coverage; require a stated minimum comparable coverage before awarding a winner label.",
+      "source": "client/src/components/overview/leaderboards/LeaderboardInsights.tsx:103-108",
+      "reference": ""
+    },
+    {
+      "priority": "Next",
+      "title": "Resource Hub presents an old hiatus notice as the current directory",
+      "url": "https://arc.markbarney.net/home",
+      "evidence": "The main navigation calls this Resource Hub. Its prominent content says On Hiatus - January 2026, with February news, although the rest of the site is active.",
+      "impact": "A visitor looking for the resource collection can conclude it is abandoned.",
+      "repair": "Turn this destination into a current compact resource directory, or name it Archived landing page and link the active resources clearly.",
+      "source": "client/src/pages/LandingPage.tsx:142; client/src/components/layout/AppNavigation.tsx:288",
+      "reference": ""
+    },
+    {
+      "priority": "Next",
+      "title": "Human ARC has a visible sign-in route that does not exist",
+      "url": "https://arc.markbarney.net/human-arc/login",
+      "evidence": "The Human ARC navbar initially exposes Sign In pointing here. The destination is 404 Page Not Found with Did you forget to add the page to the router? Once guest initialization finishes, that navbar item changes to My Profile; this is not a claim that guest play fails.",
+      "impact": "A clickable account promise leads to a developer error page.",
+      "repair": "Reflect the actual guest flow instead of advertising an unimplemented login; replace developer-facing 404 copy with a usable return link.",
+      "source": "human-arc: client/src/components/layout/Navbar.tsx; client/src/App.tsx; client/src/pages/not-found.tsx",
+      "reference": ""
+    },
+    {
+      "priority": "Next",
+      "title": "About still links Human ARC through the old domain",
+      "url": "https://arc.markbarney.net/about",
+      "evidence": "My Other Projects \u2192 Human ARC Challenge still points to human-arc.gptpluspro.com. The new app is now hosted at /human-arc/.",
+      "impact": "The migration is inconsistent, and visitors are still directed to the address the owner wanted to retire from normal use.",
+      "repair": "Use a full-page link to /human-arc/. This is a follow-up omission in the integration just shipped.",
+      "source": "client/src/pages/About.tsx:149",
+      "reference": ""
+    },
+    {
+      "priority": "Polish",
+      "title": "ARC-3 reference has preview-history and human-time inaccuracies",
+      "url": "https://arc.markbarney.net/arc3",
+      "evidence": "The original preview trio is listed as ls20/as66/ft09; ARC Prize lists ls20/ft09/vc33. The page calls all six preview-era games part of the current 25 despite noting as66 is absent. It calls 7.4 minutes a median finish time, while the report uses that for all attempts and 8.1 for successful attempts.",
+      "impact": "Small reference errors are easy for informed readers to spot.",
+      "repair": "Correct the trio and five-of-six wording; use attempt rather than finish for the 7.4-minute statistic, with sources.",
+      "source": "client/src/pages/Arc3Story.tsx:108,125,418,686",
+      "reference": "https://arcprize.org/blog/arc-agi-3-preview-30-day-learnings"
+    },
+    {
+      "priority": "Polish",
+      "title": "Play page renders a literal Unicode escape",
+      "url": "https://arc.markbarney.net/play",
+      "evidence": "After starting qx26, the feedback skip button reads Skip \\u2192 next task rather than showing an arrow. Game startup and an action both worked; step count advanced from 0 to 1.",
+      "impact": "A small but conspicuous unfinished-looking label.",
+      "repair": "Use an actual arrow or a JavaScript string expression for the label.",
+      "source": "client/src/pages/arc3-community/CommunityGamePlay.tsx:1398",
+      "reference": ""
+    }
+  ],
+  "coverage": [
+    "/",
+    "/play \u2192 /arc3/play/qx26 (started and one action)",
+    "/arc3/gallery",
+    "/arc3",
+    "/arc3/games",
+    "/arc3/games/as66",
+    "/human-records.html",
+    "/kaggle-leaderboard",
+    "/about",
+    "/scoring",
+    "/leaderboards",
+    "/model-comparison",
+    "/home",
+    "/worm-arena (default and August replay)",
+    "/human-arc/",
+    "/human-arc/login",
+    "/human-arc/dashboard"
+  ],
+  "not_tested": [
+    "Every individual game and level write-up",
+    "Paid model execution, API-key submission, or competition submissions",
+    "Every Arena subsection",
+    "Mobile layouts",
+    "Private/admin workflows",
+    "Full security or accessibility audit"
+  ],
+  "resolution": "Cleanup implemented in 9.119.1; observations below are pre-fix evidence."
+}

@@ -1,8 +1,9 @@
 /**
- * Author: Cascade (OpenAI)
- * Date: 2025-12-30
+ * Author: GPT-6 / Codex; Cascade (OpenAI)
+ * Date: 2026-10-07
  * PURPOSE: About page describing ARC Explainer’s mission, accessibility goals, and key contributors,
- * including the latest ReArc Bench spotlight content and curated references.
+ * including the latest ReArc Bench spotlight content and curated references. Human ARC
+ * uses a full-page link to its separately built app hosted within ARC Explainer.
  * SRP/DRY check: Pass — single-responsibility About view reusing shared components (revalidated 2025-12-30).
  */
 
@@ -146,9 +147,7 @@ export default function About() {
               <h2 className="text-2xl font-bold text-slate-100 mb-4">My Other Projects</h2>
               <div className="space-y-3">
                 <a
-                  href="https://human-arc.gptpluspro.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/human-arc/"
                   className="flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors group"
                 >
                   <span className="font-semibold">Human ARC Challenge</span>
