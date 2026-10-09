@@ -4,6 +4,8 @@
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
+ *          09-Oct-2026 (Claude Opus 5.5): optional person portraits, traced to the person's own
+ *          Kaggle account or Hall of Fame card; Hall of Fame art may be .jpeg or a spaced filename.
  * SRP/DRY check: Pass — one store serves HTML, JSON, feeds and sitemap discovery.
  */
 import fs from 'node:fs';
@@ -50,6 +52,12 @@ export const competitorSchema = z.object({
 }).refine(record => record.id === `${record.competition}-${record.teamId}`, 'Competitor IDs must include competition');
 export const NEWS_DIRECTORY = path.join(process.cwd(), 'content/news');
 const factSchema = z.object({ text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict();
+// Kept in step with scripts/newsroom_people.py, which validates the same ledger before publishing.
+const HALL_OF_FAME_PATH = /^\/hall-of-fame(?:#contributor-\d+|\/johan-land)?$/;
+/** Existing Hall of Fame card art in client/public, e.g. /jfPuget3.png, /jackcole.jpeg, /arc founders.png. */
+const HALL_OF_FAME_ART = /^\/[A-Za-z0-9_-]+(?: [A-Za-z0-9_-]+)*\.(?:png|jpe?g)$/;
+const PORTRAIT_FILE = /^\/news-images\/people\/[a-z0-9-]+\.(?:webp|png|jpe?g)$/;
+const HALL_OF_FAME_ORIGIN = 'https://arc.markbarney.net';
 export const newsPersonSchema = z.object({
   id: safeId, name: text,
   accounts: z.array(z.object({ platform: z.enum(['kaggle', 'x']), handle: z.string().regex(/^[A-Za-z0-9_]+$/), url: webUrl, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict()
@@ -58,13 +66,21 @@ export const newsPersonSchema = z.object({
   memberships: z.array(z.object({ competition, competitionId: text, season: z.string().regex(/^\d{4}$/), teamId: z.string().regex(/^\d+$/), teamName: text, memberHandle: text, firstObservedAt: stamp, lastObservedAt: stamp, sourceUrl: webUrl, sourceTitle: text }).strict()
     .refine(member => Date.parse(member.firstObservedAt) <= Date.parse(member.lastObservedAt), 'Reversed membership observations')
     .refine(member => member.competitionId === `arc-prize-${member.season}-${member.competition.replace('arc-', 'arc-agi-')}`, 'Membership competition and season must agree')),
-  hallOfFame: z.array(z.object({ path: z.string().regex(/^\/hall-of-fame(?:#contributor-\d+|\/johan-land)?$/), label: text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp,
-    image: z.object({ src: z.string().regex(/^\/[A-Za-z0-9_-]+\.png$/), alt: text.max(700) }).strict().optional() }).strict()),
+  hallOfFame: z.array(z.object({ path: z.string().regex(HALL_OF_FAME_PATH), label: text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp,
+    image: z.object({ src: z.string().regex(HALL_OF_FAME_ART), alt: text.max(700) }).strict().optional() }).strict()),
+  portrait: z.object({ src: z.string().regex(PORTRAIT_FILE), alt: text.max(700), kind: z.enum(['hall-of-fame', 'kaggle']), sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict().optional(),
 }).strict().superRefine((person, context) => {
   const accounts = person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`);
   const memberships = person.memberships.map(member => `${member.competitionId}:${member.teamId}:${member.memberHandle}`);
   if (new Set(accounts).size !== accounts.length || new Set(memberships).size !== memberships.length || person.memberships.some(member => !person.accounts.some(account => account.platform === 'kaggle' && account.handle === member.memberHandle))) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate identity or membership without a verified account' });
+  }
+  // A face must trace to the person's own verified Kaggle account or one of their own Hall of Fame cards.
+  const portrait = person.portrait;
+  if (portrait && !(portrait.kind === 'kaggle'
+    ? person.accounts.some(account => account.platform === 'kaggle' && account.url.toLowerCase() === portrait.sourceUrl.toLowerCase())
+    : person.hallOfFame.some(card => `${HALL_OF_FAME_ORIGIN}${card.path}` === portrait.sourceUrl))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Portrait must come from the person’s verified Kaggle account or their own Hall of Fame card' });
   }
 });
 export const newsSocialSchema = z.object({

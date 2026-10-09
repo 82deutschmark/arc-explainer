@@ -6,13 +6,15 @@
  *          08-Oct-2026: head metadata and share card from shared/news.ts; visible
  *          publication and source labels use dates while exact times stay in evidence.
  *          The article rail carries a disclosed VoynichLabs advertisement.
+ *          09-Oct-2026 (Claude Opus 5.5): faces of the people the edition cites or covers sit
+ *          under the byline; roster names in the rail carry their faces too.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
-import { TeamPeople } from '@/components/news/NewsPeople';
+import { StoryFaces, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { competitorPath, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { competitorPath, storyPeople, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
@@ -42,6 +44,7 @@ export default function NewsArticle() {
         <h1 className="news-article-title">{article.headline}</h1>
         <p className="news-dek">{article.dek}</p>
         <p className="news-byline">The ARC Daily Digest sports desk <span>· <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
+        <StoryFaces people={storyPeople(article, query.data?.people ?? [], query.data?.competitors ?? [])} max={10} />
       </header>
       <div className="news-article-grid">
         <div>

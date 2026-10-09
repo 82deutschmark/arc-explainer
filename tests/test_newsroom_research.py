@@ -1,7 +1,9 @@
-# Author: GPT-6 Sol / Codex
+# Author: GPT-6 Sol / Codex; Claude Opus 5.5
 # Date: 2026-10-09
 # PURPOSE: Verify private/public separation, missed-scan recovery, briefing deduplication
 # and persistent cross-competition roster history through the production research helpers.
+# 09-Oct-2026 (Claude Opus 5.5): portraits trace to the person's own Kaggle account or Hall of
+# Fame card, the Kaggle picture command (offline, with a fake fetch) and the committed ledger.
 # SRP/DRY check: Pass — tests observable archive behavior and identity invariants.
 import copy
 from pathlib import Path
@@ -79,5 +81,51 @@ class ResearchTests(unittest.TestCase):
             followup = social.make_brief(directory, 'morning', NOW).read_text()
             self.assertNotIn('Research item 20 ', followup)
             self.assertNotIn('Research item 30 ', followup)
+
+    def test_portraits_trace_to_the_persons_own_account_or_card(self):
+        someone = person()
+        someone['hallOfFame'] = [{'path': '/hall-of-fame#contributor-7', 'label': 'ARC Prize 2025 champion · NVARC', 'image': {'src': '/arc founders.png', 'alt': 'Card art'},
+                                  'sourceUrl': URL, 'sourceTitle': 'Official results', 'checkedAt': '2026-10-08T12:00:00Z'}]
+        kaggle = {'src': '/news-images/people/verified-person.webp', 'alt': 'Kaggle picture', 'kind': 'kaggle', 'sourceUrl': 'https://www.kaggle.com/confirmed',
+                  'sourceTitle': 'Kaggle profile picture', 'checkedAt': '2026-10-08T12:00:00Z'}
+        card = {**kaggle, 'kind': 'hall-of-fame', 'sourceUrl': 'https://arc.markbarney.net/hall-of-fame#contributor-7'}
+        for portrait in (kaggle, card):
+            people.validate_people([{**someone, 'portrait': portrait}])
+        for wrong in ({**kaggle, 'sourceUrl': 'https://www.kaggle.com/someone-else'}, {**card, 'sourceUrl': 'https://arc.markbarney.net/hall-of-fame#contributor-9'},
+                      {**kaggle, 'src': '/jfPuget3.png'}, {**kaggle, 'src': 'https://storage.googleapis.com/kaggle-avatars/images/1-kg.png'},
+                      {**kaggle, 'kind': 'x'}, {**kaggle, 'caption': 'extra'}):
+            with self.assertRaises(ValueError): people.validate_people([{**someone, 'portrait': wrong}])
+        observation = {'1': {'name': 'Solo', 'members': ['confirmed'], 'observedAt': '2026-10-08T12:00:00Z'}}
+        kept = people.observed_people([{**someone, 'portrait': kaggle}], 'arc-3', '2026', observation, URL)
+        self.assertEqual(kept[0]['portrait'], kaggle)
+
+    def test_kaggle_picture_command_saves_and_follows_removal(self):
+        import io
+        from PIL import Image
+        page = lambda image: ('<meta property="og:username" content="confirmed" />'
+                              f'<meta name="twitter:image" content="https://storage.googleapis.com/kaggle-avatars/thumbnails/{image}" />')
+        self.assertEqual(people.kaggle_avatar_url(page('42-kg.png?t=2026-01-01'), 'Confirmed'), 'https://storage.googleapis.com/kaggle-avatars/images/42-kg.png')
+        self.assertIsNone(people.kaggle_avatar_url(page('default-thumb.png'), 'confirmed'))
+        with self.assertRaises(ValueError): people.kaggle_avatar_url(page('42-kg.png'), 'someone-else')
+        picture = io.BytesIO(); Image.new('RGBA', (400, 400), (200, 30, 30, 128)).save(picture, 'PNG')
+        with tempfile.TemporaryDirectory() as root:
+            ledger = Path(root) / 'content/news/people.json'; n.write(ledger, [person()])
+            served = {'https://www.kaggle.com/confirmed': page('42-kg.png').encode(), 'https://storage.googleapis.com/kaggle-avatars/images/42-kg.png': picture.getvalue()}
+            people.save_kaggle_portrait('verified-person', root, lambda url, limit: served[url], NOW)
+            saved = people.read_people(root)[0]['portrait']
+            self.assertEqual((saved['kind'], saved['sourceUrl'], saved['checkedAt']), ('kaggle', 'https://www.kaggle.com/confirmed', n.iso(NOW)))
+            people.portrait_files_exist(people.read_people(root), root)
+            with Image.open(Path(root) / 'client/public' / saved['src'].lstrip('/')) as image:
+                self.assertEqual(image.size, (people.PORTRAIT_PIXELS, people.PORTRAIT_PIXELS))
+            served['https://www.kaggle.com/confirmed'] = page('default-thumb.png').encode()
+            people.save_kaggle_portrait('verified-person', root, lambda url, limit: served[url], NOW)
+            self.assertNotIn('portrait', people.read_people(root)[0])
+            self.assertFalse((Path(root) / 'client/public' / saved['src'].lstrip('/')).exists())
+
+    def test_committed_ledger_portraits_exist(self):
+        root = Path(__file__).parents[1]
+        ledger = people.read_people(root)
+        people.portrait_files_exist(ledger, root)
+        self.assertTrue(any(p.get('portrait', {}).get('kind') == 'hall-of-fame' for p in ledger))
 
 if __name__ == '__main__': unittest.main()

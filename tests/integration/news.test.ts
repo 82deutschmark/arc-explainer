@@ -6,17 +6,21 @@
  *          08-Oct-2026: share cards (size, real drawn content, cache headers, 404s), the
  *          per-article og/twitter/JSON-LD image, CollectionPage, lastmod and RSS additions.
  *          Social dispatch validation, people/artwork routes and public-only source discovery protect dated contender updates.
+ *          09-Oct-2026 (Claude Opus 5.5): every ledger portrait is a committed file traced to the
+ *          person's own source; profiles lead with face and honors; stories pick cited faces first.
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
 import express from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
 import type { Server } from 'node:http';
 import { mountNews } from '../../server/routes/news';
-import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema } from '../../server/services/news/newsStore';
+import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema } from '../../server/services/news/newsStore';
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import sharp from 'sharp';
-import { articleCardPath, articleTitle, NEWS_SECTION_CARD_PATH, TITLE_BUDGET } from '../../shared/news';
+import { articleCardPath, articleTitle, NEWS_SECTION_CARD_PATH, TITLE_BUDGET, citedPeople, storyPeople } from '../../shared/news';
 import { articleCardSvg, cardText, renderArticleCard } from '../../server/services/news/newsCardImage';
 const metaContent = (html: string, key: string) => html.match(new RegExp(`(?:property|name)="${key}" content="([^"]*)"`))?.[1];
 const unescape = (value = '') => value.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
@@ -187,4 +191,25 @@ it('publishes verified people, historical artwork and public community branches'
   expect(roster).toContain('/news/people/keith-tyser');
   expect(index.social!.every(post => post.visibility === 'public')).toBe(true);
   expect((await fetch(`${base}/news/people/missing-person`)).status).toBe(404);
+});
+
+it('gives people faces from their own sources and puts cited people first in a story', async () => {
+  const index = getNewsIndex();
+  const people = index.people!;
+  for (const person of people.filter(item => item.portrait)) {
+    expect(fs.existsSync(path.join(process.cwd(), 'client/public', person.portrait!.src))).toBe(true);
+  }
+  const jack = people.find(person => person.id === 'jack-cole')!;
+  expect(jack.portrait?.kind).toBe('hall-of-fame');
+  const profile = await (await fetch(`${base}/news/people/jack-cole`)).text();
+  expect(profile).toContain('/news-images/people/jack-cole.webp');
+  expect(profile).toContain(escapeHtml('ARC Prize 2025 third place · MindsAI & Tufa Labs'));
+  expect((await fetch(`${base}/news/people/ivan-sorokin`)).status).toBe(200);
+  // A Kaggle picture may only come from the person's own verified account.
+  const jan = people.find(person => person.id === 'jan-disselhoff')!;
+  expect(newsPersonSchema.safeParse({ ...jan, portrait: { ...jan.portrait!, sourceUrl: 'https://www.kaggle.com/dvhrtm' } }).success).toBe(false);
+  // Cited people lead; team members follow; uncited brief sources add nobody.
+  const article = { ...index.articles.find(item => item.competition === 'arc-3')!, teamIds: ['15770880'], sections: [{ text: 'NVARC3 moved.', sourceIds: ['person-ivan-sorokin-fact-0', 'person-ivan-sorokin-archive-0'] }] };
+  expect(citedPeople(article.sections, people).map(person => person.id)).toEqual(['ivan-sorokin']);
+  expect(storyPeople(article, people, index.competitors).map(person => person.id)).toEqual(['ivan-sorokin', 'jean-francois-puget']);
 });

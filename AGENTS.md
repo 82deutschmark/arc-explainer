@@ -30,6 +30,11 @@
 > first (Boss cut step budgets, code links and derived stats). Left: `corrections[]`, and
 > the public release only when Boss says so.
 
+> **The ARC Daily Digest (09-Oct-2026), for GPT-6 Sol and every newsroom run:** people now have
+> faces (their Hall of Fame card or Kaggle picture) and honors, and stories show the faces of the
+> people they cite. Before any newsroom run, read the desk note at the top of
+> `docs/newsroom/REPORTER.md`, then the picture map `docs/newsroom/VISUALS.md` (section 5.7).
+
 ## 1. Mission & Critical Warnings
 
 - Always understand state transitions: as soon as an action begins, collapse/disable prior controls and reveal live streaming states. Never leave static or bloated UI stuck on screen.
@@ -131,6 +136,13 @@ Consult these before asking questions:
   - `docs/plans/2025-12-24-rearc-frontend-design.md`
   - `docs/reference/frontend/DEV_ROUTES.md` (RE-ARC routes)
   - `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md` (evaluation streaming)
+
+### 5.7 The ARC Daily Digest newsroom
+- `docs/newsroom/REPORTER.md` – edition workflow. **GPT-6 Sol: read its 9 October 2026 desk note at the top before every run.**
+- `docs/newsroom/VISUALS.md` – every picture the paper can show: person portraits (Hall of Fame card crops or Kaggle pictures), honors, Hall of Fame card art, dispatch illustrations; how faces follow citations.
+- `docs/newsroom/SOCIAL_DESK.md`, `docs/newsroom/X_POSTING.md` – research archive and the 2 pm X recap.
+- `.agents/skills/competition-reporter/SKILL.md` – portable reporting principles.
+- Data: `content/news/` (`people.json`, `competitors.json`, `articles/`, `dispatches/`); portraits: `client/public/news-images/people/`.
 
 ## 6. Repository Reference & Architecture
 ### Quick Reference (AGENTS.md Essentials)

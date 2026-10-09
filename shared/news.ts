@@ -9,6 +9,9 @@
  *          08-Oct-2026: added the share-card helpers and moved newsDate/competitionName here
  *          from client/src/components/news/NewsDesk.tsx (which re-exports them).
  *          Dated social dispatches share the archive without replacing immutable editions.
+ *          09-Oct-2026 (Claude Opus 5.5): person portraits (Hall of Fame crop or saved Kaggle
+ *          picture) and the helpers that decide whose faces a story shows: people its sections
+ *          cite, then verified people on the teams it covers.
  * SRP/DRY check: Pass — server, browser and newsroom tooling share one documented shape;
  *          competition labels still come from shared/kaggleCompetitions.ts.
  */
@@ -37,6 +40,13 @@ export interface NewsDispatch {
   sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
   image?: { src: string; alt: string; caption: string };
 }
+/**
+ * A person's face on the newspaper. 'hall-of-fame' is a square crop of their own ARC Explainer
+ * Hall of Fame card (sourceUrl is that card's anchor); 'kaggle' is a saved copy of the profile
+ * picture on their verified Kaggle account (sourceUrl is that account). Files live in
+ * client/public/news-images/people/. docs/newsroom/VISUALS.md maps every picture we have.
+ */
+export interface NewsPortrait { src: string; alt: string; kind: 'hall-of-fame' | 'kaggle'; sourceUrl: string; sourceTitle: string; checkedAt: string }
 /** People persist across seasons; membership observations belong to a specific contest. */
 export interface NewsPerson {
   id: string; name: string;
@@ -44,7 +54,9 @@ export interface NewsPerson {
   facts: CompetitorFact[];
   memberships: { competition: NewsCompetition; competitionId: string; season: string; teamId: string; teamName: string;
     memberHandle: string; firstObservedAt: string; lastObservedAt: string; sourceUrl: string; sourceTitle: string }[];
+  /** Past results and roles, each linked to its Hall of Fame card; labels read like honors ("ARC Prize 2025 champion · NVARC"). */
   hallOfFame: ({ path: string; label: string; image?: { src: string; alt: string } } & Omit<CompetitorFact, 'text'>)[];
+  portrait?: NewsPortrait;
 }
 export interface NewsSocialPost {
   id: string; author: string; authorName: string; url: string; postedAt: string | null; checkedAt: string;
@@ -58,6 +70,31 @@ export const personPath = (id: string) => `/news/people/${id}`;
 /** Current roster cards use exact verified account handles, never fuzzy name matches. */
 export const peopleForTeam = (people: NewsPerson[], team: CompetitorRecord) => people.filter(person =>
   person.accounts.some(account => account.platform === 'kaggle' && team.members.includes(account.handle)));
+/** Brief source IDs for a person: person-<personId>-<identity|fact|archive|roster>-<n> (scripts/newsroom_people.py). */
+const PERSON_SOURCE_ID = /^person-([a-z0-9-]+)-(?:identity|fact|archive|roster)-\d+$/;
+/** People a story actually cites, in the order the sections first cite them. Uncited brief sources do not count. */
+export function citedPeople(sections: NewsSection[], people: NewsPerson[]): NewsPerson[] {
+  const ids = sections.flatMap(section => section.sourceIds).map(id => PERSON_SOURCE_ID.exec(id)?.[1]).filter((id): id is string => !!id);
+  return [...new Set(ids)].map(id => people.find(person => person.id === id)).filter((person): person is NewsPerson => !!person);
+}
+/** Faces for an edition: people the prose cites first, then verified people on the teams it covers. */
+export function storyPeople(article: NewsArticle, people: NewsPerson[], competitors: CompetitorRecord[]): NewsPerson[] {
+  const onTeams = article.teamIds.flatMap(teamId => {
+    const team = competitors.find(record => record.competition === article.competition && record.teamId === teamId);
+    return team ? peopleForTeam(people, team) : [];
+  });
+  return [...new Map([...citedPeople(article.sections, people), ...onTeams].map(person => [person.id, person])).values()];
+}
+/** The ledger person behind an X account, matched only on an exact verified handle. */
+export const personForXHandle = (people: NewsPerson[], handle: string) => people.find(person =>
+  person.accounts.some(account => account.platform === 'x' && account.handle.toLowerCase() === handle.toLowerCase()));
+/** Name without a parenthetical nickname, for captions under small faces. */
+export const shortPersonName = (name: string) => name.replace(/\s*\([^)]*\)\s*$/, '');
+/** First and last initials ("Mithil A Vakde" → "MV") for a person without a picture. */
+export function personInitials(name: string): string {
+  const parts = shortPersonName(name).split(/\s+/).filter(Boolean).map(part => Array.from(part)[0]);
+  return (parts.length > 1 ? parts[0] + parts[parts.length - 1] : parts[0] ?? '').toUpperCase();
+}
 export const newsArticlePath = (id: string) => `/news/${id}`;
 export const competitorPath = (id: string) => `/news/competitors/${id}`;
 export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key].label;

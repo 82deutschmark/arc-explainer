@@ -143,6 +143,26 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
+        "sourceTitle": "The ARChitects — 2025 team solution",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "text": "The ARChitects’ own 2025 solution write-up credits Daniel Franzen under the Kaggle handle dfranzen, alongside Jan Disselhoff (insanitycheck) and David Hartmann (dvhrtm)."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T20:53:45Z",
+    "id": "arc-2-15607618",
+    "lastObservedAt": "2026-10-09T20:53:45Z",
+    "members": [
+      "dfranzen"
+    ],
+    "name": "Daniel Franzen",
+    "teamId": "15607618"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15648732",
@@ -273,10 +293,10 @@
         "text": "Tufa Labs lists Dries Smit, Isaiah Pressman and Jeroen Cottaar among its AI researchers, with research interests spanning reinforcement learning, self-play and Bayesian methods."
       },
       {
-        "text": "On October 9, 2026, Tufa Labs described a temporary setback in a public X post and said it remained dedicated to crushing competitors with overwhelming resources and compute.",
-        "sourceUrl": "https://x.com/tufalabs/status/2108463895128269084",
+        "checkedAt": "2026-10-09T17:16:30Z",
         "sourceTitle": "Tufa Labs — October 9 public competition post",
-        "checkedAt": "2026-10-09T17:16:30Z"
+        "sourceUrl": "https://x.com/tufalabs/status/2108463895128269084",
+        "text": "On October 9, 2026, Tufa Labs described a temporary setback in a public X post and said it remained dedicated to crushing competitors with overwhelming resources and compute."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
@@ -294,11 +314,12 @@
     "teamId": "15486995"
   },
   {
-    "id": "arc-3-15490570",
-    "competition": "arc-3",
-    "teamId": "15490570",
-    "name": "Abstraction Lab & MindsAI",
     "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-09T18:53:27Z",
+    "id": "arc-3-15490570",
+    "lastObservedAt": "2026-10-09T18:53:27Z",
     "members": [
       "alisalmanrana",
       "jcole75",
@@ -306,9 +327,8 @@
       "sumirinn",
       "ultsaza"
     ],
-    "facts": [],
-    "firstObservedAt": "2026-10-09T18:53:27Z",
-    "lastObservedAt": "2026-10-09T18:53:27Z"
+    "name": "Abstraction Lab & MindsAI",
+    "teamId": "15490570"
   },
   {
     "aliases": [],
@@ -355,10 +375,10 @@
         "text": "Yi-Chia Chen authored a Kaggle write-up for a third-place solution in Eedi — Mining Misconceptions in Mathematics."
       },
       {
-        "text": "Yi-Chia Chen’s public Kaggle account is threerabbits. The profile lists she/her pronouns and displays an avatar of two rabbits.",
-        "sourceUrl": "https://www.kaggle.com/threerabbits",
+        "checkedAt": "2026-10-09T17:16:30Z",
         "sourceTitle": "Yi-Chia Chen — public Kaggle profile and avatar",
-        "checkedAt": "2026-10-09T17:16:30Z"
+        "sourceUrl": "https://www.kaggle.com/threerabbits",
+        "text": "Yi-Chia Chen’s public Kaggle account is threerabbits. The profile lists she/her pronouns and displays an avatar of two rabbits."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
@@ -716,6 +736,26 @@
     ],
     "name": "Lord Han Solo",
     "teamId": "16371045"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
+        "sourceTitle": "The ARChitects — 2025 team solution",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "text": "The ARChitects’ own 2025 solution write-up credits Daniel Franzen under the Kaggle handle dfranzen, alongside Jan Disselhoff (insanitycheck) and David Hartmann (dvhrtm)."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T20:53:44Z",
+    "id": "arc-3-16384837",
+    "lastObservedAt": "2026-10-09T20:53:44Z",
+    "members": [
+      "dfranzen"
+    ],
+    "name": "Daniel Franzen",
+    "teamId": "16384837"
   },
   {
     "aliases": [],

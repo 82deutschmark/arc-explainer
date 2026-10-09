@@ -6,6 +6,9 @@
  * Features compact card grid layout, Hall of Fame header, and external resource links.
  * SRP/DRY check: Pass - Reuses useArcContributors hook, HumanTradingCard component, and existing UI patterns
  * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
+ * 09-Oct-2026 (Claude Opus 5.5): every card carries a #contributor-<id> anchor (first appearance
+ * only), and a link with that hash scrolls to its card once the cards load — The ARC Daily
+ * Digest's people pages link each past honor to its card.
  */
 
 import { setPageTitle } from '@/hooks/usePageMeta';
@@ -48,6 +51,16 @@ export default function HumanTradingCards() {
 
   // Show animation on first visit (if not already complete)
   const shouldShowAnimation = isFirstVisit === true && !animationComplete;
+
+  // Cards render after the contributors load (and after a first visit's pack opening), so the
+  // browser's own jump to #contributor-N misses them.
+  useEffect(() => {
+    if (isLoading || !data?.contributors || shouldShowAnimation) return;
+    const target = decodeURIComponent(window.location.hash.slice(1));
+    if (!target) return;
+    const frame = requestAnimationFrame(() => document.getElementById(target)?.scrollIntoView({ block: 'start' }));
+    return () => cancelAnimationFrame(frame);
+  }, [isLoading, data?.contributors, shouldShowAnimation]);
 
   // Categorize contributors for 2025 results
   const { founders, topPaperAward2025, competitionWinners2025, winners2024, researchers, pioneers, arc3Preview } = useMemo(() => {
@@ -146,6 +159,15 @@ export default function HumanTradingCards() {
       };
     }
     return contributor;
+  };
+
+  // One anchor per contributor, on the first card the page renders for it (sections render in
+  // source order; Guillermo Barbadillo, for one, appears under both 2025 and 2024).
+  const anchored = new Set<number>();
+  const anchorFor = (id: number) => {
+    if (anchored.has(id)) return undefined;
+    anchored.add(id);
+    return `contributor-${id}`;
   };
 
   if (error) {
@@ -280,7 +302,7 @@ export default function HumanTradingCards() {
               <section>
                 {founders.map(founder => (
                   <Dialog key={founder.id}>
-                    <div className="border border-zinc-800 bg-zinc-900/60 rounded-lg px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div id={anchorFor(founder.id)} className="scroll-mt-20 border border-zinc-800 bg-zinc-900/60 rounded-lg px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
                       <DialogTrigger asChild>
                         <button
                           type="button"
@@ -344,7 +366,7 @@ export default function HumanTradingCards() {
                     const placementColor = placementColors[index] || 'text-zinc-400';
 
                     return (
-                      <div key={contributor.id} className="flex flex-col items-center gap-2">
+                      <div key={contributor.id} id={anchorFor(contributor.id)} className="scroll-mt-20 flex flex-col items-center gap-2">
                         <span className={`text-sm font-bold ${placementColor} uppercase tracking-wide`}>
                           {placementLabel}
                         </span>
@@ -372,7 +394,7 @@ export default function HumanTradingCards() {
 
                     if (winner.type === 'team_with_members') {
                       // Teams with individual member cards (NVARC, MindsAI) - show just the individual cards
-                      const anchorId = `contributor-${winner.teamContributor.id}`;
+                      const anchorId = anchorFor(winner.teamContributor.id);
                       return (
                         <div key={`team-${idx}`} id={anchorId} className="scroll-mt-20">
                           <div className="mb-2 flex items-center gap-2">
@@ -390,7 +412,7 @@ export default function HumanTradingCards() {
                       );
                     } else {
                       // Solo winners or teams without individual cards (ARChitects)
-                      const anchorId = `contributor-${winner.contributor.id}`;
+                      const anchorId = anchorFor(winner.contributor.id);
                       return (
                         <div key={`solo-${idx}`} id={anchorId} className="scroll-mt-20">
                           <div className="mb-2 flex items-center gap-2">
@@ -416,7 +438,9 @@ export default function HumanTradingCards() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
                   {winners2024.map(contributor => (
-                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
+                    <div key={contributor.id} id={anchorFor(contributor.id)} className="scroll-mt-20">
+                      <HumanTradingCard contributor={enrichContributor(contributor)} />
+                    </div>
                   ))}
                 </div>
               </section>
@@ -431,7 +455,9 @@ export default function HumanTradingCards() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
                   {researchers.map(contributor => (
-                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
+                    <div key={contributor.id} id={anchorFor(contributor.id)} className="scroll-mt-20">
+                      <HumanTradingCard contributor={enrichContributor(contributor)} />
+                    </div>
                   ))}
                 </div>
               </section>
@@ -446,7 +472,9 @@ export default function HumanTradingCards() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
                   {pioneers.map(contributor => (
-                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
+                    <div key={contributor.id} id={anchorFor(contributor.id)} className="scroll-mt-20">
+                      <HumanTradingCard contributor={enrichContributor(contributor)} />
+                    </div>
                   ))}
                 </div>
               </section>
@@ -466,7 +494,9 @@ export default function HumanTradingCards() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
                   {arc3Preview.map(contributor => (
-                    <HumanTradingCard key={contributor.id} contributor={enrichContributor(contributor)} />
+                    <div key={contributor.id} id={anchorFor(contributor.id)} className="scroll-mt-20">
+                      <HumanTradingCard contributor={enrichContributor(contributor)} />
+                    </div>
                   ))}
                 </div>
               </section>

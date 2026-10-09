@@ -1,15 +1,13 @@
 [
   {
-    "id": "yi-chia-chen",
-    "name": "Yi-Chia Chen",
     "accounts": [
       {
-        "platform": "kaggle",
+        "checkedAt": "2026-10-09T17:16:30Z",
         "handle": "threerabbits",
-        "url": "https://www.kaggle.com/threerabbits",
-        "sourceUrl": "https://www.kaggle.com/threerabbits",
+        "platform": "kaggle",
         "sourceTitle": "Public professional account profile",
-        "checkedAt": "2026-10-09T17:16:30Z"
+        "sourceUrl": "https://www.kaggle.com/threerabbits",
+        "url": "https://www.kaggle.com/threerabbits"
       }
     ],
     "facts": [
@@ -26,59 +24,67 @@
         "text": "Yi-Chia Chen authored a Kaggle write-up for a third-place solution in Eedi — Mining Misconceptions in Mathematics."
       },
       {
-        "text": "Yi-Chia Chen’s public Kaggle account is threerabbits. The profile lists she/her pronouns and displays an avatar of two rabbits.",
-        "sourceUrl": "https://www.kaggle.com/threerabbits",
+        "checkedAt": "2026-10-09T17:16:30Z",
         "sourceTitle": "Yi-Chia Chen — public Kaggle profile and avatar",
-        "checkedAt": "2026-10-09T17:16:30Z"
+        "sourceUrl": "https://www.kaggle.com/threerabbits",
+        "text": "Yi-Chia Chen’s public Kaggle account is threerabbits. The profile lists she/her pronouns and displays an avatar of two rabbits."
       }
     ],
+    "hallOfFame": [],
+    "id": "yi-chia-chen",
     "memberships": [
       {
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
-        "season": "2026",
-        "teamId": "15501171",
-        "teamName": "Yi-Chia Chen",
-        "memberHandle": "threerabbits",
         "firstObservedAt": "2026-10-09T18:53:30Z",
         "lastObservedAt": "2026-10-09T18:53:30Z",
+        "memberHandle": "threerabbits",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
-        "sourceTitle": "ARC-2 public roster observation"
+        "teamId": "15501171",
+        "teamName": "Yi-Chia Chen"
       },
       {
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
-        "season": "2026",
-        "teamId": "15499660",
-        "teamName": "Yi-Chia Chen",
-        "memberHandle": "threerabbits",
         "firstObservedAt": "2026-10-09T18:53:27Z",
         "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "threerabbits",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "sourceTitle": "ARC-3 public roster observation"
+        "teamId": "15499660",
+        "teamName": "Yi-Chia Chen"
       }
     ],
-    "hallOfFame": []
+    "name": "Yi-Chia Chen",
+    "portrait": {
+      "alt": "Yi-Chia Chen’s Kaggle profile picture",
+      "checkedAt": "2026-10-09T21:36:03Z",
+      "kind": "kaggle",
+      "sourceTitle": "Yi-Chia Chen — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/threerabbits",
+      "src": "/news-images/people/yi-chia-chen.webp"
+    }
   },
   {
-    "id": "jean-francois-puget",
-    "name": "Jean-François Puget (CPMP)",
     "accounts": [
       {
-        "platform": "kaggle",
+        "checkedAt": "2026-10-09T03:23:31Z",
         "handle": "cpmpml",
-        "url": "https://www.kaggle.com/cpmpml",
-        "sourceUrl": "https://github.com/jfpuget",
+        "platform": "kaggle",
         "sourceTitle": "Jean-François Puget — GitHub profile linked Kaggle account",
-        "checkedAt": "2026-10-09T03:23:31Z"
+        "sourceUrl": "https://github.com/jfpuget",
+        "url": "https://www.kaggle.com/cpmpml"
       },
       {
-        "platform": "x",
+        "checkedAt": "2026-10-09T19:22:22Z",
         "handle": "JFPuget",
-        "url": "https://x.com/JFPuget",
-        "sourceUrl": "https://arc.markbarney.net/api/contributors",
+        "platform": "x",
         "sourceTitle": "Hall of Fame verified CPMP professional account",
-        "checkedAt": "2026-10-09T19:22:22Z"
+        "sourceUrl": "https://arc.markbarney.net/api/contributors",
+        "url": "https://x.com/JFPuget"
       }
     ],
     "facts": [
@@ -95,119 +101,233 @@
         "text": "NVIDIA’s author biography describes Jean-Francois Puget as a director and individual contributor whose team advances agentic AI and showcases NVIDIA tools and expertise in Kaggle competitions."
       }
     ],
-    "memberships": [
-      {
-        "competition": "arc-2",
-        "competitionId": "arc-prize-2026-arc-agi-2",
-        "season": "2026",
-        "teamId": "15486939",
-        "teamName": "nvbanana",
-        "memberHandle": "cpmpml",
-        "firstObservedAt": "2026-10-09T18:53:30Z",
-        "lastObservedAt": "2026-10-09T18:53:30Z",
-        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
-        "sourceTitle": "ARC-2 public roster observation"
-      },
-      {
-        "competition": "arc-3",
-        "competitionId": "arc-prize-2026-arc-agi-3",
-        "season": "2026",
-        "teamId": "15770880",
-        "teamName": "NVARC3",
-        "memberHandle": "cpmpml",
-        "firstObservedAt": "2026-10-09T18:53:27Z",
-        "lastObservedAt": "2026-10-09T18:53:27Z",
-        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "sourceTitle": "ARC-3 public roster observation"
-      }
-    ],
     "hallOfFame": [
       {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "Jean-François Puget on his 2025 NVARC card in the ARC Explainer Hall of Fame",
+          "src": "/jfPuget3.png"
+        },
+        "label": "ARC Prize 2025 champion · NVARC",
         "path": "/hall-of-fame#contributor-7",
-        "label": "2025 NVARC winners",
-        "image": {
-          "src": "/jfPuget3.png",
-          "alt": "Jean-François Puget artwork reused from the historical ARC Hall of Fame"
-        },
-        "sourceUrl": "https://arc.markbarney.net/api/contributors",
-        "sourceTitle": "ARC Explainer Hall of Fame — historical contributor record",
-        "checkedAt": "2026-10-09T19:22:22Z"
-      }
-    ]
-  },
-  {
-    "id": "jack-cole",
-    "name": "Jack Cole",
-    "accounts": [
-      {
-        "platform": "kaggle",
-        "handle": "jcole75",
-        "url": "https://www.kaggle.com/jcole75",
-        "sourceUrl": "https://www.kaggle.com/jcole75",
-        "sourceTitle": "Public professional account profile",
-        "checkedAt": "2026-10-09T19:23:29Z"
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
       },
       {
-        "platform": "x",
-        "handle": "MindsAI_Jack",
-        "url": "https://x.com/MindsAI_Jack",
-        "sourceUrl": "https://www.kaggle.com/jcole75",
-        "sourceTitle": "Jack Cole — linked X account on Kaggle profile",
-        "checkedAt": "2026-10-09T19:23:29Z"
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "Jean-François Puget on his 2024 paper award card in the ARC Explainer Hall of Fame",
+          "src": "/jfPuget2.png"
+        },
+        "label": "ARC Prize 2024 paper award runner-up · A 2D nGPT Model for ARC Prize",
+        "path": "/hall-of-fame#contributor-15",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024"
       }
     ],
-    "facts": [],
+    "id": "jean-francois-puget",
     "memberships": [
       {
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
-        "season": "2026",
-        "teamId": "15487968",
-        "teamName": "Jack Cole",
-        "memberHandle": "jcole75",
         "firstObservedAt": "2026-10-09T18:53:30Z",
         "lastObservedAt": "2026-10-09T18:53:30Z",
+        "memberHandle": "cpmpml",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
-        "sourceTitle": "ARC-2 public roster observation"
+        "teamId": "15486939",
+        "teamName": "nvbanana"
       },
       {
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
-        "season": "2026",
-        "teamId": "15490570",
-        "teamName": "Abstraction Lab & MindsAI",
-        "memberHandle": "jcole75",
         "firstObservedAt": "2026-10-09T18:53:27Z",
         "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "cpmpml",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "sourceTitle": "ARC-3 public roster observation"
+        "teamId": "15770880",
+        "teamName": "NVARC3"
+      }
+    ],
+    "name": "Jean-François Puget (CPMP)",
+    "portrait": {
+      "alt": "Jean-François Puget, from his 2025 NVARC Hall of Fame card",
+      "checkedAt": "2026-10-09T21:30:00Z",
+      "kind": "hall-of-fame",
+      "sourceTitle": "ARC Explainer Hall of Fame — 2025 NVARC card",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-7",
+      "src": "/news-images/people/jean-francois-puget.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
+        "handle": "sorokin",
+        "platform": "kaggle",
+        "sourceTitle": "NVARC — 2025 team write-up crediting sorokin and cpmpml",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc",
+        "url": "https://www.kaggle.com/sorokin"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
+        "sourceTitle": "NVIDIA — 2025 NVARC competition report",
+        "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+        "text": "NVIDIA’s December 2025 report identifies Ivan Sorokin and Jean-Francois Puget as NVIDIA researchers who competed as NVARC in the 2025 ARC Prize."
+      },
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025",
+        "text": "ARC Prize’s 2025 results list NVARC first and credit the paper “NVARC solution to ARC-AGI-2 2025” to I. Sorokin and Jean-François Puget."
       }
     ],
     "hallOfFame": [
       {
-        "path": "/hall-of-fame#contributor-9",
-        "label": "2025 MindsAI team card",
+        "checkedAt": "2026-10-09T21:30:00Z",
         "image": {
-          "src": "/jackCole2.png",
-          "alt": "Jack Cole artwork reused from the historical MindsAI Hall of Fame card"
+          "alt": "Ivan Sorokin on his 2025 NVARC card in the ARC Explainer Hall of Fame",
+          "src": "/ivanARC2.png"
         },
-        "sourceUrl": "https://arc.markbarney.net/api/contributors",
-        "sourceTitle": "ARC Explainer Hall of Fame — historical contributor record",
-        "checkedAt": "2026-10-09T19:22:22Z"
+        "label": "ARC Prize 2025 champion · NVARC",
+        "path": "/hall-of-fame#contributor-7",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
       }
-    ]
+    ],
+    "id": "ivan-sorokin",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-09T18:53:27Z",
+        "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "sorokin",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "15770880",
+        "teamName": "NVARC3"
+      }
+    ],
+    "name": "Ivan Sorokin",
+    "portrait": {
+      "alt": "Ivan Sorokin, from his 2025 NVARC Hall of Fame card",
+      "checkedAt": "2026-10-09T21:30:00Z",
+      "kind": "hall-of-fame",
+      "sourceTitle": "ARC Explainer Hall of Fame — 2025 NVARC card",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-7",
+      "src": "/news-images/people/ivan-sorokin.webp"
+    }
   },
   {
-    "id": "mithil-a-vakde",
-    "name": "Mithil A Vakde",
     "accounts": [
       {
+        "checkedAt": "2026-10-09T19:23:29Z",
+        "handle": "jcole75",
         "platform": "kaggle",
+        "sourceTitle": "Public professional account profile",
+        "sourceUrl": "https://www.kaggle.com/jcole75",
+        "url": "https://www.kaggle.com/jcole75"
+      },
+      {
+        "checkedAt": "2026-10-09T19:23:29Z",
+        "handle": "MindsAI_Jack",
+        "platform": "x",
+        "sourceTitle": "Jack Cole — linked X account on Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/jcole75",
+        "url": "https://x.com/MindsAI_Jack"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — ARC-AGI-3 Preview Agents results",
+        "sourceUrl": "https://arcprize.org/competitions/arc-agi-3-preview-agents",
+        "text": "ARC Prize credits Jack Cole as adviser and reviewer for StochasticGoose @ Tufa Labs, the first-place agent in the 2025 ARC-AGI-3 Preview competition, whose lead developer was Dries Smit."
+      },
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025",
+        "text": "ARC Prize’s 2025 results list “Don’t throw the baby out with the bathwater: How and why deep learning for ARC” by J. Cole and M. Osman among the paper award honorable mentions."
+      }
+    ],
+    "hallOfFame": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "Jack Cole on his 2025 MindsAI card in the ARC Explainer Hall of Fame",
+          "src": "/jackCole2.png"
+        },
+        "label": "ARC Prize 2025 third place · MindsAI & Tufa Labs",
+        "path": "/hall-of-fame#contributor-9",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
+      },
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "Jack Cole on his 2024 MindsAI card in the ARC Explainer Hall of Fame",
+          "src": "/jackcole.jpeg"
+        },
+        "label": "ARC Prize 2024 · MindsAI top score, not prize-eligible",
+        "path": "/hall-of-fame#contributor-10",
+        "sourceTitle": "ARC Prize — 2024 winners and technical report",
+        "sourceUrl": "https://arcprize.org/blog/arc-prize-2024-winners-technical-report"
+      }
+    ],
+    "id": "jack-cole",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-09T18:53:30Z",
+        "lastObservedAt": "2026-10-09T18:53:30Z",
+        "memberHandle": "jcole75",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "15487968",
+        "teamName": "Jack Cole"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-09T18:53:27Z",
+        "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "jcole75",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "15490570",
+        "teamName": "Abstraction Lab & MindsAI"
+      }
+    ],
+    "name": "Jack Cole",
+    "portrait": {
+      "alt": "Jack Cole, from his 2025 MindsAI Hall of Fame card",
+      "checkedAt": "2026-10-09T21:30:00Z",
+      "kind": "hall-of-fame",
+      "sourceTitle": "ARC Explainer Hall of Fame — 2025 MindsAI card",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-9",
+      "src": "/news-images/people/jack-cole.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-09T03:23:31Z",
         "handle": "mithilavakde",
-        "url": "https://www.kaggle.com/mithilavakde",
-        "sourceUrl": "https://www.kaggle.com/models/mithilavakde/mdlarc",
+        "platform": "kaggle",
         "sourceTitle": "Mithil A Vakde — mdlARC model owner",
-        "checkedAt": "2026-10-09T03:23:31Z"
+        "sourceUrl": "https://www.kaggle.com/models/mithilavakde/mdlarc",
+        "url": "https://www.kaggle.com/mithilavakde"
       }
     ],
     "facts": [
@@ -218,200 +338,241 @@
         "text": "The Kaggle account mithilavakde publishes a model called mdlARC under the displayed name Mithil A Vakde."
       }
     ],
+    "hallOfFame": [],
+    "id": "mithil-a-vakde",
     "memberships": [
       {
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
-        "season": "2026",
-        "teamId": "15486728",
-        "teamName": "Mithil A Vakde",
+        "firstObservedAt": "2026-10-09T18:53:30Z",
+        "lastObservedAt": "2026-10-09T18:53:30Z",
         "memberHandle": "mithilavakde",
-        "firstObservedAt": "2026-10-09T18:53:30Z",
-        "lastObservedAt": "2026-10-09T18:53:30Z",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
-        "sourceTitle": "ARC-2 public roster observation"
+        "teamId": "15486728",
+        "teamName": "Mithil A Vakde"
       }
     ],
-    "hallOfFame": []
+    "name": "Mithil A Vakde"
   },
   {
-    "id": "keith-tyser",
-    "name": "Keith Tyser",
     "accounts": [
       {
-        "platform": "kaggle",
+        "checkedAt": "2026-10-09T19:23:29Z",
         "handle": "keithtyser",
-        "url": "https://www.kaggle.com/keithtyser",
+        "platform": "kaggle",
+        "sourceTitle": "Public professional account profile",
         "sourceUrl": "https://www.kaggle.com/keithtyser",
-        "sourceTitle": "Public professional account profile",
-        "checkedAt": "2026-10-09T19:23:29Z"
+        "url": "https://www.kaggle.com/keithtyser"
       },
       {
-        "platform": "x",
+        "checkedAt": "2026-10-09T19:23:29Z",
         "handle": "keithtyser",
-        "url": "https://x.com/keithtyser",
-        "sourceUrl": "https://keithtyser.com/",
+        "platform": "x",
         "sourceTitle": "Keith Tyser — personal site linked X account",
-        "checkedAt": "2026-10-09T19:23:29Z"
+        "sourceUrl": "https://keithtyser.com/",
+        "url": "https://x.com/keithtyser"
       }
     ],
     "facts": [
       {
-        "text": "Keith Tyser describes his work as AI/ML engineering and data science on his professional website.",
-        "sourceUrl": "https://keithtyser.com/",
+        "checkedAt": "2026-10-09T19:23:29Z",
         "sourceTitle": "Keith Tyser — professional site",
-        "checkedAt": "2026-10-09T19:23:29Z"
+        "sourceUrl": "https://keithtyser.com/",
+        "text": "Keith Tyser describes his work as AI/ML engineering and data science on his professional website."
       }
     ],
+    "hallOfFame": [],
+    "id": "keith-tyser",
     "memberships": [
       {
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
-        "season": "2026",
-        "teamId": "15526034",
-        "teamName": "ARC Raiders",
-        "memberHandle": "keithtyser",
         "firstObservedAt": "2026-10-09T18:53:30Z",
         "lastObservedAt": "2026-10-09T18:53:30Z",
+        "memberHandle": "keithtyser",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
-        "sourceTitle": "ARC-2 public roster observation"
+        "teamId": "15526034",
+        "teamName": "ARC Raiders"
       },
       {
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
-        "season": "2026",
-        "teamId": "15508513",
-        "teamName": "keithtyser",
-        "memberHandle": "keithtyser",
         "firstObservedAt": "2026-10-09T18:53:27Z",
         "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "keithtyser",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "sourceTitle": "ARC-3 public roster observation"
+        "teamId": "15508513",
+        "teamName": "keithtyser"
       }
     ],
-    "hallOfFame": []
+    "name": "Keith Tyser",
+    "portrait": {
+      "alt": "Keith Tyser’s Kaggle profile picture",
+      "checkedAt": "2026-10-09T21:36:03Z",
+      "kind": "kaggle",
+      "sourceTitle": "Keith Tyser — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/keithtyser",
+      "src": "/news-images/people/keith-tyser.webp"
+    }
   },
   {
-    "id": "dries-smit",
-    "name": "Dries Smit",
     "accounts": [
       {
-        "platform": "kaggle",
+        "checkedAt": "2026-10-09T19:23:29Z",
         "handle": "driessmit1",
-        "url": "https://www.kaggle.com/driessmit1",
-        "sourceUrl": "https://www.kaggle.com/driessmit1",
+        "platform": "kaggle",
         "sourceTitle": "Public professional account profile",
-        "checkedAt": "2026-10-09T19:23:29Z"
+        "sourceUrl": "https://www.kaggle.com/driessmit1",
+        "url": "https://www.kaggle.com/driessmit1"
       }
     ],
     "facts": [
       {
-        "text": "Tufa Labs lists Dries Smit as an AI researcher working on reinforcement learning, multi-agent systems and large language models.",
-        "sourceUrl": "https://tufalabs.ai/team/",
+        "checkedAt": "2026-10-09T19:23:29Z",
         "sourceTitle": "Tufa Labs — team profiles",
-        "checkedAt": "2026-10-09T19:23:29Z"
-      }
-    ],
-    "memberships": [
-      {
-        "competition": "arc-2",
-        "competitionId": "arc-prize-2026-arc-agi-2",
-        "season": "2026",
-        "teamId": "16756524",
-        "teamName": "Tufa Labs",
-        "memberHandle": "driessmit1",
-        "firstObservedAt": "2026-10-09T18:53:30Z",
-        "lastObservedAt": "2026-10-09T18:53:30Z",
-        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
-        "sourceTitle": "ARC-2 public roster observation"
+        "sourceUrl": "https://tufalabs.ai/team/",
+        "text": "Tufa Labs lists Dries Smit as an AI researcher working on reinforcement learning, multi-agent systems and large language models."
       },
       {
-        "competition": "arc-3",
-        "competitionId": "arc-prize-2026-arc-agi-3",
-        "season": "2026",
-        "teamId": "15486995",
-        "teamName": "Tufa Labs",
-        "memberHandle": "driessmit1",
-        "firstObservedAt": "2026-10-09T18:53:27Z",
-        "lastObservedAt": "2026-10-09T18:53:27Z",
-        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "sourceTitle": "ARC-3 public roster observation"
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — ARC-AGI-3 Preview Agents results",
+        "sourceUrl": "https://arcprize.org/competitions/arc-agi-3-preview-agents",
+        "text": "ARC Prize lists Dries Smit as lead developer of StochasticGoose @ Tufa Labs, which won the 2025 ARC-AGI-3 Preview competition."
       }
     ],
     "hallOfFame": [
       {
-        "path": "/hall-of-fame#contributor-9",
-        "label": "2025 MindsAI team card",
+        "checkedAt": "2026-10-09T21:30:00Z",
         "image": {
-          "src": "/dries.png",
-          "alt": "Dries Smit artwork reused from the historical MindsAI Hall of Fame card"
+          "alt": "Dries Smit on his ARC-AGI-3 Preview card in the ARC Explainer Hall of Fame",
+          "src": "/dries.png"
         },
-        "sourceUrl": "https://arc.markbarney.net/api/contributors",
-        "sourceTitle": "ARC Explainer Hall of Fame — historical contributor record",
-        "checkedAt": "2026-10-09T19:22:22Z"
-      }
-    ]
-  },
-  {
-    "id": "jeroen-cottaar",
-    "name": "Jeroen Cottaar",
-    "accounts": [
+        "label": "ARC-AGI-3 Preview 2025 winner · StochasticGoose @ Tufa Labs",
+        "path": "/hall-of-fame#contributor-25",
+        "sourceTitle": "ARC Prize — ARC-AGI-3 Preview Agents results",
+        "sourceUrl": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
+      },
       {
-        "platform": "kaggle",
-        "handle": "jeroencottaar",
-        "url": "https://www.kaggle.com/jeroencottaar",
-        "sourceUrl": "https://www.kaggle.com/jeroencottaar",
-        "sourceTitle": "Public professional account profile",
-        "checkedAt": "2026-10-09T19:23:29Z"
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "Dries Smit on his ARC-AGI-3 Preview card in the ARC Explainer Hall of Fame",
+          "src": "/dries.png"
+        },
+        "label": "ARC Prize 2025 third place · MindsAI & Tufa Labs",
+        "path": "/hall-of-fame#contributor-9",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
       }
     ],
-    "facts": [
-      {
-        "text": "Tufa Labs lists Jeroen Cottaar as an AI researcher, with research interests including Bayesian inference and program synthesis.",
-        "sourceUrl": "https://tufalabs.ai/team/",
-        "sourceTitle": "Tufa Labs — team profiles",
-        "checkedAt": "2026-10-09T19:23:29Z"
-      }
-    ],
+    "id": "dries-smit",
     "memberships": [
       {
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
-        "season": "2026",
-        "teamId": "16756524",
-        "teamName": "Tufa Labs",
-        "memberHandle": "jeroencottaar",
         "firstObservedAt": "2026-10-09T18:53:30Z",
         "lastObservedAt": "2026-10-09T18:53:30Z",
+        "memberHandle": "driessmit1",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
-        "sourceTitle": "ARC-2 public roster observation"
+        "teamId": "16756524",
+        "teamName": "Tufa Labs"
       },
       {
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
-        "season": "2026",
-        "teamId": "15486995",
-        "teamName": "Tufa Labs",
-        "memberHandle": "jeroencottaar",
         "firstObservedAt": "2026-10-09T18:53:27Z",
         "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "driessmit1",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "sourceTitle": "ARC-3 public roster observation"
+        "teamId": "15486995",
+        "teamName": "Tufa Labs"
       }
     ],
-    "hallOfFame": []
+    "name": "Dries Smit",
+    "portrait": {
+      "alt": "Dries Smit, from his ARC-AGI-3 Preview Hall of Fame card",
+      "checkedAt": "2026-10-09T21:30:00Z",
+      "kind": "hall-of-fame",
+      "sourceTitle": "ARC Explainer Hall of Fame — ARC-AGI-3 Preview card",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-25",
+      "src": "/news-images/people/dries-smit.webp"
+    }
   },
   {
-    "id": "jan-disselhoff",
-    "name": "Jan Disselhoff",
     "accounts": [
       {
+        "checkedAt": "2026-10-09T19:23:29Z",
+        "handle": "jeroencottaar",
         "platform": "kaggle",
+        "sourceTitle": "Public professional account profile",
+        "sourceUrl": "https://www.kaggle.com/jeroencottaar",
+        "url": "https://www.kaggle.com/jeroencottaar"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T19:23:29Z",
+        "sourceTitle": "Tufa Labs — team profiles",
+        "sourceUrl": "https://tufalabs.ai/team/",
+        "text": "Tufa Labs lists Jeroen Cottaar as an AI researcher, with research interests including Bayesian inference and program synthesis."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "jeroen-cottaar",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-09T18:53:30Z",
+        "lastObservedAt": "2026-10-09T18:53:30Z",
+        "memberHandle": "jeroencottaar",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16756524",
+        "teamName": "Tufa Labs"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-09T18:53:27Z",
+        "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "jeroencottaar",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "15486995",
+        "teamName": "Tufa Labs"
+      }
+    ],
+    "name": "Jeroen Cottaar",
+    "portrait": {
+      "alt": "Jeroen Cottaar’s Kaggle profile picture",
+      "checkedAt": "2026-10-09T21:36:03Z",
+      "kind": "kaggle",
+      "sourceTitle": "Jeroen Cottaar — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/jeroencottaar",
+      "src": "/news-images/people/jeroen-cottaar.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
         "handle": "insanitycheck",
-        "url": "https://www.kaggle.com/insanitycheck",
-        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "platform": "kaggle",
         "sourceTitle": "The ARChitects — author and Kaggle handle credits",
-        "checkedAt": "2026-10-08T03:38:00Z"
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "url": "https://www.kaggle.com/insanitycheck"
       }
     ],
     "facts": [
@@ -428,57 +589,76 @@
         "text": "The team’s 2025 technical report lists Jan Disselhoff at Johannes Gutenberg University Mainz."
       }
     ],
+    "hallOfFame": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "The ARChitects team card from the ARC Explainer Hall of Fame, featuring Franzen, Disselhoff and Hartmann",
+          "src": "/ARChitechts.png"
+        },
+        "label": "ARC Prize 2025 runner-up · the ARChitects",
+        "path": "/hall-of-fame#contributor-5",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
+      },
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "The ARChitects team card from the ARC Explainer Hall of Fame, featuring Franzen, Disselhoff and Hartmann",
+          "src": "/ARChitechts.png"
+        },
+        "label": "ARC Prize 2024 champion · the ARChitects",
+        "path": "/hall-of-fame#contributor-6",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024"
+      }
+    ],
+    "id": "jan-disselhoff",
     "memberships": [
       {
         "competition": "arc-2",
         "competitionId": "arc-prize-2026-arc-agi-2",
-        "season": "2026",
-        "teamId": "15507730",
-        "teamName": "Jan Disselhoff",
-        "memberHandle": "insanitycheck",
         "firstObservedAt": "2026-10-09T18:53:30Z",
         "lastObservedAt": "2026-10-09T18:53:30Z",
+        "memberHandle": "insanitycheck",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
-        "sourceTitle": "ARC-2 public roster observation"
+        "teamId": "15507730",
+        "teamName": "Jan Disselhoff"
       },
       {
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
-        "season": "2026",
-        "teamId": "15501006",
-        "teamName": "Jan Disselhoff",
-        "memberHandle": "insanitycheck",
         "firstObservedAt": "2026-10-09T18:53:27Z",
         "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "insanitycheck",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "sourceTitle": "ARC-3 public roster observation"
+        "teamId": "15501006",
+        "teamName": "Jan Disselhoff"
       }
     ],
-    "hallOfFame": [
-      {
-        "path": "/hall-of-fame#contributor-5",
-        "label": "2025 ARChitects team card",
-        "image": {
-          "src": "/ARChitechts.png",
-          "alt": "Historical ARChitects team artwork featuring Franzen, Disselhoff and Hartmann"
-        },
-        "sourceUrl": "https://arc.markbarney.net/api/contributors",
-        "sourceTitle": "ARC Explainer Hall of Fame — historical contributor record",
-        "checkedAt": "2026-10-09T19:22:22Z"
-      }
-    ]
+    "name": "Jan Disselhoff",
+    "portrait": {
+      "alt": "Jan Disselhoff’s Kaggle profile picture",
+      "checkedAt": "2026-10-09T21:36:04Z",
+      "kind": "kaggle",
+      "sourceTitle": "Jan Disselhoff — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/insanitycheck",
+      "src": "/news-images/people/jan-disselhoff.webp"
+    }
   },
   {
-    "id": "david-hartmann",
-    "name": "David Hartmann",
     "accounts": [
       {
-        "platform": "kaggle",
+        "checkedAt": "2026-10-08T03:38:00Z",
         "handle": "dvhrtm",
-        "url": "https://www.kaggle.com/dvhrtm",
-        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "platform": "kaggle",
         "sourceTitle": "The ARChitects — author and Kaggle handle credits",
-        "checkedAt": "2026-10-08T03:38:00Z"
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "url": "https://www.kaggle.com/dvhrtm"
       }
     ],
     "facts": [
@@ -495,96 +675,216 @@
         "text": "The team’s 2025 technical report lists David Hartmann at Lambda, Inc."
       }
     ],
+    "hallOfFame": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "The ARChitects team card from the ARC Explainer Hall of Fame, featuring Franzen, Disselhoff and Hartmann",
+          "src": "/ARChitechts.png"
+        },
+        "label": "ARC Prize 2025 runner-up · the ARChitects",
+        "path": "/hall-of-fame#contributor-5",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
+      }
+    ],
+    "id": "david-hartmann",
     "memberships": [
       {
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
-        "season": "2026",
-        "teamId": "16032816",
-        "teamName": "David Hartmann",
-        "memberHandle": "dvhrtm",
         "firstObservedAt": "2026-10-09T18:53:27Z",
         "lastObservedAt": "2026-10-09T18:53:27Z",
+        "memberHandle": "dvhrtm",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-        "sourceTitle": "ARC-3 public roster observation"
+        "teamId": "16032816",
+        "teamName": "David Hartmann"
+      }
+    ],
+    "name": "David Hartmann",
+    "portrait": {
+      "alt": "David Hartmann’s Kaggle profile picture",
+      "checkedAt": "2026-10-09T21:36:04Z",
+      "kind": "kaggle",
+      "sourceTitle": "David Hartmann — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/dvhrtm",
+      "src": "/news-images/people/david-hartmann.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
+        "handle": "dfranzen",
+        "platform": "kaggle",
+        "sourceTitle": "The ARChitects — 2025 team solution crediting dfranzen",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "url": "https://www.kaggle.com/dfranzen"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-08T03:38:00Z",
+        "sourceTitle": "The ARChitects — 2025 team solution",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+        "text": "The ARChitects’ own 2025 solution write-up credits Daniel Franzen under the Kaggle handle dfranzen, alongside Jan Disselhoff (insanitycheck) and David Hartmann (dvhrtm)."
+      },
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024",
+        "text": "ARC Prize’s 2024 results list “The LLM ARChitect: Solving ARC-AGI Is a Matter of Perspective” by Franzen et al. among the paper award runners-up."
       }
     ],
     "hallOfFame": [
       {
-        "path": "/hall-of-fame#contributor-5",
-        "label": "2025 ARChitects team card",
+        "checkedAt": "2026-10-09T21:30:00Z",
         "image": {
-          "src": "/ARChitechts.png",
-          "alt": "Historical ARChitects team artwork featuring Franzen, Disselhoff and Hartmann"
+          "alt": "The ARChitects team card from the ARC Explainer Hall of Fame, featuring Franzen, Disselhoff and Hartmann",
+          "src": "/ARChitechts.png"
         },
-        "sourceUrl": "https://arc.markbarney.net/api/contributors",
-        "sourceTitle": "ARC Explainer Hall of Fame — historical contributor record",
-        "checkedAt": "2026-10-09T19:22:22Z"
+        "label": "ARC Prize 2025 runner-up · the ARChitects",
+        "path": "/hall-of-fame#contributor-5",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
+      },
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "image": {
+          "alt": "The ARChitects team card from the ARC Explainer Hall of Fame, featuring Franzen, Disselhoff and Hartmann",
+          "src": "/ARChitechts.png"
+        },
+        "label": "ARC Prize 2024 champion · the ARChitects",
+        "path": "/hall-of-fame#contributor-6",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024"
       }
-    ]
+    ],
+    "id": "daniel-franzen",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-09T20:53:45Z",
+        "lastObservedAt": "2026-10-09T20:53:45Z",
+        "memberHandle": "dfranzen",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "15607618",
+        "teamName": "Daniel Franzen"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-09T20:53:44Z",
+        "lastObservedAt": "2026-10-09T20:53:44Z",
+        "memberHandle": "dfranzen",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16384837",
+        "teamName": "Daniel Franzen"
+      }
+    ],
+    "name": "Daniel Franzen",
+    "portrait": {
+      "alt": "Daniel Franzen’s Kaggle profile picture",
+      "checkedAt": "2026-10-09T21:36:04Z",
+      "kind": "kaggle",
+      "sourceTitle": "Daniel Franzen — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/dfranzen",
+      "src": "/news-images/people/daniel-franzen.webp"
+    }
   },
   {
-    "id": "francois-chollet",
-    "name": "François Chollet",
     "accounts": [
       {
-        "platform": "x",
+        "checkedAt": "2026-10-09T19:28:44Z",
         "handle": "fchollet",
-        "url": "https://x.com/fchollet",
-        "sourceUrl": "https://x.com/arcprize",
+        "platform": "x",
         "sourceTitle": "ARC Prize — official profile co-founder links",
-        "checkedAt": "2026-10-09T19:28:44Z"
+        "sourceUrl": "https://x.com/arcprize",
+        "url": "https://x.com/fchollet"
       }
     ],
     "facts": [
       {
-        "text": "ARC Prize’s official profile identifies François Chollet as a co-founder.",
-        "sourceUrl": "https://x.com/arcprize",
+        "checkedAt": "2026-10-09T19:28:44Z",
         "sourceTitle": "ARC Prize — official profile",
-        "checkedAt": "2026-10-09T19:28:44Z"
+        "sourceUrl": "https://x.com/arcprize",
+        "text": "ARC Prize’s official profile identifies François Chollet as a co-founder."
       }
     ],
-    "memberships": [],
     "hallOfFame": [
       {
-        "path": "/hall-of-fame",
-        "label": "ARC Prize founders and organizers",
-        "sourceUrl": "https://arc.markbarney.net/api/contributors",
-        "sourceTitle": "ARC Explainer Hall of Fame — founders record",
-        "checkedAt": "2026-10-09T19:22:22Z"
+        "checkedAt": "2026-10-09T19:28:44Z",
+        "image": {
+          "alt": "ARC Prize founders card featuring François Chollet and Mike Knoop",
+          "src": "/arc founders.png"
+        },
+        "label": "ARC Prize co-founder",
+        "path": "/hall-of-fame#contributor-19",
+        "sourceTitle": "ARC Prize — official profile",
+        "sourceUrl": "https://x.com/arcprize"
       }
-    ]
+    ],
+    "id": "francois-chollet",
+    "memberships": [],
+    "name": "François Chollet",
+    "portrait": {
+      "alt": "François Chollet and Mike Knoop, from the ARC Prize founders card",
+      "checkedAt": "2026-10-09T21:30:00Z",
+      "kind": "hall-of-fame",
+      "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders card",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+      "src": "/news-images/people/arc-founders.webp"
+    }
   },
   {
-    "id": "mike-knoop",
-    "name": "Mike Knoop",
     "accounts": [
       {
-        "platform": "x",
+        "checkedAt": "2026-10-09T19:28:44Z",
         "handle": "mikeknoop",
-        "url": "https://x.com/mikeknoop",
-        "sourceUrl": "https://x.com/arcprize",
+        "platform": "x",
         "sourceTitle": "ARC Prize — official profile co-founder links",
-        "checkedAt": "2026-10-09T19:28:44Z"
+        "sourceUrl": "https://x.com/arcprize",
+        "url": "https://x.com/mikeknoop"
       }
     ],
     "facts": [
       {
-        "text": "ARC Prize’s official profile identifies Mike Knoop as a co-founder.",
-        "sourceUrl": "https://x.com/arcprize",
+        "checkedAt": "2026-10-09T19:28:44Z",
         "sourceTitle": "ARC Prize — official profile",
-        "checkedAt": "2026-10-09T19:28:44Z"
+        "sourceUrl": "https://x.com/arcprize",
+        "text": "ARC Prize’s official profile identifies Mike Knoop as a co-founder."
       }
     ],
-    "memberships": [],
     "hallOfFame": [
       {
-        "path": "/hall-of-fame",
-        "label": "ARC Prize founders and organizers",
-        "sourceUrl": "https://arc.markbarney.net/api/contributors",
-        "sourceTitle": "ARC Explainer Hall of Fame — founders record",
-        "checkedAt": "2026-10-09T19:22:22Z"
+        "checkedAt": "2026-10-09T19:28:44Z",
+        "image": {
+          "alt": "ARC Prize founders card featuring François Chollet and Mike Knoop",
+          "src": "/arc founders.png"
+        },
+        "label": "ARC Prize co-founder",
+        "path": "/hall-of-fame#contributor-19",
+        "sourceTitle": "ARC Prize — official profile",
+        "sourceUrl": "https://x.com/arcprize"
       }
-    ]
+    ],
+    "id": "mike-knoop",
+    "memberships": [],
+    "name": "Mike Knoop",
+    "portrait": {
+      "alt": "François Chollet and Mike Knoop, from the ARC Prize founders card",
+      "checkedAt": "2026-10-09T21:30:00Z",
+      "kind": "hall-of-fame",
+      "sourceTitle": "ARC Explainer Hall of Fame — ARC Prize founders card",
+      "sourceUrl": "https://arc.markbarney.net/hall-of-fame#contributor-19",
+      "src": "/news-images/people/arc-founders.webp"
+    }
   }
 ]

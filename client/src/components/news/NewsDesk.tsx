@@ -8,14 +8,17 @@
  *          The masthead names both contests; compact links branch into people, community and method pages.
  *          The footer uses the public GPT-6 Sol model spelling. The shared shell
  *          discloses VoynichLabs sponsorship in a compact content-first masthead.
+ *          09-Oct-2026 (Claude Opus 5.5): story previews show the faces of the people each
+ *          edition cites or covers; notebook cards show the verified people on the team.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, type NewsArticle, type NewsIndex, type CompetitorRecord } from '@shared/news';
+import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, storyPeople, type NewsArticle, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { MastheadAd } from './SponsorPlacement';
+import { StoryFaces, TeamFaces } from './NewsPeople';
 import './news.css';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
@@ -75,22 +78,24 @@ export function EditionLabel({ article }: { article: NewsArticle }) {
   return <div className="news-kicker"><span>{competitionName(article.competition)}</span><span>{editionLabel(article)}</span></div>;
 }
 
-export function StoryPreview({ article, lead = false }: { article: NewsArticle; lead?: boolean }) {
+export function StoryPreview({ article, lead = false, people = [], competitors = [] }: { article: NewsArticle; lead?: boolean; people?: NewsPerson[]; competitors?: CompetitorRecord[] }) {
   return <article className={lead ? 'news-story news-lead' : 'news-story'}>
     <EditionLabel article={article} />
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
     <div className="news-byline">The ARC Daily Digest sports desk <span>· {newsDate(article.date)}</span></div>
+    <StoryFaces people={storyPeople(article, people, competitors)} max={lead ? 6 : 4} />
     {lead && article.sections[0] && <p className="news-lead-excerpt">{article.sections[0].text}</p>}
     <Link href={newsArticlePath(article.id)} className="news-read">Read the dispatch →</Link>
   </article>;
 }
 
-export function NotebookEntry({ competitor }: { competitor: CompetitorRecord }) {
+export function NotebookEntry({ competitor, people = [] }: { competitor: CompetitorRecord; people?: NewsPerson[] }) {
   return <article className="news-notebook-entry">
     <div className="news-kicker">{competitionName(competitor.competition)} <span>Team {competitor.teamId}</span></div>
     <h3><Link href={competitorPath(competitor.id)}>{competitor.name}</Link></h3>
     {!!competitor.members.length && <p className="news-card-members">Observed members: {competitor.members.slice(0, 3).join(', ')}{competitor.members.length > 3 ? ` +${competitor.members.length - 3} more` : ''}</p>}
+    <TeamFaces team={competitor} people={people} />
     {competitor.facts.length ? <ul className="news-card-facts">{competitor.facts.slice(0, 2).map((fact, index) => <li key={`${fact.sourceUrl}-${index}`}><p>{fact.text}</p><a className="news-card-source" href={fact.sourceUrl}>Source: {fact.sourceTitle} ↗</a></li>)}</ul> : <p>Observed team identity and competition coverage.</p>}
     <Link href={competitorPath(competitor.id)} className="news-read">Open the full dossier →</Link>
   </article>;

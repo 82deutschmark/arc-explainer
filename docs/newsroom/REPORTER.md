@@ -1,5 +1,39 @@
 # The ARC Daily Digest reporter
 
+## Desk note for GPT-6 Sol — 9 October 2026 (from Claude, at the Boss's request)
+
+The Boss wants the paper to make the most of the pictures we own, and above all to show
+people's faces whenever the paper talks about them: their card from the ARC Explainer Hall of
+Fame, or their Kaggle profile picture. What changed today and what it means for your runs:
+
+1. **Faces follow your citations.** Lead stories, articles and dispatches now show the faces of
+   the people their sections cite, in citation order, then verified people on the teams in
+   `teamIds`. To feature someone, cite their `person-<id>-…` sources in the section about them.
+   The front-page Hall of Fame band also follows the latest editions, so the page changes with
+   your reporting every day. You choose the faces by choosing whom to report on and cite.
+2. **`people.json` has portraits and honors.** `portrait` is the person's face (a crop of their own
+   Hall of Fame card, or their saved Kaggle picture). `hallOfFame` entries now read as honors
+   ("ARC Prize 2025 champion · NVARC") and link to their cards; they reach you as
+   `person-<id>-archive-<n>` sources when a past result matters to the story.
+3. **Give every newly verified person a face in the same run.** Run
+   `python3.13 scripts/newsroom_people.py portrait --person <id>`, then
+   `python3.13 scripts/newsroom_people.py check`, and stage the new
+   `client/public/news-images/people/<id>.webp` with `people.json`. The Boss approved this on
+   9 October 2026; it is the one image fetch a scheduled run may make. If the person already has
+   single-person card art in the Hall of Fame (table in VISUALS.md), say so in your run summary
+   so a hand-made card crop can replace the Kaggle picture.
+4. **New in the ledger:** Ivan Sorokin (NVARC3; 2025 champion with Jean-François Puget) and
+   Daniel Franzen (his own ARC-AGI-2 and ARC-AGI-3 entries; the ARChitects). Every past winner's
+   honors are complete, and Jack Cole and Dries Smit now carry their ARC-AGI-3 Preview credits.
+5. **Your automations.** The morning and evening editions, the 2 pm X recap and the research
+   desk read `AGENTS.md`, this file and the competition-reporter skill at the start of every run,
+   so they pick this up as they are. Scheduled runs still must not edit automations. Next time
+   the Boss opens an interactive session with you, add `docs/newsroom/VISUALS.md` to the reading
+   list of those four automations so the visuals guide is named explicitly.
+
+The full map of every picture we have, with paths, sources and rules:
+[docs/newsroom/VISUALS.md](VISUALS.md).
+
 The scheduled **GPT-6 Sol** run is the journalist. This helper makes no model API
 calls. Use the signed-in Codex subscription. Publish a morning edition at **6 am
 America/New_York** and an evening edition at **6 pm America/New_York**; the timezone
@@ -35,7 +69,9 @@ historical achievements. Explain who's on a team when useful; a one-account rost
 does not establish that someone received no help. Keep unknown identities unknown.
 Use existing Hall of Fame references/artwork when explicitly matched; historical
 cards keep their year and shared-team captions. Never extend an affiliation or
-technique to everyone listed on a roster.
+technique to everyone listed on a roster. Every verified person gets a portrait from
+their own Hall of Fame card or their own Kaggle picture, never from a group card or a
+lookalike; see [VISUALS.md](VISUALS.md).
 
 Preparation supplies `evidence.people` and `evidence.socialPosts`, with source IDs
 `person-ID-identity-N`, `person-ID-fact-N`, `person-ID-roster-N`,
@@ -101,7 +137,9 @@ Dispatch IDs are immutable. Stage their exact `content/news/dispatches/<id>.json
 alongside any authorized assets and notebook changes; use the same safe push
 procedure as an edition. Scheduled reporting runs still edit only content/news;
 new illustration production is separate authorized design work. Never fetch or
-generate an image on the assumption that publication was approved.
+generate an image on the assumption that publication was approved. One standing
+exception, approved by the Boss on 9 October 2026: the portrait command saves a
+verified person's own Kaggle picture to `client/public/news-images/people/`.
 An explicit user-directed editorial copy correction may update a dispatch in a
 reviewed Git commit with a changelog entry. Preserve its original publication,
 source-check and observation times. Scheduled retry immutability still applies.

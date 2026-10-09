@@ -5,13 +5,28 @@
  *          lead, separate ARC-AGI-2 coverage, sourced cards, existing Hall of Fame art,
  *          and community links. Latest editions and sourced social dispatches lead
  *          the page immediately, above the resource shelf and display advertising.
+ *          09-Oct-2026 (Claude Opus 5.5): the Hall of Fame band shows the cards of past winners
+ *          in the latest editions first, so it changes with the news; notebook cards show faces.
  * SRP/DRY check: Pass — uses shared newspaper presentation, query and news contract.
  */
 import { Link } from 'wouter';
+import { personPath, storyPeople, type NewsIndex } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ARC_DISCORD_URL, ArticleArchive, NewsPaper, NewsStatus, NotebookEntry, sortedArticles, useNews } from '@/components/news/NewsDesk';
 import { NewsFrontPage } from '@/components/news/NewsFrontPage';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
+
+/** Three Hall of Fame cards: past winners in the latest editions first, then the rest of the ledger's past winners. */
+function archiveCards(index: NewsIndex) {
+  const people = index.people ?? [];
+  const inTheNews = sortedArticles(index.articles).slice(0, 4).flatMap(article => storyPeople(article, people, index.competitors));
+  const cards: { src: string; alt: string; href: string }[] = [];
+  for (const person of [...inTheNews, ...people]) {
+    const card = person.hallOfFame.find(item => item.image && !cards.some(shown => shown.src === item.image!.src));
+    if (card?.image && cards.length < 3) cards.push({ src: card.image.src, alt: card.image.alt, href: personPath(person.id) });
+  }
+  return cards;
+}
 
 export default function News() {
   const query = useNews();
@@ -38,15 +53,11 @@ export default function News() {
       </section>
       <section className="news-people-archive" aria-label="ARC Hall of Fame cards">
         <div className="news-people-archive-copy"><span className="news-eyebrow">From the ARC Explainer archive</span><h2>The people behind the puzzles.</h2><p>The illustrated Hall of Fame collects past ARC contributors and prize stories. The dossiers below follow the current Kaggle teams with their own sourced records.</p><Link href="/hall-of-fame" className="news-read">Browse the Hall of Fame cards →</Link></div>
-        <Link href="/hall-of-fame" className="news-people-archive-art" aria-label="Explore the illustrated ARC Hall of Fame">
-          <img src="/ARChitechts.png" alt="Historical ARChitects team card" loading="lazy" />
-          <img src="/jfPuget3.png" alt="Historical Jean-François Puget card" loading="lazy" />
-          <img src="/dries.png" alt="Historical Dries Smit card" loading="lazy" />
-        </Link>
+        <div className="news-people-archive-art">{archiveCards(query.data).map(card => <Link key={card.src} href={card.href}><img src={card.src} alt={card.alt} loading="lazy" /></Link>)}</div>
       </section>
       <section className="news-competitor-section" aria-label="ARC-AGI-3 competitor notebook">
         <div className="news-section-heading"><div><span className="news-eyebrow">People and teams</span><h2>The competitor notebook</h2></div><p>Short, sourced dossiers. Team identities stay tied to the competition where they were observed.</p></div>
-        <div className="news-directory-grid">{competitors.slice(0, 9).map(competitor => <NotebookEntry key={competitor.id} competitor={competitor} />)}</div>
+        <div className="news-directory-grid">{competitors.slice(0, 9).map(competitor => <NotebookEntry key={competitor.id} competitor={competitor} people={query.data.people} />)}</div>
         {!competitors.length && <p className="news-muted">Competitor records appear as the desk gathers observations and sources.</p>}
         <Link href="/news/competitors" className="news-read">Browse every competitor dossier →</Link>
       </section>

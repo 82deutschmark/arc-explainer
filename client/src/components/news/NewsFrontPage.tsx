@@ -3,23 +3,27 @@
  * Date: 2026-10-09
  * PURPOSE: Content-first ARC Daily front-page desks. Dated social dispatches and
  *          immutable daily editions compete for the lead by publication time.
+ *          09-Oct-2026 (Claude Opus 5.5): every lead story carries the faces of the people it is
+ *          about — cited people first, then verified people on the teams it covers.
  * SRP/DRY check: Pass — reuses article previews, shared sources and sponsor placement.
  */
 import { Link } from 'wouter';
-import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition } from '@shared/news';
-import { competitionName, newsDate, newsArticlePath } from '@shared/news';
+import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition, NewsPerson, CompetitorRecord } from '@shared/news';
+import { competitionName, newsDate, newsArticlePath, citedPeople } from '@shared/news';
 import { StoryPreview, sortedArticles } from './NewsDesk';
+import { StoryFaces } from './NewsPeople';
 import { SponsorPlacement } from './SponsorPlacement';
 
 function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch; lead?: boolean }) {
   return dispatch.image ? <figure className="news-dispatch-art"><a href={dispatch.image.src} aria-label="Open the full editorial illustration"><img src={dispatch.image.src} alt={dispatch.image.alt} loading={lead ? 'eager' : 'lazy'} /></a><figcaption>{dispatch.image.caption}</figcaption></figure> : null;
 }
 
-export function DispatchPreview({ dispatch, lead = false }: { dispatch: NewsDispatch; lead?: boolean }) {
+export function DispatchPreview({ dispatch, lead = false, people = [] }: { dispatch: NewsDispatch; lead?: boolean; people?: NewsPerson[] }) {
   return <article id={dispatch.id} className={`news-story news-dispatch${lead ? ' news-lead' : ''}`}>
     <div className="news-kicker"><span>{competitionName(dispatch.competition)}</span><span>From the contenders</span></div>
     <h2><a href={`#${dispatch.id}`}>{dispatch.headline}</a></h2>
     <div className="news-byline"><time dateTime={dispatch.publishedAt}>{newsDate(dispatch.publishedAt, true)}</time></div>
+    <StoryFaces people={citedPeople(dispatch.sections, people)} max={lead ? 6 : 4} />
     <DispatchArt dispatch={dispatch} lead={lead} />
     {dispatch.sections.map((section, index) => <section key={index}>
       {section.heading && <h3>{section.heading}</h3>}
@@ -33,7 +37,7 @@ export function DispatchPreview({ dispatch, lead = false }: { dispatch: NewsDisp
   </article>;
 }
 
-function CompetitionDesk({ articles, dispatches, competition, lead = false }: { articles: NewsArticle[]; dispatches: NewsDispatch[]; competition: NewsCompetition; lead?: boolean }) {
+function CompetitionDesk({ articles, dispatches, competition, lead = false, people, competitors }: { articles: NewsArticle[]; dispatches: NewsDispatch[]; competition: NewsCompetition; lead?: boolean; people: NewsPerson[]; competitors: CompetitorRecord[] }) {
   const stories = [
     ...articles.filter(article => article.competition === competition).map(article => ({ publishedAt: article.publishedAt, id: article.id, article })),
     ...dispatches.filter(dispatch => dispatch.competition === competition).map(dispatch => ({ publishedAt: dispatch.publishedAt, id: dispatch.id, dispatch })),
@@ -43,22 +47,23 @@ function CompetitionDesk({ articles, dispatches, competition, lead = false }: { 
   // Same-day artwork keeps its dated caption when an evening edition succeeds a dispatch.
   const companionArt = 'article' in first ? dispatches.find(dispatch => dispatch.competition === competition && dispatch.image && newsDate(dispatch.publishedAt) === newsDate(first.publishedAt)) : undefined;
   return <>
-    {'article' in first ? <StoryPreview article={first.article} lead={lead} /> : <DispatchPreview dispatch={first.dispatch} lead={lead} />}
+    {'article' in first ? <StoryPreview article={first.article} lead={lead} people={people} competitors={competitors} /> : <DispatchPreview dispatch={first.dispatch} lead={lead} people={people} />}
     {lead && companionArt && <DispatchArt dispatch={companionArt} lead />}
     <div className="news-latest-list">{stories.slice(1, lead ? 4 : 3).map(story => <div key={story.id}>
       <span>{'article' in story ? `${story.article.edition} edition` : 'From the contenders'} · {newsDate(story.publishedAt)}</span>
       {'article' in story ? <Link href={newsArticlePath(story.id)}>{story.article.headline}</Link> : <a href={`#${story.id}`}>{story.dispatch.headline}</a>}
     </div>)}</div>
     {/* Older dispatches keep their permanent front-page anchors after a new edition leads. */}
-    {stories.slice(1).filter(story => 'dispatch' in story).map(story => 'dispatch' in story && <details className="news-older-dispatch" key={story.id}><summary>{story.dispatch.headline}</summary><DispatchPreview dispatch={story.dispatch} /></details>)}
+    {stories.slice(1).filter(story => 'dispatch' in story).map(story => 'dispatch' in story && <details className="news-older-dispatch" key={story.id}><summary>{story.dispatch.headline}</summary><DispatchPreview dispatch={story.dispatch} people={people} /></details>)}
   </>;
 }
 
 export function NewsFrontPage({ index }: { index: NewsIndex }) {
   const articles = sortedArticles(index.articles);
   const dispatches = index.dispatches ?? [];
+  const people = index.people ?? [];
   return <div className="news-front-grid">
-    <section aria-label="Latest ARC-AGI-3 coverage"><h2 className="news-section-title">ARC-AGI-3 / Latest</h2><CompetitionDesk articles={articles} dispatches={dispatches} competition="arc-3" lead /></section>
-    <aside className="news-sidebar" aria-label="ARC-AGI-2 desk"><h2 className="news-section-title">ARC-AGI-2 / Latest</h2><CompetitionDesk articles={articles} dispatches={dispatches} competition="arc-2" /><Link href="/kaggle-leaderboard/arc-2" className="news-read">Explore the ARC-AGI-2 board →</Link><SponsorPlacement format="rail" /></aside>
+    <section aria-label="Latest ARC-AGI-3 coverage"><h2 className="news-section-title">ARC-AGI-3 / Latest</h2><CompetitionDesk articles={articles} dispatches={dispatches} competition="arc-3" lead people={people} competitors={index.competitors} /></section>
+    <aside className="news-sidebar" aria-label="ARC-AGI-2 desk"><h2 className="news-section-title">ARC-AGI-2 / Latest</h2><CompetitionDesk articles={articles} dispatches={dispatches} competition="arc-2" people={people} competitors={index.competitors} /><Link href="/kaggle-leaderboard/arc-2" className="news-read">Explore the ARC-AGI-2 board →</Link><SponsorPlacement format="rail" /></aside>
   </div>;
 }
