@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.130.0  Oct 9, 2026
+
+- **Video ads fill The ARC Daily masthead** (Author: Claude Sonnet 5.5). The empty space beside the nameplate now holds a labeled VoynichLabs banner with video artwork and a Watch button. One catalogue of three VoynichLabs music videos (Wasted, Tool Call, You Don't Even Gotta Jailbreak Me Tonight) feeds the masthead, the sidebar rail and the lower banner, so each page shows three different videos, each linking straight to YouTube. Files: `client/src/components/news/SponsorPlacement.tsx`, `NewsDesk.tsx`, `news.css`, new artwork under `client/public/ads/`. Plan: `docs/2026-10-09-masthead-video-ads-plan.md`.
+
 ### Version 9.129.2  Oct 9, 2026
 
 - **Respectful race coverage and a 2 pm X desk** (Author: GPT-6 Sol / Codex). Corrects the user-rejected Chen/Tufa headline and removes dismissive phrasing from the dispatch while preserving its sources and dated scores. Reporter guidance keeps all competitors' coverage respectful. Moves the X workflow to 2 pm Eastern: prepares a fresh afternoon recap linking the news front page and saves competitor-post research for the 6 pm reporter. The helper reuses the previous Eastern evening comparison, keeps unknown movement unknown and protects send attempts; the evening edition still prepares fresh evidence. User explicitly requested both research and posting. Plan: `docs/2026-10-09-contender-front-page-plan.md`.

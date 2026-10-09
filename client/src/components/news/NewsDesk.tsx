@@ -15,7 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, type NewsArticle, type NewsIndex, type CompetitorRecord } from '@shared/news';
-import { SponsorDisclosure } from './SponsorPlacement';
+import { MastheadAd } from './SponsorPlacement';
 import './news.css';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
@@ -37,8 +37,10 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
       <div className="news-paper">
         <header className="news-masthead">
           <div className="news-topline"><span><Link href="/home">ARC Explainer</Link> / The competition desk</span><span>ARC-AGI-3 &amp; ARC-AGI-2</span></div>
-          <SponsorDisclosure />
-          {frontPage ? <h1 className="news-name">{NEWS_NAME}</h1> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
+          <div className="news-brand-row">
+            {frontPage ? <h1 className="news-name">{NEWS_NAME}</h1> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
+            <MastheadAd />
+          </div>
           {date && <div className="news-edition-line"><span>Latest coverage · {newsDate(date)}</span></div>}
           <nav className="news-nav" aria-label="ARC Daily sections">
             <Link href="/news">Front page</Link>
