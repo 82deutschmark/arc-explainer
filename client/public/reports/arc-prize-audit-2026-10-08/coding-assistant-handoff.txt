@@ -1,7 +1,7 @@
 ARC Prize feedback sheet — October 9, 2026
 https://arc.markbarney.net/feedback
 
-Matt—I made amateur hobbyist versions of these features because I wanted them and couldn’t find them in the official tools. I’d like to see them on ARC Prize. Here are two concrete asks your coding assistant could implement, with existing examples as references. I’m not making money from this work.
+Matt—I’m a hobbyist, and ARC Explainer is a volunteer project I build in my own time, without earning anything from it. I built these features because I wanted to understand ARC and couldn’t find the tools I needed. I’ve offered to share the work with ARC Prize, and I’d be glad to see these capabilities become part of the official site. It’s been frustrating to see useful features remain missing after putting that work into making them available. These two asks point to existing implementations your coding assistant can build on.
 
 1. Add missing resource cards and spoiler-labeled guide links from public-game pages.
 Missing ARC3 resources:
@@ -46,6 +46,6 @@ https://arc.markbarney.net/task/13e47133?highlight=73845
 https://arc.markbarney.net/analytics
 A reader can follow a result to its actual attempt. Source/settings are visible and unavailable fields are labeled.
 
-Existing open questions: I’ve already asked about continued Hugging Face publication of raw attempts and Opus 5.5 ARC-3 results. That remains an information gap. Without newer released attempts and reasoning, it is harder to examine how models reach their answers or compare Opus 4.5 with 5.5 on the same task.
+Existing open questions: I asked months ago why publication of the raw Hugging Face results had stopped and was told I would receive an answer; I’m still waiting. I’m beginning to assume publication won’t resume, although that hasn’t been confirmed. If that is the decision, it makes incorporating these inspection features into ARC Prize even more important: community tools can’t show newer attempts and released reasoning without access to the records. I’ve also asked about Opus 5.5 ARC-3 results. The practical concern is preserving people’s ability to examine how models reach their answers.
 
 Each ask can be approved independently. This sheet replaces the old general remediation backlog. No ARC Explainer defect is an instruction to modify ARC Prize.

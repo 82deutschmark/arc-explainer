@@ -36,6 +36,7 @@
   },
   "publication": {
     "official": "https://arcprize.org/results/anthropic-claude-opus-5-5",
-    "observation": "ARC1/2 scores and task outcomes are published; all five ARC3 variants show a dash. No future publication commitment established."
+    "observation": "ARC1/2 scores and task outcomes are published; all five ARC3 variants show a dash. No future publication commitment established.",
+    "mark_account": "Mark reports asking months ago why raw-result publication stopped, being promised an answer and not receiving one. His assumption that publication will not resume is unconfirmed."
   }
 }
