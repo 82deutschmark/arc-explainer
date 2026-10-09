@@ -84,8 +84,8 @@ export function StoryPreview({ article, lead = false, people = [], competitors =
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
     <div className="news-byline">The ARC Daily Digest sports desk <span>· {newsDate(article.date)}</span></div>
-    <StoryFaces people={storyPeople(article, people, competitors)} max={lead ? 6 : 4} />
     {lead && article.sections[0] && <p className="news-lead-excerpt">{article.sections[0].text}</p>}
+    <StoryFaces people={storyPeople(article, people, competitors)} max={lead ? 6 : 4} competition={article.competition} label="Contenders in this story" />
     <Link href={newsArticlePath(article.id)} className="news-read">Read the dispatch →</Link>
   </article>;
 }

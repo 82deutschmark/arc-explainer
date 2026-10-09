@@ -23,7 +23,6 @@ export function DispatchPreview({ dispatch, lead = false, people = [] }: { dispa
     <div className="news-kicker"><span>{competitionName(dispatch.competition)}</span><span>From the contenders</span></div>
     <h2><a href={`#${dispatch.id}`}>{dispatch.headline}</a></h2>
     <div className="news-byline"><time dateTime={dispatch.publishedAt}>{newsDate(dispatch.publishedAt, true)}</time></div>
-    <StoryFaces people={citedPeople(dispatch.sections, people)} max={lead ? 6 : 4} />
     <DispatchArt dispatch={dispatch} lead={lead} />
     {dispatch.sections.map((section, index) => <section key={index}>
       {section.heading && <h3>{section.heading}</h3>}
@@ -33,6 +32,7 @@ export function DispatchPreview({ dispatch, lead = false, people = [] }: { dispa
         return source ? <a key={id} href={source.url} target="_blank" rel="noopener noreferrer">{source.title} ↗</a> : null;
       })}</div>
     </section>)}
+    <StoryFaces people={citedPeople(dispatch.sections, people)} max={lead ? 6 : 4} competition={dispatch.competition} label="Contenders in this story" />
     {dispatch.interpretation && <p className="news-dispatch-take"><strong>The ARC Daily Digest’s take</strong> {dispatch.interpretation}</p>}
   </article>;
 }

@@ -44,7 +44,6 @@ export default function NewsArticle() {
         <h1 className="news-article-title">{article.headline}</h1>
         <p className="news-dek">{article.dek}</p>
         <p className="news-byline">The ARC Daily Digest sports desk <span>· <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
-        <StoryFaces people={storyPeople(article, query.data?.people ?? [], query.data?.competitors ?? [])} max={10} />
       </header>
       <div className="news-article-grid">
         <div>
@@ -64,6 +63,7 @@ export default function NewsArticle() {
           <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>
         </div>
         <aside className="news-sidebar" aria-label="Reporting notes and sources">
+          <StoryFaces people={storyPeople(article, query.data?.people ?? [], query.data?.competitors ?? [])} max={10} competition={article.competition} label="Contenders in this story" />
           <h2 className="news-section-title">How this report was checked</h2>
           <div className="news-note"><p><strong>Board date</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf)}</time></p><p><strong>Comparison</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
           <a className="news-read" href={`/api/news/${article.id}/evidence`}>Exact observations and reporting data →</a>

@@ -10,7 +10,7 @@
  */
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { personPath, peopleForTeam, newsDate, competitionName, personInitials, shortPersonName, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { personPath, peopleForTeam, newsDate, competitionName, personInitials, shortPersonName, type CompetitorRecord, type NewsCompetition, type NewsPerson } from '@shared/news';
 
 type PortraitSize = 'chip' | 'face' | 'card' | 'hero';
 
@@ -27,11 +27,21 @@ export function PersonLinks({ person, honors = 1 }: { person: NewsPerson; honors
   return <span className="news-person-chip"><PersonPortrait person={person} size="chip" decorative /><span><Link href={personPath(person.id)}>{person.name} →</Link>{person.hallOfFame.slice(0, honors).map(card => <span key={card.path} className="news-person-history"> · <Link href={card.path}>{card.label} ↗</Link></span>)}</span></span>;
 }
 
-/** Faces of the people a story is about, each linking to their profile. */
-export function StoryFaces({ people, max = 6, label = 'In this story' }: { people: NewsPerson[]; max?: number; label?: string }) {
+/** What a face is doing in a story: the person's team in this contest, else their top honor. */
+function faceCaption(person: NewsPerson, competition?: NewsCompetition) {
+  const team = competition && [...person.memberships].reverse().find(member => member.competition === competition);
+  return team ? team.teamName : person.hallOfFame[0]?.label;
+}
+
+/** The contenders a story is about, labeled as such and captioned with their team so they never read as a byline. */
+export function StoryFaces({ people, max = 6, label = 'In this story', competition, showLabel = true }: { people: NewsPerson[]; max?: number; label?: string; competition?: NewsCompetition; showLabel?: boolean }) {
   if (!people.length) return null;
-  return <div className="news-faces" role="group" aria-label={label}>{people.slice(0, max).map(person =>
-    <Link key={person.id} href={personPath(person.id)} className="news-face"><PersonPortrait person={person} size="face" decorative /><span>{shortPersonName(person.name)}</span></Link>)}
+  return <div className="news-faces-block" role="group" aria-label={label}>
+    {showLabel && <div className="news-faces-label">{label}</div>}
+    <div className="news-faces">{people.slice(0, max).map(person => {
+      const caption = faceCaption(person, competition);
+      return <Link key={person.id} href={personPath(person.id)} className="news-face"><PersonPortrait person={person} size="face" decorative /><span><strong>{shortPersonName(person.name)}</strong>{caption && <em>{caption}</em>}</span></Link>;
+    })}</div>
   </div>;
 }
 
@@ -45,7 +55,7 @@ export function TeamPeople({ team, people = [] }: { team: CompetitorRecord; peop
 
 /** Faces of the verified people on a team, for notebook cards. */
 export function TeamFaces({ team, people = [] }: { team: CompetitorRecord; people?: NewsPerson[] }) {
-  return <StoryFaces people={peopleForTeam(people, team)} max={4} label={`People on ${team.name}`} />;
+  return <StoryFaces people={peopleForTeam(people, team)} max={4} label={`People on ${team.name}`} competition={team.competition} showLabel={false} />;
 }
 
 export function PersonHonors({ person, linked = false }: { person: NewsPerson; linked?: boolean }) {

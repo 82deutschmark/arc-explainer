@@ -288,12 +288,17 @@
 .news-person-chip { display: inline-flex; align-items: center; gap: 8px; vertical-align: middle; }
 .news-team-people > ul { display: flex; flex-direction: column; gap: 7px; padding: 0; list-style: none; }
 .news-section-sources .news-person-chip { font-size: 11px; }
-.news-faces { display: flex; flex-wrap: wrap; gap: 12px 10px; margin: 14px 0 4px; }
-.arc-daily .news-face { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 70px; text-decoration: none; font: 10px/1.25 'SF Mono', Menlo, Consolas, monospace; text-align: center; color: var(--news-ink); }
-.news-face span { overflow-wrap: anywhere; }
+.news-faces-block { margin: 18px 0 6px; padding-top: 10px; border-top: 1px solid var(--news-rule); }
+.news-faces-label { margin-bottom: 9px; color: var(--news-red); font: 700 10px/1.4 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.news-notebook-entry .news-faces-block { margin: 4px 0 8px; padding-top: 0; border-top: 0; }
+.news-sidebar .news-faces-block { margin-top: 0; }
+.news-faces { display: flex; flex-wrap: wrap; gap: 12px 10px; }
+.arc-daily .news-face { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 78px; text-decoration: none; font: 10px/1.25 'SF Mono', Menlo, Consolas, monospace; text-align: center; color: var(--news-ink); }
+.news-face span { display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; }
+.news-face strong { font-weight: 700; }
+.news-face em { font-style: normal; color: #767676; }
 .arc-daily .news-face:hover { color: var(--news-red); }
 .news-face:hover .news-portrait { border-color: var(--news-red); }
-.news-notebook-entry .news-faces { margin: 4px 0 8px; }
 .news-honors { display: grid; gap: 3px; margin: 6px 0 0; padding: 0; list-style: none; color: var(--news-red); font: 700 10px/1.45 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .03em; text-transform: uppercase; }
 .news-honors a { color: inherit; }
 .news-person-card { display: flex; flex-direction: column; min-height: 250px; padding: 19px; border: 1px solid var(--news-rule); background: var(--news-soft); }
