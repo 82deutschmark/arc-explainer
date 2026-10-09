@@ -1,9 +1,9 @@
 /**
- * Author: GPT-6.1 Sol / Codex
+ * Author: GPT-6 Sol / Codex
  * Date: 2026-10-08
  * PURPOSE: ARC Daily landing page for both Kaggle contests, with ARC-AGI-3 as the
  *          lead, separate ARC-AGI-2 coverage, sourced cards, existing Hall of Fame art,
- *          and community/resource links, plus disclosed VoynichLabs display advertising.
+ *          and community/resource links, plus banner and portrait sidebar advertising.
  * SRP/DRY check: Pass — uses shared newspaper presentation, query and news contract.
  */
 import { Link } from 'wouter';
@@ -39,6 +39,7 @@ export default function News() {
           <p className="news-muted">A separate competition, with its own standings and editions.</p>
           {arc2Articles[0] ? <StoryPreview article={arc2Articles[0]} /> : <p className="news-muted">No ARC-AGI-2 edition has been published yet.</p>}
           <Link href="/kaggle-leaderboard/arc-2" className="news-read">Explore the ARC-AGI-2 board →</Link>
+          <SponsorPlacement format="rail" />
         </aside>
       </div>
       <section className="news-explore" aria-label="Explore the contests and community">

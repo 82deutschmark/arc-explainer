@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.128.1  Oct 8, 2026
+
+- **Wasted portrait sidebar ad** (Author: GPT-6 Sol / Codex). Adds a clearly disclosed VoynichLabs newspaper ad to the front-page sidebar and article rail, using the genuine Wasted artwork and linking the entire unit to its published YouTube Short. Responsive styling preserves the artwork and keeps the advertisement readable on phones. Evidence and verification: `docs/2026-10-08-wasted-sidebar-ad-plan.md`.
+
 ### Version 9.128.0  Oct 8, 2026
 
 - **Broader competitor watch and readable leaderboard names** (Author: GPT-6 / Codex). Feature Jack Cole, Mithil A Vakde and ARC Raiders on ARC-2, and keithtyser on ARC-3, in both cards and daily reporter candidates. Add dated roster observations and primary-source cpmpml/Jean-François Puget background to the notebook. Move crowded medal cutoffs to a readable legend and let daily recap names wrap above their figures instead of being clipped into initials. Missing prior ranks are labeled unknown. Scope and verification: `docs/2026-10-08-competitor-watch-and-readable-cutoffs.md`.

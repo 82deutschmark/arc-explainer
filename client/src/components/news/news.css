@@ -213,11 +213,17 @@
 .news-ad-actions a { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid #d98759; color: #fff; font: 700 11px 'SF Mono', Menlo, Consolas, monospace; text-decoration: none; }
 .news-ad-actions a:first-child { color: #111b20; background: #f1a06f; border-color: #f1a06f; }
 .news-ad-actions a:hover { color: #111b20; background: #fff; border-color: #fff; text-decoration: none; }
-.news-ad-rail { margin: 30px 0 24px; }
-.news-ad-rail .news-ad-body { display: block; padding: 20px; }
-.news-ad-rail .news-ad-mark { width: 52px; height: 52px; margin-bottom: 18px; font-size: 27px; }
-.news-ad-rail h2 { font-size: 25px; }
-.news-ad-rail .news-ad-actions { margin-top: 20px; }
+.news-video-ad { width: 100%; max-width: 320px; margin: 30px auto 24px; background: #071b22; }
+.news-video-ad-link { display: flex; flex-direction: column; justify-content: space-between; gap: 18px; min-height: 480px; padding: 26px 20px; color: #fff; text-align: center; text-decoration: none; }
+.news-video-ad-link .news-ad-brand { color: #3de0ff; font-size: 10px; }
+.news-video-ad-link h2 { margin: 0; color: #ffe345; font-size: clamp(38px, 5vw, 53px); font-weight: 900; letter-spacing: -.065em; }
+.news-video-ad-subtitle { font: 700 12px 'SF Mono', Menlo, Consolas, monospace; color: #d2f7ff; }
+.news-video-ad-link img { display: block; width: calc(100% + 40px); max-width: none; height: auto; margin: 0 -20px; }
+.news-video-ad-link p { color: #d2f7ff; font-family: inherit; font-size: 14px; }
+.news-video-ad-cta { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 14px 12px; background: #ffe345; color: #071b22; font-size: 13px; font-weight: 800; }
+.news-video-ad-link:hover { color: #fff; text-decoration: none; }
+.news-video-ad-link:hover .news-video-ad-cta { background: #fff; }
+.news-video-ad-link:focus-visible { outline: 3px solid #3de0ff; outline-offset: 4px; }
 @media (max-width: 900px) {
   .news-ad-banner .news-ad-body { grid-template-columns: 64px minmax(0, 1fr); }
   .news-ad-banner .news-ad-mark { width: 60px; height: 60px; font-size: 30px; }
