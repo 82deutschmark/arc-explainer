@@ -1,6 +1,7 @@
 /*
 Author: Codex (GPT-6), with existing contributors
-Date: 2026-09-14
+Date: 2026-10-08
+Update: Feature Simon Ouellette’s external training-data repository without changing playable catalog entries.
 Update: Add the new research collection and category deep links while preserving blind tiles.
 Update: 2026-09-19 (Claude Opus 5) -- research, arena, custom and contributed-glowup render as
         one section, "Additional games"; the community section is named after its source,
@@ -35,6 +36,7 @@ SRP/DRY check: Pass — presentation only; fetching/stripping lives in Arc3Mirro
          catalog service that /play's review queue depends on.
 */
 
+import { SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
 import { publicGameId } from '@shared/arc3PublicIds';
 import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
@@ -405,6 +407,18 @@ export default function CommunityGallery() {
             to beat.
           </p>
         </header>
+
+        <section aria-labelledby="synthetic-training-resources" className="mb-8 border-l-2 pl-4" style={{ borderColor: ARC.pink }}>
+          <h2 id="synthetic-training-resources" className="text-[11px] uppercase tracking-wider mb-2" style={{ color: ARC.dim }}>
+            Synthetic games &amp; training data
+          </h2>
+          <a href={SIMON_ARC3_TRAINING_DATA.url} className="text-sm font-semibold underline underline-offset-4" style={{ color: ARC.text }}>
+            {SIMON_ARC3_TRAINING_DATA.title} ↗
+          </a>
+          <p className="mt-2 max-w-[80ch] text-[12px] leading-relaxed" style={{ color: ARC.dim }}>
+            {SIMON_ARC3_TRAINING_DATA.desc}
+          </p>
+        </section>
 
         <div className="flex items-center gap-2 mb-8 max-w-[360px]">
           <div className="relative flex-1">

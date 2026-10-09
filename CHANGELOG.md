@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.127.2  Oct 8, 2026
+
+- **Feature Simon Ouellette’s ARC-3 training resources** (Author: Codex). Adds the ARC-AGI-3 Training Data repository prominently above the synthetic-game gallery, in the Resource Hub’s ARC-3 section and in the ARC-3 reference resources. Shares one credited description of its games, solvers and demonstration generators, verified against the repository README. No game counts or evaluation claims are implied. Validated with the production client build and rendered link checks. Plan: `docs/2026-10-08-simon-training-resource-plan.md`.
+
 ### Version 9.127.1  Oct 8, 2026
 
 - **Short audit address** (Author: Codex). Publishes the report at `/feedback`, redirects the old dated HTML URL, and updates canonical/social URLs, the Resource Hub and sharing notes. Evidence downloads retain their dated URLs and work from the short address. The existing explanation-comments explorer moves to `/explanation-feedback` with its menu link updated; comment data is unchanged. Reuses the existing report file and routing middleware. Verified with a production build and GET/HEAD/redirect/download integration checks. Plan: `docs/2026-10-08-feedback-url-plan.md`.

@@ -1,11 +1,11 @@
 /*
  * Author: GPT-6 / Codex; Cascade; Claude Fable 5; Claude Opus 5; Claude Sonnet 5
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: ARC-AGI-3 reference and history page. Dense, dark-themed layout modeled on
  *          ClaudeCodeGuide.tsx (/cc). Presents useful links up top, brief explainer prose,
  *          compact timeline table, preview-era game reference tables, environment-construction
  *          breakdown, RHAE scoring spec, leaderboard policy, duck harness section, and
- *          external resources.
+ *          external resources, including Simon Ouellette’s training-data repository.
  *          Corrected the original preview membership against ARC Prize's August 2025
  *          retrospective, distinguished withdrawn AS66, and separated attempt time from
  *          successful completion time in the technical report's human-testing figures.
@@ -25,6 +25,7 @@
  */
 
 import React from 'react';
+import { SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
 import { Link } from 'wouter';
 import { ExternalLink, Search } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
@@ -139,6 +140,7 @@ const EVAL_SET: PreviewGame[] = [
 ];
 
 const RESOURCES = [
+  SIMON_ARC3_TRAINING_DATA,
   { title: 'ARC-AGI-3 Technical Report (PDF)', url: REPORT_URL, desc: 'The official 23-page specification: benchmark design, RHAE scoring, environment construction, human calibration. April 22, 2026.' },
   { title: 'Duck Harness — Tufa Labs', url: 'https://tufalabs.ai/research/duck-harness/', desc: 'Research post on the REPL-based coding harness for the 2026 Kaggle competition.' },
   { title: 'duck-harness on GitHub', url: 'https://github.com/Tufalabs/duck-harness', desc: 'Open-source code for the duck harness, including diagnostic tools.' },
