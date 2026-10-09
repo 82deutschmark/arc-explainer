@@ -362,7 +362,7 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
           {
             type: 'link',
             title: 'Feedback',
-            href: '/feedback',
+            href: '/explanation-feedback',
             icon: MessageSquare,
             description: 'Explore human feedback on model explanations',
           },

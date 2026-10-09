@@ -1,12 +1,13 @@
 /*
 Author: GPT-6.1 Sol / Codex
-Date: 2026-10-07
+Date: 2026-10-08
 PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
          including ARC3 community submission review tooling under the admin section.
          Loads secondary route modules on demand so the front page does not download
          every solver, replay viewer, editor and admin screen before becoming usable.
          ARC Daily news and competitor notebooks are separate lazy routes.
+         Codex: /feedback loads the standalone audit; explanation comments retain their own route.
          2026-08-28: "/" now redirects to the ARC-AGI-3 community game gallery, which is
          the front door for the synthetic-game playtest programme (see
          docs/28-Aug-2026-synthetic-games-arc3-integration-plan.md). The resource
@@ -120,6 +121,7 @@ function Router() {
   return (
     <Suspense fallback={<RouteLoading />}>
     <Switch>
+      <Route path="/feedback"><Redirect to="/feedback" fullPage /></Route>
       {/* The play surface is deliberately OUTSIDE PageLayout. PageLayout renders
           AppHeader on every route, and the play page has its own minimal bar, so
           routing it inside stacked two nav bars on top of every game. A task should
@@ -187,7 +189,7 @@ function Router() {
         <Route path="/elo/:taskId" component={EloComparison} />
         <Route path="/compare" component={EloComparison} />
         <Route path="/compare/:taskId" component={EloComparison} />
-        <Route path="/feedback" component={FeedbackExplorer} />
+        <Route path="/explanation-feedback" component={FeedbackExplorer} />
         <Route path="/test-solution" component={PuzzleFeedback} />
         <Route path="/test-solution/:taskId" component={PuzzleFeedback} />
         <Route path="/debate" component={ModelDebate} />

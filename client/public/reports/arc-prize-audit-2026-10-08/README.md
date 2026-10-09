@@ -1,6 +1,6 @@
 # ARC Prize public website audit — October 8, 2026
 
-[Read the hosted report](https://arc.markbarney.net/reports/arc-prize-audit-2026-10-08/audit.html). The report contains screenshots and a printable layout; no ZIP or login is required.
+[Read the hosted report](https://arc.markbarney.net/feedback). The report contains screenshots and a printable layout; no ZIP or login is required.
 
 - [Structured fix list](fixes.json): 19 prioritized findings with reproduction and acceptance checks.
 - [Coding-assistant brief](coding-assistant-handoff.txt): suggested order and owner decisions.

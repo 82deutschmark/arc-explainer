@@ -1,6 +1,6 @@
 Matt / coding assistant — ARC Prize website audit, checked October 8, 2026
 
-Report: https://arc.markbarney.net/reports/arc-prize-audit-2026-10-08/audit.html
+Report: https://arc.markbarney.net/feedback
 Repository: https://github.com/82deutschmark/arc-explainer/tree/main/client/public/reports/arc-prize-audit-2026-10-08
 Read audit.html for context and screenshots; fixes.json is the structured backlog.
 Compact checks and the full API request/control are in evidence.json.

@@ -53,7 +53,7 @@ describe('SEO delivery', () => {
   it('serves unique, crawlable initial HTML for every public SPA hub', async () => {
     const titles = new Set<string>();
     const descriptions = new Set<string>();
-    for (const [route, tags] of Object.entries(ROUTE_META_TAGS).filter(([, tags]) => !tags.noindex)) {
+    for (const [route, tags] of Object.entries(ROUTE_META_TAGS).filter(([route, tags]) => !tags.noindex && route !== '/feedback')) {
       const response = await fetch(`${base}${route}?utm_source=test`);
       expect(response.status, route).toBe(200);
       const html = await response.text();
@@ -119,6 +119,33 @@ describe('SEO delivery', () => {
       const html = await response.text();
       assertHead(html);
       expect(html).toContain('content="noindex,follow"');
+    }
+  });
+  it('serves the audit at /feedback with working downloads and redirects old bookmarks', async () => {
+    const old = '/reports/arc-prize-audit-2026-10-08/audit.html';
+    expect((await fetch(`${base}/explanation-feedback`)).status).toBe(200);
+    expect(ROUTE_META_TAGS['/feedback'].title).toContain('ARC Prize');
+    expect(sitemapUrls()).toContain(`${SITE_ORIGIN}/feedback`);
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${base}/feedback`, { method });
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toContain('text/html');
+      if (method === 'GET') {
+        const html = await response.text();
+        expect(html).toContain(`rel="canonical" href="${SITE_ORIGIN}/feedback"`);
+        expect(html).toContain('highlight=73914');
+        expect(html).toContain('highlight=56958');
+        const downloads = [...html.matchAll(/href="(\/reports\/[^"]+\.(?:json|txt|csv))"/g)];
+        expect(downloads.length).toBeGreaterThan(0);
+        for (const url of new Set(downloads.map(match => match[1]))) {
+          expect((await fetch(`${base}${url}`)).status, url).toBe(200);
+        }
+      }
+      for (const from of [old, '/feedback/']) {
+        const redirect = await fetch(`${base}${from}?ref=matt`, { method, redirect: 'manual' });
+        expect(redirect.status).toBe(308);
+        expect(redirect.headers.get('location')).toBe('/feedback?ref=matt');
+      }
     }
   });
   it('normalizes aliases and trailing slashes in one hop while preserving query strings', async () => {

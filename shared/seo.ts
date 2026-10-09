@@ -1,11 +1,12 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Shared URL, indexing, safe HTML and structured-data policy for server responses
  *          and SPA navigation. Content remains in the existing route and game registries.
  *          08-Oct-2026 (Claude Opus 5.5): short ARC Daily breadcrumb names, the newspaper
  *          card as the fallback for /news/* in-app routes, and socialMetaEntries() so the
  *          server head and the browser writer emit the same Open Graph/Twitter tags.
+ *          Codex: retain the dated audit URL as a permanent alias for /feedback.
  * SRP/DRY check: Pass — one canonical origin and metadata serialization contract.
  */
 import { ROUTE_META_TAGS, type RouteMetaTags } from './routes';
@@ -14,6 +15,7 @@ export const SITE_ORIGIN = 'https://arc.markbarney.net';
 export const DEFAULT_IMAGE = `${SITE_ORIGIN}/og-preview.png`;
 export const INDEX_ROBOTS = 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1';
 export const REDIRECTS: Record<string, string> = {
+  '/reports/arc-prize-audit-2026-10-08/audit.html': '/feedback',
   '/synthetic': '/', '/human-cards': '/hall-of-fame', '/compare': '/elo',
   '/arc3/review': '/play', '/arc3/archive': '/arc3', '/arc3/archive/games': '/arc3/games',
   '/snake-arena': '/worm-arena', '/re-arc/leaderboard': '/re-arc', '/index.html': '/',

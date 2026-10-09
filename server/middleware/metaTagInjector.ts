@@ -1,9 +1,10 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: Serve canonical URLs, generated sitemap, accurate HTTP status and initial
  *          HTML metadata/content for the SPA. Uses the same policy as client navigation.
  *          08-Oct-2026 (Claude Opus 5.5): social tags come from shared socialMetaEntries().
+ *          Codex: serve the published audit at the canonical /feedback address.
  * SRP/DRY check: Pass — page content and shared SEO policy live in their own modules.
  */
 import type { Request, Response, NextFunction } from 'express';
@@ -50,6 +51,13 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
   if (target || (route !== req.path && !path.extname(route))) {
     const query = req.originalUrl.includes('?') ? req.originalUrl.slice(req.originalUrl.indexOf('?')) : '';
     res.redirect(308, `${target || route}${query}`);
+    return;
+  }
+  if (route === '/feedback') {
+    res.setHeader('Cache-Control', 'no-cache');
+    res.sendFile(path.join(process.cwd(), 'dist/public/reports/arc-prize-audit-2026-10-08/audit.html'), error => {
+      if (error) next(error);
+    });
     return;
   }
   next();
