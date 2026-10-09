@@ -55,7 +55,8 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
   }
   if (route === '/feedback') {
     res.setHeader('Cache-Control', 'no-cache');
-    res.sendFile(path.join(process.cwd(), 'dist/public/reports/arc-prize-audit-2026-10-08/audit.html'), error => {
+    const publicRoot = process.env.NODE_ENV === 'development' ? 'client/public' : 'dist/public';
+    res.sendFile(path.join(process.cwd(), publicRoot, 'reports/arc-prize-audit-2026-10-08/audit.html'), error => {
       if (error) next(error);
     });
     return;
