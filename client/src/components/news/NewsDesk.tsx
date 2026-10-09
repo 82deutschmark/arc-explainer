@@ -1,13 +1,13 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-08
+ * Author: GPT-6 Sol / Codex
+ * Date: 2026-10-09
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
  *          and sourced notebook previews align with the ARC Explainer landing page.
  *          The masthead now names both contests and links the established ARC Discord.
  *          The footer uses the public GPT-6 Sol model spelling. The shared shell
- *          discloses the publication's VoynichLabs sponsorship.
+ *          discloses VoynichLabs sponsorship in a compact content-first masthead.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import type { ReactNode } from 'react';
@@ -22,7 +22,7 @@ import './news.css';
 export const ARC_DISCORD_URL = 'https://discord.gg/9b77dPAmcA';
 
 export function useNews() {
-  return useQuery<NewsIndex>({ queryKey: ['/api/news'], staleTime: 60_000 });
+  return useQuery<NewsIndex>({ queryKey: ['/api/news'], staleTime: 60_000, refetchInterval: 60_000 });
 }
 
 // Date labels and competition names moved to shared/news.ts on 08-Oct-2026 so server HTML,
@@ -38,9 +38,8 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
         <header className="news-masthead">
           <div className="news-topline"><span><Link href="/home">ARC Explainer</Link> / The competition desk</span><span>ARC-AGI-3 &amp; ARC-AGI-2</span></div>
           <SponsorDisclosure />
-          {frontPage ? <div className="news-name">{NEWS_NAME}</div> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
-          <div className="news-motto">The moves. The margins. The race.</div>
-          <div className="news-edition-line"><span>{date ? newsDate(date) : 'The competition newspaper'}</span><span>Two Kaggle contests. One daily paper.</span></div>
+          {frontPage ? <h1 className="news-name">{NEWS_NAME}</h1> : <Link href="/news" className="news-name">{NEWS_NAME}</Link>}
+          {date && <div className="news-edition-line"><span>Latest coverage · {newsDate(date)}</span></div>}
           <nav className="news-nav" aria-label="ARC Daily sections">
             <Link href="/news">Front page</Link>
             <Link href="/news/competitors">Competitor notebook</Link>

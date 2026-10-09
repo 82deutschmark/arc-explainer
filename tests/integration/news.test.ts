@@ -1,17 +1,18 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-07; 08-October-2026
+ * Author: GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Date: 2026-10-09
  * PURPOSE: Verify public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
  *          08-Oct-2026: share cards (size, real drawn content, cache headers, 404s), the
  *          per-article og/twitter/JSON-LD image, CollectionPage, lastmod and RSS additions.
+ *          Social dispatch validation and crawler discovery protect dated contender updates.
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
 import express from 'express';
 import type { Server } from 'node:http';
 import { mountNews } from '../../server/routes/news';
-import { getNewsIndex, newsArticleSchema, competitorSchema } from '../../server/services/news/newsStore';
+import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema } from '../../server/services/news/newsStore';
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import sharp from 'sharp';
@@ -141,6 +142,25 @@ it('draws card text as paths, so the container needs no system fonts', async () 
   const svg = await articleCardSvg(getNewsIndex().articles[0]);
   expect(svg).not.toMatch(/<text|font-family/);
   expect((svg.match(/<path/g) ?? []).length).toBeGreaterThan(10);
+});
+it('serves sourced dispatches and their artwork in front-page API and crawler text', async () => {
+  const index = getNewsIndex();
+  const dispatch = index.dispatches![0];
+  expect(dispatch).toBeDefined();
+  const html = await (await fetch(`${base}/news`)).text();
+  expect(html).toContain(escapeHtml(dispatch.headline));
+  expect(html).toContain(escapeHtml(dispatch.sections[0].text));
+  expect(html).toContain(dispatch.image!.src);
+  for (const source of dispatch.sources) expect(html).toContain(escapeHtml(source.url));
+  const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
+  const latest = [...index.articles, ...index.dispatches!].map(story => story.publishedAt).sort().at(-1);
+  expect(sitemap).toContain(`<loc>${SITE_ORIGIN}/news</loc><lastmod>${latest}</lastmod>`);
+  const changed = structuredClone(dispatch);
+  changed.sections[0].sourceIds = ['invented'];
+  expect(newsDispatchSchema.safeParse(changed).success).toBe(false);
+  changed.sections[0].sourceIds = dispatch.sections[0].sourceIds;
+  changed.image!.src = '/news-images/../../private.png';
+  expect(newsDispatchSchema.safeParse(changed).success).toBe(false);
 });
 it('keeps cards drawable for names and headlines outside the card fonts', async () => {
   expect(cardText('the last dance 🕺')).toBe('the last dance');

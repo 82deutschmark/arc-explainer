@@ -1,0 +1,59 @@
+{
+  "competition": "arc-3",
+  "headline": "One student takes the ARC-3 lead. Tufa answers with compute bravado.",
+  "id": "2026-10-09-arc3-rabbit-and-spider",
+  "image": {
+    "alt": "A giant fluffy rabbit and its smaller companion face Tufa’s cartoon spider carrying graphics cards in a snowy city. ARC-3 score card: Yi-Chia Chen first at 59.17; Tufa Labs second at 56.52.",
+    "caption": "AI-generated editorial illustration. Score panel: October 9, 1:23 PM Eastern public-board observation; provisional standings. The GPU pile is a metaphor. Game inset: ls20 from ARC Explainer’s public game guides.",
+    "src": "/news-images/2026-10-09-rabbit-and-spider.webp"
+  },
+  "interpretation": "The rabbit gets bigger; the spider straps on more graphics cards. This callback to Tufa’s snowy battle scene uses Chen’s rabbit avatar and Tufa’s cartoon spider. The GPU pile is an editorial metaphor for the lab’s compute talk, not a report of its equipment.",
+  "publishedAt": "2026-10-09T17:27:39Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Yi-Chia Chen has moved in front of Tufa Labs on the ARC-AGI-3 public board. The checked snapshot puts Chen at 59.17 and Tufa at 56.52: a 2.65-point gap. The public roster lists one account, threerabbits, for Chen and six for Tufa. One listed competitor is setting the pace ahead of a lab’s lineup."
+    },
+    {
+      "sourceIds": [
+        "profile",
+        "morning-evidence"
+      ],
+      "text": "Chen is already a Kaggle Competitions Master. Her profile describes her as a double-degree student at National Taiwan University and Waseda University, and her avatar shows two rabbits. The October 9 morning evidence records her score rising from 55.77 to 59.17. That observed move put a familiar contender at the front of this race."
+    },
+    {
+      "sourceIds": [
+        "tufa-post"
+      ],
+      "text": "Tufa answered on X with an AI battle scene and called the position a temporary setback, saying it remained dedicated to crushing competitors with overwhelming resources and compute. That is Tufa’s public rhetoric; the standings record the scores. The next submissions can change the order again."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-09T17:26:50Z",
+      "id": "board",
+      "title": "ARC-3 public board and roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T17:16:30Z",
+      "id": "profile",
+      "title": "Yi-Chia Chen’s Kaggle profile",
+      "url": "https://www.kaggle.com/threerabbits"
+    },
+    {
+      "accessedAt": "2026-10-09T17:16:30Z",
+      "id": "tufa-post",
+      "title": "Tufa Labs’ original X post",
+      "url": "https://x.com/tufalabs/status/2108463895128269084"
+    },
+    {
+      "accessedAt": "2026-10-09T17:16:30Z",
+      "id": "morning-evidence",
+      "title": "October 9 morning score-event evidence",
+      "url": "https://arc.markbarney.net/api/news/2026-10-09-morning-arc-3/evidence"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-08
+ * Author: GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Date: 2026-10-09
  * PURPOSE: Server-readable newspaper, article and notebook HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
  *          08-Oct-2026: per-article share cards and Open Graph article fields; the front
@@ -9,12 +9,13 @@
  *          publication/check times; RSS self link, build date, categories and card images.
  *          Front-page crawler text names both contests, their public resources and the
  *          illustrated Hall of Fame; the article credit uses GPT-6 Sol spelling.
+ *          Sourced social dispatches also appear in crawler text and front-page lastmod.
  * SRP/DRY check: Pass — plain rendering only; content and validation remain in newsStore,
  *          wording and card URLs in shared/news.ts, card pixels in newsCardImage.ts.
  */
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
-  type NewsArticle, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData,
+  type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData,
   articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
 } from '../../../shared/news';
@@ -64,10 +65,11 @@ function competitorMeta(record: CompetitorRecord, articles: NewsArticle[]): Rout
     <h2>In the paper</h2>${coverage.length ? `<ul>${coverage.map(article => `<li>${articleLink(article)}</li>`).join('')}</ul>` : '<p>Not yet named in an edition.</p>'}
     <p><a href="${boardPath(record.competition)}">Live ${esc(competitionName(record.competition))} box score</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news">The ARC Daily front page</a></p></main>` });
 }
-function frontPageMeta(articles: NewsArticle[]): RouteMetaTags {
+function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[]): RouteMetaTags {
   const tags = completeMeta(ROUTE_META_TAGS['/news']);
-  return { ...tags, jsonLd: collection(tags, articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))),
-    bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Morning and evening stories from both Kaggle competitions, grounded in recorded public leaderboard observations and cited sources.</p><p><a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a></p>${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
+  const dispatchHtml = dispatches.map(dispatch => `<article id="${esc(dispatch.id)}"><p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}</p><h2>${esc(dispatch.headline)}</h2>${dispatch.image ? `<figure><img src="${esc(dispatch.image.src)}" alt="${esc(dispatch.image.alt)}"/><figcaption>${esc(dispatch.image.caption)}</figcaption></figure>` : ''}${dispatch.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}${dispatch.interpretation ? `<p><strong>The ARC Daily’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('');
+  return { ...tags, jsonLd: collection(tags, [...dispatches.map(dispatch => ({ name: dispatch.headline, path: `/news#${dispatch.id}` })), ...articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))]),
+    bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Morning and evening stories from both Kaggle competitions, grounded in recorded public leaderboard observations and cited sources.</p><p><a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a></p>${dispatchHtml}${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
 }
 function notebookMeta(competitors: CompetitorRecord[]): RouteMetaTags {
   const tags = completeMeta(ROUTE_META_TAGS['/news/competitors']);
@@ -76,8 +78,11 @@ function notebookMeta(competitors: CompetitorRecord[]): RouteMetaTags {
 }
 export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: number } | null {
   if (route !== '/news' && !route.startsWith('/news/')) return null;
-  const { articles, competitors } = getNewsIndex();
-  if (route === '/news') return { status: 200, tags: frontPageMeta(articles) };
+  const { articles, competitors, dispatches = [] } = getNewsIndex();
+  if (route === '/news') {
+    const tags = frontPageMeta(articles, dispatches);
+    return { status: 200, tags };
+  }
   if (route === '/news/competitors') return { status: 200, tags: notebookMeta(competitors) };
   const profile = route.match(/^\/news\/competitors\/([a-z0-9-]+)$/);
   if (profile) { const record = competitors.find(record => record.id === profile[1]); if (record) return { status: 200, tags: competitorMeta(record, articles) }; }
@@ -88,9 +93,9 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
 const latest = (values: string[]) => values.reduce<string | undefined>((max, value) => !max || value > max ? value : max, undefined);
 /** News URLs with a real last-change time: publication for editions, last check for notebooks. */
 export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
-  const { articles, competitors } = getNewsIndex();
+  const { articles, competitors, dispatches = [] } = getNewsIndex();
   return [
-    { url: `${SITE_ORIGIN}/news`, lastmod: latest(articles.map(article => article.publishedAt)) },
+    { url: `${SITE_ORIGIN}/news`, lastmod: latest([...articles.map(article => article.publishedAt), ...dispatches.map(dispatch => dispatch.publishedAt)]) },
     { url: `${SITE_ORIGIN}/news/competitors`, lastmod: latest(competitors.map(record => record.lastObservedAt)) },
     ...articles.map(article => ({ url: `${SITE_ORIGIN}${newsArticlePath(article.id)}`, lastmod: article.publishedAt })),
     ...competitors.map(record => ({ url: `${SITE_ORIGIN}${competitorPath(record.id)}`, lastmod: record.lastObservedAt })),

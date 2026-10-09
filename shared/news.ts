@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-07; 08-October-2026
+ * Author: GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Date: 2026-10-09
  * PURPOSE: Shared public contract for sourced ARC Daily articles and competitor records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -8,6 +8,7 @@
  *          pages all read these, so a crawler, a link unfurl and in-app navigation agree.
  *          08-Oct-2026: added the share-card helpers and moved newsDate/competitionName here
  *          from client/src/components/news/NewsDesk.tsx (which re-exports them).
+ *          Dated social dispatches share the archive without replacing immutable editions.
  * SRP/DRY check: Pass — server, browser and newsroom tooling share one documented shape;
  *          competition labels still come from shared/kaggleCompetitions.ts.
  */
@@ -31,7 +32,12 @@ export interface CompetitorRecord {
   aliases: string[]; members: string[]; firstObservedAt: string; lastObservedAt: string;
   facts: CompetitorFact[];
 }
-export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[] }
+export interface NewsDispatch {
+  id: string; competition: NewsCompetition; publishedAt: string; headline: string;
+  sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
+  image?: { src: string; alt: string; caption: string };
+}
+export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[] }
 export const NEWS_NAME = 'The ARC Daily';
 export const newsArticlePath = (id: string) => `/news/${id}`;
 export const competitorPath = (id: string) => `/news/competitors/${id}`;

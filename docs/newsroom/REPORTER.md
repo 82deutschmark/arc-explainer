@@ -16,6 +16,51 @@ If it has unrelated uncommitted work, stop and report that condition. Run
 reporting run. Keep bulk data and caches on `/Volumes/Samsung 9100 SSD/`; a small
 one-run JSON brief/draft may live under `/tmp`.
 
+## Check what the contenders are saying
+
+Before each edition, check recent public X posts and Kaggle discussions for the
+leaders and meaningful movers in both contests. Start with verified accounts already
+linked from their professional profiles or notebook sources. Include Tufa Labs'
+public `https://x.com/tufalabs` timeline and search X for the competition names and
+current contenders. Use the user's signed-in Chrome session through browser tools
+when the public fetch is incomplete. Read the actual post, its author, timestamp
+and thread context; search snippets and screenshots alone do not establish an
+identity or a current score. If X is inaccessible, record that limit and continue
+with accessible primary sources and board evidence.
+
+Cover announcements, banter, roster observations and published methods when they
+change the story. Attribute a competitor's boast or claim to that competitor.
+Separate verified facts from the desk's interpretation. Do not turn jokes, rumors
+or an illustrated GPU pile into claims about budgets, hardware, wrongdoing or
+submission methods. Give equal editorial treatment to newsworthy contestants;
+do not reserve the social coverage for featured teams.
+
+Save a useful public post as a narrow dated notebook fact with its exact permanent
+URL. Avoid duplicate facts. Add facts before preparing the brief so its citations
+are available in the daily article, and re-prepare after additions. A dated post
+is evidence of what its author said on that date, not a timeless fact.
+
+Between editions, a short sourced dispatch can update the front page. It is separate
+from the immutable scheduled issue. Write JSON with `id`, `competition`,
+`publishedAt`, `headline`, `sections` and `sources`. Sections use the same
+`heading`/`text`/`sourceIds` structure as articles; sources have `id`, `title`,
+`url` and `accessedAt`. Optional `interpretation` is shown explicitly as the
+desk's take. Optional `image` has `src`, `alt`, `caption`; assets must already
+exist under `client/public/news-images/`. Captions identify AI/editorial artwork
+and date any embedded standings. Use the real publication time, never a scheduled
+future timestamp. Validate and publish with:
+
+```sh
+python3.13 scripts/newsroom.py dispatch-validate --draft /tmp/arc-dispatch.json
+python3.13 scripts/newsroom.py dispatch-publish --draft /tmp/arc-dispatch.json
+```
+
+Dispatch IDs are immutable. Stage their exact `content/news/dispatches/<id>.json`
+alongside any authorized assets and notebook changes; use the same safe push
+procedure as an edition. Scheduled reporting runs still edit only content/news;
+new illustration production is separate authorized design work. Never fetch or
+generate an image on the assumption that publication was approved.
+
 ## Prepare the evidence
 
 Run with Python 3.13, choosing the scheduled edition:

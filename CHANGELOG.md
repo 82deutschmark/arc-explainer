@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.129.0  Oct 9, 2026
+
+- **Let the contenders lead The ARC Daily** (Author: GPT-6 Sol / Codex). Shrinks the permanent masthead and removes the large static introduction; fresh daily headlines and dated, sourced social dispatches now lead both competition desks. Refreshes the open archive each minute and moves the banner ad beneath the reporting. Adds validated immutable dispatch publication and search-readable dispatch text, with explicit editorial interpretations and primary-source links. The first dispatch covers Chen’s public ARC-3 lead, her one-account roster, Tufa’s six-account roster and its original X post, with the approved rabbit/GPU-spider callback illustration. Programmatic title cards reuse the six-color Explainer mark, blue ARC-3 identity, genuine ls20 game PNG and exact dated scores. Daily reporter guidance now checks competitor X posts and Kaggle discussions. A separate daily X draft helper reads published evening editions and protects recorded send attempts; posting workflow: `docs/newsroom/X_POSTING.md`. Client build, 20 news/SEO checks, 10 newsroom checks, draft-only X audits and actual-content desktop/phone renders passed. Plan: `docs/2026-10-09-contender-front-page-plan.md`.
+
 ### Version 9.128.1  Oct 8, 2026
 
 - **Wasted portrait sidebar ad** (Author: GPT-6 Sol / Codex). Adds a clearly disclosed VoynichLabs newspaper ad to the front-page sidebar and article rail, using the genuine Wasted artwork and linking the entire unit to its published YouTube Short. Responsive styling preserves the artwork and keeps the advertisement readable on phones. Evidence and verification: `docs/2026-10-08-wasted-sidebar-ad-plan.md`.

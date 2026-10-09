@@ -1,8 +1,8 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex
-# Date: 2026-10-08
+# Author: GPT-6 Sol / Codex
+# Date: 2026-10-09
 # PURPOSE: Prepare auditable ARC Daily evidence, validate GPT-6 Sol prose, and publish
-# immutable JSON articles and competitor observations consumed by shared/news.ts.
+# immutable JSON articles, social dispatches and competitor observations consumed by shared/news.ts.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
 """Deterministic newsroom plumbing. The scheduled model writes the journalism."""
 import argparse
@@ -391,6 +391,66 @@ def publish(draft, brief, root=ROOT):
     return path
 
 
+def validate_dispatch(draft):
+    required = {'id', 'competition', 'publishedAt', 'headline', 'sections', 'sources'}
+    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation'}:
+        raise ValueError('invalid dispatch fields')
+    if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', draft['id']) or draft['competition'] not in FEATURED:
+        raise ValueError('invalid dispatch identity')
+    published = contract_stamp(draft['publishedAt'])
+    if published > datetime.now(UTC):
+        raise ValueError('dispatch cannot be published in the future')
+    text(draft['headline'], 'dispatch headline', 240)
+    if not isinstance(draft['sources'], list) or not draft['sources']:
+        raise ValueError('dispatch requires sources')
+    source_ids = set()
+    for source in draft['sources']:
+        if set(source) != {'id', 'title', 'url', 'accessedAt'}:
+            raise ValueError('invalid dispatch source')
+        text(source['id'], 'source ID')
+        text(source['title'], 'source title')
+        web_source(source['url'])
+        if source['id'] in source_ids or contract_stamp(source['accessedAt']) > published:
+            raise ValueError('duplicate source or future source check')
+        source_ids.add(source['id'])
+    if not isinstance(draft['sections'], list) or not 1 <= len(draft['sections']) <= 5:
+        raise ValueError('dispatch requires 1–5 sections')
+    for section in draft['sections']:
+        if not isinstance(section, dict) or set(section) - {'heading', 'text', 'sourceIds'}:
+            raise ValueError('invalid dispatch section')
+        text(section.get('text'), 'dispatch section', 2500)
+        if 'heading' in section:
+            text(section['heading'], 'section heading')
+        refs = section.get('sourceIds')
+        if not isinstance(refs, list) or not refs or any(ref not in source_ids for ref in refs):
+            raise ValueError('dispatch requires valid source citations')
+    if 'interpretation' in draft:
+        text(draft['interpretation'], 'editorial interpretation', 700)
+    if 'image' in draft:
+        image = draft['image']
+        if set(image) != {'src', 'alt', 'caption'} or not re.fullmatch(r'/news-images/[a-z0-9-]+\.(png|jpg|webp)', image['src']):
+            raise ValueError('invalid dispatch image')
+        for field in ('alt', 'caption'):
+            text(image[field], f'image {field}', 700)
+    encoded(draft)
+    return draft
+
+
+def publish_dispatch(draft, root=ROOT):
+    validate_dispatch(draft)
+    if 'image' in draft and not (Path(root) / 'client/public' / draft['image']['src'].lstrip('/')).is_file():
+        raise ValueError('dispatch image is missing from the public assets')
+    target = Path(root) / 'content/news/dispatches' / f'{draft["id"]}.json'
+    if target.exists():
+        if load(target) != draft:
+            raise ValueError('immutable dispatch conflict')
+        return target
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open('xb') as stream:
+        stream.write(encoded(draft))
+    return target
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
@@ -403,6 +463,9 @@ def main():
         cmd = commands.add_parser(name)
         cmd.add_argument('--article', required=True)
         cmd.add_argument('--brief', required=True)
+    for name in ('dispatch-validate', 'dispatch-publish'):
+        cmd = commands.add_parser(name)
+        cmd.add_argument('--draft', required=True)
     args = parser.parse_args()
     try:
         if args.command == 'prepare':
@@ -410,6 +473,10 @@ def main():
             write(args.output, result)
             print(json.dumps({c: v['status'] for c, v in result['competitions'].items()}))
             return 0 if any(v['status'] == 'ready' for v in result['competitions'].values()) else 2
+        if args.command in ('dispatch-validate', 'dispatch-publish'):
+            draft = load(args.draft)
+            print(publish_dispatch(draft) if args.command == 'dispatch-publish' else f'valid dispatch: {validate_dispatch(draft)["id"]}')
+            return 0
         draft, brief = load(args.article), load(args.brief)
         if args.command == 'validate':
             article, _ = validate(draft, brief)

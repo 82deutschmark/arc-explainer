@@ -1,6 +1,6 @@
-# Author: GPT-6.1 Sol / Codex
-# Date: 2026-10-07
-# PURPOSE: Verify newsroom time boundaries, incomplete coverage, article contracts and immutable publication.
+# Author: GPT-6 Sol / Codex
+# Date: 2026-10-09
+# PURPOSE: Verify newsroom time boundaries, incomplete coverage, article and dispatch contracts, immutable publication.
 # SRP/DRY check: Pass — exercises production preparation/validation/publication functions.
 import copy
 from datetime import timedelta
@@ -137,6 +137,34 @@ class NewsroomTests(unittest.TestCase):
     def test_preview_id_does_not_collide(self):
         b = bundle(preview=True)
         self.assertTrue(b['competitions']['arc-3']['articleBase']['id'].endswith('-preview'))
+
+    def test_dispatch_rejects_bad_citations_and_preserves_immutable_retry(self):
+        dispatch = {'id': '2026-10-07-contender-post', 'competition': 'arc-3',
+                    'publishedAt': '2026-10-07T22:00:00Z', 'headline': 'A contender speaks',
+                    'sections': [{'text': 'A public announcement.', 'sourceIds': ['post']}],
+                    'sources': [{'id': 'post', 'title': 'Primary post', 'url': 'https://example.com/post',
+                                 'accessedAt': '2026-10-07T21:00:00Z'}]}
+        n.validate_dispatch(dispatch)
+        dispatch['sections'][0]['sourceIds'] = ['invented']
+        with self.assertRaisesRegex(ValueError, 'citations'):
+            n.validate_dispatch(dispatch)
+        dispatch['sections'][0]['sourceIds'] = ['post']
+        dispatch['image'] = {'src': '/news-images/../../private.png', 'alt': 'Image', 'caption': 'Caption'}
+        with self.assertRaisesRegex(ValueError, 'image'):
+            n.validate_dispatch(dispatch)
+        del dispatch['image']
+        dispatch['publishedAt'] = '2099-01-01T00:00:00Z'
+        with self.assertRaisesRegex(ValueError, 'future'):
+            n.validate_dispatch(dispatch)
+        dispatch['publishedAt'] = '2026-10-07T22:00:00Z'
+        with tempfile.TemporaryDirectory() as directory:
+            target = n.publish_dispatch(dispatch, directory)
+            original = target.read_bytes()
+            n.publish_dispatch(dispatch, directory)
+            dispatch['headline'] = 'Changed'
+            with self.assertRaisesRegex(ValueError, 'immutable'):
+                n.publish_dispatch(dispatch, directory)
+            self.assertEqual(target.read_bytes(), original)
 
 
 if __name__ == '__main__':

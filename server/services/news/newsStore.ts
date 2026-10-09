@@ -1,19 +1,36 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-07
+ * Author: GPT-6 Sol / Codex
+ * Date: 2026-10-09
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
- *          rendering. Validates public JSON at the read boundary; never runs a model.
+ *          rendering, including dated social dispatches. Validates public JSON at the
+ *          read boundary; never runs a model.
  * SRP/DRY check: Pass — one store serves HTML, JSON, feeds and sitemap discovery.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
-import type { NewsArticle, NewsIndex, CompetitorRecord } from '../../../shared/news';
+import type { NewsArticle, NewsIndex, NewsDispatch, CompetitorRecord } from '../../../shared/news';
 const stamp = z.string().datetime({ offset: true });
 const webUrl = z.string().url().refine(value => /^https:\/\//.test(value), 'Sources must use HTTPS');
 const competition = z.enum(['arc-3', 'arc-2']);
 const safeId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const text = z.string().min(1).max(20000);
+export const newsDispatchSchema = z.object({
+  id: safeId, competition, publishedAt: stamp, headline: text.max(240),
+  sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1) })).min(1).max(5),
+  sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
+  interpretation: text.max(700).optional(),
+  image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: text.max(700), caption: text.max(700) }).optional(),
+}).strict().superRefine((dispatch, context) => {
+  const sources = new Set(dispatch.sources.map(source => source.id));
+  if (sources.size !== dispatch.sources.length || dispatch.sections.some(section => section.sourceIds.some(id => !sources.has(id)))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Dispatch requires unique sources and valid citations' });
+  }
+  const published = Date.parse(dispatch.publishedAt);
+  if (published > Date.now() || dispatch.sources.some(source => Date.parse(source.accessedAt) > published)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Dispatch publication and source checks cannot be in the future' });
+  }
+});
 export const newsArticleSchema = z.object({
   id: safeId, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), edition: z.enum(['morning', 'evening']), competition,
   headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1) })).min(1),
@@ -43,5 +60,12 @@ export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
   const notebook = path.join(directory, 'competitors.json');
   const competitors: CompetitorRecord[] = fs.existsSync(notebook) ? z.array(competitorSchema).parse(JSON.parse(fs.readFileSync(notebook, 'utf8'))) : [];
   if (new Set(competitors.map(record => record.id)).size !== competitors.length) throw new Error('Duplicate competitor identities');
-  return { articles, competitors };
+  const dispatchDirectory = path.join(directory, 'dispatches');
+  const dispatches: NewsDispatch[] = fs.existsSync(dispatchDirectory) ? fs.readdirSync(dispatchDirectory)
+    .filter(file => /^[a-z0-9][a-z0-9-]{0,99}\.json$/.test(file)).map(file => {
+      const dispatch = newsDispatchSchema.parse(JSON.parse(fs.readFileSync(path.join(dispatchDirectory, file), 'utf8')));
+      if (`${dispatch.id}.json` !== file) throw new Error(`Dispatch filename does not match its ID: ${file}`);
+      return dispatch;
+    }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id)) : [];
+  return { articles, competitors, dispatches };
 }

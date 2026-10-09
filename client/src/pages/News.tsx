@@ -1,47 +1,30 @@
 /**
  * Author: GPT-6 Sol / Codex
- * Date: 2026-10-08
+ * Date: 2026-10-09
  * PURPOSE: ARC Daily landing page for both Kaggle contests, with ARC-AGI-3 as the
  *          lead, separate ARC-AGI-2 coverage, sourced cards, existing Hall of Fame art,
- *          and community/resource links, plus banner and portrait sidebar advertising.
+ *          and community links. Latest editions and sourced social dispatches lead
+ *          the page immediately, above the resource shelf and display advertising.
  * SRP/DRY check: Pass — uses shared newspaper presentation, query and news contract.
  */
 import { Link } from 'wouter';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { ARC_DISCORD_URL, ArticleArchive, NewsPaper, NewsStatus, NotebookEntry, StoryPreview, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { ARC_DISCORD_URL, ArticleArchive, NewsPaper, NewsStatus, NotebookEntry, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { NewsFrontPage } from '@/components/news/NewsFrontPage';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
 export default function News() {
   const query = useNews();
   const articles = sortedArticles(query.data?.articles ?? []);
-  const arc3Articles = articles.filter(article => article.competition === 'arc-3');
-  const arc2Articles = articles.filter(article => article.competition === 'arc-2');
-  const lead = arc3Articles[0];
+  const latestAt = [articles[0]?.publishedAt, ...(query.data?.dispatches ?? []).map(dispatch => dispatch.publishedAt)].filter((date): date is string => !!date).sort().at(-1);
   const competitors = [...(query.data?.competitors ?? [])].filter(record => record.competition === 'arc-3').sort((a, b) => b.facts.length - a.facts.length || a.name.localeCompare(b.name));
   usePageMeta({ title: 'The ARC Daily — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', canonicalPath: '/news' });
 
-  return <NewsPaper frontPage date={lead?.date}>
-    <section className="news-intro" aria-label="About The ARC Daily">
-      <div className="news-intro-copy"><span className="news-eyebrow">ARC Explainer / Competition desk</span><h1>The daily story of ARC-AGI-3 and ARC-AGI-2.</h1><p>Follow both Kaggle contests: the leaders, the challengers, and the moves that change the field. ARC-AGI-3 leads the front page; each contest has its own report and live board.</p></div>
-      <a className="news-intro-link" href="/kaggle-leaderboard#medal-race">Explore the ARC-AGI-3 race <span aria-hidden="true">↗</span></a>
-    </section>
-    <SponsorPlacement format="banner" />
+  return <NewsPaper frontPage date={latestAt}>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && <>
-      <div className="news-front-grid">
-        <section aria-label="ARC-AGI-3 lead story">
-          <h2 className="news-section-title">Latest from ARC-AGI-3</h2>
-          {lead ? <StoryPreview article={lead} lead /> : <div className="news-status"><h3>The first ARC-AGI-3 edition is on its way</h3><p>Until then, explore the live public board and its charts.</p><Link href="/kaggle-leaderboard" className="news-read">Open the ARC-AGI-3 board →</Link></div>}
-          {!!arc3Articles.slice(1, 3).length && <div className="news-secondary">{arc3Articles.slice(1, 3).map(article => <StoryPreview key={article.id} article={article} />)}</div>}
-        </section>
-        <aside className="news-sidebar" aria-label="ARC-AGI-2 desk">
-          <h2 className="news-section-title">The ARC-AGI-2 desk</h2>
-          <p className="news-muted">A separate competition, with its own standings and editions.</p>
-          {arc2Articles[0] ? <StoryPreview article={arc2Articles[0]} /> : <p className="news-muted">No ARC-AGI-2 edition has been published yet.</p>}
-          <Link href="/kaggle-leaderboard/arc-2" className="news-read">Explore the ARC-AGI-2 board →</Link>
-          <SponsorPlacement format="rail" />
-        </aside>
-      </div>
+      <NewsFrontPage index={query.data} />
+      <SponsorPlacement format="banner" />
       <section className="news-explore" aria-label="Explore the contests and community">
         <div className="news-section-heading"><div><span className="news-eyebrow">Beyond the headlines</span><h2>Explore the contests</h2></div><p>Live charts, game records and the ARC community put each dispatch in context.</p></div>
         <div className="news-explore-grid">
