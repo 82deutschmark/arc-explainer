@@ -24,10 +24,10 @@ The same collected source archive supplies public posts from the past seven days
 
 ## Rollout
 
-1. Review this bounded plan, then finish the local drafts after approval.
-2. Show one real personal briefing and the proposed small UI additions for review.
-3. Verify people/roster links, public-source filtering and duplicate protection; review the exact website diff before pushing.
-4. Activate the approved research schedules and connect the existing editions/X recap to the shared archive. Daily collection produces evidence even when nothing is posted.
+1. Approved by the user; local drafts completed.
+2. Saved a real initial catch-up briefing and reviewed the small UI additions in the built client.
+3. Verified people/roster links, public-source filtering and duplicate protection; reviewed the exact website diff and pushed.
+4. Activated the approved research schedules and connected the existing editions/X recap to the shared archive. Daily collection produces evidence even when nothing is posted.
 
 ## Implementation and verification
 
@@ -37,7 +37,7 @@ The same collected source archive supplies public posts from the past seven days
 - [x] Reporter documentation and portable discoverable skill; internal roster research notes.
 - [x] End-to-end sample briefing and public source cards; verify actual sources and identities.
 - [x] Focused checks for cross-competition membership, restricted-source exclusion, missed-run recovery and duplicate publication.
-- [ ] Review exact diff, fetch/rebase safely, commit and push; configure authorized schedules through app tools.
+- [x] Review exact diff, fetch/rebase safely, commit and push; configure authorized schedules through app tools.
 
 Cartoon reply: inspect the actual X profile before attempting a send, because the user has already completed the upload.
 
@@ -50,3 +50,11 @@ Cartoon reply: inspect the actual X profile before attempting a send, because th
 - 14 Python checks and 21 news/SEO checks passed; client production build passed. Full repository type checking reports existing errors outside changed files (SnakeBench, Johan Land ingestion and legacy tests).
 - Desktop front-page/profile and 390 px phone profile reviewed. The existing front-page stories, illustration, ads and archive remain; phone newspaper has no horizontal overflow. Preview screenshots saved under `reports/arc-daily-social/proofs/`.
 - Bubba’s weekly skill was updated and validated in its workspace. Sunday 18:00 UTC, the event link, selected bullets and recurring Discord boundaries are preserved.
+
+## Publication and scheduling
+
+- Website implementation pushed to origin main as `2c7e7584`; scheduled reporting checkout confirmed clean on `codex/newsroom-publisher` with the correct origin. No deployment status check.
+- App tool created `arc-daily-digest-research-desk` (05:00/11:00/17:00/23:00 Eastern) and `arc-daily-digest-personal-briefing` (05:30/17:30 Eastern). Both active, GPT-6 Sol.
+- Existing morning edition, evening edition and 14:00 X recap updated through the app tool to consume the archive. Their times, model and existing publication/send scopes are preserved. Saved configuration verified read-only.
+- Bubba weekly bridge committed locally as `9ad610b5`, only the skill, bridge plan and changelog. No external sends or OpenClaw configuration changes.
+- The initial briefing has its own initial-delivery key so the scheduled evening briefing can include new 17:00 research.
