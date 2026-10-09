@@ -14,6 +14,15 @@ results or provide its existing reasoning/grid/statistics tools for newer models
 AP-07 is the main owner decision; the order below separates that decision from
 immediate website repairs. A cutoff notice helps clarity but does not restore ingestion.
 
+Task-viewer quality concern (AP-20): the official task page shows a shape-count-change
+hint beside an unchanged total. Reproduce at:
+https://arcprize.org/tasks/13e47133#task-details
+Training examples 1 and 3: 6 → 6 and 4 → 4, both labeled SHAPE COUNT CHANGE.
+Our metadata scan found 16 such training examples in 10 ARC2 tasks. Per-color counts
+do change; label that explicitly if intended. Separate computed statistics from
+verified rules. No false reflection rule or AI authorship was established by this pass.
+Exact archive counterpart: https://arc.markbarney.net/task/13e47133
+
 Exact working examples (reasoning panels are populated):
 https://arc.markbarney.net/task/221dfab4?highlight=73914
 Opus 4.6 max first attempt: 2/2 tests correct.
@@ -28,7 +37,8 @@ Suggested order:
    error; a one-config control succeeds. Adding Content-Type alone did not fix it.
 2. AP-02 + AP-03: align featured model selection, task summaries and model pages.
    Existing official Opus 4.6 successes are omitted from task 0934a4d8's summary.
-3. AP-05/06/10/11/12/13/14/15/18: repair the individually verified link destinations.
+3. AP-20: correct conflicting hint labels and clarify what the metadata establishes.
+   AP-05/06/10/11/12/13/14/15/18: repair the individually verified link destinations.
 4. AP-07 + AP-08: Matt decides the raw-results publication and archive policy.
    The current HF repositories stop at June 4 in their update history. If a successor
    store exists, link it; if data is unavailable, say so. Do not invent missing data.

@@ -580,6 +580,38 @@
       "qualification": "A displayed form does not prove that submissions are still accepted. The event owner must confirm the current policy.",
       "depends_on": [],
       "decision": "For Matt to triage; not yet approved or implemented."
+    },
+    {
+      "id": "AP-20",
+      "priority": "P2",
+      "classification": "Confirmed presentation inconsistency",
+      "title": "Make transformation hints consistent and distinguish statistics from rules",
+      "url": "https://arcprize.org/tasks/13e47133#task-details",
+      "observation": "Training example 1 displays Shape Count: 6 shapes → 6 shapes beside SHAPE COUNT CHANGE. Example 3 repeats this with 4 → 4. A check of all 120 ARC-2 public evaluation task metadata files found 16 training examples across 10 tasks with this mismatch. ARC Explainer’s mixed archive currently records 119 scored attempts and no fully correct result for 13e47133; that is not a claim that nobody has solved it.",
+      "reproduction": [
+        "Open the affected task, click Details after the model table loads, then inspect Training Example #1 and #3.",
+        "Compare the Shape Count row with the adjacent Transform Hints badge.",
+        "Sum input/output shapeCountsByColor in the linked public metadata and compare with ioComparison.transformHints."
+      ],
+      "proposed_fix": "Use a total-count-change hint only when the displayed total changes. If the intended signal is changed counts by color, label it explicitly as such. Present these as computed grid statistics, separate from reviewed rule explanations. Define the background and shape-counting assumptions. Only describe a puzzle rule as verified when it has been checked against all provided pairs; label conjectures and link their evidence.",
+      "acceptance_checks": [
+        "13e47133 examples 1 and 3 no longer imply a changed total beside unchanged totals.",
+        "All 120 ARC-2 evaluation metadata files pass a hint-versus-displayed-statistic consistency check, including the 16 recorded cases.",
+        "The UI distinguishes descriptive statistics, speculative interpretations and verified explanations; a visitor can inspect the supporting grids."
+      ],
+      "sources": [
+        "https://arcprize.org/tasks/13e47133#task-details",
+        "https://arcprize.org/media/data/task/task-metadata/13e47133_metadata.json",
+        "https://arc.markbarney.net/task/13e47133",
+        "https://arc.markbarney.net/analytics"
+      ],
+      "evidence_files": [
+        "evidence.json",
+        "screenshots/task-hint-13e47133.png"
+      ],
+      "qualification": "Per-color counts do change in these examples, so this is a confirmed labeling inconsistency, not proof that the underlying calculation is wrong. The current training hints across these 120 tasks contain only sameSize, newColors and shapeCountChange. Rotation/reflection appear in generic tooltip wording, but no reflection hint or incorrect reflection rule was reproduced in this pass. Public output does not establish AI authorship. This was a metadata consistency check, not a semantic solution review of all 120 puzzles.",
+      "depends_on": [],
+      "decision": "For Matt to triage; not yet approved or implemented."
     }
   ],
   "report_url": "https://arc.markbarney.net/feedback",

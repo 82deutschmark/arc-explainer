@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.127.3  Oct 8, 2026
+
+- **Verify official task-hint quality** (Author: Codex). Adds AP-20 to the public feedback report, structured backlog and coding-assistant brief: a reproducible shape-count label inconsistency on task 13e47133, with screenshot and exact official/archive links. Records the 120-task metadata scan and 16 affected training examples across 10 tasks in compact evidence; distinguishes per-color changes from totals and unverified reflection claims. Report count is now 20. No ARC Prize code changed. Plan: `docs/2026-10-08-task-hint-audit-plan.md`.
+
 ### Version 9.127.2  Oct 8, 2026
 
 - **Feature Simon Ouellette’s ARC-3 training resources** (Author: Codex). Adds the ARC-AGI-3 Training Data repository prominently above the synthetic-game gallery, in the Resource Hub’s ARC-3 section and in the ARC-3 reference resources. Shares one credited description of its games, solvers and demonstration generators, verified against the repository README. No game counts or evaluation claims are implied. Validated with the production client build and rendered link checks. Plan: `docs/2026-10-08-simon-training-resource-plan.md`.
