@@ -1,26 +1,32 @@
 ARC Prize feedback sheet — October 9, 2026
 https://arc.markbarney.net/feedback
 
-Matt—I’m a hobbyist, and ARC Explainer is a volunteer project I build in my own time, without earning anything from it. I built these features because I wanted to understand ARC and couldn’t find the tools I needed. I’ve offered to share the work with ARC Prize, and I’d be glad to see these capabilities become part of the official site. It’s been frustrating to see useful features remain missing after putting that work into making them available. These two asks point to existing implementations your coding assistant can build on.
+Matt—ARC Explainer is a hobby project I build in my own time, unpaid. I built these tools because I wanted to understand ARC and couldn’t find them anywhere. Thanks for already listing the Puzzle Explorer in your Tools section.
 
-1. Add missing resource cards and spoiler-labeled guide links from public-game pages.
-Missing ARC3 resources:
-- Public-game breakdowns: all 25 games: https://arc.markbarney.net/arc3/games
-  Level-by-level rules, pictures and commentary; add a spoiler-labeled guide link on each official game page.
-- Playable synthetic-game collection: https://arc.markbarney.net/arc3/gallery
-  Includes the 252-game Red Pill/Blue Pill archive, with source attribution.
-- Red Pill/Blue Pill archive: https://arc.markbarney.net/arc3/gallery?category=redbluepill
-  Direct archive link; original source: https://github.com/theredbluepill/arc-interactive
+This isn’t about traffic to my site. I’d happily shut it down if these things lived on arcprize.org. Anything I wrote is yours to copy, rehost or adapt; the code is public at https://github.com/82deutschmark/arc-explainer and I’ll add whatever license makes reuse easy. If hosting something officially isn’t possible, a link works, and I’m glad to help in whatever way is useful.
+
+1. Add the missing ARC-3 resources.
+
+1a. Community work missing from the Resources catalogue (checked against all 246 entries; none of these are Mark’s):
+- Red Pill/Blue Pill — interactive ARC game archive: https://github.com/theredbluepill/arc-interactive
+  252 community-made games. Playable copy, credited to the original: https://arc.markbarney.net/arc3/gallery?category=redbluepill
 - Simon Ouellette — ARC-AGI-3 Training Data: https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data
-  Different from ARC_gym, which is already listed.
-- Son Pham’s ARC-3 games and agent harness: https://arc3.sonpham.net
+  Separate from ARC_gym, which is already listed.
+- Son Pham — ARC-3 games and agent harness: https://arc3.sonpham.net
   Browser games and agent runs.
 - Tufa Labs — Duck harness: https://github.com/Tufalabs/duck-harness
-  Code and accompanying research: https://tufalabs.ai/research/duck-harness/
-- Symbolica — ARC-3 Arcgentica repository: https://github.com/symbolica-ai/ARC-AGI-3-Agents
-  The existing official Arcgentica entry is an ARC-2 write-up; this is the ARC-3 implementation.
+  Research write-up: https://tufalabs.ai/research/duck-harness/
+- Symbolica — ARC-3 agents repository: https://github.com/symbolica-ai/ARC-AGI-3-Agents
+  The existing Arcgentica entry is their ARC-2 write-up; this is the ARC-3 code.
+Change: add resource cards with direct links, a short description and creator credit.
 
-Additional catalogue omissions:
+1b. Public-game guides, offered for official hosting:
+- Level-by-level guides for all 25 public games (rules, pictures of each level, commentary): https://arc.markbarney.net/arc3/games
+- Example: https://arc.markbarney.net/arc3/games/dc22#level-1
+- Whole set as one markdown file, for import: https://arc.markbarney.net/arc3/games.md
+Change: host the guides on arcprize.org behind a spoiler label, next to each game. Fallback: a spoiler-labeled link from each official game page.
+
+More community links missing from the catalogue:
 - H-ARC: human solving data and visualizations: https://arc-visualizations.github.io/
 - CAPED: https://caped.ferenczi.eu/
 - objarc — Patrick Spencer: https://github.com/pwspen/objarc
@@ -32,20 +38,18 @@ Additional catalogue omissions:
 - The ARChitects’ 2025 solution report: https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/
 - Ryan Greenblatt’s GPT-4o ARC write-up: https://blog.redwoodresearch.org/p/getting-50-sota-on-arc-agi-with-gpt
 - NVIDIA Kaggle Grandmasters competition write-up: https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/
-- Human ARC — Mark’s implementation: https://arc.markbarney.net/human-arc/
-- Space Force Mission Control: https://sfmc.markbarney.net/
-- The ARC Daily: https://arc.markbarney.net/news
 
-Already listed: ARC Explainer Analytics; Simon Strandgaard ARC-Interactive, arc-dataset-collection and arc-notes; Brain Grid Game; arckit; ARC-GEN; ARC3 technical report. Do not duplicate them.
+Already listed, do not duplicate: ARC_gym; Simon Strandgaard ARC-Interactive, arc-dataset-collection and arc-notes; Brain Grid Game; arckit; ARC-GEN; ARC-3 technical report; ARC-AGI Puzzle Explorer.
 Full comparison: https://arc.markbarney.net/reports/arc-prize-audit-2026-10-08/resource-comparison.csv
+Check: each added card has a direct working destination, purpose and creator credit.
 
-Each added card has a direct working destination, purpose and creator credit. Avoid duplicating existing catalogue entries.
+2. Make the underlying model attempt inspectable.
+Open the actual attempt from ARC1/2 result rows; show released reasoning, submitted/expected grids, mismatches and cost/time together. Add failed-task filters and same-task model comparisons when both records exist. ARC Prize already holds these records from its own testing, so this does not depend on Hugging Face or a third-party viewer.
+Reference: https://arc.markbarney.net/task/13e47133?highlight=73845 (a failed Opus 4.6 attempt: reasoning, both predicted grids beside the expected ones, mismatch toggle)
+Reference: https://arc.markbarney.net/analytics
+Official counterpart: https://arcprize.org/tasks/13e47133#model-performance
+Check: a reader can follow a result to its actual attempt. Source/settings are visible and unavailable fields are labeled.
 
-2. Open underlying attempts from ARC1/2 result rows; show released reasoning, submitted/expected grids, mismatches and cost/time. Add failed-task filters and same-task model comparisons when records exist.
-https://arc.markbarney.net/task/13e47133?highlight=73845
-https://arc.markbarney.net/analytics
-A reader can follow a result to its actual attempt. Source/settings are visible and unavailable fields are labeled.
+Two open questions: I asked a while back why raw results stopped appearing on Hugging Face and was told I’d hear back; I haven’t yet. If publication has ended, a quick confirmation would help, and it would make ask 2 the main way people can see how newer models reach their answers. I’d also love to know whether Opus 5.5’s ARC-3 results will be published; its results page currently shows dashes there.
 
-Existing open questions: I asked months ago why publication of the raw Hugging Face results had stopped and was told I would receive an answer; I’m still waiting. I’m beginning to assume publication won’t resume, although that hasn’t been confirmed. If that is the decision, it makes incorporating these inspection features into ARC Prize even more important: community tools can’t show newer attempts and released reasoning without access to the records. I’ve also asked about Opus 5.5 ARC-3 results. The practical concern is preserving people’s ability to examine how models reach their answers.
-
-Each ask can be approved independently. This sheet replaces the old general remediation backlog. No ARC Explainer defect is an instruction to modify ARC Prize.
+Each ask stands on its own. Thanks—Mark

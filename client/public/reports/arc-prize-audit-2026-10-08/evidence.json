@@ -6,15 +6,26 @@
     "catalogue_bundle": "https://arcprize.org/_next/static/chunks/app/resources/page-ba2aac46235dc3bc.js",
     "observed_existing_target": "https://arc.markbarney.net/analytics",
     "missing_direct_targets": [
-      "https://arc.markbarney.net/arc3/games",
-      "https://arc.markbarney.net/arc3/gallery",
       "https://github.com/theredbluepill/arc-interactive",
-      "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data"
+      "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
+      "https://arc3.sonpham.net",
+      "https://github.com/Tufalabs/duck-harness",
+      "https://github.com/symbolica-ai/ARC-AGI-3-Agents"
     ],
     "qualification": "Absence is scoped to the inspected Resources catalogue; existing Simon Strandgaard entries are not treated as missing.",
     "catalogue_entries_compared": 246,
     "comparison_file": "resource-comparison.csv",
-    "method": "Read all catalogue entries and related links. Compared against ReferenceMaterial, Arc3Story, SyntheticLanding, shared ARC3 resources and selected Resource Hub entries. Normalize host/trailing slash, GitHub repo paths and arXiv abs/pdf versions; manually distinguish same-work alternatives and official resources from missing community resources."
+    "method": "Read all catalogue entries and related links. Compared against ReferenceMaterial, Arc3Story, SyntheticLanding, shared ARC3 resources and selected Resource Hub entries. Normalize host/trailing slash, GitHub repo paths and arXiv abs/pdf versions; manually distinguish same-work alternatives and official resources from missing community resources.",
+    "offered_for_hosting": [
+      "https://arc.markbarney.net/arc3/games",
+      "https://arc.markbarney.net/arc3/games.md"
+    ],
+    "own_projects_not_requested": [
+      "https://arc.markbarney.net/human-arc/",
+      "https://sfmc.markbarney.net/",
+      "https://arc.markbarney.net/news"
+    ],
+    "recheck": "October 9: re-read the live catalogue bundle; none of the five community resources, nor the additional links, appear in it. ARC-AGI Puzzle Explorer (arc.markbarney.net/analytics) is listed first under Tools & Playgrounds."
   },
   "public_games": {
     "reference": "https://arc.markbarney.net/arc3/games.md",
@@ -32,11 +43,12 @@
   "attempt_inspection": {
     "reference": "https://arc.markbarney.net/task/13e47133?highlight=73845",
     "official": "https://arcprize.org/tasks/13e47133#model-performance",
-    "observation": "Existing archive record has populated reasoning and predicted/expected grids. Official task table contains summary rows without individual attempt links. Archive combines official imports and community/local runs; do not assume equivalent coverage or settings."
+    "observation": "Existing archive record has populated reasoning and predicted/expected grids. Official task table contains summary rows without individual attempt links. Archive combines official imports and community/local runs; do not assume equivalent coverage or settings.",
+    "record_check": "October 9, live: record 73845 is claude-opus-4-6-thinking-120K-max-attempt1, incorrect on both test outputs; the expanded card shows pattern description, full reasoning, Predicted/Expected Output 1 and 2, and a Show Mismatches toggle."
   },
   "publication": {
     "official": "https://arcprize.org/results/anthropic-claude-opus-5-5",
     "observation": "ARC1/2 scores and task outcomes are published; all five ARC3 variants show a dash. No future publication commitment established.",
-    "mark_account": "Mark reports asking months ago why raw-result publication stopped, being promised an answer and not receiving one. His assumption that publication will not resume is unconfirmed."
+    "mark_account": "Mark reports asking why raw-result publication stopped and being told he would hear back; no answer yet. Whether publication has ended is unconfirmed."
   }
 }

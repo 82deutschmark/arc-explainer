@@ -1,48 +1,48 @@
 {
   "title": "ARC Prize feedback sheet",
   "updated": "2026-10-09",
-  "scope": "Two official-site feature asks. Supersedes the broad audit.",
+  "scope": "Two official-site asks, framed as an offer. Third-party resources lead; Mark’s own guides are offered for official hosting, with a link as the fallback.",
+  "context_from_mark": "Matt—ARC Explainer is a hobby project I build in my own time, unpaid. I built these tools because I wanted to understand ARC and couldn’t find them anywhere. Thanks for already listing the Puzzle Explorer in your Tools section.",
+  "offer": "This isn’t about traffic to my site. I’d happily shut it down if these things lived on arcprize.org. Anything I wrote is yours to copy, rehost or adapt; the code is public at https://github.com/82deutschmark/arc-explainer and I’ll add whatever license makes reuse easy. If hosting something officially isn’t possible, a link works, and I’m glad to help in whatever way is useful.",
   "asks": [
     {
       "id": "missing-resources",
-      "ask": "Add missing resource cards and spoiler-labeled guide links from public-game pages.",
-      "arc3_resources": [
+      "ask": "Add missing ARC-3 community resources to the Resources catalogue, and host the public-game guides on arcprize.org behind a spoiler label.",
+      "community_resources": [
         {
-          "name": "Public-game breakdowns: all 25 games",
-          "url": "https://arc.markbarney.net/arc3/games",
-          "note": "Level-by-level rules, pictures and commentary; add a spoiler-labeled guide link on each official game page."
-        },
-        {
-          "name": "Playable synthetic-game collection",
-          "url": "https://arc.markbarney.net/arc3/gallery",
-          "note": "Includes the 252-game Red Pill/Blue Pill archive, with source attribution."
-        },
-        {
-          "name": "Red Pill/Blue Pill archive",
-          "url": "https://arc.markbarney.net/arc3/gallery?category=redbluepill",
-          "note": "Direct archive link; original source: https://github.com/theredbluepill/arc-interactive"
+          "name": "Red Pill/Blue Pill — interactive ARC game archive",
+          "url": "https://github.com/theredbluepill/arc-interactive",
+          "note": "252 community-made games. Playable copy, credited to the original: https://arc.markbarney.net/arc3/gallery?category=redbluepill"
         },
         {
           "name": "Simon Ouellette — ARC-AGI-3 Training Data",
           "url": "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
-          "note": "Different from ARC_gym, which is already listed."
+          "note": "Separate from ARC_gym, which is already listed."
         },
         {
-          "name": "Son Pham’s ARC-3 games and agent harness",
+          "name": "Son Pham — ARC-3 games and agent harness",
           "url": "https://arc3.sonpham.net",
           "note": "Browser games and agent runs."
         },
         {
           "name": "Tufa Labs — Duck harness",
           "url": "https://github.com/Tufalabs/duck-harness",
-          "note": "Code and accompanying research: https://tufalabs.ai/research/duck-harness/"
+          "note": "Research write-up: https://tufalabs.ai/research/duck-harness/"
         },
         {
-          "name": "Symbolica — ARC-3 Arcgentica repository",
+          "name": "Symbolica — ARC-3 agents repository",
           "url": "https://github.com/symbolica-ai/ARC-AGI-3-Agents",
-          "note": "The existing official Arcgentica entry is an ARC-2 write-up; this is the ARC-3 implementation."
+          "note": "The existing Arcgentica entry is their ARC-2 write-up; this is the ARC-3 code."
         }
       ],
+      "community_change": "Add resource cards with direct links, a short description and creator credit.",
+      "game_guides": {
+        "offered_for_hosting": true,
+        "index": "https://arc.markbarney.net/arc3/games",
+        "example": "https://arc.markbarney.net/arc3/games/dc22#level-1",
+        "markdown_import": "https://arc.markbarney.net/arc3/games.md",
+        "change": "Host the guides on arcprize.org behind a spoiler label, next to each game. Fallback: a spoiler-labeled link from each official game page."
+      },
       "additional_resources": [
         {
           "name": "H-ARC: human solving data and visualizations",
@@ -87,32 +87,36 @@
         {
           "name": "NVIDIA Kaggle Grandmasters competition write-up",
           "url": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/"
-        },
-        {
-          "name": "Human ARC — Mark’s implementation",
-          "url": "https://arc.markbarney.net/human-arc/"
-        },
-        {
-          "name": "Space Force Mission Control",
-          "url": "https://sfmc.markbarney.net/"
-        },
-        {
-          "name": "The ARC Daily",
-          "url": "https://arc.markbarney.net/news"
         }
+      ],
+      "already_listed": [
+        "ARC_gym",
+        "Simon Strandgaard ARC-Interactive, arc-dataset-collection and arc-notes",
+        "Brain Grid Game",
+        "arckit",
+        "ARC-GEN",
+        "ARC-3 technical report",
+        "ARC-AGI Puzzle Explorer"
       ],
       "check": "Each added card has a direct working destination, purpose and creator credit. Avoid duplicating existing catalogue entries."
     },
     {
       "id": "attempt-inspection",
-      "ask": "Open underlying attempts from ARC1/2 result rows; show released reasoning, submitted/expected grids, mismatches and cost/time. Add failed-task filters and same-task model comparisons when records exist.",
+      "ask": "Open the actual attempt from ARC1/2 result rows; show released reasoning, submitted/expected grids, mismatches and cost/time together. Add failed-task filters and same-task model comparisons when both records exist.",
+      "why_it_is_feasible": "ARC Prize already holds these records from its own testing, so this does not depend on Hugging Face or a third-party viewer.",
       "examples": [
-        "https://arc.markbarney.net/task/13e47133?highlight=73845",
-        "https://arc.markbarney.net/analytics"
+        {
+          "url": "https://arc.markbarney.net/task/13e47133?highlight=73845",
+          "note": "A failed Opus 4.6 attempt: reasoning, both predicted grids beside the expected ones, mismatch toggle."
+        },
+        {
+          "url": "https://arc.markbarney.net/analytics",
+          "note": "Task/model analytics."
+        }
       ],
+      "official_counterpart": "https://arcprize.org/tasks/13e47133#model-performance",
       "check": "A reader can follow a result to its actual attempt. Source/settings are visible and unavailable fields are labeled."
     }
   ],
-  "existing_open_questions": "I asked months ago why publication of the raw Hugging Face results had stopped and was told I would receive an answer; I’m still waiting. I’m beginning to assume publication won’t resume, although that hasn’t been confirmed. If that is the decision, it makes incorporating these inspection features into ARC Prize even more important: community tools can’t show newer attempts and released reasoning without access to the records. I’ve also asked about Opus 5.5 ARC-3 results. The practical concern is preserving people’s ability to examine how models reach their answers.",
-  "context_from_mark": "Matt—I’m a hobbyist, and ARC Explainer is a volunteer project I build in my own time, without earning anything from it. I built these features because I wanted to understand ARC and couldn’t find the tools I needed. I’ve offered to share the work with ARC Prize, and I’d be glad to see these capabilities become part of the official site. It’s been frustrating to see useful features remain missing after putting that work into making them available. These two asks point to existing implementations your coding assistant can build on."
+  "open_questions": "I asked a while back why raw results stopped appearing on Hugging Face and was told I’d hear back; I haven’t yet. If publication has ended, a quick confirmation would help, and it would make ask 2 the main way people can see how newer models reach their answers. I’d also love to know whether Opus 5.5’s ARC-3 results will be published; its results page currently shows dashes there."
 }

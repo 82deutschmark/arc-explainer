@@ -5,6 +5,8 @@
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
  *          Retires the obsolete model/trustworthiness leaderboard from public discovery.
+ *          2026-10-09 (Claude Opus 5.5): /feedback description now matches the offer-framed
+ *          page instead of the superseded October 8 audit wording.
  *          2026-10-06: entries can now carry keywords, structured data (JSON-LD) and a
  *          crawlable HTML summary that is served inside #root until the app renders, so a
  *          crawler that does not run JavaScript still sees a real page. Added /analytics
@@ -295,7 +297,7 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/leaderboards', 'Model rankings retired', 'The old model and trustworthiness rankings have been retired because their measures and data are outdated.', true],
   ['/models', 'ARC model results browser', 'Browse language models evaluated on ARC puzzles and explore their recorded performance.'],
   ['/elo/leaderboard', 'ARC explanation Elo leaderboard', 'Explore model rankings from pairwise comparisons of ARC puzzle explanations.'],
-  ['/feedback', 'ARC Prize website feedback', 'October 8, 2026 audit of ARC Prize task viewers, raw results, archives and resources, with evidence and proposed fixes.'],
+  ['/feedback', 'ARC Prize feedback', 'Missing ARC-3 community resources, public-game guides ARC Prize is welcome to host, and a request to make model attempts inspectable.'],
   ['/explanation-feedback', 'ARC explanation feedback', 'Browse feedback on model-generated ARC puzzle explanations and explore the associated puzzles.'],
   ['/model-comparison', 'Compare ARC model results', 'Compare recorded model performance across ARC puzzles and datasets.'],
   ['/scoring', 'How ARC model accuracy is scored', 'Understand how ARC Explainer combines recorded Hugging Face evaluation results and scores model answers.'],

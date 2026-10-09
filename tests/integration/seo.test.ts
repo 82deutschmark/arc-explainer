@@ -4,6 +4,7 @@
  * PURPOSE: Exercise real production HTML delivery, redirects, sitemap and route coverage
  *          against local registries and the built shell, without external services.
  *          Covers retired rankings returning 410 and disappearing from public discovery.
+ *          2026-10-09 (Claude Opus 5.5): /feedback check follows the page's current attempt example.
  * SRP/DRY check: Pass — uses production middleware and actual game/puzzle content.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -133,8 +134,7 @@ describe('SEO delivery', () => {
       if (method === 'GET') {
         const html = await response.text();
         expect(html).toContain(`rel="canonical" href="${SITE_ORIGIN}/feedback"`);
-        expect(html).toContain('highlight=73914');
-        expect(html).toContain('highlight=56958');
+        expect(html).toContain('highlight=73845');
         const downloads = [...html.matchAll(/href="(\/reports\/[^"]+\.(?:json|txt|csv))"/g)];
         expect(downloads.length).toBeGreaterThan(0);
         for (const url of new Set(downloads.map(match => match[1]))) {

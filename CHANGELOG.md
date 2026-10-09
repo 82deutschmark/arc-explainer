@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.130.8  Oct 9, 2026
+
+- **Feedback reads as an offer, not a complaint** (Author: Claude Opus 5.5). Softens the opening, thanks ARC Prize for already listing the Puzzle Explorer, and states plainly that this isn't about traffic: Mark would retire his site if the material lived on arcprize.org, offers his writing and public code for reuse, and keeps a link as the fallback. Third-party ARC-3 resources now lead (Red Pill/Blue Pill linked to its original source, with the playable copy secondary). The public-game guides are offered for official hosting with their markdown import. Mark's own Human ARC, Space Force Mission Control and ARC Daily are no longer asked for. Ask 2 notes ARC Prize already holds the attempt records and labels the example as a failed Opus 4.6 run. The open questions keep the facts in a neutral tone. Rechecked the live catalogue (every listed omission still absent) and the example attempt (reasoning, predicted/expected grids, mismatch toggle). The /feedback route description no longer says "audit". Files: `client/public/reports/arc-prize-audit-2026-10-08/{audit.html,coding-assistant-handoff.txt,fixes.json,evidence.json,resource-comparison.csv}`, `shared/routes.ts`, `docs/2026-10-09-feedback-link-guide-plan.md`.
+
 ### Version 9.130.7  Oct 9, 2026
 
 - **Give the feedback its intended personal context** (Author: Codex). Describes ARC Explainer as unpaid hobbyist work already offered to ARC Prize. Records Mark’s still-unanswered request about Hugging Face publication and explains why an ended feed would strengthen the need for official attempt inspection. Keeps the publication assumption explicitly unconfirmed and aligns the page, brief and structured context.
