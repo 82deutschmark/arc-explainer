@@ -1,644 +1,117 @@
 {
-  "title": "ARC Prize public website audit — handoff for Matt and coding assistant",
-  "checked_date": "2026-10-08",
-  "scope": "Public production pages, navigation, published source/data, result archives and resource destinations. Manual browser checks focused on ARC1/2 task inspection and the ARC3 task index, with an ARC Explainer reference comparison.",
-  "priorities": {
-    "P1": "Fix first: core visitor workflow currently fails or defaults to unusable data.",
-    "P2": "Next: data coverage/provenance, broken research journeys, and accessibility.",
-    "P3": "Editorial or product improvement; not a blocker or commitment."
-  },
-  "not_covered": [
-    "Private source repository or server implementation",
-    "Every task/model/configuration/replay",
-    "Full keyboard/screen-reader accessibility certification",
-    "Paid inference, accounts, submissions, donations or forms end-to-end",
-    "Full pedagogical/playability review of every external game",
-    "Security, load or performance audit"
-  ],
-  "tickets": [
+  "title": "ARC Prize feedback sheet",
+  "updated": "2026-10-09",
+  "scope": "Two official-site feature asks. Supersedes the broad audit.",
+  "asks": [
     {
-      "id": "AP-01",
-      "priority": "P1",
-      "classification": "Confirmed defect",
-      "title": "Default ARC3 task explorer exceeds model-query body limit",
-      "url": "https://arcprize.org/tasks",
-      "observation": "The live browser shows Failed to load ARC-AGI-3 session data. Public /api/models lookup with all 61 published configs, compact JSON exactly 1984 bytes, returns HTTP 500: error decoding json: http: request body too large. One-config 82-byte control returns HTTP 200 and 25 session rows. Changing Content-Type alone does not fix full request.",
-      "reproduction": [
-        "Open /tasks anonymously with its default ARC3 tab.",
-        "Observe the session-data error and the misleading 1–25 of 25 footer.",
-        "Reproduce the recorded full-config request and one-config control in evidence.json (model_query_reproduction)."
+      "id": "missing-resources",
+      "ask": "Add missing resource cards and spoiler-labeled guide links from public-game pages.",
+      "arc3_resources": [
+        {
+          "name": "Public-game breakdowns: all 25 games",
+          "url": "https://arc.markbarney.net/arc3/games",
+          "note": "Level-by-level rules, pictures and commentary; add a spoiler-labeled guide link on each official game page."
+        },
+        {
+          "name": "Playable synthetic-game collection",
+          "url": "https://arc.markbarney.net/arc3/gallery",
+          "note": "Includes the 252-game Red Pill/Blue Pill archive, with source attribution."
+        },
+        {
+          "name": "Red Pill/Blue Pill archive",
+          "url": "https://arc.markbarney.net/arc3/gallery?category=redbluepill",
+          "note": "Direct archive link; original source: https://github.com/theredbluepill/arc-interactive"
+        },
+        {
+          "name": "Simon Ouellette — ARC-AGI-3 Training Data",
+          "url": "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
+          "note": "Different from ARC_gym, which is already listed."
+        },
+        {
+          "name": "Son Pham’s ARC-3 games and agent harness",
+          "url": "https://arc3.sonpham.net",
+          "note": "Browser games and agent runs."
+        },
+        {
+          "name": "Tufa Labs — Duck harness",
+          "url": "https://github.com/Tufalabs/duck-harness",
+          "note": "Code and accompanying research: https://tufalabs.ai/research/duck-harness/"
+        },
+        {
+          "name": "Symbolica — ARC-3 Arcgentica repository",
+          "url": "https://github.com/symbolica-ai/ARC-AGI-3-Agents",
+          "note": "The existing official Arcgentica entry is an ARC-2 write-up; this is the ARC-3 implementation."
+        }
       ],
-      "proposed_fix": "Agree on an all-config query contract, bounded batching/selection, or a sufficient validated body limit; retain useful error handling. Do not assume adding Content-Type is sufficient.",
-      "acceptance_checks": [
-        "Fresh anonymous /tasks shows ARC3 scores/replay links without the error.",
-        "A lookup covering every current config succeeds, with an automated growth case.",
-        "Oversized/invalid requests get explicit appropriate errors; no silent empty matrix."
+      "additional_resources": [
+        {
+          "name": "H-ARC: human solving data and visualizations",
+          "url": "https://arc-visualizations.github.io/"
+        },
+        {
+          "name": "CAPED",
+          "url": "https://caped.ferenczi.eu/"
+        },
+        {
+          "name": "objarc — Patrick Spencer",
+          "url": "https://github.com/pwspen/objarc"
+        },
+        {
+          "name": "minireason — Patrick Spencer",
+          "url": "https://github.com/pwspen/minireason/tree/main"
+        },
+        {
+          "name": "NVARC",
+          "url": "https://github.com/1ytic/NVARC"
+        },
+        {
+          "name": "ARC-CDG curriculum data generator",
+          "url": "https://cdg.openai.nl/"
+        },
+        {
+          "name": "ARC-AGI-2 solvers and abstractions",
+          "url": "https://github.com/cristianoc/arc-agi-2-abstraction-dataset"
+        },
+        {
+          "name": "Eric Pang’s ARC-AGI implementation",
+          "url": "https://github.com/epang080516/arc_agi"
+        },
+        {
+          "name": "The ARChitects’ 2025 solution report",
+          "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+        },
+        {
+          "name": "Ryan Greenblatt’s GPT-4o ARC write-up",
+          "url": "https://blog.redwoodresearch.org/p/getting-50-sota-on-arc-agi-with-gpt"
+        },
+        {
+          "name": "NVIDIA Kaggle Grandmasters competition write-up",
+          "url": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/"
+        },
+        {
+          "name": "Human ARC — Mark’s implementation",
+          "url": "https://arc.markbarney.net/human-arc/"
+        },
+        {
+          "name": "Space Force Mission Control",
+          "url": "https://sfmc.markbarney.net/"
+        },
+        {
+          "name": "The ARC Daily",
+          "url": "https://arc.markbarney.net/news"
+        }
       ],
-      "sources": [
-        "https://arcprize.org/tasks",
-        "https://arcprize.org/api/models/configs",
-        "https://arcprize.org/_next/static/chunks/app/tasks/page-abae2e3bcb7bae19.js"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "The observed request is rejected for size. The exact server limit and private handler implementation were not inspected. Public source locator: tasks-index.formatted.js:328-354; original minified bundle is the public source",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
+      "check": "Each added card has a direct working destination, purpose and creator credit. Avoid duplicating existing catalogue entries."
     },
     {
-      "id": "AP-02",
-      "priority": "P1",
-      "classification": "Confirmed defect",
-      "title": "Default featured models have no rows in the ARC1/2 task feed",
-      "url": "https://arcprize.org/tasks?v=2",
-      "observation": "The task feed has 20061 rows, 42 model IDs and 514 distinct tasks. Every one of the five current featured catalogue IDs has zero matching rows. Bundle defaults to catalogue featured IDs and renders missing joins as N/A. Live browser confirms first 25 rows all N/A.",
-      "reproduction": [
-        "Open /tasks?v=2 in a fresh session.",
-        "Observe N/A for every featured model in the first 25 rows.",
-        "Choose GPT 5.2 alone in the model selector; historical results and costs populate. Check ARC1 coverage using the same feed."
-      ],
-      "proposed_fix": "Choose defaults from models with records for the active dataset, disclose coverage, and update the result feed. Keep explicitly selected absent models distinguishable from failures.",
-      "acceptance_checks": [
-        "Fresh ARC1 and ARC2 tabs have usable default results or a clear source-coverage message.",
-        "Switching dataset recalculates applicable featured coverage.",
-        "Catalogue changes cannot turn the default matrix into entirely N/A columns unnoticed."
-      ],
-      "sources": [
-        "https://arcprize.org/tasks?v=2",
-        "https://arcprize.org/media/data/models.json",
-        "https://arcprize.org/media/data/task/models-taskdata_json.gz"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": " Public source locator: tasks-index.formatted.js:207-211,301,355-400,464-476",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-03",
-      "priority": "P2",
-      "classification": "Confirmed defect",
-      "title": "Task-level results lack current coverage and provenance",
-      "url": "https://arcprize.org/tasks/0934a4d8#model-performance",
-      "observation": "0934a4d8 JSON contains 74 rows/41 distinct model IDs:35 ARC1 rows,39 ARC2 rows. There are no ARC2 Pass rows, yet official HF Opus4.6 high file for this exact task has both attempts correct. Task JSON only contains provider/modelId/dataset/passed/totalCost; no source revision, import date, attempt IDs or answer grids. Live browser inspection found no result links or model/dataset/outcome filters. Astra’s current model page reports this task across six reasoning settings, but none appears in the task summary.",
-      "reproduction": [
-        "Open /tasks/0934a4d8 and inspect Model Performance.",
-        "Compare its ARC2 rows with the linked official Opus 4.6 HF file.",
-        "Follow task 0934a4d8 from the Astra results page; the destination does not retain its model/reasoning selection and the table omits Astra."
-      ],
-      "proposed_fix": "Generate model-page and task-page summaries from the same published evaluation records. Refresh existing coverage or clearly label the archive with its source/as-of date. Retain model/configuration/dataset on result → task navigation. Link each summary to its underlying public attempts where available; show explicit unavailability otherwise.",
-      "acceptance_checks": [
-        "Both example tasks expose source and as-of metadata.",
-        "0934a4d8 can distinguish the archived table from newer official Opus4.6 data.",
-        "Following a current model result into a task retains context or clearly says it is unavailable."
-      ],
-      "sources": [
-        "https://arcprize.org/tasks/0934a4d8#model-performance",
-        "https://arcprize.org/media/data/task/task-modelstats/0934a4d8.json",
-        "https://huggingface.co/datasets/arcprize/arc_agi_v2_public_eval/resolve/main/claude-opus-4-6-thinking-120K-high/0934a4d8.json",
-        "https://arcprize.org/results/openai-gpt-6-astra"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": " Public source locator: task-detail.js:322-347,739-877",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-04",
-      "priority": "P2",
-      "classification": "Confirmed defect",
-      "title": "Make legacy task table sorting and explanations keyboard accessible",
-      "url": "https://arcprize.org/tasks/0934a4d8#model-performance",
-      "observation": "Source creates sortable th elements with pointer click sorting; no tabindex/button/key handlers/aria-sort found. Header tooltip code only handles mouseenter/mouseleave. Live DOM inspection confirms plain nonfocusable headers.",
-      "reproduction": [
-        "Open task 0934a4d8 and use Tab to reach Model Performance.",
-        "Attempt to sort Total Cost using only keyboard input.",
-        "Compare with a pointer click, which sorts successfully."
-      ],
-      "proposed_fix": "Use focusable sorting buttons in table headers, aria-sort on current column, and focus/touch-accessible descriptions.",
-      "acceptance_checks": [
-        "Tab reaches every sort control; Enter/Space changes order.",
-        "Assistive technology receives column name and current sort direction.",
-        "Column definitions are reachable without hover."
-      ],
-      "sources": [
-        "https://arcprize.org/tasks/0934a4d8#model-performance",
-        "https://arcprize.org/scripts/table-generator.js"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": " Public source locator: table-generator.js:142-188,284-312; locate sort click listener in same public file",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-05",
-      "priority": "P2",
-      "classification": "Confirmed defect",
-      "title": "Repair the 2024 o3 prompt link",
-      "url": "https://arcprize.org/blog/oai-o3-pub-breakthrough",
-      "observation": "The article links to https://github.com/arcprizeorg/model_baseline/blob/main/prompt_example_o3.md; HTTP GET follows the repository rename and returns 404. The prompt is now under docs/examples/.",
-      "reproduction": [
-        "Open the December 20, 2024 o3 article.",
-        "Scroll to Get Involved: Open-Source Analysis.",
-        "Follow the testing-prompt link."
-      ],
-      "proposed_fix": "Replace the old target with https://github.com/arcprize/arc-agi-benchmarking/blob/main/docs/examples/prompt_example_o3.md, preferably pinning a reviewed commit for historical reproducibility.",
-      "acceptance_checks": [
-        "Follow the link from the live article without signing in; the expected o3 prompt renders with HTTP 200."
-      ],
-      "sources": [
-        "https://arcprize.org/blog/oai-o3-pub-breakthrough"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "None about the current 404 and relocated file; verify which prompt revision the article should permanently cite.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-06",
-      "priority": "P2",
-      "classification": "Confirmed defect",
-      "title": "Restore the o3 testing-data destination to the historical results",
-      "url": "https://arcprize.org/blog/oai-o3-pub-breakthrough",
-      "observation": "The article links to https://github.com/arcprizeorg/model_baseline/tree/main/results. The renamed current repository results folder contains only random-baseline-sample. The linked destination no longer contains the advertised o3 data.",
-      "reproduction": [
-        "Open the same article and follow its full-testing-data link.",
-        "Inspect the resulting main/results directory; only random-baseline-sample is present."
-      ],
-      "proposed_fix": "Use the verified immutable archive https://github.com/arcprize/arc-agi-benchmarking/tree/4af6b3a0df1321c540e9302a732e883941388272/results or another maintained archive containing the original o3 runs. Clearly distinguish the December 2024 preview from later o3 releases.",
-      "acceptance_checks": [
-        "The live article leads directly to open_ai_o3_high_20241220 and open_ai_o3_low_20241220 and their files. A future main-branch reorganization cannot break this archive link."
-      ],
-      "sources": [
-        "https://arcprize.org/blog/oai-o3-pub-breakthrough"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "The data is recoverable in Git history. Do not describe it as deleted or unavailable everywhere.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-07",
-      "priority": "P2",
-      "classification": "Publication gap / owner decision",
-      "title": "Clarify and reconnect the ARC1/2 raw-attempt publication channel",
-      "url": "https://arcprize.org/results/openai-gpt-6-astra",
-      "observation": "ARC Prize public HF v1 and v2 evaluation repositories lastModified values remain 2026-06-04T16:43:53.000Z and 2026-06-04T16:45:03.000Z respectively. Neither current file list contains GPT-6. The September Astra page publishes ARC1/2 results but offers task summary links rather than raw ARC1/2 attempt downloads. No replacement raw source was found in inspected public channels.",
-      "reproduction": [
-        "Open https://huggingface.co/arcprize and inspect the v1/v2 public evaluation dataset histories or API metadata.",
-        "Open the Astra results page and its linked Astra blog post.",
-        "Look for the matching ARC1/2 answer grids, model responses and run metadata for a reported task."
-      ],
-      "proposed_fix": "Restore publication of public-evaluation ARC1/2 raw attempts on Hugging Face, or document and link a successor store. Include submitted grids, released responses/reasoning where available, task/dataset/model/run/attempt identities and source revisions so downstream tools can ingest them. If publication cannot resume, give explicit coverage/cutoff and availability notices; a notice clarifies the gap but does not restore ingestion. Preserve historical links.",
-      "acceptance_checks": [
-        "For a post-June model, a reader can either download the documented public ARC1/2 run artifacts or see a clear explicit unavailability/cutoff notice. HF cards identify any successor source.",
-        "For a newly published public-evaluation model, an independent tool can download and parse at least one successful and one failed attempt with stable identities and documented coverage. Any withheld fields are explicitly marked, not fabricated."
-      ],
-      "sources": [
-        "https://arcprize.org/results/openai-gpt-6-astra",
-        "https://huggingface.co/api/datasets/arcprize/arc_agi_v1_public_eval",
-        "https://huggingface.co/api/datasets/arcprize/arc_agi_v2_public_eval",
-        "https://huggingface.co/api/datasets?author=arcprize&limit=100",
-        "https://github.com/arcprize/arc-agi-benchmarking",
-        "https://arcprize.org/blog/astra",
-        "https://arc.markbarney.net/task/221dfab4?highlight=73914",
-        "https://arc.markbarney.net/task/221dfab4?highlight=56958",
-        "https://arcprize.org/results/anthropic-claude-opus-5-5"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "This is an observed four-month repository update gap, not proof of a permanent shutdown. An unlinked or private store may exist; publication policy needs the maintainers decision. ARC3 replay links are already present and must not be included in the missing-raw-data claim.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented.",
-      "impact": "ARC Explainer cannot ingest the newer attempts or extend its existing reasoning/grid inspection and statistics to those newer models without the underlying records. Mark identifies this as the main request, separate from the immediate website bug priorities.",
-      "owner_questions": [
-        "Are new ARC1/2 raw attempts still published on Hugging Face? If moved, what is the successor feed? If paused or stopped, please state that explicitly.",
-        "Separately: will Opus 5.5 ARC3 evaluation results be published? Clarify evaluation status, planned timing, and availability of scores, replays, action logs and releasable responses/traces."
-      ],
-      "follow_up_checked_date": "2026-10-09"
-    },
-    {
-      "id": "AP-08",
-      "priority": "P2",
-      "classification": "Product proposal",
-      "title": "Connect the new Results index to older evaluations and their data",
-      "url": "https://arcprize.org/results",
-      "observation": "The Results index has 24 dated release rows, 30 linked model/submodel pages, from June9 to September29,2026; no older archive control was found. Older 2024/2025 reports remain in Blog. In official evaluation data, all 221 ARC1/2 semi-private records across 113 pre-2026 model/config IDs have blank resultsUrl; 208 of those records across 107 IDs have display:true. Current leaderboard rows link only through resultsUrl, and the renderer does not use model dataUrl.",
-      "reproduction": [
-        "Open Results and attempt to find the September2024 o1, December2024 o3, or January2025 R1 release.",
-        "Open Verified Leaderboard and locate an older model such as o3-mini or Sonnet4.5.",
-        "Compare available row navigation with the surviving historical blog and HF artifacts."
-      ],
-      "proposed_fix": "Add a visible historical-results/archive route and link older leaderboard records to appropriate historical reports and existing raw data. Label legacy results honestly rather than inventing current-style detail pages.",
-      "acceptance_checks": [
-        "Starting from Results or Verified Leaderboard, readers can locate the cited 2024/2025 reports and their available artifacts without searching Git history or knowing the exact blog URL. Every linked archive target is checked for content, not just HTTP 200."
-      ],
-      "sources": [
-        "https://arcprize.org/results",
-        "https://arcprize.org/blog/openai-o1-results-arc-prize",
-        "https://arcprize.org/blog/oai-o3-pub-breakthrough",
-        "https://arcprize.org/blog/r1-zero-r1-results-analysis",
-        "https://arcprize.org/blog/analyzing-o3-with-arc-agi",
-        "https://arcprize.org/media/data/models.json",
-        "https://arcprize.org/media/data/evaluations.json",
-        "https://arcprize.org/scripts/leaderboard/leaderboard-table.js"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "Do not claim the old reports or aggregate results disappeared. The raw record counts are source-data counts, not a browser row-count assertion. This is a navigation/coverage enhancement unless broader historical coverage was intended.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-09",
-      "priority": "P3",
-      "classification": "Product proposal",
-      "title": "Expose available ARC1/2 attempts from the task performance view",
-      "url": "https://arcprize.org/tasks/0934a4d8",
-      "observation": "The intended task performance table renders Provider, Model ID, Dataset, Passed and Total Cost. It has no attempt-output or original-response link. Existing HF attempt files contain answer grids and response/run metadata; a checked GPT4o task file returned 200.",
-      "reproduction": [
-        "Inspect a task Model Performance table.",
-        "Try opening the original attempt behind a Pass/Fail row.",
-        "Compare with the existing public HF attempt-file structure.",
-        "Open the exact ARC Explainer comparison links: #73914 is Opus 4.6 with populated reasoning and 2/2 correct; #56958 is Opus 4.5 with populated reasoning and 0/2 correct, recorded in November 2025."
-      ],
-      "proposed_fix": "Start with source-artifact links. Then add a read-only saved-attempt drawer: submitted and expected grids per test, mismatch highlighting, available final response, recorded cost/time/tokens, and stable run/attempt links. Preserve dataset, model configuration and source revision. Keep unknown values distinct from zero; do not imply unavailable reasoning was recorded.",
-      "acceptance_checks": [
-        "For one published successful attempt and one failure, the task page opens the correct output grid/response artifact with model, task, dataset and run provenance. Missing artifacts are explicitly labeled rather than linked to404s.",
-        "A wrong-size or malformed answer remains inspectable; the viewer does not crash or hide the failure.",
-        "Two attempts, multiple test pairs and task-level scoring remain distinct. Missing artifacts display an explicit unavailable state.",
-        "A shared link restores the exact task, dataset, model configuration and attempt; keyboard and phone users can inspect it."
-      ],
-      "sources": [
-        "https://arcprize.org/tasks/0934a4d8",
-        "https://arcprize.org/scripts/task/task-detail.js",
-        "https://huggingface.co/datasets/arcprize/arc_agi_v1_public_eval/resolve/main/gpt-4o/00576224.json",
-        "https://arc.markbarney.net/task/221dfab4?highlight=73914",
-        "https://arc.markbarney.net/task/221dfab4?highlight=56958"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "This is an enhancement, not evidence that the official site lacks per-task comparisons broadly. Token counts/timing may vary by artifact and should not be fabricated. The sampled GPT4o file records a2026 run, not the original2024 run.",
-      "depends_on": [
-        "AP-03",
-        "AP-07"
-      ],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-10",
-      "priority": "P2",
-      "classification": "Confirmed defect",
-      "title": "Repair the preview competition archive link",
-      "url": "https://arcprize.org/blog/arc-agi-3-preview-30-day-learnings",
-      "observation": "The published archive link points to /archive/arc-agi-3-preview-agents/ and returns 404. The archive lives under /competitions/arc-agi-3-preview-agents/archive.",
-      "reproduction": [
-        "Open the 30-day-learnings article and follow its archive link."
-      ],
-      "proposed_fix": "Update the article and redirect the obsolete route to the real archive.",
-      "acceptance_checks": [
-        "The article reaches the correct archived competition.",
-        "Existing bookmarks to the old route redirect successfully."
-      ],
-      "sources": [
-        "https://arcprize.org/blog/arc-agi-3-preview-30-day-learnings",
-        "https://arcprize.org/archive/arc-agi-3-preview-agents/",
-        "https://arcprize.org/competitions/arc-agi-3-preview-agents/archive"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-11",
-      "priority": "P2",
-      "classification": "Confirmed defect",
-      "title": "Repair the misplaced o3 article route",
-      "url": "https://arcprize.org/blog/announcing-arc-agi-2-and-arc-prize-2025",
-      "observation": "An o3 breakthrough link resolves to /oai-o3-pub-breakthrough, which returns 404; the live article is under /blog/.",
-      "reproduction": [
-        "Follow the o3 breakthrough link in the ARC-AGI-2 announcement."
-      ],
-      "proposed_fix": "Correct the href and redirect the obsolete root-level route.",
-      "acceptance_checks": [
-        "The announcement reaches the December 2024 o3 article; the old path also redirects."
-      ],
-      "sources": [
-        "https://arcprize.org/blog/announcing-arc-agi-2-and-arc-prize-2025",
-        "https://arcprize.org/oai-o3-pub-breakthrough",
-        "https://arcprize.org/blog/oai-o3-pub-breakthrough"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-12",
-      "priority": "P2",
-      "classification": "Confirmed defect",
-      "title": "Repair the guide’s scoring-code link",
-      "url": "https://arcprize.org/guide/1",
-      "observation": "Development → Test → Github targets the old model_baseline/blob/main/src/scoring/scoring.py path. Repository redirects end at a GitHub File not found page (404).",
-      "reproduction": [
-        "Open Guide 1, find Development → Test, and follow Github."
-      ],
-      "proposed_fix": "Point to the verified src/arc_agi_benchmarking/scoring/scoring.py path; use a reviewed revision if the guide depends on fixed behavior.",
-      "acceptance_checks": [
-        "The link renders the intended scoring implementation without authentication."
-      ],
-      "sources": [
-        "https://arcprize.org/guide/1",
-        "https://github.com/arcprizeorg/model_baseline/blob/main/src/scoring/scoring.py",
-        "https://github.com/arcprize/arc-agi-benchmarking/blob/main/src/arc_agi_benchmarking/scoring/scoring.py"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-13",
-      "priority": "P2",
-      "classification": "Confirmed defect",
-      "title": "Correct the obsolete donation redirect and sitemap entry",
-      "url": "https://arcprize.org/blog/donate",
-      "observation": "The sitemap lists /blog/donate. It redirects to https://www.arcprize.org/donate; that hostname does not resolve in the audit environment. Google Public DNS independently returned NXDOMAIN. The canonical https://arcprize.org/donate loads.",
-      "reproduction": [
-        "Open the sitemap’s /blog/donate URL and follow its redirect.",
-        "Compare with the canonical /donate route."
-      ],
-      "proposed_fix": "Redirect directly to the canonical apex-host donation page and list only its canonical URL in the sitemap. Decide separately whether www should be supported.",
-      "acceptance_checks": [
-        "The legacy link reaches the donation page without DNS failure.",
-        "The sitemap has the canonical donation URL and no broken-host redirect."
-      ],
-      "sources": [
-        "https://arcprize.org/blog/donate",
-        "https://arcprize.org/donate",
-        "https://arcprize.org/sitemap.xml"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-14",
-      "priority": "P2",
-      "classification": "Confirmed external failure",
-      "title": "Flag or replace the unavailable Lab42 editor",
-      "url": "https://arcprize.org/resources",
-      "observation": "The listed https://arc-editor.lab42.global/ returns HTTP 530 with error code 1016. Five other listed Lab42 destinations load real articles successfully.",
-      "reproduction": [
-        "Find the Lab42 ARC editor in Resources and open it."
-      ],
-      "proposed_fix": "Mark the editor unavailable, remove its active-tool recommendation, or replace it with a reviewed working editor. Ask the external owner to repair the origin DNS if appropriate.",
-      "acceptance_checks": [
-        "Resources no longer presents the failing editor as a working destination.",
-        "Keep the five functioning Lab42 resources unless an editorial review finds a separate reason to remove them."
-      ],
-      "sources": [
-        "https://arcprize.org/resources",
-        "https://arc-editor.lab42.global/"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "External availability can change. Recheck before editing. This is one broken Lab42 resource, not all Lab42 resources.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-15",
-      "priority": "P3",
-      "classification": "Confirmed external failure",
-      "title": "Remove or replace a private video resource",
-      "url": "https://arcprize.org/resources",
-      "observation": "“Googlers React To Dwarkesh Patel & Francois Chollet - ARC Challenge On Path To Be Beaten” links to youtu.be/gRTUsq9DTmE. The watch page returns HTTP 200 but its player status says Private video (LOGIN_REQUIRED).",
-      "reproduction": [
-        "Find the named Resources entry and open its video."
-      ],
-      "proposed_fix": "Use a verified public replacement or label/remove the unavailable entry. Link checking should inspect content availability for media, not just HTTP status.",
-      "acceptance_checks": [
-        "The resource is playable anonymously or is clearly marked unavailable."
-      ],
-      "sources": [
-        "https://arcprize.org/resources",
-        "https://youtu.be/gRTUsq9DTmE"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "Ninety-four other inspected watch-page statuses reported OK; that is not a full playback or educational-quality review.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-16",
-      "priority": "P3",
-      "classification": "Product proposal",
-      "title": "Make learning and community resources easier to choose",
-      "url": "https://arcprize.org/resources",
-      "observation": "The catalogue has 246 entries. It already links ARC-AGI Puzzle Explorer to ARC Explainer /analytics, and includes ARC Game, Brain Grid Game and MichaelPascale/human-arc. No child/family audience filter or direct entry for Mark’s Human ARC, Space Force Mission Control or ARC-3 game guides was found.",
-      "reproduction": [
-        "Start at Resources as a parent, teacher or beginner looking for something immediately playable.",
-        "Try to distinguish a game, task examiner, tutorial, research paper and dated result archive."
-      ],
-      "proposed_fix": "Add resource type, audience, ARC version, access requirements and last-reviewed date. Consider a small “Start here / Play / Examine model answers” collection. Evaluate Mark’s individual tools alongside existing choices using the same criteria; acceptance is an editorial choice. Review The ARC Daily news page and the curated synthetic ARC-3 game catalog as distinct entries, alongside the saved-attempt viewer and existing play/guide resources. Label synthetic games as community/research resources, not official hidden evaluation games. Review original-author resources curated on ARC Explainer too: Simon Ouellette’s training data, Tufa Labs’ Duck harness and Symbolica’s Arcgentica. Link creators directly; this is broader community curation. Include Simon Strandgaard’s ARC-Interactive, Brain Grid Game, human interaction histories, dataset collection and ARC notes, which underpin ARC Explainer’s existing credits and imports. Preserve original dataset author attribution. The request is better selection, explanation, organization and maintenance of resources already linked as well as new candidates; do not frame Simon’s work as wholly absent from ARC Prize. Prioritize ARC3: review breakdowns for all 25 public games, the 252-game Red Pill/Blue Pill mirror, the broader synthetic collection and the complete game reference. Link directly to each resource, with original creator attribution.",
-      "acceptance_checks": [
-        "A visitor can find a reviewed beginner/family-friendly activity and understand login, cost, device and reading requirements before opening it.",
-        "Analytical tools are discoverable separately from papers and videos.",
-        "Chosen entries use direct working URLs and an accurate scope description."
-      ],
-      "sources": [
-        "https://arcprize.org/resources",
-        "https://arc.markbarney.net/analytics",
-        "https://arc.markbarney.net/puzzle/0934a4d8",
-        "https://arc.markbarney.net/arc3/games",
-        "https://sfmc.markbarney.net/",
-        "https://arc.markbarney.net/news",
-        "https://arc.markbarney.net/arc3/gallery",
-        "https://arc.markbarney.net/task/221dfab4?highlight=73914",
-        "https://arc.markbarney.net/arc3",
-        "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
-        "https://github.com/Tufalabs/duck-harness",
-        "https://github.com/symbolica-ai/ARC-AGI-3-Agents",
-        "https://arc.markbarney.net/about",
-        "https://neoneye.github.io/arc/",
-        "https://braingridgame.com/",
-        "https://github.com/neoneye/ARC-Interactive-History-Dataset",
-        "https://github.com/neoneye/arc-dataset-collection",
-        "https://github.com/neoneye/arc-notes",
-        "https://arc.markbarney.net/arc3/games/dc22#level-1",
-        "https://arc.markbarney.net/arc3/gallery?category=redbluepill",
-        "https://arc.markbarney.net/arc3/games.md",
-        "https://github.com/theredbluepill/arc-interactive"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "The site does have human-play and child-oriented resources. Mark’s Human ARC and MichaelPascale/human-arc are different projects. No child usability study or full playthrough of all linked games was conducted; do not claim a proven age rating or that one game is objectively superior.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-17",
-      "priority": "P3",
-      "classification": "Editorial review",
-      "title": "Date the legacy guide and clarify benchmark-specific claims",
-      "url": "https://arcprize.org/guide/1",
-      "observation": "The guide presents ARC-AGI-1 & 2 together while some task counts and approach descriptions belong to a particular benchmark or earlier era. The public partners page also introduces its ecosystem as ARC Prize 2025 participants alongside current calls to action.",
-      "reproduction": [
-        "Review Guide 1 dataset counts, approach descriptions and any claims using current/top language.",
-        "Review the partners introduction against the intended page year."
-      ],
-      "proposed_fix": "Label dataset counts by benchmark/split and date historical performance claims. Link readers to current leaderboards. Explicitly label an archived 2025 partner list or update its introduction if intended to be current.",
-      "acceptance_checks": [
-        "A newcomer can tell which benchmark and date every count/performance claim refers to.",
-        "Historical claims remain accurate as history rather than being silently rewritten as current results."
-      ],
-      "sources": [
-        "https://arcprize.org/guide/1",
-        "https://arcprize.org/partners"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "Editorial review, not an allegation that every old tutorial or partner entry is wrong. Matt should choose whether to update or preserve an explicitly dated archive.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-18",
-      "priority": "P3",
-      "classification": "Confirmed external failure",
-      "title": "Update the Jeremy Jones donor profile destination",
-      "url": "https://arcprize.org/donate",
-      "observation": "The Jeremy Jones sponsor card points to https://www.jonestrauber.com/about, which currently returns HTTP 404 and a Fastbreak-branded page-not-found response.",
-      "reproduction": [
-        "Follow the Jeremy Jones sponsor card from Donate."
-      ],
-      "proposed_fix": "Confirm the intended public destination with the donor, or remove the link while preserving the donor attribution.",
-      "acceptance_checks": [
-        "The card opens the intended donor profile, or the attribution remains without a broken link."
-      ],
-      "sources": [
-        "https://arcprize.org/donate",
-        "https://www.jonestrauber.com/about"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "Recheck before editing: an older search cache still contains an About page, but the live direct response is 404. No replacement is assumed.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-19",
-      "priority": "P2",
-      "classification": "Editorial decision",
-      "title": "Reconcile the summit application call to action with its deadline",
-      "url": "https://arcprize.org/events/research-summit-2026",
-      "observation": "On October 8 the page still promotes Apply to present, while its linked form specifies a September 14, 2026 deadline. The summit is October 23. The form still renders questions; no submission was attempted.",
-      "reproduction": [
-        "Open the summit page and follow Apply to present.",
-        "Compare the advertised application with the deadline in the form."
-      ],
-      "proposed_fix": "If presentation applications are closed, label the closed state and retain the attendance route. If extended, update the deadline consistently on both surfaces.",
-      "acceptance_checks": [
-        "The event page and application form agree on whether applications are accepted and the applicable deadline."
-      ],
-      "sources": [
-        "https://arcprize.org/events/research-summit-2026",
-        "https://forms.gle/RZLEd83igiNqjXk5A"
-      ],
-      "evidence_files": [
-        "evidence.json",
-        "url-checks.csv"
-      ],
-      "qualification": "A displayed form does not prove that submissions are still accepted. The event owner must confirm the current policy.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
-    },
-    {
-      "id": "AP-20",
-      "priority": "P2",
-      "classification": "Confirmed presentation inconsistency",
-      "title": "Make transformation hints consistent and distinguish statistics from rules",
-      "url": "https://arcprize.org/tasks/13e47133#task-details",
-      "observation": "Training example 1 displays Shape Count: 6 shapes → 6 shapes beside SHAPE COUNT CHANGE. Example 3 repeats this with 4 → 4. A check of all 120 ARC-2 public evaluation task metadata files found 16 training examples across 10 tasks with this mismatch. ARC Explainer’s mixed archive currently records 119 scored attempts and no fully correct result for 13e47133; that is not a claim that nobody has solved it.",
-      "reproduction": [
-        "Open the affected task, click Details after the model table loads, then inspect Training Example #1 and #3.",
-        "Compare the Shape Count row with the adjacent Transform Hints badge.",
-        "Sum input/output shapeCountsByColor in the linked public metadata and compare with ioComparison.transformHints."
-      ],
-      "proposed_fix": "First review the hints for accuracy and practical explanatory value to a human. Remove misleading or unsupported guidance rather than merely polishing its wording. Explain derivation and limitations for any retained hints. Use a total-count-change hint only when the displayed total changes. If the intended signal is changed counts by color, label it explicitly as such. Present these as computed grid statistics, separate from reviewed rule explanations. Define the background and shape-counting assumptions. Only describe a puzzle rule as verified when it has been checked against all provided pairs; label conjectures and link their evidence.",
-      "acceptance_checks": [
-        "13e47133 examples 1 and 3 no longer imply a changed total beside unchanged totals.",
-        "All 120 ARC-2 evaluation metadata files pass a hint-versus-displayed-statistic consistency check, including the 16 recorded cases.",
-        "The UI distinguishes descriptive statistics, speculative interpretations and verified explanations; a visitor can inspect the supporting grids.",
-        "A human review checks that retained hints help interpret the examples and do not imply a verified solution without supporting evidence."
-      ],
-      "sources": [
-        "https://arcprize.org/tasks/13e47133#task-details",
-        "https://arcprize.org/media/data/task/task-metadata/13e47133_metadata.json",
-        "https://arc.markbarney.net/task/13e47133",
+      "id": "attempt-inspection",
+      "ask": "Open underlying attempts from ARC1/2 result rows; show released reasoning, submitted/expected grids, mismatches and cost/time. Add failed-task filters and same-task model comparisons when records exist.",
+      "examples": [
+        "https://arc.markbarney.net/task/13e47133?highlight=73845",
         "https://arc.markbarney.net/analytics"
       ],
-      "evidence_files": [
-        "evidence.json",
-        "screenshots/task-hint-13e47133.png"
-      ],
-      "qualification": "Per-color counts do change in these examples, so this is a confirmed labeling inconsistency, not proof that the underlying calculation is wrong. The current training hints across these 120 tasks contain only sameSize, newColors and shapeCountChange. Rotation/reflection appear in generic tooltip wording, but no reflection hint or incorrect reflection rule was reproduced in this pass. Public output does not establish AI authorship. This was a metadata consistency check, not a semantic solution review of all 120 puzzles.",
-      "depends_on": [],
-      "decision": "For Matt to triage; not yet approved or implemented."
+      "check": "A reader can follow a result to its actual attempt. Source/settings are visible and unavailable fields are labeled."
     }
   ],
-  "report_url": "https://arc.markbarney.net/feedback",
-  "repository_url": "https://github.com/82deutschmark/arc-explainer/tree/main/client/public/reports/arc-prize-audit-2026-10-08",
-  "editorial_follow_up": {
-    "date": "2026-10-09",
-    "priority": "ARC3 public-game commentary, the Red Pill/Blue Pill archive and synthetic resources lead the feedback; ARC1/2 analysis remains secondary context."
-  }
+  "existing_open_questions": "I’ve already asked about continued Hugging Face publication of raw attempts and Opus 5.5 ARC-3 results. That remains an information gap. Without newer released attempts and reasoning, it is harder to examine how models reach their answers or compare Opus 4.5 with 5.5 on the same task."
 }

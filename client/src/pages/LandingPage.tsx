@@ -1,8 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Codex
- * Date: 2026-10-08
+ * Date: 2026-10-09
  * PURPOSE: Directory of playable ARC tools, game guides and recorded results.
- *          Features Simon Ouellette’s ARC-3 training-data tools. Includes the ARC Daily newspaper, competitor notebook and dated public website audit.
+ *          Features Simon Ouellette’s ARC-3 training-data tools. Includes the ARC Daily newspaper, competitor notebook and concrete ARC Prize feedback sheet.
  * SRP/DRY check: Pass — reuses shared Card components and router links.
  */
 import { SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
@@ -40,7 +40,7 @@ const sections: { title: string; description: string; resources: Resource[] }[] 
     description: 'Explore recorded results. The Hugging Face import is an archive, not a feed of the latest official results.',
     resources: [
       { title: 'Hugging Face results archive', href: '/analytics', description: 'Charts, dataset coverage and model comparisons built from imported ARC Prize records.' },
-      { title: 'ARC Prize website audit', href: '/feedback', fullPage: true, description: 'October 8, 2026 review of task viewers, result archives and resource links, with evidence and a prioritized fix list.' },
+      { title: 'ARC Prize feedback', href: '/feedback', fullPage: true, description: 'Concrete feature asks and missing resource links, with existing implementation references.' },
       { title: 'ARC-1 and ARC-2 scoring', href: '/scoring', description: 'Combine stored attempts and inspect dataset scores, coverage and available costs.' },
       { title: 'Model comparison', href: '/model-comparison', description: 'Compare recorded attempts and puzzle-level outcomes for selected models.' },
       { title: 'RE-ARC', href: '/re-arc', description: 'Generate additional ARC-style evaluation tasks and validate submissions.' },

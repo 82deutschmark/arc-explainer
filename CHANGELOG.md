@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.130.5  Oct 9, 2026
+
+- **Replace the broad audit with a concrete feedback sheet** (Author: Codex). Rewrites `/feedback` around additions to the official ARC Prize site, using ARC Explainer only as an existing implementation reference. Removes the 20-item remediation backlog and promotional resource tour; compares all 246 official resource entries and narrows the page to two asks: missing resource links and model-attempt inspection. Includes a comparison CSV distinguishing overlaps and unverified destinations. Retains the raw-results publication question as a dependency. No build monitoring.
+
 ### Version 9.130.4  Oct 9, 2026
 
 - **Lead feedback with ARC-3 resources** (Author: Codex). Highlights breakdowns for all 25 current public games, the 252-game Red Pill/Blue Pill archive with direct category/source links, synthetic games and the complete reference. Adds a concrete dc22 level example and moves older ARC1/2 analysis into secondary expandable context. Aligns the brief, curation proposal and dated coverage evidence; no build monitoring requested.
