@@ -3,7 +3,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "standings",
-    "checkedAt": "2026-10-09T19:27:53Z",
+    "checkedAt": "2026-10-09T21:09:33Z",
     "competitions": [
       "arc-2"
     ],
@@ -12,18 +12,18 @@
     "importance": 3,
     "personIds": [],
     "postedAt": "2026-10-09T15:19:27Z",
-    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
-    "summary": "ARC Prize announced Tufa Labs’ 88.06% ARC-AGI-2 public score and said the bonus pool would be shared among teams scoring above 85%.",
-    "threadId": null,
+    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
+    "summary": "ARC Prize announced a new 2026 ARC-AGI-2 Kaggle high of 88.06% by Tufa Labs and said a $150,000 bonus would be split among teams scoring above 85%.",
+    "threadId": "2108578092558250148",
     "url": "https://x.com/arcprize/status/2108578092558250148",
     "visibility": "public",
-    "whyItMatters": "A major public-board milestone; final award eligibility still follows the competition rules."
+    "whyItMatters": "A public-board threshold announcement and major standings lead; the post does not establish a final private score."
   },
   {
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "standings",
-    "checkedAt": "2026-10-09T19:27:53Z",
+    "checkedAt": "2026-10-09T21:09:33Z",
     "competitions": [
       "arc-3"
     ],
@@ -34,40 +34,62 @@
       "yi-chia-chen"
     ],
     "postedAt": "2026-10-09T15:16:29Z",
-    "storyUrl": null,
-    "summary": "ARC Prize announced Yi-Chia Chen’s 59.17% ARC-AGI-3 public score and her lead over Tufa Labs.",
-    "threadId": null,
+    "storyUrl": "https://x.com/arcprize/status/2108577347192676612",
+    "summary": "ARC Prize announced Yi-Chia Chen at 59.17% on the 2026 ARC-AGI-3 Kaggle board, taking the lead over Tufa Labs.",
+    "threadId": "2108577347192676612",
     "url": "https://x.com/arcprize/status/2108577347192676612",
     "visibility": "public",
-    "whyItMatters": "The organizer’s announcement supplies context for the lead change; the next edition checks fresh standings."
+    "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
   },
   {
-    "author": "MindsAI_Jack",
-    "authorName": "Jack Cole",
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
     "category": "community",
-    "checkedAt": "2026-10-09T19:27:53Z",
+    "checkedAt": "2026-10-09T21:09:33Z",
     "competitions": [
       "arc-2"
     ],
-    "id": "2108605814181363917",
-    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "id": "2108632255383957945",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
     "importance": 2,
     "personIds": [
-      "jack-cole"
+      "jean-francois-puget"
     ],
-    "postedAt": "2026-10-09T17:09:36Z",
-    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
-    "summary": "Jack Cole congratulated Tufa Labs on the ARC-AGI-2 milestone, quoting Mike Knoop’s reaction.",
-    "threadId": null,
-    "url": "https://x.com/MindsAI_Jack/status/2108605814181363917",
+    "postedAt": "2026-10-09T18:54:40Z",
+    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
+    "summary": "Puget asked ARC Prize whether the 85% bonus threshold refers to the public or private leaderboard; no organizer answer was visible in the checked thread.",
+    "threadId": "2108578092558250148",
+    "url": "https://x.com/JFPuget/status/2108632255383957945",
     "visibility": "public",
-    "whyItMatters": "A contender’s respectful response adds the people behind the leaderboard to the story."
+    "whyItMatters": "Flags a reporting question; avoid presenting the public score as the final prize result."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "community",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108584791436321097",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-09T15:46:04Z",
+    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
+    "summary": "Knoop said the 85% Grand Prize bonus threshold had been reached on Kaggle and called 2026 the final ARC-AGI-2 Kaggle year.",
+    "threadId": null,
+    "url": "https://x.com/mikeknoop/status/2108584791436321097",
+    "visibility": "public",
+    "whyItMatters": "Provides organizer context for the Tufa Labs result; his expectation about future open artifacts is not yet a release."
   },
   {
     "author": "fchollet",
     "authorName": "François Chollet",
     "category": "community",
-    "checkedAt": "2026-10-09T19:28:44Z",
+    "checkedAt": "2026-10-09T21:09:33Z",
     "competitions": [
       "arc-2"
     ],
@@ -78,18 +100,163 @@
       "francois-chollet"
     ],
     "postedAt": "2026-10-09T15:25:12Z",
-    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
-    "summary": "Chollet welcomed the improving ARC-AGI-2 Kaggle scores while quoting ARC Prize’s Tufa Labs announcement.",
+    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
+    "summary": "Chollet reacted to ARC Prize’s Tufa Labs ARC-2 announcement by saying Kaggle scores are getting very good.",
     "threadId": null,
     "url": "https://x.com/fchollet/status/2108579538372612400",
     "visibility": "public",
-    "whyItMatters": "A public reaction from ARC’s co-founder, tied to the original result rather than an independent score claim."
+    "whyItMatters": "A founder reaction adds a measured voice to the organizer’s score announcement."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "community",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2108575462695817315",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-09T15:09:00Z",
+    "storyUrl": "https://arcprize.org/events/research-summit-2026",
+    "summary": "ARC Prize announced Stephen Wolfram as a keynote speaker for its 2026 Research Summit.",
+    "threadId": "2108575462695817315",
+    "url": "https://x.com/arcprize/status/2108575462695817315",
+    "visibility": "public",
+    "whyItMatters": "A current event-program lead for the meeting digest."
+  },
+  {
+    "author": "SimonOuellette6",
+    "authorName": "Simon Ouellette",
+    "category": "research",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108289507908780366",
+    "identitySourceUrl": "https://x.com/SimonOuellette6",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-08T20:12:43Z",
+    "storyUrl": "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
+    "summary": "Ouellette released an ARC-AGI-3-style training-data framework with 429 playable games, solvers and demonstration generators; he said 37 games still lacked solvers. The linked repository says it combines augmented public ARC demos and other game sources.",
+    "threadId": "2108289507908780366",
+    "url": "https://x.com/SimonOuellette6/status/2108289507908780366",
+    "visibility": "public",
+    "whyItMatters": "A concrete research resource; its author describes training material, not a measured Kaggle-score gain or coverage of private games."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2107511511782420924",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-06T16:41:14Z",
+    "storyUrl": null,
+    "summary": "ARC Prize published verified Grok 4.7 scores: 1.8% on ARC-AGI-3 with its standard harness, 10.0% with a provider adapter, and 61.4% on ARC-AGI-2.",
+    "threadId": "2107511511782420924",
+    "url": "https://x.com/arcprize/status/2107511511782420924",
+    "visibility": "public",
+    "whyItMatters": "The harness distinction matters when comparing model scores; the post reports organizer verification."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2107491194007585239",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-06T15:20:30Z",
+    "storyUrl": null,
+    "summary": "ARC Prize published verified DeepSeek V4.1 Flash scores of 72.9% on ARC-AGI-2 and 94.5% on ARC-AGI-1, with stated per-task costs.",
+    "threadId": "2107491194007585239",
+    "url": "https://x.com/arcprize/status/2107491194007585239",
+    "visibility": "public",
+    "whyItMatters": "A dated organizer model verification relevant to ARC-2 comparisons."
+  },
+  {
+    "author": "GregKamradt",
+    "authorName": "Greg Kamradt",
+    "category": "research",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2107480627989938482",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-06T14:38:31Z",
+    "storyUrl": null,
+    "summary": "Kamradt invited researchers to contact ARC Prize about red-teaming future ARC-AGI benchmarks and mentioned grants and credits as possible support.",
+    "threadId": null,
+    "url": "https://x.com/GregKamradt/status/2107480627989938482",
+    "visibility": "public",
+    "whyItMatters": "A direct research-participation lead; it is an invitation, not a claim about any current contestant’s approach."
+  },
+  {
+    "author": "MindsAI_Jack",
+    "authorName": "Jack Cole",
+    "category": "community",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108605814181363917",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "importance": 1,
+    "personIds": [
+      "jack-cole"
+    ],
+    "postedAt": "2026-10-09T17:09:36Z",
+    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
+    "summary": "Cole congratulated Tufa Labs on the ARC-2 result, calling it a momentous achievement.",
+    "threadId": null,
+    "url": "https://x.com/MindsAI_Jack/status/2108605814181363917",
+    "visibility": "public",
+    "whyItMatters": "A named competitor’s respectful reaction adds color without implying rivalry or shared methods."
+  },
+  {
+    "author": "GregKamradt",
+    "authorName": "Greg Kamradt",
+    "category": "community",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2108576380397162576",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-09T15:12:39Z",
+    "storyUrl": "https://arcprize.org/events/research-summit-2026",
+    "summary": "Kamradt said he was excited Wolfram would join the ARC Prize Summit in two weeks, quoting the organizer’s announcement.",
+    "threadId": null,
+    "url": "https://x.com/GregKamradt/status/2108576380397162576",
+    "visibility": "public",
+    "whyItMatters": "Confirms the organizer’s program announcement from the ARC Prize president."
   },
   {
     "author": "tufalabs",
     "authorName": "Tufa Labs",
     "category": "banter",
-    "checkedAt": "2026-10-09T19:27:53Z",
+    "checkedAt": "2026-10-09T21:09:33Z",
     "competitions": [
       "arc-3"
     ],
@@ -99,10 +266,30 @@
     "personIds": [],
     "postedAt": "2026-10-09T07:45:40Z",
     "storyUrl": null,
-    "summary": "Tufa Labs posted an AI-made battle illustration and described the ARC-3 reversal as a temporary setback, with a playful pledge to overwhelm competitors with compute.",
+    "summary": "Tufa Labs made a tongue-in-cheek post about a temporary setback and “overwhelming resources and compute”; the post included AI-marked imagery.",
     "threadId": null,
     "url": "https://x.com/tufalabs/status/2108463895128269084",
     "visibility": "public",
-    "whyItMatters": "The image inspired the Digest’s friendly rabbit-and-GPU-spider callback; it is banter, not hardware evidence."
+    "whyItMatters": "Competition banter only; the line is not evidence of the team’s actual budget, compute or methods."
+  },
+  {
+    "author": "GregKamradt",
+    "authorName": "Greg Kamradt",
+    "category": "community",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108295792931090768",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-08T20:37:41Z",
+    "storyUrl": "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
+    "summary": "Kamradt shared images and called Ouellette’s release a “V3 inspired dataset.”",
+    "threadId": null,
+    "url": "https://x.com/GregKamradt/status/2108295792931090768",
+    "visibility": "public",
+    "whyItMatters": "An organizer reaction to a community resource; the original release and repository hold the substantive details."
   }
 ]
