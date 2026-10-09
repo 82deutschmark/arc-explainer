@@ -107,6 +107,14 @@ required even when `validate` passes.
 
 ## Maintain the competitor notebook
 
+The continuing watch list includes Jack Cole and Mithil A Vakde in ARC-AGI-2,
+ARC Raiders in ARC-AGI-2, and keithtyser in ARC-AGI-3. Follow cpmpml through
+the distinct nvbanana (ARC-AGI-2) and NVARC3 (ARC-AGI-3) rosters. Verified
+background on Jean-François Puget belongs in the cited notebook. Report these
+entries when newsworthy alongside the actual leaders and other meaningful movers.
+Roster presence establishes membership at the observation time, not a joining
+date, team leadership, or the cause of a score gain.
+
 `content/news/competitors.json` is an array matching `CompetitorRecord` in
 `shared/news.ts`. Publication updates the observed name, members and dates for the
 selected competitors, keeps aliases when names change, and preserves existing

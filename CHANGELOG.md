@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.128.0  Oct 8, 2026
+
+- **Broader competitor watch and readable leaderboard names** (Author: GPT-6 / Codex). Feature Jack Cole, Mithil A Vakde and ARC Raiders on ARC-2, and keithtyser on ARC-3, in both cards and daily reporter candidates. Add dated roster observations and primary-source cpmpml/Jean-François Puget background to the notebook. Move crowded medal cutoffs to a readable legend and let daily recap names wrap above their figures instead of being clipped into initials. Missing prior ranks are labeled unknown. Scope and verification: `docs/2026-10-08-competitor-watch-and-readable-cutoffs.md`.
+
 ### Version 9.127.3  Oct 8, 2026
 
 - **Verify official task-hint quality** (Author: Codex). Adds AP-20 to the public feedback report, structured backlog and coding-assistant brief: a reproducible shape-count label inconsistency on task 13e47133, with screenshot and exact official/archive links. Records the 120-task metadata scan and 16 affected training examples across 10 tasks in compact evidence; distinguishes per-color changes from totals and unverified reflection claims. Report count is now 20. No ARC Prize code changed. Plan: `docs/2026-10-08-task-hint-audit-plan.md`.

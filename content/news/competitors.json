@@ -4,21 +4,66 @@
     "competition": "arc-2",
     "facts": [
       {
+        "checkedAt": "2026-10-09T03:23:31Z",
+        "sourceTitle": "Mithil A Vakde — Kaggle mdlARC model",
+        "sourceUrl": "https://www.kaggle.com/models/mithilavakde/mdlarc",
+        "text": "The Kaggle account mithilavakde publishes a model called mdlARC under the displayed name Mithil A Vakde."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T03:21:39Z",
+    "id": "arc-2-15486728",
+    "lastObservedAt": "2026-10-09T03:21:39Z",
+    "members": [
+      "mithilavakde"
+    ],
+    "name": "Mithil A Vakde",
+    "teamId": "15486728"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
         "checkedAt": "2026-10-08T03:38:00Z",
         "sourceTitle": "ARC-AGI-3 public team roster",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
         "text": "The observed nvbanana roster contains cpmpml and darraghdog. Those two handles also appear in NVARC3 on the ARC-AGI-3 board; these remain separate competition entries."
+      },
+      {
+        "checkedAt": "2026-10-09T03:23:31Z",
+        "sourceTitle": "Jean-François Puget — public professional profile",
+        "sourceUrl": "https://github.com/jfpuget",
+        "text": "Jean-François Puget’s public GitHub profile identifies him as CPMP and links directly to the Kaggle account cpmpml."
+      },
+      {
+        "checkedAt": "2026-10-09T03:23:31Z",
+        "sourceTitle": "NVIDIA — Jean-Francois Puget author biography",
+        "sourceUrl": "https://developer.nvidia.com/blog/author/jeanfrancoispuget/",
+        "text": "NVIDIA’s author biography describes Jean-Francois Puget as a director and individual contributor whose team advances agentic AI and showcases NVIDIA tools and expertise in Kaggle competitions."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15486939",
-    "lastObservedAt": "2026-10-08T21:50:51Z",
+    "lastObservedAt": "2026-10-09T03:21:39Z",
     "members": [
       "cpmpml",
       "darraghdog"
     ],
     "name": "nvbanana",
     "teamId": "15486939"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-09T03:21:39Z",
+    "id": "arc-2-15487968",
+    "lastObservedAt": "2026-10-09T03:21:39Z",
+    "members": [
+      "jcole75"
+    ],
+    "name": "Jack Cole",
+    "teamId": "15487968"
   },
   {
     "aliases": [],
@@ -62,10 +107,17 @@
   {
     "aliases": [],
     "competition": "arc-2",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T03:23:31Z",
+        "sourceTitle": "ARC-AGI-2 observed public roster",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "text": "The ARC-AGI-2 roster observed on 8 October 2026 includes keithtyser. This observation does not establish a joining date."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15526034",
-    "lastObservedAt": "2026-10-08T21:50:51Z",
+    "lastObservedAt": "2026-10-09T03:21:39Z",
     "members": [
       "dzjiann",
       "keithtyser",
@@ -331,6 +383,26 @@
   {
     "aliases": [],
     "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T03:23:31Z",
+        "sourceTitle": "ARC-AGI-3 observed public roster",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "text": "The ARC-AGI-3 roster observed on 8 October 2026 lists keithtyser as the sole member of the entry also named keithtyser."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T03:21:38Z",
+    "id": "arc-3-15508513",
+    "lastObservedAt": "2026-10-09T03:21:38Z",
+    "members": [
+      "keithtyser"
+    ],
+    "name": "keithtyser",
+    "teamId": "15508513"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15510098",
@@ -416,11 +488,23 @@
         "sourceTitle": "NVIDIA — 2025 NVARC solution report",
         "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
         "text": "NVIDIA describes the separate 2025 NVARC ARC-AGI-2 solution as using synthetic data generation, test-time training and a fine-tuned 4B model. This is historical background, not a claim about the 2026 NVARC3 agent."
+      },
+      {
+        "checkedAt": "2026-10-09T03:23:31Z",
+        "sourceTitle": "Jean-François Puget — public professional profile",
+        "sourceUrl": "https://github.com/jfpuget",
+        "text": "Jean-François Puget’s public GitHub profile identifies him as CPMP and links directly to the Kaggle account cpmpml."
+      },
+      {
+        "checkedAt": "2026-10-09T03:23:31Z",
+        "sourceTitle": "NVIDIA — Jean-Francois Puget author biography",
+        "sourceUrl": "https://developer.nvidia.com/blog/author/jeanfrancoispuget/",
+        "text": "NVIDIA’s author biography describes Jean-Francois Puget as a director and individual contributor whose team advances agentic AI and showcases NVIDIA tools and expertise in Kaggle competitions."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15770880",
-    "lastObservedAt": "2026-10-08T21:50:49Z",
+    "lastObservedAt": "2026-10-09T03:21:38Z",
     "members": [
       "cpmpml",
       "darraghdog",

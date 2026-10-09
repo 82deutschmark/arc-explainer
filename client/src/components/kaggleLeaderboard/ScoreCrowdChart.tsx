@@ -1,16 +1,17 @@
 /**
  * Author: GPT-6 / Codex
- * Date: 2026-10-07
+ * Date: 2026-10-08
  * PURPOSE: "Where the scores bunch up" -- how many teams sit at each score across the
  *          contested range, as columns coloured by the medal zone that score lands in, with
  *          the three medal lines and the pinned team’s score marked. It answers the question the rank
  *          table cannot: what is a point worth here? In a crowded band a fraction of a point
  *          passes dozens of teams. Hover gives each column's count, rank range and places
- *          per point.
+ *          per point. Medal cutoffs and the full pinned-team name live in a readable
+ *          HTML legend rather than overlapping inside the scaled SVG.
  * SRP/DRY check: Pass - marks only; frame and tooltip from ChartFrame, data from BoardModel.
  */
 
-import { ChartFrame, PAD, TipRow, W, AXIS_TEXT, LABEL_TEXT, niceTicks, type Anchor } from './ChartFrame';
+import { ChartFrame, PAD, TipRow, W, niceTicks, type Anchor } from './ChartFrame';
 import { MEDAL_COLOR, US_COLOR, fmt, type BoardModel, type Medal } from './boardData';
 import type { KaggleBoardRow } from '@shared/types';
 
@@ -75,6 +76,16 @@ export function ScoreCrowdChart({ model }: { model: BoardModel }) {
 
   return (
     <>
+      <dl className="mb-4 grid grid-cols-2 gap-3 text-sm" aria-label="Public medal score cutoffs">
+        {(['gold', 'silver', 'bronze'] as Medal[]).map(m => <div key={m} className="min-w-0">
+          <dt className="flex items-center gap-2 text-muted-foreground"><span aria-hidden="true" className="h-3 w-1 shrink-0" style={{ background: MEDAL_COLOR[m] }} />{m[0].toUpperCase() + m.slice(1)} cutoff</dt>
+          <dd className="pl-3 font-mono font-semibold tabular-nums">{fmt(line(m))} points</dd>
+        </div>)}
+        {ourRow && <div className="min-w-0">
+          <dt className="flex items-start gap-2 text-muted-foreground"><span aria-hidden="true" className="mt-1 h-3 w-1 shrink-0" style={{ background: US_COLOR }} /><span className="[overflow-wrap:anywhere]">Pinned: {ourRow[2]}</span></dt>
+          <dd className="pl-3 font-mono font-semibold tabular-nums">{fmt(ourRow[4])} points</dd>
+        </div>}
+      </dl>
       <ChartFrame height={H} label="Number of teams at each score" yTicks={yTicks} xTicks={xTicks} xTitle="score" padRight={RIGHT} hover={hover}>
         {bins.map((bin, i) => {
           if (!bin.length) return null;
@@ -93,16 +104,14 @@ export function ScoreCrowdChart({ model }: { model: BoardModel }) {
             />
           );
         })}
-        {(['bronze', 'silver', 'gold'] as Medal[]).map((m, k) => (
+        {(['bronze', 'silver', 'gold'] as Medal[]).map(m => (
           <g key={m}>
             <line x1={x(line(m))} x2={x(line(m))} y1={PAD.T} y2={H - PAD.B} stroke={MEDAL_COLOR[m]} strokeWidth={1.5} />
-            <text x={x(line(m)) + 4} y={PAD.T + 10 + k * 13} style={{ ...AXIS_TEXT, fontWeight: 600 }}>{m} {fmt(line(m))}</text>
           </g>
         ))}
         {ourRow && ourRow[4] >= lo && ourRow[4] < hi && (
           <g>
             <line x1={x(ourRow[4])} x2={x(ourRow[4])} y1={PAD.T + 4} y2={H - PAD.B} style={{ stroke: US_COLOR }} strokeWidth={2} />
-            <text x={x(ourRow[4]) + 5} y={PAD.T + 10 + 3 * 13} textAnchor="start" style={{ ...LABEL_TEXT, fontWeight: 700 }}>Pinned {fmt(ourRow[4])}</text>
           </g>
         )}
       </ChartFrame>

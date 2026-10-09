@@ -1,10 +1,11 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-05
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-08
  * PURPOSE: "Today so far" -- the board now against where it stood at the end of the
  *          previous UTC day: biggest point gains, biggest climbers, teams that moved into
  *          the gold zone, and new teams in the top 500. Uses the start-of-day rank and score
- *          the snapshot script attaches to every row.
+ *          the snapshot script attaches to every row. Lists adapt to their card width
+ *          and place full team names above movement figures to prevent clipping.
  * SRP/DRY check: Pass - reads BoardModel only; one List used for all four columns.
  */
 
@@ -14,16 +15,16 @@ import { TeamName } from './TeamName';
 
 function List({ title, rows, value, ourId }: { title: string; rows: KaggleBoardRow[]; value: (r: KaggleBoardRow) => string; ourId: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <h3 className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{title}</h3>
       {rows.length === 0 ? (
         <div className="text-sm text-muted-foreground">Nobody yet.</div>
       ) : (
         <ol className="text-sm">
           {rows.map((r) => (
-            <li key={r[1]} className={`flex justify-between gap-2.5 border-b py-1 ${r[1] === ourId ? 'font-semibold text-primary' : ''}`}>
-              <TeamName row={r} className="truncate" />
-              <span className="whitespace-nowrap font-mono text-xs tabular-nums">{value(r)}</span>
+            <li key={r[1]} className={`flex flex-col gap-1 border-b py-2 ${r[1] === ourId ? 'font-semibold text-primary' : ''}`}>
+              <TeamName row={r} className="min-w-0 leading-snug [overflow-wrap:anywhere]" />
+              <span className="font-mono text-xs tabular-nums">{value(r)}</span>
             </li>
           ))}
         </ol>
@@ -40,7 +41,7 @@ export function TodayRecap({ model }: { model: BoardModel }) {
   const climb = (r: KaggleBoardRow) => (r[7] as number) - r[0];
 
   return (
-    <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-x-6 gap-y-5" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}>
       <List
         title="Biggest point gains"
         ourId={ourTeamId}
@@ -60,7 +61,7 @@ export function TodayRecap({ model }: { model: BoardModel }) {
         value={(r) => `#${r[7]} → #${r[0]}`}
       />
       <List
-        title="New in the top 500"
+        title="Top 500, prior rank unknown"
         ourId={ourTeamId}
         rows={rows.filter((r) => r[7] == null && r[0] <= 500).slice(0, 6)}
         value={(r) => `#${r[0]} · ${fmt(r[4])}`}
