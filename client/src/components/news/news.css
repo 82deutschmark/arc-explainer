@@ -129,6 +129,10 @@
 .news-lead h2 { font-size: clamp(30px, 3.4vw, 44px); }
 .news-dispatch-art { margin: 18px 0; }
 .news-dispatch-art img { display: block; width: 100%; height: auto; }
+/* The lead illustration sits beside its text instead of stacking a full-width picture above it,
+   which pushed the next story far down the page. */
+.news-lead .news-dispatch-art { float: right; width: 50%; margin: 6px 0 14px 24px; }
+.news-lead .news-latest-list, .news-latest-list { clear: both; }
 .news-dispatch-art figcaption { margin-top: 7px; font-size: 11px; line-height: 1.5; color: #666; }
 .news-dispatch-text { margin: 15px 0 7px; font: 17px/1.6 Georgia, 'Times New Roman', serif; }
 .news-dispatch h3 { font-size: 19px; margin-top: 17px; font-weight: 700; }
@@ -191,6 +195,7 @@
 @media (max-width: 1050px) { .news-explore-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 800px) { .news-front-grid, .news-people-archive { grid-template-columns: 1fr; } .news-sidebar { border-left: 0; padding-left: 0; } .news-people-archive-copy { padding: 28px 26px 0; } .news-people-archive-art { max-width: 560px; padding: 0 26px 20px; } }
 @media (max-width: 600px) {
+  .news-lead .news-dispatch-art { float: none; width: 100%; margin: 18px 0; }
   .arc-daily { padding: 0 10px 35px; }
   .news-paper { padding: 17px 5px 24px; }
   .news-topline span:last-child { display: none; }
@@ -207,15 +212,15 @@
 /* Display advertising is visually distinct from reporting and always names the sponsor. */
 .news-brand-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 12px 0; }
 .news-brand-row .news-name { margin: 0; flex: 0 1 auto; }
-.news-masthead-ad { flex: 0 1 430px; min-width: 0; color: #f7f7f3; background: #111b20; border: 1px solid #314048; }
-.news-masthead-ad-label { display: flex; justify-content: space-between; gap: 8px; padding: 4px 10px; border-bottom: 1px solid #536068; color: #d1d8d9; font: 700 9px 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .1em; text-transform: uppercase; }
+.news-masthead-ad { flex: 0 1 560px; min-width: 0; color: #f7f7f3; background: #0d161b; border: 1px solid #314048; border-left: 4px solid var(--ad-accent, #f1a06f); }
+.news-masthead-ad-label { display: flex; justify-content: space-between; gap: 8px; padding: 5px 12px; border-bottom: 1px solid #2a363d; color: #9fadb2; font: 700 9px 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; }
 .arc-daily .news-masthead-ad-label a { color: var(--ad-accent, #f1a06f); }
-.arc-daily .news-masthead-ad-link { display: flex; align-items: center; gap: 12px; padding: 8px 10px; color: #fff; text-decoration: none; }
-.news-masthead-ad-link img { width: 104px; height: auto; aspect-ratio: 16 / 9; object-fit: cover; flex: none; }
-.news-masthead-ad-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
-.news-masthead-ad-copy strong { color: var(--ad-accent, #ffe345); font: 900 clamp(18px, 2vw, 24px)/1.05 Georgia, 'Times New Roman', serif; letter-spacing: -.03em; }
-.news-masthead-ad-copy em { color: #cad1d1; font: normal 700 10px 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .05em; text-transform: uppercase; }
-.news-masthead-ad-cta { flex: none; padding: 9px 12px; background: var(--ad-accent, #ffe345); color: #071b22; font: 800 12px Arial, Helvetica, sans-serif; }
+.arc-daily .news-masthead-ad-link { display: flex; align-items: stretch; gap: 0; color: #fff; text-decoration: none; }
+.news-masthead-ad-link img { width: 168px; height: auto; aspect-ratio: 16 / 9; object-fit: cover; flex: none; display: block; align-self: center; }
+.news-masthead-ad-copy { display: flex; flex-direction: column; justify-content: center; gap: 5px; min-width: 0; flex: 1; padding: 8px 16px; }
+.news-masthead-ad-copy strong { color: var(--ad-accent, #ffe345); font: 900 clamp(22px, 2.6vw, 30px)/1 Georgia, 'Times New Roman', serif; letter-spacing: -.035em; }
+.news-masthead-ad-copy em { color: #cdd5d7; font: normal 700 10px 'SF Mono', Menlo, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.news-masthead-ad-cta { display: flex; align-items: center; flex: none; padding: 0 20px; background: var(--ad-accent, #ffe345); color: #071b22; font: 800 13px Arial, Helvetica, sans-serif; letter-spacing: .04em; text-transform: uppercase; }
 .arc-daily .news-masthead-ad-link:hover { color: #fff; text-decoration: none; }
 .news-masthead-ad-link:hover .news-masthead-ad-cta { background: #fff; }
 .news-ad { margin: 26px 0 0; color: #f7f7f3; background: #111b20; border: 1px solid #314048; }
@@ -249,7 +254,8 @@
   .news-ad-banner .news-ad-actions { grid-column: 2; flex-direction: row; flex-wrap: wrap; }
 }
 @media (max-width: 600px) {
-  .news-masthead-ad-link img { width: 76px; }
+  .news-masthead-ad-link img { width: 96px; }
+  .news-masthead-ad-cta { padding: 0 12px; }
   .news-ad-banner .news-ad-body { display: block; padding: 18px; }
   .news-ad-banner .news-ad-thumb { margin-bottom: 14px; }
   .news-ad-banner .news-ad-actions { margin-top: 18px; }

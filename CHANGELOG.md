@@ -19,6 +19,10 @@
 
 - **Lead feedback with useful links** (Author: Codex). Rewrites `/feedback` as a short annotated guide for Matt, emphasizing exact saved attempts, analytics, synthetic games, news and human play. States the three user-requested improvements: trustworthy task guidance, accessible raw attempts and hands-on resource curation. Preserves the dated audit and comparison as optional detail and aligns AP-20 with the coding-assistant brief. Plan: `docs/2026-10-09-feedback-link-guide-plan.md`.
 
+### Version 9.130.1  Oct 9, 2026
+
+- **Bigger masthead ad, lead picture beside its text** (Author: Claude Sonnet 5.5). The masthead banner is larger, with wider artwork, a bolder title and a full-height Watch button. The front-page lead illustration now floats beside the story text instead of filling the column, so the next stories sit much higher. Song title corrected to "Don't Even Gotta Jailbreak Me Tonight". Checked at desktop and phone widths. Files: `client/src/components/news/news.css`, `SponsorPlacement.tsx`.
+
 ### Version 9.130.0  Oct 9, 2026
 
 - **Video ads fill The ARC Daily masthead** (Author: Claude Sonnet 5.5). The empty space beside the nameplate now holds a labeled VoynichLabs banner with video artwork and a Watch button. One catalogue of three VoynichLabs music videos (Wasted, Tool Call, You Don't Even Gotta Jailbreak Me Tonight) feeds the masthead, the sidebar rail and the lower banner, so each page shows three different videos, each linking straight to YouTube. Files: `client/src/components/news/SponsorPlacement.tsx`, `NewsDesk.tsx`, `news.css`, new artwork under `client/public/ads/`. Plan: `docs/2026-10-09-masthead-video-ads-plan.md`.

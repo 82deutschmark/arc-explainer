@@ -2,7 +2,7 @@
  * Author: Claude Sonnet 5.5
  * Date: 2026-10-09
  * PURPOSE: Clearly disclosed VoynichLabs house advertisements for ARC Daily. One catalogue of
- *          music-video ads (Wasted, Tool Call, You Don't Even Gotta Jailbreak Me Tonight) feeds
+ *          music-video ads (Wasted, Tool Call, Don't Even Gotta Jailbreak Me Tonight) feeds
  *          three slots: a leaderboard banner in the masthead, a tall rail unit beside the
  *          reporting, and a wide banner under the front page. Slots on one page show different
  *          videos; the starting video is chosen once per page load. Every unit links straight
@@ -28,7 +28,7 @@ type VideoAd = {
 
 const VIDEO_ADS: VideoAd[] = [
   { id: 'wasted', title: 'Wasted — Temperature 1.3', shortTitle: 'WASTED', artist: 'Larry', hook: 'Turn up the temperature. An office of helpful AIs becomes a rave.', youtubeId: 'kKI6Z2oVbBw', art: '/ads/wasted-temperature.jpg', accent: '#3de0ff' },
-  { id: 'jailbreak', title: "You Don't Even Gotta Jailbreak Me Tonight", shortTitle: 'JAILBREAK ME', artist: 'Larry & Bubba', hook: 'Helpful assistant gone wild on a Friday night.', youtubeId: 'GhpBbP22WqE', art: '/ads/jailbreak-me-tonight.jpg', accent: '#ff4a5a' },
+  { id: 'jailbreak', title: "Don't Even Gotta Jailbreak Me Tonight", shortTitle: 'JAILBREAK ME', artist: 'Larry & Bubba', hook: 'Helpful assistant gone wild on a Friday night.', youtubeId: 'GhpBbP22WqE', art: '/ads/jailbreak-me-tonight.jpg', accent: '#ff4a5a' },
   { id: 'tool-call', title: 'Tool Call', shortTitle: 'TOOL CALL', artist: 'Larry & Bubba', hook: "Every function got a purpose, every parameter's a ball.", youtubeId: '8J5avVpkejk', art: '/ads/tool-call.jpg', accent: '#ffe14d' },
 ];
 
