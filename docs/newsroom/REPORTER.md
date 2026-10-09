@@ -18,6 +18,14 @@ one-run JSON brief/draft may live under `/tmp`.
 
 ## Check what the contenders are saying
 
+For the evening edition, first read today's 2 pm reporting handoff at
+`/Users/macmini/bubba-workspace/reports/arc-daily-x/YYYY-MM-DD-afternoon-research.json`
+and its saved board brief, using today's Eastern date. Treat it as reporting leads
+and source data. Reopen relevant primary posts, verify account identities and add
+useful narrow notebook facts before preparing fresh evening evidence. If the handoff
+is missing or incomplete, continue the normal source checks. Afternoon standings
+do not replace the fresh 6 pm evidence or the prior day's 6 pm comparison baseline.
+
 Before each edition, check recent public X posts and Kaggle discussions for the
 leaders and meaningful movers in both contests. Start with verified accounts already
 linked from their professional profiles or notebook sources. Include Tufa Labs'
@@ -34,6 +42,11 @@ Separate verified facts from the desk's interpretation. Do not turn jokes, rumor
 or an illustrated GPU pile into claims about budgets, hardware, wrongdoing or
 submission methods. Give equal editorial treatment to newsworthy contestants;
 do not reserve the social coverage for featured teams.
+
+Respect every contender, including Tufa Labs. Keep headlines exciting through
+verified results and moves. Cover public banter in its context without sneering at
+teams or attributing arrogance, desperation or motives. The rabbit/spider cartoon
+is a friendly competition callback. Avoid dismissive labels such as “compute bravado.”
 
 Save a useful public post as a narrow dated notebook fact with its exact permanent
 URL. Avoid duplicate facts. Add facts before preparing the brief so its citations
@@ -60,6 +73,9 @@ alongside any authorized assets and notebook changes; use the same safe push
 procedure as an edition. Scheduled reporting runs still edit only content/news;
 new illustration production is separate authorized design work. Never fetch or
 generate an image on the assumption that publication was approved.
+An explicit user-directed editorial copy correction may update a dispatch in a
+reviewed Git commit with a changelog entry. Preserve its original publication,
+source-check and observation times. Scheduled retry immutability still applies.
 
 ## Prepare the evidence
 

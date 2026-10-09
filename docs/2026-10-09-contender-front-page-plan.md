@@ -30,3 +30,12 @@ dispatch at desktop and phone widths. Repository-wide TypeScript checking still
 has existing unrelated diagnostics; none name the edited news files. The X draft
 helper was audited without sending a post. Full generation prompt and overlay
 instructions are in `docs/newsroom/2026-10-09-rabbit-spider-artwork.md`.
+
+
+## User-directed correction and 2 pm handoff
+
+- Correct the existing dispatch headline to “Yi-Chia Chen edges past Tufa Labs to take the ARC-3 lead.” Remove dismissive wording about Tufa from the prose and interpretation. This is an explicit editorial correction requested by the user; preserve original dates, observations and source links.
+- Update the existing X automation to 2 pm Eastern, retaining GPT-6 Sol and the signed-in account. The user confirmed that it should both gather public competitor posts and publish a recap.
+- Replace the evening-only post preparation with fresh afternoon board evidence and a front-page link. Reuse the newsroom comparison logic; never fabricate missing movement or publish a premature evening issue.
+- Save a dated source-backed research handoff outside the repository and require the 6 pm reporter to read and recheck it before preparing fresh evidence. Handle source and board failures independently of the public send.
+- Verify corrected dispatch validation, fresh draft preparation and partial-failure/unknown-baseline behavior; review and push the intended files. Update the existing automation through the app tool with all preserved settings.

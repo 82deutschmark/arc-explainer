@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.129.2  Oct 9, 2026
+
+- **Respectful race coverage and a 2 pm X desk** (Author: GPT-6 Sol / Codex). Corrects the user-rejected Chen/Tufa headline and removes dismissive phrasing from the dispatch while preserving its sources and dated scores. Reporter guidance keeps all competitors' coverage respectful. Moves the X workflow to 2 pm Eastern: prepares a fresh afternoon recap linking the news front page and saves competitor-post research for the 6 pm reporter. The helper reuses the previous Eastern evening comparison, keeps unknown movement unknown and protects send attempts; the evening edition still prepares fresh evidence. User explicitly requested both research and posting. Plan: `docs/2026-10-09-contender-front-page-plan.md`.
+
 ### Version 9.129.1  Oct 9, 2026
 
 - **Feedback page works in local development** (Author: Claude Sonnet 5.5). `/feedback` read the audit page from the production build folder, so it errored on a dev server. Development now reads the source copy under `client/public`; production is unchanged. File: `server/middleware/metaTagInjector.ts`.

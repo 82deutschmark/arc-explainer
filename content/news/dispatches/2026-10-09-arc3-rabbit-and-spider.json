@@ -1,20 +1,20 @@
 {
   "competition": "arc-3",
-  "headline": "One student takes the ARC-3 lead. Tufa answers with compute bravado.",
+  "headline": "Yi-Chia Chen edges past Tufa Labs to take the ARC-3 lead.",
   "id": "2026-10-09-arc3-rabbit-and-spider",
   "image": {
     "alt": "A giant fluffy rabbit and its smaller companion face Tufa’s cartoon spider carrying graphics cards in a snowy city. ARC-3 score card: Yi-Chia Chen first at 59.17; Tufa Labs second at 56.52.",
     "caption": "AI-generated editorial illustration. Score panel: October 9, 1:23 PM Eastern public-board observation; provisional standings. The GPU pile is a metaphor. Game inset: ls20 from ARC Explainer’s public game guides.",
     "src": "/news-images/2026-10-09-rabbit-and-spider.webp"
   },
-  "interpretation": "The rabbit gets bigger; the spider straps on more graphics cards. This callback to Tufa’s snowy battle scene uses Chen’s rabbit avatar and Tufa’s cartoon spider. The GPU pile is an editorial metaphor for the lab’s compute talk, not a report of its equipment.",
+  "interpretation": "The rabbit gets bigger; the friendly spider straps on more graphics cards. Our competition cartoon is a callback to Tufa’s snowy battle scene, with Chen’s rabbit avatar and Tufa’s cartoon spider as its contenders. The GPU pile is an editorial metaphor inspired by Tufa’s post.",
   "publishedAt": "2026-10-09T17:27:39Z",
   "sections": [
     {
       "sourceIds": [
         "board"
       ],
-      "text": "Yi-Chia Chen has moved in front of Tufa Labs on the ARC-AGI-3 public board. The checked snapshot puts Chen at 59.17 and Tufa at 56.52: a 2.65-point gap. The public roster lists one account, threerabbits, for Chen and six for Tufa. One listed competitor is setting the pace ahead of a lab’s lineup."
+      "text": "Yi-Chia Chen has moved in front of Tufa Labs on the ARC-AGI-3 public board. The checked snapshot puts Chen at 59.17 and Tufa at 56.52: a 2.65-point gap. The public roster lists one account, threerabbits, for Chen and six for Tufa. Chen now sets the pace, with Tufa Labs the closest challenger in this snapshot."
     },
     {
       "sourceIds": [
@@ -27,7 +27,7 @@
       "sourceIds": [
         "tufa-post"
       ],
-      "text": "Tufa answered on X with an AI battle scene and called the position a temporary setback, saying it remained dedicated to crushing competitors with overwhelming resources and compute. That is Tufa’s public rhetoric; the standings record the scores. The next submissions can change the order again."
+      "text": "Tufa marked the leaderboard moment on X with an AI-generated battle scene. Its post described a temporary setback and reaffirmed the team’s commitment to resources and compute. Chen’s lead and Tufa’s response give the race a new chapter. The public board can change again as the competition continues."
     }
   ],
   "sources": [
