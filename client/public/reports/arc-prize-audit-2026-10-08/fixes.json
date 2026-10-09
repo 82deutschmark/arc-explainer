@@ -3,7 +3,7 @@
   "updated": "2026-10-09",
   "scope": "Two official-site asks, framed as an offer. Third-party resources lead; Mark’s own guides are offered for official hosting, with a link as the fallback.",
   "context_from_mark": "Matt—ARC Explainer is a hobby project I build in my own time, unpaid. I built these tools because I wanted to understand ARC and couldn’t find them anywhere. Thanks for already listing the Puzzle Explorer in your Tools section.",
-  "offer": "This isn’t about traffic to my site. I’d happily shut it down if these things lived on arcprize.org. Anything I wrote is yours to copy, rehost or adapt; the code is public at https://github.com/82deutschmark/arc-explainer and I’ll add whatever license makes reuse easy. If hosting something officially isn’t possible, a link works, and I’m glad to help in whatever way is useful.",
+  "offer": "This isn’t about traffic to my site. I’d happily shut it down if these things lived on arcprize.org. Anything I wrote is yours to copy, rehost or adapt; the code is public at https://github.com/82deutschmark/arc-explainer under the MIT license. If hosting something officially isn’t possible, a link works, and I’m glad to help in whatever way is useful.",
   "asks": [
     {
       "id": "missing-resources",
@@ -108,10 +108,6 @@
         {
           "url": "https://arc.markbarney.net/task/13e47133?highlight=73845",
           "note": "A failed Opus 4.6 attempt: reasoning, both predicted grids beside the expected ones, mismatch toggle."
-        },
-        {
-          "url": "https://arc.markbarney.net/analytics",
-          "note": "Task/model analytics."
         }
       ],
       "official_counterpart": "https://arcprize.org/tasks/13e47133#model-performance",

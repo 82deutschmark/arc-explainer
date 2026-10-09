@@ -3,7 +3,7 @@ https://arc.markbarney.net/feedback
 
 Matt—ARC Explainer is a hobby project I build in my own time, unpaid. I built these tools because I wanted to understand ARC and couldn’t find them anywhere. Thanks for already listing the Puzzle Explorer in your Tools section.
 
-This isn’t about traffic to my site. I’d happily shut it down if these things lived on arcprize.org. Anything I wrote is yours to copy, rehost or adapt; the code is public at https://github.com/82deutschmark/arc-explainer and I’ll add whatever license makes reuse easy. If hosting something officially isn’t possible, a link works, and I’m glad to help in whatever way is useful.
+This isn’t about traffic to my site. I’d happily shut it down if these things lived on arcprize.org. Anything I wrote is yours to copy, rehost or adapt; the code is public at https://github.com/82deutschmark/arc-explainer under the MIT license. If hosting something officially isn’t possible, a link works, and I’m glad to help in whatever way is useful.
 
 1. Add the missing ARC-3 resources.
 
@@ -46,7 +46,6 @@ Check: each added card has a direct working destination, purpose and creator cre
 2. Make the underlying model attempt inspectable.
 Open the actual attempt from ARC1/2 result rows; show released reasoning, submitted/expected grids, mismatches and cost/time together. Add failed-task filters and same-task model comparisons when both records exist. ARC Prize already holds these records from its own testing, so this does not depend on Hugging Face or a third-party viewer.
 Reference: https://arc.markbarney.net/task/13e47133?highlight=73845 (a failed Opus 4.6 attempt: reasoning, both predicted grids beside the expected ones, mismatch toggle)
-Reference: https://arc.markbarney.net/analytics
 Official counterpart: https://arcprize.org/tasks/13e47133#model-performance
 Check: a reader can follow a result to its actual attempt. Source/settings are visible and unavailable fields are labeled.
 

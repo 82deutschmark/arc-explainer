@@ -17,7 +17,7 @@ I'm a video game producer, not an engineer. I work with engineers. I'm not going
 
 **Production:** https://arc.markbarney.net
 **Staging:** https://arc-explainer-staging.up.railway.app/ (branch `ARC3`)
-**Docs:** [CLAUDE.md](./CLAUDE.md) • [API Reference](./docs/EXTERNAL_API.md) • [Changelog](./CHANGELOG.md)
+**Docs:** [CLAUDE.md](./CLAUDE.md) • [API Reference](./docs/reference/api/EXTERNAL_API.md) • [Routes & API list](./docs/reference/architecture/ROUTES_AND_API.md) • [Changelog](./CHANGELOG.md) • [License](./LICENSE)
 
 ---
 
@@ -25,7 +25,7 @@ I'm a video game producer, not an engineer. I work with engineers. I'm not going
 
 ```bash
 # Clone and install
-git clone <repository-url> arc-explainer && cd arc-explainer
+git clone https://github.com/82deutschmark/arc-explainer.git && cd arc-explainer
 git submodule update --init --recursive
 npm install
 
@@ -35,10 +35,10 @@ OPENROUTER_API_KEY=your_key_if_used   # optional; BYOK enforced in prod
 DATABASE_URL=postgresql://...         # optional for local DB-backed features
 
 # Run development server
-npm run dev  # Allow ~10s to warm up, then open localhost:5173
+npm run dev  # Allow ~10s to warm up, then open localhost:5000
 
-# Or build and run dev server
-npm run build-dev
+# Or build and run the production server
+npm run prod
 ```
 
 More detail: [CLAUDE.md](./CLAUDE.md) and [docs/reference/architecture/DEVELOPER_GUIDE.md](./docs/reference/architecture/DEVELOPER_GUIDE.md).
@@ -49,15 +49,15 @@ More detail: [CLAUDE.md](./CLAUDE.md) and [docs/reference/architecture/DEVELOPER
 - Dev/staging: server keys may exist, but tests should work with your own keys too.  
 - Worm Arena & Poetiq flows accept user-supplied keys via UI; backend injects them per session (see [docs/reference/api/EXTERNAL_API.md](./docs/reference/api/EXTERNAL_API.md) and [docs/reference/api/SnakeBench_WormArena_API.md](./docs/reference/api/SnakeBench_WormArena_API.md)).
 
-## What to Try First
+## What's Here
 
-- **Puzzle Analyst:** `/task/:taskId` — high-density grid of analyses.
-- **RE-ARC Bench:** `/re-arc` — generate unique evaluation datasets and validate solver submissions.
-- **Worm Arena:** `/worm-arena` (replays), `/worm-arena/live/:sessionId` (live), `/worm-arena/stats` (leaderboard).
-- **ARC3 playground:** `/arc3/playground` — watch agents solve real ARC-AGI-3 games.
-  - External ARC3 site: [arc3.sonpham.net](https://arc3.sonpham.net)
-  - Featured replay: [Locksmith run](https://arc3.sonpham.net/share/77c39fa5-63d2-47bd-be83-0eb1b20e5d71)
-- **APIs:** start with `/api/health`, then `/api/puzzle/overview`; see EXTERNAL_API.md for the full surface area.
+- **ARC-AGI-3 game guides:** `/arc3/games` — level-by-level rules, pictures and commentary for all 25 public games; the whole set as one markdown file at `/arc3/games.md`.
+- **Model attempts you can inspect:** `/task/:taskId` — each saved attempt's reasoning, predicted and expected grids, mismatches, cost and time.
+- **Analytics:** `/analytics` — model performance across the ARC-AGI-1 and ARC-AGI-2 datasets, built from imported ARC Prize records.
+- **Scoring and comparison:** `/scoring` (two attempts per test input, scored the official way) and `/model-comparison`.
+- **Community ARC-3 games:** `/arc3/gallery` — playable games built on ARCEngine, credited to their authors.
+- **RE-ARC:** `/re-arc` — generate fresh evaluation sets and validate submissions.
+- **APIs:** start with `/api/health`, then `/api/puzzle/overview`; see [EXTERNAL_API.md](./docs/reference/api/EXTERNAL_API.md).
 
 ## Working in This Repo
 
@@ -77,10 +77,10 @@ More detail: [CLAUDE.md](./CLAUDE.md) and [docs/reference/architecture/DEVELOPER
 ## Architecture Overview
 
 ### Technology Stack
-**Frontend:** React 18 + TypeScript + Vite + TailwindCSS + DaisyUI components
+**Frontend:** React 18 + TypeScript + Vite + Tailwind CSS, with shadcn/ui and DaisyUI components
 **Backend:** Express.js + TypeScript + PostgreSQL (Drizzle ORM) + in-memory fallback
 **AI Integration:** Unified BaseAIService pattern supporting 6+ providers
-**Real-time:** WebSocket streaming for Saturn solver and batch progress
+**Real-time:** Server-sent events and WebSocket streaming for solvers and batch progress
 **Deployment:** Railway-ready with Docker support
 
 ### Key Design Patterns
@@ -90,276 +90,18 @@ More detail: [CLAUDE.md](./CLAUDE.md) and [docs/reference/architecture/DEVELOPER
 - **Response preservation** - Raw API responses saved before parsing for debugging
 - **Conversation chaining** - Provider-aware context management with 30-day persistence
 
-### Routes
-
-#### Frontend routes (wouter)
-
-- **Home / puzzles**
-  - `/`
-  - `/browser`
-  - `/task/:taskId` (new default - Puzzle Analyst)
-  - `/puzzle/:taskId` (legacy - PuzzleExaminer)
-  - `/examine/:taskId`
-  - `/puzzles/database`
-- **Discussion**
-  - `/discussion`
-  - `/discussion/:taskId`
-- **Analytics / rankings**
-  - `/analytics`
-  - `/leaderboards`
-  - `/elo`
-  - `/elo/leaderboard`
-  - `/elo/:taskId`
-  - `/compare`
-  - `/compare/:taskId`
-- **Feedback / debate**
-  - `/feedback`
-  - `/test-solution`
-  - `/test-solution/:taskId`
-  - `/debate`
-  - `/debate/:taskId`
-- **Models**
-  - `/models`
-  - `/model-config`
-  - `/model-comparison`
-- **Solvers**
-  - `/puzzle/saturn/:taskId`
-  - `/puzzle/grover/:taskId`
-  - `/puzzle/beetree/:taskId?`
-  - `/puzzle/poetiq/:taskId`
-  - `/poetiq`
-- **RE-ARC Bench** (new - community testing)
-  - `/re-arc` - generate datasets and evaluate submissions
-- **ARC3**
-  - `/arc3`
-  - `/arc3/playground`
-  - `/arc3/games`
-  - `/arc3/games/:gameId`
-- **Worm Arena / SnakeBench**
-  - `/snakebench`
-  - `/snake-arena` (redirect)
-  - `/worm-arena`
-  - `/worm-arena/live`
-  - `/worm-arena/live/:sessionId`
-  - `/worm-arena/matches`
-  - `/worm-arena/stats`
-  - `/worm-arena/models` (new - model match history)
-  - `/worm-arena/rules` (new - rules & prompt transparency)
-- **Admin**
-  - `/admin`
-  - `/admin/models`
-  - `/admin/ingest-hf`
-  - `/admin/openrouter`
-- **Other**
-  - `/trading-cards`
-  - `/hall-of-fame`
-  - `/human-cards` (redirect)
-  - `/kaggle-readiness`
-  - `/scoring`
-  - `/about`
-  - `/llm-reasoning`
-  - `/llm-reasoning/advanced`
-  - plus a catch-all 404
-
-#### Backend API routes (Express)
-
-- **Health**
-  - `GET /api/health`
-- **Models**
-  - `GET /api/models`
-  - `GET /api/models/:modelKey`
-  - `GET /api/models/provider/:provider`
-- **Model management (GUI)**
-  - `GET /api/model-management/list`
-  - `GET /api/model-management/stats`
-  - `GET /api/model-management/search`
-  - `POST /api/model-management/validate`
-  - `POST /api/model-management/toggle-active`
-  - `POST /api/model-management/create-alias`
-  - `POST /api/model-management/add`
-  - `PUT /api/model-management/notes`
-  - `DELETE /api/model-management/delete`
-  - `GET /api/model-management/openrouter-models`
-- **ARC puzzles**
-  - `GET /api/puzzle/list`
-  - `GET /api/puzzle/overview`
-  - `GET /api/puzzle/task/:taskId`
-  - `POST /api/puzzle/bulk-status`
-  - `POST /api/puzzle/analyze/:taskId/:model`
-  - `POST /api/puzzle/analyze-list`
-  - `GET /api/puzzle/:puzzleId/has-explanation`
-  - `POST /api/puzzle/reinitialize`
-  - `POST /api/puzzle/validate` (returns 501)
-  - Stats:
-    - `GET /api/puzzle/accuracy-stats`
-    - `GET /api/puzzle/general-stats`
-    - `GET /api/puzzle/raw-stats`
-    - `GET /api/puzzle/performance-stats`
-    - `GET /api/puzzle/performance-stats-filtered`
-    - `GET /api/puzzle/trustworthiness-stats-filtered`
-    - `GET /api/puzzle/confidence-stats`
-    - `GET /api/puzzle/worst-performing`
-    - `GET /api/puzzles/stats`
-- **Generic analysis SSE**
-  - `POST /api/stream/analyze`
-  - `GET /api/stream/analyze/:taskId/:modelKey/:sessionId`
-  - `DELETE /api/stream/analyze/:sessionId`
-  - `POST /api/stream/cancel/:sessionId`
-- **Discussion**
-  - `GET /api/discussion/eligible`
-- **Metrics & cost**
-  - `GET /api/metrics/reliability`
-  - `GET /api/metrics/comprehensive-dashboard`
-  - `GET /api/metrics/compare`
-  - `GET /api/metrics/costs/models`
-  - `GET /api/metrics/costs/models/map`
-  - `GET /api/metrics/costs/models/:modelName`
-  - `GET /api/metrics/costs/models/:modelName/trends`
-  - `GET /api/metrics/costs/system/stats`
-- **Model dataset performance**
-  - `GET /api/model-dataset/performance/:modelName/:datasetName`
-  - `GET /api/model-dataset/models`
-  - `GET /api/model-dataset/datasets`
-  - `GET /api/model-dataset/metrics/:modelName/:datasetName`
-- **Prompts**
-  - `POST /api/prompt/preview/:provider/:taskId`
-  - `GET /api/prompts`
-  - `POST /api/prompt-preview`
-- **Explanations**
-  - `GET /api/puzzle/:puzzleId/explanations/summary`
-  - `GET /api/puzzle/:puzzleId/explanations`
-  - `GET /api/puzzle/:puzzleId/explanation`
-  - `GET /api/explanations/:id`
-  - `POST /api/puzzle/save-explained/:puzzleId`
-  - Rebuttal chain:
-    - `GET /api/explanations/:id/chain`
-    - `GET /api/explanations/:id/original`
-- **Feedback + solutions**
-  - `POST /api/feedback`
-  - `GET /api/feedback`
-  - `GET /api/feedback/stats`
-  - `GET /api/feedback/accuracy-stats`
-  - `GET /api/feedback/accuracy-stats-filtered`
-  - `GET /api/feedback/overconfident-models`
-  - `GET /api/feedback/debate-accuracy-stats`
-  - `GET /api/explanation/:explanationId/feedback`
-  - `GET /api/puzzle/:puzzleId/feedback`
-  - `GET /api/puzzles/:puzzleId/solutions`
-  - `POST /api/puzzles/:puzzleId/solutions`
-  - `POST /api/solutions/:solutionId/vote`
-  - `GET /api/solutions/:solutionId/votes`
-- **ELO**
-  - `GET /api/elo/comparison`
-  - `GET /api/elo/comparison/:puzzleId`
-  - `POST /api/elo/vote`
-  - `GET /api/elo/leaderboard`
-  - `GET /api/elo/models`
-  - `GET /api/elo/stats`
-- **Saturn**
-  - `POST /api/saturn/analyze/:taskId`
-  - `GET /api/stream/saturn/:taskId/:modelKey`
-  - `POST /api/saturn/analyze-with-reasoning/:taskId`
-  - `GET /api/saturn/status/:sessionId`
-- **Grover**
-  - `POST /api/puzzle/grover/:taskId/:modelKey`
-  - `GET /api/stream/grover/:taskId/:modelKey`
-  - `GET /api/grover/status/:sessionId`
-- **Poetiq**
-  - `POST /api/poetiq/solve/:taskId`
-  - `POST /api/poetiq/batch`
-  - `GET /api/poetiq/batch/:sessionId`
-  - `GET /api/poetiq/status/:sessionId`
-  - `GET /api/poetiq/models`
-  - `GET /api/poetiq/community-progress`
-  - `GET /api/poetiq/stream/:sessionId`
-  - `POST /api/poetiq/stream/solve/:taskId`
-  - `POST /api/poetiq/stream/start/:sessionId`
-- **Beetree**
-  - `POST /api/beetree/run`
-  - `GET /api/beetree/status/:sessionId`
-  - `POST /api/beetree/estimate`
-  - `GET /api/beetree/history/:taskId`
-  - `GET /api/beetree/cost-breakdown/:explanationId`
-  - `POST /api/beetree/cancel/:sessionId`
-  - `GET /api/stream/analyze/beetree-:sessionId`
-- **SnakeBench**
-  - `GET /api/snakebench/models-with-games` (new)
-  - `GET /api/snakebench/model-history-full` (new)
-  - `GET /api/snakebench/model-insights` (new)
-  - `GET /api/snakebench/llm-player/prompt-template` (new)
-  - `POST /api/snakebench/run-match`
-  - `POST /api/snakebench/run-batch`
-  - `GET /api/snakebench/games`
-  - `GET /api/snakebench/games/:gameId`
-  - `GET /api/snakebench/matches`
-  - `GET /api/snakebench/health`
-  - `GET /api/snakebench/recent-activity`
-  - `GET /api/snakebench/leaderboard`
-  - `GET /api/snakebench/stats`
-  - `GET /api/snakebench/model-rating`
-  - `GET /api/snakebench/model-history`
-  - `GET /api/snakebench/greatest-hits`
-  - `GET /api/snakebench/trueskill-leaderboard`
-- **Worm Arena Live SSE**
-  - `POST /api/wormarena/prepare`
-  - `GET /api/wormarena/stream/:sessionId`
-- **ARC3**
-  - `GET /api/arc3/default-prompt`
-  - `GET /api/arc3/system-prompts`
-  - `GET /api/arc3/system-prompts/:id`
-  - `GET /api/arc3/games`
-  - `POST /api/arc3/start-game`
-  - `POST /api/arc3/manual-action`
-  - `POST /api/arc3/real-game/run`
-  - `POST /api/arc3/stream/prepare`
-  - `GET /api/arc3/stream/:sessionId`
-  - `POST /api/arc3/stream/cancel/:sessionId`
-  - `POST /api/arc3/stream/:sessionId/continue`
-  - `GET /api/arc3/stream/:sessionId/continue-stream`
-- **Batch**
-  - `POST /api/batch/start`
-  - `GET /api/batch/status/:sessionId`
-  - `POST /api/batch/pause/:sessionId`
-  - `POST /api/batch/resume/:sessionId`
-  - `GET /api/batch/results/:sessionId`
-  - `GET /api/batch/sessions`
-- **Admin**
-  - `GET /api/admin/quick-stats`
-  - `GET /api/admin/recent-activity`
-  - `POST /api/admin/validate-ingestion`
-  - `POST /api/admin/start-ingestion`
-  - `GET /api/admin/ingestion-history`
-  - `GET /api/admin/hf-folders`
-  - OpenRouter admin:
-    - `GET /api/admin/openrouter/catalog`
-    - `GET /api/admin/openrouter/discover`
-    - `POST /api/admin/openrouter/import`
-    - `GET /api/admin/openrouter/sync-config`
-  - Recovery helpers:
-    - `GET /api/admin/recovery-stats`
-    - `POST /api/admin/recover-multiple-predictions`
+The full frontend route and backend API listing lives in [docs/reference/architecture/ROUTES_AND_API.md](./docs/reference/architecture/ROUTES_AND_API.md).
 
 ---
 
 ## For Researchers
 
-This platform enables systematic study of AI reasoning capabilities on abstract visual patterns:
+- **Model comparison:** reasoning and results across GPT, o-series, Grok, Claude, Gemini and DeepSeek models.
+- **Cost and performance:** token usage against accuracy for different providers.
+- **Reasoning traces:** stored reasoning from models that release it.
+- **Data access:** an open API over all stored attempts, Hugging Face imports of published ARC Prize results, and raw API responses preserved for custom analysis.
 
-### Research Use Cases
-- **Model comparison** - Evaluate reasoning across GPT-5, o-series, Grok-4, Claude, Gemini, DeepSeek
-- **Cost-performance analysis** - Token usage vs. accuracy trade-offs for different providers
-- **Confidence calibration** - Study overconfidence patterns and trustworthiness scoring
-- **Reasoning depth** - Analyze structured thinking from models with reasoning token support
-- **Conversation dynamics** - Track how context affects progressive reasoning refinement
-- **Batch evaluation** - Large-scale systematic testing across 1,000+ puzzles
-
-### Data Access
-- **Unrestricted API** - Full programmatic access to all analyses and metrics
-- **HuggingFace integration** - Import external predictions for comparative analysis
-- **Raw response storage** - Complete API payloads preserved for custom analysis
-- **Custom prompts** - Design specialized evaluation frameworks
-
-**API Documentation:** [docs/EXTERNAL_API.md](./docs/EXTERNAL_API.md)
+**API Documentation:** [docs/reference/api/EXTERNAL_API.md](./docs/reference/api/EXTERNAL_API.md)
 
 ---
 
@@ -374,23 +116,24 @@ The Abstract Reasoning Corpus for Artificial General Intelligence (ARC-AGI) is a
 
 ### Puzzle Format
 Each puzzle consists of:
-- **Training examples**: 3 input/output pairs demonstrating the pattern
-- **Test cases**: 1-2 input grids requiring output prediction
+- **Training examples**: usually 3 input/output pairs (2 to 10 in the public sets) demonstrating the pattern
+- **Test cases**: 1 to 4 input grids requiring output prediction
 - **Grids**: Rectangular matrices (1x1 to 30x30) with integers 0-9 (visualized as colors or emojis)
 
 ### Success Criterion
 - Predict **exact** output grid dimensions and all cell values
 - 2 attempts allowed per test input
 - Must work on **first encounter** with the puzzle
-- Human performance: ~66% on evaluation set
 
 ### Data Location
 ```
 data/
-├── training/      # 1000 tasks for algorithm training
-├── evaluation/    # 120 tasks for testing (ARC-AGI-1)
-├── evaluation2/   # 120 tasks for testing (ARC-AGI-2)
-└── training2/     # Additional training tasks
+├── training/      # 400 ARC-AGI-1 training tasks
+├── evaluation/    # 400 ARC-AGI-1 evaluation tasks
+├── training2/     # 1,000 ARC-AGI-2 training tasks
+├── evaluation2/   # 120 ARC-AGI-2 evaluation tasks
+├── arc-heavy/     # 300 ARC-Heavy (BARC) tasks
+└── concept-arc/   # 179 ConceptARC tasks
 ```
 
 **Read the ARC-AGI-2 paper:** [arxiv.org/pdf/2505.11831](https://www.arxiv.org/pdf/2505.11831)
@@ -401,6 +144,10 @@ data/
 ## Contributing
 
 Contributions welcome. Start with [CLAUDE.md](./CLAUDE.md) for coding standards, SRP/DRY expectations, and streaming requirements. Release notes live in [CHANGELOG.md](./CHANGELOG.md).
+
+## License
+
+ARC Explainer's own code, documentation and writing are released under the [MIT License](./LICENSE). The ARC datasets, borrowed solvers, community games and submodules in this repository belong to their authors and keep their own licenses; see [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
 
 ---
 

@@ -50,5 +50,10 @@
     "official": "https://arcprize.org/results/anthropic-claude-opus-5-5",
     "observation": "ARC1/2 scores and task outcomes are published; all five ARC3 variants show a dash. No future publication commitment established.",
     "mark_account": "Mark reports asking why raw-result publication stopped and being told he would hear back; no answer yet. Whether publication has ended is unconfirmed."
+  },
+  "license": {
+    "file": "https://github.com/82deutschmark/arc-explainer/blob/main/LICENSE",
+    "spdx": "MIT",
+    "scope": "ARC Explainer's own code, documentation and writing; third-party datasets, solvers, games and submodules keep their own licenses (THIRD_PARTY_NOTICES.md). package.json has declared MIT since the first commit on July 1, 2025."
   }
 }
