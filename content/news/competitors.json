@@ -68,6 +68,26 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025",
+        "text": "ARC Prize’s 2025 results list Lonnie fourth; the final Kaggle leaderboard lists lonnieqin as that team’s only account."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T22:23:53Z",
+    "id": "arc-2-15488658",
+    "lastObservedAt": "2026-10-09T22:23:53Z",
+    "members": [
+      "lonnieqin"
+    ],
+    "name": "Lonnie",
+    "teamId": "15488658"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15501171",
@@ -103,6 +123,26 @@
     ],
     "name": "Jan Disselhoff",
     "teamId": "15507730"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024",
+        "text": "ARC Prize’s 2024 results list PoohAI fifth; the final Kaggle leaderboard lists gromml among PoohAI’s four accounts."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T22:23:53Z",
+    "id": "arc-2-15509541",
+    "lastObservedAt": "2026-10-09T22:23:53Z",
+    "members": [
+      "gromml"
+    ],
+    "name": "gromml",
+    "teamId": "15509541"
   },
   {
     "aliases": [],
@@ -244,6 +284,26 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024",
+        "text": "ARC Prize’s 2024 results list alijs third; the final Kaggle leaderboard lists alijs1 as that team’s only account."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T22:23:53Z",
+    "id": "arc-2-16724472",
+    "lastObservedAt": "2026-10-09T22:23:53Z",
+    "members": [
+      "alijs1"
+    ],
+    "name": "alijs",
+    "teamId": "16724472"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16756524",
@@ -338,6 +398,26 @@
     ],
     "name": "Tufa Labs",
     "teamId": "15486995"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025",
+        "text": "ARC Prize’s 2025 results list Lonnie fourth; the final Kaggle leaderboard lists lonnieqin as that team’s only account."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T22:23:52Z",
+    "id": "arc-3-15488665",
+    "lastObservedAt": "2026-10-09T22:23:52Z",
+    "members": [
+      "lonnieqin"
+    ],
+    "name": "Lonnie",
+    "teamId": "15488665"
   },
   {
     "aliases": [],
@@ -474,6 +554,26 @@
     ],
     "name": "keithtyser",
     "teamId": "15508513"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024",
+        "text": "ARC Prize’s 2024 results list PoohAI fifth; the final Kaggle leaderboard lists gromml among PoohAI’s four accounts."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T22:23:52Z",
+    "id": "arc-3-15509536",
+    "lastObservedAt": "2026-10-09T22:23:52Z",
+    "members": [
+      "gromml"
+    ],
+    "name": "gromml",
+    "teamId": "15509536"
   },
   {
     "aliases": [],
@@ -1074,6 +1174,26 @@
     ],
     "name": "lvisdd",
     "teamId": "17018987"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024",
+        "text": "ARC Prize’s 2024 results list alijs third; the final Kaggle leaderboard lists alijs1 as that team’s only account."
+      }
+    ],
+    "firstObservedAt": "2026-10-09T22:23:52Z",
+    "id": "arc-3-17022020",
+    "lastObservedAt": "2026-10-09T22:23:52Z",
+    "members": [
+      "alijs1"
+    ],
+    "name": "alijs",
+    "teamId": "17022020"
   },
   {
     "aliases": [],

@@ -72,7 +72,8 @@ removed their Kaggle picture since, it deletes our copy too. Stage the `.webp` f
 | Ivan Sorokin | `ivan-sorokin.webp` | crop of `/ivanARC2.png` (2025 NVARC card, `#contributor-7`) |
 | François Chollet, Mike Knoop | `arc-founders.webp` | crop of `/arc founders.png` (founders card, `#contributor-19`) |
 | Yi-Chia Chen, Keith Tyser, Jeroen Cottaar, Jan Disselhoff, David Hartmann, Daniel Franzen | `<id>.webp` | Kaggle profile pictures |
-| Mithil A Vakde | — | default Kaggle avatar; initials |
+| IsaiahP, Lonnie, alijs | `<id>.webp` | Kaggle profile pictures (past prize winners added 9 Oct; no Hall of Fame cards, so their wins are their first fact) |
+| Mithil A Vakde, gromml | — | default Kaggle avatar; initials |
 
 ## Honors: `people.json` → `hallOfFame`
 
