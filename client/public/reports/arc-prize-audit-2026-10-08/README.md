@@ -17,3 +17,5 @@ Task-hint follow-up: AP-20 records 16 equal-total/shape-count-change label misma
 
 October 9 presentation update: `/feedback` now leads with seven annotated resource links and the requests about useful task guidance, raw-attempt publication and hands-on curation. The full dated audit and comparison remain in an expandable section.
 October 9 follow-up: adds Mark’s noncommercial motivation, direct original-author resources, and explicit questions about Hugging Face publication and Opus 5.5 ARC-3 status. New publication observations are dated separately from the original audit.
+
+Clarification: the desired model comparison is Opus 4.5 versus 5.5, enabled by future access to the newer raw attempts. The existing Opus 4.5 link is an archive example, not an available 5.5 comparison. Resource feedback concerns curation quality even where ARC Prize already links the creator.

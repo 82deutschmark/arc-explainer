@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.130.3  Oct 9, 2026
+
+- **Clarify the comparison and curation requests** (Author: Codex). Rewrites feedback point 2 around the desired Opus 4.5-versus-5.5 reasoning comparison, clearly separating the existing archive example from unavailable newer records. Acknowledges ARC Prize already links Simon’s work and asks for better explanation, organization and maintenance of resources. Aligns the coding-assistant brief and curation proposal; no deployment polling at the user’s request.
+
 ### Version 9.130.2  Oct 9, 2026
 
 - **Explain the purpose of ARC feedback** (Author: Codex). Adds Mark’s noncommercial motivation and AI-assisted origins, credits original authors whose resources he curates, and asks for clear Hugging Face and Opus 5.5 ARC-3 publication status. Separates verified missing public scores from unknown evaluation/release plans; keeps historical reasoning comparisons as the intended benefit. Updates the coding-assistant brief and dated evidence. Plan: `docs/2026-10-09-feedback-link-guide-plan.md`.
