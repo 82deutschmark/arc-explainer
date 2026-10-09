@@ -10,11 +10,11 @@
  *          under the byline; roster names in the rail carry their faces too.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
-import { StoryFaces, TeamPeople } from '@/components/news/NewsPeople';
+import { StoryFeature, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { competitorPath, storyPeople, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { competitorPath, featuredPerson, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
@@ -63,7 +63,7 @@ export default function NewsArticle() {
           <Link className="news-read" href={KAGGLE_COMPETITIONS[article.competition].path}>Explore the full leaderboard →</Link>
         </div>
         <aside className="news-sidebar" aria-label="Reporting notes and sources">
-          <StoryFaces people={storyPeople(article, query.data?.people ?? [], query.data?.competitors ?? [])} max={10} competition={article.competition} label="Contenders in this story" />
+          <StoryFeature person={featuredPerson(article, query.data?.people ?? [])} competition={article.competition} />
           <h2 className="news-section-title">How this report was checked</h2>
           <div className="news-note"><p><strong>Board date</strong><time dateTime={article.dataAsOf}>{newsDate(article.dataAsOf)}</time></p><p><strong>Comparison</strong>{article.baselineAt ? <time dateTime={article.baselineAt}>{newsDate(article.baselineAt)}</time> : 'No comparable earlier snapshot'}</p><p><strong>Coverage</strong>{article.coverageNote}</p></div>
           <a className="news-read" href={`/api/news/${article.id}/evidence`}>Exact observations and reporting data →</a>

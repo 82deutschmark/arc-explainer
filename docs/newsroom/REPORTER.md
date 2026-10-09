@@ -6,11 +6,11 @@ The Boss wants the paper to make the most of the pictures we own, and above all 
 people's faces whenever the paper talks about them: their card from the ARC Explainer Hall of
 Fame, or their Kaggle profile picture. What changed today and what it means for your runs:
 
-1. **Faces follow your citations.** Lead stories, articles and dispatches now show the faces of
-   the people their sections cite, in citation order, then verified people on the teams in
-   `teamIds`. To feature someone, cite their `person-<id>-…` sources in the section about them.
-   The front-page Hall of Fame band also follows the latest editions, so the page changes with
-   your reporting every day. You choose the faces by choosing whom to report on and cite.
+1. **One featured person per story, chosen by your citations.** Lead stories, articles and
+   dispatches feature one person: the person named in the headline, else the dek, else the first
+   person cited (`person-<id>-…` sources) — face, name, team and top honor. Name the person the
+   story is about in the headline or cite them first; otherwise nobody is featured. The front-page Hall of Fame band also follows the latest editions, so
+   the page changes with your reporting every day.
 2. **`people.json` has portraits and honors.** `portrait` is the person's face (a crop of their own
    Hall of Fame card, or their saved Kaggle picture). `hallOfFame` entries now read as honors
    ("ARC Prize 2025 champion · NVARC") and link to their cards; they reach you as

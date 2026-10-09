@@ -27,6 +27,20 @@ export function PersonLinks({ person, honors = 1 }: { person: NewsPerson; honors
   return <span className="news-person-chip"><PersonPortrait person={person} size="chip" decorative /><span><Link href={personPath(person.id)}>{person.name} →</Link>{person.hallOfFame.slice(0, honors).map(card => <span key={card.path} className="news-person-history"> · <Link href={card.path}>{card.label} ↗</Link></span>)}</span></span>;
 }
 
+/**
+ * The one person a story features (featuredPerson in shared/news.ts: named in the headline, then
+ * the dek, then first cited); roster members who are not in the story never get pulled in. Face, name, their team
+ * in this contest and their top honor, so it reads as the subject, never as a byline.
+ */
+export function StoryFeature({ person, competition }: { person?: NewsPerson; competition: NewsCompetition }) {
+  if (!person) return null;
+  const team = [...person.memberships].reverse().find(member => member.competition === competition);
+  return <Link href={personPath(person.id)} className="news-story-feature">
+    <PersonPortrait person={person} size="card" decorative />
+    <span><em>In this story</em><strong>{person.name}</strong>{team && <span>{team.teamName}</span>}{person.hallOfFame[0] && <span className="news-story-feature-honor">{person.hallOfFame[0].label}</span>}</span>
+  </Link>;
+}
+
 /** What a face is doing in a story: the person's team in this contest, else their top honor. */
 function faceCaption(person: NewsPerson, competition?: NewsCompetition) {
   const team = competition && [...person.memberships].reverse().find(member => member.competition === competition);

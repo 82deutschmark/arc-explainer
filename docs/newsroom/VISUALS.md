@@ -11,8 +11,7 @@ picture**. This page lists every picture, where it lives, and how the pages choo
 
 | Where | Whose faces | Driven by |
 |---|---|---|
-| Front page story, article page (under the byline) | people the edition cites, in citation order, then verified people on the teams in `teamIds` | `storyPeople()` in `shared/news.ts` |
-| Dispatches (front page) | people the dispatch cites | `citedPeople()` |
+| Front page story, dispatch, article page | **one** featured person: the person named in the headline, else the dek, else the first person the sections cite (face, name, team, top honor). | `StoryFeature`, `featuredPerson()` |
 | Front page "people behind the puzzles" band | Hall of Fame cards of past winners in the latest editions first, then other past winners | `archiveCards()` in `client/src/pages/News.tsx` |
 | Competitor notebook cards, team rosters, "Names in this edition" | verified people on that team | `peopleForTeam()` |
 | Community desk | the post's author when the X handle is a verified person, plus people in `personIds` | `personForXHandle()` |
@@ -20,9 +19,9 @@ picture**. This page lists every picture, where it lives, and how the pages choo
 
 **So the daily layout follows the reporting.** Cite a person's brief sources
 (`person-<id>-identity|fact|archive|roster-<n>`) in the sections where you write about them and
-their face leads that story. The first person you cite is the first face. A story about a team with
-no verified people shows no faces; a story that cites three past champions shows three. Choose
-whom to feature with your citations, not with markup.
+the person your headline names (else your dek, else the first person you cite) is featured on that story with their face. Only one person is featured
+per story (Boss: a row of faces read like a staff list). Cite first the person the story is really
+about; a story that cites nobody features nobody.
 
 ## Portraits: `content/news/people.json` → `portrait`
 

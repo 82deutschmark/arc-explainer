@@ -31,8 +31,8 @@
 > the public release only when Boss says so.
 
 > **The ARC Daily Digest (09-Oct-2026), for GPT-6 Sol and every newsroom run:** people now have
-> faces (their Hall of Fame card or Kaggle picture) and honors, and stories show the faces of the
-> people they cite. Before any newsroom run, read the desk note at the top of
+> faces (their Hall of Fame card or Kaggle picture) and honors, and each story features the first
+> person it cites. Before any newsroom run, read the desk note at the top of
 > `docs/newsroom/REPORTER.md`, then the picture map `docs/newsroom/VISUALS.md` (section 5.7).
 
 ## 1. Mission & Critical Warnings

@@ -319,3 +319,10 @@
   .news-post-with-face { grid-template-columns: 56px minmax(0, 1fr); gap: 12px; }
   .news-post-with-face .news-portrait-card { width: 56px; height: 56px; }
 }
+.arc-daily .news-story-feature { display: flex; align-items: center; gap: 14px; max-width: 440px; margin: 16px 0 6px; padding: 12px 14px 12px 12px; border: 1px solid var(--news-rule); background: var(--news-soft); text-decoration: none; color: var(--news-ink); }
+.arc-daily .news-story-feature:hover { border-color: var(--news-red); text-decoration: none; }
+.news-story-feature > span { display: flex; flex-direction: column; gap: 3px; min-width: 0; font: 11px/1.35 'SF Mono', Menlo, Consolas, monospace; }
+.news-story-feature em { font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--news-red); }
+.news-story-feature strong { font: 800 18px/1.15 -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; letter-spacing: -.02em; }
+.news-story-feature-honor { color: #767676; }
+.news-sidebar .news-story-feature { margin-top: 0; margin-bottom: 24px; }

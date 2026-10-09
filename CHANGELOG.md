@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.133.4  Oct 9, 2026
+
+- **One featured person per story** (Author: Claude Opus 5.5). Boss: feature one person if they're in the story, not a row of faces. Stories, dispatches and article pages now show a single feature box (face, name, team in that contest, top honor) for the person named in the headline, else the dek, else the first person cited; nobody named or cited means no box. Roster members not in the story are no longer pulled in. GPT-6 guidance in `docs/newsroom/{REPORTER,VISUALS}.md` and `AGENTS.md` updated. Files: `shared/news.ts`, `client/src/components/news/{NewsPeople,NewsDesk,NewsFrontPage}.tsx`, `client/src/pages/NewsArticle.tsx`, `client/src/components/news/news.css`.
+
 ### Version 9.133.3  Oct 9, 2026
 
 - **/feedback is now a short note of working links for ARC Prize** (Author: Claude Opus 5.5). The Boss said the last version read as asking ARC Prize to host his write-up and was full of counts that meant nothing to the reader. The page in `client/public/reports/arc-prize-audit-2026-10-08/audit.html` now holds only useful ARC-3 links missing from their Resources page, one ARC-1/2 puzzle linked on both sites so the difference shows, and two dead links on their page. Removed the companion `coding-assistant-handoff.txt`, `fixes.json` and `evidence.json`; README updated.

@@ -16,9 +16,9 @@ import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, storyPeople, type NewsArticle, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, featuredPerson, type NewsArticle, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { MastheadAd } from './SponsorPlacement';
-import { StoryFaces, TeamFaces } from './NewsPeople';
+import { StoryFeature, TeamFaces } from './NewsPeople';
 import './news.css';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
@@ -78,14 +78,14 @@ export function EditionLabel({ article }: { article: NewsArticle }) {
   return <div className="news-kicker"><span>{competitionName(article.competition)}</span><span>{editionLabel(article)}</span></div>;
 }
 
-export function StoryPreview({ article, lead = false, people = [], competitors = [] }: { article: NewsArticle; lead?: boolean; people?: NewsPerson[]; competitors?: CompetitorRecord[] }) {
+export function StoryPreview({ article, lead = false, people = [] }: { article: NewsArticle; lead?: boolean; people?: NewsPerson[] }) {
   return <article className={lead ? 'news-story news-lead' : 'news-story'}>
     <EditionLabel article={article} />
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
     <div className="news-byline">The ARC Daily Digest sports desk <span>· {newsDate(article.date)}</span></div>
     {lead && article.sections[0] && <p className="news-lead-excerpt">{article.sections[0].text}</p>}
-    <StoryFaces people={storyPeople(article, people, competitors)} max={lead ? 6 : 4} competition={article.competition} label="Contenders in this story" />
+    <StoryFeature person={featuredPerson(article, people)} competition={article.competition} />
     <Link href={newsArticlePath(article.id)} className="news-read">Read the dispatch →</Link>
   </article>;
 }

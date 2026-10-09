@@ -9,9 +9,9 @@
  */
 import { Link } from 'wouter';
 import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition, NewsPerson, CompetitorRecord } from '@shared/news';
-import { competitionName, newsDate, newsArticlePath, citedPeople } from '@shared/news';
+import { competitionName, newsDate, newsArticlePath, featuredPerson } from '@shared/news';
 import { StoryPreview, sortedArticles } from './NewsDesk';
-import { StoryFaces } from './NewsPeople';
+import { StoryFeature } from './NewsPeople';
 import { SponsorPlacement } from './SponsorPlacement';
 
 function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch; lead?: boolean }) {
@@ -32,7 +32,7 @@ export function DispatchPreview({ dispatch, lead = false, people = [] }: { dispa
         return source ? <a key={id} href={source.url} target="_blank" rel="noopener noreferrer">{source.title} ↗</a> : null;
       })}</div>
     </section>)}
-    <StoryFaces people={citedPeople(dispatch.sections, people)} max={lead ? 6 : 4} competition={dispatch.competition} label="Contenders in this story" />
+    <StoryFeature person={featuredPerson(dispatch, people)} competition={dispatch.competition} />
     {dispatch.interpretation && <p className="news-dispatch-take"><strong>The ARC Daily Digest’s take</strong> {dispatch.interpretation}</p>}
   </article>;
 }
@@ -47,7 +47,7 @@ function CompetitionDesk({ articles, dispatches, competition, lead = false, peop
   // Same-day artwork keeps its dated caption when an evening edition succeeds a dispatch.
   const companionArt = 'article' in first ? dispatches.find(dispatch => dispatch.competition === competition && dispatch.image && newsDate(dispatch.publishedAt) === newsDate(first.publishedAt)) : undefined;
   return <>
-    {'article' in first ? <StoryPreview article={first.article} lead={lead} people={people} competitors={competitors} /> : <DispatchPreview dispatch={first.dispatch} lead={lead} people={people} />}
+    {'article' in first ? <StoryPreview article={first.article} lead={lead} people={people} /> : <DispatchPreview dispatch={first.dispatch} lead={lead} people={people} />}
     {lead && companionArt && <DispatchArt dispatch={companionArt} lead />}
     <div className="news-latest-list">{stories.slice(1, lead ? 4 : 3).map(story => <div key={story.id}>
       <span>{'article' in story ? `${story.article.edition} edition` : 'From the contenders'} · {newsDate(story.publishedAt)}</span>

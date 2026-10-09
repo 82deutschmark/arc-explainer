@@ -77,6 +77,14 @@ export function citedPeople(sections: NewsSection[], people: NewsPerson[]): News
   const ids = sections.flatMap(section => section.sourceIds).map(id => PERSON_SOURCE_ID.exec(id)?.[1]).filter((id): id is string => !!id);
   return [...new Set(ids)].map(id => people.find(person => person.id === id)).filter((person): person is NewsPerson => !!person);
 }
+/**
+ * The one person a story features: the person named in its headline, else in its dek, else the
+ * first person its sections cite. Nobody named or cited, nobody featured.
+ */
+export function featuredPerson(story: { headline: string; dek?: string; sections: NewsSection[] }, people: NewsPerson[]): NewsPerson | undefined {
+  const named = (text?: string) => text ? people.find(person => text.includes(shortPersonName(person.name))) : undefined;
+  return named(story.headline) ?? named(story.dek) ?? citedPeople(story.sections, people)[0];
+}
 /** Faces for an edition: people the prose cites first, then verified people on the teams it covers. */
 export function storyPeople(article: NewsArticle, people: NewsPerson[], competitors: CompetitorRecord[]): NewsPerson[] {
   const onTeams = article.teamIds.flatMap(teamId => {
