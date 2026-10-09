@@ -593,11 +593,12 @@
         "Compare the Shape Count row with the adjacent Transform Hints badge.",
         "Sum input/output shapeCountsByColor in the linked public metadata and compare with ioComparison.transformHints."
       ],
-      "proposed_fix": "Use a total-count-change hint only when the displayed total changes. If the intended signal is changed counts by color, label it explicitly as such. Present these as computed grid statistics, separate from reviewed rule explanations. Define the background and shape-counting assumptions. Only describe a puzzle rule as verified when it has been checked against all provided pairs; label conjectures and link their evidence.",
+      "proposed_fix": "First review the hints for accuracy and practical explanatory value to a human. Remove misleading or unsupported guidance rather than merely polishing its wording. Explain derivation and limitations for any retained hints. Use a total-count-change hint only when the displayed total changes. If the intended signal is changed counts by color, label it explicitly as such. Present these as computed grid statistics, separate from reviewed rule explanations. Define the background and shape-counting assumptions. Only describe a puzzle rule as verified when it has been checked against all provided pairs; label conjectures and link their evidence.",
       "acceptance_checks": [
         "13e47133 examples 1 and 3 no longer imply a changed total beside unchanged totals.",
         "All 120 ARC-2 evaluation metadata files pass a hint-versus-displayed-statistic consistency check, including the 16 recorded cases.",
-        "The UI distinguishes descriptive statistics, speculative interpretations and verified explanations; a visitor can inspect the supporting grids."
+        "The UI distinguishes descriptive statistics, speculative interpretations and verified explanations; a visitor can inspect the supporting grids.",
+        "A human review checks that retained hints help interpret the examples and do not imply a verified solution without supporting evidence."
       ],
       "sources": [
         "https://arcprize.org/tasks/13e47133#task-details",
