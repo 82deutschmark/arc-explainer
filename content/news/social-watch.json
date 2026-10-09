@@ -1,0 +1,56 @@
+[
+  {
+    "handle": "fchollet",
+    "name": "François Chollet",
+    "url": "https://x.com/fchollet",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "subscriberUrl": "https://x.com/fchollet/subs",
+    "personId": "francois-chollet"
+  },
+  {
+    "handle": "arcprize",
+    "name": "ARC Prize",
+    "url": "https://x.com/arcprize",
+    "identitySourceUrl": "https://arcprize.org"
+  },
+  {
+    "handle": "GregKamradt",
+    "name": "Greg Kamradt",
+    "url": "https://x.com/GregKamradt",
+    "identitySourceUrl": "https://x.com/arcprize"
+  },
+  {
+    "handle": "mikeknoop",
+    "name": "Mike Knoop",
+    "url": "https://x.com/mikeknoop",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "personId": "mike-knoop"
+  },
+  {
+    "handle": "MindsAI_Jack",
+    "name": "Jack Cole",
+    "url": "https://x.com/MindsAI_Jack",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "personId": "jack-cole"
+  },
+  {
+    "handle": "tufalabs",
+    "name": "Tufa Labs",
+    "url": "https://x.com/tufalabs",
+    "identitySourceUrl": "https://tufalabs.ai"
+  },
+  {
+    "handle": "JFPuget",
+    "name": "Jean-François Puget",
+    "url": "https://x.com/JFPuget",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "personId": "jean-francois-puget"
+  },
+  {
+    "handle": "keithtyser",
+    "name": "Keith Tyser",
+    "url": "https://x.com/keithtyser",
+    "identitySourceUrl": "https://keithtyser.com/",
+    "personId": "keith-tyser"
+  }
+]

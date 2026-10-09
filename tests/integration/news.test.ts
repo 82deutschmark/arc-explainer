@@ -5,7 +5,7 @@
  *          of missing identities and invalid citations using the committed launch issues.
  *          08-Oct-2026: share cards (size, real drawn content, cache headers, 404s), the
  *          per-article og/twitter/JSON-LD image, CollectionPage, lastmod and RSS additions.
- *          Social dispatch validation and crawler discovery protect dated contender updates.
+ *          Social dispatch validation, people/artwork routes and public-only source discovery protect dated contender updates.
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
@@ -169,4 +169,22 @@ it('keeps cards drawable for names and headlines outside the card fonts', async 
   article.headline = `${'A very long headline about the ARC-AGI-3 race '.repeat(5)}🎉`;
   article.stats = [{ teamId: '1', name: '復活の混テキスト', rank: 1, score: 1, rankChange: null, scoreChange: null }];
   await expectDrawnCard(await renderArticleCard(article));
+});
+
+it('publishes verified people, historical artwork and public community branches', async () => {
+  const index = getNewsIndex();
+  const keith = index.people!.find(person => person.id === 'keith-tyser')!;
+  expect(new Set(keith.memberships.map(member => member.competition))).toEqual(new Set(['arc-2', 'arc-3']));
+  for (const route of ['/news/people', '/news/people/keith-tyser', '/news/community', '/news/how-this-is-made']) {
+    const response = await fetch(`${base}${route}`);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain(`href="${SITE_ORIGIN}${route}"`);
+  }
+  const cpmp = await (await fetch(`${base}/news/people/jean-francois-puget`)).text();
+  expect(cpmp).toContain('/jfPuget3.png');
+  expect(cpmp).toContain('/hall-of-fame#contributor-7');
+  const roster = await (await fetch(`${base}/news/competitors/arc-2-15526034`)).text();
+  expect(roster).toContain('/news/people/keith-tyser');
+  expect(index.social!.every(post => post.visibility === 'public')).toBe(true);
+  expect((await fetch(`${base}/news/people/missing-person`)).status).toBe(404);
 });

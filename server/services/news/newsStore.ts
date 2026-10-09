@@ -2,7 +2,7 @@
  * Author: GPT-6 Sol / Codex
  * Date: 2026-10-09
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
- *          rendering, including dated social dispatches. Validates public JSON at the
+ *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
  * SRP/DRY check: Pass — one store serves HTML, JSON, feeds and sitemap discovery.
  */
@@ -49,6 +49,32 @@ export const competitorSchema = z.object({
   facts: z.array(z.object({ text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp })),
 }).refine(record => record.id === `${record.competition}-${record.teamId}`, 'Competitor IDs must include competition');
 export const NEWS_DIRECTORY = path.join(process.cwd(), 'content/news');
+const factSchema = z.object({ text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict();
+export const newsPersonSchema = z.object({
+  id: safeId, name: text,
+  accounts: z.array(z.object({ platform: z.enum(['kaggle', 'x']), handle: z.string().regex(/^[A-Za-z0-9_]+$/), url: webUrl, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp }).strict()
+    .refine(account => account.url.toLowerCase() === `https://${account.platform === 'kaggle' ? 'www.kaggle.com' : 'x.com'}/${account.handle}`.toLowerCase(), 'Account URL and handle must agree')).min(1),
+  facts: z.array(factSchema),
+  memberships: z.array(z.object({ competition, competitionId: text, season: z.string().regex(/^\d{4}$/), teamId: z.string().regex(/^\d+$/), teamName: text, memberHandle: text, firstObservedAt: stamp, lastObservedAt: stamp, sourceUrl: webUrl, sourceTitle: text }).strict()
+    .refine(member => Date.parse(member.firstObservedAt) <= Date.parse(member.lastObservedAt), 'Reversed membership observations')
+    .refine(member => member.competitionId === `arc-prize-${member.season}-${member.competition.replace('arc-', 'arc-agi-')}`, 'Membership competition and season must agree')),
+  hallOfFame: z.array(z.object({ path: z.string().regex(/^\/hall-of-fame(?:#contributor-\d+|\/johan-land)?$/), label: text, sourceUrl: webUrl, sourceTitle: text, checkedAt: stamp,
+    image: z.object({ src: z.string().regex(/^\/[A-Za-z0-9_-]+\.png$/), alt: text.max(700) }).strict().optional() }).strict()),
+}).strict().superRefine((person, context) => {
+  const accounts = person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`);
+  const memberships = person.memberships.map(member => `${member.competitionId}:${member.teamId}:${member.memberHandle}`);
+  if (new Set(accounts).size !== accounts.length || new Set(memberships).size !== memberships.length || person.memberships.some(member => !person.accounts.some(account => account.platform === 'kaggle' && account.handle === member.memberHandle))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate identity or membership without a verified account' });
+  }
+});
+export const newsSocialSchema = z.object({
+  id: z.string().regex(/^\d+$/), author: z.string().regex(/^[A-Za-z0-9_]{1,15}$/), authorName: text,
+  url: webUrl, postedAt: stamp.nullable(), checkedAt: stamp, visibility: z.literal('public'),
+  summary: text.max(1200), whyItMatters: text.max(700), competitions: z.array(competition), personIds: z.array(safeId),
+  category: z.enum(['standings', 'research', 'community', 'banter']), importance: z.number().int().min(1).max(3),
+  threadId: z.string().regex(/^\d+$/).nullable(), storyUrl: webUrl.nullable(), identitySourceUrl: webUrl,
+}).strict().refine(post => post.url.toLowerCase() === `https://x.com/${post.author}/status/${post.id}`.toLowerCase(), 'Post URL and author must agree')
+  .refine(post => Date.parse(post.checkedAt) <= Date.now() && (!post.postedAt || Date.parse(post.postedAt) <= Date.parse(post.checkedAt)), 'Future social source time');
 export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
   const articlesDirectory = path.join(directory, 'articles');
   const articles: NewsArticle[] = fs.existsSync(articlesDirectory) ? fs.readdirSync(articlesDirectory)
@@ -67,5 +93,11 @@ export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
       if (`${dispatch.id}.json` !== file) throw new Error(`Dispatch filename does not match its ID: ${file}`);
       return dispatch;
     }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id)) : [];
-  return { articles, competitors, dispatches };
+  const readArray = <T>(file: string, schema: z.ZodType<T>) => fs.existsSync(path.join(directory, file)) ? z.array(schema).parse(JSON.parse(fs.readFileSync(path.join(directory, file), 'utf8'))) : [];
+  const people = readArray('people.json', newsPersonSchema);
+  const social = readArray('social.json', newsSocialSchema);
+  if (new Set(people.map(person => person.id)).size !== people.length || new Set(social.map(post => post.id)).size !== social.length) throw new Error('Duplicate news person or social post');
+  const accounts = people.flatMap(person => person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`));
+  if (new Set(accounts).size !== accounts.length) throw new Error('A verified account belongs to multiple people');
+  return { articles, competitors, dispatches, people, social };
 }

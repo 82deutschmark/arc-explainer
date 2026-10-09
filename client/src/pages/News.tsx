@@ -18,7 +18,7 @@ export default function News() {
   const articles = sortedArticles(query.data?.articles ?? []);
   const latestAt = [articles[0]?.publishedAt, ...(query.data?.dispatches ?? []).map(dispatch => dispatch.publishedAt)].filter((date): date is string => !!date).sort().at(-1);
   const competitors = [...(query.data?.competitors ?? [])].filter(record => record.competition === 'arc-3').sort((a, b) => b.facts.length - a.facts.length || a.name.localeCompare(b.name));
-  usePageMeta({ title: 'The ARC Daily — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', canonicalPath: '/news' });
+  usePageMeta({ title: 'The ARC Daily Digest — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', canonicalPath: '/news' });
 
   return <NewsPaper frontPage date={latestAt}>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />

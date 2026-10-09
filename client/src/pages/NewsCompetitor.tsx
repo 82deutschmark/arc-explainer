@@ -1,12 +1,13 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-08
+ * Author: GPT-6 Sol / Codex
+ * Date: 2026-10-09
  * PURPOSE: Competition-scoped competitor notebook showing sourced facts, observed
  *          aliases and members, observation dates and the team's published coverage.
  *          08-Oct-2026: title and description from shared/news.ts, matching server HTML;
  *          observed identity dates show without routine clock times.
  * SRP/DRY check: Pass — identity and claims come from shared NewsIndex records only.
  */
+import { TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { competitorTitle, competitorDescription } from '@shared/news';
@@ -19,7 +20,7 @@ export default function NewsCompetitor() {
   const competitor = query.data?.competitors.find(record => record.id === competitorId);
   const missing = !!query.data && !competitor;
   const articles = competitor ? sortedArticles(query.data?.articles ?? []).filter(article => article.competition === competitor.competition && article.teamIds.includes(competitor.teamId)) : [];
-  usePageMeta({ title: competitor ? competitorTitle(competitor) : 'Competitor notebook | The ARC Daily', description: competitor ? competitorDescription(competitor) : undefined, canonicalPath: `/news/competitors/${competitorId}`, noindex: !competitor });
+  usePageMeta({ title: competitor ? competitorTitle(competitor) : 'Competitor notebook | The ARC Daily Digest', description: competitor ? competitorDescription(competitor) : undefined, canonicalPath: `/news/competitors/${competitorId}`, noindex: !competitor });
   return <NewsPaper>
     <Link href="/news/competitors" className="news-back">← All competitor notebooks</Link>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
@@ -31,7 +32,7 @@ export default function NewsCompetitor() {
         <section><h2 className="news-section-title">On the record</h2>
           {competitor.facts.length ? <ul className="news-facts">{competitor.facts.map((fact, index) => <li key={`${fact.sourceUrl}-${index}`}><p>{fact.text}</p><div className="news-fact-source"><a href={fact.sourceUrl}>{fact.sourceTitle} ↗</a><br />Checked {newsDate(fact.checkedAt)}</div></li>)}</ul> : <p className="news-muted">No sourced background facts have been added. Observed competition names and members are recorded alongside.</p>}
         </section>
-        <aside className="news-sidebar news-observations" aria-label="Observed team identity"><h2 className="news-section-title">Identity ledger</h2><h3>Observed aliases</h3>{competitor.aliases.length ? <ul>{competitor.aliases.map(alias => <li key={alias}>{alias}</li>)}</ul> : <p>No additional aliases recorded.</p>}<h3>Observed members</h3>{competitor.members.length ? <ul>{competitor.members.map(member => <li key={member}>{member}</li>)}</ul> : <p>No member names recorded.</p>}<p className="news-muted" style={{ marginTop: 20 }}>These observations describe this competition team. First observed is the first saved observation, not a claim about when the team entered.</p><Link href={KAGGLE_COMPETITIONS[competitor.competition].path} className="news-read">Open this competition's board →</Link></aside>
+        <aside className="news-sidebar news-observations" aria-label="Observed team identity"><h2 className="news-section-title">Identity ledger</h2><h3>Observed aliases</h3>{competitor.aliases.length ? <ul>{competitor.aliases.map(alias => <li key={alias}>{alias}</li>)}</ul> : <p>No additional aliases recorded.</p>}<h3>Observed members</h3>{competitor.members.length ? <TeamPeople team={competitor} people={query.data?.people} /> : <p>No member names recorded.</p>}<p className="news-muted" style={{ marginTop: 20 }}>These observations describe this competition team. First observed is the first saved observation, not a claim about when the team entered.</p><Link href={KAGGLE_COMPETITIONS[competitor.competition].path} className="news-read">Open this competition's board →</Link></aside>
       </div>
       <ArticleArchive articles={articles} heading="In the paper" />
     </>}

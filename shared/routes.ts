@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Codex; Codex
- * Date: 2026-10-08
+ * Author: GPT-6 Sol / Codex
+ * Date: 2026-10-09
  * PURPOSE: Centralized public route descriptions and indexing policy for server HTML,
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
@@ -58,7 +58,7 @@ function breadcrumb(name: string, path: string) {
   };
 }
 
-/** The ARC Daily's own masthead card instead of the site-wide preview image. */
+/** The ARC Daily Digest's own masthead card instead of the site-wide preview image. */
 const NEWS_CARD = { image: `${SITE}${NEWS_SECTION_CARD_PATH}`, imageAlt: NEWS_SECTION_CARD_ALT, imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT };
 
 /**
@@ -66,8 +66,11 @@ const NEWS_CARD = { image: `${SITE}${NEWS_SECTION_CARD_PATH}`, imageAlt: NEWS_SE
  * Organized by feature area - add new routes near related routes
  */
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
-  '/news': { title: 'The ARC Daily — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', url: `${SITE}/news`, ...NEWS_CARD },
-  '/news/competitors': { title: 'Competitor notebook | The ARC Daily', description: 'The ARC Daily’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
+  '/news': { title: 'The ARC Daily Digest — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', url: `${SITE}/news`, ...NEWS_CARD },
+  '/news/competitors': { title: 'Competitor notebook | The ARC Daily Digest', description: 'The ARC Daily Digest’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
+  '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
+  '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
+  '/news/how-this-is-made': { title: 'How This Is Made | The ARC Daily Digest', description: 'Sources, AI drafting, edition cutoffs, people records and sponsorship at the ARC Daily Digest.', url: `${SITE}/news/how-this-is-made`, ...NEWS_CARD },
   '/home': {
     title: 'ARC Explainer Resource Hub — games, guides and results',
     description: 'Find Human ARC, Space Force Mission Control, ARC-AGI-3 game guides, human and AI results, and archived benchmark analyses.',

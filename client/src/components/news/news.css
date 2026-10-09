@@ -4,6 +4,7 @@
  * carry the front page, archive-card gallery, articles, sourced competitor notebook
  * and disclosed VoynichLabs sponsor placements. Compact mastheads let fresh
  * contender dispatches, illustrations and daily headlines lead the front page.
+ * Supporting people, community and method pages reuse the same newspaper typography.
  * SRP/DRY check: Pass — one stylesheet serves every newspaper route.
  */
 .arc-daily { --news-ink: #24221e; --news-rule: #b8afa0; --news-red: #922f25; color: var(--news-ink); background: #e7e1d6; min-height: 75vh; padding: 24px 16px 52px; font-family: Georgia, 'Times New Roman', serif; }
@@ -82,6 +83,12 @@
 .news-identity code { overflow-wrap: anywhere; }
 .news-facts li { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--news-rule); }
 .news-facts p { font-size: 18px; line-height: 1.65; }
+.news-historical-card { display: block; width: 100%; max-width: 280px; height: auto; margin-bottom: 12px; }
+.news-person-history { font-size: 12px; font-weight: 400; }
+.news-team-people ul { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 0; list-style: none; }
+.news-team-people .news-muted { margin: 4px 0 12px; }
+.news-community-list { max-width: 780px; }
+.news-community-list .news-story { padding: 24px 0; border-bottom: 1px solid var(--news-rule); }
 .news-fact-source { font-size: 11px; line-height: 1.7; margin-top: 9px; color: #645d53; }
 .news-observations { font-size: 15px; line-height: 1.7; }
 .news-observations h3 { font-weight: 700; font-size: 20px; margin: 20px 0 8px; }

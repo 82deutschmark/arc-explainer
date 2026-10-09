@@ -1,5 +1,5 @@
 /**
- * Author: GPT-6.1 Sol / Codex
+ * Author: GPT-6 Sol / Codex
  * Date: 2026-10-07
  * PURPOSE: Searchable ARC Daily competitor notebook, keeping records separate by
  *          competition and searching only observed names, IDs, aliases and members.
@@ -16,7 +16,7 @@ export default function NewsCompetitors() {
   const query = useNews();
   const [search, setSearch] = useState('');
   const [competition, setCompetition] = useState<NewsCompetition | 'all'>('all');
-  usePageMeta({ title: 'Competitor notebook | The ARC Daily', description: 'Sourced ARC-AGI-2 and ARC-AGI-3 competitor records, observed team aliases and members, and links to competition reporting.', canonicalPath: '/news/competitors' });
+  usePageMeta({ title: 'Competitor notebook | The ARC Daily Digest', description: 'Sourced ARC-AGI-2 and ARC-AGI-3 competitor records, observed team aliases and members, and links to competition reporting.', canonicalPath: '/news/competitors' });
   const needle = search.trim().toLocaleLowerCase();
   const competitors = [...(query.data?.competitors ?? [])].filter(record => (competition === 'all' || record.competition === competition) && [record.name, record.teamId, ...record.aliases, ...record.members].join(' ').toLocaleLowerCase().includes(needle)).sort((a, b) => a.name.localeCompare(b.name) || a.competition.localeCompare(b.competition));
   return <NewsPaper>

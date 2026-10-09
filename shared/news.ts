@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
  * Date: 2026-10-09
- * PURPOSE: Shared public contract for sourced ARC Daily articles and competitor records,
+ * PURPOSE: Shared public contract for sourced ARC Daily articles, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
  *          (newsPresentation.ts), the share-card renderer (newsCardImage.ts) and the React
@@ -37,8 +37,27 @@ export interface NewsDispatch {
   sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
   image?: { src: string; alt: string; caption: string };
 }
-export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[] }
-export const NEWS_NAME = 'The ARC Daily';
+/** People persist across seasons; membership observations belong to a specific contest. */
+export interface NewsPerson {
+  id: string; name: string;
+  accounts: ({ platform: 'kaggle' | 'x'; handle: string; url: string } & Omit<CompetitorFact, 'text'>)[];
+  facts: CompetitorFact[];
+  memberships: { competition: NewsCompetition; competitionId: string; season: string; teamId: string; teamName: string;
+    memberHandle: string; firstObservedAt: string; lastObservedAt: string; sourceUrl: string; sourceTitle: string }[];
+  hallOfFame: ({ path: string; label: string; image?: { src: string; alt: string } } & Omit<CompetitorFact, 'text'>)[];
+}
+export interface NewsSocialPost {
+  id: string; author: string; authorName: string; url: string; postedAt: string | null; checkedAt: string;
+  visibility: 'public'; summary: string; whyItMatters: string; competitions: NewsCompetition[]; personIds: string[];
+  category: 'standings' | 'research' | 'community' | 'banter'; importance: number;
+  threadId: string | null; storyUrl: string | null; identitySourceUrl: string;
+}
+export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[] }
+export const NEWS_NAME = 'The ARC Daily Digest';
+export const personPath = (id: string) => `/news/people/${id}`;
+/** Current roster cards use exact verified account handles, never fuzzy name matches. */
+export const peopleForTeam = (people: NewsPerson[], team: CompetitorRecord) => people.filter(person =>
+  person.accounts.some(account => account.platform === 'kaggle' && team.members.includes(account.handle)));
 export const newsArticlePath = (id: string) => `/news/${id}`;
 export const competitorPath = (id: string) => `/news/competitors/${id}`;
 export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key].label;
@@ -76,7 +95,7 @@ export const competitorDescription = (record: CompetitorRecord) =>
 export const NEWS_CARD_WIDTH = 1200;
 export const NEWS_CARD_HEIGHT = 630;
 /** Bump when the card layout changes, so cached article cards are fetched again. */
-export const NEWS_CARD_DESIGN = 1;
+export const NEWS_CARD_DESIGN = 2;
 /** Front page and notebook card. Not versioned: it follows the latest editions. */
 export const NEWS_SECTION_CARD_PATH = '/api/news/og-image.png';
 export const NEWS_SECTION_CARD_ALT = `${NEWS_NAME} masthead with the latest ARC-AGI-3 and ARC-AGI-2 headlines`;

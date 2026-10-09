@@ -1,0 +1,108 @@
+[
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "standings",
+    "checkedAt": "2026-10-09T19:27:53Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108578092558250148",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-09T15:19:27Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "ARC Prize announced Tufa Labs’ 88.06% ARC-AGI-2 public score and said the bonus pool would be shared among teams scoring above 85%.",
+    "threadId": null,
+    "url": "https://x.com/arcprize/status/2108578092558250148",
+    "visibility": "public",
+    "whyItMatters": "A major public-board milestone; final award eligibility still follows the competition rules."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "standings",
+    "checkedAt": "2026-10-09T19:27:53Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108577347192676612",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [
+      "yi-chia-chen"
+    ],
+    "postedAt": "2026-10-09T15:16:29Z",
+    "storyUrl": null,
+    "summary": "ARC Prize announced Yi-Chia Chen’s 59.17% ARC-AGI-3 public score and her lead over Tufa Labs.",
+    "threadId": null,
+    "url": "https://x.com/arcprize/status/2108577347192676612",
+    "visibility": "public",
+    "whyItMatters": "The organizer’s announcement supplies context for the lead change; the next edition checks fresh standings."
+  },
+  {
+    "author": "MindsAI_Jack",
+    "authorName": "Jack Cole",
+    "category": "community",
+    "checkedAt": "2026-10-09T19:27:53Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108605814181363917",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "importance": 2,
+    "personIds": [
+      "jack-cole"
+    ],
+    "postedAt": "2026-10-09T17:09:36Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "Jack Cole congratulated Tufa Labs on the ARC-AGI-2 milestone, quoting Mike Knoop’s reaction.",
+    "threadId": null,
+    "url": "https://x.com/MindsAI_Jack/status/2108605814181363917",
+    "visibility": "public",
+    "whyItMatters": "A contender’s respectful response adds the people behind the leaderboard to the story."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "community",
+    "checkedAt": "2026-10-09T19:28:44Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108579538372612400",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-09T15:25:12Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "Chollet welcomed the improving ARC-AGI-2 Kaggle scores while quoting ARC Prize’s Tufa Labs announcement.",
+    "threadId": null,
+    "url": "https://x.com/fchollet/status/2108579538372612400",
+    "visibility": "public",
+    "whyItMatters": "A public reaction from ARC’s co-founder, tied to the original result rather than an independent score claim."
+  },
+  {
+    "author": "tufalabs",
+    "authorName": "Tufa Labs",
+    "category": "banter",
+    "checkedAt": "2026-10-09T19:27:53Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108463895128269084",
+    "identitySourceUrl": "https://tufalabs.ai",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-09T07:45:40Z",
+    "storyUrl": null,
+    "summary": "Tufa Labs posted an AI-made battle illustration and described the ARC-3 reversal as a temporary setback, with a playful pledge to overwhelm competitors with compute.",
+    "threadId": null,
+    "url": "https://x.com/tufalabs/status/2108463895128269084",
+    "visibility": "public",
+    "whyItMatters": "The image inspired the Digest’s friendly rabbit-and-GPU-spider callback; it is banter, not hardware evidence."
+  }
+]

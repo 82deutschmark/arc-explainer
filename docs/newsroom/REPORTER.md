@@ -1,4 +1,4 @@
-# The ARC Daily reporter
+# The ARC Daily Digest reporter
 
 The scheduled **GPT-6 Sol** run is the journalist. This helper makes no model API
 calls. Use the signed-in Codex subscription. Publish a morning edition at **6 am
@@ -15,6 +15,35 @@ If it has unrelated uncommitted work, stop and report that condition. Run
 `git pull --ff-only origin main` before preparing anything. Do not edit application code in a
 reporting run. Keep bulk data and caches on `/Volumes/Samsung 9100 SSD/`; a small
 one-run JSON brief/draft may live under `/tmp`.
+
+## Persistent people and the shared research desk
+
+Load `.agents/skills/competition-reporter/SKILL.md`, then read `docs/newsroom/SOCIAL_DESK.md`.
+The daily scans exist to enhance the journalism. Read the public archive at
+`/Users/macmini/bubba-workspace/reports/arc-daily-social/public.json` and its account
+coverage in `state.json`, refresh relevant primary posts, then export the strictly
+public subset before `prepare`. Subscriber/unknown items never enter public issues,
+including through paraphrases. A missing or partial scan is a coverage limit, not
+proof of no news. Keep the existing 2 pm handoff as additional leads.
+
+Maintain `content/news/people.json` alongside the team notebook. A stable person
+record connects only directly verified accounts to dated memberships keyed by
+competition ID, season and team ID. Publishing adds observations for already
+verified handles; it preserves old observations without guessing departures.
+Use sports-page framing: team results, relevant individual backgrounds and
+historical achievements. Explain who's on a team when useful; a one-account roster
+does not establish that someone received no help. Keep unknown identities unknown.
+Use existing Hall of Fame references/artwork when explicitly matched; historical
+cards keep their year and shared-team captions. Never extend an affiliation or
+technique to everyone listed on a roster.
+
+Preparation supplies `evidence.people` and `evidence.socialPosts`, with source IDs
+`person-ID-identity-N`, `person-ID-fact-N`, `person-ID-roster-N`,
+`person-ID-archive-N` and `social-POSTID`. Cite the relevant source in any section
+using those facts. Team roster observations in the brief establish the current
+listed accounts. Add verified identities/facts and refresh public source records
+before preparing; re-prepare after changes. Internal research questions live in
+`reports/arc-daily-social/people-notes.md`, outside public content.
 
 ## Check what the contenders are saying
 
@@ -211,7 +240,7 @@ article, not rewriting the original issue.
 
 Review the generated files and run `git diff --check`. Stage only the exact changed
 paths under `content/news/` (including newly written article and evidence files,
-and the notebook). Check the staged diff contains no unrelated files. Commit a
+the notebook, people ledger and public social subset when changed). Check the staged diff contains no unrelated files. Commit a
 concise issue description. Fetch origin and rebase on `origin/main` if needed; abort
 and report any conflict rather than resolve unrelated application changes. Run
 `git push origin HEAD:main` once from `codex/newsroom-publisher`. If a push loses a race, fetch/rebase safely and retry once. The existing

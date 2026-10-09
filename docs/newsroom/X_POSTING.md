@@ -1,4 +1,4 @@
-# The 2 pm X reporting and recap task
+# The 2 pm ARC Daily Digest X recap
 
 ## Schedule and scope
 
@@ -35,6 +35,18 @@ methods, motives, affiliations, quotes, hardware claims or final medals.
    comparisons stay unknown. One failed board must not stop the other. If both
    fail, save the failure and continue public-source research without posting
    unverified standings.
+
+## Use the shared archive and credit the sources
+
+Read `docs/newsroom/SOCIAL_DESK.md` and the latest strictly public archive first.
+Use it for leads and fill account/competition gaps with browser research. Save new
+public research to the archive as well as the existing afternoon handoff. The scan
+is useful even when today's recap is already posted. Restricted posts never enter
+this workflow. Mention verified competitor handles when they are material to the
+recap, and retain exact original post links in the handoff and coverage. Keep the
+public post under 280 characters with the news link; select one consequential move
+if attribution and links need space. A mention should identify the source or
+contender without implying a new rivalry. Extra between-edition alerts stay drafts.
 
 ## Research X and save the evening handoff
 

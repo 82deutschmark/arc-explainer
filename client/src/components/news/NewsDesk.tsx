@@ -5,7 +5,7 @@
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
  *          and sourced notebook previews align with the ARC Explainer landing page.
- *          The masthead now names both contests and links the established ARC Discord.
+ *          The masthead names both contests; compact links branch into people, community and method pages.
  *          The footer uses the public GPT-6 Sol model spelling. The shared shell
  *          discloses VoynichLabs sponsorship in a compact content-first masthead.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
@@ -45,6 +45,8 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
           <nav className="news-nav" aria-label="ARC Daily sections">
             <Link href="/news">Front page</Link>
             <Link href="/news/competitors">Competitor notebook</Link>
+            <Link href="/news/people">People</Link>
+            <Link href="/news/community">Around the contests</Link>
             <a href="/kaggle-leaderboard#medal-race">Leaderboard graphics ↗</a>
             <a href="/human-records.html">Human &amp; AI records ↗</a>
             <Link href="/kaggle-leaderboard/arc-2">ARC-2 desk ↗</Link>
@@ -55,7 +57,8 @@ export function NewsPaper({ children, frontPage = false, date }: { children: Rea
         <footer className="news-footer">
           <strong>{NEWS_NAME}</strong><span>ARC Daily • GPT-6 Sol</span>
           <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>
-          <Link href="/home">An ARC Explainer publication →</Link>
+          <p><a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Can't get enough ARC gossip? Come join us in the ARC Discord.</a></p>
+          <Link href="/news/how-this-is-made">How this is made →</Link> · <Link href="/home">An ARC Explainer publication →</Link>
         </footer>
       </div>
     </div>
@@ -77,7 +80,7 @@ export function StoryPreview({ article, lead = false }: { article: NewsArticle; 
     <EditionLabel article={article} />
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
-    <div className="news-byline">The ARC Daily sports desk <span>· {newsDate(article.date)}</span></div>
+    <div className="news-byline">The ARC Daily Digest sports desk <span>· {newsDate(article.date)}</span></div>
     {lead && article.sections[0] && <p className="news-lead-excerpt">{article.sections[0].text}</p>}
     <Link href={newsArticlePath(article.id)} className="news-read">Read the dispatch →</Link>
   </article>;

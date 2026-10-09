@@ -2,7 +2,7 @@
 # Author: GPT-6 Sol / Codex
 # Date: 2026-10-09
 # PURPOSE: Prepare auditable ARC Daily evidence, validate GPT-6 Sol prose, and publish
-# immutable JSON articles, social dispatches and competitor observations consumed by shared/news.ts.
+# immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
 """Deterministic newsroom plumbing. The scheduled model writes the journalism."""
 import argparse
@@ -228,6 +228,10 @@ def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False):
             board, sha = fetcher(url)
             result['competitions'][comp] = board_brief(board, comp, edition, now, actual_now, url, sha, preview)
             add_notebook_sources(result['competitions'][comp], comp, actual_now)
+            from newsroom_people import add_people_sources
+            from newsroom_social import add_social_sources
+            add_social_sources(result['competitions'][comp], comp, actual_now, ROOT)
+            add_people_sources(result['competitions'][comp], comp, actual_now, ROOT)
         except Exception as error:
             result['competitions'][comp] = {'status': 'error', 'error': str(error), 'sourceUrl': url}
     result['sha256'] = digest(result)
@@ -382,12 +386,18 @@ def publish(draft, brief, root=ROOT):
                     record['aliases'].append(record['name'])
                 record.update(name=observation_data['name'], members=observation_data['members'], lastObservedAt=when)
     validate_notebook(list(records.values()))
+    from newsroom_people import read_people, observed_people
+    people_path = directory / 'people.json'
+    people = observed_people(read_people(root), article['competition'], article['date'][:4],
+                             item['evidence']['observations'], item['evidence']['sourceUrl'])
     for target, value in ((path, article), (proof_path, proof)):
         if not target.exists():
             target.parent.mkdir(parents=True, exist_ok=True)
             with target.open('xb') as stream:
                 stream.write(encoded(value))
     write(notebook_path, sorted(records.values(), key=lambda r: r['id']))
+    if people_path.exists():
+        write(people_path, people)
     return path
 
 

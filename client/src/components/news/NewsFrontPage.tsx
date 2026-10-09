@@ -29,7 +29,7 @@ export function DispatchPreview({ dispatch, lead = false }: { dispatch: NewsDisp
         return source ? <a key={id} href={source.url} target="_blank" rel="noopener noreferrer">{source.title} ↗</a> : null;
       })}</div>
     </section>)}
-    {dispatch.interpretation && <p className="news-dispatch-take"><strong>The ARC Daily’s take</strong> {dispatch.interpretation}</p>}
+    {dispatch.interpretation && <p className="news-dispatch-take"><strong>The ARC Daily Digest’s take</strong> {dispatch.interpretation}</p>}
   </article>;
 }
 

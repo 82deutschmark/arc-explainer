@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-08
+ * Author: GPT-6 Sol / Codex
+ * Date: 2026-10-09
  * PURPOSE: Permanent ARC Daily article view with evidence timestamps, linked section
  *          sources, box scores and competition-scoped competitor links.
  *          08-Oct-2026: head metadata and share card from shared/news.ts; visible
@@ -8,6 +8,7 @@
  *          The article rail carries a disclosed VoynichLabs advertisement.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
+import { TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
@@ -26,7 +27,7 @@ export default function NewsArticle() {
   const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : undefined, [article]);
   const missing = !!query.data && !article;
   // Same title, description, card and article fields as the server-rendered head.
-  usePageMeta({ title: article ? articleTitle(article) : 'Dispatch | The ARC Daily', description: article ? articleDescription(article) : undefined, canonicalPath: `/news/${articleId}`, noindex: !article, type: 'article', jsonLd,
+  usePageMeta({ title: article ? articleTitle(article) : 'Dispatch | The ARC Daily Digest', description: article ? articleDescription(article) : undefined, canonicalPath: `/news/${articleId}`, noindex: !article, type: 'article', jsonLd,
     image: article ? { image: `${SITE_ORIGIN}${articleCardPath(article)}`, imageAlt: articleCardAlt(article), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : undefined,
     article: article ? { publishedTime: article.publishedAt, section: competitionName(article.competition) } : undefined });
   const competitors = article ? (query.data?.competitors ?? []).filter(record => record.competition === article.competition && article.teamIds.includes(record.teamId)) : [];
@@ -40,7 +41,7 @@ export default function NewsArticle() {
         <EditionLabel article={article} />
         <h1 className="news-article-title">{article.headline}</h1>
         <p className="news-dek">{article.dek}</p>
-        <p className="news-byline">The ARC Daily sports desk <span>· <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
+        <p className="news-byline">The ARC Daily Digest sports desk <span>· <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
       </header>
       <div className="news-article-grid">
         <div>
@@ -66,7 +67,7 @@ export default function NewsArticle() {
           <SponsorPlacement format="rail" />
           <h2 className="news-section-title">Sources</h2>
           <ol className="news-source-list">{article.sources.map(source => <li key={source.id}><a href={source.url}>{source.title} ↗</a><span>Checked {newsDate(source.accessedAt)}</span></li>)}</ol>
-          {!!competitors.length && <><h2 className="news-section-title">Names in this edition</h2><ul className="news-observations">{competitors.map(competitor => <li key={competitor.id}><Link href={competitorPath(competitor.id)}>{competitor.name} →</Link></li>)}</ul></>}
+          {!!competitors.length && <><h2 className="news-section-title">Names in this edition</h2><ul className="news-observations">{competitors.map(competitor => <li key={competitor.id}><Link href={competitorPath(competitor.id)}>{competitor.name} →</Link><TeamPeople team={competitor} people={query.data?.people} /></li>)}</ul></>}
         </aside>
       </div>
       <ArticleArchive articles={sortedArticles(query.data?.articles ?? []).filter(item => item.id !== article.id).slice(0, 8)} heading="More from the desk" />

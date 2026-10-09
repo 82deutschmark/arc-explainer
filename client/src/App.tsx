@@ -1,9 +1,9 @@
 /*
-Author: GPT-6.1 Sol / Codex
-Date: 2026-10-08
+Author: GPT-6 Sol / Codex
+Date: 2026-10-09
 PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
-         including ARC3 community submission review tooling under the admin section.
+         including ARC3 review tooling and supporting newspaper people, community and method routes.
          Loads secondary route modules on demand so the front page does not download
          every solver, replay viewer, editor and admin screen before becoming usable.
          ARC Daily news and competitor notebooks are separate lazy routes.
@@ -40,6 +40,9 @@ const AnalyticsOverview = lazy(() => import("@/pages/AnalyticsOverview"));
 const Leaderboards = lazy(() => import("@/pages/Leaderboards"));
 const KaggleLeaderboard = lazy(() => import("@/pages/KaggleLeaderboard"));
 const News = lazy(() => import("@/pages/News"));
+const NewsPeople = lazy(() => import("@/pages/NewsPeople"));
+const NewsCommunity = lazy(() => import("@/pages/NewsCommunity"));
+const NewsMethod = lazy(() => import("@/pages/NewsMethod"));
 const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
 const NewsCompetitors = lazy(() => import("@/pages/NewsCompetitors"));
 const NewsCompetitor = lazy(() => import("@/pages/NewsCompetitor"));
@@ -166,6 +169,10 @@ function Router() {
         <Route path="/news" component={News} />
         <Route path="/news/competitors" component={NewsCompetitors} />
         <Route path="/news/competitors/:competitorId" component={NewsCompetitor} />
+        <Route path="/news/people" component={NewsPeople} />
+        <Route path="/news/people/:personId" component={NewsPeople} />
+        <Route path="/news/community" component={NewsCommunity} />
+        <Route path="/news/how-this-is-made" component={NewsMethod} />
         <Route path="/news/:articleId" component={NewsArticle} />
 
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />

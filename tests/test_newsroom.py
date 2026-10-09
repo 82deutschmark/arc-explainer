@@ -1,16 +1,20 @@
 # Author: GPT-6 Sol / Codex
 # Date: 2026-10-09
-# PURPOSE: Verify newsroom time boundaries, incomplete coverage, article and dispatch contracts, immutable publication.
+# PURPOSE: Verify newsroom time boundaries, incomplete coverage, article and dispatch contracts, immutable publication, isolated from current research.
 # SRP/DRY check: Pass — exercises production preparation/validation/publication functions.
 import copy
 from datetime import timedelta
 import importlib.util
 from pathlib import Path
 import tempfile
+import sys
 import unittest
+
+sys.path.insert(0, str(Path(__file__).parents[1] / 'scripts'))
 
 SPEC = importlib.util.spec_from_file_location('newsroom', Path(__file__).parents[1] / 'scripts/newsroom.py')
 n = importlib.util.module_from_spec(SPEC)
+sys.modules['newsroom'] = n
 SPEC.loader.exec_module(n)
 
 
@@ -39,6 +43,18 @@ def draft(brief):
 
 
 class NewsroomTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Historical board fixtures must not consume today's independently checked social posts.
+        cls.content = tempfile.TemporaryDirectory()
+        cls.original_root = n.ROOT
+        n.ROOT = Path(cls.content.name)
+
+    @classmethod
+    def tearDownClass(cls):
+        n.ROOT = cls.original_root
+        cls.content.cleanup()
+
     def test_dst_previous_evening_uses_local_date(self):
         _, end, begin, _ = n.windows('evening', n.stamp('2026-03-08T23:00:00Z'))
         self.assertEqual(n.iso(end), '2026-03-08T22:00:00Z')
