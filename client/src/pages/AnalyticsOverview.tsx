@@ -4,6 +4,9 @@
  * PURPOSE: Archive analytics with dated source-update context, mixed-run provenance and backward-compatible
  *          union cost/coverage types and accessible archived puzzle ranking controls.
  * SRP/DRY check: Pass — cost metrics reuse the shared API contract.
+ * 2026-10-09 (Claude Opus 5.5): removed the collapsed "Most Difficult Puzzles" card; its ranking
+ * mixed uneven model coverage into a misleading list and duplicated the unsolved-puzzle view
+ * on the puzzle DB page.
  *
  * Author: Cascade using Claude Sonnet 4.5
  * Date: 2025-10-10T19:00:00-04:00 (Updated for MAXIMUM density; updated 2025-12-17)
@@ -39,14 +42,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   BarChart3,
-  Database,
-  ChevronDown,
-  ChevronUp
+  Database
 } from 'lucide-react';
 
 // Import existing components
 import { ClickablePuzzleBadge } from '@/components/ui/ClickablePuzzleBadge';
-import { DifficultPuzzlesSection } from '@/components/analytics/DifficultPuzzlesSection';
 
 // Import hooks that follow proper repository pattern
 import { useModelDatasetPerformance, useAvailableModels, useAvailableDatasets, useModelDatasetMetrics, DatasetInfo } from '@/hooks/useModelDatasetPerformance';
@@ -158,9 +158,6 @@ export default function AnalyticsOverview() {
   // Model comparison state
   const [loadingComparison, setLoadingComparison] = useState<boolean>(false);
   const [, navigate] = useLocation();
-
-  // Collapsible sections state
-  const [isDifficultPuzzlesCollapsed, setIsDifficultPuzzlesCollapsed] = useState<boolean>(true);
 
   // Fetch available models, datasets, and model dataset performance
   const { models: availableModels, loading: loadingModels, error: modelsError } = useAvailableModels();
@@ -751,39 +748,6 @@ export default function AnalyticsOverview() {
           </CardContent>
         </Card>
 
-        {/* Most Difficult Puzzles Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
-                Most Difficult Puzzles
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsDifficultPuzzlesCollapsed(!isDifficultPuzzlesCollapsed)}
-                aria-label={isDifficultPuzzlesCollapsed ? "Show hardest puzzles" : "Hide hardest puzzles"}
-                aria-expanded={!isDifficultPuzzlesCollapsed}
-                className="h-8 w-8 p-0"
-              >
-                {isDifficultPuzzlesCollapsed ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronUp className="h-4 w-4" />
-                )}
-              </Button>
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Lowest success rates among scored attempts in this archive; models and coverage vary.
-            </p>
-          </CardHeader>
-          {!isDifficultPuzzlesCollapsed && (
-            <CardContent>
-              <DifficultPuzzlesSection />
-            </CardContent>
-          )}
-        </Card>
 
       </div>
     </div>

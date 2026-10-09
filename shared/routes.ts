@@ -7,6 +7,9 @@
  *          Retires the obsolete model/trustworthiness leaderboard from public discovery.
  *          2026-10-09 (Claude Opus 5.5): /feedback description now matches the offer-framed
  *          page instead of the superseded October 8 audit wording.
+ *          Same day: early 2025 experiments (discussion, model browser, Elo leaderboard,
+ *          explanation feedback) are archived: noindex, out of the sitemap and the /home list,
+ *          still served by direct link.
  *          2026-10-06: entries can now carry keywords, structured data (JSON-LD) and a
  *          crawlable HTML summary that is served inside #root until the app renders, so a
  *          crawler that does not run JavaScript still sees a real page. Added /analytics
@@ -293,12 +296,12 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/trading-cards', 'ARC puzzle trading cards', 'Explore ARC puzzles as visual trading cards and open each puzzle for examples and analysis.'],
   ['/hall-of-fame', 'ARC community hall of fame', 'Meet contributors to the ARC community and explore their puzzle-solving work.'],
   ['/hall-of-fame/johan-land', 'Johan Land — ARC community tribute', 'Explore Johan Land’s contribution to ARC puzzle solving and the results collected on ARC Explainer.'],
-  ['/discussion', 'ARC puzzle discussions', 'Explore community discussions of ARC puzzles, model explanations and reasoning strategies.'],
+  ['/discussion', 'ARC puzzle discussions (archived)', 'An early experiment in iterative model self-discussion about ARC puzzles, kept by direct link.', true],
   ['/leaderboards', 'Model rankings retired', 'The old model and trustworthiness rankings have been retired because their measures and data are outdated.', true],
-  ['/models', 'ARC model results browser', 'Browse language models evaluated on ARC puzzles and explore their recorded performance.'],
-  ['/elo/leaderboard', 'ARC explanation Elo leaderboard', 'Explore model rankings from pairwise comparisons of ARC puzzle explanations.'],
+  ['/models', 'ARC model results browser (archived)', 'An early browser of language models evaluated on ARC puzzles, kept by direct link.', true],
+  ['/elo/leaderboard', 'ARC explanation Elo leaderboard (archived)', 'An early experiment ranking models by pairwise votes on explanations, kept by direct link.', true],
   ['/feedback', 'ARC Prize feedback', 'Missing ARC-3 community resources, public-game guides ARC Prize is welcome to host, and a request to make model attempts inspectable.'],
-  ['/explanation-feedback', 'ARC explanation feedback', 'Browse feedback on model-generated ARC puzzle explanations and explore the associated puzzles.'],
+  ['/explanation-feedback', 'ARC explanation feedback (archived)', 'An early experiment collecting reader feedback on model explanations, kept by direct link.', true],
   ['/model-comparison', 'Compare ARC model results', 'Compare recorded model performance across ARC puzzles and datasets.'],
   ['/scoring', 'How ARC model accuracy is scored', 'Understand how ARC Explainer combines recorded Hugging Face evaluation results and scores model answers.'],
   ['/about', 'About ARC Explainer', 'Learn about ARC Explainer, its puzzle-analysis tools, community game guides and benchmark resources.'],

@@ -5,6 +5,9 @@
  *          with named mobile controls and resource/reference links in the existing menus.
  *          Gives the separate ARC Daily newspaper a direct News entry.
  *          Removes the retired model/trustworthiness leaderboard from public navigation.
+ *          2026-10-09 (Claude Opus 5.5): archives the early 2025 experiments from navigation:
+ *          Elo compare, puzzle DB, test-a-solution, debate, discussion, explanation feedback
+ *          and the ML & Kaggle readiness page. Their routes still serve by direct link.
  * SRP/DRY check: Pass — maintains one navigation configuration with full-page links where needed.
  */
 /**
@@ -54,7 +57,6 @@ import { cn } from '@/lib/utils';
 import {
   Archive,
   Brain,
-  CheckCircle,
   CircuitBoard,
   Code,
   Database,
@@ -62,14 +64,11 @@ import {
   Gamepad2,
   LayoutGrid,
   Github,
-  GraduationCap,
   Grid3X3,
   Info,
   Layers,
-  MessageSquare,
   Search,
   Trophy,
-  Upload,
   Users,
   Wallet,
   Worm,
@@ -274,13 +273,6 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
           },
           {
             type: 'link',
-            title: 'Compare',
-            href: '/elo',
-            icon: Trophy,
-            description: 'Head-to-head explanation comparison with ELO ratings',
-          },
-          {
-            type: 'link',
             title: 'Model Comparison',
             href: '/model-comparison',
             icon: Layers,
@@ -326,45 +318,10 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
           },
           {
             type: 'link',
-            title: 'Puzzle DB',
-            href: '/puzzles/database',
-            icon: Database,
-            description: 'Individual puzzles with DB record counts and difficulty analysis',
-          },
-          {
-            type: 'link',
-            title: 'Test a Solution',
-            href: '/test-solution',
-            icon: CheckCircle,
-            description: 'Test your own predicted solutions against ARC puzzles',
-          },
-          {
-            type: 'link',
-            title: 'Debate',
-            href: '/debate',
-            icon: MessageSquare,
-            description: "Watch AI models challenge each other's explanations",
-          },
-          {
-            type: 'link',
-            title: 'Discussion',
-            href: '/discussion',
-            icon: Brain,
-            description: 'Uses the Responses API to do iterative self-conversation',
-          },
-          {
-            type: 'link',
             title: 'LLM Council',
             href: '/council',
             icon: Users,
             description: 'Multi-model consensus evaluation with 3-stage deliberation',
-          },
-          {
-            type: 'link',
-            title: 'Feedback',
-            href: '/explanation-feedback',
-            icon: MessageSquare,
-            description: 'Explore human feedback on model explanations',
           },
           {
             type: 'link',
@@ -384,13 +341,6 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
             href: '/about',
             icon: Info,
             description: 'Learn about this project and acknowledgments',
-          },
-          {
-            type: 'link',
-            title: 'ML & Kaggle',
-            href: '/kaggle-readiness',
-            icon: GraduationCap,
-            description: 'Plain-language explainer: what machine learning is, and what Kaggle is',
           },
           {
             type: 'link',

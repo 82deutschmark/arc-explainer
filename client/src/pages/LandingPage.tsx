@@ -3,6 +3,7 @@
  * Date: 2026-10-09
  * PURPOSE: Directory of playable ARC tools, game guides and recorded results.
  *          Features Simon Ouellette’s ARC-3 training-data tools. Includes the ARC Daily newspaper, competitor notebook and concrete ARC Prize feedback sheet.
+ *          2026-10-09 (Claude Opus 5.5): drops the archived test-a-solution card.
  * SRP/DRY check: Pass — reuses shared Card components and router links.
  */
 import { SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
@@ -19,7 +20,6 @@ const sections: { title: string; description: string; resources: Resource[] }[] 
       { title: 'Human ARC', href: '/human-arc/', fullPage: true, description: 'Draw solutions, take a puzzle assessment and review your results using an anonymous player profile.' },
       { title: 'Space Force Mission Control', href: 'https://sfmc.markbarney.net/', fullPage: true, description: 'A mission-based introduction to pattern puzzles, with a space theme for younger players and curious beginners.' },
       { title: 'ARC puzzle browser', href: '/browser', description: 'Explore ARC-AGI-1 and ARC-AGI-2 tasks, examples and recorded model explanations.' },
-      { title: 'Test a solution', href: '/test-solution', description: 'Check your predicted output against a known ARC puzzle.' },
     ],
   },
   {
