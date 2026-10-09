@@ -1,68 +1,30 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ARC Prize — feature asks and missing resources</title><meta name="description" content="A hobbyist’s offer to ARC Prize: missing ARC-3 community resources, public-game guides they are welcome to host, and a request to make model attempts inspectable."><link rel="canonical" href="https://arc.markbarney.net/feedback"><meta property="og:title" content="ARC Prize — feature asks and missing resources"><meta property="og:description" content="Missing ARC-3 community resources, public-game guides ARC Prize is welcome to host, and a request to make model attempts inspectable."><meta property="og:url" content="https://arc.markbarney.net/feedback"><style>*{box-sizing:border-box}body{margin:0;background:#f4f7f9;color:#182b39;font:16px/1.55 system-ui,-apple-system,sans-serif}main{max-width:860px;margin:auto;padding:42px 48px;background:white}h1{font-size:34px;line-height:1.15;margin:12px 0 18px}h2{font-size:23px;line-height:1.3;margin:34px 0 8px}h3{font-size:14px;margin:20px 0 4px;text-transform:uppercase;letter-spacing:.05em;color:#3d5363}p{margin:10px 0}ul{margin:6px 0 10px;padding-left:22px}li{margin:7px 0}a{color:#075f8a;text-underline-offset:3px;overflow-wrap:anywhere}.eyebrow,footer,.note{font-size:14px;color:#536674}.lead{font-size:18px}.eyebrow{text-transform:uppercase;letter-spacing:.06em}aside{background:#eaf4f7;padding:12px 20px;margin:18px 0}aside ul{margin:4px 0}details{margin:16px 0}summary{cursor:pointer;color:#075f8a;font-weight:600}footer{border-top:1px solid #dce3e8;margin-top:30px;padding-top:16px}@media(max-width:700px){main{padding:26px 20px}h1{font-size:29px}}@media print{body{background:white}main{padding:0}details>*{display:block!important}}</style></head><body><main>
-<!-- Author: Claude Opus 5.5 | Date: 2026-10-09 | Purpose: Mark's two asks to ARC Prize as short bullets: the offer, the missing ARC-3 resources (third-party first, his guides offered for hosting), inspectable model attempts using records ARC Prize already holds, and two open questions. Mirrors coding-assistant-handoff.txt and fixes.json. SRP/DRY: Pass; the three files carry the same asks and wording. -->
-<div class="eyebrow">Feedback for Matt · October 9, 2026</div>
-<h1>Feature asks and missing resources</h1>
-<p class="lead">Matt—two concrete asks for arcprize.org, each with a working version your coding agent can build from.</p>
-<aside><ul>
-<li>ARC Explainer is my unpaid hobby project. Thanks for already listing its Puzzle Explorer in your Tools section.</li>
-<li>This isn’t about traffic. I’d happily shut my site down if these things lived on arcprize.org.</li>
-<li>Anything I wrote is yours to copy, rehost or adapt. The code is <a href="https://github.com/82deutschmark/arc-explainer">public on GitHub</a> under the MIT license.</li>
-<li>If hosting something isn’t possible, a link works. I’m glad to help however is useful.</li>
-</ul></aside>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Useful ARC links for ARC Prize</title><meta name="description" content="Working links to useful ARC resources not on the ARC Prize Resources page, a better way to show model attempts on ARC-1 and ARC-2 puzzles, and two dead links."><link rel="canonical" href="https://arc.markbarney.net/feedback"><meta property="og:title" content="Useful ARC links for ARC Prize"><meta property="og:description" content="Working links to useful ARC resources not on the ARC Prize Resources page, a better way to show model attempts on ARC-1 and ARC-2 puzzles, and two dead links."><meta property="og:url" content="https://arc.markbarney.net/feedback"><style>*{box-sizing:border-box}body{margin:0;background:#f4f7f9;color:#182b39;font:16px/1.6 system-ui,-apple-system,sans-serif}main{max-width:760px;margin:auto;padding:42px 48px;background:white;min-height:100vh}h1{font-size:30px;line-height:1.2;margin:0 0 14px}h2{font-size:20px;line-height:1.3;margin:34px 0 8px}p{margin:10px 0}ul{margin:6px 0 10px;padding-left:22px}li{margin:8px 0}a{color:#075f8a;text-underline-offset:3px;overflow-wrap:anywhere}.muted{color:#536674}@media(max-width:700px){main{padding:26px 20px}h1{font-size:26px}}</style></head><body><main>
+<!-- Author: Claude Opus 5.5 | Date: 2026-10-09 | Purpose: Boss's note to Matt at ARC Prize, served at /feedback. Just working links: useful ARC-3 resources missing from arcprize.org/resources, one ARC-1/2 puzzle shown on both sites so the difference is visible, and two dead links on their page. Replaces the earlier ask-and-offer write-up. SRP/DRY: Pass; one page, no companion files. -->
+<h1>Some useful ARC links</h1>
+<p class="muted">For Matt, after the new Resources page. Just links that might be worth adding.</p>
 
-<section id="missing-resources"><h2>1. Add the missing ARC-3 resources</h2>
-<h3>Other people’s work, not in your Resources catalogue yet</h3>
+<h2>ARC-3 things that aren't on the Resources page</h2>
 <ul>
-<li><a href="https://github.com/theredbluepill/arc-interactive">Red Pill/Blue Pill</a>: 252 community-made interactive games (<a href="https://arc.markbarney.net/arc3/gallery?category=redbluepill">playable copy</a>).</li>
-<li><a href="https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data">Simon Ouellette: ARC-AGI-3 Training Data</a>. Separate from ARC_gym, which you already list.</li>
-<li><a href="https://arc3.sonpham.net">Son Pham: ARC-3 games and agent harness</a>.</li>
-<li><a href="https://github.com/Tufalabs/duck-harness">Tufa Labs: Duck harness</a>, with its <a href="https://tufalabs.ai/research/duck-harness/">write-up</a>.</li>
-<li><a href="https://github.com/symbolica-ai/ARC-AGI-3-Agents">Symbolica: ARC-3 agents</a>. Your Arcgentica entry is their ARC-2 write-up.</li>
+<li><a href="https://github.com/theredbluepill/arc-interactive">Red Pill/Blue Pill games</a>: a big set of community-made ARC-3-style games. <a href="https://arc.markbarney.net/arc3/gallery?category=redbluepill">Playable here.</a></li>
+<li><a href="https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data">Simon Ouellette's ARC-AGI-3 training data</a>.</li>
+<li><a href="https://arc3.sonpham.net">Son Pham's ARC-3 games and agent harness</a>.</li>
+<li><a href="https://github.com/Tufalabs/duck-harness">Tufa Labs' Duck harness</a>, and <a href="https://tufalabs.ai/research/duck-harness/">their write-up</a>.</li>
+<li><a href="https://github.com/symbolica-ai/ARC-AGI-3-Agents">Symbolica's ARC-3 agents</a>.</li>
+<li><a href="https://arc.markbarney.net/arc3/games">Level-by-level guides to the public games</a>, for anyone who's stuck. <a href="https://arc.markbarney.net/arc3/games/dc22#level-1">Example.</a></li>
+<li><a href="https://arc.markbarney.net/kaggle-leaderboard">The Kaggle leaderboard with its history</a>: who's climbing, who's sinking, and where the medal lines sit.</li>
 </ul>
-<p class="note">Checked against all 246 catalogue entries.</p>
-<h3>My public-game guides, offered for you to host</h3>
-<ul>
-<li><a href="https://arc.markbarney.net/arc3/games">Level-by-level guides for all 25 public games</a>: rules, a picture of each level, commentary. Example: <a href="https://arc.markbarney.net/arc3/games/dc22#level-1">dc22</a>.</li>
-<li>The whole set is one <a href="https://arc.markbarney.net/arc3/games.md">markdown file</a>, ready to import.</li>
-</ul>
-<h3>The ask</h3>
-<ul>
-<li>Add a resource card for each item above: link, one-line description, creator credit.</li>
-<li>Host the guides on arcprize.org behind a spoiler label, next to each game. If you can’t, a spoiler-labeled link from each game page works.</li>
-</ul>
-<details><summary>More community links missing from the catalogue</summary><ul><li><a href="https://arc-visualizations.github.io/">H-ARC: human solving data and visualizations</a></li>
-<li><a href="https://caped.ferenczi.eu/">CAPED</a></li>
-<li><a href="https://github.com/pwspen/objarc">objarc — Patrick Spencer</a></li>
-<li><a href="https://github.com/pwspen/minireason/tree/main">minireason — Patrick Spencer</a></li>
-<li><a href="https://github.com/1ytic/NVARC">NVARC</a></li>
-<li><a href="https://cdg.openai.nl/">ARC-CDG curriculum data generator</a></li>
-<li><a href="https://github.com/cristianoc/arc-agi-2-abstraction-dataset">ARC-AGI-2 solvers and abstractions</a></li>
-<li><a href="https://github.com/epang080516/arc_agi">Eric Pang’s ARC-AGI implementation</a></li>
-<li><a href="https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/">The ARChitects’ 2025 solution report</a></li>
-<li><a href="https://blog.redwoodresearch.org/p/getting-50-sota-on-arc-agi-with-gpt">Ryan Greenblatt’s GPT-4o ARC write-up</a></li>
-<li><a href="https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/">NVIDIA Kaggle Grandmasters competition write-up</a></li></ul><p class="note">These are catalogue omissions, not claims that ARC Prize never mentions the work elsewhere. Details in the <a href="/reports/arc-prize-audit-2026-10-08/resource-comparison.csv">full comparison</a>.</p></details></section>
 
-<section id="attempt-inspection"><span id="AP-03"></span><h2>2. Let a result open the actual attempt</h2>
-<h3>Today</h3>
+<h2>ARC-1 and ARC-2 puzzles: seeing what the model actually did</h2>
+<p>Same puzzle, two pages:</p>
 <ul>
-<li>Your task pages show whether a model passed and what it cost.</li>
-<li>They don’t show what the model drew or how it reasoned.</li>
+<li><a href="https://arcprize.org/tasks/13e47133#model-performance">Yours</a> says whether each model passed and what it cost.</li>
+<li><a href="https://arc.markbarney.net/task/13e47133?highlight=73845">Ours</a> shows the grid the model drew, where it went wrong, and its reasoning.</li>
 </ul>
-<h3>The ask</h3>
+<p>Your task pages would be a lot more useful if a result opened the actual attempt.</p>
+
+<h2>Two dead links on the Resources page</h2>
 <ul>
-<li>Clicking a result row opens the attempt: reasoning, submitted and expected grids, mismatches, cost and time.</li>
-<li>Filter to failed tasks. Compare two model versions on the same task.</li>
-<li>Show the source and model settings. Label anything unavailable.</li>
-<li>You already hold these records from your own testing, so this doesn’t depend on Hugging Face or anyone else’s viewer.</li>
+<li>The Lab42 ARC editor (arc-editor.lab42.global) is down.</li>
+<li>Jones Trauber's About page (jonestrauber.com/about) is gone.</li>
 </ul>
-<p>Working example: <a href="https://arc.markbarney.net/task/13e47133?highlight=73845">one saved attempt</a>, a failed Opus 4.6 run on 13e47133. Yours today: the <a href="https://arcprize.org/tasks/13e47133#model-performance">13e47133 result table</a>.</p></section>
-
-<section id="open-questions"><h2>Two open questions</h2>
-<ul>
-<li>Raw results stopped appearing on Hugging Face. I asked why and was told I’d hear back; I haven’t yet. If publication has ended, a quick confirmation would help, and it would make ask 2 the main way people can see how newer models reach their answers.</li>
-<li>Will Opus 5.5’s ARC-3 results be published? <a href="https://arcprize.org/results/anthropic-claude-opus-5-5">Its results page</a> shows dashes there.</li>
-</ul></section>
-
-<p>Thanks—Mark</p>
-<footer>For your coding agent: <a href="/reports/arc-prize-audit-2026-10-08/coding-assistant-handoff.txt">plain-text sheet</a> · <a href="/reports/arc-prize-audit-2026-10-08/fixes.json">structured asks</a> · <a href="/reports/arc-prize-audit-2026-10-08/resource-comparison.csv">full resource comparison</a>. Each ask stands on its own.</footer>
 </main></body></html>

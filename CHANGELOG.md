@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.133.3  Oct 9, 2026
+
+- **/feedback is now a short note of working links for ARC Prize** (Author: Claude Opus 5.5). The Boss said the last version read as asking ARC Prize to host his write-up and was full of counts that meant nothing to the reader. The page in `client/public/reports/arc-prize-audit-2026-10-08/audit.html` now holds only useful ARC-3 links missing from their Resources page, one ARC-1/2 puzzle linked on both sites so the difference shows, and two dead links on their page. Removed the companion `coding-assistant-handoff.txt`, `fixes.json` and `evidence.json`; README updated.
+
 ### Version 9.133.2  Oct 9, 2026
 
 - **Hall of Fame cards for the past prize winners back in the field** (Author: Claude Opus 5.5). Adds Lonnie (2025 fourth), IsaiahP (2025 third with MindsAI & Tufa Labs), alijs (2024 third) and gromml (2024 fifth with PoohAI) to the Hall of Fame, synced on server start. Pictures are their Kaggle profile pictures (gromml has none, so his card uses the standard animated placeholder); places and scores from arcprize.org, rosters from the official final Kaggle leaderboards, write-ups linked. Their Digest profiles link to the new cards. Files: `server/scripts/seedContributors.ts`, `content/news/people.json`.
