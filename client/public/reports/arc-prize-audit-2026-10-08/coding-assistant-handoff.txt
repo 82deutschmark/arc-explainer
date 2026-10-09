@@ -7,6 +7,42 @@ explanatory value and disclosed derivation; remove misleading or unsupported gui
 Resume public ARC1/2 raw-attempt publication or link a successor so community analysis
 can continue. These requests are about the visitor’s experience and access to evidence.
 
+Mark’s motivation: he is not making money from ARC Explainer and is not seeking
+traffic for its own sake. He built much of it with AI in 2025, as a nonprofessional
+software engineer, to fill gaps in tools he could find; he shared it and responded
+to community requests. He welcomes Matt’s involvement and the official task tools.
+This includes curation of other people’s work, with direct credit and links:
+Simon Strandgaard (@neoneye) is a foundational influence, explicitly credited in
+ARC Explainer’s About page, shared reference panel and contributor seed entry.
+The ARC-Heavy and ConceptARC import tools cite his dataset collection; this credits
+curation/distribution, not authorship of every included dataset.
+- ARC-Interactive: https://neoneye.github.io/arc/
+- Source: https://github.com/neoneye/ARC-Interactive
+- Brain Grid Game: https://braingridgame.com/
+- Human solving histories: https://github.com/neoneye/ARC-Interactive-History-Dataset
+- Dataset collection: https://github.com/neoneye/arc-dataset-collection
+- ARC notes: https://github.com/neoneye/arc-notes
+Other creators:
+- Simon Ouellette: https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data
+- Tufa Labs: https://github.com/Tufalabs/duck-harness
+- Research write-up: https://tufalabs.ai/research/duck-harness/
+- Symbolica: https://github.com/symbolica-ai/ARC-AGI-3-Agents
+Collection checked in the live UI: https://arc.markbarney.net/arc3
+
+Publication questions requiring an owner answer, not a guessed code fix:
+- Are new ARC1/2 attempts still published on Hugging Face? If moved, where?
+  If paused or stopped, say so. Mark wants publication resumed so ingestion can continue.
+- Will Opus 5.5 ARC3 evaluation results be published? Is testing pending, completed
+  but unpublished, or not planned? If planned, when, and will the release include
+  scores, replays, action logs and any releasable responses/reasoning traces?
+Checked October 9: https://arcprize.org/results/anthropic-claude-opus-5-5
+has ARC1/2 scores and task pass/fail tables, but ARC3 is a dash for all five variants.
+No future release commitment was established. Other models have ARC3 replays;
+do not broaden the ARC1/2 raw-attempt gap into a claim that no ARC3 replays exist.
+Comparing Opus 4.6 and 5.5 reasoning on the same task is a desired future workflow,
+not a claim that both traces are already in the archive. Research reuse depends
+on released fields and permissions; do not speculate about providers’ motives.
+
 Links to try:
 - Examine an actual model failure: https://arc.markbarney.net/task/13e47133?highlight=73845
   Opus 4.6’s saved reasoning, two failed predictions, expected outputs and mismatch highlighting. This is the clearest example of what the task viewer makes possible.

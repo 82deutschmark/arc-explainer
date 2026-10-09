@@ -1863,5 +1863,28 @@
       "fc7cae8d": "f0e109b6f5523ea18b49209b278891aa08d1b494344af8f478c6248a54114e0c"
     },
     "qualification": "Per-color counts do change in these examples, so this is a confirmed labeling inconsistency, not proof that the underlying calculation is wrong. The current training hints across these 120 tasks contain only sameSize, newColors and shapeCountChange. Rotation/reflection appear in generic tooltip wording, but no reflection hint or incorrect reflection rule was reproduced in this pass. Public output does not establish AI authorship. This was a metadata consistency check, not a semantic solution review of all 120 puzzles."
+  },
+  "opus_5_5_publication_follow_up": {
+    "checked_date": "2026-10-09",
+    "sources": [
+      "https://arcprize.org/results",
+      "https://arcprize.org/results/anthropic-claude-opus-5-5"
+    ],
+    "observation": "Results index and model detail page publish ARC1/2 results but show a dash for ARC3, for every one of five Opus 5.5 variants on the model page. The detail page includes ARC1/2 public task pass/fail tables.",
+    "qualification": "No ARC3 publication commitment or explanation established from these pages. Missing score does not establish that testing never occurred or that data is deliberately withheld. Ask the owner."
+  },
+  "strandgaard_credit_review": {
+    "checked_date": "2026-10-09",
+    "method": "Repository-wide tracked-file search for Strandgaard, neoneye, BrainGridGame and simon.arc; inspected page credits, shared references, contributor seed, importer code and representative import metadata; checked original project pages. Simon Ouellette references distinguished from Simon Strandgaard.",
+    "references": {
+      "client/src/pages/About.tsx": "Dedicated spotlight and personal encouragement credit.",
+      "client/src/components/browser/ReferenceMaterial.tsx": "ARC notes link and special thanks, shared by About and PuzzleBrowser.",
+      "server/scripts/seedContributors.ts": "Contributor description and human interaction dataset link; source entry does not by itself prove current database contents.",
+      "scripts/importConceptArc.js": "Imports from neoneye/arc-dataset-collection.",
+      "scripts/importArcHeavy.js": "Imports from neoneye/arc-dataset-collection.",
+      "server/services/puzzleLoader.ts": "Import-source attribution for ARC-Heavy and ConceptARC.",
+      "data/concept-arc/CenterMinimal.json": "_import.repository identifies neoneye/arc-dataset-collection."
+    },
+    "qualification": "Dataset collection includes other authors’ work. Credit Simon’s curation and distribution without assigning him authorship of every dataset. This is not a claim that the official resources omit every project."
   }
 }

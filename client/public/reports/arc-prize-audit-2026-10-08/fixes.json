@@ -218,7 +218,8 @@
         "https://github.com/arcprize/arc-agi-benchmarking",
         "https://arcprize.org/blog/astra",
         "https://arc.markbarney.net/task/221dfab4?highlight=73914",
-        "https://arc.markbarney.net/task/221dfab4?highlight=56958"
+        "https://arc.markbarney.net/task/221dfab4?highlight=56958",
+        "https://arcprize.org/results/anthropic-claude-opus-5-5"
       ],
       "evidence_files": [
         "evidence.json",
@@ -227,7 +228,12 @@
       "qualification": "This is an observed four-month repository update gap, not proof of a permanent shutdown. An unlinked or private store may exist; publication policy needs the maintainers decision. ARC3 replay links are already present and must not be included in the missing-raw-data claim.",
       "depends_on": [],
       "decision": "For Matt to triage; not yet approved or implemented.",
-      "impact": "ARC Explainer cannot ingest the newer attempts or extend its existing reasoning/grid inspection and statistics to those newer models without the underlying records. Mark identifies this as the main request, separate from the immediate website bug priorities."
+      "impact": "ARC Explainer cannot ingest the newer attempts or extend its existing reasoning/grid inspection and statistics to those newer models without the underlying records. Mark identifies this as the main request, separate from the immediate website bug priorities.",
+      "owner_questions": [
+        "Are new ARC1/2 raw attempts still published on Hugging Face? If moved, what is the successor feed? If paused or stopped, please state that explicitly.",
+        "Separately: will Opus 5.5 ARC3 evaluation results be published? Clarify evaluation status, planned timing, and availability of scores, replays, action logs and releasable responses/traces."
+      ],
+      "follow_up_checked_date": "2026-10-09"
     },
     {
       "id": "AP-08",
@@ -476,7 +482,7 @@
         "Start at Resources as a parent, teacher or beginner looking for something immediately playable.",
         "Try to distinguish a game, task examiner, tutorial, research paper and dated result archive."
       ],
-      "proposed_fix": "Add resource type, audience, ARC version, access requirements and last-reviewed date. Consider a small “Start here / Play / Examine model answers” collection. Evaluate Mark’s individual tools alongside existing choices using the same criteria; acceptance is an editorial choice. Review The ARC Daily news page and the curated synthetic ARC-3 game catalog as distinct entries, alongside the saved-attempt viewer and existing play/guide resources. Label synthetic games as community/research resources, not official hidden evaluation games.",
+      "proposed_fix": "Add resource type, audience, ARC version, access requirements and last-reviewed date. Consider a small “Start here / Play / Examine model answers” collection. Evaluate Mark’s individual tools alongside existing choices using the same criteria; acceptance is an editorial choice. Review The ARC Daily news page and the curated synthetic ARC-3 game catalog as distinct entries, alongside the saved-attempt viewer and existing play/guide resources. Label synthetic games as community/research resources, not official hidden evaluation games. Review original-author resources curated on ARC Explainer too: Simon Ouellette’s training data, Tufa Labs’ Duck harness and Symbolica’s Arcgentica. Link creators directly; this is broader community curation. Include Simon Strandgaard’s ARC-Interactive, Brain Grid Game, human interaction histories, dataset collection and ARC notes, which underpin ARC Explainer’s existing credits and imports. Preserve original dataset author attribution.",
       "acceptance_checks": [
         "A visitor can find a reviewed beginner/family-friendly activity and understand login, cost, device and reading requirements before opening it.",
         "Analytical tools are discoverable separately from papers and videos.",
@@ -490,7 +496,17 @@
         "https://sfmc.markbarney.net/",
         "https://arc.markbarney.net/news",
         "https://arc.markbarney.net/arc3/gallery",
-        "https://arc.markbarney.net/task/221dfab4?highlight=73914"
+        "https://arc.markbarney.net/task/221dfab4?highlight=73914",
+        "https://arc.markbarney.net/arc3",
+        "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
+        "https://github.com/Tufalabs/duck-harness",
+        "https://github.com/symbolica-ai/ARC-AGI-3-Agents",
+        "https://arc.markbarney.net/about",
+        "https://neoneye.github.io/arc/",
+        "https://braingridgame.com/",
+        "https://github.com/neoneye/ARC-Interactive-History-Dataset",
+        "https://github.com/neoneye/arc-dataset-collection",
+        "https://github.com/neoneye/arc-notes"
       ],
       "evidence_files": [
         "evidence.json",

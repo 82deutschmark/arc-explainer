@@ -16,3 +16,4 @@ October 8 correction: the report now shows populated reasoning and output screen
 Task-hint follow-up: AP-20 records 16 equal-total/shape-count-change label mismatches across 10 ARC2 evaluation tasks, with a live screenshot and exact links for 13e47133. Reflection claims remain unconfirmed; these statistics are not verified puzzle rules.
 
 October 9 presentation update: `/feedback` now leads with seven annotated resource links and the requests about useful task guidance, raw-attempt publication and hands-on curation. The full dated audit and comparison remain in an expandable section.
+October 9 follow-up: adds Mark’s noncommercial motivation, direct original-author resources, and explicit questions about Hugging Face publication and Opus 5.5 ARC-3 status. New publication observations are dated separately from the original audit.

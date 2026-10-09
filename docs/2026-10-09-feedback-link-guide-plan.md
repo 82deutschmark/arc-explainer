@@ -8,3 +8,9 @@ User approved revising the feedback to convey task-guidance quality, raw-attempt
 Implementation: lead the existing `/feedback` document with seven annotated links and exact attempt references. Keep the audit, screenshots and side-by-side comparison in optional expanded detail. Align AP-20 and the coding-assistant brief. No application logic changes.
 
 Validation: inspect HTML anchors and structured backlog consistency; check linked destinations; inspect the rendered public page after deployment.
+
+October 9 follow-up authorized by Mark: explain the noncommercial motivation and 2025 AI-assisted origins, credit original authors of resources he curated, and ask directly about Hugging Face publication and Opus 5.5 ARC-3 availability. Keep uncertain publication plans as questions, not defects or promises. Preserve the compact link guide and optional detailed audit.
+
+Repository-wide Simon Strandgaard review: identified About spotlight/thanks, shared ARC notes and special-thanks footer, contributor seed, ARC-Heavy and ConceptARC import sources, and 179 ConceptARC files with import metadata. Added his browser puzzle tool, human-solving history dataset, dataset collection and notes with direct creator links. Simon Ouellette remains separately credited.
+
+Validation completed: original-author/model links returned HTTP 200; JSON parses, unique anchors and 20 ticket IDs match, all six images retained. Local browser preview renders the new motivation, Simon section and publication questions with no horizontal overflow; detailed audit stays collapsed. Live About page confirms the Simon spotlight and reference credits.
