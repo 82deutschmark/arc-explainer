@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.132.1  Oct 9, 2026
+
+- **ARC Prize feedback as plain bullets** (Author: Claude Opus 5.5). Rewrites `/feedback`, the coding-agent sheet and the structured asks as short bullet points: the offer up front (unpaid hobby project, not about traffic, MIT code, a link as fallback), ask 1 split into other people's missing resources, Mark's guides offered for hosting and the requested change, ask 2 as today versus the ask, and the two open questions with the Opus 5.5 results page linked. Every link on the page and the sheet returned HTTP 200 live. Files: `client/public/reports/arc-prize-audit-2026-10-08/{audit.html,coding-assistant-handoff.txt,fixes.json}`.
+
 ### Version 9.132.0  Oct 9, 2026
 
 - **Archive the early 2025 experiments; drop the misleading hardest-puzzles list** (Author: Claude Opus 5.5). Removes Elo compare, puzzle DB, test-a-solution, debate, discussion, explanation feedback and the ML & Kaggle readiness page from the top navigation, and the test-a-solution card from `/home`. The discussion, model browser, Elo leaderboard and explanation-feedback routes become noindex, so they leave the sitemap and the /home section list; every route still serves by direct link. `/analytics` keeps its URL (ARC Prize links to it) but loses the collapsed "Most Difficult Puzzles" card, whose ranking mixed uneven model coverage into a misleading list and duplicated the puzzle DB's unsolved view; the now-unused `DifficultPuzzlesSection` component is deleted. Files: `client/src/components/layout/AppNavigation.tsx`, `client/src/pages/LandingPage.tsx`, `client/src/pages/AnalyticsOverview.tsx`, `shared/routes.ts`. Plan: `docs/2026-10-09-mit-license-and-archive-plan.md`.

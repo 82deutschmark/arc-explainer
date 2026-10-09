@@ -24,3 +24,7 @@ Archived = removed from the top navigation, the `/home` resource hub and the sit
 ## Analytics
 
 Remove the collapsed "Most Difficult Puzzles" card at the bottom of `/analytics`: its ranking mixes uneven model coverage into a misleading "hardest" list and duplicates the unsolved-puzzle view on the puzzle DB page. No restyle in this change.
+
+## Feedback page as bullets
+
+Mark asked for clear bullet points with no disjointed prose. The page, agent sheet and structured asks now share one bullet structure. All page and sheet links were checked live (HTTP 200).
