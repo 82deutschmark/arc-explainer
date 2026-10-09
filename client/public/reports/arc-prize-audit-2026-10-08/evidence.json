@@ -1886,5 +1886,23 @@
       "data/concept-arc/CenterMinimal.json": "_import.repository identifies neoneye/arc-dataset-collection."
     },
     "qualification": "Dataset collection includes other authors’ work. Credit Simon’s curation and distribution without assigning him authorship of every dataset. This is not a claim that the official resources omit every project."
+  },
+  "arc3_resource_coverage_follow_up": {
+    "checked_date": "2026-10-09",
+    "public_game_reference": {
+      "url": "https://arc.markbarney.net/arc3/games.md",
+      "current_game_sections": 25,
+      "withdrawn_separate": [
+        "as66"
+      ],
+      "method": "Parsed game headings in live reference; checked shared registry withdrawal exclusion. Viewed dc22 live level sections, pictures, play notes and records/replay controls."
+    },
+    "redbluepill_archive": {
+      "url": "https://arc.markbarney.net/arc3/gallery?category=redbluepill",
+      "source": "https://github.com/theredbluepill/arc-interactive",
+      "games": 252,
+      "method": "Live catalog API count and browser category chip/heading/attribution agree."
+    },
+    "qualification": "Coverage and access checked; not a fresh correctness review of every rule or exhaustive comparison with every other site."
   }
 }

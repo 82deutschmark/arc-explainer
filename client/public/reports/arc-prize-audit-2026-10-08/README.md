@@ -19,3 +19,5 @@ October 9 presentation update: `/feedback` now leads with seven annotated resour
 October 9 follow-up: adds Mark’s noncommercial motivation, direct original-author resources, and explicit questions about Hugging Face publication and Opus 5.5 ARC-3 status. New publication observations are dated separately from the original audit.
 
 Clarification: the desired model comparison is Opus 4.5 versus 5.5, enabled by future access to the newer raw attempts. The existing Opus 4.5 link is an archive example, not an available 5.5 comparison. Resource feedback concerns curation quality even where ARC Prize already links the creator.
+
+ARC-3 focus: feedback now leads with all 25 public-game breakdowns, the directly filtered 252-game Red Pill/Blue Pill archive, synthetic games, the complete reference and news. Earlier ARC1/2 examples are secondary, expandable context.

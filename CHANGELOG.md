@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.130.4  Oct 9, 2026
+
+- **Lead feedback with ARC-3 resources** (Author: Codex). Highlights breakdowns for all 25 current public games, the 252-game Red Pill/Blue Pill archive with direct category/source links, synthetic games and the complete reference. Adds a concrete dc22 level example and moves older ARC1/2 analysis into secondary expandable context. Aligns the brief, curation proposal and dated coverage evidence; no build monitoring requested.
+
 ### Version 9.130.3  Oct 9, 2026
 
 - **Clarify the comparison and curation requests** (Author: Codex). Rewrites feedback point 2 around the desired Opus 4.5-versus-5.5 reasoning comparison, clearly separating the existing archive example from unavailable newer records. Acknowledges ARC Prize already links Simon’s work and asks for better explanation, organization and maintenance of resources. Aligns the coding-assistant brief and curation proposal; no deployment polling at the user’s request.

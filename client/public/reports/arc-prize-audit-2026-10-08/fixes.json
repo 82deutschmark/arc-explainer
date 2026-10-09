@@ -482,7 +482,7 @@
         "Start at Resources as a parent, teacher or beginner looking for something immediately playable.",
         "Try to distinguish a game, task examiner, tutorial, research paper and dated result archive."
       ],
-      "proposed_fix": "Add resource type, audience, ARC version, access requirements and last-reviewed date. Consider a small “Start here / Play / Examine model answers” collection. Evaluate Mark’s individual tools alongside existing choices using the same criteria; acceptance is an editorial choice. Review The ARC Daily news page and the curated synthetic ARC-3 game catalog as distinct entries, alongside the saved-attempt viewer and existing play/guide resources. Label synthetic games as community/research resources, not official hidden evaluation games. Review original-author resources curated on ARC Explainer too: Simon Ouellette’s training data, Tufa Labs’ Duck harness and Symbolica’s Arcgentica. Link creators directly; this is broader community curation. Include Simon Strandgaard’s ARC-Interactive, Brain Grid Game, human interaction histories, dataset collection and ARC notes, which underpin ARC Explainer’s existing credits and imports. Preserve original dataset author attribution. The request is better selection, explanation, organization and maintenance of resources already linked as well as new candidates; do not frame Simon’s work as wholly absent from ARC Prize.",
+      "proposed_fix": "Add resource type, audience, ARC version, access requirements and last-reviewed date. Consider a small “Start here / Play / Examine model answers” collection. Evaluate Mark’s individual tools alongside existing choices using the same criteria; acceptance is an editorial choice. Review The ARC Daily news page and the curated synthetic ARC-3 game catalog as distinct entries, alongside the saved-attempt viewer and existing play/guide resources. Label synthetic games as community/research resources, not official hidden evaluation games. Review original-author resources curated on ARC Explainer too: Simon Ouellette’s training data, Tufa Labs’ Duck harness and Symbolica’s Arcgentica. Link creators directly; this is broader community curation. Include Simon Strandgaard’s ARC-Interactive, Brain Grid Game, human interaction histories, dataset collection and ARC notes, which underpin ARC Explainer’s existing credits and imports. Preserve original dataset author attribution. The request is better selection, explanation, organization and maintenance of resources already linked as well as new candidates; do not frame Simon’s work as wholly absent from ARC Prize. Prioritize ARC3: review breakdowns for all 25 public games, the 252-game Red Pill/Blue Pill mirror, the broader synthetic collection and the complete game reference. Link directly to each resource, with original creator attribution.",
       "acceptance_checks": [
         "A visitor can find a reviewed beginner/family-friendly activity and understand login, cost, device and reading requirements before opening it.",
         "Analytical tools are discoverable separately from papers and videos.",
@@ -506,7 +506,11 @@
         "https://braingridgame.com/",
         "https://github.com/neoneye/ARC-Interactive-History-Dataset",
         "https://github.com/neoneye/arc-dataset-collection",
-        "https://github.com/neoneye/arc-notes"
+        "https://github.com/neoneye/arc-notes",
+        "https://arc.markbarney.net/arc3/games/dc22#level-1",
+        "https://arc.markbarney.net/arc3/gallery?category=redbluepill",
+        "https://arc.markbarney.net/arc3/games.md",
+        "https://github.com/theredbluepill/arc-interactive"
       ],
       "evidence_files": [
         "evidence.json",
@@ -632,5 +636,9 @@
     }
   ],
   "report_url": "https://arc.markbarney.net/feedback",
-  "repository_url": "https://github.com/82deutschmark/arc-explainer/tree/main/client/public/reports/arc-prize-audit-2026-10-08"
+  "repository_url": "https://github.com/82deutschmark/arc-explainer/tree/main/client/public/reports/arc-prize-audit-2026-10-08",
+  "editorial_follow_up": {
+    "date": "2026-10-09",
+    "priority": "ARC3 public-game commentary, the Red Pill/Blue Pill archive and synthetic resources lead the feedback; ARC1/2 analysis remains secondary context."
+  }
 }
