@@ -1,0 +1,223 @@
+{
+  "baselineAt": "2026-10-08T23:51:01Z",
+  "competition": "arc-2",
+  "coverageNote": "Comparisons use observed snapshots at or before the stated boundaries. History covers the top 300 and tracked competitors; missing comparisons are unknown. Score-event entries are context, not net daily gains. Unfamiliar names are not necessarily new entrants.",
+  "dataAsOf": "2026-10-09T09:52:14Z",
+  "date": "2026-10-09",
+  "dek": "The leader lifts the public board’s top mark, while rabbithole and Yi-Chia Chen hold the next two places.",
+  "discord": "The ARC Daily | ARC-AGI-2 morning edition\n\nTufa Labs stretches its public lead to 88.06 after a recorded rise from 83.61. Rabbithole holds second at 80.56 and Yi-Chia Chen third at 77.22. _hans moves into fifth with 67.64, while nvbanana stays fourth. Morning submissions may still be evaluating, and public medal bands remain provisional.\n\nRead the full race report: https://arc.markbarney.net/news/2026-10-09-morning-arc-2",
+  "edition": "morning",
+  "generatedBy": "gpt-6-sol",
+  "headline": "Tufa Labs extends ARC-AGI-2 lead with an 88.06 score",
+  "id": "2026-10-09-morning-arc-2",
+  "publishedAt": "2026-10-09T10:02:32Z",
+  "sections": [
+    {
+      "heading": "Tufa raises the mark",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Tufa Labs leads ARC-AGI-2 at 88.06 after a recorded rise from 83.61. The top score at the overnight baseline was also 83.61. Rabbithole remains second at 80.56, and Yi-Chia Chen holds third at 77.22. The lead is clear on the observed public board, though the morning issue cannot account for submissions still being evaluated."
+    },
+    {
+      "heading": "Movement in the next group",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "nvbanana holds fourth at 77.08. Behind it, _hans rose from 64.58 to 67.64 in a recorded event and moved from sixth to fifth. ALbert RUehlman also improved, from 66.81 to 67.36, but now sits sixth. ARC Raiders is seventh at 58.75, just ahead of Dawid Kopiczko at 58.47."
+    },
+    {
+      "heading": "Beyond the leaders",
+      "sourceIds": [
+        "board"
+      ],
+      "text": "Majkel1337 and Khaotic Sethesis complete the top ten at 48.33 and 45.83. Jack Cole holds nineteenth at 36.94; Mithil A Vakde is 28th at 33.89, one place lower on an unchanged observed score. The public medal bands are provisional, and the next completed results can still reorder the field."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-09T10:02:32Z",
+      "id": "board",
+      "title": "ARC-2 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "fact-15486728-0",
+      "title": "Mithil A Vakde — Kaggle mdlARC model",
+      "url": "https://www.kaggle.com/models/mithilavakde/mdlarc"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15486939-0",
+      "title": "ARC-AGI-3 public team roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "fact-15486939-1",
+      "title": "Jean-François Puget — public professional profile",
+      "url": "https://github.com/jfpuget"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "fact-15486939-2",
+      "title": "NVIDIA — Jean-Francois Puget author biography",
+      "url": "https://developer.nvidia.com/blog/author/jeanfrancoispuget/"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15507730-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "fact-15507730-1",
+      "title": "The ARChitects — 2025 technical report",
+      "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+    },
+    {
+      "accessedAt": "2026-10-09T03:23:31Z",
+      "id": "fact-15526034-0",
+      "title": "ARC-AGI-2 observed public roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    }
+  ],
+  "stats": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": null,
+      "score": 88.06,
+      "scoreChange": null,
+      "teamId": "16756524"
+    },
+    {
+      "name": "rabbithole",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 80.56,
+      "scoreChange": 0.0,
+      "teamId": "15789060"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 77.22,
+      "scoreChange": 0.0,
+      "teamId": "15501171"
+    },
+    {
+      "name": "nvbanana",
+      "rank": 4,
+      "rankChange": 0,
+      "score": 77.08,
+      "scoreChange": 0.0,
+      "teamId": "15486939"
+    },
+    {
+      "name": "_hans",
+      "rank": 5,
+      "rankChange": null,
+      "score": 67.64,
+      "scoreChange": null,
+      "teamId": "16768245"
+    },
+    {
+      "name": "ALbert RUehlman",
+      "rank": 6,
+      "rankChange": null,
+      "score": 67.36,
+      "scoreChange": null,
+      "teamId": "16671221"
+    },
+    {
+      "name": "ARC Raiders",
+      "rank": 7,
+      "rankChange": 0,
+      "score": 58.75,
+      "scoreChange": 0.0,
+      "teamId": "15526034"
+    },
+    {
+      "name": "Dawid Kopiczko",
+      "rank": 8,
+      "rankChange": 0,
+      "score": 58.47,
+      "scoreChange": 0.0,
+      "teamId": "16461211"
+    },
+    {
+      "name": "Majkel1337",
+      "rank": 9,
+      "rankChange": 0,
+      "score": 48.33,
+      "scoreChange": 0.0,
+      "teamId": "16373916"
+    },
+    {
+      "name": "Khaotic Sethesis",
+      "rank": 10,
+      "rankChange": 0,
+      "score": 45.83,
+      "scoreChange": 0.0,
+      "teamId": "15648732"
+    },
+    {
+      "name": "Jack Cole",
+      "rank": 19,
+      "rankChange": 0,
+      "score": 36.94,
+      "scoreChange": 0.0,
+      "teamId": "15487968"
+    },
+    {
+      "name": "Mithil A Vakde",
+      "rank": 28,
+      "rankChange": -1,
+      "score": 33.89,
+      "scoreChange": 0.0,
+      "teamId": "15486728"
+    },
+    {
+      "name": "Mark Barney",
+      "rank": 579,
+      "rankChange": -5,
+      "score": 30.97,
+      "scoreChange": 0.0,
+      "teamId": "17023174"
+    },
+    {
+      "name": "Son Pham",
+      "rank": 811,
+      "rankChange": -7,
+      "score": 30.14,
+      "scoreChange": 0.0,
+      "teamId": "15605185"
+    },
+    {
+      "name": "Jan Disselhoff",
+      "rank": 1667,
+      "rankChange": -18,
+      "score": 14.17,
+      "scoreChange": 0.0,
+      "teamId": "15507730"
+    }
+  ],
+  "teamIds": [
+    "16756524",
+    "15789060",
+    "15501171",
+    "15486939",
+    "16768245",
+    "16671221",
+    "15526034",
+    "16461211",
+    "16373916",
+    "15648732",
+    "15487968",
+    "15486728"
+  ]
+}

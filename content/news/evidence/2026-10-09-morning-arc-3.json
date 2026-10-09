@@ -1,0 +1,826 @@
+{
+  "accessedAt": "2026-10-09T10:02:32Z",
+  "articleId": "2026-10-09-morning-arc-3",
+  "baselineSnapshot": {
+    "bronze": 29.25,
+    "gold": 35.44,
+    "silver": 30.82,
+    "t": "2026-10-08T23:51:00Z",
+    "teams": 4005,
+    "top": 55.89
+  },
+  "baselineTargetAt": "2026-10-09T00:00:00Z",
+  "briefSha256": "aa24507ca587b713d04ad290d4980418e8db1e368b849baa5346e333aa131d34",
+  "closingSnapshot": {
+    "bronze": 29.3,
+    "gold": 35.45,
+    "silver": 30.85,
+    "t": "2026-10-09T09:52:13Z",
+    "teams": 4027,
+    "top": 59.17
+  },
+  "comparisons": {
+    "15486995": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        56.52,
+        2
+      ],
+      "start": [
+        "2026-10-04T18:30:56Z",
+        55.89,
+        1
+      ]
+    },
+    "15499660": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        59.17,
+        1
+      ],
+      "start": null
+    },
+    "15501006": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        28.23,
+        583
+      ],
+      "start": null
+    },
+    "15508513": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        32.74,
+        64
+      ],
+      "start": [
+        "2026-10-08T18:20:23Z",
+        32.74,
+        61
+      ]
+    },
+    "15605182": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        35.45,
+        18
+      ],
+      "start": [
+        "2026-10-08T21:50:49Z",
+        35.45,
+        17
+      ]
+    },
+    "15770880": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        40.97,
+        4
+      ],
+      "start": null
+    },
+    "16021367": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        39.3,
+        5
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        39.3,
+        4
+      ]
+    },
+    "16032816": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        29.83,
+        336
+      ],
+      "start": [
+        "2026-10-08T23:51:00Z",
+        29.83,
+        323
+      ]
+    },
+    "16132261": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        38.62,
+        7
+      ],
+      "start": [
+        "2026-10-08T07:13:03Z",
+        38.62,
+        6
+      ]
+    },
+    "16153655": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        38.33,
+        8
+      ],
+      "start": [
+        "2026-10-08T07:13:03Z",
+        38.33,
+        7
+      ]
+    },
+    "16371045": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        36.61,
+        12
+      ],
+      "start": [
+        "2026-10-08T09:13:13Z",
+        36.61,
+        11
+      ]
+    },
+    "16569113": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        38.15,
+        9
+      ],
+      "start": [
+        "2026-10-08T07:13:03Z",
+        38.15,
+        8
+      ]
+    },
+    "16760493": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        37.98,
+        10
+      ],
+      "start": null
+    },
+    "16805955": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        39.11,
+        6
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        39.11,
+        5
+      ]
+    },
+    "16958599": {
+      "end": [
+        "2026-10-09T09:52:13Z",
+        42.66,
+        3
+      ],
+      "start": [
+        "2026-10-07T04:11:19Z",
+        42.66,
+        3
+      ]
+    }
+  },
+  "competitorFacts": [
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15486995-0",
+      "sourceTitle": "ARC Prize — ARC-AGI-3 Milestone 1 results",
+      "sourceUrl": "https://arcprize.org/blog/arc-prize-2026-milestone-1",
+      "teamId": "15486995",
+      "text": "ARC Prize named Tufa Labs and its Duck agent the first-place open-source solution for the June 2026 ARC-AGI-3 Milestone 1 prize."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15486995-1",
+      "sourceTitle": "Tufa Labs — Duck Harness technical overview",
+      "sourceUrl": "https://tufalabs.ai/research/duck-harness/",
+      "teamId": "15486995",
+      "text": "Tufa Labs says its public Duck harness lets an LLM inspect game grids as image and text, write Python in a REPL, and keep context short by evicting older messages. This describes the published Milestone 1 system, not an unverified current submission."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15486995-2",
+      "sourceTitle": "Tufa Labs — team profiles",
+      "sourceUrl": "https://tufalabs.ai/team/",
+      "teamId": "15486995",
+      "text": "Tufa Labs lists Dries Smit, Isaiah Pressman and Jeroen Cottaar among its AI researchers, with research interests spanning reinforcement learning, self-play and Bayesian methods."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15499660-0",
+      "sourceTitle": "Yi-Chia Chen — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/threerabbits",
+      "teamId": "15499660",
+      "text": "Yi-Chia Chen’s Kaggle profile lists her as a Competitions Master and a double-degree student at National Taiwan University and Waseda University."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15499660-1",
+      "sourceTitle": "Yi-Chia Chen — Eedi third-place solution write-up",
+      "sourceUrl": "https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/writeups/waseda-pochi-3rd-place-solution-with-magic-boost",
+      "teamId": "15499660",
+      "text": "Yi-Chia Chen authored a Kaggle write-up for a third-place solution in Eedi — Mining Misconceptions in Mathematics."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15501006-0",
+      "sourceTitle": "The ARChitects — 2025 team solution",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+      "teamId": "15501006",
+      "text": "The ARChitects’ own 2025 solution write-up credits Jan Disselhoff under the Kaggle handle insanitycheck, alongside David Hartmann (dvhrtm) and Daniel Franzen (dfranzen)."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15501006-1",
+      "sourceTitle": "The ARChitects — 2025 technical report",
+      "sourceUrl": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/",
+      "teamId": "15501006",
+      "text": "The team’s 2025 technical report lists Jan Disselhoff at Johannes Gutenberg University Mainz."
+    },
+    {
+      "checkedAt": "2026-10-09T03:23:31Z",
+      "sourceId": "fact-15508513-0",
+      "sourceTitle": "ARC-AGI-3 observed public roster",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "teamId": "15508513",
+      "text": "The ARC-AGI-3 roster observed on 8 October 2026 lists keithtyser as the sole member of the entry also named keithtyser."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15770880-0",
+      "sourceTitle": "NVIDIA — 2025 NVARC competition report",
+      "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+      "teamId": "15770880",
+      "text": "NVIDIA’s December 2025 report identifies Ivan Sorokin and Jean-Francois Puget as NVIDIA researchers who competed as NVARC in the 2025 ARC Prize."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15770880-1",
+      "sourceTitle": "NVARC — 2025 team write-up",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/nvarc",
+      "teamId": "15770880",
+      "text": "The 2025 NVARC team write-up credits sorokin and cpmpml. Both handles appear in the observed roster of the distinct 2026 NVARC3 entry. This does not establish an affiliation for every current member."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-15770880-2",
+      "sourceTitle": "NVIDIA — 2025 NVARC solution report",
+      "sourceUrl": "https://developer.nvidia.com/blog/nvidia-kaggle-grandmasters-win-artificial-general-intelligence-competition/",
+      "teamId": "15770880",
+      "text": "NVIDIA describes the separate 2025 NVARC ARC-AGI-2 solution as using synthetic data generation, test-time training and a fine-tuned 4B model. This is historical background, not a claim about the 2026 NVARC3 agent."
+    },
+    {
+      "checkedAt": "2026-10-09T03:23:31Z",
+      "sourceId": "fact-15770880-3",
+      "sourceTitle": "Jean-François Puget — public professional profile",
+      "sourceUrl": "https://github.com/jfpuget",
+      "teamId": "15770880",
+      "text": "Jean-François Puget’s public GitHub profile identifies him as CPMP and links directly to the Kaggle account cpmpml."
+    },
+    {
+      "checkedAt": "2026-10-09T03:23:31Z",
+      "sourceId": "fact-15770880-4",
+      "sourceTitle": "NVIDIA — Jean-Francois Puget author biography",
+      "sourceUrl": "https://developer.nvidia.com/blog/author/jeanfrancoispuget/",
+      "teamId": "15770880",
+      "text": "NVIDIA’s author biography describes Jean-Francois Puget as a director and individual contributor whose team advances agentic AI and showcases NVIDIA tools and expertise in Kaggle competitions."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-0",
+      "sourceTitle": "Lukas Aichberger — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+      "teamId": "16021367",
+      "text": "The rostered lukasaichberger Kaggle profile identifies its owner as Lukas Aichberger and links to his research website."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-1",
+      "sourceTitle": "JKU — Lukas Aichberger research profile",
+      "sourceUrl": "https://research.jku.at/en/persons/lukas-aichberger/",
+      "teamId": "16021367",
+      "text": "Johannes Kepler University Linz lists Lukas Aichberger at its Institute for Machine Learning and credits him on research about reasoning models and uncertainty evaluation."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-2",
+      "sourceTitle": "fses91 — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/fses91",
+      "teamId": "16021367",
+      "text": "Another rostered account, fses91, describes itself on Kaggle only as Florian; the public profile does not establish a surname."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-3",
+      "sourceTitle": "Mykyta Ielanskyi — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+      "teamId": "16021367",
+      "text": "The rostered dwellement0baser Kaggle profile identifies its owner as Mykyta Ielanskyi."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16021367-4",
+      "sourceTitle": "JKU — Mykyta Ielanskyi research profile",
+      "sourceUrl": "https://research.jku.at/en/persons/mykyta-ielanskyi/",
+      "teamId": "16021367",
+      "text": "Johannes Kepler University Linz lists Mykyta Ielanskyi at its Institute for Machine Learning. Its research record credits him and Lukas Aichberger together on a 2026 paper about reward redistribution for reasoning models."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-16032816-0",
+      "sourceTitle": "The ARChitects — 2025 team solution",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+      "teamId": "16032816",
+      "text": "The ARChitects’ own 2025 solution write-up credits David Hartmann under the Kaggle handle dvhrtm, alongside Jan Disselhoff (insanitycheck) and Daniel Franzen (dfranzen)."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-16032816-1",
+      "sourceTitle": "The ARChitects — 2025 technical report",
+      "sourceUrl": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/",
+      "teamId": "16032816",
+      "text": "The team’s 2025 technical report lists David Hartmann at Lambda, Inc."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16132261-0",
+      "sourceTitle": "Richard Csaky — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/richardcsaky",
+      "teamId": "16132261",
+      "text": "The rostered richardcsaky Kaggle profile displays the name Richard Csaky."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16132261-1",
+      "sourceTitle": "Artificial Agency Lab — research and ARC-AGI-3 project",
+      "sourceUrl": "https://artificialagencylab.com/",
+      "teamId": "16132261",
+      "text": "Artificial Agency Lab says it built an ARC-AGI-3 agent combining structured grids and image observations with persistent context updates, keeping model weights fixed; it reports an eighth-place June milestone result."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16132261-2",
+      "sourceTitle": "Manifund — Artificial Agency ARC-AGI-3 project proposal",
+      "sourceUrl": "https://manifund.org/projects/4-month-proof-of-concept-for-curiosity-driven-agents-on-arc-agi-3",
+      "teamId": "16132261",
+      "text": "A public ARC-AGI-3 project proposal names Richard Csaky as research lead and Côme Chevalier for engineering. The proposal describes an intended curiosity-driven proof of concept, not a verified method of the current Kaggle submission."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16132261-3",
+      "sourceTitle": "Richard Csaky — ARC-AGI-3 Milestone 2 notebook",
+      "sourceUrl": "https://www.kaggle.com/code/richardcsaky/arc-agi-3-milestone-2-submission",
+      "teamId": "16132261",
+      "text": "Richard Csaky’s Kaggle account published an “ARC-AGI-3 milestone 2 submission” notebook."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16153655-0",
+      "sourceTitle": "Michael — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/michaeltgao",
+      "teamId": "16153655",
+      "text": "The sole rostered michaeltgao Kaggle account displays the public name Michael; the profile does not establish a surname."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16371045-0",
+      "sourceTitle": "Lord Han Solo — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/lordhansolo",
+      "teamId": "16371045",
+      "text": "The Kaggle account and team both use the public name Lord Han Solo. The profile itself does not supply a verified personal name."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16371045-1",
+      "sourceTitle": "Lord Han Solo — Milestone 2 Kaggle notebook",
+      "sourceUrl": "https://www.kaggle.com/code/lordhansolo/built-on-tufa-labs-duck-harness-milestone-2",
+      "teamId": "16371045",
+      "text": "Lord Han Solo published a Kaggle notebook titled “Built on Tufa Labs duck harness - Milestone 2,” explicitly crediting that earlier public harness in the notebook title."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16569113-0",
+      "sourceTitle": "Tanaka Ai24 — ARC-AGI-3 Kaggle notebook",
+      "sourceUrl": "https://www.kaggle.com/code/tanakaai24/arc3-qwen3-6-duck-lb117-safety-v1",
+      "teamId": "16569113",
+      "text": "Roster member tanakaai24 has published a Kaggle ARC-AGI-3 notebook titled “ARC3 Qwen3.6 Duck LB117 Safety V1.” Its title alone does not establish the method behind the team’s current score."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16569113-1",
+      "sourceTitle": "Tanaka Ai24 — ARC-AGI-3 Pathfinder notebook",
+      "sourceUrl": "https://www.kaggle.com/code/tanakaai24/arc-agi-3-pathfinder-v2",
+      "teamId": "16569113",
+      "text": "The same Kaggle account has also published “ARC-AGI-3 Pathfinder v2,” another public notebook about the contest."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16805955-0",
+      "sourceTitle": "Jayden Szeto — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/jaydenszeto123",
+      "teamId": "16805955",
+      "text": "The rostered jaydenszeto123 Kaggle account displays the name Jayden Szeto."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16805955-1",
+      "sourceTitle": "Daniel Guo — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/denialguo",
+      "teamId": "16805955",
+      "text": "The rostered denialguo Kaggle account displays the name Daniel Guo."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16805955-2",
+      "sourceTitle": "Hayley — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/snoopydoo",
+      "teamId": "16805955",
+      "text": "The rostered snoopydoo Kaggle account displays the name Hayley, without a surname."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16805955-3",
+      "sourceTitle": "Jayden Szeto — BirdCLEF+ 2026 notebook",
+      "sourceUrl": "https://www.kaggle.com/code/jaydenszeto123/birdclef2026-v3",
+      "teamId": "16805955",
+      "text": "Jayden Szeto’s Kaggle account also has a public BirdCLEF+ 2026 notebook titled “BIRDCLEF2026 V3.” This is background work, not a claim about dreach.ai’s ARC-AGI-3 method."
+    },
+    {
+      "checkedAt": "2026-10-08T13:46:44Z",
+      "sourceId": "fact-16958599-0",
+      "sourceTitle": "Majkel1337 — Kaggle profile",
+      "sourceUrl": "https://www.kaggle.com/majkel1337",
+      "teamId": "16958599",
+      "text": "The Majkel1337 team’s sole rostered Kaggle account also displays Majkel1337 as its public profile name."
+    }
+  ],
+  "cutoffAt": "2026-10-09T10:00:00Z",
+  "events": [
+    {
+      "from": 26.88,
+      "id": "16733300",
+      "name": "s_a_ai_enginner",
+      "rankFrom": 769,
+      "rankTo": 52,
+      "t": "2026-10-09T00:21:02Z",
+      "to": 33.07
+    },
+    {
+      "from": null,
+      "id": "17062139",
+      "name": "Ryo Takaki",
+      "rankFrom": null,
+      "rankTo": 40,
+      "t": "2026-10-09T01:21:13Z",
+      "to": 33.31
+    },
+    {
+      "from": 26.66,
+      "id": "16707910",
+      "name": "daoviet",
+      "rankFrom": 794,
+      "rankTo": 371,
+      "t": "2026-10-09T01:21:13Z",
+      "to": 29.44
+    },
+    {
+      "from": null,
+      "id": "16925858",
+      "name": "Szymon Kamiński",
+      "rankFrom": null,
+      "rankTo": 180,
+      "t": "2026-10-09T01:51:31Z",
+      "to": 31.04
+    },
+    {
+      "from": 28.01,
+      "id": "17052102",
+      "name": "Kenny Lin",
+      "rankFrom": 604,
+      "rankTo": 357,
+      "t": "2026-10-09T01:51:31Z",
+      "to": 29.57
+    },
+    {
+      "from": 28.48,
+      "id": "15487205",
+      "name": "ForbeniusNorm",
+      "rankFrom": 522,
+      "rankTo": 401,
+      "t": "2026-10-09T01:51:31Z",
+      "to": 29.28
+    },
+    {
+      "from": 55.77,
+      "id": "15499660",
+      "name": "Yi-Chia Chen",
+      "rankFrom": 2,
+      "rankTo": 1,
+      "t": "2026-10-09T03:51:41Z",
+      "to": 59.17
+    },
+    {
+      "from": 27.47,
+      "id": "15497430",
+      "name": "Kumar Abhijeet",
+      "rankFrom": 697,
+      "rankTo": 499,
+      "t": "2026-10-09T03:51:41Z",
+      "to": 28.59
+    },
+    {
+      "from": 55.89,
+      "id": "15486995",
+      "name": "Tufa Labs",
+      "rankFrom": 2,
+      "rankTo": 2,
+      "t": "2026-10-09T04:21:45Z",
+      "to": 56.52
+    },
+    {
+      "from": 37.51,
+      "id": "15770880",
+      "name": "NVARC3",
+      "rankFrom": 9,
+      "rankTo": 4,
+      "t": "2026-10-09T05:21:52Z",
+      "to": 40.97
+    },
+    {
+      "from": 3.2,
+      "id": "16993850",
+      "name": "rutilo",
+      "rankFrom": 1326,
+      "rankTo": 474,
+      "t": "2026-10-09T05:51:55Z",
+      "to": 28.81
+    },
+    {
+      "from": 29.43,
+      "id": "15921682",
+      "name": "Mathemortician",
+      "rankFrom": 374,
+      "rankTo": 214,
+      "t": "2026-10-09T06:21:57Z",
+      "to": 30.73
+    },
+    {
+      "from": 25.3,
+      "id": "17032729",
+      "name": "eang24",
+      "rankFrom": 945,
+      "rankTo": 255,
+      "t": "2026-10-09T07:52:04Z",
+      "to": 30.39
+    },
+    {
+      "from": 24.66,
+      "id": "16946302",
+      "name": "Madhvansh Choksi",
+      "rankFrom": 995,
+      "rankTo": 284,
+      "t": "2026-10-09T07:52:04Z",
+      "to": 30.16
+    },
+    {
+      "from": 28.84,
+      "id": "15497833",
+      "name": "Tony Li",
+      "rankFrom": 474,
+      "rankTo": 344,
+      "t": "2026-10-09T08:22:06Z",
+      "to": 29.7
+    },
+    {
+      "from": 29.33,
+      "id": "16760493",
+      "name": "SparseTech",
+      "rankFrom": 391,
+      "rankTo": 10,
+      "t": "2026-10-09T08:52:08Z",
+      "to": 37.98
+    },
+    {
+      "from": 27.63,
+      "id": "17036016",
+      "name": "earthmaker",
+      "rankFrom": 679,
+      "rankTo": 178,
+      "t": "2026-10-09T09:22:11Z",
+      "to": 31.06
+    },
+    {
+      "from": 26.01,
+      "id": "15531704",
+      "name": "Matija L & Zhongwei W & Fususu",
+      "rankFrom": 883,
+      "rankTo": 212,
+      "t": "2026-10-09T09:22:11Z",
+      "to": 30.78
+    },
+    {
+      "from": 26.38,
+      "id": "16923073",
+      "name": "Galaxy A55",
+      "rankFrom": 840,
+      "rankTo": 250,
+      "t": "2026-10-09T09:22:11Z",
+      "to": 30.43
+    },
+    {
+      "from": 28.15,
+      "id": "15525358",
+      "name": "paul",
+      "rankFrom": 588,
+      "rankTo": 305,
+      "t": "2026-10-09T09:22:11Z",
+      "to": 30.04
+    },
+    {
+      "from": 28.03,
+      "id": "16702830",
+      "name": "Serguei Makarov",
+      "rankFrom": 608,
+      "rankTo": 320,
+      "t": "2026-10-09T09:22:11Z",
+      "to": 29.96
+    },
+    {
+      "from": 27.44,
+      "id": "16296124",
+      "name": "Tatu Helander",
+      "rankFrom": 709,
+      "rankTo": 458,
+      "t": "2026-10-09T09:22:11Z",
+      "to": 28.96
+    },
+    {
+      "from": 28.32,
+      "id": "16688248",
+      "name": "Shicheng Rao",
+      "rankFrom": 558,
+      "rankTo": 495,
+      "t": "2026-10-09T09:22:11Z",
+      "to": 28.75
+    },
+    {
+      "from": 28.08,
+      "id": "15597873",
+      "name": "iheng88",
+      "rankFrom": 607,
+      "rankTo": 276,
+      "t": "2026-10-09T09:52:13Z",
+      "to": 30.3
+    },
+    {
+      "from": 28.06,
+      "id": "16840998",
+      "name": "Sriranganada",
+      "rankFrom": 609,
+      "rankTo": 463,
+      "t": "2026-10-09T09:52:13Z",
+      "to": 28.95
+    }
+  ],
+  "latestAt": "2026-10-09T09:52:13Z",
+  "observations": {
+    "15486995": {
+      "members": [
+        "dlorah",
+        "driessmit1",
+        "infinitecreativity",
+        "jeroencottaar",
+        "pressman1",
+        "stefano1283"
+      ],
+      "name": "Tufa Labs",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "15499660": {
+      "members": [
+        "threerabbits"
+      ],
+      "name": "Yi-Chia Chen",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "15501006": {
+      "members": [
+        "insanitycheck"
+      ],
+      "name": "Jan Disselhoff",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "15508513": {
+      "members": [
+        "keithtyser"
+      ],
+      "name": "keithtyser",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "15605182": {
+      "members": [
+        "markbarney",
+        "scizical",
+        "sonphamorg"
+      ],
+      "name": "Son & Mark & Ronen",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "15770880": {
+      "members": [
+        "cpmpml",
+        "darraghdog",
+        "eladsarafian",
+        "galkaplun",
+        "sorokin",
+        "yeyinzhu"
+      ],
+      "name": "NVARC3",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16021367": {
+      "members": [
+        "dwellement0baser",
+        "fses91",
+        "gklambauer",
+        "lukasaichberger"
+      ],
+      "name": "the last dance 🕺",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16032816": {
+      "members": [
+        "dvhrtm",
+        "sbrodehl"
+      ],
+      "name": "David Hartmann",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16132261": {
+      "members": [
+        "cmechevalier",
+        "richardcsaky"
+      ],
+      "name": "artificialagencylab.com",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16153655": {
+      "members": [
+        "michaeltgao"
+      ],
+      "name": "mtg",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16371045": {
+      "members": [
+        "lordhansolo"
+      ],
+      "name": "Lord Han Solo",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16569113": {
+      "members": [
+        "isakatsuyoshi",
+        "konbu17",
+        "pompom555",
+        "refv00",
+        "tanakaai24",
+        "yuto0712"
+      ],
+      "name": "復活の混テキスト",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16760493": {
+      "members": [
+        "aaronflouro",
+        "erikfredrickson",
+        "shawnchadwick"
+      ],
+      "name": "SparseTech",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16805955": {
+      "members": [
+        "denialguo",
+        "jaydenszeto123",
+        "snoopydoo"
+      ],
+      "name": "dreach.ai",
+      "observedAt": "2026-10-09T09:52:13Z"
+    },
+    "16958599": {
+      "members": [
+        "majkel1337"
+      ],
+      "name": "Majkel1337",
+      "observedAt": "2026-10-09T09:52:13Z"
+    }
+  },
+  "sourceSha256": "c8524a8e37976ddce4e29358444bf15d414cbb640eb10d8823a0cda90d25cc39",
+  "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+}
