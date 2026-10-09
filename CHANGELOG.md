@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.133.2  Oct 9, 2026
+
+- **Hall of Fame cards for the past prize winners back in the field** (Author: Claude Opus 5.5). Adds Lonnie (2025 fourth), IsaiahP (2025 third with MindsAI & Tufa Labs), alijs (2024 third) and gromml (2024 fifth with PoohAI) to the Hall of Fame, synced on server start. Pictures are their Kaggle profile pictures (gromml has none, so his card uses the standard animated placeholder); places and scores from arcprize.org, rosters from the official final Kaggle leaderboards, write-ups linked. Their Digest profiles link to the new cards. Files: `server/scripts/seedContributors.ts`, `content/news/people.json`.
+
 ### Version 9.133.1  Oct 9, 2026
 
 - **ARC Daily Digest: every past prize winner in this year's field** (Author: Claude Opus 5.5). Adds the four 2024–2025 prize winners on the 2026 boards who were missing: IsaiahP (`pressman1`, 2025 third with MindsAI & Tufa Labs, now Tufa Labs), Lonnie (`lonnieqin`, 2025 fourth), alijs (`alijs1`, 2024 third) and gromml (2024 fifth with PoohAI). Names are their Kaggle display names; identities come from the official final Kaggle leaderboards, results from arcprize.org. Saves three Kaggle pictures (gromml has the default avatar and shows initials) and adds notebook records for their solo entries. Files: `content/news/{people,competitors}.json`, `client/public/news-images/people/`, `docs/newsroom/VISUALS.md`.

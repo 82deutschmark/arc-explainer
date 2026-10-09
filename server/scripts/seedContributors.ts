@@ -4,6 +4,7 @@
  * PURPOSE: Seed script to populate the arc_contributors table with notable ARC-AGI contributors.
  * Based on comprehensive research of competition winners, paper awards, and pioneers.
  * Run with: tsx server/scripts/seedContributors.ts
+ * 09-Oct-2026 (Claude Opus 5.5): four past prize winners competing again in 2026.
  * SRP/DRY check: Pass - Single responsibility for database seeding
  */
 
@@ -519,6 +520,81 @@ const contributors: CreateContributorRequest[] = [
     teamName: 'University of Birmingham',
     category: 'researcher',
     rank: undefined
+  },
+
+  // Past prize winners competing again in 2026 (added 09-Oct-2026, Claude Opus 5.5). Names are
+  // their Kaggle display names; rosters from the official final Kaggle leaderboards, places and
+  // scores from arcprize.org/competitions/2024 and /2025. Pictures are their Kaggle profile pictures.
+  {
+    fullName: 'Lonnie',
+    handle: 'lonnieqin',
+    affiliation: 'Kaggle competitor',
+    imageUrl: '/news-images/people/lonnie.webp',
+    achievement: '4th Place ARC Prize 2025 (6.7%)',
+    description: 'Finished fourth in ARC Prize 2025 on the ARC-AGI-2 private evaluation as a one-account team (lonnieqin), and entered both 2026 contests.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '6.7% (4th Place)',
+    links: {
+      kaggle: 'https://www.kaggle.com/lonnieqin',
+      website: 'https://www.kaggle.com/competitions/arc-prize-2025/writeups/arc-prize-2025-competition-writeup-5th-place'
+    },
+    teamName: 'Lonnie',
+    category: 'competition_winner',
+    rank: 4
+  },
+  {
+    fullName: 'IsaiahP',
+    handle: 'pressman1',
+    affiliation: 'MindsAI & Tufa Labs (2025); Tufa Labs (2026)',
+    imageUrl: '/news-images/people/isaiahp.webp',
+    achievement: '3rd Place ARC Prize 2025 with MindsAI & Tufa Labs',
+    description: 'Listed on the MindsAI & Tufa Labs Kaggle team that ARC Prize ranked third in 2025, alongside Jack Cole, Dries Smit, Mohamed Osman and Michael Hodel. Listed on both Tufa Labs teams in 2026.',
+    yearStart: 2025,
+    yearEnd: 2025,
+    score: '12.6% (3rd Place, team)',
+    links: {
+      kaggle: 'https://www.kaggle.com/pressman1',
+      website: 'https://www.kaggle.com/competitions/arc-prize-2025/writeups/mindsai-and-tufa-labs-arc-prize-2025-solution'
+    },
+    teamName: 'MindsAI & Tufa Labs',
+    category: 'competition_winner',
+    rank: 3
+  },
+  {
+    fullName: 'alijs',
+    handle: 'alijs1',
+    affiliation: 'Kaggle competitor',
+    imageUrl: '/news-images/people/alijs.webp',
+    achievement: '3rd Place ARC Prize 2024 (40%)',
+    description: 'Finished third in ARC Prize 2024 on the ARC-AGI-1 private evaluation as a one-account team (alijs1), and entered both 2026 contests.',
+    yearStart: 2024,
+    yearEnd: 2024,
+    score: '40% (3rd Place)',
+    links: {
+      kaggle: 'https://www.kaggle.com/alijs1',
+      website: 'https://www.kaggle.com/competitions/arc-prize-2024/writeups/alijs-3rd-place-solution'
+    },
+    teamName: 'alijs',
+    category: 'competition_winner',
+    rank: 3
+  },
+  {
+    fullName: 'gromml',
+    handle: 'gromml',
+    affiliation: 'PoohAI (2024)',
+    achievement: '5th Place ARC Prize 2024 with PoohAI (37%)',
+    description: 'Listed among the four accounts on PoohAI, which ARC Prize ranked fifth in 2024 on the ARC-AGI-1 private evaluation. Entered both 2026 contests.',
+    yearStart: 2024,
+    yearEnd: 2024,
+    score: '37% (5th Place, team)',
+    links: {
+      kaggle: 'https://www.kaggle.com/gromml',
+      website: 'https://www.kaggle.com/competitions/arc-prize-2024/writeups/poohai-5th-place-solution'
+    },
+    teamName: 'PoohAI',
+    category: 'competition_winner',
+    rank: 5
   },
 
   // ARC3 2026 Preview - Rising Stars
