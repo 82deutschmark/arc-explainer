@@ -906,7 +906,15 @@
         "text": "ARC Prize’s 2025 results list MindsAI third; the final Kaggle leaderboard lists pressman1 (displayed as IsaiahP) on that MindsAI & Tufa Labs team with jcole75, driessmit1, moeosman and michaelhodel."
       }
     ],
-    "hallOfFame": [],
+    "hallOfFame": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "label": "ARC Prize 2025 third place · MindsAI & Tufa Labs",
+        "path": "/hall-of-fame#contributor-27",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
+      }
+    ],
     "id": "isaiahp",
     "memberships": [
       {
@@ -963,7 +971,15 @@
         "text": "ARC Prize’s 2025 results list Lonnie fourth; the final Kaggle leaderboard lists lonnieqin as that team’s only account."
       }
     ],
-    "hallOfFame": [],
+    "hallOfFame": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "label": "ARC Prize 2025 fourth place · Lonnie",
+        "path": "/hall-of-fame#contributor-26",
+        "sourceTitle": "ARC Prize — 2025 results",
+        "sourceUrl": "https://arcprize.org/competitions/2025"
+      }
+    ],
     "id": "lonnie",
     "memberships": [
       {
@@ -1020,7 +1036,15 @@
         "text": "ARC Prize’s 2024 results list alijs third; the final Kaggle leaderboard lists alijs1 as that team’s only account."
       }
     ],
-    "hallOfFame": [],
+    "hallOfFame": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "label": "ARC Prize 2024 third place · alijs",
+        "path": "/hall-of-fame#contributor-28",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024"
+      }
+    ],
     "id": "alijs",
     "memberships": [
       {
@@ -1077,7 +1101,15 @@
         "text": "ARC Prize’s 2024 results list PoohAI fifth; the final Kaggle leaderboard lists gromml among PoohAI’s four accounts."
       }
     ],
-    "hallOfFame": [],
+    "hallOfFame": [
+      {
+        "checkedAt": "2026-10-09T21:30:00Z",
+        "label": "ARC Prize 2024 fifth place · PoohAI",
+        "path": "/hall-of-fame#contributor-29",
+        "sourceTitle": "ARC Prize — 2024 results",
+        "sourceUrl": "https://arcprize.org/competitions/2024"
+      }
+    ],
     "id": "gromml",
     "memberships": [
       {
