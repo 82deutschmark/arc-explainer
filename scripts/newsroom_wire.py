@@ -378,6 +378,10 @@ def validate(story, brief, now=None):
         offered = [{key: picture[key] for key in ('src', 'alt', 'href')} for picture in board['visuals']]
         if story['visual'] not in offered:
             raise ValueError('visual must be one of the pictures this brief offers, copied exactly')
+        # Mirrors the site's wire contract (server/services/news/newsStore.ts), which refuses the whole archive on a bad file.
+        text(story['visual']['alt'], 'picture alt text', 700)
+        if not re.fullmatch(r'/\S*', story['visual']['href']):
+            raise ValueError('picture link must be a site path')
     prose = [story['headline']] + [section['text'] for section in sections] + [section.get('heading', '') for section in sections]
     for body in (without_names(item, board['names']) for item in prose):
         if SPELLED.search(body):

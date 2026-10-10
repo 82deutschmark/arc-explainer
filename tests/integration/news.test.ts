@@ -14,6 +14,7 @@
 import { beforeAll, afterAll, it, expect } from 'vitest';
 import express from 'express';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import type { Server } from 'node:http';
 import { mountNews } from '../../server/routes/news';
@@ -240,4 +241,12 @@ it('serves the market digest and the wire, and holds wire stories to their contr
   expect(newsWireSchema.safeParse({ ...story, sections: [{ text: 'Uncited.', sourceIds: ['made-up'] }] }).success).toBe(false);
   expect(newsWireSchema.safeParse({ ...story, visual: { ...story.visual, src: 'https://example.com/face.png' } }).success).toBe(false);
   expect(newsWireSchema.safeParse({ ...story, generatedBy: 'gpt-6-sol' }).success).toBe(false);
+  // A malformed wire file is left out instead of breaking the archive.
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'wire-'));
+  fs.mkdirSync(path.join(directory, 'wire'));
+  fs.writeFileSync(path.join(directory, 'wire', `${story.id}.json`), JSON.stringify(story));
+  fs.writeFileSync(path.join(directory, 'wire', '2026-10-09-2021-arc-3-broken.json'), JSON.stringify({ ...story, id: '2026-10-09-2021-arc-3-broken', headline: '' }));
+  fs.writeFileSync(path.join(directory, 'wire', 'not-json.json'), '{');
+  expect(getNewsIndex(directory).wire?.map(item => item.id)).toEqual([story.id]);
+  fs.rmSync(directory, { recursive: true, force: true });
 });

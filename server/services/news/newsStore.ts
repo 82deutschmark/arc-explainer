@@ -103,7 +103,8 @@ export const newsWireSchema = z.object({
   sections: z.array(z.object({ heading: text.max(120).optional(), text: text.max(900), sourceIds: z.array(z.string()).min(1) }).strict()).min(1).max(3),
   sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp }).strict()).min(1),
   teamIds: z.array(z.string().regex(/^\d+$/)), personIds: z.array(safeId),
-  visual: z.object({ src: z.string().regex(WIRE_PICTURE), alt: text.max(300), href: z.string().regex(/^\/[^\s]*$/) }).strict().optional(),
+  // Same caption limit as the ledger pictures it copies, so a valid offered picture can never fail here.
+  visual: z.object({ src: z.string().regex(WIRE_PICTURE), alt: text.max(700), href: z.string().regex(/^\/[^\s]*$/) }).strict().optional(),
   generatedBy: z.literal('gpt-6-luna'),
 }).strict().superRefine((story, context) => {
   const sources = new Set(story.sources.map(source => source.id));
@@ -140,12 +141,20 @@ export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
   if (new Set(people.map(person => person.id)).size !== people.length || new Set(social.map(post => post.id)).size !== social.length) throw new Error('Duplicate news person or social post');
   const accounts = people.flatMap(person => person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`));
   if (new Set(accounts).size !== accounts.length) throw new Error('A verified account belongs to multiple people');
+  // Wire stories come from a scheduled small model several times a day. scripts/newsroom_wire.py
+  // checks the same contract first; a file that still fails is left out, so one bad story can never
+  // take the whole paper down the way a bad edition would.
   const wireDirectory = path.join(directory, 'wire');
   const wire: NewsWireStory[] = fs.existsSync(wireDirectory) ? fs.readdirSync(wireDirectory)
-    .filter(file => file.endsWith('.json')).map(file => {
-      const story = newsWireSchema.parse(JSON.parse(fs.readFileSync(path.join(wireDirectory, file), 'utf8')));
-      if (`${story.id}.json` !== file) throw new Error(`Wire story filename does not match its ID: ${file}`);
-      return story;
+    .filter(file => file.endsWith('.json')).flatMap(file => {
+      try {
+        const story = newsWireSchema.safeParse(JSON.parse(fs.readFileSync(path.join(wireDirectory, file), 'utf8')));
+        if (story.success && `${story.data.id}.json` === file) return [story.data];
+        console.warn(`[news] skipped wire story ${file}: ${story.success ? 'filename does not match its ID' : story.error.issues[0]?.message}`);
+      } catch (error) {
+        console.warn(`[news] skipped unreadable wire story ${file}: ${error instanceof Error ? error.message : error}`);
+      }
+      return [];
     }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id)) : [];
   return { articles, competitors, dispatches, people, social, wire };
 }

@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.134.1  Oct 9, 2026
+
+- **Wire stories can never take the paper down** (Author: Claude Opus 5.5). A wire story file that fails the site's contract is now skipped with a warning instead of failing the whole news archive, and the helper checks the picture caption and link exactly as the site does. Wire figures must come from the story's cited leads, its listed teams or the board-wide figures. A render test runs the rebuilt front page against a populated market digest and with none. The newsroom checkout's git data moved out of `/private/tmp` (macOS clears it) and was relinked. Files: `server/services/news/newsStore.ts`, `scripts/newsroom_wire.py`, `tests/integration/news.test.ts`, `tests/newsFrontPage.test.ts`.
+
 ### Version 9.134.0  Oct 9, 2026
 
 - **The ARC Daily Digest as a broadsheet, with a wire desk and edition posts** (Author: Claude Opus 5.5). Boss: think like a newspaper editor; information-dense like a financial terminal or a sports page, no wasted space, no startup look; use the leaderboard's movers and newcomers; write the data into readable articles the way financial journalism does, with a small model as the paper's reporters; post each edition to X as the early or late edition, driven through the browser, no paid API.
