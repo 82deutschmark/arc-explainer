@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-10T12:29:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Nhan Duc Nguyen moves into ARC-3 gold places",
+  "id": "2026-10-10-0857-arc-3-nguyen-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-10T12:57:17Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Nhan Duc Nguyen climbed from 20th to 8th at 38.84, a 4.10-point gain that moved the team into the 18 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The gold line rose 0.34 in the past day to 35.79; Son & Mark & Ronen now sit just outside in 19th at 35.45."
+    }
+  ],
+  "since": "2026-10-09T12:22:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T12:56:50Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16958955",
+    "15605182"
+  ]
+}

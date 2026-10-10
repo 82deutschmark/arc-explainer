@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-10T12:30:00Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Pranav Aggarwal jumps to 22nd on ARC-2",
+  "id": "2026-10-10-0857-arc-2-aggarwal-jumps-to-22",
+  "personIds": [],
+  "publishedAt": "2026-10-10T12:57:17Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Pranav Aggarwal gained 35.69 points, moving from 2,622nd to 22nd on the ARC-AGI-2 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The jump puts Aggarwal among the board’s leading teams; standings remain provisional."
+    }
+  ],
+  "since": "2026-10-09T12:22:27Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T12:56:50Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17029762"
+  ]
+}

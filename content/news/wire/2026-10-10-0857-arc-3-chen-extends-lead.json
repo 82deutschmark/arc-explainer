@@ -1,0 +1,45 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-10T12:29:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Yi-Chia Chen extends ARC-3 lead",
+  "id": "2026-10-10-0857-arc-3-chen-extends-lead",
+  "personIds": [
+    "yi-chia-chen"
+  ],
+  "publishedAt": "2026-10-10T12:57:17Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Yi-Chia Chen added 3.79 points to reach 62.96 and remains first on the ARC-AGI-3 public board. Tufa Labs is second at 56.52, leaving Chen 6.44 ahead."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-yi-chia-chen-identity-0"
+      ],
+      "text": "Chen has led since October 8. The public standings are provisional, with final medals decided on the private board."
+    }
+  ],
+  "since": "2026-10-09T12:22:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T12:56:50Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-09T17:16:30Z",
+      "id": "person-yi-chia-chen-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/threerabbits"
+    }
+  ],
+  "teamIds": [
+    "15499660",
+    "15486995"
+  ]
+}
