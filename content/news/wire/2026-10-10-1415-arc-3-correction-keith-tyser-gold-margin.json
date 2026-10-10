@@ -1,0 +1,43 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-10T18:00:31Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Correction: Keith Tyser’s gold-place margin",
+  "id": "2026-10-10-1415-arc-3-correction-keith-tyser-gold-margin",
+  "personIds": [
+    "keith-tyser"
+  ],
+  "publishedAt": "2026-10-10T18:15:57Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "A prior wire story misattributed the 0.35-point gap: it is lalalia’s shortfall from the ARC-3 gold cutoff, not Keith Tyser’s margin."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Tyser is 13th at 37.22. Lalalia is 19th at 35.79, and the gold cutoff is 36.14."
+    }
+  ],
+  "since": "2026-10-09T17:53:12Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T18:15:50Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15508513",
+    "16898435"
+  ],
+  "visual": {
+    "alt": "Keith Tyser’s Kaggle profile picture",
+    "href": "/news/people/keith-tyser",
+    "src": "/news-images/people/keith-tyser.webp"
+  }
+}
