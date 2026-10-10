@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.136.1  Oct 10, 2026
+
+- **Felix561's synthetic games taken back off the resource pages** (Author: Claude Sonnet 5.5). Boss: they are Codex-generated, tiny next to the official games, and many of their ideas have close counterparts in our own catalog, so they are not a resource worth endorsing. NVIDIA DreamTeam stays; its description now says what the game creator actually does (LLM agents design and test games from random seed words; 25 generated games shipped). Files: `shared/arc3Resources.ts`, `client/src/pages/LandingPage.tsx`, `client/src/pages/Arc3Story.tsx`, `client/src/pages/arc3-community/CommunityGallery.tsx`.
+
 ### Version 9.136.0  Oct 10, 2026
 
 - **Felix561's synthetic games and NVIDIA DreamTeam added to the resource pages** (Author: Claude Sonnet 5.5). Boss: a community member shared fifty synthetic ARC-3 games with recorded AI solutions, built on NVIDIA's game-creator; both belong on the resource hub. Each is described as independent (not official ARC Prize games), and the recordings are labelled as made with source access. The links live next to the Simon Ouellette entry in `shared/arc3Resources.ts` and show on the hub, the ARC-AGI-3 background page and the community gallery. Files: `shared/arc3Resources.ts`, `client/src/pages/LandingPage.tsx`, `client/src/pages/Arc3Story.tsx`, `client/src/pages/arc3-community/CommunityGallery.tsx`.

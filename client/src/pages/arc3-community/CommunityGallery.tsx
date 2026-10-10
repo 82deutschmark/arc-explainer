@@ -36,7 +36,7 @@ SRP/DRY check: Pass — presentation only; fetching/stripping lives in Arc3Mirro
          catalog service that /play's review queue depends on.
 */
 
-import { FELIX_ARC3_SYNTHETIC_GAMES, NVIDIA_DREAMTEAM, SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
+import { NVIDIA_DREAMTEAM, SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
 import { publicGameId } from '@shared/arc3PublicIds';
 import { useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
@@ -418,16 +418,14 @@ export default function CommunityGallery() {
           <p className="mt-2 max-w-[80ch] text-[12px] leading-relaxed" style={{ color: ARC.dim }}>
             {SIMON_ARC3_TRAINING_DATA.desc}
           </p>
-          {[FELIX_ARC3_SYNTHETIC_GAMES, NVIDIA_DREAMTEAM].map(resource => (
-            <div key={resource.url} className="mt-4">
-              <a href={resource.url} className="text-sm font-semibold underline underline-offset-4" style={{ color: ARC.text }}>
-                {resource.title} ↗
-              </a>
-              <p className="mt-2 max-w-[80ch] text-[12px] leading-relaxed" style={{ color: ARC.dim }}>
-                {resource.desc}
-              </p>
-            </div>
-          ))}
+          <div className="mt-4">
+            <a href={NVIDIA_DREAMTEAM.url} className="text-sm font-semibold underline underline-offset-4" style={{ color: ARC.text }}>
+              {NVIDIA_DREAMTEAM.title} ↗
+            </a>
+            <p className="mt-2 max-w-[80ch] text-[12px] leading-relaxed" style={{ color: ARC.dim }}>
+              {NVIDIA_DREAMTEAM.desc}
+            </p>
+          </div>
         </section>
 
         <div className="flex items-center gap-2 mb-8 max-w-[360px]">
