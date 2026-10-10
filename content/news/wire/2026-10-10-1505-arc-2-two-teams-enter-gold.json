@@ -1,0 +1,37 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-10T19:00:38Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Sam-wiz and ibyyue climb into ARC-2 gold places",
+  "id": "2026-10-10-1505-arc-2-two-teams-enter-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-10T19:05:21Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Sam-wiz rose from 16th to 13th and ibyyue from 19th to 14th, each reaching 41.81 as they entered the 15 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold cutoff climbed 2.22 in the past day to 40.83. Jack Cole, previously 15th, is now 17th and outside the gold places at 38.61."
+    }
+  ],
+  "since": "2026-10-09T18:53:30Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T19:04:59Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16781837",
+    "16684035",
+    "15487968"
+  ]
+}

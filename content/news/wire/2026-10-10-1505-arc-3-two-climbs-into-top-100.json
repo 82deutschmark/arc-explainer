@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-10T19:00:36Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Shutong Hou and Chang Liu surge into ARC-3 top 100",
+  "id": "2026-10-10-1505-arc-3-two-climbs-into-top-100",
+  "personIds": [],
+  "publishedAt": "2026-10-10T19:05:21Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Shutong Hou climbed from 3610th to 66th at 33.05, while chang liu rose from 1172nd to 41st at 33.47."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Both moves put the teams inside the top 100. The ARC-3 gold line is 36.14 at 18th, so the climbs reshape the chase below the medal places."
+    }
+  ],
+  "since": "2026-10-09T18:53:27Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T19:04:59Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17068216",
+    "17051978"
+  ]
+}
