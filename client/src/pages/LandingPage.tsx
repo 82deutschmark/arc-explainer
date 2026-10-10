@@ -1,12 +1,13 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Codex
- * Date: 2026-10-09
+ * Date: 2026-10-10
  * PURPOSE: Directory of playable ARC tools, game guides and recorded results.
  *          Features Simon Ouellette’s ARC-3 training-data tools. Includes the ARC Daily newspaper, competitor notebook and concrete ARC Prize feedback sheet.
  *          2026-10-09 (Claude Opus 5.5): drops the archived test-a-solution card.
+ *          2026-10-10 (Claude Sonnet 5.5): adds Felix561's synthetic games and NVIDIA DreamTeam.
  * SRP/DRY check: Pass — reuses shared Card components and router links.
  */
-import { SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
+import { FELIX_ARC3_SYNTHETIC_GAMES, NVIDIA_DREAMTEAM, SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
 import { ROUTE_META_TAGS } from '@shared/routes';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +30,8 @@ const sections: { title: string; description: string; resources: Resource[] }[] 
       { title: 'Official game guides', href: '/arc3/games', description: 'Per-level explanations, pictures and play notes for the 25 public games, plus separately labeled preview history.' },
       { title: 'Human and AI results', href: '/human-records.html', fullPage: true, description: 'Compare dated published human records and AI runs, with scores, actions and replay links.' },
       { title: SIMON_ARC3_TRAINING_DATA.title, href: SIMON_ARC3_TRAINING_DATA.url, description: SIMON_ARC3_TRAINING_DATA.desc, fullPage: true },
+      { title: FELIX_ARC3_SYNTHETIC_GAMES.title, href: FELIX_ARC3_SYNTHETIC_GAMES.url, description: FELIX_ARC3_SYNTHETIC_GAMES.desc, fullPage: true },
+      { title: NVIDIA_DREAMTEAM.title, href: NVIDIA_DREAMTEAM.url, description: NVIDIA_DREAMTEAM.desc, fullPage: true },
       { title: 'Community games', href: '/arc3/gallery', description: 'Play original community tasks built on ARCEngine. Discover the rules through interaction.' },
       { title: 'Kaggle leaderboard', href: '/kaggle-leaderboard', description: 'Explore public competition standings. Public standings are not final private results.' },
       { title: 'The ARC Daily', href: '/news', description: 'Morning and evening competition reports, with sourced competitor notebooks for ARC-AGI-2 and ARC-AGI-3.' },
