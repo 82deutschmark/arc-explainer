@@ -1,0 +1,49 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-10T00:54:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Tufa Labs extends ARC-AGI-2 lead to 88.06",
+  "id": "2026-10-09-2059-arc-2-tufa-labs-raises-arc-2-high",
+  "personIds": [],
+  "publishedAt": "2026-10-10T00:59:50Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Tufa Labs added 4.45 points to reach 88.06 and remains first on the ARC-AGI-2 public board, 7.50 ahead of rabbithole at 80.56."
+    },
+    {
+      "sourceIds": [
+        "social-2108578092558250148",
+        "social-2108632255383957945"
+      ],
+      "text": "ARC Prize announced a $150,000 bonus pool for qualifying teams. Jean-François Puget asked whether that threshold applies to the public or private leaderboard; no organizer answer was visible in the checked thread."
+    }
+  ],
+  "since": "2026-10-09T00:51:06Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T00:59:26Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    },
+    {
+      "accessedAt": "2026-10-09T21:09:33Z",
+      "id": "social-2108578092558250148",
+      "title": "ARC Prize — standings post",
+      "url": "https://x.com/arcprize/status/2108578092558250148"
+    },
+    {
+      "accessedAt": "2026-10-09T21:09:33Z",
+      "id": "social-2108632255383957945",
+      "title": "Jean-François Puget — community post",
+      "url": "https://x.com/JFPuget/status/2108632255383957945"
+    }
+  ],
+  "teamIds": [
+    "16756524",
+    "15789060"
+  ]
+}

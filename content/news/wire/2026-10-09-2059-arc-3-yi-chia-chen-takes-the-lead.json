@@ -1,0 +1,43 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-10T00:54:20Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Yi-Chia Chen takes the ARC-AGI-3 lead",
+  "id": "2026-10-09-2059-arc-3-yi-chia-chen-takes-the-lead",
+  "personIds": [
+    "yi-chia-chen"
+  ],
+  "publishedAt": "2026-10-10T00:59:50Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Yi-Chia Chen took first place from Tufa Labs in the past day, reaching 59.17 (+3.40). Tufa Labs is now second at 56.52 (+0.63)."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Chen is listed under their own name at the top of the public board. The lead change puts the 2026 ARC-AGI-3 standings into a new order, with Tufa Labs now chasing."
+    }
+  ],
+  "since": "2026-10-09T00:51:05Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T00:59:26Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15499660",
+    "15486995"
+  ],
+  "visual": {
+    "alt": "Yi-Chia Chen’s Kaggle profile picture",
+    "href": "/news/people/yi-chia-chen",
+    "src": "/news-images/people/yi-chia-chen.webp"
+  }
+}
