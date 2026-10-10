@@ -6,6 +6,8 @@
  *          08-Oct-2026 (Claude Opus 5.5): sitemap lastmod for ARC Daily URLs from their
  *          recorded publication/check times; every other route stays undated.
  *          Returns 410 for retired model rankings with shared noindex metadata.
+ *          10-Oct-2026 (Claude Sonnet 5.5): the retired-rankings notice points to the ARC
+ *          leaderboards hub; generateSitemap accepts extra real change times (leaderboard snapshots).
  * SRP/DRY check: Pass — gameLevels owns level grouping; no authored rules are changed.
  */
 import { ROUTE_META_TAGS, type RouteMetaTags } from '../../../shared/routes';
@@ -43,7 +45,7 @@ export function resolvePageMeta(route: string): { tags: RouteMetaTags; status: n
     const tags = { ...ROUTE_META_TAGS[route] };
     // Old bookmarks must not receive successful ranking pages or enter search indexes.
     if (route === '/leaderboards') {
-      tags.bodyHtml = `<main><h1>Model rankings retired</h1>${paragraphs(tags.description)}<p><a href="/kaggle-leaderboard">Current Kaggle standings</a> · <a href="/analytics">Recorded puzzle results archive</a> · <a href="/home">Resource Hub</a></p></main>`;
+      tags.bodyHtml = `<main><h1>Model rankings retired</h1>${paragraphs(tags.description)}<p><a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/kaggle-leaderboard">Current Kaggle standings</a> · <a href="/analytics">Recorded puzzle results archive</a> · <a href="/home">Resource Hub</a></p></main>`;
       return { tags: completeMeta(tags), status: 410 };
     }
     if (route === '/arc3/games') {
@@ -88,8 +90,11 @@ export function sitemapUrls(): string[] {
     ...puzzleLoader.getAvailablePuzzleIds().filter(id => /^[A-Za-z0-9_-]{1,128}$/.test(id)).map(id => `${SITE_ORIGIN}/puzzle/${id}`),
   ])];
 }
-/** Only news URLs carry lastmod: they are the pages with a real, recorded change time. */
-export function generateSitemap(): string {
-  const lastmod = new Map(newsSitemapEntries().filter(entry => entry.lastmod).map(entry => [entry.url, entry.lastmod!]));
+/**
+ * Only pages with a real, recorded change time carry lastmod: ARC Daily URLs (publication and check
+ * times) and, when the saved boards can be read, the leaderboard pages (their latest snapshot).
+ */
+export function generateSitemap(extraLastmod: ReadonlyMap<string, string> = new Map()): string {
+  const lastmod = new Map([...newsSitemapEntries().filter(entry => entry.lastmod).map(entry => [entry.url, entry.lastmod!] as const), ...extraLastmod]);
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls().map(url => `  <url><loc>${esc(url)}</loc>${lastmod.has(url) ? `<lastmod>${esc(lastmod.get(url)!)}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
 }

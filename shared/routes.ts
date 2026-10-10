@@ -19,6 +19,11 @@
  *          08-Oct-2026 (Claude Opus 5.5): image size and Open Graph article fields; the two
  *          ARC Daily index routes use the newspaper's own share card. The front-page
  *          description now names both Kaggle contests and their linked results.
+ *          10-Oct-2026 (Claude Sonnet 5.5): /arc-leaderboards, a hub for the generic "ARC leaderboards"
+ *          search; the two Kaggle board titles lead with the leaderboard name; the home title and
+ *          description name the leaderboards. Live standings reach crawlers through
+ *          server/services/seo/leaderboardSeo.ts, not through this static copy. The hub and board pages
+ *          unfurl with real ARC art (a puzzle card, an ARC-AGI-3 game frame) instead of the generic card.
  * SRP/DRY check: Pass - Single source of truth for route meta tags
  */
 
@@ -65,7 +70,17 @@ function breadcrumb(name: string, path: string) {
 }
 
 /** The ARC Daily Digest's own masthead card instead of the site-wide preview image. */
+// The bare path is only a default: the server writes the versioned address (shared/news.ts sectionCardPath) into
+// every ARC Daily page, and the browser does the same once the news archive has loaded (useNewsCardImage).
 const NEWS_CARD = { image: `${SITE}${NEWS_SECTION_CARD_PATH}`, imageAlt: NEWS_SECTION_CARD_ALT, imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT };
+
+/**
+ * Leaderboard pages unfurl with real ARC art rather than the site-wide blue card: an ARC-AGI-2 style puzzle
+ * (colourful input and answer grids, drawn by ogImageService) and an official ARC-AGI-3 game frame
+ * (arc3GameOgImageService). Both are 1200x630.
+ */
+const ARC_PUZZLE_CARD = { image: `${SITE}/api/og-image/1190bc91`, imageAlt: 'ARC puzzle 1190bc91: two training examples, each an input grid and its coloured answer grid', imageWidth: 1200, imageHeight: 630 };
+const ARC3_GAME_CARD = { image: `${SITE}/api/arc3/og-image/r11l`, imageAlt: 'Opening frame of the official ARC-AGI-3 game r11l', imageWidth: 1200, imageHeight: 630 };
 
 /**
  * Route meta tags for link unfurling (Discord, Twitter, Slack, etc.)
@@ -197,15 +212,70 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
       </main>`,
   },
 
+  // ==================== ARC leaderboards hub ====================
+  // The generic "ARC leaderboards" / "ARC-AGI leaderboard" search lands here: one page that names every
+  // ARC leaderboard we run or know, with the two live Kaggle boards on top. (/leaderboards is the retired
+  // model-ranking address and stays a 410; this is a new, current page.)
+  '/arc-leaderboards': {
+    title: 'ARC Leaderboards: Live ARC-AGI-3 and ARC-AGI-2 Standings',
+    description:
+      'Live ARC Prize 2026 leaderboards for ARC-AGI-3 and ARC-AGI-2, saved every half hour, '
+      + 'plus the official ARC Prize leaderboard and archived model results.',
+    url: `${SITE}/arc-leaderboards`,
+    type: 'website',
+    ...ARC_PUZZLE_CARD,
+    keywords: 'ARC leaderboard, ARC leaderboards, ARC-AGI leaderboard, ARC-AGI-3 leaderboard, ARC-AGI-2 leaderboard, ARC Prize leaderboard, ARC Prize 2026 leaderboard, Kaggle ARC leaderboard',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'CollectionPage',
+          '@id': `${SITE}/arc-leaderboards`,
+          url: `${SITE}/arc-leaderboards`,
+          name: 'ARC leaderboards',
+          description: 'Live ARC Prize 2026 leaderboards for ARC-AGI-3 and ARC-AGI-2, plus the official ARC Prize leaderboard and archived model results.',
+          isPartOf: WEBSITE_REF,
+          about: [{ '@type': 'Thing', name: 'ARC-AGI', sameAs: 'https://arcprize.org/arc-agi' }],
+          inLanguage: 'en',
+          mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'ARC-AGI-3 Kaggle leaderboard', url: `${SITE}/kaggle-leaderboard` },
+              { '@type': 'ListItem', position: 2, name: 'ARC-AGI-2 Kaggle leaderboard', url: `${SITE}/kaggle-leaderboard/arc-2` },
+              { '@type': 'ListItem', position: 3, name: 'ARC-AGI model results archive', url: `${SITE}/analytics` },
+            ],
+          },
+        },
+        breadcrumb('ARC leaderboards', '/arc-leaderboards'),
+      ],
+    },
+    bodyHtml: `
+      <main>
+        <h1>ARC leaderboards</h1>
+        <p>Every ARC leaderboard in one place. The two live boards are the ARC Prize 2026 Kaggle competitions,
+        ARC-AGI-3 and ARC-AGI-2: every team's rank and score, read from the public Kaggle leaderboard and saved
+        every half hour, with medal lines, movers and score history.</p>
+        <ul>
+          <li><a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a>: ARC Prize 2026 Kaggle standings, medal lines and history.</li>
+          <li><a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>: the separate ARC-AGI-2 Kaggle competition.</li>
+          <li><a href="https://arcprize.org/leaderboard">ARC Prize leaderboard</a>: the official leaderboard at arcprize.org.</li>
+          <li><a href="/analytics">ARC-AGI-1 and ARC-AGI-2 model results (archive)</a>: imported ARC Prize evaluation results, kept as a dated archive.</li>
+          <li><a href="/news">The ARC Daily Digest</a>: daily reporting on both Kaggle boards.</li>
+        </ul>
+        <p>Public Kaggle standings are not final private results; medals are settled on the private board at the close.</p>
+      </main>`,
+  },
+
   // ==================== ARC-AGI-3 Kaggle competition ====================
   '/kaggle-leaderboard': {
-    title: 'ARC Prize 2026 ARC-AGI-3 Kaggle Leaderboard: Live Standings & History',
+    title: 'ARC-AGI-3 Leaderboard: ARC Prize 2026 Live Kaggle Standings',
     description:
-      'Every team on the ARC-AGI-3 Kaggle public leaderboard, saved every half hour: medal lines, '
-      + "who is climbing, who is sinking, score history and the race to the close.",
+      'The ARC-AGI-3 leaderboard for ARC Prize 2026 on Kaggle: every team\'s rank and score saved every '
+      + 'half hour, with medal lines, movers and score history.',
     url: `${SITE}/kaggle-leaderboard`,
     type: 'website',
-    keywords: 'ARC Prize 2026, ARC-AGI-3, Kaggle leaderboard, ARC Prize leaderboard, Kaggle competition standings',
+    ...ARC3_GAME_CARD,
+    keywords: 'ARC-AGI-3 leaderboard, ARC leaderboard, ARC Prize 2026, ARC Prize leaderboard, Kaggle leaderboard, Kaggle competition standings',
     jsonLd: {
       '@context': 'https://schema.org',
       '@graph': [
@@ -229,17 +299,19 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
         rank history, and the full searchable table with links to each team on Kaggle.</p>
         <p>Source: <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard">Kaggle public leaderboard</a>.
         Medals are settled on the private board at the close.</p>
+        <p><a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/news">The ARC Daily Digest</a></p>
       </main>`,
   },
 
   '/kaggle-leaderboard/arc-2': {
-    title: 'ARC Prize 2026 ARC-AGI-2 Kaggle Leaderboard: Live Standings & History',
+    title: 'ARC-AGI-2 Leaderboard: ARC Prize 2026 Live Kaggle Standings',
     description:
-      'Every team on the ARC-AGI-2 Kaggle public leaderboard, saved every half hour: medal lines, '
-      + "who is climbing, who is sinking, score history and the race to the close.",
+      'The ARC-AGI-2 leaderboard for ARC Prize 2026 on Kaggle: every team\'s rank and score saved every '
+      + 'half hour, with medal lines, movers and score history.',
     url: `${SITE}/kaggle-leaderboard/arc-2`,
     type: 'website',
-    keywords: 'ARC Prize 2026, ARC-AGI-2, Kaggle leaderboard, ARC Prize leaderboard, Kaggle competition standings',
+    ...ARC_PUZZLE_CARD,
+    keywords: 'ARC-AGI-2 leaderboard, ARC leaderboard, ARC Prize 2026, ARC Prize leaderboard, Kaggle leaderboard, Kaggle competition standings',
     jsonLd: {
       '@context': 'https://schema.org',
       '@graph': [
@@ -263,6 +335,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
         rank history, and the full searchable table with links to each team on Kaggle.</p>
         <p>Source: <a href="https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/leaderboard">Kaggle public leaderboard</a>.
         Medals are settled on the private board at the close.</p>
+        <p><a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/news">The ARC Daily Digest</a></p>
       </main>`,
   },
 
@@ -278,10 +351,10 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
  * shared, with arc.markbarney.net as the preferred canonical origin for both.
  */
 const ROOT_META: Omit<RouteMetaTags, 'url'> = {
-  title: 'ARC Explainer — ARC-AGI games, guides and Kaggle standings',
-  description: 'Follow the ARC Prize Kaggle leaderboards, explore ARC-AGI-3 game guides and research, and try interactive reasoning tasks.',
+  title: 'ARC Explainer — ARC leaderboards, ARC-AGI-3 games and guides',
+  description: 'Live ARC leaderboards for ARC-AGI-3 and ARC-AGI-2, plus ARC-AGI-3 game guides, research and interactive reasoning tasks to try.',
   type: 'website',
-  bodyHtml: `<main><h1>We're doing ARC-AGI-3.</h1><p>Two people working on ARC-AGI-3 in spare evenings: following the Kaggle competition, building an agent and testing interactive reasoning tasks.</p><p>Explore the <a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a> and <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>, with team standings, score history and changes over time.</p><p><a href="/arc3/gallery">Try a community task</a>, read the <a href="/arc3/games">official game guides (spoilers)</a>, explore <a href="/arc3/hypotheses">research on model reasoning</a> or visit the <a href="/home">resource hub</a>.</p></main>`,
+  bodyHtml: `<main><h1>We're doing ARC-AGI-3.</h1><p>Two people working on ARC-AGI-3 in spare evenings: following the Kaggle competition, building an agent and testing interactive reasoning tasks.</p><p>Explore the <a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a> and <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>, with team standings, score history and changes over time, or see <a href="/arc-leaderboards">all ARC leaderboards</a>.</p><p><a href="/arc3/gallery">Try a community task</a>, read the <a href="/arc3/games">official game guides (spoilers)</a>, explore <a href="/arc3/hypotheses">research on model reasoning</a> or visit the <a href="/home">resource hub</a>.</p></main>`,
 };
 
 // Both hosts now render the same site. Share one preferred origin, including at root.

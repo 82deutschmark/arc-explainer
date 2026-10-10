@@ -1,6 +1,6 @@
 /**
  * Author: Claude Opus 5.5
- * Date: 2026-10-09
+ * Date: 2026-10-09; 10-October-2026 (Claude Sonnet 5.5: latestMarkets, the same cached digest as an object)
  * PURPOSE: Serves the ARC Daily Digest's market digest (GET /api/news/markets): one compact
  *          summary per Kaggle board for the front page's ticker, standings and movers, and the
  *          evidence the wire desk's reporters write from. Reads the board documents the Mac Mini
@@ -19,7 +19,7 @@ import { kaggleBoardRepository } from '../../repositories/KaggleBoardRepository.
 import { getNewsIndex } from './newsStore';
 
 const TTL_MS = 60_000;
-let cached: { at: number; raw: Buffer; gzip: Buffer } | null = null;
+let cached: { at: number; payload: MarketsPayload; raw: Buffer; gzip: Buffer } | null = null;
 
 /** Teams the paper follows on a board: notebook dossiers, ledger memberships and featured teams. */
 function watchedTeams(index: NewsIndex, competition: NewsCompetition): Set<string> {
@@ -48,10 +48,21 @@ export async function buildMarkets(now = new Date()): Promise<MarketsPayload> {
   return { generatedAt: now.toISOString(), boards };
 }
 
+/** The digest, rebuilt at most once a minute and shared by every reader below. */
+async function current() {
+  if (cached && Date.now() - cached.at < TTL_MS) return cached;
+  const payload = await buildMarkets();
+  const raw = Buffer.from(JSON.stringify(payload), 'utf8');
+  cached = { at: Date.now(), payload, raw, gzip: gzipSync(raw) };
+  return cached;
+}
+
 /** The digest as JSON and gzip, rebuilt at most once a minute. */
 export async function marketsResponse(): Promise<{ raw: Buffer; gzip: Buffer }> {
-  if (cached && Date.now() - cached.at < TTL_MS) return cached;
-  const raw = Buffer.from(JSON.stringify(await buildMarkets()), 'utf8');
-  cached = { at: Date.now(), raw, gzip: gzipSync(raw) };
-  return cached;
+  return current();
+}
+
+/** The digest as an object, for server-rendered crawler text (server/services/seo/leaderboardSeo.ts). */
+export async function latestMarkets(): Promise<MarketsPayload> {
+  return (await current()).payload;
 }

@@ -9,6 +9,8 @@
  *          09-Oct-2026 (Claude Opus 5.5): every ledger portrait is a committed file traced to the
  *          person's own source; profiles lead with face and honors; stories pick cited faces first.
  *          Later the same day: the market digest route, the wire page and the wire story contract.
+ *          10-Oct-2026 (Claude Sonnet 5.5): the front-page card's versioned address, freshness rule and
+ *          ARC puzzle figure; the /news sitemap date now counts wire stories like the code does.
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
@@ -22,8 +24,10 @@ import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema, 
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import sharp from 'sharp';
-import { articleCardPath, articleTitle, NEWS_SECTION_CARD_PATH, TITLE_BUDGET, citedPeople, storyPeople } from '../../shared/news';
-import { articleCardSvg, cardText, renderArticleCard } from '../../server/services/news/newsCardImage';
+import { articleCardPath, articleTitle, easternDay, NEWS_CARD_FRESH_MS, NEWS_SECTION_CARD_PATH, sectionCardArticles, sectionCardPath, TITLE_BUDGET, citedPeople, storyPeople } from '../../shared/news';
+import { ARC_COLORS_TUPLES } from '../../shared/config/colors';
+import { articleCardSvg, cardText, renderArticleCard, renderSectionCard } from '../../server/services/news/newsCardImage';
+import { puzzleOfTheDay } from '../../server/services/news/newsCardPuzzle';
 const metaContent = (html: string, key: string) => html.match(new RegExp(`(?:property|name)="${key}" content="([^"]*)"`))?.[1];
 const unescape = (value = '') => value.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 /** A blank or flat image passes a size check; a drawn card has many distinct shades. */
@@ -137,12 +141,72 @@ it('serves a drawn 1200x630 card for every article and the front page', async ()
 it('gives the front page and notebook the newspaper card and list structured data', async () => {
   for (const [path, type] of [['/news', 'CollectionPage'], ['/news/competitors', 'CollectionPage']]) {
     const html = await (await fetch(`${base}${path}`)).text();
-    expect(metaContent(html, 'og:image')).toBe(`${SITE_ORIGIN}${NEWS_SECTION_CARD_PATH}`);
+    expect(metaContent(html, 'og:image')).toBe(`${SITE_ORIGIN}${sectionCardPath(getNewsIndex().articles)}`);
     const schema = JSON.parse(html.match(/id="page-structured-data" type="application\/ld\+json">([\s\S]*?)<\/script>/)![1]);
     const page = schema['@graph'].find((node: Record<string, unknown>) => node['@type'] === type);
     expect(page.mainEntity.itemListElement.length).toBeGreaterThan(0);
     expect((html.match(/<h1[\s>]/g) ?? []).length).toBe(1);
   }
+});
+it('advertises the front-page card under an address that changes with the day and the editions it shows', () => {
+  const { articles } = getNewsIndex();
+  const now = Date.parse(articles[0].publishedAt) + 3_600_000;
+  expect(sectionCardArticles(articles, now).length).toBeGreaterThan(0);
+  expect(sectionCardArticles(articles, now).every(article => now - Date.parse(article.publishedAt) <= NEWS_CARD_FRESH_MS)).toBe(true);
+  expect(sectionCardPath(articles, now)).toMatch(/^\/api\/news\/og-image\.png\?v=[a-z0-9]+$/);
+  // The same editions on the same day always give the same address, whatever order they arrive in.
+  expect(sectionCardPath([...articles].reverse(), now)).toBe(sectionCardPath(articles, now));
+  // A newer edition, the next day, or the editions going stale each give a new address, so a service that kept the old picture fetches the new one.
+  const newer = [{ ...articles[0], id: `${articles[0].id}-next`, headline: 'A newer headline', publishedAt: new Date(now).toISOString() }, ...articles];
+  expect(sectionCardPath(newer, now)).not.toBe(sectionCardPath(articles, now));
+  expect(sectionCardPath(articles, now + 86_400_000)).not.toBe(sectionCardPath(articles, now));
+  const stale = Date.parse(articles[0].publishedAt) + NEWS_CARD_FRESH_MS + 3_600_000;
+  expect(sectionCardArticles(articles, stale)).toEqual([]);
+  expect(sectionCardPath(articles, stale)).not.toBe(sectionCardPath(articles, now));
+});
+it('gives every ARC Daily page that shares the front-page card its current address, and that address serves a card', async () => {
+  const { articles, competitors } = getNewsIndex();
+  const expected = `${SITE_ORIGIN}${sectionCardPath(articles)}`;
+  for (const route of ['/news', '/news/wire', '/news/competitors', '/news/people', '/news/community', '/news/how-this-is-made', `/news/competitors/${competitors[0].id}`]) {
+    const html = await (await fetch(`${base}${route}`)).text();
+    expect(metaContent(html, 'og:image'), route).toBe(expected);
+    expect(metaContent(html, 'twitter:image'), route).toBe(expected);
+  }
+  const card = await fetch(expected);
+  expect(card.status).toBe(200);
+  expect(card.headers.get('content-type')).toBe('image/png');
+  await expectDrawnCard(Buffer.from(await card.arrayBuffer()));
+});
+it('picks a real small training puzzle for each Eastern day, the same one all day', async () => {
+  const today = await puzzleOfTheDay('2026-10-10');
+  expect(today).not.toBeNull();
+  expect(await puzzleOfTheDay('2026-10-10')).toEqual(today);
+  expect((await puzzleOfTheDay('2026-10-11'))?.id).not.toBe(today!.id);
+  for (const grid of [today!.input, today!.output]) {
+    expect(Math.max(grid.length, grid[0].length)).toBeLessThanOrEqual(10);
+    expect(grid.flat().every(cell => Number.isInteger(cell) && cell >= 0 && cell <= 9)).toBe(true);
+  }
+  expect(await puzzleOfTheDay('not-a-day')).toBeNull();
+});
+it('draws the front-page card with an ARC puzzle in the ARC colours, and says what the paper is once no edition is fresh', async () => {
+  const { articles } = getNewsIndex();
+  const now = Date.parse(articles[0].publishedAt) + 3_600_000;
+  const stale = now + 7 * 86_400_000;
+  const puzzle = await puzzleOfTheDay(easternDay(now));
+  const fresh = await renderSectionCard(articles, puzzle, now);
+  const evergreen = await renderSectionCard(articles, puzzle, stale);
+  await expectDrawnCard(fresh);
+  await expectDrawnCard(evergreen);
+  expect(fresh.equals(evergreen)).toBe(false);
+  // The puzzle is drawn in ARC's own palette: at least one exact ARC colour (other than black) appears.
+  const { data, info } = await sharp(fresh).raw().toBuffer({ resolveWithObject: true });
+  const palette = ARC_COLORS_TUPLES.slice(1);
+  let arcPixels = 0;
+  for (let index = 0; index < data.length; index += info.channels) {
+    if (palette.some(([red, green, blue]) => data[index] === red && data[index + 1] === green && data[index + 2] === blue)) arcPixels++;
+  }
+  expect(arcPixels).toBeGreaterThan(100);
+  await expectDrawnCard(await renderSectionCard(articles, null, stale));
 });
 it('draws card text as paths, so the container needs no system fonts', async () => {
   const svg = await articleCardSvg(getNewsIndex().articles[0]);
@@ -159,7 +223,7 @@ it('serves sourced dispatches and their artwork in front-page API and crawler te
   expect(html).toContain(dispatch.image!.src);
   for (const source of dispatch.sources) expect(html).toContain(escapeHtml(source.url));
   const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
-  const latest = [...index.articles, ...index.dispatches!].map(story => story.publishedAt).sort().at(-1);
+  const latest = [...index.articles, ...index.dispatches!, ...(index.wire ?? [])].map(story => story.publishedAt).sort().at(-1);
   expect(sitemap).toContain(`<loc>${SITE_ORIGIN}/news</loc><lastmod>${latest}</lastmod>`);
   const changed = structuredClone(dispatch);
   changed.sections[0].sourceIds = ['invented'];

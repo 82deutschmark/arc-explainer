@@ -7,6 +7,8 @@
  *          card as the fallback for /news/* in-app routes, and socialMetaEntries() so the
  *          server head and the browser writer emit the same Open Graph/Twitter tags.
  *          Codex: retain the dated audit URL as a permanent alias for /feedback.
+ *          10-Oct-2026 (Claude Sonnet 5.5): the ARC leaderboards hub joins the sitewide discovery links
+ *          and is the parent crumb of the two Kaggle boards, which get short breadcrumb names.
  * SRP/DRY check: Pass — one canonical origin and metadata serialization contract.
  */
 import { ROUTE_META_TAGS, type RouteMetaTags } from './routes';
@@ -39,15 +41,20 @@ export function redirectPath(value: string): string | undefined {
 export function escapeHtml(value: string): string {
   return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+/** Short breadcrumb names for the leaderboard pages, whose titles are search-result length. */
+const LEADERBOARD_CRUMBS: Record<string, string> = {
+  '/arc-leaderboards': 'ARC leaderboards', '/kaggle-leaderboard': 'ARC-AGI-3 leaderboard', '/kaggle-leaderboard/arc-2': 'ARC-AGI-2 leaderboard',
+};
 export function pageBreadcrumbs(tags: RouteMetaTags): { name: string; url: string }[] {
   const route = new URL(tags.url).pathname;
   if (route === '/') return [];
   const items = [{ name: 'Home', url: `${SITE_ORIGIN}/` }];
+  if (route.startsWith('/kaggle-leaderboard')) items.push({ name: LEADERBOARD_CRUMBS['/arc-leaderboards'], url: `${SITE_ORIGIN}/arc-leaderboards` });
   const game = route.match(/^\/arc3\/games\/([a-z0-9_-]+)$/);
   if (game) items.push({ name: 'Game guides', url: `${SITE_ORIGIN}/arc3/games` });
   if (route.startsWith('/news/')) items.push({ name: 'The ARC Daily', url: `${SITE_ORIGIN}/news` });
   if (route.startsWith('/news/competitors/')) items.push({ name: 'Competitor notebook', url: `${SITE_ORIGIN}/news/competitors` });
-  const name = route === '/news' ? NEWS_NAME : tags.title.replace(/ \| (?:ARC Explainer|The ARC Daily)$/, '');
+  const name = route === '/news' ? NEWS_NAME : LEADERBOARD_CRUMBS[route] ?? tags.title.replace(/ \| (?:ARC Explainer|The ARC Daily)$/, '');
   items.push({ name: game ? game[1] : name, url: tags.url });
   return items;
 }
@@ -68,7 +75,7 @@ export function breadcrumbsHtml(tags: RouteMetaTags): string {
   return crumbs.length ? `<nav aria-label="Breadcrumb">${crumbs.map((crumb, index) => index === crumbs.length - 1 ? `<span aria-current="page">${escapeHtml(crumb.name)}</span>` : `<a href="${escapeHtml(new URL(crumb.url).pathname)}">${escapeHtml(crumb.name)}</a>`).join(' / ')}</nav>` : '';
 }
 export const DISCOVERY_LINKS = [
-  ['/', 'Home'], ['/news', 'The ARC Daily'], ['/home', 'Resource hub'], ['/kaggle-leaderboard', 'ARC-AGI-3 leaderboard'],
+  ['/', 'Home'], ['/news', 'The ARC Daily'], ['/home', 'Resource hub'], ['/arc-leaderboards', 'ARC leaderboards'], ['/kaggle-leaderboard', 'ARC-AGI-3 leaderboard'],
   ['/kaggle-leaderboard/arc-2', 'ARC-AGI-2 leaderboard'], ['/arc3/games', 'Game guides'],
   ['/arc3/slippery-seven', 'Slippery Seven'], ['/arc3/gallery', 'Community tasks'],
   ['/arc3/hypotheses', 'Research'], ['/browser', 'ARC puzzles'], ['/analytics', 'Model results archive'],
@@ -116,6 +123,7 @@ export function clientRouteMeta(value: string): RouteMetaTags {
     || /^\/puzzle\/(?:saturn|grover|beetree|poetiq)\/[^/]+$/.test(route)
     || /^\/task\/[^/]+(?:\/efficiency)?$/.test(route)
     || /^\/worm-arena\/live\/[^/]+$/.test(route);
+  // The bare news card path is a default for in-app navigation; the server and useNewsCardImage replace it with today's versioned address.
   const news = route.startsWith('/news/');
   const title = game ? `${game[1]} — ARC-AGI-3 game guide` : puzzle ? `ARC puzzle ${puzzle[1]}` : play ? `${play[1]} — ARC-AGI-3 task` : tool ? 'ARC Explainer interactive workspace' : 'Page not found | ARC Explainer';
   return completeMeta({ title, description: game ? 'Game mechanics, level screenshots and notes from play.' : puzzle ? 'Explore this ARC puzzle and its model answers.' : play ? 'Explore an interactive reasoning task without instructions.' : tool ? 'Use ARC Explainer’s interactive analysis tools.' : 'This address does not match an ARC Explainer page. Explore the resource hub or game guides.',

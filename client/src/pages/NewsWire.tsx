@@ -12,13 +12,13 @@ import { useEffect } from 'react';
 import { Link } from 'wouter';
 import { NEWS_NAME, newsDate } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { NewsPaper, NewsStatus, useNews } from '@/components/news/NewsDesk';
+import { NewsPaper, NewsStatus, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 import { WireStory, sortedWire } from '@/components/news/NewsWire';
 
 export default function NewsWire() {
   const query = useNews();
   const stories = sortedWire(query.data?.wire ?? []);
-  usePageMeta({ title: `The wire | ${NEWS_NAME}`, description: 'Short sourced stories on the ARC-AGI-3 and ARC-AGI-2 boards, filed by the ARC Daily Digest wire desk several times a day.', canonicalPath: '/news/wire' });
+  usePageMeta({ title: `The wire | ${NEWS_NAME}`, description: 'Short sourced stories on the ARC-AGI-3 and ARC-AGI-2 boards, filed by the ARC Daily Digest wire desk several times a day.', canonicalPath: '/news/wire', image: useNewsCardImage() });
   // Stories mount after the archive loads; honor a link to one of them once they exist.
   useEffect(() => {
     if (stories.length && window.location.hash) requestAnimationFrame(() => document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView());

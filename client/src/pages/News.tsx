@@ -15,7 +15,7 @@
  */
 import { NEWS_NAME } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 import { AroundTheContests, NewsFrontPage, NotebookColumns } from '@/components/news/NewsFrontPage';
 import { InsideIndex, MoversBand, PastWinners, useMarkets } from '@/components/news/NewsMarkets';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
@@ -27,7 +27,7 @@ export default function News() {
   const latest = articles[0];
   // The issue number counts published scheduled editions (one per date and edition), never previews.
   const issue = new Set(articles.filter(article => !article.id.endsWith('-preview')).map(article => `${article.date}-${article.edition}`)).size || undefined;
-  usePageMeta({ title: `${NEWS_NAME} — ARC-AGI-3 and ARC-AGI-2 news`, description: 'Daily coverage of both ARC Prize Kaggle contests: live standings and movers, wire stories, early and late editions, and sourced competitor profiles.', canonicalPath: '/news' });
+  usePageMeta({ title: `${NEWS_NAME} — ARC-AGI-3 and ARC-AGI-2 news`, description: 'Daily coverage of both ARC Prize Kaggle contests: live standings and movers, wire stories, early and late editions, and sourced competitor profiles.', canonicalPath: '/news', image: useNewsCardImage() });
   const people = query.data?.people ?? [];
   const links = { competitors: query.data?.competitors ?? [], people };
 

@@ -13,6 +13,9 @@
  *          picture) and the helpers that decide whose faces a story shows: people its sections
  *          cite, then verified people on the teams it covers. Later the same day: wire-desk stories
  *          (NewsWireStory) and Early/Late edition names in print, with morning/evening kept as data.
+ *          10-Oct-2026 (Claude Sonnet 5.5): the front-page share card's address is versioned by
+ *          day and edition (sectionCardPath), and its headlines show only while fresh
+ *          (sectionCardArticles), so a preview service can never keep serving a stale card.
  * SRP/DRY check: Pass — server, browser and newsroom tooling share one documented shape;
  *          competition labels still come from shared/kaggleCompetitions.ts.
  */
@@ -166,9 +169,13 @@ export const NEWS_CARD_WIDTH = 1200;
 export const NEWS_CARD_HEIGHT = 630;
 /** Bump when the card layout changes, so cached article cards are fetched again. 3: Early/Late edition labels. */
 export const NEWS_CARD_DESIGN = 3;
-/** Front page and notebook card. Not versioned: it follows the latest editions. */
+/**
+ * Front page and notebook card. The bare path is only the route; pages advertise sectionCardPath(),
+ * whose version changes with the day and with the editions shown, because link-preview services
+ * keep a picture for as long as its address stays the same.
+ */
 export const NEWS_SECTION_CARD_PATH = '/api/news/og-image.png';
-export const NEWS_SECTION_CARD_ALT = `${NEWS_NAME} masthead with the latest ARC-AGI-3 and ARC-AGI-2 headlines`;
+export const NEWS_SECTION_CARD_ALT = `${NEWS_NAME}: daily reporting on the ARC Prize 2026 leaderboards for ARC-AGI-3 and ARC-AGI-2, with an ARC puzzle of the day`;
 /** The three leading rows of the article's own box score, the only standings a card shows. */
 export const cardStandings = (article: NewsArticle) => [...article.stats].sort((a, b) => a.rank - b.rank).slice(0, 3);
 
@@ -185,6 +192,36 @@ function shortHash(value: string): string {
 export function articleCardVersion(article: NewsArticle): string {
   return shortHash(JSON.stringify([NEWS_CARD_DESIGN, article.headline, article.competition, article.edition, article.date,
     cardStandings(article).map(stat => [stat.rank, stat.name, stat.score, stat.rankChange])]));
+}
+/**
+ * The front-page card prints headlines only while a contest's newest edition is this recent (one
+ * missed edition still fits). Past it, the card says what the paper is rather than passing
+ * yesterday's news off as today's.
+ */
+export const NEWS_CARD_FRESH_MS = 36 * 3_600_000;
+/** Bump when the front-page card layout changes, so cached front-page cards are fetched again. */
+export const NEWS_SECTION_CARD_DESIGN = 1;
+/** Eastern calendar day as "2026-10-10"; the front-page card's puzzle changes with it. */
+export const easternDay = (now: number): string =>
+  new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(now));
+/** The newest still-fresh edition of each contest, ARC-AGI-3 first. Empty means the card shows the evergreen panel. */
+export function sectionCardArticles(articles: NewsArticle[], now = Date.now()): NewsArticle[] {
+  return (['arc-3', 'arc-2'] as const).flatMap(competition => {
+    const newest = articles.filter(article => article.competition === competition)
+      .reduce<NewsArticle | undefined>((best, article) => !best || article.publishedAt > best.publishedAt ? article : best, undefined);
+    return newest && now - Date.parse(newest.publishedAt) <= NEWS_CARD_FRESH_MS ? [newest] : [];
+  });
+}
+/** Changes with the day and with anything the front-page card prints, so every new edition gets a new address. */
+export const sectionCardVersion = (articles: NewsArticle[], now = Date.now()): string =>
+  shortHash(JSON.stringify([NEWS_SECTION_CARD_DESIGN, easternDay(now), sectionCardArticles(articles, now).map(article => [article.id, article.headline, article.dek])]));
+export const sectionCardPath = (articles: NewsArticle[], now = Date.now()): string =>
+  `${NEWS_SECTION_CARD_PATH}?v=${sectionCardVersion(articles, now)}`;
+export function sectionCardAlt(articles: NewsArticle[], now = Date.now()): string {
+  const shown = sectionCardArticles(articles, now);
+  return shown.length
+    ? `${NEWS_NAME} front page with the latest ${shown.map(article => competitionName(article.competition)).join(' and ')} headline${shown.length > 1 ? 's' : ''} and an ARC puzzle of the day.`
+    : NEWS_SECTION_CARD_ALT;
 }
 export const articleCardPath = (article: NewsArticle) => `/api/news/og-image/${article.id}.png?v=${articleCardVersion(article)}`;
 export function articleCardAlt(article: NewsArticle): string {

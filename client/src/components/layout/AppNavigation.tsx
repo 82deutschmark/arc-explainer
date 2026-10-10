@@ -12,7 +12,7 @@
  */
 /**
  * Author: Claude Opus 5; ARC-3 dropdown modernized by Claude Sonnet 5, 2026-09-12
- * Date: 2026-08-29 (ARC-3 dropdown modernized 2026-09-12; Kaggle Leaderboard link added 2026-10-05 by Claude Opus 5.5)
+ * Date: 2026-08-29 (ARC-3 dropdown modernized 2026-09-12; Kaggle Leaderboard link added 2026-10-05 by Claude Opus 5.5; All ARC leaderboards link added 2026-10-10 by Claude Sonnet 5.5)
  * PURPOSE: ARC-3-forward top navigation. The primary row is the ARC-AGI-3 flow a visitor
  * actually walks -- Play, Submit, About ARC-3 -- matching the root redirect in
  * App.tsx, which already sends "/" to /arc3/gallery. Everything ARC-1/2 collapses into a single
@@ -242,6 +242,13 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
             href: '/kaggle-leaderboard',
             icon: Trophy,
             description: 'Every team on the ARC-AGI-3 Kaggle board, medal lines and history',
+          },
+          {
+            type: 'link',
+            title: 'All ARC leaderboards',
+            href: '/arc-leaderboards',
+            icon: Trophy,
+            description: 'ARC-AGI-3 and ARC-AGI-2 standings, plus the official ARC Prize board',
           },
         ],
       },

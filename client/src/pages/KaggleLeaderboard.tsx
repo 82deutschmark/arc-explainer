@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex
- * Date: 2026-10-08
+ * Date: 2026-10-08; 10-October-2026 (Claude Sonnet 5.5: title and description follow the sharper wording in shared/routes.ts)
  * PURPOSE: Public page for the ARC Prize 2026 ARC-AGI-3 Kaggle leaderboard, at
  *          /kaggle-leaderboard. Every team on the public board, the medal cut lines, the pinned
  *          team always highlighted: the contested pack by rank, this week's storylines, where scores bunch up,
@@ -58,10 +58,10 @@ export default function KaggleLeaderboard({ competitionKey = 'arc-3' }: { compet
   const competition = KAGGLE_COMPETITIONS[competitionKey];
   usePageMeta({
     // Matches the server-rendered entry in shared/routes.ts.
-    title: `ARC Prize 2026 ${competition.label} Kaggle Leaderboard: Live Standings & History`,
+    title: `${competition.label} Leaderboard: ARC Prize 2026 Live Kaggle Standings`,
     description:
-      `Every team on the ${competition.label} Kaggle public leaderboard, saved every half hour: medal lines, `
-      + 'who is climbing, who is sinking, score history and the race to the close.',
+      `The ${competition.label} leaderboard for ARC Prize 2026 on Kaggle: every team's rank and score saved every `
+      + 'half hour, with medal lines, movers and score history.',
     canonicalPath: competition.path,
   });
 

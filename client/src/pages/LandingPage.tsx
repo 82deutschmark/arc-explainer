@@ -4,7 +4,7 @@
  * PURPOSE: Directory of playable ARC tools, game guides and recorded results.
  *          Features Simon Ouellette’s ARC-3 training-data tools. Includes the ARC Daily newspaper, competitor notebook and concrete ARC Prize feedback sheet.
  *          2026-10-09 (Claude Opus 5.5): drops the archived test-a-solution card.
- *          2026-10-10 (Claude Sonnet 5.5): adds NVIDIA DreamTeam.
+ *          2026-10-10 (Claude Sonnet 5.5): adds NVIDIA DreamTeam; adds the ARC leaderboards hub card.
  * SRP/DRY check: Pass — reuses shared Card components and router links.
  */
 import { NVIDIA_DREAMTEAM, SIMON_ARC3_TRAINING_DATA } from '@shared/arc3Resources';
@@ -33,6 +33,7 @@ const sections: { title: string; description: string; resources: Resource[] }[] 
       { title: NVIDIA_DREAMTEAM.title, href: NVIDIA_DREAMTEAM.url, description: NVIDIA_DREAMTEAM.desc, fullPage: true },
       { title: 'Community games', href: '/arc3/gallery', description: 'Play original community tasks built on ARCEngine. Discover the rules through interaction.' },
       { title: 'Kaggle leaderboard', href: '/kaggle-leaderboard', description: 'Explore public competition standings. Public standings are not final private results.' },
+      { title: 'All ARC leaderboards', href: '/arc-leaderboards', description: 'The live ARC-AGI-3 and ARC-AGI-2 boards in one place, with the official ARC Prize leaderboard.' },
       { title: 'The ARC Daily', href: '/news', description: 'Morning and evening competition reports, with sourced competitor notebooks for ARC-AGI-2 and ARC-AGI-3.' },
       { title: 'ARC-AGI-3 background', href: '/arc3', description: 'Benchmark history, scoring and links to official sources.' },
     ],

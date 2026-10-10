@@ -9,6 +9,7 @@
 - [ARC Daily RSS](https://arc.markbarney.net/news/feed.xml): permanent article links and summaries.
 
 - [Resource hub](https://arc.markbarney.net/home): public sections and related projects.
+- [ARC leaderboards](https://arc.markbarney.net/arc-leaderboards): the live ARC-AGI-3 and ARC-AGI-2 Kaggle boards in one place, with the official ARC Prize leaderboard and the archived model results.
 - [ARC-AGI-3 Kaggle leaderboard](https://arc.markbarney.net/kaggle-leaderboard): public standings, team history and changes. Public medal bands are not final private results.
 - [ARC-AGI-2 Kaggle leaderboard](https://arc.markbarney.net/kaggle-leaderboard/arc-2): separate competition data and history.
 - [ARC-AGI-3 game guides](https://arc.markbarney.net/arc3/games): 25 official public demonstration games; withdrawn preview game as66 is separately labeled.

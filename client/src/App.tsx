@@ -14,6 +14,7 @@ PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations a
          docs/28-Aug-2026-synthetic-games-arc3-integration-plan.md). The resource
          directory lives at "/home" and is linked from the header.
          2026-10-05 (Claude Opus 5.5): /kaggle-leaderboard, the public Kaggle board page.
+         2026-10-10 (Claude Sonnet 5.5): /arc-leaderboards, the hub for the generic "ARC leaderboards" search.
 SRP/DRY check: Pass - kept as a routing table only; reuses the existing wouter Redirect
          component already used by the legacy /arc3/archive routes.
 */
@@ -40,6 +41,7 @@ const PuzzleBrowser = lazy(() => import("@/pages/PuzzleBrowser"));
 const AnalyticsOverview = lazy(() => import("@/pages/AnalyticsOverview"));
 const Leaderboards = lazy(() => import("@/pages/Leaderboards"));
 const KaggleLeaderboard = lazy(() => import("@/pages/KaggleLeaderboard"));
+const ArcLeaderboards = lazy(() => import("@/pages/ArcLeaderboards"));
 const News = lazy(() => import("@/pages/News"));
 const NewsPeople = lazy(() => import("@/pages/NewsPeople"));
 const NewsCommunity = lazy(() => import("@/pages/NewsCommunity"));
@@ -166,6 +168,7 @@ function Router() {
         <Route path="/discussion/:taskId" component={PuzzleDiscussion} />
         <Route path="/analytics" component={AnalyticsOverview} />
         <Route path="/leaderboards" component={Leaderboards} />
+        <Route path="/arc-leaderboards" component={ArcLeaderboards} />
         <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>
         <Route path="/kaggle-leaderboard"><KaggleLeaderboard key="arc-3" competitionKey="arc-3" /></Route>
         <Route path="/news" component={News} />

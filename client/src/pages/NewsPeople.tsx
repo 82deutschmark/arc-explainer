@@ -10,7 +10,7 @@
 import { Link, useParams } from 'wouter';
 import { personPath, competitorPath, NEWS_NAME, competitionName, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { NewsPaper, NewsStatus, useNews, newsDate } from '@/components/news/NewsDesk';
+import { NewsPaper, NewsStatus, useNews, newsDate, useNewsCardImage } from '@/components/news/NewsDesk';
 import { PersonCard, PersonHonors, PersonPortrait, PortraitCredit } from '@/components/news/NewsPeople';
 
 export default function NewsPeople() {
@@ -18,7 +18,7 @@ export default function NewsPeople() {
   const query = useNews();
   const people = query.data?.people ?? [];
   const person = people.find(item => item.id === personId);
-  usePageMeta({ title: `${person?.name ?? 'People behind the teams'} | ${NEWS_NAME}`, canonicalPath: personId ? personPath(personId) : '/news/people', noindex: !!personId && !person });
+  usePageMeta({ title: `${person?.name ?? 'People behind the teams'} | ${NEWS_NAME}`, canonicalPath: personId ? personPath(personId) : '/news/people', noindex: !!personId && !person, image: useNewsCardImage() });
   return <NewsPaper><Link href="/news" className="news-back">← Front page</Link><NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {personId
       ? person ? <PersonProfile person={person} competitors={query.data?.competitors ?? []} /> : query.data && <p>No verified person record published for this ID.</p>

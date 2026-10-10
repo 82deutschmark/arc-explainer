@@ -5,6 +5,8 @@
  *          against local registries and the built shell, without external services.
  *          Covers retired rankings returning 410 and disappearing from public discovery.
  *          2026-10-09 (Claude Opus 5.5): /feedback check follows the page's current attempt example.
+ *          2026-10-10 (Claude Sonnet 5.5): the ARC leaderboards hub, leaderboard titles, and the
+ *          retired address pointing to the hub.
  * SRP/DRY check: Pass — uses production middleware and actual game/puzzle content.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -112,6 +114,35 @@ describe('SEO delivery', () => {
       expect((await fetch(`${base}${path}`)).status).toBe(200);
     }
   });
+  it('serves the ARC leaderboards hub as an indexable page that names and links every ARC leaderboard', async () => {
+    const response = await fetch(`${base}/arc-leaderboards`);
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    assertHead(html);
+    expect(html).not.toContain('content="noindex');
+    expect(html.match(/<h1[ >]/g)).toHaveLength(1);
+    expect(html).toContain('<h1>ARC leaderboards</h1>');
+    for (const href of ['/kaggle-leaderboard', '/kaggle-leaderboard/arc-2', '/analytics', 'https://arcprize.org/leaderboard']) expect(html).toContain(`href="${href}"`);
+    // The leaderboard pages unfurl with real ARC art, not the generic site card.
+    for (const route of ['/arc-leaderboards', '/kaggle-leaderboard', '/kaggle-leaderboard/arc-2']) {
+      const page = await (await fetch(`${base}${route}`)).text();
+      const image = page.match(/property="og:image" content="([^"]+)"/)![1];
+      expect(image, route).toMatch(/\/api\/(?:og-image|arc3\/og-image)\//);
+      expect(page, route).toContain('property="og:image:width" content="1200"');
+    }
+    expect(sitemapUrls()).toContain(`${SITE_ORIGIN}/arc-leaderboards`);
+    // Every leaderboard page names itself a leaderboard in a title that fits a search result.
+    for (const route of ['/arc-leaderboards', '/kaggle-leaderboard', '/kaggle-leaderboard/arc-2']) {
+      expect(ROUTE_META_TAGS[route].title, route).toMatch(/leaderboard/i);
+      expect(ROUTE_META_TAGS[route].title.length, route).toBeLessThanOrEqual(65);
+      expect(ROUTE_META_TAGS[route].description.length, route).toBeLessThanOrEqual(165);
+    }
+    // The sitewide discovery links, the home page and the retired address all lead here.
+    for (const path of ['/about', '/']) expect(await (await fetch(`${base}${path}`)).text()).toContain('href="/arc-leaderboards"');
+    const gone = await fetch(`${base}/leaderboards`);
+    expect(gone.status).toBe(410);
+    expect(await gone.text()).toContain('href="/arc-leaderboards"');
+  });
   it('excludes tools from indexing in raw HTML and headers, while keeping them usable', async () => {
     for (const route of ['/admin', '/admin/models', '/arc3/mechanics', '/worm-arena/live/session-123', '/worm-arena/live/session.v2', '/puzzle/saturn/007bbfb7']) {
       const response = await fetch(`${base}${route}`);
@@ -172,11 +203,11 @@ describe('SEO delivery', () => {
       expect(status, route).toBe(200);
       expect(tags.noindex, route).not.toBe(true);
     }
-    // Only ARC Daily URLs carry lastmod, taken from recorded publication / check times.
+    // Only ARC Daily URLs (and the leaderboard pages, when their saved boards can be read) carry lastmod, taken from recorded times.
     const dated = [...generateSitemap().matchAll(/<loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod>/g)];
     expect(dated.length).toBeGreaterThan(0);
     for (const [, url, lastmod] of dated) {
-      expect(new URL(url).pathname.startsWith('/news'), url).toBe(true);
+      expect(new URL(url).pathname.startsWith('/news') || /^\/(?:arc-leaderboards|kaggle-leaderboard)/.test(new URL(url).pathname), url).toBe(true);
       expect(Number.isFinite(Date.parse(lastmod)), url).toBe(true);
     }
     const id = puzzleLoader.getAvailablePuzzleIds()[0];

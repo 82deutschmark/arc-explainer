@@ -13,14 +13,17 @@
  *          Later the same day, per the Boss ("think like a newspaper editor"): a broadsheet
  *          masthead with ears (edition, date and countdown; the sponsor), an Early/Late edition
  *          line, a section nav that includes the wire, and lead stories printed in full.
+ *          10-Oct-2026 (Claude Sonnet 5.5): useNewsCardImage, so pages that share the front-page
+ *          share card write the same versioned address in the browser that the server rendered.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, featuredPerson, wirePath, writerCredit, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, featuredPerson, wirePath, writerCredit, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
+import { SITE_ORIGIN } from '@shared/seo';
 import { MastheadAd } from './SponsorPlacement';
 import { StoryFeature, TeamFaces } from './NewsPeople';
 import './news.css';
@@ -30,6 +33,12 @@ export const ARC_DISCORD_URL = 'https://discord.gg/9b77dPAmcA';
 
 export function useNews() {
   return useQuery<NewsIndex>({ queryKey: ['/api/news'], staleTime: 60_000, refetchInterval: 60_000 });
+}
+
+/** The front-page share card under today's address (the server writes the same one), once the archive has loaded. */
+export function useNewsCardImage() {
+  const { data } = useNews();
+  return useMemo(() => data ? { image: `${SITE_ORIGIN}${sectionCardPath(data.articles)}`, imageAlt: sectionCardAlt(data.articles), imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : undefined, [data]);
 }
 
 // Date labels and competition names moved to shared/news.ts on 08-Oct-2026 so server HTML,

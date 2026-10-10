@@ -11,13 +11,13 @@ import type { NewsCompetition } from '@shared/news';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { NewsPaper, NewsStatus, NotebookEntry, useNews } from '@/components/news/NewsDesk';
+import { NewsPaper, NewsStatus, NotebookEntry, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 
 export default function NewsCompetitors() {
   const query = useNews();
   const [search, setSearch] = useState('');
   const [competition, setCompetition] = useState<NewsCompetition | 'all'>('all');
-  usePageMeta({ title: 'Competitor notebook | The ARC Daily Digest', description: 'Sourced ARC-AGI-2 and ARC-AGI-3 competitor records, observed team aliases and members, and links to competition reporting.', canonicalPath: '/news/competitors' });
+  usePageMeta({ title: 'Competitor notebook | The ARC Daily Digest', description: 'Sourced ARC-AGI-2 and ARC-AGI-3 competitor records, observed team aliases and members, and links to competition reporting.', canonicalPath: '/news/competitors', image: useNewsCardImage() });
   const needle = search.trim().toLocaleLowerCase();
   const competitors = [...(query.data?.competitors ?? [])].filter(record => (competition === 'all' || record.competition === competition) && [record.name, record.teamId, ...record.aliases, ...record.members].join(' ').toLocaleLowerCase().includes(needle)).sort((a, b) => a.name.localeCompare(b.name) || a.competition.localeCompare(b.competition));
   return <NewsPaper>

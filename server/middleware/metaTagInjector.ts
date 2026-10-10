@@ -5,6 +5,8 @@
  *          HTML metadata/content for the SPA. Uses the same policy as client navigation.
  *          08-Oct-2026 (Claude Opus 5.5): social tags come from shared socialMetaEntries().
  *          Codex: serve the published audit at the canonical /feedback address.
+ *          10-Oct-2026 (Claude Sonnet 5.5): leaderboard pages get live standings in their crawler
+ *          text, and the sitemap dates them by their latest saved snapshot (leaderboardSeo.ts).
  * SRP/DRY check: Pass — page content and shared SEO policy live in their own modules.
  */
 import type { Request, Response, NextFunction } from 'express';
@@ -13,6 +15,7 @@ import path from 'node:path';
 import type { RouteMetaTags } from '../../shared/routes';
 import { breadcrumbsHtml, completeMeta, discoveryHtml, escapeHtml as esc, INDEX_ROBOTS, normalizePath, redirectPath, socialMetaEntries, structuredData } from '../../shared/seo';
 import { generateSitemap, resolvePageMeta } from '../services/seo/pageContent';
+import { leaderboardLastmods, withLiveStandings } from '../services/seo/leaderboardSeo';
 
 export function generateMetaTags(input: RouteMetaTags): string {
   const tags = completeMeta(input);
@@ -42,8 +45,11 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
   if (!['GET', 'HEAD'].includes(req.method)) return next();
   const route = normalizePath(req.path);
   if (route === '/sitemap.xml') {
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.type('application/xml').send(generateSitemap());
+    // The leaderboard pages are dated by their latest saved snapshot when the boards can be read.
+    leaderboardLastmods().then(lastmods => {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.type('application/xml').send(generateSitemap(lastmods));
+    }).catch(next);
     return;
   }
   if (req.path.startsWith('/api/') || req.path.startsWith('/human-arc')) return next();
@@ -66,13 +72,16 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
 export async function metaTagInjector(req: Request, res: Response, next: NextFunction): Promise<void> {
   if (!['GET', 'HEAD'].includes(req.method) || req.path === '/api' || req.path.startsWith('/api/')) return next();
   try {
-  const { tags, status } = resolvePageMeta(normalizePath(req.path));
+  const resolved = resolvePageMeta(normalizePath(req.path));
+  const { status } = resolved;
   // Match registered routes first: session/game identifiers may legitimately contain dots.
   // Missing scripts/images must never be answered with a successful HTML shell.
   if (status === 404 && /\.[a-z0-9]+$/i.test(req.path)) {
     res.status(404).set('X-Robots-Tag', 'noindex').type('text').send('Resource not found');
     return;
   }
+    // Leaderboard pages carry the current top of their boards, so crawlers see fresh content.
+    const tags = await withLiveStandings(normalizePath(req.path), resolved.tags);
     const html = await fs.readFile(path.join(process.cwd(), 'dist/public/index.html'), 'utf8');
     res.status(status).set('Cache-Control', 'no-cache');
     if (tags.noindex) res.set('X-Robots-Tag', 'noindex, follow');

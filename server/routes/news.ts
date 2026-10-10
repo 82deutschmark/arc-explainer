@@ -1,10 +1,11 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-07; 08-October-2026
+ * Date: 2026-10-07; 08-October-2026; 10-October-2026
  * PURPOSE: Read-only public archive and immutable reporting evidence for ARC Daily.
  *          08-Oct-2026: serves the newspaper's share cards (newsCardImage.ts). Article
  *          card URLs carry a content version (shared/news.ts articleCardPath), so they are
- *          cached as immutable; the section card follows the latest editions and is not.
+ *          cached as immutable; the section card follows the day and the latest editions, so
+ *          it is not (pages advertise it under a version that changes with them).
  *          09-Oct-2026 (Claude Opus 5.5): GET /api/news/markets, the live market digest of both
  *          boards for the front page and the wire desk (services/news/newsMarkets.ts), and each
  *          wire story's immutable evidence at /api/news/wire/:id/evidence.
@@ -34,7 +35,7 @@ export function mountNews(app: Express) {
     } catch (error) { next(error); }
   });
   app.get('/api/news/og-image.png', async (_req, res, next) => {
-    try { sendCard(res, await buildSectionCard(), 'public, max-age=1800'); } catch (error) { next(error); }
+    try { sendCard(res, await buildSectionCard(), 'public, max-age=3600'); } catch (error) { next(error); }
   });
   app.get('/api/news/og-image/:id.png', async (req, res, next) => {
     try { sendCard(res, await buildArticleCard(req.params.id), 'public, max-age=31536000, immutable'); } catch (error) { next(error); }
