@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.138.0  Oct 10, 2026
+
+- **ARC Daily front page gets an "About this paper" info box** (Author: Claude Sonnet 5.5). Boss: tell readers where the data comes from and how the paper is made, without naming the AI models, and say corrections, retractions or complaints go to Boss on X or Discord. The box (`AboutThisPaper` in `NewsDesk.tsx`) sits above "Every edition" on the front page: AI-written from saved evidence, Kaggle leaderboard figures saved every half hour, public X posts and Kaggle discussions for the people, the edition and wire schedule, provisional standings, and the contact line (X account and the ARC Discord invite). Files: `client/src/components/news/NewsDesk.tsx`, `client/src/components/news/news.css`, `client/src/pages/News.tsx`.
+
 ### Version 9.137.0  Oct 10, 2026
 
 - **The ARC Daily Digest's link preview stays current, looks like ARC, and the site now targets "ARC leaderboards"** (Author: Claude Sonnet 5.5). Boss: the preview only showed October 8 news, it should use ARC-puzzle-looking art, show up-to-date news or else say what the paper is, and the site should turn up whenever someone searches for ARC leaderboards.

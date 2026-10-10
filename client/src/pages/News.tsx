@@ -15,7 +15,7 @@
  */
 import { NEWS_NAME } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
+import { AboutThisPaper, ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
 import { AroundTheContests, NewsFrontPage, NotebookColumns } from '@/components/news/NewsFrontPage';
 import { InsideIndex, MoversBand, PastWinners, useMarkets } from '@/components/news/NewsMarkets';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
@@ -43,6 +43,7 @@ export default function News() {
       </div>
       <SponsorPlacement format="banner" />
       <NotebookColumns index={query.data} markets={markets.data} />
+      <AboutThisPaper />
       <ArticleArchive articles={articles} heading="Every edition" />
     </>}
   </NewsPaper>;

@@ -15,6 +15,8 @@
  *          line, a section nav that includes the wire, and lead stories printed in full.
  *          10-Oct-2026 (Claude Sonnet 5.5): useNewsCardImage, so pages that share the front-page
  *          share card write the same versioned address in the browser that the server rendered.
+ *          10-Oct-2026 (Claude Sonnet 5.5): AboutThisPaper, the front-page info box on where the data
+ *          comes from and how to reach Boss with corrections, retractions or complaints.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import { useMemo, type ReactNode } from 'react';
@@ -30,6 +32,9 @@ import './news.css';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
 export const ARC_DISCORD_URL = 'https://discord.gg/9b77dPAmcA';
+
+/** The X account the editions are posted from; also where readers reach Boss. */
+export const ARC_DAILY_X_URL = 'https://x.com/82deutschmark';
 
 export function useNews() {
   return useQuery<NewsIndex>({ queryKey: ['/api/news'], staleTime: 60_000, refetchInterval: 60_000 });
@@ -101,6 +106,23 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
         </footer>
       </div>
     </div>
+  );
+}
+
+/** Front-page info box: what the paper is, where its data comes from, and who to tell when it is wrong. */
+export function AboutThisPaper() {
+  return (
+    <aside className="news-about" aria-label="About this paper">
+      <h2>About this paper</h2>
+      <ul>
+        <li><strong>Written by AI.</strong> Every story is drafted by AI from saved evidence, then checked automatically against it before it is published.</li>
+        <li><strong>The numbers.</strong> Standings come from the public Kaggle leaderboards, saved every half hour. Movers compare with the save about a day earlier, and anything the saved history cannot support is left blank.</li>
+        <li><strong>The people.</strong> Stories also draw on public X posts, Kaggle discussions and profiles, and linked primary sources. A contestant's claim is kept apart from an established result.</li>
+        <li><strong>The schedule.</strong> An early edition at 6 am and a late edition at 6 pm Eastern, short wire stories through the day, and each edition is posted to X. If a scheduled run fails, a backup writer covers it and the story says so.</li>
+        <li><strong>Provisional.</strong> Public standings are not final; the private leaderboard decides the results.</li>
+      </ul>
+      <p className="news-about-contact"><strong>Corrections, retractions or complaints?</strong> Contact Boss on <a href={ARC_DAILY_X_URL} target="_blank" rel="noopener noreferrer">X</a> or in the <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">ARC Discord</a>.</p>
+    </aside>
   );
 }
 
