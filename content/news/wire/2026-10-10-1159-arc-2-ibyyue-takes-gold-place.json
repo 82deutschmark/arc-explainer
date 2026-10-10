@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-10T15:30:19Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ibyyue enters ARC-2 gold as Nguyen falls out",
+  "id": "2026-10-10-1159-arc-2-ibyyue-takes-gold-place",
+  "personIds": [],
+  "publishedAt": "2026-10-10T15:59:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "ibyyue gained 4.59 points to reach 41.81, moving from 18th to 14th and into the 15 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Nguyen dropped from 14th to 16th at 39.58, just outside the medal line; the 15th-place cutoff rose to 40.83."
+    }
+  ],
+  "since": "2026-10-09T15:22:43Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T15:58:56Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16684035",
+    "16600664"
+  ]
+}

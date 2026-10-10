@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-10T15:30:17Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "mtg jumps from eighth to third on ARC-3",
+  "id": "2026-10-10-1159-arc-3-mtg-reaches-third",
+  "personIds": [],
+  "publishedAt": "2026-10-10T15:59:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "mtg gained 5.99 points to reach 44.32, vaulting from eighth to third in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That move puts mtg among the board’s top three as the ARC-3 public standings continue to shift."
+    }
+  ],
+  "since": "2026-10-09T15:22:42Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T15:58:56Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16153655"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-10T15:30:17Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Keith Tyser surges into ARC-3 gold places",
+  "id": "2026-10-10-1159-arc-3-keith-tyser-enters-gold",
+  "personIds": [
+    "keith-tyser"
+  ],
+  "publishedAt": "2026-10-10T15:59:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Keith Tyser climbed from 66th to 13th, gaining 4.48 points to reach 37.22 and enter the 18 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The gold cutoff rose to 36.14, leaving keithtyser 0.35 above the first team outside the medal places."
+    }
+  ],
+  "since": "2026-10-09T15:22:42Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-10T15:58:56Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15508513"
+  ],
+  "visual": {
+    "alt": "Keith Tyser’s Kaggle profile picture",
+    "href": "/news/people/keith-tyser",
+    "src": "/news-images/people/keith-tyser.webp"
+  }
+}
