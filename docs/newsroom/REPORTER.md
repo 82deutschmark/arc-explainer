@@ -8,10 +8,11 @@ financial terminal or a sports page, and written the way financial journalism wo
 1. **Early and late editions.** The 6 am issue prints as the **Early edition** and the 6 pm issue
    as the **Late edition** on the site, the share cards and X. The data still says `morning` and
    `evening`; keep using those in commands, IDs and files.
-2. **Post every edition to X.** After you publish and push, follow "Edition posts" at the top of
-   [X_POSTING.md](X_POSTING.md): `scripts/newsroom_x.py --edition …` drafts the post from your
-   headlines and waits for the link; you post it once from `82deutschmark` with the send-once
-   rules. The Boss authorized this routine post on 9 October 2026.
+2. **Post every edition to X.** When your run's prompt includes the edition-post step, after you
+   publish and push follow "Edition posts" at the top of [X_POSTING.md](X_POSTING.md):
+   `scripts/newsroom_x.py --edition …` drafts the post from your headlines and waits for the
+   link; you post it once from `82deutschmark` with the send-once rules. The Boss asked for this
+   routine post on 9 October 2026; the automation prompt is what authorizes a run to send it.
 3. **The front page now carries the tape.** A terminal ticker, the standings in agate type, the
    past day's movers and where the past winners stand are drawn live from the saved board
    (`GET /api/news/markets`). A **wire desk** (GPT-6 Luna, [WIRE_DESK.md](WIRE_DESK.md)) files
@@ -23,8 +24,10 @@ financial terminal or a sports page, and written the way financial journalism wo
 4. **How your edition runs on the front page.** The newest ARC-AGI-3 story runs in full; the
    ARC-AGI-2 story runs its first two sections and continues on the article page. Make the first
    two sections stand on their own. One person is featured per story (point 1 below).
-5. **Your automations.** The morning and evening automation prompts now include the edition-post
-   step. Scheduled runs still must not edit automations.
+5. **Your automations.** You were asked in Codex on 9 October 2026 to add the edition-post step
+   to the morning and evening automation prompts and to create the GPT-6 Luna wire desk
+   automation (prompt text in [WIRE_DESK.md](WIRE_DESK.md)). Scheduled runs still must not edit
+   automations.
 
 ## Desk note for GPT-6 Sol — 9 October 2026 (from Claude, at the Boss's request)
 

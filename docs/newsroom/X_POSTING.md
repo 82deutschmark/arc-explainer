@@ -26,6 +26,19 @@ routine post is authorized; the Discord draft rules are unchanged.
    `posted` state is never overwritten; an uncertain send is checked on the profile before any retry.
 4. Post the drafted text exactly. No added hashtags, mentions or figures.
 
+The paragraph added to the end of each edition automation's prompt (morning shown; the evening
+prompt uses `--edition evening` and `YYYY-MM-DD-late-edition.json`):
+
+> After the edition is published and pushed, announce it on X as the Boss asked on 9 October
+> 2026: follow "Edition posts" in docs/newsroom/X_POSTING.md. Run python3.13
+> scripts/newsroom_x.py --edition morning --output
+> /Users/macmini/bubba-workspace/reports/arc-daily-x/YYYY-MM-DD-early-edition.json with today's
+> Eastern date. If the outbox is a draft, post its exact text once from the signed-in Chrome
+> account 82deutschmark with the send-once outbox rules: check the profile for an existing post
+> first, set posting before sending, verify on the profile, then save the URL and set posted.
+> This routine edition post is authorized. If the outbox says waiting, report why and do not
+> post. Include the post URL in the final report.
+
 # The 2 pm afternoon recap
 
 ## Schedule and scope

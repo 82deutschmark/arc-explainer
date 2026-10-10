@@ -121,9 +121,11 @@ if __name__ == '__main__':
         raise SystemExit('Existing send attempt or post: inspect its state instead of replacing it.')
     if args.edition:
         post = edition_post(args.edition, datetime.now(UTC).astimezone(ET).date().isoformat())
+        # Save the draft before the wait, so an interrupted run leaves the text behind.
+        write(target, post)
         if post['state'] == 'draft' and not wait_until_live(post['link']):
             post.update(state='waiting', reason='The article link did not open within 20 minutes of the run; nothing was posted.')
-        write(target, post)
+            write(target, post)
         print(json.dumps(post, ensure_ascii=False, indent=2))
         raise SystemExit(0 if post['state'] == 'draft' else 2)
     if not args.brief_output:

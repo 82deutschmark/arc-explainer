@@ -9,7 +9,8 @@
 #             recent public posts), their citable sources, the pictures the paper owns for them,
 #             and which leads recent wire stories already covered.
 #   validate  checks a drafted story against its brief: fields, citations, teams, people, picture,
-#             wording, and every figure in the prose, which must appear in the brief.
+#             wording, and every figure in the prose, which must come from the leads it cites, the
+#             teams it lists or the board-wide figures.
 #   publish   writes the immutable story to content/news/wire/ and its evidence to
 #             content/news/wire-evidence/.
 # SRP/DRY check: Pass — reuses newsroom.py's time, text, source and file helpers and the notebook,
@@ -135,9 +136,11 @@ def board_leads(board, board_source):
     return out
 
 
-def allowed_numbers(board, leads):
-    """Every figure a story may print, split by kind: scores and point changes (figures) and ranks,
-    places, counts, days and years (counts). Prose is checked against the right kind."""
+def allowed_numbers(board, leads, team_ids=None):
+    """Figures a story may print, split by kind: scores and point changes (figures) and ranks,
+    places, counts, days and years (counts). Board-wide figures (medal lines, field, counts, the
+    leader's margin, days to close) always count; team figures only for `team_ids` when given, so a
+    story cannot borrow another team's score. Prose is checked against the right kind."""
     figures, counts = set(), set(STANDING_NUMBERS)
     def figure(value):
         if value is not None:
@@ -148,7 +151,9 @@ def allowed_numbers(board, leads):
     for line in (item['text'] for item in leads):
         for token, _ in NUMBER.findall(line):
             (figures if '.' in token else counts).add(normal(token))
-    for row in team_rows(board).values():
+    for tid, row in team_rows(board).items():
+        if team_ids is not None and tid not in team_ids:
+            continue
         for value in (row['score'], row['scoreThen'], gain(row)):
             figure(value)
         for value in (row['rank'], row['rankThen'], climb(row)):
@@ -379,9 +384,11 @@ def validate(story, brief, now=None):
             raise ValueError(f'write figures of ten and up in digits: "{SPELLED.search(body).group(0)}"')
         if OVERCLAIM.search(body):
             raise ValueError(f'the board cannot support "{OVERCLAIM.search(body).group(0)}"; public standings are provisional')
-    bad = unsupported_numbers(prose, board['numbers'], board['names'])
+    # Only the leads the story cites, the teams it lists and the board-wide figures count.
+    allowed = allowed_numbers(board['board'], [leads[lid] for lid in story['leadIds']], set(story['teamIds']))
+    bad = unsupported_numbers(prose, allowed, board['names'])
     if bad:
-        raise ValueError(f'figures not in the brief: {", ".join(dict.fromkeys(bad))}')
+        raise ValueError(f'figures not in the cited leads, the listed teams or the board-wide figures: {", ".join(dict.fromkeys(bad))}')
     return board
 
 

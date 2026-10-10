@@ -104,6 +104,7 @@ class WireDeskTests(unittest.TestCase):
             'invented margin': ('sections', 1, 'teams.', 'teams, 12 points clear.'),
             'spelled figure': ('sections', 1, 'teams.', 'teams, twenty of them new.'),
             'overclaim': ('headline', None, 'takes', 'clinches'),
+            'another team\'s figure': ('sections', 1, 'teams.', 'teams; SparseTech sits at 37.98.'),
         }
         for label, (field, index, old, new) in cases.items():
             bad = copy.deepcopy(good)
