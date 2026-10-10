@@ -13,7 +13,7 @@
 
 ### Version 9.136.1  Oct 10, 2026
 
-- **Felix561's synthetic games taken back off the resource pages** (Author: Claude Sonnet 5.5). Boss: they are Codex-generated, tiny next to the official games, and many of their ideas have close counterparts in our own catalog, so they are not a resource worth endorsing. NVIDIA DreamTeam stays; its description now says what the game creator actually does (LLM agents design and test games from random seed words; 25 generated games shipped). Files: `shared/arc3Resources.ts`, `client/src/pages/LandingPage.tsx`, `client/src/pages/Arc3Story.tsx`, `client/src/pages/arc3-community/CommunityGallery.tsx`.
+- **Felix561's synthetic games taken back off the resource pages** (Author: Claude Sonnet 5.5). Boss: they are Codex-generated, random clicking clears two levels deep on most of the original thirty, and several of their ideas have close counterparts in our own catalog, so they are not a resource worth endorsing. NVIDIA DreamTeam stays; its description now says what the game creator actually does (LLM agents design and test games from random seed words; 25 generated games shipped). Files: `shared/arc3Resources.ts`, `client/src/pages/LandingPage.tsx`, `client/src/pages/Arc3Story.tsx`, `client/src/pages/arc3-community/CommunityGallery.tsx`.
 
 ### Version 9.136.0  Oct 10, 2026
 
