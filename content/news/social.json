@@ -1,5 +1,25 @@
 [
   {
+    "author": "OCEANVIN10",
+    "authorName": "OCEAN",
+    "category": "research",
+    "checkedAt": "2026-10-10T21:02:17Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108936146071777498",
+    "identitySourceUrl": "https://x.com/OCEANVIN10",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-10T15:02:14Z",
+    "storyUrl": "https://arxiv.org/abs/2610.11794",
+    "summary": "OCEAN highlighted the Memento 3 preprint. Its authors report that a fixed language model revises an external rulebook and executable world model; on the 25 public ARC-AGI-3 games, they report clearing every level with fewer actions than the human baseline. These are author-reported results on the public set.",
+    "threadId": null,
+    "url": "https://x.com/OCEANVIN10/status/2108936146071777498",
+    "visibility": "public",
+    "whyItMatters": "A new ARC-AGI-3 research lead for the edition desk. The paper provides a concrete mechanism and results, but the public tutorial set cannot establish private-game performance."
+  },
+  {
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "standings",
@@ -42,6 +62,26 @@
     "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
   },
   {
+    "author": "tufalabs",
+    "authorName": "Tufa Labs",
+    "category": "community",
+    "checkedAt": "2026-10-10T18:00:55Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108916273937858887",
+    "identitySourceUrl": "https://x.com/arcprize/status/2108578092558250148",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-10T13:43:16Z",
+    "storyUrl": "https://x.com/mikeknoop/status/2108584791436321097",
+    "summary": "In a reply to Mike Knoop’s ARC-AGI-2 bonus-threshold post, Tufa Labs said it had not set out to solve ARC-AGI-2, started by accident, and plans to share more after the deadline. This is the team’s account, not an independently established history.",
+    "threadId": "2108584791436321097",
+    "url": "https://x.com/tufalabs/status/2108916273937858887",
+    "visibility": "public",
+    "whyItMatters": "First-person context from the ARC-AGI-2 public-board leader; no method or final result is disclosed."
+  },
+  {
     "author": "JFPuget",
     "authorName": "Jean-François Puget",
     "category": "community",
@@ -62,6 +102,28 @@
     "url": "https://x.com/JFPuget/status/2108632255383957945",
     "visibility": "public",
     "whyItMatters": "Flags a reporting question; avoid presenting the public score as the final prize result."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "community",
+    "checkedAt": "2026-10-10T18:00:55Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108587649720340539",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-09T15:57:26Z",
+    "storyUrl": "https://x.com/mikeknoop/status/2108584791436321097",
+    "summary": "Knoop said ARC-AGI-2 remains much harder than ARC-AGI-1 and that eventual open solutions will be useful to study, while quoting his earlier reaction to Tufa Labs crossing the public Kaggle bonus threshold.",
+    "threadId": "2108584791436321097",
+    "url": "https://x.com/mikeknoop/status/2108587649720340539",
+    "visibility": "public",
+    "whyItMatters": "Organizer context about the contest; his forward-looking statement is not a released solution or final award."
   },
   {
     "author": "mikeknoop",
