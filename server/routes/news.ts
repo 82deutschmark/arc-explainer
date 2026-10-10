@@ -49,8 +49,9 @@ export function mountNews(app: Express) {
   });
   app.get('/api/news/wire/:id/evidence', (req, res, next) => {
     try {
+      // Every published story keeps its evidence, including stories older than the index's week.
       const id = String(req.params.id);
-      if (!WIRE_ID.test(id) || !(getNewsIndex().wire ?? []).some(story => story.id === id)) return res.status(404).json({ error: 'Wire story not found' });
+      if (!WIRE_ID.test(id) || !fs.existsSync(path.join(NEWS_DIRECTORY, 'wire', `${id}.json`))) return res.status(404).json({ error: 'Wire story not found' });
       const file = path.join(NEWS_DIRECTORY, 'wire-evidence', `${id}.json`);
       if (!fs.existsSync(file)) return res.status(404).json({ error: 'Reporting evidence not found' });
       res.set('Cache-Control', 'public, max-age=3600').type('json').send(fs.readFileSync(file, 'utf8'));

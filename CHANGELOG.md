@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.134.2  Oct 9, 2026
+
+- **The wire stays light as it grows** (Author: Claude Opus 5.5). The news index, which the front page refetches every minute, now carries only the past week of wire stories (at most 40); the files stay in git and every story keeps its evidence route. The wire desk's repeat check opens only the last three days' evidence files. The wire desk's checkout moved off the main working repository onto the newsroom's own copy, at the same path. Files: `server/services/news/newsStore.ts`, `server/routes/news.ts`, `scripts/newsroom_wire.py`, `client/src/pages/NewsWire.tsx`, `docs/newsroom/WIRE_DESK.md`, tests.
+
 ### Version 9.134.1  Oct 9, 2026
 
 - **Wire stories can never take the paper down** (Author: Claude Opus 5.5). A wire story file that fails the site's contract is now skipped with a warning instead of failing the whole news archive, and the helper checks the picture caption and link exactly as the site does. Wire figures must come from the story's cited leads, its listed teams or the board-wide figures. A render test runs the rebuilt front page against a populated market digest and with none. The newsroom checkout's git data moved out of `/private/tmp` (macOS clears it) and was relinked. Files: `server/services/news/newsStore.ts`, `scripts/newsroom_wire.py`, `tests/integration/news.test.ts`, `tests/newsFrontPage.test.ts`.

@@ -20,6 +20,7 @@ import newsroom_wire as wire
 import newsroom_x as x
 
 NOW = n.stamp('2026-10-10T00:20:00Z')
+iso_now = lambda: n.iso(NOW)
 FETCHED = '2026-10-09T23:54:00Z'
 SINCE = '2026-10-08T23:51:00Z'
 URL = 'https://example.com/verified-profile'
@@ -141,6 +142,10 @@ class WireDeskTests(unittest.TestCase):
         later = wire.prepare(fetcher=lambda url: (markets(), 'f' * 64), actual_now=NOW, root=self.root)
         covered = {item['id'] for item in later['boards']['arc-3']['leads'] if item['covered']}
         self.assertEqual(covered, {'lead-change', 'person-yi-chia-chen'})
+        # Files from older dates are never opened, whatever they contain.
+        stale = Path(self.root) / 'content/news/wire-evidence' / '2026-10-01-0900-arc-3-old.json'
+        stale.write_text(json.dumps({**proof, 'publishedAt': iso_now(), 'leads': [{'id': 'gold-line', 'text': 'x'}]}))
+        self.assertNotIn('gold-line', wire.recent_coverage(self.root, 'arc-3', NOW))
 
 
 class EditionPostTests(unittest.TestCase):

@@ -93,6 +93,8 @@ export const newsSocialSchema = z.object({
   threadId: z.string().regex(/^\d+$/).nullable(), storyUrl: webUrl.nullable(), identitySourceUrl: webUrl,
 }).strict().refine(post => post.url.toLowerCase() === `https://x.com/${post.author}/status/${post.id}`.toLowerCase(), 'Post URL and author must agree')
   .refine(post => Date.parse(post.checkedAt) <= Date.now() && (!post.postedAt || Date.parse(post.postedAt) <= Date.parse(post.checkedAt)), 'Future social source time');
+const WIRE_WINDOW_MS = 7 * 24 * 3_600_000;
+const WIRE_LIMIT = 40;
 /** Wire story IDs: Eastern date and time of filing, competition, then a slug ("2026-10-10-0905-arc-3-mtg-climbs"). */
 export const WIRE_ID = /^\d{4}-\d{2}-\d{2}-\d{4}-arc-[23]-[a-z0-9][a-z0-9-]{0,59}$/;
 /** A wire picture is one the brief offered: a ledger face, Hall of Fame card art or a published dispatch illustration. */
@@ -155,6 +157,9 @@ export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
         console.warn(`[news] skipped unreadable wire story ${file}: ${error instanceof Error ? error.message : error}`);
       }
       return [];
-    }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id)) : [];
+    }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id))
+    // The index the front page refetches every minute carries the past week, at most 40 stories;
+    // the files stay in git as the permanent record and keep their evidence route.
+    .filter(story => Date.now() - Date.parse(story.publishedAt) <= WIRE_WINDOW_MS).slice(0, WIRE_LIMIT) : [];
   return { articles, competitors, dispatches, people, social, wire };
 }

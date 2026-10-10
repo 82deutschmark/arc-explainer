@@ -220,12 +220,17 @@ def unsupported_numbers(texts, allowed, names):
 
 
 def recent_coverage(root, competition, now):
-    """Lead lines that wire stories filed in the past 36 hours already reported, by lead ID."""
+    """Lead lines that wire stories filed in the past 36 hours already reported, by lead ID.
+    File names start with the Eastern filing date, so only the last three days' files are opened."""
     covered = {}
     directory = Path(root) / 'content/news/wire-evidence'
     if not directory.exists():
         return covered
+    local = now.astimezone(ET).date()
+    days = {(local - timedelta(days=back)).isoformat() for back in range(3)}
     for path in directory.glob('*.json'):
+        if path.name[:10] not in days:
+            continue
         proof = load(path)
         if proof.get('competition') != competition or now - stamp(proof['publishedAt']) > COVERED_WINDOW:
             continue

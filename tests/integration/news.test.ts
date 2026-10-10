@@ -247,6 +247,11 @@ it('serves the market digest and the wire, and holds wire stories to their contr
   fs.writeFileSync(path.join(directory, 'wire', `${story.id}.json`), JSON.stringify(story));
   fs.writeFileSync(path.join(directory, 'wire', '2026-10-09-2021-arc-3-broken.json'), JSON.stringify({ ...story, id: '2026-10-09-2021-arc-3-broken', headline: '' }));
   fs.writeFileSync(path.join(directory, 'wire', 'not-json.json'), '{');
+  // The index carries the past week; older files stay on disk.
+  const old = { ...story, id: '2020-01-01-0900-arc-3-old-news', publishedAt: '2020-01-01T14:00:00Z', dataAsOf: '2020-01-01T13:54:00Z', since: '2019-12-31T13:51:00Z' };
+  fs.writeFileSync(path.join(directory, 'wire', `${old.id}.json`), JSON.stringify(old));
+  const recent = { ...story, publishedAt: new Date(Date.now() - 3_600_000).toISOString().replace(/\.\d{3}Z$/, 'Z'), dataAsOf: new Date(Date.now() - 7_200_000).toISOString().replace(/\.\d{3}Z$/, 'Z'), since: null };
+  fs.writeFileSync(path.join(directory, 'wire', `${story.id}.json`), JSON.stringify(recent));
   expect(getNewsIndex(directory).wire?.map(item => item.id)).toEqual([story.id]);
   fs.rmSync(directory, { recursive: true, force: true });
 });
