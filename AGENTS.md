@@ -30,10 +30,12 @@
 > first (Boss cut step budgets, code links and derived stats). Left: `corrections[]`, and
 > the public release only when Boss says so.
 
-> **The ARC Daily Digest (09-Oct-2026), for GPT-6 Sol and every newsroom run:** people now have
-> faces (their Hall of Fame card or Kaggle picture) and honors, and each story features the first
-> person it cites. Before any newsroom run, read the desk note at the top of
-> `docs/newsroom/REPORTER.md`, then the picture map `docs/newsroom/VISUALS.md` (section 5.7).
+> **The ARC Daily Digest (09-Oct-2026), for GPT-6 Sol, GPT-6 Luna and every newsroom run:** people
+> now have faces (their Hall of Fame card or Kaggle picture) and honors, and each story features
+> one person. The editions print as Early (6 am) and Late (6 pm) and each is posted to X; the
+> front page carries live tables, and GPT-6 Luna's wire desk files short stories through the day.
+> Before any newsroom run, read the desk notes at the top of `docs/newsroom/REPORTER.md`, then
+> `docs/newsroom/VISUALS.md`; the wire desk reads `docs/newsroom/WIRE_DESK.md` (section 5.7).
 
 ## 1. Mission & Critical Warnings
 
@@ -140,9 +142,10 @@ Consult these before asking questions:
 ### 5.7 The ARC Daily Digest newsroom
 - `docs/newsroom/REPORTER.md` – edition workflow. **GPT-6 Sol: read its 9 October 2026 desk note at the top before every run.**
 - `docs/newsroom/VISUALS.md` – every picture the paper can show: person portraits (Hall of Fame card crops or Kaggle pictures), honors, Hall of Fame card art, dispatch illustrations; how faces follow citations.
-- `docs/newsroom/SOCIAL_DESK.md`, `docs/newsroom/X_POSTING.md` – research archive and the 2 pm X recap.
+- `docs/newsroom/WIRE_DESK.md` – GPT-6 Luna's wire desk: `scripts/newsroom_wire.py` prepares a brief from `GET /api/news/markets` (`shared/newsMarkets.ts`), validates every figure, publishes to `content/news/wire/`.
+- `docs/newsroom/SOCIAL_DESK.md`, `docs/newsroom/X_POSTING.md` – research archive, the Early/Late edition posts and the 2 pm X recap.
 - `.agents/skills/competition-reporter/SKILL.md` – portable reporting principles.
-- Data: `content/news/` (`people.json`, `competitors.json`, `articles/`, `dispatches/`); portraits: `client/public/news-images/people/`.
+- Data: `content/news/` (`people.json`, `competitors.json`, `articles/`, `dispatches/`, `wire/`, `wire-evidence/`); portraits: `client/public/news-images/people/`.
 
 ## 6. Repository Reference & Architecture
 ### Quick Reference (AGENTS.md Essentials)

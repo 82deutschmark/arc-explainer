@@ -11,6 +11,8 @@
  *          illustrated Hall of Fame; the article credit uses GPT-6 Sol spelling.
  *          Sourced dispatches, people profiles, public community sources and method copy also render for crawlers.
  *          09-Oct-2026 (Claude Opus 5.5): person pages lead with the person's portrait and honors.
+ *          Later the same day: /news/wire renders the wire desk's stories; the front page's
+ *          crawler text describes the rebuilt page (What's News, the board, movers, past winners).
  * SRP/DRY check: Pass — plain rendering only; content and validation remain in newsStore,
  *          wording and card URLs in shared/news.ts, card pixels in newsCardImage.ts.
  */
@@ -19,7 +21,7 @@ import {
   type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData,
   articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
-  type NewsPerson, type NewsSocialPost, personPath, peopleForTeam,
+  type NewsPerson, type NewsSocialPost, type NewsWireStory, personPath, peopleForTeam, wirePath,
 } from '../../../shared/news';
 import { NEWS_METHOD } from '../../../shared/newsMethod';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
@@ -87,11 +89,16 @@ function communityMeta(posts: NewsSocialPost[]): RouteMetaTags {
 function methodMeta(): RouteMetaTags {
   return completeMeta({ ...ROUTE_META_TAGS['/news/how-this-is-made'], bodyHtml: `<main><h1>How This Is Made</h1>${NEWS_METHOD.map(section => `<section><h2>${esc(section.heading)}</h2><p>${esc(section.text)}</p></section>`).join('')}<p><a href="/feedback">Feedback and corrections</a> · <a href="/news">Front page</a></p></main>` });
 }
-function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[]): RouteMetaTags {
+function wireMeta(wire: NewsWireStory[]): RouteMetaTags {
+  const tags = completeMeta(ROUTE_META_TAGS['/news/wire']);
+  return { ...tags, jsonLd: collection(tags, wire.map(story => ({ name: story.headline, path: wirePath(story.id) }))),
+    bodyHtml: `<main><h1>The wire</h1><p>Short sourced stories on both boards, filed several times a day by the ARC Daily Digest wire desk (GPT-6 Luna). Every figure is checked against the saved board before publication.</p>${wire.map(story => `<article id="${esc(story.id)}"><p>${esc(competitionName(story.competition))} · ${timeTag(story.publishedAt)}</p><h2>${esc(story.headline)}</h2>${story.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}<p>${story.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('') || '<p>The wire desk has not filed yet.</p>'}<a href="/news">Front page</a></main>` };
+}
+function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire: NewsWireStory[]): RouteMetaTags {
   const tags = completeMeta(ROUTE_META_TAGS['/news']);
   const dispatchHtml = dispatches.map(dispatch => `<article id="${esc(dispatch.id)}"><p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}</p><h2>${esc(dispatch.headline)}</h2>${dispatch.image ? `<figure><img src="${esc(dispatch.image.src)}" alt="${esc(dispatch.image.alt)}"/><figcaption>${esc(dispatch.image.caption)}</figcaption></figure>` : ''}${dispatch.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}${dispatch.interpretation ? `<p><strong>The ARC Daily Digest’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('');
   return { ...tags, jsonLd: collection(tags, [...dispatches.map(dispatch => ({ name: dispatch.headline, path: `/news#${dispatch.id}` })), ...articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))]),
-    bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Morning and evening stories from both Kaggle competitions, grounded in recorded public leaderboard observations and cited sources.</p><p><a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a></p>${dispatchHtml}${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
+    bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Early (6 am) and late (6 pm Eastern) editions from both Kaggle competitions, short wire stories through the day, and the live public boards: leaders, medal lines, the past day's movers and where past prize winners stand, all from recorded leaderboard observations and cited sources.</p><p><a href="/news/wire">The wire</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a></p>${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${dispatchHtml}${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
 }
 function notebookMeta(competitors: CompetitorRecord[]): RouteMetaTags {
   const tags = completeMeta(ROUTE_META_TAGS['/news/competitors']);
@@ -100,11 +107,12 @@ function notebookMeta(competitors: CompetitorRecord[]): RouteMetaTags {
 }
 export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: number } | null {
   if (route !== '/news' && !route.startsWith('/news/')) return null;
-  const { articles, competitors, dispatches = [], people = [], social = [] } = getNewsIndex();
+  const { articles, competitors, dispatches = [], people = [], social = [], wire = [] } = getNewsIndex();
   if (route === '/news') {
-    const tags = frontPageMeta(articles, dispatches);
+    const tags = frontPageMeta(articles, dispatches, wire);
     return { status: 200, tags };
   }
+  if (route === '/news/wire') return { status: 200, tags: wireMeta(wire) };
   if (route === '/news/competitors') return { status: 200, tags: notebookMeta(competitors) };
   if (route === '/news/people') return { status: 200, tags: peopleMeta(people) };
   if (route === '/news/community') return { status: 200, tags: communityMeta(social) };
@@ -120,9 +128,10 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
 const latest = (values: string[]) => values.reduce<string | undefined>((max, value) => !max || value > max ? value : max, undefined);
 /** News URLs with a real last-change time: publication for editions, last check for notebooks. */
 export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
-  const { articles, competitors, dispatches = [], people = [], social = [] } = getNewsIndex();
+  const { articles, competitors, dispatches = [], people = [], social = [], wire = [] } = getNewsIndex();
   return [
-    { url: `${SITE_ORIGIN}/news`, lastmod: latest([...articles.map(article => article.publishedAt), ...dispatches.map(dispatch => dispatch.publishedAt)]) },
+    { url: `${SITE_ORIGIN}/news`, lastmod: latest([...articles.map(article => article.publishedAt), ...dispatches.map(dispatch => dispatch.publishedAt), ...wire.map(story => story.publishedAt)]) },
+    { url: `${SITE_ORIGIN}/news/wire`, lastmod: latest(wire.map(story => story.publishedAt)) },
     { url: `${SITE_ORIGIN}/news/competitors`, lastmod: latest(competitors.map(record => record.lastObservedAt)) },
     { url: `${SITE_ORIGIN}/news/people`, lastmod: latest(people.flatMap(person => [...person.accounts.map(account => account.checkedAt), ...person.memberships.map(member => member.lastObservedAt)])) },
     { url: `${SITE_ORIGIN}/news/community`, lastmod: latest(social.map(post => post.checkedAt)) },
@@ -137,7 +146,7 @@ export function newsRss(): string {
   const { articles } = getNewsIndex();
   const feed = `${SITE_ORIGIN}/news/feed.xml`;
   const built = latest(articles.map(article => article.publishedAt));
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>${NEWS_NAME}</title><link>${SITE_ORIGIN}/news</link><atom:link href="${feed}" rel="self" type="application/rss+xml"/><description>Morning and evening reporting on the ARC Prize 2026 ARC-AGI-3 and ARC-AGI-2 Kaggle competitions.</description><language>en</language>${built ? `<lastBuildDate>${new Date(built).toUTCString()}</lastBuildDate>` : ''}<ttl>60</ttl>${articles.slice(0, 40).map(article => {
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>${NEWS_NAME}</title><link>${SITE_ORIGIN}/news</link><atom:link href="${feed}" rel="self" type="application/rss+xml"/><description>Early and late editions on the ARC Prize 2026 ARC-AGI-3 and ARC-AGI-2 Kaggle competitions.</description><language>en</language>${built ? `<lastBuildDate>${new Date(built).toUTCString()}</lastBuildDate>` : ''}<ttl>60</ttl>${articles.slice(0, 40).map(article => {
     const link = `${SITE_ORIGIN}${newsArticlePath(article.id)}`;
     return `<item><title>${esc(article.headline)}</title><link>${link}</link><guid isPermaLink="true">${link}</guid><pubDate>${new Date(article.publishedAt).toUTCString()}</pubDate><category>${esc(competitionName(article.competition))}</category><description>${esc(article.dek)}</description><media:content url="${esc(`${SITE_ORIGIN}${articleCardPath(article)}`)}" medium="image" type="image/png" width="${NEWS_CARD_WIDTH}" height="${NEWS_CARD_HEIGHT}"><media:description>${esc(articleCardAlt(article))}</media:description></media:content></item>`;
   }).join('')}</channel></rss>`;

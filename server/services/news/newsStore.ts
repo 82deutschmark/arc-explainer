@@ -6,12 +6,14 @@
  *          read boundary; never runs a model.
  *          09-Oct-2026 (Claude Opus 5.5): optional person portraits, traced to the person's own
  *          Kaggle account or Hall of Fame card; Hall of Fame art may be .jpeg or a spaced filename.
+ *          Later the same day: wire-desk stories (content/news/wire), kept in step with
+ *          scripts/newsroom_wire.py, which validates each story against its brief first.
  * SRP/DRY check: Pass — one store serves HTML, JSON, feeds and sitemap discovery.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
-import type { NewsArticle, NewsIndex, NewsDispatch, CompetitorRecord } from '../../../shared/news';
+import type { NewsArticle, NewsIndex, NewsDispatch, CompetitorRecord, NewsWireStory } from '../../../shared/news';
 const stamp = z.string().datetime({ offset: true });
 const webUrl = z.string().url().refine(value => /^https:\/\//.test(value), 'Sources must use HTTPS');
 const competition = z.enum(['arc-3', 'arc-2']);
@@ -91,6 +93,29 @@ export const newsSocialSchema = z.object({
   threadId: z.string().regex(/^\d+$/).nullable(), storyUrl: webUrl.nullable(), identitySourceUrl: webUrl,
 }).strict().refine(post => post.url.toLowerCase() === `https://x.com/${post.author}/status/${post.id}`.toLowerCase(), 'Post URL and author must agree')
   .refine(post => Date.parse(post.checkedAt) <= Date.now() && (!post.postedAt || Date.parse(post.postedAt) <= Date.parse(post.checkedAt)), 'Future social source time');
+/** Wire story IDs: Eastern date and time of filing, competition, then a slug ("2026-10-10-0905-arc-3-mtg-climbs"). */
+export const WIRE_ID = /^\d{4}-\d{2}-\d{2}-\d{4}-arc-[23]-[a-z0-9][a-z0-9-]{0,59}$/;
+/** A wire picture is one the brief offered: a ledger face, Hall of Fame card art or a published dispatch illustration. */
+const WIRE_PICTURE = new RegExp(`${PORTRAIT_FILE.source}|${HALL_OF_FAME_ART.source}|^\\/news-images\\/[a-z0-9-]+\\.(?:png|jpg|webp)$`);
+export const newsWireSchema = z.object({
+  id: z.string().regex(WIRE_ID), competition, publishedAt: stamp, dataAsOf: stamp, since: stamp.nullable(),
+  headline: text.max(160),
+  sections: z.array(z.object({ heading: text.max(120).optional(), text: text.max(900), sourceIds: z.array(z.string()).min(1) }).strict()).min(1).max(3),
+  sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp }).strict()).min(1),
+  teamIds: z.array(z.string().regex(/^\d+$/)), personIds: z.array(safeId),
+  visual: z.object({ src: z.string().regex(WIRE_PICTURE), alt: text.max(300), href: z.string().regex(/^\/[^\s]*$/) }).strict().optional(),
+  generatedBy: z.literal('gpt-6-luna'),
+}).strict().superRefine((story, context) => {
+  const sources = new Set(story.sources.map(source => source.id));
+  if (sources.size !== story.sources.length || story.sections.some(section => section.sourceIds.some(id => !sources.has(id)))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Wire story requires unique sources and valid citations' });
+  }
+  if (!story.id.includes(`-${story.competition}-`)) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Wire story ID must name its competition' });
+  const published = Date.parse(story.publishedAt);
+  if (published > Date.now() || Date.parse(story.dataAsOf) > published || (story.since && Date.parse(story.since) > Date.parse(story.dataAsOf))) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: 'Wire story times are out of order or in the future' });
+  }
+});
 export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
   const articlesDirectory = path.join(directory, 'articles');
   const articles: NewsArticle[] = fs.existsSync(articlesDirectory) ? fs.readdirSync(articlesDirectory)
@@ -115,5 +140,12 @@ export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
   if (new Set(people.map(person => person.id)).size !== people.length || new Set(social.map(post => post.id)).size !== social.length) throw new Error('Duplicate news person or social post');
   const accounts = people.flatMap(person => person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`));
   if (new Set(accounts).size !== accounts.length) throw new Error('A verified account belongs to multiple people');
-  return { articles, competitors, dispatches, people, social };
+  const wireDirectory = path.join(directory, 'wire');
+  const wire: NewsWireStory[] = fs.existsSync(wireDirectory) ? fs.readdirSync(wireDirectory)
+    .filter(file => file.endsWith('.json')).map(file => {
+      const story = newsWireSchema.parse(JSON.parse(fs.readFileSync(path.join(wireDirectory, file), 'utf8')));
+      if (`${story.id}.json` !== file) throw new Error(`Wire story filename does not match its ID: ${file}`);
+      return story;
+    }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id)) : [];
+  return { articles, competitors, dispatches, people, social, wire };
 }

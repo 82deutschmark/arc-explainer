@@ -11,7 +11,8 @@
  *          Dated social dispatches share the archive without replacing immutable editions.
  *          09-Oct-2026 (Claude Opus 5.5): person portraits (Hall of Fame crop or saved Kaggle
  *          picture) and the helpers that decide whose faces a story shows: people its sections
- *          cite, then verified people on the teams it covers.
+ *          cite, then verified people on the teams it covers. Later the same day: wire-desk stories
+ *          (NewsWireStory) and Early/Late edition names in print, with morning/evening kept as data.
  * SRP/DRY check: Pass — server, browser and newsroom tooling share one documented shape;
  *          competition labels still come from shared/kaggleCompetitions.ts.
  */
@@ -64,7 +65,24 @@ export interface NewsSocialPost {
   category: 'standings' | 'research' | 'community' | 'banter'; importance: number;
   threadId: string | null; storyUrl: string | null; identitySourceUrl: string;
 }
-export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[] }
+/**
+ * A short sourced story from the wire desk: GPT-6 Luna, writing several times a day from a
+ * prepared market brief (scripts/newsroom_wire.py, docs/newsroom/WIRE_DESK.md). Every figure in
+ * the prose was checked against that brief; `visual` is a picture the brief offered (a face or a
+ * Hall of Fame card already on the site). Evidence: /api/news/wire/<id>/evidence.
+ */
+export interface NewsWireStory {
+  id: string; competition: NewsCompetition; publishedAt: string;
+  /** The board save the story reports, and the save a day earlier it compares with (null when none). */
+  dataAsOf: string; since: string | null;
+  headline: string; sections: NewsSection[]; sources: NewsSource[];
+  teamIds: string[];
+  /** Verified people the story is about; the first is the one pictured. */
+  personIds: string[];
+  visual?: { src: string; alt: string; href: string };
+  generatedBy: 'gpt-6-luna';
+}
+export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; wire?: NewsWireStory[] }
 export const NEWS_NAME = 'The ARC Daily Digest';
 export const personPath = (id: string) => `/news/people/${id}`;
 /** Current roster cards use exact verified account handles, never fuzzy name matches. */
@@ -104,9 +122,12 @@ export function personInitials(name: string): string {
   return (parts.length > 1 ? parts[0] + parts[parts.length - 1] : parts[0] ?? '').toUpperCase();
 }
 export const newsArticlePath = (id: string) => `/news/${id}`;
+/** Wire stories live on one page, each at its own anchor. */
+export const wirePath = (id?: string) => id ? `/news/wire#${id}` : '/news/wire';
 export const competitorPath = (id: string) => `/news/competitors/${id}`;
 export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key].label;
-export const editionName = (edition: NewsEdition) => edition === 'morning' ? 'Morning' : 'Evening';
+/** The 6 am issue is the early edition and the 6 pm issue the late edition; the data keeps morning/evening. */
+export const editionName = (edition: NewsEdition) => edition === 'morning' ? 'Early' : 'Late';
 /** Edition kicker as printed on the page and the card; launch previews say so. */
 export const editionLabel = (article: NewsArticle) => article.id.endsWith('-preview') ? 'Launch preview' : `${editionName(article.edition)} edition`;
 
@@ -139,8 +160,8 @@ export const competitorDescription = (record: CompetitorRecord) =>
 /** Share cards: 1200x630, the size every major unfurler renders as a large image. */
 export const NEWS_CARD_WIDTH = 1200;
 export const NEWS_CARD_HEIGHT = 630;
-/** Bump when the card layout changes, so cached article cards are fetched again. */
-export const NEWS_CARD_DESIGN = 2;
+/** Bump when the card layout changes, so cached article cards are fetched again. 3: Early/Late edition labels. */
+export const NEWS_CARD_DESIGN = 3;
 /** Front page and notebook card. Not versioned: it follows the latest editions. */
 export const NEWS_SECTION_CARD_PATH = '/api/news/og-image.png';
 export const NEWS_SECTION_CARD_ALT = `${NEWS_NAME} masthead with the latest ARC-AGI-3 and ARC-AGI-2 headlines`;

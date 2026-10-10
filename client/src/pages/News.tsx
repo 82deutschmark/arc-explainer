@@ -1,67 +1,48 @@
 /**
- * Author: GPT-6 Sol / Codex
+ * Author: GPT-6 Sol / Codex; Claude Opus 5.5
  * Date: 2026-10-09
- * PURPOSE: ARC Daily landing page for both Kaggle contests, with ARC-AGI-3 as the
- *          lead, separate ARC-AGI-2 coverage, sourced cards, existing Hall of Fame art,
- *          and community links. Latest editions and sourced social dispatches lead
- *          the page immediately, above the resource shelf and display advertising.
- *          09-Oct-2026 (Claude Opus 5.5): the Hall of Fame band shows the cards of past winners
- *          in the latest editions first, so it changes with the news; notebook cards show faces.
- * SRP/DRY check: Pass — uses shared newspaper presentation, query and news contract.
+ * PURPOSE: ARC Daily landing page for both Kaggle contests, laid out like a broadsheet's front
+ *          page: masthead with ears, the terminal ticker, What's News (the wire), the lead
+ *          reports run in full, the board in agate type, the past day's movers, where the past
+ *          prize winners stand now, around the contests, an index of the rest of the site, the
+ *          notebook in board order and every edition.
+ *          09-Oct-2026 (Claude Opus 5.5): rebuilt per the Boss ("think like a newspaper editor ...
+ *          information-dense, like a financial terminal, like a sports page"). The card grid
+ *          ("Explore the contests") became the Inside index; the Hall of Fame band became the
+ *          past-winners table, faces and honors included. Live figures come from
+ *          GET /api/news/markets; without them the reporting still leads the page.
+ * SRP/DRY check: Pass — composition only; sections live in components/news.
  */
-import { Link } from 'wouter';
-import { personPath, storyPeople, type NewsIndex } from '@shared/news';
+import { NEWS_NAME } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { ARC_DISCORD_URL, ArticleArchive, NewsPaper, NewsStatus, NotebookEntry, sortedArticles, useNews } from '@/components/news/NewsDesk';
-import { NewsFrontPage } from '@/components/news/NewsFrontPage';
+import { ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { AroundTheContests, NewsFrontPage, NotebookColumns } from '@/components/news/NewsFrontPage';
+import { InsideIndex, MoversBand, PastWinners, useMarkets } from '@/components/news/NewsMarkets';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
-
-/** Three Hall of Fame cards: past winners in the latest editions first, then the rest of the ledger's past winners. */
-function archiveCards(index: NewsIndex) {
-  const people = index.people ?? [];
-  const inTheNews = sortedArticles(index.articles).slice(0, 4).flatMap(article => storyPeople(article, people, index.competitors));
-  const cards: { src: string; alt: string; href: string }[] = [];
-  for (const person of [...inTheNews, ...people]) {
-    const card = person.hallOfFame.find(item => item.image && !cards.some(shown => shown.src === item.image!.src));
-    if (card?.image && cards.length < 3) cards.push({ src: card.image.src, alt: card.image.alt, href: personPath(person.id) });
-  }
-  return cards;
-}
 
 export default function News() {
   const query = useNews();
+  const markets = useMarkets();
   const articles = sortedArticles(query.data?.articles ?? []);
-  const latestAt = [articles[0]?.publishedAt, ...(query.data?.dispatches ?? []).map(dispatch => dispatch.publishedAt)].filter((date): date is string => !!date).sort().at(-1);
-  const competitors = [...(query.data?.competitors ?? [])].filter(record => record.competition === 'arc-3').sort((a, b) => b.facts.length - a.facts.length || a.name.localeCompare(b.name));
-  usePageMeta({ title: 'The ARC Daily Digest — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', canonicalPath: '/news' });
+  const latest = articles[0];
+  // The issue number counts published scheduled editions (one per date and edition), never previews.
+  const issue = new Set(articles.filter(article => !article.id.endsWith('-preview')).map(article => `${article.date}-${article.edition}`)).size || undefined;
+  usePageMeta({ title: `${NEWS_NAME} — ARC-AGI-3 and ARC-AGI-2 news`, description: 'Daily coverage of both ARC Prize Kaggle contests: live standings and movers, wire stories, early and late editions, and sourced competitor profiles.', canonicalPath: '/news' });
+  const people = query.data?.people ?? [];
+  const links = { competitors: query.data?.competitors ?? [], people };
 
-  return <NewsPaper frontPage date={latestAt}>
+  return <NewsPaper frontPage date={latest?.date} edition={latest?.edition} issue={issue}>
     <NewsStatus loading={query.isLoading} error={query.isError && !query.data} retry={() => void query.refetch()} />
     {query.data && <>
-      <NewsFrontPage index={query.data} />
+      <NewsFrontPage index={query.data} markets={markets.data} />
+      <MoversBand markets={markets.data} links={links} />
+      <div className="news-lower">
+        <PastWinners markets={markets.data} people={people} links={links} />
+        <AroundTheContests index={query.data} />
+        <InsideIndex />
+      </div>
       <SponsorPlacement format="banner" />
-      <section className="news-explore" aria-label="Explore the contests and community">
-        <div className="news-section-heading"><div><span className="news-eyebrow">Beyond the headlines</span><h2>Explore the contests</h2></div><p>Live charts, game records and the ARC community put each dispatch in context.</p></div>
-        <div className="news-explore-grid">
-          <a href="/kaggle-leaderboard#medal-race"><span>01 / ARC-AGI-3</span><strong>Medal race graphic</strong><p>See where teams stand around the public cutoffs, then widen the view to the full board.</p><em>Open chart ↗</em></a>
-          <a href="/kaggle-leaderboard#score-history"><span>02 / ARC-AGI-3</span><strong>Score history</strong><p>Trace the leader, medal lines and changing scores through saved leaderboard snapshots.</p><em>Open graphics ↗</em></a>
-          <a href="/kaggle-leaderboard/arc-2#medal-race"><span>03 / ARC-AGI-2</span><strong>ARC-AGI-2 leaderboard</strong><p>Follow its separate public standings, medal race, score history and full field.</p><em>Open board ↗</em></a>
-          <a href="/human-records.html"><span>04 / The games</span><strong>Human &amp; AI records</strong><p>Compare published human action counts with AI scores, full wins and replay links for the public games.</p><em>Explore records ↗</em></a>
-          <Link href="/arc3/games"><span>05 / The rules</span><strong>Official game guides</strong><p>See pictures, per-level notes and play records for the 25 public ARC-AGI-3 games.</p><em>Browse guides ↗</em></Link>
-          <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer"><span>06 / The community</span><strong>ARC Discord</strong><p>Join the official ARC Prize community to discuss the contests and the games.</p><em>Join the conversation ↗</em></a>
-        </div>
-      </section>
-      <section className="news-people-archive" aria-label="ARC Hall of Fame cards">
-        <div className="news-people-archive-copy"><span className="news-eyebrow">From the ARC Explainer archive</span><h2>The people behind the puzzles.</h2><p>The illustrated Hall of Fame collects past ARC contributors and prize stories. The dossiers below follow the current Kaggle teams with their own sourced records.</p><Link href="/hall-of-fame" className="news-read">Browse the Hall of Fame cards →</Link></div>
-        <div className="news-people-archive-art">{archiveCards(query.data).map(card => <Link key={card.src} href={card.href}><img src={card.src} alt={card.alt} loading="lazy" /></Link>)}</div>
-      </section>
-      <section className="news-competitor-section" aria-label="ARC-AGI-3 competitor notebook">
-        <div className="news-section-heading"><div><span className="news-eyebrow">People and teams</span><h2>The competitor notebook</h2></div><p>Short, sourced dossiers. Team identities stay tied to the competition where they were observed.</p></div>
-        <div className="news-directory-grid">{competitors.slice(0, 9).map(competitor => <NotebookEntry key={competitor.id} competitor={competitor} people={query.data.people} />)}</div>
-        {!competitors.length && <p className="news-muted">Competitor records appear as the desk gathers observations and sources.</p>}
-        <Link href="/news/competitors" className="news-read">Browse every competitor dossier →</Link>
-      </section>
-      <div className="news-bottom-links"><Link href="/arc3">ARC-AGI-3 background ↗</Link><Link href="/home">ARC Explainer resource hub ↗</Link><Link href="/kaggle-leaderboard/arc-2">ARC-AGI-2 standings ↗</Link></div>
+      <NotebookColumns index={query.data} markets={markets.data} />
       <ArticleArchive articles={articles} heading="Every edition" />
     </>}
   </NewsPaper>;

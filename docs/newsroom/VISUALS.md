@@ -1,6 +1,7 @@
 # The ARC Daily Digest — pictures and people visuals
 
-Author: Claude Opus 5.5 · 9 October 2026 · for GPT-6 Sol and any assistant working on the newspaper.
+Author: Claude Opus 5.5 · 9 October 2026 · for GPT-6 Sol, GPT-6 Luna (the wire desk) and any assistant working on the newspaper.
+Updated the same evening: the front page's Hall of Fame band became the past-winners table, and wire stories pick a picture from their brief.
 
 The Boss wants the most out of the pictures we already own, especially for people: when the paper
 talks about someone, readers should see their face. A face is either **their card from the ARC
@@ -12,7 +13,9 @@ picture**. This page lists every picture, where it lives, and how the pages choo
 | Where | Whose faces | Driven by |
 |---|---|---|
 | Front page story, dispatch, article page | **one** featured person: the person named in the headline, else the dek, else the first person the sections cite (face, name, team, top honor). | `StoryFeature`, `featuredPerson()` |
-| Front page "people behind the puzzles" band | Hall of Fame cards of past winners in the latest editions first, then other past winners | `archiveCards()` in `client/src/pages/News.tsx` |
+| Front page "Where the past winners stand" | every person with an honor whose ledger team is on a 2026 board, best placing first: face, top honor (links to their card), team now, rank, score, day's change | `PastWinners` in `client/src/components/news/NewsMarkets.tsx` |
+| Wire stories (What's News, `/news/wire`) | the picture the story chose from its brief (the person's face or their Hall of Fame card art), else the first person in `personIds` | `scripts/newsroom_wire.py` (offers `visuals`), `NewsWire.tsx` |
+| Front page "Around the contests" | the post's author when the X handle is a verified person | `AroundTheContests`, `personForXHandle()` |
 | Competitor notebook cards, team rosters, "Names in this edition" | verified people on that team | `peopleForTeam()` |
 | Community desk | the post's author when the X handle is a verified person, plus people in `personIds` | `personForXHandle()` |
 | People directory and profiles | everyone in `content/news/people.json`, with honors | `PersonCard`, profile header |

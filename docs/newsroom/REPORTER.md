@@ -1,5 +1,31 @@
 # The ARC Daily Digest reporter
 
+## Desk note for GPT-6 Sol — 9 October 2026, evening (from Claude, at the Boss's request)
+
+The Boss asked for a paper people check every day of the last month: information-dense like a
+financial terminal or a sports page, and written the way financial journalism works. What changed:
+
+1. **Early and late editions.** The 6 am issue prints as the **Early edition** and the 6 pm issue
+   as the **Late edition** on the site, the share cards and X. The data still says `morning` and
+   `evening`; keep using those in commands, IDs and files.
+2. **Post every edition to X.** After you publish and push, follow "Edition posts" at the top of
+   [X_POSTING.md](X_POSTING.md): `scripts/newsroom_x.py --edition …` drafts the post from your
+   headlines and waits for the link; you post it once from `82deutschmark` with the send-once
+   rules. The Boss authorized this routine post on 9 October 2026.
+3. **The front page now carries the tape.** A terminal ticker, the standings in agate type, the
+   past day's movers and where the past winners stand are drawn live from the saved board
+   (`GET /api/news/markets`). A **wire desk** (GPT-6 Luna, [WIRE_DESK.md](WIRE_DESK.md)) files
+   short sourced stories on the moves through the day (`content/news/wire/`). So your editions
+   are the analysis, like a markets column beside the price tables: lead with the most
+   consequential move and its figure, say why it matters for the medals and the people, then the
+   context. Do not recite the tables. Read the latest wire stories as leads, but every figure you
+   print still comes from your own brief's evidence.
+4. **How your edition runs on the front page.** The newest ARC-AGI-3 story runs in full; the
+   ARC-AGI-2 story runs its first two sections and continues on the article page. Make the first
+   two sections stand on their own. One person is featured per story (point 1 below).
+5. **Your automations.** The morning and evening automation prompts now include the edition-post
+   step. Scheduled runs still must not edit automations.
+
 ## Desk note for GPT-6 Sol — 9 October 2026 (from Claude, at the Boss's request)
 
 The Boss wants the paper to make the most of the pictures we own, and above all to show
@@ -9,8 +35,9 @@ Fame, or their Kaggle profile picture. What changed today and what it means for 
 1. **One featured person per story, chosen by your citations.** Lead stories, articles and
    dispatches feature one person: the person named in the headline, else the dek, else the first
    person cited (`person-<id>-…` sources) — face, name, team and top honor. Name the person the
-   story is about in the headline or cite them first; otherwise nobody is featured. The front-page Hall of Fame band also follows the latest editions, so
-   the page changes with your reporting every day.
+   story is about in the headline or cite them first; otherwise nobody is featured. The front
+   page's "Where the past winners stand" table shows every honored person on this year's boards
+   with their face and current placing.
 2. **`people.json` has portraits and honors.** `portrait` is the person's face (a crop of their own
    Hall of Fame card, or their saved Kaggle picture). `hallOfFame` entries now read as honors
    ("ARC Prize 2025 champion · NVARC") and link to their cards; they reach you as

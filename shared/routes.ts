@@ -10,6 +10,7 @@
  *          Same day: early 2025 experiments (discussion, model browser, Elo leaderboard,
  *          explanation feedback) are archived: noindex, out of the sitemap and the /home list,
  *          still served by direct link.
+ *          Same day: /news/wire (the wire desk) and the front page's new description.
  *          2026-10-06: entries can now carry keywords, structured data (JSON-LD) and a
  *          crawlable HTML summary that is served inside #root until the app renders, so a
  *          crawler that does not run JavaScript still sees a real page. Added /analytics
@@ -71,7 +72,8 @@ const NEWS_CARD = { image: `${SITE}${NEWS_SECTION_CARD_PATH}`, imageAlt: NEWS_SE
  * Organized by feature area - add new routes near related routes
  */
 export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
-  '/news': { title: 'The ARC Daily Digest — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests, with live leaderboard graphics, human records and sourced competitor profiles.', url: `${SITE}/news`, ...NEWS_CARD },
+  '/news': { title: 'The ARC Daily Digest — ARC-AGI-3 and ARC-AGI-2 news', description: 'Daily coverage of both ARC Prize Kaggle contests: live standings and movers, wire stories, early and late editions, and sourced competitor profiles.', url: `${SITE}/news`, ...NEWS_CARD },
+  '/news/wire': { title: 'The wire | The ARC Daily Digest', description: 'Short sourced stories on the ARC-AGI-3 and ARC-AGI-2 boards, filed by the ARC Daily Digest wire desk several times a day.', url: `${SITE}/news/wire`, ...NEWS_CARD },
   '/news/competitors': { title: 'Competitor notebook | The ARC Daily Digest', description: 'The ARC Daily Digest’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
   '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },

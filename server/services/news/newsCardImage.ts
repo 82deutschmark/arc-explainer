@@ -14,6 +14,8 @@
  *          glyph as a vector path. sharp then only rasterizes paths: same output on a Mac
  *          and in the container, no fonts installed, no native module added.
  *
+ *          09-Oct-2026 (Claude Opus 5.5): editions print as Early and Late (NEWS_CARD_DESIGN 3).
+ *
  *          GLYPHS. The fonts cover Latin script. Team names can be emoji or Japanese; those
  *          characters are dropped from the card only (never from the article), and a name
  *          with nothing left prints as its Kaggle team number.
@@ -115,14 +117,14 @@ function articleCard(article: NewsArticle): Node {
         box({ flexDirection: 'column', overflow: 'hidden' },
           box({ fontFamily: SERIF, fontWeight: 700, fontSize: 26, color: INK, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 270 }, teamName(stat)),
           box({ fontFamily: SANS, fontWeight: 500, fontSize: 20, color: MUTED }, `${points(stat.score)} ${stat.score === 1 ? 'point' : 'points'}${movement(stat) ? ` · ${movement(stat)}` : ''}`)))))) : null,
-    footer('Morning and evening editions'));
+    footer('Early and late editions'));
 }
 
 function sectionCard(articles: NewsArticle[]): Node {
   const latest = (['arc-3', 'arc-2'] as const).map(key => articles.find(article => article.competition === key)).filter((article): article is NewsArticle => !!article);
   return box({ width: NEWS_CARD_WIDTH, height: NEWS_CARD_HEIGHT, flexDirection: 'column', background: PAPER, padding: '34px 60px 30px' },
     masthead(96, true),
-    box({ justifyContent: 'center', marginTop: 14 }, kicker('ARC Prize 2026  ·  ARC-AGI-3 and ARC-AGI-2 on Kaggle  ·  6 am and 6 pm Eastern', { fontSize: 20 })),
+    box({ justifyContent: 'center', marginTop: 14 }, kicker('ARC Prize 2026  ·  ARC-AGI-3 and ARC-AGI-2  ·  Early and late editions, 6 am and 6 pm ET', { fontSize: 20 })),
     box({ marginTop: 34, flexGrow: 1 }, ...(latest.length ? latest.map((article, index) => box({ flex: 1, flexDirection: 'column', paddingLeft: index ? 30 : 0, marginLeft: index ? 30 : 0, borderLeft: index ? `1px solid ${RULE}` : 'none' },
       kicker(`${competitionName(article.competition)}  ·  ${newsDate(article.date)}`, { fontSize: 19 }),
       headlineBlock(cardText(article.headline), 38, 3, { marginTop: 10 }),

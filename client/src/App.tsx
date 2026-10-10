@@ -7,6 +7,7 @@ PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations a
          Loads secondary route modules on demand so the front page does not download
          every solver, replay viewer, editor and admin screen before becoming usable.
          ARC Daily news and competitor notebooks are separate lazy routes.
+         2026-10-09 (Claude Opus 5.5): /news/wire, the wire desk's stories.
          Codex: /feedback loads the standalone audit; explanation comments retain their own route.
          2026-08-28: "/" now redirects to the ARC-AGI-3 community game gallery, which is
          the front door for the synthetic-game playtest programme (see
@@ -43,6 +44,7 @@ const News = lazy(() => import("@/pages/News"));
 const NewsPeople = lazy(() => import("@/pages/NewsPeople"));
 const NewsCommunity = lazy(() => import("@/pages/NewsCommunity"));
 const NewsMethod = lazy(() => import("@/pages/NewsMethod"));
+const NewsWire = lazy(() => import("@/pages/NewsWire"));
 const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
 const NewsCompetitors = lazy(() => import("@/pages/NewsCompetitors"));
 const NewsCompetitor = lazy(() => import("@/pages/NewsCompetitor"));
@@ -173,6 +175,7 @@ function Router() {
         <Route path="/news/people/:personId" component={NewsPeople} />
         <Route path="/news/community" component={NewsCommunity} />
         <Route path="/news/how-this-is-made" component={NewsMethod} />
+        <Route path="/news/wire" component={NewsWire} />
         <Route path="/news/:articleId" component={NewsArticle} />
 
         <Route path="/kaggle-readiness" component={KaggleReadinessValidation} />

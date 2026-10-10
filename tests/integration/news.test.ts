@@ -8,6 +8,7 @@
  *          Social dispatch validation, people/artwork routes and public-only source discovery protect dated contender updates.
  *          09-Oct-2026 (Claude Opus 5.5): every ledger portrait is a committed file traced to the
  *          person's own source; profiles lead with face and honors; stories pick cited faces first.
+ *          Later the same day: the market digest route, the wire page and the wire story contract.
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
@@ -16,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { Server } from 'node:http';
 import { mountNews } from '../../server/routes/news';
-import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema } from '../../server/services/news/newsStore';
+import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema } from '../../server/services/news/newsStore';
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import sharp from 'sharp';
@@ -212,4 +213,31 @@ it('gives people faces from their own sources and puts cited people first in a s
   const article = { ...index.articles.find(item => item.competition === 'arc-3')!, teamIds: ['15770880'], sections: [{ text: 'NVARC3 moved.', sourceIds: ['person-ivan-sorokin-fact-0', 'person-ivan-sorokin-archive-0'] }] };
   expect(citedPeople(article.sections, people).map(person => person.id)).toEqual(['ivan-sorokin']);
   expect(storyPeople(article, people, index.competitors).map(person => person.id)).toEqual(['ivan-sorokin', 'jean-francois-puget']);
+});
+it('serves the market digest and the wire, and holds wire stories to their contract', async () => {
+  // No database in tests: the digest answers with no boards rather than failing the front page.
+  const markets = await fetch(`${base}/api/news/markets`);
+  expect(markets.status).toBe(200);
+  expect(await markets.json()).toMatchObject({ boards: {} });
+  const page = await fetch(`${base}/news/wire`);
+  expect(page.status).toBe(200);
+  const html = await page.text();
+  expect(html).toContain('<h1>The wire</h1>');
+  expect(html).toContain(`href="${SITE_ORIGIN}/news/wire"`);
+  for (const story of getNewsIndex().wire ?? []) expect(html).toContain(escapeHtml(story.headline));
+  expect((await fetch(`${base}/api/news/wire/2026-10-09-2020-arc-3-missing/evidence`)).status).toBe(404);
+  const story = {
+    id: '2026-10-09-2020-arc-3-chen-takes-the-lead', competition: 'arc-3', publishedAt: '2026-10-10T00:20:00Z', dataAsOf: '2026-10-09T23:54:00Z',
+    since: '2026-10-08T23:51:00Z', headline: 'Yi-Chia Chen takes the ARC-AGI-3 lead from Tufa Labs',
+    sections: [{ text: 'Yi-Chia Chen gained 3.40 points to 59.17% and moved to 1st.', sourceIds: ['board-arc-3'] }],
+    sources: [{ id: 'board-arc-3', title: 'ARC-AGI-3 public leaderboard', url: 'https://arc.markbarney.net/kaggle-leaderboard', accessedAt: '2026-10-10T00:10:00Z' }],
+    teamIds: ['15499660'], personIds: ['yi-chia-chen'],
+    visual: { src: '/news-images/people/yi-chia-chen.webp', alt: 'Yi-Chia Chen’s Kaggle profile picture', href: '/news/people/yi-chia-chen' },
+    generatedBy: 'gpt-6-luna',
+  };
+  expect(newsWireSchema.safeParse(story).success).toBe(true);
+  expect(newsWireSchema.safeParse({ ...story, id: '2026-10-09-2020-arc-2-chen-takes-the-lead' }).success).toBe(false);
+  expect(newsWireSchema.safeParse({ ...story, sections: [{ text: 'Uncited.', sourceIds: ['made-up'] }] }).success).toBe(false);
+  expect(newsWireSchema.safeParse({ ...story, visual: { ...story.visual, src: 'https://example.com/face.png' } }).success).toBe(false);
+  expect(newsWireSchema.safeParse({ ...story, generatedBy: 'gpt-6-sol' }).success).toBe(false);
 });
