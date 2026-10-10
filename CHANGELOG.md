@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.135.0  Oct 10, 2026
+
+- **A Claude Haiku backup desk for the newsroom** (Author: Claude Opus 5.5). Boss: a fallback in case Codex fails, running through the Claude Code subscription. `scripts/newsroom_fallback.sh`, run by a launchd agent after each Codex job, does nothing when Codex delivered; when an edition is missing (and no Codex run is still working) or Codex is signed out for the wire, it runs Claude Haiku 5.5 headless with the claude.ai sign-in (API keys unset) in its own checkout, following `docs/newsroom/FALLBACK.md`: no browser, no posting, the X post saved as a draft. Editions and wire stories record the backup writer (`--writer claude-haiku-5-5`) and the site credits it in the byline. Files: `scripts/{newsroom,newsroom_wire}.py`, `scripts/newsroom_fallback.sh`, `shared/{news,newsMethod}.ts`, `server/services/news/newsStore.ts`, `client/src/components/news/{NewsDesk,NewsWire}.tsx`, `client/src/pages/NewsArticle.tsx`, docs, tests.
+
 ### Version 9.134.2  Oct 9, 2026
 
 - **The wire stays light as it grows** (Author: Claude Opus 5.5). The news index, which the front page refetches every minute, now carries only the past week of wire stories (at most 40); the files stay in git and every story keeps its evidence route. The wire desk's repeat check opens only the last three days' evidence files. The wire desk's checkout moved off the main working repository onto the newsroom's own copy, at the same path. Files: `server/services/news/newsStore.ts`, `server/routes/news.ts`, `scripts/newsroom_wire.py`, `client/src/pages/NewsWire.tsx`, `docs/newsroom/WIRE_DESK.md`, tests.

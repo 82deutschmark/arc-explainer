@@ -39,7 +39,7 @@ export const newsArticleSchema = z.object({
   id: safeId, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), edition: z.enum(['morning', 'evening']), competition,
   headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1) })).min(1),
   teamIds: z.array(z.string().regex(/^\d+$/)), sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
-  publishedAt: stamp, dataAsOf: stamp, baselineAt: stamp.nullable(), generatedBy: z.literal('gpt-6-sol'),
+  publishedAt: stamp, dataAsOf: stamp, baselineAt: stamp.nullable(), generatedBy: z.enum(['gpt-6-sol', 'claude-haiku-5-5']),
   stats: z.array(z.object({ teamId: z.string().regex(/^\d+$/), name: text, rank: z.number().int().positive(), score: z.number().finite(), rankChange: z.number().int().nullable(), scoreChange: z.number().finite().nullable() })),
   coverageNote: text, discord: text.max(1900),
 }).superRefine((article, context) => {
@@ -107,7 +107,7 @@ export const newsWireSchema = z.object({
   teamIds: z.array(z.string().regex(/^\d+$/)), personIds: z.array(safeId),
   // Same caption limit as the ledger pictures it copies, so a valid offered picture can never fail here.
   visual: z.object({ src: z.string().regex(WIRE_PICTURE), alt: text.max(700), href: z.string().regex(/^\/[^\s]*$/) }).strict().optional(),
-  generatedBy: z.literal('gpt-6-luna'),
+  generatedBy: z.enum(['gpt-6-luna', 'claude-haiku-5-5']),
 }).strict().superRefine((story, context) => {
   const sources = new Set(story.sources.map(source => source.id));
   if (sources.size !== story.sources.length || story.sections.some(section => section.sourceIds.some(id => !sources.has(id)))) {

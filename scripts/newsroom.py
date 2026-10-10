@@ -3,6 +3,7 @@
 # Date: 2026-10-09
 # PURPOSE: Prepare auditable ARC Daily evidence, validate GPT-6 Sol prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
+# 10-Oct-2026 (Claude Opus 5.5): --writer records the Claude Haiku backup honestly in generatedBy.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
 """Deterministic newsroom plumbing. The scheduled model writes the journalism."""
 import argparse
@@ -103,7 +104,10 @@ def observation(team_id, row, trail, target, latest_at, pinned):
     return None
 
 
-def board_brief(board, competition, edition, now, actual_now, source_url, source_hash, launch_preview=False):
+WRITERS = ('gpt-6-sol', 'claude-haiku-5-5')  # Haiku is the Claude Code backup (docs/newsroom/FALLBACK.md)
+
+
+def board_brief(board, competition, edition, now, actual_now, source_url, source_hash, launch_preview=False, writer='gpt-6-sol'):
     date, cutoff, baseline_target, preview = windows(edition, now)
     if launch_preview:
         cutoff, preview = now, True
@@ -172,7 +176,7 @@ def board_brief(board, competition, edition, now, actual_now, source_url, source
     article_base = {'id': f'{date}-{edition}-{competition}' + ('-preview' if preview else ''), 'date': date, 'edition': edition,
                     'competition': competition, 'sources': sources, 'publishedAt': iso(actual_now),
                     'dataAsOf': iso(closing_at), 'baselineAt': iso(baseline_at) if baseline_at else None,
-                    'generatedBy': 'gpt-6-sol', 'stats': selected, 'coverageNote': note}
+                    'generatedBy': writer, 'stats': selected, 'coverageNote': note}
     events = [e for e in board.get('events', []) if baseline_target < stamp(e['t']) <= closing_at]
     evidence = {'sourceSha256': source_hash, 'sourceUrl': source_url, 'accessedAt': iso(actual_now),
                 'latestAt': iso(latest_at), 'cutoffAt': iso(cutoff), 'baselineTargetAt': iso(baseline_target),
@@ -216,7 +220,9 @@ def add_notebook_sources(item, competition, actual_now, root=ROOT):
     item['evidence']['competitorFacts'] = facts
 
 
-def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False):
+def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False, writer='gpt-6-sol'):
+    if writer not in WRITERS:
+        raise ValueError(f'writer must be one of {WRITERS}')
     actual_now = actual_now or datetime.now(UTC)
     now = now or actual_now
     if now > actual_now:
@@ -226,7 +232,7 @@ def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False):
         url = f'{SITE}/api/kaggle/arc-prize-2026-{comp.replace("arc-", "arc-agi-")}/board'
         try:
             board, sha = fetcher(url)
-            result['competitions'][comp] = board_brief(board, comp, edition, now, actual_now, url, sha, preview)
+            result['competitions'][comp] = board_brief(board, comp, edition, now, actual_now, url, sha, preview, writer)
             add_notebook_sources(result['competitions'][comp], comp, actual_now)
             from newsroom_people import add_people_sources
             from newsroom_social import add_social_sources
@@ -469,6 +475,7 @@ def main():
     prep.add_argument('--output', required=True)
     prep.add_argument('--preview', action='store_true', help='Launch issue closing at the actual manual run time, with a distinct article ID')
     prep.add_argument('--now', help='Explicit historical/manual clock; never overrides actual freshness checks')
+    prep.add_argument('--writer', choices=WRITERS, default='gpt-6-sol', help='The model writing this edition (the Claude Code backup passes claude-haiku-5-5)')
     for name in ('validate', 'publish'):
         cmd = commands.add_parser(name)
         cmd.add_argument('--article', required=True)
@@ -479,7 +486,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == 'prepare':
-            result = prepare(args.edition, stamp(args.now) if args.now else None, preview=args.preview)
+            result = prepare(args.edition, stamp(args.now) if args.now else None, preview=args.preview, writer=args.writer)
             write(args.output, result)
             print(json.dumps({c: v['status'] for c, v in result['competitions'].items()}))
             return 0 if any(v['status'] == 'ready' for v in result['competitions'].values()) else 2

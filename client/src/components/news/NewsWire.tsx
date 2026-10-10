@@ -11,7 +11,7 @@
  *          clockEt, edition summaries through the shared edition helpers.
  */
 import { Link } from 'wouter';
-import { competitionName, competitorPath, editionLabel, newsArticlePath, newsDate, personPath, wirePath,
+import { competitionName, competitorPath, editionLabel, newsArticlePath, newsDate, personPath, wirePath, writerCredit,
   type NewsArticle, type NewsIndex, type NewsPerson, type NewsWireStory } from '@shared/news';
 import { sortedArticles } from './NewsDesk';
 import { clockEt } from './NewsMarkets';
@@ -83,6 +83,6 @@ export function WireStory({ story, index }: { story: NewsWireStory; index: NewsI
       {people.map(person => <PersonLinks key={person.id} person={person} honors={0} />)}
       {teams.map(team => <Link key={team.id} href={competitorPath(team.id)}>{team.name} notebook →</Link>)}
     </div>}
-    <p className="news-byline">The wire desk · board saved {newsDate(story.dataAsOf, true)}{story.since ? <> · compared with {newsDate(story.since, true)}</> : null} · <a href={`/api/news/wire/${story.id}/evidence`}>evidence</a></p>
+    <p className="news-byline">The wire desk · {writerCredit(story.generatedBy)} · board saved {newsDate(story.dataAsOf, true)}{story.since ? <> · compared with {newsDate(story.since, true)}</> : null} · <a href={`/api/news/wire/${story.id}/evidence`}>evidence</a></p>
   </article>;
 }

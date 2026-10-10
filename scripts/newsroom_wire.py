@@ -401,7 +401,12 @@ def validate(story, brief, now=None):
     return board
 
 
-def publish(story, brief, root=ROOT, now=None):
+WRITERS = ('gpt-6-luna', 'claude-haiku-5-5')  # Haiku is the Claude Code backup (docs/newsroom/FALLBACK.md)
+
+
+def publish(story, brief, root=ROOT, now=None, writer='gpt-6-luna'):
+    if writer not in WRITERS:
+        raise ValueError(f'writer must be one of {WRITERS}')
     now = now or datetime.now(UTC)
     board = validate(story, brief, now)
     local = now.astimezone(ET)
@@ -413,7 +418,7 @@ def publish(story, brief, root=ROOT, now=None):
                  'since': board['since'], 'headline': story['headline'],
                  'sections': [{key: section[key] for key in ('heading', 'text', 'sourceIds') if key in section} for section in story['sections']],
                  'sources': [source for source in board['sources'] if source['id'] in cited],
-                 'teamIds': story['teamIds'], 'personIds': story['personIds'], 'generatedBy': 'gpt-6-luna'}
+                 'teamIds': story['teamIds'], 'personIds': story['personIds'], 'generatedBy': writer}
     if 'visual' in story:
         published['visual'] = story['visual']
         if not (Path(root) / 'client/public' / story['visual']['src'].lstrip('/')).is_file():
@@ -445,6 +450,7 @@ def main():
         command = commands.add_parser(name)
         command.add_argument('--story', required=True)
         command.add_argument('--brief', required=True)
+        command.add_argument('--writer', choices=WRITERS, default='gpt-6-luna', help='The Claude Code backup passes claude-haiku-5-5')
     args = parser.parse_args()
     try:
         if args.command == 'prepare':
@@ -457,7 +463,7 @@ def main():
             validate(story, brief)
             print(f"valid: {story['competition']} {story['slug']}")
         else:
-            print(publish(story, brief))
+            print(publish(story, brief, writer=args.writer))
         return 0
     except (ValueError, KeyError, TypeError, OSError) as error:
         print(f'newsroom_wire: {error}', file=sys.stderr)

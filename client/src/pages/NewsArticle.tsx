@@ -14,7 +14,7 @@ import { StoryFeature, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { competitorPath, featuredPerson, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { competitorPath, featuredPerson, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
@@ -43,7 +43,7 @@ export default function NewsArticle() {
         <EditionLabel article={article} />
         <h1 className="news-article-title">{article.headline}</h1>
         <p className="news-dek">{article.dek}</p>
-        <p className="news-byline">The ARC Daily Digest sports desk <span>· <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
+        <p className="news-byline">The ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
       </header>
       <div className="news-article-grid">
         <div>

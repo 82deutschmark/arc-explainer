@@ -27,7 +27,7 @@ export interface NewsArticle {
   id: string; date: string; edition: NewsEdition; competition: NewsCompetition;
   headline: string; dek: string; sections: NewsSection[]; teamIds: string[];
   sources: NewsSource[]; publishedAt: string; dataAsOf: string;
-  baselineAt: string | null; generatedBy: 'gpt-6-sol'; stats: NewsStat[];
+  baselineAt: string | null; generatedBy: 'gpt-6-sol' | 'claude-haiku-5-5'; stats: NewsStat[];
   coverageNote: string; discord: string;
 }
 export interface CompetitorFact { text: string; sourceUrl: string; sourceTitle: string; checkedAt: string }
@@ -80,7 +80,8 @@ export interface NewsWireStory {
   /** Verified people the story is about; the first is the one pictured. */
   personIds: string[];
   visual?: { src: string; alt: string; href: string };
-  generatedBy: 'gpt-6-luna';
+  /** Claude Haiku 5.5 when the Claude Code backup filed it (docs/newsroom/FALLBACK.md). */
+  generatedBy: 'gpt-6-luna' | 'claude-haiku-5-5';
 }
 export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; wire?: NewsWireStory[] }
 export const NEWS_NAME = 'The ARC Daily Digest';
@@ -122,6 +123,9 @@ export function personInitials(name: string): string {
   return (parts.length > 1 ? parts[0] + parts[parts.length - 1] : parts[0] ?? '').toUpperCase();
 }
 export const newsArticlePath = (id: string) => `/news/${id}`;
+/** The byline credit for a story's writer; the Claude Code backup is named as such. */
+export const writerCredit = (generatedBy: NewsArticle['generatedBy'] | NewsWireStory['generatedBy']) =>
+  generatedBy === 'claude-haiku-5-5' ? 'Claude Haiku 5.5, backup desk' : generatedBy === 'gpt-6-luna' ? 'GPT-6 Luna' : 'GPT-6 Sol';
 /** Wire stories live on one page, each at its own anchor. */
 export const wirePath = (id?: string) => id ? `/news/wire#${id}` : '/news/wire';
 export const competitorPath = (id: string) => `/news/competitors/${id}`;

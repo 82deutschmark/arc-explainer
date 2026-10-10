@@ -19,7 +19,7 @@ import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, featuredPerson, wirePath, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
+import { NEWS_NAME, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, featuredPerson, wirePath, writerCredit, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { MastheadAd } from './SponsorPlacement';
 import { StoryFeature, TeamFaces } from './NewsPeople';
@@ -117,7 +117,7 @@ export function StoryPreview({ article, lead = false, people = [], sections = 0,
     <EditionLabel article={article} />
     <h2><Link href={newsArticlePath(article.id)}>{article.headline}</Link></h2>
     <p className="news-dek">{article.dek}</p>
-    <div className="news-byline">By the ARC Daily Digest sports desk <span>· {newsDate(article.date)}</span></div>
+    <div className="news-byline">By the ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
     <StoryFeature person={featuredPerson(article, people)} competition={article.competition} />
     {art}
     {!!shown.length && <div className="news-story-body">{shown.map((section, index) => <section key={index}>

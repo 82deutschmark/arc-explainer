@@ -183,5 +183,14 @@ class NewsroomTests(unittest.TestCase):
             self.assertEqual(target.read_bytes(), original)
 
 
+class BackupWriterTests(unittest.TestCase):
+    def test_backup_desk_is_named_and_unknown_writers_refused(self):
+        now = n.stamp('2026-10-07T22:00:00Z')
+        made = lambda writer: n.board_brief(fixture(), 'arc-3', 'evening', now, now, 'https://example.com/board', '0' * 64, writer=writer)
+        self.assertEqual(made('claude-haiku-5-5')['articleBase']['generatedBy'], 'claude-haiku-5-5')
+        self.assertEqual(n.board_brief(fixture(), 'arc-3', 'evening', now, now, 'https://example.com/board', '0' * 64)['articleBase']['generatedBy'], 'gpt-6-sol')
+        with self.assertRaises(ValueError):
+            n.prepare('evening', fetcher=lambda url: (fixture(), '0' * 64), actual_now=now, writer='someone-else')
+
 if __name__ == '__main__':
     unittest.main()
