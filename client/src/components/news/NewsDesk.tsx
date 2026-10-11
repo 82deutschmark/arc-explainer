@@ -17,6 +17,7 @@
  *          share card write the same versioned address in the browser that the server rendered.
  *          10-Oct-2026 (Claude Sonnet 5.5): AboutThisPaper, the front-page info box on where the data
  *          comes from and how to reach Boss with corrections, retractions or complaints.
+ *          NewsWelcome, a one-time pop-up for first-time visitors, renders in the shared shell.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import { useMemo, type ReactNode } from 'react';
@@ -28,6 +29,7 @@ import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { SITE_ORIGIN } from '@shared/seo';
 import { MastheadAd } from './SponsorPlacement';
 import { StoryFeature, TeamFaces } from './NewsPeople';
+import { NewsWelcome } from './NewsWelcome';
 import './news.css';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
@@ -98,6 +100,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
           </nav>
         </header>
         {children}
+        <NewsWelcome peoplePath="/news/people" xUrl={ARC_DAILY_X_URL} discordUrl={ARC_DISCORD_URL} />
         <footer className="news-footer">
           <strong>{NEWS_NAME}</strong><span>Editions by GPT-6 Sol · the wire by GPT-6 Luna</span>
           <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>

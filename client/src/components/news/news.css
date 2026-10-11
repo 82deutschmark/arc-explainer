@@ -287,6 +287,15 @@
 .news-about-contact { margin: 8px 0 0; padding-top: 7px; border-top: 1px solid var(--hair); }
 .news-about a { text-decoration: underline; }
 
+/* ── First-visit welcome pop-up ─────────────────────────────────────────────────────────── */
+.news-welcome-backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px; background: #171512b8; overflow-y: auto; }
+.news-welcome { width: 100%; max-width: 520px; padding: 16px 22px 20px; border: 1px solid var(--ink); border-top: 4px double var(--ink); background: var(--paper); box-shadow: 0 12px 40px #00000066; font: 15px/1.55 var(--serif); }
+.news-welcome h2 { margin: 4px 0 10px; font: 700 clamp(24px, 5vw, 32px)/1.1 var(--display); letter-spacing: -.01em; }
+.news-welcome p { margin: 8px 0; }
+.news-welcome a { text-decoration: underline; }
+.news-welcome-go { margin-top: 12px; padding: 9px 16px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); font: 700 11px var(--sans); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.news-welcome-go:hover, .news-welcome-go:focus-visible { background: var(--accent); border-color: var(--accent); }
+
 /* ── Article page ────────────────────────────────────────────────────────────────────────── */
 .news-article-header { max-width: 940px; padding-top: 4px; }
 .news-article-title { margin: 8px 0 12px; font: 700 clamp(32px, 4.6vw, 56px)/1.03 var(--serif); letter-spacing: -.02em; overflow-wrap: anywhere; }

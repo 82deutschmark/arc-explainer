@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.139.0  Oct 10, 2026
+
+- **First-time visitors to any ARC Daily page get a short welcome pop-up** (Author: Claude Sonnet 5.5). Boss: people sent here by a contestant may be new to all of it, so greet them with the important parts and make clear the person who sent them is a star here. `NewsWelcome` says what the paper is, that the people on the board are the pro athletes (with a link to People and the Hall of Fame cards), that stories are AI-written from saved evidence, that standings are provisional, and where to send corrections. It shows once per browser (remembered in local storage, guarded so blocked storage just means it shows again) and closes with the button, Escape or a click outside. Files: `client/src/components/news/{NewsWelcome.tsx,NewsDesk.tsx,news.css}`.
+
 ### Version 9.138.0  Oct 10, 2026
 
 - **ARC Daily front page gets an "About this paper" info box** (Author: Claude Sonnet 5.5). Boss: tell readers where the data comes from and how the paper is made, without naming the AI models, and say corrections, retractions or complaints go to Boss on X or Discord. The box (`AboutThisPaper` in `NewsDesk.tsx`) sits above "Every edition" on the front page: AI-written from saved evidence, Kaggle leaderboard figures saved every half hour, public X posts and Kaggle discussions for the people, the edition and wire schedule, provisional standings, and the contact line (X account and the ARC Discord invite). Files: `client/src/components/news/NewsDesk.tsx`, `client/src/components/news/news.css`, `client/src/pages/News.tsx`.
