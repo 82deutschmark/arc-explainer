@@ -1,0 +1,70 @@
+{
+  "competition": "arc-3",
+  "headline": "Special late edition: What is Keith cooking?",
+  "id": "2026-10-10-special-late-what-is-keith-cooking",
+  "interpretation": "The message gives away the ambition and leaves us hungry for the recipe. Keith has made his move on the board. Now the question for the next installment: what is he cooking?",
+  "publishedAt": "2026-10-11T02:22:51Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "keith-message",
+        "board-arc-3",
+        "person-keith-tyser-identity-0"
+      ],
+      "text": "Keith Tyser has dropped a teaser for both ARC races. After climbing into the ARC-3 public gold places, he says he thinks he has found the secret sauce — and it seems to work on ARC-AGI-2 as well. That is a message worth stopping the presses for."
+    },
+    {
+      "sourceIds": [
+        "keith-message"
+      ],
+      "text": "In a message shared with the Digest by publisher Mark Barney, Tyser wrote: “Haha thanks! Love the Daily Digest idea btw. Such a fun way to keep up with the competition. Saw you guys made a big jump too! I think I’ve finally found the secret sauce, and it seems to work for both ARC 2 and 3 👀”"
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "board-arc-2",
+        "person-keith-tyser-roster-0",
+        "person-keith-tyser-roster-1"
+      ],
+      "text": "The scorecard gives the tease some bite. His keithtyser entry climbed from 70th to 14th in the past day, adding 4.48 points to reach 37.22 and land inside ARC-3’s 18 public gold places. On ARC-2, his account is listed with ARC Raiders, the team sitting 8th at 58.75. Two contests, two entries, and now a hint that the same sauce travels."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T02:22:51Z",
+      "id": "keith-message",
+      "title": "Keith Tyser’s message, supplied by publisher Mark Barney; saved transcript and board evidence",
+      "url": "https://github.com/82deutschmark/arc-explainer/blob/main/content/news/evidence/2026-10-10-special-late-what-is-keith-cooking.json"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-keith-tyser-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/keithtyser"
+    },
+    {
+      "accessedAt": "2026-10-11T02:21:24Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-11T02:21:24Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    },
+    {
+      "accessedAt": "2026-10-10T22:00:54Z",
+      "id": "person-keith-tyser-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-10T22:00:53Z",
+      "id": "person-keith-tyser-roster-1",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ]
+}
