@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.1  Oct 10, 2026
+
+- **The normie panel's headline carries the Skee-Lo callback** (Author: Claude Sonnet 5.5). Boss: the callback to the Skee-Lo track belongs up front. The headline now reads "Wish you were a baller? The person who sent you is." and the body keeps the shot-caller and phone-number lines. File: `client/src/components/news/NewsWelcome.tsx`.
+
 ### Version 9.141.0  Oct 10, 2026
 
 - **The normie pop-up gets a parody verse** (Author: Claude Sonnet 5.5). Boss: put the parody in the pop-up. Four original lines in the style of a hip-hop wish song, about a Kaggle contestant's wishes (the leaderboard, overfitting, the GPU budget, notebook timeouts), sit in the normie panel. New words only; none of the original lyrics are reproduced. Files: `client/src/components/news/{NewsWelcome.tsx,news.css}`.
