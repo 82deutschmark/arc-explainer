@@ -1,5 +1,5 @@
 /**
- * Author: GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
  * Date: 2026-10-11
  * PURPOSE: Shared public contract for sourced ARC Daily articles, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
@@ -45,6 +45,8 @@ export interface CompetitorRecord {
 export interface NewsDispatch {
   id: string; competition: NewsCompetition; publishedAt: string; headline: string;
   sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
+  /** Historical dispatches lack a writer ID; new features record their actual writer. */
+  generatedBy?: typeof NEWS_EDITION_WRITERS[number];
   image?: { src: string; alt: string; caption: string };
 }
 /**

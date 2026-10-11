@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 2026-10-11
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
  *          terminal ticker of both boards, then three columns: What's News (the wire), the lead
  *          stories (the latest ARC-AGI-3 report printed in full, the ARC-AGI-2 report under it)
@@ -13,7 +13,7 @@
  */
 import { Link } from 'wouter';
 import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition, NewsPerson } from '@shared/news';
-import { competitionName, competitorPath, newsDate, newsArticlePath, featuredPerson, editionLabel, personForXHandle, personPath } from '@shared/news';
+import { competitionName, competitorPath, newsDate, newsArticlePath, featuredPerson, editionLabel, personForXHandle, personPath, writerCredit } from '@shared/news';
 import type { MarketsPayload } from '@shared/newsMarkets';
 import { StoryPreview, sortedArticles } from './NewsDesk';
 import { BoardTable, MarketTicker, marketBoards } from './NewsMarkets';
@@ -28,7 +28,7 @@ export function DispatchPreview({ dispatch, lead = false, people = [] }: { dispa
   return <article id={dispatch.id} className={`news-story news-dispatch${lead ? ' news-lead' : ''}`}>
     <div className="news-kicker"><span>{competitionName(dispatch.competition)}</span><span>From the contenders</span></div>
     <h2><a href={`#${dispatch.id}`}>{dispatch.headline}</a></h2>
-    <div className="news-byline"><time dateTime={dispatch.publishedAt}>{newsDate(dispatch.publishedAt, true)}</time></div>
+    <div className="news-byline"><time dateTime={dispatch.publishedAt}>{newsDate(dispatch.publishedAt, true)}</time>{dispatch.generatedBy && <> · {writerCredit(dispatch.generatedBy)}</>}</div>
     <DispatchArt dispatch={dispatch} lead={lead} />
     {dispatch.sections.map((section, index) => <section key={index}>
       {section.heading && <h3>{section.heading}</h3>}

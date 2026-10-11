@@ -1,9 +1,10 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6 / Codex; GPT-6 Sol / Codex
+# Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
 # Date: 2026-10-11
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 10-Oct-2026 (Claude Opus 5.5): --writer records the Claude Haiku backup honestly in generatedBy.
+# 11-Oct-2026: briefs carry wire developments and unresolved editorial assignments; publication records their disposition.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
 """Deterministic newsroom plumbing. The scheduled model writes the journalism."""
 import argparse
@@ -160,7 +161,9 @@ def board_brief(board, competition, edition, now, actual_now, source_url, source
     stats.sort(key=lambda s: (s['rank'], s['teamId']))
     gainers = sorted([s for s in stats if s['scoreChange'] is not None and s['scoreChange'] > 0],
                      key=lambda s: (-s['scoreChange'], s['rank']))[:10]
-    selected_ids = {s['teamId'] for s in stats if s['rank'] <= 10} | FEATURED[competition] | {s['teamId'] for s in gainers}
+    assigned_ids = {tid for assignment in open_editorial_assignments(ROOT, competition, actual_now)
+                    for tid in assignment.get('teamIds', [])}
+    selected_ids = {s['teamId'] for s in stats if s['rank'] <= 10} | FEATURED[competition] | {s['teamId'] for s in gainers} | assigned_ids
     selected = [s for s in stats if s['teamId'] in selected_ids]
     if not selected:
         raise ValueError('no verified candidate observations at cutoff')
@@ -220,6 +223,78 @@ def add_notebook_sources(item, competition, actual_now, root=ROOT):
     item['evidence']['competitorFacts'] = facts
 
 
+def open_editorial_assignments(root, competition, now):
+    """Carry an assignment until a published edition covers or explicitly closes it."""
+    directory = Path(root) / 'content/news'
+    path = directory / 'editorial-assignments.json'
+    assignments = load(path) if path.exists() else []
+    decisions = {}
+    for proof_path in (directory / 'evidence').glob('*.json'):
+        proof = load(proof_path)
+        when = stamp(proof.get('accessedAt', '1970-01-01T00:00:00Z'))
+        if when > now:
+            continue
+        for review in proof.get('intakeReview', []):
+            if review['id'].startswith('editorial-') and (review['id'] not in decisions or when > decisions[review['id']][0]):
+                decisions[review['id']] = (when, review['disposition'])
+    return [assignment for assignment in assignments
+            if assignment['competition'] == competition and assignment.get('status', 'pending') == 'pending'
+            and stamp(assignment['createdAt']) <= now
+            and decisions.get(f"editorial-{assignment['id']}", (None, None))[1] != 'covered']
+
+
+def add_edition_intake(item, competition, actual_now, root=ROOT):
+    """Make every wire item since the prior edition, plus deferred items, an explicit desk decision.
+
+    Edition intake is separate from the statistical baseline: a morning edition's UTC
+    score comparison must not discard wire news from the preceding Eastern evening.
+    """
+    directory = Path(root) / 'content/news'
+    base, evidence = item['articleBase'], item['evidence']
+    cutoff = stamp(evidence['cutoffAt'])
+    local = cutoff.astimezone(ET)
+    since = ((local - timedelta(days=1)).replace(hour=18, minute=0, second=0, microsecond=0)
+             if base['edition'] == 'morning' else local.replace(hour=6, minute=0, second=0, microsecond=0))
+    previous, previous_proof = None, {}
+    for path in (directory / 'articles').glob('*.json'):
+        article = load(path)
+        if article['competition'] != competition or article['id'] == base['id'] or article['id'].endswith('-preview'):
+            continue
+        proof_path = directory / 'evidence' / path.name
+        if not proof_path.exists():
+            continue
+        proof = load(proof_path)
+        boundary_at = stamp(proof['cutoffAt'])
+        if boundary_at < cutoff and (previous is None or boundary_at > stamp(previous_proof['cutoffAt'])):
+            previous, previous_proof = article, proof
+    if previous:
+        since = stamp(previous_proof['cutoffAt'])
+    deferred = {review['id'] for review in previous_proof.get('intakeReview', [])
+                if review['id'].startswith(('wire-', 'dispatch-')) and review['disposition'] in ('held', 'carried')}
+    stories, limits = {'wireStories': [], 'dispatches': []}, []
+    for folder, kind, field in [('wire', 'wire', 'wireStories'), ('dispatches', 'dispatch', 'dispatches')]:
+        for path in (directory / folder).glob('*.json'):
+            try:
+                story = load(path)
+                published = stamp(story['publishedAt'])
+                source_id = f"{kind}-{story['id']}"
+                if story['competition'] != competition or published > cutoff or not (published > since or source_id in deferred):
+                    continue
+                stories[field].append({**story, 'sourceId': source_id})
+                story_url = f"{SITE}/news/wire#{story['id']}" if kind == 'wire' else f"{SITE}/news#{story['id']}"
+                base['sources'].append({'id': source_id, 'title': story['headline'], 'url': story_url, 'accessedAt': iso(actual_now)})
+            except (ValueError, KeyError, TypeError, OSError) as error:
+                limits.append(f'{path.name}: {error}')
+        stories[field].sort(key=lambda story: (story['publishedAt'], story['id']))
+    assignments = open_editorial_assignments(root, competition, cutoff)
+    item['intake'] = {'since': iso(since), 'through': iso(cutoff),
+                      'previousEditionId': previous['id'] if previous else None,
+                      **stories, 'editorialAssignments': assignments, 'limitations': limits}
+    # Only public wire data and assignment identifiers enter published evidence; desk instructions stay in the brief.
+    evidence['wireIntake'] = {key: value for key, value in item['intake'].items() if key != 'editorialAssignments'}
+    evidence['editorialIntake'] = [{'id': assignment['id'], 'title': assignment['title']} for assignment in assignments]
+
+
 def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False, writer='gpt-6.1-sol'):
     if writer not in WRITERS:
         raise ValueError(f'writer must be one of {WRITERS}')
@@ -238,6 +313,7 @@ def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False, wr
             from newsroom_social import add_social_sources
             add_social_sources(result['competitions'][comp], comp, actual_now, ROOT)
             add_people_sources(result['competitions'][comp], comp, actual_now, ROOT)
+            add_edition_intake(result['competitions'][comp], comp, actual_now)
         except Exception as error:
             result['competitions'][comp] = {'status': 'error', 'error': str(error), 'sourceUrl': url}
     result['sha256'] = digest(result)
@@ -318,7 +394,7 @@ def validate(draft, brief):
         text(source['title'], 'source title')
     if len({s['id'] for s in base['sources']}) != len(base['sources']):
         raise ValueError('duplicate source IDs')
-    if set(draft) - NARRATIVE - set(base):
+    if set(draft) - NARRATIVE - set(base) - {'intakeReview'}:
         raise ValueError('unknown article fields')
     for key in set(draft) & set(base):
         if draft[key] != base[key]:
@@ -339,6 +415,35 @@ def validate(draft, brief):
         refs = section.get('sourceIds')
         if not isinstance(refs, list) or not refs or any(not isinstance(s, str) or s not in source_ids for s in refs):
             raise ValueError('section requires valid sourceIds')
+    if 'intake' in item:
+        expected_reviews = {story['sourceId'] for story in item['intake']['wireStories'] + item['intake']['dispatches']}
+        expected_reviews |= {f"editorial-{assignment['id']}" for assignment in item['intake']['editorialAssignments']}
+        reviews = draft.get('intakeReview')
+        if not isinstance(reviews, list):
+            raise ValueError('intakeReview must account for every wire story and editorial assignment')
+        seen_reviews = set()
+        cited = {ref for section in draft['sections'] for ref in section['sourceIds']}
+        for review in reviews:
+            if not isinstance(review, dict) or set(review) != {'id', 'disposition', 'reason'}:
+                raise ValueError('each intakeReview requires id, disposition and reason')
+            if review['id'] not in expected_reviews or review['id'] in seen_reviews:
+                raise ValueError('unknown or duplicate intakeReview ID')
+            if review['disposition'] not in ('covered', 'held', 'carried', 'not-selected'):
+                raise ValueError('invalid intakeReview disposition')
+            text(review['reason'], 'intake review reason', 700)
+            if review['id'].startswith(('wire-', 'dispatch-')) and review['disposition'] == 'covered' and review['id'] not in cited:
+                raise ValueError('a covered wire item or feature must be cited in an article section')
+            if review['id'].startswith('editorial-'):
+                if review['disposition'] == 'not-selected':
+                    raise ValueError('an editorial assignment must be covered, held or carried; it cannot be silently closed')
+                assignment = next(a for a in item['intake']['editorialAssignments'] if review['id'] == f"editorial-{a['id']}")
+                if review['disposition'] == 'covered' and not any(
+                        name.casefold() in section['text'].casefold()
+                        for name in assignment.get('subjectNames', [assignment['title']]) for section in draft['sections']):
+                    raise ValueError('a covered editorial assignment must appear in an article section')
+            seen_reviews.add(review['id'])
+        if seen_reviews != expected_reviews:
+            raise ValueError('intakeReview leaves a wire story or editorial assignment unaccounted for')
     team_ids = draft['teamIds']
     allowed_teams = {s['teamId'] for s in base['stats']}
     if not isinstance(team_ids, list) or any(not isinstance(t, str) or t not in allowed_teams for t in team_ids) or len(set(team_ids)) != len(team_ids):
@@ -366,6 +471,8 @@ def publish(draft, brief, root=ROOT):
     path = directory / 'articles' / f'{article["id"]}.json'
     proof_path = directory / 'evidence' / f'{article["id"]}.json'
     proof = {'articleId': article['id'], 'briefSha256': brief['sha256'], **item['evidence']}
+    if 'intake' in item:
+        proof['intakeReview'] = draft['intakeReview']
     # Preflight every immutable destination before changing anything, including retries.
     for target, value in ((path, article), (proof_path, proof)):
         if target.exists() and load(target) != value:
@@ -409,8 +516,10 @@ def publish(draft, brief, root=ROOT):
 
 def validate_dispatch(draft):
     required = {'id', 'competition', 'publishedAt', 'headline', 'sections', 'sources'}
-    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation'}:
+    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy'}:
         raise ValueError('invalid dispatch fields')
+    if 'generatedBy' in draft and draft['generatedBy'] not in WRITERS:
+        raise ValueError('invalid dispatch writer')
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', draft['id']) or draft['competition'] not in FEATURED:
         raise ValueError('invalid dispatch identity')
     published = contract_stamp(draft['publishedAt'])

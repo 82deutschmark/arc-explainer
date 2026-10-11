@@ -100,6 +100,46 @@ public subset before `prepare`. Subscriber/unknown items never enter public issu
 including through paraphrases. A missing or partial scan is a coverage limit, not
 proof of no news. Keep the existing 2 pm handoff as additional leads.
 
+## Wire-to-edition continuity — 11 October 2026
+
+The wire is immediate publication: each validated brief appears on `/news/wire` and
+in the front page's What's News column after its push. It is not an extra X or Discord send.
+Full editions develop the strongest moves and background; they also compile the wire.
+
+Every prepared competition brief now has `intake`:
+
+- `wireStories` and `dispatches`: all committed items after the previous edition's cutoff,
+  through this edition's cutoff, plus items previously marked `held` or `carried`.
+- `editorialAssignments`: pending records from `content/news/editorial-assignments.json`.
+  Assigned teams remain candidates even if they leave the day's gainers list.
+- The morning intake begins at the preceding published edition's Eastern cutoff. It
+  therefore includes the evening and overnight wire, even though morning score changes
+  still use the UTC-midnight baseline. Missed editions widen the intake to the last
+  available edition. If none exists, the previous nominal 6 am/6 pm boundary is used.
+
+Read every item. Recheck its primary sources and date older developments accurately;
+a published wire story is a reporting lead, not proof of a new gain in a different window.
+Wire and feature citations use their `sourceId` from the intake.
+
+Add `intakeReview` to the draft. It is an array with exactly one record per intake item:
+
+```json
+{"id": "sourceId from an intake story, or editorial- plus the assignment id",
+ "disposition": "covered", "reason": "How this item is developed in the issue"}
+```
+
+Valid dispositions are `covered`, `held`, `carried`, and `not-selected`. Covered wire
+or feature items must be cited in a section. Editorial assignments cannot be closed
+as `not-selected`: cover them substantively or preserve them with a concrete reason.
+The validator refuses missing decisions, and the publisher records them in the
+edition's evidence. Held/carried stories and unresolved assignments return next time.
+Tell Boss explicitly about held/carried requested features in the final report.
+
+Peter Findley's human-mastery feature is an explicit pending assignment. The human
+board achievement is independently reportable. Verify the Kaggle/human account link
+before combining their records, and distinguish the wire's rolling day from the
+edition's comparison window. No fresh net score gain is required for a worthwhile profile.
+
 Maintain `content/news/people.json` alongside the team notebook. A stable person
 record connects only directly verified accounts to dated memberships keyed by
 competition ID, season and team ID. Publishing adds observations for already
@@ -160,7 +200,9 @@ is evidence of what its author said on that date, not a timeless fact.
 
 Between editions, a short sourced dispatch can update the front page. It is separate
 from the immutable scheduled issue. Write JSON with `id`, `competition`,
-`publishedAt`, `headline`, `sections` and `sources`. Sections use the same
+`publishedAt`, `headline`, `sections` and `sources`. New features also record their
+actual `generatedBy` writer ID (for this desk, `gpt-6.1-sol`). Historical dispatches
+without a writer ID are left unchanged. Sections use the same
 `heading`/`text`/`sourceIds` structure as articles; sources have `id`, `title`,
 `url` and `accessedAt`. Optional `interpretation` is shown explicitly as the
 desk's take. Optional `image` has `src`, `alt`, `caption`; assets must already

@@ -14,6 +14,18 @@ the picture you choose. The front page already prints the standings, the
 ticker and the movers tables, so your job is the sentence a reader cannot get from a table:
 who moved, from where to where, why it matters for the medals, and who the people are.
 
+## How breaking stories reach the editions
+
+Pushing a validated story publishes it immediately in the wire and front-page What's
+News column. Each morning/evening `newsroom.py prepare` automatically imports the wire
+and dated features filed since the previous edition's cutoff. This intake is separate
+from the edition's score-change baseline, so the morning can compile the preceding
+evening and overnight developments. The edition reporter records whether each item
+was covered, held, carried or not selected, and rechecks original sources before using it.
+Held/carried items return in the next edition's intake. Explicit feature assignments
+live in `content/news/editorial-assignments.json` until covered; reading a chat alone is
+not the handoff. Wire publication does not authorize an extra X or Discord alert.
+
 ## Schedule and checkout
 
 The Codex automation "ARC Daily Digest — wire desk" runs **every two hours, at midnight,

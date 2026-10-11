@@ -1,5 +1,5 @@
 /**
- * Author: GPT-6 / Codex; GPT-6 Sol / Codex
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
  * Date: 2026-10-11
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
@@ -22,6 +22,7 @@ const safeId = z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/);
 const text = z.string().min(1).max(20000);
 export const newsDispatchSchema = z.object({
   id: safeId, competition, publishedAt: stamp, headline: text.max(240),
+  generatedBy: z.enum(NEWS_EDITION_WRITERS).optional(),
   sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1) })).min(1).max(5),
   sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   interpretation: text.max(700).optional(),
