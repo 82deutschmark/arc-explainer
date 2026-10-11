@@ -1,0 +1,50 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-11T01:01:10Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Son & Mark & Ronen and Keith Tyser break into ARC-3 gold",
+  "id": "2026-10-10-2102-arc-3-two-teams-enter-gold",
+  "personIds": [
+    "keith-tyser"
+  ],
+  "publishedAt": "2026-10-11T01:02:13Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-keith-tyser-identity-0"
+      ],
+      "text": "Son & Mark & Ronen climbed from 19th to 7th at 39.24, a gain of 3.79. Keith Tyser moved from 70th to 14th at 37.22, up 4.48."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Both are now inside the 18 gold places. The cutoff rose 0.35 to 36.14; Andrew Reed sits 19th at that same score, just outside."
+    }
+  ],
+  "since": "2026-10-10T00:54:20Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T01:01:59Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-keith-tyser-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/keithtyser"
+    }
+  ],
+  "teamIds": [
+    "15605182",
+    "15508513"
+  ],
+  "visual": {
+    "alt": "Keith Tyser’s Kaggle profile picture",
+    "href": "/news/people/keith-tyser",
+    "src": "/news-images/people/keith-tyser.webp"
+  }
+}

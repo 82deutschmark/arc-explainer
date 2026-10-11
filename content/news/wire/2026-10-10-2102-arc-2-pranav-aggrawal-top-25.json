@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-11T01:01:11Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Pranav Aggarwal vaults from 2,622nd to 24th on ARC-2",
+  "id": "2026-10-10-2102-arc-2-pranav-aggrawal-top-25",
+  "personIds": [],
+  "publishedAt": "2026-10-11T01:02:13Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Pranav Aggarwal added 35.69 points to reach 35.69, moving from 2,622nd to 24th on the ARC-AGI-2 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "He now ranks 24th in a field of 2,701 teams. The gold cutoff is 40.83, with 15 places available."
+    }
+  ],
+  "since": "2026-10-10T00:54:21Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T01:01:59Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17029762"
+  ]
+}
