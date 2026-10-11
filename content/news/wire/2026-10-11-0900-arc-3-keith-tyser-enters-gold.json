@@ -1,0 +1,49 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-11T12:32:12Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Keith Tyser climbs into ARC-3 gold",
+  "id": "2026-10-11-0900-arc-3-keith-tyser-enters-gold",
+  "personIds": [
+    "keith-tyser"
+  ],
+  "publishedAt": "2026-10-11T13:00:33Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Keith Tyser’s keithtyser entry moved from 74th to 14th, gaining 4.48 points to reach 37.22 and enter the 18 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-keith-tyser-identity-0"
+      ],
+      "text": "Tyser is listed on the team roster. The climb puts him four places above the gold line, which rose to 36.54."
+    }
+  ],
+  "since": "2026-10-10T12:29:59Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T13:00:15Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-keith-tyser-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/keithtyser"
+    }
+  ],
+  "teamIds": [
+    "15508513"
+  ],
+  "visual": {
+    "alt": "Keith Tyser’s Kaggle profile picture",
+    "href": "/news/people/keith-tyser",
+    "src": "/news-images/people/keith-tyser.webp"
+  }
+}
