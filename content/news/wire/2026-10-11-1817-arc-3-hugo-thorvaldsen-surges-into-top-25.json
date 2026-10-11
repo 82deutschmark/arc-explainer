@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-11T22:03:07Z",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Hugo Thorvaldsen rockets from 441st to 25th",
+  "id": "2026-10-11-1817-arc-3-hugo-thorvaldsen-surges-into-top-25",
+  "personIds": [],
+  "publishedAt": "2026-10-11T22:17:04Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Hugo Thorvaldsen has charged into the ARC-3 top 25, climbing from 441st to 25th in the past day. The entry gained 5.82 points to reach 35.49."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The surge brings the entry closer to the provisional gold places. The last of the 18 gold places now requires 36.89, leaving Thorvaldsen below the line as the chase tightens."
+    }
+  ],
+  "since": "2026-10-10T22:00:53Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T22:15:56Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16559747"
+  ]
+}
