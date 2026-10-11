@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-11T18:32:47Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "matu997 punches into ARC-2 top 10",
+  "id": "2026-10-11-1500-arc-2-matu997-breaks-into-top-ten",
+  "personIds": [],
+  "publishedAt": "2026-10-11T19:00:06Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "matu997 gained 7.91 points to reach 50.83, climbing from 12th to 9th on ARC-2."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "A top-10 finish for the day puts matu997 among the leaders in a 2,740-team field as the gold line sits at 15th."
+    }
+  ],
+  "since": "2026-10-10T18:30:35Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T18:59:44Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17017585"
+  ]
+}

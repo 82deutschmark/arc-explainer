@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-11T18:32:45Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Team Alicia rockets from 654th to 20th",
+  "id": "2026-10-11-1500-arc-3-team-alicia-jumps-to-20th",
+  "personIds": [],
+  "publishedAt": "2026-10-11T19:00:03Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Team Alicia gained 7.97 points and vaulted from 654th to 20th on ARC-3, one of the day's biggest moves into the top tier."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move brings Team Alicia within striking distance of the 18 gold places, with the team now sitting 2 ranks outside that line."
+    }
+  ],
+  "since": "2026-10-10T18:30:33Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T18:59:44Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16782490"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-11T18:32:45Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Peter Findley storms from 1,482nd to 42nd",
+  "id": "2026-10-11-1500-arc-3-peter-findley-charges-into-top-50",
+  "personIds": [],
+  "publishedAt": "2026-10-11T19:00:03Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Peter Findley delivered the day's biggest ARC-3 charge, gaining 30.60 points and leaping from 1,482nd to 42nd."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That puts Findley among the leading contenders after a single day’s climb, a sharp reshuffle in a 4,150-team field."
+    }
+  ],
+  "since": "2026-10-10T18:30:33Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T18:59:44Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15495211"
+  ]
+}
