@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.0  Oct 10, 2026
+
+- **The normie pop-up gets a parody verse** (Author: Claude Sonnet 5.5). Boss: put the parody in the pop-up. Four original lines in the style of a hip-hop wish song, about a Kaggle contestant's wishes (the leaderboard, overfitting, the GPU budget, notebook timeouts), sit in the normie panel. New words only; none of the original lyrics are reproduced. Files: `client/src/components/news/{NewsWelcome.tsx,news.css}`.
+
 ### Version 9.140.0  Oct 10, 2026
 
 - **The first-visit pop-up is now an "Are you a normie?" check** (Author: Claude Sonnet 5.5). Boss: make it straight up and funny, show machine-learning terms, and let the reader tell us whether they mean anything. It lists six real terms (gradient descent, overfitting, test-time compute, few-shot prompting, loss function, held-out test set). "Yep, that's my language" goes straight to the paper; "Pure gobbledygook" shows the one thing a normie needs: whoever sent them is a baller and a shot caller, a pro athlete of this world, with the People link and the corrections contact. Still once per browser. Files: `client/src/components/news/{NewsWelcome.tsx,news.css}`.

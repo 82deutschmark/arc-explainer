@@ -295,6 +295,7 @@
 .news-welcome a { text-decoration: underline; }
 .news-welcome-jargon { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; padding: 0; list-style: none; }
 .news-welcome-jargon li { padding: 3px 8px; border: 1px solid var(--hair); background: var(--tint); font: 13px var(--mono); }
+.news-welcome-verse { padding-left: 12px; border-left: 3px solid var(--accent); font-style: italic; }
 .news-welcome-fine { color: var(--muted); font-size: 13px; }
 .news-welcome-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .news-welcome-alt { padding: 9px 16px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font: 700 11px var(--sans); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }

@@ -9,7 +9,8 @@
  *          portal) so it inherits the newsprint tokens. "Seen" is remembered in localStorage as a
  *          per-viewer convenience only; every read and write is guarded, and without storage the
  *          pop-up simply shows once per page load.
- *          10-Oct-2026: reworked from a plain welcome into the normie check, per the Boss.
+ *          10-Oct-2026: reworked from a plain welcome into the normie check, per the Boss, then given a
+ *          four-line original parody verse (a Kaggle contestant's wishes) as the callback.
  * SRP/DRY check: Pass — checked NewsDesk and components/ui: no first-visit pattern exists; contact
  *          links are passed in from NewsDesk rather than duplicated.
  */
@@ -69,6 +70,7 @@ export function NewsWelcome({ peoplePath, xUrl, discordUrl }: NewsWelcomeProps) 
           <div className="news-kicker">Normie confirmed</div>
           <h2 id="news-welcome-title">All you need to know:</h2>
           <p><strong>Whoever sent you here is a baller. A shot caller.</strong> If you had their number, you'd call. In this corner of data science the people on the board are the pro athletes, and this page is the sports section. The good ones even get a trading card in our Hall of Fame.</p>
+          <p className="news-welcome-verse">Wish I topped the leaderboard.<br />Wish my model never overfit.<br />Wish my GPU budget weren't a joke.<br />Wish my notebook didn't time out and quit.</p>
           <p>The rest is a lot of very hard math. Go find them under <Link href={peoplePath} onClick={close}>People</Link> and be impressed.</p>
           <p className="news-welcome-fine">The stories are written by AI from saved evidence, and standings are provisional. Spot a mistake? Corrections, retractions or complaints go to Boss on <a href={xUrl} target="_blank" rel="noopener noreferrer">X</a> or in the <a href={discordUrl} target="_blank" rel="noopener noreferrer">ARC Discord</a>.</p>
           <div className="news-welcome-actions">
