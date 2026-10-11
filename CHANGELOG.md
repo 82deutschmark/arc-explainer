@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.2  Oct 10, 2026
+
+- **The parody verse is out of the normie pop-up** (Author: Claude Sonnet 5.5). Boss: the Skee-Lo callback should live in the wording only. The four-line verse and its style are removed; the headline and the shot-caller and phone-number lines carry the nod. Files: `client/src/components/news/{NewsWelcome.tsx,news.css}`.
+
 ### Version 9.141.1  Oct 10, 2026
 
 - **The normie panel's headline carries the Skee-Lo callback** (Author: Claude Sonnet 5.5). Boss: the callback to the Skee-Lo track belongs up front. The headline now reads "Wish you were a baller? The person who sent you is." and the body keeps the shot-caller and phone-number lines. File: `client/src/components/news/NewsWelcome.tsx`.
