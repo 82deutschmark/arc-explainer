@@ -68,7 +68,7 @@ export function NewsWelcome({ peoplePath, xUrl, discordUrl }: NewsWelcomeProps) 
         </> : <>
           <div className="news-kicker">Normie confirmed</div>
           <h2 id="news-welcome-title">All you need to know:</h2>
-          <p><strong>Whoever sent you here is a baller. A shot caller.</strong> In this corner of data science the people on the board are the pro athletes, and this page is the sports section. The good ones even get a trading card in our Hall of Fame.</p>
+          <p><strong>Whoever sent you here is a baller. A shot caller.</strong> If you had their number, you'd call. In this corner of data science the people on the board are the pro athletes, and this page is the sports section. The good ones even get a trading card in our Hall of Fame.</p>
           <p>The rest is a lot of very hard math. Go find them under <Link href={peoplePath} onClick={close}>People</Link> and be impressed.</p>
           <p className="news-welcome-fine">The stories are written by AI from saved evidence, and standings are provisional. Spot a mistake? Corrections, retractions or complaints go to Boss on <a href={xUrl} target="_blank" rel="noopener noreferrer">X</a> or in the <a href={discordUrl} target="_blank" rel="noopener noreferrer">ARC Discord</a>.</p>
           <div className="news-welcome-actions">
