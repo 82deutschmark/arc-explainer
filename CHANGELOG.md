@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.140.0  Oct 10, 2026
+
+- **The first-visit pop-up is now an "Are you a normie?" check** (Author: Claude Sonnet 5.5). Boss: make it straight up and funny, show machine-learning terms, and let the reader tell us whether they mean anything. It lists six real terms (gradient descent, overfitting, test-time compute, few-shot prompting, loss function, held-out test set). "Yep, that's my language" goes straight to the paper; "Pure gobbledygook" shows the one thing a normie needs: whoever sent them is a baller and a shot caller, a pro athlete of this world, with the People link and the corrections contact. Still once per browser. Files: `client/src/components/news/{NewsWelcome.tsx,news.css}`.
+
 ### Version 9.139.0  Oct 10, 2026
 
 - **First-time visitors to any ARC Daily page get a short welcome pop-up** (Author: Claude Sonnet 5.5). Boss: people sent here by a contestant may be new to all of it, so greet them with the important parts and make clear the person who sent them is a star here. `NewsWelcome` says what the paper is, that the people on the board are the pro athletes (with a link to People and the Hall of Fame cards), that stories are AI-written from saved evidence, that standings are provisional, and where to send corrections. It shows once per browser (remembered in local storage, guarded so blocked storage just means it shows again) and closes with the button, Escape or a click outside. Files: `client/src/components/news/{NewsWelcome.tsx,NewsDesk.tsx,news.css}`.
