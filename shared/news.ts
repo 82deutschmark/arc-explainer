@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-09
+ * Author: GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Date: 2026-10-11
  * PURPOSE: Shared public contract for sourced ARC Daily articles, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -23,6 +23,9 @@ import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
 
 export type NewsCompetition = 'arc-3' | 'arc-2';
 export type NewsEdition = 'morning' | 'evening';
+/** Writer IDs remain stable in archived stories; scheduled editions now use GPT-6.1 Sol. */
+export const NEWS_EDITION_WRITERS = ['gpt-6-sol', 'gpt-6.1-sol', 'claude-haiku-5-5'] as const;
+export const NEWS_WIRE_WRITERS = ['gpt-6-luna', 'gpt-6.1-sol', 'claude-haiku-5-5'] as const;
 export interface NewsSource { id: string; title: string; url: string; accessedAt: string }
 export interface NewsSection { heading?: string; text: string; sourceIds: string[] }
 export interface NewsStat { teamId: string; name: string; rank: number; score: number; rankChange: number | null; scoreChange: number | null }
@@ -30,7 +33,7 @@ export interface NewsArticle {
   id: string; date: string; edition: NewsEdition; competition: NewsCompetition;
   headline: string; dek: string; sections: NewsSection[]; teamIds: string[];
   sources: NewsSource[]; publishedAt: string; dataAsOf: string;
-  baselineAt: string | null; generatedBy: 'gpt-6-sol' | 'claude-haiku-5-5'; stats: NewsStat[];
+  baselineAt: string | null; generatedBy: typeof NEWS_EDITION_WRITERS[number]; stats: NewsStat[];
   coverageNote: string; discord: string;
 }
 export interface CompetitorFact { text: string; sourceUrl: string; sourceTitle: string; checkedAt: string }
@@ -84,7 +87,7 @@ export interface NewsWireStory {
   personIds: string[];
   visual?: { src: string; alt: string; href: string };
   /** Claude Haiku 5.5 when the Claude Code backup filed it (docs/newsroom/FALLBACK.md). */
-  generatedBy: 'gpt-6-luna' | 'claude-haiku-5-5';
+  generatedBy: typeof NEWS_WIRE_WRITERS[number];
 }
 export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; wire?: NewsWireStory[] }
 export const NEWS_NAME = 'The ARC Daily Digest';
@@ -127,8 +130,14 @@ export function personInitials(name: string): string {
 }
 export const newsArticlePath = (id: string) => `/news/${id}`;
 /** The byline credit for a story's writer; the Claude Code backup is named as such. */
+const WRITER_CREDITS = {
+  'gpt-6-sol': 'GPT-6 Sol',
+  'gpt-6.1-sol': 'GPT-6.1 Sol',
+  'gpt-6-luna': 'GPT-6 Luna',
+  'claude-haiku-5-5': 'Claude Haiku 5.5, backup desk',
+} as const;
 export const writerCredit = (generatedBy: NewsArticle['generatedBy'] | NewsWireStory['generatedBy']) =>
-  generatedBy === 'claude-haiku-5-5' ? 'Claude Haiku 5.5, backup desk' : generatedBy === 'gpt-6-luna' ? 'GPT-6 Luna' : 'GPT-6 Sol';
+  WRITER_CREDITS[generatedBy];
 /** Wire stories live on one page, each at its own anchor. */
 export const wirePath = (id?: string) => id ? `/news/wire#${id}` : '/news/wire';
 export const competitorPath = (id: string) => `/news/competitors/${id}`;

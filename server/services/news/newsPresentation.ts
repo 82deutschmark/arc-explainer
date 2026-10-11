@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-09; 10-October-2026
+ * Author: GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Date: 2026-10-11
  * PURPOSE: Server-readable newspaper, article and notebook HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
  *          08-Oct-2026: per-article share cards and Open Graph article fields; the front
@@ -8,7 +8,7 @@
  *          dates and competition names in the crawler body; sitemap lastmod from real
  *          publication/check times; RSS self link, build date, categories and card images.
  *          Front-page crawler text names both contests, their public resources and the
- *          illustrated Hall of Fame; the article credit uses GPT-6 Sol spelling.
+ *          illustrated Hall of Fame; article credits follow each story's recorded writer.
  *          Sourced dispatches, people profiles, public community sources and method copy also render for crawlers.
  *          09-Oct-2026 (Claude Opus 5.5): person pages lead with the person's portrait and honors.
  *          Later the same day: /news/wire renders the wire desk's stories; the front page's
@@ -22,7 +22,7 @@
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
   type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData,
-  articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate,
+  articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
   type NewsPerson, type NewsSocialPost, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath,
 } from '../../../shared/news';
@@ -52,7 +52,7 @@ export function newsArticleMeta(article: NewsArticle): RouteMetaTags {
   const url = `${SITE_ORIGIN}${newsArticlePath(article.id)}`;
   const jsonLd = articleStructuredData(article, SITE_ORIGIN);
   const bodyHtml = `<main><article><p>${kicker(article)}</p>
-    <h1>${esc(article.headline)}</h1><p>${esc(article.dek)}</p><p>ARC Daily sports desk · Written with GPT-6 Sol</p>
+    <h1>${esc(article.headline)}</h1><p>${esc(article.dek)}</p><p>ARC Daily sports desk · ${esc(writerCredit(article.generatedBy))}</p>
     <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, false)}. Exact source observations remain in the archived reporting data.</p>
     ${article.sections.map(section => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${newlineText(section.text)}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
     <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td>${stat.rank}</td><td>${stat.score}</td><td>${rankChange(stat)}</td><td>${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
@@ -97,7 +97,7 @@ function methodMeta(articles: NewsArticle[]): RouteMetaTags {
 function wireMeta(wire: NewsWireStory[], articles: NewsArticle[]): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news/wire'], ...cardFor(articles) });
   return { ...tags, jsonLd: collection(tags, wire.map(story => ({ name: story.headline, path: wirePath(story.id) }))),
-    bodyHtml: `<main><h1>The wire</h1><p>Short sourced stories on both boards, filed several times a day by the ARC Daily Digest wire desk (GPT-6 Luna). Every figure is checked against the saved board before publication.</p>${wire.map(story => `<article id="${esc(story.id)}"><p>${esc(competitionName(story.competition))} · ${timeTag(story.publishedAt)}</p><h2>${esc(story.headline)}</h2>${story.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}<p>${story.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('') || '<p>The wire desk has not filed yet.</p>'}<a href="/news">Front page</a></main>` };
+    bodyHtml: `<main><h1>The wire</h1><p>Short sourced stories from both boards, checked every two hours by the ARC Daily Digest wire desk. Each story credits its writer. Every figure is checked against the saved board before publication.</p>${wire.map(story => `<article id="${esc(story.id)}"><p>${esc(competitionName(story.competition))} · ${timeTag(story.publishedAt)} · ${esc(writerCredit(story.generatedBy))}</p><h2>${esc(story.headline)}</h2>${story.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}<p>${story.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('') || '<p>The wire desk has not filed yet.</p>'}<a href="/news">Front page</a></main>` };
 }
 function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire: NewsWireStory[]): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news'], ...cardFor(articles) });

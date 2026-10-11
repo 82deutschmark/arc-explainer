@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6 Sol / Codex
-# Date: 2026-10-09
-# PURPOSE: Prepare auditable ARC Daily evidence, validate GPT-6 Sol prose, and publish
+# Author: GPT-6 / Codex; GPT-6 Sol / Codex
+# Date: 2026-10-11
+# PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 10-Oct-2026 (Claude Opus 5.5): --writer records the Claude Haiku backup honestly in generatedBy.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
@@ -104,10 +104,10 @@ def observation(team_id, row, trail, target, latest_at, pinned):
     return None
 
 
-WRITERS = ('gpt-6-sol', 'claude-haiku-5-5')  # Haiku is the Claude Code backup (docs/newsroom/FALLBACK.md)
+WRITERS = ('gpt-6-sol', 'gpt-6.1-sol', 'claude-haiku-5-5')  # Preserve historical credits and the backup desk.
 
 
-def board_brief(board, competition, edition, now, actual_now, source_url, source_hash, launch_preview=False, writer='gpt-6-sol'):
+def board_brief(board, competition, edition, now, actual_now, source_url, source_hash, launch_preview=False, writer='gpt-6.1-sol'):
     date, cutoff, baseline_target, preview = windows(edition, now)
     if launch_preview:
         cutoff, preview = now, True
@@ -220,7 +220,7 @@ def add_notebook_sources(item, competition, actual_now, root=ROOT):
     item['evidence']['competitorFacts'] = facts
 
 
-def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False, writer='gpt-6-sol'):
+def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False, writer='gpt-6.1-sol'):
     if writer not in WRITERS:
         raise ValueError(f'writer must be one of {WRITERS}')
     actual_now = actual_now or datetime.now(UTC)
@@ -475,7 +475,7 @@ def main():
     prep.add_argument('--output', required=True)
     prep.add_argument('--preview', action='store_true', help='Launch issue closing at the actual manual run time, with a distinct article ID')
     prep.add_argument('--now', help='Explicit historical/manual clock; never overrides actual freshness checks')
-    prep.add_argument('--writer', choices=WRITERS, default='gpt-6-sol', help='The model writing this edition (the Claude Code backup passes claude-haiku-5-5)')
+    prep.add_argument('--writer', choices=WRITERS, default='gpt-6.1-sol', help='The model writing this edition (the Claude Code backup passes claude-haiku-5-5)')
     for name in ('validate', 'publish'):
         cmd = commands.add_parser(name)
         cmd.add_argument('--article', required=True)

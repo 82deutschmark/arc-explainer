@@ -1,12 +1,12 @@
 /**
- * Author: GPT-6 Sol / Codex
- * Date: 2026-10-09
+ * Author: GPT-6 / Codex; GPT-6 Sol / Codex
+ * Date: 2026-10-11
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
  *          and sourced notebook previews align with the ARC Explainer landing page.
  *          The masthead names both contests; compact links branch into people, community and method pages.
- *          The footer uses the public GPT-6 Sol model spelling. The shared shell
+ *          Each story credits its recorded writer. The shared shell
  *          discloses VoynichLabs sponsorship in a compact content-first masthead.
  *          09-Oct-2026 (Claude Opus 5.5): story previews show the faces of the people each
  *          edition cites or covers; notebook cards show the verified people on the team.
@@ -102,7 +102,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
         {children}
         <NewsWelcome peoplePath="/news/people" xUrl={ARC_DAILY_X_URL} discordUrl={ARC_DISCORD_URL} />
         <footer className="news-footer">
-          <strong>{NEWS_NAME}</strong><span>Editions by GPT-6 Sol · the wire by GPT-6 Luna</span>
+          <strong>{NEWS_NAME}</strong><span>AI-written editions and wire reports · writer credited on each story</span>
           <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>
           <p><a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Can't get enough ARC gossip? Come join us in the ARC Discord.</a></p>
           <Link href="/news/how-this-is-made">How this is made →</Link> · <Link href="/home">An ARC Explainer publication →</Link>

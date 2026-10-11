@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
-# Author: Claude Opus 5.5
-# Date: 2026-10-09
+# Author: GPT-6 / Codex; Claude Opus 5.5
+# Date: 2026-10-11
 # PURPOSE: The wire desk's deterministic plumbing. GPT-6 Luna, run by a Codex automation, writes
 # short sourced stories on both boards several times a day; this helper never calls a model, git or X.
 #   prepare   saves a dated brief from the live market digest (GET /api/news/markets, built by
@@ -401,7 +401,7 @@ def validate(story, brief, now=None):
     return board
 
 
-WRITERS = ('gpt-6-luna', 'claude-haiku-5-5')  # Haiku is the Claude Code backup (docs/newsroom/FALLBACK.md)
+WRITERS = ('gpt-6-luna', 'gpt-6.1-sol', 'claude-haiku-5-5')  # Explicit credits for heavier wire stories and backup runs.
 
 
 def publish(story, brief, root=ROOT, now=None, writer='gpt-6-luna'):

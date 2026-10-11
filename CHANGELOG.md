@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.3  Oct 11, 2026
+
+- **News credits follow the actual writer** (Author: GPT-6 / Codex). The edition helper now defaults to GPT-6.1 Sol, accepts both current and historical writer IDs, and the shared contract and server validator accept GPT-6.1 Sol for editions and heavier wire stories. Crawler HTML reuses the same writer credit as the browser; the footer and methods copy describe AI reporting without a fixed model claim. Corrected only the writer IDs on both October 11 evening articles after the Codex run metadata confirmed GPT-6.1 Sol. Original prose, observations and publication times remain intact. Updated the existing edition jobs to pass an explicit writer and the existing wire job to sweep both boards every two hours including midnight Eastern. Documented both changes in the newsroom guides. Reviewed the diff; no tests were run.
+
 ### Version 9.141.2  Oct 10, 2026
 
 - **The parody verse is out of the normie pop-up** (Author: Claude Sonnet 5.5). Boss: the Skee-Lo callback should live in the wording only. The four-line verse and its style are removed; the headline and the shot-caller and phone-number lines carry the nod. Files: `client/src/components/news/{NewsWelcome.tsx,news.css}`.

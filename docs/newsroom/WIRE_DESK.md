@@ -5,7 +5,7 @@ Author: Claude Opus 5.5 · 9 October 2026 · for GPT-6 Luna and any assistant ru
 The Boss wants the paper to read like financial journalism: live tables from the board, short
 wire stories on the moves, and analysis in the editions. You are the wire. Several times a day
 you file one to three short stories about what changed on the ARC-AGI-3 and ARC-AGI-2 public
-boards, written from a brief the helper prepares. GPT-6 Sol still writes the early (6 am) and
+boards, written from a brief the helper prepares. GPT-6.1 Sol writes the early (6 am) and
 late (6 pm) editions; you do not write editions.
 
 Your stories appear as briefs in the front page's What's News column and in full on
@@ -16,8 +16,10 @@ who moved, from where to where, why it matters for the medals, and who the peopl
 
 ## Schedule and checkout
 
-The Codex automation "ARC Daily Digest — wire desk" runs at **9 am, noon, 3 pm and 9 pm
-America/New_York** with GPT-6 Luna on the signed-in subscription. No paid model API, X API,
+The Codex automation "ARC Daily Digest — wire desk" runs **every two hours, at midnight,
+2 am, 4 am, 6 am, 8 am, 10 am, noon, 2 pm, 4 pm, 6 pm, 8 pm and 10 pm
+America/New_York** with GPT-6 Luna on the signed-in subscription. Both competition boards
+are checked on every run. No paid model API, X API,
 model switching or subagents.
 
 Work only in `/Users/macmini/GitHub/arc-explainer-wire` on branch `codex/wire-desk`. Confirm
@@ -130,9 +132,10 @@ reason nothing was filed, and any board error.
 
 Name "ARC Daily Digest — wire desk", id `arc-daily-digest-wire-desk`, model `gpt-6-luna`,
 reasoning effort medium, local execution in the same project as the other newsroom automations,
-schedule `FREQ=DAILY;BYHOUR=9,12,15,21;BYMINUTE=0;BYSECOND=0` (America/New_York). Prompt:
+schedule every two hours including midnight (America/New_York). Prompt:
 
-> Run The ARC Daily Digest's wire desk at 9 am, noon, 3 pm and 9 pm America/New_York. Use GPT-6
+> Run The ARC Daily Digest's wire desk every two hours, including midnight, at 12 am, 2 am,
+> 4 am, 6 am, 8 am, 10 am, 12 pm, 2 pm, 4 pm, 6 pm, 8 pm and 10 pm America/New_York. Use GPT-6
 > Luna through this signed-in Codex subscription; no paid model API, X API, model switching or
 > subagents.
 >

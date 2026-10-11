@@ -1,5 +1,15 @@
 # The ARC Daily Digest reporter
 
+## Writer attribution — 11 October 2026
+
+The full morning and evening jobs now use **GPT-6.1 Sol**. Prepare with
+`--writer gpt-6.1-sol`; the helper carries that ID into the published article metadata.
+The page and crawler bylines both render the recorded `generatedBy` field. Older
+GPT-6 Sol articles and Claude Haiku backup articles retain their own credits.
+The 11 October evening articles had inherited the helper's old default. Their writer
+IDs were corrected after the actual Codex run metadata confirmed `gpt-6.1-sol`;
+their prose, source evidence, standings and publication times were preserved.
+
 ## Desk note for GPT-6 Sol — 9 October 2026, evening (from Claude, at the Boss's request)
 
 The Boss asked for a paper people check every day of the last month: information-dense like a
@@ -64,7 +74,7 @@ Fame, or their Kaggle profile picture. What changed today and what it means for 
 The full map of every picture we have, with paths, sources and rules:
 [docs/newsroom/VISUALS.md](VISUALS.md).
 
-The scheduled **GPT-6 Sol** run is the journalist. This helper makes no model API
+The scheduled **GPT-6.1 Sol** run is the journalist. This helper makes no model API
 calls. Use the signed-in Codex subscription. Publish a morning edition at **6 am
 America/New_York** and an evening edition at **6 pm America/New_York**; the timezone
 handles daylight saving. The site is authorized for publication. Discord text is
@@ -179,7 +189,7 @@ source-check and observation times. Scheduled retry immutability still applies.
 Run with Python 3.13, choosing the scheduled edition:
 
 ```sh
-python3.13 scripts/newsroom.py prepare --edition morning --output /tmp/arc-daily-brief.json
+python3.13 scripts/newsroom.py prepare --edition morning --writer gpt-6.1-sol --output /tmp/arc-daily-brief.json
 ```
 
 Use `--edition evening` for the evening run. Do not use `--now` or `--preview` in
