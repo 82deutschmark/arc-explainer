@@ -287,6 +287,18 @@ def add_edition_intake(item, competition, actual_now, root=ROOT):
                 limits.append(f'{path.name}: {error}')
         stories[field].sort(key=lambda story: (story['publishedAt'], story['id']))
     assignments = open_editorial_assignments(root, competition, cutoff)
+    for assignment in assignments:
+        if assignment.get('targetEditionId') != base['id'] or assignment.get('placement') != 'front-page-feature':
+            continue
+        feature_id = assignment['featureId']
+        if not isinstance(feature_id, str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', feature_id):
+            raise ValueError('invalid reserved front-page feature ID')
+        feature_path = directory / 'dispatches' / f'{feature_id}.json'
+        feature = validate_dispatch(load(feature_path))
+        if feature['competition'] != competition or stamp(feature['publishedAt']) > cutoff:
+            raise ValueError('reserved front-page feature does not belong to this competition/cutoff')
+        base['frontPageFeatureId'] = feature['id']
+        evidence['frontPageFeatureId'] = feature['id']
     item['intake'] = {'since': iso(since), 'through': iso(cutoff),
                       'previousEditionId': previous['id'] if previous else None,
                       **stories, 'editorialAssignments': assignments, 'limitations': limits}
@@ -516,10 +528,14 @@ def publish(draft, brief, root=ROOT):
 
 def validate_dispatch(draft):
     required = {'id', 'competition', 'publishedAt', 'headline', 'sections', 'sources'}
-    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy'}:
+    if not isinstance(draft, dict) or not required <= draft.keys() or set(draft) - required - {'image', 'interpretation', 'generatedBy', 'commissionedBy', 'editorNote'}:
         raise ValueError('invalid dispatch fields')
     if 'generatedBy' in draft and draft['generatedBy'] not in WRITERS:
         raise ValueError('invalid dispatch writer')
+    if 'commissionedBy' in draft and draft['commissionedBy'] != 'mark-barney':
+        raise ValueError('unknown commissioning editor')
+    if 'editorNote' in draft:
+        text(draft['editorNote'], 'editor note', 700)
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,99}', draft['id']) or draft['competition'] not in FEATURED:
         raise ValueError('invalid dispatch identity')
     published = contract_stamp(draft['publishedAt'])

@@ -23,6 +23,7 @@ const text = z.string().min(1).max(20000);
 export const newsDispatchSchema = z.object({
   id: safeId, competition, publishedAt: stamp, headline: text.max(240),
   generatedBy: z.enum(NEWS_EDITION_WRITERS).optional(),
+  commissionedBy: z.literal('mark-barney').optional(), editorNote: text.max(700).optional(),
   sections: z.array(z.object({ heading: text.optional(), text: text.max(2500), sourceIds: z.array(z.string()).min(1) })).min(1).max(5),
   sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   interpretation: text.max(700).optional(),
@@ -39,6 +40,7 @@ export const newsDispatchSchema = z.object({
 });
 export const newsArticleSchema = z.object({
   id: safeId, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), edition: z.enum(['morning', 'evening']), competition,
+  frontPageFeatureId: safeId.optional(),
   headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1) })).min(1),
   teamIds: z.array(z.string().regex(/^\d+$/)), sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   publishedAt: stamp, dataAsOf: stamp, baselineAt: stamp.nullable(), generatedBy: z.enum(NEWS_EDITION_WRITERS),

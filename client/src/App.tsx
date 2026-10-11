@@ -1,6 +1,6 @@
 /*
-Author: GPT-6 Sol / Codex
-Date: 2026-10-09
+Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+Date: 2026-10-11
 PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
          including ARC3 review tooling and supporting newspaper people, community and method routes.
@@ -46,6 +46,7 @@ const News = lazy(() => import("@/pages/News"));
 const NewsPeople = lazy(() => import("@/pages/NewsPeople"));
 const NewsCommunity = lazy(() => import("@/pages/NewsCommunity"));
 const NewsMethod = lazy(() => import("@/pages/NewsMethod"));
+const NewsStaff = lazy(() => import("@/pages/NewsStaff"));
 const NewsWire = lazy(() => import("@/pages/NewsWire"));
 const NewsArticle = lazy(() => import("@/pages/NewsArticle"));
 const NewsCompetitors = lazy(() => import("@/pages/NewsCompetitors"));
@@ -178,6 +179,7 @@ function Router() {
         <Route path="/news/people/:personId" component={NewsPeople} />
         <Route path="/news/community" component={NewsCommunity} />
         <Route path="/news/how-this-is-made" component={NewsMethod} />
+        <Route path="/news/staff" component={NewsStaff} />
         <Route path="/news/wire" component={NewsWire} />
         <Route path="/news/:articleId" component={NewsArticle} />
 

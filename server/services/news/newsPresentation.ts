@@ -27,6 +27,7 @@ import {
   type NewsPerson, type NewsSocialPost, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath,
 } from '../../../shared/news';
 import { NEWS_METHOD } from '../../../shared/newsMethod';
+import { NEWS_STAFF_PATH, NEWS_HUMAN_EDITOR, NEWS_STAFF_WRITERS, NEWS_STAFF_TOOL_CREDIT } from '../../../shared/newsStaff';
 import { escapeHtml as esc, SITE_ORIGIN, completeMeta } from '../../../shared/seo';
 import { getNewsIndex } from './newsStore';
 export const boardPath = (competition: string) => competition === 'arc-2' ? '/kaggle-leaderboard/arc-2' : '/kaggle-leaderboard';
@@ -94,6 +95,14 @@ function communityMeta(posts: NewsSocialPost[], articles: NewsArticle[]): RouteM
 function methodMeta(articles: NewsArticle[]): RouteMetaTags {
   return completeMeta({ ...ROUTE_META_TAGS['/news/how-this-is-made'], ...cardFor(articles), bodyHtml: `<main><h1>How This Is Made</h1>${NEWS_METHOD.map(section => `<section><h2>${esc(section.heading)}</h2><p>${esc(section.text)}</p></section>`).join('')}<p><a href="/feedback">Feedback and corrections</a> · <a href="/news">Front page</a></p></main>` });
 }
+function editorCreditHtml(note?: string): string {
+  const editor = NEWS_HUMAN_EDITOR;
+  return `<aside class="news-editor-credit"><a href="${esc(editor.portrait.src)}"><img src="${esc(editor.portrait.src)}" alt="${esc(editor.portrait.alt)}" width="112" height="112"/></a><div><strong>Commissioned by <a href="${NEWS_STAFF_PATH}">${esc(editor.name)}</a></strong><span>${esc(editor.role)}</span>${note ? `<p>${esc(note)}</p>` : ''}<small>Editorial portrait · <a href="${NEWS_STAFF_PATH}">About the Staff</a></small></div></aside>`;
+}
+function staffMeta(): RouteMetaTags {
+  const editor = NEWS_HUMAN_EDITOR;
+  return completeMeta({ ...ROUTE_META_TAGS[NEWS_STAFF_PATH], bodyHtml: `<main><h1>About the Staff</h1><section><figure><img src="${esc(editor.portrait.src)}" alt="${esc(editor.portrait.alt)}" width="320" height="320"/><figcaption>${esc(editor.portrait.caption)}</figcaption></figure><h2>${esc(editor.name)}</h2><p>${esc(editor.role)}</p><p>${esc(editor.description)}</p></section><h2>The writing desks</h2>${NEWS_STAFF_WRITERS.map(writer => `<section><h3>${esc(writer.name)}</h3><p>${esc(writer.role)}</p><p>${esc(writer.description)}</p></section>`).join('')}<h2>The newsroom tools</h2><p>${esc(NEWS_STAFF_TOOL_CREDIT)}</p><p><a href="/news">Front page</a> · <a href="/news/how-this-is-made">How this is made</a></p></main>` });
+}
 function wireMeta(wire: NewsWireStory[], articles: NewsArticle[]): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news/wire'], ...cardFor(articles) });
   return { ...tags, jsonLd: collection(tags, wire.map(story => ({ name: story.headline, path: wirePath(story.id) }))),
@@ -101,7 +110,7 @@ function wireMeta(wire: NewsWireStory[], articles: NewsArticle[]): RouteMetaTags
 }
 function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire: NewsWireStory[]): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news'], ...cardFor(articles) });
-  const dispatchHtml = dispatches.map(dispatch => `<article id="${esc(dispatch.id)}"><p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p><h2>${esc(dispatch.headline)}</h2>${dispatch.image ? `<figure><img src="${esc(dispatch.image.src)}" alt="${esc(dispatch.image.alt)}"/><figcaption>${esc(dispatch.image.caption)}</figcaption></figure>` : ''}${dispatch.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}${dispatch.interpretation ? `<p><strong>The ARC Daily Digest’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('');
+  const dispatchHtml = dispatches.map(dispatch => `<article id="${esc(dispatch.id)}"><p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p><h2>${esc(dispatch.headline)}</h2>${dispatch.image ? `<figure><img src="${esc(dispatch.image.src)}" alt="${esc(dispatch.image.alt)}"/><figcaption>${esc(dispatch.image.caption)}</figcaption></figure>` : ''}${dispatch.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}${dispatch.interpretation ? `<p><strong>The ARC Daily Digest’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('');
   return { ...tags, jsonLd: collection(tags, [...dispatches.map(dispatch => ({ name: dispatch.headline, path: `/news#${dispatch.id}` })), ...articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))]),
     bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Early (6 am) and late (6 pm Eastern) editions from both Kaggle competitions, short wire stories through the day, and the live public boards: leaders, medal lines, the past day's movers and where past prize winners stand, all from recorded leaderboard observations and cited sources.</p><p><a href="/news/wire">The wire</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a></p>${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${dispatchHtml}${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3><p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
 }
@@ -122,6 +131,7 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   if (route === '/news/people') return { status: 200, tags: peopleMeta(people, articles) };
   if (route === '/news/community') return { status: 200, tags: communityMeta(social, articles) };
   if (route === '/news/how-this-is-made') return { status: 200, tags: methodMeta(articles) };
+  if (route === NEWS_STAFF_PATH) return { status: 200, tags: staffMeta() };
   const personRoute = route.match(/^\/news\/people\/([a-z0-9-]+)$/);
   if (personRoute) { const person = people.find(item => item.id === personRoute[1]); if (person) return { status: 200, tags: peopleMeta(people, articles, person) }; }
   const profile = route.match(/^\/news\/competitors\/([a-z0-9-]+)$/);
@@ -141,6 +151,7 @@ export function newsSitemapEntries(): { url: string; lastmod?: string }[] {
     { url: `${SITE_ORIGIN}/news/people`, lastmod: latest(people.flatMap(person => [...person.accounts.map(account => account.checkedAt), ...person.memberships.map(member => member.lastObservedAt)])) },
     { url: `${SITE_ORIGIN}/news/community`, lastmod: latest(social.map(post => post.checkedAt)) },
     { url: `${SITE_ORIGIN}/news/how-this-is-made` },
+    { url: `${SITE_ORIGIN}${NEWS_STAFF_PATH}` },
     ...people.map(person => ({ url: `${SITE_ORIGIN}${personPath(person.id)}`, lastmod: latest([...person.accounts.map(account => account.checkedAt), ...person.memberships.map(member => member.lastObservedAt)]) })),
     ...articles.map(article => ({ url: `${SITE_ORIGIN}${newsArticlePath(article.id)}`, lastmod: article.publishedAt })),
     ...competitors.map(record => ({ url: `${SITE_ORIGIN}${competitorPath(record.id)}`, lastmod: record.lastObservedAt })),

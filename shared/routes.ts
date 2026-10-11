@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Sol / Codex
- * Date: 2026-10-09
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+ * Date: 2026-10-11
  * PURPOSE: Centralized public route descriptions and indexing policy for server HTML,
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
@@ -29,6 +29,7 @@
 
 import { SLIPPERY_SEVEN } from './arc3Games/slipperySeven';
 import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_SECTION_CARD_ALT, NEWS_SECTION_CARD_PATH } from './news';
+import { NEWS_STAFF_PATH, NEWS_STAFF_TITLE, NEWS_STAFF_DESCRIPTION, NEWS_HUMAN_EDITOR } from './newsStaff';
 
 export interface RouteMetaTags {
   title: string;
@@ -93,6 +94,7 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
   '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
   '/news/how-this-is-made': { title: 'How This Is Made | The ARC Daily Digest', description: 'Sources, AI drafting, edition cutoffs, people records and sponsorship at the ARC Daily Digest.', url: `${SITE}/news/how-this-is-made`, ...NEWS_CARD },
+  [NEWS_STAFF_PATH]: { title: NEWS_STAFF_TITLE, description: NEWS_STAFF_DESCRIPTION, url: `${SITE}${NEWS_STAFF_PATH}`, image: `${SITE}${NEWS_HUMAN_EDITOR.portrait.src}`, imageAlt: NEWS_HUMAN_EDITOR.portrait.alt, imageWidth: 1024, imageHeight: 1024 },
   '/home': {
     title: 'ARC Explainer Resource Hub — games, guides and results',
     description: 'Find Human ARC, Space Force Mission Control, ARC-AGI-3 game guides, human and AI results, and archived benchmark analyses.',

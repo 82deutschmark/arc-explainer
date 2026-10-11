@@ -1,5 +1,5 @@
-/* Author: GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-09
+/* Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 2026-10-11
  * PURPOSE: The ARC Daily Digest's printed look, for every newspaper route: front page, wire,
  * articles, notebook, people, community and method pages, and the disclosed VoynichLabs units.
  * 09-Oct-2026 (Claude Opus 5.5): rebuilt as a broadsheet per the Boss ("information-dense, like a
@@ -359,6 +359,22 @@
 .news-community-list { max-width: 800px; }
 .news-community-list .news-story { padding: 18px 0; border-bottom: 1px solid var(--hair); }
 .news-method h2 { font-size: 22px; }
+.news-staff-human { display: grid; grid-template-columns: minmax(180px, 320px) minmax(0, 1fr); gap: 24px; align-items: start; margin-bottom: 28px; }
+.news-staff-human figure { margin: 0; }
+.news-staff-human img { width: 100%; height: auto; border: 1px solid var(--ink); }
+.news-staff-human figcaption { font: italic 12px/1.5 var(--serif); color: var(--muted); }
+.news-staff-role { font: 700 12px/1.5 var(--sans); }
+.news-staff-writer { padding: 14px 0; border-top: 1px solid var(--hair); }
+.news-staff-writer dt { font: 700 21px/1.25 var(--serif); }
+.news-staff-writer dt span { display: block; margin-top: 4px; font: 700 11px/1.5 var(--sans); color: var(--muted); }
+.news-staff-writer dd { margin: 8px 0 0; }
+.news-editor-credit { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; clear: both; margin: 18px 0; padding-top: 12px; border-top: 1px solid var(--hair); }
+.news-editor-credit img { display: block; width: 112px; height: auto; border: 1px solid var(--ink); }
+.news-editor-credit strong, .news-editor-credit span, .news-editor-credit small { display: block; }
+.news-editor-credit strong { font: 700 14px/1.4 var(--serif); }
+.news-editor-credit span, .news-editor-credit small { margin-top: 4px; font: 11px/1.5 var(--sans); color: var(--muted); }
+.news-editor-credit p { margin: 7px 0; font: 12px/1.5 var(--serif); }
+@media (max-width: 640px) { .news-staff-human { grid-template-columns: 1fr; } .news-staff-human figure { max-width: 320px; } }
 
 /* Directory entries are ruled columns, not cards. */
 .news-notebook-entry, .news-person-card { display: flex; flex-direction: column; padding: 8px 0 14px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--hair); }

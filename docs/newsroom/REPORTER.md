@@ -140,6 +140,27 @@ board achievement is independently reportable. Verify the Kaggle/human account l
 before combining their records, and distinguish the wire's rolling day from the
 edition's comparison window. No fresh net score gain is required for a worthwhile profile.
 
+### Commissioned features and the staff page
+
+Mark Barney is the head human editor. His editor portrait with the Yorkies and GPU
+rig lives in the shared staff record; his Kaggle competitor portrait stays in the
+people ledger. `/news/staff` identifies the human editor and every supported writer.
+Commissioned dispatches record `commissionedBy: "mark-barney"` and may have a short
+`editorNote`; browser and crawler HTML show the editor credit and staff portrait.
+
+For a front-page reservation, an assignment supplies `targetEditionId`,
+`placement: "front-page-feature"` and `featureId`. Preparation sets the protected
+`articleBase.frontPageFeatureId`. Preserve it. The front page prints that feature
+in full above the edition recap, keeping its commissioning credit. Develop and cite
+the feature in the edition, and record its disposition normally.
+
+The Peter Findley feature is reserved for the October 12 morning ARC-AGI-3 issue.
+Mark commissioned analysis for knowledgeable ARC readers: no benchmark introduction.
+He supplies the account identification from Peter's Discord handle; the feature's
+short editor note attributes it to him and keeps independent confirmation distinct.
+Questions about harness engineering and learned judgment are editorial analysis,
+not claims about a method the desk has established.
+
 Maintain `content/news/people.json` alongside the team notebook. A stable person
 record connects only directly verified accounts to dated memberships keyed by
 competition ID, season and team ID. Publishing adds observations for already

@@ -3,7 +3,7 @@
     "id": "peter-findley-human-mastery-feature",
     "competition": "arc-3",
     "createdAt": "2026-10-11T22:23:41.321704Z",
-    "title": "Peter Findley: human game mastery and the AI contest",
+    "title": "Commissioned Peter Findley analysis for the morning front page",
     "priority": "Boss-requested feature",
     "status": "pending",
     "teamIds": [
@@ -16,13 +16,17 @@
       "Peter Findley",
       "Peter_Findley"
     ],
-    "instructions": "Give the human mastery angle a substantial sourced feature, rather than only a mover paragraph. Human Peter_Findley shares the lowest recorded action count for 100% WIN entries across all 25 public games. Verify the connection to Kaggle raist321 before treating both records as one person. Domain knowledge is a reporting question, not an established cause of the Kaggle result. A different evening baseline does not erase a dated move inside the earlier wire’s rolling 24-hour window. Use exact observation dates; do not recast that earlier move as a new evening or overnight gain. If identity is still unresolved, cover the independently verified human achievement or carry the feature forward and tell Boss the concrete limit.",
+    "instructions": "Head human editor Mark Barney officially commissioned this analysis and requested a prominent place on the October 12 morning front page. Use the polished feature identified by featureId in full; retain its commissioning credit and editor portrait. Write for informed ARC readers: no explanation of what ARC-AGI-3 is. Develop the questions about human mastery, what Peter has learned, and whether the advantage is harness engineering, abstraction, experimental judgment or making shared components work reliably. Do not invent his method or imply he used a public notebook; use questions and labelled editorial interpretation. Mark identifies raist321 and Peter_Findley as the same person based on Peter’s Discord handle; keep that attribution in the editor note rather than pretending independent cross-platform verification. Keep dated score events distinct from new morning gains.",
     "sourceUrls": [
       "https://www.kaggle.com/raist321",
       "https://arcprize.org/arc-agi/3/leaderboard",
       "https://arc.markbarney.net/news/wire#2026-10-11-1500-arc-3-peter-findley-charges-into-top-50",
       "https://arc.markbarney.net/news#2026-10-11-peter-findley-human-mastery"
     ],
-    "verificationNotes": "October 11 evening desk confirmed all 25 shared human minima, but did not find a direct link between raist321 and Peter_Findley. Its prior-evening baseline showed the Kaggle score already present; that is a different reporting window from the wire. Do not silently discard the feature merely because there is no new net gain. A separate sourced human-mastery feature was filed on October 11 after checking all 25 boards again. Carry it into the next edition; the cross-platform identity question remains open."
+    "verificationNotes": "The 25 shared human perfect-win action minima were independently checked on October 11. The human editor supplied the cross-platform identification based on Peter’s Discord handle and authorised this commissioned analysis. No independent profile link or submission method is established. The Yorkies/GPU portrait is for Mark’s editor role; his Kaggle competitor avatar remains separate.",
+    "targetEditionId": "2026-10-12-morning-arc-3",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-11-peter-findley-human-mastery",
+    "commissionedBy": "mark-barney"
   }
 ]

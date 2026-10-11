@@ -19,6 +19,7 @@ import { StoryPreview, sortedArticles } from './NewsDesk';
 import { BoardTable, MarketTicker, marketBoards } from './NewsMarkets';
 import { PersonPortrait, StoryFeature } from './NewsPeople';
 import { WhatsNews } from './NewsWire';
+import { NewsEditorCredit } from './NewsEditorCredit';
 
 function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch; lead?: boolean }) {
   return dispatch.image ? <figure className="news-dispatch-art"><a href={dispatch.image.src} aria-label="Open the full editorial illustration"><img src={dispatch.image.src} alt={dispatch.image.alt} loading={lead ? 'eager' : 'lazy'} /></a><figcaption>{dispatch.image.caption}</figcaption></figure> : null;
@@ -26,7 +27,7 @@ function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch; lead?
 
 export function DispatchPreview({ dispatch, lead = false, people = [] }: { dispatch: NewsDispatch; lead?: boolean; people?: NewsPerson[] }) {
   return <article id={dispatch.id} className={`news-story news-dispatch${lead ? ' news-lead' : ''}`}>
-    <div className="news-kicker"><span>{competitionName(dispatch.competition)}</span><span>From the contenders</span></div>
+    <div className="news-kicker"><span>{competitionName(dispatch.competition)}</span><span>{dispatch.commissionedBy ? 'Commissioned analysis' : 'From the contenders'}</span></div>
     <h2><a href={`#${dispatch.id}`}>{dispatch.headline}</a></h2>
     <div className="news-byline"><time dateTime={dispatch.publishedAt}>{newsDate(dispatch.publishedAt, true)}</time>{dispatch.generatedBy && <> · {writerCredit(dispatch.generatedBy)}</>}</div>
     <DispatchArt dispatch={dispatch} lead={lead} />
@@ -40,6 +41,7 @@ export function DispatchPreview({ dispatch, lead = false, people = [] }: { dispa
     </section>)}
     <StoryFeature person={featuredPerson(dispatch, people)} competition={dispatch.competition} />
     {dispatch.interpretation && <p className="news-dispatch-take"><strong>The ARC Daily Digest’s take</strong> {dispatch.interpretation}</p>}
+    {dispatch.commissionedBy && <NewsEditorCredit note={dispatch.editorNote} />}
   </article>;
 }
 
@@ -53,16 +55,20 @@ function CompetitionDesk({ articles, dispatches, competition, lead = false, peop
   if (!first) return <p className="news-muted">No published coverage yet. <Link href={competition === 'arc-3' ? '/kaggle-leaderboard' : '/kaggle-leaderboard/arc-2'}>Open the live board →</Link></p>;
   // Same-day artwork keeps its dated caption when an edition succeeds a dispatch.
   const companionArt = 'article' in first ? dispatches.find(dispatch => dispatch.competition === competition && dispatch.image && newsDate(dispatch.publishedAt) === newsDate(first.publishedAt)) : undefined;
+  const reservedFeatureId = 'article' in first ? first.article.frontPageFeatureId : undefined;
+  const reservedFeature = reservedFeatureId
+    ? dispatches.find(dispatch => dispatch.id === reservedFeatureId && dispatch.competition === competition) : undefined;
   return <div className={`news-desk${lead ? ' is-lead' : ''}`}>
+    {reservedFeature && <DispatchPreview dispatch={reservedFeature} lead={lead} people={people} />}
     {'article' in first
-      ? <StoryPreview article={first.article} lead={lead} people={people} sections={lead ? first.article.sections.length : 2} art={lead && companionArt ? <DispatchArt dispatch={companionArt} lead /> : undefined} />
+      ? <StoryPreview article={first.article} lead={lead && !reservedFeature} people={people} sections={lead && !reservedFeature ? first.article.sections.length : 2} art={lead && companionArt ? <DispatchArt dispatch={companionArt} lead /> : undefined} />
       : <DispatchPreview dispatch={first.dispatch} lead={lead} people={people} />}
-    {stories.length > 1 && <ul className="news-latest-list">{stories.slice(1, 4).map(story => <li key={story.id}>
+    {stories.length > 1 && <ul className="news-latest-list">{stories.slice(1).filter(story => story.id !== reservedFeature?.id).slice(0, 3).map(story => <li key={story.id}>
       <span>{'article' in story ? editionLabel(story.article) : 'From the contenders'} · {newsDate(story.publishedAt)}</span>
       {'article' in story ? <Link href={newsArticlePath(story.id)}>{story.article.headline}</Link> : <a href={`#${story.id}`}>{story.dispatch.headline}</a>}
     </li>)}</ul>}
     {/* Older dispatches keep their permanent front-page anchors after a new edition leads. */}
-    {stories.slice(1).filter(story => 'dispatch' in story).map(story => 'dispatch' in story && <details className="news-older-dispatch" key={story.id}><summary>{story.dispatch.headline}</summary><DispatchPreview dispatch={story.dispatch} people={people} /></details>)}
+    {stories.slice(1).filter(story => 'dispatch' in story && story.id !== reservedFeature?.id).map(story => 'dispatch' in story && <details className="news-older-dispatch" key={story.id}><summary>{story.dispatch.headline}</summary><DispatchPreview dispatch={story.dispatch} people={people} /></details>)}
   </div>;
 }
 

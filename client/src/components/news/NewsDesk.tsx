@@ -1,5 +1,5 @@
 /**
- * Author: GPT-6 / Codex; GPT-6 Sol / Codex
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
  * Date: 2026-10-11
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
@@ -93,6 +93,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
             <Link href="/news/competitors">Notebook</Link>
             <Link href="/news/people">People</Link>
             <Link href="/news/community">Around the contests</Link>
+            <Link href="/news/staff">Staff</Link>
             <a href="/kaggle-leaderboard">ARC-AGI-3 board ↗</a>
             <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 board ↗</a>
             <a href="/human-records.html">Records ↗</a>
@@ -105,7 +106,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
           <strong>{NEWS_NAME}</strong><span>AI-written editions and wire reports · writer credited on each story</span>
           <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>
           <p><a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Can't get enough ARC gossip? Come join us in the ARC Discord.</a></p>
-          <Link href="/news/how-this-is-made">How this is made →</Link> · <Link href="/home">An ARC Explainer publication →</Link>
+          <Link href="/news/staff">About the Staff →</Link> · <Link href="/news/how-this-is-made">How this is made →</Link> · <Link href="/home">An ARC Explainer publication →</Link>
         </footer>
       </div>
     </div>

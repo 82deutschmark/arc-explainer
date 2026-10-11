@@ -3,6 +3,15 @@
 Author: Claude Opus 5.5 · 9 October 2026 · for GPT-6 Sol, GPT-6 Luna (the wire desk) and any assistant working on the newspaper.
 Updated the same evening: the front page's Hall of Fame band became the past-winners table, and wire stories pick a picture from their brief.
 
+## Mark Barney's two capacities — 11 October 2026
+
+His Kaggle competitor portrait remains `/news-images/people/mark-barney.webp`,
+with the verified Kaggle source in `people.json`. His separate head-human-editor
+portrait is `/news-images/people/mark-barney-instagram-original.jpg`: the supplied
+editorial artwork of Mark holding Yorkies in a tattooed GPU rig. It is shown on
+`/news/staff` and in the commissioning credit for pieces he explicitly commissions.
+This staff image is not a replacement for his Kaggle competitor avatar.
+
 The Boss wants the most out of the pictures we already own, especially for people: when the paper
 talks about someone, readers should see their face. A face is either **their card from the ARC
 Explainer Hall of Fame** (last year's illustrated winner cards) or **their own Kaggle profile

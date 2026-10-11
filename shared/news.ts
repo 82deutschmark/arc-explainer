@@ -26,6 +26,7 @@ export type NewsEdition = 'morning' | 'evening';
 /** Writer IDs remain stable in archived stories; scheduled editions now use GPT-6.1 Sol. */
 export const NEWS_EDITION_WRITERS = ['gpt-6-sol', 'gpt-6.1-sol', 'claude-haiku-5-5'] as const;
 export const NEWS_WIRE_WRITERS = ['gpt-6-luna', 'gpt-6.1-sol', 'claude-haiku-5-5'] as const;
+export type NewsWriter = typeof NEWS_EDITION_WRITERS[number] | typeof NEWS_WIRE_WRITERS[number];
 export interface NewsSource { id: string; title: string; url: string; accessedAt: string }
 export interface NewsSection { heading?: string; text: string; sourceIds: string[] }
 export interface NewsStat { teamId: string; name: string; rank: number; score: number; rankChange: number | null; scoreChange: number | null }
@@ -35,6 +36,8 @@ export interface NewsArticle {
   sources: NewsSource[]; publishedAt: string; dataAsOf: string;
   baselineAt: string | null; generatedBy: typeof NEWS_EDITION_WRITERS[number]; stats: NewsStat[];
   coverageNote: string; discord: string;
+  /** A commissioned feature reserved for this issue's front page. */
+  frontPageFeatureId?: string;
 }
 export interface CompetitorFact { text: string; sourceUrl: string; sourceTitle: string; checkedAt: string }
 export interface CompetitorRecord {
@@ -47,6 +50,8 @@ export interface NewsDispatch {
   sections: NewsSection[]; sources: NewsSource[]; interpretation?: string;
   /** Historical dispatches lack a writer ID; new features record their actual writer. */
   generatedBy?: typeof NEWS_EDITION_WRITERS[number];
+  commissionedBy?: 'mark-barney';
+  editorNote?: string;
   image?: { src: string; alt: string; caption: string };
 }
 /**
@@ -138,7 +143,7 @@ const WRITER_CREDITS = {
   'gpt-6-luna': 'GPT-6 Luna',
   'claude-haiku-5-5': 'Claude Haiku 5.5, backup desk',
 } as const;
-export const writerCredit = (generatedBy: NewsArticle['generatedBy'] | NewsWireStory['generatedBy']) =>
+export const writerCredit = (generatedBy: NewsWriter) =>
   WRITER_CREDITS[generatedBy];
 /** Wire stories live on one page, each at its own anchor. */
 export const wirePath = (id?: string) => id ? `/news/wire#${id}` : '/news/wire';

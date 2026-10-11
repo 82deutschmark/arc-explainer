@@ -1,13 +1,14 @@
 {
   "competition": "arc-3",
   "generatedBy": "gpt-6.1-sol",
-  "headline": "Peter_Findley’s 25-game mastery puts domain knowledge in the spotlight",
+  "headline": "Peter Findley’s next move: can human mastery become an AI edge?",
   "id": "2026-10-11-peter-findley-human-mastery",
-  "interpretation": "Deep domain knowledge could help a builder recognise useful observations, design better experiments and avoid wasted actions. Peter_Findley’s human record makes that possibility worth serious attention. The result to watch is whether that judgment becomes a method that adapts to games its author has never seen.",
+  "interpretation": "Deep domain knowledge could improve the questions a builder asks and the experiments an agent runs. Peter’s human record gives that possibility substance. We want to understand the decisions behind the result: the observations he valued, the waste he removed, and the parts of the harness he trusted.",
   "publishedAt": "2026-10-11T22:28:13.795773Z",
   "sections": [
     {
-      "heading": "A place at the top of every public game",
+      "heading": "A master’s record",
+      "text": "Peter Findley deserves closer attention. Our October 11 check found the Peter_Findley account sharing the fewest recorded actions for a perfect win on each of the 25 public games. Those minima are shared with other players, but the breadth is the point: every game, played to the best recorded standard. That is a human master’s record. It gives the interest around his competition entry a particularly compelling human dimension.",
       "sourceIds": [
         "human-r11l",
         "human-su15",
@@ -34,33 +35,31 @@
         "human-wa30",
         "human-re86",
         "human-lf52"
-      ],
-      "text": "Peter_Findley has a claim to attention that a Kaggle table cannot capture. A fresh check of all 25 official public-game human boards found the account sharing the lowest recorded action count among entries with a perfect 100% WIN on every game. Every minimum is shared with other players. This is mastery across the public set, measured in moves: reaching the finish, then matching the most economical successful route recorded on the board."
+      ]
     },
     {
-      "heading": "Knowing the game is a different kind of advantage",
-      "sourceIds": [
-        "human-cn04",
-        "arc3-launch",
-        "arc3-policy"
-      ],
-      "text": "ARC-AGI-3 asks an agent to enter an unfamiliar environment, discover how it works and work out what success looks like. That makes a player’s understanding an interesting part of the story. The human boards measure refined performances developed across attempts; they are a different lens from an agent learning a new game on first exposure. Peter_Findley’s record puts the execution side of that problem in unusually sharp focus."
-    },
-    {
-      "heading": "From practiced play to unfamiliar worlds",
-      "sourceIds": [
-        "arc3-policy",
-        "arc3-launch"
-      ],
-      "text": "A route learned on a public game does not establish performance on an unseen one. ARC Prize keeps evaluation tasks private to measure learning and adaptation. The question for builders is how much of an expert’s judgment can travel: which actions reveal useful information, when to abandon a failed idea, and how to turn a discovered rule into an efficient plan. Those are questions to investigate, rather than a method we can attribute to Peter_Findley from a leaderboard."
-    },
-    {
-      "heading": "The next reporting step",
+      "heading": "What has he learned?",
+      "text": "Human mastery could change the quality of the questions a builder asks. A practised player may recognise a useful observation sooner, retire a false theory before it burns the budget, or notice that a plan has drifted from what is actually on the board. The interesting unknown is which of those judgments Peter has made explicit in his agent—and which proved difficult to transfer. That is where a detailed account of his work could teach us something.",
       "sourceIds": [
         "human-cn04",
         "kaggle-profile"
-      ],
-      "text": "The desk is separately checking whether the official human account Peter_Findley is the same person as Kaggle’s raist321, whose profile displays Peter Findley. That connection has not yet been verified. The human achievement stands on its own; a claim that it powered a particular competition entry needs both a confirmed identity and evidence of the approach used."
+      ]
+    },
+    {
+      "heading": "Is it all harness engineering?",
+      "text": "Harness engineering is one plausible answer. Cleaner state tracking, better memory, a more useful action interface and a disciplined reset policy could give the model better conditions to work in. Human experience may shape those choices: knowing what deserves attention can influence what the harness preserves and what it discards. The explanations can overlap. We would like to understand which decisions made a difference in Peter’s entry.",
+      "sourceIds": [
+        "human-sp80",
+        "kaggle-profile"
+      ]
+    },
+    {
+      "heading": "The part we want to hear about",
+      "text": "If the starting point is a shared notebook, the instructive story would be the choices made around it: what he retained, replaced, simplified and tested. Which lessons from his own play earned their keep? A clear account of those decisions would be valuable beyond one leaderboard position. The story to pursue is how a human master turns good judgment into an agent’s choices.",
+      "sourceIds": [
+        "human-re86",
+        "kaggle-profile"
+      ]
     }
   ],
   "sources": [
@@ -215,22 +214,12 @@
       "url": "https://arcprize.org/arc-agi/3/leaderboard?task=lf52"
     },
     {
-      "accessedAt": "2026-10-11T22:28:13.795773Z",
-      "id": "arc3-launch",
-      "title": "ARC Prize — Announcing ARC-AGI-3",
-      "url": "https://arcprize.org/blog/arc-agi-3-launch"
-    },
-    {
-      "accessedAt": "2026-10-11T22:28:13.795773Z",
-      "id": "arc3-policy",
-      "title": "ARC Prize — Official Testing Policy",
-      "url": "https://arcprize.org/policy"
-    },
-    {
       "accessedAt": "2026-10-11T22:01:01Z",
       "id": "kaggle-profile",
       "title": "Peter Findley — Kaggle raist321 profile",
       "url": "https://www.kaggle.com/raist321"
     }
-  ]
+  ],
+  "commissionedBy": "mark-barney",
+  "editorNote": "Mark Barney, the commissioning editor, identifies Kaggle’s raist321 as Peter_Findley based on Peter’s Discord handle. The desk has not independently confirmed a cross-platform profile link."
 }
