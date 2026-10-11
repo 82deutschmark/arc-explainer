@@ -272,6 +272,66 @@
     "whyItMatters": "A direct research-participation lead; it is an invitation, not a claim about any current contestant’s approach."
   },
   {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-11T09:01:43Z",
+    "competitions": [],
+    "id": "2109100717596381405",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-11T01:56:10Z",
+    "storyUrl": null,
+    "summary": "Replying to a question about TPU sharding for his LLM post-training experiments, Chollet said the keras.distribution API takes care of it. This is a clarification of his earlier experiment note, not a release announcement.",
+    "threadId": "2109096597011534242",
+    "url": "https://x.com/fchollet/status/2109100717596381405",
+    "visibility": "public",
+    "whyItMatters": "Adds a concrete implementation detail to the previously archived research lead; follow up if the experiments are released."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-11T03:00:52Z",
+    "competitions": [],
+    "id": "2109096597011534242",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-11T01:39:48Z",
+    "storyUrl": null,
+    "summary": "Chollet said he has been trying LLM post-training experiments with KerasHub, JAX and TPUs, and might open-source some of the work. He did not announce a release or an ARC competition result.",
+    "threadId": null,
+    "url": "https://x.com/fchollet/status/2109096597011534242",
+    "visibility": "public",
+    "whyItMatters": "A research-direction note from an ARC Prize co-founder; revisit if he publishes the experiments."
+  },
+  {
+    "author": "82deutschmark",
+    "authorName": "Mark Barney",
+    "category": "banter",
+    "checkedAt": "2026-10-11T03:00:52Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109076505255145609",
+    "identitySourceUrl": "https://x.com/82deutschmark",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-11T00:19:58Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+    "summary": "Barney joked that he had reached the top ten in the ARC-AGI-3 Kaggle competition, linked the competition page and a video, and called himself a vibe coder. This is his own claim, not an independently checked standing.",
+    "threadId": null,
+    "url": "https://x.com/82deutschmark/status/2109076505255145609",
+    "visibility": "public",
+    "whyItMatters": "A current contender’s lighthearted reaction to a claimed top-ten position; verify the dated board before using the rank as fact."
+  },
+  {
     "author": "MindsAI_Jack",
     "authorName": "Jack Cole",
     "category": "community",
