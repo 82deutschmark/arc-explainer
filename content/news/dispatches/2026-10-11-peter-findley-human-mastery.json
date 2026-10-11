@@ -1,0 +1,236 @@
+{
+  "competition": "arc-3",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Peter_Findley’s 25-game mastery puts domain knowledge in the spotlight",
+  "id": "2026-10-11-peter-findley-human-mastery",
+  "interpretation": "Deep domain knowledge could help a builder recognise useful observations, design better experiments and avoid wasted actions. Peter_Findley’s human record makes that possibility worth serious attention. The result to watch is whether that judgment becomes a method that adapts to games its author has never seen.",
+  "publishedAt": "2026-10-11T22:28:13.795773Z",
+  "sections": [
+    {
+      "heading": "A place at the top of every public game",
+      "sourceIds": [
+        "human-r11l",
+        "human-su15",
+        "human-cd82",
+        "human-ft09",
+        "human-lp85",
+        "human-tn36",
+        "human-sp80",
+        "human-tr87",
+        "human-sc25",
+        "human-sb26",
+        "human-vc33",
+        "human-cn04",
+        "human-m0r0",
+        "human-tu93",
+        "human-sk48",
+        "human-s5i5",
+        "human-ka59",
+        "human-ar25",
+        "human-g50t",
+        "human-ls20",
+        "human-bp35",
+        "human-dc22",
+        "human-wa30",
+        "human-re86",
+        "human-lf52"
+      ],
+      "text": "Peter_Findley has a claim to attention that a Kaggle table cannot capture. A fresh check of all 25 official public-game human boards found the account sharing the lowest recorded action count among entries with a perfect 100% WIN on every game. Every minimum is shared with other players. This is mastery across the public set, measured in moves: reaching the finish, then matching the most economical successful route recorded on the board."
+    },
+    {
+      "heading": "Knowing the game is a different kind of advantage",
+      "sourceIds": [
+        "human-cn04",
+        "arc3-launch",
+        "arc3-policy"
+      ],
+      "text": "ARC-AGI-3 asks an agent to enter an unfamiliar environment, discover how it works and work out what success looks like. That makes a player’s understanding an interesting part of the story. The human boards measure refined performances developed across attempts; they are a different lens from an agent learning a new game on first exposure. Peter_Findley’s record puts the execution side of that problem in unusually sharp focus."
+    },
+    {
+      "heading": "From practiced play to unfamiliar worlds",
+      "sourceIds": [
+        "arc3-policy",
+        "arc3-launch"
+      ],
+      "text": "A route learned on a public game does not establish performance on an unseen one. ARC Prize keeps evaluation tasks private to measure learning and adaptation. The question for builders is how much of an expert’s judgment can travel: which actions reveal useful information, when to abandon a failed idea, and how to turn a discovered rule into an efficient plan. Those are questions to investigate, rather than a method we can attribute to Peter_Findley from a leaderboard."
+    },
+    {
+      "heading": "The next reporting step",
+      "sourceIds": [
+        "human-cn04",
+        "kaggle-profile"
+      ],
+      "text": "The desk is separately checking whether the official human account Peter_Findley is the same person as Kaggle’s raist321, whose profile displays Peter Findley. That connection has not yet been verified. The human achievement stands on its own; a claim that it powered a particular competition entry needs both a confirmed identity and evidence of the approach used."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-r11l",
+      "title": "Official ARC-AGI-3 human leaderboard — r11l",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=r11l"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-su15",
+      "title": "Official ARC-AGI-3 human leaderboard — su15",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=su15"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-cd82",
+      "title": "Official ARC-AGI-3 human leaderboard — cd82",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=cd82"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-ft09",
+      "title": "Official ARC-AGI-3 human leaderboard — ft09",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=ft09"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-lp85",
+      "title": "Official ARC-AGI-3 human leaderboard — lp85",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=lp85"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-tn36",
+      "title": "Official ARC-AGI-3 human leaderboard — tn36",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=tn36"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-sp80",
+      "title": "Official ARC-AGI-3 human leaderboard — sp80",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=sp80"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-tr87",
+      "title": "Official ARC-AGI-3 human leaderboard — tr87",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=tr87"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-sc25",
+      "title": "Official ARC-AGI-3 human leaderboard — sc25",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=sc25"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-sb26",
+      "title": "Official ARC-AGI-3 human leaderboard — sb26",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=sb26"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-vc33",
+      "title": "Official ARC-AGI-3 human leaderboard — vc33",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=vc33"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-cn04",
+      "title": "Official ARC-AGI-3 human leaderboard — cn04",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=cn04"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-m0r0",
+      "title": "Official ARC-AGI-3 human leaderboard — m0r0",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=m0r0"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-tu93",
+      "title": "Official ARC-AGI-3 human leaderboard — tu93",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=tu93"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-sk48",
+      "title": "Official ARC-AGI-3 human leaderboard — sk48",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=sk48"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-s5i5",
+      "title": "Official ARC-AGI-3 human leaderboard — s5i5",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=s5i5"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-ka59",
+      "title": "Official ARC-AGI-3 human leaderboard — ka59",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=ka59"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-ar25",
+      "title": "Official ARC-AGI-3 human leaderboard — ar25",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=ar25"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-g50t",
+      "title": "Official ARC-AGI-3 human leaderboard — g50t",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=g50t"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-ls20",
+      "title": "Official ARC-AGI-3 human leaderboard — ls20",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=ls20"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-bp35",
+      "title": "Official ARC-AGI-3 human leaderboard — bp35",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=bp35"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-dc22",
+      "title": "Official ARC-AGI-3 human leaderboard — dc22",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=dc22"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-wa30",
+      "title": "Official ARC-AGI-3 human leaderboard — wa30",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=wa30"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-re86",
+      "title": "Official ARC-AGI-3 human leaderboard — re86",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=re86"
+    },
+    {
+      "accessedAt": "2026-10-11T22:26:16.794869Z",
+      "id": "human-lf52",
+      "title": "Official ARC-AGI-3 human leaderboard — lf52",
+      "url": "https://arcprize.org/arc-agi/3/leaderboard?task=lf52"
+    },
+    {
+      "accessedAt": "2026-10-11T22:28:13.795773Z",
+      "id": "arc3-launch",
+      "title": "ARC Prize — Announcing ARC-AGI-3",
+      "url": "https://arcprize.org/blog/arc-agi-3-launch"
+    },
+    {
+      "accessedAt": "2026-10-11T22:28:13.795773Z",
+      "id": "arc3-policy",
+      "title": "ARC Prize — Official Testing Policy",
+      "url": "https://arcprize.org/policy"
+    },
+    {
+      "accessedAt": "2026-10-11T22:01:01Z",
+      "id": "kaggle-profile",
+      "title": "Peter Findley — Kaggle raist321 profile",
+      "url": "https://www.kaggle.com/raist321"
+    }
+  ]
+}
