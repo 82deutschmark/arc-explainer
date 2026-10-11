@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-11T15:32:29Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Md Boktiar Mahbub Murad surges into ARC-3 gold places",
+  "id": "2026-10-11-1200-arc-3-murad-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-11T16:00:14Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Md Boktiar Mahbub Murad jumped from 363rd to 18th, gaining 6.83 points to reach 36.89 and move into the 18 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That puts the newcomer at the edge of the public gold band as the race tightens near its cutoff."
+    }
+  ],
+  "since": "2026-10-10T15:30:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T15:59:45Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15487522"
+  ]
+}

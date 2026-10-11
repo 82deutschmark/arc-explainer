@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-11T15:32:30Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "めめっち vaults from 1,112th to 22nd on ARC-2",
+  "id": "2026-10-11-1200-arc-2-me-me-chi-climbs-to-22",
+  "personIds": [],
+  "publishedAt": "2026-10-11T16:00:14Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "めめっち gained 7.09 points to reach 36.81, leaping from 1,112th to 22nd on the public ARC-AGI-2 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move brings the team to 22nd on the public board."
+    }
+  ],
+  "since": "2026-10-10T15:30:19Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T15:59:45Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16945216"
+  ]
+}

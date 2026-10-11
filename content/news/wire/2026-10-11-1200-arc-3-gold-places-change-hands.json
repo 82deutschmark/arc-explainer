@@ -1,0 +1,38 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-11T15:32:29Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Three teams enter ARC-3 gold places as three fall out",
+  "id": "2026-10-11-1200-arc-3-gold-places-change-hands",
+  "personIds": [],
+  "publishedAt": "2026-10-11T16:00:14Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Son & Mark & Ronen climbed from 20th to 7th at 39.24, while AFF AI CLUB rose from 29th to 9th at 38.98. Both moves put the teams among the 18 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "AI_hwlee and YUTO KOJIMA fell from the gold places to 19th and 21st, respectively, as the cutoff shifted."
+    }
+  ],
+  "since": "2026-10-10T15:30:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-11T15:59:45Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15605182",
+    "16754530",
+    "15513620",
+    "16081764"
+  ]
+}
