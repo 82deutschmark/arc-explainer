@@ -1,5 +1,9 @@
 # The ARC Daily Digest reporter
 
+## Native edition illustrations authorized October 12
+
+After writing each manuscript, follow [ART_DESK.md](ART_DESK.md). The Boss now authorizes native Codex image generation for consequential moves by contenders with saved references, and new artwork assets/records in the same edition commit. Extend the existing artwork helper, generate clean scenes natively, append headline and scores from the exact fresh edition brief, and attach the bound image before validation. Quiet boards need no new art. The October 12 evening Chen lead is an explicit assignment; its wording and growing-bunnies scene depend on fresh evidence. Scheduled reporters still do not edit application code or automations.
+
 ## Writer attribution — 11 October 2026
 
 The morning and evening editions, research desk, personal briefings and 2 pm X recap
@@ -244,10 +248,10 @@ python3.13 scripts/newsroom.py dispatch-publish --draft /tmp/arc-dispatch.json
 
 Dispatch IDs are immutable. Stage their exact `content/news/dispatches/<id>.json`
 alongside any authorized assets and notebook changes; use the same safe push
-procedure as an edition. Scheduled reporting runs still edit only content/news;
-new illustration production is separate authorized design work. Never fetch or
-generate an image on the assumption that publication was approved. One standing
-exception, approved by the Boss on 9 October 2026: the portrait command saves a
+procedure as an edition. Scheduled reporting runs may edit the intended news content,
+save verified Kaggle portraits under the Boss's 9 October authorization, and produce
+native edition artwork through ART_DESK.md under the Boss's 12 October authorization.
+Other illustration work follows the user's requested scope. The portrait command saves a
 verified person's own Kaggle picture to `client/public/news-images/people/`.
 An explicit user-directed editorial copy correction may update a dispatch in a
 reviewed Git commit with a changelog entry. Preserve its original publication,

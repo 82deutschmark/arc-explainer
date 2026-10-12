@@ -137,10 +137,14 @@ A person who joins the ledger and already has card art here gets a Hall of Fame 
 face from their own single-person card into `news-images/people/<id>.webp` (design work, done by
 hand; see the crops above for framing) and add the matching `hallOfFame` entry.
 
+## Native edition illustration workflow
+
+The Boss authorized a reusable native image-generation stage on October 12. Follow [ART_DESK.md](ART_DESK.md), using the curated reference registry and verified portraits for consequential moves. The existing newsroom_artwork.py now plans, registers, composes and attaches an immutable edition image; headline and scores come from the exact edition brief. The publisher checks its provenance and image bytes. Chen’s new two-bunny/five-spider scene is ready for tonight, with a new evening scoreboard required. Its five spiders and graphics-card machine are editorial choices, not roster or hardware facts.
+
 ## Other pictures the paper can link
 
 - Dispatch illustrations: `client/public/news-images/*.webp` (e.g. `2026-10-09-rabbit-and-spider.webp`).
-  New illustrations are separately authorized design work; label AI art as editorial artwork.
+  Native edition illustrations are authorized through ART_DESK.md; other illustration work still follows the user’s requested scope. Label AI art as editorial artwork.
 - ARC-AGI-3 game pictures: `client/public/<game>.png` and per-level shots (`ls20-lvl4.png` …),
   `client/public/arc3-levels/` (one folder per game); game guides at `/arc3/games`.
 - Leaderboard graphics: `/kaggle-leaderboard#medal-race`, `#score-history`, `/kaggle-leaderboard/arc-2`.

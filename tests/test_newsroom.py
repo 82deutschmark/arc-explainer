@@ -1,5 +1,5 @@
-# Author: GPT-6 Sol / Codex
-# Date: 2026-10-09
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+# Date: 2026-10-12
 # PURPOSE: Verify newsroom time boundaries, incomplete coverage, article and dispatch contracts, immutable publication, isolated from current research.
 # SRP/DRY check: Pass — exercises production preparation/validation/publication functions.
 import copy
@@ -39,7 +39,7 @@ def bundle(preview=False):
 def draft(brief):
     return {'id': brief['competitions']['arc-3']['articleBase']['id'], 'headline': 'Alpha leads',
             'dek': 'The standings tighten.', 'sections': [{'text': 'Alpha holds the lead.', 'sourceIds': ['board']}],
-            'teamIds': ['1'], 'discord': 'Alpha leads. @everyone'}
+            'teamIds': ['1'], 'discord': 'Alpha leads. @everyone', 'intakeReview': []}
 
 
 class NewsroomTests(unittest.TestCase):
@@ -116,7 +116,7 @@ class NewsroomTests(unittest.TestCase):
         b = bundle()
         d = draft(b)
         article, _ = n.validate(d, b)
-        self.assertEqual(article['generatedBy'], 'gpt-6-sol')
+        self.assertEqual(article['generatedBy'], 'gpt-6.1-sol')
         self.assertIn('@\u200beveryone', article['discord'])
         self.assertEqual(set(article), {'id', 'date', 'edition', 'competition', 'headline', 'dek', 'sections', 'teamIds',
                                       'sources', 'publishedAt', 'dataAsOf', 'baselineAt', 'generatedBy', 'stats', 'coverageNote', 'discord'})
@@ -188,7 +188,7 @@ class BackupWriterTests(unittest.TestCase):
         now = n.stamp('2026-10-07T22:00:00Z')
         made = lambda writer: n.board_brief(fixture(), 'arc-3', 'evening', now, now, 'https://example.com/board', '0' * 64, writer=writer)
         self.assertEqual(made('claude-haiku-5-5')['articleBase']['generatedBy'], 'claude-haiku-5-5')
-        self.assertEqual(n.board_brief(fixture(), 'arc-3', 'evening', now, now, 'https://example.com/board', '0' * 64)['articleBase']['generatedBy'], 'gpt-6-sol')
+        self.assertEqual(n.board_brief(fixture(), 'arc-3', 'evening', now, now, 'https://example.com/board', '0' * 64)['articleBase']['generatedBy'], 'gpt-6.1-sol')
         with self.assertRaises(ValueError):
             n.prepare('evening', fetcher=lambda url: (fixture(), '0' * 64), actual_now=now, writer='someone-else')
 

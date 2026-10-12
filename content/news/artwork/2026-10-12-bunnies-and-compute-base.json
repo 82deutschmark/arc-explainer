@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "id": "2026-10-12-bunnies-and-compute-base",
+  "kind": "native-generation",
+  "generatedAt": "2026-10-12T16:30:28.649625Z",
+  "tool": "image_gen.imagegen",
+  "rawSrc": "/news-images/2026-10-12-bunnies-and-compute-base.webp",
+  "references": [
+    {
+      "src": "/news-images/people/yi-chia-chen.webp",
+      "role": "Chen’s verified Kaggle two-rabbit avatar; preserve the two-rabbit pairing and fur cues."
+    },
+    {
+      "src": "/news-images/2026-10-09-rabbit-and-spider.webp",
+      "role": "Established editorial bunny characters and snowy-city style; ignore dated score panels and text."
+    }
+  ],
+  "prompt": "Use case: illustration-story. Asset type: a reusable editorial illustration for The ARC Daily Digest, wide landscape 16:9. Make a NEW scene using the two local images as references, not an edit of their text panels. Image 1 is the established cinematic snowy-city bunny-versus-Tufa-spider illustration: borrow its warm fur, friendly big expressive eyes, painterly 3D detail, and snow-lit ruins. Ignore and omit its old logos, labels, scoreboard, inset and footer. Image 2 is Yi-Chia Chen's actual two-rabbit avatar: preserve the recognizable two-bunny pairing and grey/brown/white fur character cues. Primary request: Chen's TWO bunnies have become much bigger. Both are enormous, cheerful, confident and fluffy, rising above the snow-covered buildings on the left; the bigger bunny is colossal, and the companion is also much larger than in the earlier scene. On the right are EXACTLY FIVE clearly visible little black fluffy Tufa spider mascots with friendly expressive eyes. They are energetically working together, scrambling around with graphics cards and cables, building an absurdly large, intricate, partly assembled compute monstrosity: a fantastical tower/mech made of fan-cooled graphics cards, metal braces and colorful wiring. Make the five spiders distinct and countable: one carries a card in the foreground, one routes a cable, one climbs the side with a card, one installs a card higher up, and one directs the assembly from beside it. Keep all five visible and separate from the machine, with believable multiple spider legs. The huge bunnies look on with amused curiosity, with a sense that their growing size is outpacing the increasingly elaborate machine. Friendly sporting cartoon banter, no violence, no sneering, no real people. Rich cinematic golden winter light, expressive and beautiful, consistent with the reference. Clean artwork ONLY: NO words, letters, scores, rank numbers, labels, flags, logos, watermarks or score panels. Those will be added deterministically after generation using verified standings. Do not add extra bunnies or extra spiders, including background spider silhouettes. The compute machine is an editorial metaphor, not a claim about real hardware or spending.",
+  "review": "Native image visually reviewed: two enormous rabbits, exactly five distinct spiders, graphics-card machine, no scores or labels. Friendly editorial metaphor.",
+  "rawSha256": "d5f0c8e064b725da9f47bdf7d08bc1429f1cdfe0481b5926bcac3813546d447e",
+  "toolOutput": "exec-16745a6f-89da-47d0-867e-5385cf8f5a32.png",
+  "inputImages": [
+    "2026-10-09-rabbit-and-spider.webp",
+    "yi-chia-chen.webp"
+  ]
+}

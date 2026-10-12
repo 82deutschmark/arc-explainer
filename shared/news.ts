@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
  * Date: 2026-10-12
- * PURPOSE: Shared public contract for sourced ARC Daily articles, people, roster history and public social records,
+ * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
  *          (newsPresentation.ts), the share-card renderer (newsCardImage.ts) and the React
@@ -30,9 +30,12 @@ export type NewsWriter = typeof NEWS_EDITION_WRITERS[number] | typeof NEWS_WIRE_
 export interface NewsSource { id: string; title: string; url: string; accessedAt: string }
 export interface NewsSection { heading?: string; text: string; sourceIds: string[] }
 export interface NewsStat { teamId: string; name: string; rank: number; score: number; rankChange: number | null; scoreChange: number | null }
+/** Native editorial art with an immutable, edition-bound composition record. */
+export interface NewsIllustration { src: string; alt: string; caption: string; artworkId: string }
 export interface NewsArticle {
   id: string; date: string; edition: NewsEdition; competition: NewsCompetition;
   headline: string; dek: string; sections: NewsSection[]; teamIds: string[];
+  image?: NewsIllustration;
   sources: NewsSource[]; publishedAt: string; dataAsOf: string;
   baselineAt: string | null; generatedBy: typeof NEWS_EDITION_WRITERS[number]; stats: NewsStat[];
   coverageNote: string; discord: string;

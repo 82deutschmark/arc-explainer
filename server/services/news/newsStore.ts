@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-11
+ * Date: 2026-10-12
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
@@ -41,6 +41,7 @@ export const newsDispatchSchema = z.object({
 export const newsArticleSchema = z.object({
   id: safeId, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), edition: z.enum(['morning', 'evening']), competition,
   frontPageFeatureId: safeId.optional(),
+  image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.webp$/), alt: text.max(700), caption: text.max(700), artworkId: safeId }).strict().optional(),
   headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1) })).min(1),
   teamIds: z.array(z.string().regex(/^\d+$/)), sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   publishedAt: stamp, dataAsOf: stamp, baselineAt: stamp.nullable(), generatedBy: z.enum(NEWS_EDITION_WRITERS),

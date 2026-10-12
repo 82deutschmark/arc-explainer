@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-11
+ * Date: 2026-10-12
  * PURPOSE: Shared ARC Daily newspaper layout, query, date labels and source-aware story
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
@@ -143,10 +143,17 @@ export function EditionLabel({ article }: { article: NewsArticle }) {
   return <div className="news-kicker"><span>{competitionName(article.competition)}</span><span>{editionLabel(article)}</span></div>;
 }
 
+/** Use the edition's verified asset and caption on both its preview and permanent page. */
+export function EditionArtwork({ article, lead = false }: { article: NewsArticle; lead?: boolean }) {
+  return article.image ? <figure className="news-edition-art">
+    <a href={article.image.src} aria-label="Open the full editorial illustration"><img src={article.image.src} alt={article.image.alt} loading={lead ? 'eager' : 'lazy'} /></a>
+    <figcaption>{article.image.caption}</figcaption>
+  </figure> : null;
+}
+
 /**
- * An edition on the front page. `sections` is how much of the report runs here: all of it for the
- * lead, the opening sections for the second story; the article page keeps sources and box score.
- * `art` is a same-day illustration that runs beside the text.
+ * A newspaper preview prints opening sections; the article page keeps sources and box score.
+ * An edition-bound illustration takes precedence over a same-day companion dispatch's art.
  */
 export function StoryPreview({ article, lead = false, people = [], sections = 0, art }: { article: NewsArticle; lead?: boolean; people?: NewsPerson[]; sections?: number; art?: ReactNode }) {
   const shown = article.sections.slice(0, sections);
@@ -157,7 +164,7 @@ export function StoryPreview({ article, lead = false, people = [], sections = 0,
     <p className="news-dek">{article.dek}</p>
     <div className="news-byline">By the ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · {newsDate(article.date)}</span></div>
     <StoryFeature person={featuredPerson(article, people)} competition={article.competition} />
-    {art}
+    {article.image ? <EditionArtwork article={article} lead={lead} /> : art}
     {!!shown.length && <div className="news-story-body">{shown.map((section, index) => <section key={index}>
       {section.heading && <h3>{section.heading}</h3>}
       <p>{section.text}</p>

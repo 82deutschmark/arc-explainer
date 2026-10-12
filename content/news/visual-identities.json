@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "subjects": [
+    {
+      "id": "yi-chia-chen",
+      "personId": "yi-chia-chen",
+      "teamIds": {
+        "arc-3": [
+          "15499660"
+        ],
+        "arc-2": [
+          "15501171"
+        ]
+      },
+      "description": "Yi-Chia Chen’s two rabbits; use the actual two-rabbit avatar and the established editorial scene.",
+      "references": [
+        {
+          "src": "/news-images/people/yi-chia-chen.webp",
+          "role": "Chen’s verified Kaggle two-rabbit avatar; preserve the two-rabbit pairing and fur cues."
+        },
+        {
+          "src": "/news-images/2026-10-09-rabbit-and-spider.webp",
+          "role": "Established editorial bunny characters and snowy-city style; ignore dated score panels and text."
+        }
+      ],
+      "names": [
+        "Yi-Chia Chen",
+        "Chen"
+      ]
+    },
+    {
+      "id": "tufa-labs",
+      "teamIds": {
+        "arc-3": [
+          "15486995"
+        ],
+        "arc-2": [
+          "16756524"
+        ]
+      },
+      "description": "The friendly black Tufa spider mascot from the published rabbit-and-spider cartoon.",
+      "references": [
+        {
+          "src": "/news-images/2026-10-09-rabbit-and-spider.webp",
+          "role": "The black fluffy Tufa spider mascot and editorial style. It represents the team, not a person or a roster count."
+        }
+      ],
+      "names": [
+        "Tufa Labs",
+        "Tufa"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "chen-growing-bunnies",
+      "subjectIds": [
+        "yi-chia-chen",
+        "tufa-labs"
+      ],
+      "competition": "arc-3",
+      "prompt": "Two enormous, confident fluffy bunnies look on while exactly five friendly little Tufa spiders scramble with graphics cards and cables to assemble a fantastical compute monstrosity in the snowy city. Preserve the reference characters. No text or scores. The spiders and machine are editorial metaphor, not real headcount, hardware or spending.",
+      "reusableBase": "/news-images/2026-10-12-bunnies-and-compute-base.webp",
+      "generationRecord": "2026-10-12-bunnies-and-compute-base",
+      "requiresRanks": {
+        "15499660": 1,
+        "15486995": 2
+      },
+      "requiresExtendingLead": true
+    }
+  ]
+}

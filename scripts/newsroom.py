@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-11
+# Date: 2026-10-12
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 10-Oct-2026 (Claude Opus 5.5): --writer records the Claude Haiku backup honestly in generatedBy.
@@ -381,7 +381,7 @@ def neutralize(value):
     return re.sub(r'@(everyone|here|[!&]?\d+)', '@\u200b\\1', value)
 
 
-def validate(draft, brief):
+def validate(draft, brief, root=ROOT):
     expected = dict(brief)
     sha = expected.pop('sha256', None)
     if sha != digest(expected):
@@ -406,7 +406,7 @@ def validate(draft, brief):
         text(source['title'], 'source title')
     if len({s['id'] for s in base['sources']}) != len(base['sources']):
         raise ValueError('duplicate source IDs')
-    if set(draft) - NARRATIVE - set(base) - {'intakeReview'}:
+    if set(draft) - NARRATIVE - set(base) - {'intakeReview', 'image'}:
         raise ValueError('unknown article fields')
     for key in set(draft) & set(base):
         if draft[key] != base[key]:
@@ -473,18 +473,25 @@ def validate(draft, brief):
     if base['baselineAt'] and stamp(base['baselineAt']) > stamp(item['evidence']['baselineTargetAt']):
         raise ValueError('baseline is after comparison boundary')
     article = {**base, **{k: draft[k] for k in NARRATIVE}, 'discord': discord}
+    if 'image' in draft:
+        from newsroom_artwork import validate_attachment
+        validate_attachment(draft['image'], draft, brief, root)
+        article['image'] = draft['image']
     encoded(article)  # Reject NaN/Infinity throughout, including supplied metadata.
     return article, item
 
 
 def publish(draft, brief, root=ROOT):
-    article, item = validate(draft, brief)
+    article, item = validate(draft, brief, root)
     directory = Path(root) / 'content/news'
     path = directory / 'articles' / f'{article["id"]}.json'
     proof_path = directory / 'evidence' / f'{article["id"]}.json'
     proof = {'articleId': article['id'], 'briefSha256': brief['sha256'], **item['evidence']}
     if 'intake' in item:
         proof['intakeReview'] = draft['intakeReview']
+    if article.get('image'):
+        from newsroom_artwork import validate_attachment
+        proof['artwork'] = validate_attachment(article['image'], article, brief, root)
     # Preflight every immutable destination before changing anything, including retries.
     for target, value in ((path, article), (proof_path, proof)):
         if target.exists() and load(target) != value:

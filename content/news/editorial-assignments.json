@@ -28,5 +28,32 @@
     "placement": "front-page-feature",
     "featureId": "2026-10-11-peter-findley-human-mastery",
     "commissionedBy": "mark-barney"
+  },
+  {
+    "id": "chen-growing-bunnies-evening-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-12T16:39:44.638817Z",
+    "title": "Chen evening lead with growing-bunnies illustration",
+    "priority": "Boss-requested lead and artwork",
+    "status": "pending",
+    "teamIds": [
+      "15499660",
+      "15486995"
+    ],
+    "personIds": [
+      "yi-chia-chen"
+    ],
+    "subjectNames": [
+      "Yi-Chia Chen",
+      "Chen"
+    ],
+    "targetEditionId": "2026-10-12-evening-arc-3",
+    "placement": "illustrated-lead",
+    "instructions": "For the October 12 evening edition, lead with Chen continues to extend her lead over Tufa if the fresh evening evidence supports that wording. If the lead or its extension changes, write the accurate current headline and adapt or hold the growing-bunnies artwork rather than force the claim. Use the reviewed two enormous bunnies and five little Tufa spiders building a fantastical graphics-card machine. Reuse the same-day native base through docs/newsroom/ART_DESK.md and regenerate the deterministic score overlay from the evening brief and final headline. The noon preview panel is not the evening panel. Five spiders is an artistic choice, not a roster observation; the machine is metaphor. Publish and cite substantive Chen/Tufa coverage with the bound edition illustration.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "https://arc.markbarney.net/news#2026-10-09-arc3-rabbit-and-spider"
+    ],
+    "verificationNotes": "User commissioned the scene and reusable native-generation stage in this chat on October 12. The illustration has been generated and visually checked; tonight’s narrative and score panel require fresh evening evidence."
   }
 ]

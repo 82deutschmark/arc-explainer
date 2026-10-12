@@ -15,6 +15,8 @@ import { Router } from 'wouter';
 import { afterEach, expect, test, vi } from 'vitest';
 import News from '../client/src/pages/News';
 import NewsWire from '../client/src/pages/NewsWire';
+import { newsArticleMeta } from '../server/services/news/newsPresentation';
+import fs from 'node:fs';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
 import type { NewsIndex, NewsWireStory } from '../shared/news';
@@ -95,4 +97,19 @@ test('wire stories run in What’s News and in full on the wire page', () => {
   expect(page).toContain('id="2026-10-09-2020-arc-3-chen-takes-the-lead"');
   expect(page).toContain('Yi-Chia Chen gained 3.40 points to 59.17% and moved to 1st.');
   expect(page).toContain('/api/news/wire/2026-10-09-2020-arc-3-chen-takes-the-lead/evidence');
+});
+
+test('an edition-bound illustration runs with its headline and dated caption', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const art = JSON.parse(fs.readFileSync('content/news/artwork/2026-10-12-evening-arc-3-preview-dc154a9777.json', 'utf8'));
+  const article = { ...index.articles.find(story => story.competition === 'arc-3')!, id: art.articleId,
+    headline: art.headline, publishedAt: art.dataAsOf, dataAsOf: art.dataAsOf, frontPageFeatureId: undefined, image: art.image };
+  index.articles = [article, ...index.articles];
+  const front = render(News, '/news', index, markets(index));
+  for (const html of [front, newsArticleMeta(article).bodyHtml!]) {
+    expect(html).toContain(`src="${art.image.src}"`);
+    expect(html).toContain(art.headline);
+    expect(html).toContain(art.image.caption);
+  }
 });

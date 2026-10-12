@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6 Sol / Codex
- * Date: 2026-10-09
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+ * Date: 2026-10-12
  * PURPOSE: Permanent ARC Daily article view with evidence timestamps, linked section
  *          sources, box scores and competition-scoped competitor links.
  *          08-Oct-2026: head metadata and share card from shared/news.ts; visible
@@ -17,7 +17,7 @@ import { SITE_ORIGIN } from '@shared/seo';
 import { competitorPath, featuredPerson, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { ArticleArchive, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
+import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
 const points = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 4 });
@@ -45,6 +45,7 @@ export default function NewsArticle() {
         <p className="news-dek">{article.dek}</p>
         <p className="news-byline">The ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
       </header>
+      <EditionArtwork article={article} lead />
       <div className="news-article-grid">
         <div>
           <div className="news-prose">{article.sections.map((section, index) => <section key={index}>
