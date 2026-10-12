@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-12T03:33:40Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "XIAO MA climbs from 108th to ARC-2 gold line",
+  "id": "2026-10-11-2356-arc-2-xiao-ma-climbs-into-gold-contention",
+  "personIds": [],
+  "publishedAt": "2026-10-12T03:56:39Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "XIAO MA added 8.06 points to reach 40.56, leaping from 108th to 17th in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "At 17th, XIAO MA is just outside the 15 public gold places; the current cutoff is 41.81. The standings are provisional, with medals decided on the private board."
+    }
+  ],
+  "since": "2026-10-11T03:31:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T03:56:13Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16915387"
+  ]
+}

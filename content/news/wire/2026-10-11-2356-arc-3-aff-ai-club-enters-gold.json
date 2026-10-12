@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T03:33:39Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "AFF AI CLUB charges into ARC-3 gold at 10th",
+  "id": "2026-10-11-2356-arc-3-aff-ai-club-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-12T03:56:38Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "AFF AI CLUB surged from 30th to 10th, gaining 5.06 points to reach 38.98 and move into the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move puts AFF AI CLUB among the top 18 teams currently occupying the public board’s gold places. The standings are provisional; medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-11T03:31:24Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T03:56:13Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16754530"
+  ]
+}

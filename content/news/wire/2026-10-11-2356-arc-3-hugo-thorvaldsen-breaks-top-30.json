@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T03:33:39Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Hugo Thorvaldsen vaults to 26th on ARC-3",
+  "id": "2026-10-11-2356-arc-3-hugo-thorvaldsen-breaks-top-30",
+  "personIds": [],
+  "publishedAt": "2026-10-12T03:56:38Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Hugo Thorvaldsen gained 5.82 points to reach 35.49, climbing from 441st to 26th in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That puts Thorvaldsen within sight of the gold places, whose current cutoff is 18th. The public standings remain provisional ahead of the private medal board."
+    }
+  ],
+  "since": "2026-10-11T03:31:24Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T03:56:13Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16559747"
+  ]
+}
