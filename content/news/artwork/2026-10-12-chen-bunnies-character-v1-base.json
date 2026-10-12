@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-10-12T17:05:07Z",
+  "id": "2026-10-12-chen-bunnies-character-v1-base",
+  "inputImages": [
+    "yi-chia-chen-bunnies-owner-2026-10-12.png",
+    "2026-10-12-bunnies-and-compute-base.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: stylized-concept. Asset type: a reusable two-character reference for The ARC Daily Digest, clean landscape image. Input image 1 is Chen's owner-supplied full-size photograph and is the authoritative identity/anatomy/color reference. Input image 2 is the established bunny editorial illustration, used ONLY for friendly expressive fur rendering and polished painterly 3D style; its ear shapes must NOT override the real photo. Render exactly TWO bunnies together at ordinary similar rabbit scale on a plain warm cream studio background. Bunny A is the grey-brown lop from the foreground of the photo: softly rounded head, solid grey-brown fur, BOTH ears drooping down alongside its cheeks, tiny pale nose/muzzle, white rear toes; lying comfortably stretched out but looking alert and friendly. Bunny B is the upright-eared dark-and-white rabbit from the back of the photo: tall dark upright ears, very dark charcoal-brown mask around the eyes and crown, an unmistakable broad irregular white blaze down the forehead and nose, white cheeks/chest/front paws, dark upper back and white body patches; sitting beside the lop, looking gently towards the viewer. Preserve the actual pairing and distinguishing fur markings; make their faces recognizable from the owner's photo. Whole bodies and ears visible, uncluttered layout, soft grounded shadows, detailed natural fluffy fur, charming expressive eyes without changing the eye colors. These are future scene identity anchors, not today's score illustration: no city, no giant scale, no spider, no person, no props, no cards or borders. No text, labels, logos, ranks, numbers or watermark. Do not make the grey lop's ears upright, and do not make both bunnies the same breed or coat.",
+  "purpose": "character-reference",
+  "rawSha256": "26a87840b1c98f1e13f758cee82b2a05b658bf8cb5b2dfbce7f255dd2403c57e",
+  "rawSrc": "/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp",
+  "references": [
+    {
+      "role": "Full-size owner-supplied rabbit photograph via Mark Barney; authoritative ears, pairing and coat markings.",
+      "src": "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png"
+    },
+    {
+      "role": "Established painterly fur and friendly editorial style only; do not copy the older ear anatomy.",
+      "src": "/news-images/2026-10-12-bunnies-and-compute-base.webp"
+    }
+  ],
+  "review": "Inspected exactly two recognizable bunnies: grey lop with both ears down and dark upright-eared rabbit with broad white face blaze; whole bodies, no labels or props.",
+  "subjectId": "yi-chia-chen",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-4a6fb692-f359-49e5-aabf-f76d0406c444.png",
+  "version": 1
+}

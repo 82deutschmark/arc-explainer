@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-10-12T17:04:04Z",
+  "id": "2026-10-12-dries-smit-character-v1-base",
+  "inputImages": [
+    "dries.png"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: stylized-concept. Asset type: reusable, text-free full-body character reference for The ARC Daily Digest. Input image 1 is our established Dries Smit Hall of Fame illustration; it is the character identity and costume reference, not a card to reproduce. Preserve the clean-shaven youthful face, swept short light-brown hair, black/dark-grey cybernetic suit, small square green-grid eyepiece over his right eye, metallic headband/headset, cyan and green accents, glove design and the distinctive over-the-shoulder graphics-card rig with fan-cooled cards and cables. Render ONE recognizable Dries character standing naturally at a three-quarter angle, full body visible, holding one unbranded graphics card as though about to install it. Hands, boots and head fully in frame, practical friendly engineer pose. Polished detailed painterly 3D/comic editorial illustration, warm neutral studio light, plain pale cream background with a subtle ground shadow, easy to reuse as an identity reference for new scenes. No other people or animals. No card border, labels, written words, letters, ranks, scores, badges, logos or watermarks. Do not copy any historical score or team name from the card. Cyber gear is an editorial costume, not a factual claim about his hardware. Keep his face and costume strongly recognizable from the supplied card.",
+  "purpose": "character-reference",
+  "rawSha256": "09520d923f7cd268cad339bf52d81aed7c66932a44d3dce068ab648c96f57bc5",
+  "rawSrc": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp",
+  "references": [
+    {
+      "role": "Dries Smit's own established Hall of Fame character; costume and face only, ignore historical card text.",
+      "src": "/dries.png"
+    }
+  ],
+  "review": "Inspected one recognizable full-body Dries character, green-grid right eyepiece, GPU costume and held card; no score panel or other characters.",
+  "subjectId": "dries-smit",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-c90a4a4f-307a-4eb5-b27a-46e5a5e67064.png",
+  "version": 1
+}

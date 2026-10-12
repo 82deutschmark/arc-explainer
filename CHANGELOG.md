@@ -11,6 +11,14 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.10  Oct 12, 2026
+
+- **Kaggle discussion intake joins the existing research and personal desks** (Author: GPT-6.1 Sol / Codex). Extended the locked social archive with contest-specific topic/reply revisions, read/public editorial selection, separate delivery state and partial-scan watermarks. Preparation receives only selected discussion citations; From X stays X-specific. Seeded 46 observed topic records and three read public leads, with first-pass limits recorded. Updated the two edition jobs, research scan and personal briefing while preserving their schedules, models, targets and send permissions. Validation: 48 Python newsroom checks, 20 frontend/integration checks and production build. Workflow: `docs/newsroom/DISCUSSIONS.md`.
+
+### Version 9.141.9  Oct 12, 2026
+
+- **Reusable cast library and coded corner graphics** (Author: GPT-6.1 Sol / Codex). Curated sixteen individually identified competitors plus Tufa's mascot using frozen, hashed avatar/card references and a generated review gallery; two missing references remain explicit. Preserved Chen's supplied full-size photo, generated clean bunny/Dries references natively and revised the scene to two anatomically corrected bunnies, one Dries and exactly five spiders. Current roster handles govern all casting and Dries's inclusion. Reference/cast/prompt versions bind new artwork IDs. Added the requested lower-left score chart and upper-right paper/Explainer chyron in code, preserving scene proportions and original art. Verified hashes, score/image mutations, roster changes, serialization retries and desktop/phone layout. Workflow and saved prompt paths: `docs/newsroom/CHARACTERS.md`.
+
 ### Version 9.141.8  Oct 12, 2026
 
 - **Native editorial art joins the edition pipeline** (Author: GPT-6.1 Sol / Codex). Extended the existing artwork helper to select consequential referenced contenders, register reviewed native outputs, append exact headline/score/time panels, and attach immutable artwork to a manuscript. Curated Chen’s two rabbits and Tufa’s spider; other contenders reuse verified portraits and exact observed roster handles. Scene reuse checks the current ranks and a verified widening lead. Publication rejects the wrong edition/headline/brief, changed score rows or changed image bytes and archives composition provenance. Front-page stories, articles and crawler HTML render edition-bound images. Generated the requested two-bunny/five-spider compute scene natively and prepared a dated score-panel preview; tonight’s commissioned Chen assignment requires fresh evening numbers and accurate headline wording. Updated the two existing edition jobs to invoke the artwork desk, preserving schedules, models and send permissions; restored their missing dedicated reporting checkout. Plan: `docs/2026-10-12-native-news-artwork-plan.md`.

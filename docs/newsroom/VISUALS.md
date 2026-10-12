@@ -139,6 +139,8 @@ hand; see the crops above for framing) and add the matching `hallOfFame` entry.
 
 ## Native edition illustration workflow
 
+The expanded reference gallery and source/version rules are in [CHARACTERS.md](CHARACTERS.md). References are frozen copies, independent of the changing people-page portraits. Dries’s individual card supplies his clean character; the latest scene uses Chen’s owner-provided photo and requires his current roster membership. Lower-left statistics and the upper-right paper/Explainer chyron are added in code.
+
 The Boss authorized a reusable native image-generation stage on October 12. Follow [ART_DESK.md](ART_DESK.md), using the curated reference registry and verified portraits for consequential moves. The existing newsroom_artwork.py now plans, registers, composes and attaches an immutable edition image; headline and scores come from the exact edition brief. The publisher checks its provenance and image bytes. Chen’s new two-bunny/five-spider scene is ready for tonight, with a new evening scoreboard required. Its five spiders and graphics-card machine are editorial choices, not roster or hardware facts.
 
 ## Other pictures the paper can link

@@ -6,6 +6,8 @@ The Boss authorizes native Codex image generation as part of the Early and Late 
 
 ## References and editorial choice
 
+The expanded, frozen reference library and upkeep procedure are in [CHARACTERS.md](CHARACTERS.md). It includes sixteen individual competitors plus Tufa’s mascot, with two pending references, and a browsable gallery at `/news-images/references/index.html`. Chen’s full-size owner photo and clean bunny reference govern the ear/coat details; the revised scene includes Dries when the fresh roster verifies him.
+
 `content/news/visual-identities.json` holds curated character identities and reusable scenes. Chen’s two rabbits and Tufa’s friendly black spider are the first entries. Other contenders can use their own verified saved portrait through `people.json` and an exact handle in the fresh board roster. A portrait does not identify an unlisted teammate. Add new mascot identities only after human/editorial authorization and an inspected reference. Never guess an identity from a name or avatar.
 
 The planner considers only teams covered by the manuscript, with saved references. It looks for a lead change, entry into the top ten, crossing above the gold score, a gain of at least three points in the top 25, or a climb of at least 20 places into the top 100. A recent score event can qualify when the net comparison is unknown; it remains an event, not a net daily gain. The contender named in the headline receives priority. The planner emits one job, with exact rows, reference roles and native tool arguments. Related contestants without references need no invented mascot.
@@ -38,7 +40,7 @@ The command returns `generationRecord` and the copied public `source` path. Nati
 python3.13 scripts/newsroom_artwork.py compose --source <reviewed-base-file> --generation-record <record-id> --brief /tmp/arc-daily-evening-brief.json --article /tmp/arc-daily-arc3-draft.json
 ```
 
-The appended panel uses repository fonts, the manuscript headline, two verified contender rows when available, ranks, scores and the board observation time. It does not cover or redraw the artwork. The output is immutable; a different brief or headline produces a different asset and composition record. The old `--source --brief --output` entry still routes to compose; production editions use the explicit manuscript workflow.
+The compositor draws the requested lower-left compact team/rank/score chart and upper-right ARC Daily Digest / ARC Explainer chyron in code, using repository fonts and the existing favicon. It keeps the scene’s aspect ratio and preserves the raw art. The headline is bound in the record and printed by the article. Scores and observation time come from the exact brief; both chart bars use the same 0–100 scale. Inspect that the corner graphics leave faces and essential action visible. A changed brief, headline, reference/cast, prompt or overlay version gets a new immutable asset. The old `--source --brief --output` entry still routes to compose; production editions use the explicit manuscript workflow.
 
 5. Attach the returned artwork record to the draft:
 
@@ -57,4 +59,4 @@ Stage only the intended edition/evidence/notebook files, new `content/news/artwo
 
 ## October 12 evening commission
 
-The raw native base is `/news-images/2026-10-12-bunnies-and-compute-base.webp`, with record `2026-10-12-bunnies-and-compute-base`. It has two enormous bunnies and five little spiders building a graphics-card machine. Five is the Boss’s artistic choice, not a team headcount. The noon score-panel preview is for inspection only. Tonight’s reporter must use tonight’s brief and actual headline, then compose and attach a new panel. Follow the pending Chen assignment in `editorial-assignments.json`; use “Chen continues to extend her lead over Tufa” only if the fresh comparison supports it.
+The preferred revised base is `/news-images/2026-10-12-bunnies-dries-and-compute-v2-base.webp`, with record `2026-10-12-bunnies-dries-and-compute-v2-base`. It has the owner-photo-corrected two bunnies, exactly five little spiders and Dries helping install a GPU. Dries must appear in the fresh Tufa roster before this scene is reused. Five is the Boss’s artistic choice, not a team headcount. Earlier images remain preserved. The afternoon overlay preview is for inspection; tonight must use tonight’s brief and actual headline to draw and attach fresh corner graphics. Follow the pending Chen assignment; use “Chen continues to extend her lead over Tufa” only if the fresh comparison supports it.

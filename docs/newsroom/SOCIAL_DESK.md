@@ -4,6 +4,8 @@ The six-hour scan **enhances the journalism**. It supplies announcements, resear
 
 ## Cadence and outputs
 
+The same research and personal-briefing jobs now include Kaggle discussion intake under [DISCUSSIONS.md](DISCUSSIONS.md). It keeps a broad topic/reply inventory and a separate personal digest, then exports only read public paper leads into edition evidence. The From X archive and its display remain X-specific.
+
 All desk times are America/New_York: collection at 05:00, 11:00, 17:00 and 23:00; private briefings at 05:30 and 17:30; editions at 06:00 and 18:00; the existing public X recap at 14:00. Use GPT-6.1 Sol through the signed-in subscription and Chrome account 82deutschmark. No paid model or X API. The local computer and app need to be running.
 
 Work from the clean reporting checkout `/Users/macmini/GitHub/arc-explainer-newsroom` after checking origin/branch and pulling main with `--ff-only`. Research does not edit app code or send messages. State and private summaries live at `/Users/macmini/bubba-workspace/reports/arc-daily-social/`, outside public content. This archive is small text; bulk downloads belong on the external SSD.

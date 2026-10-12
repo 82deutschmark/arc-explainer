@@ -2,7 +2,9 @@
 
 ## Native edition illustrations authorized October 12
 
-After writing each manuscript, follow [ART_DESK.md](ART_DESK.md). The Boss now authorizes native Codex image generation for consequential moves by contenders with saved references, and new artwork assets/records in the same edition commit. Extend the existing artwork helper, generate clean scenes natively, append headline and scores from the exact fresh edition brief, and attach the bound image before validation. Quiet boards need no new art. The October 12 evening Chen lead is an explicit assignment; its wording and growing-bunnies scene depend on fresh evidence. Scheduled reporters still do not edit application code or automations.
+Read [CHARACTERS.md](CHARACTERS.md) for the expanded versioned cast and programmed corner graphics. Read [DISCUSSIONS.md](DISCUSSIONS.md) and export selected public discussion leads before preparing the edition, then consider the brief’s `discussionThreads` as sourced editorial leads.
+
+After writing each manuscript, follow [ART_DESK.md](ART_DESK.md). The Boss now authorizes native Codex image generation for consequential moves by contenders with saved references, and new artwork assets/records in the same edition commit. Extend the existing artwork helper, generate clean scenes natively, draw compact corner scores and branding from the exact fresh edition brief, and attach the headline-bound image before validation. Quiet boards need no new art. The October 12 evening Chen lead is an explicit assignment; its wording and growing-bunnies scene depend on fresh evidence. Scheduled reporters still do not edit application code or automations.
 
 ## Writer attribution — 11 October 2026
 

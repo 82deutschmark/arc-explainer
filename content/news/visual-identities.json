@@ -1,72 +1,577 @@
 {
-  "version": 1,
+  "scenes": [
+    {
+      "competition": "arc-3",
+      "generationRecord": "2026-10-12-bunnies-dries-and-compute-v2-base",
+      "id": "chen-bunnies-dries-and-spiders-v2",
+      "prompt": "Exactly two enormous bunnies from Chen’s owner photo: a grey lop with both ears down, and a dark-and-white upright-eared rabbit with broad white face blaze. Exactly five little black Tufa spider mascots assemble a fantastical graphics-card machine; one recognizable Dries Smit in his established cyan/green cyber-engineer costume helps a spider install a GPU. Friendly snowy-city editorial scene. No text or numbers. The costume, machine and spider count are metaphors.",
+      "referenceSha256": {
+        "/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp": "26a87840b1c98f1e13f758cee82b2a05b658bf8cb5b2dfbce7f255dd2403c57e",
+        "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp": "09520d923f7cd268cad339bf52d81aed7c66932a44d3dce068ab648c96f57bc5",
+        "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png": "3a912289a5a3c8fa761101b8bd2517e97ebed934cb2714ba20d2dde79101cfaf"
+      },
+      "requiredPersonIds": [
+        "dries-smit"
+      ],
+      "requiresExtendingLead": true,
+      "requiresRanks": {
+        "15486995": 2,
+        "15499660": 1
+      },
+      "reusableBase": "/news-images/2026-10-12-bunnies-dries-and-compute-v2-base.webp",
+      "status": "active",
+      "subjectIds": [
+        "yi-chia-chen",
+        "tufa-labs"
+      ]
+    },
+    {
+      "competition": "arc-3",
+      "generationRecord": "2026-10-12-bunnies-and-compute-base",
+      "id": "chen-growing-bunnies",
+      "prompt": "Two enormous, confident fluffy bunnies look on while exactly five friendly little Tufa spiders scramble with graphics cards and cables to assemble a fantastical compute monstrosity in the snowy city. Preserve the reference characters. No text or scores. The spiders and machine are editorial metaphor, not real headcount, hardware or spending.",
+      "requiresExtendingLead": true,
+      "requiresRanks": {
+        "15486995": 2,
+        "15499660": 1
+      },
+      "reusableBase": "/news-images/2026-10-12-bunnies-and-compute-base.webp",
+      "status": "retired",
+      "subjectIds": [
+        "yi-chia-chen",
+        "tufa-labs"
+      ]
+    }
+  ],
   "subjects": [
     {
-      "id": "yi-chia-chen",
-      "personId": "yi-chia-chen",
-      "teamIds": {
-        "arc-3": [
-          "15499660"
-        ],
-        "arc-2": [
-          "15501171"
-        ]
-      },
       "description": "Yi-Chia Chen’s two rabbits; use the actual two-rabbit avatar and the established editorial scene.",
-      "references": [
-        {
-          "src": "/news-images/people/yi-chia-chen.webp",
-          "role": "Chen’s verified Kaggle two-rabbit avatar; preserve the two-rabbit pairing and fur cues."
-        },
-        {
-          "src": "/news-images/2026-10-09-rabbit-and-spider.webp",
-          "role": "Established editorial bunny characters and snowy-city style; ignore dated score panels and text."
-        }
+      "id": "yi-chia-chen",
+      "identityNotes": [
+        "Chen’s grey-brown lop has BOTH ears down beside its cheeks; keep its rounded face, grey coat and white rear toes.",
+        "Chen’s second rabbit has tall dark upright ears, a dark eye mask and a broad irregular white forehead/nose blaze, with white cheeks, chest and paws.",
+        "Always exactly two recognizable bunnies; the owner photo governs anatomy and markings. Giant scale is a scene choice."
       ],
       "names": [
         "Yi-Chia Chen",
         "Chen"
-      ]
-    },
-    {
-      "id": "tufa-labs",
-      "teamIds": {
-        "arc-3": [
-          "15486995"
-        ],
-        "arc-2": [
-          "16756524"
-        ]
-      },
-      "description": "The friendly black Tufa spider mascot from the published rabbit-and-spider cartoon.",
+      ],
+      "personId": "yi-chia-chen",
+      "provenance": "Full-size photograph supplied by Mark Barney on October 12, described by him as Chen’s own reference. The original bytes are preserved; the clean character sheet was generated natively and visually reviewed.",
+      "referenceType": "Owner-supplied bunnies + editorial characters",
       "references": [
         {
-          "src": "/news-images/2026-10-09-rabbit-and-spider.webp",
-          "role": "The black fluffy Tufa spider mascot and editorial style. It represents the team, not a person or a roster count."
+          "generationRecord": "2026-10-12-chen-bunnies-character-v1-base",
+          "kind": "native-character",
+          "label": "Clean bunny character sheet",
+          "role": "Clean two-bunny character identities: grey lop with both ears down; dark-and-white upright-eared rabbit.",
+          "sha256": "26a87840b1c98f1e13f758cee82b2a05b658bf8cb5b2dfbce7f255dd2403c57e",
+          "src": "/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp"
+        },
+        {
+          "kind": "owner-supplied",
+          "label": "Unchanged owner-supplied photograph",
+          "receivedAt": "2026-10-12T17:13:44Z",
+          "role": "Chen’s owner-supplied full-size bunny photo; authoritative ear anatomy, pairing and coat markings.",
+          "sha256": "3a912289a5a3c8fa761101b8bd2517e97ebed934cb2714ba20d2dde79101cfaf",
+          "src": "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png"
         }
+      ],
+      "status": "ready",
+      "teamIds": {
+        "arc-2": [
+          "15501171"
+        ],
+        "arc-3": [
+          "15499660"
+        ]
+      }
+    },
+    {
+      "description": "The friendly black Tufa spider mascot from the published rabbit-and-spider cartoon.",
+      "id": "tufa-labs",
+      "identityNotes": [
+        "Tufa’s mascot is a small friendly black fluffy spider with expressive white eyes. Spider counts and GPU props are editorial choices."
+      ],
+      "includePeople": [
+        "dries-smit"
       ],
       "names": [
         "Tufa Labs",
         "Tufa"
-      ]
+      ],
+      "provenance": "Established October 9 editorial mascot. Dries is an optional current-roster companion; older card team labels do not establish present membership.",
+      "referenceType": "Established team mascot",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "kind": "editorial-mascot",
+          "label": "Established Tufa spider scene",
+          "originalSrc": "/news-images/2026-10-09-rabbit-and-spider.webp",
+          "role": "The established black fluffy Tufa spider only; ignore bunnies, historic scoreboard, labels and card text.",
+          "sha256": "43c0218e4224989ed749d1ef93e980f0df6d30690927784dd9986cee902b2757",
+          "src": "/news-images/references/2026-10-12-tufa-labs-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready",
+      "teamIds": {
+        "arc-2": [
+          "16756524"
+        ],
+        "arc-3": [
+          "15486995"
+        ]
+      }
+    },
+    {
+      "description": "Jean-François Puget (CPMP) — reusable individual character/portrait",
+      "id": "jean-francois-puget",
+      "identityNotes": [
+        "Puget: preserve the bearded cyber-engineer character, brown hair, cyan helmet lights and shoulder-mounted GPU costume from his individual card."
+      ],
+      "names": [
+        "Jean-François Puget (CPMP)",
+        "Jean-François Puget",
+        "CPMP",
+        "Puget"
+      ],
+      "personId": "jean-francois-puget",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Established Hall of Fame character",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "kind": "hall-of-fame-character",
+          "label": "Individual Hall of Fame character card",
+          "originalSrc": "/jfPuget3.png",
+          "role": "Jean-François Puget (CPMP)’s own individual character card; preserve face and costume, ignore all historical text, numbers, logos and team labels.",
+          "sha256": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37",
+          "src": "/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Ivan Sorokin — reusable individual character/portrait",
+      "id": "ivan-sorokin",
+      "identityNotes": [
+        "Ivan: preserve the short brown hair, clean-shaven face, charcoal armor, cyan collar lights and floating blue crystal from his individual card."
+      ],
+      "names": [
+        "Ivan Sorokin",
+        "Sorokin"
+      ],
+      "personId": "ivan-sorokin",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Established Hall of Fame character",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "kind": "hall-of-fame-character",
+          "label": "Individual Hall of Fame character card",
+          "originalSrc": "/ivanARC2.png",
+          "role": "Ivan Sorokin’s own individual character card; preserve face and costume, ignore all historical text, numbers, logos and team labels.",
+          "sha256": "c050296ab22522c72c2457b471f17ab18bf4ad00490978fb66354cc54935397c",
+          "src": "/news-images/references/2026-10-12-ivan-sorokin-reference-1-v1.png"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Jack Cole — reusable individual character/portrait",
+      "id": "jack-cole",
+      "identityNotes": [
+        "Jack: preserve the dark cyber suit, large cyan visor, metallic headset, central circuit-board headpiece and cyan/red lights from his individual card."
+      ],
+      "names": [
+        "Jack Cole",
+        "Cole"
+      ],
+      "personId": "jack-cole",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Established Hall of Fame character",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "kind": "hall-of-fame-character",
+          "label": "Individual Hall of Fame character card",
+          "originalSrc": "/jackCole2.png",
+          "role": "Jack Cole’s own individual character card; preserve face and costume, ignore all historical text, numbers, logos and team labels.",
+          "sha256": "cafe1576142caf1fe85b74d60ff8a96ff895559a1cc1bf22f3104c33d2bf3d5f",
+          "src": "/news-images/references/2026-10-12-jack-cole-reference-1-v1.png"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Mithil A Vakde — reusable individual character/portrait",
+      "id": "mithil-a-vakde",
+      "identityNotes": [],
+      "names": [
+        "Mithil A Vakde"
+      ],
+      "personId": "mithil-a-vakde",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "reason": "The saved verified-person ledger has no individual image beyond a default avatar; an owner-supplied or explicitly identified reference is needed.",
+      "referenceType": "Reference needed",
+      "references": [],
+      "status": "pending"
+    },
+    {
+      "description": "Keith Tyser — reusable individual character/portrait",
+      "id": "keith-tyser",
+      "identityNotes": [
+        "Keith: preserve the round yellow mascot, very large dark eyes, black baseball cap and black hoodie. Omit printed slogans, background pets and room details unless requested."
+      ],
+      "names": [
+        "Keith Tyser",
+        "Keith"
+      ],
+      "personId": "keith-tyser",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-09T21:36:03Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/keith-tyser.webp",
+          "role": "Keith Tyser’s verified individual Kaggle avatar/portrait. Keith: preserve the round yellow mascot, very large dark eyes, black baseball cap and black hoodie. Omit printed slogans, background pets and room details unless requested. Ignore background text and do not invent other teammates.",
+          "sha256": "572ee4749a2a5205c717a555e9e9a4588edb458e3bac7d35f960769ee5a170af",
+          "sourceUrl": "https://www.kaggle.com/keithtyser",
+          "src": "/news-images/references/2026-10-12-keith-tyser-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Dries Smit — reusable individual character/portrait",
+      "id": "dries-smit",
+      "identityNotes": [
+        "Dries: preserve swept brown hair, clean-shaven face, green-grid right-eye eyepiece, dark suit, cyan/green lights and GPU backpack. Hardware costume is editorial metaphor."
+      ],
+      "names": [
+        "Dries Smit",
+        "Dries",
+        "Smit"
+      ],
+      "personId": "dries-smit",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Hall of Fame character + native reference",
+      "references": [
+        {
+          "generationRecord": "2026-10-12-dries-smit-character-v1-base",
+          "kind": "native-character",
+          "label": "Clean Dries character reference",
+          "role": "Dries Smit’s clean character reference, including his face, green right-eye eyepiece and GPU costume; editorial costume only.",
+          "sha256": "09520d923f7cd268cad339bf52d81aed7c66932a44d3dce068ab648c96f57bc5",
+          "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp"
+        },
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "kind": "hall-of-fame-character",
+          "label": "Original individual Hall of Fame card",
+          "originalSrc": "/dries.png",
+          "role": "Dries Smit’s own historical Hall of Fame character. Ignore all historical scores, logos, labels and team text.",
+          "sha256": "fb871404a38856b9826390c5ad2c41375ed688fd73e6c586ef7ad04826685596",
+          "src": "/news-images/references/2026-10-12-dries-smit-reference-2-v1.png"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Jeroen Cottaar — reusable individual character/portrait",
+      "id": "jeroen-cottaar",
+      "identityNotes": [
+        "Jeroen: preserve the human portrait, short dark hair and thin metal-frame glasses. Use the verified individual portrait; do not assign him another teammate’s character."
+      ],
+      "names": [
+        "Jeroen Cottaar",
+        "Cottaar"
+      ],
+      "personId": "jeroen-cottaar",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-09T21:36:03Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/jeroen-cottaar.webp",
+          "role": "Jeroen Cottaar’s verified individual Kaggle avatar/portrait. Jeroen: preserve the human portrait, short dark hair and thin metal-frame glasses. Use the verified individual portrait; do not assign him another teammate’s character. Ignore background text and do not invent other teammates.",
+          "sha256": "13c79f36278edd856e2454a4b77ef655c0980ffa930d5a11bfc22cb3ebadc58e",
+          "sourceUrl": "https://www.kaggle.com/jeroencottaar",
+          "src": "/news-images/references/2026-10-12-jeroen-cottaar-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Jan Disselhoff — reusable individual character/portrait",
+      "id": "jan-disselhoff",
+      "identityNotes": [
+        "Jan: preserve the orange cat, dark beard, large square black glasses with blue lenses and burgundy shirt from his own avatar."
+      ],
+      "names": [
+        "Jan Disselhoff",
+        "Disselhoff"
+      ],
+      "personId": "jan-disselhoff",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-09T21:36:04Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/jan-disselhoff.webp",
+          "role": "Jan Disselhoff’s verified individual Kaggle avatar/portrait. Jan: preserve the orange cat, dark beard, large square black glasses with blue lenses and burgundy shirt from his own avatar. Ignore background text and do not invent other teammates.",
+          "sha256": "0ad92e5d45f85823a3af0fcbfe1430501b967f5e1fec3ebfadfbb84bf9bb52f2",
+          "sourceUrl": "https://www.kaggle.com/insanitycheck",
+          "src": "/news-images/references/2026-10-12-jan-disselhoff-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "David Hartmann — reusable individual character/portrait",
+      "id": "david-hartmann",
+      "identityNotes": [
+        "David: preserve the golden-orange fox, large upright ears, pale muzzle/chest, black nose and round black sunglasses from his own avatar."
+      ],
+      "names": [
+        "David Hartmann",
+        "Hartmann"
+      ],
+      "personId": "david-hartmann",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-09T21:36:04Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/david-hartmann.webp",
+          "role": "David Hartmann’s verified individual Kaggle avatar/portrait. David: preserve the golden-orange fox, large upright ears, pale muzzle/chest, black nose and round black sunglasses from his own avatar. Ignore background text and do not invent other teammates.",
+          "sha256": "83c5fd8efec1d74bd3552761cb11b34d0fbc0e78a6b52b488ae72f51c2a5fece",
+          "sourceUrl": "https://www.kaggle.com/dvhrtm",
+          "src": "/news-images/references/2026-10-12-david-hartmann-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Daniel Franzen — reusable individual character/portrait",
+      "id": "daniel-franzen",
+      "identityNotes": [
+        "Daniel: preserve the yellow duck, orange bill and broad black sunglasses from his own avatar."
+      ],
+      "names": [
+        "Daniel Franzen",
+        "Franzen"
+      ],
+      "personId": "daniel-franzen",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-09T21:36:04Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/daniel-franzen.webp",
+          "role": "Daniel Franzen’s verified individual Kaggle avatar/portrait. Daniel: preserve the yellow duck, orange bill and broad black sunglasses from his own avatar. Ignore background text and do not invent other teammates.",
+          "sha256": "469776ab05a8f5ea268ace6aa0686cf757044ce6684c03c9d8450d10514bfc49",
+          "sourceUrl": "https://www.kaggle.com/dfranzen",
+          "src": "/news-images/references/2026-10-12-daniel-franzen-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "IsaiahP — reusable individual character/portrait",
+      "id": "isaiahp",
+      "identityNotes": [
+        "IsaiahP: preserve the Canada-goose avatar, black head/neck, white cheek patches and grey-brown body."
+      ],
+      "names": [
+        "IsaiahP"
+      ],
+      "personId": "isaiahp",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-09T22:32:30Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/isaiahp.webp",
+          "role": "IsaiahP’s verified individual Kaggle avatar/portrait. IsaiahP: preserve the Canada-goose avatar, black head/neck, white cheek patches and grey-brown body. Ignore background text and do not invent other teammates.",
+          "sha256": "9150d8099d63ff0ac76752dc866b9e98e8e6d77170506ab846cbc73d6f353b5d",
+          "sourceUrl": "https://www.kaggle.com/pressman1",
+          "src": "/news-images/references/2026-10-12-isaiahp-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Lonnie — reusable individual character/portrait",
+      "id": "lonnie",
+      "identityNotes": [
+        "Lonnie: preserve the illustrated avatar’s dark bobbed hair, round glasses, green T-shirt and backpack straps."
+      ],
+      "names": [
+        "Lonnie"
+      ],
+      "personId": "lonnie",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-09T22:32:30Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/lonnie.webp",
+          "role": "Lonnie’s verified individual Kaggle avatar/portrait. Lonnie: preserve the illustrated avatar’s dark bobbed hair, round glasses, green T-shirt and backpack straps. Ignore background text and do not invent other teammates.",
+          "sha256": "7f356916a1376617c5b9da9fa59d7bc5c6445bc997f7278446d97f95e8b05448",
+          "sourceUrl": "https://www.kaggle.com/lonnieqin",
+          "src": "/news-images/references/2026-10-12-lonnie-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "alijs — reusable individual character/portrait",
+      "id": "alijs",
+      "identityNotes": [
+        "alijs: preserve the individual human portrait, short light-brown hair and blue collared shirt; keep a respectful recognizable face."
+      ],
+      "names": [
+        "alijs"
+      ],
+      "personId": "alijs",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-09T22:32:30Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/alijs.webp",
+          "role": "alijs’s verified individual Kaggle avatar/portrait. alijs: preserve the individual human portrait, short light-brown hair and blue collared shirt; keep a respectful recognizable face. Ignore background text and do not invent other teammates.",
+          "sha256": "c782d20045ebd49229c23afb75272d20690889b28f14470b8480953b161dd057",
+          "sourceUrl": "https://www.kaggle.com/alijs1",
+          "src": "/news-images/references/2026-10-12-alijs-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "gromml — reusable individual character/portrait",
+      "id": "gromml",
+      "identityNotes": [],
+      "names": [
+        "gromml"
+      ],
+      "personId": "gromml",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "reason": "The saved verified-person ledger has no individual image beyond a default avatar; an owner-supplied or explicitly identified reference is needed.",
+      "referenceType": "Reference needed",
+      "references": [],
+      "status": "pending"
+    },
+    {
+      "description": "Mark Barney — reusable individual character/portrait",
+      "id": "mark-barney",
+      "identityNotes": [
+        "Mark as competitor: preserve his Kaggle cyber-engineer avatar, visible beard, dense GPU headgear and multicolored small screens. This is separate from his Yorkies staff portrait."
+      ],
+      "names": [
+        "Mark Barney",
+        "Barney"
+      ],
+      "personId": "mark-barney",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-11T20:34:40Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/mark-barney.webp",
+          "role": "Mark Barney’s verified individual Kaggle avatar/portrait. Mark as competitor: preserve his Kaggle cyber-engineer avatar, visible beard, dense GPU headgear and multicolored small screens. This is separate from his Yorkies staff portrait. Ignore background text and do not invent other teammates.",
+          "sha256": "f2f0a29a8747c9fa8710489459a5d5f715ec16a91c32f46bb1fa9a4d41a24e9a",
+          "sourceUrl": "https://www.kaggle.com/markbarney",
+          "src": "/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Son Pham — reusable individual character/portrait",
+      "id": "son-pham",
+      "identityNotes": [
+        "Son: preserve his Kaggle cyber-engineer avatar, dense black GPU headgear, wide glowing visor and the recognizable lower face."
+      ],
+      "names": [
+        "Son Pham",
+        "Son"
+      ],
+      "personId": "son-pham",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-11T20:34:40Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/son-pham.webp",
+          "role": "Son Pham’s verified individual Kaggle avatar/portrait. Son: preserve his Kaggle cyber-engineer avatar, dense black GPU headgear, wide glowing visor and the recognizable lower face. Ignore background text and do not invent other teammates.",
+          "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d",
+          "sourceUrl": "https://www.kaggle.com/sonphamorg",
+          "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Peter Findley — reusable individual character/portrait",
+      "id": "peter-findley",
+      "identityNotes": [
+        "Peter: preserve the grey detective cat, amber eyes, brown checked deerstalker hat and curved pipe from his own avatar."
+      ],
+      "names": [
+        "Peter Findley",
+        "Findley"
+      ],
+      "personId": "peter-findley",
+      "provenance": "Identity and original source are recorded in content/news/people.json. Current team casting requires an exact verified Kaggle handle in the fresh roster.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "archivedAt": "2026-10-12T17:50:24Z",
+          "checkedAt": "2026-10-11T20:34:40Z",
+          "kind": "kaggle-avatar",
+          "label": "Verified Kaggle avatar / portrait",
+          "originalSrc": "/news-images/people/peter-findley.webp",
+          "role": "Peter Findley’s verified individual Kaggle avatar/portrait. Peter: preserve the grey detective cat, amber eyes, brown checked deerstalker hat and curved pipe from his own avatar. Ignore background text and do not invent other teammates.",
+          "sha256": "a7e5935949c96090daa38b174d5ed0f5dc6c7c1be57d7bcab101f61799141377",
+          "sourceUrl": "https://www.kaggle.com/raist321",
+          "src": "/news-images/references/2026-10-12-peter-findley-reference-1-v1.webp"
+        }
+      ],
+      "status": "ready"
     }
   ],
-  "scenes": [
-    {
-      "id": "chen-growing-bunnies",
-      "subjectIds": [
-        "yi-chia-chen",
-        "tufa-labs"
-      ],
-      "competition": "arc-3",
-      "prompt": "Two enormous, confident fluffy bunnies look on while exactly five friendly little Tufa spiders scramble with graphics cards and cables to assemble a fantastical compute monstrosity in the snowy city. Preserve the reference characters. No text or scores. The spiders and machine are editorial metaphor, not real headcount, hardware or spending.",
-      "reusableBase": "/news-images/2026-10-12-bunnies-and-compute-base.webp",
-      "generationRecord": "2026-10-12-bunnies-and-compute-base",
-      "requiresRanks": {
-        "15499660": 1,
-        "15486995": 2
-      },
-      "requiresExtendingLead": true
-    }
-  ]
+  "updatedAt": "2026-10-12T18:24:55Z",
+  "version": 1
 }

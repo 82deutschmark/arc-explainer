@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-10-12T17:07:57Z",
+  "history": [
+    {
+      "inputImages": [
+        "2026-10-12-bunnies-and-compute-base.webp",
+        "yi-chia-chen-bunnies-owner-2026-10-12.png",
+        "2026-10-12-chen-bunnies-character-v1-base.webp",
+        "2026-10-12-dries-smit-character-v1-base.webp"
+      ],
+      "output": "exec-4aa271e2-3586-475f-8875-3ec624256633.png",
+      "prompt": "Use case: precise-object-edit. Asset type: revised reusable ARC Daily Digest evening editorial scene, wide landscape. Input image 1 is the edit target: keep the snowy-city composition, enormous friendly bunnies, fantastical GPU tower, the EXACTLY FIVE separate fluffy black spider mascots and golden winter light. Input image 2 is Chen's actual full-size owner-supplied bunny photograph, authoritative for coat markings and ear anatomy. Input image 3 is our clean two-bunny character reference derived from that photo. Input image 4 is our clean Dries Smit character reference derived from his own Hall of Fame card. Make these specific changes: (1) Correct the two enormous bunnies to match images 2 and 3. Keep the foreground bunny grey-brown, with BOTH floppy lop ears hanging down beside its cheeks; its ears must never stand upright. Keep the larger bunny behind it dark charcoal-brown and white, with tall dark upright ears, broad irregular white forehead-and-nose blaze, white cheeks and chest and dark mask around the eyes. Both remain colossal relative to the buildings. (2) Add ONE clearly visible human-scale Dries Smit on the right side beside the GPU tower, wearing the recognizable dark cyber-engineer suit, cyan/green accents, swept brown hair and small green-grid right-eye eyepiece from image 4. He is enthusiastically helping one of the existing spiders install a graphics card into the tower; make the collaboration clear, with his hands touching the card and the spider helping from below or beside him. He must be a small human beside the tower, vastly smaller than the bunnies, visible and recognizable rather than hidden among the cables. Keep all FIVE existing spiders visible and countable; Dries is an additional human, not a sixth spider. No other humans. Do not remove a spider to make room. Friendly cooperative sporting humor, no violence or humiliation. Preserve the painterly cinematic 3D scene style, snow, ruins, warm expressive faces and the absurd fan-cooled graphics-card machine. Clean image only: no words, letters, labels, logos, ranks, scores, watermark or score panel. The score panel will be drawn separately from fresh evidence. The suit, spiders and GPU machine are editorial metaphor, not literal hardware or roster headcount."
+    }
+  ],
+  "id": "2026-10-12-bunnies-dries-and-compute-v2-base",
+  "inputImages": [
+    "exec-4aa271e2-3586-475f-8875-3ec624256633.png"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: precise-object-edit. Edit ONLY the attached scene to fix the spider count. There are six spiders now. Remove exactly ONE spider: the lower-right foreground spider with big white eyes, standing at the foot of the GPU tower beside the hanging red/yellow/blue cables, below and right of Dries. Fill only that spider's former body and legs with natural snow, small ruins and the existing hanging cables. Keep EXACTLY FIVE other spiders unchanged and clearly visible: the top installer, the middle-right installer, the far-right director with raised legs, the lower-left foreground card carrier, and the spider immediately beside Dries that is helping him lift/install the card. Preserve that helpful spider beside Dries. Keep Dries, the two bunnies (grey lop with both floppy ears and dark-and-white upright-eared bunny), all faces and fur, GPU tower, framing, light, snow and background unchanged. Do not add any new characters, props, text or score panel. Do not change any other part of the image. Final count exactly TWO bunnies, ONE human Dries, FIVE black spiders.",
+  "rawSha256": "e0091539cbd6893d6e3cffa4c39c54b26140f4d85182af6619e1ddddc676d1b3",
+  "rawSrc": "/news-images/2026-10-12-bunnies-dries-and-compute-v2-base.webp",
+  "references": [
+    {
+      "role": "Owner-supplied authoritative bunny photo.",
+      "src": "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png"
+    },
+    {
+      "role": "Clean bunny identity reference based on the owner's photo.",
+      "src": "/news-images/references/2026-10-12-chen-bunnies-character-v1-base.webp"
+    },
+    {
+      "role": "Clean Dries Smit character based on his own Hall of Fame illustration.",
+      "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp"
+    },
+    {
+      "role": "Earlier scene, established spider mascots, snowy city and GPU metaphor.",
+      "src": "/news-images/2026-10-12-bunnies-and-compute-base.webp"
+    }
+  ],
+  "review": "Inspected exactly two bunnies with corrected ear/coat identities, one recognizable Dries helping the adjacent spider install a card, and exactly five separate black spiders; no score panel or labels.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-187303d3-0819-4382-aafc-bbd3a7114117.png",
+  "version": 1
+}

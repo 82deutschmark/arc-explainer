@@ -22,6 +22,7 @@ class ArtworkTests(unittest.TestCase):
         (self.root / 'content/news/artwork').mkdir(parents=True)
         (self.root / 'client/public/news-images').mkdir(parents=True)
         shutil.copytree(n.ROOT / 'server/assets/fonts', self.root / 'server/assets/fonts')
+        shutil.copyfile(n.ROOT / 'client/public/favicon-32x32.png', self.root / 'client/public/favicon-32x32.png')
         self.raw = self.root / 'client/public/news-images/reference.webp'
         shutil.copyfile(n.ROOT / 'client/public/news-images/2026-10-12-bunnies-and-compute-base.webp', self.raw)
         n.write(self.root / 'content/news/people.json', [])
@@ -67,6 +68,59 @@ class ArtworkTests(unittest.TestCase):
             item['evidence']['comparisons'][row['teamId']]['start'] = None
         item['evidence']['events'] = []
         self.assertEqual(art.plan(self.brief, self.article, self.root)['jobs'], [])
+
+    def test_person_references_follow_exact_fresh_handles_and_keep_both_teammates(self):
+        people = [{'id': pid, 'name': pid, 'accounts': [{'platform': 'kaggle', 'handle': handle}]} for pid, handle in [('alpha', 'one'), ('beta', 'two')]]
+        n.write(self.root / 'content/news/people.json', people)
+        registry = n.load(self.root / 'content/news/visual-identities.json')
+        for subject in registry['subjects']:
+            subject['personId'] = subject['id']
+            subject.pop('teamIds')
+        item = copy.deepcopy(self.brief['competitions']['arc-3'])
+        item['evidence']['observations'] = {'new-team-id': {'members': ['one', 'two']}, 'similar-name': {'members': ['one2']}}
+        cast = art.registry_subjects(item, registry, self.root)
+        self.assertEqual(cast['new-team-id']['personIds'], ['alpha', 'beta'])
+        self.assertNotIn('similar-name', cast)
+
+    def test_companion_is_omitted_when_the_fresh_roster_no_longer_lists_them(self):
+        n.write(self.root / 'content/news/people.json', [{'id': 'dries', 'name': 'Dries', 'accounts': [{'platform': 'kaggle', 'handle': 'exact-handle'}]}])
+        registry = n.load(self.root / 'content/news/visual-identities.json')
+        registry['subjects'][0]['includePeople'] = ['dries']
+        registry['subjects'].append({'id': 'dries', 'personId': 'dries', 'description': 'Dries', 'references': [{'src': '/news-images/reference.webp', 'role': 'Dries'}]})
+        item = copy.deepcopy(self.brief['competitions']['arc-3'])
+        item['evidence']['observations']['1']['members'] = ['exact-handle']
+        self.assertIn('dries', art.registry_subjects(item, registry, self.root)['1']['personIds'])
+        item['evidence']['observations']['1']['members'] = []
+        self.assertNotIn('dries', art.registry_subjects(item, registry, self.root)['1']['personIds'])
+
+    def test_reference_changes_get_a_new_artwork_id(self):
+        before = art.plan(self.brief, self.article, self.root)['jobs'][0]['id']
+        path = self.root / 'content/news/visual-identities.json'
+        registry = n.load(path)
+        registry['subjects'][0]['references'][0]['role'] = 'An updated character reference.'
+        n.write(path, registry)
+        self.assertNotEqual(art.plan(self.brief, self.article, self.root)['jobs'][0]['id'], before)
+
+    def test_job_id_survives_brief_json_serialization(self):
+        before = art.plan(self.brief, self.article, self.root)['jobs'][0]['id']
+        self.assertEqual(art.plan(art.load(self.path), self.article, self.root)['jobs'][0]['id'], before)
+
+    def test_changed_reference_bytes_fail_the_library_check(self):
+        path = self.root / 'content/news/visual-identities.json'
+        registry = n.load(path)
+        for subject in registry['subjects']:
+            subject['references'][0]['sha256'] = art.file_sha(self.raw)
+        n.write(path, registry)
+        art.check_library(self.root)
+        self.raw.write_bytes(self.raw.read_bytes() + b'changed')
+        with self.assertRaisesRegex(ValueError, 'reference bytes changed'):
+            art.check_library(self.root)
+
+    def test_corner_overlays_keep_the_scene_aspect_ratio(self):
+        report = self.compose()
+        with art.Image.open(self.raw) as raw, art.Image.open(art.public_file(report['image']['src'], self.root)) as image:
+            self.assertEqual(image.height, round(raw.height * image.width / raw.width))
+        self.assertEqual(report['layout'], 'corner-overlays-v1')
 
     def test_recorded_event_can_supply_a_gain_without_a_net_comparison(self):
         item = self.brief['competitions']['arc-3']

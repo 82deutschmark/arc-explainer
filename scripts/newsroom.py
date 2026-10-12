@@ -3,6 +3,7 @@
 # Date: 2026-10-12
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
+# 12-Oct-2026: selected public Kaggle discussion threads join the edition's dated source evidence.
 # 10-Oct-2026 (Claude Opus 5.5): --writer records the Claude Haiku backup honestly in generatedBy.
 # 11-Oct-2026: briefs carry wire developments and unresolved editorial assignments; publication records their disposition.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
@@ -322,8 +323,9 @@ def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False, wr
             result['competitions'][comp] = board_brief(board, comp, edition, now, actual_now, url, sha, preview, writer)
             add_notebook_sources(result['competitions'][comp], comp, actual_now)
             from newsroom_people import add_people_sources
-            from newsroom_social import add_social_sources
+            from newsroom_social import add_social_sources, add_discussion_sources
             add_social_sources(result['competitions'][comp], comp, actual_now, ROOT)
+            add_discussion_sources(result['competitions'][comp], comp, actual_now, ROOT)
             add_people_sources(result['competitions'][comp], comp, actual_now, ROOT)
             add_edition_intake(result['competitions'][comp], comp, actual_now)
         except Exception as error:
