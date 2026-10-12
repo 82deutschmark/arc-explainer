@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T09:34:16Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "SpaceDebri rockets from 640th to 88th on ARC-3",
+  "id": "2026-10-12-0556-arc-3-spacedebri-enters-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-12T09:56:24Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "SpaceDebri climbed 552 places to 88th, reaching 32.93 with a 4.40 gain."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That puts SpaceDebri inside the top 100 on a 4,196-team board, a sharp arrival among the front-running group."
+    }
+  ],
+  "since": "2026-10-11T09:31:57Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T09:55:48Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17077790"
+  ]
+}

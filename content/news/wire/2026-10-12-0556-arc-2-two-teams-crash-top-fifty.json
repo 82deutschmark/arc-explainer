@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-12T09:34:17Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "mrkmakr and Burton Lancaster surge into ARC-2 top 33",
+  "id": "2026-10-12-0556-arc-2-two-teams-crash-top-fifty",
+  "personIds": [],
+  "publishedAt": "2026-10-12T09:56:24Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "mrkmakr gained 6.95 to 36.67, leaping from 1135th to 29th. Burton Lancaster gained 6.11 to 35.83, rising from 1162nd to 33rd."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Both now sit among the board's top 33 on a field of 2,783 teams, turning long climbs into a fresh contest near the front."
+    }
+  ],
+  "since": "2026-10-11T09:31:58Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T09:55:48Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17021025",
+    "17064172"
+  ]
+}
