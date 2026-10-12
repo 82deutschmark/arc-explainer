@@ -1,0 +1,38 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T07:34:03Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Yi-Chia Chen stretches the ARC-3 lead",
+  "id": "2026-10-12-0402-arc-3-yi-chia-chen-extends-lead",
+  "personIds": [
+    "yi-chia-chen"
+  ],
+  "publishedAt": "2026-10-12T08:02:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Yi-Chia Chen added 4.53 to reach 67.49 and remains atop ARC-3. Tufa Labs is second at 56.52, leaving Chen 10.97 clear."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Chen has held the lead since October 8. The top spot stays in the same hands, but the cushion grew in the latest board comparison."
+    }
+  ],
+  "since": "2026-10-11T07:31:46Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T08:01:50Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15499660",
+    "15486995"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-12T07:34:05Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Kajetan Schweighofer breaks into ARC-2 gold",
+  "id": "2026-10-12-0402-arc-2-kajetan-schweighofer-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-12T08:02:20Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Kajetan Schweighofer gained 13.89 to reach 47.92, vaulting from 32nd to 12th and into the 15 gold places. ibyyue slipped from 15th to 16th at 41.81, just outside."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The cut moved with Schweighofer’s surge: the gold line now sits at 41.81, with ibyyue level on score but 0.00 short of a place."
+    }
+  ],
+  "since": "2026-10-11T07:31:47Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T08:01:50Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16761662",
+    "16684035"
+  ]
+}
