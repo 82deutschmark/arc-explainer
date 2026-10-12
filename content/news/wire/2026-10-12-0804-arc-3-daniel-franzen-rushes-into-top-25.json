@@ -1,0 +1,70 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T11:34:30Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Daniel Franzen races from 765th to 24th on ARC-3",
+  "id": "2026-10-12-0804-arc-3-daniel-franzen-rushes-into-top-25",
+  "personIds": [
+    "daniel-franzen"
+  ],
+  "publishedAt": "2026-10-12T12:04:22Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Daniel Franzen added 7.97 points to reach 35.86, surging from 765th to 24th in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-daniel-franzen-archive-0",
+        "person-daniel-franzen-archive-1",
+        "person-daniel-franzen-fact-0",
+        "person-daniel-franzen-fact-1"
+      ],
+      "text": "The move brings a familiar name near the front: Franzen was the ARC Prize 2025 runner-up and 2024 champion with the ARChitects."
+    }
+  ],
+  "since": "2026-10-11T11:32:07Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T12:03:52Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-daniel-franzen-fact-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-daniel-franzen-fact-1",
+      "title": "ARC Prize — 2024 results",
+      "url": "https://arcprize.org/competitions/2024"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-daniel-franzen-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-daniel-franzen-archive-1",
+      "title": "ARC Prize — 2024 results",
+      "url": "https://arcprize.org/competitions/2024"
+    }
+  ],
+  "teamIds": [
+    "16384837"
+  ],
+  "visual": {
+    "alt": "Daniel Franzen’s Kaggle profile picture",
+    "href": "/news/people/daniel-franzen",
+    "src": "/news-images/people/daniel-franzen.webp"
+  }
+}
