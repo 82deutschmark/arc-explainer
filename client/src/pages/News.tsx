@@ -1,10 +1,10 @@
 /**
- * Author: GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+ * Date: 2026-10-12
  * PURPOSE: ARC Daily landing page for both Kaggle contests, laid out like a broadsheet's front
- *          page: masthead with ears, the terminal ticker, What's News (the wire), the lead
+ *          page: masthead with ears, the terminal ticker, public X coverage, What's News (the wire), the lead
  *          reports run in full, the board in agate type, the past day's movers, where the past
- *          prize winners stand now, around the contests, an index of the rest of the site, the
+ *          prize winners stand now, an index of the rest of the site, the
  *          notebook in board order and every edition.
  *          09-Oct-2026 (Claude Opus 5.5): rebuilt per the Boss ("think like a newspaper editor ...
  *          information-dense, like a financial terminal, like a sports page"). The card grid
@@ -16,7 +16,7 @@
 import { NEWS_NAME } from '@shared/news';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { AboutThisPaper, ArticleArchive, NewsPaper, NewsStatus, sortedArticles, useNews, useNewsCardImage } from '@/components/news/NewsDesk';
-import { AroundTheContests, NewsFrontPage, NotebookColumns } from '@/components/news/NewsFrontPage';
+import { NewsFrontPage, NotebookColumns } from '@/components/news/NewsFrontPage';
 import { InsideIndex, MoversBand, PastWinners, useMarkets } from '@/components/news/NewsMarkets';
 import { SponsorPlacement } from '@/components/news/SponsorPlacement';
 
@@ -38,7 +38,6 @@ export default function News() {
       <MoversBand markets={markets.data} links={links} />
       <div className="news-lower">
         <PastWinners markets={markets.data} people={people} links={links} />
-        <AroundTheContests index={query.data} />
         <InsideIndex />
       </div>
       <SponsorPlacement format="banner" />

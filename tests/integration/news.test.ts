@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-11
+ * Date: 2026-10-12
  * PURPOSE: Verify public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
  *          Unified masthead replaces the former methods page and uses the editor portrait.
@@ -216,7 +216,7 @@ it('draws card text as paths, so the container needs no system fonts', async () 
 });
 it('serves sourced dispatches and their artwork in front-page API and crawler text', async () => {
   const index = getNewsIndex();
-  const dispatch = index.dispatches![0];
+  const dispatch = index.dispatches!.find(story => story.image)!;
   expect(dispatch).toBeDefined();
   const html = await (await fetch(`${base}/news`)).text();
   expect(html).toContain(escapeHtml(dispatch.headline));

@@ -1,8 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-11
+ * Date: 2026-10-12
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
- *          terminal ticker of both boards, then three columns: What's News (the wire), the lead
+ *          terminal ticker of both boards, a prominent public X strip, then three columns: What's News (the wire), the lead
  *          stories (the latest ARC-AGI-3 report printed in full, the ARC-AGI-2 report under it)
  *          and the board in agate type. Dated social dispatches and immutable editions still
  *          compete for each lead by publication time, and every story features at most one person.
@@ -13,7 +13,7 @@
  */
 import { Link } from 'wouter';
 import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition, NewsPerson } from '@shared/news';
-import { competitionName, competitorPath, newsDate, newsArticlePath, featuredPerson, editionLabel, personForXHandle, personPath, writerCredit } from '@shared/news';
+import { competitionName, competitorPath, newsDate, newsArticlePath, featuredPerson, editionLabel, personForXHandle, personPath, writerCredit, frontPageSocialPosts } from '@shared/news';
 import type { MarketsPayload } from '@shared/newsMarkets';
 import { StoryPreview, sortedArticles } from './NewsDesk';
 import { BoardTable, MarketTicker, marketBoards } from './NewsMarkets';
@@ -80,6 +80,7 @@ export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: 
   const links = { competitors: index.competitors, people };
   return <>
     <MarketTicker markets={markets} />
+    <AroundTheContests index={index} />
     <div className={`news-front${boards.length ? '' : ' no-board'}`}>
       <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /></section>
       <section className="news-col-lead" aria-label="Lead stories">
@@ -96,13 +97,13 @@ export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: 
 
 const clip = (text: string, length: number) => text.length <= length ? text : `${text.slice(0, text.lastIndexOf(' ', length - 1) > length * 0.6 ? text.lastIndexOf(' ', length - 1) : length - 1)}…`;
 
-/** The four newest public posts from the community desk, with the author's face when the account is a verified person. */
+/** Useful public posts lead the page, with the author's face when the account is verified. */
 export function AroundTheContests({ index }: { index: NewsIndex }) {
   const people = index.people ?? [];
-  const posts = [...(index.social ?? [])].sort((a, b) => (b.postedAt ?? b.checkedAt).localeCompare(a.postedAt ?? a.checkedAt)).slice(0, 4);
+  const posts = frontPageSocialPosts(index.social ?? []);
   if (!posts.length) return null;
-  return <section className="news-around" aria-label="Around the contests">
-    <h2 className="news-flag"><span>Around the contests</span><em>Public posts</em></h2>
+  return <section className="news-around" aria-label="From X">
+    <h2 className="news-flag"><span>From X</span><em>Research and reactions around the contests</em></h2>
     <ul>{posts.map(post => {
       const author = personForXHandle(people, post.author);
       return <li key={post.id}>

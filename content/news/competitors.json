@@ -157,7 +157,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15526034",
-    "lastObservedAt": "2026-10-12T10:04:20Z",
+    "lastObservedAt": "2026-10-12T15:34:53Z",
     "members": [
       "dzjiann",
       "keithtyser",
@@ -370,7 +370,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-11T21:33:05Z",
     "id": "arc-2-16761662",
-    "lastObservedAt": "2026-10-12T10:04:20Z",
+    "lastObservedAt": "2026-10-12T15:34:53Z",
     "members": [
       "kschweig"
     ],
@@ -1144,12 +1144,27 @@
     ],
     "firstObservedAt": "2026-10-09T20:53:44Z",
     "id": "arc-3-16384837",
-    "lastObservedAt": "2026-10-09T20:53:44Z",
+    "lastObservedAt": "2026-10-12T15:34:52Z",
     "members": [
       "dfranzen"
     ],
     "name": "Daniel Franzen",
     "teamId": "16384837"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-12T15:34:52Z",
+    "id": "arc-3-16447222",
+    "lastObservedAt": "2026-10-12T15:34:52Z",
+    "members": [
+      "dzjiann",
+      "keithtyser",
+      "mitubant"
+    ],
+    "name": "ARC Slayers",
+    "teamId": "16447222"
   },
   {
     "aliases": [],

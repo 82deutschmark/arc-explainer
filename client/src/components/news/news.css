@@ -1,5 +1,5 @@
 /* Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-11
+ * Date: 2026-10-12
  * PURPOSE: The ARC Daily Digest's printed look, for every newspaper route: front page, wire,
  * articles, notebook, people, community and unified masthead, and disclosed VoynichLabs units.
  * 09-Oct-2026 (Claude Opus 5.5): rebuilt as a broadsheet per the Boss ("information-dense, like a
@@ -210,8 +210,8 @@
 .news-movers-gold strong { font: 800 9.5px/1.4 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 .news-movers-board > .news-muted { margin: 4px 0 0; }
 
-/* ── Lower front page: past winners | around the contests | inside ──────────────────────── */
-.news-lower { display: grid; grid-template-columns: minmax(0, 5.2fr) minmax(0, 3.8fr) minmax(190px, 2.6fr); margin-top: 22px; }
+/* ── Lower front page: past winners | inside ──────────────────────────────────────────── */
+.news-lower { display: grid; grid-template-columns: minmax(0, 5.2fr) minmax(190px, 2.6fr); margin-top: 22px; }
 .news-lower > * { min-width: 0; padding: 0 16px; border-left: 1px solid var(--hair); }
 .news-lower > :first-child { padding-left: 0; border-left: 0; }
 .news-lower > :last-child { padding-right: 0; }
@@ -223,8 +223,11 @@
 .news-winner-name { font: 700 13.5px/1.2 var(--serif); }
 .arc-daily .news-winner-honor { color: var(--accent); font: 700 9px/1.35 var(--sans); letter-spacing: .06em; text-transform: uppercase; }
 .news-winners .news-muted { margin-top: 5px; }
-.news-around ul { margin: 0; padding: 0; list-style: none; }
-.news-around li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--hair); }
+.news-around { margin: 14px 0 18px; padding-bottom: 8px; border-bottom: 1px solid var(--ink); }
+.news-around ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
+.news-around li { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-content: start; gap: 8px; padding: 4px 12px; border-left: 1px solid var(--hair); overflow-wrap: anywhere; }
+.news-around li:first-child { padding-left: 0; border-left: 0; }
+.news-around li:last-child { padding-right: 0; }
 .news-around-mark { display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid var(--ink); font: 700 13px/1 var(--serif); }
 .news-around a strong { font: 700 13px/1.3 var(--serif); }
 .news-around a span { color: var(--muted); font: 10.5px/1.3 var(--sans); }
@@ -429,9 +432,8 @@
   .news-col-lead { padding-left: 0; border-left: 0; }
   .news-col-wire { margin: 18px 18px 0 0; padding-right: 0; }
   .news-front.no-board .news-col-wire { margin-right: 0; }
-  .news-lower { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); row-gap: 20px; }
-  .news-lower > .news-winners { grid-column: 1 / -1; padding-right: 0; }
-  .news-lower > .news-winners + * { padding-left: 0; border-left: 0; }
+  .news-lower { grid-template-columns: minmax(0, 1fr); row-gap: 20px; }
+  .news-lower > * { padding: 0; border-left: 0; }
 }
 @media (max-width: 900px) {
   .news-brand-row { grid-template-columns: 1fr; justify-items: center; gap: 8px; }
@@ -439,6 +441,9 @@
   .news-name { order: 1; }
   .news-masthead-ad { order: 3; justify-self: center; }
   .news-movers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 10px; }
+  .news-around ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 0; }
+  .news-around li:nth-child(odd) { padding-left: 0; border-left: 0; }
+  .news-around li:nth-child(even) { padding-right: 0; }
   .news-mover:nth-child(3) { padding-left: 0; border-left: 0; }
   .news-mover:nth-child(2) { padding-right: 0; }
   .news-directory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -459,6 +464,8 @@
   .news-lower > * { padding: 0; border-left: 0; }
 }
 @media (max-width: 600px) {
+  .news-around ul { grid-template-columns: minmax(0, 1fr); }
+  .news-around li { padding: 6px 0; border-left: 0; border-bottom: 1px solid var(--hair); }
   .arc-daily { padding: 0 0 32px; }
   .news-paper { padding: 6px 16px 22px; box-shadow: none; }
   .news-topline span:last-child { display: none; }

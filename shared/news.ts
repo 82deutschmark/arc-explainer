@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-11
+ * Date: 2026-10-12
  * PURPOSE: Shared public contract for sourced ARC Daily articles, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -77,6 +77,19 @@ export interface NewsSocialPost {
   visibility: 'public'; summary: string; whyItMatters: string; competitions: NewsCompetition[]; personIds: string[];
   category: 'standings' | 'research' | 'community' | 'banter'; importance: number;
   threadId: string | null; storyUrl: string | null; identitySourceUrl: string;
+}
+/** Useful reporting precedes minor color; within each tier, newest posts lead. */
+export function frontPageSocialPosts(posts: NewsSocialPost[]): NewsSocialPost[] {
+  const seen = new Set<string>();
+  return [...posts].sort((a, b) => Number(b.importance >= 2) - Number(a.importance >= 2)
+    || (b.postedAt ?? b.checkedAt).localeCompare(a.postedAt ?? a.checkedAt) || b.id.localeCompare(a.id))
+    .filter(post => {
+      // Related replies and reactions share one front-page slot; the community desk keeps all posts.
+      const story = post.storyUrl ?? post.threadId ?? post.id;
+      if (seen.has(story)) return false;
+      seen.add(story);
+      return true;
+    }).slice(0, 4);
 }
 /**
  * A short sourced story from the wire desk: GPT-6 Luna, writing several times a day from a

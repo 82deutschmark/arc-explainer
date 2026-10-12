@@ -1,6 +1,6 @@
 /**
- * Author: Claude Opus 5.5
- * Date: 2026-10-09
+ * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
+ * Date: 2026-10-12
  * PURPOSE: Render the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
  *          past winners, What's News, notebook columns) runs against real-shaped data; and render
@@ -58,8 +58,11 @@ test('the front page runs every live section against a populated digest', () => 
   for (const text of ['What’s news', 'The board', 'Market movers', 'Where the past winners stand', 'Inside', 'The competitor notebook', 'Every edition',
     'Gold line · 5 places', 'Into gold:', 'Leader · <span class="news-ticker-name">Yi-Chia Chen</span>', 'NEW', 'ARC Prize 2025 champion · NVARC'])
     expect(html).toContain(text);
-  // The lead report runs in full and the masthead names the edition.
-  const lead = [...index.articles].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).find(article => article.competition === 'arc-3')!;
+  // A newer afternoon dispatch can lead; a reserved feature gets the full treatment for its edition.
+  const newest = [...index.articles, ...(index.dispatches ?? [])].filter(story => story.competition === 'arc-3')
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id))[0];
+  const feature = 'frontPageFeatureId' in newest ? index.dispatches?.find(story => story.id === newest.frontPageFeatureId) : undefined;
+  const lead = feature ?? newest;
   expect(html).toContain(lead.sections.at(-1)!.text.slice(0, 40).replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
   expect(html).toMatch(/(Early|Late) edition/);
   expect(html).not.toContain('The people behind the puzzles');

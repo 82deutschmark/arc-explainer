@@ -1,0 +1,142 @@
+{
+  "competition": "arc-3",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Afternoon edition: ARC Slayers storms into seventh, with Keith Tyser on both boards",
+  "id": "2026-10-12-afternoon-arc3-slayers-and-research",
+  "publishedAt": "2026-10-12T15:52:40.426127Z",
+  "sections": [
+    {
+      "heading": "The Slayers make their move",
+      "sourceIds": [
+        "afternoon-evidence",
+        "board-arc-3",
+        "board-arc-2",
+        "person-keith-tyser-identity-0",
+        "person-keith-tyser-roster-2"
+      ],
+      "text": "ARC Slayers is the big top-ten mover on ARC-AGI-3. Its 9.97-point gain puts it seventh at 41.19, up from 218th in the fresh past-day comparison. Keith Tyser is listed alongside dzjiann and mitubant. Those same three accounts also appear on ARC Raiders in ARC-AGI-2, where that team holds eighth at 62.08. Two contests, two top-ten entries, and a shared core of listed accounts. The rosters establish membership, not which person produced the score increase."
+    },
+    {
+      "heading": "Chen leads while the gold places tighten",
+      "sourceIds": [
+        "afternoon-evidence",
+        "board-arc-3"
+      ],
+      "text": "Yi-Chia Chen remains first at 67.49, with Tufa Labs second at 56.52 and a 10.97-point gap between them. Son & Mark & Ronen is sixth at 41.97, just ahead of ARC Slayers, while NVARC3 is eighth at 40.97. The last of the 18 public gold places now requires 36.98. These are public-board positions; the private leaderboard decides final medals."
+    },
+    {
+      "heading": "Franzen returns near the front",
+      "sourceIds": [
+        "afternoon-evidence",
+        "wire-franzen",
+        "wire-fu",
+        "person-daniel-franzen-archive-0",
+        "person-daniel-franzen-archive-1"
+      ],
+      "text": "Daniel Franzen is 24th at 35.86. The morning Wire reported his climb from 765th; the afternoon snapshot keeps him in the same place. Franzen was a 2024 ARC Prize champion and 2025 runner-up with the ARChitects. Farther down, Jingshui Fu is now 67th at 33.22, after the Wire caught the move out of a position below 3,500. The board offers more than one kind of story today: established winners returning near the front, and deep-board entries suddenly becoming contenders."
+    },
+    {
+      "heading": "Memento 3 keeps the learning outside the weights",
+      "sourceIds": [
+        "memento-paper",
+        "social-2108936146071777498"
+      ],
+      "text": "The Memento 3 preprint is the research release to read alongside today’s standings. Its authors describe a fixed language model that revises an external rulebook, compiles it into an executable world model and checks updates against observed transitions before planning with them. They report clearing every level of all 25 public ARC-AGI-3 games with 44% of the human action count. OCEAN highlighted the paper on X. This is an author-reported result on the public games; it establishes neither a private-game result nor a Kaggle leaderboard score."
+    },
+    {
+      "heading": "The harness debate has a fresh ARC-3 angle",
+      "sourceIds": [
+        "harness-paper",
+        "social-2109493530465059261",
+        "social-2109594490663276946"
+      ],
+      "text": "Mike Knoop said a similar shift was happening with ARC-AGI-3 while quoting Pedro Domingos’s reaction to Harness Learning Enables Generalizable Test-Time Adaptation. That paper trains a proposer to revise executable harness code using feedback; its reported evaluations concern reasoning and multi-hop question answering. Knoop named no ARC team, method or score. In a separate public post, fshindo said the ARC-AGI-3 competition had taught them a great deal about harnesses and called contests a valuable learning opportunity. Both posts keep attention on the choices around the model, while supplying no explanation for ARC Slayers’ new score."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T15:52:40.426127Z",
+      "id": "afternoon-evidence",
+      "title": "Saved afternoon board briefs and public source checks",
+      "url": "https://github.com/82deutschmark/arc-explainer/blob/main/content/news/evidence/2026-10-12-afternoon-reporting.json"
+    },
+    {
+      "accessedAt": "2026-10-12T15:49:58Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public board and exact roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-12T15:49:58Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public board and exact roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-keith-tyser-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/keithtyser"
+    },
+    {
+      "accessedAt": "2026-10-12T15:34:52Z",
+      "id": "person-keith-tyser-roster-2",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-12T15:52:40.426127Z",
+      "id": "wire-franzen",
+      "title": "Morning Wire: Daniel Franzen races from 765th to 24th",
+      "url": "https://arc.markbarney.net/news/wire#2026-10-12-0804-arc-3-daniel-franzen-rushes-into-top-25"
+    },
+    {
+      "accessedAt": "2026-10-12T15:52:40.426127Z",
+      "id": "wire-fu",
+      "title": "Morning Wire: Jingshui Fu enters the top 100",
+      "url": "https://arc.markbarney.net/news/wire#2026-10-12-1003-arc-3-jingshui-fu-breaks-into-top-100"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-daniel-franzen-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-daniel-franzen-archive-1",
+      "title": "ARC Prize — 2024 results",
+      "url": "https://arcprize.org/competitions/2024"
+    },
+    {
+      "accessedAt": "2026-10-12T15:52:40.426127Z",
+      "id": "memento-paper",
+      "title": "Memento 3 preprint, submitted October 8",
+      "url": "https://arxiv.org/abs/2610.11794"
+    },
+    {
+      "accessedAt": "2026-10-12T15:52:40.426127Z",
+      "id": "harness-paper",
+      "title": "Harness Learning preprint, submitted September 28",
+      "url": "https://arxiv.org/abs/2609.35738"
+    },
+    {
+      "accessedAt": "2026-10-12T15:49:06.002362Z",
+      "id": "social-2109493530465059261",
+      "title": "Mike Knoop — original public post",
+      "url": "https://x.com/mikeknoop/status/2109493530465059261"
+    },
+    {
+      "accessedAt": "2026-10-12T15:49:06.002362Z",
+      "id": "social-2108936146071777498",
+      "title": "OCEAN — original public post",
+      "url": "https://x.com/OCEANVIN10/status/2108936146071777498"
+    },
+    {
+      "accessedAt": "2026-10-12T15:49:06.002362Z",
+      "id": "social-2109594490663276946",
+      "title": "fshindo — original public post",
+      "url": "https://x.com/crysis44k/status/2109594490663276946"
+    }
+  ]
+}

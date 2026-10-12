@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.7  Oct 12, 2026
+
+- **Public X coverage moves above the lead stories** (Author: GPT-6.1 Sol / Codex). Reused AroundTheContests as a compact From X strip immediately below the live ticker, before the reporting and standings on desktop and mobile. Useful and consequential posts precede minor replies, recent posts lead within each tier, and reactions sharing a release or thread use one slot. The full community archive stays accessible. Crawler HTML uses the same selection. Simplified the lower-page columns after the move. Filed two sourced afternoon dispatches covering ARC Slayers and ARC Raiders, the day's other major moves, and public research discussion; retained fresh board evidence and dated roster observations. Validation: production build, 19 existing focused checks, dispatch and portrait validators, desktop and phone browser review. Maintained the existing assertions for newer front-page dispatches and illustrated stories. Plan: `docs/2026-10-12-digest-afternoon-glowup-plan.md`.
+
 ### Version 9.141.6  Oct 11, 2026
 
 - **One institutional masthead and production page** (Author: GPT-6.1 Sol / Codex). Combined staff and How This Is Made into About the Paper at `/news/staff`, with a generic human-editor role, current reporting desks, earlier bylines, the daily news cycle, source standards, corrections contact and sponsorship. Removed the one-off feature reference from staff copy. Browser and crawler text reuse the same masthead and reporting copy; the old production URL redirects through the existing shared SEO policy and leaves the sitemap. Navigation and footer link to the combined page. Upgraded the existing research, personal-briefing and X-recap jobs from GPT-6 Sol to GPT-6.1 Sol through the app automation tool, preserving schedules and other settings; updated active newsroom guidance. Historical writer credits remain accurate. Reviewed source and whitespace; no code tests or deployment checks run. Plan: `docs/2026-10-11-about-the-paper-plan.md`.

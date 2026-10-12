@@ -3,7 +3,7 @@
     "author": "OCEANVIN10",
     "authorName": "OCEAN",
     "category": "research",
-    "checkedAt": "2026-10-10T21:02:17Z",
+    "checkedAt": "2026-10-12T15:49:06.002362Z",
     "competitions": [
       "arc-3"
     ],
@@ -62,10 +62,30 @@
     "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
   },
   {
+    "author": "crysis44k",
+    "authorName": "fshindo",
+    "category": "community",
+    "checkedAt": "2026-10-12T15:49:06.002362Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109594490663276946",
+    "identitySourceUrl": "https://x.com/crysis44k",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T10:38:15Z",
+    "storyUrl": null,
+    "summary": "Posting in Japanese, fshindo said the ARC-AGI-3 competition had taught them a great deal about agent harnesses and called contests a valuable learning opportunity. The post links the current Kaggle competition.",
+    "threadId": null,
+    "url": "https://x.com/crysis44k/status/2109594490663276946",
+    "visibility": "public",
+    "whyItMatters": "A fresh first-person account of the engineering lessons behind the competition. The author handle is observed directly; no team or real-person identity has been established."
+  },
+  {
     "author": "mikeknoop",
     "authorName": "Mike Knoop",
     "category": "research",
-    "checkedAt": "2026-10-12T10:05:58.813224Z",
+    "checkedAt": "2026-10-12T15:49:06.002362Z",
     "competitions": [
       "arc-3"
     ],
@@ -354,6 +374,29 @@
     "whyItMatters": "A direct research-participation lead; it is an invitation, not a claim about any current contestant’s approach."
   },
   {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-12T15:07:43.999Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2109572004835954875",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-12T09:08:54Z",
+    "storyUrl": null,
+    "summary": "Replying to Michael Taiwo’s suggestion of a small-budget version students could run before attempting the full experiment, Chollet called it a great idea. The conversation concerns his previously announced KerasHub/JAX/TPU post-training experiments; it does not announce a release, schedule or ARC score.",
+    "threadId": "2109096597011534242",
+    "url": "https://x.com/fchollet/status/2109572004835954875",
+    "visibility": "public",
+    "whyItMatters": "A modest follow-up to the archived post-training lead: student accessibility is a possible direction welcomed by Chollet, not a promised deliverable or evidence of a competition method."
+  },
+  {
     "author": "pmddomingos",
     "authorName": "Pedro Domingos",
     "category": "research",
@@ -372,45 +415,5 @@
     "url": "https://x.com/pmddomingos/status/2109420932955804040",
     "visibility": "public",
     "whyItMatters": "Primary quoted context for Mike Knoop’s new ARC-AGI-3 reaction. Group by the shared paper and distinguish its actual experiment from the broader social interpretation."
-  },
-  {
-    "author": "Fei2411",
-    "authorName": "FeiZ",
-    "category": "research",
-    "checkedAt": "2026-10-11T17:58:52.184063Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109320245483917753",
-    "identitySourceUrl": "https://x.com/Fei2411",
-    "importance": 1,
-    "personIds": [],
-    "postedAt": "2026-10-11T16:28:00Z",
-    "storyUrl": null,
-    "summary": "FeiZ attributed the one-level difference to context compression settings in a follow-up. A reply questioned the comparison setup; the explanation is an author claim, not independently established.",
-    "threadId": "2109319340902510823",
-    "url": "https://x.com/Fei2411/status/2109320245483917753",
-    "visibility": "public",
-    "whyItMatters": "Necessary context and caveat for the root ARC-AGI-3 experiment."
-  },
-  {
-    "author": "fchollet",
-    "authorName": "François Chollet",
-    "category": "research",
-    "checkedAt": "2026-10-12T03:10:21.955Z",
-    "competitions": [],
-    "id": "2109100717596381405",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 1,
-    "personIds": [
-      "francois-chollet"
-    ],
-    "postedAt": "2026-10-11T01:56:10Z",
-    "storyUrl": null,
-    "summary": "Replying to a question about TPU sharding for his LLM post-training experiments, Chollet said the keras.distribution API takes care of it. This is a clarification of his earlier experiment note, not a release announcement.",
-    "threadId": "2109096597011534242",
-    "url": "https://x.com/fchollet/status/2109100717596381405",
-    "visibility": "public",
-    "whyItMatters": "Adds a concrete implementation detail to the previously archived research lead; follow up if the experiments are released."
   }
 ]
