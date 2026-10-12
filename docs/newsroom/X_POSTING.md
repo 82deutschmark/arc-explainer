@@ -11,20 +11,41 @@ edition" (the 6 am issue) or "Late edition" (the 6 pm issue). The edition run se
 after it has published and pushed, with the same send-once rules as the afternoon recap. This
 routine post is authorized; the Discord draft rules are unchanged.
 
+**Boss's artwork rule, 12 October 2026:** a good reviewed custom image should lead the
+post. For an illustrated edition, upload the finished illustration as the post's image,
+lead the text with that article's headline, and retain its permanent link. Use that exact
+edition's composed image, including its current score/time overlays and branding. A
+generic link preview, raw scene without the score panel, or earlier edition's image is not
+a substitute. This image belongs in the existing routine announcement; it does not create
+an extra post. An edition without custom artwork keeps the normal text/link announcement.
+
 1. Run, with today's Eastern date in the file name:
    `python3.13 scripts/newsroom_x.py --edition morning --output /Users/macmini/bubba-workspace/reports/arc-daily-x/YYYY-MM-DD-early-edition.json`
    (the evening run uses `--edition evening` and `YYYY-MM-DD-late-edition.json`).
 2. The helper drafts the post from the published editions: `The ARC Daily Digest · Early
    edition` (or `Late edition`), the ARC-AGI-3 and ARC-AGI-2 headlines when both fit in 280
-   characters (otherwise the lead one), and the lead article's link. It then waits up to 20
-   minutes for that link to open on the redeployed site, so X can draw the article's card. If the
+   characters (otherwise the lead one), and the lead article's link. A published article
+   with reviewed, evidence-bound custom artwork leads; ARC-3 leads when both have art or
+   neither does. The helper validates that artwork against the archived edition and saves
+   a PNG attachment beside the outbox. Its `media` object records the exact local `path`,
+   attachment `sha256`, original asset/hash, artwork ID, `alt` and `caption`. It then waits up to 20
+   minutes for the article link to open on the redeployed site. If the
    link never opens, the outbox says `waiting` and nothing is posted; report it.
 3. When the outbox state is `draft`: confirm the account is `82deutschmark` and look at its recent
-   posts for this edition's post (an existing one completes the job; save its URL). Save the exact
-   text and set the state to `posting`, post it once, verify it on the profile, then save its
+   posts for this edition's post (an existing one completes the job; save its URL). If `media`
+   is present, inspect its PNG, verify its saved hash, upload `media.path` through the browser's
+   file picker and add `media.alt` as image description. Confirm the compose preview shows
+   the intended illustration with readable current overlays before sending. Save the exact
+   text and attachment metadata and set the state to `posting`, post it once, verify the text
+   and attached illustration on the profile, then save its
    permanent URL and completion time and set the state to `posted`. An existing `posting` or
    `posted` state is never overwritten; an uncertain send is checked on the profile before any retry.
 4. Post the drafted text exactly. No added hashtags, mentions or figures.
+
+An image-preparation, upload or preview failure leaves the draft and its concrete error for
+the Boss; do not silently send an illustrated story without its image. Preserve the exact
+reviewed attachment and send state across a retry. A previous text-only post for the same
+edition is still an existing send, so this new policy never duplicates it.
 
 The paragraph added to the end of each edition automation's prompt (morning shown; the evening
 prompt uses `--edition evening` and `YYYY-MM-DD-late-edition.json`):
@@ -33,9 +54,11 @@ prompt uses `--edition evening` and `YYYY-MM-DD-late-edition.json`):
 > 2026: follow "Edition posts" in docs/newsroom/X_POSTING.md. Run python3.13
 > scripts/newsroom_x.py --edition morning --output
 > /Users/macmini/bubba-workspace/reports/arc-daily-x/YYYY-MM-DD-early-edition.json with today's
-> Eastern date. If the outbox is a draft, post its exact text once from the signed-in Chrome
-> account 82deutschmark with the send-once outbox rules: check the profile for an existing post
-> first, set posting before sending, verify on the profile, then save the URL and set posted.
+> Eastern date. If the outbox is a draft, upload its reviewed media.path when present and
+> post its exact text once from the signed-in Chrome account 82deutschmark with the send-once
+> outbox rules: check the profile for an existing post first, verify the composed illustration,
+> save text and attachment and set posting before sending, verify both on the profile, then
+> save the URL and set posted. Custom article artwork leads the routine announcement.
 > This routine edition post is authorized. If the outbox says waiting, report why and do not
 > post. Include the post URL in the final report.
 

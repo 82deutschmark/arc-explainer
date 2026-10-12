@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.12  Oct 12, 2026
+
+- **Required newspaper checkouts and custom-art X announcements** (Author: GPT-6.1 Sol / Codex). Added a prominent `AGENTS.md` warning naming the permanent newsroom, wire and fallback paths, branches and jobs: no cleanup removal or unlocking without the Boss's specific authorization. The X helper now leads with the illustrated edition, validates its custom image against immutable publication evidence, and saves the exact PNG attachment and hashes for browser posting. Updated reporter/X instructions and edition automation prompts to upload and visually verify the custom artwork in the existing routine post. Existing send states remain protected. Files: `AGENTS.md`, `scripts/newsroom_x.py`, newsroom guides and `docs/2026-10-12-newspaper-checkouts-and-x-art-plan.md`.
+
 ### Version 9.141.11  Oct 12, 2026
 
 - **Digest source columns and a complete collected-tweet view** (Author: GPT-6.1 Sol / Codex). Added a modest “From the Kaggle boards” column beneath the wire, with read public summaries and original thread links. The prominent X strip now leads to a searchable, contest-filtered chronological archive of all dated public posts retained for thirty days, rather than only the twenty selected recent sources. Server validation excludes restricted/unread/undated discussion leads; crawler HTML mirrors both source sections.

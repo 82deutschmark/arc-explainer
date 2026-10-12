@@ -1,5 +1,18 @@
 # The ARC Daily Digest reporter
 
+## Permanent checkouts and artwork-led X posts — October 12 editor instruction
+
+Read the required newspaper-checkout warning near the top of `AGENTS.md`. The newsroom,
+wire and fallback folders are permanent scheduled desk infrastructure, even when clean or
+idle; preserve their locks, paths and branches during cleanup. Their deletion breaks the paper.
+
+When an edition has a reviewed custom illustration, that finished image leads its routine
+X announcement as an attachment, with the illustrated story first. Follow [X_POSTING.md](X_POSTING.md):
+the existing helper saves the current edition's exact attachment and provenance in the outbox.
+Inspect the composed image before posting and verify the image on the profile afterward.
+Use the published edition's score overlays, never an earlier composed scene. Existing
+send-once states stay protected; this rule adds no extra post.
+
 ## Native edition illustrations authorized October 12
 
 Read [CHARACTERS.md](CHARACTERS.md) for the expanded versioned cast and programmed corner graphics. Read [DISCUSSIONS.md](DISCUSSIONS.md) and export selected public discussion leads before preparing the edition, then consider the brief’s `discussionThreads` as sourced editorial leads.

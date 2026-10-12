@@ -37,6 +37,34 @@
 > Before any newsroom run, read the desk notes at the top of `docs/newsroom/REPORTER.md`, then
 > `docs/newsroom/VISUALS.md`; the wire desk reads `docs/newsroom/WIRE_DESK.md` (section 5.7).
 
+> **Required newspaper checkouts — do not delete (Boss, 12-Oct-2026):** these are permanent
+> infrastructure for The ARC Daily Digest, not duplicate or abandoned development checkouts:
+>
+> | Required path | Required branch | Newspaper job |
+> |---|---|---|
+> | `/Users/macmini/GitHub/arc-explainer-newsroom` | `codex/newsroom-publisher` | 6 am Early and 6 pm Late editions, research, personal briefings and X posts |
+> | `/Users/macmini/GitHub/arc-explainer-wire` | `codex/wire-desk` | Wire stories every two hours |
+> | `/Users/macmini/GitHub/arc-explainer-fallback` | `claude/newsroom-fallback` | Scheduled backup when the main edition fails |
+>
+> They share `https://github.com/82deutschmark/arc-explainer.git` and are intentionally locked
+> with `git worktree lock`. Never remove, archive, unlock, prune, rename or repurpose these
+> paths or delete their branches during cleanup unless the Boss explicitly authorizes that
+> specific newspaper-infrastructure change. An idle or clean checkout is still required.
+> Deleting the wire and fallback checkouts stopped scheduled reporting on 12 October.
+> The primary repository `/Users/macmini/GitHub/arc-explainer`, shared reports under
+> `/Users/macmini/bubba-workspace/reports/`, and the reporting skill under
+> `.agents/skills/competition-reporter/` also remain required. Jobs may start in ARC3;
+> execute newspaper commands in their designated checkout. If a designated checkout is
+> missing, follow the saved automation's narrow recovery instructions and continue;
+> preserve other work and never substitute an arbitrary checkout.
+
+> **Custom artwork leads X posts (Boss, 12-Oct-2026):** when the published article has a
+> reviewed custom illustration, attach that edition's finished image to the routine X post
+> and lead with its story. A generic link card does not replace it. Preserve current score
+> overlays, save the exact attachment in the outbox, and visually verify it before sending
+> and on the posted profile. Follow `docs/newsroom/X_POSTING.md`; existing posts stay
+> send-once, and an earlier composed image is never substituted for the current edition.
+
 ## 1. Mission & Critical Warnings
 
 - Always understand state transitions: as soon as an action begins, collapse/disable prior controls and reveal live streaming states. Never leave static or bloated UI stuck on screen.
@@ -426,4 +454,4 @@ while (stream.interruptions?.length) {
 
 ---
 
-**Final reminders:** Small hobby project, but quality matters. Think before you code, reuse existing work, keep documentation (especially RE-ARC references) current, and remember that RE-ARC scoring matches ARC-AGI per-pair logic (two attempts, either can solve). Keep the codemap **@RE-ARC: Verifiable ARC Solver Benchmarking System** plus `d:\GitHub\arc-explainer\docs\` handy whenever you touch benchmarking flows. 
+**Final reminders:** Small hobby project, but quality matters. Think before you code, reuse existing work, keep documentation (especially RE-ARC references) current, and remember that RE-ARC scoring matches ARC-AGI per-pair logic (two attempts, either can solve). Keep the codemap **@RE-ARC: Verifiable ARC Solver Benchmarking System** plus `d:\GitHub\arc-explainer\docs\` handy whenever you touch benchmarking flows.

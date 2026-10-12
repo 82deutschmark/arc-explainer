@@ -1,20 +1,24 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6 Sol / Codex
-# Date: 2026-10-09
-# PURPOSE: Prepare a 2 pm X draft and saved board evidence for the evening desk.
-# Browser automation researches public posts and performs the authorized daily send.
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+# Date: 2026-10-12
+# PURPOSE: Prepare afternoon X evidence and edition announcements with the current article's
+# reviewed custom artwork as the lead attachment. Save exact image bytes for browser posting;
+# the browser journalist verifies and sends once, while this helper never sends to X.
 # 09-Oct-2026 (Claude Opus 5.5): --edition drafts the post announcing a published edition, labeled
 # "Early edition" (6 am) or "Late edition" (6 pm) at the Boss's request, and waits until its link opens.
-# SRP/DRY check: Pass — reuses newsroom evidence and previous-Eastern-evening comparisons.
+# SRP/DRY check: Pass — reuses newsroom evidence, artwork validation and immutable asset writes.
 """Prepare an afternoon X draft and evidence, or an edition announcement. This helper never posts to X."""
 import argparse
 from datetime import datetime
+from io import BytesIO
 import json
 from pathlib import Path
 import time
 import urllib.error
 import urllib.request
 from newsroom import prepare, stamp, write, load, ET, SITE, ROOT, UTC
+from newsroom_artwork import validate_attachment, public_file, file_sha, immutable
+from PIL import Image
 
 EDITION_WORD = {'morning': 'Early', 'evening': 'Late'}
 X_LINK_WEIGHT = 23  # X counts every link as 23 characters.
@@ -26,8 +30,40 @@ def x_weight(message, link=None):
     return sum(1 if ord(char) < 128 else 2 for char in body)
 
 
+def edition_media(article, root=ROOT):
+    """Only the published article's evidence-bound custom artwork can lead its post."""
+    image = article.get('image')
+    if not image or not image.get('artworkId'):
+        return None
+    evidence = load(Path(root) / 'content/news/evidence' / (article['id'] + '.json'))
+    # Reconstruct the existing validator's brief inputs from immutable publication evidence.
+    brief = {'sha256': evidence['briefSha256'], 'competitions': {
+        article['competition']: {'status': 'ready', 'articleBase': article}}}
+    report = validate_attachment(image, article, brief, root)
+    if evidence.get('articleId') != article['id'] or evidence.get('artwork') != report:
+        raise ValueError('X artwork differs from the published edition evidence')
+    return {'artworkId': image['artworkId'], 'sourcePath': str(public_file(image['src'], root)),
+            'sourceSha256': report['imageSha256'], 'url': SITE + image['src'],
+            'alt': image['alt'], 'caption': image['caption']}
+
+
+def prepare_media(post, outbox):
+    """Save a PNG attachment without changing the reviewed image or its score overlays."""
+    media = post.get('media')
+    if not media:
+        return
+    if file_sha(media['sourcePath']) != media['sourceSha256']:
+        raise ValueError('X artwork source changed before attachment preparation')
+    target = Path(outbox).with_name(media['artworkId'] + '-x.png')
+    with Image.open(media['sourcePath']) as source:
+        buffer = BytesIO()
+        source.save(buffer, format='PNG')
+    immutable(target, buffer.getvalue())
+    media.update(path=str(target.resolve()), sha256=file_sha(target))
+
+
 def edition_post(edition, day, root=ROOT):
-    """The X post for a published edition: its Early/Late label, both headlines when they fit, the lead article link."""
+    """Draft an edition announcement, leading with its reviewed custom art when available."""
     found = {}
     for competition in ('arc-3', 'arc-2'):
         path = Path(root) / 'content/news/articles' / f'{day}-{edition}-{competition}.json'
@@ -36,17 +72,23 @@ def edition_post(edition, day, root=ROOT):
     label = f'{EDITION_WORD[edition]} edition'
     if not found:
         return {'date': day, 'edition': edition, 'label': label, 'state': 'waiting', 'reason': f'No published {edition} edition for {day}.'}
-    lead = found.get('arc-3') or found['arc-2']
+    media = {competition: edition_media(article, root) for competition, article in found.items()}
+    lead_competition = next((competition for competition in found if media[competition]), next(iter(found)))
+    lead = found[lead_competition]
     link = f"{SITE}/news/{lead['id']}"
-    lines = [f"{name}: {found[competition]['headline']}" for competition, name in (('arc-3', 'ARC-AGI-3'), ('arc-2', 'ARC-AGI-2')) if competition in found]
+    order = [lead_competition, *(competition for competition in found if competition != lead_competition)]
+    lines = [f"{competition.replace('arc-', 'ARC-AGI-')}: {found[competition]['headline']}" for competition in order]
     render = lambda rows: '\n'.join([f'The ARC Daily Digest · {label}', *rows, link])
     message = render(lines)
     if x_weight(message, link) > 280:
         message = render(lines[:1])
     if x_weight(message, link) > 280:
         raise ValueError('Edition post is too long')
-    return {'date': day, 'edition': edition, 'label': label, 'state': 'draft', 'message': message, 'link': link,
-            'articleIds': [article['id'] for article in found.values()], 'account': '82deutschmark'}
+    post = {'date': day, 'edition': edition, 'label': label, 'state': 'draft', 'message': message, 'link': link,
+            'articleIds': [found[competition]['id'] for competition in order], 'account': '82deutschmark'}
+    if media[lead_competition]:
+        post['media'] = media[lead_competition]
+    return post
 
 
 def link_is_live(url):
@@ -121,6 +163,9 @@ if __name__ == '__main__':
         raise SystemExit('Existing send attempt or post: inspect its state instead of replacing it.')
     if args.edition:
         post = edition_post(args.edition, datetime.now(UTC).astimezone(ET).date().isoformat())
+        # Preserve the reviewed text/source metadata if attachment preparation is interrupted.
+        write(target, post)
+        prepare_media(post, target)
         # Save the draft before the wait, so an interrupted run leaves the text behind.
         write(target, post)
         if post['state'] == 'draft' and not wait_until_live(post['link']):
