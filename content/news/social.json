@@ -62,6 +62,28 @@
     "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
   },
   {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "research",
+    "checkedAt": "2026-10-12T10:05:58.813224Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109493530465059261",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-12T03:57:04Z",
+    "storyUrl": "https://arxiv.org/abs/2609.35738",
+    "summary": "Mike Knoop said the same thing is happening with ARC-AGI-3 while quoting Pedro Domingos’s comment that models are absorbing harness behavior. The quoted post links Harness Learning Enables Generalizable Test-Time Adaptation. Knoop gives no named team, method, score or ARC experiment. The linked paper trains a proposer to revise executable harness code using feedback; its reported evaluations cover reasoning and multi-hop question answering, so the ARC-3 observation remains Knoop’s attributed comment.",
+    "threadId": "2109493530465059261",
+    "url": "https://x.com/mikeknoop/status/2109493530465059261",
+    "visibility": "public",
+    "whyItMatters": "Fresh ARC co-founder reaction for reporting on how models and harnesses divide the work. Useful research context, with no new verified Kaggle result or evidence that harnesses disappear."
+  },
+  {
     "author": "Fei2411",
     "authorName": "FeiZ",
     "category": "research",
@@ -105,7 +127,7 @@
     "author": "masspeakss",
     "authorName": "masspeaks",
     "category": "community",
-    "checkedAt": "2026-10-11T21:58:42.183715+00:00",
+    "checkedAt": "2026-10-12T09:10:49.320Z",
     "competitions": [
       "arc-2"
     ],
@@ -113,7 +135,7 @@
     "identitySourceUrl": "https://www.kaggle.com/masspeaks",
     "importance": 2,
     "personIds": [],
-    "postedAt": "2026-10-11T03:38:00Z",
+    "postedAt": "2026-10-11T03:38:07Z",
     "storyUrl": null,
     "summary": "In a Japanese post, masspeaks said careful preparation had paid off and expected a high gold-band cutoff. This is the contestant’s reaction; the post alone does not establish the exact score or method.",
     "threadId": null,
@@ -125,7 +147,7 @@
     "author": "tufalabs",
     "authorName": "Tufa Labs",
     "category": "community",
-    "checkedAt": "2026-10-11T21:58:42.183715+00:00",
+    "checkedAt": "2026-10-12T10:05:58.813224Z",
     "competitions": [
       "arc-2"
     ],
@@ -332,6 +354,26 @@
     "whyItMatters": "A direct research-participation lead; it is an invitation, not a claim about any current contestant’s approach."
   },
   {
+    "author": "pmddomingos",
+    "authorName": "Pedro Domingos",
+    "category": "research",
+    "checkedAt": "2026-10-12T09:10:38.693Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109420932955804040",
+    "identitySourceUrl": "https://x.com/pmddomingos",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-11T23:08:36Z",
+    "storyUrl": "https://arxiv.org/abs/2609.35738",
+    "summary": "Pedro Domingos described a linked paper as showing the model absorbing the harness. The primary release, submitted September 28, describes learning to revise executable harnesses from execution feedback, with reasoning and multi-hop question-answering evaluations. Its introduction retains an executable harness and frozen models at test time. The social phrasing is Domingos’s interpretation; it should not be reported as a demonstrated removal of the harness or an ARC competition result.",
+    "threadId": "2109420932955804040",
+    "url": "https://x.com/pmddomingos/status/2109420932955804040",
+    "visibility": "public",
+    "whyItMatters": "Primary quoted context for Mike Knoop’s new ARC-AGI-3 reaction. Group by the shared paper and distinguish its actual experiment from the broader social interpretation."
+  },
+  {
     "author": "Fei2411",
     "authorName": "FeiZ",
     "category": "research",
@@ -355,7 +397,7 @@
     "author": "fchollet",
     "authorName": "François Chollet",
     "category": "research",
-    "checkedAt": "2026-10-11T09:01:43Z",
+    "checkedAt": "2026-10-12T03:10:21.955Z",
     "competitions": [],
     "id": "2109100717596381405",
     "identitySourceUrl": "https://x.com/arcprize",
@@ -370,45 +412,5 @@
     "url": "https://x.com/fchollet/status/2109100717596381405",
     "visibility": "public",
     "whyItMatters": "Adds a concrete implementation detail to the previously archived research lead; follow up if the experiments are released."
-  },
-  {
-    "author": "fchollet",
-    "authorName": "François Chollet",
-    "category": "research",
-    "checkedAt": "2026-10-11T03:00:52Z",
-    "competitions": [],
-    "id": "2109096597011534242",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 1,
-    "personIds": [
-      "francois-chollet"
-    ],
-    "postedAt": "2026-10-11T01:39:48Z",
-    "storyUrl": null,
-    "summary": "Chollet said he has been trying LLM post-training experiments with KerasHub, JAX and TPUs, and might open-source some of the work. He did not announce a release or an ARC competition result.",
-    "threadId": null,
-    "url": "https://x.com/fchollet/status/2109096597011534242",
-    "visibility": "public",
-    "whyItMatters": "A research-direction note from an ARC Prize co-founder; revisit if he publishes the experiments."
-  },
-  {
-    "author": "82deutschmark",
-    "authorName": "Mark Barney",
-    "category": "banter",
-    "checkedAt": "2026-10-11T03:00:52Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109076505255145609",
-    "identitySourceUrl": "https://x.com/82deutschmark",
-    "importance": 1,
-    "personIds": [],
-    "postedAt": "2026-10-11T00:19:58Z",
-    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
-    "summary": "Barney joked that he had reached the top ten in the ARC-AGI-3 Kaggle competition, linked the competition page and a video, and called himself a vibe coder. This is his own claim, not an independently checked standing.",
-    "threadId": null,
-    "url": "https://x.com/82deutschmark/status/2109076505255145609",
-    "visibility": "public",
-    "whyItMatters": "A current contender’s lighthearted reaction to a claimed top-ten position; verify the dated board before using the rank as fact."
   }
 ]
