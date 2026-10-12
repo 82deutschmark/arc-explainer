@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T13:34:40Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Jingshui Fu storms from 3,527th to 68th",
+  "id": "2026-10-12-1003-arc-3-jingshui-fu-breaks-into-top-100",
+  "personIds": [],
+  "publishedAt": "2026-10-12T14:03:03Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Jingshui Fu added 33.12 points to reach 33.22, leaping from 3,527th to 68th on ARC-AGI-3."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That move carries Fu into the top 100 in a field of 4,205 teams, turning a deep-board position into a place among the contest’s leading contenders."
+    }
+  ],
+  "since": "2026-10-11T13:32:18Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T14:02:19Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17060073"
+  ]
+}

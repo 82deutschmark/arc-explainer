@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T13:34:40Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC Slayer vaults from 215th into ARC-3 gold",
+  "id": "2026-10-12-1003-arc-3-arc-slayer-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-12T14:03:03Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "ARC Slayer surged from 215th to 7th, gaining 9.97 points to reach 41.19 and cross into the 18 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The jump puts the team inside gold with room between it and the cutoff: the final gold place is 18th, while Lord Han Solo sits just outside in 19th, only 0.09 short."
+    }
+  ],
+  "since": "2026-10-11T13:32:18Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T14:02:19Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16447222"
+  ]
+}
