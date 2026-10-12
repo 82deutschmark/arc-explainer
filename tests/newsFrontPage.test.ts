@@ -5,6 +5,7 @@
  *          archive and a populated market digest, so every live section (ticker, board, movers,
  *          past winners, What's News, notebook columns) runs against real-shaped data; and render
  *          it again with no digest to prove a board outage leaves the reporting standing.
+ *          Public source-column hierarchy and full archive rendering use committed source data.
  * SRP/DRY check: Pass — production pages, production digest builder, seeded query cache.
  */
 import React, { createElement } from 'react';
@@ -15,6 +16,7 @@ import { Router } from 'wouter';
 import { afterEach, expect, test, vi } from 'vitest';
 import News from '../client/src/pages/News';
 import NewsWire from '../client/src/pages/NewsWire';
+import NewsCommunity from '../client/src/pages/NewsCommunity';
 import { newsArticleMeta } from '../server/services/news/newsPresentation';
 import fs from 'node:fs';
 import { getNewsIndex } from '../server/services/news/newsStore';
@@ -78,6 +80,27 @@ test('without the digest the reporting still leads and the market sections stay 
   expect(html).toContain('What’s news');
   expect(html).toContain(index.articles[0].headline.replace(/&/g, '&amp;').replace(/'/g, '&#x27;').slice(0, 30));
   for (const text of ['news-ticker', 'Market movers', 'Where the past winners stand', 'The board<']) expect(html).not.toContain(text);
+});
+
+test('Kaggle threads follow the prominent X strip and the wire, with original links', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const html = render(News, '/news', index, markets(index));
+  expect(html.indexOf('aria-label="From X"')).toBeLessThan(html.indexOf('aria-label="From the Kaggle boards"'));
+  expect(html.indexOf('What’s news')).toBeLessThan(html.indexOf('aria-label="From the Kaggle boards"'));
+  for (const thread of index.discussions!) expect(html).toContain(`href="${thread.url}"`);
+  expect(html).toContain('/news/community#tweet-archive');
+});
+
+test('community archive retains collected posts omitted from the curated strip', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const html = render(NewsCommunity, '/news/community', index);
+  expect(index.socialArchive!.length).toBeGreaterThan(index.social!.length);
+  for (const post of index.socialArchive!) expect(html).toContain(`id="post-${post.id}"`);
+  expect(html).toContain('Search collected tweets');
+  expect(html).toContain('Filter tweets by competition');
+  expect(html).toContain('id="kaggle-boards"');
 });
 
 test('wire stories run in What’s News and in full on the wire page', () => {

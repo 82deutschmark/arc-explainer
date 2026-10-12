@@ -23,7 +23,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "standings",
-    "checkedAt": "2026-10-09T21:09:33Z",
+    "checkedAt": "2026-10-12T18:15:45.034590Z",
     "competitions": [
       "arc-2"
     ],
@@ -60,6 +60,49 @@
     "url": "https://x.com/arcprize/status/2108577347192676612",
     "visibility": "public",
     "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
+  },
+  {
+    "author": "crysis44k",
+    "authorName": "fshindo",
+    "category": "community",
+    "checkedAt": "2026-10-12T18:15:45.034590Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2109688065099006141",
+    "identitySourceUrl": "https://x.com/crysis44k",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T16:50:05Z",
+    "storyUrl": null,
+    "summary": "In Japanese, fshindo said they had finally reached the medal range in ARC-AGI-2 and were pleased after spending substantial effort on it. This is the author’s claim; no primary profile link connecting @crysis44k to a specific Kaggle team has been verified. A similar board name and the attached image do not establish that connection.",
+    "threadId": null,
+    "url": "https://x.com/crysis44k/status/2109688065099006141",
+    "visibility": "public",
+    "whyItMatters": "A fresh ARC-2 competitor reaction for the evening desk. Verify the account-to-team connection and evening board before combining it with team 17019785 or reporting a provisional medal-band position as fact."
+  },
+  {
+    "author": "cunkpyber",
+    "authorName": "PunkCyber",
+    "category": "community",
+    "checkedAt": "2026-10-12T19:02:36Z",
+    "competitions": [
+      "arc-3",
+      "arc-2"
+    ],
+    "id": "2109599257980555583",
+    "identitySourceUrl": "https://x.com/cunkpyber",
+    "importance": 2,
+    "personIds": [
+      "punkcyber"
+    ],
+    "postedAt": "2026-10-12T10:57:12Z",
+    "storyUrl": null,
+    "summary": "PunkCyber tells the ARC Daily Digest that 復活の混テキスト is their team. The exact Japanese name matches entries on the current ARC-3 and ARC-2 boards; these have separate competition team IDs.",
+    "threadId": "2109589148218638844",
+    "url": "https://x.com/cunkpyber/status/2109599257980555583",
+    "visibility": "public",
+    "whyItMatters": "A competitor checked in with the paper and supplied a direct team identification. It supports a friendly shout-out; the reply does not identify their individual Kaggle handle or establish who produced a submission."
   },
   {
     "author": "crysis44k",
@@ -147,7 +190,7 @@
     "author": "masspeakss",
     "authorName": "masspeaks",
     "category": "community",
-    "checkedAt": "2026-10-12T09:10:49.320Z",
+    "checkedAt": "2026-10-12T18:15:45.034590Z",
     "competitions": [
       "arc-2"
     ],
@@ -167,7 +210,7 @@
     "author": "tufalabs",
     "authorName": "Tufa Labs",
     "category": "community",
-    "checkedAt": "2026-10-12T10:05:58.813224Z",
+    "checkedAt": "2026-10-12T18:15:45.034590Z",
     "competitions": [
       "arc-2"
     ],
@@ -372,48 +415,5 @@
     "url": "https://x.com/GregKamradt/status/2107480627989938482",
     "visibility": "public",
     "whyItMatters": "A direct research-participation lead; it is an invitation, not a claim about any current contestant’s approach."
-  },
-  {
-    "author": "fchollet",
-    "authorName": "François Chollet",
-    "category": "research",
-    "checkedAt": "2026-10-12T15:07:43.999Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2109572004835954875",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 1,
-    "personIds": [
-      "francois-chollet"
-    ],
-    "postedAt": "2026-10-12T09:08:54Z",
-    "storyUrl": null,
-    "summary": "Replying to Michael Taiwo’s suggestion of a small-budget version students could run before attempting the full experiment, Chollet called it a great idea. The conversation concerns his previously announced KerasHub/JAX/TPU post-training experiments; it does not announce a release, schedule or ARC score.",
-    "threadId": "2109096597011534242",
-    "url": "https://x.com/fchollet/status/2109572004835954875",
-    "visibility": "public",
-    "whyItMatters": "A modest follow-up to the archived post-training lead: student accessibility is a possible direction welcomed by Chollet, not a promised deliverable or evidence of a competition method."
-  },
-  {
-    "author": "pmddomingos",
-    "authorName": "Pedro Domingos",
-    "category": "research",
-    "checkedAt": "2026-10-12T09:10:38.693Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109420932955804040",
-    "identitySourceUrl": "https://x.com/pmddomingos",
-    "importance": 1,
-    "personIds": [],
-    "postedAt": "2026-10-11T23:08:36Z",
-    "storyUrl": "https://arxiv.org/abs/2609.35738",
-    "summary": "Pedro Domingos described a linked paper as showing the model absorbing the harness. The primary release, submitted September 28, describes learning to revise executable harnesses from execution feedback, with reasoning and multi-hop question-answering evaluations. Its introduction retains an executable harness and frozen models at test time. The social phrasing is Domingos’s interpretation; it should not be reported as a demonstrated removal of the harness or an ARC competition result.",
-    "threadId": "2109420932955804040",
-    "url": "https://x.com/pmddomingos/status/2109420932955804040",
-    "visibility": "public",
-    "whyItMatters": "Primary quoted context for Mike Knoop’s new ARC-AGI-3 reaction. Group by the shared paper and distinguish its actual experiment from the broader social interpretation."
   }
 ]

@@ -9,6 +9,7 @@
  *          09-Oct-2026 (Claude Opus 5.5): rebuilt per the Boss ("information-dense, like a
  *          financial terminal, like a sports page"); without the market digest the columns
  *          close up and the reporting still leads.
+ *          Selected Kaggle threads sit below the wire; the leading X strip links to the full collected archive.
  * SRP/DRY check: Pass — reuses story previews, dispatch rendering, the market tables and the wire.
  */
 import { Link } from 'wouter';
@@ -20,6 +21,7 @@ import { BoardTable, MarketTicker, marketBoards } from './NewsMarkets';
 import { PersonPortrait, StoryFeature } from './NewsPeople';
 import { WhatsNews } from './NewsWire';
 import { NewsEditorCredit } from './NewsEditorCredit';
+import { FromKaggleBoards } from './NewsSources';
 
 function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch; lead?: boolean }) {
   return dispatch.image ? <figure className="news-dispatch-art"><a href={dispatch.image.src} aria-label="Open the full editorial illustration"><img src={dispatch.image.src} alt={dispatch.image.alt} loading={lead ? 'eager' : 'lazy'} /></a><figcaption>{dispatch.image.caption}</figcaption></figure> : null;
@@ -82,7 +84,7 @@ export function NewsFrontPage({ index, markets }: { index: NewsIndex; markets?: 
     <MarketTicker markets={markets} />
     <AroundTheContests index={index} />
     <div className={`news-front${boards.length ? '' : ' no-board'}`}>
-      <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /></section>
+      <section className="news-col-wire" aria-label="What's news"><WhatsNews index={index} /><FromKaggleBoards threads={index.discussions ?? []} compact /></section>
       <section className="news-col-lead" aria-label="Lead stories">
         <CompetitionDesk articles={articles} dispatches={dispatches} competition="arc-3" lead people={people} />
         <CompetitionDesk articles={articles} dispatches={dispatches} competition="arc-2" people={people} />
@@ -114,7 +116,7 @@ export function AroundTheContests({ index }: { index: NewsIndex }) {
         </div>
       </li>;
     })}</ul>
-    <Link href="/news/community" className="news-read">Every post, with sources →</Link>
+    <Link href="/news/community#tweet-archive" className="news-read">Browse the collected tweet archive →</Link>
   </section>;
 }
 

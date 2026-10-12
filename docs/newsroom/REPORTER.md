@@ -6,6 +6,12 @@ Read [CHARACTERS.md](CHARACTERS.md) for the expanded versioned cast and programm
 
 After writing each manuscript, follow [ART_DESK.md](ART_DESK.md). The Boss now authorizes native Codex image generation for consequential moves by contenders with saved references, and new artwork assets/records in the same edition commit. Extend the existing artwork helper, generate clean scenes natively, draw compact corner scores and branding from the exact fresh edition brief, and attach the headline-bound image before validation. Quiet boards need no new art. The October 12 evening Chen lead is an explicit assignment; its wording and growing-bunnies scene depend on fresh evidence. Scheduled reporters still do not edit application code or automations.
 
+## Public source sections and October 12 shout-out
+
+The public X export now writes both `content/news/social.json` and `content/news/social-archive.json`; stage both exact files with the intended edition, alongside `discussions.json`. The prominent From X strip leads to the searchable thirty-day collected archive; the smaller From the Kaggle boards column links read public discussions beneath the wire.
+
+The Boss requested a friendly October 12 evening shout-out to PunkCyber (@cunkpyber), who publicly identified 復活の混テキスト as their team. The exact name occurs in separate ARC-3 and ARC-2 entries; the dossier stores the primary reply without inventing an individual Kaggle handle. Follow `punkcyber-evening-shoutout`, cite its source and the fresh ARC-3 board, retain the original name, and use “PunkCyber’s team” as an explanatory label rather than an official translated name. This joins the approved Chen/Tufa artwork commission; cover and report both requested items.
+
 ## Writer attribution — 11 October 2026
 
 The morning and evening editions, research desk, personal briefings and 2 pm X recap

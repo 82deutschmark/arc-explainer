@@ -52,5 +52,12 @@
     "url": "https://x.com/keithtyser",
     "identitySourceUrl": "https://keithtyser.com/",
     "personId": "keith-tyser"
+  },
+  {
+    "handle": "cunkpyber",
+    "identitySourceUrl": "https://x.com/cunkpyber",
+    "name": "PunkCyber",
+    "personId": "punkcyber",
+    "url": "https://x.com/cunkpyber"
   }
 ]

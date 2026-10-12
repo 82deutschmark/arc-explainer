@@ -1445,5 +1445,29 @@
       "sourceUrl": "https://www.kaggle.com/raist321",
       "src": "/news-images/people/peter-findley.webp"
     }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-12T19:02:36Z",
+        "handle": "cunkpyber",
+        "platform": "x",
+        "sourceTitle": "PunkCyber — public X profile",
+        "sourceUrl": "https://x.com/cunkpyber",
+        "url": "https://x.com/cunkpyber"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-12T19:02:36Z",
+        "sourceTitle": "PunkCyber — public team-identification reply to the ARC Daily Digest",
+        "sourceUrl": "https://x.com/cunkpyber/status/2109599257980555583",
+        "text": "PunkCyber (@cunkpyber) identifies 復活の混テキスト as their team in a public reply to the ARC Daily Digest."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "punkcyber",
+    "memberships": [],
+    "name": "PunkCyber"
   }
 ]

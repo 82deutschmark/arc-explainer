@@ -11,6 +11,11 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.11  Oct 12, 2026
+
+- **Digest source columns and a complete collected-tweet view** (Author: GPT-6.1 Sol / Codex). Added a modest “From the Kaggle boards” column beneath the wire, with read public summaries and original thread links. The prominent X strip now leads to a searchable, contest-filtered chronological archive of all dated public posts retained for thirty days, rather than only the twenty selected recent sources. Server validation excludes restricted/unread/undated discussion leads; crawler HTML mirrors both source sections.
+- **PunkCyber’s team and the evening art commission** (Author: GPT-6.1 Sol / Codex). Read the requested X notification and public original reply; matched 復活の混テキスト exactly to separate ARC-3/ARC-2 team entries. Added the attributed identification to both dossiers, an X-only person record/watch entry, and a sourced evening shout-out assignment. No individual Kaggle handle is guessed. A covered evening illustration assignment now requires the approved native base in a fresh edition-bound composition. Updated existing edition prompts to publish the archive and report both evening assignments, preserving schedules/models/permissions. Verification: 50 Python newsroom checks, 23 frontend/integration checks, production build and desktop/mobile browser inspection.
+
 ### Version 9.141.10  Oct 12, 2026
 
 - **Kaggle discussion intake joins the existing research and personal desks** (Author: GPT-6.1 Sol / Codex). Extended the locked social archive with contest-specific topic/reply revisions, read/public editorial selection, separate delivery state and partial-scan watermarks. Preparation receives only selected discussion citations; From X stays X-specific. Seeded 46 observed topic records and three read public leads, with first-pass limits recorded. Updated the two edition jobs, research scan and personal briefing while preserving their schedules, models, targets and send permissions. Validation: 48 Python newsroom checks, 20 frontend/integration checks and production build. Workflow: `docs/newsroom/DISCUSSIONS.md`.

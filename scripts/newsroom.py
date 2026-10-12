@@ -6,6 +6,7 @@
 # 12-Oct-2026: selected public Kaggle discussion threads join the edition's dated source evidence.
 # 10-Oct-2026 (Claude Opus 5.5): --writer records the Claude Haiku backup honestly in generatedBy.
 # 11-Oct-2026: briefs carry wire developments and unresolved editorial assignments; publication records their disposition.
+# Covered illustrated commissions require their approved native base, composed for the actual issue.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
 """Deterministic newsroom plumbing. The scheduled model writes the journalism."""
 import argparse
@@ -475,10 +476,19 @@ def validate(draft, brief, root=ROOT):
     if base['baselineAt'] and stamp(base['baselineAt']) > stamp(item['evidence']['baselineTargetAt']):
         raise ValueError('baseline is after comparison boundary')
     article = {**base, **{k: draft[k] for k in NARRATIVE}, 'discord': discord}
+    artwork = None
     if 'image' in draft:
         from newsroom_artwork import validate_attachment
-        validate_attachment(draft['image'], draft, brief, root)
+        artwork = validate_attachment(draft['image'], draft, brief, root)
         article['image'] = draft['image']
+    # A covered illustrated commission must actually carry its approved base, freshly composed
+    # for this issue. Holding/carrying it remains possible when the source evidence changes.
+    covered = {review['id'] for review in draft.get('intakeReview', []) if review['disposition'] == 'covered'}
+    for assignment in item.get('intake', {}).get('editorialAssignments', []):
+        approved = assignment.get('artworkGenerationRecord')
+        if approved and assignment.get('targetEditionId') == article['id'] and f"editorial-{assignment['id']}" in covered:
+            if not artwork or artwork.get('generationRecord') != approved:
+                raise ValueError('a covered illustrated assignment requires its approved edition-bound artwork')
     encoded(article)  # Reject NaN/Infinity throughout, including supplied metadata.
     return article, item
 

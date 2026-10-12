@@ -8,6 +8,7 @@
  *          Kaggle account or Hall of Fame card; Hall of Fame art may be .jpeg or a spaced filename.
  *          Later the same day: wire-desk stories (content/news/wire), kept in step with
  *          scripts/newsroom_wire.py, which validates each story against its brief first.
+ *          Serves only exported public tweet archives and read, dated Kaggle discussion leads.
  * SRP/DRY check: Pass — one store serves HTML, JSON, feeds and sitemap discovery.
  */
 import fs from 'node:fs';
@@ -98,6 +99,16 @@ export const newsSocialSchema = z.object({
   threadId: z.string().regex(/^\d+$/).nullable(), storyUrl: webUrl.nullable(), identitySourceUrl: webUrl,
 }).strict().refine(post => post.url.toLowerCase() === `https://x.com/${post.author}/status/${post.id}`.toLowerCase(), 'Post URL and author must agree')
   .refine(post => Date.parse(post.checkedAt) <= Date.now() && (!post.postedAt || Date.parse(post.postedAt) <= Date.parse(post.checkedAt)), 'Future social source time');
+export const newsDiscussionSchema = z.object({
+  id: z.string().regex(/^\d+$/), competition, url: webUrl, title: text,
+  author: z.string().regex(/^[A-Za-z0-9_]+$/), authorName: text,
+  postedAt: stamp.nullable(), latestActivityAt: stamp.nullable(), checkedAt: stamp,
+  commentCount: z.number().int().nonnegative(), visibility: z.literal('public'), bodyRead: z.literal(true),
+  summary: text.max(1600), decision: z.literal('paper-lead'), reason: text.max(700), personIds: z.array(safeId),
+}).strict().refine(thread => thread.url === `https://www.kaggle.com/competitions/arc-prize-2026-${thread.competition.replace('arc-', 'arc-agi-')}/discussion/${thread.id}`, 'Discussion URL must match its competition and ID')
+  .refine(thread => !!(thread.postedAt || thread.latestActivityAt), 'Discussion needs an observed source date')
+  .refine(thread => Date.parse(thread.checkedAt) <= Date.now() && [thread.postedAt, thread.latestActivityAt].every(value => !value || Date.parse(value) <= Date.parse(thread.checkedAt)), 'Future discussion source time')
+  .refine(thread => !thread.postedAt || !thread.latestActivityAt || Date.parse(thread.postedAt) <= Date.parse(thread.latestActivityAt), 'Reversed discussion dates');
 const WIRE_WINDOW_MS = 7 * 24 * 3_600_000;
 const WIRE_LIMIT = 40;
 /** Wire story IDs: Eastern date and time of filing, competition, then a slug ("2026-10-10-0905-arc-3-mtg-climbs"). */
@@ -145,6 +156,12 @@ export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
   const readArray = <T>(file: string, schema: z.ZodType<T>) => fs.existsSync(path.join(directory, file)) ? z.array(schema).parse(JSON.parse(fs.readFileSync(path.join(directory, file), 'utf8'))) : [];
   const people = readArray('people.json', newsPersonSchema);
   const social = readArray('social.json', newsSocialSchema);
+  // Only the explicitly exported public archive is served. The private research state is never read here.
+  const socialArchive = readArray('social-archive.json', newsSocialSchema)
+    .filter(post => post.postedAt && Date.now() - Date.parse(post.postedAt) <= 30 * 24 * 3_600_000);
+  const discussions = readArray('discussions.json', newsDiscussionSchema)
+    .filter(thread => Date.now() - Date.parse(thread.latestActivityAt ?? thread.postedAt!) <= WIRE_WINDOW_MS);
+  if (new Set(socialArchive.map(post => post.id)).size !== socialArchive.length || new Set(discussions.map(thread => `${thread.competition}:${thread.id}`)).size !== discussions.length) throw new Error('Duplicate public archive source');
   if (new Set(people.map(person => person.id)).size !== people.length || new Set(social.map(post => post.id)).size !== social.length) throw new Error('Duplicate news person or social post');
   const accounts = people.flatMap(person => person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`));
   if (new Set(accounts).size !== accounts.length) throw new Error('A verified account belongs to multiple people');
@@ -166,5 +183,5 @@ export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
     // The index the front page refetches every minute carries the past week, at most 40 stories;
     // the files stay in git as the permanent record and keep their evidence route.
     .filter(story => Date.now() - Date.parse(story.publishedAt) <= WIRE_WINDOW_MS).slice(0, WIRE_LIMIT) : [];
-  return { articles, competitors, dispatches, people, social, wire };
+  return { articles, competitors, dispatches, people, social, socialArchive, discussions, wire };
 }

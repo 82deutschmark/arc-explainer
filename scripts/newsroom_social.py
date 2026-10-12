@@ -3,6 +3,7 @@
 # Date: 2026-10-12
 # PURPOSE: Store browser-researched X posts and Kaggle discussion activity, coverage and separate personal briefing delivery;
 # export a strictly public subset for the newsroom and weekly meeting. No X/model API or sends.
+# Exports the full dated public thirty-day archive alongside the curated seven-day source subset.
 # SRP/DRY check: Pass — reuses newsroom timestamp, text and source validators; agents do browser research.
 import argparse
 import copy
@@ -167,8 +168,12 @@ def make_brief(directory, edition, now=None):
 
 
 def export_public(directory, root=ROOT, now=None):
-    posts = public_posts(state_at(directory), now)[:20]
+    state = state_at(directory)
+    posts = public_posts(state, now)[:20]
     save(Path(root) / 'content/news/social.json', posts)
+    archive = public_posts(state, now, days=30)
+    archive.sort(key=lambda post: (post['postedAt'], post['id']), reverse=True)
+    save(Path(root) / 'content/news/social-archive.json', archive)
     return len(posts)
 
 

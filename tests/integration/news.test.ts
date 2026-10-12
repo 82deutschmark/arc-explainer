@@ -12,6 +12,7 @@
  *          Later the same day: the market digest route, the wire page and the wire story contract.
  *          10-Oct-2026 (Claude Sonnet 5.5): the front-page card's versioned address, freshness rule and
  *          ARC puzzle figure; the /news sitemap date now counts wire stories like the code does.
+ *          Public source archives and discussion selection reject unread, restricted and misdirected sources.
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
@@ -21,7 +22,7 @@ import os from 'node:os';
 import path from 'node:path';
 import type { Server } from 'node:http';
 import { mountNews } from '../../server/routes/news';
-import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema } from '../../server/services/news/newsStore';
+import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema, newsDiscussionSchema } from '../../server/services/news/newsStore';
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import sharp from 'sharp';
@@ -90,6 +91,20 @@ it('publishes full article text and real NewsArticle schema before JavaScript ru
     const evidence = await fetch(`${base}/api/news/${article.id}/evidence`);
     expect(evidence.status).toBe(200);
     expect(evidence.headers.get('content-type')).toContain('json');
+  }
+});
+it('serves the full public tweet archive and rejects unread or restricted board leads', async () => {
+  const index = getNewsIndex();
+  const html = await (await fetch(`${base}/news/community`)).text();
+  for (const post of index.socialArchive!) {
+    expect(post.visibility).toBe('public');
+    expect(html).toContain(`id="post-${post.id}"`);
+  }
+  for (const thread of index.discussions!) expect(html).toContain(thread.url);
+  const thread = index.discussions![0];
+  for (const invalid of [{ bodyRead: false }, { visibility: 'unknown' }, { decision: 'watch-only' },
+    { postedAt: null, latestActivityAt: null }, { url: 'https://www.kaggle.com/competitions/other/discussion/748593' }]) {
+    expect(newsDiscussionSchema.safeParse({ ...thread, ...invalid }).success).toBe(false);
   }
 });
 it('discovers articles and separate competitor identities through sitemap and RSS', async () => {

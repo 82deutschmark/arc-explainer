@@ -2,6 +2,7 @@
 # Date: 2026-10-12
 # PURPOSE: Verify native-art planning, immutable composition and publication evidence, including
 # score/image mutations, wrong editions/headlines and missing comparisons. No model calls.
+# Covered illustrated commissions cannot publish without their freshly bound approved base.
 # SRP/DRY check: Pass — production helper and the existing newsroom time-boundary fixture.
 import copy
 import json
@@ -177,6 +178,22 @@ class ArtworkTests(unittest.TestCase):
         self.assertEqual(n.load(published)['image'], report['image'])
         proof = n.load(self.root / 'content/news/evidence' / published.name)
         self.assertEqual(proof['artwork']['imageSha256'], report['imageSha256'])
+
+    def test_covered_art_commission_requires_the_approved_base(self):
+        item = self.brief['competitions']['arc-3']
+        item['intake']['editorialAssignments'] = [{'id': 'approved-art', 'title': 'Alpha art commission', 'subjectNames': ['Alpha'],
+            'targetEditionId': self.article['id'], 'artworkGenerationRecord': 'native-base'}]
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        self.article['intakeReview'] = [{'id': 'editorial-approved-art', 'disposition': 'covered', 'reason': 'Alpha is the lead.'}]
+        with self.assertRaisesRegex(ValueError, 'approved edition-bound artwork'):
+            n.validate(self.article, self.brief, self.root)
+        self.article['intakeReview'][0]['disposition'] = 'held'
+        n.validate(self.article, self.brief, self.root)
+        self.article['intakeReview'][0]['disposition'] = 'covered'
+        report = self.compose()
+        n.validate({**self.article, 'image': report['image']}, self.brief, self.root)
+
 
     def test_stale_brief_fails_even_when_the_checksum_matches(self):
         with self.assertRaisesRegex(ValueError, 'fresh brief'):

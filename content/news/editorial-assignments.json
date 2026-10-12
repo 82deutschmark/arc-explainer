@@ -50,11 +50,37 @@
     ],
     "targetEditionId": "2026-10-12-evening-arc-3",
     "placement": "illustrated-lead",
-    "instructions": "For the October 12 evening edition, lead with Chen continues to extend her lead over Tufa if the fresh evening evidence supports that wording. If the lead or its extension changes, write the accurate current headline and adapt or hold the growing-bunnies artwork rather than force the claim. Use the reviewed two enormous bunnies and five little Tufa spiders building a fantastical graphics-card machine. Reuse the same-day native base through docs/newsroom/ART_DESK.md and regenerate the deterministic score overlay from the evening brief and final headline. The noon preview panel is not the evening panel. Five spiders is an artistic choice, not a roster observation; the machine is metaphor. Publish and cite substantive Chen/Tufa coverage with the bound edition illustration. October 12 update: use the inspected v2 scene with bunny anatomy/coat markings corrected from Chen’s full-size owner photo and Dries Smit helping the spiders install GPUs. His clean individual character reference is in the expanded library. Require his verified handle in the fresh Tufa roster before reusing the v2 scene; the library planner enforces this. Use the compact lower-left current-score chart and upper-right ARC Daily Digest / ARC Explainer chyron, drawn in code with no new image generation for the overlays.",
+    "instructions": "For the October 12 evening edition, lead with Chen continues to extend her lead over Tufa if the fresh evening evidence supports that wording. If the lead or its extension changes, write the accurate current headline and adapt or hold the growing-bunnies artwork rather than force the claim. Use the reviewed two enormous bunnies and five little Tufa spiders building a fantastical graphics-card machine. Reuse the same-day native base through docs/newsroom/ART_DESK.md and regenerate the deterministic score overlay from the evening brief and final headline. The noon preview panel is not the evening panel. Five spiders is an artistic choice, not a roster observation; the machine is metaphor. Publish and cite substantive Chen/Tufa coverage with the bound edition illustration. October 12 update: use the inspected v2 scene with bunny anatomy/coat markings corrected from Chen’s full-size owner photo and Dries Smit helping the spiders install GPUs. His clean individual character reference is in the expanded library. Require his verified handle in the fresh Tufa roster before reusing the v2 scene; the library planner enforces this. Use the compact lower-left current-score chart and upper-right ARC Daily Digest / ARC Explainer chyron, drawn in code with no new image generation for the overlays. The Boss reconfirmed on October 12 that the finished artwork must make the evening edition. Reuse the approved v2 raw base, compose and attach fresh scores; a covered disposition now requires that base in the actual issue. If fresh evidence makes the metaphor inaccurate, explicitly hold/carry the assignment and report the concrete reason.",
     "sourceUrls": [
       "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
       "https://arc.markbarney.net/news#2026-10-09-arc3-rabbit-and-spider"
     ],
-    "verificationNotes": "User commissioned the scene and reusable native-generation stage in this chat on October 12. The illustration has been generated and visually checked; tonight’s narrative and score panel require fresh evening evidence."
+    "verificationNotes": "User commissioned the scene and reusable native-generation stage in this chat on October 12. The illustration has been generated and visually checked; tonight’s narrative and score panel require fresh evening evidence.",
+    "artworkGenerationRecord": "2026-10-12-bunnies-dries-and-compute-v2-base"
+  },
+  {
+    "competition": "arc-3",
+    "createdAt": "2026-10-12T19:02:36Z",
+    "id": "punkcyber-evening-shoutout",
+    "instructions": "Give PunkCyber (@cunkpyber) and their team a warm, substantive shout-out in the October 12 evening edition. They publicly replied to the Digest on October 12 to identify 復活の混テキスト as their team. Preserve the exact Japanese Kaggle name and use the English explanatory label “PunkCyber’s team” so readers can recognize it; this label is attribution, not an official translation or renamed team. Cite social-2109599257980555583 and the fresh ARC-3 board/roster sources. The 2:35 PM EDT board placed ARC-3 team 16569113 ninth, but report tonight’s actual rank/score and comparison from the edition brief. The same name appears under separate ARC-2 team ID 16569125; keep competition identities separate. Do not invent the individual Kaggle handle behind cunkpyber, credit a submission to them, or infer methods from notebook titles. Their public profile did not link a Kaggle handle. Cover this alongside the Chen/Tufa illustrated lead rather than replacing it.",
+    "personIds": [
+      "punkcyber"
+    ],
+    "placement": "community-shout-out",
+    "priority": "Boss-requested friendly shout-out",
+    "sourceUrls": [
+      "https://x.com/cunkpyber/status/2109599257980555583",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    ],
+    "status": "pending",
+    "subjectNames": [
+      "PunkCyber"
+    ],
+    "targetEditionId": "2026-10-12-evening-arc-3",
+    "teamIds": [
+      "16569113"
+    ],
+    "title": "Welcome PunkCyber and 復活の混テキスト in the evening edition",
+    "verificationNotes": "Exact self-identification read in Mark’s X notifications and original thread, publicly readable without login. The team name was matched exactly in both dated board snapshots; cunkpyber’s individual Kaggle account remains unverified."
   }
 ]

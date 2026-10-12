@@ -4,6 +4,7 @@
 # and persistent cross-competition roster history through the production research helpers.
 # 09-Oct-2026 (Claude Opus 5.5): portraits trace to the person's own Kaggle account or Hall of
 # Fame card, the Kaggle picture command (offline, with a fake fetch) and the committed ledger.
+# The full thirty-day public export excludes restricted/undated/expired sources and exceeds the curated cap.
 # SRP/DRY check: Pass — tests observable archive behavior and identity invariants.
 import copy
 from pathlib import Path
@@ -28,6 +29,24 @@ def batch(posts, coverage=None):
     return {'version': 1, 'researchedAt': '2026-10-09T19:00:00Z', 'posts': posts, 'accounts': coverage or {}}
 
 class ResearchTests(unittest.TestCase):
+    def test_full_public_archive_keeps_older_posts_beyond_curated_limit(self):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as root:
+            older = post('80'); older['postedAt'] = '2026-09-20T12:00:00Z'
+            expired = post('81'); expired['postedAt'] = '2026-08-20T12:00:00Z'
+            undated = post('82'); undated['postedAt'] = None
+            posts = [post(str(i)) for i in range(1, 27)] + [older, expired, undated, post('90', 'subscriber'), post('91', 'unknown')]
+            social.ingest(batch(posts), directory, NOW)
+            social.export_public(directory, root, NOW)
+            selected = n.load(Path(root) / 'content/news/social.json')
+            archive = n.load(Path(root) / 'content/news/social-archive.json')
+            self.assertEqual(len(selected), 20)
+            self.assertEqual(len(archive), 27)
+            self.assertIn('80', [p['id'] for p in archive])
+            self.assertNotIn('80', [p['id'] for p in selected])
+            self.assertFalse({'81', '82', '90', '91'} & {p['id'] for p in archive})
+            self.assertEqual(archive[-1]['id'], '80')
+            self.assertTrue(all(set(p) == social.POST_FIELDS for p in archive))
+
     def test_rosters_keep_competitions_and_observed_history_separate(self):
         observation = {'1': {'name': 'Solo', 'members': ['confirmed'], 'observedAt': '2026-10-08T12:00:00Z'}}
         result = people.observed_people([person()], 'arc-3', '2026', observation, URL)

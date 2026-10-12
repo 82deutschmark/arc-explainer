@@ -16,6 +16,7 @@
  *          10-Oct-2026 (Claude Sonnet 5.5): the front-page share card's address is versioned by
  *          day and edition (sectionCardPath), and its headlines show only while fresh
  *          (sectionCardArticles), so a preview service can never keep serving a stale card.
+ *          Public source contracts also include selected Kaggle discussions and the chronological tweet archive.
  * SRP/DRY check: Pass — server, browser and newsroom tooling share one documented shape;
  *          competition labels still come from shared/kaggleCompetitions.ts.
  */
@@ -81,6 +82,18 @@ export interface NewsSocialPost {
   category: 'standings' | 'research' | 'community' | 'banter'; importance: number;
   threadId: string | null; storyUrl: string | null; identitySourceUrl: string;
 }
+/** Read, dated public discussion leads; participant claims remain attributed in their summaries. */
+export interface NewsDiscussion {
+  id: string; competition: NewsCompetition; url: string; title: string; author: string; authorName: string;
+  postedAt: string | null; latestActivityAt: string | null; commentCount: number; checkedAt: string;
+  visibility: 'public'; bodyRead: true; summary: string; decision: 'paper-lead'; reason: string; personIds: string[];
+}
+/** Catch-up archive order is chronological, independent of the front page's editorial priorities. */
+export const chronologicalSocialPosts = (posts: NewsSocialPost[]) => [...posts].sort((a, b) =>
+  (b.postedAt ?? b.checkedAt).localeCompare(a.postedAt ?? a.checkedAt) || b.id.localeCompare(a.id));
+export const recentDiscussions = (threads: NewsDiscussion[]) => [...threads].sort((a, b) =>
+  (b.latestActivityAt ?? b.postedAt ?? b.checkedAt).localeCompare(a.latestActivityAt ?? a.postedAt ?? a.checkedAt)
+  || b.id.localeCompare(a.id));
 /** Useful reporting precedes minor color; within each tier, newest posts lead. */
 export function frontPageSocialPosts(posts: NewsSocialPost[]): NewsSocialPost[] {
   const seen = new Set<string>();
@@ -112,7 +125,7 @@ export interface NewsWireStory {
   /** Claude Haiku 5.5 when the Claude Code backup filed it (docs/newsroom/FALLBACK.md). */
   generatedBy: typeof NEWS_WIRE_WRITERS[number];
 }
-export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; wire?: NewsWireStory[] }
+export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; socialArchive?: NewsSocialPost[]; discussions?: NewsDiscussion[]; wire?: NewsWireStory[] }
 export const NEWS_NAME = 'The ARC Daily Digest';
 export const personPath = (id: string) => `/news/people/${id}`;
 /** Current roster cards use exact verified account handles, never fuzzy name matches. */
