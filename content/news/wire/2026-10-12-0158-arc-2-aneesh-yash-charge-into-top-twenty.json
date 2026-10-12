@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-12T05:33:52Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Aneesh & Yash surge from 862nd to 19th",
+  "id": "2026-10-12-0158-arc-2-aneesh-yash-charge-into-top-twenty",
+  "personIds": [],
+  "publishedAt": "2026-10-12T05:58:37Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Aneesh & Yash gained 10.00 points to reach 40.14, vaulting from 862nd to 19th on ARC-AGI-2."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The pair are now just outside the top 15 gold places: the cutoff is 41.81, with Ueddy 16th at 40.83. The standings are provisional."
+    }
+  ],
+  "since": "2026-10-11T05:31:36Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T05:58:15Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15796569",
+    "15580691"
+  ]
+}
