@@ -45,7 +45,7 @@ prompt uses `--edition evening` and `YYYY-MM-DD-late-edition.json`):
 
 Run at **2 pm America/New_York**. Do both jobs: gather public competitor posts
 for the 6 pm edition and publish one short afternoon leaderboard recap on X.
-Use GPT-6 Sol through the signed-in Codex subscription and the existing signed-in
+Use GPT-6.1 Sol through the signed-in Codex subscription and the existing signed-in
 Chrome account `82deutschmark`. No paid model or X API is needed. The computer
 and app must be running. This task does not publish an evening edition or send
 Discord messages.

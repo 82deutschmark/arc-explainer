@@ -1,16 +1,13 @@
 /**
- * Author: GPT-6 Sol / Codex
- * Date: 2026-10-09
- * PURPOSE: Dedicated public explanation of ARC Daily Digest generation, provenance and sponsorship.
- * SRP/DRY check: Pass — copy comes from shared/newsMethod.ts and layout from NewsPaper.
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+ * Date: 2026-10-11
+ * PURPOSE: Preserve links to the former production page by directing readers to the
+ *          unified About the Paper page. Crawler content uses the same canonical destination.
+ * SRP/DRY check: Pass — reuses the existing redirect component and shared staff path.
  */
-import { Link } from 'wouter';
-import { NEWS_METHOD } from '@shared/newsMethod';
-import { NEWS_NAME } from '@shared/news';
-import { usePageMeta } from '@/hooks/usePageMeta';
-import { NewsPaper, useNewsCardImage } from '@/components/news/NewsDesk';
+import Redirect from '@/components/Redirect';
+import { NEWS_STAFF_PATH } from '@shared/newsStaff';
 
 export default function NewsMethod() {
-  usePageMeta({ title: `How this is made | ${NEWS_NAME}`, description: 'How the ARC Daily Digest gathers sources, follows people and teams, and publishes its AI-written competition coverage.', canonicalPath: '/news/how-this-is-made', image: useNewsCardImage() });
-  return <NewsPaper><Link href="/news" className="news-back">← Front page</Link><header className="news-directory-header"><div className="news-kicker">Behind the sports desk</div><h1>How this is made</h1></header><div className="news-prose news-method">{NEWS_METHOD.map(section => <section key={section.heading}><h2>{section.heading}</h2><p>{section.text}</p></section>)}<p><Link href="/feedback">Send feedback or a correction →</Link></p><p><a href="https://github.com/82deutschmark/arc-explainer/blob/main/docs/newsroom/REPORTER.md">Read the reporter workflow ↗</a></p></div></NewsPaper>;
+  return <Redirect to={NEWS_STAFF_PATH} />;
 }

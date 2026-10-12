@@ -1,6 +1,6 @@
 # The ARC Daily Digest — pictures and people visuals
 
-Author: Claude Opus 5.5 · 9 October 2026 · for GPT-6 Sol, GPT-6 Luna (the wire desk) and any assistant working on the newspaper.
+Author: Claude Opus 5.5 · 9 October 2026; desk assignments updated by GPT-6.1 Sol / Codex on 11 October 2026 · for GPT-6.1 Sol, GPT-6 Luna (the wire desk) and any assistant working on the newspaper.
 Updated the same evening: the front page's Hall of Fame band became the past-winners table, and wire stories pick a picture from their brief.
 
 ## Mark Barney's two capacities — 11 October 2026

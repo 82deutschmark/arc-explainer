@@ -2,7 +2,7 @@
 
 Author: Claude Opus 5.5 · 10 October 2026 · at the Boss's request.
 
-Codex (GPT-6 Sol and GPT-6 Luna) writes the paper. If Codex is signed out or a run fails, the
+Codex (GPT-6.1 Sol and GPT-6 Luna) writes the paper. If Codex is signed out or a run fails, the
 backup desk covers it with **Claude Haiku 5.5, through the Boss's Claude Code subscription** (the
 claude.ai sign-in; the runner unsets any API key so it can never bill the paid API).
 

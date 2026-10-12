@@ -5,7 +5,8 @@
  *          previews. All views read the same modest /api/news archive and typed contract.
  *          08-Oct-2026: newsDate/competitionName now live in shared/news.ts; visual shell
  *          and sourced notebook previews align with the ARC Explainer landing page.
- *          The masthead names both contests; compact links branch into people, community and method pages.
+ *          The masthead names both contests; compact links branch into people, community
+ *          and the unified About the Paper page. Reader contacts reuse the shared masthead.
  *          Each story credits its recorded writer. The shared shell
  *          discloses VoynichLabs sponsorship in a compact content-first masthead.
  *          09-Oct-2026 (Claude Opus 5.5): story previews show the faces of the people each
@@ -27,16 +28,17 @@ import { Button } from '@/components/ui/button';
 import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, featuredPerson, wirePath, writerCredit, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { SITE_ORIGIN } from '@shared/seo';
+import { NEWS_STAFF_PATH, NEWS_EDITOR_CONTACT } from '@shared/newsStaff';
 import { MastheadAd } from './SponsorPlacement';
 import { StoryFeature, TeamFaces } from './NewsPeople';
 import { NewsWelcome } from './NewsWelcome';
 import './news.css';
 
 /** The public ARC Prize Discord invite already used by ARC Explainer's other pages. */
-export const ARC_DISCORD_URL = 'https://discord.gg/9b77dPAmcA';
+export const ARC_DISCORD_URL = NEWS_EDITOR_CONTACT.discordUrl;
 
 /** The X account the editions are posted from; also where readers reach Boss. */
-export const ARC_DAILY_X_URL = 'https://x.com/82deutschmark';
+export const ARC_DAILY_X_URL = NEWS_EDITOR_CONTACT.xUrl;
 
 export function useNews() {
   return useQuery<NewsIndex>({ queryKey: ['/api/news'], staleTime: 60_000, refetchInterval: 60_000 });
@@ -93,7 +95,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
             <Link href="/news/competitors">Notebook</Link>
             <Link href="/news/people">People</Link>
             <Link href="/news/community">Around the contests</Link>
-            <Link href="/news/staff">Staff</Link>
+            <Link href={NEWS_STAFF_PATH}>About the paper</Link>
             <a href="/kaggle-leaderboard">ARC-AGI-3 board ↗</a>
             <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 board ↗</a>
             <a href="/human-records.html">Records ↗</a>
@@ -106,7 +108,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
           <strong>{NEWS_NAME}</strong><span>AI-written editions and wire reports · writer credited on each story</span>
           <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>
           <p><a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">Can't get enough ARC gossip? Come join us in the ARC Discord.</a></p>
-          <Link href="/news/staff">About the Staff →</Link> · <Link href="/news/how-this-is-made">How this is made →</Link> · <Link href="/home">An ARC Explainer publication →</Link>
+          <Link href={NEWS_STAFF_PATH}>About the Paper →</Link> · <Link href="/home">An ARC Explainer publication →</Link>
         </footer>
       </div>
     </div>
@@ -119,13 +121,14 @@ export function AboutThisPaper() {
     <aside className="news-about" aria-label="About this paper">
       <h2>About this paper</h2>
       <ul>
-        <li><strong>Written by AI.</strong> Every story is drafted by AI from saved evidence, then checked automatically against it before it is published.</li>
+        <li><strong>Written by AI.</strong> Reporting desks draft stories from saved standings and linked sources. Newsroom helpers check citations, format and box-score figures before publication.</li>
         <li><strong>The numbers.</strong> Standings come from the public Kaggle leaderboards, saved every half hour. Movers compare with the save about a day earlier, and anything the saved history cannot support is left blank.</li>
         <li><strong>The people.</strong> Stories also draw on public X posts, Kaggle discussions and profiles, and linked primary sources. A contestant's claim is kept apart from an established result.</li>
         <li><strong>The schedule.</strong> An early edition at 6 am and a late edition at 6 pm Eastern, short wire stories through the day, and each edition is posted to X. If a scheduled run fails, a backup writer covers it and the story says so.</li>
         <li><strong>Provisional.</strong> Public standings are not final; the private leaderboard decides the results.</li>
       </ul>
       <p className="news-about-contact"><strong>Corrections, retractions or complaints?</strong> Contact Boss on <a href={ARC_DAILY_X_URL} target="_blank" rel="noopener noreferrer">X</a> or in the <a href={ARC_DISCORD_URL} target="_blank" rel="noopener noreferrer">ARC Discord</a>.</p>
+      <p><Link href={NEWS_STAFF_PATH}>The masthead and how we work →</Link></p>
     </aside>
   );
 }

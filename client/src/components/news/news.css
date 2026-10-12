@@ -1,7 +1,7 @@
 /* Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
  * Date: 2026-10-11
  * PURPOSE: The ARC Daily Digest's printed look, for every newspaper route: front page, wire,
- * articles, notebook, people, community and method pages, and the disclosed VoynichLabs units.
+ * articles, notebook, people, community and unified masthead, and disclosed VoynichLabs units.
  * 09-Oct-2026 (Claude Opus 5.5): rebuilt as a broadsheet per the Boss ("information-dense, like a
  * financial terminal, like a sports page ... take this back to a different era"). Newsprint and
  * ink, ruled columns instead of cards, Georgia for reporting, agate tables with monospace figures,
@@ -359,6 +359,13 @@
 .news-community-list { max-width: 800px; }
 .news-community-list .news-story { padding: 18px 0; border-bottom: 1px solid var(--hair); }
 .news-method h2 { font-size: 22px; }
+.news-staff { max-width: 880px; }
+.news-staff > section { padding-top: 12px; border-top: 2px solid var(--ink); margin-top: 24px; }
+.news-staff h3 { margin: 20px 0 8px; font: 700 20px/1.25 var(--serif); }
+.news-production { margin: 0; padding-left: 26px; list-style: decimal; }
+.news-production li { padding-left: 6px; margin-bottom: 18px; }
+.news-production li::marker { font-weight: 700; }
+.news-production li h3 { margin-top: 12px; }
 .news-staff-human { display: grid; grid-template-columns: minmax(180px, 320px) minmax(0, 1fr); gap: 24px; align-items: start; margin-bottom: 28px; }
 .news-staff-human figure { margin: 0; }
 .news-staff-human img { width: 100%; height: auto; border: 1px solid var(--ink); }

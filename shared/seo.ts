@@ -1,22 +1,25 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-08
+ * Date: 2026-10-11
  * PURPOSE: Shared URL, indexing, safe HTML and structured-data policy for server responses
  *          and SPA navigation. Content remains in the existing route and game registries.
  *          08-Oct-2026 (Claude Opus 5.5): short ARC Daily breadcrumb names, the newspaper
  *          card as the fallback for /news/* in-app routes, and socialMetaEntries() so the
  *          server head and the browser writer emit the same Open Graph/Twitter tags.
  *          Codex: retain the dated audit URL as a permanent alias for /feedback.
+ *          11-Oct-2026: redirect the former newsroom methods page to the unified masthead.
  *          10-Oct-2026 (Claude Sonnet 5.5): the ARC leaderboards hub joins the sitewide discovery links
  *          and is the parent crumb of the two Kaggle boards, which get short breadcrumb names.
  * SRP/DRY check: Pass — one canonical origin and metadata serialization contract.
  */
 import { ROUTE_META_TAGS, type RouteMetaTags } from './routes';
 import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, NEWS_SECTION_CARD_ALT, NEWS_SECTION_CARD_PATH } from './news';
+import { NEWS_STAFF_PATH } from './newsStaff';
 export const SITE_ORIGIN = 'https://arc.markbarney.net';
 export const DEFAULT_IMAGE = `${SITE_ORIGIN}/og-preview.png`;
 export const INDEX_ROBOTS = 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1';
 export const REDIRECTS: Record<string, string> = {
+  '/news/how-this-is-made': NEWS_STAFF_PATH,
   '/reports/arc-prize-audit-2026-10-08/audit.html': '/feedback',
   '/synthetic': '/', '/human-cards': '/hall-of-fame', '/compare': '/elo',
   '/arc3/review': '/play', '/arc3/archive': '/arc3', '/arc3/archive/games': '/arc3/games',

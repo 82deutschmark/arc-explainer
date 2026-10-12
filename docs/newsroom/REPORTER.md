@@ -2,7 +2,9 @@
 
 ## Writer attribution — 11 October 2026
 
-The full morning and evening jobs now use **GPT-6.1 Sol**. Prepare with
+The morning and evening editions, research desk, personal briefings and 2 pm X recap
+now use **GPT-6.1 Sol**. These replace all current GPT-6 Sol newsroom assignments.
+The two-hour wire remains GPT-6 Luna; the backup desk uses Claude Haiku 5.5. Prepare editions with
 `--writer gpt-6.1-sol`; the helper carries that ID into the published article metadata.
 The page and crawler bylines both render the recorded `generatedBy` field. Older
 GPT-6 Sol articles and Claude Haiku backup articles retain their own credits.
@@ -140,11 +142,15 @@ board achievement is independently reportable. Verify the Kaggle/human account l
 before combining their records, and distinguish the wire's rolling day from the
 edition's comparison window. No fresh net score gain is required for a worthwhile profile.
 
-### Commissioned features and the staff page
+### The masthead and commissioned features
 
 Mark Barney is the head human editor. His editor portrait with the Yorkies and GPU
 rig lives in the shared staff record; his Kaggle competitor portrait stays in the
-people ledger. `/news/staff` identifies the human editor and every supported writer.
+people ledger. `/news/staff` is the unified **About the Paper** page: permanent
+masthead, current desks, earlier bylines, production cycle, standards and corrections.
+The former `/news/how-this-is-made` URL redirects there. Institutional copy must not
+single out an individual assignment. Mark also competes; coverage of his team uses
+the same sourcing and attribution standards as every other contestant.
 Commissioned dispatches record `commissionedBy: "mark-barney"` and may have a short
 `editorNote`; browser and crawler HTML show the editor credit and staff portrait.
 

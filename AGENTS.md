@@ -30,7 +30,7 @@
 > first (Boss cut step budgets, code links and derived stats). Left: `corrections[]`, and
 > the public release only when Boss says so.
 
-> **The ARC Daily Digest (09-Oct-2026), for GPT-6 Sol, GPT-6 Luna and every newsroom run:** people
+> **The ARC Daily Digest (updated 11-Oct-2026), for GPT-6.1 Sol, GPT-6 Luna and every newsroom run:** people
 > now have faces (their Hall of Fame card or Kaggle picture) and honors, and each story features
 > one person. The editions print as Early (6 am) and Late (6 pm) and each is posted to X; the
 > front page carries live tables, and GPT-6 Luna's wire desk files short stories through the day.

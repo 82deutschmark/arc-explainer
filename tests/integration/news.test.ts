@@ -1,8 +1,9 @@
 /**
- * Author: GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-09
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
+ * Date: 2026-10-11
  * PURPOSE: Verify public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
+ *          Unified masthead replaces the former methods page and uses the editor portrait.
  *          08-Oct-2026: share cards (size, real drawn content, cache headers, 404s), the
  *          per-article og/twitter/JSON-LD image, CollectionPage, lastmod and RSS additions.
  *          Social dispatch validation, people/artwork routes and public-only source discovery protect dated contender updates.
@@ -167,7 +168,7 @@ it('advertises the front-page card under an address that changes with the day an
 it('gives every ARC Daily page that shares the front-page card its current address, and that address serves a card', async () => {
   const { articles, competitors } = getNewsIndex();
   const expected = `${SITE_ORIGIN}${sectionCardPath(articles)}`;
-  for (const route of ['/news', '/news/wire', '/news/competitors', '/news/people', '/news/community', '/news/how-this-is-made', `/news/competitors/${competitors[0].id}`]) {
+  for (const route of ['/news', '/news/wire', '/news/competitors', '/news/people', '/news/community', `/news/competitors/${competitors[0].id}`]) {
     const html = await (await fetch(`${base}${route}`)).text();
     expect(metaContent(html, 'og:image'), route).toBe(expected);
     expect(metaContent(html, 'twitter:image'), route).toBe(expected);
@@ -245,7 +246,7 @@ it('publishes verified people, historical artwork and public community branches'
   const index = getNewsIndex();
   const keith = index.people!.find(person => person.id === 'keith-tyser')!;
   expect(new Set(keith.memberships.map(member => member.competition))).toEqual(new Set(['arc-2', 'arc-3']));
-  for (const route of ['/news/people', '/news/people/keith-tyser', '/news/community', '/news/how-this-is-made']) {
+  for (const route of ['/news/people', '/news/people/keith-tyser', '/news/community', '/news/staff']) {
     const response = await fetch(`${base}${route}`);
     expect(response.status).toBe(200);
     expect(await response.text()).toContain(`href="${SITE_ORIGIN}${route}"`);

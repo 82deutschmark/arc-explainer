@@ -5,6 +5,8 @@
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
  *          Retires the obsolete model/trustworthiness leaderboard from public discovery.
+ *          2026-10-11: the newsroom masthead and methods share one About the Paper page;
+ *          metadata identifies the combined page at the existing staff URL.
  *          2026-10-09 (Claude Opus 5.5): /feedback description now matches the offer-framed
  *          page instead of the superseded October 8 audit wording.
  *          Same day: early 2025 experiments (discussion, model browser, Elo leaderboard,
@@ -93,7 +95,6 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   '/news/competitors': { title: 'Competitor notebook | The ARC Daily Digest', description: 'The ARC Daily Digest’s growing, sourced notebook of ARC-AGI competitors, their public team identities and competition coverage.', url: `${SITE}/news/competitors`, ...NEWS_CARD },
   '/news/people': { title: 'People behind the teams | The ARC Daily Digest', description: 'Verified contestants, dated team observations across ARC competitions and historical Hall of Fame cards.', url: `${SITE}/news/people`, ...NEWS_CARD },
   '/news/community': { title: 'Around the contests | The ARC Daily Digest', description: 'Public research releases, reactions and friendly banter with original source links.', url: `${SITE}/news/community`, ...NEWS_CARD },
-  '/news/how-this-is-made': { title: 'How This Is Made | The ARC Daily Digest', description: 'Sources, AI drafting, edition cutoffs, people records and sponsorship at the ARC Daily Digest.', url: `${SITE}/news/how-this-is-made`, ...NEWS_CARD },
   [NEWS_STAFF_PATH]: { title: NEWS_STAFF_TITLE, description: NEWS_STAFF_DESCRIPTION, url: `${SITE}${NEWS_STAFF_PATH}`, image: `${SITE}${NEWS_HUMAN_EDITOR.portrait.src}`, imageAlt: NEWS_HUMAN_EDITOR.portrait.alt, imageWidth: 1024, imageHeight: 1024 },
   '/home': {
     title: 'ARC Explainer Resource Hub — games, guides and results',
