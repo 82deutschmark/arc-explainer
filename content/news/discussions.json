@@ -3,7 +3,7 @@
     "author": "dzjiann",
     "authorName": "上原 歩夢",
     "bodyRead": true,
-    "checkedAt": "2026-10-12T17:17:37Z",
+    "checkedAt": "2026-10-12T22:00:46.283358+00:00",
     "commentCount": 0,
     "competition": "arc-3",
     "decision": "paper-lead",
@@ -21,7 +21,7 @@
     "author": "darrenamadeusmartin",
     "authorName": "Darren Amadeus Martin",
     "bodyRead": true,
-    "checkedAt": "2026-10-12T17:28:40Z",
+    "checkedAt": "2026-10-12T22:00:46.283358+00:00",
     "commentCount": 5,
     "competition": "arc-2",
     "decision": "paper-lead",
@@ -57,6 +57,29 @@
     "summary": "In CPMP’s thread about the mismatch between a notebook’s displayed score and Franzen’s leaderboard entry, Son Pham suggests inherited notebook metadata from an API-submitted derivative could explain the display. His explanation is a hypothesis, with no organizer confirmation observed. The notebook display should not be treated as proof of a new Franzen leaderboard score.",
     "title": "How come D Franzen score does not appear on LB?",
     "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/746010",
+    "visibility": "public"
+  },
+  {
+    "author": "huikang",
+    "authorName": "Tong Hui Kang",
+    "bodyRead": true,
+    "checkedAt": "2026-10-12T21:06:55.354Z",
+    "commentCount": 18,
+    "competition": "arc-3",
+    "decision": "paper-lead",
+    "id": "744792",
+    "latestActivityAt": "2026-10-06T20:47:47Z",
+    "personIds": [
+      "daniel-franzen",
+      "son-pham",
+      "yi-chia-chen",
+      "jeroen-cottaar"
+    ],
+    "postedAt": "2026-10-01T00:36:37Z",
+    "reason": "Newly collected older research background, not a fresh Oct 12 release: source created Oct 1, latest visible reply Oct 6. Body and replies verified in logged-out Chrome at 21:06:55Z. Board reports 18 comments; thread heading counts 15 top-level comments. Useful concrete comparison for Sunday research and future method coverage.",
+    "summary": "Tong Hui Kang compares the three Milestone 2 winning ARC-AGI-3 solutions and links their notebooks and write-ups. He describes a shared Duck/TAAF foundation and compares serving, scheduling, context management and harness changes. In the replies, rellik13 says requests waited for cache space despite high decode throughput and describes reallocating memory to longer history. Mintu Kumar asks for request-latency and cache-wait measurements. The desk also read Franzen’s linked write-up, which distinguishes its submission configuration from inherited defaults and says the experiments were not a complete controlled ablation study.",
+    "title": "Comparing the Milestone 2 winning solutions",
+    "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/744792",
     "visibility": "public"
   }
 ]

@@ -85,7 +85,7 @@
     "author": "cunkpyber",
     "authorName": "PunkCyber",
     "category": "community",
-    "checkedAt": "2026-10-12T19:02:36Z",
+    "checkedAt": "2026-10-12T22:00:13.611292+00:00",
     "competitions": [
       "arc-3",
       "arc-2"
@@ -190,7 +190,7 @@
     "author": "masspeakss",
     "authorName": "masspeaks",
     "category": "community",
-    "checkedAt": "2026-10-12T18:15:45.034590Z",
+    "checkedAt": "2026-10-12T22:00:13.611292+00:00",
     "competitions": [
       "arc-2"
     ],
@@ -356,6 +356,29 @@
     "whyItMatters": "A concrete research resource; its author describes training material, not a measured Kaggle-score gain or coverage of private games."
   },
   {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "research",
+    "checkedAt": "2026-10-12T21:09:42.599Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2107701171037020293",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 2,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-07T05:14:53Z",
+    "storyUrl": null,
+    "summary": "Jean-François Puget warns that setting temperature to zero does not guarantee fully deterministic LLM inference. The post quotes a claim that temperature zero always produces the same answer. In a later reply he says the hiring wording should not be taken too seriously and was intended to draw attention to the topic.",
+    "threadId": "2107701171037020293",
+    "url": "https://x.com/JFPuget/status/2107701171037020293",
+    "visibility": "public",
+    "whyItMatters": "Older catch-up lead for reporting on reproducibility and run-to-run variation. This is Puget’s general inference comment, not a measurement explaining any ARC leaderboard result. Preserve the clarification when using the hiring line."
+  },
+  {
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
@@ -395,25 +418,5 @@
     "url": "https://x.com/arcprize/status/2107491194007585239",
     "visibility": "public",
     "whyItMatters": "A dated organizer model verification relevant to ARC-2 comparisons."
-  },
-  {
-    "author": "GregKamradt",
-    "authorName": "Greg Kamradt",
-    "category": "research",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2107480627989938482",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-06T14:38:31Z",
-    "storyUrl": null,
-    "summary": "Kamradt invited researchers to contact ARC Prize about red-teaming future ARC-AGI benchmarks and mentioned grants and credits as possible support.",
-    "threadId": null,
-    "url": "https://x.com/GregKamradt/status/2107480627989938482",
-    "visibility": "public",
-    "whyItMatters": "A direct research-participation lead; it is an invitation, not a claim about any current contestant’s approach."
   }
 ]

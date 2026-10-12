@@ -23,7 +23,7 @@
     "author": "cunkpyber",
     "authorName": "PunkCyber",
     "category": "community",
-    "checkedAt": "2026-10-12T19:02:36Z",
+    "checkedAt": "2026-10-12T22:00:13.611292+00:00",
     "competitions": [
       "arc-3",
       "arc-2"
@@ -191,7 +191,7 @@
     "author": "masspeakss",
     "authorName": "masspeaks",
     "category": "community",
-    "checkedAt": "2026-10-12T18:15:45.034590Z",
+    "checkedAt": "2026-10-12T22:00:13.611292+00:00",
     "competitions": [
       "arc-2"
     ],
@@ -527,7 +527,7 @@
     "author": "tufalabs",
     "authorName": "Tufa Labs",
     "category": "banter",
-    "checkedAt": "2026-10-12T18:15:45.034590Z",
+    "checkedAt": "2026-10-12T22:00:13.611292+00:00",
     "competitions": [
       "arc-3"
     ],
@@ -582,6 +582,52 @@
     "url": "https://x.com/SimonOuellette6/status/2108289507908780366",
     "visibility": "public",
     "whyItMatters": "A concrete research resource; its author describes training material, not a measured Kaggle-score gain or coverage of private games."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "research",
+    "checkedAt": "2026-10-12T21:10:12.566Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2107943967769911475",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 1,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-07T21:19:40Z",
+    "storyUrl": null,
+    "summary": "In the discussion of his temperature-zero determinism post, Jean-François Puget says not to take the hiring part too seriously: he used it to draw attention to the topic.",
+    "threadId": "2107701171037020293",
+    "url": "https://x.com/JFPuget/status/2107943967769911475",
+    "visibility": "public",
+    "whyItMatters": "Context for the Oct 7 inference reproducibility lead; prevents treating the rhetorical hiring remark as an actual policy announcement."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "research",
+    "checkedAt": "2026-10-12T21:09:42.599Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2107701171037020293",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 2,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-07T05:14:53Z",
+    "storyUrl": null,
+    "summary": "Jean-François Puget warns that setting temperature to zero does not guarantee fully deterministic LLM inference. The post quotes a claim that temperature zero always produces the same answer. In a later reply he says the hiring wording should not be taken too seriously and was intended to draw attention to the topic.",
+    "threadId": "2107701171037020293",
+    "url": "https://x.com/JFPuget/status/2107701171037020293",
+    "visibility": "public",
+    "whyItMatters": "Older catch-up lead for reporting on reproducibility and run-to-run variation. This is Puget’s general inference comment, not a measurement explaining any ARC leaderboard result. Preserve the clarification when using the hiring line."
   },
   {
     "author": "arcprize",

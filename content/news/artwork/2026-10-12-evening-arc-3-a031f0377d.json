@@ -1,0 +1,47 @@
+{
+  "articleId": "2026-10-12-evening-arc-3",
+  "briefSha256": "722caeba2109e3b4a0c2acc81ff21477cf905747b9ccf1dbd085979fa91fec70",
+  "dataAsOf": "2026-10-12T21:36:51Z",
+  "generationRecord": "2026-10-12-bunnies-dries-and-compute-v2-base",
+  "headline": "Chen continues to extend her lead over Tufa",
+  "id": "2026-10-12-evening-arc-3-a031f0377d",
+  "image": {
+    "alt": "Editorial illustration for Chen continues to extend her lead over Tufa. Yi-Chia Chen: rank 1, score 67.49; Tufa Labs: rank 2, score 56.52.",
+    "artworkId": "2026-10-12-evening-arc-3-a031f0377d",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 12, 2026 · 5:36 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-12-evening-arc-3-a031f0377d.webp"
+  },
+  "imageSha256": "0ba7fbb21989b8ae8e8090ea153196e097e2931071bfb9cccdfa6665220e653a",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 10.97,
+    "extends": true,
+    "previous": 6.44
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "e0091539cbd6893d6e3cffa4c39c54b26140f4d85182af6619e1ddddc676d1b3",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 1,
+      "rankChange": null,
+      "score": 67.49,
+      "scoreChange": null,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 56.52,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "recorded-score-event",
+  "version": 1
+}
