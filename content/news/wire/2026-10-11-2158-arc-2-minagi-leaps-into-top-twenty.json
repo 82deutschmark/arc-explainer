@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-12T01:33:30Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "MINAGI leaps from 862nd to 19th on ARC-2",
+  "id": "2026-10-11-2158-arc-2-minagi-leaps-into-top-twenty",
+  "personIds": [],
+  "publishedAt": "2026-10-12T01:58:29Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "MINAGI added 10.00 points to reach 40.14, jumping from 862nd to 19th in the past day. The current gold cutoff is 41.81, with 15 teams in the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The standings now place MINAGI near the medal positions after starting well outside the top 100. The public board is provisional, with medals decided on the private board."
+    }
+  ],
+  "since": "2026-10-11T01:31:15Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T01:57:25Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15796569"
+  ]
+}

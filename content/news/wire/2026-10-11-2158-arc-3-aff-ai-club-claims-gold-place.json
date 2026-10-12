@@ -1,0 +1,37 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T01:33:28Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "AFF AI CLUB storms into ARC-3 gold as two teams slip out",
+  "id": "2026-10-11-2158-arc-3-aff-ai-club-claims-gold-place",
+  "personIds": [],
+  "publishedAt": "2026-10-12T01:58:29Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "AFF AI CLUB surged from 30th to 9th at 38.98, up 5.06, to claim a gold place. The move carried two teams the other way: AI_hwlee fell from 17th to 19th at 36.54, while YUTO KOJIMA dropped from 18th to 21st at 36.14; both scores were unchanged."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The public gold line now runs through 18th, so this reshuffle puts AFF AI CLUB comfortably inside the medal band while AI_hwlee and YUTO KOJIMA sit outside it. These are provisional public standings; the medals will be decided on the private board."
+    }
+  ],
+  "since": "2026-10-11T01:31:14Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-12T01:57:25Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16754530",
+    "15513620",
+    "16081764"
+  ]
+}
