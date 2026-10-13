@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T05:38:54Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Richard Csaky vaults from 658th into ARC-2 gold",
+  "id": "2026-10-13-0203-arc-2-richard-csaky-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-13T06:03:22Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Richard Csaky gained 27.36 points to reach 58.33, climbing from 658th to 9th on ARC-AGI-2."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The surge puts Csaky inside the 15 public gold places, where the current cutoff is 48.33. The standings remain provisional."
+    }
+  ],
+  "since": "2026-10-12T05:33:52Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T06:02:55Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17077331"
+  ]
+}
