@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T13:41:55Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Danïel Salazar and Hmm climb to 31st and 32nd",
+  "id": "2026-10-13-0956-arc-3-daniel-salazar-and-hmm-reach-top-thirty-five",
+  "personIds": [],
+  "publishedAt": "2026-10-13T13:56:06Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Danïel Salazar gained 6.84 points to reach 34.73, jumping from 868th to 31st. Hmm climbed from 688th to 32nd with a gain of 5.93, reaching 34.61."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The two teams now sit side by side just outside the board’s gold places, which extend through 18th. Their gains add fresh depth to the chase behind the medal group."
+    }
+  ],
+  "since": "2026-10-12T13:34:40Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T13:55:27Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16841668",
+    "15492312"
+  ]
+}

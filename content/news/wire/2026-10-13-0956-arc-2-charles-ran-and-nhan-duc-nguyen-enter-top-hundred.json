@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T13:41:57Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Charles Ran and Nhan Duc Nguyen break into ARC-2’s top 100",
+  "id": "2026-10-13-0956-arc-2-charles-ran-and-nhan-duc-nguyen-enter-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-13T13:56:06Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Charles Ran climbed 1,683 places, from 1,741st to 58th, with a score of 33.89 (+11.95). Nhan Duc Nguyen rose from 1,749th to 85th at 32.92 (+12.09)."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Both moves put the teams inside the top 100, turning deep-field gains into a visible chase toward the medal places. The public board remains provisional."
+    }
+  ],
+  "since": "2026-10-12T13:34:42Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T13:55:27Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16987610",
+    "17037471"
+  ]
+}
