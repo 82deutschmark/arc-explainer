@@ -1,0 +1,37 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T09:41:33Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Daniel Franzen climbs to 25th on ARC-3",
+  "id": "2026-10-13-0605-arc-3-daniel-franzen-climbs-to-25th",
+  "personIds": [
+    "daniel-franzen"
+  ],
+  "publishedAt": "2026-10-13T10:05:50Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Daniel Franzen gained 3.89 to reach 35.86, moving from 136th to 25th on the ARC-3 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The rise puts Franzen among ARC-3’s top 25 entries in the current public standings."
+    }
+  ],
+  "since": "2026-10-12T09:34:16Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T10:04:54Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16384837"
+  ]
+}

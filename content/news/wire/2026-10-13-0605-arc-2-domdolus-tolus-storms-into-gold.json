@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T09:41:34Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Domdolus Tolus storms from 549th to 8th on ARC-2",
+  "id": "2026-10-13-0605-arc-2-domdolus-tolus-storms-into-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-13T10:05:43Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Domdolus Tolus gained 34.17 to reach 65.14, leaping from 549th to 8th and into the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move clears a 48.33 gold line at 15th by a wide margin, putting Domdolus Tolus among the leading ARC-2 contenders."
+    }
+  ],
+  "since": "2026-10-12T09:34:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T10:04:54Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16559402"
+  ]
+}
