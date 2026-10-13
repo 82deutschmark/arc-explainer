@@ -1,0 +1,49 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T01:37:15Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC Slayers vault from 226th into ARC-3 gold",
+  "id": "2026-10-12-2158-arc-3-arc-slayers-break-into-gold",
+  "personIds": [
+    "keith-tyser"
+  ],
+  "publishedAt": "2026-10-13T01:58:44Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "ARC Slayers gained 9.97 points to reach 41.19, leaping from 226th to 7th and into the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-keith-tyser-roster-0"
+      ],
+      "text": "Keith Tyser is listed on the team's roster. The public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-12T01:33:28Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T01:58:25Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-12T21:36:52Z",
+      "id": "person-keith-tyser-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    }
+  ],
+  "teamIds": [
+    "16447222"
+  ],
+  "visual": {
+    "alt": "Keith Tyser’s Kaggle profile picture",
+    "href": "/news/people/keith-tyser",
+    "src": "/news-images/people/keith-tyser.webp"
+  }
+}

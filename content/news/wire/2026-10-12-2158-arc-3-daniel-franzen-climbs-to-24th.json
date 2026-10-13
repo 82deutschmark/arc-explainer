@@ -1,0 +1,56 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T01:37:15Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Daniel Franzen climbs to 24th on ARC-3",
+  "id": "2026-10-12-2158-arc-3-daniel-franzen-climbs-to-24th",
+  "personIds": [
+    "daniel-franzen"
+  ],
+  "publishedAt": "2026-10-13T01:58:45Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Franzen gained 3.89 points to reach 35.86, moving from 131st to 24th under his own name."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-daniel-franzen-fact-0",
+        "person-daniel-franzen-fact-1"
+      ],
+      "text": "He is the ARC Prize 2025 runner-up and 2024 champion, both with the ARChitects."
+    }
+  ],
+  "since": "2026-10-12T01:33:28Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T01:58:25Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-daniel-franzen-fact-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-daniel-franzen-fact-1",
+      "title": "ARC Prize — 2024 results",
+      "url": "https://arcprize.org/competitions/2024"
+    }
+  ],
+  "teamIds": [
+    "16384837"
+  ],
+  "visual": {
+    "alt": "Daniel Franzen’s Kaggle profile picture",
+    "href": "/news/people/daniel-franzen",
+    "src": "/news-images/people/daniel-franzen.webp"
+  }
+}
