@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T17:42:25Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "119.ai climbs to 40th on ARC-3",
+  "id": "2026-10-13-1403-arc-3-119-ai-climbs-to-fortieth",
+  "personIds": [],
+  "publishedAt": "2026-10-13T18:03:33Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "119.ai added 3.68 points to reach 33.90, moving from 402nd to 40th in the past day."
+    }
+  ],
+  "since": "2026-10-12T17:35:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T18:02:35Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16532267"
+  ]
+}
