@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-13T23:20:12Z",
+  "id": "2026-10-13-tufa-arc3-gpu-icebreaker-v1-base",
+  "inputImages": [
+    "2026-10-13-tufa-gpu-citadel-base.webp",
+    "2026-10-12-dries-smit-character-v1-base.webp",
+    "yi-chia-chen-bunnies-owner-2026-10-12.png"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story. Asset type: a new clean ARC Daily Digest editorial comic-strip episode for tonight’s ARC-AGI-3 Tufa-leading issue.\nPrimary request: a clearly NEW cool, crazy episode with the same recognizable characters and the beloved GPU-citadel visual style from reference 1. Do not repeat the tower composition, Dries-petting-rabbits close-up, or tomorrow’s GPU crawler on a bridge. Reference 2 governs Dries’s identity. Reference 3 is the authoritative photo of Chen’s two rabbits.\nScene: a snowy fantasy canal city at night beneath shimmering turquoise aurora and a violet-blue sky, with warm amber harbor lights reflecting on dark water and broken ice. Tufa’s fantastical colossal GPU-POWERED ICEBREAKER SHIP has just launched: huge reinforced metallic prow splitting a small ridge of harmless canal ice, a sweeping armored hull, banks of spinning circular graphics-card fans, luminous cyan engine, golden cable bundles, steampunk deck cranes and puffs of glowing steam. It sails diagonally toward the viewer, so the vessel has a totally different silhouette and camera from the vertical citadel and bridge-crawler scenes. Playful cinematic adventure, rich painterly 3D detail, beautiful snow, tactile fur, lively expressions.\nCast: EXACTLY FIVE separate, countable friendly black fluffy Tufa spiders with expressive white eyes, each with a clear full head: one waves from the prow, one operates a port-side deck console, one steadies a graphics card beneath a deck crane, one tends cables on the starboard platform, and one stands beside the helm. EXACTLY ONE recognizable Dries stands at the helm with reference 2’s face, swept brown hair, green-grid right-eye eyepiece and cyan/green GPU engineer costume, facing the viewer in a proud new pose. No other humans. EXACTLY TWO Chen bunnies together in the right foreground on a snowy dock, confidently watching the launch beside their own small fanciful GPU-equipped snow sled. Both whole faces and bodies visible, not cropped. Grey-brown lop rabbit has BOTH ears down and rounded face. Dark-and-white rabbit has tall upright dark ears, dark eye patches, broad irregular white face blaze, white chest and paws. Preserve their fur and modest dark GPU back harnesses with cyan/amber lights. No helmets or masks over faces. Rabbits look spirited and engaged, never defeated or frightened.\nThe ship, equipment, spider count and costumes are editorial fantasy, not claims of actual hardware, methods, spending or team headcount. Tufa narrowly leads Chen in ARC-3; the scene is respectful sporting humor. Do not imply that the ARC-2 citadel is this ARC-3 vessel. No extra animals or mascot silhouettes in the distant city.\nComposition: wide 16:9 landscape. Leave the lower-left 30% width / 23% height as quiet dark water/snow, and upper-right 33% width / 11% height as quiet sky, for later code-drawn publication scores and branding. Keep all five spider heads, Dries and both bunny faces outside these overlay corners, and make the ship readable at thumbnail size.\nNO text, lettering, names, labels, logos, score panels, rank numbers, dates or watermarks. New art only; the exact published evening scores will be drawn separately.",
+  "rawSha256": "4b3886a9c8ef1a9da0c70e3b3a4d225d1994f0c73387a48694e31b28d6ca9cca",
+  "rawSrc": "/news-images/2026-10-13-tufa-arc3-gpu-icebreaker-v1-base.webp",
+  "references": [
+    {
+      "role": "Mark’s chosen style and cast reference: five Tufa spiders, exactly two Chen bunnies, one Dries, GPU fantasy machine and snowy city. Vary composition rather than reproducing the vertical citadel.",
+      "sha256": "77d42745db3ee91bf11ba5ff98744bd1bc1c07c7552cb1d060c1de315c2d7a88",
+      "src": "/news-images/2026-10-13-tufa-gpu-citadel-base.webp"
+    },
+    {
+      "role": "Authoritative Dries face, swept brown hair, green right-eye eyepiece and cyan/green GPU suit. Ignore generated labels or tiny equipment marks.",
+      "sha256": "09520d923f7cd268cad339bf52d81aed7c66932a44d3dce068ab648c96f57bc5",
+      "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp"
+    },
+    {
+      "role": "Authoritative Chen bunny anatomy: grey lop with both ears down; dark and white rabbit with upright ears and broad white face blaze.",
+      "sha256": "3a912289a5a3c8fa761101b8bd2517e97ebed934cb2714ba20d2dde79101cfaf",
+      "src": "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png"
+    }
+  ],
+  "review": "Inspected a distinct GPU icebreaker at night under aurora: five countable black spiders at separated stations, one recognizable Dries at the helm, and both owner-photo-consistent rabbits beside a GPU sled. Lop ears remain down; upright rabbit retains its white blaze and dark patches. New vessel silhouette, action, viewpoint and lighting clearly differ from both published close-ups and tomorrow’s bridge scene. No generated labels or scores; faces stay outside overlay corners. Hardware is metaphor.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-4d9ca661-a63c-4288-8502-d11ae7ffb3fb.png",
+  "version": 1
+}

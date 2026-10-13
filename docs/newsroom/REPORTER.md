@@ -1,10 +1,28 @@
 # The ARC Daily Digest reporter
 
+## Comic-strip episodes — latest October 13 evening editor direction
+
+Mark clarified the intent: the paper's illustrations are an evolving comic strip.
+Keep recognizable characters, but each illustrated edition should show a distinct,
+cool, imaginative episode of the verified race. Check the previous Early/Late ARC-3
+and ARC-2 images before selection. A changed scoreboard, mirrored arrangement or
+another close-up of Dries petting the rabbits does not count as a new episode.
+Choose an unused matching commissioned scene or generate a fresh variation with
+different setting, action, machine silhouette, camera and poses. Retain existing
+approved art as references; this direction supersedes statistics-only routine reuse.
+
+Mark explicitly authorized replacing the October 13 Late ARC-3 close-up. Its new
+illustration is the GPU icebreaker under aurora, with the original issue's scores and
+observation time. The separate artwork-revision evidence preserves the old article
+and original evidence. The GPU viaduct stays queued for October 14 Early while its
+leader/cast conditions hold. This specific replacement does not relax ordinary
+edition immutability or authorize extra routine X sends.
+
 ## Tufa-leading artwork variations — October 13 evening editor instruction
 
 Mark requested varieties of the GPU-citadel illustration, with distinct settings,
 machine silhouettes, camera angles and poses while preserving the established cast.
-The October 13 Late issue had already published with its own ARC-3 close-up, and the
+The October 13 Late issue initially published with its own ARC-3 close-up, and the
 citadel appeared on both October 13 ARC-2 article pages. Both routine X announcements
 attached their separate ARC-3 images. Do not describe the citadel as never published.
 

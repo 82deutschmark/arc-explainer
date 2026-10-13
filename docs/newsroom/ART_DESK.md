@@ -55,6 +55,18 @@ If native generation is unavailable or fails, preserve the reason and publish th
 
 ## Reusable approved editions — October 13 editor instruction
 
+Latest October 13 evening clarification: treat each illustrated edition as a new
+comic-strip episode. Character identities persist; the composition should evolve.
+Compare the previous published images before selecting a base. Prefer an unused
+commissioned variant or generate a fresh, clearly distinct scene. Repeated art with
+different statistics, a mirrored camera, or another near-identical close-up is not
+enough. This supersedes routine statistics-only reuse, while keeping older approved
+originals as references and preserving all cast, source and composition checks.
+Mark specifically authorized replacing October 13 Late ARC-3's repeated-looking
+close-up with the new GPU icebreaker under aurora. That replacement preserves its
+original reporting and score observation, with a separate artwork-revision archive.
+The GPU viaduct is reserved for October 14 Early if current conditions still hold.
+
 October 13 evening: Mark requested distinct varieties of his chosen GPU-citadel style.
 The new ARC-3 reusable scene `tufa-arc-3-gpu-viaduct-v1` uses the registered native base
 `2026-10-13-tufa-arc3-gpu-viaduct-v1-base`: a horizontal GPU crawler on a snowy viaduct
@@ -63,7 +75,8 @@ Tufa first ahead of Chen and Dries in the current ARC-3 roster. The next Early e
 explicit assignment selects it. The ARC-2 citadel remains its own separate approved scene.
 Future appropriate variants should change setting, camera, machine silhouette and poses;
 do not treat updated statistics alone as a new illustration. Preserve the cast and inspect
-every new output. Tonight's already published articles and X post keep their original art.
+every new output. The October 13 Late ARC-3 article now has Mark's explicitly requested
+replacement; earlier artwork remains archived and the existing X send state stays protected.
 
 Mark explicitly approved retaining good native images and changing their daily statistics.
 `visual-identities.json` now has `reusableScenes`: the ARC-2 Tufa GPU citadel and the
