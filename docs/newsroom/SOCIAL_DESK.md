@@ -1,6 +1,6 @@
 # ARC Daily Digest social desk
 
-The six-hour scan **enhances the journalism**. It supplies announcements, research releases, reactions and respectful banter with original links to the morning/evening reporters, personal briefing and Sunday meeting workflow. It does not post four times a day.
+The scheduled scans **enhance the journalism**. They supply announcements, research releases, reactions and respectful banter with original links to the morning/evening reporters, personal briefing and Sunday meeting workflow. Research shifts do not send public posts.
 
 Mark's October 12 night direction: collect broadly and translate Japanese competitor
 voices, but keep the newspaper balanced. Sasha's technical work is primarily background
@@ -13,9 +13,17 @@ are optional light material for a suitable or slower issue, not a daily required
 
 ## Cadence and outputs
 
-The same research and personal-briefing jobs include Kaggle discussion intake under [DISCUSSIONS.md](DISCUSSIONS.md). Full board scans run twice daily at 5 am and 5 pm Eastern, checking both new topics and recent replies; the four daily X scans keep their existing cadence. The discussion desk keeps a broad topic/reply inventory and a separate personal digest, then exports only read public paper leads into edition evidence. The From X archive and its display remain X-specific.
+The same research and personal-briefing jobs include Kaggle discussion intake under [DISCUSSIONS.md](DISCUSSIONS.md). Full board scans run twice daily at 5 am and 5 pm Eastern, checking both new topics and recent replies; X research also includes the new 3 am overnight shift. The discussion desk keeps a broad topic/reply inventory and a separate personal digest, then exports only read public paper leads into edition evidence. The From X archive and its display remain X-specific.
 
-All desk times are America/New_York: collection at 05:00, 11:00, 17:00 and 23:00; private briefings at 05:30 and 17:30; editions at 06:00 and 18:00; the existing public X recap at 14:00. Use GPT-6.1 Sol through the signed-in subscription and Chrome account 82deutschmark. No paid model or X API. The local computer and app need to be running.
+All desk times are America/New_York: collection at 03:00, 05:00, 11:00, 17:00 and 23:00; private briefings at 05:30 and 17:30; editions at 06:00 and 18:00; the existing public X recap at 14:00. Use GPT-6.1 Sol through the signed-in subscription and Chrome account 82deutschmark. No paid model or X API. The local computer and app need to be running.
+
+The 3 am shift is Mark's October 13 overnight instruction, added to the existing research
+automation. Check both boards for meaningful overnight score events and leaders/medal
+moves, then read original X statements and relevant thread context. Save dated evidence,
+public leads and access limits under `reports/arc-daily-social/overnight/YYYY-MM-DD/`,
+with `editor-handoff.json` for the morning publisher. Keep unchanged overnight state quiet
+and send no X/Discord post or direct ping from this shift. The full discussion scans stay
+at 5 am and 5 pm. The 6 am issue prepares its own final-cutoff evidence.
 
 Work from the clean reporting checkout `/Users/macmini/GitHub/arc-explainer-newsroom` after checking origin/branch and pulling main with `--ff-only`. Research does not edit app code or send messages. State and private summaries live at `/Users/macmini/bubba-workspace/reports/arc-daily-social/`, outside public content. This archive is small text; bulk downloads belong on the external SSD.
 

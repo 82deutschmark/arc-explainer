@@ -1,5 +1,16 @@
 # The ARC Daily Digest reporter
 
+## Overnight handoff and next Early tweet — October 13 editor instruction
+
+The existing research desk now includes a daily 3 am Eastern shift for overnight score
+moves and original X news. Before the Early edition, read its dated handoff under
+`/Users/macmini/bubba-workspace/reports/arc-daily-social/overnight/YYYY-MM-DD/editor-handoff.json`,
+then the normal 5 am research/5:30 briefing. Its preview supplies leads, not final evidence.
+Mark explicitly selected the GPU-viaduct/bridge image for the October 14 Early tweet:
+attach that edition's finished image from `2026-10-13-tufa-arc3-gpu-viaduct-v1-base` with
+fresh morning scores and observation time, while its leader/cast conditions hold.
+Use the existing routine announcement and send-once state; no additional overnight post.
+
 ## Comic-strip episodes — latest October 13 evening editor direction
 
 Mark clarified the intent: the paper's illustrations are an evolving comic strip.
