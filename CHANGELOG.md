@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.18  Oct 13, 2026
+
+- **Team credit and optional afternoon profiles** (Author: GPT-6.1 Sol / Codex). Verified seven additional people through their own profiles or credited milestone notebooks, confirmed IsaiahP as Isaiah Pressman through direct professional links, saved six own-profile portraits (Yeyin Zhu uses initials), and retained separate dated ARC-2/ARC-3 rosters. Added verified Hanley/Viel X accounts to the research watch list and archived Puget's public request for team credit. Prepared a short NVARC3/Tufa team dispatch plus a separate July-winners reserve in the shared editorial handoff. The existing 2 p.m. job receives an October 13-only permission to publish one companion dispatch if current news leaves room, after fresh source checks; ordinary send-once posting and later schedules remain unchanged. Both drafts validate and the people/portrait ledger passes its checker. Two Tufa aliases and unmatched professional biographies remain unresolved.
+
 ### Version 9.141.17  Oct 13, 2026
 
 - **Reuse approved native newspaper images** (Author: GPT-6.1 Sol / Codex). Saved Mark's explicit approvals for the ARC-2 Tufa GPU citadel and the ARC-3 digital giant bunnies when Chen retakes first. The existing planner can reuse these clean originals across later or quiet editions with fresh ranks, scores, Eastern date/time and ARC-3 history, while retaining competition/lead/cast/source checks and immutable overlays. X attachment validation now reads the archived roster/history evidence needed for reused scenes. Earlier edition evidence, headlines, schedules and send-once distribution remain intact. Both published morning artworks validate, and 59 Python newsroom checks pass. Plan: `docs/2026-10-13-reusable-approved-news-art-plan.md`.

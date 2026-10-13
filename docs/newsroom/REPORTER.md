@@ -1,5 +1,27 @@
 # The ARC Daily Digest reporter
 
+## Optional October 13 afternoon profiles — editor handoff
+
+Mark commissioned a short look at the full NVARC/Tufa teams, then clarified that it
+is supporting material for a quiet afternoon. The existing 2 p.m. recap has the dated
+handoff at `/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-13-afternoon-team-profiles/afternoon-editor-handoff.json`:
+a validated team-profile draft and a separate July Milestone 1 winners reserve.
+Consequential current news takes priority; do not force both pieces into the recap.
+The October 13-only prompt exception permits one companion dispatch through the
+existing workflow, with fresh roster/score/source times and the ordinary single X
+recap. It adds no recurring job, full edition, code edit or extra announcement.
+The evening desk should read the saved publication/hold disposition and consider
+any held copy briefly, with its own fresh evidence.
+
+The people ledger now verifies NVARC3 members Darragh Hanley, Elad Sarafian, Gal
+Kaplun and Yeyin Zhu alongside the existing Puget/Sorokin identities; Stefano Viel
+joins the Tufa identities, and IsaiahP's own links confirm Isaiah Pressman. Current
+ARC-2 rosters differ from ARC-3. The handles `dlorah` and `infinitecreativity` remain
+unresolved; historical Duck authors and company staff do not identify them. Direct
+Kaggle links verify `@gonedarragh` and `@Stefan0Vl` for future social research.
+Reki and Md Boktiar Mahbub Murad have verified July winner identities and dated
+current entries. Keep historical gains and public medal positions clearly dated.
+
 ## Discord destination — October 13 editor correction
 
 All authorized ARC Daily Digest messages, including manual desk status and editorial

@@ -96,5 +96,19 @@
     "name": "Takuma Mori",
     "url": "https://x.com/menphim",
     "identitySourceUrl": "https://www.kaggle.com/menphim"
+  },
+  {
+    "handle": "gonedarragh",
+    "name": "Darragh Hanley",
+    "url": "https://x.com/gonedarragh",
+    "identitySourceUrl": "https://www.kaggle.com/darraghdog",
+    "personId": "darragh-hanley"
+  },
+  {
+    "handle": "Stefan0Vl",
+    "name": "Stefano Viel",
+    "url": "https://x.com/Stefan0Vl",
+    "identitySourceUrl": "https://www.kaggle.com/stefano1283",
+    "personId": "stefano-viel"
   }
 ]
