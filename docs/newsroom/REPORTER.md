@@ -1,5 +1,13 @@
 # The ARC Daily Digest reporter
 
+## Discord destination — October 13 editor correction
+
+All authorized ARC Daily Digest messages, including manual desk status and editorial
+handoffs, go to **#arc3-rollout-feed**, `channel:1550165647911034940`. Mark corrected
+the earlier use of the #arc-3 team-talk channel. Keep the existing edition announcer,
+send-once state and job-specific send permissions; this routing correction creates no
+extra recurring sends or duplicate edition announcement.
+
 ## Balanced editions — latest October 12 editor direction
 
 Lead with the strongest verified current development, and balance both contests, their

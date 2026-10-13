@@ -110,6 +110,7 @@
 From the Mac Mini, any agent (Codex, Claude Code, OpenClaw) posts with the OpenClaw command line, which posts as Bubba's bot:
 `openclaw message send --channel discord --target channel:1487216946171609220 --message "<@293569238386606080> your message"`
 - `channel:1487216946171609220` = #arc-3 (team talk and results); `channel:1550165647911034940` = #arc3-rollout-feed (automatic feeds; every live ARC Daily edition is announced there by `~/bubba-workspace/tools/arc_daily_announce.py`). The `channel:` prefix is required.
+- **Boss correction, 13-Oct-2026:** ARC Daily Digest posts belong in **#arc3-rollout-feed**, `channel:1550165647911034940`, including manual newsroom status reports and editorial handoffs. Do not route Digest updates to #arc-3. This corrects the destination; preserve the existing announcement/send-once workflow and each job's send permissions.
 - Tag with ids, never plain names: the Boss `<@293569238386606080>`, Son `<@662536895007293460>`, OpenMind `<@260480020735066112>`, Ronen `<@1154970676130750554>`, Bubba `<@1474802169415733358>`.
 - Plain words, short, answer first. Never paste tokens or keys. Off the Mini you cannot post: put the message in your final answer for whoever started you to relay.
 
