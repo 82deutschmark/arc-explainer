@@ -106,6 +106,13 @@
   - When running `npm run test`, wait ≥20 seconds before reading output and include a quick coding joke in your summary per historical guidance.
   - Assume environment variables, secrets, and external APIs are healthy; treat issues as your bug to diagnose.
 
+### Posting to the team's Discord (added 12-Oct-2026, the Boss's ask)
+From the Mac Mini, any agent (Codex, Claude Code, OpenClaw) posts with the OpenClaw command line, which posts as Bubba's bot:
+`openclaw message send --channel discord --target channel:1487216946171609220 --message "<@293569238386606080> your message"`
+- `channel:1487216946171609220` = #arc-3 (team talk and results); `channel:1550165647911034940` = #arc3-rollout-feed (automatic feeds; every live ARC Daily edition is announced there by `~/bubba-workspace/tools/arc_daily_announce.py`). The `channel:` prefix is required.
+- Tag with ids, never plain names: the Boss `<@293569238386606080>`, Son `<@662536895007293460>`, OpenMind `<@260480020735066112>`, Ronen `<@1154970676130750554>`, Bubba `<@1474802169415733358>`.
+- Plain words, short, answer first. Never paste tokens or keys. Off the Mini you cannot post: put the message in your final answer for whoever started you to relay.
+
 ## 3. Workflow, Planning & Version Control
 1. **Deep analysis** – Study existing architecture for reuse opportunities before touching code.
 2. **Plan architecture** – Create `{date}-{goal}-plan.md` inside `docs/` with scope, objectives, and TODOs; seek user approval.
