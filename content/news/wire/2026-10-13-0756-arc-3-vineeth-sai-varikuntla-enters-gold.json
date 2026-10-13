@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T11:41:44Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Vineeth Sai Varikuntla breaks into ARC-3 gold",
+  "id": "2026-10-13-0756-arc-3-vineeth-sai-varikuntla-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-13T11:56:53Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Vineeth Sai Varikuntla gained 5.75 points to reach 40.09, climbing from 32nd to 9th on the public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move puts Varikuntla inside the board’s 18 gold places, adding a new challenger to the medal group."
+    }
+  ],
+  "since": "2026-10-12T11:34:30Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T11:56:01Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16537511"
+  ]
+}

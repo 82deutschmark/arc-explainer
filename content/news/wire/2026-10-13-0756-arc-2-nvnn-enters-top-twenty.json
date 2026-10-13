@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T11:41:45Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Newcomer nvnn enters ARC-2 in 19th",
+  "id": "2026-10-13-0756-arc-2-nvnn-enters-top-twenty",
+  "personIds": [],
+  "publishedAt": "2026-10-13T11:56:53Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "New to the ARC-2 public board, nvnn arrived in 19th place with a score of 45.00."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The debut lands just outside the board’s 15 gold places, adding a new challenger just outside the medal group."
+    }
+  ],
+  "since": "2026-10-12T11:34:31Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T11:56:01Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16766086"
+  ]
+}

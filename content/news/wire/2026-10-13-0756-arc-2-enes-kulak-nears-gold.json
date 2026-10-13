@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T11:41:45Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Enes Kulak surges to the edge of ARC-2 gold",
+  "id": "2026-10-13-0756-arc-2-enes-kulak-nears-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-13T11:56:53Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Enes Kulak gained 14.30 points to reach 44.86, leaping from 850th to 20th on the public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Gold currently covers the top 15 places, leaving Kulak just outside the medal group as the chase tightens."
+    }
+  ],
+  "since": "2026-10-12T11:34:31Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T11:56:01Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17037977"
+  ]
+}
