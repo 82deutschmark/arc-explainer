@@ -1,5 +1,67 @@
 [
   {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-13T22:00:48.823665+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110060578530001231",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-13T17:30:19Z",
+    "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
+    "summary": "ARC Prize announces DeepSeek V4.1 Flash ARC-3 evaluation: about 3% with a provider adapter and under 1% with the standard harness. Its linked public results page shows the headline comparison uses low versus max reasoning. This is benchmark evaluation, not a Kaggle team submission.",
+    "threadId": "2110060578530001231",
+    "url": "https://x.com/arcprize/status/2110060578530001231",
+    "visibility": "public",
+    "whyItMatters": "Public original read without sign-in in the in-app browser; linked primary results table independently read. Organizer evaluation, separate from Kaggle team standings."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "standings",
+    "checkedAt": "2026-10-13T22:00:48.823665+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110031207601979715",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-13T15:33:37Z",
+    "storyUrl": null,
+    "summary": "ARC Prize announces Tufa Labs reclaimed first on the ARC-AGI-3 public Kaggle board with roughly 69%, up from roughly 56%. This is the author’s dated October 13 observation; refresh standings before publication.",
+    "threadId": "2110031207601979715",
+    "url": "https://x.com/arcprize/status/2110031207601979715",
+    "visibility": "public",
+    "whyItMatters": "Organizer confirmation of a consequential team result already covered in the newspaper’s morning/afternoon reporting; no methods disclosed."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "community",
+    "checkedAt": "2026-10-13T18:06:57.732Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109971877091274960",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 2,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-13T11:37:51Z",
+    "storyUrl": null,
+    "summary": "Replying to the Digest’s morning announcement, Jean-François Puget asks why he was singled out and emphasizes that NVARC is a team with other members.",
+    "threadId": "2109951342487945277",
+    "url": "https://x.com/JFPuget/status/2109971877091274960",
+    "visibility": "public",
+    "whyItMatters": "A direct, public request for team credit supports a short roster profile rather than treating a team result as an individual accomplishment."
+  },
+  {
     "author": "guanningzeng",
     "authorName": "Guanning Zeng",
     "category": "research",
@@ -83,7 +145,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-13T10:04:00.667410+00:00",
+    "checkedAt": "2026-10-13T18:05:48.028Z",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -106,7 +168,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "standings",
-    "checkedAt": "2026-10-13T09:01:55.729Z",
+    "checkedAt": "2026-10-13T18:05:48.028Z",
     "competitions": [
       "arc-2"
     ],
@@ -128,7 +190,7 @@
     "author": "iiiiitsu_ne",
     "authorName": "イツ",
     "category": "standings",
-    "checkedAt": "2026-10-13T09:02:24.920Z",
+    "checkedAt": "2026-10-13T18:05:11.055Z",
     "competitions": [
       "arc-2"
     ],
@@ -191,7 +253,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-13T09:07:43.206Z",
+    "checkedAt": "2026-10-13T18:05:48.028Z",
     "competitions": [
       "arc-3"
     ],
@@ -318,17 +380,17 @@
     "author": "menphim",
     "authorName": "めんふぃむ",
     "category": "standings",
-    "checkedAt": "2026-10-13T09:02:24.920Z",
+    "checkedAt": "2026-10-13T18:04:15.217Z",
     "competitions": [
       "arc-3"
     ],
     "id": "2109263693922107727",
-    "identitySourceUrl": "https://x.com/menphim",
+    "identitySourceUrl": "https://www.kaggle.com/menphim",
     "importance": 1,
     "personIds": [],
     "postedAt": "2026-10-11T12:43:47Z",
     "storyUrl": null,
-    "summary": "The author shares an English Kaggle card saying they moved to rank 76 in ARC-AGI-3, with a joking addiction line. The competition link and original post were read; exact Kaggle identity/team remains unverified.",
+    "summary": "Takuma Mori (@menphim) shared an October 11 ARC-AGI-3 card claiming rank 76, with Kaggle’s joking addiction line. Direct Kaggle-to-X and owned Takuma Mori page-to-Kaggle links now verify the identity. This is the dated claim, not a current ranking; team observations are in the separate identity handoff.",
     "threadId": null,
     "url": "https://x.com/menphim/status/2109263693922107727",
     "visibility": "public",
@@ -500,7 +562,7 @@
     "author": "tufalabs",
     "authorName": "Tufa Labs",
     "category": "community",
-    "checkedAt": "2026-10-12T18:15:45.034590Z",
+    "checkedAt": "2026-10-13T18:07:08.559Z",
     "competitions": [
       "arc-2"
     ],

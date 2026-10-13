@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-13-evening-arc-3",
+  "briefSha256": "0f865ae28bc6d54f229a03f24afe1f3ed31eef261a95494e39a138e4b31584ee",
+  "dataAsOf": "2026-10-13T21:42:56Z",
+  "generationRecord": "2026-10-13-evening-arc-3-e9a20d116a-base",
+  "headline": "Tufa takes ARC-3 into the evening lead; Vineeth joins the top ten",
+  "historyChart": null,
+  "id": "2026-10-13-evening-arc-3-e9a20d116a",
+  "image": {
+    "alt": "Editorial illustration for Tufa takes ARC-3 into the evening lead; Vineeth joins the top ten. Tufa Labs: rank 1, score 68.91; Yi-Chia Chen: rank 2, score 67.49.",
+    "artworkId": "2026-10-13-evening-arc-3-e9a20d116a",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 13, 2026 · 5:42 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-13-evening-arc-3-e9a20d116a.webp"
+  },
+  "imageSha256": "e0e1ca9f34605f0ec72754cc8ff1c68e94cf41eedd2a458ada19cc90fcbd316a",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": null
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "67d860f4d2728273ca8065b102c7d89755a242f2e392518306f86aa479bfb549",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": null,
+      "score": 68.91,
+      "scoreChange": null,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": -1,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "recorded-score-event",
+  "version": 1
+}

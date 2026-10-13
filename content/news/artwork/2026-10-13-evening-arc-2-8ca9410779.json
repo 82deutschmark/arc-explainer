@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-13-evening-arc-2",
+  "briefSha256": "0f865ae28bc6d54f229a03f24afe1f3ed31eef261a95494e39a138e4b31584ee",
+  "dataAsOf": "2026-10-13T21:42:57Z",
+  "generationRecord": "2026-10-13-tufa-gpu-citadel-base",
+  "headline": "Chen takes second on ARC-2 as Tufa holds the summit",
+  "historyChart": null,
+  "id": "2026-10-13-evening-arc-2-8ca9410779",
+  "image": {
+    "alt": "Editorial illustration for Chen takes second on ARC-2 as Tufa holds the summit. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen: rank 2, score 82.64.",
+    "artworkId": "2026-10-13-evening-arc-2-8ca9410779",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 13, 2026 · 5:42 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-13-evening-arc-2-8ca9410779.webp"
+  },
+  "imageSha256": "214bd26949649ab1323607e1c3a1eb67a006f3130074786550f894c5760782e6",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 5.42,
+    "extends": false,
+    "previous": null
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "77d42745db3ee91bf11ba5ff98744bd1bc1c07c7552cb1d060c1de315c2d7a88",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 88.06,
+      "scoreChange": 0.0,
+      "teamId": "16756524"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": null,
+      "score": 82.64,
+      "scoreChange": null,
+      "teamId": "15501171"
+    }
+  ],
+  "trigger": "editor-approved-reusable-scene",
+  "version": 1
+}

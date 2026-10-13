@@ -1,25 +1,5 @@
 [
   {
-    "author": "yuritosci",
-    "authorName": "yuritosci",
-    "bodyRead": true,
-    "checkedAt": "2026-10-13T01:10:03.788Z",
-    "commentCount": 0,
-    "competition": "arc-2",
-    "decision": "paper-lead",
-    "id": "748741",
-    "latestActivityAt": "2026-10-12T23:51:48+00:00",
-    "personIds": [
-      "jean-francois-puget"
-    ],
-    "postedAt": "2026-10-12T23:51:48+00:00",
-    "reason": "Substantive source read and original replies checked; distinguish participant claims from organizer decisions. Logged-out access confirmed.",
-    "summary": "The author asks whether Codex- or Claude-generated synthetic ARC-style training puzzles fit the providers’ terms and asks NVARC’s CPMP for perspective. No replies or organizer ruling were present. This is an unanswered participant question, not an eligibility decision.",
-    "title": "Are Codex- or Claude-generated synthetic ARC puzzles allowed for model training?",
-    "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/748741",
-    "visibility": "public"
-  },
-  {
     "author": "darrenamadeusmartin",
     "authorName": "Darren Amadeus Martin",
     "bodyRead": true,
@@ -37,26 +17,6 @@
     "summary": "Darren Amadeus Martin proposes a deadline extension or GPU change because of grading delays. CPMP argues that a late GPU change would be unfair to teams that spent months tuning for 4xL4. The author replies that fixing the queue is preferable if possible and describes the hardware change as a contingent proposal. No organizer approval was seen.",
     "title": "Petition to delay the end of competition and compute change",
     "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/748419",
-    "visibility": "public"
-  },
-  {
-    "author": "herbison",
-    "authorName": "Dustin",
-    "bodyRead": true,
-    "checkedAt": "2026-10-13T01:10:03.788Z",
-    "commentCount": 20,
-    "competition": "arc-2",
-    "decision": "paper-lead",
-    "id": "747515",
-    "latestActivityAt": "2026-10-12T22:55:05+00:00",
-    "personIds": [
-      "jean-francois-puget"
-    ],
-    "postedAt": "2026-10-08T22:04:06+00:00",
-    "reason": "Substantive source read and original replies checked; distinguish participant claims from organizer decisions. Logged-out access confirmed.",
-    "summary": "Kaggle staff member Dustin says the 4xL4 accounting error was fixed and current capacity supports approximately one submission every other day per team. CPMP asked about the quota accounting; a later competitor still asks for faster queues. The organizer’s earlier timeout/reprocessing update remains dated context, not proof that all present delays are resolved.",
-    "title": "Update on \"Kaggle Error\" Submissions & Queue Delays",
-    "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/747515",
     "visibility": "public"
   },
   {
@@ -79,29 +39,6 @@
     "summary": "In CPMP’s thread about the mismatch between a notebook’s displayed score and Franzen’s leaderboard entry, Son Pham suggests inherited notebook metadata from an API-submitted derivative could explain the display. His explanation is a hypothesis, with no organizer confirmation observed. The notebook display should not be treated as proof of a new Franzen leaderboard score.",
     "title": "How come D Franzen score does not appear on LB?",
     "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/746010",
-    "visibility": "public"
-  },
-  {
-    "author": "huikang",
-    "authorName": "Tong Hui Kang",
-    "bodyRead": true,
-    "checkedAt": "2026-10-12T21:06:55.354Z",
-    "commentCount": 18,
-    "competition": "arc-3",
-    "decision": "paper-lead",
-    "id": "744792",
-    "latestActivityAt": "2026-10-06T20:47:47Z",
-    "personIds": [
-      "daniel-franzen",
-      "son-pham",
-      "yi-chia-chen",
-      "jeroen-cottaar"
-    ],
-    "postedAt": "2026-10-01T00:36:37Z",
-    "reason": "Newly collected older research background, not a fresh Oct 12 release: source created Oct 1, latest visible reply Oct 6. Body and replies verified in logged-out Chrome at 21:06:55Z. Board reports 18 comments; thread heading counts 15 top-level comments. Useful concrete comparison for Sunday research and future method coverage.",
-    "summary": "Tong Hui Kang compares the three Milestone 2 winning ARC-AGI-3 solutions and links their notebooks and write-ups. He describes a shared Duck/TAAF foundation and compares serving, scheduling, context management and harness changes. In the replies, rellik13 says requests waited for cache space despite high decode throughput and describes reallocating memory to longer history. Mintu Kumar asks for request-latency and cache-wait measurements. The desk also read Franzen’s linked write-up, which distinguishes its submission configuration from inherited defaults and says the experiments were not a complete controlled ablation study.",
-    "title": "Comparing the Milestone 2 winning solutions",
-    "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/744792",
     "visibility": "public"
   }
 ]

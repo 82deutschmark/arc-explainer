@@ -1,5 +1,45 @@
 [
   {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-13T22:00:48.823665+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110060578530001231",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-13T17:30:19Z",
+    "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
+    "summary": "ARC Prize announces DeepSeek V4.1 Flash ARC-3 evaluation: about 3% with a provider adapter and under 1% with the standard harness. Its linked public results page shows the headline comparison uses low versus max reasoning. This is benchmark evaluation, not a Kaggle team submission.",
+    "threadId": "2110060578530001231",
+    "url": "https://x.com/arcprize/status/2110060578530001231",
+    "visibility": "public",
+    "whyItMatters": "Public original read without sign-in in the in-app browser; linked primary results table independently read. Organizer evaluation, separate from Kaggle team standings."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "standings",
+    "checkedAt": "2026-10-13T22:00:48.823665+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110031207601979715",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-13T15:33:37Z",
+    "storyUrl": null,
+    "summary": "ARC Prize announces Tufa Labs reclaimed first on the ARC-AGI-3 public Kaggle board with roughly 69%, up from roughly 56%. This is the author’s dated October 13 observation; refresh standings before publication.",
+    "threadId": "2110031207601979715",
+    "url": "https://x.com/arcprize/status/2110031207601979715",
+    "visibility": "public",
+    "whyItMatters": "Organizer confirmation of a consequential team result already covered in the newspaper’s morning/afternoon reporting; no methods disclosed."
+  },
+  {
     "author": "OCEANVIN10",
     "authorName": "OCEAN",
     "category": "research",
@@ -60,6 +100,28 @@
     "url": "https://x.com/arcprize/status/2108577347192676612",
     "visibility": "public",
     "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "community",
+    "checkedAt": "2026-10-13T18:06:57.732Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109971877091274960",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 2,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-13T11:37:51Z",
+    "storyUrl": null,
+    "summary": "Replying to the Digest’s morning announcement, Jean-François Puget asks why he was singled out and emphasizes that NVARC is a team with other members.",
+    "threadId": "2109951342487945277",
+    "url": "https://x.com/JFPuget/status/2109971877091274960",
+    "visibility": "public",
+    "whyItMatters": "A direct, public request for team credit supports a short roster profile rather than treating a team result as an individual accomplishment."
   },
   {
     "author": "guanningzeng",
@@ -145,7 +207,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-13T10:04:00.667410+00:00",
+    "checkedAt": "2026-10-13T18:05:48.028Z",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -168,7 +230,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "standings",
-    "checkedAt": "2026-10-13T09:01:55.729Z",
+    "checkedAt": "2026-10-13T18:05:48.028Z",
     "competitions": [
       "arc-2"
     ],
@@ -213,7 +275,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-13T09:07:43.206Z",
+    "checkedAt": "2026-10-13T18:05:48.028Z",
     "competitions": [
       "arc-3"
     ],
@@ -337,7 +399,7 @@
     "author": "tufalabs",
     "authorName": "Tufa Labs",
     "category": "community",
-    "checkedAt": "2026-10-12T18:15:45.034590Z",
+    "checkedAt": "2026-10-13T18:07:08.559Z",
     "competitions": [
       "arc-2"
     ],
@@ -352,71 +414,5 @@
     "url": "https://x.com/tufalabs/status/2108916273937858887",
     "visibility": "public",
     "whyItMatters": "First-person context from the ARC-AGI-2 public-board leader; no method or final result is disclosed."
-  },
-  {
-    "author": "JFPuget",
-    "authorName": "Jean-François Puget",
-    "category": "community",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2108632255383957945",
-    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
-    "importance": 2,
-    "personIds": [
-      "jean-francois-puget"
-    ],
-    "postedAt": "2026-10-09T18:54:40Z",
-    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
-    "summary": "Puget asked ARC Prize whether the 85% bonus threshold refers to the public or private leaderboard; no organizer answer was visible in the checked thread.",
-    "threadId": "2108578092558250148",
-    "url": "https://x.com/JFPuget/status/2108632255383957945",
-    "visibility": "public",
-    "whyItMatters": "Flags a reporting question; avoid presenting the public score as the final prize result."
-  },
-  {
-    "author": "mikeknoop",
-    "authorName": "Mike Knoop",
-    "category": "community",
-    "checkedAt": "2026-10-10T18:00:55Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2108587649720340539",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 2,
-    "personIds": [
-      "mike-knoop"
-    ],
-    "postedAt": "2026-10-09T15:57:26Z",
-    "storyUrl": "https://x.com/mikeknoop/status/2108584791436321097",
-    "summary": "Knoop said ARC-AGI-2 remains much harder than ARC-AGI-1 and that eventual open solutions will be useful to study, while quoting his earlier reaction to Tufa Labs crossing the public Kaggle bonus threshold.",
-    "threadId": "2108584791436321097",
-    "url": "https://x.com/mikeknoop/status/2108587649720340539",
-    "visibility": "public",
-    "whyItMatters": "Organizer context about the contest; his forward-looking statement is not a released solution or final award."
-  },
-  {
-    "author": "mikeknoop",
-    "authorName": "Mike Knoop",
-    "category": "community",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2108584791436321097",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 2,
-    "personIds": [
-      "mike-knoop"
-    ],
-    "postedAt": "2026-10-09T15:46:04Z",
-    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
-    "summary": "Knoop said the 85% Grand Prize bonus threshold had been reached on Kaggle and called 2026 the final ARC-AGI-2 Kaggle year.",
-    "threadId": null,
-    "url": "https://x.com/mikeknoop/status/2108584791436321097",
-    "visibility": "public",
-    "whyItMatters": "Provides organizer context for the Tufa Labs result; his expectation about future open artifacts is not yet a release."
   }
 ]
