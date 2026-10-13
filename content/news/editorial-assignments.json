@@ -82,5 +82,117 @@
     ],
     "title": "Welcome PunkCyber and 復活の混テキスト in the evening edition",
     "verificationNotes": "Exact self-identification read in Mark’s X notifications and original thread, publicly readable without login. The team name was matched exactly in both dated board snapshots; cunkpyber’s individual Kaggle account remains unverified."
+  },
+  {
+    "id": "former-leaders-morning-feature",
+    "competition": "arc-3",
+    "createdAt": "2026-10-13T03:08:58.501651+00:00",
+    "title": "Former leaders: Mostik, Daniel Franzen and the milestone field",
+    "priority": "Boss-requested supporting feature",
+    "status": "pending",
+    "targetEditionId": "2026-10-13-morning-arc-3",
+    "placement": "supporting-feature",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "16364346",
+      "16384837",
+      "16371045",
+      "16706087"
+    ],
+    "personIds": [
+      "daniel-franzen"
+    ],
+    "subjectNames": [
+      "mostik.ai",
+      "Daniel Franzen",
+      "Lord Han Solo",
+      "Lohit Siriki"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-13-former-leaders/feature-draft.json",
+    "instructions": "Commissioned by Mark for the October 13 Early edition as a separate supporting piece. Read the saved manuscript and source handoff, reopen original public sources and refresh every current rank/score from the morning brief. Explain that Mostik claimed an early first place; the current board is a different dated observation, not evidence that the September claim was false. Daniel won the qualifying open-source Milestone 2 prize, not necessarily the unrestricted board at the deadline; his October 12 improvement was already observed Monday morning, not a second evening gain. Lord Han Solo has recovered toward gold; do not frame every earlier prize winner as stalled. Attribute Sasha’s fine-tuning portability proposal as an experiment she wants to run, not a demonstrated result or known Kaggle recipe. Publish the refreshed separate dispatch with scripts/newsroom.py dispatch-validate and dispatch-publish, re-prepare to cite it in the morning issue, and retain the commissioning credit. Include a respectful invitation for all competitors to share public observations/hot takes with the editorial desk by replying to @82deutschmark. The morning routine X announcement may invite @mostik_ai and @JFPuget to comment; no extra post or direct message. Broaden public competitor reporting, especially Japanese voices with faithful English translations and dated, attributed standings claims. Keep unresolved Kaggle identities unresolved. This ARC-3 feature must explicitly acknowledge that Tufa leads ARC-2.",
+    "sourceUrls": [
+      "https://x.com/aimalysheva/status/2095232794792255848",
+      "https://x.com/aimalysheva/status/2107222547682951453",
+      "https://x.com/arcprize/status/2105737436450201734",
+      "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    ],
+    "verificationNotes": "Sources read October 12 Eastern. Recheck Monday-night standings before publishing Tuesday. A rank drop need not mean a lower score or abandoned work; no method, spending, motive or wrongdoing is inferred."
+  },
+  {
+    "id": "arc-3-oct13-morning-digital-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-13T03:08:58.501651+00:00",
+    "title": "Digital giant bunnies with Chen/Tufa history chart",
+    "priority": "Boss-requested morning artwork",
+    "status": "pending",
+    "targetEditionId": "2026-10-13-morning-arc-3",
+    "placement": "illustrated-lead",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "15499660",
+      "15486995"
+    ],
+    "personIds": [
+      "yi-chia-chen",
+      "dries-smit"
+    ],
+    "subjectNames": [
+      "Yi-Chia Chen",
+      "Tufa Labs"
+    ],
+    "artworkGenerationRecord": "2026-10-13-digital-giant-bunnies-base",
+    "artworkConditions": {
+      "leaderTeamId": "15499660",
+      "rivalTeamId": "15486995",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "artworkHistoryChart": true,
+    "allowArtworkPreview": true,
+    "instructions": "Use this newly reviewed native base for the October 13 ARC-3 Early edition if the specified leader remains rank one with a higher score than the rival, and Dries remains in Tufa’s fresh verified roster. This commission applies even if the overnight score is unchanged; use the updated helper’s editor-commissioned-leading-scene plan. Cover both pictured teams substantively in the manuscript. Run plan, compose using this exact approved generation record, attach and validate against the fresh morning brief. Keep competitions separate: Chen leads ARC-3, while Tufa leads ARC-2. Include the lower-left dated Chen/Tufa score-history chart from archived brief scoreHistory, with the observed crossover time, current ranks/scores and full Eastern observation date/time. The generated raw image has no scores. Never publish the October 12 preview panel as October 13 evidence; draw fresh overlays at publication. The exact five spiders, digital rabbit gear, Dries costume and GPU props are editorial metaphor. If lead/cast conditions fail, hold/carry explicitly and report why. Upload the finished image in the existing routine edition X announcement and verify the attachment, following send-once state. If both stories have custom art, the existing routine announcement leads ARC-3 with its own current image; each article keeps its separate competition-specific artwork on its page. No extra send.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    ],
+    "verificationNotes": "Native output inspected: two cute fluffy digital rabbits, one Dries and five countable Tufa spiders. ARC-3 bunnies dwarf the skyline; ARC-2’s spider machine dominates the smaller rabbits. Mark commissioned the styling and separate ARC-2 composition; current ranks/cast must be rechecked."
+  },
+  {
+    "id": "arc-2-oct13-morning-digital-art",
+    "competition": "arc-2",
+    "createdAt": "2026-10-13T03:08:58.501651+00:00",
+    "title": "Tufa’s ARC-2 GPU citadel with smaller digital rabbits",
+    "priority": "Boss-requested morning artwork",
+    "status": "pending",
+    "targetEditionId": "2026-10-13-morning-arc-2",
+    "placement": "illustrated-lead",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "16756524",
+      "15501171"
+    ],
+    "personIds": [
+      "yi-chia-chen",
+      "dries-smit"
+    ],
+    "subjectNames": [
+      "Yi-Chia Chen",
+      "Tufa Labs"
+    ],
+    "artworkGenerationRecord": "2026-10-13-tufa-gpu-citadel-base",
+    "artworkConditions": {
+      "leaderTeamId": "16756524",
+      "rivalTeamId": "15501171",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "artworkHistoryChart": false,
+    "allowArtworkPreview": true,
+    "instructions": "Use this newly reviewed native base for the October 13 ARC-2 Early edition if the specified leader remains rank one with a higher score than the rival, and Dries remains in Tufa’s fresh verified roster. This commission applies even if the overnight score is unchanged; use the updated helper’s editor-commissioned-leading-scene plan. Cover both pictured teams substantively in the manuscript. Run plan, compose using this exact approved generation record, attach and validate against the fresh morning brief. Keep competitions separate: Chen leads ARC-3, while Tufa leads ARC-2. Use the lower-left current ARC-2 rank/score panel and full Eastern observation date/time. Chen was third at commissioning; do not imply she was second or that Tufa trailed her on ARC-2. The generated raw image has no scores. Never publish the October 12 preview panel as October 13 evidence; draw fresh overlays at publication. The exact five spiders, digital rabbit gear, Dries costume and GPU props are editorial metaphor. If lead/cast conditions fail, hold/carry explicitly and report why. Upload the finished image in the existing routine edition X announcement and verify the attachment, following send-once state. If both stories have custom art, the existing routine announcement leads ARC-3 with its own current image; each article keeps its separate competition-specific artwork on its page. No extra send.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    ],
+    "verificationNotes": "Native output inspected: two cute fluffy digital rabbits, one Dries and five countable Tufa spiders. ARC-3 bunnies dwarf the skyline; ARC-2’s spider machine dominates the smaller rabbits. Mark commissioned the styling and separate ARC-2 composition; current ranks/cast must be rechecked."
   }
 ]

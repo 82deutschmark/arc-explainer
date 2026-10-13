@@ -1546,5 +1546,79 @@
       "sourceUrl": "https://www.kaggle.com/ffsscf",
       "src": "/news-images/people/fshindo.webp"
     }
+  },
+  {
+    "id": "lord-han-solo",
+    "name": "Lord Han Solo",
+    "accounts": [
+      {
+        "platform": "kaggle",
+        "handle": "lordhansolo",
+        "url": "https://www.kaggle.com/lordhansolo",
+        "sourceUrl": "https://x.com/arcprize/status/2105737439700787646",
+        "sourceTitle": "ARC Prize — official Milestone 2 participant credit and Kaggle link",
+        "checkedAt": "2026-10-13T03:15:37.495573+00:00"
+      }
+    ],
+    "facts": [
+      {
+        "text": "ARC Prize announced Lord Han Solo as the second-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026.",
+        "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
+        "sourceTitle": "ARC Prize — official Milestone 2 winners",
+        "checkedAt": "2026-10-13T03:15:37.495573+00:00"
+      }
+    ],
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "season": "2026",
+        "teamId": "16371045",
+        "teamName": "Lord Han Solo",
+        "memberHandle": "lordhansolo",
+        "firstObservedAt": "2026-10-13T03:07:24Z",
+        "lastObservedAt": "2026-10-13T03:07:24Z",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "Dated ARC-3 public roster observation"
+      }
+    ],
+    "hallOfFame": []
+  },
+  {
+    "id": "lohit-siriki",
+    "name": "Lohit Siriki",
+    "accounts": [
+      {
+        "platform": "kaggle",
+        "handle": "sirikilohit",
+        "url": "https://www.kaggle.com/sirikilohit",
+        "sourceUrl": "https://x.com/arcprize/status/2105737441021997106",
+        "sourceTitle": "ARC Prize — official Milestone 2 participant credit and Kaggle link",
+        "checkedAt": "2026-10-13T03:15:37.495573+00:00"
+      }
+    ],
+    "facts": [
+      {
+        "text": "ARC Prize announced Lohit Siriki as the third-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026.",
+        "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
+        "sourceTitle": "ARC Prize — official Milestone 2 winners",
+        "checkedAt": "2026-10-13T03:15:37.495573+00:00"
+      }
+    ],
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "season": "2026",
+        "teamId": "16706087",
+        "teamName": "rellik13",
+        "memberHandle": "sirikilohit",
+        "firstObservedAt": "2026-10-13T03:07:24Z",
+        "lastObservedAt": "2026-10-13T03:07:24Z",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "Dated ARC-3 public roster observation"
+      }
+    ],
+    "hallOfFame": []
   }
 ]

@@ -53,6 +53,32 @@ The publisher verifies the article ID, headline, brief checksum, observation tim
 
 If native generation is unavailable or fails, preserve the reason and publish the verified text without `image`. Do not silently use a paid API or stale illustration. Include the art outcome in the final report. Scheduled runs do not edit application code or this workflow.
 
+## Edition-specific human commissions and score history — October 12
+
+An assignment may name an approved `artworkGenerationRecord`, exact `targetEditionId`,
+and `artworkConditions` with `leaderTeamId`, `rivalTeamId` and `requiredPersonIds`.
+The planner permits this explicitly commissioned scene on a quiet board only while the
+named leader remains first with a higher score than the rival and the required people
+still match the fresh roster. It selects those two teams rather than an unrelated mover.
+The scene may have been generated the previous evening; publication overlays always use
+the actual fresh edition brief. A changed leader or cast requires an explicit hold/carry.
+`allowArtworkPreview: true` permits a separately identified manual preview using current
+observations; its image is never tomorrow's edition evidence.
+
+`artworkHistoryChart: true` uses selected `evidence.scoreHistory` trails archived by
+preparation, appends the exact closing scores and draws an observed-score step chart in
+the lower-left panel. The chart names its vertical scale, dates and the first recorded
+rank change into first place; that timestamp is an observation, not an exact submission
+time. It also prints both current ranks/scores and the full Eastern observation date/time.
+Missing history supplies no invented flat line. The composition stores the chart's exact
+data, and attachment validation rejects a historical-score mutation. Older artworks stay
+immutable. ARC-3's Chen/Tufa crossover says nothing about ARC-2, where the separate
+commission pictures Tufa's leading GPU machine and smaller digital rabbits.
+
+Mark approved GPU/pixel-grid accents on the cute fluffy rabbits, using Son Pham's avatar
+as equipment-style inspiration only. Son is not added to either scene. Preserve the
+owner-photo ear/coat identities; the gear, mascot counts and compute machines are metaphors.
+
 ## Publish together
 
 Stage only the intended edition/evidence/notebook files, new `content/news/artwork/` records, new `client/public/news-images/` assets and any deliberately updated visual registry. Review and use the normal reporter commit/push procedure. The edition image appears with its headline on the front page and article page, with its dated caption, and in crawler HTML. Never overwrite an earlier edition or its images.

@@ -64,8 +64,31 @@
   {
     "author": "crysis44k",
     "authorName": "fshindo",
+    "category": "community",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2109689542391496948",
+    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
+    "importance": 2,
+    "personIds": [
+      "fshindo"
+    ],
+    "postedAt": "2026-10-12T16:55:57Z",
+    "storyUrl": null,
+    "summary": "English translation of the Japanese post: fshindo thinks local LLM enthusiasts with many GPUs who improve harnesses and inference speed ought to enter competitions, then jokes about discovering formidable people who would become rivals. This is a friendly invitation, not a claim about a named rival’s resources.",
+    "threadId": null,
+    "url": "https://x.com/crysis44k/status/2109689542391496948",
+    "visibility": "public",
+    "whyItMatters": "Japanese competitor voice about the connection between practical inference/harness work and contest participation."
+  },
+  {
+    "author": "crysis44k",
+    "authorName": "fshindo",
     "category": "standings",
-    "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
     "competitions": [
       "arc-2"
     ],
@@ -77,11 +100,31 @@
     ],
     "postedAt": "2026-10-12T16:50:05Z",
     "storyUrl": null,
-    "summary": "In Japanese, fshindo (@crysis44k) reported reaching the ARC-AGI-2 medal range after substantial effort. The Kaggle profile ffsscf directly links to this X account, and current dated rosters list ffsscf on the separate fshindo teams in ARC-AGI-2 and ARC-AGI-3. The rank/medal statement belongs to the post’s observation time, not the present board.",
+    "summary": "English translation of the Japanese post: fshindo says they finally reached the medal range in ARC-AGI-2 and are pleased because that contest had received the most of their time and effort without results until then. The profile ffsscf directly links this X account; the claim is dated to the post, not a current rank.",
     "threadId": null,
     "url": "https://x.com/crysis44k/status/2109688065099006141",
     "visibility": "public",
-    "whyItMatters": "A verified competitor reaction can now be connected to ARC-2 team 17019785, while keeping the author’s posting-time medal claim distinct from current provisional standings."
+    "whyItMatters": "A useful participant account of persistence and uneven progress between the two contests."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "community",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109661765722079371",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T15:05:35Z",
+    "storyUrl": null,
+    "summary": "Malysheva says most of the Mostik team is together on site for brainstorming and that Stanislav Smirnov joined. The post shows ongoing activity but announces no new ARC submission, score or method.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2109661765722079371",
+    "visibility": "public",
+    "whyItMatters": "Current activity helps avoid treating a low board position as evidence that the company abandoned the race."
   },
   {
     "author": "cunkpyber",
@@ -211,6 +254,26 @@
     "whyItMatters": "Context from the ARC-AGI-2 public-board mover; compare any score or rank with the board brief."
   },
   {
+    "author": "masspeakss",
+    "authorName": "masspeaks",
+    "category": "community",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108933240887345594",
+    "identitySourceUrl": "https://x.com/masspeakss",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-10T14:50:41Z",
+    "storyUrl": null,
+    "summary": "English translation of the Japanese post: masspeaks says submissions older than 48 hours can disappear from Active Events while still scoring, and jokes about discovering that none of their submissions had finished. This is a participant report, not an organizer-confirmed platform rule.",
+    "threadId": null,
+    "url": "https://x.com/masspeakss/status/2108933240887345594",
+    "visibility": "public",
+    "whyItMatters": "Explains why some public competitor chatter concerns scoring waits rather than a new method or result."
+  },
+  {
     "author": "tufalabs",
     "authorName": "Tufa Labs",
     "category": "community",
@@ -251,6 +314,26 @@
     "url": "https://x.com/JFPuget/status/2108632255383957945",
     "visibility": "public",
     "whyItMatters": "Flags a reporting question; avoid presenting the public score as the final prize result."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108626549121433687",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-09T18:32:00Z",
+    "storyUrl": "https://arxiv.org/abs/2602.15382",
+    "summary": "Malysheva discusses Vision Wormhole’s use of vision tokens as a continuous communication interface between models and highlights losses on harder tasks with larger senders. The desk opened the authors’ arXiv abstract and owned project page; the work is about cooperative VLM communication, not an ARC leaderboard result.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2108626549121433687",
+    "visibility": "public",
+    "whyItMatters": "The size of a reasoning handoff may constrain what the receiving model can preserve."
   },
   {
     "author": "mikeknoop",
@@ -338,89 +421,5 @@
     "url": "https://x.com/arcprize/status/2108575462695817315",
     "visibility": "public",
     "whyItMatters": "A current event-program lead for the meeting digest."
-  },
-  {
-    "author": "SimonOuellette6",
-    "authorName": "Simon Ouellette",
-    "category": "research",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2108289507908780366",
-    "identitySourceUrl": "https://x.com/SimonOuellette6",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-08T20:12:43Z",
-    "storyUrl": "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
-    "summary": "Ouellette released an ARC-AGI-3-style training-data framework with 429 playable games, solvers and demonstration generators; he said 37 games still lacked solvers. The linked repository says it combines augmented public ARC demos and other game sources.",
-    "threadId": "2108289507908780366",
-    "url": "https://x.com/SimonOuellette6/status/2108289507908780366",
-    "visibility": "public",
-    "whyItMatters": "A concrete research resource; its author describes training material, not a measured Kaggle-score gain or coverage of private games."
-  },
-  {
-    "author": "JFPuget",
-    "authorName": "Jean-François Puget",
-    "category": "research",
-    "checkedAt": "2026-10-12T21:09:42.599Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2107701171037020293",
-    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
-    "importance": 2,
-    "personIds": [
-      "jean-francois-puget"
-    ],
-    "postedAt": "2026-10-07T05:14:53Z",
-    "storyUrl": null,
-    "summary": "Jean-François Puget warns that setting temperature to zero does not guarantee fully deterministic LLM inference. The post quotes a claim that temperature zero always produces the same answer. In a later reply he says the hiring wording should not be taken too seriously and was intended to draw attention to the topic.",
-    "threadId": "2107701171037020293",
-    "url": "https://x.com/JFPuget/status/2107701171037020293",
-    "visibility": "public",
-    "whyItMatters": "Older catch-up lead for reporting on reproducibility and run-to-run variation. This is Puget’s general inference comment, not a measurement explaining any ARC leaderboard result. Preserve the clarification when using the hiring line."
-  },
-  {
-    "author": "arcprize",
-    "authorName": "ARC Prize",
-    "category": "research",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2107511511782420924",
-    "identitySourceUrl": "https://arcprize.org",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-06T16:41:14Z",
-    "storyUrl": null,
-    "summary": "ARC Prize published verified Grok 4.7 scores: 1.8% on ARC-AGI-3 with its standard harness, 10.0% with a provider adapter, and 61.4% on ARC-AGI-2.",
-    "threadId": "2107511511782420924",
-    "url": "https://x.com/arcprize/status/2107511511782420924",
-    "visibility": "public",
-    "whyItMatters": "The harness distinction matters when comparing model scores; the post reports organizer verification."
-  },
-  {
-    "author": "arcprize",
-    "authorName": "ARC Prize",
-    "category": "research",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2107491194007585239",
-    "identitySourceUrl": "https://arcprize.org",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-06T15:20:30Z",
-    "storyUrl": null,
-    "summary": "ARC Prize published verified DeepSeek V4.1 Flash scores of 72.9% on ARC-AGI-2 and 94.5% on ARC-AGI-1, with stated per-task costs.",
-    "threadId": "2107491194007585239",
-    "url": "https://x.com/arcprize/status/2107491194007585239",
-    "visibility": "public",
-    "whyItMatters": "A dated organizer model verification relevant to ARC-2 comparisons."
   }
 ]

@@ -7,6 +7,7 @@
 # 10-Oct-2026 (Claude Opus 5.5): --writer records the Claude Haiku backup honestly in generatedBy.
 # 11-Oct-2026: briefs carry wire developments and unresolved editorial assignments; publication records their disposition.
 # Covered illustrated commissions require their approved native base, composed for the actual issue.
+# Archives selected score trails for the editor-requested dated illustration history chart.
 # SRP/DRY check: Pass — uses existing board API and shared news contract; no model API or git calls.
 """Deterministic newsroom plumbing. The scheduled model writes the journalism."""
 import argparse
@@ -187,7 +188,10 @@ def board_brief(board, competition, edition, now, actual_now, source_url, source
                 'latestAt': iso(latest_at), 'cutoffAt': iso(cutoff), 'baselineTargetAt': iso(baseline_target),
                 'closingSnapshot': closing, 'baselineSnapshot': baseline,
                 'comparisons': {tid: comparisons[tid] for tid in sorted(selected_ids & comparisons.keys())},
-                'events': events, 'observations': {tid: observations[tid] for tid in sorted(selected_ids & observations.keys())}}
+                'events': events, 'observations': {tid: observations[tid] for tid in sorted(selected_ids & observations.keys())},
+                'scoreHistory': {tid: [p for p in history['trails'].get(tid, {}).get('pts', [])
+                                      if stamp(p[0]) <= closing_at]
+                                 for tid in sorted(selected_ids & observations.keys())}}
     return {'status': 'ready', 'articleBase': article_base, 'evidence': evidence,
             'candidates': {'leaders': [s['teamId'] for s in selected if s['rank'] <= 10],
                            'featured': sorted(FEATURED[competition]), 'gainers': [s['teamId'] for s in gainers]}}

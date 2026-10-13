@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.15  Oct 12, 2026
+
+- **Former leaders and separate morning art commissions** (Author: GPT-6.1 Sol / Codex). Prepared Mark's sourced supporting feature on Mostik, Franzen and the milestone field, an open competitor invitation, and public competitor translations with broader Japanese/Sasha watch coverage. Generated and reviewed digital giant-bunny ARC-3 art and a distinct Tufa-leading ARC-2 GPU citadel. Existing morning/research jobs carry the editorial assignments without schedule/model changes. The artwork helper now honors explicit lead/cast-checked commissions on quiet boards and draws a dated Chen/Tufa history chart from immutable brief score trails. Altered history or a changed leader/cast cannot reuse the approved commission through an unrelated automatic move. Both current previews were visually inspected; 55 Python newsroom checks passed. Publication still requires fresh morning scores, date/time and the existing send-once X flow. Plan: `docs/2026-10-12-former-leaders-and-morning-art-plan.md`.
+
 ### Version 9.141.14  Oct 12, 2026
 
 - **Twice-daily discussion review and article-linked X mentions** (Author: GPT-6.1 Sol / Codex). The existing research automation now scans both Kaggle boards at 5 am and 5 pm Eastern, including old topics with new replies; its four daily X scans remain unchanged. Read and archived the current queue, synthetic-training question, GPU-change proposal and Qwen discussions with exact source dates and honest public-access limits. Refreshed and retained the earlier reviewed ARC-3 training and notebook-score discussions alongside the new ARC-2 sources. Edition posts may include verified X handles of substantively covered people, including `@JFPuget` for CPMP/NVARC coverage, while preserving image lead, article link, length limit and send state. No handle is guessed for other NVIDIA teammates. Updated `DISCUSSIONS.md`, `SOCIAL_DESK.md`, `X_POSTING.md` and the existing automation prompts.

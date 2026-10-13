@@ -1,0 +1,116 @@
+{
+  "articleId": "2026-10-12-evening-arc-3-preview",
+  "briefSha256": "64b4fc7d7ec747d9b6e8b06d09454691b48e79e76ca91809832f293f86828288",
+  "dataAsOf": "2026-10-13T03:07:24Z",
+  "generationRecord": "2026-10-13-digital-giant-bunnies-base",
+  "headline": "Preview: Chen leads ARC-3 as the digital bunnies grow",
+  "historyChart": {
+    "dataAsOf": "2026-10-13T03:07:24Z",
+    "leadObservedAt": "2026-10-09T03:51:41Z",
+    "series": [
+      {
+        "name": "Yi-Chia Chen",
+        "points": [
+          [
+            "2026-10-04T18:30:56Z",
+            48.59,
+            2
+          ],
+          [
+            "2026-10-08T05:42:56Z",
+            55.77,
+            2
+          ],
+          [
+            "2026-10-09T03:51:41Z",
+            59.17,
+            1
+          ],
+          [
+            "2026-10-10T08:59:42Z",
+            62.96,
+            1
+          ],
+          [
+            "2026-10-12T05:33:50Z",
+            67.49,
+            1
+          ],
+          [
+            "2026-10-13T03:07:24Z",
+            67.49,
+            1
+          ]
+        ],
+        "teamId": "15499660"
+      },
+      {
+        "name": "Tufa Labs",
+        "points": [
+          [
+            "2026-10-04T18:30:56Z",
+            55.89,
+            1
+          ],
+          [
+            "2026-10-09T03:51:41Z",
+            55.89,
+            2
+          ],
+          [
+            "2026-10-09T04:21:45Z",
+            56.52,
+            2
+          ],
+          [
+            "2026-10-13T03:07:24Z",
+            56.52,
+            2
+          ]
+        ],
+        "teamId": "15486995"
+      }
+    ],
+    "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+  },
+  "id": "2026-10-12-evening-arc-3-preview-48cd1b646f",
+  "image": {
+    "alt": "Editorial illustration for Preview: Chen leads ARC-3 as the digital bunnies grow. Yi-Chia Chen: rank 1, score 67.49; Tufa Labs: rank 2, score 56.52.",
+    "artworkId": "2026-10-12-evening-arc-3-preview-48cd1b646f",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 12, 2026 · 11:07 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-12-evening-arc-3-preview-48cd1b646f.webp"
+  },
+  "imageSha256": "67c743730fc17dc1b4482ec2c9e95b7f7812fa85bb6b6d345813b8eb0a8be184",
+  "kind": "edition-composition",
+  "layout": "corner-history-v2.1",
+  "leadGap": {
+    "current": 10.97,
+    "extends": true,
+    "previous": 6.44
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "81282ca9bed3cb82d2f34a7810bbd0e9c105bd74c67c1428e7a85dbb76f610a1",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 1,
+      "rankChange": null,
+      "score": 67.49,
+      "scoreChange": null,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 56.52,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

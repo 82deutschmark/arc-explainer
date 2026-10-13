@@ -1194,6 +1194,12 @@
         "sourceTitle": "Lord Han Solo — Milestone 2 Kaggle notebook",
         "sourceUrl": "https://www.kaggle.com/code/lordhansolo/built-on-tufa-labs-duck-harness-milestone-2",
         "text": "Lord Han Solo published a Kaggle notebook titled “Built on Tufa Labs duck harness - Milestone 2,” explicitly crediting that earlier public harness in the notebook title."
+      },
+      {
+        "text": "ARC Prize announced Lord Han Solo as second-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner and directly linked the Kaggle profile lordhansolo.",
+        "sourceUrl": "https://x.com/arcprize/status/2105737439700787646",
+        "sourceTitle": "ARC Prize — Lord Han Solo official participant credit",
+        "checkedAt": "2026-10-13T03:23:30.256145+00:00"
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
@@ -1214,6 +1220,12 @@
         "sourceTitle": "The ARChitects — 2025 team solution",
         "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
         "text": "The ARChitects’ own 2025 solution write-up credits Daniel Franzen under the Kaggle handle dfranzen, alongside Jan Disselhoff (insanitycheck) and David Hartmann (dvhrtm)."
+      },
+      {
+        "text": "ARC Prize announced Daniel Franzen as first-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026; that prize placement is distinct from the unrestricted ongoing public board.",
+        "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
+        "sourceTitle": "ARC Prize — official Milestone 2 winners",
+        "checkedAt": "2026-10-13T03:23:30.256145+00:00"
       }
     ],
     "firstObservedAt": "2026-10-09T20:53:44Z",
@@ -1704,5 +1716,52 @@
     ],
     "name": "fshindo",
     "teamId": "17019785"
+  },
+  {
+    "id": "arc-3-16364346",
+    "competition": "arc-3",
+    "teamId": "16364346",
+    "name": "mostik.ai",
+    "aliases": [],
+    "members": [
+      "avgaydashenko",
+      "gatamaz",
+      "godjan",
+      "korogodsky",
+      "malyshevasasha",
+      "rolion",
+      "tehnar",
+      "vitalique"
+    ],
+    "firstObservedAt": "2026-10-13T03:07:24Z",
+    "lastObservedAt": "2026-10-13T03:07:24Z",
+    "facts": [
+      {
+        "text": "Mostik’s September 2, 2026 public launch post claimed first place on the ARC-AGI leaderboard; the post did not disclose the competition method.",
+        "sourceUrl": "https://x.com/aimalysheva/status/2095232794792255848",
+        "sourceTitle": "Mostik — dated public launch and early-lead claim",
+        "checkedAt": "2026-10-13T03:23:30.256145+00:00"
+      }
+    ]
+  },
+  {
+    "id": "arc-3-16706087",
+    "competition": "arc-3",
+    "teamId": "16706087",
+    "name": "rellik13",
+    "aliases": [],
+    "members": [
+      "sirikilohit"
+    ],
+    "firstObservedAt": "2026-10-13T03:07:24Z",
+    "lastObservedAt": "2026-10-13T03:07:24Z",
+    "facts": [
+      {
+        "text": "ARC Prize announced Lohit Siriki as third-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner and credited the notebook published under sirikilohit.",
+        "sourceUrl": "https://x.com/arcprize/status/2105737441021997106",
+        "sourceTitle": "ARC Prize — Lohit Siriki official participant credit",
+        "checkedAt": "2026-10-13T03:23:30.256145+00:00"
+      }
+    ]
   }
 ]

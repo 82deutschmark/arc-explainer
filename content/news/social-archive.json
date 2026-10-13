@@ -2,8 +2,31 @@
   {
     "author": "crysis44k",
     "authorName": "fshindo",
+    "category": "community",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2109689542391496948",
+    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
+    "importance": 2,
+    "personIds": [
+      "fshindo"
+    ],
+    "postedAt": "2026-10-12T16:55:57Z",
+    "storyUrl": null,
+    "summary": "English translation of the Japanese post: fshindo thinks local LLM enthusiasts with many GPUs who improve harnesses and inference speed ought to enter competitions, then jokes about discovering formidable people who would become rivals. This is a friendly invitation, not a claim about a named rival’s resources.",
+    "threadId": null,
+    "url": "https://x.com/crysis44k/status/2109689542391496948",
+    "visibility": "public",
+    "whyItMatters": "Japanese competitor voice about the connection between practical inference/harness work and contest participation."
+  },
+  {
+    "author": "crysis44k",
+    "authorName": "fshindo",
     "category": "standings",
-    "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
     "competitions": [
       "arc-2"
     ],
@@ -15,11 +38,51 @@
     ],
     "postedAt": "2026-10-12T16:50:05Z",
     "storyUrl": null,
-    "summary": "In Japanese, fshindo (@crysis44k) reported reaching the ARC-AGI-2 medal range after substantial effort. The Kaggle profile ffsscf directly links to this X account, and current dated rosters list ffsscf on the separate fshindo teams in ARC-AGI-2 and ARC-AGI-3. The rank/medal statement belongs to the post’s observation time, not the present board.",
+    "summary": "English translation of the Japanese post: fshindo says they finally reached the medal range in ARC-AGI-2 and are pleased because that contest had received the most of their time and effort without results until then. The profile ffsscf directly links this X account; the claim is dated to the post, not a current rank.",
     "threadId": null,
     "url": "https://x.com/crysis44k/status/2109688065099006141",
     "visibility": "public",
-    "whyItMatters": "A verified competitor reaction can now be connected to ARC-2 team 17019785, while keeping the author’s posting-time medal claim distinct from current provisional standings."
+    "whyItMatters": "A useful participant account of persistence and uneven progress between the two contests."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ",
+    "category": "standings",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2109662430381187422",
+    "identitySourceUrl": "https://x.com/iiiiitsu_ne",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-12T15:08:13Z",
+    "storyUrl": null,
+    "summary": "The author asks in Japanese whether this counts as a good result, then shares Kaggle’s rank-31 card for ARC-AGI-2. The linked competition is verified; their exact Kaggle account/team remains unresolved.",
+    "threadId": null,
+    "url": "https://x.com/iiiiitsu_ne/status/2109662430381187422",
+    "visibility": "public",
+    "whyItMatters": "Additional Japanese competitor voice without guessing a present board identity from an old rank."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "community",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109661765722079371",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T15:05:35Z",
+    "storyUrl": null,
+    "summary": "Malysheva says most of the Mostik team is together on site for brainstorming and that Stanislav Smirnov joined. The post shows ongoing activity but announces no new ARC submission, score or method.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2109661765722079371",
+    "visibility": "public",
+    "whyItMatters": "Current activity helps avoid treating a low board position as evidence that the company abandoned the race."
   },
   {
     "author": "cunkpyber",
@@ -172,6 +235,26 @@
     "whyItMatters": "Recent ARC-AGI-3 community experiment; the author explicitly says one level proves little."
   },
   {
+    "author": "menphim",
+    "authorName": "めんふぃむ",
+    "category": "standings",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109263693922107727",
+    "identitySourceUrl": "https://x.com/menphim",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-11T12:43:47Z",
+    "storyUrl": null,
+    "summary": "The author shares an English Kaggle card saying they moved to rank 76 in ARC-AGI-3, with a joking addiction line. The competition link and original post were read; exact Kaggle identity/team remains unverified.",
+    "threadId": null,
+    "url": "https://x.com/menphim/status/2109263693922107727",
+    "visibility": "public",
+    "whyItMatters": "A dated standings lead outside the existing watch list; no current ranking or method is inferred."
+  },
+  {
     "author": "masspeakss",
     "authorName": "masspeaks",
     "category": "community",
@@ -314,6 +397,26 @@
     "whyItMatters": "A new ARC-AGI-3 research lead for the edition desk. The paper provides a concrete mechanism and results, but the public tutorial set cannot establish private-game performance."
   },
   {
+    "author": "masspeakss",
+    "authorName": "masspeaks",
+    "category": "community",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108933240887345594",
+    "identitySourceUrl": "https://x.com/masspeakss",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-10T14:50:41Z",
+    "storyUrl": null,
+    "summary": "English translation of the Japanese post: masspeaks says submissions older than 48 hours can disappear from Active Events while still scoring, and jokes about discovering that none of their submissions had finished. This is a participant report, not an organizer-confirmed platform rule.",
+    "threadId": null,
+    "url": "https://x.com/masspeakss/status/2108933240887345594",
+    "visibility": "public",
+    "whyItMatters": "Explains why some public competitor chatter concerns scoring waits rather than a new method or result."
+  },
+  {
     "author": "tufalabs",
     "authorName": "Tufa Labs",
     "category": "community",
@@ -354,6 +457,26 @@
     "url": "https://x.com/JFPuget/status/2108632255383957945",
     "visibility": "public",
     "whyItMatters": "Flags a reporting question; avoid presenting the public score as the final prize result."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108626549121433687",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-09T18:32:00Z",
+    "storyUrl": "https://arxiv.org/abs/2602.15382",
+    "summary": "Malysheva discusses Vision Wormhole’s use of vision tokens as a continuous communication interface between models and highlights losses on harder tasks with larger senders. The desk opened the authors’ arXiv abstract and owned project page; the work is about cooperative VLM communication, not an ARC leaderboard result.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2108626549121433687",
+    "visibility": "public",
+    "whyItMatters": "The size of a reasoning handoff may constrain what the receiving model can preserve."
   },
   {
     "author": "MindsAI_Jack",
@@ -548,6 +671,26 @@
     "whyItMatters": "Competition banter only; the line is not evidence of the team’s actual budget, compute or methods."
   },
   {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108323804351217748",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-08T22:29:00Z",
+    "storyUrl": null,
+    "summary": "Malysheva highlights CacheFuse as a training-free blending of compatible Qwen3-8B and Qwen3-4B caches. She stresses that matching cache shapes and a shared tokenizer are required and contrasts this with cross-family bridges. Her reported numerical comparisons are attributed to the paper; this desk has not independently read the CacheFuse paper.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2108323804351217748",
+    "visibility": "public",
+    "whyItMatters": "A concrete reading lead about reusable inference state and compatibility limits, not a verified ARC score."
+  },
+  {
     "author": "GregKamradt",
     "authorName": "Greg Kamradt",
     "category": "community",
@@ -693,5 +836,67 @@
     "url": "https://x.com/GregKamradt/status/2107480627989938482",
     "visibility": "public",
     "whyItMatters": "A direct research-participation lead; it is an invitation, not a claim about any current contestant’s approach."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2107349493695856754",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-06T05:57:26Z",
+    "storyUrl": null,
+    "summary": "Replying to Alex Zverianskii, Malysheva distinguishes fine-tuning, which puts capability into the small model’s weights, from a learned bridge that lets the small model use a larger model’s computation during inference.",
+    "threadId": "2107222547682951453",
+    "url": "https://x.com/aimalysheva/status/2107349493695856754",
+    "visibility": "public",
+    "whyItMatters": "Clarifies the proposed inference-time relationship; it is not a disclosure of Mostik’s Kaggle submission."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2107222547682951453",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-05T21:33:00Z",
+    "storyUrl": null,
+    "summary": "Malysheva proposes testing a domain-fine-tuned small receiver with a newer large sender and a newly trained bridge. Preserving the receiver’s tuning through the sender swap is the experiment she wants to run, not a completed demonstrated result.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2107222547682951453",
+    "visibility": "public",
+    "whyItMatters": "Research lead on whether specialist tuning can survive changes to a reasoning supplier."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "standings",
+    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2105737436450201734",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 3,
+    "personIds": [
+      "daniel-franzen"
+    ],
+    "postedAt": "2026-10-01T19:11:42Z",
+    "storyUrl": null,
+    "summary": "ARC Prize announces the three qualifying open-source ARC-AGI-3 Milestone 2 winners: Daniel Franzen, Lord Han Solo and Lohit Siriki. Milestone prize placement is distinct from the unrestricted ongoing public leaderboard.",
+    "threadId": null,
+    "url": "https://x.com/arcprize/status/2105737436450201734",
+    "visibility": "public",
+    "whyItMatters": "Primary historical result for the former-leaders morning feature."
   }
 ]

@@ -3,6 +3,7 @@
 # PURPOSE: Verify native-art planning, immutable composition and publication evidence, including
 # score/image mutations, wrong editions/headlines and missing comparisons. No model calls.
 # Covered illustrated commissions cannot publish without their freshly bound approved base.
+# Explicit lead/cast conditions and archived chart history fail after meaningful mutations.
 # SRP/DRY check: Pass — production helper and the existing newsroom time-boundary fixture.
 import copy
 import json
@@ -198,6 +199,69 @@ class ArtworkTests(unittest.TestCase):
     def test_stale_brief_fails_even_when_the_checksum_matches(self):
         with self.assertRaisesRegex(ValueError, 'fresh brief'):
             art.checked_brief(self.path, self.now + n.timedelta(hours=2))
+
+    def commission(self):
+        item = self.brief['competitions']['arc-3']
+        self.article['teamIds'] = ['1', '2']
+        for row in item['articleBase']['stats']:
+            row['scoreChange'] = row['rankChange'] = None
+            item['evidence']['comparisons'][row['teamId']]['start'] = None
+        item['evidence']['events'] = []
+        item['intake']['editorialAssignments'] = [{'id': 'quiet-lead-art', 'targetEditionId': self.article['id'],
+            'artworkGenerationRecord': 'native-base', 'artworkHistoryChart': True,
+            'artworkConditions': {'leaderTeamId': '1', 'rivalTeamId': '2', 'requiredPersonIds': []}}]
+        native = n.load(self.root / 'content/news/artwork/native-base.json')
+        native['rawSrc'] = '/news-images/reference.webp'
+        n.write(self.root / 'content/news/artwork/native-base.json', native)
+        earlier = n.iso(self.now - n.timedelta(days=2))
+        middle = n.iso(self.now - n.timedelta(days=1))
+        item['evidence']['scoreHistory'] = {'1': [[earlier, 6, 2], [middle, 12, 1]],
+                                          '2': [[earlier, 9, 1], [middle, 9, 2]]}
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        return item
+
+    def test_human_commission_works_without_an_invented_daily_gain(self):
+        item = self.commission()
+        job = art.plan(self.brief, self.article, self.root)['jobs'][0]
+        self.assertEqual(job['trigger'], 'editor-commissioned-leading-scene')
+        self.assertEqual(job['layout'], 'corner-history-v2.1')
+        self.assertEqual(job['historyChart']['series'][0]['points'][-1][1], 12)
+        self.assertIsNotNone(job['historyChart']['leadObservedAt'])
+        report = self.compose()
+        art.validate_attachment(report['image'], self.article, self.brief, self.root)
+
+    def test_commission_stops_after_lead_or_cast_changes(self):
+        item = self.commission()
+        self.assertEqual(len(art.plan(self.brief, self.article, self.root)['jobs']), 1)
+        item['articleBase']['stats'][0]['rank'] = 2
+        self.assertEqual(art.plan(self.brief, self.article, self.root)['jobs'], [])
+        item['articleBase']['stats'][0]['rank'] = 1
+        item['intake']['editorialAssignments'][0]['artworkConditions']['requiredPersonIds'] = ['absent-person']
+        self.assertEqual(art.plan(self.brief, self.article, self.root)['jobs'], [])
+
+    def test_mutated_history_fails_attachment_validation(self):
+        self.commission()
+        report = self.compose()
+        report['historyChart']['series'][0]['points'][0][1] = 99
+        n.write(self.root / 'content/news/artwork' / (report['id'] + '.json'), report)
+        with self.assertRaisesRegex(ValueError, 'history differs'):
+            art.validate_attachment(report['image'], self.article, self.brief, self.root)
+
+    def test_missing_history_does_not_invent_a_flat_line(self):
+        item = self.commission()
+        item['evidence']['scoreHistory']['2'] = []
+        self.assertIsNone(art.plan(self.brief, self.article, self.root)['jobs'][0]['historyChart'])
+
+    def test_a_normal_move_cannot_bypass_the_commissions_lead_condition(self):
+        item = self.commission()
+        item['articleBase']['stats'][0]['rank'] = 2
+        item['articleBase']['stats'][0]['scoreChange'] = 5
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        self.assertTrue(art.plan(self.brief, self.article, self.root)['jobs'])
+        with self.assertRaisesRegex(ValueError, 'conditions no longer hold'):
+            self.compose()
 
 
 if __name__ == '__main__':

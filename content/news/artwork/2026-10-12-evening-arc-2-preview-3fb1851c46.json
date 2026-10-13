@@ -1,0 +1,44 @@
+{
+  "articleId": "2026-10-12-evening-arc-2-preview",
+  "briefSha256": "64b4fc7d7ec747d9b6e8b06d09454691b48e79e76ca91809832f293f86828288",
+  "dataAsOf": "2026-10-13T03:07:26Z",
+  "generationRecord": "2026-10-13-tufa-gpu-citadel-base",
+  "headline": "Preview: Tufa leads ARC-2 with its GPU citadel",
+  "historyChart": null,
+  "id": "2026-10-12-evening-arc-2-preview-3fb1851c46",
+  "image": {
+    "alt": "Editorial illustration for Preview: Tufa leads ARC-2 with its GPU citadel. Tufa Labs: rank 1, score 88.06; Yi-Chia Chen: rank 3, score 77.22.",
+    "artworkId": "2026-10-12-evening-arc-2-preview-3fb1851c46",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 12, 2026 · 11:07 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-12-evening-arc-2-preview-3fb1851c46.webp"
+  },
+  "imageSha256": "263dde52224ebd2a69c8bf7e2ee7ba6ca4b607f2a8ae6af168449db47d4e7bb3",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": null,
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "77d42745db3ee91bf11ba5ff98744bd1bc1c07c7552cb1d060c1de315c2d7a88",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 88.06,
+      "scoreChange": 0.0,
+      "teamId": "16756524"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 77.22,
+      "scoreChange": 0.0,
+      "teamId": "15501171"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

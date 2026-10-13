@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-10-13T03:07:15Z",
+  "id": "2026-10-13-digital-giant-bunnies-base",
+  "inputImages": [
+    "2026-10-13-dawn-giant-bunnies-base.webp",
+    "yi-chia-chen-bunnies-owner-2026-10-12.png",
+    "2026-10-12-son-pham-reference-1-v1.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Edit reference 1, the approved NEW dawn city scene, to give only the two enormous rabbits tasteful ARC-style digital/GPU enhancements inspired by reference 3. Reference 2 is the real owner-provided bunny photograph; keep its anatomy and markings exactly. Reference 3 is Son Pham's cyber-engineer avatar used ONLY as inspiration for pixel-grid lights, GPUs, cables and compact digital accessories; DO NOT depict Son, copy his human face, or add any human. Keep the cute rabbits predominantly natural, plush and fluffy with all fur, expressive eyes and unobscured faces. Add elegant dark graphite GPU shoulder/back harnesses fitted comfortably around each rabbit, cyan/amber pixel-grid modules along the straps, miniature fan clusters, fine glowing geometric circuits, and a small off-to-the-side translucent grid display near one cheek. No visor over their eyes, no full armor, no mechanical replacement limbs. The grey-brown lop must have BOTH soft ears hanging down; the dark-and-white rabbit must have two tall upright dark ears, broad white face blaze and dark eye mask. Preserve their enormous relative scale, original composition, warm snow/dawn lighting, tram, one Dries and exactly five black spiders, every face and the wheeled GPU contraption. Absolutely no additional bunnies, spiders or humans. Preserve quiet lower-left snow and upper-right sky for coded history chart, date/time, score/brand overlays. This image concerns Chen leading ARC-AGI-3 ONLY; do not imply Tufa trails on ARC-AGI-2. Gear, huge sizes and compute props are friendly editorial fantasy. Clean artwork with NO letters, words, labels, logos, ranks, scores, watermarks or date stamp: those will be drawn in code from publication evidence.",
+  "rawSha256": "81282ca9bed3cb82d2f34a7810bbd0e9c105bd74c67c1428e7a85dbb76f610a1",
+  "rawSrc": "/news-images/2026-10-13-digital-giant-bunnies-base.webp",
+  "references": [
+    {
+      "role": "Selected dawn scene edit target and established cast.",
+      "src": "/news-images/2026-10-13-dawn-giant-bunnies-base.webp"
+    },
+    {
+      "role": "Authoritative owner-provided bunny anatomy and fur.",
+      "src": "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png"
+    },
+    {
+      "role": "Son Pham avatar used only as digital-equipment style reference; Son is not depicted.",
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp"
+    }
+  ],
+  "review": "Inspected two recognizable giant fluffy rabbits with graphite GPU harnesses and pixel-grid accents; lop ears remain down and upright ears/white blaze intact. Preserved one Dries, five countable spiders, dawn city/tram, new wheeled machine and clear overlay corners. No generated text or score labels.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-ed7e0f1a-0a5e-4235-b3ae-7f39ff730447.png",
+  "version": 1
+}
