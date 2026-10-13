@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T21:42:57Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Correction: Arhan canli’s 24th-place climb is outside gold",
+  "id": "2026-10-13-1759-arc-2-correction-arhan-canli-medal-line",
+  "personIds": [],
+  "publishedAt": "2026-10-13T21:59:13Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "A wire story published earlier today misstated Arhan canli’s medal position. Arhan climbed from 826th to 24th at 43.33 (+12.77), outside the 15 ARC-2 gold places."
+    }
+  ],
+  "since": "2026-10-12T21:36:52Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T21:58:27Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16985343"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T21:42:57Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Arhan canli leaps into ARC-2 gold places",
+  "id": "2026-10-13-1758-arc-2-arhan-canli-charges-into-gold-places",
+  "personIds": [],
+  "publishedAt": "2026-10-13T21:58:53Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Arhan canli climbed 802 places, from 826th to 24th, reaching 43.33 after a 12.77-point gain."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts Arhan inside the 15 gold places on the public board, where the current line is 48.75. Those places remain provisional."
+    }
+  ],
+  "since": "2026-10-12T21:36:52Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T21:58:27Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16985343"
+  ]
+}

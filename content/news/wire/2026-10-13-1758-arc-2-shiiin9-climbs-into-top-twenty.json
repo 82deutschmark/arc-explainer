@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T21:42:57Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "shiiin9 reaches 19th on ARC-2",
+  "id": "2026-10-13-1758-arc-2-shiiin9-climbs-into-top-twenty",
+  "personIds": [],
+  "publishedAt": "2026-10-13T21:58:56Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "shiiin9 gained 14.02 points to reach 45.83, moving from 273rd to 19th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "At 19th, shiiin9 sits just outside the public board’s 15 gold places."
+    }
+  ],
+  "since": "2026-10-12T21:36:52Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T21:58:27Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16815011"
+  ]
+}
