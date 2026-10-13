@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T03:37:51Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "apiens S leaps into ARC-3’s top 100",
+  "id": "2026-10-12-2358-arc-3-apiens-s-breaks-top-100",
+  "personIds": [],
+  "publishedAt": "2026-10-13T03:58:58Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "apiens S gained 5.66 points to reach 33.21, climbing from 884th to 69th on the ARC-3 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb moves the team into the top 100."
+    }
+  ],
+  "since": "2026-10-12T03:33:39Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T03:58:25Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16882104"
+  ]
+}
