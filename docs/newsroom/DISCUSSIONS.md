@@ -29,6 +29,12 @@ python3.13 scripts/newsroom_social.py discussion-ingest --directory /Users/macmi
 
 The existing locked archive keeps `discussionThreads`, `discussionBoards` and `discussionDeliveries` alongside its X state. It tracks topic IDs and revisions of title/activity/comment count, preserving original first-seen and body-read times. A changed listing requires another body read before its earlier summary can feed the paper. An unchanged listing retains the actual earlier read time. Existing X/subscriber archives and deliveries are preserved.
 
+For an unchanged list-only revisit, preserve its prior verified visibility and editorial
+decision; do not downgrade reviewed public context merely because the body was not opened
+again. Normalize source dates through the existing `stamp`/`iso` helpers so equivalent UTC
+timestamp formatting does not create false activity revisions. Re-read changed threads
+before publishing their updated summaries, and keep genuinely unavailable new replies private.
+
 Use `paper-lead` for substantive releases, reproducible methods, organizer clarifications, consequential contest issues or significant competitor statements after reading their source. An unanswered question can be useful reporting context without proving its premise. A proposal is not a rule change, and notebook-display speculation is not a verified leaderboard score. Routine help questions, recruiting, minor banter and the paper’s own promotion can remain on the broader watchlist. The edition writer makes the final editorial selection.
 
 ## Personal updates and edition evidence

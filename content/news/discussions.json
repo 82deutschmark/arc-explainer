@@ -60,6 +60,46 @@
     "visibility": "public"
   },
   {
+    "author": "dzjiann",
+    "authorName": "上原 歩夢",
+    "bodyRead": true,
+    "checkedAt": "2026-10-13T01:18:39.848Z",
+    "commentCount": 0,
+    "competition": "arc-3",
+    "decision": "paper-lead",
+    "id": "748593",
+    "latestActivityAt": "2026-10-12T17:05:59Z",
+    "personIds": [],
+    "postedAt": "2026-10-12T17:05:59Z",
+    "reason": "Original publicly accessible thread and relevant replies rechecked; retain this reviewed context alongside the newer ARC-2 sources.",
+    "summary": "The dzjiann account reports unstable supervised and reinforcement-learning training with Qwen3.8-Flash-Next over the past week, while Qwen3.8-27B training runs work but score progress is slow. The author asks for advice. This is a contestant’s self-report; it supplies no independent comparison or full submission recipe.",
+    "title": "Which is a better choice for training, Qwen3.8-27B or Qwen3.8-Flash-Next?",
+    "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/748593",
+    "visibility": "public"
+  },
+  {
+    "author": "cpmpml",
+    "authorName": "CPMP",
+    "bodyRead": true,
+    "checkedAt": "2026-10-13T01:18:40.492Z",
+    "commentCount": 19,
+    "competition": "arc-3",
+    "decision": "paper-lead",
+    "id": "746010",
+    "latestActivityAt": "2026-10-12T15:07:23Z",
+    "personIds": [
+      "jean-francois-puget",
+      "son-pham",
+      "daniel-franzen"
+    ],
+    "postedAt": null,
+    "reason": "Original publicly accessible thread and relevant replies rechecked; retain this reviewed context alongside the newer ARC-2 sources.",
+    "summary": "In CPMP’s thread about the mismatch between a notebook’s displayed score and Franzen’s leaderboard entry, Son Pham suggests inherited notebook metadata from an API-submitted derivative could explain the display. His explanation is a hypothesis, with no organizer confirmation observed. The notebook display should not be treated as proof of a new Franzen leaderboard score.",
+    "title": "How come D Franzen score does not appear on LB?",
+    "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/746010",
+    "visibility": "public"
+  },
+  {
     "author": "huikang",
     "authorName": "Tong Hui Kang",
     "bodyRead": true,

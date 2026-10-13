@@ -13,7 +13,7 @@
 
 ### Version 9.141.14  Oct 12, 2026
 
-- **Twice-daily discussion review and article-linked X mentions** (Author: GPT-6.1 Sol / Codex). The existing research automation now scans both Kaggle boards at 5 am and 5 pm Eastern, including old topics with new replies; its four daily X scans remain unchanged. Read and archived the current queue, synthetic-training question, GPU-change proposal and Qwen discussions with exact source dates and honest public-access limits. Edition posts may include verified X handles of substantively covered people, including `@JFPuget` for CPMP/NVARC coverage, while preserving image lead, article link, length limit and send state. No handle is guessed for other NVIDIA teammates. Updated `DISCUSSIONS.md`, `SOCIAL_DESK.md`, `X_POSTING.md` and the existing automation prompts.
+- **Twice-daily discussion review and article-linked X mentions** (Author: GPT-6.1 Sol / Codex). The existing research automation now scans both Kaggle boards at 5 am and 5 pm Eastern, including old topics with new replies; its four daily X scans remain unchanged. Read and archived the current queue, synthetic-training question, GPU-change proposal and Qwen discussions with exact source dates and honest public-access limits. Refreshed and retained the earlier reviewed ARC-3 training and notebook-score discussions alongside the new ARC-2 sources. Edition posts may include verified X handles of substantively covered people, including `@JFPuget` for CPMP/NVARC coverage, while preserving image lead, article link, length limit and send state. No handle is guessed for other NVIDIA teammates. Updated `DISCUSSIONS.md`, `SOCIAL_DESK.md`, `X_POSTING.md` and the existing automation prompts.
 
 ### Version 9.141.13  Oct 12, 2026
 
