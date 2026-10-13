@@ -1,0 +1,57 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T07:41:20Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Tufa Labs retakes the ARC-3 lead",
+  "id": "2026-10-13-0402-arc-3-tufa-labs-retakes-lead",
+  "personIds": [
+    "dries-smit"
+  ],
+  "publishedAt": "2026-10-13T08:02:24Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Tufa Labs gained 12.39 to reach 68.91, moving from 2nd to 1st and taking the lead from Yi-Chia Chen, now 2nd at 67.49."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-dries-smit-roster-0",
+        "person-dries-smit-fact-1"
+      ],
+      "text": "Dries Smit is listed on the Tufa Labs roster; he won the 2025 ARC-AGI-3 Preview. The public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-12T07:34:03Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T08:01:31Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-dries-smit-fact-1",
+      "title": "ARC Prize — ARC-AGI-3 Preview Agents results",
+      "url": "https://arcprize.org/competitions/arc-agi-3-preview-agents"
+    },
+    {
+      "accessedAt": "2026-10-12T21:36:52Z",
+      "id": "person-dries-smit-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    }
+  ],
+  "teamIds": [
+    "15486995",
+    "15499660"
+  ],
+  "visual": {
+    "alt": "Dries Smit, from his ARC-AGI-3 Preview Hall of Fame card",
+    "href": "/news/people/dries-smit",
+    "src": "/news-images/people/dries-smit.webp"
+  }
+}
