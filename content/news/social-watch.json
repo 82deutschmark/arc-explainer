@@ -59,5 +59,12 @@
     "name": "PunkCyber",
     "personId": "punkcyber",
     "url": "https://x.com/cunkpyber"
+  },
+  {
+    "handle": "crysis44k",
+    "name": "fshindo",
+    "url": "https://x.com/crysis44k",
+    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
+    "personId": "fshindo"
   }
 ]

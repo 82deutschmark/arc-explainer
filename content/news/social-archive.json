@@ -2,22 +2,24 @@
   {
     "author": "crysis44k",
     "authorName": "fshindo",
-    "category": "community",
-    "checkedAt": "2026-10-12T18:15:45.034590Z",
+    "category": "standings",
+    "checkedAt": "2026-10-13T01:05:51.234925+00:00",
     "competitions": [
       "arc-2"
     ],
     "id": "2109688065099006141",
-    "identitySourceUrl": "https://x.com/crysis44k",
+    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
     "importance": 2,
-    "personIds": [],
+    "personIds": [
+      "fshindo"
+    ],
     "postedAt": "2026-10-12T16:50:05Z",
     "storyUrl": null,
-    "summary": "In Japanese, fshindo said they had finally reached the medal range in ARC-AGI-2 and were pleased after spending substantial effort on it. This is the author’s claim; no primary profile link connecting @crysis44k to a specific Kaggle team has been verified. A similar board name and the attached image do not establish that connection.",
+    "summary": "In Japanese, fshindo (@crysis44k) reported reaching the ARC-AGI-2 medal range after substantial effort. The Kaggle profile ffsscf directly links to this X account, and current dated rosters list ffsscf on the separate fshindo teams in ARC-AGI-2 and ARC-AGI-3. The rank/medal statement belongs to the post’s observation time, not the present board.",
     "threadId": null,
     "url": "https://x.com/crysis44k/status/2109688065099006141",
     "visibility": "public",
-    "whyItMatters": "A fresh ARC-2 competitor reaction for the evening desk. Verify the account-to-team connection and evening board before combining it with team 17019785 or reporting a provisional medal-band position as fact."
+    "whyItMatters": "A verified competitor reaction can now be connected to ARC-2 team 17019785, while keeping the author’s posting-time medal claim distinct from current provisional standings."
   },
   {
     "author": "cunkpyber",
@@ -46,21 +48,23 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-12T15:49:06.002362Z",
+    "checkedAt": "2026-10-13T01:05:51.234925+00:00",
     "competitions": [
       "arc-3"
     ],
     "id": "2109594490663276946",
-    "identitySourceUrl": "https://x.com/crysis44k",
+    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
     "importance": 2,
-    "personIds": [],
+    "personIds": [
+      "fshindo"
+    ],
     "postedAt": "2026-10-12T10:38:15Z",
     "storyUrl": null,
     "summary": "Posting in Japanese, fshindo said the ARC-AGI-3 competition had taught them a great deal about agent harnesses and called contests a valuable learning opportunity. The post links the current Kaggle competition.",
     "threadId": null,
     "url": "https://x.com/crysis44k/status/2109594490663276946",
     "visibility": "public",
-    "whyItMatters": "A fresh first-person account of the engineering lessons behind the competition. The author handle is observed directly; no team or real-person identity has been established."
+    "whyItMatters": "A first-person ARC-3 engineering account, now connected through the direct Kaggle profile link to team 16992721. It is an attributed experience, not a claimed cause of any score."
   },
   {
     "author": "fchollet",

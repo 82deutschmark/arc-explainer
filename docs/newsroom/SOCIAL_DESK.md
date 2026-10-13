@@ -4,7 +4,7 @@ The six-hour scan **enhances the journalism**. It supplies announcements, resear
 
 ## Cadence and outputs
 
-The same research and personal-briefing jobs now include Kaggle discussion intake under [DISCUSSIONS.md](DISCUSSIONS.md). It keeps a broad topic/reply inventory and a separate personal digest, then exports only read public paper leads into edition evidence. The From X archive and its display remain X-specific.
+The same research and personal-briefing jobs include Kaggle discussion intake under [DISCUSSIONS.md](DISCUSSIONS.md). Full board scans run twice daily at 5 am and 5 pm Eastern, checking both new topics and recent replies; the four daily X scans keep their existing cadence. The discussion desk keeps a broad topic/reply inventory and a separate personal digest, then exports only read public paper leads into edition evidence. The From X archive and its display remain X-specific.
 
 All desk times are America/New_York: collection at 05:00, 11:00, 17:00 and 23:00; private briefings at 05:30 and 17:30; editions at 06:00 and 18:00; the existing public X recap at 14:00. Use GPT-6.1 Sol through the signed-in subscription and Chrome account 82deutschmark. No paid model or X API. The local computer and app need to be running.
 
@@ -15,6 +15,36 @@ python3.13 scripts/newsroom_social.py plan --directory /Users/macmini/bubba-work
 ```
 
 Read the complete plan, the public watch list `content/news/social-watch.json` and the verified person ledger. Use the signed-in browser to read each account's posts since `after`, including threads and linked primary releases. The initial window is seven days; subsequent windows start one hour before the last completely scanned time. Search the competition names and significant current contenders too. The watch list is a starting point, not favored editorial treatment. Never infer an account from a similar name. Add a new verified identity or source only in the authorized edition publication workflow.
+
+## Discover competitors across X — Boss instruction, 12 October 2026
+
+Every research shift and the 2 pm X desk must search beyond the watch list for people
+posting their own ARC Prize Kaggle standings, score improvements or medal-band milestones.
+Use the Latest view from anyone, exact competition names and terms such as `Kaggle`,
+`leaderboard`, `rank`, `medal`, `順位` and `メダル`; include native Kaggle share wording
+such as “Moved up to rank” and “Rank … on #kaggle.” Read the actual post and context,
+then follow its competition/profile links. Search coverage remains partial and never
+advances an account's complete timeline watermark.
+
+Verify identity through a direct link on the person's Kaggle profile, X profile, or owned
+professional page. A matching display name, avatar, screenshot rank or score is a lead,
+not identity proof. The Kaggle roster handle may differ from the team/display name.
+On 12 October, the Kaggle account **ffsscf**, displayed as **fshindo**, directly linked
+to **@crysis44k**; the two 2026 team IDs are ARC-3 `16992721` and ARC-2 `17019785`.
+Those are separate contest entries connected to one verified person.
+
+Save dated discovery handoffs under
+`/Users/macmini/bubba-workspace/reports/arc-daily-social/identity-leads/`, including the
+exact post/profile links, check time, claim's observation time, verified cross-links,
+competition/season/team ID and roster handle where established, plus unresolved gaps.
+Keep unverified matches in this private handoff. The edition reporter reads new handoffs
+before preparation, persists verified people/roster facts and watch entries, and exports
+only verified public posts. Re-prepare after identity/source changes. Do not guess joining
+dates, individual responsibility for a score, or present standings from an old post.
+
+Newly verified competitors join the watch list so subsequent shifts revisit them. The
+fshindo account now does; @iiiiitsu_ne and @menphim were also found sharing ARC standings
+and remain discovery leads until their exact Kaggle identities are directly linked.
 
 Read François Chollet's subscribed feed separately at `https://x.com/fchollet/subs`. Record subscriber posts only in the private archive. If visibility is uncertain, use `unknown`. Do not bypass access limits. A partial timeline, login prompt or inaccessible account must be recorded as partial/error, with an honest covered interval; it is not evidence of no news.
 

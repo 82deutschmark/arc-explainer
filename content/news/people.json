@@ -1481,5 +1481,70 @@
     "id": "punkcyber",
     "memberships": [],
     "name": "PunkCyber"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+        "handle": "ffsscf",
+        "platform": "kaggle",
+        "sourceTitle": "fshindo — Kaggle profile and linked @crysis44k account",
+        "sourceUrl": "https://www.kaggle.com/ffsscf",
+        "url": "https://www.kaggle.com/ffsscf"
+      },
+      {
+        "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+        "handle": "crysis44k",
+        "platform": "x",
+        "sourceTitle": "fshindo — Kaggle profile and linked @crysis44k account",
+        "sourceUrl": "https://www.kaggle.com/ffsscf",
+        "url": "https://x.com/crysis44k"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+        "sourceTitle": "fshindo — Kaggle profile with direct Twitter account link",
+        "sourceUrl": "https://www.kaggle.com/ffsscf",
+        "text": "The Kaggle profile ffsscf displays fshindo and directly links to the X account @crysis44k."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "fshindo",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-10T22:00:53Z",
+        "lastObservedAt": "2026-10-13T00:37:09Z",
+        "memberHandle": "ffsscf",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16992721",
+        "teamName": "fshindo"
+      },
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-13T00:37:11Z",
+        "lastObservedAt": "2026-10-13T00:37:11Z",
+        "memberHandle": "ffsscf",
+        "season": "2026",
+        "sourceTitle": "ARC-2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "17019785",
+        "teamName": "fshindo"
+      }
+    ],
+    "name": "fshindo",
+    "portrait": {
+      "alt": "fshindo’s Kaggle profile picture",
+      "checkedAt": "2026-10-13T01:06:21Z",
+      "kind": "kaggle",
+      "sourceTitle": "fshindo — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/ffsscf",
+      "src": "/news-images/people/fshindo.webp"
+    }
   }
 ]

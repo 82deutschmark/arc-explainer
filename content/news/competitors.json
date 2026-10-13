@@ -1609,10 +1609,17 @@
   {
     "aliases": [],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+        "sourceTitle": "fshindo — Kaggle profile with linked X account",
+        "sourceUrl": "https://www.kaggle.com/ffsscf",
+        "text": "The listed Kaggle member ffsscf directly links to @crysis44k, the X account displayed as fshindo."
+      }
+    ],
     "firstObservedAt": "2026-10-10T22:00:53Z",
     "id": "arc-3-16992721",
-    "lastObservedAt": "2026-10-10T22:00:53Z",
+    "lastObservedAt": "2026-10-13T00:37:09Z",
     "members": [
       "ffsscf"
     ],
@@ -1677,5 +1684,25 @@
     ],
     "name": "Pppycccc",
     "teamId": "17059189"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+        "sourceTitle": "fshindo — Kaggle profile with linked X account",
+        "sourceUrl": "https://www.kaggle.com/ffsscf",
+        "text": "The listed Kaggle member ffsscf directly links to @crysis44k, the X account displayed as fshindo."
+      }
+    ],
+    "firstObservedAt": "2026-10-13T00:37:11Z",
+    "id": "arc-2-17019785",
+    "lastObservedAt": "2026-10-13T00:37:11Z",
+    "members": [
+      "ffsscf"
+    ],
+    "name": "fshindo",
+    "teamId": "17019785"
   }
 ]

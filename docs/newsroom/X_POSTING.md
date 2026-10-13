@@ -40,12 +40,32 @@ an extra post. An edition without custom artwork keeps the normal text/link anno
    and attached illustration on the profile, then save its
    permanent URL and completion time and set the state to `posted`. An existing `posting` or
    `posted` state is never overwritten; an uncertain send is checked on the profile before any retry.
-4. Post the drafted text exactly. No added hashtags, mentions or figures.
+4. The helper supplies the initial text. The journalist may shorten it and add verified
+   competitor handles when those people receive substantive, sourced coverage in the linked
+   article. Save the exact reviewed text and chosen handles in the draft outbox before
+   `posting`; send that saved text exactly. Keep the image/story lead, permanent article
+   link and 280-character limit. No unsourced figures, guessed handles or unrelated tags.
+
+**Article-linked mentions — Boss instruction, 12 October 2026:** mention the relevant
+verified people, including NVIDIA's NVARC3/nvbanana competitors, when the article covers
+their results or statements. The ledger directly verifies CPMP/Jean-François Puget as
+`@JFPuget`; use that handle when his coverage warrants it. Other NVIDIA teammates currently
+without verified X accounts are not assigned guessed handles. Check `people.json` and the
+article's sources, choose the most relevant one or two people, and make room by shortening
+the recap or retaining only its lead headline. A table-only appearance or incidental name
+does not call for a tag. This belongs in the authorized routine post, with no extra send.
 
 An image-preparation, upload or preview failure leaves the draft and its concrete error for
 the Boss; do not silently send an illustrated story without its image. Preserve the exact
 reviewed attachment and send state across a retry. A previous text-only post for the same
 edition is still an existing send, so this new policy never duplicates it.
+
+A direct human request to correct an already-sent announcement is a separate authorization,
+not a routine retry. Preserve the original outbox and record any image-led replacement in
+a separately named correction outbox with the old and new URLs. Check the profile first:
+if the human already posted the corrected image, verify it, record the existing result and
+do not send another copy. Deleting an old post is a separate irreversible action requiring
+the browser's action-time confirmation; it is not part of an unattended routine retry.
 
 The paragraph added to the end of each edition automation's prompt (morning shown; the evening
 prompt uses `--edition evening` and `YYYY-MM-DD-late-edition.json`):

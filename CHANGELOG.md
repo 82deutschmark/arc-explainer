@@ -11,6 +11,14 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.14  Oct 12, 2026
+
+- **Twice-daily discussion review and article-linked X mentions** (Author: GPT-6.1 Sol / Codex). The existing research automation now scans both Kaggle boards at 5 am and 5 pm Eastern, including old topics with new replies; its four daily X scans remain unchanged. Read and archived the current queue, synthetic-training question, GPU-change proposal and Qwen discussions with exact source dates and honest public-access limits. Edition posts may include verified X handles of substantively covered people, including `@JFPuget` for CPMP/NVARC coverage, while preserving image lead, article link, length limit and send state. No handle is guessed for other NVIDIA teammates. Updated `DISCUSSIONS.md`, `SOCIAL_DESK.md`, `X_POSTING.md` and the existing automation prompts.
+
+### Version 9.141.13  Oct 12, 2026
+
+- **Verified fshindo identity and standings-post discovery** (Author: GPT-6.1 Sol / Codex). The Kaggle profile `ffsscf` directly links to X `crysis44k`; saved that primary identity evidence, the person's own Kaggle portrait, and separate observed ARC-2/ARC-3 memberships. Refreshed the two archived posts with the verified person link and added the account to the research watch list. The existing research and afternoon desks now discover standings posts beyond watched accounts and hand exact identity leads to edition reporters; unresolved matches remain private. Verified the human-posted October 12 image correction and saved its URL/send state, preserving the original announcement. Updated social/X guidance and `docs/2026-10-12-standings-account-discovery-plan.md`.
+
 ### Version 9.141.12  Oct 12, 2026
 
 - **Required newspaper checkouts and custom-art X announcements** (Author: GPT-6.1 Sol / Codex). Added a prominent `AGENTS.md` warning naming the permanent newsroom, wire and fallback paths, branches and jobs: no cleanup removal or unlocking without the Boss's specific authorization. The X helper now leads with the illustrated edition, validates its custom image against immutable publication evidence, and saves the exact PNG attachment and hashes for browser posting. Updated reporter/X instructions and edition automation prompts to upload and visually verify the custom artwork in the existing routine post. Existing send states remain protected. Files: `AGENTS.md`, `scripts/newsroom_x.py`, newsroom guides and `docs/2026-10-12-newspaper-checkouts-and-x-art-plan.md`.
