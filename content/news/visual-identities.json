@@ -572,7 +572,7 @@
       "status": "ready"
     }
   ],
-  "updatedAt": "2026-10-13T16:15:40Z",
+  "updatedAt": "2026-10-13T23:14:44.243682Z",
   "version": 1,
   "reusableScenes": [
     {
@@ -608,6 +608,23 @@
       },
       "artworkHistoryChart": false,
       "approvalNote": "Mark reconfirmed the attached GPU-citadel scene as reusable ARC-2 art. Reuse its clean native base while Tufa leads, with fresh ranks/scores and Eastern observation date/time."
+    },
+    {
+      "id": "tufa-arc-3-gpu-viaduct-v1",
+      "competition": "arc-3",
+      "approvedAt": "2026-10-13T23:14:44.243682Z",
+      "approvedBy": "mark-barney",
+      "status": "active",
+      "artworkGenerationRecord": "2026-10-13-tufa-arc3-gpu-viaduct-v1-base",
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "artworkHistoryChart": false,
+      "approvalNote": "Mark requested distinct variations of his chosen GPU-citadel style on October 13. Codex generated and visually reviewed this horizontal crawler crossing a snowy viaduct at dusk: two owner-photo-consistent rabbits, five countable spiders and one Dries. It is a new ARC-3 scene, separate from the ARC-2 citadel. Compose fresh publication scores; retain the original editions."
     }
   ]
 }

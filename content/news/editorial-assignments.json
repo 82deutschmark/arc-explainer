@@ -193,5 +193,42 @@
       "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
     ],
     "verificationNotes": "Native output inspected: two cute fluffy digital rabbits, one Dries and five countable Tufa spiders. ARC-3 bunnies dwarf the skyline; ARC-2’s spider machine dominates the smaller rabbits. Mark commissioned the styling and separate ARC-2 composition; current ranks/cast must be rechecked."
+  },
+  {
+    "id": "tufa-arc3-next-edition-art-variation",
+    "competition": "arc-3",
+    "createdAt": "2026-10-13T23:14:44.243682Z",
+    "title": "Use Mark’s new Tufa-leading ARC-3 GPU-viaduct variation",
+    "priority": "Boss-requested artwork variation",
+    "status": "pending",
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "personIds": [
+      "dries-smit",
+      "yi-chia-chen"
+    ],
+    "subjectNames": [
+      "Tufa Labs",
+      "Yi-Chia Chen"
+    ],
+    "targetEditionId": "2026-10-14-morning-arc-3",
+    "placement": "edition-artwork",
+    "commissionedBy": "mark-barney",
+    "artworkGenerationRecord": "2026-10-13-tufa-arc3-gpu-viaduct-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "artworkHistoryChart": false,
+    "instructions": "Mark asked on October 13 to mix up Tufa-leading ARC-3 illustrations with varieties of his chosen GPU-citadel style. Tonight’s October 13 Late issue and its X announcement had already published, so this new native variant is queued for the next Early issue. Use the horizontal GPU crawler crossing a snowy viaduct at dusk, with exactly two rabbits, five spiders and Dries. This is ARC-3 artwork; retain the separate ARC-2 citadel. Recheck Tufa first ahead of Chen and Dries’s exact current roster. Cover both pictured teams with concise sourced race context, without forcing the headline. Run the normal plan/compose/inspect/attach/validate workflow against the final October 14 morning evidence. Fresh ranks, scores and full Eastern observation date/time must come from that edition, not the October 13 preview. Hold/carry explicitly if leader/cast conditions fail. Use the finished current edition image in the ordinary existing X announcement; no extra post or change to published October 13 articles. Keep varying setting, machine silhouette, camera and poses in later appropriate editions while preserving character identities.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    ],
+    "verificationNotes": "Fresh October 13 preview observed Tufa first and Chen second; native output reviewed and registered with exact prompt/reference hashes. Publication conditions must be rechecked at the next cutoff."
   }
 ]

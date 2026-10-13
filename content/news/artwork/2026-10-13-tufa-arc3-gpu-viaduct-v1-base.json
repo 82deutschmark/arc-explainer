@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-13T23:14:44Z",
+  "id": "2026-10-13-tufa-arc3-gpu-viaduct-v1-base",
+  "inputImages": [
+    "2026-10-13-tufa-gpu-citadel-base.webp",
+    "2026-10-12-dries-smit-character-v1-base.webp",
+    "yi-chia-chen-bunnies-owner-2026-10-12.png"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story. Asset type: clean reusable ARC Daily Digest editorial artwork for an ARC-AGI-3 Tufa-leading edition.\nPrimary request: create a DISTINCT new variation of the beloved GPU-citadel illustration in reference 1. Keep its polished warm painterly cinematic 3D style, snowy fantasy city, richly tactile fur and engaging friendly characters. Change the scene, machine silhouette, camera angle, lighting and poses substantially.\nInput images: 1 is style/cast inspiration, NOT an edit target or layout to reproduce; 2 governs Dries’s identity; 3 governs the two rabbits’ exact anatomy and coat markings.\nNew composition: blue-hour evening over a snowy canal city, seen from a low three-quarter view looking diagonally along an elegant arched viaduct. The main Tufa machine is now a fantastic long horizontal GPU-powered crawler with a broad fan-lined hull, staggered GPU banks, a central luminous engine and braided amber/cyan cables, advancing onto the bridge. NOT the previous vertical tower. The sweeping bridge and machine lead the eye into a glowing city skyline. A warm gold sunset lingers on the horizon under a deep cobalt sky. Distinctive, adventurous, cheerful sporting mood.\nCast: EXACTLY FIVE countable friendly black fluffy Tufa spiders with large white eyes, each visibly separated: one waves on the forward deck, one operates a side console, one carries a graphics card on an upper gangway, one secures a cable beside the rear wheel, one stands beside Dries on the snowy landing. EXACTLY ONE Dries, with reference 2’s face, swept brown hair, green right-eye eyepiece and cyan/green cyber-engineer outfit, standing confidently at a foreground control console in a new pose. EXACTLY TWO Chen bunnies together on the right snowy bank, close enough to have clearly visible uncropped expressive faces, watching with friendly curiosity. Grey-brown lop: BOTH ears droop, rounded face. Dark-and-white bunny: upright dark ears, dark eye patches, broad irregular white face blaze, white chest and paws. Their modest GPU back harnesses and pixel-grid lights are inspired by reference 1; retain mostly fur and unmasked eyes and ears. No other humans, animals or mascot silhouettes anywhere, including in the distance.\nTufa leads ARC-3 narrowly in the current verified standings; this is a respectful editorial fantasy, not a claim of actual hardware, team headcount, spending or methods. Rabbits remain confident competitors, with no defeat, distress or humiliation.\nLayout: wide 16:9. Keep all faces and main action out of the lower-left 30% width / 23% height and upper-right 33% width / 11% height. Those corners should contain quiet snow and sky for later CODE-DRAWN fresh scores and branding. Keep machine recognizable at article thumbnail scale.\nNO text, labels, words, logos, score panels, rank numbers, dates or watermarks. Do not copy old score overlays. Keep the clean art independent of any edition’s statistics.",
+  "rawSha256": "fa962e9576a9be06691e427d70ab29a2fe638e4595c72adb3e374d5d2e474cbf",
+  "rawSrc": "/news-images/2026-10-13-tufa-arc3-gpu-viaduct-v1-base.webp",
+  "references": [
+    {
+      "role": "Mark’s chosen style and cast reference: five Tufa spiders, exactly two Chen bunnies, one Dries, GPU fantasy machine and snowy city. Vary composition rather than reproducing the vertical citadel.",
+      "sha256": "77d42745db3ee91bf11ba5ff98744bd1bc1c07c7552cb1d060c1de315c2d7a88",
+      "src": "/news-images/2026-10-13-tufa-gpu-citadel-base.webp"
+    },
+    {
+      "role": "Authoritative Dries face, swept brown hair, green right-eye eyepiece and cyan/green GPU suit. Ignore generated labels or tiny equipment marks.",
+      "sha256": "09520d923f7cd268cad339bf52d81aed7c66932a44d3dce068ab648c96f57bc5",
+      "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp"
+    },
+    {
+      "role": "Authoritative Chen bunny anatomy: grey lop with both ears down; dark and white rabbit with upright ears and broad white face blaze.",
+      "sha256": "3a912289a5a3c8fa761101b8bd2517e97ebed934cb2714ba20d2dde79101cfaf",
+      "src": "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png"
+    }
+  ],
+  "review": "Inspected the dusk viaduct scene: exactly five separated black spiders, one recognizable Dries in cyan/green gear, and two owner-photo-consistent rabbits with lop versus upright ears and correct coat markings. The horizontal GPU crawler, bridge, new poses and evening sky vary the vertical citadel composition clearly. Faces remain outside quiet lower-left snow and upper-right sky for overlays. No scores, logos or editorial labels. Hardware and cast counts remain metaphor.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-8dc07d16-48f8-41c3-8ca8-8d5efe3e45c1.png",
+  "version": 1
+}

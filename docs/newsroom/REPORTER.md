@@ -1,5 +1,20 @@
 # The ARC Daily Digest reporter
 
+## Tufa-leading artwork variations — October 13 evening editor instruction
+
+Mark requested varieties of the GPU-citadel illustration, with distinct settings,
+machine silhouettes, camera angles and poses while preserving the established cast.
+The October 13 Late issue had already published with its own ARC-3 close-up, and the
+citadel appeared on both October 13 ARC-2 article pages. Both routine X announcements
+attached their separate ARC-3 images. Do not describe the citadel as never published.
+
+The new ARC-3 native base `2026-10-13-tufa-arc3-gpu-viaduct-v1-base` shows a horizontal
+GPU crawler crossing a snowy bridge at dusk, with two rabbits, five spiders and Dries.
+The pending `tufa-arc3-next-edition-art-variation` assignment queues it for the October 14
+Early issue while its fresh leader/cast conditions hold. Read ART_DESK.md and use the
+normal final-evidence composition workflow. Later variations should visibly change the
+scene; keep the ARC-2 citadel distinct and preserve published editions and send-once state.
+
 ## Optional October 13 afternoon profiles — editor handoff
 
 Mark commissioned a short look at the full NVARC/Tufa teams, then clarified that it

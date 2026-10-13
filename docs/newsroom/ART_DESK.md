@@ -55,6 +55,16 @@ If native generation is unavailable or fails, preserve the reason and publish th
 
 ## Reusable approved editions — October 13 editor instruction
 
+October 13 evening: Mark requested distinct varieties of his chosen GPU-citadel style.
+The new ARC-3 reusable scene `tufa-arc-3-gpu-viaduct-v1` uses the registered native base
+`2026-10-13-tufa-arc3-gpu-viaduct-v1-base`: a horizontal GPU crawler on a snowy viaduct
+at dusk, with two owner-photo-consistent rabbits, five spiders and one Dries. It requires
+Tufa first ahead of Chen and Dries in the current ARC-3 roster. The next Early edition's
+explicit assignment selects it. The ARC-2 citadel remains its own separate approved scene.
+Future appropriate variants should change setting, camera, machine silhouette and poses;
+do not treat updated statistics alone as a new illustration. Preserve the cast and inspect
+every new output. Tonight's already published articles and X post keep their original art.
+
 Mark explicitly approved retaining good native images and changing their daily statistics.
 `visual-identities.json` now has `reusableScenes`: the ARC-2 Tufa GPU citadel and the
 ARC-3 digital giant bunnies. These approvals persist across Early/Late editions, including
