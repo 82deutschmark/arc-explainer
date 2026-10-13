@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T19:42:46Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Arcnights charges into ARC-2 gold",
+  "id": "2026-10-13-1557-arc-2-arcnights-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-13T19:57:46Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Arcnights gained 16.81 to 48.75, moving from 214th to 15th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts Arcnights on the 15th-place gold line, which rose 3.61 in the past day to 48.75."
+    }
+  ],
+  "since": "2026-10-12T19:36:40Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T19:57:25Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16442485"
+  ]
+}

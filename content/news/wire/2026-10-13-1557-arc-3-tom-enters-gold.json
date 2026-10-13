@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T19:42:44Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Tom. vaults from 1,135th into ARC-3 gold",
+  "id": "2026-10-13-1557-arc-3-tom-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-13T19:57:46Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Tom. gained 10.93 to 37.18, moving from 1,135th to 17th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That puts Tom. inside ARC-3’s 18 gold places; the gold line rose 0.14 to 37.12 in the past day."
+    }
+  ],
+  "since": "2026-10-12T19:36:36Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T19:57:25Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16721902"
+  ]
+}
