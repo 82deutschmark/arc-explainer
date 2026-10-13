@@ -24,7 +24,7 @@ python3.13 scripts/newsroom_artwork.py plan --brief /tmp/arc-daily-evening-brief
 
 Read the complete plan. With no jobs, continue normal publication. With a job:
 
-1. If `reuseBase` is present, inspect its public image and generation record. Reuse that reviewed same-day scene for the same verified story; redraw the score panel from this edition’s brief. Never use its old composed scoreboard.
+1. If `reuseBase` is present, inspect its public image and generation record. Reuse that reviewed scene for the same verified story (approved reusable scenes may span days); redraw the score panel from this edition’s brief. Never use its old composed scoreboard.
 2. Otherwise inspect every image in `toolArguments.referenced_image_paths` with `view_image`, then call the built-in `image_gen.imagegen` tool with the supplied arguments. Generate clean artwork without text, logos, ranks or scores. Inspect the result: correct subjects and requested counts, useful composition, respectful tone and no invented methods or hardware claims. A compute machine is a metaphor. If a repair is needed, make one targeted native edit and inspect it again. Before registering that selected output, save the exact final tool arguments back into the plan's `toolArguments`, including the edit prompt and its actual input references; retain the original plan with the run's private reporting files. The saved generation record must describe the selected output's actual call.
 3. Save the selected native output with the existing helper. Preserve the original tool output. The review must describe what you actually inspected:
 
@@ -52,6 +52,26 @@ python3.13 scripts/newsroom.py validate --article /tmp/arc-daily-arc3-draft.json
 The publisher verifies the article ID, headline, brief checksum, observation time, score rows and final image bytes, then archives the composition alongside the edition’s evidence. A wrong edition, changed score, changed image or stale brief fails. Keep the article’s existing sources and intakeReview; artwork does not replace reporting.
 
 If native generation is unavailable or fails, preserve the reason and publish the verified text without `image`. Do not silently use a paid API or stale illustration. Include the art outcome in the final report. Scheduled runs do not edit application code or this workflow.
+
+## Reusable approved editions — October 13 editor instruction
+
+Mark explicitly approved retaining good native images and changing their daily statistics.
+`visual-identities.json` now has `reusableScenes`: the ARC-2 Tufa GPU citadel and the
+ARC-3 digital giant bunnies. These approvals persist across Early/Late editions, including
+quiet boards, when both pictured teams receive sourced coverage and the current
+competition, leader/score and Dries roster conditions match. They do not dictate the
+headline. The giant bunnies return only when Chen is first on ARC-3; the citadel remains
+ARC-2 artwork while Tufa is first there. Recheck each competition independently.
+
+The planner returns the exact reviewed `reuseBase`, so use the normal compose/attach
+workflow without generating the scene again. Always start from the clean native original;
+never paint over a screenshot's old statistics or reuse a composed edition image. Fresh
+ranks, scores, full Eastern observation date/time and any observed-history chart come from
+that edition's brief. The base remains unchanged and each finished overlay is immutable.
+A lead/cast change prevents reuse even when another score event would qualify for artwork.
+Approvals dated after an older issue's evidence do not change its archived composition.
+The library approval is separate from dated assignment intake; old held commissions still
+receive normal editorial decisions. Keep the current X attachment/send-once workflow.
 
 ## Edition-specific human commissions and score history — October 12
 

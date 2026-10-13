@@ -8,6 +8,16 @@ the earlier use of the #arc-3 team-talk channel. Keep the existing edition annou
 send-once state and job-specific send permissions; this routing correction creates no
 extra recurring sends or duplicate edition announcement.
 
+## Reuse approved native images — October 13 editor instruction
+
+Mark reconfirmed the Tufa GPU citadel for ARC-2 and the digital giant bunnies for ARC-3
+when Chen retakes first. The visual registry's `reusableScenes` makes these clean originals
+available across later editions, including quiet boards, while verifying the independent
+leader/score/cast conditions. Follow ART_DESK.md: use the returned `reuseBase`, compose
+fresh scores/date/time (and ARC-3 history), inspect, attach and validate. Reuse never
+forces the headline or permits yesterday's finished score panel. Preserve old editions
+and the routine X attachment/send-once workflow.
+
 ## Balanced editions — latest October 12 editor direction
 
 Lead with the strongest verified current development, and balance both contests, their

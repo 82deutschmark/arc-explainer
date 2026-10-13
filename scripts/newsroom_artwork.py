@@ -1,10 +1,12 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-12
+# Date: 2026-10-13
 # PURPOSE: Maintain reusable competitor character references, plan native illustrations from verified edition moves,
 # draw dated corner statistics and branding, and bind image bytes/provenance to the exact headline and manuscript.
 # Edition-specific human commissions can reuse approved art on a quiet board while checking
 # the current lead/cast; their observed-history charts are archived and mutation-checked.
+# Human-approved reusable scenes remain available across editions with fresh overlays,
+# while preserving competition, leadership, cast and native-source checks.
 # SRP/DRY check: Pass — extends the existing compositor; reuses newsroom briefs and people records.
 """Native generation is the Codex journalist's tool call; this helper never calls a model/API."""
 import argparse
@@ -91,7 +93,21 @@ def check_library(root=ROOT):
         record = load(Path(root) / 'content/news/artwork' / (scene['generationRecord'] + '.json'))
         if record['rawSrc'] != scene['reusableBase'] or record['rawSha256'] != file_sha(public_file(scene['reusableBase'], root)):
             raise ValueError('scene generation provenance mismatch')
-    return {'ready': ready, 'pending': pending, 'assets': sorted(assets)}
+    reusable = []
+    for scene in registry.get('reusableScenes', []):
+        conditions = scene['artworkConditions']
+        if (scene['id'] in reusable or scene['competition'] not in ('arc-2', 'arc-3')
+                or not scene.get('approvedBy')
+                or conditions['leaderTeamId'] == conditions['rivalTeamId']
+                or not set(conditions.get('requiredPersonIds', [])).issubset(ready)):
+            raise ValueError('invalid reusable scene approval')
+        stamp(scene['approvedAt'])
+        record = load(Path(root) / 'content/news/artwork' / (scene['artworkGenerationRecord'] + '.json'))
+        if (record.get('kind') != 'native-generation' or record.get('tool') != 'image_gen.imagegen'
+                or record['rawSha256'] != file_sha(public_file(record['rawSrc'], root))):
+            raise ValueError('reusable scene generation provenance mismatch')
+        reusable.append(scene['id'])
+    return {'ready': ready, 'pending': pending, 'assets': sorted(assets), 'reusableScenes': reusable}
 
 
 def library_gallery(root=ROOT):
@@ -193,10 +209,23 @@ def lead_gap(rows, item):
     return {'previous': previous, 'current': current, 'extends': previous is not None and current > previous}
 
 
+def scene_assignments(item, article, root):
+    """Reuse explicit human approvals without reopening old editions or their evidence."""
+    assignments = list(item.get('intake', {}).get('editorialAssignments', []))
+    registry = load(Path(root) / 'content/news/visual-identities.json')
+    for scene in registry.get('reusableScenes', []):
+        if (scene.get('status', 'active') != 'active'
+                or scene['competition'] != item['articleBase']['competition']
+                or stamp(scene['approvedAt']) > stamp(item['evidence']['accessedAt'])):
+            continue
+        assignments.append({**scene, 'targetEditionId': article['id'], '_reusableScene': True})
+    return assignments
+
+
 def commissioned_scene(item, article, subjects, root):
     """A human commission has its own verified condition, independent of daily gains."""
     rows = {r['teamId']: r for r in item['articleBase']['stats']}
-    for assignment in item.get('intake', {}).get('editorialAssignments', []):
+    for assignment in scene_assignments(item, article, root):
         conditions = assignment.get('artworkConditions')
         preview = article['id'].endswith('-preview') and assignment.get('allowArtworkPreview') is True
         if (assignment.get('targetEditionId') != article['id'] and not preview) or not conditions or not assignment.get('artworkGenerationRecord'):
@@ -240,7 +269,7 @@ def score_chart_data(rows, item):
 
 
 def validate_commission_use(report, item, article, root):
-    assignments = [a for a in item.get('intake', {}).get('editorialAssignments', [])
+    assignments = [a for a in scene_assignments(item, article, root)
                    if a.get('artworkConditions') and a.get('artworkGenerationRecord') == report['generationRecord']
                    and (a.get('targetEditionId') == article['id']
                         or article['id'].endswith('-preview') and a.get('allowArtworkPreview') is True)]
@@ -279,7 +308,7 @@ def plan(brief, article, root=ROOT):
         return {'version': 1, 'articleId': article['id'], 'jobs': [], 'reason': 'No consequential referenced contender in this manuscript.'}
     if commission:
         assignment, selected, native = commission
-        reason = 'editor-commissioned-leading-scene'
+        reason = 'editor-approved-reusable-scene' if assignment.get('_reusableScene') else 'editor-commissioned-leading-scene'
     else:
         _, _, row, reason = max(eligible, key=lambda x: x[:2])
         # A rival is pictured only when that rival also has an established visual identity.
@@ -449,7 +478,8 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     if not generation_record:
         raise ValueError('save the native generation record before composition')
     registry = load(Path(root) / 'content/news/visual-identities.json')
-    curated = {scene['generationRecord'] for scene in registry.get('scenes', [])}
+    curated = ({scene['generationRecord'] for scene in registry.get('scenes', [])}
+               | {scene['artworkGenerationRecord'] for scene in registry.get('reusableScenes', [])})
     if generation_record in curated and (not job['reuseBase'] or job['reuseBase']['recordId'] != generation_record):
         raise ValueError('the reusable scene no longer matches the verified move')
     generation = load(Path(root) / 'content/news/artwork' / (generation_record + '.json'))

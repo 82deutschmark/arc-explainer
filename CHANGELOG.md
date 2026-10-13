@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.17  Oct 13, 2026
+
+- **Reuse approved native newspaper images** (Author: GPT-6.1 Sol / Codex). Saved Mark's explicit approvals for the ARC-2 Tufa GPU citadel and the ARC-3 digital giant bunnies when Chen retakes first. The existing planner can reuse these clean originals across later or quiet editions with fresh ranks, scores, Eastern date/time and ARC-3 history, while retaining competition/lead/cast/source checks and immutable overlays. X attachment validation now reads the archived roster/history evidence needed for reused scenes. Earlier edition evidence, headlines, schedules and send-once distribution remain intact. Both published morning artworks validate, and 59 Python newsroom checks pass. Plan: `docs/2026-10-13-reusable-approved-news-art-plan.md`.
+
 ### Version 9.141.16  Oct 12, 2026
 
 - **Balanced editions and a firm image handoff** (Author: GPT-6.1 Sol / Codex). Reconfirmed both approved morning images with exact assets, fresh standings/date/time and explicit publication outcomes. Shortened the former-leaders sidebar and made it optional supporting/slow-day coverage; Sasha's technical work stays desk background. A narrow social editorial policy keeps background research out of the curated strip/edition sources while preserving the full public archive. Updated all six existing job prompts without cadence/model changes, including avoiding repeated wire gains. Plan: `docs/2026-10-12-balanced-edition-handoff-plan.md`.

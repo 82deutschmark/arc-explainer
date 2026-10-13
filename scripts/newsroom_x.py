@@ -1,9 +1,10 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-12
+# Date: 2026-10-13
 # PURPOSE: Prepare afternoon X evidence and edition announcements with the current article's
 # reviewed custom artwork as the lead attachment. Save exact image bytes for browser posting;
 # the browser journalist verifies and sends once, while this helper never sends to X.
+# Reconstruct archived roster/history evidence so reused scenes and charts remain verifiable.
 # 09-Oct-2026 (Claude Opus 5.5): --edition drafts the post announcing a published edition, labeled
 # "Early edition" (6 am) or "Late edition" (6 pm) at the Boss's request, and waits until its link opens.
 # SRP/DRY check: Pass — reuses newsroom evidence, artwork validation and immutable asset writes.
@@ -38,7 +39,7 @@ def edition_media(article, root=ROOT):
     evidence = load(Path(root) / 'content/news/evidence' / (article['id'] + '.json'))
     # Reconstruct the existing validator's brief inputs from immutable publication evidence.
     brief = {'sha256': evidence['briefSha256'], 'competitions': {
-        article['competition']: {'status': 'ready', 'articleBase': article}}}
+        article['competition']: {'status': 'ready', 'articleBase': article, 'evidence': evidence}}}
     report = validate_attachment(image, article, brief, root)
     if evidence.get('articleId') != article['id'] or evidence.get('artwork') != report:
         raise ValueError('X artwork differs from the published edition evidence')

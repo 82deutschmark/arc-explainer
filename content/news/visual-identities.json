@@ -572,6 +572,42 @@
       "status": "ready"
     }
   ],
-  "updatedAt": "2026-10-12T18:24:55Z",
-  "version": 1
+  "updatedAt": "2026-10-13T16:15:40Z",
+  "version": 1,
+  "reusableScenes": [
+    {
+      "id": "chen-digital-giant-bunnies",
+      "competition": "arc-3",
+      "approvedAt": "2026-10-13T16:15:40Z",
+      "approvedBy": "mark-barney",
+      "status": "active",
+      "artworkGenerationRecord": "2026-10-13-digital-giant-bunnies-base",
+      "artworkConditions": {
+        "leaderTeamId": "15499660",
+        "rivalTeamId": "15486995",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "artworkHistoryChart": true,
+      "approvalNote": "Mark reconfirmed the attached giant-bunnies scene for reuse when Chen retakes ARC-3 first. Preserve clean native art; redraw current ranks/scores, observed history and Eastern date/time."
+    },
+    {
+      "id": "tufa-arc-2-gpu-citadel",
+      "competition": "arc-2",
+      "approvedAt": "2026-10-13T16:15:40Z",
+      "approvedBy": "mark-barney",
+      "status": "active",
+      "artworkGenerationRecord": "2026-10-13-tufa-gpu-citadel-base",
+      "artworkConditions": {
+        "leaderTeamId": "16756524",
+        "rivalTeamId": "15501171",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "artworkHistoryChart": false,
+      "approvalNote": "Mark reconfirmed the attached GPU-citadel scene as reusable ARC-2 art. Reuse its clean native base while Tufa leads, with fresh ranks/scores and Eastern observation date/time."
+    }
+  ]
 }

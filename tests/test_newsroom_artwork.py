@@ -1,9 +1,10 @@
 # Author: GPT-6.1 Sol / Codex
-# Date: 2026-10-12
+# Date: 2026-10-13
 # PURPOSE: Verify native-art planning, immutable composition and publication evidence, including
 # score/image mutations, wrong editions/headlines and missing comparisons. No model calls.
 # Covered illustrated commissions cannot publish without their freshly bound approved base.
 # Explicit lead/cast conditions and archived chart history fail after meaningful mutations.
+# Cross-edition reuse refreshes overlays and cannot bypass leadership or competition checks.
 # SRP/DRY check: Pass — production helper and the existing newsroom time-boundary fixture.
 import copy
 import json
@@ -262,6 +263,72 @@ class ArtworkTests(unittest.TestCase):
         self.assertTrue(art.plan(self.brief, self.article, self.root)['jobs'])
         with self.assertRaisesRegex(ValueError, 'conditions no longer hold'):
             self.compose()
+
+    def reusable_scene(self):
+        item = self.commission()
+        approval = dict(item['intake']['editorialAssignments'][0])
+        approval.pop('targetEditionId')
+        approval.update(competition='arc-3', approvedAt=n.iso(self.now - n.timedelta(days=1)), approvedBy='mark-barney')
+        item['intake']['editorialAssignments'] = []
+        path = self.root / 'content/news/visual-identities.json'
+        registry = n.load(path)
+        registry['reusableScenes'] = [approval]
+        n.write(path, registry)
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        return item
+
+    def test_reusable_scene_refreshes_another_days_overlay_without_changing_the_base(self):
+        item = self.reusable_scene()
+        before = art.file_sha(self.raw)
+        first = self.compose()
+        next_day = self.now + n.timedelta(days=1)
+        self.brief['preparedAt'] = n.iso(next_day)
+        self.now = next_day
+        date = next_day.astimezone(n.ET).date().isoformat()
+        item['articleBase'].update(id=f'{date}-evening-arc-3', date=date, dataAsOf=n.iso(next_day))
+        item['evidence']['accessedAt'] = n.iso(next_day)
+        item['articleBase']['stats'][0]['score'] = 13
+        self.article['id'] = item['articleBase']['id']
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        second = self.compose()
+        self.assertEqual(second['trigger'], 'editor-approved-reusable-scene')
+        self.assertEqual(second['generationRecord'], first['generationRecord'])
+        self.assertEqual(art.file_sha(self.raw), before)
+        self.assertNotEqual(second['imageSha256'], first['imageSha256'])
+        self.assertEqual(second['rows'][0]['score'], 13)
+        self.assertEqual(second['dataAsOf'], n.iso(next_day))
+        art.validate_attachment(second['image'], self.article, self.brief, self.root)
+
+    def test_reusable_scene_is_rejected_after_lead_cast_or_competition_changes(self):
+        item = self.reusable_scene()
+        self.assertTrue(art.plan(self.brief, self.article, self.root)['jobs'][0]['reuseBase'])
+        path = self.root / 'content/news/visual-identities.json'
+        registry = n.load(path)
+        for change in [lambda s: s.update(competition='arc-2'),
+                       lambda s: s['artworkConditions'].update(requiredPersonIds=['absent-person']),
+                       lambda s: s.update(approvedAt=n.iso(self.now + n.timedelta(hours=1)))]:
+            modified = copy.deepcopy(registry)
+            change(modified['reusableScenes'][0])
+            n.write(path, modified)
+            self.assertEqual(art.plan(self.brief, self.article, self.root)['jobs'], [])
+        n.write(path, registry)
+        item['articleBase']['stats'][0]['rank'] = 2
+        item['articleBase']['stats'][0]['scoreChange'] = 5  # Another move cannot authorize this old metaphor.
+        self.brief['sha256'] = n.digest({k: v for k, v in self.brief.items() if k != 'sha256'})
+        n.write(self.path, self.brief)
+        with self.assertRaisesRegex(ValueError, 'no longer matches'):
+            self.compose()
+
+    def test_reused_artwork_remains_valid_as_the_published_x_attachment(self):
+        from newsroom_x import edition_media
+        self.reusable_scene()
+        report = self.compose()
+        published = n.publish({**self.article, 'image': report['image']}, self.brief, self.root)
+        media = edition_media(n.load(published), self.root)
+        self.assertEqual(media['artworkId'], report['id'])
+        self.assertEqual(media['sourceSha256'], report['imageSha256'])
 
 
 if __name__ == '__main__':
