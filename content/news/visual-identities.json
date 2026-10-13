@@ -572,7 +572,7 @@
       "status": "ready"
     }
   ],
-  "updatedAt": "2026-10-13T23:14:44.243682Z",
+  "updatedAt": "2026-10-13T23:30:43.185998Z",
   "version": 1,
   "reusableScenes": [
     {
@@ -625,6 +625,23 @@
       },
       "artworkHistoryChart": false,
       "approvalNote": "Mark requested distinct variations of his chosen GPU-citadel style on October 13. Codex generated and visually reviewed this horizontal crawler crossing a snowy viaduct at dusk: two owner-photo-consistent rabbits, five countable spiders and one Dries. It is a new ARC-3 scene, separate from the ARC-2 citadel. Compose fresh publication scores; retain the original editions."
+    },
+    {
+      "id": "tufa-arc-3-gpu-icebreaker-v1",
+      "competition": "arc-3",
+      "approvedAt": "2026-10-13T23:30:43.185998Z",
+      "approvedBy": "mark-barney",
+      "status": "reserve",
+      "artworkGenerationRecord": "2026-10-13-tufa-arc3-gpu-icebreaker-v1-base",
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "artworkHistoryChart": false,
+      "approvalNote": "Prepared as part of Mark’s comic-strip variants. Latest direction reserves this extra scene for the next Late issue; use the attached existing citadel for October 13 Late. Generate no additional scene while a suitable prepared reserve exists."
     }
   ]
 }

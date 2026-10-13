@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-13T23:30:43.185998Z",
+  "editorDirection": "Use existing suitable prepared images before generating more. Think comic-strip episodes with stable characters and distinct scenes. Track article uses and X attachments separately.",
+  "images": [
+    {
+      "id": "tufa-gpu-citadel",
+      "generationRecord": "2026-10-13-tufa-gpu-citadel-base",
+      "src": "/news-images/2026-10-13-tufa-gpu-citadel-base.webp",
+      "articleUses": [
+        "2026-10-13-morning-arc-2",
+        "2026-10-13-evening-arc-2"
+      ],
+      "selectedArticleCorrection": "2026-10-13-evening-arc-3",
+      "correctionArtworkId": "2026-10-13-evening-arc-3-4d06115378",
+      "xAttachments": []
+    },
+    {
+      "id": "tufa-gpu-viaduct",
+      "generationRecord": "2026-10-13-tufa-arc3-gpu-viaduct-v1-base",
+      "src": "/news-images/2026-10-13-tufa-arc3-gpu-viaduct-v1-base.webp",
+      "status": "reserved",
+      "targetEditionId": "2026-10-14-morning-arc-3",
+      "articleUses": [],
+      "xAttachments": []
+    },
+    {
+      "id": "tufa-gpu-icebreaker",
+      "generationRecord": "2026-10-13-tufa-arc3-gpu-icebreaker-v1-base",
+      "src": "/news-images/2026-10-13-tufa-arc3-gpu-icebreaker-v1-base.webp",
+      "status": "reserved",
+      "targetEditionId": "2026-10-14-evening-arc-3",
+      "articleUses": [],
+      "xAttachments": [],
+      "supersededReplacementAttempt": "057f0931",
+      "visibilityNote": "The last live article check at 23:26 UTC still showed the original close-up. The attempted replacement was superseded by Mark’s citadel selection; do not count it as a scheduled illustrated edition."
+    }
+  ],
+  "existingXPosts": [
+    {
+      "edition": "2026-10-13-early",
+      "artworkId": "2026-10-13-morning-arc-3-9659b73f98",
+      "url": "https://x.com/82deutschmark/status/2109951342487945277"
+    },
+    {
+      "edition": "2026-10-13-late",
+      "artworkId": "2026-10-13-evening-arc-3-e9a20d116a",
+      "url": "https://x.com/82deutschmark/status/2110131782016475193"
+    }
+  ]
+}

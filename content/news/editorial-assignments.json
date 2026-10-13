@@ -225,10 +225,47 @@
       ]
     },
     "artworkHistoryChart": false,
-    "instructions": "Mark asked on October 13 to mix up Tufa-leading ARC-3 illustrations with varieties of his chosen GPU-citadel style. Tonight’s October 13 Late issue and its X announcement had already published, so this new native variant is queued for the next Early issue. Use the horizontal GPU crawler crossing a snowy viaduct at dusk, with exactly two rabbits, five spiders and Dries. This is ARC-3 artwork; retain the separate ARC-2 citadel. Recheck Tufa first ahead of Chen and Dries’s exact current roster. Cover both pictured teams with concise sourced race context, without forcing the headline. Run the normal plan/compose/inspect/attach/validate workflow against the final October 14 morning evidence. Fresh ranks, scores and full Eastern observation date/time must come from that edition, not the October 13 preview. Hold/carry explicitly if leader/cast conditions fail. Use the finished current edition image in the ordinary existing X announcement; no extra post or change to published October 13 articles. Keep varying setting, machine silhouette, camera and poses in later appropriate editions while preserving character identities.",
+    "instructions": "Mark asked on October 13 to mix up Tufa-leading ARC-3 illustrations with varieties of his chosen GPU-citadel style. Tonight’s October 13 Late issue and its X announcement had already published, so this new native variant is queued for the next Early issue. Use the horizontal GPU crawler crossing a snowy viaduct at dusk, with exactly two rabbits, five spiders and Dries. This is ARC-3 artwork; retain the separate ARC-2 citadel. Recheck Tufa first ahead of Chen and Dries’s exact current roster. Cover both pictured teams with concise sourced race context, without forcing the headline. Run the normal plan/compose/inspect/attach/validate workflow against the final October 14 morning evidence. Fresh ranks, scores and full Eastern observation date/time must come from that edition, not the October 13 preview. Hold/carry explicitly if leader/cast conditions fail. Use the finished current edition image in the ordinary existing X announcement; no extra post or change to published October 13 articles. Keep varying setting, machine silhouette, camera and poses in later appropriate editions while preserving character identities. Latest October 13 correction: use the existing citadel for tonight; this bridge stays reserved for October 14 Early. Read artwork-inventory.json and consume suitable prepared variants before generating additional art.",
     "sourceUrls": [
       "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
     ],
     "verificationNotes": "Fresh October 13 preview observed Tufa first and Chen second; native output reviewed and registered with exact prompt/reference hashes. Publication conditions must be rechecked at the next cutoff."
+  },
+  {
+    "id": "tufa-arc3-oct14-late-icebreaker-reserve",
+    "competition": "arc-3",
+    "createdAt": "2026-10-13T23:30:43.185998Z",
+    "title": "Reserve the prepared GPU icebreaker for the next ARC-3 Late issue",
+    "priority": "Boss-requested artwork inventory",
+    "status": "pending",
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "personIds": [
+      "dries-smit",
+      "yi-chia-chen"
+    ],
+    "subjectNames": [
+      "Tufa Labs",
+      "Yi-Chia Chen"
+    ],
+    "targetEditionId": "2026-10-14-evening-arc-3",
+    "placement": "edition-artwork",
+    "commissionedBy": "mark-barney",
+    "artworkGenerationRecord": "2026-10-13-tufa-arc3-gpu-icebreaker-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "artworkHistoryChart": false,
+    "instructions": "Mark pointed out the desk is two images ahead. Use the existing attached GPU citadel for October 13 Late; preserve the prepared bridge for October 14 Early and this icebreaker for the next Late issue. Before generating more artwork read artwork-inventory.json and check actual article/X uses. Select a suitable prepared image first. Use this reviewed native icebreaker only while fresh ARC-3 evidence shows Tufa first above Chen and Dries in its roster; hold/carry if conditions change. Cover the pictured teams without forcing the headline, then plan/compose/inspect/attach/validate from the final October 14 Late evidence, including fresh scores and observation time. Preserve the existing routine X send-once workflow; this reserve is not an extra post.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    ],
+    "verificationNotes": "Native output and provenance are saved; future reporting conditions must be rechecked. A premature October 13 artwork replacement was superseded by the editor’s existing-citadel selection."
   }
 ]

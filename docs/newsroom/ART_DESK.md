@@ -57,15 +57,18 @@ If native generation is unavailable or fails, preserve the reason and publish th
 
 Latest October 13 evening clarification: treat each illustrated edition as a new
 comic-strip episode. Character identities persist; the composition should evolve.
-Compare the previous published images before selecting a base. Prefer an unused
-commissioned variant or generate a fresh, clearly distinct scene. Repeated art with
+Compare the previous published images and `content/news/artwork-inventory.json`
+before selecting a base. Use a suitable prepared variant before generating more.
+Track competition-specific article appearances separately from X attachments. Repeated art with
 different statistics, a mirrored camera, or another near-identical close-up is not
 enough. This supersedes routine statistics-only reuse, while keeping older approved
 originals as references and preserving all cast, source and composition checks.
-Mark specifically authorized replacing October 13 Late ARC-3's repeated-looking
-close-up with the new GPU icebreaker under aurora. That replacement preserves its
-original reporting and score observation, with a separate artwork-revision archive.
-The GPU viaduct is reserved for October 14 Early if current conditions still hold.
+Mark selected the EXISTING GPU citadel he attached for October 13 Late ARC-3's
+repeated-looking close-up. This article-only correction preserves the original
+reporting and score observation, with a separate artwork-revision archive. Reserve
+the new GPU viaduct for October 14 Early and the GPU icebreaker for October 14 Late,
+if their current leader/cast conditions hold. No more native generation is needed
+while these suitable prepared scenes remain. The original X announcement stays intact.
 
 October 13 evening: Mark requested distinct varieties of his chosen GPU-citadel style.
 The new ARC-3 reusable scene `tufa-arc-3-gpu-viaduct-v1` uses the registered native base

@@ -7,16 +7,19 @@ Keep recognizable characters, but each illustrated edition should show a distinc
 cool, imaginative episode of the verified race. Check the previous Early/Late ARC-3
 and ARC-2 images before selection. A changed scoreboard, mirrored arrangement or
 another close-up of Dries petting the rabbits does not count as a new episode.
-Choose an unused matching commissioned scene or generate a fresh variation with
-different setting, action, machine silhouette, camera and poses. Retain existing
-approved art as references; this direction supersedes statistics-only routine reuse.
+Read `content/news/artwork-inventory.json` before generating anything. Choose a
+suitable prepared scene first; do not get ahead by generating more while unused
+variants are ready. Keep article appearances distinct from X attachments, and track
+which competition used a scene. When a new image is actually needed, vary setting,
+action, machine silhouette, camera and poses. Retain established art as references.
 
-Mark explicitly authorized replacing the October 13 Late ARC-3 close-up. Its new
-illustration is the GPU icebreaker under aurora, with the original issue's scores and
-observation time. The separate artwork-revision evidence preserves the old article
-and original evidence. The GPU viaduct stays queued for October 14 Early while its
-leader/cast conditions hold. This specific replacement does not relax ordinary
-edition immutability or authorize extra routine X sends.
+Mark selected his attached EXISTING GPU citadel for the October 13 Late ARC-3 article,
+with that issue's original scores and observation time. It previously appeared on
+both October 13 ARC-2 article pages, but not on ARC-3 or as an X attachment. The two
+new variants stay in reserve: GPU viaduct for October 14 Early, GPU icebreaker for
+October 14 Late, subject to their fresh leader/cast conditions. Separate revision
+evidence preserves earlier article images and the original reporting evidence.
+The user selected an article-only correction; preserve the existing X post and state.
 
 ## Tufa-leading artwork variations — October 13 evening editor instruction
 
