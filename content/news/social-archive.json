@@ -1,9 +1,89 @@
 [
   {
+    "author": "guanningzeng",
+    "authorName": "Guanning Zeng",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:48:52.894Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109719698472673733",
+    "identitySourceUrl": "https://github.com/guanning03/Schema",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T18:55:47Z",
+    "storyUrl": "https://arxiv.org/abs/2609.39140",
+    "summary": "Zeng links the Schema preprint, public implementation repository and project site, and credits the research team. The repository was read without sign-in.",
+    "threadId": "2109719501587570957",
+    "url": "https://x.com/guanningzeng/status/2109719698472673733",
+    "visibility": "public",
+    "whyItMatters": "Direct primary-source links for reporters. Code was inspected as source material, not run or installed."
+  },
+  {
+    "author": "guanningzeng",
+    "authorName": "Guanning Zeng",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:48:52.894Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109719693971857861",
+    "identitySourceUrl": "https://github.com/guanning03/Schema",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T18:55:46Z",
+    "storyUrl": "https://arxiv.org/abs/2609.39140",
+    "summary": "In an author-reported ten-public-game ablation, removing executable modeling, history checks, planning or runtime verification reduces performance.",
+    "threadId": "2109719501587570957",
+    "url": "https://x.com/guanningzeng/status/2109719693971857861",
+    "visibility": "public",
+    "whyItMatters": "Explains the design claim; grouped with the release rather than a separate score story."
+  },
+  {
+    "author": "guanningzeng",
+    "authorName": "Guanning Zeng",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:48:52.894Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109719611839238316",
+    "identitySourceUrl": "https://github.com/guanning03/Schema",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T18:55:26Z",
+    "storyUrl": "https://arxiv.org/abs/2609.39140",
+    "summary": "Zeng reports that Schema with Claude Fable 5 clears the 25 public ARC-AGI-3 games and improves relative human action efficiency over Claude Code. The paper supports this author-reported public-set comparison.",
+    "threadId": "2109719501587570957",
+    "url": "https://x.com/guanningzeng/status/2109719611839238316",
+    "visibility": "public",
+    "whyItMatters": "Useful technical context for the release; the public tutorial set does not establish competition performance."
+  },
+  {
+    "author": "guanningzeng",
+    "authorName": "Guanning Zeng",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:48:52.894Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109719501587570957",
+    "identitySourceUrl": "https://github.com/guanning03/Schema",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T18:55:00Z",
+    "storyUrl": "https://arxiv.org/abs/2609.39140",
+    "summary": "Zeng announces Schema’s full report and code, building on its July public-game demonstration. The linked preprint was submitted September 30; this is an October 12 release announcement.",
+    "threadId": "2109719501587570957",
+    "url": "https://x.com/guanningzeng/status/2109719501587570957",
+    "visibility": "public",
+    "whyItMatters": "A fresh release lead with publicly accessible paper and implementation. Public-game evaluation; no private Kaggle result established."
+  },
+  {
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "checkedAt": "2026-10-13T10:04:00.667410+00:00",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -26,7 +106,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "standings",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "checkedAt": "2026-10-13T09:01:55.729Z",
     "competitions": [
       "arc-2"
     ],
@@ -48,7 +128,7 @@
     "author": "iiiiitsu_ne",
     "authorName": "イツ",
     "category": "standings",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "checkedAt": "2026-10-13T09:02:24.920Z",
     "competitions": [
       "arc-2"
     ],
@@ -111,7 +191,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+    "checkedAt": "2026-10-13T09:07:43.206Z",
     "competitions": [
       "arc-3"
     ],
@@ -238,7 +318,7 @@
     "author": "menphim",
     "authorName": "めんふぃむ",
     "category": "standings",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "checkedAt": "2026-10-13T09:02:24.920Z",
     "competitions": [
       "arc-3"
     ],
@@ -278,7 +358,7 @@
     "author": "masspeakss",
     "authorName": "masspeaks",
     "category": "community",
-    "checkedAt": "2026-10-12T22:00:13.611292+00:00",
+    "checkedAt": "2026-10-13T09:06:43.868Z",
     "competitions": [
       "arc-2"
     ],
@@ -671,6 +751,26 @@
     "whyItMatters": "Competition banter only; the line is not evidence of the team’s actual budget, compute or methods."
   },
   {
+    "author": "e_aad1tya",
+    "authorName": "AadEd",
+    "category": "standings",
+    "checkedAt": "2026-10-13T03:54:50.712Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108338606188478899",
+    "identitySourceUrl": "https://x.com/e_aad1tya",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-08T23:27:49Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+    "summary": "AadEd shares an October 8 ARC-AGI-3 rank-590 claim and attributes the improvement to small prompt changes, alongside a RAM joke. Exact Kaggle account/team remains unresolved.",
+    "threadId": null,
+    "url": "https://x.com/e_aad1tya/status/2108338606188478899",
+    "visibility": "public",
+    "whyItMatters": "Older catch-up contender discovery, not an overnight gain or verified hardware/method claim."
+  },
+  {
     "author": "aimalysheva",
     "authorName": "Sasha Malysheva",
     "category": "research",
@@ -752,6 +852,26 @@
     "url": "https://x.com/JFPuget/status/2107943967769911475",
     "visibility": "public",
     "whyItMatters": "Context for the Oct 7 inference reproducibility lead; prevents treating the rhetorical hiring remark as an actual policy announcement."
+  },
+  {
+    "author": "QuantumHowl",
+    "authorName": "Quantum Howl",
+    "category": "standings",
+    "checkedAt": "2026-10-13T03:54:56.000Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2107903196999950794",
+    "identitySourceUrl": "https://x.com/QuantumHowl",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-07T18:37:39Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+    "summary": "Quantum Howl shares an October 7 ARC-AGI-3 rank-175 Kaggle card. Exact Kaggle account and team identity remain unresolved.",
+    "threadId": null,
+    "url": "https://x.com/QuantumHowl/status/2107903196999950794",
+    "visibility": "public",
+    "whyItMatters": "Older catch-up contender discovery; neither a current standing nor a verified identity mapping."
   },
   {
     "author": "JFPuget",

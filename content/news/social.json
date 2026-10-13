@@ -62,10 +62,90 @@
     "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
   },
   {
+    "author": "guanningzeng",
+    "authorName": "Guanning Zeng",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:48:52.894Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109719698472673733",
+    "identitySourceUrl": "https://github.com/guanning03/Schema",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T18:55:47Z",
+    "storyUrl": "https://arxiv.org/abs/2609.39140",
+    "summary": "Zeng links the Schema preprint, public implementation repository and project site, and credits the research team. The repository was read without sign-in.",
+    "threadId": "2109719501587570957",
+    "url": "https://x.com/guanningzeng/status/2109719698472673733",
+    "visibility": "public",
+    "whyItMatters": "Direct primary-source links for reporters. Code was inspected as source material, not run or installed."
+  },
+  {
+    "author": "guanningzeng",
+    "authorName": "Guanning Zeng",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:48:52.894Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109719693971857861",
+    "identitySourceUrl": "https://github.com/guanning03/Schema",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T18:55:46Z",
+    "storyUrl": "https://arxiv.org/abs/2609.39140",
+    "summary": "In an author-reported ten-public-game ablation, removing executable modeling, history checks, planning or runtime verification reduces performance.",
+    "threadId": "2109719501587570957",
+    "url": "https://x.com/guanningzeng/status/2109719693971857861",
+    "visibility": "public",
+    "whyItMatters": "Explains the design claim; grouped with the release rather than a separate score story."
+  },
+  {
+    "author": "guanningzeng",
+    "authorName": "Guanning Zeng",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:48:52.894Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109719611839238316",
+    "identitySourceUrl": "https://github.com/guanning03/Schema",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T18:55:26Z",
+    "storyUrl": "https://arxiv.org/abs/2609.39140",
+    "summary": "Zeng reports that Schema with Claude Fable 5 clears the 25 public ARC-AGI-3 games and improves relative human action efficiency over Claude Code. The paper supports this author-reported public-set comparison.",
+    "threadId": "2109719501587570957",
+    "url": "https://x.com/guanningzeng/status/2109719611839238316",
+    "visibility": "public",
+    "whyItMatters": "Useful technical context for the release; the public tutorial set does not establish competition performance."
+  },
+  {
+    "author": "guanningzeng",
+    "authorName": "Guanning Zeng",
+    "category": "research",
+    "checkedAt": "2026-10-13T03:48:52.894Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2109719501587570957",
+    "identitySourceUrl": "https://github.com/guanning03/Schema",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-12T18:55:00Z",
+    "storyUrl": "https://arxiv.org/abs/2609.39140",
+    "summary": "Zeng announces Schema’s full report and code, building on its July public-game demonstration. The linked preprint was submitted September 30; this is an October 12 release announcement.",
+    "threadId": "2109719501587570957",
+    "url": "https://x.com/guanningzeng/status/2109719501587570957",
+    "visibility": "public",
+    "whyItMatters": "A fresh release lead with publicly accessible paper and implementation. Public-game evaluation; no private Kaggle result established."
+  },
+  {
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "checkedAt": "2026-10-13T10:04:00.667410+00:00",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -88,7 +168,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "standings",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
+    "checkedAt": "2026-10-13T09:01:55.729Z",
     "competitions": [
       "arc-2"
     ],
@@ -133,7 +213,7 @@
     "author": "crysis44k",
     "authorName": "fshindo",
     "category": "community",
-    "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+    "checkedAt": "2026-10-13T09:07:43.206Z",
     "competitions": [
       "arc-3"
     ],
@@ -217,7 +297,7 @@
     "author": "masspeakss",
     "authorName": "masspeaks",
     "category": "community",
-    "checkedAt": "2026-10-12T22:00:13.611292+00:00",
+    "checkedAt": "2026-10-13T09:06:43.868Z",
     "competitions": [
       "arc-2"
     ],
@@ -338,91 +418,5 @@
     "url": "https://x.com/mikeknoop/status/2108584791436321097",
     "visibility": "public",
     "whyItMatters": "Provides organizer context for the Tufa Labs result; his expectation about future open artifacts is not yet a release."
-  },
-  {
-    "author": "fchollet",
-    "authorName": "François Chollet",
-    "category": "community",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2108579538372612400",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 2,
-    "personIds": [
-      "francois-chollet"
-    ],
-    "postedAt": "2026-10-09T15:25:12Z",
-    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
-    "summary": "Chollet reacted to ARC Prize’s Tufa Labs ARC-2 announcement by saying Kaggle scores are getting very good.",
-    "threadId": null,
-    "url": "https://x.com/fchollet/status/2108579538372612400",
-    "visibility": "public",
-    "whyItMatters": "A founder reaction adds a measured voice to the organizer’s score announcement."
-  },
-  {
-    "author": "arcprize",
-    "authorName": "ARC Prize",
-    "category": "community",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2108575462695817315",
-    "identitySourceUrl": "https://arcprize.org",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-09T15:09:00Z",
-    "storyUrl": "https://arcprize.org/events/research-summit-2026",
-    "summary": "ARC Prize announced Stephen Wolfram as a keynote speaker for its 2026 Research Summit.",
-    "threadId": "2108575462695817315",
-    "url": "https://x.com/arcprize/status/2108575462695817315",
-    "visibility": "public",
-    "whyItMatters": "A current event-program lead for the meeting digest."
-  },
-  {
-    "author": "SimonOuellette6",
-    "authorName": "Simon Ouellette",
-    "category": "research",
-    "checkedAt": "2026-10-09T21:09:33Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2108289507908780366",
-    "identitySourceUrl": "https://x.com/SimonOuellette6",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-08T20:12:43Z",
-    "storyUrl": "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
-    "summary": "Ouellette released an ARC-AGI-3-style training-data framework with 429 playable games, solvers and demonstration generators; he said 37 games still lacked solvers. The linked repository says it combines augmented public ARC demos and other game sources.",
-    "threadId": "2108289507908780366",
-    "url": "https://x.com/SimonOuellette6/status/2108289507908780366",
-    "visibility": "public",
-    "whyItMatters": "A concrete research resource; its author describes training material, not a measured Kaggle-score gain or coverage of private games."
-  },
-  {
-    "author": "JFPuget",
-    "authorName": "Jean-François Puget",
-    "category": "research",
-    "checkedAt": "2026-10-12T21:09:42.599Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2107701171037020293",
-    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
-    "importance": 2,
-    "personIds": [
-      "jean-francois-puget"
-    ],
-    "postedAt": "2026-10-07T05:14:53Z",
-    "storyUrl": null,
-    "summary": "Jean-François Puget warns that setting temperature to zero does not guarantee fully deterministic LLM inference. The post quotes a claim that temperature zero always produces the same answer. In a later reply he says the hiring wording should not be taken too seriously and was intended to draw attention to the topic.",
-    "threadId": "2107701171037020293",
-    "url": "https://x.com/JFPuget/status/2107701171037020293",
-    "visibility": "public",
-    "whyItMatters": "Older catch-up lead for reporting on reproducibility and run-to-run variation. This is Puget’s general inference comment, not a measurement explaining any ARC leaderboard result. Preserve the clarification when using the hiring line."
   }
 ]

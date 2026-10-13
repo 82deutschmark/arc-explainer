@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-13-morning-arc-3",
+  "briefSha256": "b664da67bb22ae4cfc60fa332148e6018dd33afdb9628aed4b4d5fd0ebd08c3b",
+  "dataAsOf": "2026-10-13T09:41:33Z",
+  "generationRecord": "2026-10-13-morning-arc-3-9659b73f98-base",
+  "headline": "Tufa retakes the ARC-AGI-3 lead as NVARC3 climbs to fourth",
+  "historyChart": null,
+  "id": "2026-10-13-morning-arc-3-9659b73f98",
+  "image": {
+    "alt": "Editorial illustration for Tufa retakes the ARC-AGI-3 lead as NVARC3 climbs to fourth. Tufa Labs: rank 1, score 68.91; Yi-Chia Chen: rank 2, score 67.49.",
+    "artworkId": "2026-10-13-morning-arc-3-9659b73f98",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 13, 2026 · 5:41 AM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-13-morning-arc-3-9659b73f98.webp"
+  },
+  "imageSha256": "8cb17f31ddcdc6c411a75fc758a4299eacacc9bbd24757e50e2fe73e20689bff",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": null
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "756c6c95966568e8ad77136511922a940cbd2f116e12745751d05f0b9216df3d",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": null,
+      "score": 68.91,
+      "scoreChange": null,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": -1,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "recorded-score-event",
+  "version": 1
+}

@@ -12,7 +12,7 @@
     ],
     "firstObservedAt": "2026-10-09T03:21:39Z",
     "id": "arc-2-15486728",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "mithilavakde"
     ],
@@ -44,7 +44,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15486939",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "cpmpml",
       "darraghdog"
@@ -58,7 +58,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-09T03:21:39Z",
     "id": "arc-2-15487968",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "jcole75"
     ],
@@ -91,7 +91,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15501171",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "threerabbits"
     ],
@@ -117,7 +117,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15507730",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "insanitycheck"
     ],
@@ -157,7 +157,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15526034",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "dzjiann",
       "keithtyser",
@@ -220,7 +220,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15789060",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "cookizesong",
       "xiezejian",
@@ -228,6 +228,20 @@
     ],
     "name": "rabbithole",
     "teamId": "15789060"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-13T09:41:34Z",
+    "id": "arc-2-15796569",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
+    "members": [
+      "cassinicraft",
+      "yash9439"
+    ],
+    "name": "Aneesh & Yash",
+    "teamId": "15796569"
   },
   {
     "aliases": [],
@@ -248,7 +262,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16373916",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "majkel1337"
     ],
@@ -278,12 +292,29 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16461211",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "dawkopi"
     ],
     "name": "Dawid Kopiczko",
     "teamId": "16461211"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-13T09:41:34Z",
+    "id": "arc-2-16559402",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
+    "members": [
+      "alwintheodoric",
+      "billyanggara",
+      "darrenamadeusmartin",
+      "rinnnntt",
+      "yassirramadhan"
+    ],
+    "name": "Domdolus Tolus",
+    "teamId": "16559402"
   },
   {
     "aliases": [],
@@ -341,7 +372,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16671221",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "albertruehlman"
     ],
@@ -387,7 +418,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16756524",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "driessmit1",
       "jeroencottaar",
@@ -416,7 +447,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16768245",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "deepdreamer"
     ],
@@ -437,16 +468,18 @@
     "teamId": "16799366"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "Boris Matsakov"
+    ],
     "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-12T21:36:52Z",
     "id": "arc-2-16809131",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "borismatsakov"
     ],
-    "name": "Boris Matsakov",
+    "name": "ИТМОНЯ AI B2B 67 SaaS",
     "teamId": "16809131"
   },
   {
@@ -543,10 +576,30 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-13T01:05:51.234925+00:00",
+        "sourceTitle": "fshindo — Kaggle profile with linked X account",
+        "sourceUrl": "https://www.kaggle.com/ffsscf",
+        "text": "The listed Kaggle member ffsscf directly links to @crysis44k, the X account displayed as fshindo."
+      }
+    ],
+    "firstObservedAt": "2026-10-13T00:37:11Z",
+    "id": "arc-2-17019785",
+    "lastObservedAt": "2026-10-13T00:37:11Z",
+    "members": [
+      "ffsscf"
+    ],
+    "name": "fshindo",
+    "teamId": "17019785"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-17023174",
-    "lastObservedAt": "2026-10-12T21:36:52Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "markbarney",
       "scizical",
@@ -584,10 +637,30 @@
   {
     "aliases": [],
     "competition": "arc-2",
+    "facts": [
+      {
+        "checkedAt": "2026-10-13T10:03:02.528982+00:00",
+        "sourceTitle": "menphim — direct public profile links",
+        "sourceUrl": "https://www.kaggle.com/menphim",
+        "text": "The listed menphim account directly links @menphim and the owned Takuma Mori professional page, which links back to Kaggle."
+      }
+    ],
+    "firstObservedAt": "2026-10-13T08:41:28Z",
+    "id": "arc-2-17038082",
+    "lastObservedAt": "2026-10-13T08:41:28Z",
+    "members": [
+      "menphim"
+    ],
+    "name": "menphim",
+    "teamId": "17038082"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-11T21:33:05Z",
     "id": "arc-2-17052013",
-    "lastObservedAt": "2026-10-11T21:33:05Z",
+    "lastObservedAt": "2026-10-13T09:41:34Z",
     "members": [
       "leeminseung"
     ],
@@ -625,7 +698,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15486995",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "dlorah",
       "driessmit1",
@@ -753,7 +826,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15499660",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "threerabbits"
     ],
@@ -779,7 +852,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15501006",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "insanitycheck"
     ],
@@ -910,7 +983,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15605182",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "markbarney",
       "scizical",
@@ -995,7 +1068,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15770880",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "cpmpml",
       "darraghdog",
@@ -1057,7 +1130,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16021367",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "dwellement0baser",
       "fses91",
@@ -1086,7 +1159,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16032816",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "dvhrtm",
       "sbrodehl"
@@ -1159,7 +1232,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16153655",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "michaeltgao"
     ],
@@ -1184,6 +1257,33 @@
     "competition": "arc-3",
     "facts": [
       {
+        "checkedAt": "2026-10-13T03:23:30.256145+00:00",
+        "sourceTitle": "Mostik — dated public launch and early-lead claim",
+        "sourceUrl": "https://x.com/aimalysheva/status/2095232794792255848",
+        "text": "Mostik’s September 2, 2026 public launch post claimed first place on the ARC-AGI leaderboard; the post did not disclose the competition method."
+      }
+    ],
+    "firstObservedAt": "2026-10-13T03:07:24Z",
+    "id": "arc-3-16364346",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
+    "members": [
+      "avgaydashenko",
+      "gatamaz",
+      "godjan",
+      "korogodsky",
+      "malyshevasasha",
+      "rolion",
+      "tehnar",
+      "vitalique"
+    ],
+    "name": "mostik.ai",
+    "teamId": "16364346"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
         "checkedAt": "2026-10-08T13:46:44Z",
         "sourceTitle": "Lord Han Solo — Kaggle profile",
         "sourceUrl": "https://www.kaggle.com/lordhansolo",
@@ -1196,15 +1296,15 @@
         "text": "Lord Han Solo published a Kaggle notebook titled “Built on Tufa Labs duck harness - Milestone 2,” explicitly crediting that earlier public harness in the notebook title."
       },
       {
-        "text": "ARC Prize announced Lord Han Solo as second-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner and directly linked the Kaggle profile lordhansolo.",
-        "sourceUrl": "https://x.com/arcprize/status/2105737439700787646",
+        "checkedAt": "2026-10-13T03:23:30.256145+00:00",
         "sourceTitle": "ARC Prize — Lord Han Solo official participant credit",
-        "checkedAt": "2026-10-13T03:23:30.256145+00:00"
+        "sourceUrl": "https://x.com/arcprize/status/2105737439700787646",
+        "text": "ARC Prize announced Lord Han Solo as second-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner and directly linked the Kaggle profile lordhansolo."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16371045",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "lordhansolo"
     ],
@@ -1222,15 +1322,15 @@
         "text": "The ARChitects’ own 2025 solution write-up credits Daniel Franzen under the Kaggle handle dfranzen, alongside Jan Disselhoff (insanitycheck) and David Hartmann (dvhrtm)."
       },
       {
-        "text": "ARC Prize announced Daniel Franzen as first-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026; that prize placement is distinct from the unrestricted ongoing public board.",
-        "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
+        "checkedAt": "2026-10-13T03:23:30.256145+00:00",
         "sourceTitle": "ARC Prize — official Milestone 2 winners",
-        "checkedAt": "2026-10-13T03:23:30.256145+00:00"
+        "sourceUrl": "https://x.com/arcprize/status/2105737436450201734",
+        "text": "ARC Prize announced Daniel Franzen as first-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner on October 1, 2026; that prize placement is distinct from the unrestricted ongoing public board."
       }
     ],
     "firstObservedAt": "2026-10-09T20:53:44Z",
     "id": "arc-3-16384837",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "dfranzen"
     ],
@@ -1243,11 +1343,12 @@
     "facts": [],
     "firstObservedAt": "2026-10-12T15:34:52Z",
     "id": "arc-3-16447222",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "dzjiann",
       "keithtyser",
-      "mitubant"
+      "mitubant",
+      "ngyzly"
     ],
     "name": "ARC Slayers",
     "teamId": "16447222"
@@ -1344,7 +1445,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16569113",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "isakatsuyoshi",
       "konbu17",
@@ -1383,6 +1484,26 @@
     ],
     "name": "Zakinosuke",
     "teamId": "16688839"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-13T03:23:30.256145+00:00",
+        "sourceTitle": "ARC Prize — Lohit Siriki official participant credit",
+        "sourceUrl": "https://x.com/arcprize/status/2105737441021997106",
+        "text": "ARC Prize announced Lohit Siriki as third-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner and credited the notebook published under sirikilohit."
+      }
+    ],
+    "firstObservedAt": "2026-10-13T03:07:24Z",
+    "id": "arc-3-16706087",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
+    "members": [
+      "sirikilohit"
+    ],
+    "name": "rellik13",
+    "teamId": "16706087"
   },
   {
     "aliases": [],
@@ -1497,7 +1618,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16805955",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "denialguo",
       "jaydenszeto123",
@@ -1572,7 +1693,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16958599",
-    "lastObservedAt": "2026-10-12T21:36:51Z",
+    "lastObservedAt": "2026-10-13T09:41:33Z",
     "members": [
       "majkel1337"
     ],
@@ -1687,6 +1808,26 @@
   {
     "aliases": [],
     "competition": "arc-3",
+    "facts": [
+      {
+        "checkedAt": "2026-10-13T10:03:02.528982+00:00",
+        "sourceTitle": "menphim — direct public profile links",
+        "sourceUrl": "https://www.kaggle.com/menphim",
+        "text": "The listed menphim account directly links @menphim and the owned Takuma Mori professional page, which links back to Kaggle."
+      }
+    ],
+    "firstObservedAt": "2026-10-13T08:41:27Z",
+    "id": "arc-3-17038083",
+    "lastObservedAt": "2026-10-13T08:41:27Z",
+    "members": [
+      "menphim"
+    ],
+    "name": "menphim",
+    "teamId": "17038083"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
     "facts": [],
     "firstObservedAt": "2026-10-12T21:36:51Z",
     "id": "arc-3-17059189",
@@ -1696,72 +1837,5 @@
     ],
     "name": "Pppycccc",
     "teamId": "17059189"
-  },
-  {
-    "aliases": [],
-    "competition": "arc-2",
-    "facts": [
-      {
-        "checkedAt": "2026-10-13T01:05:51.234925+00:00",
-        "sourceTitle": "fshindo — Kaggle profile with linked X account",
-        "sourceUrl": "https://www.kaggle.com/ffsscf",
-        "text": "The listed Kaggle member ffsscf directly links to @crysis44k, the X account displayed as fshindo."
-      }
-    ],
-    "firstObservedAt": "2026-10-13T00:37:11Z",
-    "id": "arc-2-17019785",
-    "lastObservedAt": "2026-10-13T00:37:11Z",
-    "members": [
-      "ffsscf"
-    ],
-    "name": "fshindo",
-    "teamId": "17019785"
-  },
-  {
-    "id": "arc-3-16364346",
-    "competition": "arc-3",
-    "teamId": "16364346",
-    "name": "mostik.ai",
-    "aliases": [],
-    "members": [
-      "avgaydashenko",
-      "gatamaz",
-      "godjan",
-      "korogodsky",
-      "malyshevasasha",
-      "rolion",
-      "tehnar",
-      "vitalique"
-    ],
-    "firstObservedAt": "2026-10-13T03:07:24Z",
-    "lastObservedAt": "2026-10-13T03:07:24Z",
-    "facts": [
-      {
-        "text": "Mostik’s September 2, 2026 public launch post claimed first place on the ARC-AGI leaderboard; the post did not disclose the competition method.",
-        "sourceUrl": "https://x.com/aimalysheva/status/2095232794792255848",
-        "sourceTitle": "Mostik — dated public launch and early-lead claim",
-        "checkedAt": "2026-10-13T03:23:30.256145+00:00"
-      }
-    ]
-  },
-  {
-    "id": "arc-3-16706087",
-    "competition": "arc-3",
-    "teamId": "16706087",
-    "name": "rellik13",
-    "aliases": [],
-    "members": [
-      "sirikilohit"
-    ],
-    "firstObservedAt": "2026-10-13T03:07:24Z",
-    "lastObservedAt": "2026-10-13T03:07:24Z",
-    "facts": [
-      {
-        "text": "ARC Prize announced Lohit Siriki as third-place qualifying open-source ARC-AGI-3 Milestone 2 prize winner and credited the notebook published under sirikilohit.",
-        "sourceUrl": "https://x.com/arcprize/status/2105737441021997106",
-        "sourceTitle": "ARC Prize — Lohit Siriki official participant credit",
-        "checkedAt": "2026-10-13T03:23:30.256145+00:00"
-      }
-    ]
   }
 ]
