@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.16  Oct 12, 2026
+
+- **Balanced editions and a firm image handoff** (Author: GPT-6.1 Sol / Codex). Reconfirmed both approved morning images with exact assets, fresh standings/date/time and explicit publication outcomes. Shortened the former-leaders sidebar and made it optional supporting/slow-day coverage; Sasha's technical work stays desk background. A narrow social editorial policy keeps background research out of the curated strip/edition sources while preserving the full public archive. Updated all six existing job prompts without cadence/model changes, including avoiding repeated wire gains. Plan: `docs/2026-10-12-balanced-edition-handoff-plan.md`.
+
 ### Version 9.141.15  Oct 12, 2026
 
 - **Former leaders and separate morning art commissions** (Author: GPT-6.1 Sol / Codex). Prepared Mark's sourced supporting feature on Mostik, Franzen and the milestone field, an open competitor invitation, and public competitor translations with broader Japanese/Sasha watch coverage. Generated and reviewed digital giant-bunny ARC-3 art and a distinct Tufa-leading ARC-2 GPU citadel. Existing morning/research jobs carry the editorial assignments without schedule/model changes. The artwork helper now honors explicit lead/cast-checked commissions on quiet boards and draws a dated Chen/Tufa history chart from immutable brief score trails. Altered history or a changed leader/cast cannot reuse the approved commission through an unrelated automatic move. Both current previews were visually inspected; 55 Python newsroom checks passed. Publication still requires fresh morning scores, date/time and the existing send-once X flow. Plan: `docs/2026-10-12-former-leaders-and-morning-art-plan.md`.

@@ -1,10 +1,11 @@
-# Author: GPT-6 Sol / Codex; Claude Opus 5.5
-# Date: 2026-10-09
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
+# Date: 2026-10-12
 # PURPOSE: Verify private/public separation, missed-scan recovery, briefing deduplication
 # and persistent cross-competition roster history through the production research helpers.
 # 09-Oct-2026 (Claude Opus 5.5): portraits trace to the person's own Kaggle account or Hall of
 # Fame card, the Kaggle picture command (offline, with a fake fetch) and the committed ledger.
 # The full thirty-day public export excludes restricted/undated/expired sources and exceeds the curated cap.
+# Background research stays available without crowding the curated paper sources or changing visibility.
 # SRP/DRY check: Pass — tests observable archive behavior and identity invariants.
 import copy
 from pathlib import Path
@@ -29,6 +30,22 @@ def batch(posts, coverage=None):
     return {'version': 1, 'researchedAt': '2026-10-09T19:00:00Z', 'posts': posts, 'accounts': coverage or {}}
 
 class ResearchTests(unittest.TestCase):
+    def test_background_research_stays_in_archive_but_not_curated_paper_sources(self):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as root:
+            research = post('1')
+            standings = {**post('2'), 'category': 'standings'}
+            color = post('3')
+            social.ingest(batch([research, standings, color]), directory, NOW)
+            social.save(Path(root) / 'content/news/social-editorial.json', {
+                'version': 1, 'backgroundResearchAccounts': ['CONFIRMED'], 'backgroundPostIds': ['3']})
+            social.export_public(directory, root, NOW)
+            self.assertEqual([p['id'] for p in n.load(Path(root) / 'content/news/social.json')], ['2'])
+            self.assertEqual({p['id'] for p in n.load(Path(root) / 'content/news/social-archive.json')}, {'1', '2', '3'})
+            self.assertEqual(social.state_at(directory)['posts']['1']['visibility'], 'public')
+            item = {'articleBase': {'dataAsOf': n.iso(NOW), 'sources': []}, 'evidence': {}}
+            social.add_social_sources(item, 'arc-3', NOW, root)
+            self.assertEqual([p['id'] for p in item['evidence']['socialPosts']], ['2'])
+
     def test_full_public_archive_keeps_older_posts_beyond_curated_limit(self):
         with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as root:
             older = post('80'); older['postedAt'] = '2026-09-20T12:00:00Z'

@@ -107,26 +107,6 @@
     "whyItMatters": "A useful participant account of persistence and uneven progress between the two contests."
   },
   {
-    "author": "aimalysheva",
-    "authorName": "Sasha Malysheva",
-    "category": "community",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109661765722079371",
-    "identitySourceUrl": "https://x.com/aimalysheva",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-12T15:05:35Z",
-    "storyUrl": null,
-    "summary": "Malysheva says most of the Mostik team is together on site for brainstorming and that Stanislav Smirnov joined. The post shows ongoing activity but announces no new ARC submission, score or method.",
-    "threadId": null,
-    "url": "https://x.com/aimalysheva/status/2109661765722079371",
-    "visibility": "public",
-    "whyItMatters": "Current activity helps avoid treating a low board position as evidence that the company abandoned the race."
-  },
-  {
     "author": "cunkpyber",
     "authorName": "PunkCyber",
     "category": "community",
@@ -316,26 +296,6 @@
     "whyItMatters": "Flags a reporting question; avoid presenting the public score as the final prize result."
   },
   {
-    "author": "aimalysheva",
-    "authorName": "Sasha Malysheva",
-    "category": "research",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2108626549121433687",
-    "identitySourceUrl": "https://x.com/aimalysheva",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-09T18:32:00Z",
-    "storyUrl": "https://arxiv.org/abs/2602.15382",
-    "summary": "Malysheva discusses Vision Wormhole’s use of vision tokens as a continuous communication interface between models and highlights losses on harder tasks with larger senders. The desk opened the authors’ arXiv abstract and owned project page; the work is about cooperative VLM communication, not an ARC leaderboard result.",
-    "threadId": null,
-    "url": "https://x.com/aimalysheva/status/2108626549121433687",
-    "visibility": "public",
-    "whyItMatters": "The size of a reasoning handoff may constrain what the receiving model can preserve."
-  },
-  {
     "author": "mikeknoop",
     "authorName": "Mike Knoop",
     "category": "community",
@@ -421,5 +381,48 @@
     "url": "https://x.com/arcprize/status/2108575462695817315",
     "visibility": "public",
     "whyItMatters": "A current event-program lead for the meeting digest."
+  },
+  {
+    "author": "SimonOuellette6",
+    "authorName": "Simon Ouellette",
+    "category": "research",
+    "checkedAt": "2026-10-09T21:09:33Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2108289507908780366",
+    "identitySourceUrl": "https://x.com/SimonOuellette6",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-08T20:12:43Z",
+    "storyUrl": "https://github.com/SimonOuellette35/ARC-AGI-3-Training-Data",
+    "summary": "Ouellette released an ARC-AGI-3-style training-data framework with 429 playable games, solvers and demonstration generators; he said 37 games still lacked solvers. The linked repository says it combines augmented public ARC demos and other game sources.",
+    "threadId": "2108289507908780366",
+    "url": "https://x.com/SimonOuellette6/status/2108289507908780366",
+    "visibility": "public",
+    "whyItMatters": "A concrete research resource; its author describes training material, not a measured Kaggle-score gain or coverage of private games."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "research",
+    "checkedAt": "2026-10-12T21:09:42.599Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2107701171037020293",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 2,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-07T05:14:53Z",
+    "storyUrl": null,
+    "summary": "Jean-François Puget warns that setting temperature to zero does not guarantee fully deterministic LLM inference. The post quotes a claim that temperature zero always produces the same answer. In a later reply he says the hiring wording should not be taken too seriously and was intended to draw attention to the topic.",
+    "threadId": "2107701171037020293",
+    "url": "https://x.com/JFPuget/status/2107701171037020293",
+    "visibility": "public",
+    "whyItMatters": "Older catch-up lead for reporting on reproducibility and run-to-run variation. This is Puget’s general inference comment, not a measurement explaining any ARC leaderboard result. Preserve the clarification when using the hiring line."
   }
 ]

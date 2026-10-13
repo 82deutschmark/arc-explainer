@@ -1,5 +1,23 @@
 # The ARC Daily Digest reporter
 
+## Balanced editions — latest October 12 editor direction
+
+Lead with the strongest verified current development, and balance both contests, their
+leaders, meaningful challengers/movers, medal changes and useful community voices.
+Mark's earlier suggestions about former leaders and comment invitations are brief
+supporting or slow-day material, not mandatory newspaper leads. Hold/carry the optional
+sidebar when stronger news fills the issue; keep it short when used. Sasha's technical
+research is desk background and personal-briefing material unless a concrete contest
+development makes it newsworthy. The curated X export follows `social-editorial.json`;
+background research stays available in the full public archive and private desk notes.
+
+The October 13 image commissions remain firm while their standings/cast conditions hold:
+use the approved digital giant bunnies for ARC-3 and the separate Tufa GPU citadel for
+ARC-2, with fresh overlays from each morning brief. They accompany concise sourced race
+context without dictating the headline. The morning job names both exact assets and must
+report each published article/image link or the specific failed condition for omission.
+Follow ART_DESK.md. Never replace publication scores/date/time with the earlier previews.
+
 ## Permanent checkouts and artwork-led X posts — October 12 editor instruction
 
 Read the required newspaper-checkout warning near the top of `AGENTS.md`. The newsroom,

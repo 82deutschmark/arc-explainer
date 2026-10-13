@@ -87,8 +87,8 @@
     "id": "former-leaders-morning-feature",
     "competition": "arc-3",
     "createdAt": "2026-10-13T03:08:58.501651+00:00",
-    "title": "Former leaders: Mostik, Daniel Franzen and the milestone field",
-    "priority": "Boss-requested supporting feature",
+    "title": "Brief standings context: where earlier ARC-3 leaders stand",
+    "priority": "Optional brief supporting sidebar",
     "status": "pending",
     "targetEditionId": "2026-10-13-morning-arc-3",
     "placement": "supporting-feature",
@@ -109,10 +109,9 @@
       "Lohit Siriki"
     ],
     "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-13-former-leaders/feature-draft.json",
-    "instructions": "Commissioned by Mark for the October 13 Early edition as a separate supporting piece. Read the saved manuscript and source handoff, reopen original public sources and refresh every current rank/score from the morning brief. Explain that Mostik claimed an early first place; the current board is a different dated observation, not evidence that the September claim was false. Daniel won the qualifying open-source Milestone 2 prize, not necessarily the unrestricted board at the deadline; his October 12 improvement was already observed Monday morning, not a second evening gain. Lord Han Solo has recovered toward gold; do not frame every earlier prize winner as stalled. Attribute Sasha’s fine-tuning portability proposal as an experiment she wants to run, not a demonstrated result or known Kaggle recipe. Publish the refreshed separate dispatch with scripts/newsroom.py dispatch-validate and dispatch-publish, re-prepare to cite it in the morning issue, and retain the commissioning credit. Include a respectful invitation for all competitors to share public observations/hot takes with the editorial desk by replying to @82deutschmark. The morning routine X announcement may invite @mostik_ai and @JFPuget to comment; no extra post or direct message. Broaden public competitor reporting, especially Japanese voices with faithful English translations and dated, attributed standings claims. Keep unresolved Kaggle identities unresolved. This ARC-3 feature must explicitly acknowledge that Tufa leads ARC-2.",
+    "instructions": "Mark’s latest direction supersedes the earlier long feature brief: lead the paper with the strongest verified current development across the field. Keep this former-leaders material to a short supporting sidebar, roughly 200 words, or hold/carry it with a concrete editorial reason when stronger news fills the issue. Do not force a standalone dispatch or a featured lead. Use the shortened saved manuscript only after refreshing every current rank/score. Compare earlier leaders who maintained their position, recovered or slipped, without guessing effort or methods. Distinguish the qualifying milestone prize from the unrestricted board and Monday morning’s Franzen gain from a repeated evening wire filing. Sasha’s fine-tuning/latent-transfer work is for private background research and personal briefings, not this commissioned paper piece. Comment invitations, including @mostik_ai/@JFPuget, are optional respectful color for a suitable or slower issue; do not force them into the article or routine X text. Retain balanced ARC-3 and ARC-2 coverage, including Tufa’s separate ARC-2 lead. If used, a compact sourced section in the edition or a short supporting dispatch is sufficient; record covered/held/carried normally.",
     "sourceUrls": [
       "https://x.com/aimalysheva/status/2095232794792255848",
-      "https://x.com/aimalysheva/status/2107222547682951453",
       "https://x.com/arcprize/status/2105737436450201734",
       "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md",
       "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
@@ -127,7 +126,7 @@
     "priority": "Boss-requested morning artwork",
     "status": "pending",
     "targetEditionId": "2026-10-13-morning-arc-3",
-    "placement": "illustrated-lead",
+    "placement": "edition-artwork",
     "commissionedBy": "mark-barney",
     "teamIds": [
       "15499660",
@@ -151,7 +150,7 @@
     },
     "artworkHistoryChart": true,
     "allowArtworkPreview": true,
-    "instructions": "Use this newly reviewed native base for the October 13 ARC-3 Early edition if the specified leader remains rank one with a higher score than the rival, and Dries remains in Tufa’s fresh verified roster. This commission applies even if the overnight score is unchanged; use the updated helper’s editor-commissioned-leading-scene plan. Cover both pictured teams substantively in the manuscript. Run plan, compose using this exact approved generation record, attach and validate against the fresh morning brief. Keep competitions separate: Chen leads ARC-3, while Tufa leads ARC-2. Include the lower-left dated Chen/Tufa score-history chart from archived brief scoreHistory, with the observed crossover time, current ranks/scores and full Eastern observation date/time. The generated raw image has no scores. Never publish the October 12 preview panel as October 13 evidence; draw fresh overlays at publication. The exact five spiders, digital rabbit gear, Dries costume and GPU props are editorial metaphor. If lead/cast conditions fail, hold/carry explicitly and report why. Upload the finished image in the existing routine edition X announcement and verify the attachment, following send-once state. If both stories have custom art, the existing routine announcement leads ARC-3 with its own current image; each article keeps its separate competition-specific artwork on its page. No extra send.",
+    "instructions": "Use this newly reviewed native base for the October 13 ARC-3 Early edition if the specified leader remains rank one with a higher score than the rival, and Dries remains in Tufa’s fresh verified roster. This commission applies even if the overnight score is unchanged; use the updated helper’s editor-commissioned-leading-scene plan. Cover both pictured teams substantively in the manuscript. Run plan, compose using this exact approved generation record, attach and validate against the fresh morning brief. Keep competitions separate: Chen leads ARC-3, while Tufa leads ARC-2. Include the lower-left dated Chen/Tufa score-history chart from archived brief scoreHistory, with the observed crossover time, current ranks/scores and full Eastern observation date/time. The generated raw image has no scores. Never publish the October 12 preview panel as October 13 evidence; draw fresh overlays at publication. The exact five spiders, digital rabbit gear, Dries costume and GPU props are editorial metaphor. If lead/cast conditions fail, hold/carry explicitly and report why. Upload the finished image in the existing routine edition X announcement and verify the attachment, following send-once state. If both stories have custom art, the existing routine announcement leads ARC-3 with its own current image; each article keeps its separate competition-specific artwork on its page. No extra send. Mark reconfirmed these exact approved images must be used in their respective morning contest articles while the verified lead/cast conditions hold. Artwork does not dictate the headline or displace a more consequential new mover: choose the strongest current lead and use the illustration with concise, sourced leader/race context in the same issue. The morning final report must give each image’s actual published article link or the specific failed condition; do not silently omit either image.",
     "sourceUrls": [
       "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
     ],
@@ -165,7 +164,7 @@
     "priority": "Boss-requested morning artwork",
     "status": "pending",
     "targetEditionId": "2026-10-13-morning-arc-2",
-    "placement": "illustrated-lead",
+    "placement": "edition-artwork",
     "commissionedBy": "mark-barney",
     "teamIds": [
       "16756524",
@@ -189,7 +188,7 @@
     },
     "artworkHistoryChart": false,
     "allowArtworkPreview": true,
-    "instructions": "Use this newly reviewed native base for the October 13 ARC-2 Early edition if the specified leader remains rank one with a higher score than the rival, and Dries remains in Tufa’s fresh verified roster. This commission applies even if the overnight score is unchanged; use the updated helper’s editor-commissioned-leading-scene plan. Cover both pictured teams substantively in the manuscript. Run plan, compose using this exact approved generation record, attach and validate against the fresh morning brief. Keep competitions separate: Chen leads ARC-3, while Tufa leads ARC-2. Use the lower-left current ARC-2 rank/score panel and full Eastern observation date/time. Chen was third at commissioning; do not imply she was second or that Tufa trailed her on ARC-2. The generated raw image has no scores. Never publish the October 12 preview panel as October 13 evidence; draw fresh overlays at publication. The exact five spiders, digital rabbit gear, Dries costume and GPU props are editorial metaphor. If lead/cast conditions fail, hold/carry explicitly and report why. Upload the finished image in the existing routine edition X announcement and verify the attachment, following send-once state. If both stories have custom art, the existing routine announcement leads ARC-3 with its own current image; each article keeps its separate competition-specific artwork on its page. No extra send.",
+    "instructions": "Use this newly reviewed native base for the October 13 ARC-2 Early edition if the specified leader remains rank one with a higher score than the rival, and Dries remains in Tufa’s fresh verified roster. This commission applies even if the overnight score is unchanged; use the updated helper’s editor-commissioned-leading-scene plan. Cover both pictured teams substantively in the manuscript. Run plan, compose using this exact approved generation record, attach and validate against the fresh morning brief. Keep competitions separate: Chen leads ARC-3, while Tufa leads ARC-2. Use the lower-left current ARC-2 rank/score panel and full Eastern observation date/time. Chen was third at commissioning; do not imply she was second or that Tufa trailed her on ARC-2. The generated raw image has no scores. Never publish the October 12 preview panel as October 13 evidence; draw fresh overlays at publication. The exact five spiders, digital rabbit gear, Dries costume and GPU props are editorial metaphor. If lead/cast conditions fail, hold/carry explicitly and report why. Upload the finished image in the existing routine edition X announcement and verify the attachment, following send-once state. If both stories have custom art, the existing routine announcement leads ARC-3 with its own current image; each article keeps its separate competition-specific artwork on its page. No extra send. Mark reconfirmed these exact approved images must be used in their respective morning contest articles while the verified lead/cast conditions hold. Artwork does not dictate the headline or displace a more consequential new mover: choose the strongest current lead and use the illustration with concise, sourced leader/race context in the same issue. The morning final report must give each image’s actual published article link or the specific failed condition; do not silently omit either image.",
     "sourceUrls": [
       "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
     ],

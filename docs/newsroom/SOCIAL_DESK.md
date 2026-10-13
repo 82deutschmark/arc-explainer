@@ -2,6 +2,15 @@
 
 The six-hour scan **enhances the journalism**. It supplies announcements, research releases, reactions and respectful banter with original links to the morning/evening reporters, personal briefing and Sunday meeting workflow. It does not post four times a day.
 
+Mark's October 12 night direction: collect broadly and translate Japanese competitor
+voices, but keep the newspaper balanced. Sasha's technical work is primarily background
+for the desk/personal briefing. `content/news/social-editorial.json` can exclude selected
+post IDs and research from specified accounts from the curated From X strip and edition
+source subset. This changes editorial placement, not public visibility: the full public
+archive and private source state keep those posts, and standings posts from a background
+research account can still be news. Comment invitations and earlier-leader comparisons
+are optional light material for a suitable or slower issue, not a daily required hook.
+
 ## Cadence and outputs
 
 The same research and personal-briefing jobs include Kaggle discussion intake under [DISCUSSIONS.md](DISCUSSIONS.md). Full board scans run twice daily at 5 am and 5 pm Eastern, checking both new topics and recent replies; the four daily X scans keep their existing cadence. The discussion desk keeps a broad topic/reply inventory and a separate personal digest, then exports only read public paper leads into edition evidence. The From X archive and its display remain X-specific.
