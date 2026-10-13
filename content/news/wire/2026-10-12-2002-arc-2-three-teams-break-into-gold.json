@@ -1,0 +1,38 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-12T23:37:05Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Three ARC-2 teams storm into gold",
+  "id": "2026-10-12-2002-arc-2-three-teams-break-into-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-13T00:02:13Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Domdolus Tolus surged from 549th to 12th, yuritosci from 1,374th to 14th, and Kajetan Schweighofer from 27th to 15th. All three moved into the 15 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Their arrival pushed Anil Thomas from 12th to 17th and out of gold. The cutoff now stands at 47.92 in 15th, a sharp turn at the medal line."
+    }
+  ],
+  "since": "2026-10-11T23:33:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T00:01:50Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16559402",
+    "16616584",
+    "16761662",
+    "16893334"
+  ]
+}

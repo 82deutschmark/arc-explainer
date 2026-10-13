@@ -1,0 +1,57 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-12T23:37:03Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC Slayers charge from 223rd to 7th",
+  "id": "2026-10-12-2002-arc-3-arc-slayers-storm-into-gold",
+  "personIds": [
+    "keith-tyser"
+  ],
+  "publishedAt": "2026-10-13T00:02:13Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-keith-tyser-identity-0",
+        "person-keith-tyser-roster-0"
+      ],
+      "text": "ARC Slayers gained 9.97 points to reach 41.19, vaulting from 223rd to 7th and into the ARC-AGI-3 gold places. Keith Tyser is listed on the team roster."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb lands them inside the 18 gold places, where the cutoff is 36.98. AI_hwlee sits just outside in 19th at 36.54, only 0.44 short."
+    }
+  ],
+  "since": "2026-10-11T23:33:15Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-13T00:01:50Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-keith-tyser-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/keithtyser"
+    },
+    {
+      "accessedAt": "2026-10-12T21:36:52Z",
+      "id": "person-keith-tyser-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    }
+  ],
+  "teamIds": [
+    "16447222",
+    "15513620"
+  ],
+  "visual": {
+    "alt": "Keith Tyser’s Kaggle profile picture",
+    "href": "/news/people/keith-tyser",
+    "src": "/news-images/people/keith-tyser.webp"
+  }
+}
