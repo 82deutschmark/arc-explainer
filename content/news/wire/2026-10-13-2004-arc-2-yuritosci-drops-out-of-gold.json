@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T23:43:09Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "yuritosci slips outside ARC-2 gold",
+  "id": "2026-10-13-2004-arc-2-yuritosci-drops-out-of-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-14T00:04:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "yuritosci fell from 14th to 17th with its score unchanged at 48.33, dropping outside the 15 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line rose 0.83 in the past day to 48.75, leaving the team just below the cutoff."
+    }
+  ],
+  "since": "2026-10-12T23:37:05Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T00:03:57Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16616584"
+  ]
+}

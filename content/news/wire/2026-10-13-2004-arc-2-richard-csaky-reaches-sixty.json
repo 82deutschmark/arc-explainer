@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-13T23:43:09Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Richard Csaky pushes ARC-2 score to 60",
+  "id": "2026-10-13-2004-arc-2-richard-csaky-reaches-sixty",
+  "personIds": [],
+  "publishedAt": "2026-10-14T00:04:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Richard Csaky added 29.03 points to reach 60.00, moving from 658th to 11th on ARC-AGI-2."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "That puts the climb inside the contest’s 15 gold places, with a wide cushion over the current cutoff."
+    }
+  ],
+  "since": "2026-10-12T23:37:05Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T00:03:57Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17077331"
+  ]
+}

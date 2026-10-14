@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-13T23:43:08Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Two teams slip out of ARC-3 gold",
+  "id": "2026-10-13-2004-arc-3-two-teams-slip-out-of-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-14T00:04:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "_hans fell from 17th to 19th, while Lord Han Solo moved from 18th to 20th; both scores were unchanged."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The 18th-place gold line rose 0.14 in the past day to 37.12, putting both teams outside the 18 available gold places."
+    }
+  ],
+  "since": "2026-10-12T23:37:03Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T00:03:57Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16768259",
+    "16371045"
+  ]
+}
