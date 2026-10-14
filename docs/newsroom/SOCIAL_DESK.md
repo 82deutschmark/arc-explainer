@@ -15,7 +15,47 @@ are optional light material for a suitable or slower issue, not a daily required
 
 The same research and personal-briefing jobs include Kaggle discussion intake under [DISCUSSIONS.md](DISCUSSIONS.md). Full board scans run twice daily at 5 am and 5 pm Eastern, checking both new topics and recent replies; X research also includes the new 3 am overnight shift. The discussion desk keeps a broad topic/reply inventory and a separate personal digest, then exports only read public paper leads into edition evidence. The From X archive and its display remain X-specific.
 
-All desk times are America/New_York: collection at 03:00, 05:00, 11:00, 17:00 and 23:00; private briefings at 05:30 and 17:30; editions at 06:00 and 18:00; the existing public X recap at 14:00. Use GPT-6.1 Sol through the signed-in subscription and Chrome account 82deutschmark. No paid model or X API. The local computer and app need to be running.
+All desk times are America/New_York: the existing research job now runs hourly. At 03:00, 05:00, 11:00, 17:00 and 23:00 it performs the broad research shift; other hours are focused François Chollet/Mike Knoop checks. Private briefings stay at 05:30 and 17:30; editions at 06:00 and 18:00; the existing public X recap at 14:00. Use GPT-6.1 Sol through the signed-in subscription and Chrome account 82deutschmark. No paid model or X API. The local computer and app need to be running.
+
+## Capture every founder post — Mark, October 13 evening
+
+François Chollet (`fchollet`) and Mike Knoop (`mikeknoop`) are mandatory priority sources.
+Capture every new post, quote, reply and thread follow-up before deciding its newspaper
+value. General AI commentary, product links, games and jokes still belong in the collected
+archive. Keep predictions and jokes attributed; never turn them into contest results.
+The full public archive carries every captured public item. The small front-page strip
+and edition leads remain selected journalism. Subscriber items belong in Mark's private
+archive/briefing. Do not omit a founder post just because it does not fit an ARC headline.
+
+Select **Chrome explicitly**, using its extension and the existing signed-in profile.
+Confirm the X account menu says `@82deutschmark`; the in-app browser is a separate session.
+Read Posts, Replies and Reposts separately, plus Chollet's Subs feed. A logged-out search
+snippet, web 403 or empty in-app browser is not a completed signed-in timeline scan.
+Regular public posts and visibly labelled subscriber entries must be handled separately;
+uncertain visibility remains private. Like/follow controls can be used through Chrome,
+but the research schedule does not authorize automatic engagement or sends.
+
+Maintain `/Users/macmini/bubba-workspace/reports/arc-daily-social/founder-coverage.json`
+with independent `posts`, `replies`, `reposts` and (Chollet only) `subscriber` surfaces.
+For chronological surfaces record actual check time, requested/covered interval,
+`status`, `lastCompleteThrough` only on complete coverage, seen IDs and concrete limits.
+Start one hour before that surface's last complete checkpoint, or use the ordinary plan
+when none exists. Scroll newest through the older boundary, expanding posts and reading
+thread context; pinned posts and quoted timestamps never set the checkpoint. Cross-check
+with a focused Latest search for the handle/window when useful; search remains partial.
+For reposts retain original author/ID/date and a seen-ID inventory with first observation;
+do not invent a repost action time from the original publication date. Capture the read
+original in the normal batch and the repost relationship in this private ledger.
+
+One incomplete repost surface must not erase successful Posts/Replies checkpoints.
+Keep the existing aggregate account status partial until all requested coverage is
+complete; never advance its complete watermark on a partial run. Preserve previous
+ledger data and delivery/send state. Save a dated founder handoff listing all new IDs,
+public leads, private items and gaps. Edition reporters read it before selecting stories.
+The October 13 catch-up recovered seven previously missing public founder posts; its
+handoff is `reports/arc-daily-social/editorial/2026-10-13-founder-catchup/handoff.json`.
+At midnight, prepare a candidate using fresh score/news evidence and the prepared GPU
+bridge image; an extra public send still needs its separate human authorization.
 
 The 3 am shift is Mark's October 13 overnight instruction, added to the existing research
 automation. Check both boards for meaningful overnight score events and leaders/medal

@@ -1,5 +1,25 @@
 [
   {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "community",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110116171207123326",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-13T21:11:13Z",
+    "storyUrl": null,
+    "summary": "Knoop takes stock of what he sees as rapid AI disruption in coding, mathematics, games and app building, and argues that the changes create opportunities for builders.",
+    "threadId": "2110116171207123326",
+    "url": "https://x.com/mikeknoop/status/2110116171207123326",
+    "visibility": "public",
+    "whyItMatters": "A founder perspective on AI progress. His broad disruption and cryptography claims remain attributed commentary, separate from contest standings."
+  },
+  {
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
@@ -18,6 +38,86 @@
     "url": "https://x.com/arcprize/status/2110060578530001231",
     "visibility": "public",
     "whyItMatters": "Public original read without sign-in in the in-app browser; linked primary results table independently read. Organizer evaluation, separate from Kaggle team standings."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "community",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110053707476033632",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-13T17:03:01Z",
+    "storyUrl": null,
+    "summary": "Knoop predicts that a future generation of game consoles will rely on cloud streaming, while quoting a report about a possible GTA 6 PC launch.",
+    "threadId": "2110053707476033632",
+    "url": "https://x.com/mikeknoop/status/2110053707476033632",
+    "visibility": "public",
+    "whyItMatters": "A gaming prediction and reaction to a reported rumor; neither is a verified ARC development."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110050843462688769",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-13T16:51:38Z",
+    "storyUrl": "https://kylon.io",
+    "summary": "Chollet links to Kylon in the follow-up to his discussion of shared team context for coding agents.",
+    "threadId": "2110050795890827756",
+    "url": "https://x.com/fchollet/status/2110050843462688769",
+    "visibility": "public",
+    "whyItMatters": "Companion link in the same thread; group with the original discussion rather than present it as a separate announcement."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110050795890827756",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-13T16:51:27Z",
+    "storyUrl": "https://kylon.io",
+    "summary": "Chollet argues that coding-agent time savings can be erased by team coordination and review costs. He highlights Kylon, which places Claude Code and Codex in a shared team workspace.",
+    "threadId": "2110050795890827756",
+    "url": "https://x.com/fchollet/status/2110050795890827756",
+    "visibility": "public",
+    "whyItMatters": "An attributed founder view on team context and agent workflows, not measured product performance."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "community",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110042948821975317",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-13T16:20:16Z",
+    "storyUrl": null,
+    "summary": "Chollet congratulates the Gemini 4 Argon release and gives a positive first reaction to the model, quoting the release announcement.",
+    "threadId": "2110042948821975317",
+    "url": "https://x.com/fchollet/status/2110042948821975317",
+    "visibility": "public",
+    "whyItMatters": "Founder reaction to a model release; the post does not supply a new ARC score or an independent evaluation."
   },
   {
     "author": "arcprize",
@@ -60,6 +160,26 @@
     "url": "https://x.com/JFPuget/status/2109971877091274960",
     "visibility": "public",
     "whyItMatters": "A direct, public request for team credit supports a short roster profile rather than treating a team result as an individual accomplishment."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "banter",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2109802734899880280",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-13T00:25:44Z",
+    "storyUrl": null,
+    "summary": "Chollet jokes about agriculture as self-replicating, recursively improving technology, using the multiplication of seeds as his example.",
+    "threadId": "2109802734899880280",
+    "url": "https://x.com/fchollet/status/2109802734899880280",
+    "visibility": "public",
+    "whyItMatters": "Light founder commentary, posted on the evening of October 12 Eastern; it is not an AI research result."
   },
   {
     "author": "guanningzeng",
@@ -517,6 +637,26 @@
     "url": "https://x.com/fchollet/status/2108951977904517409",
     "visibility": "public",
     "whyItMatters": "A founder’s view of the shift in agent reasoning offers context for ARC-AGI-3 coverage; this post reports no competition result. The individual post was readable without sign-in."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "research",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2108942651743682808",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-10T15:28:05Z",
+    "storyUrl": null,
+    "summary": "Knoop suggests three ways to help AI agents discover and use a product API: awareness through training or search, publishing evaluation scores, and training for the required skill.",
+    "threadId": "2108942651743682808",
+    "url": "https://x.com/mikeknoop/status/2108942651743682808",
+    "visibility": "public",
+    "whyItMatters": "Practical founder advice from October 10, recovered during catch-up; do not relabel it as an October 13 announcement."
   },
   {
     "author": "OCEANVIN10",

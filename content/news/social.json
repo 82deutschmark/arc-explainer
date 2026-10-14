@@ -102,6 +102,86 @@
     "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
   },
   {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "community",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110116171207123326",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-13T21:11:13Z",
+    "storyUrl": null,
+    "summary": "Knoop takes stock of what he sees as rapid AI disruption in coding, mathematics, games and app building, and argues that the changes create opportunities for builders.",
+    "threadId": "2110116171207123326",
+    "url": "https://x.com/mikeknoop/status/2110116171207123326",
+    "visibility": "public",
+    "whyItMatters": "A founder perspective on AI progress. His broad disruption and cryptography claims remain attributed commentary, separate from contest standings."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110050843462688769",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-13T16:51:38Z",
+    "storyUrl": "https://kylon.io",
+    "summary": "Chollet links to Kylon in the follow-up to his discussion of shared team context for coding agents.",
+    "threadId": "2110050795890827756",
+    "url": "https://x.com/fchollet/status/2110050843462688769",
+    "visibility": "public",
+    "whyItMatters": "Companion link in the same thread; group with the original discussion rather than present it as a separate announcement."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110050795890827756",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-13T16:51:27Z",
+    "storyUrl": "https://kylon.io",
+    "summary": "Chollet argues that coding-agent time savings can be erased by team coordination and review costs. He highlights Kylon, which places Claude Code and Codex in a shared team workspace.",
+    "threadId": "2110050795890827756",
+    "url": "https://x.com/fchollet/status/2110050795890827756",
+    "visibility": "public",
+    "whyItMatters": "An attributed founder view on team context and agent workflows, not measured product performance."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "community",
+    "checkedAt": "2026-10-13T23:58:42.620645+00:00",
+    "competitions": [],
+    "id": "2110042948821975317",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-13T16:20:16Z",
+    "storyUrl": null,
+    "summary": "Chollet congratulates the Gemini 4 Argon release and gives a positive first reaction to the model, quoting the release announcement.",
+    "threadId": "2110042948821975317",
+    "url": "https://x.com/fchollet/status/2110042948821975317",
+    "visibility": "public",
+    "whyItMatters": "Founder reaction to a model release; the post does not supply a new ARC score or an independent evaluation."
+  },
+  {
     "author": "JFPuget",
     "authorName": "Jean-François Puget",
     "category": "community",
@@ -334,85 +414,5 @@
     "url": "https://x.com/Fei2411/status/2109319340902510823",
     "visibility": "public",
     "whyItMatters": "Recent ARC-AGI-3 community experiment; the author explicitly says one level proves little."
-  },
-  {
-    "author": "masspeakss",
-    "authorName": "masspeaks",
-    "category": "community",
-    "checkedAt": "2026-10-11T17:58:52.184063Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2109128890631536984",
-    "identitySourceUrl": "https://www.kaggle.com/masspeaks",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-11T03:48:00Z",
-    "storyUrl": "https://x.com/arcprize/status/2108578092558250148",
-    "summary": "masspeaks reacted in Japanese to Tufa Labs exceeding 85% on ARC-AGI-2, calling the result impressive. The public board independently shows Tufa Labs at 88.06% in the afternoon snapshot.",
-    "threadId": null,
-    "url": "https://x.com/masspeakss/status/2109128890631536984",
-    "visibility": "public",
-    "whyItMatters": "Respectful reaction from a current ARC-AGI-2 mover to the leader."
-  },
-  {
-    "author": "masspeakss",
-    "authorName": "masspeaks",
-    "category": "community",
-    "checkedAt": "2026-10-13T09:06:43.868Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2109126372128116926",
-    "identitySourceUrl": "https://www.kaggle.com/masspeaks",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-11T03:38:07Z",
-    "storyUrl": null,
-    "summary": "In a Japanese post, masspeaks said careful preparation had paid off and expected a high gold-band cutoff. This is the contestant’s reaction; the post alone does not establish the exact score or method.",
-    "threadId": null,
-    "url": "https://x.com/masspeakss/status/2109126372128116926",
-    "visibility": "public",
-    "whyItMatters": "Context from the ARC-AGI-2 public-board mover; compare any score or rank with the board brief."
-  },
-  {
-    "author": "masspeakss",
-    "authorName": "masspeaks",
-    "category": "community",
-    "checkedAt": "2026-10-13T03:14:07.374872+00:00",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2108933240887345594",
-    "identitySourceUrl": "https://x.com/masspeakss",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-10T14:50:41Z",
-    "storyUrl": null,
-    "summary": "English translation of the Japanese post: masspeaks says submissions older than 48 hours can disappear from Active Events while still scoring, and jokes about discovering that none of their submissions had finished. This is a participant report, not an organizer-confirmed platform rule.",
-    "threadId": null,
-    "url": "https://x.com/masspeakss/status/2108933240887345594",
-    "visibility": "public",
-    "whyItMatters": "Explains why some public competitor chatter concerns scoring waits rather than a new method or result."
-  },
-  {
-    "author": "tufalabs",
-    "authorName": "Tufa Labs",
-    "category": "community",
-    "checkedAt": "2026-10-13T18:07:08.559Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2108916273937858887",
-    "identitySourceUrl": "https://x.com/arcprize/status/2108578092558250148",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-10T13:43:16Z",
-    "storyUrl": "https://x.com/mikeknoop/status/2108584791436321097",
-    "summary": "In a reply to Mike Knoop’s ARC-AGI-2 bonus-threshold post, Tufa Labs said it had not set out to solve ARC-AGI-2, started by accident, and plans to share more after the deadline. This is the team’s account, not an independently established history.",
-    "threadId": "2108584791436321097",
-    "url": "https://x.com/tufalabs/status/2108916273937858887",
-    "visibility": "public",
-    "whyItMatters": "First-person context from the ARC-AGI-2 public-board leader; no method or final result is disclosed."
   }
 ]

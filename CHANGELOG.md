@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.19  Oct 13, 2026
+
+- **Hourly founder research and missing-post catch-up** (Author: GPT-6.1 Sol / Codex). The existing research schedule now checks François Chollet and Mike Knoop hourly, capturing every post/reply/thread before editorial selection while retaining broad shifts and the 3 am desk. Explicit signed-in Chrome selection and independent surface checkpoints prevent private-browser access failures or uncertain repost dates from hiding successful timeline scans. Recovered seven public founder posts in the searchable archive and saved the dated private catch-up/coverage handoff. Existing models, edition schedules, subscriber privacy and send-once posting remain intact.
+
 ### Version 9.141.18  Oct 13, 2026
 
 - **Team credit and optional afternoon profiles** (Author: GPT-6.1 Sol / Codex). Verified seven additional people through their own profiles or credited milestone notebooks, confirmed IsaiahP as Isaiah Pressman through direct professional links, saved six own-profile portraits (Yeyin Zhu uses initials), and retained separate dated ARC-2/ARC-3 rosters. Added verified Hanley/Viel X accounts to the research watch list and archived Puget's public request for team credit. Prepared a short NVARC3/Tufa team dispatch plus a separate July-winners reserve in the shared editorial handoff. The existing 2 p.m. job receives an October 13-only permission to publish one companion dispatch if current news leaves room, after fresh source checks; ordinary send-once posting and later schedules remain unchanged. Both drafts validate and the people/portrait ledger passes its checker. Two Tufa aliases and unmatched professional biographies remain unresolved.

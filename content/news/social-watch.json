@@ -5,7 +5,15 @@
     "url": "https://x.com/fchollet",
     "identitySourceUrl": "https://x.com/arcprize",
     "subscriberUrl": "https://x.com/fchollet/subs",
-    "personId": "francois-chollet"
+    "personId": "francois-chollet",
+    "capturePolicy": "all-posts-before-editorial-selection",
+    "researchPriority": "every-hour",
+    "surfaces": [
+      "posts",
+      "replies",
+      "reposts",
+      "subscriber"
+    ]
   },
   {
     "handle": "arcprize",
@@ -24,7 +32,14 @@
     "name": "Mike Knoop",
     "url": "https://x.com/mikeknoop",
     "identitySourceUrl": "https://x.com/arcprize",
-    "personId": "mike-knoop"
+    "personId": "mike-knoop",
+    "capturePolicy": "all-posts-before-editorial-selection",
+    "researchPriority": "every-hour",
+    "surfaces": [
+      "posts",
+      "replies",
+      "reposts"
+    ]
   },
   {
     "handle": "MindsAI_Jack",

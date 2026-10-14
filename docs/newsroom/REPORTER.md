@@ -1,5 +1,16 @@
 # The ARC Daily Digest reporter
 
+## Founder coverage — October 13 evening instruction
+
+Read the hourly founder handoffs and `founder-coverage.json` in the shared social reports
+before selecting edition sources. François Chollet and Mike Knoop are mandatory capture
+sources: all public posts, quotes, replies and thread follow-ups enter the collected
+archive before editorial selection, including general commentary and jokes. Their private
+subscriber material stays in the personal briefing. Follow SOCIAL_DESK.md's separate
+Chrome account and per-surface coverage rules; partial scans are not evidence of silence.
+Run the existing public exporter so every collected public item reaches the searchable
+archive. Curate the paper around news value, and retain exact author/source dates.
+
 ## Overnight handoff and next Early tweet — October 13 editor instruction
 
 The existing research desk now includes a daily 3 am Eastern shift for overnight score
