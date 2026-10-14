@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-14T01:43:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Emre Cirak climbs to 29th on ARC-3",
+  "id": "2026-10-13-2156-arc-3-emre-cirak-breaks-top-thirty",
+  "personIds": [],
+  "publishedAt": "2026-10-14T01:56:44Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Emre Cirak gained 5.26 to reach 35.68, moving from 375th to 29th."
+    }
+  ],
+  "since": "2026-10-13T01:37:15Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T01:56:37Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15492005"
+  ]
+}

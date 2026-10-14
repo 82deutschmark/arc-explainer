@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-14T01:43:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Benedicte HELFER and rutilo make deep ARC-3 climbs",
+  "id": "2026-10-13-2156-arc-3-two-more-climbs-reach-top-seventy",
+  "personIds": [],
+  "publishedAt": "2026-10-14T01:56:44Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Benedicte HELFER climbed 654 places, from 721st to 67th, at 33.31 (+4.66)."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "rutilo climbed 644 places, from 696th to 52nd, at 33.57 (+4.76)."
+    }
+  ],
+  "since": "2026-10-13T01:37:15Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T01:56:37Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15493326",
+    "16993850"
+  ]
+}
