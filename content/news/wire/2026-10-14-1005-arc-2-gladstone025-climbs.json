@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T13:44:33Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Gladstone025 climbs from 249th to 59th on ARC-2",
+  "id": "2026-10-14-1005-arc-2-gladstone025-climbs",
+  "personIds": [],
+  "publishedAt": "2026-10-14T14:05:16Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Gladstone025 climbed from 249th to 59th, gaining 2.63 points to reach 34.44."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The 190-place rise is one of the board’s largest rank gains in the past day."
+    }
+  ],
+  "since": "2026-10-13T13:41:57Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T14:04:33Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16432786"
+  ]
+}

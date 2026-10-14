@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-14T13:44:31Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Harsh Patel and Saket Poswal make major ARC-3 climbs",
+  "id": "2026-10-14-1005-arc-3-harsh-patel-saket-poswal-climb",
+  "personIds": [],
+  "publishedAt": "2026-10-14T14:05:17Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Harsh Patel gained 10.14 points to reach 33.87, moving from 1,361st to 46th. Saket Poswal added 7.25 to reach 33.94 and rose from 1,110th to 44th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "They now sit 46th and 44th, respectively, on a board led by Tufa Labs at 68.91."
+    }
+  ],
+  "since": "2026-10-13T13:41:55Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T14:04:33Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16884832",
+    "15491054"
+  ]
+}
