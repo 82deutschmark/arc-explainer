@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-14T11:44:20Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "mikelou1 climbs into ARC-3 gold at 17th",
+  "id": "2026-10-14-0757-arc-3-mikelou1-reaches-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-14T11:57:29Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "mikelou1 climbed from 30th to 17th, gaining 1.85 points to reach 37.27 and move into the 18 public gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The cutoff rose 0.11 in the past day to 37.18 at 18th. Md Boktiar Mahbub Murad is first outside gold, 19th at 37.12, just 0.06 short."
+    }
+  ],
+  "since": "2026-10-13T11:41:44Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T11:56:35Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16273949",
+    "15487522"
+  ]
+}
