@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-14T01:28:10.926304+00:00",
+  "updatedAt": "2026-10-14T04:18:22.973749+00:00",
   "editorDirection": "Preserve and use existing suitable prepared images before generating more. Future comic-strip scenes show two high-ground GPU strongholds and the reference-ready top-five/top-ten field advancing uphill with GPU siege machines; use the dated valley-strongholds plan. Track article appearances and X attachments separately.",
   "images": [
     {
@@ -19,10 +19,18 @@
       "id": "tufa-gpu-viaduct",
       "generationRecord": "2026-10-13-tufa-arc3-gpu-viaduct-v1-base",
       "src": "/news-images/2026-10-13-tufa-arc3-gpu-viaduct-v1-base.webp",
-      "status": "reserved",
-      "targetEditionId": "2026-10-14-morning-arc-3",
+      "status": "used-on-x",
       "articleUses": [],
-      "xAttachments": []
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2110222672550609239",
+          "postedAt": "2026-10-14T04:14:25Z",
+          "artworkId": "2026-10-14-morning-arc-3-preview-7572e4a703",
+          "attachmentSha256": "35de671a384ae896b95fd999b1bd220a37b4e67d30b2199b006aab8c17bda257"
+        }
+      ],
+      "originalTargetEditionId": "2026-10-14-morning-arc-3",
+      "nextUseNote": "Actually attached to the one-time October 14 midnight post. Select another unused suitable prepared scene for the next Early issue; preserve this native base for later continuity/reference."
     },
     {
       "id": "tufa-gpu-icebreaker",

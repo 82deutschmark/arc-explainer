@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-14-morning-arc-3-preview",
+  "briefSha256": "ecf6829ba4139a5355b9c61f579fedc940806d9d57f55cfc3caf007d29b4e507",
+  "dataAsOf": "2026-10-14T03:43:33Z",
+  "generationRecord": "2026-10-13-tufa-arc3-gpu-viaduct-v1-base",
+  "headline": "Midnight ARC-3: rutilo reaches 52nd; Tufa remains ahead of Chen",
+  "historyChart": null,
+  "id": "2026-10-14-morning-arc-3-preview-7572e4a703",
+  "image": {
+    "alt": "Editorial illustration for Midnight ARC-3: rutilo reaches 52nd; Tufa remains ahead of Chen. Tufa Labs: rank 1, score 68.91; Yi-Chia Chen: rank 2, score 67.49.",
+    "artworkId": "2026-10-14-morning-arc-3-preview-7572e4a703",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 13, 2026 · 11:43 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-14-morning-arc-3-preview-7572e4a703.webp"
+  },
+  "imageSha256": "27adf20285de5e4f65c590b0b2bc9ff6f0d5366b00d365b85b7312a7dbf5feed",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "fa962e9576a9be06691e427d70ab29a2fe638e4595c72adb3e374d5d2e474cbf",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-approved-reusable-scene",
+  "version": 1
+}
