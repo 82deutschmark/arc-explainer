@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T09:44:10Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARCward Intelligence moves into ARC-2 gold",
+  "id": "2026-10-14-0556-arc-2-arcward-intelligence-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-14T09:56:48Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "ARCward Intelligence climbed from 17th to 13th, gaining 8.75 points to reach 54.17."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "That puts the team inside the 15 gold places, after sitting just outside the medal band in the previous observation."
+    }
+  ],
+  "since": "2026-10-13T09:41:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T09:56:29Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16797706"
+  ]
+}
