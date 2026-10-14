@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T21:45:23Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Kajetan Schweighofer climbs to 12th as ARC-2 gold line rises",
+  "id": "2026-10-14-1800-arc-2-kajetan-schweighofer-climbs-as-gold-line-rises",
+  "personIds": [],
+  "publishedAt": "2026-10-14T22:00:34Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Kajetan Schweighofer added 5.41 points to reach 54.44, moving from 14th to 12th on ARC-AGI-2."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The 15th-place gold line rose 4.31 points to 53.06. Kajetan's latest move follows his earlier return to the gold places, now with the cutoff climbing behind him."
+    }
+  ],
+  "since": "2026-10-13T21:42:57Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T22:00:05Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16761662"
+  ]
+}
