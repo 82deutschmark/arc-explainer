@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T15:44:44Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Khaotic Sethesis slips outside ARC-2 gold",
+  "id": "2026-10-14-1201-arc-2-khaotic-sethesis-slips-out-of-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-14T16:01:23Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Khaotic Sethesis has dropped from 14th to 16th at 48.75, unchanged in the past day, and is now outside the 15 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The cutoff rose to 49.03, leaving Khaotic Sethesis 0.28 short. Kajetan Schweighofer now holds 15th at 49.03."
+    }
+  ],
+  "since": "2026-10-13T15:42:09Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T16:01:02Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15648732"
+  ]
+}
