@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.21  Oct 14, 2026
+
+- **Restore the morning front-page picture** (Author: GPT-6.1 Sol / Codex). Promoted the existing two-strongholds valley concept onto the Early ARC-3 article with its original morning score/time overlay, preserving the narrative, publication evidence and posted X announcement. Archived the image-only revision, full reference/cast provenance and artwork usage; the icebreaker stays reserved. The existing compositor can center its panels for scenes with important corner faces, with a new immutable layout identity. Both edition jobs now require a front-page illustration and use suitable prepared stock before generating. Validation: the attached artwork passes its evidence check and all 26 artwork checks pass.
+
 ### Version 9.141.20  Oct 13, 2026
 
 - **Plan the wider comic-strip field** (Author: GPT-6.1 Sol / Codex). Saved Mark's two high-ground GPU strongholds and chasing-valley direction, with artistically taller Tufa/Chen towers and top-five/top-ten siege machines. Named the existing Puget/Sorokin NVARC cast and NVIDIA-green treatment; queued verified-reference gaps for The Last Dance and other contenders. Added dated cast/action/stock handoffs to the existing desks while preserving all prepared pictures and publishing schedules. The plan records the current two-team artwork helper boundary; no new scene or application-code change was needed.

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-13
+# Date: 2026-10-14
 # PURPOSE: Maintain reusable competitor character references, plan native illustrations from verified edition moves,
 # draw dated corner statistics and branding, and bind image bytes/provenance to the exact headline and manuscript.
 # Edition-specific human commissions can reuse approved art on a quiet board while checking
 # the current lead/cast; their observed-history charts are archived and mutation-checked.
 # Human-approved reusable scenes remain available across editions with fresh overlays,
 # while preserving competition, leadership, cast and native-source checks.
+# Reviewed native scenes can request centered overlays to leave foreground faces and
+# high-ground characters visible, with a distinct immutable composition identity.
 # SRP/DRY check: Pass — extends the existing compositor; reuses newsroom briefs and people records.
 """Native generation is the Codex journalist's tool call; this helper never calls a model/API."""
 import argparse
@@ -487,6 +489,16 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
         raise ValueError('artwork requires native generation provenance')
     if file_sha(source) != generation['rawSha256']:
         raise ValueError('raw image differs from the reviewed native generation')
+    placement = generation.get('overlayPlacement', 'corners')
+    if placement not in ('corners', 'center'):
+        raise ValueError('unknown native artwork overlay placement')
+    if placement == 'center':
+        if job['historyChart']:
+            raise ValueError('centered overlays require the compact score panel')
+        # The native scene's reviewed layout is part of the immutable output identity.
+        job = {**job, 'layout': 'center-overlays-v1',
+               'id': article['id'] + '-' + digest({'planId': job['id'],
+                   'generationRecord': generation_record, 'layout': 'center-overlays-v1'})[:10]}
     item = next(x for x in brief['competitions'].values()
                 if x['status'] == 'ready' and x['articleBase']['id'] == article['id'])
     validate_commission_use({'generationRecord': generation_record, 'rows': job['rows']}, item, article, root)
@@ -503,7 +515,8 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
     if job['historyChart']:
         draw_history_panel(draw, canvas, job, font, date_label)
     else:
-        x, panel_width = 32, 560
+        panel_width = 560
+        x = (width - panel_width) // 2 if placement == 'center' else 32
         panel_height = 86 + 74 * len(job['rows'])
         y = canvas.height - panel_height - 32
         draw.rectangle((x, y, x + panel_width, y + panel_height), fill='#f5f0e5', outline='#171512', width=2)
@@ -524,6 +537,8 @@ def compose(source, brief_path, output=None, article=None, root=ROOT, generation
             draw.rectangle((x + 20, row_y + 44, x + 20 + (panel_width - 40) * min(100, max(0, row['score'])) / 100, row_y + 51), fill='#8b3a2a' if i == 0 else '#355970')
         draw.text((x + 20, y + panel_height - 30), date_label + ' · provisional', font=font(19), fill='#534c40')
     brand_x, brand_y, brand_width = width - 662, 32, 630
+    if placement == 'center':
+        brand_x = (width - brand_width) // 2
     draw.rectangle((brand_x, brand_y, brand_x + brand_width, brand_y + 106), fill='#f5f0e5', outline='#171512', width=2)
     draw.rectangle((brand_x, brand_y + 101, brand_x + brand_width, brand_y + 106), fill='#8b3a2a')
     logo = Image.open(public_file('/favicon-32x32.png', root)).convert('RGBA').resize((64, 64), Image.Resampling.NEAREST)

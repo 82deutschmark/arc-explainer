@@ -1,5 +1,25 @@
 # The ARC Daily Digest reporter
 
+## Every front page needs an image — October 14 editor correction
+
+Mark requires an illustration on the front page of each Early/Late issue. Before
+publishing, ensure at least one ready edition article has a valid finished image
+attached, normally the ARC-3 lead. A quiet leader, a used reserve or no automatic
+move trigger is not sufficient reason to leave the front page without art. Select
+a suitable unused prepared scene, including an existing reviewed concept whose
+cast/score premise matches; compose current issue statistics and attach it before
+validation. Keep the article's strongest news headline rather than forcing an art lead.
+If a scene needs explicit edition commissioning, save its named native record and
+fresh leader/cast conditions through the established workflow. Preserve later reserves
+when another suitable prepared scene exists. Generate only when suitable stock is
+unavailable. A real image/tool/source failure must be reported plainly, not silently
+treated as the intended text-only edition. Preserve existing X send-once state.
+
+The October 14 Early ARC-3 article now uses the existing two-strongholds valley
+scene as an image-only correction with its original morning scores/date/time.
+Its separate revision archive preserves the original publication evidence. The
+bridge was used at midnight and the icebreaker remains reserved for later.
+
 ## Expanded cast and valley strongholds — October 13 evening instruction
 
 Future new illustrations follow

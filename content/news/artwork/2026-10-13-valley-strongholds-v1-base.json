@@ -1,0 +1,107 @@
+{
+  "generatedAt": "2026-10-14T01:35:03Z",
+  "id": "2026-10-13-valley-strongholds-v1-base",
+  "inputImages": [
+    "2026-10-13-tufa-gpu-citadel-base.webp",
+    "2026-10-12-jean-francois-puget-reference-1-v1.png",
+    "2026-10-12-ivan-sorokin-reference-1-v1.png",
+    "2026-10-12-mark-barney-reference-1-v1.webp",
+    "2026-10-12-son-pham-reference-1-v1.webp"
+  ],
+  "kind": "native-generation",
+  "overlayPlacement": "center",
+  "promotionAuthorization": {
+    "authorizedAt": "2026-10-14T15:05:07Z",
+    "authorizedBy": "mark-barney",
+    "reason": "Add an image to the morning front page, using the existing valley concept; no new image generation."
+  },
+  "prompt": "Use case: illustration-story.\nCreate ONE finished, richly detailed 16:9 landscape concept illustration titled in our planning notes \"The Siege of GPU Valley\". This is a new scene using references, not an edit of any existing illustration. Use the established warm whimsical snowy fantasy city aesthetic of reference image 1, at the same high quality and with lovely atmospheric depth, fluffy animals, intricate physical GPUs, fans, braided colorful cables, brass railings and glowing cyan/amber electronics. Do not reproduce the existing image composition.\n\nCORE COMPOSITION: View up a broad snowy mountain valley from a three-quarter foreground angle, not a distant bird's-eye map. At the HEAD of the valley are TWO SEPARATE GPU FORTRESSES on adjacent elevated ridges, facing each other across a ravine. The LEFT fortress is Tufa's friendly black spider citadel: stacked graphics cards, enormous fan arrays, illuminated equipment and elegant scaffolding. Exactly FIVE fluffy black spiders tend this fortress, with the referenced Dries at one control balcony. The RIGHT fortress is Chen's equally formidable GPU stronghold, inhabited by exactly TWO rabbits visible in image 1, clearly visible perched on its terraces. Both towers are roughly 20 percent taller than the tallest pursuing siege tower in comparable perspective, with the elevation adding a dramatic separation. Both forts compete with one another while also keeping watch on the field advancing from below. Crucial: the two rabbits belong on their own separate fort, not with the spiders at the bottom. Show both lead forts clearly enough that their architecture and crews read.\n\nCHASING VALLEY: A winding rising route below the lead pair contains visibly distinct pursuing GPU siege machines and camps. Closest major identifiable team: an elaborate NVIDIA GREEN AND BLACK rolling GPU siege tower, designed like a medieval wheeled siege tower built from stacked triple-fan graphics cards, heatsinks and cables. Put a tasteful accurate small \"NVIDIA\" wordmark and eye emblem on one green pennant, and \"NVARC\" on another pennant. Puget and Sorokin, both from their supplied individual character references, stand together at the controls on this machine; show their recognizable faces and preserve their distinct looks. Puget has brown hair, a beard, cyan cyber-helmet and shoulder GPU equipment; Sorokin is clean-shaven with short brown hair and charcoal armor with cyan accents and his blue-crystal visual motif.\n\nOn ANOTHER switchback below the forts, a distinctive wheeled BATTERING RAM made from GPUs with a heavy suspended multi-GPU beam, fans and cable rigging advances uphill under a small elegant pennant reading exactly \"THE LAST DANCE\". This represents the team machine only: no invented named team members or arbitrary human likenesses. A third compact uphill GPU workshop/cart with a small pennant \"MTG\" can represent the other leading challenger, also without an invented person.\n\nNEARER FOREGROUND, BELOW THAT ADVANCED TIER: Mark and Son from images 4 and 5 operate/haul their OWN separate inventive GPU siege machine on the uphill trail. Give them readable recognizable heads and equipment, not generic knights. Mark's bearded lower face, spectacular GPU headgear, small multicolored screens and eyepiece come from his reference. Son has his own dark GPU helmet, broad luminous visor and recognizable lower face. They are together but must be distinct individuals. Scatter additional unoccupied siege equipment, staged GPU carts and small construction camps down the valley to suggest the larger pursuing field; no extra named faces, no duplicate characters. The story is ambitious challengers struggling up toward the two much higher strongholds, not a battle between the lower teams.\n\nREFERENCE ROLES IN INPUT ORDER:\n1: The approved GPU citadel image supplies BOTH STYLE/WORLD and existing Tufa/Chen/Dries identities. Preserve the two rabbits already pictured: grey-brown lop with BOTH ears down beside its cheeks and rounded face; second rabbit with tall dark upright ears, dark eye mask and broad irregular white forehead/nose blaze, white cheeks/chest/paws. Exactly those two bunnies, move them to their own right-hand high-ground fortress. Preserve the small fluffy black spider mascot with expressive white eyes, exactly five spiders at the left-hand fortress. Preserve Dries's swept brown hair, clean-shaven face, green right-eye eyepiece, dark cyan/green GPU suit at the spider fort. Copy the beautiful snowy warm-sunset fantastical engineering world, NOT its single-citadel composition.\n2: Puget's individual character identity only: bearded brown-haired cyber-engineer, cyan-lit helmet, shoulder GPU costume. Ignore all trading-card titles, logos, scores and background.\n3: Sorokin's individual character identity only: short brown hair, clean-shaven face, charcoal armor, cyan collar and blue crystal motif. Ignore trading-card text, scores and backgrounds.\n4: Mark's individual Kaggle cyber-engineer avatar. Preserve his visible beard, dense GPU headgear and multicolored small screens, distinguish him from Puget.\n5: Son's individual Kaggle cyber-engineer avatar. Preserve his wide luminous visor, dense GPU headgear and recognizable lower face. He is a separate person from Mark. No duplicated faces.\n\nLIGHT AND MOOD: Warm sunset behind the twin ridges, peach cloud streaks, cool blue snow and river ice, lamp-lit climbing road, wonderful cyan/green/amber fan glow. Playful, determined sporting adventure, beautiful illustrated comic-strip episode, expressive readable poses. No injury or gore, no flames or destruction. Physically clear machines, silhouettes and terrain. This is imaginative editorial metaphor, not literal hardware reporting.\n\nNo scoreboard, no score numbers, no rank numbers, no dates, no newspaper masthead, no watermarks, no trading-card border. Only the small deliberately requested machine pennants/branding above may contain lettering. Keep the bottom-left and top-right corners reasonably quiet so publication overlays can be added later. Avoid tiny cast faces, a flat row of portraits, duplicated people, merged fortresses or rabbits wandering into the chasing field. Prioritize a coherent beautiful scene over clutter.",
+  "rawSha256": "a18da0f68fc657db777148219756ae022bc390722149a64bcaa4adacc657c2a3",
+  "rawSrc": "/news-images/2026-10-13-valley-strongholds-v1-base.webp",
+  "references": [
+    {
+      "role": "Approved style/world and Tufa, Chen and Dries identities; exact two rabbits and five spiders.",
+      "sha256": "77d42745db3ee91bf11ba5ff98744bd1bc1c07c7552cb1d060c1de315c2d7a88",
+      "src": "/news-images/2026-10-13-tufa-gpu-citadel-base.webp"
+    },
+    {
+      "role": "Puget individual character only; ignore historical card text.",
+      "sha256": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37",
+      "src": "/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png"
+    },
+    {
+      "role": "Sorokin individual character only; ignore historical card text.",
+      "sha256": "c050296ab22522c72c2457b471f17ab18bf4ad00490978fb66354cc54935397c",
+      "src": "/news-images/references/2026-10-12-ivan-sorokin-reference-1-v1.png"
+    },
+    {
+      "role": "Mark’s own Kaggle cyber-engineer avatar, beard and GPU headgear.",
+      "sha256": "f2f0a29a8747c9fa8710489459a5d5f715ec16a91c32f46bb1fa9a4d41a24e9a",
+      "src": "/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp"
+    },
+    {
+      "role": "Son’s own Kaggle cyber-engineer avatar, visor and GPU headgear.",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d",
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp"
+    }
+  ],
+  "registeredAt": "2026-10-14T15:05:07Z",
+  "review": "Two separate ridge forts with two correct rabbits, five spiders and Dries; Puget/Sorokin on green NVARC tower, distinct Mark/Son foreground avatars, labelled Last Dance ram and MTG machine. Preserve identities; use centered overlays so corners do not hide faces/ears. This is previously generated concept art selected by Mark’s front-page request.",
+  "sceneCast": [
+    {
+      "personIds": [
+        "dries-smit"
+      ],
+      "rosterObservedAt": "2026-10-14T09:44:09Z",
+      "teamId": "15486995",
+      "teamName": "Tufa Labs",
+      "treatment": "Individual reference-based characters"
+    },
+    {
+      "personIds": [
+        "yi-chia-chen"
+      ],
+      "rosterObservedAt": "2026-10-14T09:44:09Z",
+      "teamId": "15499660",
+      "teamName": "Yi-Chia Chen",
+      "treatment": "Individual reference-based characters"
+    },
+    {
+      "personIds": [
+        "jean-francois-puget",
+        "ivan-sorokin"
+      ],
+      "rosterObservedAt": "2026-10-14T09:44:09Z",
+      "teamId": "15770880",
+      "teamName": "NVARC3",
+      "treatment": "Individual reference-based characters"
+    },
+    {
+      "personIds": [
+        "mark-barney",
+        "son-pham"
+      ],
+      "rosterObservedAt": "2026-10-14T09:44:09Z",
+      "teamId": "15605182",
+      "teamName": "Son & Mark & Ronen",
+      "treatment": "Individual reference-based characters"
+    },
+    {
+      "personIds": [],
+      "rosterObservedAt": "2026-10-14T09:44:09Z",
+      "teamId": "16021367",
+      "teamName": "the last dance 🕺",
+      "treatment": "Labelled team machine; no individual likeness asserted"
+    },
+    {
+      "personIds": [],
+      "rosterObservedAt": "2026-10-14T09:44:09Z",
+      "teamId": "16153655",
+      "teamName": "mtg",
+      "treatment": "Labelled team machine; no individual likeness asserted"
+    }
+  ],
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-c08c70cc-8390-4592-b180-2bab14246328.png",
+  "version": 1
+}

@@ -2,6 +2,25 @@
 
 Author: GPT-6.1 Sol / Codex · updated 13 October 2026
 
+## Required front-page illustration — Mark, October 14
+
+Each Early/Late front page must have at least one appropriate illustration on its
+published edition lead. This supersedes the quiet-board/no-new-art option below
+for the edition as a whole; both contests do not need separate new images. Use
+appropriate existing prepared artwork first, with exact issue score/time overlays.
+Do not omit the picture merely because the ordinary move-trigger planner is empty
+or the first queued scene was used. Explicit issue commissioning can select a matching
+reviewed native scene on a quiet board. Keep all cast/source checks and stored stock.
+
+The promoted valley native record requests `overlayPlacement: center`: the compact
+score panel sits at bottom center and the paper chyron at top center, leaving Mark,
+Son and the rabbits unobscured. The existing compositor records a distinct
+`center-overlays-v1` identity; older corner compositions keep their original bytes.
+This is layout on a copy of the reviewed native scene, with no image regeneration.
+The main pair's score panel is separate from the broader cast saved in the native
+record and the dated revision/cast handoff. Image-only human corrections preserve
+original standings/reporting and archive separate revision evidence.
+
 ## High-ground forts and the chasing field — October 13 direction
 
 Read [the valley strongholds episode plan](2026-10-13-valley-strongholds-art-plan.md)
