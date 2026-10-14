@@ -16,6 +16,17 @@ Native Codex image generation made these three selected assets. The scene has ex
 
 ## Casting and upkeep
 
+October 13 expanded-scene direction: follow the
+[two strongholds and chasing valley plan](2026-10-13-valley-strongholds-art-plan.md).
+Puget and Sorokin already have separate frozen Hall of Fame character references;
+use both when their exact handles match NVARC3's fresh ARC-3 roster. Mark requests
+NVIDIA-green GPU siege equipment and accents for them. Add reference-ready top-five
+and top-ten competitors to future scenes, including Son/Mark's saved cyber-engineer
+avatars where their current entry belongs. The Last Dance's current roster is known,
+but its members have no mapped individual character references in the saved ledger
+yet; obtain their own verified references first. Ronen also needs an individual
+reference. Preserve the existing characters and prepared scenes while filling gaps.
+
 A `personId` follows that person’s verified Kaggle handle in the fresh observed roster, including new team IDs. All matched individual references remain available on multi-person teams. A curated team mascot takes priority; its `includePeople` lists explicit optional companions. Tufa currently requests Dries. He is included only when his exact verified handle is observed in that contest’s current roster. The revised growing-lead scene also requires Dries, Chen first, Tufa second, a widening verified gap and matching reference hashes. If those conditions fail, the desk must use an appropriate scene or sourced text.
 
 Reference roles are combined when the same image serves multiple identities. Artwork job IDs include the reference versions, cast, scene, prompt and overlay version. Changing a reference does not overwrite an earlier composition. The planner checks selected reference hashes before providing native-tool arguments.

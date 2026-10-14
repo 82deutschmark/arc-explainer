@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.141.20  Oct 13, 2026
+
+- **Plan the wider comic-strip field** (Author: GPT-6.1 Sol / Codex). Saved Mark's two high-ground GPU strongholds and chasing-valley direction, with artistically taller Tufa/Chen towers and top-five/top-ten siege machines. Named the existing Puget/Sorokin NVARC cast and NVIDIA-green treatment; queued verified-reference gaps for The Last Dance and other contenders. Added dated cast/action/stock handoffs to the existing desks while preserving all prepared pictures and publishing schedules. The plan records the current two-team artwork helper boundary; no new scene or application-code change was needed.
+
 ### Version 9.141.19  Oct 13, 2026
 
 - **Hourly founder research and missing-post catch-up** (Author: GPT-6.1 Sol / Codex). The existing research schedule now checks François Chollet and Mike Knoop hourly, capturing every post/reply/thread before editorial selection while retaining broad shifts and the 3 am desk. Explicit signed-in Chrome selection and independent surface checkpoints prevent private-browser access failures or uncertain repost dates from hiding successful timeline scans. Recovered seven public founder posts in the searchable archive and saved the dated private catch-up/coverage handoff. Existing models, edition schedules, subscriber privacy and send-once posting remain intact.

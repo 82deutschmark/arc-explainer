@@ -1,6 +1,19 @@
 # Native illustrations for the ARC Daily Digest
 
-Author: GPT-6.1 Sol / Codex · 12 October 2026
+Author: GPT-6.1 Sol / Codex · updated 13 October 2026
+
+## High-ground forts and the chasing field — October 13 direction
+
+Read [the valley strongholds episode plan](2026-10-13-valley-strongholds-art-plan.md)
+before planning future new scenes. Mark wants Tufa and Chen's rabbits in separate GPU
+forts on adjacent high ground, with towers about 20% taller than the chasing field's
+towers as an artistic convention. Top-five/top-ten contenders bring GPU battering rams
+and siege towers uphill. Use Sorokin and Puget's saved individual characters for NVARC,
+with the explicitly requested NVIDIA-green branding; plan The Last Dance and other
+reference-ready contenders as recurring supporting cast. Score tiers, cast and advances
+must follow the fresh contest evidence. Preserve and use the prepared bridge/icebreaker
+and all existing native originals; this direction does not commission more art now.
+The linked plan explains cast-sheet preparation and the current two-team planner limit.
 
 The Boss authorizes native Codex image generation as part of the Early and Late editions when a referenced competitor makes a consequential move. The Python helper plans and composes; the Codex journalist calls the built-in image tool. No paid image/model API, CLI image-generation fallback, model switching or new schedule is needed. One image per competition at most; a quiet issue can publish without art.
 

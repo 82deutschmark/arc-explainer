@@ -1,5 +1,17 @@
 # The ARC Daily Digest reporter
 
+## Expanded cast and valley strongholds — October 13 evening instruction
+
+Future new illustrations follow
+[the two-strongholds episode plan](2026-10-13-valley-strongholds-art-plan.md): Tufa and
+Chen's rabbits occupy neighboring high ground while the top-five/top-ten field brings
+GPU siege towers and battering rams uphill. Use the existing Puget/Sorokin characters
+and requested NVIDIA-green NVARC accents, and include The Last Dance and other
+contenders as their verified individual references become available. Prepare a dated
+cast sheet from the fresh roster/ranks and preserve actual appearances between episodes.
+Use existing suitable stock first; keep the bridge, icebreaker and all other artwork.
+This adds future planning, not a replacement image or extra publication schedule.
+
 ## Founder coverage — October 13 evening instruction
 
 Read the hourly founder handoffs and `founder-coverage.json` in the shared social reports

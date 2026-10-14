@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T23:30:43.185998Z",
-  "editorDirection": "Use existing suitable prepared images before generating more. Think comic-strip episodes with stable characters and distinct scenes. Track article uses and X attachments separately.",
+  "updatedAt": "2026-10-14T01:28:10.926304+00:00",
+  "editorDirection": "Preserve and use existing suitable prepared images before generating more. Future comic-strip scenes show two high-ground GPU strongholds and the reference-ready top-five/top-ten field advancing uphill with GPU siege machines; use the dated valley-strongholds plan. Track article appearances and X attachments separately.",
   "images": [
     {
       "id": "tufa-gpu-citadel",
@@ -47,5 +47,6 @@
       "artworkId": "2026-10-13-evening-arc-3-e9a20d116a",
       "url": "https://x.com/82deutschmark/status/2110131782016475193"
     }
-  ]
+  ],
+  "futureScenePlan": "docs/newsroom/2026-10-13-valley-strongholds-art-plan.md"
 }
