@@ -102,6 +102,28 @@
     "whyItMatters": "Historical October 9 standings announcement, newly inventoried as a Chollet repost; not a fresh score move. Original and visible context re-read; existing independently verified public visibility preserved."
   },
   {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-14T22:04:09.719062+00:00",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110459241316430266",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-14T19:54:28Z",
+    "storyUrl": null,
+    "summary": "Replying to Vlad Garbuz’s question about the provider checkpoint used for the DeepSeek evaluation, Mazur says Baseten serves the original DeepSeek V4.1 Flash checkpoint, which natively uses fp8 with mxfp4 experts, without additional quantization. Original reply and parent chain read in regular public-post UI, with no Subscribers restriction. This is Mazur’s testing clarification, not an independently reproduced provider comparison.",
+    "threadId": "2110060578530001231",
+    "url": "https://x.com/mhmazur/status/2110459241316430266",
+    "visibility": "public",
+    "whyItMatters": "New organizer detail for interpreting the October 13 verified DeepSeek evaluation. Keep the native mixed precision distinct from additional provider quantization; no new Kaggle score or ruling."
+  },
+  {
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
@@ -188,7 +210,7 @@
     "author": "iiiiitsu_ne",
     "authorName": "イツ",
     "category": "standings",
-    "checkedAt": "2026-10-14T18:04:51.910Z",
+    "checkedAt": "2026-10-14T22:04:09.719062+00:00",
     "competitions": [
       "arc-2"
     ],
@@ -387,27 +409,5 @@
     "url": "https://x.com/fchollet/status/2110042948821975317",
     "visibility": "public",
     "whyItMatters": "Founder reaction to a model release; the post does not supply a new ARC score or an independent evaluation."
-  },
-  {
-    "author": "JFPuget",
-    "authorName": "Jean-François Puget",
-    "category": "community",
-    "checkedAt": "2026-10-14T18:04:58.578Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109971877091274960",
-    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
-    "importance": 2,
-    "personIds": [
-      "jean-francois-puget"
-    ],
-    "postedAt": "2026-10-13T11:37:51Z",
-    "storyUrl": null,
-    "summary": "Replying to the Digest’s morning announcement, Jean-François Puget asks why he was singled out and emphasizes that NVARC is a team with other members.",
-    "threadId": "2109951342487945277",
-    "url": "https://x.com/JFPuget/status/2109971877091274960",
-    "visibility": "public",
-    "whyItMatters": "A direct, public request for team credit supports a short roster profile rather than treating a team result as an individual accomplishment."
   }
 ]

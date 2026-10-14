@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-14-evening-arc-3",
+  "briefSha256": "6928fc5b01547f85195736272c7da1b385de9c55717b5d6c3760dc6e294a9165",
+  "dataAsOf": "2026-10-14T21:45:21Z",
+  "generationRecord": "2026-10-13-tufa-arc3-gpu-icebreaker-v1-base",
+  "headline": "Jing Hua and Juyong climb into ARC-3’s top 35 as Tufa holds the lead",
+  "historyChart": null,
+  "id": "2026-10-14-evening-arc-3-13f00dc867",
+  "image": {
+    "alt": "Editorial illustration for Jing Hua and Juyong climb into ARC-3’s top 35 as Tufa holds the lead. Tufa Labs: rank 1, score 68.91; Yi-Chia Chen: rank 2, score 67.49.",
+    "artworkId": "2026-10-14-evening-arc-3-13f00dc867",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 14, 2026 · 5:45 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-14-evening-arc-3-13f00dc867.webp"
+  },
+  "imageSha256": "e78f598b715220241213fe0d6710a90ac38fe7f73b08bec3a6bbe284d52f0a81",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "4b3886a9c8ef1a9da0c70e3b3a4d225d1994f0c73387a48694e31b28d6ca9cca",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

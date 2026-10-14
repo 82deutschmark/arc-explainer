@@ -104,7 +104,8 @@
     "handle": "iiiiitsu_ne",
     "name": "イツ",
     "url": "https://x.com/iiiiitsu_ne",
-    "identitySourceUrl": "https://x.com/iiiiitsu_ne"
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "personId": "itsu"
   },
   {
     "handle": "menphim",
@@ -160,5 +161,12 @@
     "url": "https://x.com/dawkopi",
     "identitySourceUrl": "https://www.kaggle.com/dawkopi",
     "personId": "dawid-kopiczko"
+  },
+  {
+    "handle": "mhmazur",
+    "name": "Matt Mazur",
+    "url": "https://x.com/mhmazur",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "personId": "matt-mazur"
   }
 ]

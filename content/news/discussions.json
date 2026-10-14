@@ -1,5 +1,23 @@
 [
   {
+    "author": "justnoone2026",
+    "authorName": "Vitalii Berezniak",
+    "bodyRead": true,
+    "checkedAt": "2026-10-14T21:16:52.042Z",
+    "commentCount": 5,
+    "competition": "arc-3",
+    "decision": "paper-lead",
+    "id": "745079",
+    "latestActivityAt": "2026-10-14T16:58:57Z",
+    "personIds": [],
+    "postedAt": "2026-10-02T05:03:20Z",
+    "reason": "Public unanswered eligibility question with a new request today; useful context if the editor covers open requirements. It is not a ruling or disqualification. New comment #3538669; logged-out body and reply verified.",
+    "summary": "The October 2 question asks organizers to reconcile the open-source winner requirements with the exception for incompatible pretrained-model/data licences, specifically Qwen3.8-Flash-Next; follow-ups also mention NVIDIA’s build and datasets with unknown licences. On October 14 16:58:57Z, Thomas Ferraz again asks Greg Kamradt and María Cruz for help. All five displayed comments were read; no organizer answer is visible. Contestant assertions about common model usage are not independently verified here.",
+    "title": "Rules clarification: is Qwen3.8-Flash-Next (Qwen Community License 1.0) allowed in a prize-eligible solution?",
+    "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/745079",
+    "visibility": "public"
+  },
+  {
     "author": "darrenamadeusmartin",
     "authorName": "Darren Amadeus Martin",
     "bodyRead": true,
