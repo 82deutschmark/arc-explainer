@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T07:43:58Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Yanming (Owen) Dong surges to 29th on ARC-2",
+  "id": "2026-10-14-0356-arc-2-yanming-owen-dong-reaches-top-thirty",
+  "personIds": [],
+  "publishedAt": "2026-10-14T07:56:04Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Yanming (Owen) Dong gained 11.39 points to reach 41.25, leaping from 1,111th to 29th on the ARC-2 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "That puts Dong among the leading challengers just outside the 15 gold places, with a much shorter climb now separating him from the medal group."
+    }
+  ],
+  "since": "2026-10-13T07:41:22Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T07:55:29Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16532134"
+  ]
+}
