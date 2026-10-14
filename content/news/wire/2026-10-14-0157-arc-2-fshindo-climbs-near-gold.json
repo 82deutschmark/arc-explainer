@@ -1,0 +1,42 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T05:43:46Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "fshindo climbs to 18th on ARC-2",
+  "id": "2026-10-14-0157-arc-2-fshindo-climbs-near-gold",
+  "personIds": [
+    "fshindo"
+  ],
+  "publishedAt": "2026-10-14T05:57:34Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "fshindo is 18th at 45.83, up 8.33 on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts fshindo just outside the 15 gold places; the current gold line is 48.75."
+    }
+  ],
+  "since": "2026-10-13T05:38:54Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T05:56:59Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17019785"
+  ],
+  "visual": {
+    "alt": "fshindo’s Kaggle profile picture",
+    "href": "/news/people/fshindo",
+    "src": "/news-images/people/fshindo.webp"
+  }
+}
