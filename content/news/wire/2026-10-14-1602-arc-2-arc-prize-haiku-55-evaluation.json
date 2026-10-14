@@ -1,0 +1,46 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T19:45:10Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC Prize reports Haiku 5.5 results across all three ARC tests",
+  "id": "2026-10-14-1602-arc-2-arc-prize-haiku-55-evaluation",
+  "personIds": [],
+  "publishedAt": "2026-10-14T20:02:15Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "social-2110417867288039864",
+        "board-arc-2"
+      ],
+      "text": "ARC Prize reports Haiku 5.5 scored 61.3% on ARC-AGI-2 at $0.085 per task. On ARC-AGI-3, it reached 2.8% at $437 with the provider adapter and 0.5% at $388 with the standard harness. These are model evaluations, separate from Kaggle team standings."
+    },
+    {
+      "sourceIds": [
+        "social-2110417868563042314"
+      ],
+      "text": "The organization says it omitted the max-reasoning ARC-AGI-2 result: only 74 of 120 tasks completed, with many unfinished attempts exhausting their output budget before producing parseable answers."
+    }
+  ],
+  "since": "2026-10-13T19:42:46Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T20:01:36Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    },
+    {
+      "accessedAt": "2026-10-14T18:10:17.513Z",
+      "id": "social-2110417868563042314",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2110417868563042314"
+    },
+    {
+      "accessedAt": "2026-10-14T18:10:17.191Z",
+      "id": "social-2110417867288039864",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2110417867288039864"
+    }
+  ],
+  "teamIds": []
+}

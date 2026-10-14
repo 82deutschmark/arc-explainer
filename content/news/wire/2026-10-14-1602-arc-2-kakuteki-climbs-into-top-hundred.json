@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T19:45:10Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "kakuteki surges from 1,748th to 78th on ARC-2",
+  "id": "2026-10-14-1602-arc-2-kakuteki-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-14T20:02:15Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "kakuteki gained 6.66 points to reach 33.19, jumping from 1,748th to 78th on the ARC-2 public board. The move puts the team inside the top 100."
+    }
+  ],
+  "since": "2026-10-13T19:42:46Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T20:01:36Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15569841"
+  ]
+}

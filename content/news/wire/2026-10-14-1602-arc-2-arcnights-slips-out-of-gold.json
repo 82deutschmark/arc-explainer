@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-14T19:45:10Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Arcnights slips outside ARC-2 gold as cutoff rises",
+  "id": "2026-10-14-1602-arc-2-arcnights-slips-out-of-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-14T20:02:15Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Arcnights fell from 15th to 17th on the ARC-2 public board, leaving the 15 gold places at an unchanged 48.75. The gold cutoff rose 0.28 in the past day to 49.03; Arcnights is now 0.28 short."
+    }
+  ],
+  "since": "2026-10-13T19:42:46Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T20:01:36Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16442485"
+  ]
+}
