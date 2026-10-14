@@ -1,0 +1,40 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-14T03:43:33Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC Prize reports DeepSeek Flash ARC-3 results",
+  "id": "2026-10-14-0004-arc-3-deepseek-flash-evaluation-results",
+  "personIds": [],
+  "publishedAt": "2026-10-14T04:04:07Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "social-2110060578530001231",
+        "board-arc-3"
+      ],
+      "text": "ARC Prize reported that DeepSeek V4.1 Flash reached about three percent on its ARC-3 evaluation with a provider adapter, and under one percent with the standard harness."
+    },
+    {
+      "sourceIds": [
+        "social-2110060578530001231"
+      ],
+      "text": "The linked results compare low reasoning with max reasoning. This is an ARC Prize model evaluation, separate from a team submission on the public Kaggle leaderboard."
+    }
+  ],
+  "since": "2026-10-13T03:37:51Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T04:03:28Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-13T22:00:48.823665+00:00",
+      "id": "social-2110060578530001231",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2110060578530001231"
+    }
+  ],
+  "teamIds": []
+}
