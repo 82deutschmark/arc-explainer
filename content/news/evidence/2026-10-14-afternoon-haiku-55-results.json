@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "id": "2026-10-14-afternoon-haiku-55-results",
+  "publishedAt": "2026-10-14T19:15:35.300544Z",
+  "checkedAt": "2026-10-14T19:14:37Z",
+  "researchHandoff": "2026-10-14T181200Z",
+  "announcementAt": "2026-10-14T17:10:03Z",
+  "sources": [
+    {
+      "id": "haiku-results",
+      "title": "ARC Prize — verified Haiku 5.5 results",
+      "url": "https://arcprize.org/results/anthropic-claude-haiku-5-5",
+      "accessedAt": "2026-10-14T19:14:37Z"
+    },
+    {
+      "id": "haiku-announcement",
+      "title": "ARC Prize — October 14 Haiku 5.5 announcement",
+      "url": "https://x.com/arcprize/status/2110417867288039864",
+      "accessedAt": "2026-10-14T19:14:37Z"
+    },
+    {
+      "id": "haiku-max-coverage",
+      "title": "ARC Prize — why ARC-2 max reasoning was omitted",
+      "url": "https://x.com/arcprize/status/2110417868563042314",
+      "accessedAt": "2026-10-14T19:14:37Z"
+    },
+    {
+      "id": "testing-policy",
+      "title": "ARC Prize — testing policy and harness definitions",
+      "url": "https://arcprize.org/policy",
+      "accessedAt": "2026-10-14T19:14:37Z"
+    },
+    {
+      "id": "opus-results",
+      "title": "ARC Prize — verified Opus 5.5 results",
+      "url": "https://arcprize.org/results/anthropic-claude-opus-5-5",
+      "accessedAt": "2026-10-14T19:14:37Z"
+    },
+    {
+      "id": "verified-board",
+      "title": "ARC Prize — verified model leaderboard",
+      "url": "https://arcprize.org/leaderboard",
+      "accessedAt": "2026-10-14T19:14:37Z"
+    }
+  ],
+  "observedFacts": {
+    "haiku": {
+      "arc1": {
+        "reasoning": "max",
+        "semiPrivateScore": 89.0,
+        "costPerTaskUsd": 0.051,
+        "completed": 93,
+        "total": 100,
+        "incompleteCountedIncorrect": true
+      },
+      "arc2": {
+        "reasoning": "xhigh",
+        "semiPrivateScore": 61.3,
+        "costPerTaskUsd": 0.085,
+        "maxOmitted": true,
+        "maxCompleted": 74,
+        "maxTotal": 120
+      },
+      "arc3": {
+        "reasoning": "max",
+        "standardScore": 0.45,
+        "adapterScore": 2.82,
+        "standardReportedCostUsd": 388.11,
+        "adapterReportedCostUsd": 437.14
+      }
+    },
+    "opus55": {
+      "highArc1": 98.5,
+      "highArc2": 93.3,
+      "arc3Published": false
+    },
+    "sonnet55": {
+      "entryFoundOnVerifiedLeaderboard": false
+    }
+  },
+  "editorialChecks": [
+    "Scores are benchmark scores, not percent of ARC-3 games won.",
+    "Haiku page explicitly calls headline grid scores Semi-Private; public-task tables are separately labelled.",
+    "Rounded headline: 61.3% to 61%; both ARC-3 figures below 3%.",
+    "ARC-3 reported amounts kept distinct from explicit grid cost per task; no per-game unit inferred.",
+    "No Sonnet test-start status or Opus failure cause inferred.",
+    "No Kaggle score change, private-game transfer or hardware claim inferred."
+  ],
+  "accessMethod": "Official result, announcement/thread and policy read in logged-out in-app browser; Opus result and leaderboard also checked via web. Web fetch initially failed for Haiku/X, browser bodies were readable.",
+  "limitations": [
+    "No unpublished testing status established.",
+    "Public replays not analysed as evidence of private-game performance."
+  ]
+}

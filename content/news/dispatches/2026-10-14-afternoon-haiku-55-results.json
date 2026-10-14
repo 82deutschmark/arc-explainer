@@ -1,0 +1,92 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Mark Barney commissioned this afternoon report on Haiku 5.5 and asked for the published status of Sonnet 5.5 and Opus 5.5.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Afternoon edition: Haiku 5.5 scores 61% on ARC-2, but ARC-3 stays below 3%",
+  "id": "2026-10-14-afternoon-haiku-55-results",
+  "interpretation": "For builders, Haiku is a candidate to test for inexpensive grid reasoning. Interactive reliability needs its own evidence: context handling and producing a usable answer both matter. The results support experiments, not a claim that a different harness will deliver the same gains on unseen games.",
+  "publishedAt": "2026-10-14T19:15:35.300544Z",
+  "sections": [
+    {
+      "heading": "A small model, a large divide",
+      "sourceIds": [
+        "haiku-announcement",
+        "haiku-results"
+      ],
+      "text": "Anthropic’s Haiku 5.5 reaches 61.3% on ARC-AGI-2 at $0.085 per task, according to verified results ARC Prize announced Wednesday. Its ARC-AGI-3 score remains below 3% in both published evaluation conditions. The release gives builders a low-cost result on the grid benchmark, while leaving a substantial challenge in interactive play. ARC Prize’s results page dates the model October 7; the public announcement arrived October 14."
+    },
+    {
+      "heading": "Two ways to carry context",
+      "sourceIds": [
+        "haiku-results",
+        "verified-board",
+        "testing-policy"
+      ],
+      "text": "On ARC-3, Haiku scores 0.45% with the Standard harness and 2.82% with the Provider Adapter, both at max reasoning. ARC Prize lists their costs at about $388 and $437 respectively. The announcement quotes those ARC-3 amounts separately from the explicitly per-task prices for ARC-1 and ARC-2. The Standard harness lets a model keep notes across the game. The Provider Adapter uses provider-designed context management, including facilities such as retained reasoning state and conversation compaction. ARC Prize treats them as separate evaluation conditions. The adapter improves Haiku’s reported score, but both results remain low."
+    },
+    {
+      "heading": "More reasoning did not guarantee a finished answer",
+      "sourceIds": [
+        "haiku-max-coverage",
+        "haiku-results",
+        "haiku-announcement"
+      ],
+      "text": "The published ARC-2 result uses xhigh reasoning. ARC Prize omitted max reasoning because it completed only 74 of 120 tasks; many unfinished attempts exhausted their output budget before returning an answer the evaluator could read. On ARC-1, max reasoning reached 89.0% at $0.051 per task. That run completed 93 of 100 tasks, and the score counts unfinished tasks as incorrect. The omissions matter: an unavailable result should not be read as a zero, and a reasoning setting that fails to finish cannot be treated as a reliable upgrade."
+    },
+    {
+      "heading": "Opus has grid results; its ARC-3 slot is still empty",
+      "sourceIds": [
+        "opus-results",
+        "verified-board"
+      ],
+      "text": "Opus 5.5 already has verified ARC-1 and ARC-2 evaluations across five reasoning settings. Its strongest published scores are 98.5% and 93.3%, both at High reasoning. Every ARC-3 entry on its current result page remains blank. The page gives no explanation for that missing result. No Sonnet 5.5 entry appears on the current verified leaderboard either. That establishes the absence of a published result, not whether an unpublished test has begun."
+    },
+    {
+      "heading": "Keep the benchmarks and the race separate",
+      "sourceIds": [
+        "haiku-results",
+        "testing-policy"
+      ],
+      "text": "The headline Haiku grid scores are Semi-Private evaluations. The result page separately supplies public grid-task answers and replays from 25 ARC-3 demo environments. Those demo traces are useful inspection material, but they do not establish performance on unseen competition games. These are model evaluations, separate from the Kaggle team standings; the announcement establishes no change in the medal race."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-14T19:14:37Z",
+      "id": "haiku-results",
+      "title": "ARC Prize — verified Haiku 5.5 results",
+      "url": "https://arcprize.org/results/anthropic-claude-haiku-5-5"
+    },
+    {
+      "accessedAt": "2026-10-14T19:14:37Z",
+      "id": "haiku-announcement",
+      "title": "ARC Prize — October 14 Haiku 5.5 announcement",
+      "url": "https://x.com/arcprize/status/2110417867288039864"
+    },
+    {
+      "accessedAt": "2026-10-14T19:14:37Z",
+      "id": "haiku-max-coverage",
+      "title": "ARC Prize — why ARC-2 max reasoning was omitted",
+      "url": "https://x.com/arcprize/status/2110417868563042314"
+    },
+    {
+      "accessedAt": "2026-10-14T19:14:37Z",
+      "id": "testing-policy",
+      "title": "ARC Prize — testing policy and harness definitions",
+      "url": "https://arcprize.org/policy"
+    },
+    {
+      "accessedAt": "2026-10-14T19:14:37Z",
+      "id": "opus-results",
+      "title": "ARC Prize — verified Opus 5.5 results",
+      "url": "https://arcprize.org/results/anthropic-claude-opus-5-5"
+    },
+    {
+      "accessedAt": "2026-10-14T19:14:37Z",
+      "id": "verified-board",
+      "title": "ARC Prize — verified model leaderboard",
+      "url": "https://arcprize.org/leaderboard"
+    }
+  ]
+}

@@ -23,7 +23,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "standings",
-    "checkedAt": "2026-10-13T22:00:48.823665+00:00",
+    "checkedAt": "2026-10-14T18:03:44Z",
     "competitions": [
       "arc-3"
     ],
@@ -102,10 +102,93 @@
     "whyItMatters": "Historical October 9 standings announcement, newly inventoried as a Chollet repost; not a fresh score move. Original and visible context re-read; existing independently verified public visibility preserved."
   },
   {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-14T18:10:17.513Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110417868563042314",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-14T17:10:04Z",
+    "storyUrl": "https://arcprize.org/results/anthropic-claude-haiku-5-5",
+    "summary": "ARC Prize says it omitted Haiku 5.5 max reasoning on ARC-AGI-2 because only 74 of 120 tasks completed, with many incomplete attempts exhausting their output budget before producing parseable answers.",
+    "threadId": "2110417867288039864",
+    "url": "https://x.com/arcprize/status/2110417868563042314",
+    "visibility": "public",
+    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-14T18:10:18.127Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110417869984935975",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-14T17:10:04Z",
+    "storyUrl": "https://arcprize.org/results/anthropic-claude-haiku-5-5",
+    "summary": "ARC Prize supplies its leaderboard, reproduction repository, testing policy and full Haiku 5.5 results as supporting links for the evaluation thread.",
+    "threadId": "2110417867288039864",
+    "url": "https://x.com/arcprize/status/2110417869984935975",
+    "visibility": "public",
+    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-14T18:10:17.191Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110417867288039864",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-14T17:10:03Z",
+    "storyUrl": "https://arcprize.org/results/anthropic-claude-haiku-5-5",
+    "summary": "ARC Prize reports verified Haiku 5.5 scores: ARC-AGI-3 2.8%/$437 with its provider adapter and 0.5%/$388 with its standard harness; ARC-AGI-2 61.3% at $0.085 per task; ARC-AGI-1 89.0% at $0.051 per task. These are model evaluations, separate from Kaggle team standings.",
+    "threadId": "2110417867288039864",
+    "url": "https://x.com/arcprize/status/2110417867288039864",
+    "visibility": "public",
+    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-14T15:10:22.522Z",
+    "competitions": [],
+    "id": "2110378929588752784",
+    "identitySourceUrl": "https://x.com/fchollet",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-14T14:35:20Z",
+    "storyUrl": "https://aetherlabsai.github.io/CRIS-0/",
+    "summary": "Chollet argues that autonomous robotics needs causality and discrete reasoning beyond autoregressive sampling, and praises Biwei Huang’s Aether AI work. His quote refers to Huang’s October 12 CRIS-0 announcement; it is not an October 14 model release or a Kaggle result.",
+    "threadId": "2109667913472839911",
+    "url": "https://x.com/fchollet/status/2110378929588752784",
+    "visibility": "public",
+    "whyItMatters": "New public founder research lead. Original and visible conversation read; public body independently readable without sign-in. Linked CRIS-0 technical project page read: explicit task state, verification, retry/replan; reported robotics work, no disclosed ARC recipe."
+  },
+  {
     "author": "iiiiitsu_ne",
     "authorName": "イツ",
     "category": "standings",
-    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
+    "checkedAt": "2026-10-14T18:04:51.910Z",
     "competitions": [
       "arc-2"
     ],
@@ -162,6 +245,88 @@
     "url": "https://x.com/mikeknoop/status/2110116171207123326",
     "visibility": "public",
     "whyItMatters": "A founder perspective on AI progress. His broad disruption and cryptography claims remain attributed commentary, separate from contest standings."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-14T18:10:42.100Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110106306207948818",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-13T20:32:01Z",
+    "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
+    "summary": "In the DeepSeek evaluation conversation, Mazur offers to answer questions about ARC Prize testing and analysis, identifying himself as its testing lead.",
+    "threadId": "2110060578530001231",
+    "url": "https://x.com/mhmazur/status/2110106306207948818",
+    "visibility": "public",
+    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-14T18:10:43.124Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110066453168668901",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-13T17:53:40Z",
+    "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
+    "summary": "Mazur says ARC Prize tested DeepSeek V4.1 Flash through Baseten's Models API, calculating costs at $0.30 per million input tokens and $1.20 per million output tokens.",
+    "threadId": "2110060578530001231",
+    "url": "https://x.com/mhmazur/status/2110066453168668901",
+    "visibility": "public",
+    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-14T18:11:23.556Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110060580782403627",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-13T17:30:20Z",
+    "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
+    "summary": "ARC Prize supplies reproduction, policy, leaderboard and full-result links at the end of its DeepSeek V4.1 Flash evaluation thread.",
+    "threadId": "2110060578530001231",
+    "url": "https://x.com/arcprize/status/2110060580782403627",
+    "visibility": "public",
+    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-14T18:10:18.458Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110060579763134648",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-13T17:30:19Z",
+    "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
+    "summary": "ARC Prize links its earlier DeepSeek V4.1 Flash ARC-AGI-1/2 evaluation thread as context for its October 13 ARC-AGI-3 evaluation.",
+    "threadId": "2110060578530001231",
+    "url": "https://x.com/arcprize/status/2110060579763134648",
+    "visibility": "public",
+    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
   },
   {
     "author": "fchollet",
@@ -227,7 +392,7 @@
     "author": "JFPuget",
     "authorName": "Jean-François Puget",
     "category": "community",
-    "checkedAt": "2026-10-13T18:06:57.732Z",
+    "checkedAt": "2026-10-14T18:04:58.578Z",
     "competitions": [
       "arc-3"
     ],
@@ -244,175 +409,5 @@
     "url": "https://x.com/JFPuget/status/2109971877091274960",
     "visibility": "public",
     "whyItMatters": "A direct, public request for team credit supports a short roster profile rather than treating a team result as an individual accomplishment."
-  },
-  {
-    "author": "guanningzeng",
-    "authorName": "Guanning Zeng",
-    "category": "research",
-    "checkedAt": "2026-10-13T03:48:52.894Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109719698472673733",
-    "identitySourceUrl": "https://github.com/guanning03/Schema",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-12T18:55:47Z",
-    "storyUrl": "https://arxiv.org/abs/2609.39140",
-    "summary": "Zeng links the Schema preprint, public implementation repository and project site, and credits the research team. The repository was read without sign-in.",
-    "threadId": "2109719501587570957",
-    "url": "https://x.com/guanningzeng/status/2109719698472673733",
-    "visibility": "public",
-    "whyItMatters": "Direct primary-source links for reporters. Code was inspected as source material, not run or installed."
-  },
-  {
-    "author": "guanningzeng",
-    "authorName": "Guanning Zeng",
-    "category": "research",
-    "checkedAt": "2026-10-13T03:48:52.894Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109719693971857861",
-    "identitySourceUrl": "https://github.com/guanning03/Schema",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-12T18:55:46Z",
-    "storyUrl": "https://arxiv.org/abs/2609.39140",
-    "summary": "In an author-reported ten-public-game ablation, removing executable modeling, history checks, planning or runtime verification reduces performance.",
-    "threadId": "2109719501587570957",
-    "url": "https://x.com/guanningzeng/status/2109719693971857861",
-    "visibility": "public",
-    "whyItMatters": "Explains the design claim; grouped with the release rather than a separate score story."
-  },
-  {
-    "author": "guanningzeng",
-    "authorName": "Guanning Zeng",
-    "category": "research",
-    "checkedAt": "2026-10-13T03:48:52.894Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109719611839238316",
-    "identitySourceUrl": "https://github.com/guanning03/Schema",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-12T18:55:26Z",
-    "storyUrl": "https://arxiv.org/abs/2609.39140",
-    "summary": "Zeng reports that Schema with Claude Fable 5 clears the 25 public ARC-AGI-3 games and improves relative human action efficiency over Claude Code. The paper supports this author-reported public-set comparison.",
-    "threadId": "2109719501587570957",
-    "url": "https://x.com/guanningzeng/status/2109719611839238316",
-    "visibility": "public",
-    "whyItMatters": "Useful technical context for the release; the public tutorial set does not establish competition performance."
-  },
-  {
-    "author": "guanningzeng",
-    "authorName": "Guanning Zeng",
-    "category": "research",
-    "checkedAt": "2026-10-13T03:48:52.894Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109719501587570957",
-    "identitySourceUrl": "https://github.com/guanning03/Schema",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-12T18:55:00Z",
-    "storyUrl": "https://arxiv.org/abs/2609.39140",
-    "summary": "Zeng announces Schema’s full report and code, building on its July public-game demonstration. The linked preprint was submitted September 30; this is an October 12 release announcement.",
-    "threadId": "2109719501587570957",
-    "url": "https://x.com/guanningzeng/status/2109719501587570957",
-    "visibility": "public",
-    "whyItMatters": "A fresh release lead with publicly accessible paper and implementation. Public-game evaluation; no private Kaggle result established."
-  },
-  {
-    "author": "crysis44k",
-    "authorName": "fshindo",
-    "category": "community",
-    "checkedAt": "2026-10-13T18:05:48.028Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2109689542391496948",
-    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
-    "importance": 2,
-    "personIds": [
-      "fshindo"
-    ],
-    "postedAt": "2026-10-12T16:55:57Z",
-    "storyUrl": null,
-    "summary": "English translation of the Japanese post: fshindo thinks local LLM enthusiasts with many GPUs who improve harnesses and inference speed ought to enter competitions, then jokes about discovering formidable people who would become rivals. This is a friendly invitation, not a claim about a named rival’s resources.",
-    "threadId": null,
-    "url": "https://x.com/crysis44k/status/2109689542391496948",
-    "visibility": "public",
-    "whyItMatters": "Japanese competitor voice about the connection between practical inference/harness work and contest participation."
-  },
-  {
-    "author": "crysis44k",
-    "authorName": "fshindo",
-    "category": "standings",
-    "checkedAt": "2026-10-13T18:05:48.028Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2109688065099006141",
-    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
-    "importance": 2,
-    "personIds": [
-      "fshindo"
-    ],
-    "postedAt": "2026-10-12T16:50:05Z",
-    "storyUrl": null,
-    "summary": "English translation of the Japanese post: fshindo says they finally reached the medal range in ARC-AGI-2 and are pleased because that contest had received the most of their time and effort without results until then. The profile ffsscf directly links this X account; the claim is dated to the post, not a current rank.",
-    "threadId": null,
-    "url": "https://x.com/crysis44k/status/2109688065099006141",
-    "visibility": "public",
-    "whyItMatters": "A useful participant account of persistence and uneven progress between the two contests."
-  },
-  {
-    "author": "cunkpyber",
-    "authorName": "PunkCyber",
-    "category": "community",
-    "checkedAt": "2026-10-12T22:00:13.611292+00:00",
-    "competitions": [
-      "arc-3",
-      "arc-2"
-    ],
-    "id": "2109599257980555583",
-    "identitySourceUrl": "https://x.com/cunkpyber",
-    "importance": 2,
-    "personIds": [
-      "punkcyber"
-    ],
-    "postedAt": "2026-10-12T10:57:12Z",
-    "storyUrl": null,
-    "summary": "PunkCyber tells the ARC Daily Digest that 復活の混テキスト is their team. The exact Japanese name matches entries on the current ARC-3 and ARC-2 boards; these have separate competition team IDs.",
-    "threadId": "2109589148218638844",
-    "url": "https://x.com/cunkpyber/status/2109599257980555583",
-    "visibility": "public",
-    "whyItMatters": "A competitor checked in with the paper and supplied a direct team identification. It supports a friendly shout-out; the reply does not identify their individual Kaggle handle or establish who produced a submission."
-  },
-  {
-    "author": "crysis44k",
-    "authorName": "fshindo",
-    "category": "community",
-    "checkedAt": "2026-10-13T18:05:48.028Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109594490663276946",
-    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
-    "importance": 2,
-    "personIds": [
-      "fshindo"
-    ],
-    "postedAt": "2026-10-12T10:38:15Z",
-    "storyUrl": null,
-    "summary": "Posting in Japanese, fshindo said the ARC-AGI-3 competition had taught them a great deal about agent harnesses and called contests a valuable learning opportunity. The post links the current Kaggle competition.",
-    "threadId": null,
-    "url": "https://x.com/crysis44k/status/2109594490663276946",
-    "visibility": "public",
-    "whyItMatters": "A first-person ARC-3 engineering account, now connected through the direct Kaggle profile link to team 16992721. It is an attributed experience, not a claimed cause of any score."
   }
 ]
