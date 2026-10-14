@@ -125,5 +125,40 @@
     "url": "https://x.com/Stefan0Vl",
     "identitySourceUrl": "https://www.kaggle.com/stefano1283",
     "personId": "stefano-viel"
+  },
+  {
+    "handle": "ricsinaruto",
+    "name": "Richard Csaky",
+    "url": "https://x.com/ricsinaruto",
+    "identitySourceUrl": "https://artificialagencylab.com/",
+    "personId": "richard-csaky"
+  },
+  {
+    "handle": "fses91",
+    "name": "fses91",
+    "url": "https://x.com/fses91",
+    "identitySourceUrl": "https://www.kaggle.com/fses91",
+    "personId": "fses91"
+  },
+  {
+    "handle": "aichberger",
+    "name": "Lukas Aichberger",
+    "url": "https://x.com/aichberger",
+    "identitySourceUrl": "https://www.kaggle.com/lukasaichberger",
+    "personId": "lukas-aichberger"
+  },
+  {
+    "handle": "vineeth_sai_vs",
+    "name": "Vineeth Sai Varikuntla",
+    "url": "https://x.com/vineeth_sai_vs",
+    "identitySourceUrl": "https://www.kaggle.com/vineethsaivs",
+    "personId": "vineeth-sai-varikuntla"
+  },
+  {
+    "handle": "dawkopi",
+    "name": "Dawid Kopiczko",
+    "url": "https://x.com/dawkopi",
+    "identitySourceUrl": "https://www.kaggle.com/dawkopi",
+    "personId": "dawid-kopiczko"
   }
 ]

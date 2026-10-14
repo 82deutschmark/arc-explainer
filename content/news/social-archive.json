@@ -1,5 +1,67 @@
 [
   {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ",
+    "category": "banter",
+    "checkedAt": "2026-10-14T07:10:56.292Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2110255485874315718",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-14T06:24:49Z",
+    "storyUrl": null,
+    "summary": "Japanese translation: Odd Dice’s flick/slide input judgement was so strange that I deliberately chose it as my Kaggle team name. A light explanation of the name, not a disclosure of an ARC solution or model method.",
+    "threadId": "2110255485874315718",
+    "url": "https://x.com/iiiiitsu_ne/status/2110255485874315718",
+    "visibility": "public",
+    "whyItMatters": "Own team-name statement complements direct Kaggle-to-X identity evidence. Original body/date readable without sign-in; preserve the joke as color."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ",
+    "category": "standings",
+    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2110243114988581038",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 2,
+    "personIds": [
+      "itsu"
+    ],
+    "postedAt": "2026-10-14T05:35:39Z",
+    "storyUrl": null,
+    "summary": "Japanese translation: Even with a 2.5-point improvement, I have actually dropped from rank 31. The attached native Kaggle share says Moved up to rank 35 for ARC-AGI-2. This is the author’s posting-time comparison, distinct from the saved rolling board event and later rank.",
+    "threadId": "2110243114988581038",
+    "url": "https://x.com/iiiiitsu_ne/status/2110243114988581038",
+    "visibility": "public",
+    "whyItMatters": "Own standings voice. Kaggle nisshokuitsuki directly links @iiiiitsu_ne; current ARC-2 Odd Dice roster contains that handle. Original body/date independently readable without sign-in."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
+    "competitions": [],
+    "id": "2110214967228236242",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-14T03:43:48Z",
+    "storyUrl": null,
+    "summary": "Chollet argues that the ideal scientific outcome of AI is to enable millions of human scientists to pursue their curiosity more ambitiously, rather than concentrating expensive proprietary systems in a few labs tackling prestige problems.",
+    "threadId": "2110214967228236242",
+    "url": "https://x.com/fchollet/status/2110214967228236242",
+    "visibility": "public",
+    "whyItMatters": "A fresh public founder statement at 11:43 pm Eastern on October 13. This is his view of AI-aided science, not a new release or ARC contest result. Original post read in signed-in Chrome with ordinary public engagement controls and no subscriber label; the separately read Subs feed retains its explicit private labels."
+  },
+  {
     "author": "mikeknoop",
     "authorName": "Mike Knoop",
     "category": "community",
@@ -23,7 +85,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
-    "checkedAt": "2026-10-13T22:00:48.823665+00:00",
+    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
     "competitions": [
       "arc-3"
     ],
@@ -33,7 +95,7 @@
     "personIds": [],
     "postedAt": "2026-10-13T17:30:19Z",
     "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
-    "summary": "ARC Prize announces DeepSeek V4.1 Flash ARC-3 evaluation: about 3% with a provider adapter and under 1% with the standard harness. Its linked public results page shows the headline comparison uses low versus max reasoning. This is benchmark evaluation, not a Kaggle team submission.",
+    "summary": "ARC Prize’s October 13 announcement reports DeepSeek V4.1 Flash at about 3% with its provider adapter and below 1% with the standard harness. The original linked verified-results table, refreshed October 14, gives a matched Low-reasoning comparison of 3.26% versus 0.35%; its headline best configurations differ in reasoning level. Organizer model evaluation, separate from Kaggle team submissions.",
     "threadId": "2110060578530001231",
     "url": "https://x.com/arcprize/status/2110060578530001231",
     "visibility": "public",
@@ -98,6 +160,50 @@
     "url": "https://x.com/fchollet/status/2110050795890827756",
     "visibility": "public",
     "whyItMatters": "An attributed founder view on team context and agent workflows, not measured product performance."
+  },
+  {
+    "author": "MindsAI_Jack",
+    "authorName": "Jack Cole",
+    "category": "banter",
+    "checkedAt": "2026-10-14T09:20:47.035134Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110050318620746012",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "importance": 1,
+    "personIds": [
+      "jack-cole"
+    ],
+    "postedAt": "2026-10-13T16:49:33Z",
+    "storyUrl": null,
+    "summary": "Replying to Dries Smit’s friendly comment that Yi-Chia is giving Tufa a run for its money, Cole jokes that the competition must keep the effort level high. Parent congratulations and Smit reply read.",
+    "threadId": "2110037280337371161",
+    "url": "https://x.com/MindsAI_Jack/status/2110050318620746012",
+    "visibility": "public",
+    "whyItMatters": "Light supporting color, posted October 13 afternoon and recovered during catch-up. No new score claim or evidence about actual effort, hardware or rivalry. X unauthenticated access returned 403; private pending verification."
+  },
+  {
+    "author": "DriesSmit1",
+    "authorName": "Dries Smit",
+    "category": "banter",
+    "checkedAt": "2026-10-14T09:20:47.460562Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110049550652121201",
+    "identitySourceUrl": "https://x.com/DriesSmit1",
+    "importance": 1,
+    "personIds": [
+      "dries-smit"
+    ],
+    "postedAt": "2026-10-13T16:46:30Z",
+    "storyUrl": null,
+    "summary": "Smit thanks Cole and jokes that Yi-Chia is giving the team a run for its money.",
+    "threadId": "2110037280337371161",
+    "url": "https://x.com/DriesSmit1/status/2110049550652121201",
+    "visibility": "public",
+    "whyItMatters": "Friendly banter, not a disclosure of methods or a new score."
   },
   {
     "author": "fchollet",
@@ -872,7 +978,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "standings",
-    "checkedAt": "2026-10-09T21:09:33Z",
+    "checkedAt": "2026-10-14T02:01:10.931Z",
     "competitions": [
       "arc-3"
     ],
@@ -888,7 +994,7 @@
     "threadId": "2108577347192676612",
     "url": "https://x.com/arcprize/status/2108577347192676612",
     "visibility": "public",
-    "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
+    "whyItMatters": "Historical October 9 standings announcement, newly inventoried as a Chollet repost; not a fresh score move. Original and visible context re-read; existing independently verified public visibility preserved."
   },
   {
     "author": "GregKamradt",
@@ -1031,6 +1137,66 @@
     "url": "https://x.com/SimonOuellette6/status/2108289507908780366",
     "visibility": "public",
     "whyItMatters": "A concrete research resource; its author describes training material, not a measured Kaggle-score gain or coverage of private games."
+  },
+  {
+    "author": "masspeakss",
+    "authorName": "masspeaks(まっすー)",
+    "category": "community",
+    "checkedAt": "2026-10-14T09:22:22.054Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108093781283319932",
+    "identitySourceUrl": "https://x.com/masspeakss",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-08T07:14:58Z",
+    "storyUrl": null,
+    "summary": "Translation of the original Japanese: masspeaks asks for help with an ARC-2 queue that takes a long time and ends in an error, while describing one submission per day. This is the author’s October 8 complaint, not an organizer ruling or evidence of a current queue outage.",
+    "threadId": null,
+    "url": "https://x.com/masspeakss/status/2108093781283319932",
+    "visibility": "public",
+    "whyItMatters": "Older catch-up context for queue reporting; current organizer decisions must come from the original organizer thread."
+  },
+  {
+    "author": "masspeakss",
+    "authorName": "masspeaks(まっすー)",
+    "category": "community",
+    "checkedAt": "2026-10-14T09:23:01.096Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108046244237201491",
+    "identitySourceUrl": "https://x.com/masspeakss",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-08T04:06:04Z",
+    "storyUrl": null,
+    "summary": "In a reply to a question about AI subscriptions and GPUs, masspeaks says they have been using Claude Code and some A100 GPUs, and jokes about wanting unlimited machine resources. The conversation sits beneath their ARC-2 start post.",
+    "threadId": "2108004879059087625",
+    "url": "https://x.com/masspeakss/status/2108046244237201491",
+    "visibility": "public",
+    "whyItMatters": "A narrow first-person resource disclosure, not a full Kaggle recipe, spending figure or current hardware inventory. Older catch-up material."
+  },
+  {
+    "author": "masspeakss",
+    "authorName": "masspeaks(まっすー)",
+    "category": "community",
+    "checkedAt": "2026-10-14T09:22:39.557Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2108004879059087625",
+    "identitySourceUrl": "https://x.com/masspeakss",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-08T01:21:42Z",
+    "storyUrl": null,
+    "summary": "Translation of the original Japanese: masspeaks says they have started ARC-AGI-2. The thread contains friendly greetings from another participant. This is an October 8 catch-up source, not a fresh entry announcement.",
+    "threadId": "2108004879059087625",
+    "url": "https://x.com/masspeakss/status/2108004879059087625",
+    "visibility": "public",
+    "whyItMatters": "Dated Japanese competitor voice for the desk; no exact team identity or current rank established."
   },
   {
     "author": "JFPuget",

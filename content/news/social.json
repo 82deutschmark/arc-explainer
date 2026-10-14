@@ -3,7 +3,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
-    "checkedAt": "2026-10-13T22:00:48.823665+00:00",
+    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
     "competitions": [
       "arc-3"
     ],
@@ -13,7 +13,7 @@
     "personIds": [],
     "postedAt": "2026-10-13T17:30:19Z",
     "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
-    "summary": "ARC Prize announces DeepSeek V4.1 Flash ARC-3 evaluation: about 3% with a provider adapter and under 1% with the standard harness. Its linked public results page shows the headline comparison uses low versus max reasoning. This is benchmark evaluation, not a Kaggle team submission.",
+    "summary": "ARC Prize’s October 13 announcement reports DeepSeek V4.1 Flash at about 3% with its provider adapter and below 1% with the standard harness. The original linked verified-results table, refreshed October 14, gives a matched Low-reasoning comparison of 3.26% versus 0.35%; its headline best configurations differ in reasoning level. Organizer model evaluation, separate from Kaggle team submissions.",
     "threadId": "2110060578530001231",
     "url": "https://x.com/arcprize/status/2110060578530001231",
     "visibility": "public",
@@ -83,7 +83,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "standings",
-    "checkedAt": "2026-10-09T21:09:33Z",
+    "checkedAt": "2026-10-14T02:01:10.931Z",
     "competitions": [
       "arc-3"
     ],
@@ -99,7 +99,49 @@
     "threadId": "2108577347192676612",
     "url": "https://x.com/arcprize/status/2108577347192676612",
     "visibility": "public",
-    "whyItMatters": "A new public-board leader is the strongest ARC-3 standings lead; verify the current board before an edition."
+    "whyItMatters": "Historical October 9 standings announcement, newly inventoried as a Chollet repost; not a fresh score move. Original and visible context re-read; existing independently verified public visibility preserved."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ",
+    "category": "standings",
+    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2110243114988581038",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 2,
+    "personIds": [
+      "itsu"
+    ],
+    "postedAt": "2026-10-14T05:35:39Z",
+    "storyUrl": null,
+    "summary": "Japanese translation: Even with a 2.5-point improvement, I have actually dropped from rank 31. The attached native Kaggle share says Moved up to rank 35 for ARC-AGI-2. This is the author’s posting-time comparison, distinct from the saved rolling board event and later rank.",
+    "threadId": "2110243114988581038",
+    "url": "https://x.com/iiiiitsu_ne/status/2110243114988581038",
+    "visibility": "public",
+    "whyItMatters": "Own standings voice. Kaggle nisshokuitsuki directly links @iiiiitsu_ne; current ARC-2 Odd Dice roster contains that handle. Original body/date independently readable without sign-in."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
+    "competitions": [],
+    "id": "2110214967228236242",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-14T03:43:48Z",
+    "storyUrl": null,
+    "summary": "Chollet argues that the ideal scientific outcome of AI is to enable millions of human scientists to pursue their curiosity more ambitiously, rather than concentrating expensive proprietary systems in a few labs tackling prestige problems.",
+    "threadId": "2110214967228236242",
+    "url": "https://x.com/fchollet/status/2110214967228236242",
+    "visibility": "public",
+    "whyItMatters": "A fresh public founder statement at 11:43 pm Eastern on October 13. This is his view of AI-aided science, not a new release or ARC contest result. Original post read in signed-in Chrome with ordinary public engagement controls and no subscriber label; the separately read Subs feed retains its explicit private labels."
   },
   {
     "author": "mikeknoop",
@@ -372,47 +414,5 @@
     "url": "https://x.com/crysis44k/status/2109594490663276946",
     "visibility": "public",
     "whyItMatters": "A first-person ARC-3 engineering account, now connected through the direct Kaggle profile link to team 16992721. It is an attributed experience, not a claimed cause of any score."
-  },
-  {
-    "author": "mikeknoop",
-    "authorName": "Mike Knoop",
-    "category": "research",
-    "checkedAt": "2026-10-12T15:49:06.002362Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109493530465059261",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 2,
-    "personIds": [
-      "mike-knoop"
-    ],
-    "postedAt": "2026-10-12T03:57:04Z",
-    "storyUrl": "https://arxiv.org/abs/2609.35738",
-    "summary": "Mike Knoop said the same thing is happening with ARC-AGI-3 while quoting Pedro Domingos’s comment that models are absorbing harness behavior. The quoted post links Harness Learning Enables Generalizable Test-Time Adaptation. Knoop gives no named team, method, score or ARC experiment. The linked paper trains a proposer to revise executable harness code using feedback; its reported evaluations cover reasoning and multi-hop question answering, so the ARC-3 observation remains Knoop’s attributed comment.",
-    "threadId": "2109493530465059261",
-    "url": "https://x.com/mikeknoop/status/2109493530465059261",
-    "visibility": "public",
-    "whyItMatters": "Fresh ARC co-founder reaction for reporting on how models and harnesses divide the work. Useful research context, with no new verified Kaggle result or evidence that harnesses disappear."
-  },
-  {
-    "author": "Fei2411",
-    "authorName": "FeiZ",
-    "category": "research",
-    "checkedAt": "2026-10-11T21:59:54.035507+00:00",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2109319340902510823",
-    "identitySourceUrl": "https://x.com/Fei2411",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-11T16:24:00Z",
-    "storyUrl": null,
-    "summary": "FeiZ reported a one-level ls20 ARC-AGI-3 comparison: a DS Bot cleared that level within 81 steps, while a DeepSeek Harness exhausted 110 steps without clearing it. This is the author’s own small test, not a Kaggle standing or verified benchmark result.",
-    "threadId": "2109319340902510823",
-    "url": "https://x.com/Fei2411/status/2109319340902510823",
-    "visibility": "public",
-    "whyItMatters": "Recent ARC-AGI-3 community experiment; the author explicitly says one level proves little."
   }
 ]
