@@ -310,5 +310,41 @@
     "subjectNames": [
       "Walking Foundry"
     ]
+  },
+  {
+    "id": "oct15-evening-turducken-harness",
+    "competition": "arc-3",
+    "createdAt": "2026-10-15T17:18:44.063426Z",
+    "expiresAt": "2026-10-16T00:00:00Z",
+    "title": "Evening turducken harness with Son, Mark and two cybernetic Yorkies",
+    "priority": "Boss-requested evening artwork and exclusive team voices",
+    "status": "pending",
+    "targetEditionId": "2026-10-15-evening-arc-3",
+    "placement": "edition-artwork",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "15486995",
+      "15499660",
+      "15605182"
+    ],
+    "personIds": [
+      "mark-barney",
+      "son-pham"
+    ],
+    "subjectNames": [
+      "Son & Mark & Ronen"
+    ],
+    "artworkGenerationRecord": "2026-10-15-evening-turducken-harness-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": []
+    },
+    "artworkHistoryChart": false,
+    "instructions": "Mark explicitly commissioned a NEW evening image in this chat: Son and Mark engineering a flying turducken (duck inside chicken inside turkey) with exactly two cybernetic Yorkies. Use the reviewed native base, stronger owner-supplied Mark likeness. Recheck supporting team roster markbarney/sonphamorg/scizical and top-ten context, then compose the evening issue’s fresh actual scores/time. Preserve afternoon chicken as its own separate published episode. The yellow sunglasses duck derives from Daniel Franzen’s own avatar as a visual nod requested by Mark; it implies no team membership/collaboration or real harness method. Caption all machinery as editorial metaphor. Exact exclusive team statement has now arrived directly from Mark in this conversation. Private source record: editorial/2026-10-15-special-afternoon/exclusive-team-statement.json. Attribute collectively as an exclusive team statement supplied by Mark Barney, because no individual speaker was specified. Verbatim: “We're using the turducken harness, which is the original duck but it's also inside of a chicken that's inside of a turkey.” Acknowledgment verbatim: “Shoutouts to Tufa, Daniel Franzen, and NVIDIA for open-sourcing their previous work and leading the way.” The afternoon special already carries it; the evening may develop the follow-up while acknowledging that earlier publication. Do not invent additional quotes or technical claims, or claim a separately conducted interview. Artwork should lead the normal evening X announcement as actual attachment; preserve send-once state. If leader geography or supporting roster conditions change, hold with concrete reason or adapt only as authorized.",
+    "sourceUrls": [
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+    ],
+    "verificationNotes": "User supplied his Mark/two-Yorkies portrait and identified it as himself. Native image inspected: correct two humans/two dogs/nested bird machine. Exact prompt, references/hashes and review in generation record. Exact collective statement and acknowledgment received directly from Mark; saved verbatim privately and included in special."
   }
 ]

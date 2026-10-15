@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-10-15T17:18:01Z",
+  "id": "2026-10-15-special-afternoon-flying-gpu-chicken-v1-base",
+  "inputImages": [
+    "2026-10-13-valley-strongholds-v1-base.webp",
+    "2026-10-12-mark-barney-reference-1-v1.webp",
+    "2026-10-12-son-pham-reference-1-v1.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: stylized-concept. Create one spectacular polished 16:9 landscape lead illustration for The ARC Daily Digest special afternoon edition, a NEW episode in the supplied snowy GPU Valley world. Use a dimensional cinematic 3D fantasy editorial style matching reference 1, intricate warm brass engineering, physical graphics cards, glowing electronics, fan arrays, snowy mountain depth. It should be thrilling, beautiful and a little funny, a big leap forward.\n\nINPUT ROLES: Image 1 is world/style and established two separate ridge-top citadels/cast reference only; do not duplicate its foreground composition. Image 2 is Mark Barney's own cyber-engineer avatar: preserve beard, dense stacked graphics-card headgear, multicolored small monitors, cables and eyepiece. Image 3 is Son Pham's own cyber-engineer avatar: preserve distinctive lower face, broad glowing visor and dense black GPU helmet. Keep Son and Mark clearly distinct and recognizable, exactly two riders. No invented likeness for their teammate Ronen, who is not pictured.\n\nMAIN ACTION commissioned by Mark: Son and Mark have been FLUNG UP from the valley and are riding one amazing cybernetic CHICKEN with graphics cards strapped to its body, surging in flight very close to the heights of the TWO massive citadels. The bird is unmistakably a chicken: expressive chicken head, metal red comb and wattles, copper beak, articulated chicken feet trailing behind, feather-shaped metal tail. Its huge mechanical wings are fully spread, with physical GPU cards strapped along the wing spars and flanks and ducted fan rotors integrated into the wings, flying/hovering like a drone while still looking unmistakably like a chicken. A coherent two-seat saddle on its back carries Son at the front holding controls and Mark immediately behind bracing excitedly. Show faces and torsos clearly, a dynamic three-quarter camera with the whole spectacular chicken's silhouette readable, enough wing visible on both sides, contrails and snow swirling below to communicate a dramatic launch. Do not make it a plane with a pasted chicken face.\n\nBACKGROUND: the two separate familiar towering GPU citadels on adjacent snowy cliffs, now visibly CLOSE behind the flying riders, looming magnificent in perspective. Tufa fort on left has its friendly black fluffy spider motif and one small reference-matched Dries at controls; Chen fort on right has exactly two recognizable bunnies: grey-brown lop with BOTH ears down, dark-and-white upright-eared rabbit with broad irregular white facial blaze. Keep precisely FIVE small friendly black spiders total at Tufa fort. Focus is Son/Mark/chicken; background figures small but distinct, separated forts with their spider/rabbit pennant motifs. Lower chasers can be distant machinery silhouettes without named people. Warm brilliant afternoon sun, cyan electronics, gold/bronze chicken fittings, snow and billowing cloud below, heroic exhilarating motion. Do not imply literal hardware or spending; this is playful sporting metaphor.\n\nCOMPOSITION: two riders and chicken central across the middle, citadels framing behind, no people at bottom center. Leave the bottom-center strip quiet for a later readable stats overlay, and top center quiet for small newspaper branding. CLEAN ART ONLY: no words, logos, names, numbers, scores, ranks, dates, newspaper labels, scoreboards, trading-card frames or watermark. The current ARC-3 standings support third place for Son & Mark & Ronen behind the two leaders; no victory crown or first-place claim.",
+  "rawSha256": "5cde3a6584fd46b7dbd3186bf3b551bbea457ded0149c548780a2d9784f83712",
+  "rawSrc": "/news-images/2026-10-15-special-afternoon-flying-gpu-chicken-v1-base.webp",
+  "references": [
+    {
+      "role": "2026-10-13-valley-strongholds-v1-base.webp",
+      "sha256": "a18da0f68fc657db777148219756ae022bc390722149a64bcaa4adacc657c2a3",
+      "src": "/news-images/2026-10-13-valley-strongholds-v1-base.webp"
+    },
+    {
+      "role": "2026-10-12-mark-barney-reference-1-v1.webp",
+      "sha256": "f2f0a29a8747c9fa8710489459a5d5f715ec16a91c32f46bb1fa9a4d41a24e9a",
+      "src": "/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp"
+    },
+    {
+      "role": "2026-10-12-son-pham-reference-1-v1.webp",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d",
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp"
+    }
+  ],
+  "review": "Mark explicitly praised and approved this original. Two distinct recognizable cyber-engineers ride a coherent wing-spread GPU chicken close to the two separate citadels. Two correct bunnies, Dries and seven artistic spider mascots; mascot count has no roster meaning. Clean art with no statistics or text. Preserving the owner-approved original.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-3410f5cc-8937-4dd9-b77b-f4ba202723ec.png",
+  "version": 1,
+  "overlayPlacement": "center",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "editorialDate": "2026-10-15",
+    "request": "Special afternoon chicken flight; separate evening turducken engineering scene with owner-supplied Mark and two Yorkies."
+  },
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "requiredTopTenTeamIds": [
+      "15605182"
+    ],
+    "requiredRosterHandles": {
+      "15605182": [
+        "markbarney",
+        "sonphamorg",
+        "scizical"
+      ]
+    },
+    "note": "Mark/Son picture the current team; Ronen not depicted. Yorkies are owner-supplied pets. The turducken duck uses Franzen’s own avatar as an explicitly commissioned visual nod, not collaboration or team-membership evidence."
+  },
+  "reviewStatus": "reviewed"
+}

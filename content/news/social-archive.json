@@ -1,5 +1,233 @@
 [
   {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "research",
+    "checkedAt": "2026-10-15T16:59:06.148Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110775560846914009",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-15T16:51:24Z",
+    "storyUrl": "https://arcprize.org/results/google-gemini-4-argon",
+    "summary": "Chollet says Argon has a similar ARC-AGI-3 performance profile to Astra and calls Google back at the frontier, quoting ARC Prize’s result.",
+    "threadId": null,
+    "url": "https://x.com/fchollet/status/2110775560846914009",
+    "visibility": "public",
+    "whyItMatters": "Attributed organizer reaction to the Verified release; not a separate evaluation."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "research",
+    "checkedAt": "2026-10-15T16:59:11.727Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110769895332040761",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-15T16:28:53Z",
+    "storyUrl": "https://arcprize.org/results/google-gemini-4-argon",
+    "summary": "Knoop calls Argon the second model family effectively to max out ARC-AGI-3 with a provider adapter and notes a similar backwards bend in action efficiency.",
+    "threadId": null,
+    "url": "https://x.com/mikeknoop/status/2110769895332040761",
+    "visibility": "public",
+    "whyItMatters": "Attributed reaction; preserve the provider-adapter qualification and avoid equating it with Kaggle performance."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-15T16:58:41.770Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110768293761921137",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-15T16:22:32Z",
+    "storyUrl": "https://arcprize.org/results/google-gemini-4-argon",
+    "summary": "ARC Prize links the Verified leaderboard, reproducible public benchmark code, testing policy and full Gemini 4 Argon results.",
+    "threadId": "2110768288523251762",
+    "url": "https://x.com/arcprize/status/2110768293761921137",
+    "visibility": "public",
+    "whyItMatters": "Primary evidence links for edition follow-up; no new Kaggle ranking."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-15T16:58:41.770Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110768292101042240",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-15T16:22:31Z",
+    "storyUrl": "https://arcprize.org/results/google-gemini-4-argon",
+    "summary": "ARC Prize says API issues prevented complete standard-harness testing: low reasoning completed 42/55 games for 49.8%; medium completed 46/55 for 46.3%; high completed 19/55 and no score was published. Reported scores retain partial credit across all 55 games. Provider adapter preserves opaque reasoning and permits automatic compaction; standard harness carries notes between turns. Costs use introductory $2 input/$10 output per million tokens.",
+    "threadId": "2110768288523251762",
+    "url": "https://x.com/arcprize/status/2110768292101042240",
+    "visibility": "public",
+    "whyItMatters": "Material limit on harness comparisons. Do not present incomplete standard-harness runs as a clean capability ceiling."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-15T16:58:41.770Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110768289861317026",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-15T16:22:31Z",
+    "storyUrl": "https://arcprize.org/results/google-gemini-4-argon",
+    "summary": "ARC Prize places Argon behind Astra’s 99.9% ARC-AGI-3 result. It reports 62% fewer actions than the human baseline on the 25 public games, matching or beating three speedrun records and coming within 10% on six others.",
+    "threadId": "2110768288523251762",
+    "url": "https://x.com/arcprize/status/2110768289861317026",
+    "visibility": "public",
+    "whyItMatters": "Keep the public-demo action comparison separate from the semi-private Verified score."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-15T16:58:41.770Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110768288523251762",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-15T16:22:30Z",
+    "storyUrl": "https://arcprize.org/results/google-gemini-4-argon",
+    "summary": "ARC Prize announces Gemini 4 Argon Verified results: ARC-AGI-3 97.5% at $4.8K with the provider adapter and 49.8% at $5.8K with the standard harness; ARC-AGI-2 91.3% at $0.32/task and ARC-AGI-1 98.5% at $0.16/task. It calls Google DeepMind the second frontier lab above 95% on ARC-AGI-3.",
+    "threadId": "2110768288523251762",
+    "url": "https://x.com/arcprize/status/2110768288523251762",
+    "visibility": "public",
+    "whyItMatters": "Consequential organizer result. Separate from Kaggle standings. Standard-harness API incompletion is essential context; primary results introduction says 91.2% on v2 while its table and announcement say 91.3%."
+  },
+  {
+    "author": "harshitj__",
+    "authorName": "Harshit Joshi",
+    "category": "research",
+    "checkedAt": "2026-10-15T16:09:53.831Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2110761869048754565",
+    "identitySourceUrl": "https://x.com/harshitj__",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-15T15:57Z",
+    "storyUrl": "https://sheldon.genie.stanford.edu",
+    "summary": "Joshi introduces SHELDON, a reasoning harness that separately tracks hypotheses and observations. His thread claims ARC-AGI-2 improvement over its baselines. The linked Stanford project table reports 59.17 for SHELDON versus 47.50 for EvoX, using GPT-5.6-terra high reasoning and GPT-5.6-luna for delegated implementation.",
+    "threadId": "2110761869048754565",
+    "url": "https://x.com/harshitj__/status/2110761869048754565",
+    "visibility": "public",
+    "whyItMatters": "Fresh primary research lead. These are author-reported experimental results, not Kaggle standings or an ARC Prize Verified evaluation; confirm split, budget and comparability before publication."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "research",
+    "checkedAt": "2026-10-15T16:05:34.683Z",
+    "competitions": [],
+    "id": "2110760611026206814",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-15T15:52Z",
+    "storyUrl": "https://arxiv.org/abs/2610.11358",
+    "summary": "Malysheva highlights RaReCache: a small model processes a prompt, a linear map translates its KV cache for a larger model, and selected positions are recomputed. Original post links arXiv 2610.11358; its abstract page identifies RaReCache and the authors.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2110760611026206814",
+    "visibility": "public",
+    "whyItMatters": "Potential inference-efficiency research lead. The paper was submitted October 8; this is a new social discussion, not a new ARC score. Detailed numerical claims need paper review."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "community",
+    "checkedAt": "2026-10-15T15:58:57.949Z",
+    "competitions": [],
+    "id": "2110756584611516512",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-15T15:36:00Z",
+    "storyUrl": "https://gakku.ai",
+    "summary": "Chollet recommends Gakku, describing a voice tutoring app that coaches school-age students through short essay-writing missions. He argues conversational AI could make individual tutoring widely accessible.",
+    "threadId": null,
+    "url": "https://x.com/fchollet/status/2110756584611516512",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; an education recommendation, not an ARC benchmark result."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "community",
+    "checkedAt": "2026-10-15T15:59:02.830Z",
+    "competitions": [],
+    "id": "2110748224097222874",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-15T15:02:47Z",
+    "storyUrl": null,
+    "summary": "Chollet argues that breakthroughs come from sustained interest in the process of solving hard problems, rather than merely wanting the outcome.",
+    "threadId": null,
+    "url": "https://x.com/fchollet/status/2110748224097222874",
+    "visibility": "public",
+    "whyItMatters": "Organizer general commentary; attributed opinion, not a measured result."
+  },
+  {
+    "author": "masspeakss",
+    "authorName": "masspeaks",
+    "category": "community",
+    "checkedAt": "2026-10-15T16:05:56.138Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2110717635168252212",
+    "identitySourceUrl": "https://x.com/masspeakss",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-15T13:01Z",
+    "storyUrl": null,
+    "summary": "Translation of Japanese original: An ARC2 merge invitation involving the gold range has come in, so I am torn, but I want to keep trying solo until the last possible moment. The post does not name the inviting team or announce an accepted merger.",
+    "threadId": null,
+    "url": "https://x.com/masspeakss/status/2110717635168252212",
+    "visibility": "public",
+    "whyItMatters": "Contender motivation and possible future team change; do not report a merger or a verified gold position. Exact current team mapping remains unresolved."
+  },
+  {
     "author": "mikeknoop",
     "authorName": "Mike Knoop",
     "category": "community",

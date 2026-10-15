@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-10-15T17:18:01Z",
+  "id": "2026-10-15-evening-turducken-harness-v1-base",
+  "inputImages": [
+    "codex-clipboard-5bcac980-0825-4f30-84e8-51c112eb1b46.png",
+    "2026-10-12-son-pham-reference-1-v1.webp",
+    "2026-10-12-daniel-franzen-reference-1-v1.webp",
+    "2026-10-13-valley-strongholds-v1-base.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: stylized-concept. One NEW beautiful wide 16:9 clean cinematic 3D fantasy editorial illustration for The ARC Daily Digest evening edition, matching the attached snowy GPU Valley comic's expensive intricate brass-and-electronics world. An inventive heroic-comic engineering episode in evening golden light fading into cyan dusk. NEW machine silhouette, camera and poses compared with the previous flying chicken.\n\nINPUT ROLES: 1 Mark's OWNER-SUPPLIED likeness with his TWO Yorkshire terriers, authoritative for Mark's beard, strong stocky muscular build, medium dark hair, tattooed arms/torso, gold chain, cybernetic headgear, visor, heavy GPU backpack and the two Yorkies' tan faces/dark silky body fur. Match THIS portrait more closely than the older avatar. Adapt him respectfully, omit all the reference's written slogans/words and celebrity-specific tattoos; retain general decorative tattoos. 2 Son's own frozen avatar, authoritative for his recognizable smiling lower face, dense black graphics-card helmet, broad glowing visor, blue/orange cable gear. He is separate from Mark. 3 Daniel Franzen's yellow cartoon duck with orange bill and broad black sunglasses: use ONLY as the design reference for the innermost small duck-shaped module/mascot, a playful visual nod to the duck harness, not a claim he joined or collaborated with this team. 4 the original GPU Valley art is STYLE/WORLD reference, not a layout to copy. No other real people or competitor characters required.\n\nSUBJECT AND ACTION: Son and Mark working together on an outrageous FLYING TURDUCKEN HARNESS. The whimsical machine makes the nesting concept legible: a DUCK inside a CHICKEN inside a TURKEY, all CYBERNETIC, LIVING-LOOKING MACHINERY, absolutely no food, cooking, gore or harm. The outer enormous bronze/white mechanical TURKEY has a magnificent broad splayed turkey tail fan and wide drone wings with fan rotors and strapped GPUs, a turkey head with wattle and snood, floating through the mountain air. Its open upper torso is a fantastical workshop bay built from hinged metal panels; inside sits the smaller gold-and-white CHICKEN chassis with clear red comb and chicken head, and inside that chicken's open upper bay is a compact yellow DUCK control-core/module with orange bill and Franzen-style broad black sunglasses. Keep all three nested bird forms visible and coherent, like a spectacular mechanical nesting-doll airship with three distinct bird heads arranged outer-to-inner, NOT dismembered creatures. A nonverbal diagram made of actual machinery. Physical graphics cards, copper tubing, articulated harness straps, crystal-blue fans and bundled cables tie the three systems together. It still flies with its outer wings outstretched.\n\nSon and Mark are in the open flying workshop around the duck core, actually ENGINEERING: Son crouched at a glowing control console adjusting connected cables; Mark beside him holding a tool and fitting a GPU card into the harness. Their expressive faces/visors and different outfits readable. Exactly TWO lively Yorkshire terriers from reference 1 assist from safe little cockpit perches, one on either side, wearing adorable fitted cybernetic GPU armor, little translucent blue visors/headsets and cable harnesses; one dog watches a small monitor, the other sniffs a secured connector. Keep them unmistakably Yorkies, realistic silky tan and dark fur, each with two ears, four legs, natural anatomy. They should be prominent and delightful, not tiny background specks. Mark can wear an open cybernetic work vest with his gold chain and some visible general tattoos; use supplied portrait's likeness and personality.\n\nSETTING: high over the snowy GPU Valley at sunset with warm workshop lamps and cold blue mountain haze. Two distinct GPU citadels on far ridges, suggestive silhouettes and rabbit/spider pennant symbols only, no extra animals or human cast. Main focus the clever nested flying turducken, engineering duo and two dogs. Dynamic three-quarter side/top perspective showing the open workshop and the turkey's giant spread tail fan, sense of speed and altitude, cinematic depth. Reserve quiet top-center and bottom-center bands for later coded newspaper/score graphics without covering faces or dogs. No text, logos, numbers, scores, ranks, dates, labels, newspaper branding or watermarks. Machine and GPU costume are editorial metaphor, no claim about real hardware or method. Exactly two human people, exactly two Yorkies, one outer turkey, one inner chicken and one innermost duck module.",
+  "rawSha256": "20e12d6f369467cb1ae1bb2efad9ca64737acf86b30359b7e431942bec120437",
+  "rawSrc": "/news-images/2026-10-15-evening-turducken-harness-v1-base.webp",
+  "references": [
+    {
+      "role": "Owner-supplied Mark Barney and two Yorkies likeness reference, received October 15",
+      "sha256": "fcde1de7a685c5630aea7bb840fa8e2dc61cf6fbfa3725a1f8bc4b249f165906",
+      "src": "/news-images/references/mark-yorkies-owner-2026-10-15.png"
+    },
+    {
+      "role": "2026-10-12-son-pham-reference-1-v1.webp",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d",
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp"
+    },
+    {
+      "role": "2026-10-12-daniel-franzen-reference-1-v1.webp",
+      "sha256": "469776ab05a8f5ea268ace6aa0686cf757044ce6684c03c9d8450d10514bfc49",
+      "src": "/news-images/references/2026-10-12-daniel-franzen-reference-1-v1.webp"
+    },
+    {
+      "role": "2026-10-13-valley-strongholds-v1-base.webp",
+      "sha256": "a18da0f68fc657db777148219756ae022bc390722149a64bcaa4adacc657c2a3",
+      "src": "/news-images/2026-10-13-valley-strongholds-v1-base.webp"
+    }
+  ],
+  "review": "Inspected: muscular bearded Mark with owner-reference visor, GPU backpack and gold chain; distinct Son; exactly two recognizable geared Yorkies. Coherent flying turkey with fan tail, chicken nested in open body, yellow sunglasses duck inside chicken. Both people visibly work on controls/GPU harness. Separate distant citadels, no extra cast, no text or statistics. Respectful mechanical metaphor; duck cameo conveys no team affiliation.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-c126f313-a794-4fe9-8dc9-7d9677a0a6bd.png",
+  "version": 1,
+  "overlayPlacement": "center",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "editorialDate": "2026-10-15",
+    "request": "Special afternoon chicken flight; separate evening turducken engineering scene with owner-supplied Mark and two Yorkies."
+  },
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "requiredTopTenTeamIds": [
+      "15605182"
+    ],
+    "requiredRosterHandles": {
+      "15605182": [
+        "markbarney",
+        "sonphamorg",
+        "scizical"
+      ]
+    },
+    "note": "Mark/Son picture the current team; Ronen not depicted. Yorkies are owner-supplied pets. The turducken duck uses Franzen’s own avatar as an explicitly commissioned visual nod, not collaboration or team-membership evidence."
+  },
+  "reviewStatus": "reviewed"
+}

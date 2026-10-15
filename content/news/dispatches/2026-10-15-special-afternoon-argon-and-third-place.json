@@ -1,0 +1,134 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Mark Barney commissioned this special afternoon issue and its flying GPU chicken illustration. He is also a member of the third-place team covered here; all standings and roster claims use the same public-source checks as other contenders. Mark supplied the exclusive team statement directly to the desk; no individual speaker beyond that collective attribution was specified.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Special afternoon edition: Argon joins the frontier; Son, Mark & Ronen jump to third",
+  "id": "2026-10-15-special-afternoon-argon-and-third-place",
+  "image": {
+    "alt": "Editorial illustration for Special afternoon edition: Argon joins the frontier; Son, Mark & Ronen jump to third. Yi-Chia Chen: rank 2, score 67.49; Son & Mark & Ronen: rank 3, score 47.25.",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 15, 2026 · 1:18 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-15-evening-arc-3-preview-078539e93d.webp"
+  },
+  "publishedAt": "2026-10-15T17:23:12.632830Z",
+  "sections": [
+    {
+      "heading": "Special afternoon edition · Google joins the leading model tier",
+      "sourceIds": [
+        "social-2110768288523251762",
+        "argon-results"
+      ],
+      "text": "Google DeepMind has become the second frontier lab to score above 95% on ARC-AGI-3 in ARC Prize Verified testing. ARC Prize announced 97.5% for Gemini 4 Argon using the provider adapter harness, at a reported evaluation cost of $4,800. Its standard-harness result was 49.8% at $5,800, with API failures preventing a complete run. The announcement also reports 91.3% on ARC-AGI-2 and 98.5% on ARC-AGI-1. These are Verified model evaluations, separate from the Kaggle competition standings."
+    },
+    {
+      "heading": "The harness gap needs its footnote",
+      "sourceIds": [
+        "social-2110768292101042240",
+        "argon-results"
+      ],
+      "text": "The provider adapter preserves the model’s opaque reasoning state and supports compaction; the standard harness carries forward notes chosen by the model. At low reasoning, the standard-harness evaluation completed 42 of 55 games; medium reasoning completed 46 and scored 46.3%. High reasoning completed only 19, so ARC Prize published no score for it. The reported scores still include all 55 games, retaining partial credit from incomplete runs. That makes the gap important, but it does not isolate a clean estimate of the harness effect. The results page’s introduction says 91.2% for ARC-AGI-2, while its table and the announcement say 91.3%; the latter is the figure attributed above."
+    },
+    {
+      "heading": "Third on Kaggle, with an exclusive team statement",
+      "sourceIds": [
+        "board",
+        "kaggle-arc3",
+        "person-son-pham-identity-0",
+        "person-mark-barney-identity-0"
+      ],
+      "text": "On the separate ARC-AGI-3 Kaggle public board, Son & Mark & Ronen has jumped from seventh to third after improving from 41.97 to 47.25. The five-point advance puts the team ahead of mtg, now fourth on 45.00, and NVARC3, fifth on 43.94. Kaggle’s live roster lists Mark Barney, Son Pham and Ronen Dunlea. The jump was first observed by the collector at 11:47 am Eastern and remains in the latest collected board, dated 1:18 pm. This is a place on the provisional public leaderboard; the private final standings decide the competition.\n\nIn an exclusive team statement supplied to The ARC Daily Digest by Mark Barney, the team offered a cryptic description: “We're using the turducken harness, which is the original duck but it's also inside of a chicken that's inside of a turkey.” The statement added: “Shoutouts to Tufa, Daniel Franzen, and NVIDIA for open-sourcing their previous work and leading the way.”"
+    },
+    {
+      "heading": "Two citadels still command the heights",
+      "sourceIds": [
+        "board",
+        "person-dries-smit-identity-0",
+        "person-yi-chia-chen-identity-0"
+      ],
+      "text": "Tufa Labs remains first on 68.91 and Yi-Chia Chen second on 67.49. Their scores are unchanged from the previous close, and the new third-place team still trails Chen by about twenty points. Below NVARC3, the last dance holds sixth on 43.64. Third place changes the order of the chase without erasing the leaders’ separation. The new illustration sends Son and Mark airborne on a graphics-card chicken toward those two forts: a playful picture of the climb, not a claim about anyone’s real equipment, methods or spending. Ronen is part of the team result and is not depicted."
+    },
+    {
+      "heading": "The organizers’ verdict",
+      "sourceIds": [
+        "social-2110775560846914009",
+        "social-2110769895332040761",
+        "social-2110768289861317026"
+      ],
+      "text": "François Chollet says Argon has a similar ARC-AGI-3 performance profile to Astra and describes Google as back at the frontier. Mike Knoop calls it the second model family effectively to max out ARC-AGI-3 with a provider adapter, while noting the same backwards bend in action efficiency. ARC Prize separately reports that Argon used 62% fewer actions than the human baseline across the 25 public demo games. That action-efficiency comparison is distinct from the 55-game semi-private evaluation and from today’s Kaggle team scores."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T17:19:28Z",
+      "id": "board",
+      "title": "ARC-3 public leaderboard and observed history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-15T16:58:41.770Z",
+      "id": "social-2110768289861317026",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2110768289861317026"
+    },
+    {
+      "accessedAt": "2026-10-15T16:58:41.770Z",
+      "id": "social-2110768292101042240",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2110768292101042240"
+    },
+    {
+      "accessedAt": "2026-10-15T16:58:41.770Z",
+      "id": "social-2110768288523251762",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2110768288523251762"
+    },
+    {
+      "accessedAt": "2026-10-15T16:59:06.148Z",
+      "id": "social-2110775560846914009",
+      "title": "François Chollet — research post",
+      "url": "https://x.com/fchollet/status/2110775560846914009"
+    },
+    {
+      "accessedAt": "2026-10-15T16:59:11.727Z",
+      "id": "social-2110769895332040761",
+      "title": "Mike Knoop — research post",
+      "url": "https://x.com/mikeknoop/status/2110769895332040761"
+    },
+    {
+      "accessedAt": "2026-10-09T17:16:30Z",
+      "id": "person-yi-chia-chen-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/threerabbits"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-dries-smit-identity-0",
+      "title": "Public professional account profile",
+      "url": "https://www.kaggle.com/driessmit1"
+    },
+    {
+      "accessedAt": "2026-10-15T17:23:12.632830Z",
+      "id": "person-mark-barney-identity-0",
+      "title": "Mark Barney — public identity; team statement supplied directly to the desk on October 15",
+      "url": "https://www.kaggle.com/markbarney"
+    },
+    {
+      "accessedAt": "2026-10-11T20:33:19Z",
+      "id": "person-son-pham-identity-0",
+      "title": "Public Kaggle profile",
+      "url": "https://www.kaggle.com/sonphamorg"
+    },
+    {
+      "accessedAt": "2026-10-15T17:12:13Z",
+      "id": "argon-results",
+      "title": "ARC Prize Verified — Gemini 4 Argon results, harness coverage and scores",
+      "url": "https://arcprize.org/results/google-gemini-4-argon"
+    },
+    {
+      "accessedAt": "2026-10-15T17:13:00Z",
+      "id": "kaggle-arc3",
+      "title": "Kaggle ARC-AGI-3 public leaderboard and current team roster",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+    }
+  ]
+}

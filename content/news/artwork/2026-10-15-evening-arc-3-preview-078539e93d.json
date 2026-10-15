@@ -1,0 +1,45 @@
+{
+  "articleId": "2026-10-15-evening-arc-3-preview",
+  "briefSha256": "ddb6e3ebdc42ea8ad1ae01768bac1da72c89d04a7bec8cd09797fe6421115ca2",
+  "dataAsOf": "2026-10-15T17:18:03Z",
+  "generationRecord": "2026-10-15-special-afternoon-flying-gpu-chicken-v1-base",
+  "headline": "Special afternoon edition: Argon joins the frontier; Son, Mark & Ronen jump to third",
+  "historyChart": null,
+  "id": "2026-10-15-evening-arc-3-preview-078539e93d",
+  "image": {
+    "alt": "Editorial illustration for Special afternoon edition: Argon joins the frontier; Son, Mark & Ronen jump to third. Yi-Chia Chen: rank 2, score 67.49; Son & Mark & Ronen: rank 3, score 47.25.",
+    "artworkId": "2026-10-15-evening-arc-3-preview-078539e93d",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 15, 2026 · 1:18 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-15-evening-arc-3-preview-078539e93d.webp"
+  },
+  "imageSha256": "005492430a02445d4eff4e40ec87bb82fd8630010ff568adb879950543c48928",
+  "kind": "edition-composition",
+  "layout": "center-overlays-v1",
+  "leadGap": null,
+  "personIds": [
+    "mark-barney",
+    "son-pham",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "5cde3a6584fd46b7dbd3186bf3b551bbea457ded0149c548780a2d9784f83712",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Son & Mark & Ronen",
+      "rank": 3,
+      "rankChange": 4,
+      "score": 47.25,
+      "scoreChange": 5.28,
+      "teamId": "15605182"
+    }
+  ],
+  "trigger": "recorded-score-event",
+  "version": 1
+}
