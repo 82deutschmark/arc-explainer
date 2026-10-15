@@ -1,0 +1,141 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Commissioned by Mark Barney for The ARC Daily Digest. Game rules and human play context come from ARC-Explainer. Reporting examines eight public BP35 recordings; Argon adapter passages are recorded summaries, and standard-harness passages are visible answer text.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Special edition: Argon solves BP35; Haiku cannot clear its first level",
+  "id": "2026-10-15-special-argon-haiku-bp35",
+  "image": {
+    "alt": "Editor Mark Barney studies BP35 replay diagrams with his two cybernetic Yorkies and a mechanical duck, chicken and turkey in a snowy mountain newsroom.",
+    "caption": "AI editorial artwork, October 15, 2026: Mark Barney and his two Yorkies interpret the BP35 evidence with their cybernetic poultry. Game screens and diagrams are illustrative.",
+    "src": "/news-images/2026-10-15-special-bp35-editor-data-v1-base.webp"
+  },
+  "publishedAt": "2026-10-15T23:16:03.709106Z",
+  "sections": [
+    {
+      "heading": "One game exposes the divide",
+      "sourceIds": [
+        "argon-results",
+        "haiku-results",
+        "argon-standard-medium",
+        "argon-standard-low",
+        "argon-adapter-high",
+        "argon-adapter-medium",
+        "argon-adapter-low",
+        "argon-standard-high",
+        "haiku-standard",
+        "haiku-adapter"
+      ],
+      "text": "Gemini 4 Argon completes all nine levels of BP35 in 492 actions with Google’s Provider Adapter at high reasoning. Claude Haiku 5.5 clears none: its max-reasoning recordings end after 105 actions in each harness. Argon’s own three standard-harness runs also struggle, clearing just the first level. With the adapter, its low and medium runs clear eight levels; high finishes the game. Those are the outcomes of the published recordings, rather than repeated trials.\n\nThe wider ARC-AGI-3 results show the same ordering. On the Semi-Private evaluation, ARC Prize reports Argon at about 50% with the Standard harness and about 98% with the Provider Adapter, both at low reasoning. Haiku stays below 1% with the Standard harness and reaches about 3% with the adapter, both at max reasoning. Argon’s Standard evaluation had incomplete task coverage because of API issues. The public BP35 replays let us inspect particular successes and failures; they cannot explain the whole benchmark gap."
+    },
+    {
+      "heading": "The screen hides the next question",
+      "sourceIds": [
+        "bp35-guide"
+      ],
+      "text": "BP35 gives the player only left and right movement. After a sideways step, an automatic pull carries the player through open space until something stops it. Green blocks disappear when clicked; orange blocks switch between solid and passable; red blocks reverse the pull. Striped purple blocks are fatal when the pull carries the player into them. Later, plain purple blocks introduce a different rule: clicking one removes it and grows new blocks into its empty neighbouring cells.\n\nThe shaft extends far beyond the visible screen. The exit and gravity switches usually begin out of sight. In Mark Barney’s recorded play observations on ARC-Explainer, level four demands exploration above the starting view to discover the switch. Success means learning what the screen has not shown yet, then remembering how the pieces work as the camera moves. Undo helps recover a bad choice, but consumes another action."
+    },
+    {
+      "heading": "An accurate discovery gives way to an invented story",
+      "sourceIds": [
+        "argon-standard-low",
+        "argon-standard-medium",
+        "argon-standard-high",
+        "bp35-guide"
+      ],
+      "text": "In Argon’s low-reasoning Standard replay, decision 29 announces: “WHOA! We floated UP through the gap, and the camera scrolled UP!” The run clears level one three actions later. That observation captures the central movement rule.\n\nBy decision 79, its visible answer has wandered into a different game: it describes the three striped purple hazards as an inventory of boats or logs to place in a river. ARC-Explainer identifies those marked blocks as spikes. The answer also reconstructs events from level one that do not match its earlier account. It recognises Undo and notices that using it still advances the bottom counter, yet those useful observations coexist with a false explanation of the board.\n\nThe run ends with only one level cleared after 258 actions. The medium and high Standard recordings also finish with one clear, after 281 and 265 actions. The visible record shows an unstable account of the rules. It does not establish whether the cause was lost context, mistaken perception, or another part of the evaluation."
+    },
+    {
+      "heading": "The winning run turns experiments into a route",
+      "sourceIds": [
+        "argon-adapter-high",
+        "bp35-guide",
+        "google-thinking"
+      ],
+      "text": "The high-reasoning adapter replay handles the changes differently. On level four, it brings the red switch into view, clicks it, identifies the reversal, and plans around the new downward pull. It clears that level in 23 actions.\n\nOn level eight, it tests the unfamiliar plain purple block. The recorded summary describes its four neighbours growing into new blocks, then proposes building a ceiling to stop the player rising into spikes. The following clicks extend the formation; sideways moves use it to reach the upper area. The level eventually takes 98 actions. The discovered rule becomes something the run uses.\n\nEven this winner makes bad guesses. On level nine, a summary exclaims “MIND BLOWN!” while speculating about space beyond the left edge. The next summary acknowledges that the expected horizontal scrolling did not occur. The run revises its approach and eventually wins. Its nine level counts total 492 actions against ARC Prize’s published baseline of 651, about a quarter fewer.\n\nThese passages are reasoning summaries. Google documents summaries and encrypted reasoning state as separate API fields; the replay does not reveal the underlying raw thoughts."
+    },
+    {
+      "heading": "Haiku is still trying to read the board",
+      "sourceIds": [
+        "haiku-standard",
+        "haiku-adapter",
+        "argon-adapter-high"
+      ],
+      "text": "Haiku’s difficulty appears earlier. In its Standard replay, the first answer proposes testing rightward movement. By decision ten it is uncertain whether it has tested horizontal movement and hypothesises that all green tiles might need activating. Near the end, it is still revising the player’s coordinates and asking whether clicking the sprite will select it.\n\nThe adapter recording also repeatedly recounts rows and columns and rechecks the player’s position. Across restarts, each published run spends 105 actions without reaching the first exit.\n\nBP35 offers a concrete contrast: Haiku struggles to turn the pixels into a dependable account of the scene, while Argon’s winning run turns tested rules into a route through nine levels. The harness changes what we observe, but these recordings alone cannot isolate which change produced the improvement. They cover a public demo game, separate from the unseen Kaggle competition games."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "argon-results",
+      "title": "ARC Prize — Gemini 4 Argon verified results and evaluation coverage",
+      "url": "https://arcprize.org/results/google-gemini-4-argon"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "haiku-results",
+      "title": "ARC Prize — Claude Haiku 5.5 verified results",
+      "url": "https://arcprize.org/results/anthropic-claude-haiku-5-5"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "bp35-guide",
+      "title": "ARC-Explainer — BP35 rules, level pictures and human play observations",
+      "url": "https://arc.markbarney.net/arc3/games/bp35"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "google-thinking",
+      "title": "Google — thought summaries and encrypted reasoning state",
+      "url": "https://ai.google.dev/gemini-api/docs/thinking"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "argon-standard-medium",
+      "title": "ARC Prize BP35 replay — google-barium-bb3-medium",
+      "url": "https://arcprize.org/replay/f241a636-5d84-4eeb-8334-303eaec5f190"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "argon-standard-low",
+      "title": "ARC Prize BP35 replay — google-barium-bb3-low",
+      "url": "https://arcprize.org/replay/c127733d-8027-43a8-a493-6e94173a9dbb"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "argon-adapter-high",
+      "title": "ARC Prize BP35 replay — google-barium-bb3-high-provider-adapter",
+      "url": "https://arcprize.org/replay/3e6bda77-5ffd-4b96-a2c7-5b803b7f9d5a"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "argon-adapter-medium",
+      "title": "ARC Prize BP35 replay — google-barium-bb3-medium-provider-adapter",
+      "url": "https://arcprize.org/replay/4c0a6add-d7d9-4c49-8aad-8a284c028f3a"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "argon-adapter-low",
+      "title": "ARC Prize BP35 replay — google-barium-bb3-low-provider-adapter",
+      "url": "https://arcprize.org/replay/2e3a2e33-4cda-42ee-ac02-f05b349a7005"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "argon-standard-high",
+      "title": "ARC Prize BP35 replay — google-barium-bb3-high",
+      "url": "https://arcprize.org/replay/12f4676a-33a5-4eaa-9e97-2ee3ecc9376c"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "haiku-standard",
+      "title": "ARC Prize BP35 replay — anthropic-claude-haiku-5-5-max",
+      "url": "https://arcprize.org/replay/5b37c708-a543-4e68-a55e-580842b34316"
+    },
+    {
+      "accessedAt": "2026-10-15T23:12:56.075130Z",
+      "id": "haiku-adapter",
+      "title": "ARC Prize BP35 replay — anthropic-claude-haiku-5-5-max-provider-adapter",
+      "url": "https://arcprize.org/replay/479c1364-6c1a-4eed-9db5-35e9fee2df74"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-10-15T23:15:47Z",
+  "id": "2026-10-15-special-bp35-editor-data-v1-base",
+  "inputImages": [
+    "mark-yorkies-owner-2026-10-15.png",
+    "2026-10-15-evening-turducken-harness-v1-base.webp",
+    "lvl8.png"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story.\nAsset type: a NEW wide 16:9 lead illustration for a commissioned ARC Daily Digest special article about Gemini 4 Argon and Claude Haiku 5.5 on BP35.\nPrimary request: Mark Barney, the newspaper's head human editor, with his exactly TWO beloved Yorkshire terriers and all his cybernetic poultry, trying to make sense of a mountain of AI-game replay data.\n\nINPUT ROLES: Image 1 is the authoritative owner-supplied portrait for Mark and the TWO Yorkies: preserve Mark's recognizable bearded face, medium-dark hair, muscular stocky build, gold chain, general decorative arm tattoos, chunky cybernetic visor and elaborate GPU backpack/headgear. Preserve the terriers' tan faces, erect ears and silky dark body fur, their tiny technological harnesses and blue display goggles. Omit written slogans and celebrity-specific tattoo writing. Image 2 is the established cybernetic poultry design and cinematic world/style reference ONLY: the mechanical white-brass turkey with broad fan tail, white-red-combed chicken, and small yellow duck with orange bill and black sunglasses. Do not reproduce the flight scene or its second human. Image 3 is BP35's actual game screenshot, for the visual language of one research screen: a tiny blue/yellow player, light cyan open shaft, purple plain block and striped hazards. It is not the overall illustration layout.\n\nSCENE: an extravagant but cozy high-tech NEWSPAPER EDITOR'S OFFICE above snowy mountains at blue-hour night. Mark sits at a large curved brass-and-dark-wood editor's desk, leaning forward, one gloved hand on his chin and the other pointing at a specific place on a glowing replay display. His expression and body language say deeply engaged, trying to reconcile a confusing result, with affectionate comic exasperation. His beard and lower face clearly visible beneath the visor. Make this recognizably editorial work, rather than riding or building a flying machine.\n\nHe is surrounded by neatly layered case files, fanfold printed tables with abstract marks, loose replay frame contact sheets, and several translucent screens showing pixel game snapshots, two very different abstract line patterns, and branching action diagrams, all nonverbal. One screen evokes the real BP35 screenshot, one suggests a successful long route, another a stalled short loop; artistic diagrams, no invented numeric labels. His two Yorkies are prominent assistants, both large enough to see clearly: one standing safely on a desk-side stool with forepaws on an open contact-sheet folio, the other perched on a leather chair arm studying a screen. Both look curious and alert, natural canine anatomy, cute silky fur, sophisticated fitted GPU collars/armor, distinct two dogs.\n\nALL THREE POULTRY are clearly recognizable, separate charming cybernetic newsroom helpers gathered close: one small yellow sunglasses DUCK on the desk guarding a rolled-up data printout; one red-combed white/brass mechanical CHICKEN next to the desk, peering into the diagrams with one wing holding a file; one larger bronze/white mechanical TURKEY behind Mark with a beautiful full fan-shaped tail spread across part of the background, neck bent in to inspect the analysis. They share the intricate physical graphics cards, blue cooling-fan glow, copper cabling and articulated feather plates of reference 2. They are living-looking machines, whimsical assistants, no food or cooking.\n\nCOMPOSITION/STYLE: cinematic dimensional 3D editorial illustration, richly crafted warm brass and realistic fur, amber reading lamps versus cool cyan displays and violet-blue snow outside the large window. The editor's face and two dogs are the emotional center; intelligent, funny, handsome, detailed and readable. Three-quarter eye-level medium-wide view, desk wraps around the foreground, depth from papers to animals to turkey tail to distant snowy mountains. Include only ONE human editor, exactly TWO Yorkies, exactly ONE duck, ONE chicken and ONE turkey. No other human or animal figures, no corporate logos, no photoreal fake news evidence, no readable words, no letters, no numbers, no title, no scores, no dates, no labels, no watermark. Leave a little breathing room around faces. This is a playful metaphor for reporting, with no claims about real hardware or model internals.",
+  "rawSha256": "fda171b009e4b33367150813138928ffddffd569c8808309eff3c26a841dbb96",
+  "rawSrc": "/news-images/2026-10-15-special-bp35-editor-data-v1-base.webp",
+  "references": [
+    {
+      "role": "Owner-supplied Mark Barney and exactly two Yorkies; authoritative editor likeness.",
+      "sha256": "fcde1de7a685c5630aea7bb840fa8e2dc61cf6fbfa3725a1f8bc4b249f165906",
+      "src": "/news-images/references/mark-yorkies-owner-2026-10-15.png"
+    },
+    {
+      "role": "Established cybernetic duck, chicken and turkey designs and cinematic visual style; new office scene, one human.",
+      "sha256": "20e12d6f369467cb1ae1bb2efad9ca64737acf86b30359b7e431942bec120437",
+      "src": "/news-images/2026-10-15-evening-turducken-harness-v1-base.webp"
+    },
+    {
+      "role": "BP35 level-eight screenshot; visual game reference for illustrative displays.",
+      "sha256": "c3b077d2d1158480073710e292355079b2fa6474ff2a83be282939f3176db61b",
+      "src": "/arc3-levels/bp35/lvl8.png"
+    }
+  ],
+  "review": "Inspected full image: exactly one recognizable bearded Mark with owner-reference visor, gold chain and GPU headgear, exactly two natural-looking geared Yorkies, and one each cybernetic sunglasses duck, red-combed chicken and fan-tailed turkey. Mark studies a replay display at an editorial desk. BP35-inspired diagrams are illustrative; no benchmark scores or real result plots appear. Warm brass office and snowy blue-hour background, clear faces and dogs, respectful comic tone.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-ea2b4790-1ef3-4df4-b22f-f89a6f02d999.png",
+  "version": 1,
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "editorialDate": "2026-10-15",
+    "request": "Generate an image of the editor with his Yorkies interpreting the data, with all his cybernetic poultry.",
+    "articleId": "2026-10-15-special-argon-haiku-bp35"
+  },
+  "reviewStatus": "reviewed"
+}
