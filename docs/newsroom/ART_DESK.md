@@ -1,6 +1,21 @@
 # Native illustrations for the ARC Daily Digest
 
-Author: GPT-6.1 Sol / Codex · updated 13 October 2026
+Author: GPT-6.1 Sol / Codex · updated 14 October 2026
+
+## October 14 valley reserve commission and anonymous NVIDIA crew
+
+Mark explicitly requested several new valley iterations and approved the shown
+results. The three reviewed clean bases are now prepared stock: Walking Foundry,
+Gyroscopic Siege and Aurora Skyworks. Follow [their exact native record and cast
+handoff](2026-10-14-valley-reserve-art-plan.md). Select a suitable unused episode
+before more generation, compose current issue overlays and manually verify the
+full cast. The records request centered overlays.
+
+Supporting NVIDIA teammates may be anonymous little human engineers covered in
+GPUs with opaque visors. This is Mark's explicit October 14 character direction;
+individual likenesses and named person IDs are unnecessary for this anonymous
+crew. Keep Puget and Sorokin's existing individual characters. The clean bases,
+native call chains and separate article/X/Discord dispositions are preserved.
 
 ## Required front-page illustration — Mark, October 14
 

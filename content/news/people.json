@@ -1724,7 +1724,7 @@
   {
     "accounts": [
       {
-        "checkedAt": "2026-10-13T17:33:14Z",
+        "checkedAt": "2026-10-15T02:22:14Z",
         "handle": "darraghdog",
         "platform": "kaggle",
         "sourceTitle": "darraghdog — own public profile",
@@ -1732,7 +1732,7 @@
         "url": "https://www.kaggle.com/darraghdog"
       },
       {
-        "checkedAt": "2026-10-13T17:33:14Z",
+        "checkedAt": "2026-10-15T02:22:14Z",
         "handle": "gonedarragh",
         "platform": "x",
         "sourceTitle": "Darragh — direct X link from own Kaggle profile",
@@ -1742,13 +1742,13 @@
     ],
     "facts": [
       {
-        "checkedAt": "2026-10-13T17:33:14Z",
+        "checkedAt": "2026-10-15T02:22:14Z",
         "sourceTitle": "Darragh — Kaggle profile and direct professional links",
         "sourceUrl": "https://www.kaggle.com/darraghdog",
         "text": "Darragh’s Kaggle profile links to his GitHub profile, which displays the full name Darragh Hanley."
       },
       {
-        "checkedAt": "2026-10-13T17:33:14Z",
+        "checkedAt": "2026-10-15T02:22:14Z",
         "sourceTitle": "NVIDIA — Darragh Hanley author biography",
         "sourceUrl": "https://developer.nvidia.com/blog/author/dhanley/",
         "text": "NVIDIA describes Darragh Hanley as a senior LLM technologist working on autonomous reasoning and multi-agent collaboration, and a Kaggle Grandmaster with a peak worldwide rank of fourth."
@@ -1761,7 +1761,7 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-13T17:12:19Z",
-        "lastObservedAt": "2026-10-14T21:45:21Z",
+        "lastObservedAt": "2026-10-15T02:15:49Z",
         "memberHandle": "darraghdog",
         "season": "2026",
         "sourceTitle": "ARC-3 public roster observation",

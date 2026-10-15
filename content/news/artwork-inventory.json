@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-14T22:16:15.608822+00:00",
-  "editorDirection": "Preserve and use existing suitable prepared images before generating more. Future comic-strip scenes show two high-ground GPU strongholds and the reference-ready top-five/top-ten field advancing uphill with GPU siege machines; use the dated valley-strongholds plan. Track article appearances and X attachments separately.",
+  "updatedAt": "2026-10-15T02:38:05.126724+00:00",
+  "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
       "id": "tufa-gpu-citadel",
@@ -65,6 +65,150 @@
       "src": "/news-images/2026-10-13-valley-strongholds-v1-base.webp",
       "status": "published-on-front-page",
       "xAttachments": []
+    },
+    {
+      "id": "valley-walking-foundry-v1",
+      "generationRecord": "2026-10-14-valley-walking-foundry-v1-base",
+      "src": "/news-images/2026-10-14-valley-walking-foundry-v1-base.webp",
+      "title": "The Walking Foundry",
+      "episode": "Golden-morning articulated GPU walking foundry and bridge crane; Last Dance trebuchet, MTG drill/ramp, Mark/Son folding gantry.",
+      "status": "reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1560119367100928024",
+          "postedAt": "2026-10-15T02:37:22.733000+00:00",
+          "attachmentFilename": "2026-10-14-valley-walking-foundry-v1.png",
+          "attachmentSha256": "780db537c0be587544c29223bf0e55b545fa296b061da4ffba5df891d8bb9da6",
+          "purpose": "User-requested preview of clean reserve; not an article or X use."
+        }
+      ],
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredTopTenTeamIds": [
+          "16153655",
+          "15770880",
+          "16021367",
+          "15605182"
+        ],
+        "requiredRosterHandles": {
+          "15770880": [
+            "cpmpml",
+            "sorokin"
+          ],
+          "15605182": [
+            "markbarney",
+            "sonphamorg"
+          ]
+        },
+        "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
+      },
+      "selectionNote": "Mark commissioned and reviewed these three reserves October 14. Select an unused episode after fresh board/cast checks, explicitly commission it for the actual issue, compose exact new scores/time and inspect centered overlays. Discord preview sharing does not count as an edition or X use."
+    },
+    {
+      "id": "valley-gyroscopic-siege-v1",
+      "generationRecord": "2026-10-14-valley-gyroscopic-siege-v1-base",
+      "src": "/news-images/2026-10-14-valley-gyroscopic-siege-v1-base.webp",
+      "title": "The Gyroscopic Siege",
+      "episode": "Twilight GPU gyroscope with folding bridge; Last Dance spiral lift, MTG winch, Mark/Son articulated snow train.",
+      "status": "reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1560119429461712939",
+          "postedAt": "2026-10-15T02:37:37.601000+00:00",
+          "attachmentFilename": "2026-10-14-valley-gyroscopic-siege-v1.png",
+          "attachmentSha256": "56f33a4ee85a0eec63e9eef5ba1cf4272778923ec73fe620140466ce4463fe0a",
+          "purpose": "User-requested preview of clean reserve; not an article or X use."
+        }
+      ],
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredTopTenTeamIds": [
+          "16153655",
+          "15770880",
+          "16021367",
+          "15605182"
+        ],
+        "requiredRosterHandles": {
+          "15770880": [
+            "cpmpml",
+            "sorokin"
+          ],
+          "15605182": [
+            "markbarney",
+            "sonphamorg"
+          ]
+        },
+        "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
+      },
+      "selectionNote": "Mark commissioned and reviewed these three reserves October 14. Select an unused episode after fresh board/cast checks, explicitly commission it for the actual issue, compose exact new scores/time and inspect centered overlays. Discord preview sharing does not count as an edition or X use."
+    },
+    {
+      "id": "valley-aurora-skyworks-v1",
+      "generationRecord": "2026-10-14-valley-aurora-skyworks-v1-base",
+      "src": "/news-images/2026-10-14-valley-aurora-skyworks-v1-base.webp",
+      "title": "The Aurora Skyworks",
+      "episode": "Aurora fan airship on launch cradle; Last Dance scissor bridge, MTG gondola carousel, Mark/Son snow crane.",
+      "status": "reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1560119486390997022",
+          "postedAt": "2026-10-15T02:37:51.174000+00:00",
+          "attachmentFilename": "2026-10-14-valley-aurora-skyworks-v1.png",
+          "attachmentSha256": "481620a6e1daf9fd7d95ae64b57c65f74991c4e416c57a96376f9d48fe6aa96c",
+          "purpose": "User-requested preview of clean reserve; not an article or X use."
+        }
+      ],
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredTopTenTeamIds": [
+          "16153655",
+          "15770880",
+          "16021367",
+          "15605182"
+        ],
+        "requiredRosterHandles": {
+          "15770880": [
+            "cpmpml",
+            "sorokin"
+          ],
+          "15605182": [
+            "markbarney",
+            "sonphamorg"
+          ]
+        },
+        "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
+      },
+      "selectionNote": "Mark commissioned and reviewed these three reserves October 14. Select an unused episode after fresh board/cast checks, explicitly commission it for the actual issue, compose exact new scores/time and inspect centered overlays. Discord preview sharing does not count as an edition or X use."
     }
   ],
   "existingXPosts": [

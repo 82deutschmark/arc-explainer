@@ -642,6 +642,117 @@
       },
       "artworkHistoryChart": false,
       "approvalNote": "Prepared as part of Mark’s comic-strip variants. Latest direction reserves this extra scene for the next Late issue; use the attached existing citadel for October 13 Late. Generate no additional scene while a suitable prepared reserve exists."
+    },
+    {
+      "id": "valley-walking-foundry-v1",
+      "competition": "arc-3",
+      "approvedAt": "2026-10-15T02:38:05.126724+00:00",
+      "approvedBy": "mark-barney",
+      "status": "reserve",
+      "artworkGenerationRecord": "2026-10-14-valley-walking-foundry-v1-base",
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredTopTenTeamIds": [
+          "16153655",
+          "15770880",
+          "16021367",
+          "15605182"
+        ],
+        "requiredRosterHandles": {
+          "15770880": [
+            "cpmpml",
+            "sorokin"
+          ],
+          "15605182": [
+            "markbarney",
+            "sonphamorg"
+          ]
+        },
+        "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
+      },
+      "artworkHistoryChart": false,
+      "approvalNote": "October 14 explicit reserve commission and positive visual review. Not automatically active: desk selects one unused episode through existing issue-commission mechanics after manual full-cast checks. Anonymous GPU-covered NVIDIA supporting engineers explicitly authorized; no invented named likenesses."
+    },
+    {
+      "id": "valley-gyroscopic-siege-v1",
+      "competition": "arc-3",
+      "approvedAt": "2026-10-15T02:38:05.126724+00:00",
+      "approvedBy": "mark-barney",
+      "status": "reserve",
+      "artworkGenerationRecord": "2026-10-14-valley-gyroscopic-siege-v1-base",
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredTopTenTeamIds": [
+          "16153655",
+          "15770880",
+          "16021367",
+          "15605182"
+        ],
+        "requiredRosterHandles": {
+          "15770880": [
+            "cpmpml",
+            "sorokin"
+          ],
+          "15605182": [
+            "markbarney",
+            "sonphamorg"
+          ]
+        },
+        "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
+      },
+      "artworkHistoryChart": false,
+      "approvalNote": "October 14 explicit reserve commission and positive visual review. Not automatically active: desk selects one unused episode through existing issue-commission mechanics after manual full-cast checks. Anonymous GPU-covered NVIDIA supporting engineers explicitly authorized; no invented named likenesses."
+    },
+    {
+      "id": "valley-aurora-skyworks-v1",
+      "competition": "arc-3",
+      "approvedAt": "2026-10-15T02:38:05.126724+00:00",
+      "approvedBy": "mark-barney",
+      "status": "reserve",
+      "artworkGenerationRecord": "2026-10-14-valley-aurora-skyworks-v1-base",
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredTopTenTeamIds": [
+          "16153655",
+          "15770880",
+          "16021367",
+          "15605182"
+        ],
+        "requiredRosterHandles": {
+          "15770880": [
+            "cpmpml",
+            "sorokin"
+          ],
+          "15605182": [
+            "markbarney",
+            "sonphamorg"
+          ]
+        },
+        "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
+      },
+      "artworkHistoryChart": false,
+      "approvalNote": "October 14 explicit reserve commission and positive visual review. Not automatically active: desk selects one unused episode through existing issue-commission mechanics after manual full-cast checks. Anonymous GPU-covered NVIDIA supporting engineers explicitly authorized; no invented named likenesses."
     }
   ]
 }

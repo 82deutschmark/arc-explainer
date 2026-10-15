@@ -1,5 +1,16 @@
 # The ARC Daily Digest reporter
 
+## Three new valley reserves — October 14 evening commission
+
+Mark commissioned and approved three distinct GPU Valley iterations: Walking
+Foundry, Gyroscopic Siege and Aurora Skyworks. Read the exact records and fresh
+cast conditions in [the reserve handoff](2026-10-14-valley-reserve-art-plan.md),
+then select suitable unused prepared stock before generating more. Anonymous
+GPU-covered NVIDIA supporting crew are explicitly authorized; Puget and Sorokin
+retain their frozen individual identities. Discord preview sharing is distinct
+from article/X use. These clean reserves need current issue overlays and manual
+full-cast checks before an edition selects one.
+
 ## Every front page needs an image — October 14 editor correction
 
 Mark requires an illustration on the front page of each Early/Late issue. Before

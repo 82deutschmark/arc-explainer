@@ -1,0 +1,179 @@
+{
+  "generatedAt": "2026-10-15T02:36:42Z",
+  "id": "2026-10-14-valley-walking-foundry-v1-base",
+  "inputImages": [
+    "exec-ec934a51-b0b5-47f6-8b82-fd76d065eb5f.png"
+  ],
+  "kind": "native-generation",
+  "prompt": "Precisely edit this existing walking GPU foundry illustration to add a small supporting NVIDIA engineering crew. Keep Puget and Sorokin as the prominent distinct recognizable pair at the controls. Add THREE little stylized human engineers, their bodies covered in green/black GPU panels and chunky graphics-card helmets with completely opaque visors, no distinctive visible faces. Place them only around the NVIDIA walking machine: one on the left machine-side maintenance catwalk tightening a cable, one on the right rear platform inspecting a GPU rack, and one on a small service step beside the articulated leg installing a fan. Make them physically small relative to the main two, readable and naturally integrated. They represent anonymous teammates, not individually identified people or an exact roster count. Preserve everything else as closely as possible: exactly the existing FIVE spiders at the Tufa fort, one Dries, exactly TWO correct rabbits at Chen fort, Mark and Son at lower right, all machine silhouettes, green NVIDIA branding, flags, warm morning and composition. Do not add spiders, rabbits, scoreboards or other text.",
+  "rawSha256": "4cdc35f64bcc565e6b64d746f3d3b6bcbc8f8268e08afa00a2940234356b77c4",
+  "rawSrc": "/news-images/2026-10-14-valley-walking-foundry-v1-base.webp",
+  "references": [
+    {
+      "nativeToolOutput": "exec-ec934a51-b0b5-47f6-8b82-fd76d065eb5f.png",
+      "role": "Actual input to targeted native edit; generated predecessor preserved in private batch provenance.",
+      "sha256": "0390d4bb35f4c06df8bfadff3ad88e05613d5c5cdc264538bf82610235a246e6"
+    }
+  ],
+  "review": "Walking foundry with GPU crane and recognizable Puget/Sorokin; anonymous opaque-visor NVIDIA crew visibly working around the machine. Last Dance trebuchet, MTG drill/ramp, Mark/Son scissor workshop. Exactly five spiders and Dries left, two correct rabbits right; distinct forts. No statistics. Inspected final native edit, preserves five-spider repair; use fresh future overlays and recheck all pictured teams.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-0eac23ec-4fca-4922-9b62-02d0a91daa79.png",
+  "version": 1,
+  "overlayPlacement": "center",
+  "sceneCast": [
+    {
+      "personIds": [
+        "dries-smit"
+      ],
+      "rosterObservedAt": "2026-10-15T02:15:49Z",
+      "teamId": "15486995",
+      "teamName": "Tufa Labs",
+      "treatment": "Individual reference-based characters"
+    },
+    {
+      "personIds": [
+        "yi-chia-chen"
+      ],
+      "rosterObservedAt": "2026-10-15T02:15:49Z",
+      "teamId": "15499660",
+      "teamName": "Yi-Chia Chen",
+      "treatment": "Individual reference-based characters"
+    },
+    {
+      "personIds": [
+        "jean-francois-puget",
+        "ivan-sorokin"
+      ],
+      "rosterObservedAt": "2026-10-15T02:15:49Z",
+      "teamId": "15770880",
+      "teamName": "NVARC3",
+      "treatment": "Puget and Sorokin frozen individual characters plus Mark-authorized anonymous GPU-covered supporting crew, with opaque visors and no claimed individual likeness/headcount."
+    },
+    {
+      "personIds": [
+        "mark-barney",
+        "son-pham"
+      ],
+      "rosterObservedAt": "2026-10-15T02:15:49Z",
+      "teamId": "15605182",
+      "teamName": "Son & Mark & Ronen",
+      "treatment": "Individual reference-based characters"
+    },
+    {
+      "personIds": [],
+      "rosterObservedAt": "2026-10-15T02:15:49Z",
+      "teamId": "16021367",
+      "teamName": "the last dance 🕺",
+      "treatment": "Labelled team machine; no individual likeness asserted"
+    },
+    {
+      "personIds": [],
+      "rosterObservedAt": "2026-10-15T02:15:49Z",
+      "teamId": "16153655",
+      "teamName": "mtg",
+      "treatment": "Labelled team machine; no individual likeness asserted"
+    }
+  ],
+  "episodeTitle": "The Walking Foundry",
+  "episodeDescription": "Golden-morning articulated GPU walking foundry and bridge crane; Last Dance trebuchet, MTG drill/ramp, Mark/Son folding gantry.",
+  "reserveStatus": "ready",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "editorialDate": "2026-10-14",
+    "request": "Iterate the liked valley scene with increasingly imaginative siege equipment; save several ready for future editions. Include anonymous GPU-covered NVIDIA crew.",
+    "reviewResponse": "Mark said the shown variants look great and requested sharing them in the Digest Discord updates channel."
+  },
+  "artworkConditions": {
+    "leaderTeamId": "15486995",
+    "rivalTeamId": "15499660",
+    "requiredPersonIds": [
+      "dries-smit"
+    ]
+  },
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "requiredTopTenTeamIds": [
+      "16153655",
+      "15770880",
+      "16021367",
+      "15605182"
+    ],
+    "requiredRosterHandles": {
+      "15770880": [
+        "cpmpml",
+        "sorokin"
+      ],
+      "15605182": [
+        "markbarney",
+        "sonphamorg"
+      ]
+    },
+    "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
+  },
+  "generationChain": [
+    {
+      "tool": "image_gen.imagegen",
+      "prompt": "Use case: illustration-story. One richly detailed 16:9 landscape, a NEW episode of the attached snowy GPU-valley comic, intended as clean reusable newspaper illustration. Preserve the gorgeous painterly 3D fantasy engineering, warm lamps, brass, intricate graphics cards, fan arrays, cable looms and atmospheric scale. The user particularly loves the recognizable NVIDIA team and wants the pursuing teams building increasingly inventive siege machines. This is friendly sporting editorial metaphor, never a literal claim about hardware, spending or methods.\n\nINPUT ROLES in order: 1 the approved valley image is world/style/cast continuity reference, not a composition to duplicate. 2 Puget: bearded brown hair, cyan cyber helmet and shoulder GPUs, ignore card text. 3 Sorokin: clean-shaven short brown hair, charcoal/cyan armor and blue-crystal motif, ignore card text. 4 Mark: beard, extraordinary stacked GPU headgear, multicolored small screens and eyepiece. 5 Son: broad luminous visor, dense GPU helmet and distinct lower face. The owner-photo-verified rabbits in image 1 govern Chen's exact two rabbits: grey-brown lop with BOTH ears hanging down beside cheeks, and dark-and-white rabbit with tall upright dark ears, irregular broad white forehead/nose blaze and white chest/paws. Dries in image 1: swept brown hair, clean-shaven, green right-eye eyepiece, dark cyan/green engineer outfit.\n\nCONTINUITY: Keep TWO SEPARATE great GPU forts on adjacent snowy high ridges, Tufa left and Chen right. Both have silhouettes around one-fifth taller than the tallest challenger tower at comparable perspective; this is an artistic convention only. On the Tufa fort show exactly FIVE fluffy black friendly spiders with expressive white eyes, countably separate: two on upper parapets, two on lower balconies and one in a crane basket. One Dries operates a balcony console. On Chen's own fort show exactly TWO large rabbits matching photo anatomy, alert and curious about the approaching machines; no other rabbits anywhere. No spider/rabbit mixing. Forts remain visibly separate.\n\nCHALLENGERS: The hero pursuing machine is NVIDIA green/black with tasteful accurate NVIDIA eye/wordmark on a green pennant and a second pennant reading \"NVARC\". BOTH Puget and Sorokin operate it together with distinct recognizable faces, identities and gear. The other top-five teams have their own different machines with small pennants reading \"MTG\" and \"THE LAST DANCE\"; these are team machines without invented identifiable people. Mark and Son together operate a smaller separate inventive machine further downhill, clearly below the leading challenger tier, with their two distinct referenced heads readable. No Ronen likeness and no extra named human faces. Small unoccupied workshops can suggest the rest of the field.\n\nCLEAN ART: no score/rank numbers, no dates, no scoreboard, no newspaper masthead, no watermark, no card borders. Only the small specified team pennants/accurate NVIDIA brand may have lettering. Reserve moderately quiet sky top-center and snow/mist bottom-center for future deterministic publication overlays, keep all faces and main engineering action outside those areas. Friendly cooperation within teams, playful competition between them. No injury, destruction, weapons firing, military uniforms, smoke battle or gore. Machines are fantastical siege construction equipment. Clear architecture and poses rather than clutter. Do not duplicate characters or merge faces.\n\nNEW EPISODE — THE WALKING FOUNDRY: A crisp golden morning after fresh snowfall. Low three-quarter camera beside the uphill switchback, looking past an extraordinary NVARC SIX-LEGGED mechanical GPU foundry taking a careful step up a rock ledge. Its silhouette is a broad articulated beetle-shaped walking workshop with piston legs and a tall telescoping loading crane, not yesterday's rectangular wheeled tower. A suspended green GPU bridge section is being hoisted into place. Puget and Sorokin are prominent together in an open forward command cockpit, Puget working levers and Sorokin directing the crane with his luminous crystal gauntlet. Keep their faces large enough to read.\nOn another switchback MTG's compact corkscrew drilling-and-bridge-laying cart is unfolding a neat temporary ramp without damaging the mountain. THE LAST DANCE has a dramatic mobile counterweight trebuchet with a cradle full of giant GPU modules, visibly still under construction, no launch. Mark and Son in lower-right foreground are bolting together a folding scissor gantry on a little tracked snow workshop, Mark holds a spanner, Son aligns a hinge. The two ridge forts loom beyond, five spiders watch and tinker on left, the two owner-photo rabbits peer over their right fort. Distinct machine silhouettes, fresh active poses, sunlight glinting off icy cables, delightful absurd engineering. Wide strong composition with NVARC as the primary machinery subject and all groups grounded on clearly separate climbing paths.",
+      "inputImages": [
+        "2026-10-13-valley-strongholds-v1-base.webp",
+        "2026-10-12-jean-francois-puget-reference-1-v1.png",
+        "2026-10-12-ivan-sorokin-reference-1-v1.png",
+        "2026-10-12-mark-barney-reference-1-v1.webp",
+        "2026-10-12-son-pham-reference-1-v1.webp"
+      ],
+      "transparentBackground": false,
+      "outputImage": "exec-8e68adf6-c3a8-43f2-875f-8d59beb2da18.png",
+      "outputSha256": "3d92fdd0db994021cdfdab31e562f6fe993abb8785f839790e582ef043124a1d",
+      "selected": false
+    },
+    {
+      "tool": "image_gen.imagegen",
+      "prompt": "Precisely edit this illustration. Remove ONLY the extra fluffy black spider at the far-right LOWER balcony of the left GPU fortress, just below the crane basket, around image x=510,y=255 (image is 1672x941). Replace that single spider with matching unobstructed brass railing and fortress hardware. Keep the other FIVE spiders untouched: TWO on the top parapet, ONE in the suspended crane basket, ONE on the far-left lower balcony, ONE just to Dries's right on the middle balcony. Final count exactly five. Preserve every other pixel/composition as closely as possible: both rabbits, all five humans, green NVIDIA walking GPU foundry, machines, flags, intricate details, sunrise, colors, framing. No new text or scoreboard.",
+      "inputImages": [
+        "exec-8e68adf6-c3a8-43f2-875f-8d59beb2da18.png"
+      ],
+      "transparentBackground": false,
+      "outputImage": "exec-ec934a51-b0b5-47f6-8b82-fd76d065eb5f.png",
+      "outputSha256": "0390d4bb35f4c06df8bfadff3ad88e05613d5c5cdc264538bf82610235a246e6",
+      "selected": false
+    },
+    {
+      "tool": "image_gen.imagegen",
+      "prompt": "Precisely edit this existing walking GPU foundry illustration to add a small supporting NVIDIA engineering crew. Keep Puget and Sorokin as the prominent distinct recognizable pair at the controls. Add THREE little stylized human engineers, their bodies covered in green/black GPU panels and chunky graphics-card helmets with completely opaque visors, no distinctive visible faces. Place them only around the NVIDIA walking machine: one on the left machine-side maintenance catwalk tightening a cable, one on the right rear platform inspecting a GPU rack, and one on a small service step beside the articulated leg installing a fan. Make them physically small relative to the main two, readable and naturally integrated. They represent anonymous teammates, not individually identified people or an exact roster count. Preserve everything else as closely as possible: exactly the existing FIVE spiders at the Tufa fort, one Dries, exactly TWO correct rabbits at Chen fort, Mark and Son at lower right, all machine silhouettes, green NVIDIA branding, flags, warm morning and composition. Do not add spiders, rabbits, scoreboards or other text.",
+      "inputImages": [
+        "exec-ec934a51-b0b5-47f6-8b82-fd76d065eb5f.png"
+      ],
+      "transparentBackground": false,
+      "outputImage": "exec-0eac23ec-4fca-4922-9b62-02d0a91daa79.png",
+      "outputSha256": "780db537c0be587544c29223bf0e55b545fa296b061da4ffba5df891d8bb9da6",
+      "selected": true
+    }
+  ],
+  "supportingReferences": [
+    {
+      "src": "/news-images/2026-10-13-valley-strongholds-v1-base.webp",
+      "role": "World, painting quality, team separation, established cast and machine style; make a new episode, not a copy.",
+      "sha256": "a18da0f68fc657db777148219756ae022bc390722149a64bcaa4adacc657c2a3"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+      "role": "Jean-François Puget individual likeness only; beard, cyan cyber helmet and shoulder GPUs. Ignore card text.",
+      "sha256": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-ivan-sorokin-reference-1-v1.png",
+      "role": "Ivan Sorokin individual likeness only; clean-shaven, short brown hair, charcoal/cyan armor, blue crystal motif. Ignore card text.",
+      "sha256": "c050296ab22522c72c2457b471f17ab18bf4ad00490978fb66354cc54935397c"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp",
+      "role": "Mark Barney owned avatar; beard, stacked GPU helmet, multicolored screens and eyepiece.",
+      "sha256": "f2f0a29a8747c9fa8710489459a5d5f715ec16a91c32f46bb1fa9a4d41a24e9a"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp",
+      "role": "Son Pham owned avatar; broad luminous visor, GPU helmet, distinct lower face.",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d"
+    }
+  ]
+}
