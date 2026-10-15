@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-14
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
+# Date: 15-October-2026 (an approved scene that already ran in the contest or on X is no longer
+# offered automatically; the comic-strip rule, found in the backup desk's rehearsal)
 # PURPOSE: Maintain reusable competitor character references, plan native illustrations from verified edition moves,
 # draw dated corner statistics and branding, and bind image bytes/provenance to the exact headline and manuscript.
 # Edition-specific human commissions can reuse approved art on a quiet board while checking
@@ -211,15 +212,48 @@ def lead_gap(rows, item):
     return {'previous': previous, 'current': current, 'extends': previous is not None and current > previous}
 
 
+def used_scene_hashes(root, competition):
+    """Clean bases (by image hash) that already ran: in a published article of this contest, or on
+    any X post. The Boss's comic-strip direction (13 October) is that a used scene is not repeated as
+    routine art, so the planner stops offering it automatically; an explicit editorial assignment
+    can still commission it. Hashes, not record IDs, because one base can be registered twice."""
+    root = Path(root)
+
+    def base_hash(record_id, depth=0):
+        path = root / 'content/news/artwork' / f'{record_id}.json'
+        if not record_id or depth > 2 or not path.exists():
+            return None
+        record = load(path)
+        if record.get('kind') == 'native-generation':
+            return record.get('rawSha256')
+        return base_hash(record.get('generationRecord'), depth + 1)  # a finished composition: follow it to its base
+
+    used = set()
+    for path in (root / 'content/news/articles').glob('*.json'):
+        article = load(path)
+        if article.get('competition') == competition and (article.get('image') or {}).get('artworkId'):
+            used.add(base_hash(article['image']['artworkId']))
+    inventory = root / 'content/news/artwork-inventory.json'
+    for image in (load(inventory).get('images', []) if inventory.exists() else []):
+        for attachment in image.get('xAttachments', []):
+            used.add(base_hash(attachment.get('artworkId')) or base_hash(image.get('generationRecord')))
+    used.discard(None)
+    return used
+
+
 def scene_assignments(item, article, root):
     """Reuse explicit human approvals without reopening old editions or their evidence."""
     assignments = list(item.get('intake', {}).get('editorialAssignments', []))
     registry = load(Path(root) / 'content/news/visual-identities.json')
+    used = used_scene_hashes(root, item['articleBase']['competition'])
     for scene in registry.get('reusableScenes', []):
         if (scene.get('status', 'active') != 'active'
                 or scene['competition'] != item['articleBase']['competition']
                 or stamp(scene['approvedAt']) > stamp(item['evidence']['accessedAt'])):
             continue
+        record = Path(root) / 'content/news/artwork' / f"{scene['artworkGenerationRecord']}.json"
+        if record.exists() and load(record).get('rawSha256') in used:
+            continue  # already ran in this contest or on X: a new episode, not a repeat
         assignments.append({**scene, 'targetEditionId': article['id'], '_reusableScene': True})
     return assignments
 

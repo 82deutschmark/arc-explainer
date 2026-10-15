@@ -1,5 +1,5 @@
-# Author: GPT-6.1 Sol / Codex
-# Date: 2026-10-13
+# Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 Max
+# Date: 15-October-2026 (used scenes are not offered again automatically)
 # PURPOSE: Verify native-art planning, immutable composition and publication evidence, including
 # score/image mutations, wrong editions/headlines and missing comparisons. No model calls.
 # Covered illustrated commissions cannot publish without their freshly bound approved base.
@@ -329,6 +329,27 @@ class ArtworkTests(unittest.TestCase):
         media = edition_media(n.load(published), self.root)
         self.assertEqual(media['artworkId'], report['id'])
         self.assertEqual(media['sourceSha256'], report['imageSha256'])
+
+
+class UsedSceneTests(unittest.TestCase):
+    def test_a_scene_that_ran_in_the_contest_or_on_x_is_not_offered_again(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            news = root / 'content/news'
+            (news / 'artwork').mkdir(parents=True); (news / 'articles').mkdir()
+            write = lambda path, value: path.write_text(json.dumps(value))
+            # Two registrations of one base (same bytes) and a second, unused base.
+            write(news / 'artwork/base-a.json', {'kind': 'native-generation', 'rawSha256': 'aaa'})
+            write(news / 'artwork/base-a-again.json', {'kind': 'native-generation', 'rawSha256': 'aaa'})
+            write(news / 'artwork/base-b.json', {'kind': 'native-generation', 'rawSha256': 'bbb'})
+            write(news / 'artwork/base-c.json', {'kind': 'native-generation', 'rawSha256': 'ccc'})
+            write(news / 'artwork/edition-1.json', {'kind': 'edition-composition', 'generationRecord': 'base-a-again'})
+            write(news / 'artwork/x-1.json', {'kind': 'edition-composition', 'generationRecord': 'base-c'})
+            write(news / 'articles/2026-10-14-morning-arc-3.json', {'competition': 'arc-3', 'image': {'artworkId': 'edition-1'}})
+            write(news / 'artwork-inventory.json', {'images': [{'generationRecord': 'base-c', 'xAttachments': [{'artworkId': 'x-1'}]}]})
+            self.assertEqual(art.used_scene_hashes(root, 'arc-3'), {'aaa', 'ccc'})
+            # An article in the other contest does not count; an X post counts everywhere.
+            self.assertEqual(art.used_scene_hashes(root, 'arc-2'), {'ccc'})
 
 
 if __name__ == '__main__':
