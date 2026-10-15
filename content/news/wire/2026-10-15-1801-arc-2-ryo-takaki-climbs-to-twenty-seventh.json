@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-15T21:48:35Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Ryo Takaki climbs to 27th on ARC-2",
+  "id": "2026-10-15-1801-arc-2-ryo-takaki-climbs-to-twenty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-15T22:01:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Ryo Takaki gained 11.25 points to reach 43.47, moving from 212th to 27th on the ARC-AGI-2 public board."
+    }
+  ],
+  "since": "2026-10-14T21:45:23Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T22:00:47Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17034545"
+  ]
+}

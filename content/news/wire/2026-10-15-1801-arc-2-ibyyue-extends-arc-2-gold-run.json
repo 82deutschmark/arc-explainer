@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-15T21:48:35Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ibyyue adds to its ARC-2 gold run",
+  "id": "2026-10-15-1801-arc-2-ibyyue-extends-arc-2-gold-run",
+  "personIds": [],
+  "publishedAt": "2026-10-15T22:01:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "ibyyue gained 21.67 points to reach 65.56, moving from 25th to 10th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The new board snapshot puts ibyyue among the 15 gold places after its earlier move into the medal group."
+    }
+  ],
+  "since": "2026-10-14T21:45:23Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T22:00:47Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16684035"
+  ]
+}
