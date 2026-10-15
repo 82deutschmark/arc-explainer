@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.148.0  Oct 15, 2026
+
+- **A twice-daily Claude check-in on the newsroom** (Author: Claude Opus 5.5 Low). What: Claude Sonnet 5.5 runs as a scheduled task in the Claude app at about 8:15 am and 8:15 pm, after each edition and the backup desk's check. It confirms both contests' editions went live, reads Codex's run ledger for failed or stuck jobs, checks the wire, the site's news health, board freshness, the relay and the collector, and fixes only a short list of things (running the backup desk for a missing edition, restarting the collector or relay, repairing an obviously broken news file). It writes a daily report to `~/bubba-workspace/reports/arc-daily-checkins/` and posts one line to Discord. Why: the editions land while the Boss is asleep, so an alarm alone helps no one; someone has to look and act. How: new `docs/newsroom/CHECKIN.md`, `docs/newsroom/README.md` (desks table, checks).
+
 ### Version 9.147.0  Oct 15, 2026
 
 - **The team's turducken harness picture on both About pages** (Author: Claude Opus 5.5 Low). What: the Boss's illustration of Son & Mark & Ronen flying the turducken harness up to third place on the ARC-AGI-3 board (15 October) now sits under the editor on the paper's About page and under the title on the site's About page. Why: the Boss asked for it on About Us and About the Publisher. How: new `client/public/turducken-harness.jpg`, `client/src/pages/NewsStaff.tsx`, `client/src/pages/About.tsx`, `client/src/components/news/news.css`.

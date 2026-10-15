@@ -22,6 +22,7 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 | Backup desk | Claude Sonnet 5.5 (launchd `com.arcdaily.fallback`) | 6:50 am/pm; wire checks 9:40 am, 12:40, 3:40, 9:40 pm | fallback checkout | [FALLBACK.md](FALLBACK.md) | only what Codex missed |
 | Desk relay | launchd `ai.bubba.arc-daily-announce` | every 10 minutes | `~/bubba-workspace/tools/arc_daily_announce.py` | this page | Discord: edition announcements and alarms |
 | Leaderboard collector | launchd `com.arc3.leaderboard` | every 30 minutes | `~/GitHub/arc-daily-collector` | this page | uploads both boards to the site |
+| Check-in | Claude Sonnet 5.5 (Claude app scheduled task "ARC Daily check-in") | about 8:15 am and 8:15 pm | fallback checkout, read-only except the fixes it lists | [CHECKIN.md](CHECKIN.md) | a daily report in `~/bubba-workspace/reports/arc-daily-checkins/`, one Discord line |
 
 The two editions, the wire and the backup push to `main`; the site redeploys itself on every push
 (never poll the deployment). Research, briefings and the X recap never change the repository.
@@ -77,6 +78,9 @@ uses its own log folder instead). Big downloads belong on `/Volumes/Samsung 9100
 
 ## Checks and alarms
 
+- Twice a day the check-in ([CHECKIN.md](CHECKIN.md)) looks over the editions, the Codex runs, the
+  wire, the site, the boards and the plumbing, fixes the few things it may, and writes its report
+  to `~/bubba-workspace/reports/arc-daily-checkins/<date>.md`. Start there when asking how the paper is doing.
 - The desk relay posts to Discord **#arc3-rollout-feed** (`channel:1550165647911034940`), tagging
   the Boss, when an edition goes live and when something is wrong: the site leaving out a broken
   news file (`GET /api/news/health`), a leaderboard more than 75 minutes old (editions and the
