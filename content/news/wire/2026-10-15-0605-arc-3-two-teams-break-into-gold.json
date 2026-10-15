@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-15T09:47:18Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Two teams surge into ARC-3 gold places",
+  "id": "2026-10-15-0605-arc-3-two-teams-break-into-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-15T10:05:11Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "AquaUrsa Research jumped from 467th to 14th, gaining 8.76 points to reach 38.97 and move into the 18 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "speed, my mom is kinda homless also entered gold, climbing from 435th to 16th after a 7.96-point gain to 38.22. The team now sits two places behind AquaUrsa Research."
+    }
+  ],
+  "since": "2026-10-14T09:44:09Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T10:04:45Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15488763",
+    "16253766"
+  ]
+}
