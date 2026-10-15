@@ -346,5 +346,33 @@
       "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
     ],
     "verificationNotes": "User supplied his Mark/two-Yorkies portrait and identified it as himself. Native image inspected: correct two humans/two dogs/nested bird machine. Exact prompt, references/hashes and review in generation record. Exact collective statement and acknowledgment received directly from Mark; saved verbatim privately and included in special."
+  },
+  {
+    "id": "gemini-4-argon-aha-moments-feature",
+    "competition": "arc-3",
+    "createdAt": "2026-10-15T22:10:00+00:00",
+    "expiresAt": "2026-10-17T22:00:00Z",
+    "title": "Gemini 4 Argon's mind-blown moments on ARC-AGI-3",
+    "priority": "Boss-requested feature",
+    "status": "pending",
+    "targetEditionId": "2026-10-15-evening-arc-3",
+    "placement": "supporting-feature",
+    "commissionedBy": "mark-barney",
+    "teamIds": [],
+    "personIds": [],
+    "subjectNames": [
+      "Gemini 4 Argon",
+      "Argon"
+    ],
+    "instructions": "Mark asked for an article on Google's Gemini 4 Argon ARC-AGI-3 results, centered on the moments in its public replays where it shouts WHOA, BINGO or MIND BLOWN. Read docs/2026-10-15-gemini-4-argon-aha-moments.md first (the quotes, the replay IDs and the outburst statistics), then docs/2026-10-15-gemini-4-argon-slippery-seven-traces.md for the harness story and for what Google documents about reasoning visibility. Write it as a sourced supporting feature or short dispatch for the arc-3 edition: a model run, not a leaderboard entry, so open with the most consequential verified board news if there is any and give this the space its news value earns. Keep the two harnesses apart in every sentence that names a score: the standard harness (49.8% on the semi-private v3 at low reasoning) and the Provider Adapter harness (97.5% at low), both from https://arcprize.org/results/google-gemini-4-argon, where ARC Prize says API issues stopped the standard-harness evaluation finishing every task. Quote only the lines in the aha-moments file, each with its game, config and replay link (https://arcprize.org/replay/<session id>). The quotes are the model's visible answer text, not its hidden thinking: do not call them its thoughts or reasoning trace. Report the reasoning-visibility point as Google documents it (summaries and encrypted signatures, no raw thoughts) and the Provider Adapter summaries as summaries. Do not say the model was trained on the games, replayed a walkthrough or got help: the near-identical Provider Adapter play across reasoning levels is an open question the desk could not test, and may be mentioned only as that. We did not check any claimed discovery against the game source; say what the run did next, not that the model was right. Not every moment is a triumph: the statistic that outbursts precede a level clear less often than average (25.3% vs 36.1% standard, 36.8% vs 56.8% Provider Adapter) is part of the story. Respect Google and every team; no invented drama, motives or method claims. Mark may want it illustrated: a request for art would arrive as its own assignment.",
+    "sourceUrls": [
+      "https://arcprize.org/results/google-gemini-4-argon",
+      "https://ai.google.dev/gemini-api/docs/interactions/thinking.md.txt",
+      "https://ai.google.dev/gemini-api/docs/generate-content/thought-signatures",
+      "https://arcprize.org/replay/971b5463-876a-4b1a-b0bf-039f1489bb5e",
+      "https://arcprize.org/replay/9978214b-a051-4bc2-b0d6-febf5e9171b3",
+      "https://arcprize.org/replay/00ea2e7f-f46f-49dd-b3fd-26119bdec2fb"
+    ],
+    "verificationNotes": "Replay data pulled from the public arcprize.org recordings API on October 15 and read by Claude Sonnet 5.5 (about 40 passages of 42 Slippery Seven sessions plus keyword scans over all 150). Counts and percentages are reproducible with data/gemini-4-argon-traces/ scripts. Google documentation read October 15. Discovery claims in the quotes were not checked against game code; scores come from the ARC Prize results page and the recordings' session records."
   }
 ]
