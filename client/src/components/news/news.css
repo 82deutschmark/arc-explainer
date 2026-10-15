@@ -397,6 +397,9 @@
 .news-production li h3 { margin-top: 12px; }
 .news-staff-human { display: grid; grid-template-columns: minmax(180px, 320px) minmax(0, 1fr); gap: 24px; align-items: start; margin-bottom: 28px; }
 .news-staff-human figure { margin: 0; }
+.news-staff-team { margin: 0 0 28px; }
+.news-staff-team img { display: block; width: 100%; height: auto; border: 1px solid var(--ink); }
+.news-staff-team figcaption { margin-top: 4px; font: italic 12px/1.5 var(--serif); color: var(--muted); }
 .news-staff-human img { width: 100%; height: auto; border: 1px solid var(--ink); }
 .news-staff-human figcaption { font: italic 12px/1.5 var(--serif); color: var(--muted); }
 .news-staff-role { font: 700 12px/1.5 var(--sans); }

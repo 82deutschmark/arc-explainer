@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-11
+ * Date: 2026-10-11; 2026-10-15 (Claude Opus 5.5 Low: the team's turducken harness picture under the editor)
  * PURPOSE: Unified ARC Daily Digest masthead, production cycle and editorial standards.
  *          Uses institutional copy shared with crawler HTML and the existing newspaper shell.
  * SRP/DRY check: Pass — copy comes from shared/newsStaff.ts and shared/newsMethod.ts.
@@ -25,6 +25,7 @@ export default function NewsStaff() {
           <figure><a href={editor.portrait.src}><img src={editor.portrait.src} alt={editor.portrait.alt} width={1024} height={1024} /></a><figcaption>{editor.portrait.caption}</figcaption></figure>
           <div><h3>{editor.name}</h3><p className="news-staff-role">{editor.role}</p><p>{editor.description}</p><p><Link href="/news/people/mark-barney">Kaggle competitor profile →</Link></p></div>
         </div>
+        <figure className="news-staff-team"><a href="/turducken-harness.jpg"><img src="/turducken-harness.jpg" alt="Illustration: the team rides a giant robot turkey built from graphics cards over snowy castles at sunset, with a robot chicken, a duck in sunglasses and two terriers in goggles aboard." width={1672} height={941} loading="lazy" /></a><figcaption>Son &amp; Mark &amp; Ronen flying our turducken harness up to third place on the ARC-AGI-3 board, 15 October 2026.</figcaption></figure>
         <h3>The reporting desks</h3><dl>{NEWS_STAFF_WRITERS.map(writer => <div className="news-staff-writer" key={writer.id}><dt>{writer.name}<span>{writer.role}</span></dt><dd>{writer.description}</dd></div>)}</dl>
         <h3>Earlier bylines &amp; contributors</h3>{NEWS_STAFF_ARCHIVE_WRITERS.map(writer => <p key={writer.id}><strong>{writer.name}.</strong> {writer.description}</p>)}<p>{NEWS_STAFF_TOOL_CREDIT}</p>
       </section>

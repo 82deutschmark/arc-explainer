@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6 / Codex; Cascade (OpenAI)
- * Date: 2026-10-07
+ * Date: 2026-10-07; 2026-10-15 (Claude Opus 5.5 Low: the team's turducken harness picture under the title)
  * PURPOSE: About page describing ARC Explainer’s mission, accessibility goals, and key contributors,
  * including the latest ReArc Bench spotlight content and curated references. Human ARC
  * uses a full-page link to its separately built app hosted within ARC Explainer.
@@ -69,6 +69,14 @@ export default function About() {
             />
           </div>
         </div>
+
+        {/* The team, 15-Oct-2026: art supplied by the Boss. */}
+        <figure className="mb-8 border border-slate-700 rounded-lg overflow-hidden bg-slate-900/70">
+          <a href="/turducken-harness.jpg">
+            <img src="/turducken-harness.jpg" alt="Illustration: the team rides a giant robot turkey built from graphics cards over snowy castles at sunset, with a robot chicken, a duck in sunglasses and two terriers in goggles aboard." width={1672} height={941} className="w-full h-auto block" />
+          </a>
+          <figcaption className="px-4 py-3 text-sm text-slate-300 italic">Son &amp; Mark &amp; Ronen flying our turducken harness up to third place on the ARC-AGI-3 board, 15 October 2026.</figcaption>
+        </figure>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

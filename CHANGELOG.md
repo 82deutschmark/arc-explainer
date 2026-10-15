@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.147.0  Oct 15, 2026
+
+- **The team's turducken harness picture on both About pages** (Author: Claude Opus 5.5 Low). What: the Boss's illustration of Son & Mark & Ronen flying the turducken harness up to third place on the ARC-AGI-3 board (15 October) now sits under the editor on the paper's About page and under the title on the site's About page. Why: the Boss asked for it on About Us and About the Publisher. How: new `client/public/turducken-harness.jpg`, `client/src/pages/NewsStaff.tsx`, `client/src/pages/About.tsx`, `client/src/components/news/news.css`.
+
 ### Version 9.146.1  Oct 15, 2026
 
 - **The book ad links to Chollet's paper and ARC Prize** (Author: Claude Opus 5.5 Low). What: the parody ad's fine print now links to "On the Measure of Intelligence" on arXiv and to arcprize.org. Why: the Boss asked for a link to the paper. How: `client/src/components/news/NewsWelcome.tsx`.
