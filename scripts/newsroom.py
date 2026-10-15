@@ -4,7 +4,9 @@
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 12-Oct-2026: selected public Kaggle discussion threads join the edition's dated source evidence.
-# 10-Oct-2026 (Claude Opus 5.5): --writer records the Claude Haiku backup honestly in generatedBy.
+# 10-Oct-2026 (Claude Opus 5.5): --writer records the backup desk honestly in generatedBy.
+# 15-Oct-2026 (Claude Opus 5.5 Max): editorial assignments expire (expiresAt, default 72 hours) instead
+# of riding along in every edition's intake once held or carried.
 # 11-Oct-2026: briefs carry wire developments and unresolved editorial assignments; publication records their disposition.
 # Covered illustrated commissions require their approved native base, composed for the actual issue.
 # Archives selected score trails for the editor-requested dated illustration history chart.
@@ -231,11 +233,22 @@ def add_notebook_sources(item, competition, actual_now, root=ROOT):
     item['evidence']['competitorFacts'] = facts
 
 
+ASSIGNMENT_LIFE = timedelta(hours=72)
+
+
+def assignment_expired(assignment, now):
+    """A held or carried assignment used to ride along in every edition forever, because only a
+    'covered' decision closes one. It now also ends at its `expiresAt`, or 72 hours after
+    `createdAt` when the editor set no expiry; set a later `expiresAt` for a longer commission."""
+    expires = stamp(assignment['expiresAt']) if assignment.get('expiresAt') else stamp(assignment['createdAt']) + ASSIGNMENT_LIFE
+    return now >= expires
+
+
 def open_editorial_assignments(root, competition, now):
-    """Carry an assignment until a published edition covers or explicitly closes it."""
+    """Carry an assignment until a published edition covers it or it expires."""
     directory = Path(root) / 'content/news'
     path = directory / 'editorial-assignments.json'
-    assignments = load(path) if path.exists() else []
+    assignments = [a for a in (load(path) if path.exists() else []) if not assignment_expired(a, now)]
     decisions = {}
     for proof_path in (directory / 'evidence').glob('*.json'):
         proof = load(proof_path)

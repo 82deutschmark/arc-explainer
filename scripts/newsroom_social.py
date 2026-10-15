@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-12
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
+# Date: 15-October-2026 (per-feed coverage markers: the plan resumes each feed where its last complete
+# read ended, instead of re-reading a week because repost history can never be complete)
 # PURPOSE: Store browser-researched X posts and Kaggle discussion activity, coverage and separate personal briefing delivery;
 # export a strictly public subset for the newsroom and weekly meeting. No X/model API or sends.
 # Exports the full dated public thirty-day archive alongside the curated seven-day source subset.
@@ -63,12 +64,36 @@ def state_at(directory):
     return state
 
 
+# Chronological feeds a read window can be planned from. Reposts are recorded but never planned:
+# X shows no repost action dates, so a reposts check can never be "complete", and it must not hold
+# back the posts/replies/subscriber markers (that was why every account looked unchecked since 10 Oct).
+CHRONOLOGICAL_SURFACES = ('posts', 'replies', 'subscriber')
+SURFACES = CHRONOLOGICAL_SURFACES + ('reposts',)
+INITIAL_WINDOW = timedelta(days=7)
+OVERLAP = timedelta(hours=1)
+
+
 def validate_coverage(coverage, now):
-    if set(coverage) != {'status', 'coveredFrom', 'coveredThrough', 'checkedAt', 'detail'} or coverage['status'] not in ('ok', 'partial', 'error'):
+    if set(coverage) - {'surfaces'} != {'status', 'coveredFrom', 'coveredThrough', 'checkedAt', 'detail'} or coverage['status'] not in ('ok', 'partial', 'error'):
         raise ValueError('invalid source coverage')
     text(coverage['detail'], 'coverage detail', 1200)
     if stamp(coverage['coveredFrom']) > stamp(coverage['coveredThrough']) or stamp(coverage['coveredThrough']) > stamp(coverage['checkedAt']) or stamp(coverage['checkedAt']) > now:
         raise ValueError('invalid source coverage times')
+    # Optional per-feed results: {posts|replies|subscriber|reposts: {status, checkedAt, coveredFrom?, coveredThrough?, detail?}}.
+    surfaces = coverage.get('surfaces', {})
+    if not isinstance(surfaces, dict):
+        raise ValueError('coverage surfaces must be an object')
+    for surface, part in surfaces.items():
+        if surface not in SURFACES or not isinstance(part, dict) or part.get('status') not in ('ok', 'partial', 'error') \
+                or not {'status', 'checkedAt'} <= set(part) <= {'status', 'checkedAt', 'coveredFrom', 'coveredThrough', 'detail'}:
+            raise ValueError(f'invalid {surface} surface coverage')
+        if 'detail' in part:
+            text(part['detail'], 'surface coverage detail', 1200)
+        if stamp(part['checkedAt']) > now or ('coveredThrough' in part and stamp(part['coveredThrough']) > stamp(part['checkedAt'])) \
+                or ('coveredFrom' in part and 'coveredThrough' in part and stamp(part['coveredFrom']) > stamp(part['coveredThrough'])):
+            raise ValueError(f'invalid {surface} surface coverage times')
+        if part['status'] == 'ok' and surface in CHRONOLOGICAL_SURFACES and 'coveredThrough' not in part:
+            raise ValueError(f'complete {surface} coverage needs coveredThrough')
 
 
 def public_posts(state, now=None, days=7):
@@ -104,23 +129,62 @@ def ingest(batch, directory, now=None):
         if old.get('checkedAt') and stamp(coverage['checkedAt']) < stamp(old['checkedAt']):
             continue
         # A partial/error scan never advances the fully checked watermark.
-        candidate['accounts'][handle] = {**coverage, **({'lastSuccessfulAt': old['lastSuccessfulAt']} if old.get('lastSuccessfulAt') else {})}
+        record = {key: coverage[key] for key in ('status', 'coveredFrom', 'coveredThrough', 'checkedAt', 'detail')}
+        if old.get('lastSuccessfulAt'):
+            record['lastSuccessfulAt'] = old['lastSuccessfulAt']
         if coverage['status'] == 'ok':
-            candidate['accounts'][handle]['lastSuccessfulAt'] = coverage['coveredThrough']
+            record['lastSuccessfulAt'] = coverage['coveredThrough']
+        # Each feed keeps its own complete-through marker, which only moves forward on a complete read.
+        surfaces = copy.deepcopy(old.get('surfaces', {}))
+        for surface, part in coverage.get('surfaces', {}).items():
+            marker = surfaces.get(surface, {}).get('lastCompleteThrough')
+            if part['status'] == 'ok' and 'coveredThrough' in part and (not marker or stamp(part['coveredThrough']) > stamp(marker)):
+                marker = part['coveredThrough']
+            surfaces[surface] = {**part, **({'lastCompleteThrough': marker} if marker else {})}
+        if surfaces:
+            record['surfaces'] = surfaces
+        candidate['accounts'][handle] = record
     candidate['posts'] = {pid: post for pid, post in candidate['posts'].items() if stamp(post['lastSeenAt']) >= now - timedelta(days=30)}
     save(Path(directory) / 'state.json', candidate)
     save(Path(directory) / 'public.json', public_posts(candidate, now))
     return {'postsStored': len(candidate['posts']), 'publicPosts': len(public_posts(candidate, now))}
 
 
+def surface_marker(handle, surface, state, founder):
+    """Newest complete-through time for one feed: this archive's per-feed marker, the hourly
+    organizer desk's founder-coverage.json marker, or the account's legacy all-feeds marker."""
+    account = state['accounts'].get(handle, {})
+    marks = [account.get('surfaces', {}).get(surface, {}).get('lastCompleteThrough'),
+             founder.get('accounts', {}).get(handle, {}).get('surfaces', {}).get(surface, {}).get('lastCompleteThrough'),
+             account.get('lastSuccessfulAt')]
+    found = [stamp(mark) for mark in marks if mark]
+    return max(found) if found else None
+
+
 def collection_plan(directory, root=ROOT, now=None):
+    """What to read per watched account and feed. Each feed starts one hour before its own last
+    complete read (never more than seven days back), so a scan resumes where the last one ended."""
     now = now or datetime.now(UTC)
     state = state_at(directory)
-    watch = load(Path(root) / 'content/news/social-watch.json')
-    return [{'author': account['handle'], 'name': account['name'], 'url': account['url'], 'subscriberUrl': account.get('subscriberUrl'),
-        'identitySourceUrl': account['identitySourceUrl'], 'personId': account.get('personId'),
-        'after': iso(stamp(state['accounts'][account['handle']]['lastSuccessfulAt']) - timedelta(hours=1)) if state['accounts'].get(account['handle'], {}).get('lastSuccessfulAt') else iso(now - timedelta(days=7))}
-        for account in watch]
+    founder_path = Path(directory) / 'founder-coverage.json'
+    founder = load(founder_path) if founder_path.exists() else {}
+    plan = []
+    for account in load(Path(root) / 'content/news/social-watch.json'):
+        handle = account['handle']
+        listed = [s for s in account.get('surfaces', []) if s in CHRONOLOGICAL_SURFACES]
+        feeds = listed or ['posts', 'replies'] + (['subscriber'] if account.get('subscriberUrl') else [])
+        windows = {}
+        for surface in feeds:
+            marker = surface_marker(handle, surface, state, founder)
+            start = max(marker - OVERLAP, now - INITIAL_WINDOW) if marker else now - INITIAL_WINDOW
+            windows[surface] = {'after': iso(start), 'basis': 'last complete read' if marker and marker - OVERLAP > now - INITIAL_WINDOW else 'seven-day window'}
+        plan.append({'author': handle, 'name': account['name'], 'url': account['url'], 'subscriberUrl': account.get('subscriberUrl'),
+                     'identitySourceUrl': account['identitySourceUrl'], 'personId': account.get('personId'),
+                     # The earliest feed boundary, for readers of the older single-window plan.
+                     'after': min(windows.values(), key=lambda window: stamp(window['after']))['after'],
+                     'surfaces': windows,
+                     'reposts': 'record the visible inventory only; repost times are unknown and never block the feeds above'})
+    return plan
 
 
 def make_brief(directory, edition, now=None):

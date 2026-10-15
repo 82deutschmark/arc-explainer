@@ -195,5 +195,20 @@ class BackupWriterTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             n.prepare('evening', fetcher=lambda url: (fixture(), '0' * 64), actual_now=now, writer='someone-else')
 
+class AssignmentExpiryTests(unittest.TestCase):
+    def test_held_assignments_end_at_their_expiry_or_after_72_hours(self):
+        with tempfile.TemporaryDirectory() as root:
+            news = Path(root) / 'content/news'; (news / 'evidence').mkdir(parents=True)
+            base = {'competition': 'arc-3', 'title': 'A commission', 'status': 'pending'}
+            n.write(news / 'editorial-assignments.json', [
+                {**base, 'id': 'default-life', 'createdAt': '2026-10-10T00:00:00Z'},
+                {**base, 'id': 'explicit-life', 'createdAt': '2026-10-10T00:00:00Z', 'expiresAt': '2026-10-20T00:00:00Z'},
+                {**base, 'id': 'closed', 'createdAt': '2026-10-10T00:00:00Z', 'status': 'closed'}])
+            ids = lambda when: [a['id'] for a in n.open_editorial_assignments(root, 'arc-3', n.stamp(when))]
+            self.assertEqual(ids('2026-10-12T23:59:00Z'), ['default-life', 'explicit-life'])
+            self.assertEqual(ids('2026-10-13T00:00:00Z'), ['explicit-life'])
+            self.assertEqual(ids('2026-10-20T00:00:00Z'), [])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,5 @@
-# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
-# Date: 2026-10-12
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5; Claude Opus 5.5 Max
+# Date: 15-October-2026 (per-feed coverage markers and plans)
 # PURPOSE: Verify private/public separation, missed-scan recovery, briefing deduplication
 # and persistent cross-competition roster history through the production research helpers.
 # 09-Oct-2026 (Claude Opus 5.5): portraits trace to the person's own Kaggle account or Hall of
@@ -104,6 +104,42 @@ class ResearchTests(unittest.TestCase):
             social.ingest(batch([], {'confirmed': failed}), directory, NOW)
             self.assertEqual(social.collection_plan(directory, root, NOW)[0]['after'], '2026-10-09T11:00:00Z')
             self.assertEqual(social.state_at(directory)['accounts']['confirmed']['status'], 'error')
+
+    def test_each_feed_resumes_from_its_own_complete_read_and_reposts_never_hold_it_back(self):
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as root:
+            watch = Path(root) / 'content/news/social-watch.json'; watch.parent.mkdir(parents=True)
+            social.save(watch, [{'handle': 'confirmed', 'name': 'Verified Person', 'url': 'https://x.com/confirmed', 'identitySourceUrl': URL,
+                                 'subscriberUrl': 'https://x.com/confirmed/subs'},
+                                {'handle': 'organizer', 'name': 'Organizer', 'url': 'https://x.com/organizer', 'identitySourceUrl': URL,
+                                 'surfaces': ['posts', 'replies', 'reposts']}])
+            # Posts and replies were read completely; repost times are unknowable, so the account stays partial.
+            coverage = {'status': 'partial', 'coveredFrom': '2026-10-09T08:00:00Z', 'coveredThrough': '2026-10-09T18:00:00Z', 'checkedAt': '2026-10-09T19:00:00Z',
+                        'detail': 'Posts and replies complete; repost action dates unavailable.',
+                        'surfaces': {'posts': {'status': 'ok', 'coveredFrom': '2026-10-09T08:00:00Z', 'coveredThrough': '2026-10-09T18:00:00Z', 'checkedAt': '2026-10-09T19:00:00Z'},
+                                     'replies': {'status': 'ok', 'coveredFrom': '2026-10-09T08:00:00Z', 'coveredThrough': '2026-10-09T17:00:00Z', 'checkedAt': '2026-10-09T19:00:00Z'},
+                                     'subscriber': {'status': 'error', 'checkedAt': '2026-10-09T19:00:00Z', 'detail': 'Subscriber page did not load.'},
+                                     'reposts': {'status': 'partial', 'checkedAt': '2026-10-09T19:00:00Z'}}}
+            social.ingest(batch([], {'confirmed': coverage}), directory, NOW)
+            plan = {item['author']: item for item in social.collection_plan(directory, root, NOW)}
+            feeds = plan['confirmed']['surfaces']
+            self.assertEqual(feeds['posts']['after'], '2026-10-09T17:00:00Z')
+            self.assertEqual(feeds['replies']['after'], '2026-10-09T16:00:00Z')
+            # A failed feed with no earlier complete read falls back to the seven-day window.
+            self.assertEqual(feeds['subscriber'], {'after': '2026-10-02T20:00:00Z', 'basis': 'seven-day window'})
+            self.assertEqual(plan['confirmed']['after'], '2026-10-02T20:00:00Z')
+            self.assertNotIn('reposts', feeds)
+            # A later partial read of a feed never moves its marker back.
+            later = {**coverage, 'checkedAt': '2026-10-09T19:30:00Z', 'surfaces': {'posts': {'status': 'partial', 'checkedAt': '2026-10-09T19:30:00Z'}}}
+            social.ingest(batch([], {'confirmed': later}), directory, NOW)
+            self.assertEqual(social.state_at(directory)['accounts']['confirmed']['surfaces']['posts']['lastCompleteThrough'], '2026-10-09T18:00:00Z')
+            # The hourly organizer desk's founder-coverage.json markers count too.
+            social.save(Path(directory) / 'founder-coverage.json', {'accounts': {'organizer': {'surfaces': {
+                'posts': {'status': 'ok', 'lastCompleteThrough': '2026-10-09T19:00:00Z'}, 'reposts': {'status': 'partial'}}}}})
+            organizer = {item['author']: item for item in social.collection_plan(directory, root, NOW)}['organizer']['surfaces']
+            self.assertEqual(organizer['posts']['after'], '2026-10-09T18:00:00Z')
+            self.assertEqual(set(organizer), {'posts', 'replies'})
+            with self.assertRaises(ValueError):
+                social.ingest(batch([], {'confirmed': {**coverage, 'surfaces': {'posts': {'status': 'ok', 'checkedAt': '2026-10-09T19:00:00Z'}}}}), directory, NOW)
 
     def test_brief_reserves_subscription_and_retains_grouped_reactions(self):
         with tempfile.TemporaryDirectory() as directory:

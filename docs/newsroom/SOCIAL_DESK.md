@@ -39,8 +39,8 @@ Maintain `/Users/macmini/bubba-workspace/reports/arc-daily-social/founder-covera
 with independent `posts`, `replies`, `reposts` and (Chollet only) `subscriber` surfaces.
 For chronological surfaces record actual check time, requested/covered interval,
 `status`, `lastCompleteThrough` only on complete coverage, seen IDs and concrete limits.
-Start one hour before that surface's last complete checkpoint, or use the ordinary plan
-when none exists. Scroll newest through the older boundary, expanding posts and reading
+The research plan (`newsroom_social.py plan`) reads these markers too, so its per-feed
+`after` already starts one hour before each surface's last complete checkpoint. Scroll newest through the older boundary, expanding posts and reading
 thread context; pinned posts and quoted timestamps never set the checkpoint. Cross-check
 with a focused Latest search for the handle/window when useful; search remains partial.
 For reposts retain original author/ID/date and a seen-ID inventory with first observation;
@@ -117,7 +117,7 @@ Each post has exactly:
 - `category` (`standings`, `research`, `community`, `banter`), `importance` (3 consequential, 2 useful, 1 color).
 - `threadId` (root post ID or null), `storyUrl` (shared primary release URL or null), `identitySourceUrl` (primary identity verification).
 
-`accounts` maps each scanned handle to exactly `status` (`ok`, `partial`, `error`), `coveredFrom`, `coveredThrough`, `checkedAt` and `detail`. `ok` means the complete requested interval was checked. Partial/error scans preserve the prior fully checked watermark. Save separate coverage detail for public and subscriber feed limits within the account's detail; do not claim complete coverage if either requested feed failed.
+`accounts` maps each scanned handle to `status` (`ok`, `partial`, `error`), `coveredFrom`, `coveredThrough`, `checkedAt` and `detail`, plus a `surfaces` object with one entry per feed you read: `posts`, `replies`, `subscriber` (Chollet only) and `reposts`, each with `status`, `checkedAt` and, for a complete read, `coveredFrom` and `coveredThrough` (optional `detail`). The account `status` is `ok` only when every requested feed was complete; partial/error scans preserve the prior fully checked watermark. Mark a feed `ok` when you read it from newest through the plan's `after` for that feed; that feed's next plan then starts one hour before it, independently of the others. Reposts never have action dates, so record their visible inventory as `partial`; that no longer holds back posts, replies or subscriber posts. `plan` prints each account's per-feed `surfaces.<feed>.after` (and the earliest of them as the account `after`).
 
 ```sh
 python3.13 scripts/newsroom_social.py ingest --directory /Users/macmini/bubba-workspace/reports/arc-daily-social --batch <actual-batch-path>

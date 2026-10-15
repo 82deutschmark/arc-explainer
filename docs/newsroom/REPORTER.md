@@ -296,8 +296,11 @@ Every prepared competition brief now has `intake`:
 
 - `wireStories` and `dispatches`: all committed items after the previous edition's cutoff,
   through this edition's cutoff, plus items previously marked `held` or `carried`.
-- `editorialAssignments`: pending records from `content/news/editorial-assignments.json`.
-  Assigned teams remain candidates even if they leave the day's gainers list.
+- `editorialAssignments`: pending, unexpired records from `content/news/editorial-assignments.json`.
+  Assigned teams remain candidates even if they leave the day's gainers list. Every assignment
+  ends at its `expiresAt`, or 72 hours after `createdAt` when none is set (15 October 2026), so a
+  held or carried commission no longer rides along in every edition. Give a longer commission an
+  explicit `expiresAt`; a day-specific one (a picture for one issue) should expire after that issue.
 - The morning intake begins at the preceding published edition's Eastern cutoff. It
   therefore includes the evening and overnight wire, even though morning score changes
   still use the UTC-midnight baseline. Missed editions widen the intake to the last
@@ -318,7 +321,7 @@ Valid dispositions are `covered`, `held`, `carried`, and `not-selected`. Covered
 or feature items must be cited in a section. Editorial assignments cannot be closed
 as `not-selected`: cover them substantively or preserve them with a concrete reason.
 The validator refuses missing decisions, and the publisher records them in the
-edition's evidence. Held/carried stories and unresolved assignments return next time.
+edition's evidence. Held/carried stories and unexpired assignments return next time.
 Tell Boss explicitly about held/carried requested features in the final report.
 
 Peter Findley's human-mastery feature is an explicit pending assignment. The human
