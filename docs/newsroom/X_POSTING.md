@@ -7,6 +7,28 @@ recap** at 2:20 pm, and the **late edition** post after the 6 pm edition. Anythi
 shares the browser with the hourly organizer scan, and it now reads the research archive rather than
 repeating the research desk's searches.)
 
+## Editorial review for every routine post
+
+Lead with the current issue's strongest verified news, using fresh, concise copy.
+Before saving the reviewed draft, compare the recent posted edition and afternoon
+recap outboxes. Avoid repeating the same secondary feature teaser or framing across
+successive posts. An evergreen team profile, unchanged roster background or familiar
+character in the artwork does not supply a new news hook. Revisit a subject when a
+new material development warrants it; a quiet issue can have a shorter announcement.
+
+Competitor mentions are optional. Zero mentions is a complete post. Choose at most
+one or two verified handles when they help identify a material result, statement or
+contribution substantively reported in the linked article or recap. Check
+`people.json` and the article's sources. Recurring background coverage alone does
+not warrant repeatedly notifying the same person; a further mention needs a fresh
+editorial reason. There is no standing person or team to tag,
+no tag quota and no requirement to rotate handles. A table-only appearance or
+incidental name does not call for a tag. Keep the strongest news, image/story lead,
+permanent article link and 280-character limit; omit an optional mention if needed.
+
+These rules apply to future drafts. Preserve every `posting`/`posted` outbox and
+existing announcement; a copy preference does not authorize a replacement send.
+
 ## Edition posts (Early edition, Late edition)
 
 The Boss asked on 9 October 2026 for a post whenever an edition comes out, labeled "Early
@@ -43,20 +65,10 @@ an extra post. An edition without custom artwork keeps the normal text/link anno
    and attached illustration on the profile, then save its
    permanent URL and completion time and set the state to `posted`. An existing `posting` or
    `posted` state is never overwritten; an uncertain send is checked on the profile before any retry.
-4. The helper supplies the initial text. The journalist may shorten it and add verified
-   competitor handles when those people receive substantive, sourced coverage in the linked
-   article. Save the exact reviewed text and chosen handles in the draft outbox before
-   `posting`; send that saved text exactly. Keep the image/story lead, permanent article
-   link and 280-character limit. No unsourced figures, guessed handles or unrelated tags.
-
-**Article-linked mentions — Boss instruction, 12 October 2026:** mention the relevant
-verified people, including NVIDIA's NVARC3/nvbanana competitors, when the article covers
-their results or statements. The ledger directly verifies CPMP/Jean-François Puget as
-`@JFPuget`; use that handle when his coverage warrants it. Other NVIDIA teammates currently
-without verified X accounts are not assigned guessed handles. Check `people.json` and the
-article's sources, choose the most relevant one or two people, and make room by shortening
-the recap or retaining only its lead headline. A table-only appearance or incidental name
-does not call for a tag. This belongs in the authorized routine post, with no extra send.
+4. The helper supplies the initial text. Apply the editorial review above before moving
+   a draft to `posting`: choose this issue's news, check recent copy and use mentions only
+   when useful. Save the exact reviewed text and any chosen handles in the draft outbox;
+   send that saved text exactly. No unsourced figures, guessed handles or unrelated tags.
 
 An image-preparation, upload or preview failure leaves the draft and its concrete error for
 the Boss; do not silently send an illustrated story without its image. Preserve the exact
@@ -116,8 +128,8 @@ from its work: the strictly public archive (`public.json`), the newest `founder-
 contender who moved this afternoon with nothing in the archive; do not repeat the research desk's
 watch-list scan or broad searches. Save any new public research through the normal ingest as
 well as in the afternoon handoff. The handoff is useful even when today's recap is already posted. Restricted posts never enter
-this workflow. Mention verified competitor handles when they are material to the
-recap, and retain exact original post links in the handoff and coverage. Keep the
+this workflow. Apply the same fresh-copy and optional-mention review above, and
+retain exact original post links in the handoff and coverage. Keep the
 public post under 280 characters with the news link; select one consequential move
 if attribution and links need space. A mention should identify the source or
 contender without implying a new rivalry. Extra between-edition alerts stay drafts; the edition

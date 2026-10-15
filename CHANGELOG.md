@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.145.2  Oct 15, 2026
+
+- **Future X announcements get fresh copy and selective mentions** (Author: GPT-6.1 Sol / Codex). At Mark's request, the canonical X posting guide now compares recent announcements, leads with the current issue's news and treats competitor mentions as optional. Repeated evergreen team-profile teasers and a standing Puget tag are no longer editorial defaults. Existing posts and send-once outboxes remain unchanged; no helper, schedule or model changes.
+
 ### Version 9.145.1  Oct 15, 2026
 
 - **The art planner stops re-offering pictures that already ran** (Author: Claude Opus 5.5 Max). What: an approved reusable scene is no longer offered automatically once its clean base has run in a published article of the same contest or on any X post (matched by image hash, since one base can be registered twice); an explicit editorial assignment can still commission it. Why: the backup desk's rehearsal tonight was offered the GPU bridge again, though it ran on X at midnight on 14 October; the Boss's comic-strip direction is a new episode each issue, not a repeat. Today that leaves the three GPU Valley reserves and the giant bunnies (only while Chen leads ARC-3) as unused stock. How: `scripts/newsroom_artwork.py` (`used_scene_hashes`, `scene_assignments`), `tests/test_newsroom_artwork.py`; 62 newsroom checks pass.
