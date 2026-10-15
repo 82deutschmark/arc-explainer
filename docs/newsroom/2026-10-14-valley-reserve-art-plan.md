@@ -2,6 +2,10 @@
 
 Author: GPT-6.1 Sol / Codex
 
+For a short portable prompt and handoff to another image model, use
+[GPU_VALLEY_IMAGE_GUIDE.md](GPU_VALLEY_IMAGE_GUIDE.md). The detailed production
+workflow and exact native prompts remain linked below.
+
 Mark explicitly commissioned several iterations of the valley illustration, with
 the chasing teams building increasingly imaginative siege equipment. He approved
 the shown results and asked for the three final images to be shared in
