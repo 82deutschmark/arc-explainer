@@ -1,0 +1,40 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-15T19:48:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC Prize reports Gemini 4 Argon Verified results",
+  "id": "2026-10-15-1602-arc-3-gemini-argon-verified-results",
+  "personIds": [],
+  "publishedAt": "2026-10-15T20:02:48Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "social-2110768288523251762",
+        "board-arc-3"
+      ],
+      "text": "ARC Prize says Gemini 4 Argon scored 97.5% on ARC-AGI-3 with its provider adapter, at $4.8K, and 49.8% with the standard harness, at $5.8K."
+    },
+    {
+      "sourceIds": [
+        "social-2110768288523251762"
+      ],
+      "text": "The post also reports 91.3% on ARC-AGI-2 at $0.32 per task and 98.5% on ARC-AGI-1 at $0.16 per task."
+    }
+  ],
+  "since": "2026-10-14T19:45:08Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T20:02:14Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-15T16:58:41.770Z",
+      "id": "social-2110768288523251762",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2110768288523251762"
+    }
+  ],
+  "teamIds": []
+}
