@@ -30,12 +30,12 @@
 > first (Boss cut step budgets, code links and derived stats). Left: `corrections[]`, and
 > the public release only when Boss says so.
 
-> **The ARC Daily Digest (updated 11-Oct-2026), for GPT-6.1 Sol, GPT-6 Luna and every newsroom run:** people
-> now have faces (their Hall of Fame card or Kaggle picture) and honors, and each story features
-> one person. The editions print as Early (6 am) and Late (6 pm) and each is posted to X; the
-> front page carries live tables, and GPT-6 Luna's wire desk files short stories through the day.
-> Before any newsroom run, read the desk notes at the top of `docs/newsroom/REPORTER.md`, then
-> `docs/newsroom/VISUALS.md`; the wire desk reads `docs/newsroom/WIRE_DESK.md` (section 5.7).
+> **The ARC Daily Digest (reorganized 15-Oct-2026), for GPT-6.1 Sol, GPT-6 Luna, Claude and every
+> newsroom run:** start at `docs/newsroom/README.md`, the map of every desk, schedule, folder and
+> permission. Each desk then follows its own guide (`REPORTER.md`, `WIRE_DESK.md`,
+> `SOCIAL_DESK.md`, `X_POSTING.md`, `ART_DESK.md`, `FALLBACK.md`). Standing rules live in those
+> guides, one-off orders in `content/news/editorial-assignments.json` (they expire), and each Codex
+> job's short instruction in `docs/newsroom/automation-prompts/`.
 
 > **Required newspaper checkouts — do not delete (Boss, 12-Oct-2026):** these are permanent
 > infrastructure for The ARC Daily Digest, not duplicate or abandoned development checkouts:
@@ -45,6 +45,7 @@
 > | `/Users/macmini/GitHub/arc-explainer-newsroom` | `codex/newsroom-publisher` | 6 am Early and 6 pm Late editions, research, personal briefings and X posts |
 > | `/Users/macmini/GitHub/arc-explainer-wire` | `codex/wire-desk` | Wire stories every two hours |
 > | `/Users/macmini/GitHub/arc-explainer-fallback` | `claude/newsroom-fallback` | Scheduled backup when the main edition fails |
+> | `/Users/macmini/GitHub/arc-daily-collector` | (scripts-only clone of `sonpham-org/arc-3`) | Leaderboard collector and its saved board history (launchd `com.arc3.leaderboard`) |
 >
 > They share `https://github.com/82deutschmark/arc-explainer.git` and are intentionally locked
 > with `git worktree lock`. Never remove, archive, unlock, prune, rename or repurpose these
@@ -58,12 +59,6 @@
 > missing, follow the saved automation's narrow recovery instructions and continue;
 > preserve other work and never substitute an arbitrary checkout.
 
-> **Custom artwork leads X posts (Boss, 12-Oct-2026):** when the published article has a
-> reviewed custom illustration, attach that edition's finished image to the routine X post
-> and lead with its story. A generic link card does not replace it. Preserve current score
-> overlays, save the exact attachment in the outbox, and visually verify it before sending
-> and on the posted profile. Follow `docs/newsroom/X_POSTING.md`; existing posts stay
-> send-once, and an earlier composed image is never substituted for the current edition.
 
 ## 1. Mission & Critical Warnings
 
@@ -176,11 +171,14 @@ Consult these before asking questions:
   - `docs/reference/api/OpenAI_Responses_API_Streaming_Implementation.md` (evaluation streaming)
 
 ### 5.7 The ARC Daily Digest newsroom
-- `docs/newsroom/REPORTER.md` – edition workflow. **GPT-6 Sol: read its 9 October 2026 desk note at the top before every run.**
+- `docs/newsroom/README.md` – **start here**: every desk, schedule, folder, permission, alarm, and how to change a desk.
+- `docs/newsroom/automation-prompts/` – the reviewed instruction of each Codex job (applied by GPT-6 with `automation_update`).
+- `docs/newsroom/REPORTER.md` – Early and Late edition workflow, with the Boss's standing editorial direction.
+- `docs/newsroom/ART_DESK.md` – edition pictures; stock lives in `content/news/artwork-inventory.json` and `visual-identities.json`.
 - `docs/newsroom/VISUALS.md` – every picture the paper can show: person portraits (Hall of Fame card crops or Kaggle pictures), honors, Hall of Fame card art, dispatch illustrations; how faces follow citations.
 - `docs/newsroom/WIRE_DESK.md` – GPT-6 Luna's wire desk: `scripts/newsroom_wire.py` prepares a brief from `GET /api/news/markets` (`shared/newsMarkets.ts`), validates every figure, publishes to `content/news/wire/`.
 - `docs/newsroom/FALLBACK.md` – the Claude Sonnet 5.5 backup desk (launchd, Claude Code subscription) that covers a missed Codex edition contest or a stopped/signed-out Codex wire, and reports to Discord.
-- `docs/newsroom/SOCIAL_DESK.md`, `docs/newsroom/X_POSTING.md` – research archive, the Early/Late edition posts and the 2 pm X recap.
+- `docs/newsroom/SOCIAL_DESK.md`, `docs/newsroom/X_POSTING.md` – research desk and archive, the Early/Late edition posts and the 2:20 pm afternoon X recap.
 - `.agents/skills/competition-reporter/SKILL.md` – portable reporting principles.
 - Data: `content/news/` (`people.json`, `competitors.json`, `articles/`, `dispatches/`, `wire/`, `wire-evidence/`); portraits: `client/public/news-images/people/`.
 
