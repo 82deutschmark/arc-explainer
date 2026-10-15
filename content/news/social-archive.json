@@ -1,5 +1,25 @@
 [
   {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "community",
+    "checkedAt": "2026-10-15T05:00:15.029732+00:00",
+    "competitions": [],
+    "id": "2110591314329042988",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-15T04:39:16Z",
+    "storyUrl": null,
+    "summary": "Knoop says taste is about asking interesting questions. This is his general commentary, not a competition result.",
+    "threadId": null,
+    "url": "https://x.com/mikeknoop/status/2110591314329042988",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection; minor colour only, with no standings or benchmark implication. Actual post opened in signed-in Chrome; full text visible without a Subscribers label or access restriction."
+  },
+  {
     "author": "mhmazur",
     "authorName": "Matt Mazur",
     "category": "research",

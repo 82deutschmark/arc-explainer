@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-15T02:38:05.126724+00:00",
+  "updatedAt": "2026-10-15T10:03:53.395986+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -72,8 +72,10 @@
       "src": "/news-images/2026-10-14-valley-walking-foundry-v1-base.webp",
       "title": "The Walking Foundry",
       "episode": "Golden-morning articulated GPU walking foundry and bridge crane; Last Dance trebuchet, MTG drill/ramp, Mark/Son folding gantry.",
-      "status": "reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-15-morning-arc-3"
+      ],
       "xAttachments": [],
       "discordShares": [
         {
@@ -112,7 +114,8 @@
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
       },
-      "selectionNote": "Mark commissioned and reviewed these three reserves October 14. Select an unused episode after fresh board/cast checks, explicitly commission it for the actual issue, compose exact new scores/time and inspect centered overlays. Discord preview sharing does not count as an edition or X use."
+      "selectionNote": "Mark commissioned and reviewed these three reserves October 14. Select an unused episode after fresh board/cast checks, explicitly commission it for the actual issue, compose exact new scores/time and inspect centered overlays. Discord preview sharing does not count as an edition or X use.",
+      "artworkId": "2026-10-15-morning-arc-3-b78aa4380b"
     },
     {
       "id": "valley-gyroscopic-siege-v1",

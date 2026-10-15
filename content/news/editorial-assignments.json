@@ -280,5 +280,35 @@
       "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
     ],
     "verificationNotes": "Native output and provenance are saved; future reporting conditions must be rechecked. A premature October 13 artwork replacement was superseded by the editor’s existing-citadel selection."
+  },
+  {
+    "id": "oct15-early-walking-foundry-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-15T02:36:42Z",
+    "expiresAt": "2026-10-15T14:00:00Z",
+    "title": "Walking Foundry for October 15 Early edition",
+    "priority": "Edition picture selection from approved stock",
+    "status": "pending",
+    "targetEditionId": "2026-10-15-morning-arc-3",
+    "placement": "edition-artwork",
+    "artworkGenerationRecord": "2026-10-14-valley-walking-foundry-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "instructions": "Use the unused approved Walking Foundry stock with this Early edition’s exact scores and time. Fresh full supporting cast checks pass: Tufa ahead of Chen, Dries in Tufa; mtg, NVARC3, Last Dance and Son & Mark & Ronen in top ten, Puget/Sorokin and Mark/Son exact handles present. Cover pictured teams, inspect composition and attach to routine X announcement.",
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "selectedAt": "2026-10-15T10:01:47.336207+00:00",
+    "commissionedBy": "mark-barney",
+    "verificationNotes": "Original stock commission and native record predate cutoff; selectedAt records this desk’s issue selection after cutoff.",
+    "subjectNames": [
+      "Walking Foundry"
+    ]
   }
 ]
