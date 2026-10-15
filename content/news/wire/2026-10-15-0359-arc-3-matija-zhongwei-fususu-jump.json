@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-15T07:47:07Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Matija L, Zhongwei W and Fususu jump to 31st on ARC-3",
+  "id": "2026-10-15-0359-arc-3-matija-zhongwei-fususu-jump",
+  "personIds": [],
+  "publishedAt": "2026-10-15T07:59:25Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Matija L, Zhongwei W and Fususu gained 4.84 points to reach 35.62, climbing from 353rd to 31st on the ARC-3 public board."
+    }
+  ],
+  "since": "2026-10-14T07:43:57Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T07:58:45Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15531704"
+  ]
+}
