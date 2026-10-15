@@ -29,7 +29,7 @@ import { getNewsIndex, loadNewsArchive, newsArticleSchema, newsDispatchSchema, c
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import sharp from 'sharp';
-import { articleCardPath, articleTitle, easternDay, NEWS_CARD_FRESH_MS, NEWS_SECTION_CARD_PATH, sectionCardArticles, sectionCardPath, TITLE_BUDGET, citedPeople, storyPeople } from '../../shared/news';
+import { articleCardPath, articleTitle, easternDay, NEWS_CARD_FRESH_MS, NEWS_SECTION_CARD_PATH, sectionCardArticles, sectionCardPath, TITLE_BUDGET, citedPeople, storyPeople, NEWS_EDITION_WRITERS, NEWS_WIRE_WRITERS, WRITER_CREDITS } from '../../shared/news';
 import { ARC_COLORS_TUPLES } from '../../shared/config/colors';
 import { articleCardSvg, cardText, renderArticleCard, renderSectionCard } from '../../server/services/news/newsCardImage';
 import { puzzleOfTheDay } from '../../server/services/news/newsCardPuzzle';
@@ -341,6 +341,11 @@ it('serves the market digest and the wire, and holds wire stories to their contr
   fs.writeFileSync(path.join(directory, 'wire', `${story.id}.json`), JSON.stringify(recent));
   expect(getNewsIndex(directory).wire?.map(item => item.id)).toEqual([story.id]);
   fs.rmSync(directory, { recursive: true, force: true });
+});
+it('credits every writer the newsroom tools may publish as (one list in shared/newsWriters.json)', () => {
+  for (const id of new Set([...NEWS_EDITION_WRITERS, ...NEWS_WIRE_WRITERS])) expect(WRITER_CREDITS[id], id).toBeTruthy();
+  expect(NEWS_EDITION_WRITERS).toContain('claude-sonnet-5-5');
+  expect(NEWS_WIRE_WRITERS).toContain('claude-sonnet-5-5');
 });
 // The content check: run before pushing news changes. The live site would leave out anything listed here.
 it('loads every committed news file and ledger record without leaving anything out', async () => {

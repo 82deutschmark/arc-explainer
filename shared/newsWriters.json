@@ -1,0 +1,4 @@
+{
+  "edition": ["gpt-6-sol", "gpt-6.1-sol", "claude-sonnet-5-5"],
+  "wire": ["gpt-6-luna", "gpt-6.1-sol", "claude-sonnet-5-5"]
+}

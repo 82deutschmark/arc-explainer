@@ -52,7 +52,7 @@ Checked today: the detection runs on schedule and correctly stands down when Cod
 
 **Step 2: Make the trigger honest.** Judge an edition "delivered" by what the site needs (both contests, art present, valid data), not just file existence. Add a wire check on "no wire story or heartbeat for several hours while Codex shows no run", not only signed-out.
 
-**Step 3: Model (decided).** Claude Sonnet 5.5 for every fallback job. Replace Haiku in the fallback script and FALLBACK.md, and credit Sonnet 5.5 as the writer on published stories. This needs the allowed-writer list changed everywhere it lives, in one change: `scripts/newsroom.py`, `scripts/newsroom_wire.py` and `shared/news.ts` (edition list, wire list and byline credits). Changing only the Python side would let a Sonnet edition publish and then take the site's news pages down; better still, make it one shared list first (sanity check finding 2).
+**Step 3: Model (done 15 October, CHANGELOG 9.143.0).** Claude Sonnet 5.5 for every fallback job. Replace Haiku in the fallback script and FALLBACK.md, and credit Sonnet 5.5 as the writer on published stories. This needs the allowed-writer list changed everywhere it lives, in one change: `scripts/newsroom.py`, `scripts/newsroom_wire.py` and `shared/news.ts` (edition list, wire list and byline credits). Changing only the Python side would let a Sonnet edition publish and then take the site's news pages down; better still, make it one shared list first (sanity check finding 2).
 
 **Step 4: Extend coverage by priority.** Edition first (done), then the 2 pm X recap and personal briefing as drafts, then the research desk. Skip anything that needs a browser; those stay drafts for the Boss.
 

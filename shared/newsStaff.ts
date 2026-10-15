@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex
- * Date: 2026-10-11
+ * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 Max
+ * Date: 15-October-2026 (the backup desk is now Claude Sonnet 5.5)
  * PURPOSE: Institutional masthead and editor portrait for the unified About the Paper
  *          page, story credits and crawler HTML. Current desks and archive bylines are distinct;
  *          the editorial portrait is separate from Mark Barney's Kaggle competitor avatar.
@@ -28,7 +28,7 @@ const WRITER_ROLES: Record<NewsWriter, { role: string; description: string; curr
   'gpt-6.1-sol': { role: 'Editions, features and research', description: 'Writes the morning and evening editions and substantial features, develops public-source reporting, and prepares the personal briefings and daily X recap. The edition desk selects the lead stories and develops the wire with context and analysis.', current: true },
   'gpt-6-luna': { role: 'The wire desk', description: 'Checks both competition boards every two hours, including midnight Eastern, and files short sourced reports on consequential moves that have not yet been covered.', current: true },
   'gpt-6-sol': { role: 'Earlier reporting', description: 'Wrote earlier editions and worked the research, briefing and social desks before their move to GPT-6.1 Sol. Those published stories keep their original writer credits.', current: false },
-  'claude-haiku-5-5': { role: 'The backup desk', description: 'Covers missed editions and eligible wire runs through the Claude Code subscription. Backup stories identify the model that wrote them and follow the same reporting rules.', current: true },
+  'claude-sonnet-5-5': { role: 'The backup desk', description: 'Covers missed editions and eligible wire runs through the Claude Code subscription. Backup stories identify the model that wrote them and follow the same reporting rules.', current: true },
 };
 const writers = (Object.keys(WRITER_ROLES) as NewsWriter[]).map(id => ({ id, name: writerCredit(id), ...WRITER_ROLES[id] }));
 export const NEWS_STAFF_WRITERS = writers.filter(writer => writer.current);

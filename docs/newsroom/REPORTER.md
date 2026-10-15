@@ -188,10 +188,10 @@ The Boss requested a friendly October 12 evening shout-out to PunkCyber (@cunkpy
 
 The morning and evening editions, research desk, personal briefings and 2 pm X recap
 now use **GPT-6.1 Sol**. These replace all current GPT-6 Sol newsroom assignments.
-The two-hour wire remains GPT-6 Luna; the backup desk uses Claude Haiku 5.5. Prepare editions with
+The two-hour wire remains GPT-6 Luna; the backup desk uses Claude Sonnet 5.5. Prepare editions with
 `--writer gpt-6.1-sol`; the helper carries that ID into the published article metadata.
 The page and crawler bylines both render the recorded `generatedBy` field. Older
-GPT-6 Sol articles and Claude Haiku backup articles retain their own credits.
+GPT-6 Sol articles keep their own credits; allowed writer IDs live in `shared/newsWriters.json`.
 The 11 October evening articles had inherited the helper's old default. Their writer
 IDs were corrected after the actual Codex run metadata confirmed `gpt-6.1-sol`;
 their prose, source evidence, standings and publication times were preserved.

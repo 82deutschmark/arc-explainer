@@ -1,5 +1,5 @@
-# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-12
+# Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
+# Date: 15-October-2026 (the backup writer is claude-sonnet-5-5, from shared/newsWriters.json)
 # PURPOSE: Verify newsroom time boundaries, incomplete coverage, article and dispatch contracts, immutable publication, isolated from current research.
 # SRP/DRY check: Pass — exercises production preparation/validation/publication functions.
 import copy
@@ -187,7 +187,10 @@ class BackupWriterTests(unittest.TestCase):
     def test_backup_desk_is_named_and_unknown_writers_refused(self):
         now = n.stamp('2026-10-07T22:00:00Z')
         made = lambda writer: n.board_brief(fixture(), 'arc-3', 'evening', now, now, 'https://example.com/board', '0' * 64, writer=writer)
-        self.assertEqual(made('claude-haiku-5-5')['articleBase']['generatedBy'], 'claude-haiku-5-5')
+        self.assertEqual(made('claude-sonnet-5-5')['articleBase']['generatedBy'], 'claude-sonnet-5-5')
+        # The site reads the same list, so every writer the tools accept is one the site accepts.
+        shared = n.json.loads((n.ROOT / 'shared/newsWriters.json').read_text())
+        self.assertEqual(n.WRITERS, tuple(shared['edition']))
         self.assertEqual(n.board_brief(fixture(), 'arc-3', 'evening', now, now, 'https://example.com/board', '0' * 64)['articleBase']['generatedBy'], 'gpt-6.1-sol')
         with self.assertRaises(ValueError):
             n.prepare('evening', fetcher=lambda url: (fixture(), '0' * 64), actual_now=now, writer='someone-else')

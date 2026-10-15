@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-12
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max
+ * Date: 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -21,13 +21,16 @@
  *          competition labels still come from shared/kaggleCompetitions.ts.
  */
 import { KAGGLE_COMPETITIONS } from './kaggleCompetitions';
+import NEWS_WRITER_IDS from './newsWriters.json';
 
 export type NewsCompetition = 'arc-3' | 'arc-2';
 export type NewsEdition = 'morning' | 'evening';
-/** Writer IDs remain stable in archived stories; scheduled editions now use GPT-6.1 Sol. */
-export const NEWS_EDITION_WRITERS = ['gpt-6-sol', 'gpt-6.1-sol', 'claude-haiku-5-5'] as const;
-export const NEWS_WIRE_WRITERS = ['gpt-6-luna', 'gpt-6.1-sol', 'claude-haiku-5-5'] as const;
-export type NewsWriter = typeof NEWS_EDITION_WRITERS[number] | typeof NEWS_WIRE_WRITERS[number];
+/** Writer IDs remain stable in archived stories; scheduled editions use GPT-6.1 Sol, the wire GPT-6 Luna and
+ *  the Claude Code backup desk Claude Sonnet 5.5. The one list lives in shared/newsWriters.json, which
+ *  scripts/newsroom.py and scripts/newsroom_wire.py read too, so the writer tools and the site can never disagree. */
+export const NEWS_EDITION_WRITERS = NEWS_WRITER_IDS.edition as [string, ...string[]];
+export const NEWS_WIRE_WRITERS = NEWS_WRITER_IDS.wire as [string, ...string[]];
+export type NewsWriter = string;
 export interface NewsSource { id: string; title: string; url: string; accessedAt: string }
 export interface NewsSection { heading?: string; text: string; sourceIds: string[] }
 export interface NewsStat { teamId: string; name: string; rank: number; score: number; rankChange: number | null; scoreChange: number | null }
@@ -165,15 +168,16 @@ export function personInitials(name: string): string {
   return (parts.length > 1 ? parts[0] + parts[parts.length - 1] : parts[0] ?? '').toUpperCase();
 }
 export const newsArticlePath = (id: string) => `/news/${id}`;
-/** The byline credit for a story's writer; the Claude Code backup is named as such. */
-const WRITER_CREDITS = {
+/** The byline credit for a story's writer; the Claude Code backup is named as such. Every ID in
+ *  shared/newsWriters.json has a credit here (tests/integration/news.test.ts checks it). */
+export const WRITER_CREDITS: Record<string, string> = {
   'gpt-6-sol': 'GPT-6 Sol',
   'gpt-6.1-sol': 'GPT-6.1 Sol',
   'gpt-6-luna': 'GPT-6 Luna',
-  'claude-haiku-5-5': 'Claude Haiku 5.5, backup desk',
-} as const;
+  'claude-sonnet-5-5': 'Claude Sonnet 5.5, backup desk',
+};
 export const writerCredit = (generatedBy: NewsWriter) =>
-  WRITER_CREDITS[generatedBy];
+  WRITER_CREDITS[generatedBy] ?? generatedBy;
 /** Wire stories live on one page, each at its own anchor. */
 export const wirePath = (id?: string) => id ? `/news/wire#${id}` : '/news/wire';
 export const competitorPath = (id: string) => `/news/competitors/${id}`;

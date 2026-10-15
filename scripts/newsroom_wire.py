@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6 / Codex; Claude Opus 5.5
-# Date: 2026-10-11
+# Author: GPT-6 / Codex; Claude Opus 5.5; Claude Opus 5.5 Max
+# Date: 15-October-2026 (writer IDs come from shared/newsWriters.json; backup desk is claude-sonnet-5-5)
 # PURPOSE: The wire desk's deterministic plumbing. GPT-6 Luna, run by a Codex automation, writes
 # short sourced stories on both boards several times a day; this helper never calls a model, git or X.
 #   prepare   saves a dated brief from the live market digest (GET /api/news/markets, built by
@@ -401,7 +401,8 @@ def validate(story, brief, now=None):
     return board
 
 
-WRITERS = ('gpt-6-luna', 'gpt-6.1-sol', 'claude-haiku-5-5')  # Explicit credits for heavier wire stories and backup runs.
+# Allowed wire writers: the same shared file the site reads (shared/newsWriters.json).
+WRITERS = tuple(json.loads((ROOT / 'shared/newsWriters.json').read_text())['wire'])
 
 
 def publish(story, brief, root=ROOT, now=None, writer='gpt-6-luna'):
@@ -450,7 +451,7 @@ def main():
         command = commands.add_parser(name)
         command.add_argument('--story', required=True)
         command.add_argument('--brief', required=True)
-        command.add_argument('--writer', choices=WRITERS, default='gpt-6-luna', help='The Claude Code backup passes claude-haiku-5-5')
+        command.add_argument('--writer', choices=WRITERS, default='gpt-6-luna', help='The Claude Code backup passes claude-sonnet-5-5')
     args = parser.parse_args()
     try:
         if args.command == 'prepare':

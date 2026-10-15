@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
-# Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-12
+# Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
+# Date: 15-October-2026 (writer IDs come from shared/newsWriters.json; backup desk is claude-sonnet-5-5)
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 12-Oct-2026: selected public Kaggle discussion threads join the edition's dated source evidence.
@@ -108,7 +108,9 @@ def observation(team_id, row, trail, target, latest_at, pinned):
     return None
 
 
-WRITERS = ('gpt-6-sol', 'gpt-6.1-sol', 'claude-haiku-5-5')  # Preserve historical credits and the backup desk.
+# Allowed edition writers, shared with the site (shared/news.ts) and the wire through one file, so a
+# writer the site would refuse can never be published. Historical credits stay; the backup is Sonnet 5.5.
+WRITERS = tuple(json.loads((ROOT / 'shared/newsWriters.json').read_text())['edition'])
 
 
 def board_brief(board, competition, edition, now, actual_now, source_url, source_hash, launch_preview=False, writer='gpt-6.1-sol'):
@@ -623,7 +625,7 @@ def main():
     prep.add_argument('--output', required=True)
     prep.add_argument('--preview', action='store_true', help='Launch issue closing at the actual manual run time, with a distinct article ID')
     prep.add_argument('--now', help='Explicit historical/manual clock; never overrides actual freshness checks')
-    prep.add_argument('--writer', choices=WRITERS, default='gpt-6.1-sol', help='The model writing this edition (the Claude Code backup passes claude-haiku-5-5)')
+    prep.add_argument('--writer', choices=WRITERS, default='gpt-6.1-sol', help='The model writing this edition (the Claude Code backup passes claude-sonnet-5-5)')
     for name in ('validate', 'publish'):
         cmd = commands.add_parser(name)
         cmd.add_argument('--article', required=True)
