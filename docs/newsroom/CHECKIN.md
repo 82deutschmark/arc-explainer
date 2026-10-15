@@ -7,7 +7,9 @@ report.
 **Who and when.** Claude Sonnet 5.5, as the scheduled task "ARC Daily check-in" in the Claude
 desktop app on the Mac Mini, at about 8:15 am and 8:15 pm America/New_York. That is after each
 edition (6:00) and after the backup desk's own check (6:50), so the check-in sees what both did.
-Each run covers the twelve hours before it.
+Each run covers the twelve hours before it. Its edition is the latest one that should already be out:
+the morning edition from 6:50 am, the evening edition from 6:50 pm (a run at 1 pm checks the
+morning edition; never treat an edition whose time has not come as missing).
 
 **Where you work.** Read from anywhere listed in [README.md](README.md). Do any git work in the
 backup desk's checkout, `~/GitHub/arc-explainer-fallback` (fetch first, and only if no backup run is
