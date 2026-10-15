@@ -1,6 +1,6 @@
 /**
  * Author: Claude Sonnet 5.5; Claude Opus 5.5 Low
- * Date: 2026-10-10; 2026-10-15 (book ad)
+ * Date: 2026-10-10; 2026-10-15 (book ad, then links to Chollet's paper and ARC Prize)
  * PURPOSE: One-time pop-up for brand-new visitors to any ARC Daily page. Since 15-Oct-2026 it is a
  *          joke "sponsored" interstitial: a parody ad for François Chollet's Deep Learning with
  *          Python ("Master the AI before it masters you"), art supplied by the Boss and stored at
@@ -57,7 +57,7 @@ export function NewsWelcome() {
           <button ref={focusTarget} type="button" className="news-welcome-go" onClick={close}>Your only hope — read the paper</button>
           <button type="button" className="news-welcome-alt" onClick={close}>No thanks, let the AI master me</button>
         </div>
-        <p className="news-welcome-fine">Parody ad. Not from Manning, ARC Prize or Mr Chollet, though the book is real and worth it.</p>
+        <p className="news-welcome-fine">Parody ad. Not from Manning, ARC Prize or Mr Chollet, though the book is real and worth it. The idea behind ARC is in his paper <a href="https://arxiv.org/abs/1911.01547" target="_blank" rel="noopener noreferrer">On the Measure of Intelligence</a>, and the contest lives at <a href="https://arcprize.org" target="_blank" rel="noopener noreferrer">ARC Prize</a>.</p>
       </div>
     </div>
   );

@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.146.1  Oct 15, 2026
+
+- **The book ad links to Chollet's paper and ARC Prize** (Author: Claude Opus 5.5 Low). What: the parody ad's fine print now links to "On the Measure of Intelligence" on arXiv and to arcprize.org. Why: the Boss asked for a link to the paper. How: `client/src/components/news/NewsWelcome.tsx`.
+
 ### Version 9.146.0  Oct 15, 2026
 
 - **The news pop-up is now a parody ad for Chollet's book** (Author: Claude Opus 5.5 Low). What: first-time visitors to any ARC Daily page now get a joke "Advertisement" for François Chollet's Deep Learning with Python ("Master the AI before it masters you"), art supplied by the Boss, with two buttons that both close it and fine print saying it is a parody. Why: the Boss asked for it in place of the "are you a normie?" check. How: `client/src/components/news/NewsWelcome.tsx` (new remembered key, so readers who dismissed the old pop-up see the ad once), `NewsDesk.tsx` (no props), `news.css`, new `client/public/ads/deep-learning-with-python.jpg`.
