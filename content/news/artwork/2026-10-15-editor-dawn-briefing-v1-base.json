@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-10-15T23:28:46Z",
+  "id": "2026-10-15-editor-dawn-briefing-v1-base",
+  "inputImages": [
+    "mark-yorkies-owner-2026-10-15.png",
+    "2026-10-15-special-bp35-editor-data-v1-base.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story. NEW wide 16:9 cinematic 3D editorial illustration for The ARC Daily Digest's reusable art library. A distinct new episode, not a recoloring or a crop. Image 1: authoritative owner-supplied Mark Barney and exactly TWO Yorkies likeness. Match the bearded face, dark hair, stocky muscular build, gold chain, general decorative tattoos, blue display visor, elaborate GPU headgear and backpack; omit all written slogans and celebrity tattoo writing. Two Yorkshire terriers have tan faces, upright ears, silky dark body fur, fitted cybernetic collars and goggles. Image 2: approved newspaper office art for cast/design/material/world continuity ONLY, do not copy its camera or poses. Maintain one recognizable human Mark and exactly two dogs, plus exactly one small yellow sunglasses DUCK, one red-combed white/brass mechanical CHICKEN and one bronze/white fan-tailed mechanical TURKEY. Intricate physical GPU cards, amber lights, copper cabling, expressive natural fur, charming helpful poultry. All machinery is playful editorial metaphor. No extra people or animals. No readable words, letters, numbers, brands, scores, dates or watermarks. Research screens may show abstract game grids and arrows, clearly illustrative.\nSCENE VARIATION 3 — THE DAWN BRIEFING. A genuinely different room layout and camera: slightly elevated wide three-quarter view of a ROUND brass-and-wood editorial conference table beside huge mountain-facing windows, at sunrise. The whole team is in a compact circle around a large horizontal luminous table display showing a branching route through abstract pixel puzzles, with piles of printed contact sheets and a couple of clean translucent overlays. Mark sits on the far side of the round table, torso and recognizable face clear, one gloved hand raised as he explains a promising comparison and the other hand resting on a printed sequence. He has a warm slight smile of dawning understanding, calm but animated. Exactly TWO Yorkies on high padded chairs, prominently visible in the near foreground, both looking attentively toward him; one has a paw on an open folio. Their heads must remain separate and natural, wearing the established tiny GPU harnesses and goggles. The yellow sunglasses duck stands on a small pile of books on the table, as if chairing the meeting. The red-combed white/brass chicken leans over a printed chart at one side and the big mechanical turkey stands opposite with its full fan tail a warm graphic silhouette against the window. Duck, chicken and turkey are three distinct birds, one of each. Sunrise fills the snowy mountain windows with rose-gold light and blue haze, the last warm reading lamps still glowing, subtle steam rising from Mark's coffee mug. Inventive brass electronics, physical GPU equipment, copper cable inlays around table. No wall of data screens, no magnifying glass. Distinct energetic but cozy editorial-team tableau with a legible circular composition, like a beautifully crafted animated-film still. No text, numbers or factual score graphics, no extra cast.",
+  "rawSha256": "ab87b590d194a6d12b19b626fa5a2ae85f76c54cf82a250113cabfcd65290878",
+  "rawSrc": "/news-images/2026-10-15-editor-dawn-briefing-v1-base.webp",
+  "references": [
+    {
+      "role": "Owner-supplied Mark and two Yorkies likeness.",
+      "sha256": "fcde1de7a685c5630aea7bb840fa8e2dc61cf6fbfa3725a1f8bc4b249f165906",
+      "src": "/news-images/references/mark-yorkies-owner-2026-10-15.png"
+    },
+    {
+      "role": "Approved editor office illustration: established cast, poultry designs and world, not composition.",
+      "sha256": "fda171b009e4b33367150813138928ffddffd569c8808309eff3c26a841dbb96",
+      "src": "/news-images/2026-10-15-special-bp35-editor-data-v1-base.webp"
+    }
+  ],
+  "review": "Inspected: one recognizable Mark explaining a chart at a round table, exactly two Yorkies in separate foreground chairs, one yellow sunglasses duck, one chicken and one fan-tailed turkey. Dawn mountain light, circular team briefing and new poses differ from the other scenes. Game diagrams are illustrative, no numerical result or standings claims. Natural animal shapes and coherent engineering details.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-5b103845-93b0-41da-bbf5-849d2cd83eb1.png",
+  "version": 1,
+  "reviewStatus": "reviewed",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "editorialDate": "2026-10-15",
+    "request": "Create several varieties of the approved editor, Yorkies and cybernetic poultry scene for later use."
+  },
+  "usage": {
+    "status": "reserve",
+    "capacity": "Mark Barney as head human editor; no current contestant roster conditions",
+    "captionRequirement": "Identify AI editorial artwork; game displays and diagrams are illustrative."
+  }
+}

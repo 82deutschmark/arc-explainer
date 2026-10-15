@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-10-15T23:28:46Z",
+  "id": "2026-10-15-editor-proofing-session-v1-base",
+  "inputImages": [
+    "mark-yorkies-owner-2026-10-15.png",
+    "2026-10-15-special-bp35-editor-data-v1-base.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story. NEW wide 16:9 cinematic 3D editorial illustration for The ARC Daily Digest's reusable art library. A distinct new episode, not a recoloring or a crop. Image 1: authoritative owner-supplied Mark Barney and exactly TWO Yorkies likeness. Match the bearded face, dark hair, stocky muscular build, gold chain, general decorative tattoos, blue display visor, elaborate GPU headgear and backpack; omit all written slogans and celebrity tattoo writing. Two Yorkshire terriers have tan faces, upright ears, silky dark body fur, fitted cybernetic collars and goggles. Image 2: approved newspaper office art for cast/design/material/world continuity ONLY, do not copy its camera or poses. Maintain one recognizable human Mark and exactly two dogs, plus exactly one small yellow sunglasses DUCK, one red-combed white/brass mechanical CHICKEN and one bronze/white fan-tailed mechanical TURKEY. Intricate physical GPU cards, amber lights, copper cabling, expressive natural fur, charming helpful poultry. All machinery is playful editorial metaphor. No extra people or animals. No readable words, letters, numbers, brands, scores, dates or watermarks. Research screens may show abstract game grids and arrows, clearly illustrative.\nSCENE VARIATION 2 — THE PROOFING SESSION. A tighter, intimate, slightly elevated three-quarter cinematic view of Mark at a wide editor's workbench, in a brass-and-dark-wood mountain newsroom on a snowy night. This is an involved physical comparison of printed game replay contact sheets rather than a huge screen scene. Mark leans forward with a large brass magnifying glass over two different printed pixel-grid sequences laid side by side, the other hand holding a blue pencil over a transparent tracing overlay. His recognizable bearded face is prominent and has amused intense concentration, as though a tiny contradiction has just caught his eye. Both Yorkies are large in frame: one on the near edge of a safe upholstered bench looking directly at the magnifier, the other next to his elbow with one paw resting on a folder. The sunglasses duck is perched atop a stack of heavy bound folios beside the lamp; the white/red-combed chicken passes a clean replay sheet across the opposite edge of the workbench; the larger turkey stands behind the workbench and bends its head in curiously, its splendid fan tail partly framing the scene without hiding anyone. A few glowing abstract board thumbnails on a modest desk monitor, not a wall of screens. Warm pool of amber lamplight on paper, shallow depth of field, cold moonlight on snow beyond the window, exquisite fur, brushed brass and GPU details, cozy detective-editor mood. One human, exactly two dogs, one each duck/chicken/turkey, every face readable. Portrait of painstaking editorial verification; no legible writing or numbers anywhere. Composition distinct from both the original seated hologram scene and the standing replay-wall variant.",
+  "rawSha256": "19e4a92c2e5addc133116511342326c30d853683aab29e0499f5a6e0af585747",
+  "rawSrc": "/news-images/2026-10-15-editor-proofing-session-v1-base.webp",
+  "references": [
+    {
+      "role": "Owner-supplied Mark and two Yorkies likeness.",
+      "sha256": "fcde1de7a685c5630aea7bb840fa8e2dc61cf6fbfa3725a1f8bc4b249f165906",
+      "src": "/news-images/references/mark-yorkies-owner-2026-10-15.png"
+    },
+    {
+      "role": "Approved editor office illustration: established cast, poultry designs and world, not composition.",
+      "sha256": "fda171b009e4b33367150813138928ffddffd569c8808309eff3c26a841dbb96",
+      "src": "/news-images/2026-10-15-special-bp35-editor-data-v1-base.webp"
+    }
+  ],
+  "review": "Inspected: one recognizable Mark closely examining replay proofs with a brass magnifier and pencil; exactly two distinct natural-looking Yorkies, one duck, one chicken and one fan-tailed turkey. Close proofing composition differs from the original and replay wall. Printed diagrams are illustrative. Coherent hands and instruments, clear faces and warm office lighting; no factual score claims.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-81a4c252-6aa3-4dd7-a26f-7ef979ce6a8e.png",
+  "version": 1,
+  "reviewStatus": "reviewed",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "editorialDate": "2026-10-15",
+    "request": "Create several varieties of the approved editor, Yorkies and cybernetic poultry scene for later use."
+  },
+  "usage": {
+    "status": "reserve",
+    "capacity": "Mark Barney as head human editor; no current contestant roster conditions",
+    "captionRequirement": "Identify AI editorial artwork; game displays and diagrams are illustrative."
+  }
+}

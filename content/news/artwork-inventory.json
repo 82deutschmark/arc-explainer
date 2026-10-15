@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-15T23:16:35.530146Z",
+  "updatedAt": "2026-10-15T23:29:12.796093Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -264,8 +264,46 @@
       "articleUses": [
         "2026-10-15-special-argon-haiku-bp35"
       ],
-      "xAttachments": [],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2110874624577999323",
+          "postedAt": "2026-10-15T23:25:32.828442Z",
+          "attachmentSha256": "d2f90d43667d783142bcf0f86fa8066b2f8f8412945d7727e2ce25c82699c38d",
+          "kind": "explicitly-requested-editorial-preview",
+          "verification": "Text, approved illustration, alt description and AI disclosure verified on the profile and permanent post."
+        }
+      ],
       "selectionNote": "New artwork explicitly commissioned by Mark in this chat for the Argon/Haiku BP35 article: editor, exactly two Yorkies, cybernetic duck/chicken/turkey. Native image and saved WebP visually inspected. Illustrative game/data screens, no standings overlays."
+    },
+    {
+      "id": "2026-10-15-editor-replay-wall-v1",
+      "generationRecord": "2026-10-15-editor-replay-wall-v1-base",
+      "src": "/news-images/2026-10-15-editor-replay-wall-v1-base.webp",
+      "title": "The Replay Wall",
+      "status": "reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Explicitly commissioned reusable editor scene. Standing editor investigating a replay wall with the Yorkies and all three poultry. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative."
+    },
+    {
+      "id": "2026-10-15-editor-proofing-session-v1",
+      "generationRecord": "2026-10-15-editor-proofing-session-v1-base",
+      "src": "/news-images/2026-10-15-editor-proofing-session-v1-base.webp",
+      "title": "The Proofing Session",
+      "status": "reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Explicitly commissioned reusable editor scene. Editor examines printed replay proofs with a magnifier, two Yorkies and all three poultry. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative."
+    },
+    {
+      "id": "2026-10-15-editor-dawn-briefing-v1",
+      "generationRecord": "2026-10-15-editor-dawn-briefing-v1-base",
+      "src": "/news-images/2026-10-15-editor-dawn-briefing-v1-base.webp",
+      "title": "The Dawn Briefing",
+      "status": "reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Explicitly commissioned reusable editor scene. Editor, Yorkies and all three poultry discuss a route around a round conference table at sunrise. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative."
     }
   ],
   "existingXPosts": [
