@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-15T15:47:53Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Son & Mark & Ronen jump from 7th to 3rd on ARC-3",
+  "id": "2026-10-15-1159-arc-3-son-mark-ronen-jump-to-third",
+  "personIds": [],
+  "publishedAt": "2026-10-15T15:59:17Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Son & Mark & Ronen gained 5.28 points to reach 47.25, moving from 7th to 3rd on the ARC-3 public board. The standings remain provisional."
+    }
+  ],
+  "since": "2026-10-14T15:44:43Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T15:58:46Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15605182"
+  ]
+}
