@@ -3,7 +3,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
-    "checkedAt": "2026-10-15T16:58:41.770Z",
+    "checkedAt": "2026-10-15T18:24:37.044800Z",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -24,7 +24,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
-    "checkedAt": "2026-10-15T16:58:41.770Z",
+    "checkedAt": "2026-10-15T18:24:37.044800Z",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -45,7 +45,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
-    "checkedAt": "2026-10-15T16:58:41.770Z",
+    "checkedAt": "2026-10-15T18:24:37.044800Z",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -165,6 +165,105 @@
     "whyItMatters": "Historical October 9 standings announcement, newly inventoried as a Chollet repost; not a fresh score move. Original and visible context re-read; existing independently verified public visibility preserved."
   },
   {
+    "author": "nickcammarata",
+    "authorName": "Nick",
+    "category": "research",
+    "checkedAt": "2026-10-15T18:01:55.767Z",
+    "competitions": [],
+    "id": "2110788560341336240",
+    "identitySourceUrl": "https://x.com/nickcammarata",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-15T17:43:03Z",
+    "storyUrl": "https://x.com/nickcammarata/status/2110757819427574056",
+    "summary": "Nick adds that agents have automated circuit-study work that previously took months for the Curve Detectors / Curve Circuits experiments on ten neurons.",
+    "threadId": "2110757819427574056",
+    "url": "https://x.com/nickcammarata/status/2110788560341336240",
+    "visibility": "public",
+    "whyItMatters": "Attributed claim about research automation, not a measured ARC result."
+  },
+  {
+    "author": "nickcammarata",
+    "authorName": "Nick",
+    "category": "research",
+    "checkedAt": "2026-10-15T18:01:55.767Z",
+    "competitions": [],
+    "id": "2110788108304416984",
+    "identitySourceUrl": "https://x.com/nickcammarata",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-15T17:41:16Z",
+    "storyUrl": "https://x.com/nickcammarata/status/2110757819427574056",
+    "summary": "Responding to Knoop, Nick says such an evaluation seems feasible and points to controlled activations, ablations, large token collections and other circuit-study tools; he promises more details.",
+    "threadId": "2110757819427574056",
+    "url": "https://x.com/nickcammarata/status/2110788108304416984",
+    "visibility": "public",
+    "whyItMatters": "Substantive response to the organizer’s evaluation proposal. Feasibility is the author’s view."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-15T18:01:41.766Z",
+    "competitions": [],
+    "id": "2110785157997437292",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-15T17:29:32Z",
+    "storyUrl": "https://x.com/fraserpricee/status/2110770481808986139",
+    "summary": "Replying to Fraser Price’s simulated multicellular-life video, Mazur praises the research but says the difficult next step is advancing beyond such demonstrations, perhaps by evolving rudimentary intelligence.",
+    "threadId": "2110770481808986139",
+    "url": "https://x.com/mhmazur/status/2110785157997437292",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary on open-ended research. The parent simulation claim was read but not independently validated."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "research",
+    "checkedAt": "2026-10-15T18:01:55.767Z",
+    "competitions": [],
+    "id": "2110784364783296924",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-15T17:26:23Z",
+    "storyUrl": "https://x.com/nickcammarata/status/2110757819427574056",
+    "summary": "Replying to Nick’s Neural Networks Are Already Clean announcement, Knoop asks whether neural-network cleanliness can be formalized as an evaluation and whether the proposed falsifiable-explanation experiment would suffice.",
+    "threadId": "2110757819427574056",
+    "url": "https://x.com/mikeknoop/status/2110784364783296924",
+    "visibility": "public",
+    "whyItMatters": "Concrete evaluation question, with two substantive replies from the original author. No ARC score or validated new evaluation announced."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "research",
+    "checkedAt": "2026-10-15T18:24:37.044800Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2110779223527080374",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-15T17:05:57Z",
+    "storyUrl": null,
+    "summary": "Knoop argues experiment ideation is the current bottleneck in recursive self-improvement. He claims coding and execution are largely automated, distinguishes reproducing known results from asking novel questions, and says domain-specific improvement recipes still need human-AI collaboration to spread across domains without further generalization breakthroughs.",
+    "threadId": null,
+    "url": "https://x.com/mikeknoop/status/2110779223527080374",
+    "visibility": "public",
+    "whyItMatters": "Useful organizer perspective on open-ended evaluation and ARC-AGI. His automation percentages and 12-month scenario are attributed claims, not independently verified results."
+  },
+  {
     "author": "fchollet",
     "authorName": "François Chollet",
     "category": "research",
@@ -186,6 +285,28 @@
     "url": "https://x.com/fchollet/status/2110775560846914009",
     "visibility": "public",
     "whyItMatters": "Attributed organizer reaction to the Verified release; not a separate evaluation."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ",
+    "category": "standings",
+    "checkedAt": "2026-10-15T21:09:22.191884Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2110770818712256539",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 2,
+    "personIds": [
+      "itsu"
+    ],
+    "postedAt": "2026-10-15T16:32:34Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "Itsu reports moving to rank 30 on Kaggle. The original post links ARC Prize 2026 - ARC-AGI-2.",
+    "threadId": null,
+    "url": "https://x.com/iiiiitsu_ne/status/2110770818712256539",
+    "visibility": "public",
+    "whyItMatters": "Dated competitor statement. Later collector snapshot at 20:48:28Z lists Odd Dice, team 16297545, roster nisshokuitsuki, at rank 32; the post is not a current-rank claim."
   },
   {
     "author": "mikeknoop",
@@ -235,7 +356,7 @@
     "author": "harshitj__",
     "authorName": "Harshit Joshi",
     "category": "research",
-    "checkedAt": "2026-10-15T16:09:53.831Z",
+    "checkedAt": "2026-10-15T18:24:37.044800Z",
     "competitions": [
       "arc-2"
     ],
@@ -255,7 +376,7 @@
     "author": "masspeakss",
     "authorName": "masspeaks",
     "category": "community",
-    "checkedAt": "2026-10-15T16:05:56.138Z",
+    "checkedAt": "2026-10-15T18:24:37.044800Z",
     "competitions": [
       "arc-2"
     ],
@@ -292,130 +413,5 @@
     "url": "https://x.com/mhmazur/status/2110459241316430266",
     "visibility": "public",
     "whyItMatters": "New organizer detail for interpreting the October 13 verified DeepSeek evaluation. Keep the native mixed precision distinct from additional provider quantization; no new Kaggle score or ruling."
-  },
-  {
-    "author": "arcprize",
-    "authorName": "ARC Prize",
-    "category": "research",
-    "checkedAt": "2026-10-14T18:10:17.513Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2110417868563042314",
-    "identitySourceUrl": "https://arcprize.org",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-14T17:10:04Z",
-    "storyUrl": "https://arcprize.org/results/anthropic-claude-haiku-5-5",
-    "summary": "ARC Prize says it omitted Haiku 5.5 max reasoning on ARC-AGI-2 because only 74 of 120 tasks completed, with many incomplete attempts exhausting their output budget before producing parseable answers.",
-    "threadId": "2110417867288039864",
-    "url": "https://x.com/arcprize/status/2110417868563042314",
-    "visibility": "public",
-    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
-  },
-  {
-    "author": "arcprize",
-    "authorName": "ARC Prize",
-    "category": "research",
-    "checkedAt": "2026-10-14T18:10:18.127Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2110417869984935975",
-    "identitySourceUrl": "https://arcprize.org",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-14T17:10:04Z",
-    "storyUrl": "https://arcprize.org/results/anthropic-claude-haiku-5-5",
-    "summary": "ARC Prize supplies its leaderboard, reproduction repository, testing policy and full Haiku 5.5 results as supporting links for the evaluation thread.",
-    "threadId": "2110417867288039864",
-    "url": "https://x.com/arcprize/status/2110417869984935975",
-    "visibility": "public",
-    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
-  },
-  {
-    "author": "arcprize",
-    "authorName": "ARC Prize",
-    "category": "research",
-    "checkedAt": "2026-10-14T18:10:17.191Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2110417867288039864",
-    "identitySourceUrl": "https://arcprize.org",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-14T17:10:03Z",
-    "storyUrl": "https://arcprize.org/results/anthropic-claude-haiku-5-5",
-    "summary": "ARC Prize reports verified Haiku 5.5 scores: ARC-AGI-3 2.8%/$437 with its provider adapter and 0.5%/$388 with its standard harness; ARC-AGI-2 61.3% at $0.085 per task; ARC-AGI-1 89.0% at $0.051 per task. These are model evaluations, separate from Kaggle team standings.",
-    "threadId": "2110417867288039864",
-    "url": "https://x.com/arcprize/status/2110417867288039864",
-    "visibility": "public",
-    "whyItMatters": "Priority-account capture before editorial selection. Original read in signed-in Chrome; separately readable without sign-in. General commentary is not a competition result."
-  },
-  {
-    "author": "fchollet",
-    "authorName": "François Chollet",
-    "category": "research",
-    "checkedAt": "2026-10-14T15:10:22.522Z",
-    "competitions": [],
-    "id": "2110378929588752784",
-    "identitySourceUrl": "https://x.com/fchollet",
-    "importance": 2,
-    "personIds": [
-      "francois-chollet"
-    ],
-    "postedAt": "2026-10-14T14:35:20Z",
-    "storyUrl": "https://aetherlabsai.github.io/CRIS-0/",
-    "summary": "Chollet argues that autonomous robotics needs causality and discrete reasoning beyond autoregressive sampling, and praises Biwei Huang’s Aether AI work. His quote refers to Huang’s October 12 CRIS-0 announcement; it is not an October 14 model release or a Kaggle result.",
-    "threadId": "2109667913472839911",
-    "url": "https://x.com/fchollet/status/2110378929588752784",
-    "visibility": "public",
-    "whyItMatters": "New public founder research lead. Original and visible conversation read; public body independently readable without sign-in. Linked CRIS-0 technical project page read: explicit task state, verification, retry/replan; reported robotics work, no disclosed ARC recipe."
-  },
-  {
-    "author": "iiiiitsu_ne",
-    "authorName": "イツ",
-    "category": "standings",
-    "checkedAt": "2026-10-14T22:04:09.719062+00:00",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2110243114988581038",
-    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
-    "importance": 2,
-    "personIds": [
-      "itsu"
-    ],
-    "postedAt": "2026-10-14T05:35:39Z",
-    "storyUrl": null,
-    "summary": "Japanese translation: Even with a 2.5-point improvement, I have actually dropped from rank 31. The attached native Kaggle share says Moved up to rank 35 for ARC-AGI-2. This is the author’s posting-time comparison, distinct from the saved rolling board event and later rank.",
-    "threadId": "2110243114988581038",
-    "url": "https://x.com/iiiiitsu_ne/status/2110243114988581038",
-    "visibility": "public",
-    "whyItMatters": "Own standings voice. Kaggle nisshokuitsuki directly links @iiiiitsu_ne; current ARC-2 Odd Dice roster contains that handle. Original body/date independently readable without sign-in."
-  },
-  {
-    "author": "fchollet",
-    "authorName": "François Chollet",
-    "category": "research",
-    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
-    "competitions": [],
-    "id": "2110214967228236242",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 2,
-    "personIds": [
-      "francois-chollet"
-    ],
-    "postedAt": "2026-10-14T03:43:48Z",
-    "storyUrl": null,
-    "summary": "Chollet argues that the ideal scientific outcome of AI is to enable millions of human scientists to pursue their curiosity more ambitiously, rather than concentrating expensive proprietary systems in a few labs tackling prestige problems.",
-    "threadId": "2110214967228236242",
-    "url": "https://x.com/fchollet/status/2110214967228236242",
-    "visibility": "public",
-    "whyItMatters": "A fresh public founder statement at 11:43 pm Eastern on October 13. This is his view of AI-aided science, not a new release or ARC contest result. Original post read in signed-in Chrome with ordinary public engagement controls and no subscriber label; the separately read Subs feed retains its explicit private labels."
   }
 ]

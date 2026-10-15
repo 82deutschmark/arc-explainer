@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-15T17:18:44.064374Z",
+  "updatedAt": "2026-10-15T22:04:49.250676+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -239,11 +239,14 @@
       "generationRecord": "2026-10-15-evening-turducken-harness-v1-base",
       "src": "/news-images/2026-10-15-evening-turducken-harness-v1-base.webp",
       "title": "The Turducken Harness",
-      "status": "reserve",
+      "status": "published-on-front-page",
       "targetEditionId": "2026-10-15-evening-arc-3",
-      "articleUses": [],
+      "articleUses": [
+        "2026-10-15-evening-arc-3"
+      ],
       "xAttachments": [],
-      "selectionNote": "Explicit October 15 commission from Mark. Evening reserve uses owner-supplied likeness and Yorkies; future actual issue must draw fresh score/time overlays."
+      "selectionNote": "Evening commission fulfilled with fresh 5:48 PM EDT closing evidence; top-three team and exact supporting roster checked. Clean native base inspected, overlays composed and inspected; preserves afternoon dispatch.",
+      "artworkId": "2026-10-15-evening-arc-3-4dc3c2307b"
     }
   ],
   "existingXPosts": [

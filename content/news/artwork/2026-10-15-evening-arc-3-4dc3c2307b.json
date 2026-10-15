@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-15-evening-arc-3",
+  "briefSha256": "c71741ed2b68371a71c7b59b01a638b5a6ae499dee62581532ccea56b5816809",
+  "dataAsOf": "2026-10-15T21:48:34Z",
+  "generationRecord": "2026-10-15-evening-turducken-harness-v1-base",
+  "headline": "Son & Mark & Ronen take third as Argon puts the harness in focus",
+  "historyChart": null,
+  "id": "2026-10-15-evening-arc-3-4dc3c2307b",
+  "image": {
+    "alt": "Editorial illustration for Son & Mark & Ronen take third as Argon puts the harness in focus. Tufa Labs: rank 1, score 68.91; Yi-Chia Chen: rank 2, score 67.49.",
+    "artworkId": "2026-10-15-evening-arc-3-4dc3c2307b",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 15, 2026 · 5:48 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-15-evening-arc-3-4dc3c2307b.webp"
+  },
+  "imageSha256": "e4ab9b082d8c8cca0c8902ac4068456c532050b81842f943d30d3ebf5c175584",
+  "kind": "edition-composition",
+  "layout": "center-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "20e12d6f369467cb1ae1bb2efad9ca64737acf86b30359b7e431942bec120437",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}
