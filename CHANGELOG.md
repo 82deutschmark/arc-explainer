@@ -12,6 +12,10 @@
 # reference the old numbers.
 
 
+### Version 9.115.2  Oct 15, 2026
+
+- **Gemini 4 Argon traces on the Slippery Seven** (Author: Claude Sonnet 5.5). Boss wanted to read Argon's reasoning on our hardest ARC-3 games and know whether it is real. Pulled all 150 public replays from arcprize.org, kept the model text and usage numbers, and wrote up what they show: the standard harness forgets its own plan on g50t (0%), the Provider Adapter scores 97-100% with near-identical play across reasoning levels, and the "reasoning" is a summary (Google's docs checked). Docs only, no site code changed. `docs/2026-10-15-gemini-4-argon-slippery-seven-traces.md`, `data/gemini-4-argon-traces/{fetch_traces.py,harness_stats.py,index.csv,slippery_stats.csv,.gitignore}`; the 61 MB of transcripts stay local and regenerate with `fetch_traces.py`.
+
 ### Version 9.115.1  Sep 25, 2026
 
 - **The Notes button pulses, and giving up is fine** (Author: Claude Opus 5.5). Boss: these games are confusing and we want people to say so. The Notes button on the console now glows on and off until the player sends a note (a steady glow for people who have turned off motion). And since moving on is fine, the form's Skip and the thank-you after a send both offer the next task mid-run, not only after the run is over. `client/src/components/arc3-community/Arc3Console.tsx`, `client/src/pages/arc3-community/CommunityGamePlay.tsx`, `client/src/index.css`.

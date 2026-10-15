@@ -1,0 +1,43 @@
+game,config,score,levels,actions,state,steps,med_input,max_input,pct_cached,med_frames,max_frames,med_out,med_think,pct_bare,level_clear_steps
+dc22,google-barium-bb3-high,71.4,5,698,NOT_FINISHED,698,152840,328070,32,1,15,418,0,0,26 84 131 259 386
+dc22,google-barium-bb3-high-provider-adapter,100,6,456,WIN,456,110335,337092,91,1,15,61,56,96,24 80 126 188 305 457
+dc22,google-barium-bb3-low,47.6,4,254,NOT_FINISHED,254,163081,450087,25,1,3,193,0,0,30 74 124 193
+dc22,google-barium-bb3-low-provider-adapter,100,6,466,WIN,466,114611,727749,92,1,15,31,0,12,31 87 133 199 310 467
+dc22,google-barium-bb3-medium,47.6,4,468,NOT_FINISHED,468,160497,432165,25,1,15,147,0,0,28 72 118 182
+dc22,google-barium-bb3-medium-provider-adapter,100,6,487,WIN,487,110042,279253,92,1,15,45,38,84,25 81 126 198 327 488
+g50t,google-barium-bb3-high,0,0,390,GAME_OVER,388,87068,2408327,18,7,85,2114,2083,4,
+g50t,google-barium-bb3-high-provider-adapter,100,7,300,WIN,300,190634,290001,49,9,95,1117,146,79,25 56 120 151 201 258 301
+g50t,google-barium-bb3-low,0,0,390,GAME_OVER,388,87034,125966,21,7,239,244,0,0,
+g50t,google-barium-bb3-low-provider-adapter,100,7,306,WIN,306,190538,351779,51,9,95,857,0,2,27 58 122 155 205 263 307
+g50t,google-barium-bb3-medium,0,0,390,GAME_OVER,389,87034,114216,24,7,113,258,85,5,
+g50t,google-barium-bb3-medium-provider-adapter,100,7,294,WIN,294,188958,289775,49,9,95,973,51,39,24 55 119 152 202 252 295
+m0r0,google-barium-bb3-high,71.4,5,327,NOT_FINISHED,327,156404,448023,23,1,8,442,0,0,16 39 137 150 198
+m0r0,google-barium-bb3-high-provider-adapter,100,6,249,WIN,249,106837,1140358,90,1,2,83,80,88,16 46 122 137 188 250
+m0r0,google-barium-bb3-low,71.4,5,1432,GAME_OVER,1430,153448,627056,32,1,8,301,0,0,16 39 105 131 248
+m0r0,google-barium-bb3-low-provider-adapter,100,6,410,WIN,410,116743,557421,90,1,8,70,0,7,20 43 127 138 195 411
+m0r0,google-barium-bb3-medium,71.4,5,259,NOT_FINISHED,259,156578,317932,20,1,8,150,0,0,16 39 141 165 213
+m0r0,google-barium-bb3-medium-provider-adapter,85.0,6,949,WIN,948,122908,578066,89,1,8,70,42,69,16 39 130 144 199 950
+sc25,google-barium-bb3-high,47.6,4,294,GAME_OVER,291,140698,492834,60,1,22,368,163,0,31 37 63 98
+sc25,google-barium-bb3-high-provider-adapter,100,6,143,WIN,143,128441,273192,86,1,25,74,65,94,17 22 34 57 101 144
+sc25,google-barium-bb3-low,47.6,4,157,NOT_FINISHED,157,152594,561136,57,1,25,101,0,0,28 34 61 90
+sc25,google-barium-bb3-low-provider-adapter,97.3,6,239,WIN,239,128915,292761,86,1,23,43,0,10,19 26 83 140 192 240
+sc25,google-barium-bb3-medium,47.6,4,232,NOT_FINISHED,232,152358,898801,46,1,22,210,0,0,23 30 54 112
+sc25,google-barium-bb3-medium-provider-adapter,100,6,146,WIN,146,129639,272261,86,1,25,47,26,77,24 29 48 72 110 147
+sk48,google-barium-bb3-high,27.8,4,242,NOT_FINISHED,242,151490,968375,26,2,39,263,0,0,51 131 189 222
+sk48,google-barium-bb3-high-provider-adapter,100,8,394,WIN,394,137359,537658,85,2,39,99,87,75,29 69 110 167 210 270 315 395
+sk48,google-barium-bb3-low,41.7,5,384,NOT_FINISHED,384,151053,176298,29,2,39,379,0,0,36 142 184 311 361
+sk48,google-barium-bb3-low-provider-adapter,100,8,546,WIN,546,128371,380000,85,2,39,56,0,3,29 105 154 281 363 407 471 547
+sk48,google-barium-bb3-medium,77.8,7,581,NOT_FINISHED,581,151199,442644,21,2,39,343,0,0,25 76 120 185 321 404 482
+sk48,google-barium-bb3-medium-provider-adapter,100,8,323,WIN,323,128248,386282,84,2,39,92,53,50,21 61 98 135 177 235 278 324
+tn36,google-barium-bb3-high,100,7,180,WIN,180,141215,929261,52,1,11,232,0,0,10 22 51 71 93 127 181
+tn36,google-barium-bb3-high-provider-adapter,100,7,121,WIN,121,129677,533777,84,1,11,79,70,73,13 23 33 49 69 95 122
+tn36,google-barium-bb3-low,58.0,6,234,GAME_OVER,233,130177,169132,41,1,11,178,0,0,9 20 36 54 156 221
+tn36,google-barium-bb3-low-provider-adapter,100,7,127,WIN,127,139404,330163,86,1,11,46,0,0,9 20 30 46 65 98 128
+tn36,google-barium-bb3-medium,28.4,4,257,GAME_OVER,254,129790,168000,37,1,11,243,0,0,9 19 30 108
+tn36,google-barium-bb3-medium-provider-adapter,100,7,123,WIN,123,104098,309628,85,1,11,47,33,80,10 22 32 48 68 90 124
+tr87,google-barium-bb3-high,100,6,286,WIN,286,142453,245918,33,1,51,756,0,0,26 54 99 122 178 287
+tr87,google-barium-bb3-high-provider-adapter,100,6,163,WIN,163,111711,288790,91,1,51,163,161,99,26 53 79 101 126 164
+tr87,google-barium-bb3-low,93.5,6,409,WIN,409,154154,490824,39,1,51,161,0,0,32 88 199 232 259 410
+tr87,google-barium-bb3-low-provider-adapter,100,6,224,WIN,224,117044,511896,91,1,51,117,0,6,27 72 101 123 166 225
+tr87,google-barium-bb3-medium,100,6,207,WIN,207,150976,319938,29,1,51,364,0,0,31 63 96 126 170 208
+tr87,google-barium-bb3-medium-provider-adapter,100,6,193,WIN,193,117073,333638,90,1,51,166,88,55,27 73 112 134 157 194
