@@ -1,0 +1,160 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Written by Claude Sonnet 5.5 at the head editor's request, from Gemini 4 Argon's public ARC-AGI-3 replays and the studio's own trace write-ups. Quoted lines are the model's visible answer text, not its hidden thinking. The model's claimed discoveries were not checked against game code.",
+  "generatedBy": "claude-sonnet-5-5",
+  "headline": "Mind Blown, 532 Times: Gemini 4 Argon Takes On the Kebab Game",
+  "id": "2026-10-15-gemini-4-argon-mind-blown",
+  "interpretation": "Argon's exclamations track confusion more than progress, and the 0% versus 100% split on g50t looks like a memory difference between harnesses, not an ability difference. Both are readings of the replays; neither was checked against game code.",
+  "publishedAt": "2026-10-15T22:38:52Z",
+  "sections": [
+    {
+      "heading": "The last move",
+      "sourceIds": [
+        "results",
+        "sk48-medium",
+        "sk48-adapter"
+      ],
+      "text": "The last thing Gemini 4 Argon did in its run on sk48 was announce a plan: \"Let's RESET now so we have the clean initial state and can inspect the exact initial coordinates and solve it cleanly!\" Then the recording ends. Level 8 of 8 never got its clean solve. sk48 is Skewer Kebabs, one of the Slippery Seven, the games our own Qwen 27B scored zero on in every pass of its September run. It took the Boss 856 actions to win it on 21 September. In ARC Prize's published standard-harness run, Argon cleared seven of eight levels in 481 actions, fewer than ARC Prize's baseline on each of those seven. ARC Prize reports Argon on ARC-AGI-3 twice. In the standard harness the model carries forward only the notes it writes in its own answer, and scores 49.8% at low reasoning. Under Google's Provider Adapter harness, which keeps its reasoning state between moves, it scores 97.5%. On sk48 the adapter finished all eight levels at all three reasoning settings, in 323, 394 and 546 actions. Same model; the memory is what changed. The standard replays are the funny ones, because the model thinks out loud in its answer, the way you talk to yourself in an empty office."
+    },
+    {
+      "heading": "The ledger",
+      "sourceIds": [
+        "sk48-medium",
+        "results"
+      ],
+      "text": "Across its 150 public runs, MIND BLOWN appears 532 times in Argon's answer text, WHOA 372, EUREKA 273, BINGO 671, HOLD EVERYTHING 1,689, and WAIT A SECOND 13,182. The shouting is, if anything, a distress signal: in the standard harness a step containing a MIND BLOWN, BINGO, EUREKA or WHOA is followed by a cleared level within 30 moves 25.3% of the time, against 36.1% for any step. It is louder when it is lost. On sk48 level 3 it works out a chain, carrying the 8, then the 12, then the 9 and the 14: \"MIND BLOWN!! THAT'S THE ENTIRE PUZZLE MECHANIC OF LEVEL 3!!\" Level 3 fell at move 120. On level 5, facing three nines and three eights, it decides the spare nines are there to be sacrificed: \"OH, WHAT A BRILLIANT PUZZLE DESIGN!!\" It congratulated the designer, then cleared the level. It also mistook a grey square for \"ANOTHER 6 HEAD\". It was a wall. At move 414 it noticed that the first frame it receives each turn is the rod halfway through moving: \"MIND BLOWN!! Read that again!!\""
+    },
+    {
+      "heading": "\"Game started.\"",
+      "sourceIds": [
+        "g50t-low",
+        "g50t-high",
+        "m0r0-high"
+      ],
+      "text": "In g50t every move triggers a slide animation of about seven frames, and the model reads them all as text. The standard harness has no room left for history after that: the prompt is about 87,000 tokens on nearly every step, the last move's frames and little else. So 58 times in the low-reasoning run, Argon's notes open with \"Game started.\" It read the animation of its own last move as the opening of the game. The high-reasoning run is worse. On move 151 it writes a plan with the right shape: park one block on the button, switch, send the other through the gate. On move 152 it writes: \"I will take ACTION2 to observe how the block responds and determine the action mappings.\" It keeps testing the controls until the run ends at 390 actions, with zero levels. In m0r0 the model manages a better version of the same thing. Deep in level 6 it looks up at its own context: \"Oh! I didn't play Levels 1-5 in this conversation... HAHAHA! Look at the first user message of this conversation.\" Then it coaches itself: \"OKAY! GOOD CATCH! Don't hallucinate about Levels 1-5 when we started this context window at Level 6.\""
+    },
+    {
+      "heading": "Reading the manual, late, and other confessions",
+      "sourceIds": [
+        "lf52-medium",
+        "ar25-medium",
+        "dc22-high",
+        "m0r0-low",
+        "sk48-low",
+        "su15-medium",
+        "dc22-medium"
+      ],
+      "text": "The setup says the final action mentioned in a reply is the one that executes, and Argon sometimes mentioned several. In lf52 it works out that only one of its four planned moves per turn had ever run: \"Only ONE action is executed per turn!... That's why!\" In ar25 it gets there by experiment: \"The parser extracts the LAST action name mentioned anywhere in the text!\" In dc22: \"14 IS OUR PLAYER COLOR! HAHAHA! There was NEVER a pad... that was US standing there!\" In m0r0: \"My mathematical proof was completely sound - the premise that was false was that we started at row=1 after RESET.\" In sk48 at low reasoning, a numbered review of its own move history reaches item 38: \"I NEVER PRESSED ACTION3 A THIRD TIME!!\" In su15: \"I MISCOUNTED THE ROW NUMBERS earlier!\" The board arrives as a 64-by-64 grid of numbers. Anyone would. And in its medium dc22 run, the Polish word ostatecznie (\"finally\") ends 444 of 469 moves, uninvited, from about move 23 on."
+    },
+    {
+      "heading": "What to make of it",
+      "sourceIds": [
+        "sk48-adapter",
+        "m0r0-adapter",
+        "google-thinking",
+        "google-signatures",
+        "results"
+      ],
+      "text": "Google does not show anyone a model's raw thoughts, only summaries and encrypted signatures, so the Provider Adapter runs offer a summary instead, and this one reads as if its author was never told it was watching a game. Summarising sk48's rod-and-beads puzzle it reports: \"It's essentially a row-shifting operation, likely within a grid or table structure, or perhaps within memory registers.\" On m0r0 level 6, where the standard runs stall, the adapter's medium run decides the level is \"mathematically impossible\" and talks itself out of it: \"I'm a programmer; the game is designed to be solvable.\" Three things, in order of how sure we are. The memory problem looks real, and looks like the harness: the same model scores 0% on g50t under one harness and 100% under the other. The shouting is not a progress bar. And the Provider Adapter's 97.5% carries one open question: across the three reasoning levels its moves are nearly the same, 95-97% matching on g50t and 98-99% on tn36. A unique shortest solution can explain the late game, but not obviously the exploration. Whether the cause is a deterministic model, public demo games it already knows, or something in the adapter, the replays cannot say. ARC Prize's private games are the clean test. For the record, Argon's best sk48 line is 323 actions and the Boss's win took 856."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "results",
+      "title": "ARC Prize: Gemini 4 Argon results",
+      "url": "https://arcprize.org/results/google-gemini-4-argon"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "sk48-medium",
+      "title": "Replay: Gemini 4 Argon, sk48, standard harness, medium",
+      "url": "https://arcprize.org/replay/e3ab3eb6-f9de-4735-ac7d-b9681b247500"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "sk48-low",
+      "title": "Replay: Gemini 4 Argon, sk48, standard harness, low",
+      "url": "https://arcprize.org/replay/954ffecc-534c-4e1b-aec0-1059f6de229b"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "sk48-adapter",
+      "title": "Replay: Gemini 4 Argon, sk48, Provider Adapter, medium",
+      "url": "https://arcprize.org/replay/e62e95a8-d39a-414c-86bd-65b38bf28984"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "g50t-low",
+      "title": "Replay: Gemini 4 Argon, g50t, standard harness, low",
+      "url": "https://arcprize.org/replay/b38ced7f-34c1-49fa-94b3-643d75e37bfc"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "g50t-high",
+      "title": "Replay: Gemini 4 Argon, g50t, standard harness, high",
+      "url": "https://arcprize.org/replay/0f85993c-58d8-40ec-aa95-be773537607e"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "m0r0-high",
+      "title": "Replay: Gemini 4 Argon, m0r0, standard harness, high",
+      "url": "https://arcprize.org/replay/e7e9f23a-7261-4368-8b2d-962d1aa7a38b"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "m0r0-low",
+      "title": "Replay: Gemini 4 Argon, m0r0, standard harness, low",
+      "url": "https://arcprize.org/replay/d8379bc2-fcb1-4d8c-aba3-a7e2654d0e77"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "m0r0-adapter",
+      "title": "Replay: Gemini 4 Argon, m0r0, Provider Adapter, medium",
+      "url": "https://arcprize.org/replay/479bac4f-aec4-4cae-b9a3-cc1948f82dcb"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "ar25-medium",
+      "title": "Replay: Gemini 4 Argon, ar25, standard harness, medium",
+      "url": "https://arcprize.org/replay/03a03b4c-881c-4f49-8ed8-2346c9dba1a8"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "lf52-medium",
+      "title": "Replay: Gemini 4 Argon, lf52, standard harness, medium",
+      "url": "https://arcprize.org/replay/fbd4dfe0-199f-4b79-9764-4c1e548e4fa3"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "dc22-high",
+      "title": "Replay: Gemini 4 Argon, dc22, standard harness, high",
+      "url": "https://arcprize.org/replay/08fc7dc2-d279-481a-9d5d-226c1d741110"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "dc22-medium",
+      "title": "Replay: Gemini 4 Argon, dc22, standard harness, medium",
+      "url": "https://arcprize.org/replay/07298656-af3d-4082-9408-6816768eb647"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "su15-medium",
+      "title": "Replay: Gemini 4 Argon, su15, standard harness, medium",
+      "url": "https://arcprize.org/replay/c25a8a18-a402-451f-ae15-4edaede1faae"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "google-thinking",
+      "title": "Google: Gemini thinking (thought summaries and signatures)",
+      "url": "https://ai.google.dev/gemini-api/docs/interactions/thinking.md.txt"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "google-signatures",
+      "title": "Google: Thought signatures",
+      "url": "https://ai.google.dev/gemini-api/docs/generate-content/thought-signatures"
+    }
+  ]
+}
