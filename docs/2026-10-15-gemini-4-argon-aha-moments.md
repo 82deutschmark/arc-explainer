@@ -20,25 +20,28 @@ to the run afterwards.
 
 ## How loud is it?
 
-Across all 150 sessions (25 games x 6 configs), counting the model's visible text:
+Across all 150 sessions (25 games x 6 configs), counting only the model's own answer text (case-insensitive; the
+Provider Adapter's Google-written summaries are left out):
 
 | phrase | times |
 |---|---|
-| WAIT A SECOND | 13,401 |
-| HOLD ON | 3,045 |
-| WAIT A MINUTE | 2,900 |
-| AHA | 2,647 |
-| HOLD EVERYTHING | 1,694 |
-| BINGO | 749 |
-| MIND BLOWN | 541 |
-| WHOA | 405 |
-| EUREKA | 385 |
-| BOOM | 53 |
+| WAIT A SECOND | 13,182 |
+| WAIT A MINUTE | 2,698 |
+| HOLD ON | 2,248 |
+| AHA | 2,144 |
+| HOLD EVERYTHING | 1,689 |
+| BINGO | 671 |
+| MIND BLOWN | 532 |
+| WHOA | 372 |
+| EUREKA | 273 |
+| BOOM | 29 |
 
-The loudest run is m0r0 at low reasoning (2,499 outbursts over 1,432 actions, 20 resets, ended GAME_OVER at
-71.4%), then dc22 at high reasoning (1,557). The standard harness shouts more than the Provider Adapter
-(22,438 vs 7,933 outbursts in total). These two totals and the per-run counts also include I SEE (2,996),
-EXACTLY (698) and OH!! (630), which are not in the table.
+Of the MIND BLOWNs, 483 are in the standard harness and 49 in the Provider Adapter.
+
+The loudest run is m0r0 at low reasoning (2,483 outbursts over 1,432 actions, 20 resets, ended GAME_OVER at
+71.4%), then dc22 at high reasoning (1,549), then sk48 at medium (991) and low (976). The standard harness shouts far
+more than the Provider Adapter (22,267 vs 2,455 outbursts in total). The totals and per-run counts also include
+EXACTLY (231) and OH!! (630), which are not in the table.
 
 ## Does shouting predict success?
 
@@ -47,7 +50,7 @@ No, if anything the reverse. For each step, did the run clear a level within the
 | harness | all steps | steps with MIND BLOWN / EUREKA / BINGO / BOOM / WHOA / HAHAHA / FOUND IT / THAT'S IT |
 |---|---|---|
 | standard | 36.1% (of 23,933) | 25.3% (of 1,271) |
-| Provider Adapter | 56.8% (of 22,093) | 36.8% (of 190) |
+| Provider Adapter | 56.8% (of 22,093) | 35.3% (of 156) |
 
 Plausible reading, not tested: the outbursts cluster in the middle of confusion, when the model is
 revising its model of the game, not at the end of a solved level. Rough measure: late steps in a finished run

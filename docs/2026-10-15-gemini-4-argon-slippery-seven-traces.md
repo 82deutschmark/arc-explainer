@@ -49,10 +49,11 @@ return one frame per move run about 150K tokens with 20-60% cached input, i.e. r
 g50t's multi-frame moves fill the window with a single turn.
 
 - High run, step 151: "Switch to `2` (ACTION5), slide `2` right onto the button (ACTION4) to open the gate,
-  switch back to `9` (ACTION5), slide `9` down (ACTION2) and right (ACTION4) into the goal." That is the
-  solution.
+  switch back to `9` (ACTION5), slide `9` down (ACTION2) and right (ACTION4) into the goal." That is a plan with the right shape. (Per our g50t notes, ACTION5 actually casts a ghost
+  twin that replays your last run; the model reads it as a second block to switch to.)
 - Step 152: "I will take ACTION2 to observe how the block responds and determine the action mappings."
-- It repeats this for all 390 actions, then the move budget ends the game. One step spent 362,449 thinking
+- It keeps re-testing the controls until the run ends: GAME_OVER at exactly 390 actions in all three standard configs
+  (the 25-Sep Gemini 3.8 Flash write-up read that same 390 as a fixed per-game cap). One step spent 362,449 thinking
   tokens.
 
 Inference, not proven: the model's own "Context:" notes are the only memory, and in g50t they are not carried.
@@ -74,8 +75,8 @@ carry a stray `{_thought ... _}` wrapper around plain-text reasoning.
 
 - Context is 175,000-290,000 tokens per call on g50t (alternating ~176K / ~265K, so two model calls per
   action); history cached 85-92% on most games.
-- Thought summaries are carried and visible. In g50t medium it works out ACTION5 (swap which block you control)
-  by step 6, parks one block on the button, switches, and walks the other through the gate. 294 actions, 7 levels.
+- Thought summaries are carried and visible. In g50t medium it works out ACTION5 (it casts a ghost twin that
+  replays your last run) by step 6, parks one block on the button, switches, and walks the other through the gate. 294 actions, 7 levels.
 - 50-99% of its steps on most games are a bare action with no text. The reasoning behind those is hidden.
 
 ## 4. What to verify before believing the 97%
