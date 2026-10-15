@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-14T23:45:33Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "NilsySKillzy surges into ARC-3 top 100",
+  "id": "2026-10-14-2000-arc-3-nilsy-skillzy-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-15T00:00:33Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "NilsySKillzy gained 7.85 to reach 33.46, climbing from 1,265th to 66th on the ARC-3 board."
+    }
+  ],
+  "since": "2026-10-13T23:43:08Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T00:00:07Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17092421"
+  ]
+}
