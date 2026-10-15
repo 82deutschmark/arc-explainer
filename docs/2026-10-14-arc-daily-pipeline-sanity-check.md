@@ -198,3 +198,44 @@ more desks.
 6. Separate folder for the read-only desks; remove the leftover worktree (finding 8 and clutter).
 
 Do not change anything while a desk is running: the wire fires on even hours and editions at 6.
+
+## What was done, 15 October 2026 (overnight, Claude Opus 5.5 Max)
+
+The Boss approved the fix order above and allowed changes to the Codex notes and instructions,
+with Codex staying the engine. Work was done between desk runs; each step was pushed to `main`.
+
+1. **Done.** The site leaves out a bad news file or ledger record and keeps the rest of the paper,
+   including the market digest; `GET /api/news/health` lists what is left out; a content check
+   test runs the site's loader over the live archive (CHANGELOG 9.142.0). Deliberately not a
+   build-time gate: a failed build would freeze every later publish until someone fixed the file.
+2. **Done.** One writer list in `shared/newsWriters.json`; the backup desk runs Claude Sonnet 5.5,
+   covers a single missing contest, backs up a stopped (not only signed-out) wire, saves and clears
+   a half-finished run, keeps its files out of Codex's `/tmp` paths, updates itself before each
+   check, reports to Discord and has a `--rehearse` mode (9.143.0). The rehearsal passed: Sonnet
+   prepared, wrote, illustrated and validated both contests in about two minutes and left the
+   folder clean. It also exposed the art planner re-offering a picture that had already run on X;
+   the planner now skips any approved scene already used in that contest or on X (9.145.1).
+3. **Done.** The desk relay (`~/bubba-workspace/tools/arc_daily_announce.py`) raises Discord alarms
+   for left-out news files, a leaderboard older than 75 minutes and a silent site, once on start
+   and once on clear. The collector moved to `~/GitHub/arc-daily-collector`, a scripts-only clone
+   (about 5 MB instead of 670 MB) with its board history inside; its first run there uploaded both
+   boards; the old cache copies are in the Trash.
+4. **Done, review pending.** New `docs/newsroom/README.md` map; `REPORTER.md`, `ART_DESK.md` and
+   `SOCIAL_DESK.md` rewritten with the dated sections folded in; one short instruction per job in
+   `docs/newsroom/automation-prompts/` (about 2,000 characters each, down from up to 35,000), applied
+   to all six jobs (9.145.0). The afternoon X recap moved to 2:20 pm. Each job's `memory.md` is now
+   a short note, with the old notes archived beside it. GPT-6 could not be reached overnight (the
+   app starts a queued message only when that conversation is opened), so the prompts were applied
+   in `automation.toml` and the `automations` table together, as `automation_update` does, with
+   backups in `~/bubba-workspace/reports/arc-daily-social/audits/2026-10-15-automation-backup/`.
+   A review request is waiting in the configuration conversation, including deleting the two
+   paused one-off jobs, which are still there (paused, harmless).
+5. **Done.** The research plan resumes each feed from its own last complete read; editorial
+   assignments expire, and the existing ones have expiries (9.144.0).
+6. **Done differently.** The leftover worktree is removed. Rather than add another checkout, the
+   read-only desks no longer pull over an edition's uncommitted work, and the recap no longer shares
+   the 2 pm minute with the hourly scan.
+
+Left as they are: the six evidence files without articles (harmless), automation commits signed
+with the Boss's identity, and the full-site rebuild on every push (finding 9; not urgent at this
+size).
