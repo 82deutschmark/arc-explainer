@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-15T05:46:56Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Morten Middelfart debuts 133rd on the ARC-3 board",
+  "id": "2026-10-15-0158-arc-3-morten-middelfart-debuts-high",
+  "personIds": [],
+  "publishedAt": "2026-10-15T05:58:19Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Morten Middelfart is new to the ARC-3 public board, entering in 133rd place with a score of 32.49."
+    }
+  ],
+  "since": "2026-10-14T05:43:45Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T05:57:44Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17078349"
+  ]
+}
