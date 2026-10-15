@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-15T11:47:30Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Snowiers climbs 189 places to 47th on ARC-3",
+  "id": "2026-10-15-0805-arc-3-snowiers-climbs-to-forty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-15T12:05:33Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Snowiers climbed from 236th to 47th on the ARC-3 public board, gaining 2.62 points to reach 34.04."
+    }
+  ],
+  "since": "2026-10-14T11:44:20Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T12:04:49Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17040498"
+  ]
+}
