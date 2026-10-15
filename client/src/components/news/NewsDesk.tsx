@@ -103,7 +103,7 @@ export function NewsPaper({ children, frontPage = false, date, edition, issue }:
           </nav>
         </header>
         {children}
-        <NewsWelcome peoplePath="/news/people" xUrl={ARC_DAILY_X_URL} discordUrl={ARC_DISCORD_URL} />
+        <NewsWelcome />
         <footer className="news-footer">
           <strong>{NEWS_NAME}</strong><span>AI-written editions and wire reports · writer credited on each story</span>
           <p>AI-written competition reporting from dated leaderboard observations and linked sources. Public standings are provisional; final results use the private leaderboard. Sponsored by VoynichLabs.</p>

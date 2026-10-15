@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.146.0  Oct 15, 2026
+
+- **The news pop-up is now a parody ad for Chollet's book** (Author: Claude Opus 5.5 Low). What: first-time visitors to any ARC Daily page now get a joke "Advertisement" for François Chollet's Deep Learning with Python ("Master the AI before it masters you"), art supplied by the Boss, with two buttons that both close it and fine print saying it is a parody. Why: the Boss asked for it in place of the "are you a normie?" check. How: `client/src/components/news/NewsWelcome.tsx` (new remembered key, so readers who dismissed the old pop-up see the ad once), `NewsDesk.tsx` (no props), `news.css`, new `client/public/ads/deep-learning-with-python.jpg`.
+
 ### Version 9.145.2  Oct 15, 2026
 
 - **Future X announcements get fresh copy and selective mentions** (Author: GPT-6.1 Sol / Codex). At Mark's request, the canonical X posting guide now compares recent announcements, leads with the current issue's news and treats competitor mentions as optional. Repeated evergreen team-profile teasers and a standing Puget tag are no longer editorial defaults. Existing posts and send-once outboxes remain unchanged; no helper, schedule or model changes.
