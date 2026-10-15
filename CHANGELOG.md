@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.142.0  Oct 15, 2026
+
+- **One bad news file can no longer take the paper down** (Author: Claude Opus 5.5 Max). What: the news store now checks every edition, dispatch and ledger record on its own, the way wire stories already were, and leaves out (and logs once) anything invalid instead of throwing. New `GET /api/news/health` lists what is being left out. Why: a single malformed edition, dispatch, person or post used to fail `/api/news`, the SEO pages and the market digest the wire desk writes from, and nothing checked files before they went live (sanity check finding 1, `docs/2026-10-14-arc-daily-pipeline-sanity-check.md`). How: `server/services/news/newsStore.ts` (`loadNewsArchive`, per-file and per-record readers; a later person claiming an earlier person's verified account is left out whole), `server/routes/news.ts` (health route), `tests/integration/news.test.ts` (content check: every committed file loads with nothing left out; broken-file cases). Deliberately not a build-time gate: a failed build would freeze every later publish until someone fixed the file. Also refreshed two tests pinned to older content (`tests/newsFrontPage.test.ts`, the NVARC3 faces check). Adds the sanity check and the Claude Code fallback plan to `docs/`.
+
 ### Version 9.141.21  Oct 14, 2026
 
 - **Restore the morning front-page picture** (Author: GPT-6.1 Sol / Codex). Promoted the existing two-strongholds valley concept onto the Early ARC-3 article with its original morning score/time overlay, preserving the narrative, publication evidence and posted X announcement. Archived the image-only revision, full reference/cast provenance and artwork usage; the icebreaker stays reserved. The existing compositor can center its panels for scenes with important corner faces, with a new immutable layout identity. Both edition jobs now require a front-page illustration and use suitable prepared stock before generating. Validation: the attached artwork passes its evidence check and all 26 artwork checks pass.

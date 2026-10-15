@@ -9,12 +9,14 @@
  *          09-Oct-2026 (Claude Opus 5.5): GET /api/news/markets, the live market digest of both
  *          boards for the front page and the wire desk (services/news/newsMarkets.ts), and each
  *          wire story's immutable evidence at /api/news/wire/:id/evidence.
+ *          15-Oct-2026 (Claude Opus 5.5 Max): GET /api/news/health lists any news file or ledger
+ *          record the store left out, for the desk watchdog's Discord alert.
  * SRP/DRY check: Pass — all publication is via reviewed git data; no public write API.
  */
 import type { Express, Response } from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getNewsIndex, NEWS_DIRECTORY, WIRE_ID } from '../services/news/newsStore';
+import { getNewsIndex, loadNewsArchive, NEWS_DIRECTORY, WIRE_ID } from '../services/news/newsStore';
 import { newsRss } from '../services/news/newsPresentation';
 import { buildArticleCard, buildSectionCard } from '../services/news/newsCardImage';
 import { marketsResponse } from '../services/news/newsMarkets';
@@ -24,6 +26,17 @@ const sendCard = (res: Response, card: Buffer | null, cacheControl: string) => c
 export function mountNews(app: Express) {
   app.get('/api/news', (_req, res, next) => {
     try { res.set('Cache-Control', 'public, max-age=60').json(getNewsIndex()); } catch (error) { next(error); }
+  });
+  // What the site is leaving out right now. The Mac Mini's desk watchdog
+  // (bubba-workspace/tools/arc_daily_announce.py) reads this and raises it in Discord.
+  app.get('/api/news/health', (_req, res, next) => {
+    try {
+      const { index, skipped } = loadNewsArchive();
+      res.set('Cache-Control', 'no-store').json({
+        status: skipped.length ? 'degraded' : 'ok', checkedAt: new Date().toISOString(), skipped,
+        counts: { articles: index.articles.length, dispatches: index.dispatches?.length ?? 0, wire: index.wire?.length ?? 0, people: index.people?.length ?? 0 },
+      });
+    } catch (error) { next(error); }
   });
   // Live market digest for the front page and the wire desk; a board that was never pushed is left out.
   app.get('/api/news/markets', async (req, res, next) => {

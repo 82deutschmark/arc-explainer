@@ -6,6 +6,8 @@
  *          past winners, What's News, notebook columns) runs against real-shaped data; and render
  *          it again with no digest to prove a board outage leaves the reporting standing.
  *          Public source-column hierarchy and full archive rendering use committed source data.
+ *          15-Oct-2026 (Claude Opus 5.5 Max): the illustration test's article is dated now, so it
+ *          still leads the desk after later editions are published.
  * SRP/DRY check: Pass — production pages, production digest builder, seeded query cache.
  */
 import React, { createElement } from 'react';
@@ -126,8 +128,9 @@ test('an edition-bound illustration runs with its headline and dated caption', (
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
   const art = JSON.parse(fs.readFileSync('content/news/artwork/2026-10-12-evening-arc-3-preview-dc154a9777.json', 'utf8'));
+  // Published "now" so it leads the ARC-3 desk however many editions have run since this artwork.
   const article = { ...index.articles.find(story => story.competition === 'arc-3')!, id: art.articleId,
-    headline: art.headline, publishedAt: art.dataAsOf, dataAsOf: art.dataAsOf, frontPageFeatureId: undefined, image: art.image };
+    headline: art.headline, publishedAt: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'), dataAsOf: art.dataAsOf, frontPageFeatureId: undefined, image: art.image };
   index.articles = [article, ...index.articles];
   const front = render(News, '/news', index, markets(index));
   for (const html of [front, newsArticleMeta(article).bodyHtml!]) {

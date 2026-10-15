@@ -13,6 +13,9 @@
  *          10-Oct-2026 (Claude Sonnet 5.5): the front-page card's versioned address, freshness rule and
  *          ARC puzzle figure; the /news sitemap date now counts wire stories like the code does.
  *          Public source archives and discussion selection reject unread, restricted and misdirected sources.
+ *          15-Oct-2026 (Claude Opus 5.5 Max): the content check (every committed file loads, nothing
+ *          left out) and the store leaving out one bad edition, dispatch or ledger record, with
+ *          /api/news/health reporting it, instead of failing the whole paper.
  * SRP/DRY check: Pass — exercises production store, routes and metadata middleware.
  */
 import { beforeAll, afterAll, it, expect } from 'vitest';
@@ -22,7 +25,7 @@ import os from 'node:os';
 import path from 'node:path';
 import type { Server } from 'node:http';
 import { mountNews } from '../../server/routes/news';
-import { getNewsIndex, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema, newsDiscussionSchema } from '../../server/services/news/newsStore';
+import { getNewsIndex, loadNewsArchive, newsArticleSchema, newsDispatchSchema, competitorSchema, newsPersonSchema, newsWireSchema, newsDiscussionSchema } from '../../server/services/news/newsStore';
 import { metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
 import { SITE_ORIGIN, escapeHtml } from '../../shared/seo';
 import sharp from 'sharp';
@@ -293,7 +296,11 @@ it('gives people faces from their own sources and puts cited people first in a s
   // Cited people lead; team members follow; uncited brief sources add nobody.
   const article = { ...index.articles.find(item => item.competition === 'arc-3')!, teamIds: ['15770880'], sections: [{ text: 'NVARC3 moved.', sourceIds: ['person-ivan-sorokin-fact-0', 'person-ivan-sorokin-archive-0'] }] };
   expect(citedPeople(article.sections, people).map(person => person.id)).toEqual(['ivan-sorokin']);
-  expect(storyPeople(article, people, index.competitors).map(person => person.id)).toEqual(['ivan-sorokin', 'jean-francois-puget']);
+  // The ledger keeps verifying NVARC3 teammates, so check the order and the roster rule, not a fixed list.
+  const faces = storyPeople(article, people, index.competitors);
+  expect(faces.slice(0, 2).map(person => person.id)).toEqual(['ivan-sorokin', 'jean-francois-puget']);
+  const roster = index.competitors.find(record => record.competition === 'arc-3' && record.teamId === '15770880')!;
+  for (const person of faces.slice(1)) expect(person.accounts.some(account => account.platform === 'kaggle' && roster.members.includes(account.handle))).toBe(true);
 });
 it('serves the market digest and the wire, and holds wire stories to their contract', async () => {
   // No database in tests: the digest answers with no boards rather than failing the front page.
@@ -333,5 +340,46 @@ it('serves the market digest and the wire, and holds wire stories to their contr
   const recent = { ...story, publishedAt: new Date(Date.now() - 3_600_000).toISOString().replace(/\.\d{3}Z$/, 'Z'), dataAsOf: new Date(Date.now() - 7_200_000).toISOString().replace(/\.\d{3}Z$/, 'Z'), since: null };
   fs.writeFileSync(path.join(directory, 'wire', `${story.id}.json`), JSON.stringify(recent));
   expect(getNewsIndex(directory).wire?.map(item => item.id)).toEqual([story.id]);
+  fs.rmSync(directory, { recursive: true, force: true });
+});
+// The content check: run before pushing news changes. The live site would leave out anything listed here.
+it('loads every committed news file and ledger record without leaving anything out', async () => {
+  const { skipped } = loadNewsArchive();
+  expect(skipped).toEqual([]);
+  const health = await (await fetch(`${base}/api/news/health`)).json();
+  expect(health).toMatchObject({ status: 'ok', skipped: [] });
+  expect(health.counts.articles).toBe(getNewsIndex().articles.length);
+});
+it('leaves out one bad edition, dispatch or ledger record and keeps the rest of the paper', () => {
+  const live = getNewsIndex();
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'news-'));
+  const write = (file: string, value: unknown) => {
+    fs.mkdirSync(path.dirname(path.join(directory, file)), { recursive: true });
+    fs.writeFileSync(path.join(directory, file), typeof value === 'string' ? value : JSON.stringify(value));
+  };
+  const good = live.articles[0];
+  write(`articles/${good.id}.json`, good);
+  write('articles/2026-10-15-morning-arc-3.json', { ...good, id: '2026-10-15-morning-arc-3', headline: '' });
+  write('articles/2026-10-15-evening-arc-3.json', '{');
+  write('articles/renamed-copy.json', good);
+  const dispatch = live.dispatches![0];
+  write(`dispatches/${dispatch.id}.json`, dispatch);
+  write('dispatches/broken-dispatch.json', { ...dispatch, id: 'broken-dispatch', sources: [] });
+  const [first, second] = live.people!;
+  // A duplicate ID and a second person claiming an already verified account are each left out.
+  write('people.json', [first, { ...second, accounts: [...second.accounts, first.accounts[0]] }, { ...first }, { id: 'no-accounts' }]);
+  write('competitors.json', [live.competitors[0], { ...live.competitors[1], id: 'wrong-id' }]);
+  write('social.json', '[not json');
+  const { index, skipped } = loadNewsArchive(directory);
+  expect(index.articles.map(article => article.id)).toEqual([good.id]);
+  expect(index.dispatches!.map(item => item.id)).toEqual([dispatch.id]);
+  expect(index.people!.map(person => person.id)).toEqual([first.id]);
+  expect(index.competitors.map(record => record.id)).toEqual([live.competitors[0].id]);
+  expect(index.social).toEqual([]);
+  expect(skipped.map(entry => `${entry.file}${entry.record ? `#${entry.record}` : ''}`).sort()).toEqual([
+    'articles/2026-10-15-evening-arc-3.json', 'articles/2026-10-15-morning-arc-3.json', 'articles/renamed-copy.json',
+    `competitors.json#wrong-id`, 'dispatches/broken-dispatch.json',
+    `people.json#${first.id}`, 'people.json#no-accounts', `people.json#${second.id}`, 'social.json',
+  ].sort());
   fs.rmSync(directory, { recursive: true, force: true });
 });

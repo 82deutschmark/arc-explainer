@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-12
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
+ * Date: 15-October-2026
  * PURPOSE: Read the committed ARC Daily archive and competitor notebook for API and SEO
  *          rendering, including people, roster history and strictly public social sources. Validates JSON at the
  *          read boundary; never runs a model.
@@ -9,7 +9,12 @@
  *          Later the same day: wire-desk stories (content/news/wire), kept in step with
  *          scripts/newsroom_wire.py, which validates each story against its brief first.
  *          Serves only exported public tweet archives and read, dated Kaggle discussion leads.
- * SRP/DRY check: Pass — one store serves HTML, JSON, feeds and sitemap discovery.
+ *          15-Oct-2026 (Claude Opus 5.5 Max): every file and ledger record is now checked on its own,
+ *          the way wire stories already were. One bad edition, dispatch, person or post is left out
+ *          and reported (loadNewsArchive().skipped, served at /api/news/health) instead of failing
+ *          /api/news, the SEO pages and the market digest the wire desk depends on.
+ * SRP/DRY check: Pass — one store serves HTML, JSON, feeds and sitemap discovery; the per-file and
+ *          per-record readers replace three copies of the same parse-and-check loop.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -135,53 +140,109 @@ export const newsWireSchema = z.object({
     context.addIssue({ code: z.ZodIssueCode.custom, message: 'Wire story times are out of order or in the future' });
   }
 });
-export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
-  const articlesDirectory = path.join(directory, 'articles');
-  const articles: NewsArticle[] = fs.existsSync(articlesDirectory) ? fs.readdirSync(articlesDirectory)
-    .filter(file => /^[a-z0-9][a-z0-9-]{0,99}\.json$/.test(file)).map(file => {
-      const article = newsArticleSchema.parse(JSON.parse(fs.readFileSync(path.join(articlesDirectory, file), 'utf8')));
-      if (`${article.id}.json` !== file) throw new Error(`Article filename does not match its ID: ${file}`);
-      return article;
-    }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.competition.localeCompare(b.competition)) : [];
-  const notebook = path.join(directory, 'competitors.json');
-  const competitors: CompetitorRecord[] = fs.existsSync(notebook) ? z.array(competitorSchema).parse(JSON.parse(fs.readFileSync(notebook, 'utf8'))) : [];
-  if (new Set(competitors.map(record => record.id)).size !== competitors.length) throw new Error('Duplicate competitor identities');
-  const dispatchDirectory = path.join(directory, 'dispatches');
-  const dispatches: NewsDispatch[] = fs.existsSync(dispatchDirectory) ? fs.readdirSync(dispatchDirectory)
-    .filter(file => /^[a-z0-9][a-z0-9-]{0,99}\.json$/.test(file)).map(file => {
-      const dispatch = newsDispatchSchema.parse(JSON.parse(fs.readFileSync(path.join(dispatchDirectory, file), 'utf8')));
-      if (`${dispatch.id}.json` !== file) throw new Error(`Dispatch filename does not match its ID: ${file}`);
-      return dispatch;
-    }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id)) : [];
-  const readArray = <T>(file: string, schema: z.ZodType<T>) => fs.existsSync(path.join(directory, file)) ? z.array(schema).parse(JSON.parse(fs.readFileSync(path.join(directory, file), 'utf8'))) : [];
-  const people = readArray('people.json', newsPersonSchema);
-  const social = readArray('social.json', newsSocialSchema);
-  // Only the explicitly exported public archive is served. The private research state is never read here.
-  const socialArchive = readArray('social-archive.json', newsSocialSchema)
-    .filter(post => post.postedAt && Date.now() - Date.parse(post.postedAt) <= 30 * 24 * 3_600_000);
-  const discussions = readArray('discussions.json', newsDiscussionSchema)
-    .filter(thread => Date.now() - Date.parse(thread.latestActivityAt ?? thread.postedAt!) <= WIRE_WINDOW_MS);
-  if (new Set(socialArchive.map(post => post.id)).size !== socialArchive.length || new Set(discussions.map(thread => `${thread.competition}:${thread.id}`)).size !== discussions.length) throw new Error('Duplicate public archive source');
-  if (new Set(people.map(person => person.id)).size !== people.length || new Set(social.map(post => post.id)).size !== social.length) throw new Error('Duplicate news person or social post');
-  const accounts = people.flatMap(person => person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`));
-  if (new Set(accounts).size !== accounts.length) throw new Error('A verified account belongs to multiple people');
-  // Wire stories come from a scheduled small model several times a day. scripts/newsroom_wire.py
-  // checks the same contract first; a file that still fails is left out, so one bad story can never
-  // take the whole paper down the way a bad edition would.
-  const wireDirectory = path.join(directory, 'wire');
-  const wire: NewsWireStory[] = fs.existsSync(wireDirectory) ? fs.readdirSync(wireDirectory)
-    .filter(file => file.endsWith('.json')).flatMap(file => {
-      try {
-        const story = newsWireSchema.safeParse(JSON.parse(fs.readFileSync(path.join(wireDirectory, file), 'utf8')));
-        if (story.success && `${story.data.id}.json` === file) return [story.data];
-        console.warn(`[news] skipped wire story ${file}: ${story.success ? 'filename does not match its ID' : story.error.issues[0]?.message}`);
-      } catch (error) {
-        console.warn(`[news] skipped unreadable wire story ${file}: ${error instanceof Error ? error.message : error}`);
-      }
+/** A news file, or one record inside a ledger file, that the site is leaving out, and why. */
+export interface NewsSkip { file: string; record?: string; reason: string }
+// The archive is written by scheduled models several times a day and goes live on every push, with
+// no build-time content check. So every file and ledger record is checked on its own: a bad one is
+// left out, logged once and reported by /api/news/health (which the desk watchdog reads), and the
+// rest of the paper, including the market digest the wire desk writes from, keeps working. The same
+// contract is enforced strictly before publishing by scripts/newsroom*.py and by the content test.
+const warned = new Set<string>();
+function leaveOut(skipped: NewsSkip[], entry: NewsSkip) {
+  skipped.push(entry);
+  const key = `${entry.file}|${entry.record ?? ''}|${entry.reason}`;
+  if (!warned.has(key)) {
+    warned.add(key);
+    console.warn(`[news] left out ${entry.file}${entry.record ? ` (${entry.record})` : ''}: ${entry.reason}`);
+  }
+}
+const describeError = (error: unknown) => error instanceof Error ? error.message : String(error);
+const describeIssues = (error: z.ZodError) => {
+  const issue = error.issues[0];
+  return issue ? `${issue.path.length ? `${issue.path.join('.')}: ` : ''}${issue.message}` : 'invalid record';
+};
+/** One-story-per-file folders (articles, dispatches, wire): every valid file whose name matches its ID. */
+function readStoryFolder<T extends { id: string }>(directory: string, folder: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>, skipped: NewsSkip[]): T[] {
+  const root = path.join(directory, folder);
+  if (!fs.existsSync(root)) return [];
+  return fs.readdirSync(root).filter(file => file.endsWith('.json')).flatMap(file => {
+    const label = `${folder}/${file}`;
+    try {
+      const parsed = schema.safeParse(JSON.parse(fs.readFileSync(path.join(root, file), 'utf8')));
+      if (!parsed.success) leaveOut(skipped, { file: label, reason: describeIssues(parsed.error) });
+      else if (`${parsed.data.id}.json` !== file) leaveOut(skipped, { file: label, reason: 'filename does not match its ID' });
+      else return [parsed.data];
+    } catch (error) {
+      leaveOut(skipped, { file: label, reason: `unreadable: ${describeError(error)}` });
+    }
+    return [];
+  });
+}
+/** Ledger files holding a JSON array: every valid record, keeping the first of any duplicate key. */
+function readLedger<T>(directory: string, file: string, schema: z.ZodType<T, z.ZodTypeDef, unknown>, keyOf: (record: T) => string, skipped: NewsSkip[]): T[] {
+  const target = path.join(directory, file);
+  if (!fs.existsSync(target)) return [];
+  let raw: unknown;
+  try {
+    raw = JSON.parse(fs.readFileSync(target, 'utf8'));
+  } catch (error) {
+    leaveOut(skipped, { file, reason: `unreadable: ${describeError(error)}` });
+    return [];
+  }
+  if (!Array.isArray(raw)) {
+    leaveOut(skipped, { file, reason: 'not a JSON array' });
+    return [];
+  }
+  const seen = new Set<string>();
+  return raw.flatMap((item, position) => {
+    const label = item && typeof item === 'object' && typeof (item as { id?: unknown }).id === 'string' ? (item as { id: string }).id : `item ${position}`;
+    const parsed = schema.safeParse(item);
+    if (!parsed.success) {
+      leaveOut(skipped, { file, record: label, reason: describeIssues(parsed.error) });
       return [];
-    }).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id))
-    // The index the front page refetches every minute carries the past week, at most 40 stories;
-    // the files stay in git as the permanent record and keep their evidence route.
-    .filter(story => Date.now() - Date.parse(story.publishedAt) <= WIRE_WINDOW_MS).slice(0, WIRE_LIMIT) : [];
-  return { articles, competitors, dispatches, people, social, socialArchive, discussions, wire };
+    }
+    const key = keyOf(parsed.data);
+    if (seen.has(key)) {
+      leaveOut(skipped, { file, record: label, reason: `duplicate of an earlier record (${key})` });
+      return [];
+    }
+    seen.add(key);
+    return [parsed.data];
+  });
+}
+/** The public archive plus anything that had to be left out of it. */
+export function loadNewsArchive(directory = NEWS_DIRECTORY): { index: NewsIndex; skipped: NewsSkip[] } {
+  const skipped: NewsSkip[] = [];
+  const articles: NewsArticle[] = readStoryFolder(directory, 'articles', newsArticleSchema, skipped)
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.competition.localeCompare(b.competition));
+  const competitors: CompetitorRecord[] = readLedger(directory, 'competitors.json', competitorSchema, record => record.id, skipped);
+  const dispatches: NewsDispatch[] = readStoryFolder(directory, 'dispatches', newsDispatchSchema, skipped)
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
+  // A verified account names one person; a later record claiming an earlier person's account is left out whole.
+  const claimed = new Set<string>();
+  const people = readLedger(directory, 'people.json', newsPersonSchema, person => person.id, skipped).filter(person => {
+    const accounts = person.accounts.map(account => `${account.platform}:${account.handle.toLowerCase()}`);
+    const taken = accounts.find(account => claimed.has(account));
+    if (taken) {
+      leaveOut(skipped, { file: 'people.json', record: person.id, reason: `verified account ${taken} already belongs to another person` });
+      return false;
+    }
+    accounts.forEach(account => claimed.add(account));
+    return true;
+  });
+  const social = readLedger(directory, 'social.json', newsSocialSchema, post => post.id, skipped);
+  // Only the explicitly exported public archive is served. The private research state is never read here.
+  const socialArchive = readLedger(directory, 'social-archive.json', newsSocialSchema, post => post.id, skipped)
+    .filter(post => post.postedAt && Date.now() - Date.parse(post.postedAt) <= 30 * 24 * 3_600_000);
+  const discussions = readLedger(directory, 'discussions.json', newsDiscussionSchema, thread => `${thread.competition}:${thread.id}`, skipped)
+    .filter(thread => Date.now() - Date.parse(thread.latestActivityAt ?? thread.postedAt!) <= WIRE_WINDOW_MS);
+  // The index the front page refetches every minute carries the past week of wire, at most 40 stories;
+  // the files stay in git as the permanent record and keep their evidence route.
+  const wire: NewsWireStory[] = readStoryFolder(directory, 'wire', newsWireSchema, skipped)
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id))
+    .filter(story => Date.now() - Date.parse(story.publishedAt) <= WIRE_WINDOW_MS).slice(0, WIRE_LIMIT);
+  return { index: { articles, competitors, dispatches, people, social, socialArchive, discussions, wire }, skipped };
+}
+export function getNewsIndex(directory = NEWS_DIRECTORY): NewsIndex {
+  return loadNewsArchive(directory).index;
 }
