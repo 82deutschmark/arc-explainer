@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-16T15:50:24Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC-2 gold cutoff rises to 57.08",
+  "id": "2026-10-16-1155-arc-2-gold-cutoff-rises-again",
+  "personIds": [],
+  "publishedAt": "2026-10-16T15:55:38Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The score needed for 15th place rose 2.91 in the past day to 57.08. Kajetan Schweighofer is first outside the gold places, 16th at 56.11 and 0.97 short."
+    }
+  ],
+  "since": "2026-10-15T15:47:54Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T15:55:18Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16761662"
+  ]
+}
