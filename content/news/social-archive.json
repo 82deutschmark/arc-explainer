@@ -1,5 +1,347 @@
 [
   {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-16T19:58:47.568Z",
+    "competitions": [],
+    "id": "2111173500178141595",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T19:12:40Z",
+    "storyUrl": null,
+    "summary": "Mazur encourages Dave Martin in a reply to Martin’s post about coming to enjoy running.",
+    "threadId": "2111173260683432414",
+    "url": "https://x.com/mhmazur/status/2111173500178141595",
+    "visibility": "public",
+    "whyItMatters": "Organizer colour only; no ARC result or research claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T18:01:36.749Z",
+    "competitions": [],
+    "id": "2111154032433840184",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T17:55:19Z",
+    "storyUrl": null,
+    "summary": "Replying to Binx’s “more from the primordial soup” video, Mazur calls it cool, asks how it was built and tags Fraser Price.",
+    "threadId": "2111089914226094166",
+    "url": "https://x.com/mhmazur/status/2111154032433840184",
+    "visibility": "public",
+    "whyItMatters": "Routine organizer community colour retained before editorial selection; no new competition result or research release."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T18:01:41.716Z",
+    "competitions": [],
+    "id": "2111143750013464745",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T17:14:27Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Replying to Hrishi about the Emergent Mind homepage card-title font, Mazur says Opus chose it and identifies it as Menlo.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111143750013464745",
+    "visibility": "public",
+    "whyItMatters": "Routine organizer community colour retained before editorial selection; no new competition result or research release."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T17:02:43.291756Z",
+    "competitions": [],
+    "id": "2111125839190585627",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T16:03:17Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Replying to Finn Ramos in the Emergent Mind homepage conversation, Mazur invites him to explore and report issues or suggestions.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111125839190585627",
+    "visibility": "public",
+    "whyItMatters": "Organizer community follow-up retained under capture-before-filtering; no new research or competition result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T16:03:01.224Z",
+    "competitions": [],
+    "id": "2111120999899086921",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T15:44:03Z",
+    "storyUrl": null,
+    "summary": "Mazur encourages Fraser Price to continue his artificial-life experiments and predicts they will attract a larger audience. Encouragement, not a validated research result.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111120999899086921",
+    "visibility": "public",
+    "whyItMatters": "Organizer community colour; no new contest standing or benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T16:03:01.224Z",
+    "competitions": [],
+    "id": "2111118969176502336",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T15:35:59Z",
+    "storyUrl": null,
+    "summary": "In the Emergent Mind relaunch conversation, Mazur says Fraser Price’s similar experimental approach partly inspired him.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111118969176502336",
+    "visibility": "public",
+    "whyItMatters": "Organizer community colour; no new contest standing or benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111108927828140137",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T14:56:05Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "In reply to a reader praising the homepage, Mazur says it now matches what he always wanted the site to be.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111108927828140137",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111107547147252077",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T14:50:36Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Mazur thanks a reader and says he is adding the reader’s suggested experiment to his list; this is a conversational response, not an announced release.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111107547147252077",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111106708332478827",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T14:47:16Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Responding to Dave Martin encouraging him to keep making things, Mazur says he always has and always will.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111106708332478827",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111100366272287096",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T14:22:04Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Mazur confirms that keeping the assistant as the first featured tool was intended to let existing users find it quickly.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111100366272287096",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111099557861842955",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T14:18:51Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Mazur thanks a reader for congratulations on the Emergent Mind relaunch.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111099557861842955",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111099389728972913",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T14:18:11Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Mazur thanks a reader who compared discovering his site to browsing early-2000s experimental websites.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111099389728972913",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111098331795497161",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T14:13:59Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Mazur clarifies that the old homepage was the arXiv AI research assistant; it remains the first featured tool and is available at emergentmind.com/assistant.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111098331795497161",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111094213064700105",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T13:57:37Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Mazur posts an image/GIF reaction to a reader’s brief praise of the Emergent Mind launch; no text or measurable result is stated.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111094213064700105",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111088544676565302",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T13:35:05Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Mazur thanks Michael Byrne for calling the site an amazing portfolio and says it is coming along.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111088544676565302",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T15:13:44.050878Z",
+    "competitions": [],
+    "id": "2111087394598363589",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T13:30:31Z",
+    "storyUrl": "https://www.emergentmind.com/",
+    "summary": "Mazur announces a new Emergent Mind homepage and a shift to an experimental product lab, with the arXiv research assistant retained as one of its tools. He says most tools will be small and free, with some larger paid tools. The actual homepage independently displays AI Product Lab by Matt Mazur and links the assistant, open problems and experimental projects.",
+    "threadId": "2111087394598363589",
+    "url": "https://x.com/mhmazur/status/2111087394598363589",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before editorial selection. Product and community context, not an ARC score or competition result. Each item was read at its actual permalink with no subscriber restriction."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ",
+    "category": "standings",
+    "checkedAt": "2026-10-16T18:22:03.965499Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2111030664149807327",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 2,
+    "personIds": [
+      "itsu"
+    ],
+    "postedAt": "2026-10-16T09:45:06Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "Itsu announces a move to rank 14 in ARC-AGI-2, with a joke comparing the climb to the electricity bill. The original post links the ARC-AGI-2 competition. Chrome subsequently showed Muggle at rank 14 with nisshokuitsuki as its listed account; the collector snapshot at 09:49:46 UTC maps that account to team 16297545.",
+    "threadId": null,
+    "url": "https://x.com/iiiiitsu_ne/status/2111030664149807327",
+    "visibility": "public",
+    "whyItMatters": "Fresh contender statement for the Early edition: rank 14 is within the observed provisional public gold band. Do not imply the score was achieved at the post time or a final medal has been won."
+  },
+  {
     "author": "MindsAI_Jack",
     "authorName": "Jack Cole",
     "category": "community",
@@ -317,7 +659,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
-    "checkedAt": "2026-10-15T18:24:37.044800Z",
+    "checkedAt": "2026-10-16T18:22:03.965499Z",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -338,7 +680,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
-    "checkedAt": "2026-10-15T18:24:37.044800Z",
+    "checkedAt": "2026-10-16T18:22:03.965499Z",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -359,7 +701,7 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
-    "checkedAt": "2026-10-15T18:24:37.044800Z",
+    "checkedAt": "2026-10-16T18:22:03.965499Z",
     "competitions": [
       "arc-2",
       "arc-3"

@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-16-evening-arc-3",
+  "briefSha256": "ad00171dcde52510bfa7a9c20389dad25f48043b7a4973113c1236dd6ed4d196",
+  "dataAsOf": "2026-10-16T21:50:59Z",
+  "generationRecord": "2026-10-14-valley-aurora-skyworks-v1-base",
+  "headline": "mtg takes third as the ARC-3 chase clears fifty",
+  "historyChart": null,
+  "id": "2026-10-16-evening-arc-3-06dcccb494",
+  "image": {
+    "alt": "Editorial illustration for mtg takes third as the ARC-3 chase clears fifty. Tufa Labs: rank 1, score 68.91; Yi-Chia Chen: rank 2, score 67.49.",
+    "artworkId": "2026-10-16-evening-arc-3-06dcccb494",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 16, 2026 · 5:50 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-16-evening-arc-3-06dcccb494.webp"
+  },
+  "imageSha256": "17fe36c560425e89485a978b7d0658a18395b8db14485a0a2d653b798c8cbf22",
+  "kind": "edition-composition",
+  "layout": "center-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "76356b8730c642d364ff82b866c34c80e8bb235ef648d3fd2cda6e453ff7fcc6",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

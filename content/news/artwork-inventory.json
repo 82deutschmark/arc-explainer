@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-16T10:08:12.347383+00:00",
+  "updatedAt": "2026-10-16T22:01:03.141538+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -188,8 +188,10 @@
       "src": "/news-images/2026-10-14-valley-aurora-skyworks-v1-base.webp",
       "title": "The Aurora Skyworks",
       "episode": "Aurora fan airship on launch cradle; Last Dance scissor bridge, MTG gondola carousel, Mark/Son snow crane.",
-      "status": "reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-16-evening-arc-3"
+      ],
       "xAttachments": [],
       "discordShares": [
         {
@@ -228,7 +230,8 @@
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
       },
-      "selectionNote": "Mark commissioned and reviewed these three reserves October 14. Select an unused episode after fresh board/cast checks, explicitly commission it for the actual issue, compose exact new scores/time and inspect centered overlays. Discord preview sharing does not count as an edition or X use."
+      "selectionNote": "Unused approved episode selected after fresh full supporting-cast checks. Native base and finished centered overlays inspected; exact October 16 5:50 PM EDT closing scores. Machines and anonymous GPU crew are editorial metaphor.",
+      "artworkId": "2026-10-16-evening-arc-3-06dcccb494"
     },
     {
       "id": "2026-10-15-special-afternoon-flying-gpu-chicken-v1",

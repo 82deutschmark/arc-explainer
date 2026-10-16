@@ -427,5 +427,31 @@
     "instructions": "Select unused approved Gyroscopic Siege stock, following ART_DESK. Fresh full cast checked: Tufa first above Chen with Dries; Last Dance, mtg, NVARC3 and Son & Mark & Ronen all top ten; cpmpml/sorokin and markbarney/sonphamorg remain present. Compose exact Early scores/time, inspect and attach to routine X announcement. Machines are editorial metaphor.",
     "selectedAt": "2026-10-16T10:01:20.417421+00:00",
     "verificationNotes": "createdAt dates the existing approved stock commission; selectedAt records this desk’s October 16 issue selection after the cutoff, not a new pre-cutoff news event."
+  },
+  {
+    "id": "oct16-late-aurora-skyworks-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-15T02:36:43Z",
+    "expiresAt": "2026-10-17T00:00:00Z",
+    "title": "Aurora Skyworks for October 16 Late edition",
+    "status": "pending",
+    "targetEditionId": "2026-10-16-evening-arc-3",
+    "placement": "edition-artwork",
+    "commissionedBy": "mark-barney",
+    "artworkGenerationRecord": "2026-10-14-valley-aurora-skyworks-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "instructions": "Select the unused approved Aurora Skyworks reserve under ART_DESK. Full cast checked: Tufa first above Chen with Dries; mtg, Last Dance, NVARC3 and Son & Mark & Ronen remain top ten, with cpmpml/sorokin and markbarney/sonphamorg present. Compose exact Late scores/time, inspect and attach to routine X announcement. Machinery is editorial metaphor.",
+    "selectedAt": "2026-10-16T21:59:10.531427+00:00",
+    "verificationNotes": "createdAt dates the existing approved stock commission; selectedAt records selection for this issue, not a new news event."
   }
 ]
