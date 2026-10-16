@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-16T13:50:11Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Youssef Nader rises from 1,830th to 21st on ARC-2",
+  "id": "2026-10-16-1001-arc-2-youssef-nader-rises-to-twenty-first",
+  "personIds": [],
+  "publishedAt": "2026-10-16T14:01:05Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Youssef Nader gained 25.83 points to reach 51.11, moving from 1,830th to 21st on the ARC-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "That rise brings Nader into the board’s top tier, after starting the day far down the standings."
+    }
+  ],
+  "since": "2026-10-15T13:47:43Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T14:00:47Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16095234"
+  ]
+}
