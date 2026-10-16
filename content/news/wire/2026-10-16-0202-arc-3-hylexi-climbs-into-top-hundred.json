@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T05:49:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "hylexi climbs into the top 100",
+  "id": "2026-10-16-0202-arc-3-hylexi-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-16T06:02:49Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "hylexi gained 7.03 points to reach 33.21, rising from 1,259th to 92nd on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move puts hylexi inside the board's top 100 after starting the day at 1,259th."
+    }
+  ],
+  "since": "2026-10-15T05:46:56Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T06:02:18Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16872033"
+  ]
+}

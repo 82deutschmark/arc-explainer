@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T05:49:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Thuitanium breaks into the top 100",
+  "id": "2026-10-16-0202-arc-3-thuitanium-breaks-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-16T06:02:49Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Thuitanium gained 2.41 points to reach 33.26, climbing from 356th to 83rd on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The rise carries the team into the board's top 100 from 356th a day earlier."
+    }
+  ],
+  "since": "2026-10-15T05:46:56Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T06:02:18Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16716641"
+  ]
+}
