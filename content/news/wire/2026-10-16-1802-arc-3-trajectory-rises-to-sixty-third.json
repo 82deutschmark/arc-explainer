@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T21:50:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "轨迹 climbs from 1,373rd to 63rd on ARC-AGI-3",
+  "id": "2026-10-16-1802-arc-3-trajectory-rises-to-sixty-third",
+  "personIds": [],
+  "publishedAt": "2026-10-16T22:02:59Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "轨迹 gained 8.58 to reach 33.71, rising from 1,373rd to 63rd on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The result puts 轨迹 inside the top 100, while the board’s 18 gold places remain higher up."
+    }
+  ],
+  "since": "2026-10-15T21:48:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T22:02:22Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17029219"
+  ]
+}

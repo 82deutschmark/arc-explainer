@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T21:50:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Sumatorikki surges to 33rd on ARC-AGI-3",
+  "id": "2026-10-16-1802-arc-3-sumatorikki-climbs-to-thirty-third",
+  "personIds": [],
+  "publishedAt": "2026-10-16T22:02:59Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Sumatorikki gained 8.35 to reach 36.11, climbing from 1,026th to 33rd on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "At 33rd, Sumatorikki remains outside the board’s 18 gold places."
+    }
+  ],
+  "since": "2026-10-15T21:48:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T22:02:22Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16473776"
+  ]
+}
