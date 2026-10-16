@@ -375,5 +375,31 @@
     ],
     "verificationNotes": "Replay data pulled from the public arcprize.org recordings API on October 15 and read by Claude Sonnet 5.5 (about 40 passages of 42 Slippery Seven sessions plus keyword scans over all 150). Counts and percentages are reproducible with data/gemini-4-argon-traces/ scripts. Google documentation read October 15. Discovery claims in the quotes were not checked against game code; scores come from the ARC Prize results page and the recordings' session records. Dispatch draft validated with newsroom.py dispatch-validate on October 15; discovery claims in the quotes were not checked against game code.",
     "manuscriptPath": "docs/2026-10-15-gemini-4-argon-mind-blown-dispatch-draft.json"
+  },
+  {
+    "id": "gemini-4-argon-shouts-scored-feature",
+    "competition": "arc-3",
+    "createdAt": "2026-10-16T01:13:42Z",
+    "expiresAt": "2026-10-16T14:00:00Z",
+    "title": "Front-page feature for the October 16 Early edition: Gemini 4 Argon's shouts, scored",
+    "priority": "Boss-requested feature",
+    "status": "pending",
+    "teamIds": [],
+    "personIds": [],
+    "subjectNames": [
+      "Gemini 4 Argon",
+      "Argon"
+    ],
+    "targetEditionId": "2026-10-16-morning-arc-3",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-15-gemini-4-argon-shouts-scored",
+    "commissionedBy": "mark-barney",
+    "instructions": "Head human editor Mark Barney commissioned this Claude Opus 5.5 dispatch and wants it leading the ARC-3 front page and included in the morning updates. The front page prints the feature in full above your recap; keep frontPageFeatureId, keep Claude Opus 5.5 credited as its writer, and do not rewrite it. In the issue, cite the dispatch and give it a short paragraph for readers arriving from the morning post: its question is what happened after Argon shouted MIND BLOWN, BINGO, EUREKA or WHOA, and its answer, in the standard harness, is that about one shout in six (190 of 1,224) was the last before the level fell, about half were followed by another shout first, and about a third came on levels it never beat; under the Provider Adapter 56% were the last one it needed. Use only numbers and quotes printed in the dispatch. Keep the two harnesses apart whenever a number appears. The quotes are the model's visible answer text, except the lines the dispatch names as Google's thinking summaries; never call them its thoughts. Do not say the model was trained on the games or got help, and do not present its claimed discoveries as checked. This supersedes the placement in gemini-4-argon-aha-moments-feature: the first mind-blown dispatch is already published and stays as it is. The Early edition X post and the article's Discord summary should mention the feature and link https://arc.markbarney.net/news#2026-10-15-gemini-4-argon-shouts-scored.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/news#2026-10-15-gemini-4-argon-shouts-scored",
+      "https://arcprize.org/results/google-gemini-4-argon"
+    ],
+    "verificationNotes": "Dispatch published 2026-10-16T00:16:36Z (commit ed806ba5). Counts come from data/gemini-4-argon-traces/outburst_outcomes.py over ARC Prize's 150 public replays; all 34 quotes checked against their replay steps by data/argon-vs-haiku/verify_quotes.py; manuscript docs/2026-10-15-argon-shouts-scored-article.md. Discovery claims in the quotes were not checked against game code.",
+    "manuscriptPath": "docs/2026-10-15-argon-shouts-scored-article.md"
   }
 ]
