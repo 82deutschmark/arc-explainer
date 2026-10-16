@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-16T00:10:51.774937Z",
+  "updatedAt": "2026-10-16T10:03:10.519978+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -130,8 +130,10 @@
       "src": "/news-images/2026-10-14-valley-gyroscopic-siege-v1-base.webp",
       "title": "The Gyroscopic Siege",
       "episode": "Twilight GPU gyroscope with folding bridge; Last Dance spiral lift, MTG winch, Mark/Son articulated snow train.",
-      "status": "reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-16-morning-arc-3"
+      ],
       "xAttachments": [],
       "discordShares": [
         {
@@ -170,7 +172,8 @@
         },
         "note": "Recheck the full scene cast manually; current compositor/planner validates only its two score-panel teams. Cover pictured teams briefly in sourced manuscript. No claim that anonymous crew count equals roster count."
       },
-      "selectionNote": "Mark commissioned and reviewed these three reserves October 14. Select an unused episode after fresh board/cast checks, explicitly commission it for the actual issue, compose exact new scores/time and inspect centered overlays. Discord preview sharing does not count as an edition or X use."
+      "selectionNote": "Unused approved episode selected after fresh full supporting-cast roster checks. Native base and final centered overlays visually inspected; exact October 16 5:49 AM EDT scores.",
+      "artworkId": "2026-10-16-morning-arc-3-1aab50bd53"
     },
     {
       "id": "valley-aurora-skyworks-v1",

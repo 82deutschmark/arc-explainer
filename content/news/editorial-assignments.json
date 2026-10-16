@@ -401,5 +401,31 @@
     ],
     "verificationNotes": "Dispatch published 2026-10-16T00:16:36Z (commit ed806ba5). Counts come from data/gemini-4-argon-traces/outburst_outcomes.py over ARC Prize's 150 public replays; all 34 quotes checked against their replay steps by data/argon-vs-haiku/verify_quotes.py; manuscript docs/2026-10-15-argon-shouts-scored-article.md. Discovery claims in the quotes were not checked against game code.",
     "manuscriptPath": "docs/2026-10-15-argon-shouts-scored-article.md"
+  },
+  {
+    "id": "oct16-early-gyroscopic-siege-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-15T02:36:43Z",
+    "expiresAt": "2026-10-16T14:00:00Z",
+    "title": "Gyroscopic Siege for October 16 Early edition",
+    "status": "pending",
+    "targetEditionId": "2026-10-16-morning-arc-3",
+    "placement": "edition-artwork",
+    "commissionedBy": "mark-barney",
+    "artworkGenerationRecord": "2026-10-14-valley-gyroscopic-siege-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "instructions": "Select unused approved Gyroscopic Siege stock, following ART_DESK. Fresh full cast checked: Tufa first above Chen with Dries; Last Dance, mtg, NVARC3 and Son & Mark & Ronen all top ten; cpmpml/sorokin and markbarney/sonphamorg remain present. Compose exact Early scores/time, inspect and attach to routine X announcement. Machines are editorial metaphor.",
+    "selectedAt": "2026-10-16T10:01:20.417421+00:00",
+    "verificationNotes": "createdAt dates the existing approved stock commission; selectedAt records this desk’s October 16 issue selection after the cutoff, not a new pre-cutoff news event."
   }
 ]

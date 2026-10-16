@@ -1,5 +1,67 @@
 [
   {
+    "author": "MindsAI_Jack",
+    "authorName": "Jack Cole",
+    "category": "community",
+    "checkedAt": "2026-10-16T07:07:53.006743Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2110897483639304371",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "importance": 1,
+    "personIds": [
+      "jack-cole"
+    ],
+    "postedAt": "2026-10-16T00:55:53Z",
+    "storyUrl": null,
+    "summary": "Jack Cole congratulated Mark Barney in a reply to the Digest announcement that Son & Mark & Ronen had reached third on ARC-AGI-3.",
+    "threadId": "2110798464502083858",
+    "url": "https://x.com/MindsAI_Jack/status/2110897483639304371",
+    "visibility": "public",
+    "whyItMatters": "Friendly competitor reaction; not evidence of a new score, team affiliation or method. Actual permalink and parent read in signed-in Chrome; no subscriber restriction shown."
+  },
+  {
+    "author": "crysis44k",
+    "authorName": "fshindo",
+    "category": "community",
+    "checkedAt": "2026-10-16T07:07:53.006743Z",
+    "competitions": [],
+    "id": "2110897014171107758",
+    "identitySourceUrl": "https://www.kaggle.com/ffsscf",
+    "importance": 1,
+    "personIds": [
+      "fshindo"
+    ],
+    "postedAt": "2026-10-16T00:54:01Z",
+    "storyUrl": null,
+    "summary": "Translated from Japanese: fshindo says trying Nemotron 3.5 made him appreciate how capable the Qwen 3.8 family is.",
+    "threadId": null,
+    "url": "https://x.com/crysis44k/status/2110897014171107758",
+    "visibility": "public",
+    "whyItMatters": "Personal model-use opinion; no ARC score, harness, training or competition-method claim. Actual post read; no subscriber restriction shown."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-16T01:01:50Z",
+    "competitions": [],
+    "id": "2110895678629335192",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-16T00:48:42Z",
+    "storyUrl": null,
+    "summary": "In reply to Mark Cuban’s claim that AI is book smart rather than street smart, Mazur asks how that distinction would be measured.",
+    "threadId": "2110506786747011202",
+    "url": "https://x.com/mhmazur/status/2110895678629335192",
+    "visibility": "public",
+    "whyItMatters": "General commentary on evaluating AI; no new ARC result or standings claim."
+  },
+  {
     "author": "GregKamradt",
     "authorName": "Greg Kamradt",
     "category": "community",
