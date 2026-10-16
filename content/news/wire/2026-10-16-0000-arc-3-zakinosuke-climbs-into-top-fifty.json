@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T03:49:09Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Zakinosuke climbs 95 places to 49th",
+  "id": "2026-10-16-0000-arc-3-zakinosuke-climbs-into-top-fifty",
+  "personIds": [],
+  "publishedAt": "2026-10-16T04:00:41Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Zakinosuke climbed 95 places, from 144th to 49th, reaching 33.98 after a 1.67-point gain."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The advance carries Zakinosuke from the middle ranks into the upper end of the standings."
+    }
+  ],
+  "since": "2026-10-15T03:45:58Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T04:00:16Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16688839"
+  ]
+}
