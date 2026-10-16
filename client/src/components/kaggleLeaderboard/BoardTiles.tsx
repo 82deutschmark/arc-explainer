@@ -5,11 +5,13 @@
  *          lines, weekly gold-line movement, and days to the close, followed by the
  *          pinned team’s rank and distance to gold. Visible without scrolling,
  *          per the Boss's note on the old arc-3 page's tall hero band.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): days to close come from the shared helper.
  * SRP/DRY check: Pass - reads BoardModel only; one small Tile used for every figure.
  */
 
 import { Card } from '@/components/ui/card';
-import { DAY_MS, MEDAL_COLOR, fmt, snapNearest, weekAgoMs, type BoardModel, type Medal } from './boardData';
+import { daysToClose } from '@shared/kaggleCompetitions';
+import { MEDAL_COLOR, fmt, snapNearest, weekAgoMs, type BoardModel, type Medal } from './boardData';
 
 function Tile({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: string }) {
   return (
@@ -28,8 +30,7 @@ export function BoardTiles({ model }: { model: BoardModel }) {
   const gold = at(mr.gold), silver = at(mr.silver), bronze = at(mr.bronze), leader = latest.rows[0];
 
   const week = history.snaps.some((s) => Date.parse(s.t) <= weekAgoMs()) ? snapNearest(history.snaps, weekAgoMs()) : null;
-  const close = model.competition.closeAt ? Date.parse(model.competition.closeAt) : null;
-  const daysLeft = close == null ? null : Math.max(0, Math.ceil((close - Date.now()) / DAY_MS));
+  const daysLeft = daysToClose(model.competition);
 
   const tiles: Array<{ label: string; value: string; sub?: string; accent?: string }> = [];
 

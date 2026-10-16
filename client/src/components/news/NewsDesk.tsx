@@ -19,6 +19,7 @@
  *          10-Oct-2026 (Claude Sonnet 5.5): AboutThisPaper, the front-page info box on where the data
  *          comes from and how to reach Boss with corrections, retractions or complaints.
  *          NewsWelcome, a one-time pop-up for first-time visitors, renders in the shared shell.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): the masthead countdown reads the shared close helpers.
  * SRP/DRY check: Pass — presentation helpers reuse shared news and competition identities.
  */
 import { useMemo, type ReactNode } from 'react';
@@ -26,7 +27,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { NEWS_CARD_HEIGHT, NEWS_CARD_WIDTH, NEWS_NAME, sectionCardAlt, sectionCardPath, newsArticlePath, competitorPath, newsDate, competitionName, editionLabel, editionName, featuredPerson, wirePath, writerCredit, type NewsArticle, type NewsEdition, type NewsIndex, type CompetitorRecord, type NewsPerson } from '@shared/news';
-import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
+import { KAGGLE_COMPETITIONS, closeMs, daysToClose } from '@shared/kaggleCompetitions';
 import { SITE_ORIGIN } from '@shared/seo';
 import { NEWS_STAFF_PATH, NEWS_EDITOR_CONTACT } from '@shared/newsStaff';
 import { MastheadAd } from './SponsorPlacement';
@@ -66,10 +67,9 @@ export function datelineDate(value: string): string {
 
 /** Days until both boards close (they share a deadline) and the close date in Eastern time; null once past or unknown. */
 function theClose(now = Date.now()): { days: number; date: string } | null {
-  const close = KAGGLE_COMPETITIONS['arc-3'].closeAt;
-  if (!close) return null;
-  const days = Math.ceil((Date.parse(close) - now) / 864e5);
-  return days > 0 ? { days, date: new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric' }).format(new Date(close)) } : null;
+  const close = closeMs(KAGGLE_COMPETITIONS['arc-3']);
+  const days = daysToClose(KAGGLE_COMPETITIONS['arc-3'], now);
+  return close != null && days ? { days, date: new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric' }).format(new Date(close)) } : null;
 }
 
 export function NewsPaper({ children, frontPage = false, date, edition, issue }: { children: ReactNode; frontPage?: boolean; date?: string; edition?: NewsEdition; issue?: number }) {

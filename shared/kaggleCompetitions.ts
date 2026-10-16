@@ -4,6 +4,8 @@
  * PURPOSE: Competition identities and presentation settings shared by the public Kaggle
  *          pages and server metadata. Team IDs belong to a single competition; names and
  *          standings always come from its latest board. Unknown close times stay absent.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): closeMs/daysToClose are the one countdown
+ *          source; the front page's clock, the newspaper masthead and the board tiles read them.
  * SRP/DRY check: Pass — one registry prevents chart dates, links and featured teams drifting.
  */
 export interface KaggleCompetition {
@@ -42,3 +44,13 @@ export const KAGGLE_COMPETITIONS = {
 
 export type KaggleCompetitionKey = keyof typeof KAGGLE_COMPETITIONS;
 export const kaggleLeaderboardUrl = (competition: KaggleCompetition) => `https://www.kaggle.com/competitions/${competition.slug}/leaderboard`;
+
+/** The close as epoch milliseconds, or null while Kaggle has not published one. */
+export const closeMs = (competition: KaggleCompetition): number | null =>
+  competition.closeAt ? Date.parse(competition.closeAt) : null;
+
+/** Whole days left before the close, rounded up, never below zero; null when the close is unknown. */
+export function daysToClose(competition: KaggleCompetition, now = Date.now()): number | null {
+  const close = closeMs(competition);
+  return close == null ? null : Math.max(0, Math.ceil((close - now) / 86_400_000));
+}

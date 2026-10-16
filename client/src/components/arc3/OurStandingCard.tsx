@@ -14,6 +14,8 @@
  *             and only the best-ever placing (history, which cannot go stale) remains.
  *          3. "Public leaderboard", always. Medals are settled on the private board.
  *          Renders nothing if the board never loaded; the hero prose stands without it.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): a compact size for the final-stretch front
+ *          page, where our placing is a small side box and the race is the story.
  * SRP/DRY check: Pass - display only. Data from useKaggleBoard (passed in) and
  *          computeOurs in storyData.ts; palette from landingTheme like the rest of the page.
  */
@@ -31,18 +33,19 @@ function ordinal(n: number): string {
   return `${n}${({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[n % 10] ?? 'th'}`;
 }
 
-function Figure({ value, label }: { value: string; label: string }) {
+function Figure({ value, label, compact }: { value: string; label: string; compact: boolean }) {
   return (
     <div>
-      <div className="text-[34px] font-bold leading-none" style={{ color: ARC.text }}>{value}</div>
+      <div className={`${compact ? 'text-[24px]' : 'text-[34px]'} font-bold leading-none`} style={{ color: ARC.text }}>{value}</div>
       <div className="mt-1.5 text-[11px] tracking-[.4px]" style={{ color: ARC.faint, fontFamily: MONO }}>{label}</div>
     </div>
   );
 }
 
-export default function OurStandingCard({ model, loading }: { model: BoardModel | null; loading: boolean }) {
+/** `compact` is the front page's small side box: same rules and wording, smaller type. */
+export default function OurStandingCard({ model, loading, compact = false }: { model: BoardModel | null; loading: boolean; compact?: boolean }) {
   if (loading) {
-    return <div className="h-[220px] animate-pulse" style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }} />;
+    return <div className={`${compact ? 'h-[160px]' : 'h-[220px]'} animate-pulse`} style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }} />;
   }
   if (!model) return null;
   const ours = computeOurs(model);
@@ -57,17 +60,17 @@ export default function OurStandingCard({ model, loading }: { model: BoardModel 
   const moved = weekAgo ? weekAgo[2] - row[0] : null;
 
   return (
-    <div className="p-6" style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
+    <div className={compact ? 'p-4' : 'p-6'} style={{ background: ARC.cell, border: `1px solid ${ARC.border}` }}>
       <div className="mb-4 text-[11px] uppercase tracking-[2px]" style={{ color: ARC.pink, fontFamily: MONO }}>
         Where we stand
       </div>
-      <div className="flex flex-wrap items-start gap-x-10 gap-y-4">
-        {fresh && <Figure value={ordinal(row[0])} label={`of ${model.latest.teams.toLocaleString()} teams`} />}
-        {fresh && <Figure value={fmt(row[4])} label="our score" />}
-        {best && best[2] < row[0] && <Figure value={ordinal(best[2])} label="our best so far" />}
+      <div className={`flex flex-wrap items-start ${compact ? 'gap-x-6' : 'gap-x-10'} gap-y-4`}>
+        {fresh && <Figure value={ordinal(row[0])} label={`of ${model.latest.teams.toLocaleString()} teams`} compact={compact} />}
+        {fresh && <Figure value={fmt(row[4])} label="our score" compact={compact} />}
+        {best && best[2] < row[0] && <Figure value={ordinal(best[2])} label="our best so far" compact={compact} />}
       </div>
       {fresh && (
-        <div className="mt-5 space-y-1 text-[14px] leading-[1.6]" style={{ color: ARC.dim }}>
+        <div className={`${compact ? 'mt-4 text-[13px]' : 'mt-5 text-[14px]'} space-y-1 leading-[1.6]`} style={{ color: ARC.dim }}>
           {moved != null && moved !== 0 && (
             <p>
               <strong style={{ color: ARC.text }}>{moved > 0 ? `Up ${moved}` : `Down ${-moved}`} places</strong> in the past week.

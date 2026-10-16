@@ -15,6 +15,8 @@ PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations a
          directory lives at "/home" and is linked from the header.
          2026-10-05 (Claude Opus 5.5): /kaggle-leaderboard, the public Kaggle board page.
          2026-10-10 (Claude Sonnet 5.5): /arc-leaderboards, the hub for the generic "ARC leaderboards" search.
+         2026-10-16 (Claude Opus 5.5 Medium): "/" is the final-stretch front page (countdown, medal
+         race, wire, our placing); the earlier landing stays at /synthetic.
 SRP/DRY check: Pass - kept as a routing table only; reuses the existing wouter Redirect
          component already used by the legacy /arc3/archive routes.
 */
@@ -32,6 +34,7 @@ import DynamicFavicon from "@/components/DynamicFavicon";
 import NotFound from "@/pages/not-found";
 import Redirect from "@/components/Redirect";
 import SyntheticLanding from "@/pages/arc3-community/SyntheticLanding";
+import FinalStretchLanding from "@/pages/FinalStretchLanding";
 
 // Keep the current front door eager. Secondary pages are separate chunks; importing
 // concrete page files also avoids pulling every page from a feature barrel at once.
@@ -157,7 +160,7 @@ function Router() {
             brand mark ended up as a second link to the gallery. One front door, one
             explanation, both hosts. /synthetic stays as an alias because it has been
             linked; the resource hub lives at /home. */}
-        <Route path="/" component={SyntheticLanding} />
+        <Route path="/" component={FinalStretchLanding} />
         <Route path="/synthetic" component={SyntheticLanding} />
         <Route path="/home" component={LandingPage} />
         <Route path="/browser" component={PuzzleBrowser} />

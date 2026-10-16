@@ -26,6 +26,7 @@
  *          description name the leaderboards. Live standings reach crawlers through
  *          server/services/seo/leaderboardSeo.ts, not through this static copy. The hub and board pages
  *          unfurl with real ARC art (a puzzle card, an ARC-AGI-3 game frame) instead of the generic card.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): root meta matches the final-stretch front page.
  * SRP/DRY check: Pass - Single source of truth for route meta tags
  */
 
@@ -354,10 +355,10 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
  * shared, with arc.markbarney.net as the preferred canonical origin for both.
  */
 const ROOT_META: Omit<RouteMetaTags, 'url'> = {
-  title: 'ARC Explainer — ARC leaderboards, ARC-AGI-3 games and guides',
-  description: 'Live ARC leaderboards for ARC-AGI-3 and ARC-AGI-2, plus ARC-AGI-3 game guides, research and interactive reasoning tasks to try.',
+  title: 'ARC Prize 2026, the final stretch — live ARC-AGI-3 and ARC-AGI-2 leaderboards',
+  description: 'A countdown to the close of ARC Prize 2026 on Kaggle, the live ARC-AGI-3 medal race saved every half hour, and the newest ARC Daily wire stories on both boards.',
   type: 'website',
-  bodyHtml: `<main><h1>We're doing ARC-AGI-3.</h1><p>Two people working on ARC-AGI-3 in spare evenings: following the Kaggle competition, building an agent and testing interactive reasoning tasks.</p><p>Explore the <a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a> and <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>, with team standings, score history and changes over time, or see <a href="/arc-leaderboards">all ARC leaderboards</a>.</p><p><a href="/arc3/gallery">Try a community task</a>, read the <a href="/arc3/games">official game guides (spoilers)</a>, explore <a href="/arc3/hypotheses">research on model reasoning</a> or visit the <a href="/home">resource hub</a>.</p></main>`,
+  bodyHtml: `<main><h1>The last weeks of ARC Prize.</h1><p>Teams on Kaggle are building agents for ARC-AGI-3, little games with no instructions, and solvers for ARC-AGI-2's grid puzzles. Both boards close on the same night.</p><p>We save the public leaderboard every half hour and keep score: see the <a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a>, the <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>, <a href="/arc-leaderboards">all ARC leaderboards</a> and the <a href="/news">ARC Daily Digest</a>, with its <a href="/news/wire">wire</a> of short stories on both boards.</p><p>Also here: <a href="/synthetic">how we got here</a>, our harness notes and practice games, plus <a href="/arc3/games">official game guides (spoilers)</a> and the <a href="/home">resource hub</a>.</p></main>`,
 };
 
 // Both hosts now render the same site. Share one preferred origin, including at root.

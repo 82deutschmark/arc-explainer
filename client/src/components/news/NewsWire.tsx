@@ -7,6 +7,7 @@
  *          the desk has filed few, and /news/wire carries every story in full with its sources.
  *          A story shows the picture it chose from its brief, else the face of the first person
  *          it is about; nobody else's face is pulled in.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): filedAt is exported for the site front page's wire column.
  * SRP/DRY check: Pass — reads NewsIndex only; faces through PersonPortrait, Eastern times through
  *          clockEt, edition summaries through the shared edition helpers.
  */
@@ -19,8 +20,8 @@ import { PersonLinks, PersonPortrait } from './NewsPeople';
 
 export const sortedWire = (stories: NewsWireStory[]) => [...stories].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || b.id.localeCompare(a.id));
 
-/** "9:05 pm ET" today, "Oct 8, 9:05 pm ET" before. */
-function filedAt(iso: string): string {
+/** "9:05 pm ET" today, "Oct 8, 9:05 pm ET" before. Also used by the site front page's wire column. */
+export function filedAt(iso: string): string {
   const day = (value: Date) => new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' }).format(value);
   return day(new Date(iso)) === day(new Date()) ? clockEt(iso) : `${day(new Date(iso))}, ${clockEt(iso)}`;
 }
