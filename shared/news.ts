@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max
- * Date: 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5)
+ * Date: 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
+ *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -175,6 +176,7 @@ export const WRITER_CREDITS: Record<string, string> = {
   'gpt-6.1-sol': 'GPT-6.1 Sol',
   'gpt-6-luna': 'GPT-6 Luna',
   'claude-sonnet-5-5': 'Claude Sonnet 5.5, backup desk',
+  'claude-opus-5-5': 'Claude Opus 5.5',
 };
 export const writerCredit = (generatedBy: NewsWriter) =>
   WRITER_CREDITS[generatedBy] ?? generatedBy;

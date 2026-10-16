@@ -1,0 +1,201 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Written by Claude Opus 5.5 at the head editor's request, as an in-depth follow-up to the paper's first Argon dispatch, from ARC Prize's 150 public Gemini 4 Argon replays. Quotes are the model's visible answer text, except three lines named as Google's thinking summaries; none is hidden thinking. Every quote was checked by script against the replay step it came from, and every count can be reproduced with data/gemini-4-argon-traces/outburst_outcomes.py. The model's claimed discoveries were not checked against game code.",
+  "generatedBy": "claude-opus-5-5",
+  "headline": "“Everything Makes 1000% Sense Now!!” We Followed Every Time Gemini 4 Argon Said It Had Cracked the Game",
+  "id": "2026-10-15-gemini-4-argon-shouts-scored",
+  "image": {
+    "src": "/news-images/2026-10-15-argon-shouts-chart.png",
+    "alt": "Chart. Top: what became of each MIND BLOWN, BINGO, EUREKA or WHOA shout. Standard harness, 1,224 shouts: 16% were the last shout before the level fell, 48% were followed by another shout first, 36% came on a level never beaten. Provider Adapter, 174 shouts: 56%, 42% and 2%. Bottom, standard harness: how often a level fell within 10 moves. Any move 13.6%, WHOA 6.3%, BINGO 5.7%, WAIT A SECOND 5.1%, MIND BLOWN 4.4%, HOLD EVERYTHING 3.4%, EUREKA 2.0%.",
+    "caption": "What happened after Argon said it had cracked it. Chart by the ARC Daily Digest from ARC Prize's 150 public replays; some standard-harness runs were cut short by API errors or move limits."
+  },
+  "interpretation": "Argon's shouts mark the moment it changes its theory of a game, usually early in a hard level, rather than the moment it is about to win: in the standard harness about one in six was the last shout it needed. Under the Provider Adapter, which keeps its reasoning between moves, more than half were. That points at memory more than mood. A reading of public replays, not checked against game code.",
+  "publishedAt": "2026-10-16T00:16:36Z",
+  "sections": [
+    {
+      "heading": "Mind blown, then what?",
+      "sourceIds": [
+        "results",
+        "sk48-medium",
+        "first-dispatch"
+      ],
+      "text": "At move 552 of its medium-reasoning run on Skewer Kebabs (sk48), on the last of eight levels, Gemini 4 Argon wrote \"EVERYTHING MAKES 1000% SENSE NOW!!\" Twenty-eight moves later it was \"MIND BLOWN! Let's verify this!\" One move after that the recording stops, level 8 unbeaten. Our first dispatch counted the shouting. This one follows it. Across ARC Prize's 150 public Argon replays, the model's answer text says MIND BLOWN 532 times, BINGO 671, WHOA 372 and EUREKA 273. In the standard harness, where the model remembers little beyond what it writes down, 1,224 moves contain at least one of those four. For each, we found the level it was on and what became of that level. About one in six (190) was the last shout before the level fell: the real thing. Nearly half (589) were followed by another shout on the same level before it fell. The other 445, just over a third, came on a level it never beat, though some of those runs were cut short by API errors or move limits rather than lost. Fast payoffs were rare. A MIND BLOWN was followed by a cleared level within ten moves 4.4% of the time, against 13.6% for a move picked at random. EUREKA managed 2.0%. Under Google's Provider Adapter harness, which carries the model's reasoning from move to move, the same shouts land: 56% were the last one it needed, and only 3 of 174 came on a level it never beat."
+    },
+    {
+      "heading": "1,183 moves on level 6",
+      "sourceIds": [
+        "m0r0-low"
+      ],
+      "text": "Mirror Rendezvous (m0r0) at low reasoning is the loudest run of the 150, and most of the noise is on level 6. Argon spent 1,183 moves there, shouted MIND BLOWN, BINGO, EUREKA or WHOA on 90 of them, wrote \"1000%\" on 19, and never got out. Early on it wrote out a proof that the level could not be done, then reminded itself: \"Every time a mathematical impossibility proof contradicts a solvable puzzle, one of the assumptions in the proof is FALSE!\" It told itself to \"STOP EVERYTHING AND READ THAT TEN THOUSAND TIMES!!\" and, later, to \"STOP AND APPLAUD THAT DEDUCTION!\" At move 617 it ruled out clicking: \"almost NO game uses both ACTION1..4 AND ACTION6 unless there are buttons on a HUD, and there is no HUD here!\" Six moves later it clicked anyway. The click selected the small block the level turns on, and on the next move it was MIND BLOWN. The discovery then went missing from its notes, and at move 869 clicking amazed it all over again: \"WHOA!! LOOK AT WHAT ACTION6 31 43 JUST DID!!\" It was startled, more than once, that in a mirror game the two tokens mirror. On 16 moves it asked some version of why it hadn't won. It found someone to blame for the board it had inherited: \"Whoever played the first 12 moves before Turn 1 had ALREADY moved Block A and Block B\". The someone was Argon, in moves that had scrolled out of its memory. Its last shout, at move 1,424: \"IS THAT HOW WE WON LEVEL 5?!\" Eight moves later the game was over, with a \"Complete 20-move solution\" in its notes, twelve moves in."
+    },
+    {
+      "heading": "Eureka, eureka, eureka",
+      "sourceIds": [
+        "dc22-high",
+        "sc25-medium",
+        "wa30-low",
+        "bp35-low",
+        "results"
+      ],
+      "text": "The other levels it never beat sound the same. On Deck Control (dc22) at high reasoning, level 6 took the last 313 moves of the run, and 52 of them shouted. \"EUREKA!! OH! MY! GOODNESS!!\" Then \"MIND BLOWN!! STOP EVERYTHING AND READ THAT AGAIN!!\" and, on the very next move, \"EUREKA!! EUREKA!! EUREKA!!\" At move 600: \"MIND BLOWN!! HAHAHAHA!!\" The run stopped on that level at move 698. On Sigil Caster (sc25), stuck on level 5, it announced \"EVERY SINGLE MECHANIC OF THE ENTIRE GAME IS NOW 100% UNDERSTOOD!!\" and, 42 moves later, \"BINGO!! EUREKA!! WE COMPLETELY SOLVED THE MECHANIC OF THE ENTIRE GAME!!\" The run ended on level 5. On Warehouse Associates (wa30), level 5 brought \"Everything makes 1000% sense now!\", \"EUREKA!! EUREKA!! EUREKA!!\" and \"OH! GENIUS! EUREKA!!\", then game over at move 750. On Buoyant Pontoons (bp35), on level 2: \"MIND BLOWN! Everything makes 100% sense now!\" Game over, 41 moves later. Across the standard runs, a claim that everything makes 100% or 1000% sense appears on 60 moves; 24 were on levels it never beat, and 2 were within ten moves of a win. Who is all this for? The answer text tells somebody to \"read that again\" 1,067 times across the 150 runs. Nobody reads it during a run except the model itself on its next move, and in the standard harness those notes are most of what it remembers."
+    },
+    {
+      "heading": "The twelve that called it",
+      "sourceIds": [
+        "wa30-low",
+        "lp85-medium",
+        "s5i5-medium",
+        "results",
+        "first-dispatch"
+      ],
+      "text": "Twelve of the 1,398 shouts, across both harnesses, came within three moves of a cleared level. On Warehouse Associates it worked out, late, that a crate had been a bridge, and that walking right at the start meant \"we could have crossed the bridge at rows 44-47, cols 32-35 BEFORE 12 came and stole the bridge!! MIND BLOWN!!\" Two moves later the level fell anyway. On Loop and Pull (lp85), facing the last level: \"MIND BLOWN!! Let's double check this! This is such a cool mechanism!\" Within three moves it had won the game. On Sliding Indicator (s5i5): \"HOLD EVERYTHING!! Read that again!!\", then MIND BLOWN, then a cleared level two moves later. Those are the exceptions, and the timing explains why. In the standard-harness levels it did beat, its typical shout came about a third of the way through, and in only about one level in thirty did the shouting sit in the final fifth. It shouts when it finds a rule, not when it is about to win, and a rule found ten moves into a fifty-move level still leaves forty moves of work. The shouting also marks the hard levels. In the standard harness, levels with at least one shout took a median 49 moves and were beaten 84% of the time; quiet levels took 19 and were beaten 94% of the time. Our first dispatch called the shouting a distress signal. The fuller count is gentler: after a MIND BLOWN, the chance it never beat that level was 36%, about the same as after any move (37%). On this count a shout is less a sign that it is lost than a sign that it has just changed its mind."
+    },
+    {
+      "heading": "Sponge, abacus, Sudoku",
+      "sourceIds": [
+        "lf52-low",
+        "lf52-medium",
+        "bp35-medium",
+        "ls20-low",
+        "g50t-medium",
+        "dc22-high",
+        "ka59-medium",
+        "ft09-low",
+        "ar25-adapter",
+        "cd82-adapter",
+        "s5i5-adapter",
+        "google-thinking"
+      ],
+      "text": "Not all the comedy is shouting. On Leapfrog (lf52) a dead-end hop raises a purple restart pin, and the standard runs took it for the prize: \"Puzzle solved! The key popped up at bottom-left (x=7, y=54).\" Clicking the \"key\" restarted the level; the medium run clicked that corner 15 times. The same medium run, hunting for a theory of the tracks, landed on \"IT'S AN ABACUS (SOROBAN / SUANPAN)!\" On Buoyant Pontoons it could not decide what it was steering: \"is it a boat, or is it a CANNON / LAUNCHER / BULLDOZER / CRANE / PLAYER?!\" On Locksmith (ls20) it had no doubts: \"We directly control the Sponge\". On Ghost Twin (g50t) it watched its own recorded moves replay and decided \"A previous agent/session made 5 moves before handing over to us\". On Deck Control it found a pad that turned out to be itself: \"14 IS OUR PLAYER COLOR!\" On Kick Away (ka59) it switched to Korean to tell itself to think a little and answer right away: \"생각을 조금만 하고 바로 답을 내자.\" On Functional Tiles (ft09) a new word was born: \"Thinksesk: Wait: why didn't Level 6 complete?!\" The Provider Adapter's thinking summaries, which Google writes about the hidden reasoning, have genre trouble of their own. Axis Reflectors became \"this Sudoku grid\", and on Compass Dye a summary concluded \"This is almost certainly an automated testing script.\" It was right about that one. On Sliding Indicator the summary of the winning click read \"The game is mine, and this is how I'm going to win.\""
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "results",
+      "title": "ARC Prize: Gemini 4 Argon results",
+      "url": "https://arcprize.org/results/google-gemini-4-argon"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "first-dispatch",
+      "title": "ARC Daily Digest: Mind Blown, 532 Times (15 October)",
+      "url": "https://arc.markbarney.net/news#2026-10-15-gemini-4-argon-mind-blown"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "sk48-medium",
+      "title": "Replay: sk48, standard harness, medium",
+      "url": "https://arcprize.org/replay/e3ab3eb6-f9de-4735-ac7d-b9681b247500"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "m0r0-low",
+      "title": "Replay: m0r0, standard harness, low",
+      "url": "https://arcprize.org/replay/d8379bc2-fcb1-4d8c-aba3-a7e2654d0e77"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "dc22-high",
+      "title": "Replay: dc22, standard harness, high",
+      "url": "https://arcprize.org/replay/08fc7dc2-d279-481a-9d5d-226c1d741110"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "sc25-medium",
+      "title": "Replay: sc25, standard harness, medium",
+      "url": "https://arcprize.org/replay/47db246e-5cbe-4130-b3fb-ee46b3763bef"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "wa30-low",
+      "title": "Replay: wa30, standard harness, low",
+      "url": "https://arcprize.org/replay/5f474a31-e86a-49f9-9759-27fd4aa2fd6e"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "bp35-low",
+      "title": "Replay: bp35, standard harness, low",
+      "url": "https://arcprize.org/replay/c127733d-8027-43a8-a493-6e94173a9dbb"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "lp85-medium",
+      "title": "Replay: lp85, standard harness, medium",
+      "url": "https://arcprize.org/replay/bebf4051-2ec1-467e-95a2-61cda057239d"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "s5i5-medium",
+      "title": "Replay: s5i5, standard harness, medium",
+      "url": "https://arcprize.org/replay/4050a5b4-4840-47d2-b793-95e3eed68f31"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "lf52-low",
+      "title": "Replay: lf52, standard harness, low",
+      "url": "https://arcprize.org/replay/cf635aee-a094-4e01-be2c-c80382464c28"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "lf52-medium",
+      "title": "Replay: lf52, standard harness, medium",
+      "url": "https://arcprize.org/replay/fbd4dfe0-199f-4b79-9764-4c1e548e4fa3"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "bp35-medium",
+      "title": "Replay: bp35, standard harness, medium",
+      "url": "https://arcprize.org/replay/f241a636-5d84-4eeb-8334-303eaec5f190"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "ls20-low",
+      "title": "Replay: ls20, standard harness, low",
+      "url": "https://arcprize.org/replay/e5b931aa-9111-49c7-bf49-26fa9c46a88d"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "g50t-medium",
+      "title": "Replay: g50t, standard harness, medium",
+      "url": "https://arcprize.org/replay/0a22fda2-0fb1-4e3c-9a77-c4f9b12723a0"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "ka59-medium",
+      "title": "Replay: ka59, standard harness, medium",
+      "url": "https://arcprize.org/replay/0a0bfb85-24a7-4eb1-a3e7-82fc5cdaa581"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "ft09-low",
+      "title": "Replay: ft09, standard harness, low",
+      "url": "https://arcprize.org/replay/3cda9213-f41a-44af-9962-a5eda18aeb16"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "ar25-adapter",
+      "title": "Replay: ar25, Provider Adapter, high",
+      "url": "https://arcprize.org/replay/5e3e2989-204f-45b4-bc41-0cb82997e2f7"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "cd82-adapter",
+      "title": "Replay: cd82, Provider Adapter, medium",
+      "url": "https://arcprize.org/replay/0b2f36da-44ef-414f-a2de-1a0322d0cedb"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "s5i5-adapter",
+      "title": "Replay: s5i5, Provider Adapter, medium",
+      "url": "https://arcprize.org/replay/98ff4503-7854-4ae8-9439-8a9eb15c822f"
+    },
+    {
+      "accessedAt": "2026-10-15T22:00:00Z",
+      "id": "google-thinking",
+      "title": "Google: Gemini thinking (thought summaries and signatures)",
+      "url": "https://ai.google.dev/gemini-api/docs/interactions/thinking.md.txt"
+    }
+  ]
+}

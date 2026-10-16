@@ -1,0 +1,319 @@
+{
+  "occurrences": {
+    "adapter": {
+      "MIND BLOWN": 49,
+      "EUREKA": 8,
+      "BINGO": 75,
+      "WHOA": 63,
+      "HOLD EVERYTHING": 119,
+      "WAIT A SECOND": 1094
+    },
+    "standard": {
+      "MIND BLOWN": 483,
+      "EUREKA": 265,
+      "BINGO": 596,
+      "WHOA": 309,
+      "HOLD EVERYTHING": 1570,
+      "WAIT A SECOND": 12088
+    }
+  },
+  "by_harness": {
+    "standard": {
+      "every_step": {
+        "n": 23703,
+        "within_10": 13.6,
+        "within_30": 34.8,
+        "within_11_50": 32.8,
+        "after_50": 16.5,
+        "never": 37.1,
+        "median_moves_if_cleared": 26.0
+      },
+      "MIND BLOWN": {
+        "n": 475,
+        "within_10": 4.4,
+        "within_30": 24.4,
+        "within_11_50": 36.2,
+        "after_50": 23.4,
+        "never": 36.0,
+        "median_moves_if_cleared": 39.0
+      },
+      "EUREKA": {
+        "n": 205,
+        "within_10": 2.0,
+        "within_30": 22.0,
+        "within_11_50": 37.1,
+        "after_50": 22.9,
+        "never": 38.0,
+        "median_moves_if_cleared": 43
+      },
+      "BINGO": {
+        "n": 542,
+        "within_10": 5.7,
+        "within_30": 25.1,
+        "within_11_50": 35.1,
+        "after_50": 24.5,
+        "never": 34.7,
+        "median_moves_if_cleared": 39.0
+      },
+      "WHOA": {
+        "n": 303,
+        "within_10": 6.3,
+        "within_30": 24.4,
+        "within_11_50": 34.3,
+        "after_50": 19.8,
+        "never": 39.6,
+        "median_moves_if_cleared": 39
+      },
+      "HOLD EVERYTHING": {
+        "n": 1240,
+        "within_10": 3.4,
+        "within_30": 21.5,
+        "within_11_50": 32.4,
+        "after_50": 22.0,
+        "never": 42.2,
+        "median_moves_if_cleared": 40
+      },
+      "WAIT A SECOND": {
+        "n": 3782,
+        "within_10": 5.1,
+        "within_30": 23.1,
+        "within_11_50": 32.7,
+        "after_50": 21.5,
+        "never": 40.7,
+        "median_moves_if_cleared": 39
+      },
+      "any of the big four": {
+        "n": 1224,
+        "within_10": 5.4,
+        "within_30": 24.7,
+        "within_11_50": 35.0,
+        "after_50": 22.9,
+        "never": 36.7,
+        "median_moves_if_cleared": 39
+      }
+    },
+    "adapter": {
+      "every_step": {
+        "n": 21993,
+        "within_10": 21.7,
+        "within_30": 54.6,
+        "within_11_50": 50.6,
+        "after_50": 23.0,
+        "never": 4.8,
+        "median_moves_if_cleared": 25.0
+      },
+      "MIND BLOWN": {
+        "n": 49,
+        "within_10": 10.2,
+        "within_30": 32.7,
+        "within_11_50": 53.1,
+        "after_50": 32.7,
+        "never": 4.1,
+        "median_moves_if_cleared": 39
+      },
+      "EUREKA": {
+        "n": 8,
+        "within_10": 0.0,
+        "within_30": 25.0,
+        "within_11_50": 75.0,
+        "after_50": 25.0,
+        "never": 0.0,
+        "median_moves_if_cleared": 41.5
+      },
+      "BINGO": {
+        "n": 73,
+        "within_10": 5.5,
+        "within_30": 38.4,
+        "within_11_50": 58.9,
+        "after_50": 34.2,
+        "never": 1.4,
+        "median_moves_if_cleared": 41.0
+      },
+      "WHOA": {
+        "n": 63,
+        "within_10": 4.8,
+        "within_30": 33.3,
+        "within_11_50": 63.5,
+        "after_50": 31.7,
+        "never": 0.0,
+        "median_moves_if_cleared": 38
+      },
+      "HOLD EVERYTHING": {
+        "n": 103,
+        "within_10": 8.7,
+        "within_30": 34.0,
+        "within_11_50": 49.5,
+        "after_50": 41.7,
+        "never": 0.0,
+        "median_moves_if_cleared": 47
+      },
+      "WAIT A SECOND": {
+        "n": 467,
+        "within_10": 7.1,
+        "within_30": 36.0,
+        "within_11_50": 54.0,
+        "after_50": 37.7,
+        "never": 1.3,
+        "median_moves_if_cleared": 40
+      },
+      "any of the big four": {
+        "n": 174,
+        "within_10": 6.3,
+        "within_30": 35.1,
+        "within_11_50": 58.6,
+        "after_50": 33.3,
+        "never": 1.7,
+        "median_moves_if_cleared": 39
+      }
+    },
+    "all": {
+      "every_step": {
+        "n": 45696,
+        "within_10": 17.5,
+        "within_30": 44.3,
+        "within_11_50": 41.4,
+        "after_50": 19.6,
+        "never": 21.5,
+        "median_moves_if_cleared": 26.0
+      },
+      "MIND BLOWN": {
+        "n": 524,
+        "within_10": 5.0,
+        "within_30": 25.2,
+        "within_11_50": 37.8,
+        "after_50": 24.2,
+        "never": 33.0,
+        "median_moves_if_cleared": 39
+      },
+      "EUREKA": {
+        "n": 213,
+        "within_10": 1.9,
+        "within_30": 22.1,
+        "within_11_50": 38.5,
+        "after_50": 23.0,
+        "never": 36.6,
+        "median_moves_if_cleared": 43
+      },
+      "BINGO": {
+        "n": 615,
+        "within_10": 5.7,
+        "within_30": 26.7,
+        "within_11_50": 37.9,
+        "after_50": 25.7,
+        "never": 30.7,
+        "median_moves_if_cleared": 39.0
+      },
+      "WHOA": {
+        "n": 366,
+        "within_10": 6.0,
+        "within_30": 26.0,
+        "within_11_50": 39.3,
+        "after_50": 21.9,
+        "never": 32.8,
+        "median_moves_if_cleared": 38.5
+      },
+      "HOLD EVERYTHING": {
+        "n": 1343,
+        "within_10": 3.8,
+        "within_30": 22.4,
+        "within_11_50": 33.7,
+        "after_50": 23.5,
+        "never": 38.9,
+        "median_moves_if_cleared": 41.0
+      },
+      "WAIT A SECOND": {
+        "n": 4249,
+        "within_10": 5.3,
+        "within_30": 24.5,
+        "within_11_50": 35.0,
+        "after_50": 23.3,
+        "never": 36.4,
+        "median_moves_if_cleared": 39.0
+      },
+      "any of the big four": {
+        "n": 1398,
+        "within_10": 5.5,
+        "within_30": 26.0,
+        "within_11_50": 38.0,
+        "after_50": 24.2,
+        "never": 32.3,
+        "median_moves_if_cleared": 39.0
+      }
+    }
+  },
+  "levels": {
+    "standard": {
+      "levels_with_big_four": 226,
+      "cleared_pct_with_big_four": 84.1,
+      "levels_without": 191,
+      "cleared_pct_without": 93.7,
+      "median_moves_on_level_with": 49.0,
+      "median_moves_on_level_without": 19
+    },
+    "adapter": {
+      "levels_with_big_four": 99,
+      "cleared_pct_with_big_four": 98.0,
+      "levels_without": 449,
+      "cleared_pct_without": 99.8,
+      "median_moves_on_level_with": 47,
+      "median_moves_on_level_without": 23
+    },
+    "all": {
+      "levels_with_big_four": 325,
+      "cleared_pct_with_big_four": 88.3,
+      "levels_without": 640,
+      "cleared_pct_without": 98.0,
+      "median_moves_on_level_with": 48,
+      "median_moves_on_level_without": 22.0
+    }
+  },
+  "fate_of_each_shout": {
+    "standard": {
+      "last_before_win": 190,
+      "shouted_again_first": 589,
+      "level_never_beaten": 445,
+      "never_by_end_state": {
+        "GAME_OVER": 212,
+        "NOT_FINISHED": 233
+      },
+      "shouts": 1224,
+      "pct": {
+        "last_before_win": 15.5,
+        "shouted_again_first": 48.1,
+        "level_never_beaten": 36.4
+      }
+    },
+    "adapter": {
+      "last_before_win": 97,
+      "shouted_again_first": 74,
+      "level_never_beaten": 3,
+      "never_by_end_state": {
+        "GAME_OVER": 3
+      },
+      "shouts": 174,
+      "pct": {
+        "last_before_win": 55.7,
+        "shouted_again_first": 42.5,
+        "level_never_beaten": 1.7
+      }
+    }
+  },
+  "called_it_within_3_moves": 12,
+  "shout_position_in_cleared_levels": {
+    "standard": {
+      "levels": 190,
+      "median_position": 0.32,
+      "in_last_fifth_pct": 3.2
+    },
+    "adapter": {
+      "levels": 97,
+      "median_position": 0.19,
+      "in_last_fifth_pct": 2.1
+    },
+    "all": {
+      "levels": 287,
+      "median_position": 0.27,
+      "in_last_fifth_pct": 2.8
+    }
+  }
+}
