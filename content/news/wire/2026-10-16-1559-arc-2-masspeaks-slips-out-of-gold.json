@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-16T19:50:49Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "masspeaks slips out of ARC-2 gold as cutoff rises",
+  "id": "2026-10-16-1559-arc-2-masspeaks-slips-out-of-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-16T19:59:15Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "masspeaks fell from 15th to 17th on the ARC-AGI-2 public board, leaving the 15 gold places with its score unchanged at 55.00."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold cutoff rose 2.08 points in the past day to 57.08. Kajetan Schweighofer sits 16th at 56.11, 0.97 short of the line."
+    }
+  ],
+  "since": "2026-10-15T19:48:22Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T19:58:51Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17030687",
+    "16761662"
+  ]
+}

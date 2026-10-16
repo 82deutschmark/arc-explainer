@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-16T19:50:49Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Hira Norm climbs 701 places into ARC-2 top 100",
+  "id": "2026-10-16-1559-arc-2-hira-norm-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-16T19:59:15Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Hira Norm climbed from 764th to 63rd, gaining 5.27 points to reach 35.83 on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts Norm inside the top 100 after starting the day outside the top 500."
+    }
+  ],
+  "since": "2026-10-15T19:48:22Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T19:58:51Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15596748"
+  ]
+}
