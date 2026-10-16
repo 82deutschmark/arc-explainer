@@ -59,11 +59,13 @@ const MAX_WIRE = 6;
 /** Same re-pointing SyntheticLanding does: the shared board components draw "us" in --primary. */
 const BOARD_SCOPE = { '--primary': ARC.pink, '--foreground': ARC.text, '--muted-foreground': ARC.faint, '--border': ARC.border, '--card': ARC.ground } as CSSProperties;
 
-/** "Monday, November 2 at 11:59 pm UTC" and the same moment in Eastern, the newspaper's zone. */
-function closeWords(close: number): { utc: string; eastern: string } {
+/** "Monday, November 2 at 11:59 pm" in UTC and in Eastern (the newspaper's zone), plus the bare day. */
+function closeWords(close: number): { utc: string; eastern: string; day: string } {
   const say = (timeZone: string) => new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })
     .format(new Date(close)).replace(' AM', ' am').replace(' PM', ' pm');
-  return { utc: say('UTC'), eastern: say('America/New_York') };
+  // After the close the sentence is history, so it names the day only ("closed on November 2").
+  const day = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', day: 'numeric' }).format(new Date(close));
+  return { utc: say('UTC'), eastern: say('America/New_York'), day };
 }
 
 /** Ticks once a second while the page is open. */
@@ -98,7 +100,7 @@ function Countdown() {
       <div className="p-6" style={{ background: ARC.cell, border: `2px solid ${ARC.pink}` }}>
         <div className="mb-3 text-[11px] uppercase tracking-[2px]" style={{ color: ARC.pink, fontFamily: MONO }}>The boards are closed</div>
         <p className="text-[15px] leading-[1.7]" style={{ color: ARC.dim }}>
-          Both Kaggle boards closed on {words.utc} UTC. The standings below are the public
+          Both Kaggle boards closed on {words.day}. The standings below are the public
           board's last save. Medals are decided on the private board, not this one.
         </p>
       </div>

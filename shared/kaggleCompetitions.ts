@@ -49,7 +49,9 @@ export const kaggleLeaderboardUrl = (competition: KaggleCompetition) => `https:/
 export const closeMs = (competition: KaggleCompetition): number | null =>
   competition.closeAt ? Date.parse(competition.closeAt) : null;
 
-/** Whole days left before the close, rounded up, never below zero; null when the close is unknown. */
+/** Whole days left before the close, rounded up, never below zero; null when the close is unknown.
+ *  Counts from now. shared/newsMarkets.ts has its own daysToClose that counts from a board save,
+ *  on purpose: a printed market table must agree with the save it shows. */
 export function daysToClose(competition: KaggleCompetition, now = Date.now()): number | null {
   const close = closeMs(competition);
   return close == null ? null : Math.max(0, Math.ceil((close - now) / 86_400_000));
