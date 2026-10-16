@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T07:49:33Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Grigoriy Zatravkin surges to 10th on ARC-3",
+  "id": "2026-10-16-0358-arc-3-grigoriy-zatravkin-reaches-tenth",
+  "personIds": [],
+  "publishedAt": "2026-10-16T07:58:54Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Grigoriy Zatravkin gained 14.57 points to reach 40.63, vaulting from 1,274th to 10th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb puts him in the board's 18 gold places, after rising from 1,274th."
+    }
+  ],
+  "since": "2026-10-15T07:47:07Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T07:58:17Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16490178"
+  ]
+}

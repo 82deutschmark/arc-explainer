@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-16T07:49:34Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "masspeaks moves into ARC-2 gold",
+  "id": "2026-10-16-0358-arc-2-masspeaks-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-16T07:58:55Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "masspeaks gained 1.94 points to reach 55.00, climbing from 16th to 15th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "That is the last of the 15 gold places, where the cutoff rose 0.83 in the past day."
+    }
+  ],
+  "since": "2026-10-15T07:47:09Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T07:58:17Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17030687"
+  ]
+}
