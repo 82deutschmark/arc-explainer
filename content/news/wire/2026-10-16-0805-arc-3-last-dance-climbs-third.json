@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T11:49:57Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "the last dance climbs to third on ARC-3",
+  "id": "2026-10-16-0805-arc-3-last-dance-climbs-third",
+  "personIds": [],
+  "publishedAt": "2026-10-16T12:05:07Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "the last dance 🕺 gained 6.21 points to reach 49.85, moving from 5th to 3rd on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb places the team among the three highest-scoring entries; public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-15T11:47:30Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T12:04:25Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16021367"
+  ]
+}
