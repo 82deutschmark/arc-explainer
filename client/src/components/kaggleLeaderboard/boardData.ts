@@ -9,6 +9,7 @@
  *
  *          Ported from docs/static/js/leaderboard.js in the arc-3 repo, where this page
  *          lived behind a sign-in until 05-Oct-2026.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): removed weekAgoMs; weekly baselines count back from the latest save.
  * SRP/DRY check: Pass - data and pure helpers only; every section component renders from
  *          the BoardModel returned here and none of them fetch on their own.
  */
@@ -125,7 +126,6 @@ export function trailAt(history: KaggleBoardHistory, id: string, t: number): [st
   return found;
 }
 
-export const weekAgoMs = () => Date.now() - 7 * DAY_MS;
 export { DAY_MS };
 
 /**

@@ -8,6 +8,8 @@
  *          Public source-column hierarchy and full archive rendering use committed source data.
  *          15-Oct-2026 (Claude Opus 5.5 Max): the illustration test's article is dated now, so it
  *          still leads the desk after later editions are published.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): the Kaggle-threads check expects the front page's
+ *          three most recent threads, matching the column's cap, not every thread in the archive.
  * SRP/DRY check: Pass — production pages, production digest builder, seeded query cache.
  */
 import React, { createElement } from 'react';
@@ -23,7 +25,7 @@ import { newsArticleMeta } from '../server/services/news/newsPresentation';
 import fs from 'node:fs';
 import { getNewsIndex } from '../server/services/news/newsStore';
 import { buildMarketBoard, type MarketsPayload } from '../shared/newsMarkets';
-import type { NewsIndex, NewsWireStory } from '../shared/news';
+import { recentDiscussions, type NewsIndex, type NewsWireStory } from '../shared/news';
 import type { KaggleBoardRow } from '../shared/types';
 
 const NOW = '2026-10-09T23:54:00Z';
@@ -90,7 +92,8 @@ test('Kaggle threads follow the prominent X strip and the wire, with original li
   const html = render(News, '/news', index, markets(index));
   expect(html.indexOf('aria-label="From X"')).toBeLessThan(html.indexOf('aria-label="From the Kaggle boards"'));
   expect(html.indexOf('What’s news')).toBeLessThan(html.indexOf('aria-label="From the Kaggle boards"'));
-  for (const thread of index.discussions!) expect(html).toContain(`href="${thread.url}"`);
+  // The front-page column is capped at the three most recent threads; the community page carries the rest.
+  for (const thread of recentDiscussions(index.discussions!).slice(0, 3)) expect(html).toContain(`href="${thread.url}"`);
   expect(html).toContain('/news/community#tweet-archive');
 });
 

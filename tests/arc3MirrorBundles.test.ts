@@ -4,10 +4,12 @@ Date: 2026-09-30
 PURPOSE: Execute every local catalog's real served payload with Python and exercise the
 affected Arena games with the installed ARCEngine. Detect invalid future-import placement,
 missing support modules and regressions in initial rendering, actions and reset.
+16-Oct-2026 (Claude Opus 5.5 Medium): runs under vitest like the rest of the suite; it was
+written for node:test, so npm run test reported it as an empty file.
 SRP/DRY check: Pass -- uses the production catalog and real game files/engine; no bundler copy.
 */
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -81,4 +83,4 @@ print(json.dumps({'executed': len(games), 'renderedMovedReset': exercised}))
   assert.ifError(result.error);
   assert.equal(result.status, 0, result.stderr || result.stdout);
   console.log(result.stdout.trim());
-});
+}, 120_000); // runs Python over every served game

@@ -2,6 +2,8 @@
  * Author: Sonnet 4
  * Date: 2026-01-05
  * PURPOSE: Integration tests for OG image API endpoint and crawler meta tag injection
+ * 16-Oct-2026 (Claude Opus 5.5 Medium): unknown routes now expect the not-found, noindex meta
+ *          the injector serves, instead of untouched HTML.
  * SRP/DRY check: Pass - Tests only OG image HTTP API and crawler behavior
  */
 
@@ -90,9 +92,12 @@ describe('Meta Tag Injection for Puzzle Routes', () => {
 </html>`;
 
   describe('injectMetaTagsIntoHtml', () => {
-    it('should not modify HTML for unknown routes', () => {
+    // Unknown addresses are served as "Page not found" and kept out of search indexes.
+    it('marks unknown routes as not found and noindex', () => {
       const result = injectMetaTagsIntoHtml(sampleHtml, '/unknown-route');
-      expect(result).toBe(sampleHtml);
+      expect(result).toContain('<title>Page not found | ARC Explainer</title>');
+      expect(result).toContain('<meta name="robots" content="noindex,follow" />');
+      expect(result).not.toContain('Default Title');
     });
 
     it('should inject meta tags for known static routes', () => {

@@ -5,13 +5,14 @@
  *          lines, weekly gold-line movement, and days to the close, followed by the
  *          pinned team’s rank and distance to gold. Visible without scrolling,
  *          per the Boss's note on the old arc-3 page's tall hero band.
- *          16-Oct-2026 (Claude Opus 5.5 Medium): days to close come from the shared helper.
+ *          16-Oct-2026 (Claude Opus 5.5 Medium): days to close come from the shared helper; the
+ *          gold line's past week is measured back from the latest save, not from the clock.
  * SRP/DRY check: Pass - reads BoardModel only; one small Tile used for every figure.
  */
 
 import { Card } from '@/components/ui/card';
 import { daysToClose } from '@shared/kaggleCompetitions';
-import { MEDAL_COLOR, fmt, snapNearest, weekAgoMs, type BoardModel, type Medal } from './boardData';
+import { DAY_MS, MEDAL_COLOR, fmt, snapNearest, type BoardModel, type Medal } from './boardData';
 
 function Tile({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: string }) {
   return (
@@ -29,7 +30,10 @@ export function BoardTiles({ model }: { model: BoardModel }) {
   const at = (rank: number) => latest.rows[rank - 1];
   const gold = at(mr.gold), silver = at(mr.silver), bronze = at(mr.bronze), leader = latest.rows[0];
 
-  const week = history.snaps.some((s) => Date.parse(s.t) <= weekAgoMs()) ? snapNearest(history.snaps, weekAgoMs()) : null;
+  // A week back from the latest save, like every other weekly figure (storyData): measured from
+  // the wall clock, a board holding one old save compared that save with itself as "past week".
+  const weekAgo = Date.parse(latest.fetched) - 7 * DAY_MS;
+  const week = history.snaps.some((s) => Date.parse(s.t) <= weekAgo) ? snapNearest(history.snaps, weekAgo) : null;
   const daysLeft = daysToClose(model.competition);
 
   const tiles: Array<{ label: string; value: string; sub?: string; accent?: string }> = [];

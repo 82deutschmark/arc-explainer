@@ -4,10 +4,12 @@ Date: 2026-09-14
 PURPOSE: Verify public ID round trips and real catalog/source resolution while
 preserving legacy game identities and isolating contributed practice telemetry. Uses the
 shipped local catalog and upstream catalog, without mocking source responses.
+16-Oct-2026 (Claude Opus 5.5 Medium): runs under vitest like the rest of the suite; it was
+written for node:test, so npm run test reported it as an empty file.
 SRP/DRY check: Pass — calls the shared resolver and the production catalog service.
 */
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import evolutionIds from '../shared/arc3EvolutionIds.json';
 import { ARC3_PUBLIC_IDS, canonicalGameId, publicGameId } from '../shared/arc3PublicIds.ts';
