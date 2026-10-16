@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-15T23:29:12.796093Z",
+  "updatedAt": "2026-10-16T00:10:51.774937Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -283,7 +283,17 @@
       "status": "reserve",
       "articleUses": [],
       "xAttachments": [],
-      "selectionNote": "Explicitly commissioned reusable editor scene. Standing editor investigating a replay wall with the Yorkies and all three poultry. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative."
+      "selectionNote": "Explicitly commissioned reusable editor scene. Standing editor investigating a replay wall with the Yorkies and all three poultry. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative.",
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1560444736819560468",
+          "postedAt": "2026-10-16T00:10:17.975713Z",
+          "attachmentFilename": "2026-10-15-editor-replay-wall-v1-base.webp",
+          "attachmentSha256": "ada11a2fb4c14db3d2ac7c356ca431108afeaa31ed95a3043241578e58d34bd6",
+          "purpose": "User-requested preview for Opus 5.5 special article; remains an unused article reserve."
+        }
+      ]
     },
     {
       "id": "2026-10-15-editor-proofing-session-v1",
@@ -293,7 +303,17 @@
       "status": "reserve",
       "articleUses": [],
       "xAttachments": [],
-      "selectionNote": "Explicitly commissioned reusable editor scene. Editor examines printed replay proofs with a magnifier, two Yorkies and all three poultry. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative."
+      "selectionNote": "Explicitly commissioned reusable editor scene. Editor examines printed replay proofs with a magnifier, two Yorkies and all three poultry. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative.",
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1560444768180240525",
+          "postedAt": "2026-10-16T00:10:25.466597Z",
+          "attachmentFilename": "2026-10-15-editor-proofing-session-v1-base.webp",
+          "attachmentSha256": "19e4a92c2e5addc133116511342326c30d853683aab29e0499f5a6e0af585747",
+          "purpose": "User-requested preview for Opus 5.5 special article; remains an unused article reserve."
+        }
+      ]
     },
     {
       "id": "2026-10-15-editor-dawn-briefing-v1",
@@ -303,7 +323,17 @@
       "status": "reserve",
       "articleUses": [],
       "xAttachments": [],
-      "selectionNote": "Explicitly commissioned reusable editor scene. Editor, Yorkies and all three poultry discuss a route around a round conference table at sunrise. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative."
+      "selectionNote": "Explicitly commissioned reusable editor scene. Editor, Yorkies and all three poultry discuss a route around a round conference table at sunrise. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative.",
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1560444800816123995",
+          "postedAt": "2026-10-16T00:10:33.382899Z",
+          "attachmentFilename": "2026-10-15-editor-dawn-briefing-v1-base.webp",
+          "attachmentSha256": "ab87b590d194a6d12b19b626fa5a2ae85f76c54cf82a250113cabfcd65290878",
+          "purpose": "User-requested preview for Opus 5.5 special article; remains an unused article reserve."
+        }
+      ]
     }
   ],
   "existingXPosts": [
