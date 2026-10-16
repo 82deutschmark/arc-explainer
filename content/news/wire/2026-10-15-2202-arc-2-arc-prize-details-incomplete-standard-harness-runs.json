@@ -1,0 +1,40 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-16T01:48:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC Prize details incomplete standard-harness runs",
+  "id": "2026-10-15-2202-arc-2-arc-prize-details-incomplete-standard-harness-runs",
+  "personIds": [],
+  "publishedAt": "2026-10-16T02:02:45Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "social-2110768292101042240",
+        "board-arc-2"
+      ],
+      "text": "ARC Prize said API issues left its standard-harness testing incomplete. Low reasoning finished 42 of 55 games for 49.8%; medium finished 46 of 55 for 46.3%. High reasoning finished 19 games, and ARC Prize published no score for that run."
+    },
+    {
+      "sourceIds": [
+        "social-2110768292101042240"
+      ],
+      "text": "The reported scores still include partial credit across all 55 games. ARC Prize says its provider adapter preserves opaque reasoning and allows automatic compaction, while the standard harness carries notes between turns."
+    }
+  ],
+  "since": "2026-10-15T01:45:48Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T02:02:14Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    },
+    {
+      "accessedAt": "2026-10-15T18:24:37.044800Z",
+      "id": "social-2110768292101042240",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2110768292101042240"
+    }
+  ],
+  "teamIds": []
+}
