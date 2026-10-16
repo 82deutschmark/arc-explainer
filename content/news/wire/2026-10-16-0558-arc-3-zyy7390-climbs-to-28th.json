@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T09:49:44Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Zyy7390 climbs from 267th to 28th on ARC-3",
+  "id": "2026-10-16-0558-arc-3-zyy7390-climbs-to-28th",
+  "personIds": [],
+  "publishedAt": "2026-10-16T09:58:41Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Zyy7390 gained 4.86 points to reach 36.22, vaulting from 267th to 28th on the ARC-AGI-3 public board."
+    }
+  ],
+  "since": "2026-10-15T09:47:18Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T09:58:17Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17044861"
+  ]
+}
