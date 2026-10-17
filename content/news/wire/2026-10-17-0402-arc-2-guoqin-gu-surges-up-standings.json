@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-17T07:52:02Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "guoqin gu surges up ARC-2 standings",
+  "id": "2026-10-17-0402-arc-2-guoqin-gu-surges-up-standings",
+  "personIds": [],
+  "publishedAt": "2026-10-17T08:02:15Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "guoqin gu gained 18.75 points to reach 46.39, moving from 1,764th to 29th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "At 29th, guoqin gu remains outside the 15 gold places; the last gold position currently carries 57.08."
+    }
+  ],
+  "since": "2026-10-16T07:49:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T08:01:53Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16505371"
+  ]
+}
