@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-17T13:52:37Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Varstern 6037 jumps to 48th on ARC-2",
+  "id": "2026-10-17-0956-arc-2-varstern-6037-climbs-to-forty-eighth",
+  "personIds": [],
+  "publishedAt": "2026-10-17T13:56:12Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Varstern 6037 gained 8.88 points to reach 39.44, moving from 932nd to 48th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The climb puts the team inside the top 100, while the 15th-place gold cutoff stands at 58.06."
+    }
+  ],
+  "since": "2026-10-16T13:50:11Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T13:55:54Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17078907"
+  ]
+}
