@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-17T15:52:48Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "insuperabilehart climbs to 27th on ARC-3",
+  "id": "2026-10-17-1205-arc-3-insuperabilehart-climbs-to-twenty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-17T16:05:42Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "insuperabilehart gained 4.65 to reach 36.73, moving from 180th to 27th on the ARC-AGI-3 public board."
+    }
+  ],
+  "since": "2026-10-16T15:50:23Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T16:04:59Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15775532"
+  ]
+}

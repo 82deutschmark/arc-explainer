@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-17T15:52:50Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "mtg climbs to 20th on ARC-2",
+  "id": "2026-10-17-1205-arc-2-mtg-climbs-to-twentieth",
+  "personIds": [],
+  "publishedAt": "2026-10-17T16:05:42Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "mtg gained 7.36 to reach 54.03, moving from 26th to 20th on the ARC-AGI-2 public board. The move puts the team closer to the 15 gold places."
+    }
+  ],
+  "since": "2026-10-16T15:50:24Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T16:04:59Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16153654"
+  ]
+}
