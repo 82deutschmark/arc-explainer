@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-17T11:52:24Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Mosamosa rises to 45th on ARC-3",
+  "id": "2026-10-17-0803-arc-3-mosamosa-climbs-to-forty-fifth",
+  "personIds": [],
+  "publishedAt": "2026-10-17T12:03:54Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Mosamosa gained 3.06 to 34.47, moving from 276th to 45th on the ARC-AGI-3 public board."
+    }
+  ],
+  "since": "2026-10-16T11:49:57Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T12:03:25Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16753824"
+  ]
+}

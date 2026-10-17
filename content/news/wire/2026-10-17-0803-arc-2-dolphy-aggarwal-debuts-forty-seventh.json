@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-17T11:52:25Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Dolphy Aggarwal debuts at 47th on ARC-2",
+  "id": "2026-10-17-0803-arc-2-dolphy-aggarwal-debuts-forty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-17T12:03:54Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "New to the ARC-AGI-2 public board, Dolphy Aggarwal entered at 47th with 39.72."
+    }
+  ],
+  "since": "2026-10-16T11:49:59Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T12:03:25Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17084199"
+  ]
+}
