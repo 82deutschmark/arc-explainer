@@ -1,5 +1,126 @@
 [
   {
+    "author": "bogoconic1",
+    "authorName": "Geremie Yeo",
+    "category": "community",
+    "checkedAt": "2026-10-17T09:06:10.613Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2111352743181136264",
+    "identitySourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-17T07:04:55Z",
+    "storyUrl": null,
+    "summary": "Geremie Yeo complains about Kaggle inference queues and competition demand for four L4 GPUs. His post mentions both ARC contests and Gemma 4 Developer Agent.",
+    "threadId": null,
+    "url": "https://x.com/bogoconic1/status/2111352743181136264",
+    "visibility": "public",
+    "whyItMatters": "A dated participant reaction to compute contention; his explanation and cloud-price claim are not independently established capacity measurements."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T04:06:45.734Z",
+    "competitions": [],
+    "id": "2111296341536301354",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T03:20:48Z",
+    "storyUrl": null,
+    "summary": "Mazur replies to a comparison of modern tutorial-heavy games and 1990s games by revisiting his September Contra III AI-modding experiment.",
+    "threadId": "2111037182907392416",
+    "url": "https://x.com/mhmazur/status/2111296341536301354",
+    "visibility": "public",
+    "whyItMatters": "Gaming and AI colour; this is a retrospective reference, not a new model or benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T04:06:49.839Z",
+    "competitions": [],
+    "id": "2111294166991057037",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T03:12:10Z",
+    "storyUrl": null,
+    "summary": "Mazur expresses nostalgia in response to a post showing a familiar game map.",
+    "threadId": "2111203277341962330",
+    "url": "https://x.com/mhmazur/status/2111294166991057037",
+    "visibility": "public",
+    "whyItMatters": "Personal gaming colour; no competition claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T04:06:53.460Z",
+    "competitions": [],
+    "id": "2111292885727338913",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T03:07:04Z",
+    "storyUrl": null,
+    "summary": "Mazur joins a nostalgic exchange about an old poker software client.",
+    "threadId": "2111260153831887318",
+    "url": "https://x.com/mhmazur/status/2111292885727338913",
+    "visibility": "public",
+    "whyItMatters": "Personal banter; no competition or research claim."
+  },
+  {
+    "author": "sirbayes",
+    "authorName": "Kevin Patrick Murphy",
+    "category": "research",
+    "checkedAt": "2026-10-17T03:06:51.600Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111278061039800629",
+    "identitySourceUrl": "https://x.com/arcprize/status/2108212068545392857",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-17T02:08:10Z",
+    "storyUrl": null,
+    "summary": "Murphy says his ARC talk next week in Boston will cover his Model Discovery Agent and an interactive scientific benchmark inspired by ARC-AGI-3. Agents would run a few experiments in a partially observed stochastic simulator, fit a causal world model, then be evaluated on predictions for novel interventions rather than on the model description itself.",
+    "threadId": "2111278061039800629",
+    "url": "https://x.com/sirbayes/status/2111278061039800629",
+    "visibility": "public",
+    "whyItMatters": "A new primary-source lead for Research Summit coverage and the next generation of interactive benchmarks. A proposed benchmark and upcoming talk, not a released benchmark, new score, or Kaggle result."
+  },
+  {
+    "author": "masspeakss",
+    "authorName": "masspeaks(まっすー)",
+    "category": "banter",
+    "checkedAt": "2026-10-17T03:08:24.931271Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2111220331184820379",
+    "identitySourceUrl": "https://x.com/masspeakss",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-16T22:18:46Z",
+    "storyUrl": null,
+    "summary": "In Japanese, masspeaks thanks NT (@Mitubant) and jokes that he looks forward to continuing their matches in both ARC-2 and Street Fighter 6. The parent conversation celebrates a Kaggriculture medal; that result is not an ARC medal.",
+    "threadId": "2111218975833223466",
+    "url": "https://x.com/masspeakss/status/2111220331184820379",
+    "visibility": "public",
+    "whyItMatters": "Friendly contender colour only. No new ARC score, medal, identity or team-membership claim."
+  },
+  {
     "author": "mhmazur",
     "authorName": "Matt Mazur",
     "category": "banter",
@@ -118,6 +239,26 @@
     "url": "https://x.com/mhmazur/status/2111118969176502336",
     "visibility": "public",
     "whyItMatters": "Organizer community colour; no new contest standing or benchmark result."
+  },
+  {
+    "author": "Daviswh",
+    "authorName": "daviswu",
+    "category": "community",
+    "checkedAt": "2026-10-17T07:03:23.978424Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111118645393010870",
+    "identitySourceUrl": "https://x.com/Daviswh",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-16T15:34:42Z",
+    "storyUrl": "https://x.com/arcprize/status/2110768288523251762",
+    "summary": "Daviswh points to the different Argon ARC-AGI-3 results under the provider adapter and standard harnesses and says harness choice should accompany leaderboard claims. Reaction to ARC Prize’s existing announcement, not a new evaluation.",
+    "threadId": "2111118645393010870",
+    "url": "https://x.com/Daviswh/status/2111118645393010870",
+    "visibility": "public",
+    "whyItMatters": "Optional community colour for the harness story; no new result, competitor identity or recipe established."
   },
   {
     "author": "mhmazur",

@@ -168,5 +168,12 @@
     "url": "https://x.com/mhmazur",
     "identitySourceUrl": "https://mattmazur.com/contact/",
     "personId": "matt-mazur"
+  },
+  {
+    "handle": "bogoconic1",
+    "name": "Geremie Yeo",
+    "url": "https://x.com/bogoconic1",
+    "identitySourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+    "personId": "geremie-yeo"
   }
 ]

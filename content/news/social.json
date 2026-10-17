@@ -123,6 +123,47 @@
     "whyItMatters": "A new ARC-AGI-3 research lead for the edition desk. The paper provides a concrete mechanism and results, but the public tutorial set cannot establish private-game performance."
   },
   {
+    "author": "bogoconic1",
+    "authorName": "Geremie Yeo",
+    "category": "community",
+    "checkedAt": "2026-10-17T09:06:10.613Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2111352743181136264",
+    "identitySourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-17T07:04:55Z",
+    "storyUrl": null,
+    "summary": "Geremie Yeo complains about Kaggle inference queues and competition demand for four L4 GPUs. His post mentions both ARC contests and Gemma 4 Developer Agent.",
+    "threadId": null,
+    "url": "https://x.com/bogoconic1/status/2111352743181136264",
+    "visibility": "public",
+    "whyItMatters": "A dated participant reaction to compute contention; his explanation and cloud-price claim are not independently established capacity measurements."
+  },
+  {
+    "author": "sirbayes",
+    "authorName": "Kevin Patrick Murphy",
+    "category": "research",
+    "checkedAt": "2026-10-17T03:06:51.600Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111278061039800629",
+    "identitySourceUrl": "https://x.com/arcprize/status/2108212068545392857",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-17T02:08:10Z",
+    "storyUrl": null,
+    "summary": "Murphy says his ARC talk next week in Boston will cover his Model Discovery Agent and an interactive scientific benchmark inspired by ARC-AGI-3. Agents would run a few experiments in a partially observed stochastic simulator, fit a causal world model, then be evaluated on predictions for novel interventions rather than on the model description itself.",
+    "threadId": "2111278061039800629",
+    "url": "https://x.com/sirbayes/status/2111278061039800629",
+    "visibility": "public",
+    "whyItMatters": "A new primary-source lead for Research Summit coverage and the next generation of interactive benchmarks. A proposed benchmark and upcoming talk, not a released benchmark, new score, or Kaggle result."
+  },
+  {
     "author": "mhmazur",
     "authorName": "Matt Mazur",
     "category": "community",
@@ -371,47 +412,5 @@
     "url": "https://x.com/harshitj__/status/2110761869048754565",
     "visibility": "public",
     "whyItMatters": "Fresh primary research lead. These are author-reported experimental results, not Kaggle standings or an ARC Prize Verified evaluation; confirm split, budget and comparability before publication."
-  },
-  {
-    "author": "masspeakss",
-    "authorName": "masspeaks",
-    "category": "community",
-    "checkedAt": "2026-10-15T18:24:37.044800Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2110717635168252212",
-    "identitySourceUrl": "https://x.com/masspeakss",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-15T13:01Z",
-    "storyUrl": null,
-    "summary": "Translation of Japanese original: An ARC2 merge invitation involving the gold range has come in, so I am torn, but I want to keep trying solo until the last possible moment. The post does not name the inviting team or announce an accepted merger.",
-    "threadId": null,
-    "url": "https://x.com/masspeakss/status/2110717635168252212",
-    "visibility": "public",
-    "whyItMatters": "Contender motivation and possible future team change; do not report a merger or a verified gold position. Exact current team mapping remains unresolved."
-  },
-  {
-    "author": "mhmazur",
-    "authorName": "Matt Mazur",
-    "category": "research",
-    "checkedAt": "2026-10-14T22:04:09.719062+00:00",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2110459241316430266",
-    "identitySourceUrl": "https://mattmazur.com/contact/",
-    "importance": 2,
-    "personIds": [
-      "matt-mazur"
-    ],
-    "postedAt": "2026-10-14T19:54:28Z",
-    "storyUrl": null,
-    "summary": "Replying to Vlad Garbuz’s question about the provider checkpoint used for the DeepSeek evaluation, Mazur says Baseten serves the original DeepSeek V4.1 Flash checkpoint, which natively uses fp8 with mxfp4 experts, without additional quantization. Original reply and parent chain read in regular public-post UI, with no Subscribers restriction. This is Mazur’s testing clarification, not an independently reproduced provider comparison.",
-    "threadId": "2110060578530001231",
-    "url": "https://x.com/mhmazur/status/2110459241316430266",
-    "visibility": "public",
-    "whyItMatters": "New organizer detail for interpreting the October 13 verified DeepSeek evaluation. Keep the native mixed precision distinct from additional provider quantization; no new Kaggle score or ruling."
   }
 ]

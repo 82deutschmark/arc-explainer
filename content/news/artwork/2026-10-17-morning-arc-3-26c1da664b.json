@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-17-morning-arc-3",
+  "briefSha256": "b353f8f661eff1fb5b2a49117f4af98282c461254ae4730a40ecefdf4ea8f4e2",
+  "dataAsOf": "2026-10-17T09:52:12Z",
+  "generationRecord": "2026-10-15-editor-dawn-briefing-v1-base",
+  "headline": "Grigoriy Zatravkin takes seventh as ARC-3’s chase tightens",
+  "historyChart": null,
+  "id": "2026-10-17-morning-arc-3-26c1da664b",
+  "image": {
+    "alt": "AI editorial illustration: head human editor Mark Barney, two Yorkies and three mechanical birds — duck, chicken and turkey — at a dawn conference table. Illustrative puzzle diagrams. ARC-3 score panel: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49; October 17, 2026, 5:52 AM EDT.",
+    "artworkId": "2026-10-17-morning-arc-3-26c1da664b",
+    "caption": "AI-generated editorial illustration: The Dawn Briefing. Mark Barney appears as head human editor. Game diagrams and equipment are illustrative. Score panel: Oct 17, 2026 · 5:52 AM EDT; provisional public standings.",
+    "src": "/news-images/2026-10-17-morning-arc-3-26c1da664b.webp"
+  },
+  "imageSha256": "7858c1e3634dd4e320dcb6722d1a6c9097e0ba0693dda07434a42f4f31bb4566",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "ab87b590d194a6d12b19b626fa5a2ae85f76c54cf82a250113cabfcd65290878",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-16T22:08:50.889616+00:00",
+  "updatedAt": "2026-10-17T10:02:50.310182+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -340,10 +340,12 @@
       "generationRecord": "2026-10-15-editor-dawn-briefing-v1-base",
       "src": "/news-images/2026-10-15-editor-dawn-briefing-v1-base.webp",
       "title": "The Dawn Briefing",
-      "status": "reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-17-morning-arc-3"
+      ],
       "xAttachments": [],
-      "selectionNote": "Explicitly commissioned reusable editor scene. Editor, Yorkies and all three poultry discuss a route around a round conference table at sunrise. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative.",
+      "selectionNote": "Suitable unused editor-analysis reserve selected for October 17 Early. Native scene and finished corner overlays visually inspected: exactly two Yorkies, one duck, chicken and turkey; fresh 5:52 AM EDT leader scores. Mark appears as head human editor. Game diagrams and equipment are illustrative.",
       "discordShares": [
         {
           "channelId": "1550165647911034940",
@@ -353,7 +355,8 @@
           "attachmentSha256": "ab87b590d194a6d12b19b626fa5a2ae85f76c54cf82a250113cabfcd65290878",
           "purpose": "User-requested preview for Opus 5.5 special article; remains an unused article reserve."
         }
-      ]
+      ],
+      "artworkId": "2026-10-17-morning-arc-3-26c1da664b"
     }
   ],
   "existingXPosts": [
