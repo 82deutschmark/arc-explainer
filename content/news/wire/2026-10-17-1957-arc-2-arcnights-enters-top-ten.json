@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-17T23:53:40Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Arcnights enters ARC-2 top 10 with 3.89-point gain",
+  "id": "2026-10-17-1957-arc-2-arcnights-enters-top-ten",
+  "personIds": [],
+  "publishedAt": "2026-10-17T23:57:43Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Arcnights added 3.89 points to reach 68.06, climbing from 12th to ninth on the ARC-AGI-2 public board."
+    }
+  ],
+  "since": "2026-10-16T23:51:13Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T23:57:13Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16442485"
+  ]
+}
