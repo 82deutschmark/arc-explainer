@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-17T19:53:13Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "AquaUrsa Research moves to 13th on ARC-3",
+  "id": "2026-10-17-1604-arc-3-aquaur-research-moves-to-thirteenth",
+  "personIds": [],
+  "publishedAt": "2026-10-17T20:04:51Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "AquaUrsa Research gained 0.72 to reach 39.69, moving from 15th to 13th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move puts AquaUrsa inside the board's 18 gold places; the 18th-place cutoff is 38.20."
+    }
+  ],
+  "since": "2026-10-16T19:50:47Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T20:04:25Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15488763"
+  ]
+}
