@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-16T23:51:11Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "okajiro climbs 796 places to 55th on ARC-AGI-3",
+  "id": "2026-10-16-2000-arc-3-okajiro-climbs-to-55",
+  "personIds": [],
+  "publishedAt": "2026-10-17T00:00:12Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "okajiro climbed 796 places in the past day, from 851st to 55th, with a score of 33.95 (+5.38)."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That puts okajiro inside the board’s top 100, among 4,383 teams."
+    }
+  ],
+  "since": "2026-10-15T23:48:46Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-16T23:59:50Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16970229"
+  ]
+}
