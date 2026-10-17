@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-17T21:53:28Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Hack2Publish climbs into ARC-2 top 100",
+  "id": "2026-10-17-1758-arc-2-hack2publish-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-17T21:58:37Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Hack2Publish climbed 47 places, from 122nd to 75th, at 34.58 (+1.94) in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts the team inside the top 100 on a board of 3,001 teams."
+    }
+  ],
+  "since": "2026-10-16T21:51:01Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T21:58:26Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16260837"
+  ]
+}
