@@ -1,9 +1,467 @@
 [
   {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T20:57:23.841450Z",
+    "competitions": [],
+    "id": "2111560813094043812",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T20:51:43Z",
+    "storyUrl": null,
+    "summary": "Mazur agrees with Mark Barney’s remark about the interaction of language and mathematics, replying “Same” in the Preceden discussion.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111560813094043812",
+    "visibility": "public",
+    "whyItMatters": "Organizer community colour; no competition score, release or research result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T20:57:23.841450Z",
+    "competitions": [],
+    "id": "2111559918318952920",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T20:48:10Z",
+    "storyUrl": null,
+    "summary": "Mazur asks Billy to explain algorithmic disintermediation, in a discussion quoting his autonomous SaaS coding experiment.",
+    "threadId": "2111537673580274071",
+    "url": "https://x.com/mhmazur/status/2111559918318952920",
+    "visibility": "public",
+    "whyItMatters": "Organizer community colour; no competition score, release or research result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T19:06:20.469Z",
+    "competitions": [],
+    "id": "2111518766043709695",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T18:04:38Z",
+    "storyUrl": null,
+    "summary": "Mazur replies with a hundred-points emoji to Charles Smith’s praise of Claude finding a broken funnel and knowing where to stop. A brief agreement, with no new technical detail or ARC result.",
+    "threadId": "2111514948203606350",
+    "url": "https://x.com/mhmazur/status/2111518766043709695",
+    "visibility": "public",
+    "whyItMatters": "Captured before editorial selection; colour only."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T17:58:55.202Z",
+    "competitions": [],
+    "id": "2111509128036426203",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T17:26:20Z",
+    "storyUrl": null,
+    "summary": "Mazur enthusiastically agrees with Lane Henslee’s praise of the existing-subscription setup and the old thumbnail bug the agent reportedly found.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111509128036426203",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; attributed claims, not an ARC benchmark result."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "community",
+    "checkedAt": "2026-10-17T17:59:10.848Z",
+    "competitions": [],
+    "id": "2111507711653564543",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-17T17:20:43Z",
+    "storyUrl": null,
+    "summary": "Chollet argues that coding automation shifts bottlenecks elsewhere in a system. He claims engineering demand and workloads remain high despite agents writing most code, while companies often see little resulting profit improvement. His commentary gives no supporting study or ARC score.",
+    "threadId": "2111507711653564543",
+    "url": "https://x.com/fchollet/status/2111507711653564543",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; attributed claims, not an ARC benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T17:59:24.680Z",
+    "competitions": [],
+    "id": "2111505655429296279",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T17:12:32Z",
+    "storyUrl": "https://x.com/mhmazur/status/2108661854608203932",
+    "summary": "Mazur links back to his October 9 account of Claude Code finding an old SaaS bug, submitting and deploying a fix, and measuring affected production records. This is a new reply referring to an earlier claimed result, not a new fix.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111505655429296279",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; attributed claims, not an ARC benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T17:59:19.156Z",
+    "competitions": [],
+    "id": "2111505445353329137",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T17:11:42Z",
+    "storyUrl": null,
+    "summary": "Mazur tells Mark Barney that the Preceden date-localization bug is fixed. He says a French language selection combined with an English topic produced English content with French dates, which the homepage cache then served to everyone. He says the language and caching logic needs simplifying.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111505445353329137",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; attributed claims, not an ARC benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T17:58:55.202Z",
+    "competitions": [],
+    "id": "2111503826918252937",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T17:05:16Z",
+    "storyUrl": null,
+    "summary": "Mazur responds with a cheers emoji after Pavel Flit acknowledges that AI-written replies may reduce genuine engagement.",
+    "threadId": "2111494456633638912",
+    "url": "https://x.com/mhmazur/status/2111503826918252937",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; attributed claims, not an ARC benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:56:37.260Z",
+    "competitions": [],
+    "id": "2111501514724491589",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T16:56:05Z",
+    "storyUrl": null,
+    "summary": "Mazur argues that visibly AI-generated replies discourage engagement, even when the underlying ideas belong to the writer.",
+    "threadId": "2111494456633638912",
+    "url": "https://x.com/mhmazur/status/2111501514724491589",
+    "visibility": "public",
+    "whyItMatters": "Organizer follow-up captured before editorial selection; no ARC score or standings claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:56:37.260Z",
+    "competitions": [],
+    "id": "2111496047352561995",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T16:34:22Z",
+    "storyUrl": null,
+    "summary": "Mazur asks a commenter to reply in their own words rather than use an LLM to write replies.",
+    "threadId": "2111494456633638912",
+    "url": "https://x.com/mhmazur/status/2111496047352561995",
+    "visibility": "public",
+    "whyItMatters": "Organizer follow-up captured before editorial selection; no ARC score or standings claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:56:37.260Z",
+    "competitions": [],
+    "id": "2111491839358300669",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T16:17:38Z",
+    "storyUrl": null,
+    "summary": "Mazur thanks Mark Barney for suggesting an independent daily QA agent acting as a new user and says he will brainstorm the idea.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111491839358300669",
+    "visibility": "public",
+    "whyItMatters": "Organizer follow-up captured before editorial selection; no ARC score or standings claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T16:56:37.260Z",
+    "competitions": [],
+    "id": "2111491741446541321",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T16:17:15Z",
+    "storyUrl": null,
+    "summary": "Mazur responds with agreement and a grimacing emoji to a comparison of the agent’s reported record with human product managers.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111491741446541321",
+    "visibility": "public",
+    "whyItMatters": "Organizer follow-up captured before editorial selection; no ARC score or standings claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:56:53.905Z",
+    "competitions": [],
+    "id": "2111491485715570971",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T16:16:14Z",
+    "storyUrl": null,
+    "summary": "Mazur says the system uses his existing $200/month Claude Code subscription, adds no extra bill, and barely affects weekly usage. He clarifies that routines start hourly and often finish within minutes, rather than running continuously.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111491485715570971",
+    "visibility": "public",
+    "whyItMatters": "Organizer follow-up captured before editorial selection; no ARC score or standings claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:56:58.222Z",
+    "competitions": [],
+    "id": "2111489166550745555",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T16:07:01Z",
+    "storyUrl": null,
+    "summary": "Mazur posts an answer attributed to Claude: signup-funnel data identified a weak cohort, a desktop/mobile browser walkthrough revealed that generated timelines exceeded the free event limit, and code inspection explained the disabled Add Event button. The reply says plan logic required Matt’s approval and a fix is scheduled for Monday.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111489166550745555",
+    "visibility": "public",
+    "whyItMatters": "Useful detail behind the Preceden autonomous-agent experiment. Author-published account, not independently verified performance or a shipped fix."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "banter",
+    "checkedAt": "2026-10-17T16:56:44.861Z",
+    "competitions": [],
+    "id": "2111488924619243981",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-17T16:06:03Z",
+    "storyUrl": "https://en.wikipedia.org/wiki/Cute_aggression",
+    "summary": "Knoop jokes by linking the Wikipedia entry for cute aggression in response to a proposal to align AI by making it regard humans as cute.",
+    "threadId": "2111397649748557839",
+    "url": "https://x.com/mikeknoop/status/2111488924619243981",
+    "visibility": "public",
+    "whyItMatters": "Organizer follow-up captured before editorial selection; no ARC score or standings claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:02:24.432Z",
+    "competitions": [],
+    "id": "2111487238244577373",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T15:59:21Z",
+    "storyUrl": "https://preceden.com",
+    "summary": "Responding to a warning that conversion gains can mask a decline in willingness to pay, Mazur says this is not too hard to guard against; he gives no method in this reply.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111487238244577373",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; no new ARC score or independently verified product outcome."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:02:29.261Z",
+    "competitions": [],
+    "id": "2111481426969239710",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T15:36:16Z",
+    "storyUrl": "https://preceden.com",
+    "summary": "Asked whether Claude has shipped anything he regretted, Mazur says it has not and praises its competence. This is his personal experience claim.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111481426969239710",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; no new ARC score or independently verified product outcome."
+  },
+  {
+    "author": "GregKamradt",
+    "authorName": "Greg Kamradt",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:02:20.565Z",
+    "competitions": [],
+    "id": "2111478656237543489",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-17T15:25:15Z",
+    "storyUrl": "https://pixiecitie.com/app/",
+    "summary": "Kamradt replies to Michael Tan's North Beach/San Francisco post with a link to PixieCitie, his live city-view app.",
+    "threadId": "2111295265932189926",
+    "url": "https://x.com/GregKamradt/status/2111478656237543489",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; no new ARC score or independently verified product outcome."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:02:33.152Z",
+    "competitions": [],
+    "id": "2111477498030813596",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T15:20:39Z",
+    "storyUrl": null,
+    "summary": "Mazur thanks @fireandstart for sharing his autonomous Preceden development experiment.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111477498030813596",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; no new ARC score or independently verified product outcome."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T16:02:29.261Z",
+    "competitions": [],
+    "id": "2111472285437821117",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T14:59:56Z",
+    "storyUrl": "https://preceden.com",
+    "summary": "Asked how much of the agent-generated backlog he ships, Mazur says he follows Claude's recommendations about 99% of the time.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111472285437821117",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary captured before editorial selection; no new ARC score or independently verified product outcome."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T14:59:40.721Z",
+    "competitions": [],
+    "id": "2111466773987897821",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T14:38:02Z",
+    "storyUrl": null,
+    "summary": "Replying to a comment favoring human approval for pricing, limits and authentication, Mazur says funnel autonomy could be fairly low risk if the agent measures changes and iterates. He frames lower revenue over days or weeks as a downside and lasting conversion and revenue gains as a possible upside.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111466773987897821",
+    "visibility": "public",
+    "whyItMatters": "Attributed view on autonomy and outcome measurement; hypothetical benefits, not a demonstrated revenue gain."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T14:59:51.163Z",
+    "competitions": [],
+    "id": "2111461708896313762",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T14:17:55Z",
+    "storyUrl": null,
+    "summary": "Mazur links his September 21 account of experimenting with Claude Code autonomously shipping changes to Preceden as background to the new funnel thread.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111461708896313762",
+    "visibility": "public",
+    "whyItMatters": "Context link for the autonomous coding experiment; retain with the root thread."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-17T14:59:34.186Z",
+    "competitions": [],
+    "id": "2111461401139060934",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T14:16:41Z",
+    "storyUrl": "https://preceden.com",
+    "summary": "Mazur says his autonomous Claude setup found a signup funnel problem in Preceden without being directed to it: AI-generated timelines exceed the free plan limit, leaving new users unable to add events. He says it investigated production data and code, proposed fixes to limits, signup thumbnails, upgrade copy and tracking, and defined a 28-day success check. Pricing, plan limits and authentication changes required his approval.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111461401139060934",
+    "visibility": "public",
+    "whyItMatters": "Organizer perspective on agent autonomy and measuring product outcomes; an attributed product anecdote, not an ARC score or independently verified business result."
+  },
+  {
     "author": "bogoconic1",
     "authorName": "Geremie Yeo",
     "category": "community",
-    "checkedAt": "2026-10-17T09:06:10.613Z",
+    "checkedAt": "2026-10-17T22:06:11.938664+00:00",
     "competitions": [
       "arc-2",
       "arc-3"
@@ -11,7 +469,9 @@
     "id": "2111352743181136264",
     "identitySourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
     "importance": 2,
-    "personIds": [],
+    "personIds": [
+      "geremie-yeo"
+    ],
     "postedAt": "2026-10-17T07:04:55Z",
     "storyUrl": null,
     "summary": "Geremie Yeo complains about Kaggle inference queues and competition demand for four L4 GPUs. His post mentions both ARC contests and Gemma 4 Developer Agent.",
@@ -84,7 +544,7 @@
     "author": "sirbayes",
     "authorName": "Kevin Patrick Murphy",
     "category": "research",
-    "checkedAt": "2026-10-17T03:06:51.600Z",
+    "checkedAt": "2026-10-17T18:26:07.283020Z",
     "competitions": [
       "arc-3"
     ],

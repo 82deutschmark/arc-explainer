@@ -477,5 +477,32 @@
     "instructions": "Select suitable unused approved editor stock for morning race analysis. Mark appears as head human editor, not as a roster depiction; two Yorkies and three distinct mechanical birds. Fresh leader score panel is context only. Caption must identify AI editorial illustration and illustrative game diagrams. No depicted method or equipment claim.",
     "selectedAt": "2026-10-17T10:00:24.276464+00:00",
     "verificationNotes": "createdAt records the original approved stock commission; selectedAt records selection for this issue, not a news event."
+  },
+  {
+    "id": "arc-3-oct17-evening-proofing-session-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-15T23:28:46Z",
+    "expiresAt": "2026-10-18T00:00:00Z",
+    "title": "The Proofing Session for October 17 Late edition",
+    "priority": "standing front-page picture",
+    "status": "pending",
+    "targetEditionId": "2026-10-17-evening-arc-3",
+    "placement": "edition-artwork",
+    "artworkGenerationRecord": "2026-10-15-editor-proofing-session-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": []
+    },
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "subjectNames": [
+      "cha7ura"
+    ],
+    "instructions": "Use the suitable unused approved Proofing Session reserve for the Late analysis of cha7ura and the gold chase. Mark appears as head human editor, with exactly two Yorkies and one each duck, chicken and turkey. Compose fresh leader scores and observation time. Caption identifies AI editorial artwork and illustrative game diagrams and equipment; no entrant method claim.",
+    "selectedAt": "2026-10-17T22:05:48.492020+00:00",
+    "verificationNotes": "createdAt records the original approved reusable-art commission. selectedAt is this issue selection, not a news event. Native base inspected against the last Early and Late episodes; distinct proofing action and camera."
   }
 ]

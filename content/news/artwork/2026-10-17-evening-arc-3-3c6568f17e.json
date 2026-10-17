@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-17-evening-arc-3",
+  "briefSha256": "51ce0623620eb9016295618dba3ee9a8be868e89c746458c73ce68f1f9f84ad6",
+  "dataAsOf": "2026-10-17T21:53:27Z",
+  "generationRecord": "2026-10-15-editor-proofing-session-v1-base",
+  "headline": "cha7ura leaps to 25th as ARC-3’s gold line holds",
+  "historyChart": null,
+  "id": "2026-10-17-evening-arc-3-3c6568f17e",
+  "image": {
+    "alt": "AI editorial illustration: head human editor Mark Barney examines illustrative replay sheets with a magnifier beside two Yorkies and three mechanical birds: a duck, chicken and turkey. ARC-3 score panel: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49; October 17, 2026, 5:53 PM EDT.",
+    "artworkId": "2026-10-17-evening-arc-3-3c6568f17e",
+    "caption": "AI-generated editorial illustration: The Proofing Session. Mark Barney appears as head human editor. Game diagrams and equipment are illustrative. Score panel: Oct 17, 2026 · 5:53 PM EDT; provisional public standings.",
+    "src": "/news-images/2026-10-17-evening-arc-3-3c6568f17e.webp"
+  },
+  "imageSha256": "d2f5c829826eee641d4fb35be9061d2589b54dff52832808b2a8c5b6ba40d713",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "19e4a92c2e5addc133116511342326c30d853683aab29e0499f5a6e0af585747",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

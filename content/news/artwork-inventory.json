@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-17T10:08:32.415150+00:00",
+  "updatedAt": "2026-10-17T22:08:30.542761+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -320,10 +320,12 @@
       "generationRecord": "2026-10-15-editor-proofing-session-v1-base",
       "src": "/news-images/2026-10-15-editor-proofing-session-v1-base.webp",
       "title": "The Proofing Session",
-      "status": "reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-17-evening-arc-3"
+      ],
       "xAttachments": [],
-      "selectionNote": "Explicitly commissioned reusable editor scene. Editor examines printed replay proofs with a magnifier, two Yorkies and all three poultry. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative.",
+      "selectionNote": "Unused approved Proofing Session reserve selected for October 17 Late analysis of the gold chase. Native original and final closing overlays visually inspected: exactly two Yorkies, one duck, chicken and turkey; fresh 5:53 PM EDT leader scores. Mark appears as head human editor. Game diagrams and equipment are illustrative. Faces, magnifier and proofing action remain clear.",
       "discordShares": [
         {
           "channelId": "1550165647911034940",
@@ -333,7 +335,8 @@
           "attachmentSha256": "19e4a92c2e5addc133116511342326c30d853683aab29e0499f5a6e0af585747",
           "purpose": "User-requested preview for Opus 5.5 special article; remains an unused article reserve."
         }
-      ]
+      ],
+      "artworkId": "2026-10-17-evening-arc-3-3c6568f17e"
     },
     {
       "id": "2026-10-15-editor-dawn-briefing-v1",
