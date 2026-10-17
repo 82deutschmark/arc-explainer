@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-17T09:52:12Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "mtg moves into third on ARC-AGI-3",
+  "id": "2026-10-17-0602-arc-3-mtg-moves-into-third",
+  "personIds": [],
+  "publishedAt": "2026-10-17T10:02:50Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "mtg gained 5.37 to 50.37, moving from 5th to 3rd on the ARC-AGI-3 board."
+    }
+  ],
+  "since": "2026-10-16T09:49:44Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T10:02:24Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16153655"
+  ]
+}

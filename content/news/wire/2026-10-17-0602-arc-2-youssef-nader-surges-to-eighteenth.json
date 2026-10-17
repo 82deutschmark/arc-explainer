@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-17T09:52:13Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Youssef Nader surges to 18th on ARC-2",
+  "id": "2026-10-17-0602-arc-2-youssef-nader-surges-to-eighteenth",
+  "personIds": [],
+  "publishedAt": "2026-10-17T10:02:50Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Youssef Nader gained 29.44 to 54.72, vaulting from 1,830th to 18th."
+    }
+  ],
+  "since": "2026-10-16T09:49:46Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-17T10:02:24Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16095234"
+  ]
+}
