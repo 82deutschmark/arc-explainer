@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T03:54:03Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "gurume climbs 842 places into ARC-2 top 100",
+  "id": "2026-10-18-0003-arc-2-gurume-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-18T04:03:03Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "gurume climbed from 926th to 84th, reaching 33.61 after a 3.05-point gain on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts gurume inside the top 100 among 3,010 teams. The gold line is 58.06 at 16th."
+    }
+  ],
+  "since": "2026-10-17T03:51:39Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T04:02:44Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17019651"
+  ]
+}
