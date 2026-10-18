@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-18T01:46:36.393911Z",
+  "updatedAt": "2026-10-18T10:04:46.312142+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -300,10 +300,12 @@
       "generationRecord": "2026-10-15-editor-replay-wall-v1-base",
       "src": "/news-images/2026-10-15-editor-replay-wall-v1-base.webp",
       "title": "The Replay Wall",
-      "status": "reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-18-morning-arc-3"
+      ],
       "xAttachments": [],
-      "selectionNote": "Explicitly commissioned reusable editor scene. Standing editor investigating a replay wall with the Yorkies and all three poultry. Native output visually inspected. Mark appears as head editor. Use for suitable future analysis reporting; diagrams are illustrative.",
+      "selectionNote": "Unused approved editor episode selected for October 18 Early; clean base and exact 5:54 AM EDT overlays visually inspected. Mark appears as head human editor; displays illustrative.",
       "discordShares": [
         {
           "channelId": "1550165647911034940",
@@ -313,7 +315,8 @@
           "attachmentSha256": "ada11a2fb4c14db3d2ac7c356ca431108afeaa31ed95a3043241578e58d34bd6",
           "purpose": "User-requested preview for Opus 5.5 special article; remains an unused article reserve."
         }
-      ]
+      ],
+      "artworkId": "2026-10-18-morning-arc-3-f3622e5aad"
     },
     {
       "id": "2026-10-15-editor-proofing-session-v1",

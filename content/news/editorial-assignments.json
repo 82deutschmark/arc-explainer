@@ -504,5 +504,33 @@
     "instructions": "Use the suitable unused approved Proofing Session reserve for the Late analysis of cha7ura and the gold chase. Mark appears as head human editor, with exactly two Yorkies and one each duck, chicken and turkey. Compose fresh leader scores and observation time. Caption identifies AI editorial artwork and illustrative game diagrams and equipment; no entrant method claim.",
     "selectedAt": "2026-10-17T22:05:48.492020+00:00",
     "verificationNotes": "createdAt records the original approved reusable-art commission. selectedAt is this issue selection, not a news event. Native base inspected against the last Early and Late episodes; distinct proofing action and camera."
+  },
+  {
+    "id": "early-2026-10-18-replay-wall-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-15T23:28:45Z",
+    "expiresAt": "2026-10-18T13:00:00Z",
+    "title": "The Replay Wall for October 18 Early edition",
+    "priority": "Standing front-page picture requirement",
+    "status": "pending",
+    "targetEditionId": "2026-10-18-morning-arc-3",
+    "teamIds": [
+      "16384837",
+      "15486995",
+      "15499660"
+    ],
+    "personIds": [
+      "daniel-franzen"
+    ],
+    "instructions": "Use the unused approved Replay Wall editor reserve with fresh score overlays for the edition reporting Daniel Franzen’s gold-band advance. The editor is shown in his newsroom capacity; the displays are illustrative. Keep the headline on the strongest verified contest news.",
+    "artworkGenerationRecord": "2026-10-15-editor-replay-wall-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": []
+    },
+    "selectedAt": "2026-10-18T10:02:36.670593+00:00",
+    "verificationNotes": "createdAt records Mark’s original approved reserve commission in the native generation record; selectedAt records selection for this issue, not a news event.",
+    "placement": "edition-artwork"
   }
 ]

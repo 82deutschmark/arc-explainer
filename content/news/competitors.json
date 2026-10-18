@@ -12,7 +12,7 @@
     ],
     "firstObservedAt": "2026-10-09T03:21:39Z",
     "id": "arc-2-15486728",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "mithilavakde"
     ],
@@ -44,7 +44,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15486939",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "cpmpml",
       "darraghdog"
@@ -58,7 +58,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-09T03:21:39Z",
     "id": "arc-2-15487968",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "jcole75"
     ],
@@ -91,7 +91,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15501171",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "threerabbits"
     ],
@@ -117,7 +117,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15507730",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "insanitycheck"
     ],
@@ -157,7 +157,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15526034",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "dzjiann",
       "keithtyser",
@@ -192,6 +192,20 @@
     ],
     "name": "Hira Norm",
     "teamId": "15596748"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-18T09:54:37Z",
+    "id": "arc-2-15601881",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
+    "members": [
+      "amiteshhhhhhhhh",
+      "gghhjjkk"
+    ],
+    "name": "Flying Pandas",
+    "teamId": "15601881"
   },
   {
     "aliases": [],
@@ -273,7 +287,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15789060",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "cookizesong",
       "xiezejian",
@@ -295,6 +309,19 @@
     ],
     "name": "Aneesh & Yash",
     "teamId": "15796569"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-18T09:54:37Z",
+    "id": "arc-2-15938245",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
+    "members": [
+      "andy2709"
+    ],
+    "name": "NguyenThanhNhan",
+    "teamId": "15938245"
   },
   {
     "aliases": [],
@@ -328,17 +355,18 @@
   },
   {
     "aliases": [
-      "Odd Dice"
+      "Odd Dice",
+      "Muggle"
     ],
     "competition": "arc-2",
     "facts": [],
     "firstObservedAt": "2026-10-12T21:36:52Z",
     "id": "arc-2-16297545",
-    "lastObservedAt": "2026-10-16T21:51:01Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "nisshokuitsuki"
     ],
-    "name": "Muggle",
+    "name": "ｶﾎｳｼｭｳｾｲ",
     "teamId": "16297545"
   },
   {
@@ -347,7 +375,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16373916",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "majkel1337"
     ],
@@ -373,7 +401,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-11T21:33:05Z",
     "id": "arc-2-16410256",
-    "lastObservedAt": "2026-10-11T21:33:05Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "badboiriri",
       "cody11null",
@@ -403,7 +431,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-13T21:42:57Z",
     "id": "arc-2-16442485",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "hongori",
       "quarkliu"
@@ -536,7 +564,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16671221",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "albertruehlman"
     ],
@@ -595,7 +623,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16756524",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "driessmit1",
       "jeroencottaar",
@@ -622,9 +650,22 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-18T09:54:37Z",
+    "id": "arc-2-16767874",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
+    "members": [
+      "t0m0t0m0w"
+    ],
+    "name": "T0m0t0m0 W",
+    "teamId": "16767874"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16768245",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "deepdreamer"
     ],
@@ -831,7 +872,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-17023174",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-18T09:54:37Z",
     "members": [
       "markbarney",
       "scizical",
@@ -1021,7 +1062,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15486995",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "dlorah",
       "driessmit1",
@@ -1175,7 +1216,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15499660",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "threerabbits"
     ],
@@ -1201,7 +1242,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15501006",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "insanitycheck"
     ],
@@ -1358,7 +1399,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15605182",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "markbarney",
       "scizical",
@@ -1443,7 +1484,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15770880",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "cpmpml",
       "darraghdog",
@@ -1531,7 +1572,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16021367",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "dwellement0baser",
       "fses91",
@@ -1560,7 +1601,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16032816",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "dvhrtm",
       "sbrodehl"
@@ -1605,7 +1646,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16132261",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "cmechevalier",
       "richardcsaky"
@@ -1639,7 +1680,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16153655",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "michaeltgao"
     ],
@@ -1750,7 +1791,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16371045",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "lordhansolo"
     ],
@@ -1776,7 +1817,7 @@
     ],
     "firstObservedAt": "2026-10-09T20:53:44Z",
     "id": "arc-3-16384837",
-    "lastObservedAt": "2026-10-15T21:48:34Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "dfranzen"
     ],
@@ -1846,7 +1887,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-16T09:49:44Z",
     "id": "arc-3-16490178",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "florenciasolange",
       "grigoriyzatravkin"
@@ -1905,7 +1946,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16569113",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "isakatsuyoshi",
       "konbu17",
@@ -2174,6 +2215,22 @@
     "aliases": [],
     "competition": "arc-3",
     "facts": [],
+    "firstObservedAt": "2026-10-18T09:54:36Z",
+    "id": "arc-3-16861524",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
+    "members": [
+      "ikaroskaggle",
+      "milkcoffeen",
+      "naoism",
+      "nistudy"
+    ],
+    "name": "Preferred ARC",
+    "teamId": "16861524"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
     "firstObservedAt": "2026-10-13T21:42:56Z",
     "id": "arc-3-16897768",
     "lastObservedAt": "2026-10-13T21:42:56Z",
@@ -2248,7 +2305,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16958599",
-    "lastObservedAt": "2026-10-17T21:53:27Z",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
     "members": [
       "majkel1337"
     ],
@@ -2332,6 +2389,19 @@
     ],
     "name": "Koris Lab",
     "teamId": "16971639"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-18T09:54:36Z",
+    "id": "arc-3-16991828",
+    "lastObservedAt": "2026-10-18T09:54:36Z",
+    "members": [
+      "stefanoclss"
+    ],
+    "name": "stefanoclss",
+    "teamId": "16991828"
   },
   {
     "aliases": [],

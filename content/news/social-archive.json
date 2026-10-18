@@ -1,5 +1,199 @@
 [
   {
+    "author": "bogoconic1",
+    "authorName": "Geremie Yeo",
+    "category": "community",
+    "checkedAt": "2026-10-18T07:11:54.682255Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2111669155820945808",
+    "identitySourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+    "importance": 1,
+    "personIds": [
+      "geremie-yeo"
+    ],
+    "postedAt": "2026-10-18T04:02:14Z",
+    "storyUrl": null,
+    "summary": "Geremie Yeo reports a 12-minute-59-second wait to provision four L4 GPUs on Modal.",
+    "threadId": null,
+    "url": "https://x.com/bogoconic1/status/2111669155820945808",
+    "visibility": "public",
+    "whyItMatters": "A dated personal report following his October 17 Kaggle-queue commentary. It does not establish a platform-wide wait or attribute a particular ARC score to this run."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-18T02:56:58.391Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111648614078656949",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-18T02:40:36Z",
+    "storyUrl": null,
+    "summary": "Mazur replies “Good question!” to Raikaru asking what benchmark could not possibly be trained for, in the ongoing benchmark-training discussion. No new testing claim.",
+    "threadId": "2111589586111783403",
+    "url": "https://x.com/mhmazur/status/2111648614078656949",
+    "visibility": "public",
+    "whyItMatters": "Organizer follow-up archived for completeness; colour only, no substantive new result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-18T02:57:02.647Z",
+    "competitions": [],
+    "id": "2111648453138821251",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-18T02:39:58Z",
+    "storyUrl": null,
+    "summary": "Mazur replies “same :)” to Krzysztof Cichy joking that the Preceden experiment makes him want to give AI more control.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111648453138821251",
+    "visibility": "public",
+    "whyItMatters": "Organizer follow-up archived for completeness; colour only, no substantive new result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-18T01:03:07.079Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2111622650799767667",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-18T00:57:26Z",
+    "storyUrl": null,
+    "summary": "Mazur says that, based on conversations with some lab staff and to the best of his knowledge, none have built synthetic RL environments specifically to raise ARC scores. He explains that ARC calls datasets semi-private because evaluation data leaves the organization through third-party model APIs, despite zero data retention.",
+    "threadId": "2111589586111783403",
+    "url": "https://x.com/mhmazur/status/2111622650799767667",
+    "visibility": "public",
+    "whyItMatters": "Follow-up to the evaluation-integrity exchange. Attribute to Mazur; this is not an independent audit of lab training data. The critic acknowledges having no evidence of that practice."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-18T01:03:07.079Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2111619680880205824",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-18T00:45:38Z",
+    "storyUrl": null,
+    "summary": "Mazur asks whether there is evidence that major labs create synthetic ARC-like reinforcement-learning environments specifically to improve ARC benchmark scores.",
+    "threadId": "2111589586111783403",
+    "url": "https://x.com/mhmazur/status/2111619680880205824",
+    "visibility": "public",
+    "whyItMatters": "Follow-up to the evaluation-integrity exchange. Attribute to Mazur; this is not an independent audit of lab training data. The critic acknowledges having no evidence of that practice."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "community",
+    "checkedAt": "2026-10-17T23:57:08.031Z",
+    "competitions": [],
+    "id": "2111604462221771110",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-17T23:45:10Z",
+    "storyUrl": null,
+    "summary": "Chollet disputes a claim that AI is improving software-company profits. He says software-engineer employment is flat at SaaS firms and revenue follows trends predating AI, citing Adobe, Workday, Zoom and Salesforce. Four attached charts were visible; their data were not independently verified.",
+    "threadId": "2111507711653564543",
+    "url": "https://x.com/fchollet/status/2111604462221771110",
+    "visibility": "public",
+    "whyItMatters": "Attributed follow-up to his earlier software-automation commentary; opinion and empirical claims, not a benchmark result."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "banter",
+    "checkedAt": "2026-10-17T23:58:15.084Z",
+    "competitions": [],
+    "id": "2111602756075376911",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-17T23:38:23Z",
+    "storyUrl": null,
+    "summary": "Knoop recalls 1998 Zelda Online / Graal as an unmatched experience, says he was a GC, and criticizes its management.",
+    "threadId": "2111543522100703332",
+    "url": "https://x.com/mikeknoop/status/2111602756075376911",
+    "visibility": "public",
+    "whyItMatters": "Organizer colour captured before filtering; no contest or research development."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-17T23:57:58.938Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2111602330349064617",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T23:36:41Z",
+    "storyUrl": null,
+    "summary": "Responding to an allegation that benchmarks test on training data, Mazur says ARC is not compromised, its semi-private evaluation sets have not leaked and cannot be trained on, and provider API testing requires zero data retention.",
+    "threadId": "2111589586111783403",
+    "url": "https://x.com/mhmazur/status/2111602330349064617",
+    "visibility": "public",
+    "whyItMatters": "Useful organizer statement on evaluation integrity; attribute to Mazur rather than presenting it as an independent audit."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-17T22:06:11.721Z",
+    "competitions": [],
+    "id": "2111571581780758972",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-17T21:34:30Z",
+    "storyUrl": null,
+    "summary": "Mazur praises a pathfinding visualization shared by Binx, replying “Cool viz”. The parent describes an older random pathfinding comparison.",
+    "threadId": "2111569573720055998",
+    "url": "https://x.com/mhmazur/status/2111571581780758972",
+    "visibility": "public",
+    "whyItMatters": "Organizer community colour; no competition score, release or research result."
+  },
+  {
     "author": "mhmazur",
     "authorName": "Matt Mazur",
     "category": "banter",
@@ -456,6 +650,26 @@
     "url": "https://x.com/mhmazur/status/2111461401139060934",
     "visibility": "public",
     "whyItMatters": "Organizer perspective on agent autonomy and measuring product outcomes; an attributed product anecdote, not an ARC score or independently verified business result."
+  },
+  {
+    "author": "menphim",
+    "authorName": "めんふぃむ",
+    "category": "banter",
+    "checkedAt": "2026-10-18T07:11:54.682255Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111459293052711141",
+    "identitySourceUrl": "https://www.kaggle.com/menphim",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-17T14:08:19Z",
+    "storyUrl": null,
+    "summary": "In Japanese, @menphim says: “I am in the ARC-AGI-3 silver band for now, but I do not understand anything. Is it possible fewer than 50 people understand this competition?” The final question is a rhetorical reaction, not a measured headcount.",
+    "threadId": null,
+    "url": "https://x.com/menphim/status/2111459293052711141",
+    "visibility": "public",
+    "whyItMatters": "Participant colour about the contest’s difficulty. The silver-band position is self-reported here; no new roster or standings claim established."
   },
   {
     "author": "bogoconic1",
