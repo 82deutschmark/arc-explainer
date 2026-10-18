@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-18T13:54:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Matt #2 and Tecnod8.AI leap into the top 100",
+  "id": "2026-10-18-1002-arc-3-two-teams-leap-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-18T14:02:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Matt #2 gained 6.61 to reach 34.44, moving from 1,084th to 48th. Tecnod8.AI gained 5.16 to reach 34.12, moving from 828th to 54th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The simultaneous climbs put both teams among the upper tier of the ARC-AGI-3 public standings."
+    }
+  ],
+  "since": "2026-10-17T13:52:36Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T14:01:48Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16939166",
+    "16406081"
+  ]
+}
