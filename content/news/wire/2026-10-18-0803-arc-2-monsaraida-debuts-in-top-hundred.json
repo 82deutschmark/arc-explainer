@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T11:54:49Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "monsaraida debuts 73rd on ARC-AGI-2",
+  "id": "2026-10-18-0803-arc-2-monsaraida-debuts-in-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-18T12:03:45Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "New entrant monsaraida opened its ARC-AGI-2 campaign in 73rd place with 35.56."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "That puts the team inside the top 100 on its first appearance in the public standings."
+    }
+  ],
+  "since": "2026-10-17T11:52:25Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T12:03:17Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17059100"
+  ]
+}
