@@ -374,19 +374,6 @@
         }
       ],
       "artworkId": "2026-10-17-morning-arc-3-26c1da664b"
-    },
-    {
-      "id": "2026-10-17-merger-whispers-v1",
-      "generationRecord": "2026-10-17-merger-whispers-v1-base",
-      "src": "/news-images/2026-10-17-merger-whispers-v1-base.webp",
-      "title": "Merger Whispers",
-      "status": "published-on-front-page",
-      "articleUses": [
-        "2026-10-17-arc3-superteam-merger-whispers"
-      ],
-      "xAttachments": [],
-      "discordShares": [],
-      "selectionNote": "Mark explicitly commissioned and approved publication of this unconfirmed gossip column. Saved three individually verified avatar references used; imagined meeting and rumor labels visible. No score or roster claim."
     }
   ],
   "existingXPosts": [
