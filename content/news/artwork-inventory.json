@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-18T21:51:17.495491Z",
+  "updatedAt": "2026-10-18T22:03:15.875914+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -453,8 +453,10 @@
       "generationRecord": "2026-10-18-top-ten-siege-full-crew-v1-base",
       "src": "/news-images/2026-10-18-top-ten-siege-full-crew-v1-base.webp",
       "title": "The High Ground — Ten Camps",
-      "status": "approved-unused-reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-18-evening-arc-3"
+      ],
       "xAttachments": [],
       "discordShares": [
         {
@@ -468,10 +470,11 @@
       ],
       "approvedBy": "mark-barney",
       "approvedAt": "2026-10-18T19:17:34.889371Z",
-      "selectionNote": "Boss-approved native episode. Preserve clean source; future illustrated editions use fresh score/time overlays and record actual article and X uses. Discord sharing alone does not consume an article reserve.",
+      "selectionNote": "October 18 Late commission fulfilled. All ten closing ranks and required roster handles checked. Clean native panorama and fresh 5:56 PM EDT score footer visually inspected; entire cast and machinery unobscured. Earlier Discord preview preserved separately.",
       "previewSrc": "/news-images/2026-10-18-top-ten-siege-score-gaps-preview.png",
       "previewArtworkId": "2026-10-18-top-ten-siege-score-gaps-preview",
-      "previewObservedAt": "2026-10-18T18:55:34Z"
+      "previewObservedAt": "2026-10-18T18:55:34Z",
+      "artworkId": "2026-10-18-evening-arc-3-de4792d35e-footer"
     },
     {
       "id": "2026-10-18-merger-confirmed-v1",

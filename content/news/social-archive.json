@@ -1,5 +1,327 @@
 [
   {
+    "author": "AlexBarry4",
+    "authorName": "Alexander Barry",
+    "category": "community",
+    "checkedAt": "2026-10-18T18:18:02.594443Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111873522985537865",
+    "identitySourceUrl": "https://x.com/AlexBarry4",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-18T17:34:19.000Z",
+    "storyUrl": null,
+    "summary": "Replying to Psyho’s PuzzleScript benchmark announcement, Barry says Epoch might be able to support API costs and that he has sent a DM. This is a tentative public statement; no funding agreement or collaboration is established.",
+    "threadId": "2111842926917550193",
+    "url": "https://x.com/AlexBarry4/status/2111873522985537865",
+    "visibility": "public",
+    "whyItMatters": "New response to the archive’s independent benchmark lead; recheck any later public confirmation before describing support as secured."
+  },
+  {
+    "author": "GregKamradt",
+    "authorName": "Greg Kamradt",
+    "category": "community",
+    "checkedAt": "2026-10-18T18:18:02.594443Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111855879444459565",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-18T16:24:12.000Z",
+    "storyUrl": null,
+    "summary": "Kamradt publicly replies that he sent a DM to Psyho after Psyho announced a nearly finished private PuzzleScript-based reasoning benchmark.",
+    "threadId": "2111842926917550193",
+    "url": "https://x.com/GregKamradt/status/2111855879444459565",
+    "visibility": "public",
+    "whyItMatters": "Organizer interest in an independent game benchmark; the message contents and any collaboration are unknown."
+  },
+  {
+    "author": "FakePsyho",
+    "authorName": "Psyho",
+    "category": "research",
+    "checkedAt": "2026-10-18T18:18:02.594443Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111851337130668414",
+    "identitySourceUrl": "https://x.com/FakePsyho",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-18T16:06:09.000Z",
+    "storyUrl": null,
+    "summary": "Asked about online solutions and prior model knowledge, Psyho says the selected games are niche and that reviewing logs for all selected games revealed no suspicious behavior.",
+    "threadId": "2111842926917550193",
+    "url": "https://x.com/FakePsyho/status/2111851337130668414",
+    "visibility": "public",
+    "whyItMatters": "Author-reported contamination check; does not independently establish absence of training exposure."
+  },
+  {
+    "author": "FakePsyho",
+    "authorName": "Psyho",
+    "category": "research",
+    "checkedAt": "2026-10-18T17:05:46.925Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111850705094930809",
+    "identitySourceUrl": "https://x.com/FakePsyho",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-18T16:03:39.000Z",
+    "storyUrl": null,
+    "summary": "Psyho reports full-run costs of $700 for Sol 6.1 and $60 for Luna 6, and estimates about $1,000 for Sonnet 5.5 and $4,000 for Astra 6. Says testing uses xhigh and may reduce generous action limits to lower cost.",
+    "threadId": "2111842926917550193",
+    "url": "https://x.com/FakePsyho/status/2111850705094930809",
+    "visibility": "public",
+    "whyItMatters": "Separates reported completed costs from forecasts; no logs, scores or reproducible release verified."
+  },
+  {
+    "author": "FakePsyho",
+    "authorName": "Psyho",
+    "category": "banter",
+    "checkedAt": "2026-10-18T17:05:31.241Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111842931078320161",
+    "identitySourceUrl": "https://x.com/FakePsyho",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-18T15:32:45.000Z",
+    "storyUrl": null,
+    "summary": "Psyho jokes that finishing the benchmark is procrastination from preparing for an interview.",
+    "threadId": "2111842926917550193",
+    "url": "https://x.com/FakePsyho/status/2111842931078320161",
+    "visibility": "public",
+    "whyItMatters": "Attributed colour accompanying the announcement."
+  },
+  {
+    "author": "FakePsyho",
+    "authorName": "Psyho",
+    "category": "research",
+    "checkedAt": "2026-10-18T18:18:02.594443Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111842926917550193",
+    "identitySourceUrl": "https://x.com/FakePsyho",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-18T15:32:44.000Z",
+    "storyUrl": null,
+    "summary": "Psyho says a nearly finished PuzzleScript benchmark selects 40 games from over 300, uses Codex/Claude Code harnesses with code generation prohibited, and keeps the game set private. The author says generous action limits already allow some saturation while models remain inefficient.",
+    "threadId": "2111842926917550193",
+    "url": "https://x.com/FakePsyho/status/2111842926917550193",
+    "visibility": "public",
+    "whyItMatters": "Potential benchmark-development story; author claims, not an official ARC release or independently verified score."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-18T15:59:33.227Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111842281515004205",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-18T15:30:10Z",
+    "storyUrl": null,
+    "summary": "Mazur replies “Well said!” to Zanthous’s objection that knowing what a benchmark is like does not itself compromise it.",
+    "threadId": "2111589586111783403",
+    "url": "https://x.com/mhmazur/status/2111842281515004205",
+    "visibility": "public",
+    "whyItMatters": "Adds an organizer reaction to the existing debate about synthetic practice environments; supplies no new measurement."
+  },
+  {
+    "author": "GregKamradt",
+    "authorName": "Greg Kamradt",
+    "category": "banter",
+    "checkedAt": "2026-10-18T15:59:37.477Z",
+    "competitions": [],
+    "id": "2111836628016882012",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-18T15:07:42Z",
+    "storyUrl": null,
+    "summary": "Kamradt jokes about a VC asking for a business moat, quoting Musk’s claim about superintelligence, robots, solar power and mass to space.",
+    "threadId": null,
+    "url": "https://x.com/GregKamradt/status/2111836628016882012",
+    "visibility": "public",
+    "whyItMatters": "Organizer colour; attributed joke and quoted prediction, not an ARC result."
+  },
+  {
+    "author": "ZanthousDev",
+    "authorName": "Zanthous ✾ Zankai",
+    "category": "community",
+    "checkedAt": "2026-10-18T15:59:33.227Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111829398236074456",
+    "identitySourceUrl": "https://x.com/ZanthousDev",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-18T14:38:59Z",
+    "storyUrl": null,
+    "summary": "Zanthous asks whether merely knowing what a benchmark is like is enough to call it compromised, and calls that standard excessive.",
+    "threadId": "2111589586111783403",
+    "url": "https://x.com/ZanthousDev/status/2111829398236074456",
+    "visibility": "public",
+    "whyItMatters": "The direct parent of Mazur’s approving reply."
+  },
+  {
+    "author": "ZanthousDev",
+    "authorName": "Zanthous ✾ Zankai",
+    "category": "community",
+    "checkedAt": "2026-10-18T15:59:33.227Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111829299791851660",
+    "identitySourceUrl": "https://x.com/ZanthousDev",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-18T14:38:35Z",
+    "storyUrl": null,
+    "summary": "Zanthous argues that private novel games remain meaningful even if labs create practice environments, because skill transfer is not guaranteed.",
+    "threadId": "2111589586111783403",
+    "url": "https://x.com/ZanthousDev/status/2111829299791851660",
+    "visibility": "public",
+    "whyItMatters": "Context for Mazur’s new approving reply; an attributed argument, not proof about any lab’s training."
+  },
+  {
+    "author": "paulg",
+    "authorName": "Paul Graham",
+    "category": "community",
+    "checkedAt": "2026-10-18T15:59:41.030Z",
+    "competitions": [],
+    "id": "2111823339953991832",
+    "identitySourceUrl": "https://x.com/paulg",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-18T14:14:54Z",
+    "storyUrl": null,
+    "summary": "Graham predicts persistent agent attacks while quoting dax’s report of attacks over the past 48 hours and a need for defenders running continuously.",
+    "threadId": null,
+    "url": "https://x.com/paulg/status/2111823339953991832",
+    "visibility": "public",
+    "whyItMatters": "Newly observed in Mazur’s repost inventory. General AI/security commentary; repost time unknown and attack claim not independently verified."
+  },
+  {
+    "author": "MarcShade47879",
+    "authorName": "Marc Shade",
+    "category": "banter",
+    "checkedAt": "2026-10-18T15:07:57.718Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111778832176877712",
+    "identitySourceUrl": "https://x.com/MarcShade47879",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-18T11:18:03.000Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+    "summary": "Marc Shade self-reports rank 766 in an ARC-AGI-3 Kaggle share, joking that it is a small price for a social life.",
+    "threadId": null,
+    "url": "https://x.com/MarcShade47879/status/2111778832176877712",
+    "visibility": "public",
+    "whyItMatters": "New public community colour. The competition link is verified, but Kaggle handle, team ID and current rank are unverified."
+  },
+  {
+    "author": "Mitubant",
+    "authorName": "NT",
+    "category": "community",
+    "checkedAt": "2026-10-18T15:08:53.788Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2111748562023493924",
+    "identitySourceUrl": "https://x.com/Mitubant",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-18T09:17:46.000Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "In reply to Itsu, NT says their side is in the same situation and jokes that there is heavy traffic between 60 and 70.",
+    "threadId": "2111746277256110582",
+    "url": "https://x.com/Mitubant/status/2111748562023493924",
+    "visibility": "public",
+    "whyItMatters": "New thread context about difficulty improving; no Kaggle identity or team membership established."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ (Itsu)",
+    "category": "standings",
+    "checkedAt": "2026-10-18T18:18:02.594443Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2111748324072276193",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 2,
+    "personIds": [
+      "itsu"
+    ],
+    "postedAt": "2026-10-18T09:16:49.000Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "Replying after NT congratulates them on passing 70, Itsu says they do not yet know how to improve beyond 70 and will keep trying.",
+    "threadId": "2111746277256110582",
+    "url": "https://x.com/iiiiitsu_ne/status/2111748324072276193",
+    "visibility": "public",
+    "whyItMatters": "Attributed contender reaction, with thread context; no method or new official result established."
+  },
+  {
+    "author": "Mitubant",
+    "authorName": "NT",
+    "category": "community",
+    "checkedAt": "2026-10-18T15:08:53.788Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2111747800593768925",
+    "identitySourceUrl": "https://x.com/Mitubant",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-18T09:14:44.000Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "NT congratulates Itsu on exceeding 70 points in the ARC-AGI-2 thread.",
+    "threadId": "2111746277256110582",
+    "url": "https://x.com/Mitubant/status/2111747800593768925",
+    "visibility": "public",
+    "whyItMatters": "Context for Itsu’s already archived response; not an independently checked score."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ (Itsu)",
+    "category": "standings",
+    "checkedAt": "2026-10-18T15:07:57.357Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2111746277256110582",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 2,
+    "personIds": [
+      "itsu"
+    ],
+    "postedAt": "2026-10-18T09:08:41.000Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
+    "summary": "Itsu says they strongly expect to fall from rank eight on the private leaderboard, and perhaps on the public board too. This is their expectation, not a private result. The post links ARC-AGI-2.",
+    "threadId": "2111746277256110582",
+    "url": "https://x.com/iiiiitsu_ne/status/2111746277256110582",
+    "visibility": "public",
+    "whyItMatters": "New first-person reaction from a top-ten contender; distinguish the rank mentioned at posting from later board observations."
+  },
+  {
     "author": "bogoconic1",
     "authorName": "Geremie Yeo",
     "category": "community",

@@ -1,0 +1,53 @@
+{
+  "articleId": "2026-10-18-evening-arc-3",
+  "briefSha256": "9ae3102875b863039861bc0018de38f216c17b108dbbae09358eee8ec747e1d5",
+  "dataAsOf": "2026-10-18T21:56:07Z",
+  "generationRecord": "2026-10-18-top-ten-siege-full-crew-v1-base",
+  "headline": "Team Turducken closes fifth as its seven-person merger reaches the board",
+  "historyChart": null,
+  "id": "2026-10-18-evening-arc-3-de4792d35e-footer",
+  "image": {
+    "alt": "AI editorial panorama: Tufa’s five spider mascots and Dries, Chen’s two rabbits, and eight challenger workshops, including the seven-character Turducken crew with two Yorkies and Puget and Sorokin at NVARC3. Separate ARC-3 score panel: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49; October 18, 2026, 5:56 PM EDT.",
+    "artworkId": "2026-10-18-evening-arc-3-de4792d35e-footer",
+    "caption": "AI-generated editorial illustration: The High Ground — Ten Camps. Approved character avatars and fantasy machinery are illustrative; anonymous crew counts are not roster counts. Score panel: Oct 18, 2026 · 5:56 PM EDT; provisional public standings.",
+    "src": "/news-images/2026-10-18-evening-arc-3-de4792d35e-footer.webp"
+  },
+  "imageSha256": "57b04e9356ee69797f8ebd1a65bedf8d4a24c7a1a63801089ab54698276b1e47",
+  "kind": "edition-composition",
+  "layout": "separate-footer-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "3ef85f60182bd244b34da979e50a66a4748de9fc7fb8c79728fd6f83c98f775f",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1,
+  "compositionReview": "Recomposed clean native panorama with deterministic score and branding panels in a separate added footer, preserving the complete illustration without face or workshop occlusion. Exact edition rows/time retained.",
+  "supportingCastReview": {
+    "checkedAt": "2026-10-18T22:00:04Z",
+    "result": "All eight required challenger IDs remain top ten; Dries, Puget, Sorokin and all seven Turducken handles present in closing rosters."
+  }
+}
