@@ -11,6 +11,14 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.150.4  Oct 18, 2026
+
+- **The official Team Turducken merger leads today's paper** (Author: GPT-6 / Codex). Merges `bubba/official-merger-story` at the Boss's release instruction, keeping its dispatch byte for byte, including the Tufa/Daniel Franzen naming credit and full-crew mech artwork. Preserves main's other art and reporting, combines inventory records, and replaces today's Early edition rumor feature pointer (and evidence pointer) with the official dispatch. Reserves the same official feature for today's Late edition through existing editorial intake; the rumor remains unchanged below it. Reuses the current publication-time/feature placement without application changes. Plan and validation: `docs/2026-10-18-official-merger-release-plan.md`.
+
+### Version 9.150.3  Oct 18, 2026
+
+- **Team Turducken’s full crew joins the official mech artwork** (Author: GPT-6 / Codex). What: a native image edit adds DZ with her pink bunny, NT in the banana costume with comic tears, Choryu with a cardiac MRI display head, and Herminator as Ronen’s cobalt-toned knight bot, all working alongside Mark, Son, Keith and the two armoured Yorkies. Why: the Boss and Son requested the complete avatar-based crew and a bigger, more heroic mech. How: use the supplied hangar base and all four avatar references, save a new 1664 × 936 (16:9) WebP without overwriting the base, and update only the held dispatch’s image source, descriptive alt text and requested caption. Files: `client/public/news-images/2026-10-18-team-turducken-mech-full-crew-v1.webp`, `content/news/dispatches/2026-10-18-arc3-superteam-merger-official.json`; prompt and review: `docs/2026-10-18-turducken-full-crew-art-plan.md`. Release remains held until Son says go; push only to `bubba/official-merger-story`.
+
 ### Version 9.150.2  Oct 18, 2026
 
 - **Team Turducken’s confirmed merger and seven-character workshop** (Author: GPT-6.1 Sol / Codex; earlier team brief by Claude Opus 5.5). Publishes the Boss-authorized ARC-3 roster dispatch with the full native crew, corrects Keith’s X handle to `chiefkeitht`, and records the combined roster without inventing a merger time or score gain. Adds the approved hangar, flight and ten-camp clean artwork with provenance, separate article/Discord/X-use tracking, and a Late-edition commission requiring fresh overlays and an actual image attachment on its routine X announcement. Updates the existing character and GPU Valley guides; no application or automation changes.

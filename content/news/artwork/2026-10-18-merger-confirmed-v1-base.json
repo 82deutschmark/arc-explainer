@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-10-18T15:07:00Z",
+  "id": "2026-10-18-merger-confirmed-v1-base",
+  "inputImages": [
+    "2026-10-12-mark-barney-reference-1-v1.webp",
+    "2026-10-12-son-pham-reference-1-v1.webp",
+    "2026-10-12-keith-tyser-reference-1-v1.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Official follow-up to 2026-10-17-merger-whispers-v1-base. Same three stored avatar references (Mark Barney: beard and multicolored-screen GPU helmet; Son Pham: clean-shaven lower face, wide glowing visor, black GPU-panel helmet; Keith Tyser: round yellow mascot, large dark eyes, black cap and hoodie, never a human face). Exactly these three characters, waist up, in the same velvet restaurant booth now brightly lit, toasting with coffee cups; Son in the middle holds an open envelope with a green check mark (accepted invitation); a covered silver serving dish with steam as a playful hint, no food label. No handshake, signatures, contract, money, trophy, scores, ranks or numbers; no fourth person or silhouettes. Hand-painted ink and gouache editorial cartoon, newsprint halftone, black ivory and red newspaper border, landscape 3:2. Verbatim text only: \"THE ARC DAILY DIGEST\", \"MERGER CONFIRMED\", green stamp \"OFFICIAL\", caption \"EDITORIAL ILLUSTRATION\"; no team name.",
+  "rawSha256": "e7b54d8083a5f57277f51e04fb1ddb45071b225fc54414396abe48d1c7c8eeae",
+  "rawSrc": "/news-images/2026-10-18-merger-confirmed-v1-base.webp",
+  "references": [
+    {
+      "role": "Mark Barney’s verified individual Kaggle avatar/portrait. Mark as competitor: preserve his Kaggle cyber-engineer avatar, visible beard, dense GPU headgear and multicolored small screens. This is separate from his Yorkies staff portrait. Ignore background text and do not invent other teammates.",
+      "sha256": "f2f0a29a8747c9fa8710489459a5d5f715ec16a91c32f46bb1fa9a4d41a24e9a",
+      "sourceUrl": "https://www.kaggle.com/markbarney",
+      "src": "/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp",
+      "subjectId": "mark-barney"
+    },
+    {
+      "role": "Son Pham’s verified individual Kaggle avatar/portrait. Son: preserve his Kaggle cyber-engineer avatar, dense black GPU headgear, wide glowing visor and the recognizable lower face. Ignore background text and do not invent other teammates.",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d",
+      "sourceUrl": "https://www.kaggle.com/sonphamorg",
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp",
+      "subjectId": "son-pham"
+    },
+    {
+      "role": "Keith Tyser’s verified individual Kaggle avatar/portrait. Keith: preserve the round yellow mascot, very large dark eyes, black baseball cap and black hoodie. Omit printed slogans, background pets and room details unless requested. Ignore background text and do not invent other teammates.",
+      "sha256": "572ee4749a2a5205c717a555e9e9a4588edb458e3bac7d35f960769ee5a170af",
+      "sourceUrl": "https://www.kaggle.com/keithtyser",
+      "src": "/news-images/references/2026-10-12-keith-tyser-reference-1-v1.webp",
+      "subjectId": "keith-tyser"
+    }
+  ],
+  "review": "Inspected exactly three intended characters: bearded Mark with multicolored screen helmet left, Son with wide visor center holding the checked envelope, Keith as the yellow mascot in black cap and hoodie right. Masthead, headline, OFFICIAL stamp and editorial-illustration footer readable. No scores, numbers, team name, handshake or signatures; no other team members depicted because Ronen, NT, dzj and kawaimahiro have no stored reference.",
+  "tool": "openclaw.image_generate (openai/gpt-image-2)",
+  "toolOutput": "2026-10-18-merger-confirmed-v1-base---c538b5bd-5d9b-4ef1-ac32-2f6610d76529.png",
+  "version": 1
+}

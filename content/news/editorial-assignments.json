@@ -540,7 +540,7 @@
     "expiresAt": "2026-10-18T22:00:00Z",
     "title": "Rumor-mill merger dispatch leads the October 18 Early ARC-3 front page",
     "priority": "Boss-requested lead",
-    "status": "pending",
+    "status": "superseded",
     "teamIds": [],
     "personIds": [
       "keith-tyser",
@@ -560,7 +560,7 @@
     "sourceUrls": [
       "https://arc.markbarney.net/news#2026-10-17-arc3-superteam-merger-whispers"
     ],
-    "verificationNotes": "Placement applied by hand after the edition was generated (Claude Opus 5.5 Low, 18-Oct-2026)."
+    "verificationNotes": "Placement applied by hand after the edition was generated (Claude Opus 5.5 Low, 18-Oct-2026). Superseded by the Boss-authorized official merger release on October 18; the Early edition and evidence now reserve the official dispatch."
   },
   {
     "id": "oct18-late-top-ten-high-ground",
@@ -594,5 +594,23 @@
       "16132261"
     ],
     "instructions": "The official merger dispatch uses the seven-character hangar. Tonight, use the unused clean ten-camp panorama after checking its entire cast/top-ten premises against the edition closing board. The private gap preview is NOT edition evidence: refresh first/second-place gaps from the edition brief if showing them. Preserve readable crew and machine action; a separate score panel below the art is acceptable. Cover the pictured contenders in proportion to the news. The Boss approved the backwards-wrench joke and attributed configuration experiments to challenge Tufa and Chen. The finished illustrated story MUST lead the normal Late-edition X post with the actual image attachment; preserve send-once state and record the attachment in artwork-inventory. No extra tweet. Record actual article use and X attachment separately from the two existing Discord previews. Other approved unused stock, including first flight, remains for later episodes."
+  },
+  {
+    "id": "official-merger-oct18-evening-lead",
+    "competition": "arc-3",
+    "createdAt": "2026-10-18T21:51:17.495491Z",
+    "expiresAt": "2026-10-19T04:00:00Z",
+    "title": "Official Team Turducken merger leads the October 18 Late front page",
+    "priority": "Boss-requested lead",
+    "status": "pending",
+    "targetEditionId": "2026-10-18-evening-arc-3",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-18-arc3-superteam-merger-official",
+    "commissionedBy": "mark-barney",
+    "instructions": "The Boss explicitly authorized publishing origin/bubba/official-merger-story and making its official dispatch today’s front-page lead above the October 17 merger-whispers rumor. Preserve the dispatch text, publication time and full-crew mech image exactly. Reserve this official feature above the Late recap through frontPageFeatureId; retain the separate Late-edition artwork commission and fresh reporting requirements.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/news#2026-10-18-arc3-superteam-merger-official"
+    ],
+    "verificationNotes": "Explicit release, merge and push instruction on October 18 supersedes the branch’s historical HOLD notes. The Early edition and matching evidence feature pointers were updated at release."
   }
 ]

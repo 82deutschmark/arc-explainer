@@ -1,110 +1,78 @@
 {
-  "commissionedBy": "mark-barney",
   "competition": "arc-3",
-  "editorNote": "Commissioned by Mark Barney, the Digest’s head human editor and a member of the merged team. Earlier team reporting was prepared by Claude Opus 5.5; this dispatch and native artwork were prepared by GPT-6.1 Sol / Codex. The machines are imaginative, not documentary.",
-  "generatedBy": "gpt-6.1-sol",
-  "headline": "It’s official: Team Turducken brings seven players onto one ARC-3 roster",
+  "generatedBy": "claude-opus-5-5",
+  "headline": "It’s official: Team Turducken is born as Keith Tyser’s ARC Slayers join Son, Mark and Ronen",
   "id": "2026-10-18-arc3-superteam-merger-official",
   "image": {
-    "alt": "Seven team-approved characters build a giant mechanical turkey containing a chicken containing a duck: Mark, Son, Keith, DZ, NT, Choryu’s MRI-display avatar and Herminator standing in for Ronen, with exactly two armoured Yorkies.",
-    "caption": "Team Turducken’s official artwork, generated with AI from team-approved avatars.",
-    "src": "/news-images/2026-10-18-turducken-full-crew-codex-v1-base.webp"
+    "alt": "Team Turducken’s full crew works on a giant mechanical turkey containing a mechanical chicken and a duck in sunglasses, in a glowing hangar overlooking snowy mountains and a castle. Mark works on the wing, Son tends the cockpit, and Keith’s yellow mascot uses a tablet beside two armoured Yorkies. DZ, a blonde chibi girl holding a pink bunny, operates diagnostics; NT, a tabby kitten in a banana costume shedding comic tears, adjusts a thruster; Choryu, a technician with a cardiac MRI display for a head, connects cables; and Herminator, Ronen’s silver knight bot with a cobalt-blue plume, tightens the mech’s fittings. All wear matching tech harnesses.",
+    "caption": "Team Turducken’s official artwork.",
+    "src": "/news-images/2026-10-18-team-turducken-mech-full-crew-v1.webp"
   },
-  "publishedAt": "2026-10-18T19:16:05.370354Z",
+  "publishedAt": "2026-10-18T15:08:42Z",
   "sections": [
     {
-      "heading": "From the gossip wire to the public roster",
+      "heading": "Off the gossip wire, onto the record",
       "sourceIds": [
-        "public-roster",
-        "team-confirmation",
-        "earlier-whispers",
-        "person-keith-tyser-identity",
-        "person-son-pham-identity",
-        "person-mark-barney-identity"
+        "team-note-merger-confirmed",
+        "dispatch-merger-whispers"
       ],
-      "text": "The merger is now on the record. Keith Tyser’s ARC Slayers and Son Pham, Mark Barney and Ronen appear together as Team Turducken on the ARC-AGI-3 public leaderboard. The combined entry is fifth in the latest saved public standings. The team’s earlier confirmation says Son sent the formal invitation and the Slayers accepted."
+      "text": "Yesterday the gossip desk had only a whisper. Today it has the paperwork. Son Pham’s ARC-3 team—Son Pham, Mark Barney and Ronen—has merged with Keith Tyser’s team, the ARC Slayers. Son sent the formal Kaggle team invite and the Slayers accepted. The champagne we told you to keep on ice can come out."
     },
     {
-      "heading": "Seven accounts, one entry",
+      "heading": "Who is on the roster",
       "sourceIds": [
-        "public-roster",
-        "earlier-edition"
+        "team-note-merger-confirmed",
+        "person-keith-tyser-identity-0",
+        "person-mark-barney-identity-0",
+        "person-son-pham-identity-0"
       ],
-      "text": "Team Turducken keeps entry 15605182. Its listed accounts are dzjiann, keithtyser, markbarney, mitubant, ngyzly, scizical and sonphamorg. The public name and combined roster are confirmed; the observation does not establish the precise merger time. The team’s score matches its earlier recorded score, so the merger itself is not a newly scored advance. This is the ARC-3 roster; ARC-2 memberships remain separate."
+      "text": "From Son’s side: Son Pham, Mark Barney and Ronen. From the ARC Slayers: Keith Tyser, NT (mitubant on Kaggle), dzj (Chris-440 on GitHub) and kawaimahiro. Son is coordinating the combined team’s submissions."
     },
     {
-      "heading": "The name, and the machinery",
+      "heading": "The name: Team Turducken",
       "sourceIds": [
-        "public-roster",
-        "editor-commission"
+        "team-note-merger-confirmed",
+        "dispatch-merger-whispers"
       ],
-      "text": "Team Turducken is no longer a suggestion from the naming desk. The public entry has taken the name, and the team-approved picture makes the nesting clear: a duck inside a chicken inside a turkey. Mark, Son and Keith’s established characters are joined by DZ, NT and Choryu’s supplied avatars, with Herminator standing in for Ronen. Both Yorkshire terriers keep their workshop passes."
-    },
-    {
-      "heading": "Different configurations, same high ground",
-      "sourceIds": [
-        "editor-commission",
-        "public-roster"
-      ],
-      "text": "Mark says the team is trying different configurations to reach the lofty heights occupied by Tufa and Chen. The flying workshop and hangar scenes give that ambition an appropriately absurd machine. He also points out that his illustrated character is holding a wrench the wrong way in one picture. Apparently the configuration experiments extend to the tools. The drawings are editorial fantasy, not a technical description of a submission."
+      "text": "The naming drama is settled. The merged squad rolls out as Team Turducken: three crews nested into one bird, the way a chicken goes inside a duck inside a turkey. Son says the name is also partly a tip of the hat to the Tufa team and to Daniel Franzen, whose public work the squad builds on. The Digest notes, with no small satisfaction, that a duck inside a duck inside a bird was already our branding department’s pick. Team Allegedly may now retire with honour."
     },
     {
       "heading": "Disclosure",
       "sourceIds": [
-        "public-roster",
-        "team-confirmation",
-        "editor-commission"
+        "team-note-merger-confirmed"
       ],
-      "text": "Mark Barney is both a member of Team Turducken and the Digest’s head human editor. The merger is supported by the team’s own confirmation and the public roster. The artwork uses team-approved avatars; Herminator represents Ronen’s bot rather than his real likeness. Public standings and medal positions remain provisional."
+      "text": "Mark Barney, the Digest’s head human editor, is a member of the merged team. These facts come from the team’s own messages on 18 October; the public leaderboard will reflect the merged roster once it refreshes. The artwork is the team’s own and is imaginative, not documentary."
     }
   ],
   "sources": [
     {
-      "accessedAt": "2026-10-18T19:16:05.370354Z",
-      "id": "public-roster",
-      "title": "ARC-3 public leaderboard and seven-account Team Turducken roster",
-      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
-    },
-    {
-      "accessedAt": "2026-10-18T19:16:05.370354Z",
-      "id": "team-confirmation",
-      "title": "The team’s earlier formal merger confirmation",
+      "accessedAt": "2026-10-18T15:08:42Z",
+      "id": "team-note-merger-confirmed",
+      "title": "Merged team — merger confirmation recorded from the team’s own messages, 18 October 2026",
       "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-18-merger-confirmed-team-note.json"
     },
     {
-      "accessedAt": "2026-10-18T19:16:05.370354Z",
-      "id": "editor-commission",
-      "title": "Mark Barney’s configuration comment and commissioned avatar artwork",
-      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-18-editor-art-commission.json"
-    },
-    {
-      "accessedAt": "2026-10-18T19:16:05.370354Z",
-      "id": "earlier-whispers",
-      "title": "The earlier unconfirmed merger dispatch",
+      "accessedAt": "2026-10-18T15:08:42Z",
+      "id": "dispatch-merger-whispers",
+      "title": "The Gossip Wire: Keith Tyser, Mark and Son: is ARC-3 cooking up Team Turducken?",
       "url": "https://arc.markbarney.net/news#2026-10-17-arc3-superteam-merger-whispers"
     },
     {
-      "accessedAt": "2026-10-18T19:16:05.370354Z",
-      "id": "earlier-edition",
-      "title": "October 18 Early ARC-3 edition and its archived score table",
-      "url": "https://arc.markbarney.net/news/2026-10-18-morning-arc-3"
-    },
-    {
       "accessedAt": "2026-10-09T19:23:29Z",
-      "id": "person-keith-tyser-identity",
-      "title": "Keith Tyser — verified Kaggle account",
+      "id": "person-keith-tyser-identity-0",
+      "title": "Keith Tyser — verified Kaggle identity and avatar reference",
       "url": "https://www.kaggle.com/keithtyser"
     },
     {
       "accessedAt": "2026-10-11T20:33:19Z",
-      "id": "person-mark-barney-identity",
-      "title": "Mark Barney — verified Kaggle account",
+      "id": "person-mark-barney-identity-0",
+      "title": "Mark Barney — verified Kaggle identity and avatar reference",
       "url": "https://www.kaggle.com/markbarney"
     },
     {
       "accessedAt": "2026-10-11T20:33:19Z",
-      "id": "person-son-pham-identity",
-      "title": "Son Pham — verified Kaggle account",
+      "id": "person-son-pham-identity-0",
+      "title": "Son Pham — verified Kaggle identity and avatar reference",
       "url": "https://www.kaggle.com/sonphamorg"
     }
   ]

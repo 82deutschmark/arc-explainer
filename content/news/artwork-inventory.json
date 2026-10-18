@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-18T19:17:34.889371Z",
+  "updatedAt": "2026-10-18T21:51:17.495491Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -472,6 +472,29 @@
       "previewSrc": "/news-images/2026-10-18-top-ten-siege-score-gaps-preview.png",
       "previewArtworkId": "2026-10-18-top-ten-siege-score-gaps-preview",
       "previewObservedAt": "2026-10-18T18:55:34Z"
+    },
+    {
+      "id": "2026-10-18-merger-confirmed-v1",
+      "generationRecord": "2026-10-18-merger-confirmed-v1-base",
+      "src": "/news-images/2026-10-18-merger-confirmed-v1-base.webp",
+      "title": "Merger Confirmed",
+      "status": "reserved-awaiting-publication",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Made for the official merger dispatch 2026-10-18-arc3-superteam-merger-official, held on branch bubba/official-merger-story until the go-ahead. On publication set status to published-on-front-page and add the dispatch to articleUses. Three stored, individually verified avatar references; no score or roster count in the image."
+    },
+    {
+      "id": "2026-10-18-team-turducken-mech-full-crew-v1",
+      "src": "/news-images/2026-10-18-team-turducken-mech-full-crew-v1.webp",
+      "title": "Team Turducken — Official Full-Crew Mech",
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-18-arc3-superteam-merger-official"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Boss authorized release of bubba/official-merger-story on October 18. This is the selected official dispatch image; provenance, prompt and inspection are in docs/2026-10-18-turducken-full-crew-art-plan.md. Earlier images and their historical use records are preserved."
     }
   ],
   "existingXPosts": [
