@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-10-18T01:46:22Z",
+  "id": "2026-10-17-merger-whispers-v1-base",
+  "inputImages": [
+    "2026-10-12-mark-barney-reference-1-v1.webp",
+    "2026-10-12-son-pham-reference-1-v1.webp",
+    "2026-10-12-keith-tyser-reference-1-v1.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story. Create one finished illustrated gossip-column artwork for The ARC Daily Digest, with a glamorous New York tabloid society-page sensibility: bold newspaper design, warm restaurant noir, paparazzi energy, sly but friendly humor. This is an imagined editorial scene about an UNCONFIRMED esports/AI contest team merger rumor, never a documentary photo or evidence of an actual meeting.\nInput reference 1 is Mark Barney: preserve the visible beard and cyber-engineer helmet crowded with small multicolored screens, GPU-shaped panels and cables. Input reference 2 is Son Pham: preserve the recognizable clean-shaven lower face, large glowing visor, black GPU-panel helmet and cables. Input reference 3 is Keith Tyser's established fictional avatar: preserve the ROUND YELLOW MASCOT, huge glossy dark eyes, black baseball cap and black hoodie. Keith must remain this yellow mascot, not a human face. Ignore all reference-image text, pets and room details.\nExactly these three characters sit together in a velvet restaurant booth around a small round table in an imagined playful negotiation. Mark on left, Son in the middle, Keith on right, all three clearly visible from waist up and looking toward each other with conspiratorial smiles. Coffee cups and one blank folder with a large question mark on the table. No handshake, signature, contract, money or victory trophy. Their futuristic headgear is character design, not a hardware claim. No fourth person, no background faces. No face merging or duplicate characters.\nStyle: sophisticated hand-painted editorial cartoon, detailed ink and gouache with light newsprint halftone, recognizable reference silhouettes, cinematic restaurant lighting, black ivory and red newspaper border. Landscape 3:2 composition with generous ivory top masthead and lower caption strip, all heads fully visible. Broad empty margins around subjects so typography never touches their faces.\nText, verbatim, clean readable editorial typography: small top masthead \"THE ARC DAILY DIGEST\"; very large headline \"MERGER WHISPERS\"; red corner stamp \"RUMOR MILL\"; prominent bottom caption \"UNCONFIRMED • EDITORIAL ILLUSTRATION\". Do not use the Page Six logo or imply affiliation with that publication. No team name is settled; do not put any proposed team name, score, rank, factual claim or quoted dialogue in the image. This is respectful, mischievous tabloid fun about a possible collaboration.",
+  "rawSha256": "7cce8f92cbef4f1d967c30c9ad10e011b804dcee979eea3d6bb2638075d2a03c",
+  "rawSrc": "/news-images/2026-10-17-merger-whispers-v1-base.webp",
+  "references": [
+    {
+      "role": "Mark Barney’s verified individual Kaggle avatar/portrait. Mark as competitor: preserve his Kaggle cyber-engineer avatar, visible beard, dense GPU headgear and multicolored small screens. This is separate from his Yorkies staff portrait. Ignore background text and do not invent other teammates.",
+      "sha256": "f2f0a29a8747c9fa8710489459a5d5f715ec16a91c32f46bb1fa9a4d41a24e9a",
+      "sourceUrl": "https://www.kaggle.com/markbarney",
+      "src": "/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp",
+      "subjectId": "mark-barney"
+    },
+    {
+      "role": "Son Pham’s verified individual Kaggle avatar/portrait. Son: preserve his Kaggle cyber-engineer avatar, dense black GPU headgear, wide glowing visor and the recognizable lower face. Ignore background text and do not invent other teammates.",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d",
+      "sourceUrl": "https://www.kaggle.com/sonphamorg",
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp",
+      "subjectId": "son-pham"
+    },
+    {
+      "role": "Keith Tyser’s verified individual Kaggle avatar/portrait. Keith: preserve the round yellow mascot, very large dark eyes, black baseball cap and black hoodie. Omit printed slogans, background pets and room details unless requested. Ignore background text and do not invent other teammates.",
+      "sha256": "572ee4749a2a5205c717a555e9e9a4588edb458e3bac7d35f960769ee5a170af",
+      "sourceUrl": "https://www.kaggle.com/keithtyser",
+      "src": "/news-images/references/2026-10-12-keith-tyser-reference-1-v1.webp",
+      "subjectId": "keith-tyser"
+    }
+  ],
+  "review": "Inspected exactly three intended characters: bearded Mark left, Son with wide visor center, Keith yellow mascot in black cap and hoodie right. Headline, rumor stamp and unconfirmed editorial-illustration footer readable. No scores, roster count, handshake, signatures or completed-merger claim. Imagined restaurant meeting is editorial staging.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-bb6fd4fb-733f-4bfa-af3e-beb2c210ba67.png",
+  "version": 1
+}

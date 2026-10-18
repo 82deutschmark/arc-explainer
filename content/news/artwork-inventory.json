@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-17T22:14:49.466355+00:00",
+  "updatedAt": "2026-10-18T01:46:36.393911Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -374,6 +374,19 @@
         }
       ],
       "artworkId": "2026-10-17-morning-arc-3-26c1da664b"
+    },
+    {
+      "id": "2026-10-17-merger-whispers-v1",
+      "generationRecord": "2026-10-17-merger-whispers-v1-base",
+      "src": "/news-images/2026-10-17-merger-whispers-v1-base.webp",
+      "title": "Merger Whispers",
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-17-arc3-superteam-merger-whispers"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Mark explicitly commissioned and approved publication of this unconfirmed gossip column. Saved three individually verified avatar references used; imagined meeting and rumor labels visible. No score or roster claim."
     }
   ],
   "existingXPosts": [
