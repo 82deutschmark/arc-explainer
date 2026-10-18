@@ -532,5 +532,34 @@
     "selectedAt": "2026-10-18T10:02:36.670593+00:00",
     "verificationNotes": "createdAt records Mark’s original approved reserve commission in the native generation record; selectedAt records selection for this issue, not a news event.",
     "placement": "edition-artwork"
+  },
+  {
+    "id": "merger-whispers-oct18-morning-lead",
+    "competition": "arc-3",
+    "createdAt": "2026-10-18T15:10:00Z",
+    "expiresAt": "2026-10-18T22:00:00Z",
+    "title": "Rumor-mill merger dispatch leads the October 18 Early ARC-3 front page",
+    "priority": "Boss-requested lead",
+    "status": "pending",
+    "teamIds": [],
+    "personIds": [
+      "keith-tyser",
+      "mark-barney",
+      "son-pham"
+    ],
+    "subjectNames": [
+      "Keith Tyser",
+      "Mark Barney",
+      "Son Pham"
+    ],
+    "targetEditionId": "2026-10-18-morning-arc-3",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-17-arc3-superteam-merger-whispers",
+    "commissionedBy": "mark-barney",
+    "instructions": "The Boss asked for the rumor-mill gossip dispatch to lead the ARC-3 front page on the morning of October 18. The Early edition was already published, so frontPageFeatureId was added to that edition (and its evidence record) after publication; the dispatch prints in full above the recap. Do not rewrite the dispatch or change its publishedAt.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/news#2026-10-17-arc3-superteam-merger-whispers"
+    ],
+    "verificationNotes": "Placement applied by hand after the edition was generated (Claude Opus 5.5 Low, 18-Oct-2026)."
   }
 ]
