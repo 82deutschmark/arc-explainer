@@ -1,0 +1,56 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T07:54:26Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Itsu’s Muggle rises to sixth on ARC-2",
+  "id": "2026-10-18-0359-arc-2-itsu-muggle-rises-to-sixth",
+  "personIds": [
+    "itsu"
+  ],
+  "publishedAt": "2026-10-18T07:59:10Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Muggle added 11.11 points to reach 70.28, moving from 14th to sixth on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2",
+        "person-itsu-identity-0",
+        "person-itsu-roster-0"
+      ],
+      "text": "Itsu is listed on Muggle’s roster. The team was 14th in its previous wire report; this new climb carries it into the top six."
+    }
+  ],
+  "since": "2026-10-17T07:52:02Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T07:58:44Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    },
+    {
+      "accessedAt": "2026-10-14T10:07:47.955742+00:00",
+      "id": "person-itsu-identity-0",
+      "title": "Own profile and direct account links",
+      "url": "https://www.kaggle.com/nisshokuitsuki"
+    },
+    {
+      "accessedAt": "2026-10-16T21:51:01Z",
+      "id": "person-itsu-roster-0",
+      "title": "Public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    }
+  ],
+  "teamIds": [
+    "16297545"
+  ],
+  "visual": {
+    "alt": "イツ (Itsu)’s Kaggle profile picture",
+    "href": "/news/people/itsu",
+    "src": "/news-images/people/itsu.webp"
+  }
+}
