@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T15:55:15Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ctree4113 climbs 1,270 places into ARC-2 top 100",
+  "id": "2026-10-18-1202-arc-2-ctree4113-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-18T16:02:07Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "ctree4113 climbed from 1,355th to 85th, gaining 4.31 points to reach 34.03."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts ctree4113 inside the top 100 on a board where the gold line sits at 16th."
+    }
+  ],
+  "since": "2026-10-17T15:52:50Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T16:01:46Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16385075"
+  ]
+}
