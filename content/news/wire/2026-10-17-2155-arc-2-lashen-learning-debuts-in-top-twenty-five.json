@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T01:53:52Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Lashen Learning debuts 23rd on ARC-2",
+  "id": "2026-10-17-2155-arc-2-lashen-learning-debuts-in-top-twenty-five",
+  "personIds": [],
+  "publishedAt": "2026-10-18T01:55:55Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Newcomer Lashen Learning entered the ARC-AGI-2 public board in 23rd place with 52.78."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The debut puts the team near the top of the field, though the 16-place gold line stands at 57.08."
+    }
+  ],
+  "since": "2026-10-17T01:51:27Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T01:55:44Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17054447"
+  ]
+}
