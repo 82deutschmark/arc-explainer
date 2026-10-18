@@ -1,12 +1,12 @@
 {
   "competition": "arc-3",
   "generatedBy": "claude-opus-5-5",
-  "headline": "It’s official: Keith Tyser’s ARC Slayers join Son, Mark and Ronen",
+  "headline": "It’s official: Team Turducken is born as Keith Tyser’s ARC Slayers join Son, Mark and Ronen",
   "id": "2026-10-18-arc3-superteam-merger-official",
   "image": {
-    "alt": "Editorial cartoon of Mark Barney, Son Pham and Keith Tyser’s established avatars toasting with coffee in the same restaurant booth from the rumor-mill illustration, Son holding an accepted invitation, under the headline Merger Confirmed.",
-    "caption": "AI-generated editorial illustration from the members’ stored avatars. Ronen, NT, dzj and kawaimahiro have no stored likeness and are not pictured.",
-    "src": "/news-images/2026-10-18-merger-confirmed-v1-base.webp"
+    "alt": "Illustration of a giant armoured mechanical turkey being assembled in a glowing hangar, with a mechanical chicken and a duck in sunglasses nested inside it. Mark Barney’s and Son Pham’s cyber-engineer avatars work on it, joined by Keith Tyser’s yellow mascot holding a tablet and two armoured Yorkshire terriers, with snowy mountains and a castle behind.",
+    "caption": "Team Turducken’s official artwork, supplied by the team.",
+    "src": "/news-images/2026-10-18-team-turducken-mech-v1.webp"
   },
   "publishedAt": "2026-10-18T15:08:42Z",
   "sections": [
@@ -29,19 +29,19 @@
       "text": "From Son’s side: Son Pham, Mark Barney and Ronen. From the ARC Slayers: Keith Tyser, NT (mitubant on Kaggle), dzj (Chris-440 on GitHub) and kawaimahiro. Son is coordinating the combined team’s submissions."
     },
     {
-      "heading": "The naming drama, continued",
+      "heading": "The name: Team Turducken",
       "sourceIds": [
         "team-note-merger-confirmed",
         "dispatch-merger-whispers"
       ],
-      "text": "The name is still open. Keith has cast his vote for Team Turducken, which makes it the front-runner, not the final word. The Digest notes, with no small satisfaction, that a duck inside a duck inside a bird was already our branding department’s pick. Team Allegedly may now retire with honour."
+      "text": "The naming drama is settled. The merged squad rolls out as Team Turducken: three crews nested into one bird, the way a chicken goes inside a duck inside a turkey. The Digest notes, with no small satisfaction, that a duck inside a duck inside a bird was already our branding department’s pick. Team Allegedly may now retire with honour."
     },
     {
       "heading": "Disclosure",
       "sourceIds": [
         "team-note-merger-confirmed"
       ],
-      "text": "Mark Barney, the Digest’s head human editor, is a member of the merged team. These facts come from the team’s own messages on 18 October; the public leaderboard will reflect the merged roster once it refreshes. The illustration imagines a celebration; it does not document one."
+      "text": "Mark Barney, the Digest’s head human editor, is a member of the merged team. These facts come from the team’s own messages on 18 October; the public leaderboard will reflect the merged roster once it refreshes. The artwork is the team’s own and is imaginative, not documentary."
     }
   ],
   "sources": [
