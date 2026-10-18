@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T09:54:37Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC-2 gold cutoff rises as two teams fall out",
+  "id": "2026-10-18-0558-arc-2-gold-cutoff-rises-again",
+  "personIds": [],
+  "publishedAt": "2026-10-18T09:58:32Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The ARC-2 gold line rose 3.75 points in the past day to 61.81 at 16th. ARCward Intelligence slipped from 16th to 17th at 58.33, while Kajetan Schweighofer fell from 15th to 18th at 58.06."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The new cutoff leaves ARCward Intelligence 3.48 points short of the last gold place; Schweighofer's score was unchanged as the boundary moved past him."
+    }
+  ],
+  "since": "2026-10-17T09:52:13Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T09:58:14Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16797706",
+    "16761662"
+  ]
+}
