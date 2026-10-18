@@ -1,0 +1,79 @@
+{
+  "competition": "arc-3",
+  "generatedBy": "claude-opus-5-5",
+  "headline": "It’s official: Keith Tyser’s ARC Slayers join Son, Mark and Ronen",
+  "id": "2026-10-18-arc3-superteam-merger-official",
+  "image": {
+    "alt": "Editorial cartoon of Mark Barney, Son Pham and Keith Tyser’s established avatars toasting with coffee in the same restaurant booth from the rumor-mill illustration, Son holding an accepted invitation, under the headline Merger Confirmed.",
+    "caption": "AI-generated editorial illustration from the members’ stored avatars. Ronen, NT, dzj and kawaimahiro have no stored likeness and are not pictured.",
+    "src": "/news-images/2026-10-18-merger-confirmed-v1-base.webp"
+  },
+  "publishedAt": "2026-10-18T15:08:42Z",
+  "sections": [
+    {
+      "heading": "Off the gossip wire, onto the record",
+      "sourceIds": [
+        "team-note-merger-confirmed",
+        "dispatch-merger-whispers"
+      ],
+      "text": "Yesterday the gossip desk had only a whisper. Today it has the paperwork. Son Pham’s ARC-3 team—Son Pham, Mark Barney and Ronen—has merged with Keith Tyser’s team, the ARC Slayers. Son sent the formal Kaggle team invite and the Slayers accepted. The champagne we told you to keep on ice can come out."
+    },
+    {
+      "heading": "Who is on the roster",
+      "sourceIds": [
+        "team-note-merger-confirmed",
+        "person-keith-tyser-identity-0",
+        "person-mark-barney-identity-0",
+        "person-son-pham-identity-0"
+      ],
+      "text": "From Son’s side: Son Pham, Mark Barney and Ronen. From the ARC Slayers: Keith Tyser, NT (mitubant on Kaggle), dzj (Chris-440 on GitHub) and kawaimahiro. Son is coordinating the combined team’s submissions."
+    },
+    {
+      "heading": "The naming drama, continued",
+      "sourceIds": [
+        "team-note-merger-confirmed",
+        "dispatch-merger-whispers"
+      ],
+      "text": "The name is still open. Keith has cast his vote for Team Turducken, which makes it the front-runner, not the final word. The Digest notes, with no small satisfaction, that a duck inside a duck inside a bird was already our branding department’s pick. Team Allegedly may now retire with honour."
+    },
+    {
+      "heading": "Disclosure",
+      "sourceIds": [
+        "team-note-merger-confirmed"
+      ],
+      "text": "Mark Barney, the Digest’s head human editor, is a member of the merged team. These facts come from the team’s own messages on 18 October; the public leaderboard will reflect the merged roster once it refreshes. The illustration imagines a celebration; it does not document one."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T15:08:42Z",
+      "id": "team-note-merger-confirmed",
+      "title": "Merged team — merger confirmation recorded from the team’s own messages, 18 October 2026",
+      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-18-merger-confirmed-team-note.json"
+    },
+    {
+      "accessedAt": "2026-10-18T15:08:42Z",
+      "id": "dispatch-merger-whispers",
+      "title": "The Gossip Wire: Keith Tyser, Mark and Son: is ARC-3 cooking up Team Turducken?",
+      "url": "https://arc.markbarney.net/news#2026-10-17-arc3-superteam-merger-whispers"
+    },
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-keith-tyser-identity-0",
+      "title": "Keith Tyser — verified Kaggle identity and avatar reference",
+      "url": "https://www.kaggle.com/keithtyser"
+    },
+    {
+      "accessedAt": "2026-10-11T20:33:19Z",
+      "id": "person-mark-barney-identity-0",
+      "title": "Mark Barney — verified Kaggle identity and avatar reference",
+      "url": "https://www.kaggle.com/markbarney"
+    },
+    {
+      "accessedAt": "2026-10-11T20:33:19Z",
+      "id": "person-son-pham-identity-0",
+      "title": "Son Pham — verified Kaggle identity and avatar reference",
+      "url": "https://www.kaggle.com/sonphamorg"
+    }
+  ]
+}

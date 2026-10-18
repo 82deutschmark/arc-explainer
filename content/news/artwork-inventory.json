@@ -397,6 +397,17 @@
       "xAttachments": [],
       "discordShares": [],
       "selectionNote": "Mark explicitly commissioned and approved publication of this unconfirmed gossip column. Saved three individually verified avatar references used; imagined meeting and rumor labels visible. No score or roster claim."
+    },
+    {
+      "id": "2026-10-18-merger-confirmed-v1",
+      "generationRecord": "2026-10-18-merger-confirmed-v1-base",
+      "src": "/news-images/2026-10-18-merger-confirmed-v1-base.webp",
+      "title": "Merger Confirmed",
+      "status": "reserved-awaiting-publication",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Made for the official merger dispatch 2026-10-18-arc3-superteam-merger-official, held on branch bubba/official-merger-story until the go-ahead. On publication set status to published-on-front-page and add the dispatch to articleUses. Three stored, individually verified avatar references; no score or roster count in the image."
     }
   ],
   "existingXPosts": [
