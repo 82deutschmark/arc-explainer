@@ -194,9 +194,18 @@
     "teamId": "15596748"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "Harp404"
+    ],
     "competition": "arc-2",
-    "facts": [],
+    "facts": [
+      {
+        "text": "The October 18 02:02 wire reported team 15601881 as Harp404; the 05:54 AM EDT closing roster names the same entry Flying Pandas. These are observations of one competition entry, not separate score gains.",
+        "sourceUrl": "https://arc.markbarney.net/news/wire#2026-10-18-0202-arc-2-harp404-advances-to-forty-second",
+        "sourceTitle": "ARC Daily Digest — dated Harp404 wire report and closing roster",
+        "checkedAt": "2026-10-18T10:07:01.320822+00:00"
+      }
+    ],
     "firstObservedAt": "2026-10-18T09:54:37Z",
     "id": "arc-2-15601881",
     "lastObservedAt": "2026-10-18T09:54:37Z",
