@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T21:56:08Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Daewoo Myoung climbs to 40th on ARC-AGI-2",
+  "id": "2026-10-18-1759-arc-2-daewoo-myoung-climbs-to-fortieth",
+  "personIds": [],
+  "publishedAt": "2026-10-18T21:59:23Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Daewoo Myoung gained 6.39 points to reach 42.92, moving from 64th to 40th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The climb puts Myoung among the board’s top 40 teams; the last of 16 gold places is 16th at 61.81."
+    }
+  ],
+  "since": "2026-10-17T21:53:28Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T21:58:46Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16540266"
+  ]
+}
