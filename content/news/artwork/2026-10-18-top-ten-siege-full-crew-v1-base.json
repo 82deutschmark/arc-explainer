@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "id": "2026-10-18-top-ten-siege-full-crew-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-18T19:16:05.370354Z",
+  "toolOutput": "exec-39c31b67-3b6b-4c81-95cc-55d7f3289d5e.png",
+  "rawSrc": "/news-images/2026-10-18-top-ten-siege-full-crew-v1-base.webp",
+  "rawSha256": "3ef85f60182bd244b34da979e50a66a4748de9fc7fb8c79728fd6f83c98f775f",
+  "prompt": "Edit Image 1, the exact wide TEN-CAMP GPU Valley panorama. Image 2 is the newly approved full-crew Turducken hangar and is authoritative ONLY for the seven mapped Turducken characters and two Yorkies. Preserve Image 1's exact wide aspect ratio, TWO separate upper citadels, exactly FIVE fluffy black Tufa spiders with Dries at upper left, Chen's exactly TWO correctly marked rabbits at upper right, all EIGHT separate challenger workshops, Puget and Sorokin on the lower green NVARC rig, every other machine, geography, camera and lighting.\n\nChange ONLY the Team Turducken workshop in the upper terrace right of center, around x48%-75%, y25%-62% of the whole image. It is the existing large turkey/chicken/duck machine with Mark, Son, Keith and two Yorkies. Add the four now-authorized characters from Image 2 to this SAME workshop and its tiered platform, without spilling into other teams' camps. Retain the three existing members: muscular bearded visor-wearing Mark, smiling broad-visor Son, round yellow black-cap/black-hoodie Keith. Exactly TWO Yorkies remain. Add: DZ, blonde short-haired red-eyed chibi girl holding a pink stuffed bunny, using a wing console; NT, orange kitten in bright yellow banana suit with big playful arcs of blue tears, adjusting a thruster lever; Choryu, a humanoid technician whose head IS a rectangular glowing grayscale cardiac MRI display rather than a face, connecting cables; Herminator standing in for Ronen, ornate SILVER cuirassier knight in electric cobalt-blue, tall blue PLUME, working a support brace. All seven main characters have compatible black-and-gold tech harnesses and cyan equipment. Keep a complete robotic TURKEY containing a CHICKEN containing a small DUCK. A folded alternative rotor configuration can sit on their bench. Mark may hold his wrench by the wrong end as an affectionate visual gag. No duplicate main crew, no additional dogs or turkeys. The seven characters need enough room and identity cues to recognize them within the existing panorama; use safe compact platforms, don't cover their faces.\n\nDo NOT alter any other team camp or move the high citadels. Do NOT introduce text, numbers, logos, scoreboards, labels or watermarks anywhere. Keep clean art for later code overlays. Machinery is charming editorial metaphor, no weapons fired or people harmed. This is a precise cast expansion of the single existing Turducken workshop, not a new composition.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-18-top-ten-siege-pre-crew-v1.png",
+      "sha256": "b1a6b441083db9c1eaa74d0bcea3e8c15dc16aa8bc8f84e24d45342955e9a0bf",
+      "role": "Exact approved ten-camp panorama before full-crew expansion."
+    },
+    {
+      "src": "/news-images/references/2026-10-18-turducken-full-crew-input-v1.png",
+      "sha256": "3fe9fbf52a1139819cf33089c50ba1c39b01657a8569663c62fc9cdc4482869d",
+      "role": "Exact seven-character native hangar output for cast identity."
+    }
+  ],
+  "inputImages": [
+    "2026-10-18-top-ten-siege-pre-crew-v1.png",
+    "2026-10-18-turducken-full-crew-input-v1.png"
+  ],
+  "review": "Visually checked: all ten camp locations preserved; seven-person Turducken subset expanded with all four supplied avatars. Five Tufa spiders, Dries, two correctly paired rabbits, Puget and Sorokin remain. Machine silhouettes distinct. No generated score text.",
+  "reviewStatus": "reviewed",
+  "generationChain": [
+    {
+      "prompt": "Use case: illustration-story. Create a NEW very wide cinematic panoramic 3D editorial comic illustration, approximately 2.4:1 landscape, a grand establishing scene called the GPU Valley siege workshops. An inventive, beautiful, humorous sporting metaphor, not actual warfare. Intricate snowy alpine fantasy engineering world, brass rails, physical GPUs, countless glowing fans, cyan/amber electronics and sunset-pink mountain atmosphere. Use high visual clarity: TEN distinct team locations, TWO separate high citadels plus EIGHT separate construction workshops below, with real space and winding paths between. All ten groups are calmly and busily BUILDING different fantastic machines aimed uphill. Nothing attacks or injures anyone. NOT a row of portraits, NOT a collage, NOT a trading card.\n\nINPUT ROLES (five attached images):\n1 is the PREVIOUS APPROVED GPU VALLEY ensemble, authoritative for its already-mapped characters and world: Tufa's black fluffy spiders and clean-shaven brown-haired Dries with green eyepiece at upper LEFT castle; Chen's two rabbits at upper RIGHT castle; Puget and Sorokin on the green tower. It is world/character continuity, not composition. Ignore ALL its printed text, ranks, badges, historic team names and scores.\n2 is the NEW APPROVED TURDUCKEN HANGAR scene. It is authoritative for the three mapped characters: muscular bearded tattooed Mark with gold chain and blue visor at LEFT; smiling cyber-helmeted Son at RIGHT; yellow round black-capped black-hoodie mascot Keith at CENTER, and exactly two tan/dark Yorkies. It also supplies the coherent nested turkey/chicken/duck machine. No other named people.\n3 actual owner photo authoritative for Chen's EXACTLY TWO rabbits: grey-brown lop with both ears DOWN and rounded face, second dark-and-white bunny with tall upright dark ears and broad irregular white forehead/nose blaze. Preserve these coats/ears.\n4 Jean-François Puget's individual card: bearded engineer with brown hair, cyan headgear, GPU shoulder armor. Ignore written card titles.\n5 Ivan Sorokin's individual card: short brown hair, clean-shaven face, charcoal armor, cyan collar and blue crystal. Ignore card writing.\nKeep the two NVARC engineers distinct. Anonymous builders in other camps have fully opaque helmets and no individual likenesses.\n\nCOMPOSITION / TEN LOCATIONS: pulled-back sweeping elevated three-quarter valley view with two mighty castles in the upper third and two staggered terraces of four construction sites each below. Crisp readable small diorama details and recognizable main characters. Leave paths, snow and separation so each machine is independently countable.\n\nONE: TUFA, upper LEFT high ridge. A black/brass GPU citadel, exactly FIVE friendly fluffy black spiders working the parapets, Dries at a balcony console surveying the workshops below. Spider silk cables and fans, no weapons fired.\nTWO: CHEN, upper RIGHT separate neighboring high ridge. An ivory/brass GPU citadel, exactly TWO reference rabbits looking down curiously while adjusting a balcony control console. Maintain their precise ear anatomy and coats. These castles are separate rivals, do not connect them as one team. Both towers have structural height roughly ONE FIFTH TALLER than the tallest challenger tower at comparable perspective; elevated craggy ridges emphasize their lofty position. This is fantasy scale, not numerical score geometry.\n\nEIGHT CHALLENGER LOCATIONS, arranged as four across the upper valley terrace and four across the lower foreground terrace:\nTHREE: MTG, upper terrace far LEFT around x18%, y49%. Tall cyan-lit brass telescoping GPU siege tower on caterpillar treads with a crane raising one final fan segment. Small anonymous opaque-visored technicians, no named face or invented mascot.\nFOUR: THE LAST DANCE, upper terrace left-center x40%, y48%. A long black/brass wheeled battering ram with folded mechanical suspension and amber fans, crew aligning the ram on a workshop jig. Anonymous fully helmeted technicians only.\nFIVE: TEAM TURDUCKEN, upper terrace right-center x64%, y49%, make this workshop large and readable. Mark, Son and yellow black-hoodie Keith working on a hovering mechanical turkey DRONE with scalloped tail, a smaller white red-combed mechanical CHICKEN inside its open service bay, a tiny yellow DUCK with orange bill inside that chicken. Clear nested containment. Exactly two Yorkies on a safe platform. One folded spare rotor configuration lies on the workbench, implying experiments. Mark can be comically gripping a wrench by the open jaw; a gentle affectionate joke, not incompetence. All characters clear of rotating fans, safe railings.\nSIX: the mixed-text Japanese team, upper terrace far RIGHT x87%, y50%. A VIOLET geometric folding GPU crane/scissor-lift with origami-like articulated metal panels, technicians calibrating its many hinges, opaque helmets. No guessed real faces or extra animals.\nSEVEN: Grigoriy Zatravkin's team, lower terrace far LEFT x13%, y80%. A crimson/copper walking foundry with six jointed legs, a warm furnace glow, crew fitting a footpad. Generic technicians concealed by opaque protective helmets.\nEIGHT: Majkel1337, lower terrace left-center x36%, y79%. A teal/copper enormous nested GYROSCOPE siege carrier with ring gimbals on a wheeled base, a tiny helmeted technician balances a fan counterweight.\nNINE: NVARC3, lower terrace right-center x62%, y79%, prominent readable Puget AND Sorokin side by side working on a VERY MYSTERIOUS green-and-black levitating GPU core inside an elaborate ringed cage on a tracked chassis. Green light leaks from under a carefully secured canvas cover; intricate NVIDIA-green fan arrays and absurd articulated tools. Preserve each man's separate face/costume; Ivan's small cyan crystal hovers near a diagnostic console. Supporting anonymous GPU-covered engineers may have opaque visors. Green machinery only here, no inaccurate logo lettering required.\nTEN: artificialagencylab.com, lower terrace far RIGHT x86%, y80%. A blue-and-brass MOBILE FOLDING BRIDGE rig with big horizontal joints and a circular portal-like cable arch, masked crew assembling a span on trestles. No invented individual likeness.\n\nRespectful ingenuity and friendly rivalry everywhere. A beautiful open mountain vista links the ten camps; machinery silhouettes must all differ. Physical GPU costume/equipment is editorial metaphor, not a claim about actual hardware, methods or team spending. Character counts do not represent roster sizes. The eight workshops must remain EIGHT, not blend together or disappear. Exactly TWO citadels above, EIGHT challenger workshops below. Each anonymous workshop may have a few generic helmeted builders; do not give them celebrity faces or animal mascots.\n\nGenerate CLEAN native art ONLY: NO words, letters, names, rank numerals, scores, numbers, labels, logos, dates, watermarks or big blank scoreboard. Blank small pennants are fine. All precise names, rank badges and score-gap graphics will be overlaid later in code outside the main action. Keep clear patches of snow around each camp for small later badges. Panoramic composition, full equipment visible, charming high-detail miniature engineering story.",
+      "inputImages": [
+        "2026-10-13-valley-strongholds-v1-base.webp",
+        "2026-10-18-turducken-hangar-v1-base.webp",
+        "yi-chia-chen-bunnies-owner-2026-10-12.png",
+        "2026-10-12-jean-francois-puget-reference-1-v1.png",
+        "2026-10-12-ivan-sorokin-reference-1-v1.png"
+      ]
+    },
+    {
+      "prompt": "Edit this exact wide GPU Valley panorama. Preserve the complete composition, all ten team locations and machines, all three Turducken characters and two Yorkies, the two Chen rabbits with their correct ears, Dries, Puget and Sorokin, lighting, materials and wide aspect ratio. Make ONLY ONE small correction: the upper-left Tufa citadel currently has SIX visible fluffy black spiders. Remove the sixth spider on the LOWEST FAR-RIGHT exterior platform of that left citadel, immediately below/right of the hanging crane basket (roughly 30% across the whole image and 21% down). Restore the railing/architecture behind that tiny spider. Leave the other FIVE Tufa spiders untouched: left high parapet spider, front-left platform spider, top center crown spider, upper-right parapet spider, mid-right platform spider. Exactly FIVE spiders remain at Tufa. No other changes, no text, no new characters or objects.",
+      "inputImages": [
+        "exec-9e281e9c-4cef-4d49-b2e4-f8f5b7da048d.png"
+      ]
+    },
+    {
+      "prompt": "Edit Image 1, the exact wide TEN-CAMP GPU Valley panorama. Image 2 is the newly approved full-crew Turducken hangar and is authoritative ONLY for the seven mapped Turducken characters and two Yorkies. Preserve Image 1's exact wide aspect ratio, TWO separate upper citadels, exactly FIVE fluffy black Tufa spiders with Dries at upper left, Chen's exactly TWO correctly marked rabbits at upper right, all EIGHT separate challenger workshops, Puget and Sorokin on the lower green NVARC rig, every other machine, geography, camera and lighting.\n\nChange ONLY the Team Turducken workshop in the upper terrace right of center, around x48%-75%, y25%-62% of the whole image. It is the existing large turkey/chicken/duck machine with Mark, Son, Keith and two Yorkies. Add the four now-authorized characters from Image 2 to this SAME workshop and its tiered platform, without spilling into other teams' camps. Retain the three existing members: muscular bearded visor-wearing Mark, smiling broad-visor Son, round yellow black-cap/black-hoodie Keith. Exactly TWO Yorkies remain. Add: DZ, blonde short-haired red-eyed chibi girl holding a pink stuffed bunny, using a wing console; NT, orange kitten in bright yellow banana suit with big playful arcs of blue tears, adjusting a thruster lever; Choryu, a humanoid technician whose head IS a rectangular glowing grayscale cardiac MRI display rather than a face, connecting cables; Herminator standing in for Ronen, ornate SILVER cuirassier knight in electric cobalt-blue, tall blue PLUME, working a support brace. All seven main characters have compatible black-and-gold tech harnesses and cyan equipment. Keep a complete robotic TURKEY containing a CHICKEN containing a small DUCK. A folded alternative rotor configuration can sit on their bench. Mark may hold his wrench by the wrong end as an affectionate visual gag. No duplicate main crew, no additional dogs or turkeys. The seven characters need enough room and identity cues to recognize them within the existing panorama; use safe compact platforms, don't cover their faces.\n\nDo NOT alter any other team camp or move the high citadels. Do NOT introduce text, numbers, logos, scoreboards, labels or watermarks anywhere. Keep clean art for later code overlays. Machinery is charming editorial metaphor, no weapons fired or people harmed. This is a precise cast expansion of the single existing Turducken workshop, not a new composition.",
+      "inputImages": [
+        "2026-10-18-top-ten-siege-pre-crew-v1.png",
+        "2026-10-18-turducken-full-crew-input-v1.png"
+      ]
+    }
+  ],
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "requiredTopTenTeamIds": [
+      "16153655",
+      "16021367",
+      "15605182",
+      "16569113",
+      "16490178",
+      "16958599",
+      "15770880",
+      "16132261"
+    ],
+    "requiredRosterHandles": {
+      "15486995": [
+        "driessmit1"
+      ],
+      "15770880": [
+        "cpmpml",
+        "sorokin"
+      ],
+      "15605182": [
+        "dzjiann",
+        "keithtyser",
+        "markbarney",
+        "mitubant",
+        "ngyzly",
+        "scizical",
+        "sonphamorg"
+      ]
+    },
+    "note": "Full background cast needs manual current-roster review. Other camps use anonymous helmeted builders, not likenesses or roster headcounts."
+  }
+}

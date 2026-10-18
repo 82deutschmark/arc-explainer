@@ -81,7 +81,9 @@ Inspect every reference yourself; never claim an unattached file was a model inp
    or asserting that their count equals the roster.
    MTG and The Last Dance can be represented by labelled team machines; an
    individual likeness needs its own reference. Ronen has no frozen likeness yet.
-3. Choose one coherent episode based on the news or Mark's request. Do not let an
+3. Choose one coherent episode based on the news or Mark's request.
+   The Boss’s expanded direction is to show all ten camps when the field supports it: the two rival citadels above eight separate workshops, NVARC3’s mysterious green machine, Turducken’s nested drone and alternative configurations, and distinct siege equipment elsewhere. Retain the recurring approved characters; anonymous crews do not invent missing likenesses. The wrong-way wrench can recur as affectionate, attributed artwork banter. For numerical comparisons, draw exact score-point gaps to both leaders in code from a dated board; keep the clean native scene and dated graphic separate.
+   Do not let an
    older composition dictate the article headline. Give pictured contenders brief
    sourced race context in the manuscript.
 4. Inspect inputs, generate clean art, and review the result: counts, ear/coat

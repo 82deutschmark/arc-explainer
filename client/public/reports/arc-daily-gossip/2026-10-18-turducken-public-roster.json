@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-18T19:16:05.370354Z",
+  "observedAt": "2026-10-18T18:55:34Z",
+  "competitionId": "arc-prize-2026-arc-agi-3",
+  "teamId": "15605182",
+  "name": "Team Turducken",
+  "members": [
+    "dzjiann",
+    "keithtyser",
+    "markbarney",
+    "mitubant",
+    "ngyzly",
+    "scizical",
+    "sonphamorg"
+  ],
+  "rank": 5,
+  "score": 48.92,
+  "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+  "primarySourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+}

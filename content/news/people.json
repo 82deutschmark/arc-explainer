@@ -367,12 +367,12 @@
         "url": "https://www.kaggle.com/keithtyser"
       },
       {
-        "checkedAt": "2026-10-09T19:23:29Z",
-        "handle": "keithtyser",
+        "checkedAt": "2026-10-18T18:49:54Z",
+        "handle": "chiefkeitht",
         "platform": "x",
-        "sourceTitle": "Keith Tyser — personal site linked X account",
-        "sourceUrl": "https://keithtyser.com/",
-        "url": "https://x.com/keithtyser"
+        "sourceTitle": "chiefkeith X profile directly links kaggle.com/keithtyser",
+        "sourceUrl": "https://x.com/chiefkeitht",
+        "url": "https://x.com/chiefkeitht"
       }
     ],
     "facts": [
@@ -421,6 +421,18 @@
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
         "teamId": "16447222",
         "teamName": "ARC Slayers"
+      },
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "season": "2026",
+        "teamId": "15605182",
+        "teamName": "Team Turducken",
+        "memberHandle": "keithtyser",
+        "firstObservedAt": "2026-10-18T18:55:34Z",
+        "lastObservedAt": "2026-10-18T18:55:34Z",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "ARC-3 public roster observation"
       }
     ],
     "name": "Keith Tyser",
@@ -1206,13 +1218,13 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-11T20:02:53Z",
-        "lastObservedAt": "2026-10-18T09:54:36Z",
+        "lastObservedAt": "2026-10-18T18:55:34Z",
         "memberHandle": "markbarney",
         "season": "2026",
         "sourceTitle": "ARC-3 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
         "teamId": "15605182",
-        "teamName": "Son & Mark & Ronen"
+        "teamName": "Team Turducken"
       }
     ],
     "name": "Mark Barney",
@@ -1256,13 +1268,13 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-11T20:02:53Z",
-        "lastObservedAt": "2026-10-18T09:54:36Z",
+        "lastObservedAt": "2026-10-18T18:55:34Z",
         "memberHandle": "sonphamorg",
         "season": "2026",
         "sourceTitle": "ARC-3 public roster observation",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
         "teamId": "15605182",
-        "teamName": "Son & Mark & Ronen"
+        "teamName": "Team Turducken"
       },
       {
         "competition": "arc-2",

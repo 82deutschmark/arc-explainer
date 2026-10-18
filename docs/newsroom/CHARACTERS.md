@@ -39,6 +39,12 @@ python3.13 scripts/newsroom_artwork.py library --gallery client/public/news-imag
 
 Inspect each new input and native output. A character-reference registration uses the existing `register` command with a plan job containing `purpose: character-reference` and its exact `subjectId`, actual `toolArguments` and reference roles. Record the final selected call if an edit was needed. Register a new version, update its registry reference, inspect the gallery and commit the intended assets and records together. Add newly verified people through the normal people ledger; an unlisted person or default avatar supplies no character.
 
+## Team Turducken’s commissioned crew
+
+The October 18 full-crew commission uses Son’s supplied Discord avatars directly: DZ is the blonde, red-eyed chibi with a pink plush bunny; NT is the orange kitten in a banana suit with comic tears; Choryu uses a grayscale cardiac-MRI display as a head; Herminator, the silver/cobalt plumed knight, stands in for Ronen’s bot. These are approved editorial characters, not claims about real faces or health. Preserve Mark, Son, Keith’s black-capped yellow mascot and exactly two Yorkies. The four frozen inputs are `client/public/news-images/references/2026-10-18-turducken-{dzj,nt,choryu,herminator}-avatar-v1.png`; the full-crew generation record preserves their hashes and roles.
+
+The seven-character hangar is `2026-10-18-turducken-full-crew-codex-v1-base`; the expanded ten-camp panorama is `2026-10-18-top-ten-siege-full-crew-v1-base`. Their records and clean assets live in the normal artwork folders. Earlier three-character hangar and first-flight episodes remain intact; a pictured subset is not a roster headcount.
+
 ## Programmed corner graphics
 
 The compositor now draws a compact lower-left team/rank/score chart and an upper-right ARC Daily Digest / ARC Explainer chyron directly onto a copy of the approved scene. It uses the existing favicon and newsroom fonts. Both bars share a 0–100 score scale. The exact scores and observation time come from the edition brief. It keeps the scene’s aspect ratio and source bytes, and archives `corner-overlays-v1` with the image hash. Generation prompts reserve those corners for the code-drawn graphics. Overlays require no new native image generation. The headline remains bound to the composition record and appears in the article; the image carries the small statistics and branding requested by the Boss.

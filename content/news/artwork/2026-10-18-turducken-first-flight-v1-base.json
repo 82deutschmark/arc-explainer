@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "id": "2026-10-18-turducken-first-flight-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-18T18:48:59Z",
+  "toolOutput": "turducken-first-flight-v1.png",
+  "rawSrc": "/news-images/2026-10-18-turducken-first-flight-v1-base.webp",
+  "rawSha256": "20db9542a7ee9759c75c37ca706fc42d218dadc0b440fcea7b4bff836e5d9f45",
+  "prompt": "Use case: illustration-story. Create one NEW wide 16:9, richly detailed cinematic 3D editorial illustration for The ARC Daily Digest: Team Turducken's outrageous flying machine under construction. A new episode in the established snowy GPU Valley comic, with a different setting, silhouette, camera and poses from the previous airborne scene.\n\nREFERENCE ROLES: Image 1 is Mark Barney's OWNER-SUPPLIED likeness: stocky muscular bearded man, dark hair, glowing cyber visor, dense GPU crown/backpack, general decorative tattoos and gold chain. Ignore all printed words/slogans and specific written tattoos. His two tan-and-dark silky Yorkshire terriers are the only dogs. Image 2 is Son Pham's individual avatar: preserve his recognizable smiling lower face, black GPU helmet, broad glowing visor and blue/orange cable armor. Image 3 is Keith Tyser's established individual avatar: the ROUND YELLOW mascot with huge dark glossy eyes, small puckered orange mouth, BLACK BASEBALL CAP and BLACK HOODIE; portray this exact mascot as an upright engineer, NOT a human face, NOT the inner duck. No printed slogans. Image 4 is STYLE/WORLD ONLY: the earlier turducken scene; do not copy its layout or characters besides the individually referenced cast.\n\nSCENE: A NEW second episode, the first flight across an icy canyon at sunrise. Wide cinematic side view with the entire spectacular machine silhouetted against pink clouds and snowy mountain peaks. The TURKEY-shaped drone is airborne, a bronze-and-ivory turkey head with red snood and wattle at the prow, large scalloped tail fan at the rear, broad articulated wings with four blue ducted rotors. A big transparent open cockpit cutaway clearly reveals a white mechanical CHICKEN with red comb nested INSIDE the turkey body; the chicken's open control bay contains a small yellow DUCK with flat orange bill. These are complete cheerful robotic bird forms nested like dolls, NOT three separate flying birds, no food or harm.\n\nThe three established characters ride on safe open service decks around the nested control core: Mark braces at a wing-root console using a wrench to tighten a secured GPU module, Son checks the duck core connections at the opposite console, and Keith's ROUND YELLOW black-capped BLACK HOODIE mascot stands between them with a handheld flight-controller, large dark eyes intent on the flight. Mark and Son have the specific visors/headgear/likenesses from their individual references; Keith is the mascot, never a human man. Exactly two little geared Yorkshire terriers on separate protected perches beside Mark. Everyone protected by railings, clear of rotors, naturally connected equipment. Rich copper tubes, cable bundles and graphics cards are whimsical editorial metaphor. Snow blows below; a faint vapor wake follows; exhilarating ingenious ridiculous machine.\n\nCOMPOSITION: strong side-to-three-quarter wide camera, whole aircraft and recognizable turkey tail visible, the three engineers and nested chicken/duck in the center large enough to read. Much more open sky and motion than the hangar scene. Warm sunlight on faces, cold cyan engine light. Maintain the established beautifully rendered cinematic 3D GPU Valley world. Reserve quiet top-right sky and lower-left mist for later code overlays. No text, no letters, no logos, no ranks, scores, dates, labels or watermark. Exactly two human engineers Mark and Son, one yellow black-capped mascot engineer Keith, two Yorkies, one turkey containing one chicken containing one duck. No other competitor characters.",
+  "references": [
+    {
+      "src": "/news-images/references/mark-yorkies-owner-2026-10-15.png",
+      "role": "Owner-supplied Mark Barney and two Yorkies likeness; omit printed words.",
+      "sha256": "fcde1de7a685c5630aea7bb840fa8e2dc61cf6fbfa3725a1f8bc4b249f165906"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp",
+      "role": "Son Pham individual cyber-engineer avatar.",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-keith-tyser-reference-1-v1.webp",
+      "role": "Keith Tyser individual yellow mascot, black cap and hoodie.",
+      "sha256": "572ee4749a2a5205c717a555e9e9a4588edb458e3bac7d35f960769ee5a170af"
+    },
+    {
+      "src": "/news-images/2026-10-15-evening-turducken-harness-v1-base.webp",
+      "role": "Previous native turducken image for style/world continuity only.",
+      "sha256": "20e12d6f369467cb1ae1bb2efad9ca64737acf86b30359b7e431942bec120437"
+    }
+  ],
+  "inputImages": [
+    "mark-yorkies-owner-2026-10-15.png",
+    "2026-10-12-son-pham-reference-1-v1.webp",
+    "2026-10-12-keith-tyser-reference-1-v1.webp",
+    "2026-10-15-evening-turducken-harness-v1-base.webp"
+  ],
+  "review": "Visually inspected native output: Mark works on a secured GPU unit, Son operates a console and yellow black-capped Keith mascot holds a controller. Exactly two Yorkies. Flying fan-tailed turkey contains the open chicken bay containing the duck core. Snowy canyon, clear sunrise sky and coherent drone wings. New camera, poses and setting versus hangar. No scores or newspaper words. Duck sunglasses echo existing commissioned harness art and imply no Franzen membership.",
+  "reviewStatus": "reviewed",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "editorialDate": "2026-10-18",
+    "request": "New images of Son, Mark and Keith working on a duck inside a chicken inside a turkey flying drone for the next edition."
+  },
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "requiredRosterHandles": {
+      "15605182": [
+        "markbarney",
+        "sonphamorg",
+        "keithtyser"
+      ]
+    },
+    "note": "The three commissioned characters are a subset of the verified seven-person roster, not its complete headcount. Two Yorkies are owner-supplied pets."
+  }
+}

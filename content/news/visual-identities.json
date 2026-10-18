@@ -572,7 +572,7 @@
       "status": "ready"
     }
   ],
-  "updatedAt": "2026-10-13T23:30:43.185998Z",
+  "updatedAt": "2026-10-18T19:17:34.889371Z",
   "version": 1,
   "reusableScenes": [
     {
@@ -753,6 +753,79 @@
       },
       "artworkHistoryChart": false,
       "approvalNote": "October 14 explicit reserve commission and positive visual review. Not automatically active: desk selects one unused episode through existing issue-commission mechanics after manual full-cast checks. Anonymous GPU-covered NVIDIA supporting engineers explicitly authorized; no invented named likenesses."
+    },
+    {
+      "id": "2026-10-18-top-ten-siege-full-crew-v1",
+      "competition": "arc-3",
+      "approvedAt": "2026-10-18T19:17:34.889371Z",
+      "approvedBy": "mark-barney",
+      "status": "reserve",
+      "artworkGenerationRecord": "2026-10-18-top-ten-siege-full-crew-v1-base",
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": [
+          "dries-smit"
+        ]
+      },
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredTopTenTeamIds": [
+          "16153655",
+          "16021367",
+          "15605182",
+          "16569113",
+          "16490178",
+          "16958599",
+          "15770880",
+          "16132261"
+        ],
+        "requiredRosterHandles": {
+          "15486995": [
+            "driessmit1"
+          ],
+          "15770880": [
+            "cpmpml",
+            "sorokin"
+          ],
+          "15605182": [
+            "dzjiann",
+            "keithtyser",
+            "markbarney",
+            "mitubant",
+            "ngyzly",
+            "scizical",
+            "sonphamorg"
+          ]
+        },
+        "note": "Full background cast needs manual current-roster review. Other camps use anonymous helmeted builders, not likenesses or roster headcounts."
+      },
+      "approvalNote": "Boss-approved October 18 scene. Recheck full cast manually; compose current issue scores/time. See artwork-inventory for actual uses and Discord previews."
+    },
+    {
+      "id": "2026-10-18-turducken-first-flight-v1",
+      "competition": "arc-3",
+      "approvedAt": "2026-10-18T19:17:34.889371Z",
+      "approvedBy": "mark-barney",
+      "status": "reserve",
+      "artworkGenerationRecord": "2026-10-18-turducken-first-flight-v1-base",
+      "artworkConditions": {
+        "leaderTeamId": "15486995",
+        "rivalTeamId": "15499660",
+        "requiredPersonIds": []
+      },
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "requiredRosterHandles": {
+          "15605182": [
+            "markbarney",
+            "sonphamorg",
+            "keithtyser"
+          ]
+        },
+        "note": "The three commissioned characters are a subset of the verified seven-person roster, not its complete headcount. Two Yorkies are owner-supplied pets."
+      },
+      "approvalNote": "Boss-approved October 18 scene. Recheck full cast manually; compose current issue scores/time. See artwork-inventory for actual uses and Discord previews."
     }
   ]
 }

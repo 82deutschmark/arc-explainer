@@ -561,5 +561,38 @@
       "https://arc.markbarney.net/news#2026-10-17-arc3-superteam-merger-whispers"
     ],
     "verificationNotes": "Placement applied by hand after the edition was generated (Claude Opus 5.5 Low, 18-Oct-2026)."
+  },
+  {
+    "id": "oct18-late-top-ten-high-ground",
+    "competition": "arc-3",
+    "createdAt": "2026-10-18T19:17:34.889371Z",
+    "expiresAt": "2026-10-19T02:00:00Z",
+    "title": "The High Ground: top-ten workshops for the Late edition",
+    "priority": "Boss-requested artwork and merger follow-up",
+    "status": "pending",
+    "commissionedBy": "mark-barney",
+    "targetEditionId": "2026-10-18-evening-arc-3",
+    "placement": "edition-artwork",
+    "artworkGenerationRecord": "2026-10-18-top-ten-siege-full-crew-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "teamIds": [
+      "15486995",
+      "15499660",
+      "16153655",
+      "16021367",
+      "15605182",
+      "16569113",
+      "16490178",
+      "16958599",
+      "15770880",
+      "16132261"
+    ],
+    "instructions": "The official merger dispatch uses the seven-character hangar. Tonight, use the unused clean ten-camp panorama after checking its entire cast/top-ten premises against the edition closing board. The private gap preview is NOT edition evidence: refresh first/second-place gaps from the edition brief if showing them. Preserve readable crew and machine action; a separate score panel below the art is acceptable. Cover the pictured contenders in proportion to the news. The Boss approved the backwards-wrench joke and attributed configuration experiments to challenge Tufa and Chen. The finished illustrated story MUST lead the normal Late-edition X post with the actual image attachment; preserve send-once state and record the attachment in artwork-inventory. No extra tweet. Record actual article use and X attachment separately from the two existing Discord previews. Other approved unused stock, including first flight, remains for later episodes."
   }
 ]

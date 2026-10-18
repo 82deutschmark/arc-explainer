@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "id": "2026-10-18-turducken-full-crew-codex-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-18T19:16:05.370354Z",
+  "toolOutput": "exec-80459124-ad63-41e9-a654-5f07570897d6.png",
+  "rawSrc": "/news-images/2026-10-18-turducken-full-crew-codex-v1-base.webp",
+  "rawSha256": "98aed54fe4857b770d257f2ffa531a03dc493858e03e00f43f6cef0e5b7c59af",
+  "prompt": "Use case: compositing.\nAsset type: official Team Turducken dispatch illustration, landscape 16:9.\nInput images: Image 1 is the edit target and definitive visual base (the mechanical Turducken in its hangar with the existing crew). Images 2–5 are identity references for four added crew: Image 2 DZ, Image 3 NT, Image 4 Choryu, Image 5 Herminator.\nPrimary request: Expand the base into a bigger, more heroic full-crew scene, preserving its richly detailed cinematic 3D illustration style, warm gold workshop lights, electric cyan technology, snowy mountains and illuminated castle. Preserve the giant turkey mech, its fan tail, broad mechanical wings, glowing ducted thrusters and the chicken containing a sunglasses-wearing duck nested inside the turkey. Give the heroic mech the upper two thirds of the composition and expand the hangar/catwalk framing as needed to show the entire working crew clearly.\nPreserve the original crew, recognizable and unobscured: Mark, the bearded muscular tattooed cyber-engineer with GPU backpack, working on the left wing; Son, the dark-armoured cyber-engineer with elaborate blue visor helmet, working beside the cockpit on the right; Keith, the round yellow mascot wearing black cap and black hoodie and using his tablet; and exactly two small armoured Yorkshire terriers. Do not replace any of them with the new characters.\nAdd exactly four distinct crew, recognizable from the four avatar references, integrated into the same scene rather than as inset portraits. Each wears a matching black-and-gold tech harness with cyan equipment and visibly performs a real job on the mech:\n1. DZ: the reference chibi anime girl, short golden-blonde hair and very large red eyes, retaining her pink stuffed bunny under one arm while her free hand operates a wing diagnostic console. Keep her cute avatar identity and cheerful proud expression.\n2. NT: the reference orange tabby kitten inside a full bright-yellow banana costume, unmistakable cat face and banana stem, huge expressive comic tears arcing from both eyes, proudly operating a thruster calibration lever with little paws. Treat the tears as joyous comic determination, preserve this defining avatar detail.\n3. Choryu: a humanoid technician with a glowing rectangular holographic display IN PLACE OF the head. Its display shows the grayscale cardiac MRI cross-section from Image 4, an unmistakable anatomical medical scan with heart and torso shapes; no ordinary face, no skull, no helmeted human head. The technician connects and tunes the mech's power/data cabling.\n4. Herminator, Ronen's bot: a proud knight matching Image 5, ornate reflective silver cuirassier armour, tall plumed helmet, electric cobalt-blue sheen and glow, wearing the matching tech harness over his armour and tightening a wing-brace bolt with a substantial workshop torque wrench.\nArrange all seven main crew and the two Yorkies across coherent tiered working platforms around the giant mech. Their hands/tools contact their workstations believably. All four newcomers must be clearly identifiable and large enough to read; do not place them as tiny distant extras. Keep both Yorkies visible. Preserve the nested mechanical chicken and duck as machinery/mascots inside the turkey.\nComposition and mood: epic heroic wide-angle hangar tableau, larger imposing mech towering over its proud working team; sophisticated highly detailed polished metal and cloth textures, cinematic depth, warm amber and cyan illumination; the avatar characters keep their recognizable stylized identities while sharing the scene's light and perspective.\nConstraints: final image exactly landscape 16:9, edge-to-edge illustration. No text, letters, logos, numbers, labels, watermarks, score panels or typography anywhere, including on hats, screens or armour. Screen graphics are unlabeled abstract schematics except Choryu's MRI. No extra humans, no duplicated crew, no additional dogs.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-18-turducken-hangar-input-v1.webp",
+      "sha256": "3710addaa05730a52a17820fed896542a56500c3f4683024c0f80a5085d6f8d2",
+      "role": "Exact approved original hangar image as native edit target."
+    },
+    {
+      "src": "/news-images/references/2026-10-18-turducken-dzj-avatar-v1.png",
+      "sha256": "5c0ffc0ab9bef250744df9dd11104c9627a26123c26413952cd77a183d3e43a4",
+      "role": "Son-approved DZ Discord avatar: blonde red-eyed chibi with pink plush bunny."
+    },
+    {
+      "src": "/news-images/references/2026-10-18-turducken-nt-avatar-v1.png",
+      "sha256": "057d0fc3f004dde233d65c16e196fbfd683a48d4a47e4c629c7e158ed93da9ee",
+      "role": "Son-approved NT Discord avatar: orange kitten in banana costume with comic tears."
+    },
+    {
+      "src": "/news-images/references/2026-10-18-turducken-choryu-avatar-v1.png",
+      "sha256": "42057806fbaa9eb938f0aaba825512bed57022e4e51963663b4d8bbf3cd09edc",
+      "role": "Son-approved Choryu Discord avatar: grayscale cardiac MRI, used as a display head; no health claim."
+    },
+    {
+      "src": "/news-images/references/2026-10-18-turducken-herminator-avatar-v1.png",
+      "sha256": "bb09a4b622a3b2e56dd5deca81b905ae77b2482abf3a9bb3c4b03e14e31c4ed4",
+      "role": "Son-approved Herminator bot avatar standing in for Ronen: silver/cobalt plumed knight, not a human likeness."
+    }
+  ],
+  "inputImages": [
+    "2026-10-18-turducken-hangar-input-v1.webp",
+    "2026-10-18-turducken-dzj-avatar-v1.png",
+    "2026-10-18-turducken-nt-avatar-v1.png",
+    "2026-10-18-turducken-choryu-avatar-v1.png",
+    "2026-10-18-turducken-herminator-avatar-v1.png"
+  ],
+  "review": "Inspected: seven distinct main crew, original Mark/Son/Keith preserved, DZ blonde/red-eyed with pink plush bunny, NT banana kitten with large blue tear arcs, Choryu grayscale MRI head, Herminator silver/cobalt knight with tall blue plume. Exactly two Yorkies. Turkey contains chicken contains sunglasses duck. Characters perform workstation jobs; no typography. Original native output preserved; WebP exported at exactly 1920×1080.",
+  "reviewStatus": "reviewed",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "date": "2026-10-18",
+    "request": "Full seven-character crew with Son-approved Discord avatars; Boss released official-story publication in this chat."
+  },
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "requiredRosterHandles": {
+      "15605182": [
+        "dzjiann",
+        "keithtyser",
+        "markbarney",
+        "mitubant",
+        "ngyzly",
+        "scizical",
+        "sonphamorg"
+      ]
+    },
+    "note": "Herminator represents Ronen’s bot; avatars are team-approved editorial characters."
+  }
+}

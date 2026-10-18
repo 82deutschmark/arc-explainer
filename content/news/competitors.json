@@ -1403,18 +1403,31 @@
     "teamId": "15585956"
   },
   {
-    "aliases": [],
+    "aliases": [
+      "Son & Mark & Ronen"
+    ],
     "competition": "arc-3",
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-18T19:16:05.370354Z",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "sourceTitle": "ARC-3 observed public roster",
+        "text": "The public roster now lists all seven accounts together under Team Turducken. This confirms the combined entry, not its exact merger time or any new score gain."
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15605182",
-    "lastObservedAt": "2026-10-18T09:54:36Z",
+    "lastObservedAt": "2026-10-18T18:55:34Z",
     "members": [
+      "dzjiann",
+      "keithtyser",
       "markbarney",
+      "mitubant",
+      "ngyzly",
       "scizical",
       "sonphamorg"
     ],
-    "name": "Son & Mark & Ronen",
+    "name": "Team Turducken",
     "teamId": "15605182"
   },
   {

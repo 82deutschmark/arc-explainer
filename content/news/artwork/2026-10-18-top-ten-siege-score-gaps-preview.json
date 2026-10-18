@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "kind": "manual-editorial-preview",
+  "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+  "observedAt": "2026-10-18T18:55:34Z",
+  "boardSha256": "b04f78f76de78ddc8e575adde9fe681b0281a37d2e0d4693ef1f9a952f40f2a8",
+  "cleanImageSha256": "e76301a562d85ad893e078c4f6a37310b5baea7808ff1483ab1f737785baebd8",
+  "outputSha256": "322ae18927b1861cea3ac2a792efbf9b5b75a3600a1d3aae83ac7475f8d2dd98",
+  "rows": [
+    {
+      "rank": 3,
+      "teamId": "16153655",
+      "name": "mtg",
+      "score": "50.37",
+      "gapToFirst": "18.54",
+      "gapToSecond": "17.12"
+    },
+    {
+      "rank": 4,
+      "teamId": "16021367",
+      "name": "the last dance 🕺",
+      "score": "49.85",
+      "gapToFirst": "19.06",
+      "gapToSecond": "17.64"
+    },
+    {
+      "rank": 5,
+      "teamId": "15605182",
+      "name": "Team Turducken",
+      "score": "48.92",
+      "gapToFirst": "19.99",
+      "gapToSecond": "18.57"
+    },
+    {
+      "rank": 6,
+      "teamId": "16569113",
+      "name": "復活の混テキスト",
+      "score": "45.11",
+      "gapToFirst": "23.80",
+      "gapToSecond": "22.38"
+    },
+    {
+      "rank": 7,
+      "teamId": "16490178",
+      "name": "Grigoriy Zatravkin",
+      "score": "45.02",
+      "gapToFirst": "23.89",
+      "gapToSecond": "22.47"
+    },
+    {
+      "rank": 8,
+      "teamId": "16958599",
+      "name": "Majkel1337",
+      "score": "44.84",
+      "gapToFirst": "24.07",
+      "gapToSecond": "22.65"
+    },
+    {
+      "rank": 9,
+      "teamId": "15770880",
+      "name": "NVARC3",
+      "score": "43.94",
+      "gapToFirst": "24.97",
+      "gapToSecond": "23.55"
+    },
+    {
+      "rank": 10,
+      "teamId": "16132261",
+      "name": "artificialagencylab.com",
+      "score": "41.74",
+      "gapToFirst": "27.17",
+      "gapToSecond": "25.75"
+    }
+  ],
+  "releaseStatus": "Boss-authorized-preview-shared",
+  "note": "Dated manual preview, not a future edition’s evidence. Recompose closing score gaps from that edition’s own brief.",
+  "id": "2026-10-18-top-ten-siege-score-gaps-preview",
+  "nativeGenerationRecord": "2026-10-18-top-ten-siege-full-crew-v1-base",
+  "src": "/news-images/2026-10-18-top-ten-siege-score-gaps-preview.png"
+}

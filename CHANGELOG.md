@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.150.2  Oct 18, 2026
+
+- **Team Turducken’s confirmed merger and seven-character workshop** (Author: GPT-6.1 Sol / Codex; earlier team brief by Claude Opus 5.5). Publishes the Boss-authorized ARC-3 roster dispatch with the full native crew, corrects Keith’s X handle to `chiefkeitht`, and records the combined roster without inventing a merger time or score gain. Adds the approved hangar, flight and ten-camp clean artwork with provenance, separate article/Discord/X-use tracking, and a Late-edition commission requiring fresh overlays and an actual image attachment on its routine X announcement. Updates the existing character and GPU Valley guides; no application or automation changes.
+
 ### Version 9.150.1  Oct 16, 2026
 
 - **The whole test suite passes again** (Author: Claude Opus 5.5 Medium). Real fix: the leaderboard's "gold line, past week" tile measured its week from today's clock instead of from the latest save, so a board holding one old save compared that save with itself and showed a weekly change that wasn't there. It now counts back from the latest save like every other weekly figure; the clock-based helper is removed. Stale tests brought up to date: the newspaper front-page test expected every Kaggle thread, but the column deliberately shows the three most recent; the preview-card test expected unknown addresses to be left untouched, but they're now served as "Page not found" and kept out of search. Two game-catalog tests were written for Node's own runner, so vitest reported them as empty files; they now run under vitest. The puzzle-generator and snake-game tests needed their outside code folders downloaded on this machine (no code change). Files: `client/src/components/kaggleLeaderboard/{BoardTiles.tsx,boardData.ts}`, `tests/{newsFrontPage,arc3PublicIds,arc3MirrorBundles}.test.ts`, `tests/integration/ogImage.test.ts`.
