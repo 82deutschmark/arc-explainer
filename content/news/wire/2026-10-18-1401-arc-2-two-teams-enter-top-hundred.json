@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T17:55:28Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Two teams climb into the ARC-2 top 100",
+  "id": "2026-10-18-1401-arc-2-two-teams-enter-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-18T18:01:47Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Something AI Related climbed 404 places, from 502nd to 98th, reaching 33.47 after a 2.08-point gain."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "T0m0t0m0 W climbed from 232nd to 97th at 33.47, a 1.25-point gain. Both teams are now inside the top 100 on the public board."
+    }
+  ],
+  "since": "2026-10-17T17:53:01Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T18:01:17Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16586006",
+    "16767874"
+  ]
+}
