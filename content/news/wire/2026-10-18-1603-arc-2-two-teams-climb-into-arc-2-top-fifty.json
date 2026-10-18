@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-18T19:55:55Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Two ARC-2 teams reach 43rd and 46th",
+  "id": "2026-10-18-1603-arc-2-two-teams-climb-into-arc-2-top-fifty",
+  "personIds": [],
+  "publishedAt": "2026-10-18T20:03:29Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "NguyenThanhNhan gained 8.47 points to reach 41.25, moving from 111th to 46th. Flying Pandas gained 8.34 to reach 41.67, moving from 90th to 43rd."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "They are 43rd and 46th on a board where the last of 16 gold places is 16th at 61.81."
+    }
+  ],
+  "since": "2026-10-17T19:53:14Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T20:02:48Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15938245",
+    "15601881"
+  ]
+}

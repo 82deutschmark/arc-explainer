@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-18T19:55:54Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "The AGI Boys rise from 470th to 42nd on ARC-3",
+  "id": "2026-10-18-1603-arc-3-the-agi-boys-rise-to-forty-second",
+  "personIds": [],
+  "publishedAt": "2026-10-18T20:03:29Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The AGI Boys gained 4.79 points to reach 35.35, moving from 470th to 42nd on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The team is now 42nd, with the last of 18 gold places at 18th and 38.20."
+    }
+  ],
+  "since": "2026-10-17T19:53:13Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T20:02:48Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15653548"
+  ]
+}

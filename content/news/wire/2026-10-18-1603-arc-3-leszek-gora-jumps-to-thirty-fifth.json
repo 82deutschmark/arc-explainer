@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-18T19:55:54Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Leszek Góra jumps from 867th to 35th on ARC-3",
+  "id": "2026-10-18-1603-arc-3-leszek-gora-jumps-to-thirty-fifth",
+  "personIds": [],
+  "publishedAt": "2026-10-18T20:03:29Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Leszek Góra gained 7.05 points to reach 35.96, moving from 867th to 35th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Góra is now 35th; the last of 18 gold places is 18th at 38.20."
+    }
+  ],
+  "since": "2026-10-17T19:53:13Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-18T20:02:48Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16665571"
+  ]
+}
