@@ -10,6 +10,9 @@
  *          'partial' means the rule could not be pinned down even with the answers. The synthetic-data
  *          plan (docs/2026-10-19-arc2-hard-set-synthetic-data-plan.md) reads these notes, so keep the
  *          wording honest: nothing here is an answer key the models were denied.
+ *          19-Oct-2026, Claude Opus 5.5 Medium: the spiral note is now 'checked' (a coded rule reproduces every
+ *          pair; it adds the corner step the first note missed) and the leaky-boxes note is 'partial' (leaks
+ *          bend where they meet, which the first note missed). Both found while building the generators.
  * SRP/DRY check: Pass — mirrors shared/featuredPuzzles.ts (standalone constants, no dependencies);
  *                the server computes membership from the database, this file only names the buckets.
  */
@@ -131,16 +134,17 @@ export const ARC2_HARD_SET_NOTES: Record<string, Arc2HardSetNote> = {
   'da515329': {
     id: 'da515329',
     nickname: 'Spiral',
-    confidence: 'read',
+    confidence: 'checked',
     bullets: [
       'The only thing in the picture is a small plus sign.',
       'Each of the four arms of the plus is the start of a line.',
-      'Each line goes straight out from its arm. When it gets near the edge or near another line, it turns and keeps going, always turning the same way, leaving a one-square gap.',
-      'The four lines wind around and around until the whole grid is one big square spiral.',
+      'All four lines turn the same way, like the hands of a clock, and wind outward until they run off the picture.',
+      'Every time a line turns a corner, it takes a tiny step sideways, as long as the plus arm minus two, then carries on. When the plus arms are two long the step is zero; when they are one long there is no step at all.',
+      'The lines never touch: there is always one empty square between them.',
       'The middle of the plus stays empty.',
     ],
     whereModelsBreak:
-      'The models say "spiral" readily and then cannot draw one that long without drifting by a square somewhere. The rule is easy to state and hard to execute, and their answer grids show the drift.',
+      'The models say "spiral" readily and then cannot draw one that long without drifting by a square somewhere. Part of that drift is the little sideways step at each corner: a plain square spiral is already wrong at the first corner, and one missed step shifts everything after it.',
   },
   '9bbf930d': {
     id: '9bbf930d',
@@ -160,14 +164,14 @@ export const ARC2_HARD_SET_NOTES: Record<string, Arc2HardSetNote> = {
   'e12f9a14': {
     id: 'e12f9a14',
     nickname: 'Leaky boxes',
-    confidence: 'read',
+    confidence: 'partial',
     bullets: [
       'Each box has a colored middle and a dark frame around it.',
       'Somewhere the frame has a hole: a frame square that is missing.',
-      'The middle color leaks out through the hole in a straight line all the way to the edge of the picture.',
+      'The middle color leaks out through the hole in a line toward the edge of the picture.',
       'A hole in the side of the frame leaks straight out. A hole at a corner leaks out on the diagonal.',
       'The hole square itself takes the middle color too.',
-      'Nothing else moves.',
+      'Honest note: the leaks do not always run straight to the edge. Where two leaks would run into each other they bend and travel side by side. I could not pin down exactly when and how they bend.',
     ],
   },
   '88bcf3b4': {

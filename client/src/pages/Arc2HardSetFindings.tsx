@@ -7,6 +7,7 @@
  *          ARC-2 Kaggle entry should therefore contain. Written in the first person on purpose; the
  *          Boss asked for my estimation, not a survey. Facts about attempts come from the hard-set
  *          endpoint and the attempt records; the per-puzzle notes live in shared/arc2HardSet.ts.
+ *          19-Oct-2026, Claude Opus 5.5 Medium: one dated aside on the spiral, found while coding its generator.
  * SRP/DRY check: Pass — prose page; links to the hard-set page and the plan instead of repeating them.
  */
 
@@ -70,7 +71,10 @@ export default function Arc2HardSetFindings() {
             both traced every marble square by square, and both let one marble slide diagonally past the
             corner of a wall. A marble cannot squeeze through a corner gap. One square wrong, whole
             answer wrong. The spiral puzzle is the same story stretched out: every attempt says
-            "spiral", and the drawn spirals drift by a square somewhere in thirty rows.
+            "spiral", and the drawn spirals drift by a square somewhere in thirty rows. (Coding it later
+            showed part of that drift is a rule detail, not only shaky hands: every corner carries a small
+            sideways step as long as the plus arm minus two, so a plain square spiral is wrong from the
+            first corner. Claude Opus 5.5 Medium, 19-Oct.)
           </li>
           <li>
             <strong>A rule invented from one example when the secret spans all of them.</strong> The torn
