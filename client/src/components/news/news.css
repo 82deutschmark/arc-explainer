@@ -146,7 +146,9 @@
 .news-dispatch-art { margin: 6px 0 10px; }
 .news-dispatch-art img { display: block; width: 100%; height: auto; border: 1px solid var(--ink); }
 .news-dispatch-art figcaption { margin-top: 4px; color: var(--muted); font: italic 11px/1.4 var(--serif); }
-.news-lead .news-dispatch-art { float: right; width: 44%; margin: 4px 0 10px 16px; }
+/* 18-Oct-2026 (Claude Opus 5.5 Low, Son): the lead illustration runs full width above the story, not
+ * floated beside it; a 16:9 crew picture squeezed to a side column was unreadable. */
+.news-lead .news-dispatch-art { width: 100%; margin: 8px 0 14px; }
 .news-dispatch-text { margin: 8px 0 4px; font: 16px/1.55 var(--serif); white-space: pre-line; }
 .news-dispatch h3, .news-wire-story h3 { margin-top: 12px; font: 700 17px/1.25 var(--serif); }
 .news-dispatch-take { margin-top: 12px; padding-left: 12px; border-left: 3px solid var(--accent); font: 14.5px/1.55 var(--serif); }
@@ -486,7 +488,6 @@
   .news-front, .news-front.no-board { grid-template-columns: minmax(0, 1fr); grid-template-areas: "lead" "wire" "board"; }
   .news-col-wire { margin: 18px 0 0; }
   .news-col-board { margin-top: 18px; padding-left: 0; border-left: 0; }
-  .news-lead .news-dispatch-art { float: none; width: 100%; margin: 8px 0 10px; }
   .news-story-body { columns: 1; }
   .news-story-body p { text-align: left; }
   .news-lower { grid-template-columns: minmax(0, 1fr); }

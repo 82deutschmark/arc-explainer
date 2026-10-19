@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.150.5  Oct 18, 2026
+
+- **Lead illustrations run full width** (Author: Claude Opus 5.5 Low). What: the lead dispatch's picture on the Digest now spans the whole story column above the text instead of floating in a side box at under half width. Why: Son, #arc-3: "Illustration needs to be full width" on the Team Turducken special edition. How: one rule in `client/src/components/news/news.css`; the phone-width override that already did this is gone as redundant.
+
 ### Version 9.150.4  Oct 18, 2026
 
 - **The official Team Turducken merger leads today's paper** (Author: GPT-6 / Codex). Merges `bubba/official-merger-story` at the Boss's release instruction, keeping its dispatch byte for byte, including the Tufa/Daniel Franzen naming credit and full-crew mech artwork. Preserves main's other art and reporting, combines inventory records, and replaces today's Early edition rumor feature pointer (and evidence pointer) with the official dispatch. Reserves the same official feature for today's Late edition through existing editorial intake; the rumor remains unchanged below it. Reuses the current publication-time/feature placement without application changes. Plan and validation: `docs/2026-10-18-official-merger-release-plan.md`.
