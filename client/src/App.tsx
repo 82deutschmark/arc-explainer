@@ -14,6 +14,7 @@ PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations a
          docs/28-Aug-2026-synthetic-games-arc3-integration-plan.md). The resource
          directory lives at "/home" and is linked from the header.
          2026-10-05 (Claude Opus 5.5): /kaggle-leaderboard, the public Kaggle board page.
+         2026-10-19 (Claude Opus 5.5 Low): /team/login and /team/arc2-runs, the team-only runs record.
          2026-10-10 (Claude Sonnet 5.5): /arc-leaderboards, the hub for the generic "ARC leaderboards" search.
          2026-10-16 (Claude Opus 5.5 Medium): "/" is the final-stretch front page (countdown, medal
          race, wire, our placing); the earlier landing stays at /synthetic.
@@ -44,6 +45,9 @@ const PuzzleBrowser = lazy(() => import("@/pages/PuzzleBrowser"));
 const AnalyticsOverview = lazy(() => import("@/pages/AnalyticsOverview"));
 const Leaderboards = lazy(() => import("@/pages/Leaderboards"));
 const KaggleLeaderboard = lazy(() => import("@/pages/KaggleLeaderboard"));
+const TeamLogin = lazy(() => import("@/pages/team/TeamLogin"));
+const Arc2Runs = lazy(() => import("@/pages/team/Arc2Runs"));
+const Arc2Run = lazy(() => import("@/pages/team/Arc2Run"));
 const ArcLeaderboards = lazy(() => import("@/pages/ArcLeaderboards"));
 const News = lazy(() => import("@/pages/News"));
 const NewsPeople = lazy(() => import("@/pages/NewsPeople"));
@@ -175,6 +179,10 @@ function Router() {
         <Route path="/analytics" component={AnalyticsOverview} />
         <Route path="/leaderboards" component={Leaderboards} />
         <Route path="/arc-leaderboards" component={ArcLeaderboards} />
+        {/* Team-only pages, behind the team sign-in (2026-10-19). */}
+        <Route path="/team/login" component={TeamLogin} />
+        <Route path="/team/arc2-runs" component={Arc2Runs} />
+        <Route path="/team/arc2-runs/:key" component={Arc2Run} />
         <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>
         <Route path="/kaggle-leaderboard"><KaggleLeaderboard key="arc-3" competitionKey="arc-3" /></Route>
         <Route path="/news" component={News} />

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Author: Claude Opus 5.5 Low
+Date: 19-October-2026
+PURPOSE: launchd job on the Mac Mini for the ARC-AGI-2 runs record: one pass of arc2_runs.py every
+  fifteen minutes (submissions are the spine and stay readable, so there's no need to poll faster).
+  Installed as ~/Library/LaunchAgents/ai.bubba.arc2-runs-watch.plist; this copy is the source.
+SRP/DRY check: Pass - schedule only; mirrors ai.bubba.kaggle-runs-watch (the ARC-3 record).
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>ai.bubba.arc2-runs-watch</string>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HOME</key>
+		<string>/Users/macmini</string>
+		<key>PATH</key>
+		<string>/Users/macmini/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/macmini/.kaggle-venv/bin/python3.13</string>
+		<string>/Users/macmini/GitHub/arc-explainer/scripts/arc2_runs/arc2_runs.py</string>
+		<string>tick</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StartInterval</key>
+	<integer>900</integer>
+	<key>StandardOutPath</key>
+	<string>/Users/macmini/Library/Logs/bubba-arc2-runs-watch.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/macmini/Library/Logs/bubba-arc2-runs-watch.err.log</string>
+</dict>
+</plist>

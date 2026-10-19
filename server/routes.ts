@@ -5,6 +5,7 @@
  * Date: 2026-02-10
  * PURPOSE: Main routes configuration file for the API, including SnakeBench model insights routing.
  *          2026-09-18 (Claude Opus 5): mounts the token-gated /api/arc3/dataset router.
+ *          2026-10-19 (Claude Opus 5.5 Low): mounts /api/team, the team-only runs record.
  * SRP/DRY check: Pass - route registration only.
  */
 
@@ -48,6 +49,7 @@ import arc3ArchiveRouter from "./routes/arc3Archive";
 import arc3MirrorRouter from "./routes/arc3Mirror";
 import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
 import kaggleRouter from "./routes/kaggle";
+import teamRunsRouter from "./routes/teamRuns";
 
 // Import middleware
 import { errorHandler } from "./middleware/errorHandler";
@@ -126,6 +128,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/arc3-mirror", arc3MirrorRouter);
   app.use("/api/arc3-play", arc3HumanPlayRouter);
   app.use("/api/kaggle", kaggleRouter);
+  // Team-only Kaggle runs record, behind the team sign-in (2026-10-19).
+  app.use("/api/team", teamRunsRouter);
 
   // Contributor trading cards routes
   app.use("/api/contributors", contributorController);

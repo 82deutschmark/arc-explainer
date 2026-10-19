@@ -5,6 +5,7 @@
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
  *          Retires the obsolete model/trustworthiness leaderboard from public discovery.
+ *          2026-10-19 (Claude Opus 5.5 Low): /team/login and /team/arc2-runs, team-only and noindex.
  *          2026-10-11: the newsroom masthead and methods share one About the Paper page;
  *          metadata identifies the combined page at the existing staff URL.
  *          2026-10-09 (Claude Opus 5.5): /feedback description now matches the offer-framed
@@ -417,6 +418,8 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/poetiq', 'Poetiq ARC solver', 'Explore the Poetiq ARC solver workflow.', true],
   ['/puzzle/beetree', 'Beetree ARC solver', 'Start a Beetree ARC solver session.', true],
   ['/worm-arena/live', 'Live Worm Arena match', 'Watch a live language-model Snake match.', true],
+  ['/team/login', 'Team sign-in', 'Sign in to the ARC Mutants team pages.', true],
+  ['/team/arc2-runs', 'ARC-AGI-2 runs (team)', 'Team-only record of ARC Mutants submissions.', true],
 ];
 for (const [route, name, description, noindex] of ADDITIONAL_PAGES) {
   ROUTE_META_TAGS[route] = { title: `${name} | ARC Explainer`, description, url: `${SITE}${route}`, noindex };

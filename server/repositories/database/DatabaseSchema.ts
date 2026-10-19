@@ -7,6 +7,8 @@ PURPOSE: Database schema initialization and migration utilities for ARC Explaine
          Integration points: called from server startup using the configured pg Pool.
 SRP/DRY check: Pass - verified community-games schema changes are additive and keep existing tables intact.
 2026-10-05 (Claude Opus 5.5): added kaggle_board_documents for the public /kaggle-leaderboard page.
+2026-10-19 (Claude Opus 5.5 Low): added team_run_documents, team_run_notes and team_run_note_log
+         for the team-only ARC-AGI-2 runs record (TeamRunRepository).
 */
 
 import { Pool, PoolClient } from 'pg';
@@ -44,6 +46,7 @@ export class DatabaseSchema {
       await this.createVisitorStatsTable(client);
       await this.createKaggleLeaderboardSnapshotsTable(client);
       await this.createKaggleBoardDocumentsTable(client);
+      await this.createTeamRunTables(client);
       // community_games / community_game_sessions removed 2026-08-30: the catalog is now
       // mirrored from arc3.sonpham.net (the source of truth) rather than stored here, and
       // the submission pipeline that wrote these tables is gone. Anonymous human-play
@@ -601,6 +604,48 @@ export class DatabaseSchema {
         body TEXT NOT NULL,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (competition, name)
+      )
+    `);
+  }
+
+  /**
+   * The team-only Kaggle runs record (2026-10-19). team_run_documents holds one JSON
+   * document per run, written by the Mac Mini's watcher and overwritten in place, like
+   * kaggle_board_documents. team_run_notes holds what people on the team set by hand (the
+   * baseline a run is judged against, a short note), one row per run. Every note edit is
+   * also appended to team_run_note_log, which is never updated or deleted from, so a
+   * changed baseline can always be traced.
+   */
+  private static async createTeamRunTables(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS team_run_documents (
+        competition VARCHAR(32) NOT NULL,
+        run_key VARCHAR(64) NOT NULL,
+        body TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (competition, run_key)
+      )
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS team_run_notes (
+        competition VARCHAR(32) NOT NULL,
+        run_key VARCHAR(64) NOT NULL,
+        baseline VARCHAR(64),
+        note TEXT,
+        updated_by VARCHAR(80),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (competition, run_key)
+      )
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS team_run_note_log (
+        id SERIAL PRIMARY KEY,
+        competition VARCHAR(32) NOT NULL,
+        run_key VARCHAR(64) NOT NULL,
+        baseline VARCHAR(64),
+        note TEXT,
+        updated_by VARCHAR(80),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
     `);
   }
