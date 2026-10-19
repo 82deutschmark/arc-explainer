@@ -16,13 +16,16 @@
  *          Renders nothing if the board never loaded; the hero prose stands without it.
  *          16-Oct-2026 (Claude Opus 5.5 Medium): a compact size for the final-stretch front
  *          page, where our placing is a small side box and the race is the story.
+ *          19-Oct-2026 (Claude Opus 5.5 Low): works for either board. The Kaggle link comes
+ *          from the model's own competition, so the ARC-AGI-2 front page links the right board.
  * SRP/DRY check: Pass - display only. Data from useKaggleBoard (passed in) and
  *          computeOurs in storyData.ts; palette from landingTheme like the rest of the page.
  */
 
 import { ARC, MONO, formatCaptureDate } from '@/pages/arc3-community/landingTheme';
-import { KAGGLE_URL, ago, fmt, type BoardModel, type Medal } from '@/components/kaggleLeaderboard/boardData';
+import { ago, fmt, type BoardModel, type Medal } from '@/components/kaggleLeaderboard/boardData';
 import { computeOurs } from '@/components/kaggleLeaderboard/storyData';
+import { kaggleLeaderboardUrl } from '@shared/kaggleCompetitions';
 
 /** Two missed half-hourly saves is a hiccup; two days is something broken. */
 const STALE_HOURS = 48;
@@ -96,7 +99,7 @@ export default function OurStandingCard({ model, loading, compact = false }: { m
         )}
         {best && <>Best placing {formatCaptureDate(best[0])}. </>}
         Medals are decided on the private board at the close.{' '}
-        <a href={KAGGLE_URL} target="_blank" rel="noreferrer" className="underline">Check it on Kaggle</a>.
+        <a href={kaggleLeaderboardUrl(model.competition)} target="_blank" rel="noreferrer" className="underline">Check it on Kaggle</a>.
       </p>
     </div>
   );

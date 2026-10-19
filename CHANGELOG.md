@@ -11,6 +11,9 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.151.0  Oct 19, 2026
+
+- **The front page leads with ARC Mutants on ARC-AGI-2** (Author: Claude Opus 5.5 Low). What: the team artwork now opens the home page, our live ARC-AGI-2 placing sits right under the headline, and the medal race below reads the ARC-AGI-2 board instead of ARC-AGI-3. Why: the Boss, 19-Oct: we've joined Jack Cole for ARC-AGI-2, ARC-3 work now lives on Son Pham's site and ARC-2 work lives here. How: `client/src/pages/FinalStretchLanding.tsx` points its one board query at the ARC-2 registry entry and links out to arc3.sonpham.net; `client/src/components/arc3/OurStandingCard.tsx` takes its Kaggle link from the board it is shown, so it no longer always points at ARC-3; artwork at `client/public/images/arc-mutants-arc-agi-2.webp`.
 ### Version 9.150.6  Oct 19, 2026
 
 - **Stop false RSS failures as the newspaper archive grows** (Author: GPT-6.1 Sol / Codex). The integration check expected every archived edition in a feed intentionally capped at the newest 40. Separate complete sitemap coverage from RSS coverage, and verify the feed's exact entries, order, build time and card links. Document the feed boundary; no production feed behavior changes. Also save a competition-specific graphics reference for ARC Mutants (ARC2) and Team Turducken (ARC3), including approved casts and artwork paths, and connect the local imagegen skill to it.
