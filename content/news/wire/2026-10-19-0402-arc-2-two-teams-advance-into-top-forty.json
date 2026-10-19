@@ -1,0 +1,30 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-19T07:57:16Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Hiểu Vy and Sunstone North Lab surge up ARC-2 standings",
+  "id": "2026-10-19-0402-arc-2-two-teams-advance-into-top-forty",
+  "personIds": [],
+  "publishedAt": "2026-10-19T08:02:51Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Hiểu Vy gained 6.81 points to reach 44.03, moving from 61st to 36th on the ARC-AGI-2 public board. Sunstone North Lab gained 5.00 to reach 44.58, rising from 52nd to 35th."
+    }
+  ],
+  "since": "2026-10-18T07:54:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T08:02:00Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15618366",
+    "17064172"
+  ]
+}
