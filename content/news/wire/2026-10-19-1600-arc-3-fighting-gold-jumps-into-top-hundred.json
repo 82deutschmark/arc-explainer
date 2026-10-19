@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-19T19:58:31Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Fighting Gold jumps 352 places into ARC-3 top 100",
+  "id": "2026-10-19-1600-arc-3-fighting-gold-jumps-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-19T20:00:54Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Fighting Gold climbed from 448th to 96th on the ARC-AGI-3 public board, gaining 2.67 points to reach 33.41."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move puts the team inside the board’s top 100."
+    }
+  ],
+  "since": "2026-10-18T19:55:54Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T20:00:23Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16623996"
+  ]
+}

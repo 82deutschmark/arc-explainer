@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-19T19:58:33Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Eshaan Mistry climbs to 72nd on ARC-AGI-2",
+  "id": "2026-10-19-1600-arc-2-eshaan-mistry-climbs-to-seventy-second",
+  "personIds": [],
+  "publishedAt": "2026-10-19T20:00:54Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Eshaan Mistry climbed 50 places, from 122nd to 72nd, after gaining 3.61 points to reach 36.39 on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move takes Mistry into the board’s top 100."
+    }
+  ],
+  "since": "2026-10-18T19:55:55Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T20:00:23Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17040175"
+  ]
+}
