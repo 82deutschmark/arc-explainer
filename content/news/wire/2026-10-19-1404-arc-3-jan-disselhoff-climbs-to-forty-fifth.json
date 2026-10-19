@@ -1,0 +1,58 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-19T17:58:18Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Jan Disselhoff climbs to 45th on ARC-AGI-3",
+  "id": "2026-10-19-1404-arc-3-jan-disselhoff-climbs-to-forty-fifth",
+  "personIds": [
+    "jan-disselhoff"
+  ],
+  "publishedAt": "2026-10-19T18:04:02Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Jan Disselhoff gained 5.34 points to reach 34.77, climbing from 734th to 45th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-jan-disselhoff-identity-0",
+        "person-jan-disselhoff-fact-0",
+        "person-jan-disselhoff-fact-1"
+      ],
+      "text": "The 2025 ARC Prize runner-up and 2024 champion is now 45th under his own name."
+    }
+  ],
+  "since": "2026-10-18T17:55:27Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T18:03:24Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-jan-disselhoff-identity-0",
+      "title": "The ARChitects — author and Kaggle handle credits",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-jan-disselhoff-fact-0",
+      "title": "The ARChitects — 2025 team solution",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+    },
+    {
+      "accessedAt": "2026-10-08T03:38:00Z",
+      "id": "person-jan-disselhoff-fact-1",
+      "title": "The ARChitects — 2025 technical report",
+      "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+    }
+  ],
+  "teamIds": [
+    "15501006"
+  ]
+}
