@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.151.0  Oct 19, 2026
+
+- **The ARC-3 team's GPU job queue, at /arc3/jobs** (Author: Claude Opus 5.5, for Son). What: an unlisted page (noindex, not in the navigation) showing the team's job queue: busy boxes per type, jobs waiting and running, and each job's owner, label, what it runs, status and progress; spend against daily caps, job costs, the boxes, run output and the dispatcher log appear only after the queue view password. Why: Son, 19-Oct: "Add a page under markbarney repository for tracking", "password gate on internal stuffs"; the collaborators (Keith, Jack Cole) can't open the team's own page behind Google sign-in. How: the page reads two read-only documents straight from the team's arc3-jobs API (CORS for this site; the public one is filtered server-side, the full one needs the X-Queue-Password header); the password stays in the tab's sessionStorage. New `client/src/pages/Arc3JobQueue.tsx` and `client/src/components/arc3Jobs/queueData.ts`, route in `client/src/App.tsx`, unlisted entry in `shared/routes.ts`, tests in `tests/arc3JobQueue.test.ts`. No server or database change. Plan: `docs/2026-10-19-arc3-job-queue-page-plan.md`.
+
 ### Version 9.150.5  Oct 18, 2026
 
 - **Lead illustrations run full width** (Author: Claude Opus 5.5 Low). What: the lead dispatch's picture on the Digest now spans the whole story column above the text instead of floating in a side box at under half width. Why: Son, #arc-3: "Illustration needs to be full width" on the Team Turducken special edition. How: one rule in `client/src/components/news/news.css`; the phone-width override that already did this is gone as redundant.

@@ -15,6 +15,7 @@ PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations a
          directory lives at "/home" and is linked from the header.
          2026-10-05 (Claude Opus 5.5): /kaggle-leaderboard, the public Kaggle board page.
          2026-10-10 (Claude Sonnet 5.5): /arc-leaderboards, the hub for the generic "ARC leaderboards" search.
+         2026-10-19 (Claude Opus 5.5): /arc3/jobs, the ARC-3 team's GPU job queue (unlisted).
          2026-10-16 (Claude Opus 5.5 Medium): "/" is the final-stretch front page (countdown, medal
          race, wire, our placing); the earlier landing stays at /synthetic.
 SRP/DRY check: Pass - kept as a routing table only; reuses the existing wouter Redirect
@@ -109,6 +110,7 @@ const Arc3HypothesisResearch = lazy(() => import("@/pages/arc3-community/Arc3Hyp
 const Arc3MechanicGuide = lazy(() => import("@/pages/arc3-community/Arc3MechanicGuide"));
 // The official game index shares its registry with the server-rendered /arc3/games.md.
 const Arc3GamesIndex = lazy(() => import("@/pages/Arc3GamesIndex"));
+const Arc3JobQueue = lazy(() => import("@/pages/Arc3JobQueue"));
 const Arc3SlipperySeven = lazy(() => import("@/pages/Arc3SlipperySeven"));
 const Arc3ArchivePlayground = lazy(() => import("@/pages/arc3-archive/Arc3ArchivePlayground"));
 const CommunityGallery = lazy(() => import("@/pages/arc3-community/CommunityGallery"));
@@ -232,6 +234,7 @@ function Router() {
             unseen frame, and what LM Studio's thinking controls actually do. */}
         <Route path="/arc3/hypotheses" component={Arc3HypothesisResearch} />
         <Route path="/arc3/mechanics" component={Arc3MechanicGuide} />
+        <Route path="/arc3/jobs" component={Arc3JobQueue} />
         {/* /arc3/upload removed 2026-08-30: task submissions belong to
             arc3.sonpham.net, the source of truth for the synthetic set. */}
         {/* Legacy archive routes - redirect to new structure */}

@@ -5,6 +5,7 @@
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
  *          Retires the obsolete model/trustworthiness leaderboard from public discovery.
+ *          2026-10-19 (Claude Opus 5.5): /arc3/jobs, the team's GPU job queue (unlisted, noindex).
  *          2026-10-11: the newsroom masthead and methods share one About the Paper page;
  *          metadata identifies the combined page at the existing staff URL.
  *          2026-10-09 (Claude Opus 5.5): /feedback description now matches the offer-framed
@@ -402,6 +403,7 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/arc3/playground', 'ARC-AGI-3 agent playground', 'Run an interactive ARC-AGI-3 agent experiment.', true],
   ['/arc3/archive/playground', 'Archived ARC-AGI-3 playground', 'The earlier ARC-AGI-3 experiment interface.', true],
   ['/arc3/mechanics', 'Community task mechanics', 'Unlisted reference for community task mechanics.', true],
+  ['/arc3/jobs', 'ARC-3 team job queue', "Live status of the ARC-3 team's GPU job queue: jobs waiting and running, their progress and busy boxes.", true],
   ['/kaggle-readiness', 'Kaggle readiness validation', 'Validate an ARC submission workflow.', true],
   ['/puzzles/database', 'ARC puzzle database tools', 'Inspect stored ARC puzzle records.', true],
   ['/model-config', 'Model configuration', 'Manage ARC Explainer model settings.', true],
