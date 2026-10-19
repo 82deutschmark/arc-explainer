@@ -1,0 +1,37 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-19T01:56:34Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC-2 gold places push two teams out",
+  "id": "2026-10-18-2157-arc-2-two-teams-fall-out-of-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-19T01:57:17Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The ARC-2 gold line remains 61.81 at 16th, with Youssef Nader first outside at 17th on 60.97, 0.84 short. ARCward Intelligence has slipped from 16th to 18th at 58.33, while Kajetan Schweighofer moved from 15th to 19th at 58.06."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The standings shift leaves two teams that held gold places a day earlier outside the 16-team band; ARCward Intelligence added 1.25 points, while Schweighofer's score was unchanged."
+    }
+  ],
+  "since": "2026-10-18T01:53:52Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T01:56:49Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16095234",
+    "16797706",
+    "16761662"
+  ]
+}
