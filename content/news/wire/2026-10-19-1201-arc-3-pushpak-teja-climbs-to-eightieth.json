@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-19T15:58:05Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Pushpak Teja climbs to 80th on ARC-3",
+  "id": "2026-10-19-1201-arc-3-pushpak-teja-climbs-to-eightieth",
+  "personIds": [],
+  "publishedAt": "2026-10-19T16:01:27Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Pushpak Teja gained 4.60 points to reach 33.57, moving from 862nd to 80th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb takes Teja into the board’s top 100. The last of 19 public gold places is at 37.98."
+    }
+  ],
+  "since": "2026-10-18T15:55:13Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T16:00:55Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17037347"
+  ]
+}
