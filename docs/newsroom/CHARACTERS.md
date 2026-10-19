@@ -1,6 +1,6 @@
 # Competitor character reference library
 
-Author: GPT-6.1 Sol / Codex · 12 October 2026
+Author: GPT-6.1 Sol / Codex · 12 October 2026; team-specific casting updated 19 October 2026
 
 The Boss commissioned the expanded library on October 12. The registry is `content/news/visual-identities.json`; browse `/news-images/references/index.html`. It contains sixteen individually identified competitors plus the Tufa team mascot. Mithil A Vakde and gromml remain pending because the saved ledger has no individual reference for them. The gallery is generated from the registry, so the desk and the review view use the same cast.
 
@@ -24,8 +24,9 @@ NVIDIA-green GPU siege equipment and accents for them. Add reference-ready top-f
 and top-ten competitors to future scenes, including Son/Mark's saved cyber-engineer
 avatars where their current entry belongs. The Last Dance's current roster is known,
 but its members have no mapped individual character references in the saved ledger
-yet; obtain their own verified references first. Ronen also needs an individual
-reference. Preserve the existing characters and prepared scenes while filling gaps.
+yet; obtain their own verified references first. Ronen has no verified human likeness;
+use only the explicitly approved fictional stand-ins described below. Preserve the
+existing characters and prepared scenes while filling gaps.
 
 A `personId` follows that person’s verified Kaggle handle in the fresh observed roster, including new team IDs. All matched individual references remain available on multi-person teams. A curated team mascot takes priority; its `includePeople` lists explicit optional companions. Tufa currently requests Dries. He is included only when his exact verified handle is observed in that contest’s current roster. The revised growing-lead scene also requires Dries, Chen first, Tufa second, a widening verified gap and matching reference hashes. If those conditions fail, the desk must use an appropriate scene or sourced text.
 
@@ -38,6 +39,47 @@ python3.13 scripts/newsroom_artwork.py library --gallery client/public/news-imag
 ```
 
 Inspect each new input and native output. A character-reference registration uses the existing `register` command with a plan job containing `purpose: character-reference` and its exact `subjectId`, actual `toolArguments` and reference roles. Record the final selected call if an edit was needed. Register a new version, update its registry reference, inspect the gallery and commit the intended assets and records together. Add newly verified people through the normal people ledger; an unlisted person or default avatar supplies no character.
+
+## Choose the competition before casting
+
+These are separate 2026 entries, confirmed by Mark and the public boards on 19 October.
+Refresh the roster before a new news illustration; this dated map is not a permanent roster.
+Overlapping people do not make the teams interchangeable.
+
+| Competition | Team / ID | Observed Kaggle handles | Approved illustrated crew and visual setting |
+|---|---|---|---|
+| ARC-AGI-2 | **ARC Mutants**, `17023174` | `jcole75`, `markbarney`, `scizical`, `sonphamorg` | Jack Cole, Mark Barney, Ronen and Son Pham. Digital university, original gifted-hero academy, floating ARC input/output grids; Jack the cerebral mentor, Mark the GPU brawler, Son the visor-equipped energy specialist, Ronen the opaque-helmet grid-shield architect. |
+| ARC-AGI-3 | **Team Turducken**, `15605182` | `dzjiann`, `keithtyser`, `markbarney`, `mitubant`, `ngyzly`, `scizical`, `sonphamorg` | Mark, Son, Keith’s yellow mascot, DZ, NT, Choryu’s MRI-display character and Herminator standing in for Ronen, plus exactly two Yorkies. Mechanical turkey/chicken/duck, workshop/hangar and established snowy GPU Valley setting. Avatar names here describe the approved cast; they do not independently prove an exact Kaggle-to-Discord identity match. |
+
+Roster evidence: `client/public/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json`.
+Owner confirmation: `client/public/reports/arc-daily-gossip/2026-10-19-arc2-mutants-team-note.json`.
+Use exact competition and team IDs to select current people from `content/news/people.json`
+and `competitors.json`. Earlier ARC2 history called `17023174` Team Turducken; keep
+that historical alias without importing the ARC3 cast. Jack joined ARC2 ARC Mutants;
+he is not on the recorded ARC3 Team Turducken roster. Do not add him to that crew.
+
+### Individual input images
+
+All paths below are relative to `client/public/news-images/references/` in the designated
+newsroom checkout. Inspect selected images before native generation; preserve their bytes.
+
+| Subject / role | Frozen reference |
+|---|---|
+| Jack, ARC2 cerebral mentor | `2026-10-12-jack-cole-reference-1-v1.png` — his individual card; ignore old labels, scores and team names. |
+| Mark, either contest | `2026-10-12-mark-barney-reference-1-v1.webp` — bearded cyber-engineer with GPU rig and multicolored screens. |
+| Son, either contest | `2026-10-12-son-pham-reference-1-v1.webp` — wide visor and dense black GPU headgear. |
+| Ronen, ARC2 | No human portrait. Use the Boss-approved opaque-helmet character in the ARC Mutants academy scene below, not Herminator. |
+| Keith, ARC3 | `2026-10-12-keith-tyser-reference-1-v1.webp` — established yellow mascot, black cap. |
+| DZ, ARC3 | `2026-10-18-turducken-dzj-avatar-v1.png` — blonde chibi, red eyes, pink bunny. |
+| NT, ARC3 | `2026-10-18-turducken-nt-avatar-v1.png` — orange kitten in banana costume with comic tears. |
+| Choryu, ARC3 | `2026-10-18-turducken-choryu-avatar-v1.png` — grayscale cardiac-MRI display head; no health claim. |
+| Ronen’s Herminator stand-in, ARC3 | `2026-10-18-turducken-herminator-avatar-v1.png` — silver/cobalt knight with blue plume. |
+| ARC2 aesthetic reference | `2026-10-19-arc-mutants-owner-aesthetic-v1.png` — ARC grids and dense GPU equipment; ignore old ARC Raiders branding. |
+
+The approved academy scene supplies original superhero roles, not franchise costume
+designs or actor likenesses. Keep ARC2’s digital campus separate from ARC3’s snowy
+Turducken setting. All equipment and powers are editorial fantasy, not evidence of
+hardware, methods or team headcount. Generation alone does not authorize publication.
 
 ## Team Turducken’s commissioned crew
 

@@ -1,8 +1,10 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-12
+ * Date: 2026-10-19
  * PURPOSE: Verify public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
+ *          RSS checks cover the newest 40 editions; the sitemap checks the whole archive,
+ *          so normal archive growth does not produce a false publication failure.
  *          Unified masthead replaces the former methods page and uses the editor portrait.
  *          08-Oct-2026: share cards (size, real drawn content, cache headers, 404s), the
  *          per-article og/twitter/JSON-LD image, CollectionPage, lastmod and RSS additions.
@@ -110,26 +112,37 @@ it('serves the full public tweet archive and rejects unread or restricted board 
     expect(newsDiscussionSchema.safeParse({ ...thread, ...invalid }).success).toBe(false);
   }
 });
-it('discovers articles and separate competitor identities through sitemap and RSS', async () => {
+it('discovers every archived article and separate competitor identity through the sitemap', async () => {
   const index = getNewsIndex();
   const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
-  const rss = await fetch(`${base}/news/feed.xml`);
-  expect(rss.headers.get('content-type')).toContain('application/rss+xml');
-  const xml = await rss.text();
   for (const article of index.articles) {
     expect(sitemap).toContain(`${SITE_ORIGIN}/news/${article.id}`);
-    expect(xml).toContain(escapeHtml(article.headline));
     expect(sitemap).toContain(`<loc>${SITE_ORIGIN}/news/${article.id}</loc><lastmod>${article.publishedAt}</lastmod>`);
-    expect(xml).toContain(escapeHtml(`${SITE_ORIGIN}${articleCardPath(article)}`));
   }
-  expect(xml).toContain(`<atom:link href="${SITE_ORIGIN}/news/feed.xml" rel="self"`);
-  expect(xml).toContain('<lastBuildDate>');
   for (const record of index.competitors) {
     expect(sitemap).toContain(`/news/competitors/${record.id}`);
     const response = await fetch(`${base}/news/competitors/${record.id}`);
     expect(response.status).toBe(200);
     expect(await response.text()).toContain(escapeHtml(record.name));
   }
+});
+it('serves the newest 40 editions in RSS order without including older archive entries', async () => {
+  const articles = getNewsIndex().articles;
+  const rss = await fetch(`${base}/news/feed.xml`);
+  expect(rss.headers.get('content-type')).toContain('application/rss+xml');
+  const xml = await rss.text();
+  const recent = articles.slice(0, 40);
+  const itemLinks = [...xml.matchAll(/<guid isPermaLink="true">([^<]+)<\/guid>/g)].map(match => match[1]);
+  expect(itemLinks).toEqual(recent.map(article => `${SITE_ORIGIN}/news/${article.id}`));
+  expect(recent.map(article => Date.parse(article.publishedAt))).toEqual(
+    recent.map(article => Date.parse(article.publishedAt)).sort((a, b) => b - a),
+  );
+  for (const article of recent) {
+    expect(xml).toContain(escapeHtml(article.headline));
+    expect(xml).toContain(escapeHtml(`${SITE_ORIGIN}${articleCardPath(article)}`));
+  }
+  expect(xml).toContain(`<atom:link href="${SITE_ORIGIN}/news/feed.xml" rel="self"`);
+  expect(xml).toContain(`<lastBuildDate>${new Date(articles[0].publishedAt).toUTCString()}</lastBuildDate>`);
 });
 it('returns real 404s for unknown articles, competitors and evidence', async () => {
   for (const path of ['/news/not-an-issue', '/news/competitors/arc-3-0', '/api/news/not-an-issue/evidence', '/api/news/og-image/not-an-issue.png']) {

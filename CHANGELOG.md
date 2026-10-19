@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.150.6  Oct 19, 2026
+
+- **Stop false RSS failures as the newspaper archive grows** (Author: GPT-6.1 Sol / Codex). The integration check expected every archived edition in a feed intentionally capped at the newest 40. Separate complete sitemap coverage from RSS coverage, and verify the feed's exact entries, order, build time and card links. Document the feed boundary; no production feed behavior changes. Also save a competition-specific graphics reference for ARC Mutants (ARC2) and Team Turducken (ARC3), including approved casts and artwork paths, and connect the local imagegen skill to it.
+
 ### Version 9.150.5  Oct 18, 2026
 
 - **Lead illustrations run full width** (Author: Claude Opus 5.5 Low). What: the lead dispatch's picture on the Digest now spans the whole story column above the text instead of floating in a side box at under half width. Why: Son, #arc-3: "Illustration needs to be full width" on the Team Turducken special edition. How: one rule in `client/src/components/news/news.css`; the phone-width override that already did this is gone as redundant.

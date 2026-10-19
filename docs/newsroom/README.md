@@ -92,3 +92,7 @@ uses its own log folder instead). Big downloads belong on `/Volumes/Samsung 9100
   `npx vitest run tests/integration/news.test.ts tests/newsFrontPage.test.ts` and
   `python3.13 -m unittest discover -s tests -p 'test_newsroom*.py'`.
 - Allowed writer IDs are in `shared/newsWriters.json`, read by the site and both newsroom scripts.
+- `/news/feed.xml` carries the newest 40 edition articles, newest first, with stable article
+  links and share-card images. The sitemap keeps the complete edition archive. Content checks
+  must check these separately: an older article rolling out of RSS is normal, not a missing
+  publication. Dispatches and wire stories remain in their existing news archives.
