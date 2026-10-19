@@ -1,5 +1,86 @@
 [
   {
+    "author": "Anders_Rippe91",
+    "authorName": "Anders rippe",
+    "category": "community",
+    "checkedAt": "2026-10-19T08:03:27.212Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2112084465077940252",
+    "identitySourceUrl": "https://x.com/Anders_Rippe91",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-19T07:32:31Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+    "summary": "Anders Rippe says his first personal harness submission reached rank 626 on ARC-AGI-3. He jokes about needing more RAM. The shared link resolves to the ARC-AGI-3 contest; no exact Kaggle handle or team identity has been verified.",
+    "threadId": null,
+    "url": "https://x.com/Anders_Rippe91/status/2112084465077940252",
+    "visibility": "public",
+    "whyItMatters": "New participant-led harness progress claim for community coverage; self-reported rank, not an independently matched board result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-19T02:04:02.254820Z",
+    "competitions": [],
+    "id": "2111980411177902425",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T00:39:03Z",
+    "storyUrl": null,
+    "summary": "Mazur thanks @lordofscripts for sharing a Panama presidents timeline made with his Preceden AI Timeline Maker.",
+    "threadId": "2111966531584229779",
+    "url": "https://x.com/mhmazur/status/2111980411177902425",
+    "visibility": "public",
+    "whyItMatters": "Routine product acknowledgment, captured before editorial selection; no new ARC result or research claim. Actual post and parent context read in signed-in Chrome; full reply independently visible while logged out."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-19T00:05:30.882044Z",
+    "competitions": [],
+    "id": "2111956721132355689",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-18T23:04:55Z",
+    "storyUrl": null,
+    "summary": "Replying to a question about his Preceden automation, Mazur shares an answer attributed to Claude describing scheduled desktop tasks with separate playbooks, a shared rulebook, disk-based state, bounded changes, tests and review gates, separate deployments, and a weekly retrospective with human decisions.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2111956721132355689",
+    "visibility": "public",
+    "whyItMatters": "Useful organizer commentary on agent orchestration, captured before editorial selection. Describes his own software workflow; makes no new ARC benchmark or competition result claim. Full text visible on the actual post while logged out."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "research",
+    "checkedAt": "2026-10-18T22:05:14Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2111885271314661835",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-18T18:21:00Z",
+    "storyUrl": "https://arxiv.org/abs/2607.12161",
+    "summary": "Malysheva links two studies arguing that fewer tokens do not reliably mean lower agent cost or latency, and connects this to Mostik’s latent-bridge approach. Both paper abstracts were read. The first was revised in August and the second submitted in September; this is a new post about existing research, not new ARC results.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2111885271314661835",
+    "visibility": "public",
+    "whyItMatters": "Useful inference-budget research angle. Primary abstracts support the narrow compression findings; her Mostik connection is her interpretation and promotion, not an ARC score claim."
+  },
+  {
     "author": "AlexBarry4",
     "authorName": "Alexander Barry",
     "category": "community",

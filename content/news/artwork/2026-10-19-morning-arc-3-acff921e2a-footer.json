@@ -1,0 +1,53 @@
+{
+  "articleId": "2026-10-19-morning-arc-3",
+  "briefSha256": "eeebf8df2380099abbf968863a1121d8e327aacb6296b59e9828753edf1e1166",
+  "dataAsOf": "2026-10-19T09:57:26Z",
+  "generationRecord": "2026-10-18-turducken-hangar-v1-base",
+  "headline": "Turducken opens a gap in third; Zatravkin reaches sixth",
+  "historyChart": null,
+  "id": "2026-10-19-morning-arc-3-acff921e2a-footer",
+  "image": {
+    "alt": "AI editorial illustration: Mark Barney, Son Pham and yellow black-capped Keith Tyser work on a mechanical turkey containing a chicken containing a duck, with exactly two Yorkies. The pictured trio is a subset of Team Turducken. Separate ARC-3 panel: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49; October 19, 2026, 5:57 AM EDT.",
+    "artworkId": "2026-10-19-morning-arc-3-acff921e2a-footer",
+    "caption": "AI-generated editorial illustration: The Turducken Hangar. Pictured members are a subset of the seven-account team; machinery is fantasy. Score panel: Oct 19, 2026 · 5:57 AM EDT; provisional public standings.",
+    "src": "/news-images/2026-10-19-morning-arc-3-acff921e2a-footer.webp"
+  },
+  "imageSha256": "9c00ba2bb59f33ef7b6faa667a89b3c8302d5e68b0f9f8e5b4e35c31eabe4f82",
+  "kind": "edition-composition",
+  "layout": "separate-footer-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "ce8c6e1edc58ec051ce3be3ea481701be75b91ef3788953906b28d089c2ca73f",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1,
+  "compositionReview": "Fresh current-issue deterministic panels composed in separate added footer from clean native base, preserving every face and the nested aircraft. Full illustration and final footer visually inspected.",
+  "supportingCastReview": {
+    "checkedAt": "2026-10-19T10:00:04Z",
+    "result": "markbarney, sonphamorg and keithtyser present in seven-handle closing roster of team 15605182; two Yorkies owner-supplied. Pictured trio is a subset."
+  }
+}

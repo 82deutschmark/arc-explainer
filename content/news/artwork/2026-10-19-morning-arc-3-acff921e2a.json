@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-19-morning-arc-3",
+  "briefSha256": "eeebf8df2380099abbf968863a1121d8e327aacb6296b59e9828753edf1e1166",
+  "dataAsOf": "2026-10-19T09:57:26Z",
+  "generationRecord": "2026-10-18-turducken-hangar-v1-base",
+  "headline": "Turducken opens a gap in third; Zatravkin reaches sixth",
+  "historyChart": null,
+  "id": "2026-10-19-morning-arc-3-acff921e2a",
+  "image": {
+    "alt": "Editorial illustration for Turducken opens a gap in third; Zatravkin reaches sixth. Tufa Labs: rank 1, score 68.91; Yi-Chia Chen: rank 2, score 67.49.",
+    "artworkId": "2026-10-19-morning-arc-3-acff921e2a",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 19, 2026 · 5:57 AM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-19-morning-arc-3-acff921e2a.webp"
+  },
+  "imageSha256": "0ef5b5501b1d713bc56129a9b7c0794247f5491fafe5e3f5848cc9707bcf5662",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "ce8c6e1edc58ec051ce3be3ea481701be75b91ef3788953906b28d089c2ca73f",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

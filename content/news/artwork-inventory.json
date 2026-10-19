@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-19T03:17:46.335105+00:00",
+  "updatedAt": "2026-10-19T10:01:50.872361+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -403,8 +403,10 @@
       "generationRecord": "2026-10-18-turducken-hangar-v1-base",
       "src": "/news-images/2026-10-18-turducken-hangar-v1-base.webp",
       "title": "The Turducken Hangar",
-      "status": "approved-unused-reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-19-morning-arc-3"
+      ],
       "xAttachments": [],
       "discordShares": [
         {
@@ -418,7 +420,8 @@
       ],
       "approvedBy": "mark-barney",
       "approvedAt": "2026-10-18T19:17:34.889371Z",
-      "selectionNote": "Boss-approved native episode. Preserve clean source; future illustrated editions use fresh score/time overlays and record actual article and X uses. Discord sharing alone does not consume an article reserve."
+      "selectionNote": "Unused Boss-approved hangar selected for October 19 Early. All three pictured members present in fresh seven-account roster. Native base and new 5:57 AM EDT footer inspected; complete aircraft, faces and two Yorkies unobscured. Machines are editorial fantasy.",
+      "artworkId": "2026-10-19-morning-arc-3-acff921e2a-footer"
     },
     {
       "id": "2026-10-18-turducken-first-flight-v1",

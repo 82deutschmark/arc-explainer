@@ -618,5 +618,29 @@
     "subjectNames": [
       "Team Turducken"
     ]
+  },
+  {
+    "id": "oct19-early-turducken-hangar-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-18T19:17:34.889371Z",
+    "expiresAt": "2026-10-19T14:00:00Z",
+    "title": "The Turducken Hangar for October 19 Early edition",
+    "status": "pending",
+    "targetEditionId": "2026-10-19-morning-arc-3",
+    "placement": "edition-artwork",
+    "artworkGenerationRecord": "2026-10-18-turducken-hangar-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": []
+    },
+    "teamIds": [
+      "15486995",
+      "15499660",
+      "15605182"
+    ],
+    "instructions": "Select the unused Boss-approved hangar episode. Mark, Son and Keith remain in the fresh seven-account Turducken roster; the depicted trio is a subset, not a headcount. Compose current leader scores and observation time, inspect the image and use it in the routine Early X announcement. Fantasy machinery is illustrative.",
+    "selectedAt": "2026-10-19T09:58:38.672960+00:00",
+    "verificationNotes": "createdAt records the existing Boss approval of this reserve; selectedAt dates this issue selection. Clean hangar scene inspected: two human engineers, yellow black-capped Keith, two Yorkies, nested mechanical turkey/chicken/duck. Different workshop scene from previous Early replay wall and Late panorama."
   }
 ]
