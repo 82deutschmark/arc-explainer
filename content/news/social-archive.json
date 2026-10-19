@@ -1,5 +1,416 @@
 [
   {
+    "author": "82deutschmark",
+    "authorName": "Mark Barney",
+    "category": "community",
+    "checkedAt": "2026-10-19T18:20:47.341882+00:00",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112247067913457944",
+    "identitySourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+    "importance": 2,
+    "personIds": [
+      "mark-barney",
+      "jack-cole"
+    ],
+    "postedAt": "2026-10-19T18:18:39Z",
+    "storyUrl": null,
+    "summary": "Mark Barney publicly welcomes Jack Cole to his ARC-AGI-2 team, using a Professor X metaphor, and states an ambition to reach gold. The post has ARC Mutants artwork. The announcement explicitly concerns ARC2; it does not add Cole to ARC3 Team Turducken.",
+    "threadId": null,
+    "url": "https://x.com/82deutschmark/status/2112247067913457944",
+    "visibility": "public",
+    "whyItMatters": "Fresh public first-person confirmation supporting the commissioned ARC Mutants dispatch. Gold is an ambition, not an awarded medal."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-19T19:04:23.464490Z",
+    "competitions": [],
+    "id": "2112246639457100044",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T18:16:57Z",
+    "storyUrl": null,
+    "summary": "Replying to Dmitrii Kovanikov’s comment that agents wait for instructions, Mazur says recurring routines can give Claude or Codex ongoing work. He says his experiments over recent months continue to surprise him and quotes his earlier Preceden example.",
+    "threadId": "2112140139791294695",
+    "url": "https://x.com/mhmazur/status/2112246639457100044",
+    "visibility": "public",
+    "whyItMatters": "General AI workflow commentary from an organizer; attributed experience, with no new ARC benchmark or Kaggle result. Actual reply and parent conversation read in signed-in Chrome."
+  },
+  {
+    "author": "spisallyouneed",
+    "authorName": "Sam Pasupalak",
+    "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [],
+    "id": "2112243129084694580",
+    "identitySourceUrl": "https://x.com/spisallyouneed",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-19T18:03:00Z",
+    "storyUrl": null,
+    "summary": "In a SKY-001 follow-up, Pasupalak says his team tested CAD and BIM tasks against GPT-6 Astra, Claude Opus 5.5 and other frontier models and claims its model outperformed them. He argues autoregressive LLMs are ill-suited to visual reasoning and long-horizon tasks.",
+    "threadId": "2112242023805964327",
+    "url": "https://x.com/spisallyouneed/status/2112243129084694580",
+    "visibility": "public",
+    "whyItMatters": "Context for the release claim; performance and architectural conclusions are attributed and unverified. Posted after scan start and captured opportunistically."
+  },
+  {
+    "author": "spisallyouneed",
+    "authorName": "Sam Pasupalak",
+    "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [],
+    "id": "2112242023805964327",
+    "identitySourceUrl": "https://x.com/spisallyouneed",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-19T17:58:36Z",
+    "storyUrl": null,
+    "summary": "Sam Pasupalak announces SKY-001, which he calls the first Engineering World Model. He claims higher IoU on CAD and BIM tasks than tested frontier models, with 51–125 times faster and 150–210 times cheaper operation. Says it reflects 18 months of work by a team from Maluuba. Observed in Chollet’s repost inventory.",
+    "threadId": "2112242023805964327",
+    "url": "https://x.com/spisallyouneed/status/2112242023805964327",
+    "visibility": "public",
+    "whyItMatters": "Adjacent research lead amplified by an organizer; author claims only, with no independently inspected evaluation or ARC score. Repost action time is unknown."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [],
+    "id": "2112234839273574627",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T17:30:03Z",
+    "storyUrl": null,
+    "summary": "In his ChatGPT Then and Now launch conversation, Mazur shares a humorous generated Cinderella retelling in a Donald Trump style and a link to that comparison.",
+    "threadId": "2112176864760320357",
+    "url": "https://x.com/mhmazur/status/2112234839273574627",
+    "visibility": "public",
+    "whyItMatters": "Attributed humour and product colour; no ARC contest claim. Actual reply and parent conversation read."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [],
+    "id": "2112234559471276098",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T17:28:57Z",
+    "storyUrl": null,
+    "summary": "Replying to a reader reacting to the grain-of-sand story in ChatGPT Then and Now, Mazur supplies the direct comparison link.",
+    "threadId": "2112176864760320357",
+    "url": "https://x.com/mhmazur/status/2112234559471276098",
+    "visibility": "public",
+    "whyItMatters": "Follow-up to the already archived comparison-tool launch; no new benchmark result. Actual reply and parent conversation read."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112230543379095621",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-19T17:12:59Z",
+    "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+    "summary": "ARC Prize links its leaderboard, public reproduction repository, testing policy and full Beam 1.0 results.",
+    "threadId": "2112230540283658499",
+    "url": "https://x.com/arcprize/status/2112230543379095621",
+    "visibility": "public",
+    "whyItMatters": "Primary follow-up with reproducibility and policy links; group with the Beam announcement."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112230541730689510",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-19T17:12:59Z",
+    "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+    "summary": "ARC Prize says Beam costs use Baseten pricing of $1.30 input and $4.30 output per million tokens. ARC-AGI-3 results are pending.",
+    "threadId": "2112230540283658499",
+    "url": "https://x.com/arcprize/status/2112230541730689510",
+    "visibility": "public",
+    "whyItMatters": "Keeps the cost basis and absence of ARC-AGI-3 results explicit."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112230540283658499",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-19T17:12:58Z",
+    "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+    "summary": "ARC Prize reports verified Reflection Beam 1.0 scores: ARC-AGI-2 23.5% at $0.61/task and ARC-AGI-1 74.0% at $0.31/task. Best scores use xhigh reasoning; high reaches 20.0% on ARC-AGI-2 at about 43% lower cost.",
+    "threadId": "2112230540283658499",
+    "url": "https://x.com/arcprize/status/2112230540283658499",
+    "visibility": "public",
+    "whyItMatters": "New official model evaluation. Linked result page independently read in Chrome: semi-private best scores match. This is benchmark evaluation, not a Kaggle team score."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-19T16:56:38.168Z",
+    "competitions": [],
+    "id": "2112216108602360281",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T16:15:38Z",
+    "storyUrl": null,
+    "summary": "Replying to CaseySoftware about autonomous software development, Mazur says he orchestrates his work through the Claude Code desktop app on his Max subscription without extra charges. He asks about the reported $90 cost, mistakes and surprises.",
+    "threadId": "2111461401139060934",
+    "url": "https://x.com/mhmazur/status/2112216108602360281",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary on agent workflows; general community colour, not an ARC result or score claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-19T15:05:50.864780Z",
+    "competitions": [],
+    "id": "2112196226829726097",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T14:56:37Z",
+    "storyUrl": "https://www.emergentmind.com/chatgpt-then-and-now/explain-html-to-me-like-im-dog",
+    "summary": "Replying to Lane Henslee in the ChatGPT Then and Now launch thread, Mazur compares the HTML-for-a-dog answers: both use a park analogy, while Astra adds formatting and emoji. The linked public example was read and supports that narrow comparison.",
+    "threadId": "2112176864760320357",
+    "url": "https://x.com/mhmazur/status/2112196226829726097",
+    "visibility": "public",
+    "whyItMatters": "New organizer thread follow-up; a qualitative example, not an ARC result."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "community",
+    "checkedAt": "2026-10-19T15:05:50.864780Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112187863752212820",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 1,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-19T14:23:23Z",
+    "storyUrl": null,
+    "summary": "Replying to a suggestion to inspect only some parts of agent code, Puget asks how one can know what the agent changed without checking.",
+    "threadId": "2112118534129987833",
+    "url": "https://x.com/JFPuget/status/2112187863752212820",
+    "visibility": "public",
+    "whyItMatters": "Follow-up on human review of experimental code."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "community",
+    "checkedAt": "2026-10-19T15:05:50.864780Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112180531941060939",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 1,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-19T13:54:15Z",
+    "storyUrl": null,
+    "summary": "In the workflow thread, Puget says his priorities are human-readable code and performance when responding to a proposed codebase skill.",
+    "threadId": "2112118534129987833",
+    "url": "https://x.com/JFPuget/status/2112180531941060939",
+    "visibility": "public",
+    "whyItMatters": "Follow-up context for his agent workflow commentary."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-19T13:59:40.916Z",
+    "competitions": [],
+    "id": "2112176867625070659",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T13:39:42Z",
+    "storyUrl": "https://www.emergentmind.com/chatgpt-then-and-now",
+    "summary": "Mazur recalls early ChatGPT hallucinations being indexed and reused in Google quick answers, links his October 2023 Kenya example, and offers a present-day Astra comparison.",
+    "threadId": "2112176864760320357",
+    "url": "https://x.com/mhmazur/status/2112176867625070659",
+    "visibility": "public",
+    "whyItMatters": "Follow-up context about hallucinations; this run did not independently audit the historical search behavior."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-19T13:59:40.916Z",
+    "competitions": [],
+    "id": "2112176866303918238",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T13:39:41Z",
+    "storyUrl": "https://www.emergentmind.com/chatgpt-then-and-now",
+    "summary": "Thread follow-up links Karpathy’s build-GPT tutorial and says LearnGPT appears near the one-minute mark.",
+    "threadId": "2112176864760320357",
+    "url": "https://x.com/mhmazur/status/2112176866303918238",
+    "visibility": "public",
+    "whyItMatters": "Context for the release; historical tutorial claim attributed to Mazur."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-19T13:59:40.916Z",
+    "competitions": [],
+    "id": "2112176864760320357",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T13:39:41Z",
+    "storyUrl": "https://www.emergentmind.com/chatgpt-then-and-now",
+    "summary": "Mazur launched ChatGPT Then and Now, pairing 492 early LearnGPT responses with new GPT-6 Astra answers. The linked page identifies the originals as December 2022–March 2023, new runs as October 19, 2026, one message with no system prompt and default reasoning effort, and says Claude Opus 5.5 wrote the paired analyses. A data download is offered; it was not downloaded.",
+    "threadId": "2112176864760320357",
+    "url": "https://x.com/mhmazur/status/2112176864760320357",
+    "visibility": "public",
+    "whyItMatters": "Public organizer product/research lead; a prompt comparison collection, with no ARC score or competition result claimed."
+  },
+  {
+    "author": "fchollet",
+    "authorName": "François Chollet",
+    "category": "community",
+    "checkedAt": "2026-10-19T13:59:57.809Z",
+    "competitions": [],
+    "id": "2112168594352349518",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "francois-chollet"
+    ],
+    "postedAt": "2026-10-19T13:06:49Z",
+    "storyUrl": null,
+    "summary": "Chollet observes that widely shared expectations can produce consequences even if the anticipated event never occurs.",
+    "threadId": null,
+    "url": "https://x.com/fchollet/status/2112168594352349518",
+    "visibility": "public",
+    "whyItMatters": "Attributed general commentary; no ARC result or explicit prediction."
+  },
+  {
+    "author": "MindsAI_Jack",
+    "authorName": "Jack Cole",
+    "category": "banter",
+    "checkedAt": "2026-10-19T15:05:50.864780Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2112166202953105863",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "importance": 1,
+    "personIds": [
+      "jack-cole"
+    ],
+    "postedAt": "2026-10-19T12:57:19Z",
+    "storyUrl": null,
+    "summary": "Cole congratulates Mark Barney on his ARC-AGI-3 top-three post and jokes that the top two might be nervous. The quoted post and actual public quote were read.",
+    "threadId": null,
+    "url": "https://x.com/MindsAI_Jack/status/2112166202953105863",
+    "visibility": "public",
+    "whyItMatters": "Friendly contender reaction to an already reported standings event; no new board result."
+  },
+  {
+    "author": "tufalabs",
+    "authorName": "Tufa Labs",
+    "category": "community",
+    "checkedAt": "2026-10-19T15:05:50.864780Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112165331292602740",
+    "identitySourceUrl": "https://tufalabs.ai",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-19T12:53:51Z",
+    "storyUrl": null,
+    "summary": "Tufa says its two NVIDIA GB300 NVL72 racks are live in Stockholm; credits DELTA for installation and T.Loop for hosting and links a deployment video. Actual public post read.",
+    "threadId": null,
+    "url": "https://x.com/tufalabs/status/2112165331292602740",
+    "visibility": "public",
+    "whyItMatters": "Contender infrastructure announcement; no evidence here ties this equipment to a specific score or competition run."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "community",
+    "checkedAt": "2026-10-19T15:05:50.864780Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112118534129987833",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 2,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-19T09:47:54Z",
+    "storyUrl": null,
+    "summary": "Puget says AI agents now run all his training experiments, while he still reads their harness code. He says agents tend to overengineer, retain unnecessary compatibility code and require human direction. Actual public post expanded and read.",
+    "threadId": null,
+    "url": "https://x.com/JFPuget/status/2112118534129987833",
+    "visibility": "public",
+    "whyItMatters": "First-person account of a competitor’s research workflow; no new ARC score claimed."
+  },
+  {
     "author": "Anders_Rippe91",
     "authorName": "Anders rippe",
     "category": "community",

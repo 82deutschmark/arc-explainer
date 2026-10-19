@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-19T18:01:43.005825Z",
+  "updatedAt": "2026-10-19T22:14:26.660632+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -579,6 +579,30 @@
       "approvedBy": "mark-barney",
       "approvedAt": "2026-10-19T18:01:43.005825Z",
       "selectionNote": "Boss approved in chat: “That’s fantastic.” Commissioned for Jack Cole’s ARC2 joining announcement. Distinct from ARC3 Turducken imagery; Ronen uses an original opaque-helmet editorial character."
+    },
+    {
+      "id": "2026-10-19-tufa-two-racks-two-strongholds-v1",
+      "generationRecord": "2026-10-19-tufa-two-racks-two-strongholds-v1-base",
+      "src": "/news-images/2026-10-19-tufa-two-racks-two-strongholds-v1-base.webp",
+      "title": "Tufa Data Citadel — Exterior Study",
+      "status": "superseded-editor-rejected-composition",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Mark requested the view from inside the citadel overlooking the competition. Keep as v2 provenance only; do not publish this exterior composition."
+    },
+    {
+      "id": "2026-10-19-tufa-citadel-interior-v2",
+      "generationRecord": "2026-10-19-tufa-citadel-interior-v2-base",
+      "src": "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp",
+      "title": "Tufa Data Citadel — Inside the Stronghold",
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-19-tufa-two-racks-two-strongholds",
+        "2026-10-19-evening-arc-3"
+      ],
+      "xAttachments": [],
+      "selectionNote": "Recomposed to Mark’s corrected direction: immense interior, moving two racks into position, looking out over rivals far below. Visually reviewed; selected replacement for v1.",
+      "artworkId": "2026-10-19-evening-arc-3-df65101f00-footer"
     }
   ],
   "existingXPosts": [

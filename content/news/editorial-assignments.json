@@ -667,5 +667,45 @@
       "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json"
     ],
     "instructions": "Preserve and substantively cover the Boss-commissioned breaking afternoon dispatch, Jack Cole joining ARC Mutants in ARC-AGI-2. ARC2 team 17023174 (jcole75, markbarney, scizical, sonphamorg) is separate from ARC3 Team Turducken 15605182. Do not transfer roster changes, ranks, scores, artwork, or gold claims across contests. Gold is the team’s stated ambition. Retain this dispatch as the ARC2 front-page feature above the Late recap; refresh any current board figures. The Boss approved the digital-academy illustration; its fantasy hardware is not a method claim."
+  },
+  {
+    "id": "oct19-late-tufa-data-citadel-special",
+    "competition": "arc-3",
+    "createdAt": "2026-10-19T22:07:55.080996+00:00",
+    "expiresAt": "2026-10-20T12:00:00Z",
+    "title": "A sneak peek inside the Tufa Citadel — commissioned evening headline",
+    "priority": "Boss-requested special article and new artwork",
+    "status": "pending",
+    "targetEditionId": "2026-10-19-evening-arc-3",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-19-tufa-two-racks-two-strongholds",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "personIds": [
+      "dries-smit"
+    ],
+    "subjectNames": [
+      "Tufa Labs"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-19-puget-tufa-evening/tufa-dispatch-draft.json",
+    "artworkGenerationRecord": "2026-10-19-tufa-citadel-interior-v2-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": [
+        "dries-smit"
+      ]
+    },
+    "sourceUrls": [
+      "https://x.com/tufalabs/status/2112165331292602740",
+      "https://www.nvidia.com/en-us/data-center/gb300-nvl72/",
+      "https://www.youtube.com/watch?v=oUimA1_rm5E",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    ],
+    "instructions": "Mark commissioned a substantial special Tufa article for the October 19 evening front page and held the edition while it was prepared. Publish the supplied validated Tufa dispatch, then prepare the scheduled edition so this feature is protected above the ARC3 recap. Preserve the existing separate Jack Cole/ARC Mutants ARC2 feature. Use only the reviewed v2 INTERIOR illustration: inside the immense Tufa data citadel, two racks being moved into place, looking out over competition far below. v1 exterior composition was rejected. Full hardware specs and source distinctions are already in the manuscript. Refresh closing standings/rosters and publication time; keep dated observations explicit. Nvidia platform specifications are not an audited Tufa configuration, and rack installation is not proven to have caused existing scores. Puget article was WITHDRAWN by Mark and remains private background: do not publish its draft or his private reaction. Mark explicitly authorized handoff to the paused evening edition for publication after this work. Follow normal validation, edition artwork composition/inspection and routine send-once X process, with this commissioned feature and selected image leading its announcement where supported. Latest explicit direction: headline the feature “A sneak peek inside the Tufa Citadel”. Retain the concise, timestamped YouTube-film summary and clickable original video source. User approved v2 as the lead; three additional citadel views are optional reserves still being prepared and must not delay publication. The October 9 compute quotation was rechecked on the public logged-out original post."
   }
 ]

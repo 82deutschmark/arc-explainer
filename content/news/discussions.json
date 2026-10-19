@@ -164,27 +164,5 @@
     "title": "Petition to delay the end of competition and compute change",
     "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/748419",
     "visibility": "public"
-  },
-  {
-    "author": "cpmpml",
-    "authorName": "CPMP",
-    "bodyRead": true,
-    "checkedAt": "2026-10-13T01:18:40.492Z",
-    "commentCount": 19,
-    "competition": "arc-3",
-    "decision": "paper-lead",
-    "id": "746010",
-    "latestActivityAt": "2026-10-12T15:07:23Z",
-    "personIds": [
-      "jean-francois-puget",
-      "son-pham",
-      "daniel-franzen"
-    ],
-    "postedAt": null,
-    "reason": "Original publicly accessible thread and relevant replies rechecked; retain this reviewed context alongside the newer ARC-2 sources.",
-    "summary": "In CPMP’s thread about the mismatch between a notebook’s displayed score and Franzen’s leaderboard entry, Son Pham suggests inherited notebook metadata from an API-submitted derivative could explain the display. His explanation is a hypothesis, with no organizer confirmation observed. The notebook display should not be treated as proof of a new Franzen leaderboard score.",
-    "title": "How come D Franzen score does not appear on LB?",
-    "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/746010",
-    "visibility": "public"
   }
 ]

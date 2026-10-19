@@ -12,7 +12,7 @@
     ],
     "firstObservedAt": "2026-10-09T03:21:39Z",
     "id": "arc-2-15486728",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "mithilavakde"
     ],
@@ -44,7 +44,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15486939",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "cpmpml",
       "darraghdog"
@@ -91,7 +91,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15501171",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "threerabbits"
     ],
@@ -117,7 +117,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15507730",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "insanitycheck"
     ],
@@ -157,7 +157,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15526034",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "dzjiann",
       "keithtyser",
@@ -208,7 +208,7 @@
     ],
     "firstObservedAt": "2026-10-18T09:54:37Z",
     "id": "arc-2-15601881",
-    "lastObservedAt": "2026-10-18T21:56:08Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "amiteshhhhhhhhh",
       "gghhjjkk"
@@ -296,7 +296,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-15789060",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "cookizesong",
       "xiezejian",
@@ -325,7 +325,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-18T09:54:37Z",
     "id": "arc-2-15938245",
-    "lastObservedAt": "2026-10-18T21:56:08Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "andy2709"
     ],
@@ -371,7 +371,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-12T21:36:52Z",
     "id": "arc-2-16297545",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "nisshokuitsuki"
     ],
@@ -384,7 +384,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16373916",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "majkel1337"
     ],
@@ -456,7 +456,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16461211",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "dawkopi"
     ],
@@ -480,6 +480,19 @@
     "aliases": [],
     "competition": "arc-2",
     "facts": [],
+    "firstObservedAt": "2026-10-19T21:58:46Z",
+    "id": "arc-2-16532134",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
+    "members": [
+      "yanmingowendong"
+    ],
+    "name": "Yanming (Owen) Dong",
+    "teamId": "16532134"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
     "firstObservedAt": "2026-10-13T21:42:57Z",
     "id": "arc-2-16540266",
     "lastObservedAt": "2026-10-18T21:56:08Z",
@@ -495,7 +508,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-13T09:41:34Z",
     "id": "arc-2-16559402",
-    "lastObservedAt": "2026-10-17T09:52:13Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "alwintheodoric",
       "billyanggara",
@@ -575,7 +588,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16671221",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "albertruehlman"
     ],
@@ -634,7 +647,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16756524",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "driessmit1",
       "jeroencottaar",
@@ -676,7 +689,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-16768245",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "deepdreamer"
     ],
@@ -689,7 +702,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-15T21:48:35Z",
     "id": "arc-2-16797706",
-    "lastObservedAt": "2026-10-15T21:48:35Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "maciejsypetkowski",
       "nataliajakowska"
@@ -772,7 +785,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-18T21:56:08Z",
     "id": "arc-2-16883591",
-    "lastObservedAt": "2026-10-18T21:56:08Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "sajadgoudarzi"
     ],
@@ -811,7 +824,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-10T22:00:54Z",
     "id": "arc-2-16936050",
-    "lastObservedAt": "2026-10-10T22:00:54Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "spoutop"
     ],
@@ -824,7 +837,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-11T21:33:05Z",
     "id": "arc-2-16942017",
-    "lastObservedAt": "2026-10-17T21:53:28Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "notnitsuj"
     ],
@@ -898,15 +911,15 @@
     "competition": "arc-2",
     "facts": [
       {
-        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team.",
-        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+        "checkedAt": "2026-10-19T18:01:43.005825Z",
         "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
-        "checkedAt": "2026-10-19T18:01:43.005825Z"
+        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-17023174",
-    "lastObservedAt": "2026-10-19T17:58:20Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "jcole75",
       "markbarney",
@@ -1033,12 +1046,25 @@
     "facts": [],
     "firstObservedAt": "2026-10-15T09:47:20Z",
     "id": "arc-2-17038960",
-    "lastObservedAt": "2026-10-15T09:47:20Z",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
     "members": [
       "chw114"
     ],
     "name": "Chenhao Wu",
     "teamId": "17038960"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-19T21:58:46Z",
+    "id": "arc-2-17040175",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
+    "members": [
+      "eshaanmistry"
+    ],
+    "name": "Eshaan Mistry",
+    "teamId": "17040175"
   },
   {
     "aliases": [],
@@ -1065,6 +1091,19 @@
     ],
     "name": "Sunstone North Lab",
     "teamId": "17064172"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-2",
+    "facts": [],
+    "firstObservedAt": "2026-10-19T21:58:46Z",
+    "id": "arc-2-17077331",
+    "lastObservedAt": "2026-10-19T21:58:46Z",
+    "members": [
+      "richardcsaky"
+    ],
+    "name": "artificialagencylab.com",
+    "teamId": "17077331"
   },
   {
     "aliases": [],
@@ -1097,7 +1136,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15486995",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "dlorah",
       "driessmit1",
@@ -1251,7 +1290,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15499660",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "threerabbits"
     ],
@@ -1277,7 +1316,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15501006",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "insanitycheck"
     ],
@@ -1441,15 +1480,15 @@
         "text": "The public roster now lists all seven accounts together under Team Turducken. This confirms the combined entry, not its exact merger time or any new score gain."
       },
       {
-        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team.",
-        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+        "checkedAt": "2026-10-19T18:01:43.005825Z",
         "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
-        "checkedAt": "2026-10-19T18:01:43.005825Z"
+        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15605182",
-    "lastObservedAt": "2026-10-19T17:58:18Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "dzjiann",
       "keithtyser",
@@ -1538,7 +1577,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15770880",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "cpmpml",
       "darraghdog",
@@ -1569,7 +1608,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-12T10:04:19Z",
     "id": "arc-3-15823039",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "huikang"
     ],
@@ -1626,7 +1665,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16021367",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "dwellement0baser",
       "fses91",
@@ -1655,7 +1694,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16032816",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "dvhrtm",
       "sbrodehl"
@@ -1700,7 +1739,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16132261",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "cmechevalier",
       "richardcsaky"
@@ -1734,7 +1773,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16153655",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "michaeltgao"
     ],
@@ -1845,7 +1884,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16371045",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "lordhansolo"
     ],
@@ -1941,7 +1980,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-16T09:49:44Z",
     "id": "arc-3-16490178",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "florenciasolange",
       "grigoriyzatravkin"
@@ -1955,7 +1994,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-19T09:57:26Z",
     "id": "arc-3-16498846",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "aizealotwu"
     ],
@@ -2013,7 +2052,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16569113",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "isakatsuyoshi",
       "konbu17",
@@ -2398,7 +2437,7 @@
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16958599",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
     "members": [
       "majkel1337"
     ],
@@ -2430,6 +2469,19 @@
     ],
     "name": "MingYue",
     "teamId": "16960245"
+  },
+  {
+    "aliases": [],
+    "competition": "arc-3",
+    "facts": [],
+    "firstObservedAt": "2026-10-19T21:58:44Z",
+    "id": "arc-3-16960672",
+    "lastObservedAt": "2026-10-19T21:58:44Z",
+    "members": [
+      "yoshharu"
+    ],
+    "name": "Haru Yo",
+    "teamId": "16960672"
   },
   {
     "aliases": [],

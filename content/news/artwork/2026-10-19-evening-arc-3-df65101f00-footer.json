@@ -1,0 +1,49 @@
+{
+  "articleId": "2026-10-19-evening-arc-3",
+  "briefSha256": "396fce1dca19d6c4c09095dd458cfb0f0e741b457b12352f48344c861d89c35d",
+  "dataAsOf": "2026-10-19T21:58:44Z",
+  "generationRecord": "2026-10-19-tufa-citadel-interior-v2-base",
+  "headline": "A sneak peek inside the Tufa Citadel",
+  "historyChart": null,
+  "id": "2026-10-19-evening-arc-3-df65101f00-footer",
+  "image": {
+    "alt": "AI editorial illustration inside Tufa’s imagined data citadel: five spider mascots and Dries guide two racks into place above the snowy competition valley. ARC-AGI-3 public scores: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49. October 19, 2026, 5:58 PM EDT.",
+    "artworkId": "2026-10-19-evening-arc-3-df65101f00-footer",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 19, 2026 · 5:58 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-19-evening-arc-3-df65101f00-footer.webp"
+  },
+  "imageSha256": "ea663c22ff137d4428e6fec19c1af8156757eaf03d0c7d277a82467391083dc6",
+  "kind": "edition-composition",
+  "layout": "separate-footer-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "3b1470a04cbaacf43be30a7f1789f1d0c67eb7835ad7a41e822f443293694c6a",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1,
+  "compositionReview": "Complete approved interior retained; fresh deterministic score/branding panels placed in separate footer to preserve spiders and valley view."
+}

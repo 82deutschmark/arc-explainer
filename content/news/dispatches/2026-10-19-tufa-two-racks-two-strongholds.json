@@ -1,0 +1,102 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Special evening feature commissioned by Mark Barney. The accompanying AI illustration looks out from inside Tufa’s imagined data citadel as two racks arrive. Its scale, mascots and view over the competition are editorial fantasy, not a reconstruction of the Stockholm data centre.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "A sneak peek inside the Tufa Citadel",
+  "id": "2026-10-19-tufa-two-racks-two-strongholds",
+  "image": {
+    "alt": "Inside Tufa’s immense data citadel, five spider mascots and Dries guide two server racks into place while rival machines climb the snowy valley far below.",
+    "caption": "AI editorial illustration: inside Tufa’s imagined data citadel as two GB300-inspired racks arrive. Tufa led both public boards in the October 19, 2026 observations at about 5:58 pm EDT. Architecture, scale, machinery and mascot count are fantasy; this is not a photograph of the Stockholm installation.",
+    "src": "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp"
+  },
+  "publishedAt": "2026-10-19T22:12:18Z",
+  "sections": [
+    {
+      "heading": "Two racks behind a double stronghold",
+      "sourceIds": [
+        "tufa-announcement",
+        "board-arc2",
+        "board-arc3",
+        "tufa-oct9",
+        "previous-report"
+      ],
+      "text": "Tufa Labs holds first place on both ARC public boards — and has now announced two NVIDIA GB300 NVL72 racks running in Stockholm. Its October 19 message makes the purpose plain: more computing capacity for more experiments at scale. DELTA handled the installation; T.Loop hosts the equipment.\n\nThe double stronghold is real in the standings. In the October 19 observations just before 6 pm Eastern, Tufa led ARC-AGI-2 and ARC-AGI-3, with Yi-Chia Chen second in each. The hardware announcement adds a striking new view of the lab behind those entries. It does not establish which machines produced the scores already on the board.\n\nThere is a callback for readers of our October 9 rabbit-and-spider report. Responding to a temporary setback, Tufa pledged to crush its competitors with “overwhelming resources and compute.” That was sporting bravado, accompanied by AI artwork. Ten days later, the lab has supplied a concrete hardware announcement to go alongside the rhetoric."
+    },
+    {
+      "heading": "Inside each rack",
+      "sourceIds": [
+        "nvidia-specs",
+        "tufa-announcement"
+      ],
+      "text": "NVIDIA’s published GB300 NVL72 configuration packs 72 Blackwell Ultra GPUs and 36 Grace CPUs into a liquid-cooled rack. Across Tufa’s two announced racks, that means 144 GPUs and 72 CPUs. Using NVIDIA’s reference specifications, the pair has about 40 TB of GPU memory plus 34 TB of CPU memory — roughly 74 TB combined.\n\nEach rack provides up to 576 TB per second of aggregate GPU-memory bandwidth and 130 TB per second of NVLink bandwidth between its GPUs. The important distinction is where data moves: memory bandwidth feeds the processors; NVLink lets the GPUs exchange work inside the rack. Two racks do not automatically become one 144-GPU NVLink domain.\n\nThe advertised FP4 arithmetic ceiling is 1,080 petaflops per rack without sparsity, or 2,160 across two. NVIDIA also lists 1,440 per rack with sparsity. These are low-precision hardware ratings, not measured ARC speedups. They describe the standard platform; Tufa has not published a complete configuration or utilization report."
+    },
+    {
+      "heading": "The deployment film, for readers short on time",
+      "sourceIds": [
+        "delta-film"
+      ],
+      "text": "DELTA’s October 19 YouTube film, Inside an NVIDIA GB300 NVL72 Deployment: TUFA Labs, follows the installation in Stockholm. The linked source below opens the full video. These are its essential moments.\n\nAt 1:26, founder Benjamin Crouzier introduces Tufa as an independent AI capability and safety research group. Around 4:17, he describes moving from DGX B200 systems to GB300 and a new workflow: faster work is the expectation, but he cautions against a direct comparison. At 7:50–8:10, he explains the ambition: run training rather than only download finished models, and investigate efficiency and alignment."
+    },
+    {
+      "heading": "The unglamorous work behind the enormous machine",
+      "sourceIds": [
+        "delta-film"
+      ],
+      "text": "Around 2:04, the film reports that the equipment was connected within two days, following months of preparation. DELTA engineer Ramon Lenck describes planning power, cooling, networking and even cable lengths. At 3:31, the team explains the reinforced floor and plates used to spread the load.\n\nAround 5:03, unpacking alone requires a large clear area and several people. At 6:21–6:52, the crew describes depressurizing and flushing the cooling circuits with hundreds of litres of coolant before final connections. The takeaway: this is a facility project, not merely two cabinets delivered to a server room."
+    },
+    {
+      "heading": "What the challengers can read into it",
+      "sourceIds": [
+        "tufa-announcement",
+        "board-arc2",
+        "board-arc3"
+      ],
+      "text": "Tufa’s announcement is evidence of greater research capacity. The two leading public entries make it consequential competition news. The next question is what Tufa builds and demonstrates with it. Neither the post nor the deployment film allocates a rack to each contest, discloses an ARC training recipe, or ties a particular submission to this installation.\n\nThe vast data-citadel interior is the sporting metaphor; the two racks are the hardware Tufa says is now live."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T22:01:59.380896+00:00",
+      "id": "tufa-announcement",
+      "title": "Tufa Labs: two GB300 NVL72 racks live in Stockholm, October 19",
+      "url": "https://x.com/tufalabs/status/2112165331292602740"
+    },
+    {
+      "accessedAt": "2026-10-19T22:01:59.380896+00:00",
+      "id": "nvidia-specs",
+      "title": "NVIDIA GB300 NVL72 official specifications, checked October 19",
+      "url": "https://www.nvidia.com/en-us/data-center/gb300-nvl72/"
+    },
+    {
+      "accessedAt": "2026-10-19T22:01:59.380896+00:00",
+      "id": "delta-film",
+      "title": "DELTA: Inside an NVIDIA GB300 NVL72 Deployment: TUFA Labs, October 19",
+      "url": "https://www.youtube.com/watch?v=oUimA1_rm5E"
+    },
+    {
+      "accessedAt": "2026-10-19T22:01:59.380896+00:00",
+      "id": "board-arc2",
+      "title": "ARC-AGI-2 public board, observed October 19 at 5:58 pm Eastern",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-19T22:01:59.380896+00:00",
+      "id": "board-arc3",
+      "title": "ARC-AGI-3 public board, observed October 19 at 5:58 pm Eastern",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-19T22:11:17.951344+00:00",
+      "id": "tufa-oct9",
+      "title": "Tufa Labs: overwhelming resources and compute, October 9; public post rechecked October 19",
+      "url": "https://x.com/tufalabs/status/2108463895128269084"
+    },
+    {
+      "accessedAt": "2026-10-19T22:11:17.951344+00:00",
+      "id": "previous-report",
+      "title": "The ARC Daily Digest, October 9: Yi-Chia Chen edges past Tufa Labs",
+      "url": "https://arc.markbarney.net/news#2026-10-09-arc3-rabbit-and-spider"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-10-19T22:03:27Z",
+  "id": "2026-10-19-tufa-two-racks-two-strongholds-v1-base",
+  "inputImages": [
+    "2026-10-12-tufa-labs-reference-1-v1.webp",
+    "2026-10-12-dries-smit-character-v1-base.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story. Asset: wide cinematic front-page editorial illustration for The ARC Daily Digest, landscape 16:9, premium detailed digital comic art. A new episode in the snowy GPU Valley. Exactly TWO enormous black liquid-cooled data-centre server racks stand side by side as the central dominant foreground subjects, visually unmistakable rectangular industrial cabinets with dense horizontal compute trays, tidy teal cabling, copper coolant manifolds and hoses, dark perforated metal and small green indicator lights. Their rack architecture is inspired by GB300 NVL72; do not claim an exact engineering cutaway. Both racks are much taller than the engineer. Behind them, on TWO neighbouring snowy rocky heights, exactly TWO magnificent Tufa GPU strongholds rise over the valley, both held by the same spider crew. The forts are distinct silhouettes, connected visually to the racks by luminous fictional conduits: the metaphor is one lab with two leading contest entries and serious new computing capacity. Twilight blue sky, warm gold light from the forts, green and cyan machine glow, drifting snow, exceptional depth and readable scale. Exactly FIVE friendly black fluffy spider mascots with large expressive white eyes work around the racks; use input 1 only for spider identity and style, ignoring its rabbits, labels and old scores. Exactly ONE Dries Smit stands near the racks, small enough to show the machines’ mass but face recognizable, confidently supervising with an open hand; use input 2 for identity and cyber-engineer costume. No other people or animals. No rabbits, turkeys, birds or rival characters. Put Dries and all five spiders in the middle vertical band; leave the bottom 15 percent calm snow for a later typeset panel. Entirely new composition, not a repaint of either reference. Friendly, respectful, awestruck engineering grandeur. No generated letters, logos, text, numbers, scores, flags with writing or watermarks. These forts and their conduits are clearly editorial fantasy, not a photograph of Tufa’s installation.",
+  "rawSha256": "2ef5fb67f7f0b1382c4bb31c2ce223bcafbdc52c4c4fab211052b91b72c412c9",
+  "rawSrc": "/news-images/2026-10-19-tufa-two-racks-two-strongholds-v1-base.webp",
+  "references": [
+    {
+      "role": "Use only the friendly black fluffy Tufa spider; ignore all rabbits, text, scores and machinery.",
+      "sha256": "43c0218e4224989ed749d1ef93e980f0df6d30690927784dd9986cee902b2757",
+      "src": "/news-images/references/2026-10-12-tufa-labs-reference-1-v1.webp"
+    },
+    {
+      "role": "Preserve Dries Smit’s swept brown hair, clean-shaven face, green right-eye eyepiece and cyan/green cyber-engineer costume.",
+      "sha256": "09520d923f7cd268cad339bf52d81aed7c66932a44d3dce068ab648c96f57bc5",
+      "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp"
+    }
+  ],
+  "review": "Inspected full native output: exactly two tall industrial server racks, two separate illuminated strongholds on snowy heights, five countable friendly black Tufa spiders and one recognizable Dries with green eyepiece and cyber-engineer gear. Rack trays, coolant pipes and cables are readable. No rival characters, text, scores or logos. Strongholds and luminous conduits are editorial fantasy; rack shape is illustrative, not a technical reconstruction. Cast verified on both October 19 5:58 pm public rosters.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-81608ebf-20aa-45d2-b410-235572fe6bf2.png",
+  "version": 1
+}

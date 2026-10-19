@@ -3,6 +3,27 @@
     "author": "arcprize",
     "authorName": "ARC Prize",
     "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112230540283658499",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 3,
+    "personIds": [],
+    "postedAt": "2026-10-19T17:12:58Z",
+    "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+    "summary": "ARC Prize reports verified Reflection Beam 1.0 scores: ARC-AGI-2 23.5% at $0.61/task and ARC-AGI-1 74.0% at $0.31/task. Best scores use xhigh reasoning; high reaches 20.0% on ARC-AGI-2 at about 43% lower cost.",
+    "threadId": "2112230540283658499",
+    "url": "https://x.com/arcprize/status/2112230540283658499",
+    "visibility": "public",
+    "whyItMatters": "New official model evaluation. Linked result page independently read in Chrome: semi-private best scores match. This is benchmark evaluation, not a Kaggle team score."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
     "checkedAt": "2026-10-16T18:22:03.965499Z",
     "competitions": [
       "arc-2",
@@ -101,6 +122,152 @@
     "url": "https://x.com/arcprize/status/2110031207601979715",
     "visibility": "public",
     "whyItMatters": "Organizer confirmation of a consequential team result already covered in the newspaper’s morning/afternoon reporting; no methods disclosed."
+  },
+  {
+    "author": "82deutschmark",
+    "authorName": "Mark Barney",
+    "category": "community",
+    "checkedAt": "2026-10-19T18:20:47.341882+00:00",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112247067913457944",
+    "identitySourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+    "importance": 2,
+    "personIds": [
+      "mark-barney",
+      "jack-cole"
+    ],
+    "postedAt": "2026-10-19T18:18:39Z",
+    "storyUrl": null,
+    "summary": "Mark Barney publicly welcomes Jack Cole to his ARC-AGI-2 team, using a Professor X metaphor, and states an ambition to reach gold. The post has ARC Mutants artwork. The announcement explicitly concerns ARC2; it does not add Cole to ARC3 Team Turducken.",
+    "threadId": null,
+    "url": "https://x.com/82deutschmark/status/2112247067913457944",
+    "visibility": "public",
+    "whyItMatters": "Fresh public first-person confirmation supporting the commissioned ARC Mutants dispatch. Gold is an ambition, not an awarded medal."
+  },
+  {
+    "author": "spisallyouneed",
+    "authorName": "Sam Pasupalak",
+    "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [],
+    "id": "2112242023805964327",
+    "identitySourceUrl": "https://x.com/spisallyouneed",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-19T17:58:36Z",
+    "storyUrl": null,
+    "summary": "Sam Pasupalak announces SKY-001, which he calls the first Engineering World Model. He claims higher IoU on CAD and BIM tasks than tested frontier models, with 51–125 times faster and 150–210 times cheaper operation. Says it reflects 18 months of work by a team from Maluuba. Observed in Chollet’s repost inventory.",
+    "threadId": "2112242023805964327",
+    "url": "https://x.com/spisallyouneed/status/2112242023805964327",
+    "visibility": "public",
+    "whyItMatters": "Adjacent research lead amplified by an organizer; author claims only, with no independently inspected evaluation or ARC score. Repost action time is unknown."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112230541730689510",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-19T17:12:59Z",
+    "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+    "summary": "ARC Prize says Beam costs use Baseten pricing of $1.30 input and $4.30 output per million tokens. ARC-AGI-3 results are pending.",
+    "threadId": "2112230540283658499",
+    "url": "https://x.com/arcprize/status/2112230541730689510",
+    "visibility": "public",
+    "whyItMatters": "Keeps the cost basis and absence of ARC-AGI-3 results explicit."
+  },
+  {
+    "author": "arcprize",
+    "authorName": "ARC Prize",
+    "category": "research",
+    "checkedAt": "2026-10-19T18:04:44.564405Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112230543379095621",
+    "identitySourceUrl": "https://arcprize.org",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-19T17:12:59Z",
+    "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+    "summary": "ARC Prize links its leaderboard, public reproduction repository, testing policy and full Beam 1.0 results.",
+    "threadId": "2112230540283658499",
+    "url": "https://x.com/arcprize/status/2112230543379095621",
+    "visibility": "public",
+    "whyItMatters": "Primary follow-up with reproducibility and policy links; group with the Beam announcement."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "research",
+    "checkedAt": "2026-10-19T13:59:40.916Z",
+    "competitions": [],
+    "id": "2112176864760320357",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-19T13:39:41Z",
+    "storyUrl": "https://www.emergentmind.com/chatgpt-then-and-now",
+    "summary": "Mazur launched ChatGPT Then and Now, pairing 492 early LearnGPT responses with new GPT-6 Astra answers. The linked page identifies the originals as December 2022–March 2023, new runs as October 19, 2026, one message with no system prompt and default reasoning effort, and says Claude Opus 5.5 wrote the paired analyses. A data download is offered; it was not downloaded.",
+    "threadId": "2112176864760320357",
+    "url": "https://x.com/mhmazur/status/2112176864760320357",
+    "visibility": "public",
+    "whyItMatters": "Public organizer product/research lead; a prompt comparison collection, with no ARC score or competition result claimed."
+  },
+  {
+    "author": "tufalabs",
+    "authorName": "Tufa Labs",
+    "category": "community",
+    "checkedAt": "2026-10-19T15:05:50.864780Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112165331292602740",
+    "identitySourceUrl": "https://tufalabs.ai",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-19T12:53:51Z",
+    "storyUrl": null,
+    "summary": "Tufa says its two NVIDIA GB300 NVL72 racks are live in Stockholm; credits DELTA for installation and T.Loop for hosting and links a deployment video. Actual public post read.",
+    "threadId": null,
+    "url": "https://x.com/tufalabs/status/2112165331292602740",
+    "visibility": "public",
+    "whyItMatters": "Contender infrastructure announcement; no evidence here ties this equipment to a specific score or competition run."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "community",
+    "checkedAt": "2026-10-19T15:05:50.864780Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112118534129987833",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 2,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-19T09:47:54Z",
+    "storyUrl": null,
+    "summary": "Puget says AI agents now run all his training experiments, while he still reads their harness code. He says agents tend to overengineer, retain unnecessary compatibility code and require human direction. Actual public post expanded and read.",
+    "threadId": null,
+    "url": "https://x.com/JFPuget/status/2112118534129987833",
+    "visibility": "public",
+    "whyItMatters": "First-person account of a competitor’s research workflow; no new ARC score claimed."
   },
   {
     "author": "AlexBarry4",
@@ -245,171 +412,5 @@
     "url": "https://x.com/iiiiitsu_ne/status/2111746277256110582",
     "visibility": "public",
     "whyItMatters": "New first-person reaction from a top-ten contender; distinguish the rank mentioned at posting from later board observations."
-  },
-  {
-    "author": "mhmazur",
-    "authorName": "Matt Mazur",
-    "category": "research",
-    "checkedAt": "2026-10-18T01:03:07.079Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2111622650799767667",
-    "identitySourceUrl": "https://mattmazur.com/contact/",
-    "importance": 2,
-    "personIds": [
-      "matt-mazur"
-    ],
-    "postedAt": "2026-10-18T00:57:26Z",
-    "storyUrl": null,
-    "summary": "Mazur says that, based on conversations with some lab staff and to the best of his knowledge, none have built synthetic RL environments specifically to raise ARC scores. He explains that ARC calls datasets semi-private because evaluation data leaves the organization through third-party model APIs, despite zero data retention.",
-    "threadId": "2111589586111783403",
-    "url": "https://x.com/mhmazur/status/2111622650799767667",
-    "visibility": "public",
-    "whyItMatters": "Follow-up to the evaluation-integrity exchange. Attribute to Mazur; this is not an independent audit of lab training data. The critic acknowledges having no evidence of that practice."
-  },
-  {
-    "author": "mhmazur",
-    "authorName": "Matt Mazur",
-    "category": "research",
-    "checkedAt": "2026-10-17T23:57:58.938Z",
-    "competitions": [
-      "arc-2",
-      "arc-3"
-    ],
-    "id": "2111602330349064617",
-    "identitySourceUrl": "https://mattmazur.com/contact/",
-    "importance": 2,
-    "personIds": [
-      "matt-mazur"
-    ],
-    "postedAt": "2026-10-17T23:36:41Z",
-    "storyUrl": null,
-    "summary": "Responding to an allegation that benchmarks test on training data, Mazur says ARC is not compromised, its semi-private evaluation sets have not leaked and cannot be trained on, and provider API testing requires zero data retention.",
-    "threadId": "2111589586111783403",
-    "url": "https://x.com/mhmazur/status/2111602330349064617",
-    "visibility": "public",
-    "whyItMatters": "Useful organizer statement on evaluation integrity; attribute to Mazur rather than presenting it as an independent audit."
-  },
-  {
-    "author": "fchollet",
-    "authorName": "François Chollet",
-    "category": "community",
-    "checkedAt": "2026-10-17T17:59:10.848Z",
-    "competitions": [],
-    "id": "2111507711653564543",
-    "identitySourceUrl": "https://x.com/arcprize",
-    "importance": 2,
-    "personIds": [
-      "francois-chollet"
-    ],
-    "postedAt": "2026-10-17T17:20:43Z",
-    "storyUrl": null,
-    "summary": "Chollet argues that coding automation shifts bottlenecks elsewhere in a system. He claims engineering demand and workloads remain high despite agents writing most code, while companies often see little resulting profit improvement. His commentary gives no supporting study or ARC score.",
-    "threadId": "2111507711653564543",
-    "url": "https://x.com/fchollet/status/2111507711653564543",
-    "visibility": "public",
-    "whyItMatters": "Organizer commentary captured before editorial selection; attributed claims, not an ARC benchmark result."
-  },
-  {
-    "author": "mhmazur",
-    "authorName": "Matt Mazur",
-    "category": "community",
-    "checkedAt": "2026-10-17T17:59:19.156Z",
-    "competitions": [],
-    "id": "2111505445353329137",
-    "identitySourceUrl": "https://mattmazur.com/contact/",
-    "importance": 2,
-    "personIds": [
-      "matt-mazur"
-    ],
-    "postedAt": "2026-10-17T17:11:42Z",
-    "storyUrl": null,
-    "summary": "Mazur tells Mark Barney that the Preceden date-localization bug is fixed. He says a French language selection combined with an English topic produced English content with French dates, which the homepage cache then served to everyone. He says the language and caching logic needs simplifying.",
-    "threadId": "2111461401139060934",
-    "url": "https://x.com/mhmazur/status/2111505445353329137",
-    "visibility": "public",
-    "whyItMatters": "Organizer commentary captured before editorial selection; attributed claims, not an ARC benchmark result."
-  },
-  {
-    "author": "mhmazur",
-    "authorName": "Matt Mazur",
-    "category": "community",
-    "checkedAt": "2026-10-17T16:56:53.905Z",
-    "competitions": [],
-    "id": "2111491485715570971",
-    "identitySourceUrl": "https://mattmazur.com/contact/",
-    "importance": 2,
-    "personIds": [
-      "matt-mazur"
-    ],
-    "postedAt": "2026-10-17T16:16:14Z",
-    "storyUrl": null,
-    "summary": "Mazur says the system uses his existing $200/month Claude Code subscription, adds no extra bill, and barely affects weekly usage. He clarifies that routines start hourly and often finish within minutes, rather than running continuously.",
-    "threadId": "2111461401139060934",
-    "url": "https://x.com/mhmazur/status/2111491485715570971",
-    "visibility": "public",
-    "whyItMatters": "Organizer follow-up captured before editorial selection; no ARC score or standings claim."
-  },
-  {
-    "author": "mhmazur",
-    "authorName": "Matt Mazur",
-    "category": "community",
-    "checkedAt": "2026-10-17T16:56:58.222Z",
-    "competitions": [],
-    "id": "2111489166550745555",
-    "identitySourceUrl": "https://mattmazur.com/contact/",
-    "importance": 2,
-    "personIds": [
-      "matt-mazur"
-    ],
-    "postedAt": "2026-10-17T16:07:01Z",
-    "storyUrl": null,
-    "summary": "Mazur posts an answer attributed to Claude: signup-funnel data identified a weak cohort, a desktop/mobile browser walkthrough revealed that generated timelines exceeded the free event limit, and code inspection explained the disabled Add Event button. The reply says plan logic required Matt’s approval and a fix is scheduled for Monday.",
-    "threadId": "2111461401139060934",
-    "url": "https://x.com/mhmazur/status/2111489166550745555",
-    "visibility": "public",
-    "whyItMatters": "Useful detail behind the Preceden autonomous-agent experiment. Author-published account, not independently verified performance or a shipped fix."
-  },
-  {
-    "author": "mhmazur",
-    "authorName": "Matt Mazur",
-    "category": "community",
-    "checkedAt": "2026-10-17T16:02:29.261Z",
-    "competitions": [],
-    "id": "2111472285437821117",
-    "identitySourceUrl": "https://mattmazur.com/contact/",
-    "importance": 2,
-    "personIds": [
-      "matt-mazur"
-    ],
-    "postedAt": "2026-10-17T14:59:56Z",
-    "storyUrl": "https://preceden.com",
-    "summary": "Asked how much of the agent-generated backlog he ships, Mazur says he follows Claude's recommendations about 99% of the time.",
-    "threadId": "2111461401139060934",
-    "url": "https://x.com/mhmazur/status/2111472285437821117",
-    "visibility": "public",
-    "whyItMatters": "Organizer commentary captured before editorial selection; no new ARC score or independently verified product outcome."
-  },
-  {
-    "author": "mhmazur",
-    "authorName": "Matt Mazur",
-    "category": "community",
-    "checkedAt": "2026-10-17T14:59:34.186Z",
-    "competitions": [],
-    "id": "2111461401139060934",
-    "identitySourceUrl": "https://mattmazur.com/contact/",
-    "importance": 2,
-    "personIds": [
-      "matt-mazur"
-    ],
-    "postedAt": "2026-10-17T14:16:41Z",
-    "storyUrl": "https://preceden.com",
-    "summary": "Mazur says his autonomous Claude setup found a signup funnel problem in Preceden without being directed to it: AI-generated timelines exceed the free plan limit, leaving new users unable to add events. He says it investigated production data and code, proposed fixes to limits, signup thumbnails, upgrade copy and tracking, and defined a 28-day success check. Pricing, plan limits and authentication changes required his approval.",
-    "threadId": "2111461401139060934",
-    "url": "https://x.com/mhmazur/status/2111461401139060934",
-    "visibility": "public",
-    "whyItMatters": "Organizer perspective on agent autonomy and measuring product outcomes; an attributed product anecdote, not an ARC score or independently verified business result."
   }
 ]
