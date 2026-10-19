@@ -11,8 +11,8 @@
  *          plan (docs/2026-10-19-arc2-hard-set-synthetic-data-plan.md) reads these notes, so keep the
  *          wording honest: nothing here is an answer key the models were denied.
  *          19-Oct-2026, Claude Opus 5.5 Medium: the spiral note is now 'checked' (a coded rule reproduces every
- *          pair; it adds the corner step the first note missed), repair-the-lines is 'checked' (only gaps with a
- *          piece hanging from them are mended), and the leaky-boxes note is 'partial' (leaks
+ *          pair; it adds the corner step the first note missed), repair-the-lines, marble corridors and jigsaw are
+ *          'checked' (coded rules reproduce every pair; each note gained the detail the first one missed), and the leaky-boxes note is 'partial' (leaks
  *          bend where they meet, which the first note missed). Both found while building the generators.
  * SRP/DRY check: Pass — mirrors shared/featuredPuzzles.ts (standalone constants, no dependencies);
  *                the server computes membership from the database, this file only names the buckets.
@@ -150,14 +150,15 @@ export const ARC2_HARD_SET_NOTES: Record<string, Arc2HardSetNote> = {
   '9bbf930d': {
     id: '9bbf930d',
     nickname: 'Marble corridors',
-    confidence: 'read',
+    confidence: 'checked',
     bullets: [
       'Colored bars stack top to bottom, with a plain corridor between every two bars.',
       'Each row starts with a marker at the far left, like a marble waiting at a gate.',
       'Look at the two bars on either side of a corridor. If they are the same color, that corridor\'s marble is released.',
-      'A released marble rolls right along the corridor. When it hits something, it turns and keeps rolling along the open path until it cannot, and it stops there.',
+      'A released marble rolls right along the corridor. When something blocks it, it turns to the one side that is open and keeps rolling.',
+      'It stops at the edge of the picture, or where both sides or neither side are open.',
+      'It also stops when it is blocked while rolling up or down inside a corridor whose marble was not released.',
       'Corridors between two different-colored bars keep their marble at the gate.',
-      'Honest note: where each marble finally stops is the fiddly part. The one attempt that solved it traced every marble square by square.',
     ],
     whereModelsBreak:
       'Claude Opus 4.8 solved it by writing the release rule and then tracing each marble\'s turns one square at a time. Other attempts state the same rule and lose a marble on a turn.',
@@ -273,12 +274,14 @@ export const ARC2_HARD_SET_NOTES: Record<string, Arc2HardSetNote> = {
   '446ef5d2': {
     id: '446ef5d2',
     nickname: 'Jigsaw',
-    confidence: 'read',
+    confidence: 'checked',
     bullets: [
-      'A framed picture was cut into pieces, and the pieces were scattered around.',
-      'Each piece shows part of the frame and part of the inside.',
-      'Put the pieces back together so the frame runs all the way around and the pieces fit edge to edge.',
-      'Draw the finished picture once, in the middle, and clear the scattered pieces away.',
+      'A framed picture was cut into rectangle pieces, and the pieces were scattered around.',
+      'One piece has a little three-square corner mark next to it. That piece has not moved.',
+      'Put the other pieces back around it so the frame color runs all the way around the outside.',
+      'If the pieces fit together in more than one way, pick the way where the lines inside the picture carry on smoothly from piece to piece.',
+      'Pieces that touch each other in the scattered picture are still separate rectangles.',
+      'Draw the finished picture once and clear the scattered pieces away.',
     ],
   },
   '2b83f449': {
