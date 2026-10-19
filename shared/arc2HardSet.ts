@@ -11,7 +11,8 @@
  *          plan (docs/2026-10-19-arc2-hard-set-synthetic-data-plan.md) reads these notes, so keep the
  *          wording honest: nothing here is an answer key the models were denied.
  *          19-Oct-2026, Claude Opus 5.5 Medium: the spiral note is now 'checked' (a coded rule reproduces every
- *          pair; it adds the corner step the first note missed) and the leaky-boxes note is 'partial' (leaks
+ *          pair; it adds the corner step the first note missed), repair-the-lines is 'checked' (only gaps with a
+ *          piece hanging from them are mended), and the leaky-boxes note is 'partial' (leaks
  *          bend where they meet, which the first note missed). Both found while building the generators.
  * SRP/DRY check: Pass — mirrors shared/featuredPuzzles.ts (standalone constants, no dependencies);
  *                the server computes membership from the database, this file only names the buckets.
@@ -212,13 +213,14 @@ export const ARC2_HARD_SET_NOTES: Record<string, Arc2HardSetNote> = {
   '7b80bb43': {
     id: '7b80bb43',
     nickname: 'Repair the lines',
-    confidence: 'read',
+    confidence: 'checked',
     bullets: [
-      'Long straight lines run across the picture, and some have a chunk missing.',
-      'Near each missing chunk the broken-off bits are lying around on a slant.',
-      'Put each broken line back whole by filling the gap.',
-      'Sweep away all the loose bits.',
-      'A gap where two lines cross stays open, and a line that simply ends with nothing lying nearby stays as it is.',
+      'Long straight lines run across the picture, and some have a chunk of three squares missing.',
+      'A broken line gets fixed only when its broken-off piece is still hanging from it: two squares on a slant, starting at one end of the gap and leaning toward the gap.',
+      'Fill that gap so the line is whole again.',
+      'Sweep away every loose slanted piece, including ones hanging from a line that is not broken there.',
+      'A gap with no piece hanging from it stays open, and so does a gap where two lines cross.',
+      'A short stub poking out of a line is still part of a line when the same line carries on after a gap.',
     ],
   },
   'a32d8b75': {

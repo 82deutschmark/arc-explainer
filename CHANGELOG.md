@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.152.2  Oct 19, 2026
+
+- **Hard-set notes: repair-the-lines corrected and checked** (Author: Claude Opus 5.5 Medium). What: the note now says a gap is mended only when its broken piece still hangs from the gap's end, leaning toward it; other gaps stay open and every loose piece is swept. Why: a coded rule (team repo `arc2/synth_hardset/families/repair_lines.py`) reproduces every pair of 7b80bb43 only that way; the old note said to fill every gap near loose bits. How: `shared/arc2HardSet.ts`.
+
 ### Version 9.152.1  Oct 19, 2026
 
 - **Hard-set notes: spiral corrected and checked, leaky boxes marked unsure** (Author: Claude Opus 5.5 Medium). What: the spiral note now describes the small sideways step at each corner and is tagged checked; the leaky-boxes note now says the leaks bend where they would meet and is tagged could-not-pin-down. Why: building the synthetic generators (team repo `arc2/synth_hardset`), a coded spiral rule reproduced every pair of da515329 only with the corner step, and the leaky-boxes pairs show bent leaks the old note did not mention. How: `shared/arc2HardSet.ts`; a dated aside on the findings page (`client/src/pages/Arc2HardSetFindings.tsx`).
