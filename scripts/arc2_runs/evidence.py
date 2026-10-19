@@ -3,7 +3,7 @@
 Author: Claude Opus 5.5 Low
 Date: 19-October-2026
 PURPOSE: Turns what Kaggle gives us about an ARC-AGI-2 run into what people and Claude can read:
-  - the notebook's code (code cells only, numbered) from the source Kaggle serves;
+  - the notebook's code (code cells only, numbered, never cut) from the source Kaggle serves;
   - a unified diff of that code against the baseline run's code;
   - the run log condensed from Kaggle's JSON stream format to plain text, keeping the start and the
     end when it is long;
@@ -21,7 +21,7 @@ from pathlib import Path
 
 MAX_LOG = 200_000      # characters of log on the page: the first quarter and the last three quarters
 MAX_DIFF = 300_000     # characters of diff on the page
-MAX_CELL = 20_000      # a cell longer than this is mostly an embedded file; its middle is cut
+MAX_DIFF_LINE = 2_000  # one diff line longer than this is an embedded blob; its tail is cut
 
 
 def notebook_code(source: str) -> str:
@@ -37,16 +37,35 @@ def notebook_code(source: str) -> str:
         if cell.get("cell_type") != "code":
             continue
         text = "".join(cell.get("source") or []) if isinstance(cell.get("source"), list) else str(cell.get("source") or "")
-        if len(text) > MAX_CELL:
-            text = f"{text[:MAX_CELL // 2]}\n# … {len(text) - MAX_CELL} characters cut …\n{text[-MAX_CELL // 2:]}"
         parts.append(f"# ===== cell {i} =====\n{text.rstrip()}\n")
     return "\n".join(parts)
 
 
+HUNK_RE = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
+CELL_RE = re.compile(r"^# ===== cell (\d+) =====")
+
+
 def code_diff(base_code: str, run_code: str, base_label: str, run_label: str) -> tuple[str, bool]:
-    lines = difflib.unified_diff(base_code.splitlines(keepends=True), run_code.splitlines(keepends=True),
-                                 fromfile=base_label, tofile=run_label, n=3)
-    text = "".join(lines)
+    """Unified diff of the full code (long cells are never cut, since notebooks embed their solver
+    files in cells and the change is often inside one). Each hunk header names the cell it starts in,
+    the way git names the function, and over-long lines (embedded blobs) are cut."""
+    run_lines = run_code.splitlines(keepends=True)
+    cell_at, current = [], None
+    for line in run_lines:
+        m = CELL_RE.match(line)
+        current = m.group(1) if m else current
+        cell_at.append(current)
+    out = []
+    for line in difflib.unified_diff(base_code.splitlines(keepends=True), run_lines,
+                                     fromfile=base_label, tofile=run_label, n=3):
+        m = HUNK_RE.match(line)
+        if m and cell_at:
+            cell = cell_at[min(max(int(m.group(1)) - 1, 0), len(cell_at) - 1)]
+            line = line.rstrip("\n") + (f" cell {cell}" if cell else "") + "\n"
+        if len(line) > MAX_DIFF_LINE:
+            line = line[:MAX_DIFF_LINE] + f" … ({len(line) - MAX_DIFF_LINE} characters cut)\n"
+        out.append(line)
+    text = "".join(out)
     if len(text) <= MAX_DIFF:
         return text or "(the code is identical)", False
     return text[:MAX_DIFF] + "\n… diff cut here …\n", True

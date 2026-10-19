@@ -126,7 +126,6 @@ def collect(entries: dict, all_subs: list[dict]) -> None:
                 if source:
                     d.mkdir(parents=True, exist_ok=True)
                     (d / "source.txt").write_text(source)
-                    (d / "code.py").write_text(evidence.notebook_code(source))
                     log(f"{key}: kept the notebook source ({len(source)} characters)")
             if current and info["status"] in kaggle_read.FINAL and not (d / "output").exists():
                 n = kaggle_read.download_output(ref, d / "output")
@@ -161,8 +160,9 @@ def collect(entries: dict, all_subs: list[dict]) -> None:
 
 
 def code_of(key: str) -> str | None:
-    p = run_dir(key) / "code.py"
-    return p.read_text() if p.exists() else None
+    """Rebuilt from the kept source each time, so a change to how code is extracted reaches every run."""
+    p = run_dir(key) / "source.txt"
+    return evidence.notebook_code(p.read_text()) if p.exists() else None
 
 
 def log_of(entry: dict) -> tuple[str, bool, str] | None:
