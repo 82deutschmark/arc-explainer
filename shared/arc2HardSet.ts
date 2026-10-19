@@ -11,7 +11,7 @@
  *          plan (docs/2026-10-19-arc2-hard-set-synthetic-data-plan.md) reads these notes, so keep the
  *          wording honest: nothing here is an answer key the models were denied.
  *          19-Oct-2026, Claude Opus 5.5 Medium: the spiral note is now 'checked' (a coded rule reproduces every
- *          pair; it adds the corner step the first note missed), repair-the-lines, marble corridors and jigsaw are
+ *          pair; it adds the corner step the first note missed), repair-the-lines, marble corridors, jigsaw and follow-the-trail are
  *          'checked' (coded rules reproduce every pair; each note gained the detail the first one missed), and the leaky-boxes note is 'partial' (leaks
  *          bend where they meet, which the first note missed). Both found while building the generators.
  * SRP/DRY check: Pass — mirrors shared/featuredPuzzles.ts (standalone constants, no dependencies);
@@ -262,13 +262,15 @@ export const ARC2_HARD_SET_NOTES: Record<string, Arc2HardSetNote> = {
   '195c6913': {
     id: '195c6913',
     nickname: 'Follow the trail',
-    confidence: 'read',
+    confidence: 'checked',
     bullets: [
-      'A short recipe sits in the top-left corner: a few colors in order.',
-      'A big blob covers much of the picture, and a trail runs across the blob to a marker.',
-      'Walk the trail from its start, painting as you go, repeating the recipe color by color.',
-      'The recipe in the corner is cleared away.',
-      'Honest note: where the trail starts and which way it turns at the edge of the blob is the part I am unsure of.',
+      'A short recipe sits in the top-left corner: a few colored squares in order.',
+      'Another lone colored square somewhere else is the edge marker.',
+      'A big blob covers much of the picture. Every square on the left edge painted in the recipe\'s first color starts a trail.',
+      'The trail walks right through the blob, painting the recipe color by color, over and over. It never restarts the recipe at a corner.',
+      'When the next square is outside the blob, that outside square gets the edge marker\'s color and the trail turns: up if it was going right, right if it was going up.',
+      'If that turn is blocked, the trail stops, even if the other way is open.',
+      'The recipe and the edge marker are cleared away.',
     ],
   },
   '446ef5d2': {
