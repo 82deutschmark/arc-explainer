@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-19T13:57:53Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Flying Pandas climbs to 24th on ARC-2",
+  "id": "2026-10-19-1003-arc-2-flying-pandas-climbs-to-twenty-fourth",
+  "personIds": [],
+  "publishedAt": "2026-10-19T14:03:52Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Flying Pandas gained 12.91 points to reach 54.58, moving from 42nd to 24th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The climb moves the team further into the standings. The board's 16 gold places are led by a cutoff of 64.72, so the climb has not yet reached the medal line."
+    }
+  ],
+  "since": "2026-10-18T13:55:01Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T14:03:07Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15601881"
+  ]
+}
