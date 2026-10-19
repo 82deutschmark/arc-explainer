@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-19T03:56:48Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Team Turducken moves to third on ARC-3",
+  "id": "2026-10-19-0001-arc-3-team-turducken-moves-to-third",
+  "personIds": [],
+  "publishedAt": "2026-10-19T04:01:27Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Team Turducken gained 3.90 points to reach 52.82, moving from fifth to third on the ARC-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The team now sits behind only Tufa Labs and Yi-Chia Chen in the standings."
+    }
+  ],
+  "since": "2026-10-18T03:54:02Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T04:00:54Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15605182"
+  ]
+}

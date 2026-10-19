@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-19T03:56:48Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Artem Goncharov jumps to 55th on ARC-3",
+  "id": "2026-10-19-0001-arc-3-artem-goncharov-jumps-to-fifty-fifth",
+  "personIds": [],
+  "publishedAt": "2026-10-19T04:01:27Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Artem Goncharov gained 2.84 points to reach 34.11, moving from 335th to 55th on the ARC-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb puts Goncharov inside the board’s top 100."
+    }
+  ],
+  "since": "2026-10-18T03:54:02Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T04:00:54Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15488435"
+  ]
+}
