@@ -1,0 +1,72 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Mark Barney commissioned this special edition, its full-crew flight illustration and its X announcement. He is also a member of Team Turducken. The score and roster were checked against the same public sources used for every contender.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Special edition: Team Turducken takes flight into third",
+  "id": "2026-10-18-special-turducken-takes-third",
+  "image": {
+    "alt": "Editorial illustration for Special edition: Team Turducken takes flight into third. Yi-Chia Chen: rank 2, score 67.49; Team Turducken: rank 3, score 52.82.",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 18, 2026 · 10:56 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-18-evening-arc-3-preview-242980a95d.webp"
+  },
+  "publishedAt": "2026-10-19T03:09:14.292146Z",
+  "sections": [
+    {
+      "heading": "A four-point climb changes the chase",
+      "sourceIds": [
+        "board-arc-3",
+        "kaggle-arc-3"
+      ],
+      "text": "Team Turducken has climbed from fifth to third on the ARC-AGI-3 Kaggle public leaderboard, improving from 48.92 to 52.82. The 3.90-point advance moves the team past mtg, now fourth at 50.37, and the last dance, fifth at 49.85. The collector first recorded the new score at 10:56 pm Eastern on October 18, after the Late edition closed with Turducken still fifth. The new third-place team leads mtg by 2.45 points."
+    },
+    {
+      "heading": "The two leaders remain above the flight path",
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Tufa Labs remains first at 68.91 and Yi-Chia Chen second at 67.49. Turducken is 14.67 points behind Chen: third place changes the order of the chase while leaving a substantial gap to the leading pair. The team has returned to a position its predecessor entry held earlier in the month, now with a higher score and a combined roster. These are provisional public standings; the final private leaderboard decides the competition."
+    },
+    {
+      "heading": "Seven crew, one Turducken",
+      "sourceIds": [
+        "board-arc-3",
+        "merger"
+      ],
+      "text": "The score arrives on the day Keith Tyser’s ARC Slayers and the former Son & Mark & Ronen entry joined as Team Turducken. The public entry, team ID 15605182, now lists dzjiann, keithtyser, markbarney, mitubant, ngyzly, scizical and sonphamorg. The board verifies the gain; it does not disclose which technical change produced it. For this special edition, the seven approved crew characters and Mark’s two Yorkies take their nested duck-inside-chicken-inside-turkey aircraft into the moonlit mountain sky. The flight and machinery are editorial fantasy, not documentary equipment or a claim of a final medal."
+    },
+    {
+      "heading": "ARC-2’s medal chase has been moving too",
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "On the separate ARC-AGI-2 board, Tufa Labs and Yi-Chia Chen still lead at 88.06 and 83.89. Sunday’s larger advances include mikelou1 reaching 13th at 66.39 and guoqin gu reaching the last of 16 provisional gold places at 61.81. Majkel1337 is sixth at 71.81, while Itsu’s entry, now named ｶﾎｳｼｭｳｾｲ, is eighth at 70.28. Those are earlier Sunday gains carried into the current standings, not additional improvements triggered by this special edition."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T03:09:14.292146Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public board and observed score history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-19T02:58:43Z",
+      "id": "kaggle-arc-3",
+      "title": "Kaggle ARC-AGI-3 public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-19T03:09:14.292146Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public board and observed score history",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-19T03:09:14.292146Z",
+      "id": "merger",
+      "title": "Team Turducken official merger announcement, October 18",
+      "url": "https://arc.markbarney.net/news#2026-10-18-arc3-superteam-merger-official"
+    }
+  ]
+}

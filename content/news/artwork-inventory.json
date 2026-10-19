@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-18T22:11:14.863842+00:00",
+  "updatedAt": "2026-10-19T03:11:19.225427+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -406,7 +406,16 @@
       "status": "approved-unused-reserve",
       "articleUses": [],
       "xAttachments": [],
-      "discordShares": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1561577418840342593",
+          "postedAt": "2026-10-19T03:11:10.658166+00:00",
+          "attachmentFilename": "2026-10-18-turducken-hangar-v1-base.webp",
+          "attachmentSha256": "ce8c6e1edc58ec051ce3be3ea481701be75b91ef3788953906b28d089c2ca73f",
+          "purpose": "Explicit human request to share all Turducken artwork in ARC-3 rollout channel."
+        }
+      ],
       "approvedBy": "mark-barney",
       "approvedAt": "2026-10-18T19:17:34.889371Z",
       "selectionNote": "Boss-approved native episode. Preserve clean source; future illustrated editions use fresh score/time overlays and record actual article and X uses. Discord sharing alone does not consume an article reserve."
@@ -419,7 +428,16 @@
       "status": "approved-unused-reserve",
       "articleUses": [],
       "xAttachments": [],
-      "discordShares": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1561577453137301544",
+          "postedAt": "2026-10-19T03:11:19.224972+00:00",
+          "attachmentFilename": "2026-10-18-turducken-first-flight-v1-base.webp",
+          "attachmentSha256": "20db9542a7ee9759c75c37ca706fc42d218dadc0b440fcea7b4bff836e5d9f45",
+          "purpose": "Explicit human request to share all Turducken artwork in ARC-3 rollout channel."
+        }
+      ],
       "approvedBy": "mark-barney",
       "approvedAt": "2026-10-18T19:17:34.889371Z",
       "selectionNote": "Boss-approved native episode. Preserve clean source; future illustrated editions use fresh score/time overlays and record actual article and X uses. Discord sharing alone does not consume an article reserve."
@@ -505,6 +523,29 @@
       "xAttachments": [],
       "discordShares": [],
       "selectionNote": "Boss authorized release of bubba/official-merger-story on October 18. This is the selected official dispatch image; provenance, prompt and inspection are in docs/2026-10-18-turducken-full-crew-art-plan.md. Earlier images and their historical use records are preserved."
+    },
+    {
+      "articleUses": [
+        "2026-10-18-special-turducken-takes-third"
+      ],
+      "artworkId": "2026-10-18-evening-arc-3-preview-242980a95d",
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1561577153437368421",
+          "postedAt": "2026-10-19T03:10:06.080Z",
+          "attachmentFilename": "2026-10-18-special-turducken-third-x.png",
+          "attachmentSha256": "d295352a3b7420400b9bb44df6ad4873780b1fff9c34c9233f97e26bc28881a4",
+          "purpose": "Explicit human request to share all Turducken artwork in ARC-3 rollout channel."
+        }
+      ],
+      "generationRecord": "2026-10-18-turducken-whole-crew-flight-v1-base",
+      "id": "2026-10-18-turducken-whole-crew-flight-v1",
+      "selectionNote": "Human-commissioned new seven-character flight episode. Existing first-flight stock has only three characters. Clean native source and finished 10:56 PM EDT overlays inspected; all seven crew and both Yorkies visible.",
+      "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+      "status": "published-on-special-front-page",
+      "title": "Team Turducken — The Whole Crew Takes Flight",
+      "xAttachments": []
     }
   ],
   "existingXPosts": [

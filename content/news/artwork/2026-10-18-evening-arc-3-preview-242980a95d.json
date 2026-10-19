@@ -1,0 +1,46 @@
+{
+  "articleId": "2026-10-18-evening-arc-3-preview",
+  "briefSha256": "a8a32b02c1e0cc6db5316af0a09050355634779257818d0a0068b66a6fa57615",
+  "dataAsOf": "2026-10-19T02:56:40Z",
+  "generationRecord": "2026-10-18-turducken-whole-crew-flight-v1-base",
+  "headline": "Special edition: Team Turducken takes flight into third",
+  "historyChart": null,
+  "id": "2026-10-18-evening-arc-3-preview-242980a95d",
+  "image": {
+    "alt": "Editorial illustration for Special edition: Team Turducken takes flight into third. Yi-Chia Chen: rank 2, score 67.49; Team Turducken: rank 3, score 52.82.",
+    "artworkId": "2026-10-18-evening-arc-3-preview-242980a95d",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 18, 2026 · 10:56 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-18-evening-arc-3-preview-242980a95d.webp"
+  },
+  "imageSha256": "70da99e61e8d68bb8d48ee3961d0edca8bf707571ac200aeef0dd47abcf231d3",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": null,
+  "personIds": [
+    "keith-tyser",
+    "mark-barney",
+    "son-pham",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 3,
+      "rankChange": 2,
+      "score": 52.82,
+      "scoreChange": 3.9,
+      "teamId": "15605182"
+    }
+  ],
+  "trigger": "recorded-score-event",
+  "version": 1
+}

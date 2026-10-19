@@ -1,0 +1,49 @@
+{
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "editorialDate": "2026-10-18",
+    "request": "Special edition and X announcement with the whole team flying the Turducken."
+  },
+  "generatedAt": "2026-10-19T03:07:38Z",
+  "id": "2026-10-18-turducken-whole-crew-flight-v1-base",
+  "inputImages": [
+    "2026-10-18-turducken-full-crew-codex-v1-base.webp",
+    "2026-10-18-turducken-first-flight-v1-base.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story.\nAsset type: special-edition lead illustration for The ARC Daily Digest, wide landscape 16:9.\nInput images: Image 1 is the authoritative identity reference for the COMPLETE SEVEN-CHARACTER CREW and the nested Turducken machine. Image 2 is a reference for the aircraft in flight, its bird anatomy, snowy canyon world, cinematic rendering and sunrise light. Create a new episode; do not copy either composition.\n\nPrimary request: The WHOLE TEAM flying their spectacular mechanical TURDUCKEN through a snowy mountain canyon at night, climbing into moonlit clouds. The aircraft is unmistakably a giant bronze-and-ivory TURKEY with red snood/wattle, magnificent scalloped tail fan, broad articulated mechanical wings and blue ducted rotor engines. Its open central control bay visibly contains a complete white mechanical CHICKEN with a red comb, and the chicken's open chest cockpit visibly contains the small yellow DUCK wearing sunglasses. This is one coherent nested flying machine, turkey contains chicken contains duck, not separate flying birds.\n\nShow exactly SEVEN distinct crew operating the aircraft together on protected, attached flight decks around the central cockpit. Each must be large, clearly readable and faithful to Image 1:\n1. Mark at the left wing-root engineering controls: stocky muscular bearded man, decorative tattooed arms, gold chain, cyber visor and GPU backpack/crown.\n2. Son at the forward piloting console: smiling visible lower face, distinctive dense black GPU helmet and broad blue illuminated visor, orange/cyan equipment.\n3. Keith in the central flight-control seat: ROUND YELLOW mascot with huge glossy dark eyes and orange mouth, BLACK CAP and BLACK HOODIE, holding a flight controller. He is distinct from the sunglasses duck inside the chicken.\n4. DZ at navigation: cute short golden-blonde chibi girl with huge red eyes, pink plush bunny tucked under one arm.\n5. NT at engine controls: orange tabby kitten inside a bright-yellow banana costume with a banana stem and huge blue arcs of joyous comic tears, little paws on the controls.\n6. Choryu at systems: humanoid technician whose head IS a rectangular grayscale cardiac-MRI display. Preserve the heart/torso scan image; no human face on that display.\n7. Herminator standing in for Ronen's bot, at the rear stabilizer console: ornate polished SILVER knight armour with a tall COBALT-BLUE plume.\nExactly TWO small tan-and-dark Yorkshire terriers in separate secure perches beside Mark. No other crew or animals. All seven have coherent matching black/gold tech harnesses with cyan equipment and are participating in the flight; no inset portraits.\n\nComposition: dynamic wide three-quarter tracking view, the whole aircraft visibly AIRBORNE with no hangar or construction platform, clouds below and a streaming vapor wake, wings and tail fully legible. Arrange the crew across two open tiers so every face/avatar reads. Heroic, ingenious, exuberant sporting metaphor, polished cinematic dimensional 3D illustration, intricate warm brass machinery and cold cyan propulsion, moonlit snowy peaks and a distant illuminated castle. Preserve the established whimsical visual language and recognizable identities.\nReserve the lower-left 30% width / 23% height as mostly quiet clouds for a later code-drawn score panel, and the upper-right 33% width / 11% height as quiet sky for newspaper branding. Keep all seven crew and both dogs outside those two corners.\nClean art only: no words, letters, numbers, logos, scores, ranks, labels, watermarks or typography on screens or clothing. No podium, first-place crown, competitor likenesses, extra humans or duplicated crew. This scene celebrates a verified rise to third on the provisional public board; machinery is imaginative, not a claim about actual equipment or methods.",
+  "rawSha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37",
+  "rawSrc": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
+  "references": [
+    {
+      "role": "Authoritative seven-character crew, two Yorkies and nested machine identities.",
+      "sha256": "98aed54fe4857b770d257f2ffa531a03dc493858e03e00f43f6cef0e5b7c59af",
+      "src": "/news-images/2026-10-18-turducken-full-crew-codex-v1-base.webp"
+    },
+    {
+      "role": "Flight silhouette, snowy canyon world and cinematic rendering.",
+      "sha256": "20db9542a7ee9759c75c37ca706fc42d218dadc0b440fcea7b4bff836e5d9f45",
+      "src": "/news-images/2026-10-18-turducken-first-flight-v1-base.webp"
+    }
+  ],
+  "review": "Inspected native output: exactly seven recognizable crew—Mark, Son, yellow black-capped Keith, blonde DZ with pink bunny, crying banana kitten NT, MRI-display Choryu and silver/cobalt Herminator—and exactly two Yorkies. One airborne turkey contains the chicken containing the sunglasses duck. Moonlit snowy canyon, clear vapor wake, no text or labels. Lower-left clouds and upper-right sky leave room for coded overlays.",
+  "reviewStatus": "reviewed",
+  "supportingCastConditions": {
+    "competition": "arc-3",
+    "note": "Seven approved editorial avatars, plus two owner-supplied Yorkies; no inferred real-world likenesses.",
+    "requiredRosterHandles": {
+      "15605182": [
+        "dzjiann",
+        "keithtyser",
+        "markbarney",
+        "mitubant",
+        "ngyzly",
+        "scizical",
+        "sonphamorg"
+      ]
+    }
+  },
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-7a7bcf67-5f55-4fd5-b554-7a90b8be4ac2.png",
+  "version": 1
+}
