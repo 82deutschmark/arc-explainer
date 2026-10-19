@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-19T03:11:19.225427+00:00",
+  "updatedAt": "2026-10-19T03:17:46.335105+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -545,7 +545,15 @@
       "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
       "status": "published-on-special-front-page",
       "title": "Team Turducken — The Whole Crew Takes Flight",
-      "xAttachments": []
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2112019763517956256",
+          "postedAt": "2026-10-19T03:15:25.709Z",
+          "verifiedAt": "2026-10-19T03:17:46.335105+00:00",
+          "artworkId": "2026-10-18-evening-arc-3-preview-242980a95d",
+          "attachmentSha256": "d295352a3b7420400b9bb44df6ad4873780b1fff9c34c9233f97e26bc28881a4"
+        }
+      ]
     }
   ],
   "existingXPosts": [
