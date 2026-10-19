@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-19T09:27:24Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Yanming (Owen) Dong climbs to 27th on ARC-2",
+  "id": "2026-10-19-0557-arc-2-yanming-owen-dong-rises-to-twenty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-19T09:57:21Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Yanming (Owen) Dong gained 10.00 points to reach 51.25, moving from 44th to 27th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The 16th-place gold cutoff is 63.06, 2.09 points above Dong’s score."
+    }
+  ],
+  "since": "2026-10-18T09:24:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-19T09:56:51Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16532134"
+  ]
+}
