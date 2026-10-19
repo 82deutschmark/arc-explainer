@@ -642,5 +642,30 @@
     "instructions": "Select the unused Boss-approved hangar episode. Mark, Son and Keith remain in the fresh seven-account Turducken roster; the depicted trio is a subset, not a headcount. Compose current leader scores and observation time, inspect the image and use it in the routine Early X announcement. Fantasy machinery is illustrative.",
     "selectedAt": "2026-10-19T09:58:38.672960+00:00",
     "verificationNotes": "createdAt records the existing Boss approval of this reserve; selectedAt dates this issue selection. Clean hangar scene inspected: two human engineers, yellow black-capped Keith, two Yorkies, nested mechanical turkey/chicken/duck. Different workshop scene from previous Early replay wall and Late panorama."
+  },
+  {
+    "id": "oct19-late-arc2-jack-cole-mutants-lead",
+    "competition": "arc-2",
+    "createdAt": "2026-10-19T18:01:43.005825Z",
+    "expiresAt": "2026-10-20T12:00:00Z",
+    "title": "Jack Cole joins ARC Mutants: keep ARC2 and ARC3 separate",
+    "priority": "Boss-requested breaking news and follow-through",
+    "status": "pending",
+    "targetEditionId": "2026-10-19-evening-arc-2",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-19-special-afternoon-jack-cole-arc-mutants",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "17023174"
+    ],
+    "subjectNames": [
+      "Jack Cole",
+      "ARC Mutants"
+    ],
+    "sourceUrls": [
+      "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc2-mutants-team-note.json",
+      "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json"
+    ],
+    "instructions": "Preserve and substantively cover the Boss-commissioned breaking afternoon dispatch, Jack Cole joining ARC Mutants in ARC-AGI-2. ARC2 team 17023174 (jcole75, markbarney, scizical, sonphamorg) is separate from ARC3 Team Turducken 15605182. Do not transfer roster changes, ranks, scores, artwork, or gold claims across contests. Gold is the team’s stated ambition. Retain this dispatch as the ARC2 front-page feature above the Late recap; refresh any current board figures. The Boss approved the digital-academy illustration; its fantasy hardware is not a method claim."
   }
 ]

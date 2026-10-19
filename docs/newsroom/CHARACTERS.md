@@ -45,6 +45,19 @@ The October 18 full-crew commission uses Son’s supplied Discord avatars direct
 
 The seven-character hangar is `2026-10-18-turducken-full-crew-codex-v1-base`; the expanded ten-camp panorama is `2026-10-18-top-ten-siege-full-crew-v1-base`. Their records and clean assets live in the normal artwork folders. Earlier three-character hangar and first-flight episodes remain intact; a pictured subset is not a roster headcount.
 
+## ARC Mutants Academy (ARC2)
+
+The Boss approved the **ARC Mutants Academy** illustration on 19 October 2026 for
+Jack Cole joining the ARC2 team (`17023174`). Its image is
+`client/public/news-images/2026-10-19-arc-mutants-academy-v1.png`; its generation record
+is `content/news/artwork/2026-10-19-arc-mutants-academy-v1.json`. Jack uses his frozen
+individual card, Mark and Son their frozen cyber-engineer avatars. Ronen is an
+original opaque-helmet grid-shield character, not a verified likeness or a replacement
+for Herminator's separate ARC3 role. The university, powers and GPU machinery are
+editorial fantasy. Preserve the digital campus and ARC grids when developing this
+ARC2 identity. Team Turducken (`15605182`) remains the separate ARC3 team: do not
+transfer its snowy setting, crew or team name into the ARC Mutants announcement.
+
 ## Programmed corner graphics
 
 The compositor now draws a compact lower-left team/rank/score chart and an upper-right ARC Daily Digest / ARC Explainer chyron directly onto a copy of the approved scene. It uses the existing favicon and newsroom fonts. Both bars share a 0–100 score scale. The exact scores and observation time come from the edition brief. It keeps the scene’s aspect ratio and source bytes, and archives `corner-overlays-v1` with the image hash. Generation prompts reserve those corners for the code-drawn graphics. Overlays require no new native image generation. The headline remains bound to the composition record and appears in the article; the image carries the small statistics and branding requested by the Boss.

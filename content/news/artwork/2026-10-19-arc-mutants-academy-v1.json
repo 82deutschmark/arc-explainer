@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "id": "2026-10-19-arc-mutants-academy-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-19T17:49:52.613526Z",
+  "toolOutput": "exec-7641a5ae-247c-4ad7-ac43-5ebd4139c4b8.png",
+  "rawSrc": "/news-images/2026-10-19-arc-mutants-academy-v1.png",
+  "rawSha256": "0b33834c3052cffaa56d334e9b04a54f93859d9fecdf07860fb3fe1f57d429a3",
+  "prompt": "Use case: stylized-concept. Create a polished wide landscape team poster, approximately 16:9, titled exactly 'ARC MUTANTS'. Original superhero science-academy ensemble concept for a newly united ARC-AGI-2 team: exactly four adult men, Jack Cole, Mark Barney, Son Pham, Ronen. Input 1 is aesthetic and background reference: densely detailed hand-inked cyberpunk graphic-novel illustration, cyan/teal luminous hardware, dark navy, warm magenta/amber accents, intricate GPU rigs, multicolored abstract ARC grids. Do not copy its ARC Raiders logo. Input 2 is Jack's established character identity; use only his face, broad calm clean-shaven lower face, cyan visor and distinctive central circuit-board headset, ignoring ALL historical text and numbers. Input 3 is Mark's avatar: preserve recognizable bearded lower face and spectacular dense GPU headgear and multicolor little screens. Input 4 is Son: preserve recognizable younger Asian lower face, slight confident smile, wide illuminated visor, black GPU headgear.\nScene: an extraordinary digital university campus and research academy at blue hour, graceful stone-and-glass halls, illuminated quadrangles, skybridges, glass dome, central open-air learning courtyard, floating holographic ARC-AGI-2 square-grid puzzles and paired input/output examples, colored geometric cells without digits. Everything evokes a brilliant eccentric academy for gifted reasoning heroes. No snow, no ice, no mountain setting, no ARC-3 game imagery.\nComposition: heroic cinematic ensemble with readable faces and four clearly distinct silhouettes, waist-to-full-length, architecture and enormous ARC grid holograms behind. Jack is central cerebral mentor, composed and authoritative, in a dark tailored futuristic academy coat over cybernetic suit, seated at a beautifully designed hovering command chair projecting patterns with his hand; his established visor and circuit headset remain recognizable. Do NOT resemble any actor. Mark stands left foreground, rugged scrappy GPU-powered brawler, beard visible, outrageous exposed graphics-card backpack and cabling, heavy gauntlets with three short luminous parallel circuit-prongs per hand (original technological tools), asymmetrical teal and amber industrial armor. Son stands right foreground, agile precision energy specialist, streamlined dark suit and his signature broad visor directing a refined cyan geometric light beam into floating ARC grid. Ronen stands slightly behind on the right, original helmeted grid-shield architect with opaque visor concealing face because no likeness reference exists, violet-edged geometric shield and floating rearrangeable colored square tiles. Give all four equal dignity, make Jack clearly the mentor. Use distinct tasteful original costumes, no branded superhero uniforms, no X symbols, no X-Men/Marvel logos, no recognizable franchise costume designs. Shared new emblem may be a small simple multicolor square grid.\nTypography: elegant bold clean readable upper-left title 'ARC MUTANTS', smaller 'ARC-AGI-2' underneath. No other text, scores, team claims or historical labels. Premium comic-book cover illustration, meticulous hardware, sophisticated campus depth, expressive human faces below visors, controlled luminous colors, dramatic warm rim lighting, playful confidence and camaraderie. Full bleed, no trading-card borders.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-19-arc-mutants-owner-aesthetic-v1.png",
+      "sha256": "578ed9f0099dcb93d236fc850c266a54878bc905dfbdc8a01d53307dfd478b25",
+      "role": "User-supplied aesthetic and ARC-grid background reference; ignore old ARC Raiders logo."
+    },
+    {
+      "src": "/news-images/references/2026-10-12-jack-cole-reference-1-v1.png",
+      "sha256": "cafe1576142caf1fe85b74d60ff8a96ff895559a1cc1bf22f3104c33d2bf3d5f",
+      "role": "Jack Cole individual identity reference; ignore historical text."
+    },
+    {
+      "src": "/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp",
+      "sha256": "f2f0a29a8747c9fa8710489459a5d5f715ec16a91c32f46bb1fa9a4d41a24e9a",
+      "role": "Mark Barney individual cyber-engineer avatar."
+    },
+    {
+      "src": "/news-images/references/2026-10-12-son-pham-reference-1-v1.webp",
+      "sha256": "341d26ad643741f1c7786450805af8de6d40e2335a91fc1a6440f0e4e274886d",
+      "role": "Son Pham individual cyber-engineer avatar."
+    }
+  ],
+  "review": "Inspected native output: exactly four main foreground characters. Mark at left with beard, GPU backpack and luminous circuit prongs; Jack seated centrally with circuit-board headset, cyan visor and tailored coat; Son foreground right with broad visor; Ronen represented behind by an original opaque helmet and violet geometric shield. Digital university and colorful ARC input/output grids, readable ARC MUTANTS and ARC-AGI-2 title, no snow or old ARC Raiders logo. Mark approved the result in chat before commissioning publication. No scores shown; hardware and powers are editorial fantasy.",
+  "reviewStatus": "reviewed",
+  "commission": {
+    "authorizedBy": "mark-barney",
+    "approvedAt": "2026-10-19T18:02:30.142821Z",
+    "request": "Jack joins the separate ARC2 team; Boss approved this first concept and requested a breaking afternoon edition."
+  },
+  "supportingCastConditions": {
+    "competition": "arc-2",
+    "requiredRosterHandles": {
+      "17023174": [
+        "jcole75",
+        "markbarney",
+        "scizical",
+        "sonphamorg"
+      ]
+    },
+    "note": "ARC2 only. Ronen is a fictional helmeted stand-in, not a human likeness. ARC3 Team Turducken 15605182 is separate."
+  }
+}

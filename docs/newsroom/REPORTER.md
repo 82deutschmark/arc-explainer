@@ -46,6 +46,16 @@ These are the Boss's standing instructions (12–14 October 2026), in force for 
   the curated From X strip and edition sources while the full public archive keeps it.
 - **Faces.** Each story features one person: the person named in the headline, else the dek, else
   the first person cited. Name the person a story is about in the headline or cite them first.
+- **Separate ARC2 and ARC3 teams.** Mark's ARC-AGI-2 entry is **ARC Mutants**, team
+  `17023174`; Jack Cole joined Mark Barney, Son Pham and Ronen there, confirmed by Mark
+  and the public roster on 19 October 2026. Mark's ARC-AGI-3 entry is **Team Turducken**,
+  team `15605182`. These are separate teams with separate rosters and results, even when
+  people overlap. Earlier ARC2 observations called `17023174` Team Turducken; preserve
+  that historical alias without conflating it with the ARC3 entry. Jack joining ARC2 does
+  not establish membership in Team Turducken's ARC3 team. Refresh exact contest/team
+  rosters before reporting; the ARC Mutants gold goal is an attributed ambition. The
+  dated confirmation and both roster observations are linked in the October 19 Jack
+  Cole dispatch. Its academy artwork belongs to ARC2, not the snowy ARC3 Turducken story.
 - **Every front page has a picture.** At least one finished illustration on a front-page edition
   article each issue, normally the ARC-3 lead ([ART_DESK.md](ART_DESK.md)).
 - **Commissions.** Requested features and pictures arrive as editorial assignments in the brief.

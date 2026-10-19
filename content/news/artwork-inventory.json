@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-19T10:07:12.459415+00:00",
+  "updatedAt": "2026-10-19T18:01:43.005825Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -564,6 +564,21 @@
           "attachmentSha256": "d295352a3b7420400b9bb44df6ad4873780b1fff9c34c9233f97e26bc28881a4"
         }
       ]
+    },
+    {
+      "id": "arc-mutants-academy-v1",
+      "generationRecord": "2026-10-19-arc-mutants-academy-v1",
+      "src": "/news-images/2026-10-19-arc-mutants-academy-v1.png",
+      "title": "ARC Mutants Academy",
+      "competition": "arc-2",
+      "status": "published-with-commissioned-dispatch",
+      "articleUses": [
+        "2026-10-19-special-afternoon-jack-cole-arc-mutants"
+      ],
+      "xAttachments": [],
+      "approvedBy": "mark-barney",
+      "approvedAt": "2026-10-19T18:01:43.005825Z",
+      "selectionNote": "Boss approved in chat: “That’s fantastic.” Commissioned for Jack Cole’s ARC2 joining announcement. Distinct from ARC3 Turducken imagery; Ronen uses an original opaque-helmet editorial character."
     }
   ],
   "existingXPosts": [

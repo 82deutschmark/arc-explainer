@@ -1,0 +1,103 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "editorNote": "Commissioned by Mark Barney, a member of ARC Mutants and the Digest’s head human editor. ARC Mutants competes in ARC2; Team Turducken is the separate ARC3 team.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Breaking afternoon edition: Jack Cole joins ARC Mutants for the ARC2 gold chase",
+  "id": "2026-10-19-special-afternoon-jack-cole-arc-mutants",
+  "image": {
+    "alt": "ARC Mutants at a glowing digital university filled with ARC grids: Mark with GPU gauntlets on the left, Jack Cole as the seated central mentor, Son at the front right, and an original helmeted character representing Ronen behind him.",
+    "caption": "AI-generated editorial artwork approved by Mark Barney: ARC Mutants’ digital academy, created for ARC-AGI-2. Characters and equipment are fantasy; Ronen’s helmeted character is not a verified likeness.",
+    "src": "/news-images/2026-10-19-arc-mutants-academy-v1.png"
+  },
+  "publishedAt": "2026-10-19T18:01:43.005825Z",
+  "sections": [
+    {
+      "heading": "Jack Cole joins the ARC2 squad",
+      "sourceIds": [
+        "person-jack-cole-identity-0",
+        "team-confirmation",
+        "separate-rosters",
+        "arc2-board"
+      ],
+      "text": "Jack Cole has joined Mark Barney, Son Pham and Ronen in the ARC-AGI-2 competition. The team now appears on the public board as ARC Mutants, with the four accounts jcole75, markbarney, scizical and sonphamorg listed together. Mark confirmed the move to the Digest and commissioned this special afternoon announcement."
+    },
+    {
+      "heading": "Two competitions. Two separate teams.",
+      "sourceIds": [
+        "separate-rosters",
+        "arc2-board",
+        "arc3-board"
+      ],
+      "text": "ARC Mutants is the ARC2 entry, team 17023174. Team Turducken is the separate ARC3 entry, team 15605182. The teams share some people, but their competition entries, rosters and results are distinct. Jack’s arrival is an ARC2 announcement: he is not listed on Team Turducken’s ARC3 roster. The same ARC3 snapshot continues to list his jcole75 account with Abstraction Lab & MindsAI. Earlier ARC2 reports used Team Turducken for the entry now called ARC Mutants; that history must not be confused with the separate ARC3 team."
+    },
+    {
+      "heading": "“Our own Professor X”",
+      "sourceIds": [
+        "team-confirmation"
+      ],
+      "text": "“We’ve acquired our own Professor X and are honored to have Jack Cole join us,” Mark said. He called Cole “a true legend of ARC.” The welcome gives ARC Mutants its digital-academy theme: Cole as the cerebral mentor, Mark with his extravagant GPU rig, and Son and Ronen alongside them among glowing ARC grids. It is an affectionate team cartoon, not a claim about anyone’s role, equipment or powers."
+    },
+    {
+      "heading": "A long ARC record comes with him",
+      "sourceIds": [
+        "person-jack-cole-identity-0",
+        "arc-prize-2024",
+        "arc-prize-2025"
+      ],
+      "text": "Cole’s reputation has substance behind it. ARC Prize’s 2024 report credits MindsAI with the highest score, while noting that its closed-source submission was not eligible for a prize. The 2025 results place MindsAI third and give an honorable mention to Cole and Mohamed Osman’s paper, “Don’t throw the baby out with the bathwater: How and why deep learning for ARC.” These are earlier achievements, not this season’s results."
+    },
+    {
+      "heading": "The ambition is gold",
+      "sourceIds": [
+        "team-confirmation",
+        "separate-rosters"
+      ],
+      "text": "“We’re hoping that our combined efforts in ARC2 can take us to gold,” Mark said. That is the new squad’s ambition, not a medal claim or a prediction. The news today is a confirmed teammate and a new ARC2 identity: Jack Cole joins ARC Mutants, while Team Turducken continues as the separate ARC3 team. Disclosure: Mark is both a competitor and the Digest’s head human editor; the welcome above is attributed to him."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-09T19:23:29Z",
+      "id": "person-jack-cole-identity-0",
+      "title": "Jack Cole — verified Kaggle account",
+      "url": "https://www.kaggle.com/jcole75"
+    },
+    {
+      "accessedAt": "2026-10-19T18:01:43.005825Z",
+      "id": "team-confirmation",
+      "title": "Mark Barney — ARC Mutants joining announcement and welcome, 19 October 2026",
+      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc2-mutants-team-note.json"
+    },
+    {
+      "accessedAt": "2026-10-19T18:01:43.005825Z",
+      "id": "separate-rosters",
+      "title": "ARC Mutants (ARC2) and Team Turducken (ARC3) — archived public rosters",
+      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json"
+    },
+    {
+      "accessedAt": "2026-10-19T18:01:43.005825Z",
+      "id": "arc2-board",
+      "title": "ARC-AGI-2 public leaderboard and roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    },
+    {
+      "accessedAt": "2026-10-19T18:01:43.005825Z",
+      "id": "arc3-board",
+      "title": "ARC-AGI-3 public leaderboard and roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    },
+    {
+      "accessedAt": "2026-10-19T18:01:43.005825Z",
+      "id": "arc-prize-2024",
+      "title": "ARC Prize — 2024 winners and technical report",
+      "url": "https://arcprize.org/blog/arc-prize-2024-winners-technical-report"
+    },
+    {
+      "accessedAt": "2026-10-19T18:01:43.005825Z",
+      "id": "arc-prize-2025",
+      "title": "ARC Prize — 2025 results and paper awards",
+      "url": "https://arcprize.org/competitions/2025"
+    }
+  ]
+}

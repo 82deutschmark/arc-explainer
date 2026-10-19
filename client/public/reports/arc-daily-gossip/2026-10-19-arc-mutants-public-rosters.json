@@ -1,0 +1,60 @@
+{
+  "recordedAt": "2026-10-19T18:01:43.005825Z",
+  "purpose": "Dated public roster evidence for the Jack Cole ARC2 joining announcement; competition entries are separate.",
+  "competitions": {
+    "arc-2": {
+      "competitionId": "arc-prize-2026-arc-agi-2",
+      "observedAt": "2026-10-19T17:58:20Z",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "rows": [
+        {
+          "rank": 56,
+          "teamId": "17023174",
+          "name": "ARC Mutants",
+          "score": 39.31,
+          "members": [
+            "jcole75",
+            "markbarney",
+            "scizical",
+            "sonphamorg"
+          ]
+        }
+      ]
+    },
+    "arc-3": {
+      "competitionId": "arc-prize-2026-arc-agi-3",
+      "observedAt": "2026-10-19T17:58:18Z",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "rows": [
+        {
+          "rank": 3,
+          "teamId": "15605182",
+          "name": "Team Turducken",
+          "score": 52.82,
+          "members": [
+            "dzjiann",
+            "keithtyser",
+            "markbarney",
+            "mitubant",
+            "ngyzly",
+            "scizical",
+            "sonphamorg"
+          ]
+        },
+        {
+          "rank": 446,
+          "teamId": "15490570",
+          "name": "Abstraction Lab & MindsAI",
+          "score": 30.8,
+          "members": [
+            "alisalmanrana",
+            "jcole75",
+            "kimura0415",
+            "sumirinn",
+            "ultsaza"
+          ]
+        }
+      ]
+    }
+  }
+}

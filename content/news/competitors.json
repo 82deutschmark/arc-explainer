@@ -892,19 +892,28 @@
   },
   {
     "aliases": [
-      "Mark Barney"
+      "Mark Barney",
+      "Team Turducken"
     ],
     "competition": "arc-2",
-    "facts": [],
+    "facts": [
+      {
+        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team.",
+        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+        "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
+        "checkedAt": "2026-10-19T18:01:43.005825Z"
+      }
+    ],
     "firstObservedAt": "2026-10-08T03:42:47Z",
     "id": "arc-2-17023174",
-    "lastObservedAt": "2026-10-19T09:57:28Z",
+    "lastObservedAt": "2026-10-19T17:58:20Z",
     "members": [
+      "jcole75",
       "markbarney",
       "scizical",
       "sonphamorg"
     ],
-    "name": "Team Turducken",
+    "name": "ARC Mutants",
     "teamId": "17023174"
   },
   {
@@ -1139,7 +1148,7 @@
     "facts": [],
     "firstObservedAt": "2026-10-09T18:53:27Z",
     "id": "arc-3-15490570",
-    "lastObservedAt": "2026-10-09T18:53:27Z",
+    "lastObservedAt": "2026-10-19T17:58:18Z",
     "members": [
       "alisalmanrana",
       "jcole75",
@@ -1430,11 +1439,17 @@
         "sourceTitle": "ARC-3 observed public roster",
         "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
         "text": "The public roster now lists all seven accounts together under Team Turducken. This confirms the combined entry, not its exact merger time or any new score gain."
+      },
+      {
+        "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team.",
+        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+        "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
+        "checkedAt": "2026-10-19T18:01:43.005825Z"
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-15605182",
-    "lastObservedAt": "2026-10-19T09:57:26Z",
+    "lastObservedAt": "2026-10-19T17:58:18Z",
     "members": [
       "dzjiann",
       "keithtyser",
