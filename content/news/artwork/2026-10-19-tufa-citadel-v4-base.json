@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-10-19T22:15:16Z",
+  "id": "2026-10-19-tufa-citadel-v4-base",
+  "inputImages": [
+    "2026-10-19-tufa-citadel-interior-v2-base.webp",
+    "2026-10-18-top-ten-siege-full-crew-v1-base.webp"
+  ],
+  "kind": "native-generation",
+  "prompt": "Use case: illustration-story. Create one new standalone wide 16:9 cinematic editorial fantasy illustration for ARC Daily Digest, a companion to reference 1, preserving its magnificent Tufa Citadel interior, golden industrial cathedral architecture, cyan coolant pipes, snowy mountain valley, richly detailed comic painting and warm amber/cold blue lighting. Reference 1 is setting/style/rack/spider identity reference, not an exact composition to copy. Reference 2 provides the established competitor MACHINE designs only: the green-and-black tracked GPU siege engine with scaffolding and crane (NVARC3), the golden mechanical turkey with chicken and duck motifs (Team Turducken), and distant rabbit-banner stronghold. Do not reproduce reference2 human ensemble or add recognizable human faces. We are unmistakably INSIDE Tufa's vast citadel looking OUT over the competition far below, huge near pillars cropped by frame, multi-storey galleries, heavy floor plates, monumental roof scale. Exactly two featured GB300-inspired rack cabinets, one on a heavy transporter and another being positioned by overhead crane, within the interior. Friendly fluffy black spiders with large white eyes are small installation workers, five maximum. They are mascots not roster counts. Outside and BELOW our altitude, show NVARC3's clearly recognizable GREEN GPU tracked siege engine UNDER CONSTRUCTION, with exposed frame, a crane lowering a GPU module and small anonymous workers. Also show a clearly recognizable golden TURDUCKEN machine IN FLIGHT low over the snowy valley road, wings fully spread, visible shadow separated from body and snow kicked up by downwash, far BELOW the citadel arch: turkey fan tail, turkey head, chicken and duck motifs integrated into one fantastical flying machine. No riders' faces required. Include far rabbit-banner stronghold with simple bunny emblem, no individual bunnies necessary. All machines and architecture fantasy, no documentary appearance. No words, numbers, logos, scores, watermark. Architectural scale is enormous; installation workers tiny; racks moderately exaggerated industrial size. Composition: View from just inside the monumental open arch, with a thick pillar and broad bronze balcony rail in foreground, looking down and outward. Left foreground contains part of the immense data hall and the two rack installation operations, right two-thirds opens onto the valley. NVARC3 green siege engine under construction on a near lower terrace is clear enough to read crane/scaffold action; Turducken flying low between snowy pines beside it. The hanging ceiling, interior walls and foreground floor establish that the camera remains inside the citadel.",
+  "rawSha256": "5a2ccf99a36bcda2726e5bce8260220877b8127f62042d629ce049c0ca89cc0f",
+  "rawSrc": "/news-images/2026-10-19-tufa-citadel-v4-base.webp",
+  "references": [
+    {
+      "role": "Approved interior setting and Tufa mascot/rack designs.",
+      "sha256": "3b1470a04cbaacf43be30a7f1789f1d0c67eb7835ad7a41e822f443293694c6a",
+      "src": "/news-images/2026-10-19-tufa-citadel-interior-v2-base.webp"
+    },
+    {
+      "role": "Established competitor machines only; no foreground human ensemble.",
+      "sha256": "3ef85f60182bd244b34da979e50a66a4748de9fc7fb8c79728fd6f83c98f775f",
+      "src": "/news-images/2026-10-18-top-ten-siege-full-crew-v1-base.webp"
+    }
+  ],
+  "review": "Inspected native output. Interior threshold composition with massive pillar, two rack installations and four spiders. Clear low-flying golden Turducken, green tracked siege engine under cranes/scaffolds and distant rabbit-banner stronghold. Warm sunset palette, no text/scores or identifiable rival faces. Reserve alternate; original approved v2 remains lead.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-75477af7-19a5-4bd3-b0a2-bb574225e5d1.png",
+  "version": 1
+}

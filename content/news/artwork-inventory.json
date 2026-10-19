@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-19T22:14:26.660632+00:00",
+  "updatedAt": "2026-10-19T22:15:34.155372+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -603,6 +603,36 @@
       "xAttachments": [],
       "selectionNote": "Recomposed to Mark’s corrected direction: immense interior, moving two racks into position, looking out over rivals far below. Visually reviewed; selected replacement for v1.",
       "artworkId": "2026-10-19-evening-arc-3-df65101f00-footer"
+    },
+    {
+      "id": "2026-10-19-tufa-citadel-v3",
+      "generationRecord": "2026-10-19-tufa-citadel-v3-base",
+      "src": "/news-images/2026-10-19-tufa-citadel-v3-base.webp",
+      "title": "Tufa Citadel — The Crane Gallery",
+      "status": "reviewed-reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss-requested extra interior view with NVARC3 siege engine under construction and Turducken flying low. Visually reviewed native generation. Editorial fantasy; no current score overlay. The user-approved v2 remains the commissioned lead."
+    },
+    {
+      "id": "2026-10-19-tufa-citadel-v4",
+      "generationRecord": "2026-10-19-tufa-citadel-v4-base",
+      "src": "/news-images/2026-10-19-tufa-citadel-v4-base.webp",
+      "title": "Tufa Citadel — The Threshold",
+      "status": "reviewed-reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss-requested extra interior view with NVARC3 siege engine under construction and Turducken flying low. Visually reviewed native generation. Editorial fantasy; no current score overlay. The user-approved v2 remains the commissioned lead."
+    },
+    {
+      "id": "2026-10-19-tufa-citadel-v5",
+      "generationRecord": "2026-10-19-tufa-citadel-v5-base",
+      "src": "/news-images/2026-10-19-tufa-citadel-v5-base.webp",
+      "title": "Tufa Citadel — The Night Watch",
+      "status": "reviewed-reserve",
+      "articleUses": [],
+      "xAttachments": [],
+      "selectionNote": "Boss-requested extra interior view with NVARC3 siege engine under construction and Turducken flying low. Visually reviewed native generation. Editorial fantasy; no current score overlay. The user-approved v2 remains the commissioned lead."
     }
   ],
   "existingXPosts": [
