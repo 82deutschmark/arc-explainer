@@ -75,6 +75,8 @@ const ModelDebate = lazy(() => import("@/pages/ModelDebate"));
 const LLMCouncil = lazy(() => import("@/pages/LLMCouncil"));
 const ModelComparisonPage = lazy(() => import("@/pages/ModelComparisonPage"));
 const HuggingFaceUnionAccuracy = lazy(() => import("@/pages/HuggingFaceUnionAccuracy"));
+const Arc2HardSet = lazy(() => import("@/pages/Arc2HardSet"));
+const Arc2HardSetFindings = lazy(() => import("@/pages/Arc2HardSetFindings"));
 const About = lazy(() => import("@/pages/About"));
 const ClaudeCodeGuide = lazy(() => import("@/pages/ClaudeCodeGuide"));
 const ARC3AgentPlayground = lazy(() => import("@/pages/ARC3AgentPlayground"));
@@ -216,6 +218,8 @@ function Router() {
         <Route path="/council/:taskId" component={LLMCouncil} />
         <Route path="/model-comparison" component={ModelComparisonPage} />
         <Route path="/scoring" component={HuggingFaceUnionAccuracy} />
+        <Route path="/arc2/hard-set" component={Arc2HardSet} />
+        <Route path="/arc2/hard-set/findings" component={Arc2HardSetFindings} />
         <Route path="/about" component={About} />
         <Route path="/cc" component={ClaudeCodeGuide} />
         <Route path="/llm-reasoning" component={LLMReasoning} />

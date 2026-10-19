@@ -35,6 +35,7 @@ import { snakeBenchController } from "./controllers/snakeBenchController.ts";
 import { contributorController } from './controllers/contributorController.ts';
 import * as reArcController from './controllers/reArcController.ts';
 import { councilController } from './controllers/councilController.ts';
+import { arc2HardSetController } from './controllers/arc2HardSetController.ts';
 import { ogImageController } from './controllers/ogImageController.ts';
 
 // Import route modules
@@ -186,6 +187,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // DISCUSSION PAGE - worst-performing puzzles for retry analysis
   app.get("/api/puzzle/worst-performing", asyncHandler(puzzleController.getWorstPerformingPuzzles));
+  // ARC-AGI-2 hard set: public-eval puzzles at most two logged attempts have solved (see /arc2/hard-set)
+  app.get("/api/arc2/hard-set", asyncHandler(arc2HardSetController.getHardSet));
   app.get("/api/puzzles/stats", asyncHandler(puzzleController.getPuzzleStats));
 
   // Discussion routes - conversation chaining eligible explanations

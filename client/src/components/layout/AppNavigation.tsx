@@ -299,6 +299,13 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
           },
           {
             type: 'link',
+            title: 'ARC-2 Hard Set',
+            href: '/arc2/hard-set',
+            icon: Database,
+            description: 'Eval puzzles no logged attempt has solved, with every model\'s reasoning',
+          },
+          {
+            type: 'link',
             title: 'RE-ARC',
             href: '/re-arc',
             icon: CircuitBoard,
