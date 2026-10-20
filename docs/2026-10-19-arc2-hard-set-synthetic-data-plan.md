@@ -175,3 +175,11 @@ The 28 task ids:
 
 The same list is `HOLDOUT` in `arc2/synth_hardset/families/__init__.py`. The ruler reports it as
 holdout28, and past runs were rescored from their saved per-task scores.
+
+**Ruler, restated (Fable, 20-Oct).** Score only on holdout28, two-attempt union, three seeds per arm, and
+report two numbers: the whole holdout, and its hard five (16b78196, 88bcf3b4, abc82100, d35bdbdc,
+e12f9a14, the holdout tasks that are also in the hard 18 or Jack's atlas extras). The other 92 public-eval
+tasks are watched for regression only; families are modelled on some of them, so they are not the ruler.
+The leakage check keeps rejecting matches against all 120. Tier datasets live beside the `hs_v*` sets on
+the SSD, one folder per tier with its own manifest and leakage report. Fable's independent exposure check
+on 20-Oct reached the same 28-task holdout from the generator manifests, so the two readings agree.
