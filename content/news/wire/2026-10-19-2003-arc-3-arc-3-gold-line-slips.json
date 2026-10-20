@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-19T23:58:56Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC-3 gold cutoff slips as the chase tightens",
+  "id": "2026-10-19-2003-arc-3-arc-3-gold-line-slips",
+  "personIds": [],
+  "publishedAt": "2026-10-20T00:03:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The public ARC-3 gold line fell 0.22 in the past day to 37.98, the score for 19th place."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "mikelou1 sits just outside the medal places in 20th at 37.27, 0.71 short of the cutoff."
+    }
+  ],
+  "since": "2026-10-18T23:56:20Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T00:02:57Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16273949"
+  ]
+}
