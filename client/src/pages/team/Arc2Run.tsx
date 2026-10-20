@@ -13,14 +13,13 @@
  *          redone rather than shown as current.
  * SRP/DRY check: Pass - one-run view; data, baseline rule and formatting in
  *          components/teamRuns/teamRunsApi.ts, the note renderer in NoteMarkdown.tsx.
- *          shadcn Button/Input/Textarea/Select/Collapsible.
+ *          shadcn Button/Textarea/Select/Collapsible.
  */
 
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
 import { ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -33,15 +32,7 @@ import {
   utcStamp, type RunRow, type TeamRunNote,
 } from '@/components/teamRuns/teamRunsApi';
 
-const NAME_KEY = 'team-runs-name';
 const GUESS = '__guess__';
-
-function readName(): string {
-  try { return window.localStorage.getItem(NAME_KEY) ?? ''; } catch { return ''; }
-}
-function rememberName(name: string) {
-  try { window.localStorage.setItem(NAME_KEY, name); } catch { /* private window: just don't remember */ }
-}
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -66,25 +57,23 @@ function Fold({ label, text, foot }: { label: string; text: string; foot?: strin
   );
 }
 
-/** Change the baseline or the team note. Empty name is allowed but asked for. */
+/** Change the baseline or the team note. The server records who saved it from their Google sign-in. */
 function NoteForm({ runKey, note, proposed, earlier }: {
   runKey: string; note: TeamRunNote | null; proposed: RunRow['proposedBaseline']; earlier: RunRow[];
 }) {
   const save = useSaveNote(runKey);
   const [baseline, setBaseline] = useState(note?.baseline ?? GUESS);
   const [text, setText] = useState(note?.note ?? '');
-  const [name, setName] = useState(readName);
   useEffect(() => { setBaseline(note?.baseline ?? GUESS); setText(note?.note ?? ''); }, [note]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    rememberName(name.trim());
-    save.mutate({ baseline: baseline === GUESS ? '' : baseline, note: text, by: name.trim() });
+    save.mutate({ baseline: baseline === GUESS ? '' : baseline, note: text });
   };
 
   return (
     <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start">
-      <div className="space-y-1.5">
+      <div className="space-y-1.5 sm:col-span-2">
         <Label>Judge it against</Label>
         <Select value={baseline} onValueChange={setBaseline}>
           <SelectTrigger><SelectValue /></SelectTrigger>
@@ -98,10 +87,6 @@ function NoteForm({ runKey, note, proposed, earlier }: {
             ))}
           </SelectContent>
         </Select>
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="team-name">Your name</Label>
-        <Input id="team-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder="So the team knows who set it" />
       </div>
       <div className="space-y-1.5 sm:col-span-2">
         <Label htmlFor="team-note">Team note (optional)</Label>

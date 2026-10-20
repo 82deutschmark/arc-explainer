@@ -53,17 +53,21 @@ vs score; a single swing needs a repeat), Where the code and log show it, Verdic
 the author's own description, never in place of it.
 
 **Site:**
-- Login: one shared team passphrase (env ARC2_TEAM_PASSPHRASE on Railway), posted once; the
-  server sets an httpOnly signed cookie that lasts sixty days. Changing the passphrase signs
-  everyone out. Closed by default: with no passphrase set, nobody gets in.
-- Who holds which secret: the passphrase lives on Railway (what the site checks) with a copy in the
-  Mac Mini's keychain (service arc2-team-passphrase) so the Boss can hand it out; rotate both
-  together. The Mini publishes with the separate arc3 admin token, which has nothing to do with the
-  team login.
+- Login: Google, the same way the AutoResearchArena does it (the Boss, 19-Oct-2026; a shared
+  passphrase was the first version the same day and was replaced before anyone used it). The site
+  sends people to Google, checks the verified email against TEAM_EMAILS, and sets an httpOnly
+  signed cookie for thirty days. It reuses the arena's Google client (GOOGLE_CLIENT_ID and
+  GOOGLE_CLIENT_SECRET copied from the Arena service), so this site's return address,
+  GOOGLE_REDIRECT_URI = https://arc.markbarney.net/api/auth/google/callback, has to be added to
+  that client in the Google Cloud console before anyone can sign in. Closed by default.
+- Who holds which secret: the Google client and TEAM_SESSION_SECRET (signs the cookie; rotating it
+  signs everyone out) live on Railway. TEAM_EMAILS is the team list; taking someone off it locks
+  them out at once. The Mini publishes with the separate arc3 admin token.
 - Storage: run documents as JSON text in a new table shaped like kaggle_board_documents, plus a
   notes table (baseline choice, team note, who, when) with an append-only log of every edit.
-- Routes: team routes behind the cookie (index, one run, edit note); machine routes behind the
-  existing arc3 admin token (publish a run document, read the notes).
+- Routes: Google sign-in at /api/auth; team routes behind the cookie (index, one run, edit
+  note, which records the signed-in person's name); machine routes behind the existing arc3 admin
+  token (publish a run document, read the notes).
 - Pages: /team/login, /team/arc2-runs (every submission newest first: date, who, description,
   score, baseline and difference, note status), /team/arc2-runs/:key (everything for one run,
   Claude's note, the log).

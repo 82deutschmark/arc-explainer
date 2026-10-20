@@ -5,9 +5,9 @@ PURPOSE: HTTP layer for the team-only ARC-AGI-2 runs record (Son's ask, built on
          call to keep it on ARC Explainer behind a team login, 19-Oct-2026). Mounted at
          /api/team.
 
-         SIGN-IN (middleware/teamSession.ts): POST /session with the team passphrase sets a
-         cookie; GET /session says whether this browser is signed in; DELETE /session signs
-         out. Rate-limited, since a shared phrase is guessable by brute force otherwise.
+         SIGN-IN is Google, like the AutoResearchArena (routes/teamAuth.ts at /api/auth, the
+         session check in middleware/teamSession.ts). A note records who saved it from the
+         signed-in Google account, not from anything the browser sends.
 
          TEAM ROUTES (cookie required):
            GET  /arc2-runs             every run, newest first, without the bulky parts
@@ -32,13 +32,7 @@ import rateLimit from 'express-rate-limit';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { formatResponse } from '../utils/responseFormatter';
 import { requireArc3AdminToken } from '../middleware/arc3AdminToken';
-import {
-  endTeamSession,
-  hasTeamSession,
-  requireTeamSession,
-  startTeamSession,
-  teamLoginConfigured,
-} from '../middleware/teamSession';
+import { requireTeamSession, type TeamUser } from '../middleware/teamSession';
 import { teamRunRepository } from '../repositories/TeamRunRepository.js';
 
 const router = Router();
@@ -53,7 +47,6 @@ const INDEX_FIELDS = [
   'proposedBaseline', 'output', 'publishedAt',
 ] as const;
 
-const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
 const writeLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 300, standardHeaders: true, legacyHeaders: false });
 
 const requireMachineToken = requireArc3AdminToken({
@@ -78,30 +71,6 @@ function parse(body: string): JsonObject | null {
 function optionalText(value: unknown, max: number): string | null {
   return typeof value === 'string' && value.trim() ? value.trim().slice(0, max) : null;
 }
-
-// ── sign-in ─────────────────────────────────────────────────────────────────────────────
-
-router.get('/session', (req: Request, res: Response) => {
-  res.set('Cache-Control', 'private, no-store');
-  res.json(formatResponse.success({ configured: teamLoginConfigured(), signedIn: hasTeamSession(req) }));
-});
-
-router.post('/session', loginLimiter, (req: Request, res: Response) => {
-  res.set('Cache-Control', 'private, no-store');
-  if (!teamLoginConfigured()) {
-    return res.status(503).json(formatResponse.error('team_login_disabled', 'Team sign-in is not configured on this deployment.'));
-  }
-  const provided = typeof req.body?.passphrase === 'string' ? req.body.passphrase : '';
-  if (!provided || !startTeamSession(req, res, provided)) {
-    return res.status(401).json(formatResponse.error('wrong_passphrase', "That isn't the team passphrase."));
-  }
-  return res.json(formatResponse.success({ signedIn: true }));
-});
-
-router.delete('/session', (req: Request, res: Response) => {
-  endTeamSession(req, res);
-  res.json(formatResponse.success({ signedIn: false }));
-});
 
 // ── machine routes (declared before /:key so "machine" is never read as a run key) ─────────
 
@@ -195,7 +164,7 @@ router.post(
     const note = await teamRunRepository.saveNote(COMPETITION, key, {
       baseline,
       note: optionalText(body.note, 2000),
-      updatedBy: optionalText(body.by, 80),
+      updatedBy: (res.locals.teamUser as TeamUser).name.slice(0, 80),
     });
     if (!note) return res.status(503).json(formatResponse.error('no_database', 'Notes need the database, which is not connected.'));
     res.json(formatResponse.success({ note }));

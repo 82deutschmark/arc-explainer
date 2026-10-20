@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import {
-  SignInRequired, deltaText, effectiveBaseline, scoreText, useArc2Runs, useSignInRedirect, useSignOut, utcStamp, type RunRow,
+  SignInRequired, deltaText, effectiveBaseline, scoreText, useArc2Runs, useSignInRedirect, useSignOut, useTeamSession, utcStamp, type RunRow,
 } from '@/components/teamRuns/teamRunsApi';
 
 function noteState(run: RunRow, baselineKey: string | null): string {
@@ -35,6 +35,7 @@ export default function Arc2Runs() {
   usePageMeta({ title: 'ARC-AGI-2 runs (team)', description: 'Team-only record of ARC Mutants submissions.', noindex: true });
   const runs = useArc2Runs();
   const signOut = useSignOut();
+  const session = useTeamSession();
   useSignInRedirect(runs.error);
 
   const rows = runs.data?.runs ?? [];
@@ -45,9 +46,12 @@ export default function Arc2Runs() {
     <div className="max-w-[1180px] mx-auto px-4 py-8">
       <div className="flex flex-wrap items-baseline justify-between gap-3 mb-1">
         <h1 className="text-2xl font-bold">ARC-AGI-2 runs</h1>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        {session.data?.email && <span>Signed in as {session.data.email}</span>}
         <Button variant="ghost" size="sm" onClick={() => signOut.mutate(undefined, { onSuccess: () => { window.location.href = '/team/login'; } })}>
           Sign out
         </Button>
+        </div>
       </div>
       <p className="text-sm text-muted-foreground mb-6 max-w-[760px]">
         Every ARC Mutants submission on Kaggle, newest first, in the submitter's own words. Scores are

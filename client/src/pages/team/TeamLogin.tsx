@@ -2,22 +2,31 @@
  * Author: Claude Opus 5.5 Low
  * Date: 2026-10-19
  * PURPOSE: /team/login, the sign-in for the team-only pages (first one: the ARC-AGI-2 runs
- *          record). One field, the shared team passphrase; on success the server sets a
- *          sixty-day cookie and this page goes on to ?next= (team pages only) or the runs
- *          list. Unlisted and noindex: nothing on the public site links here.
- * SRP/DRY check: Pass - sign-in form only; the calls live in components/teamRuns/teamRunsApi.ts,
- *          the check in server/middleware/teamSession.ts. shadcn Input/Button/Label.
+ *          record). One button: sign in with Google, as on the AutoResearchArena. The server
+ *          lets in Google accounts on the team list and sends the browser on to ?next= (team
+ *          pages only) or the runs list. When it sends someone back here, ?error= says why, in
+ *          plain words. Unlisted and noindex: nothing on the public site links here.
+ *          (The first version, earlier the same day, used a shared passphrase.)
+ * SRP/DRY check: Pass - sign-in page only; the Google round trip is server/routes/teamAuth.ts,
+ *          the session check server/middleware/teamSession.ts. shadcn Button.
  */
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { useSignIn, useTeamSession } from '@/components/teamRuns/teamRunsApi';
+import { googleSignInUrl, useTeamSession } from '@/components/teamRuns/teamRunsApi';
 
-/** Only ever go on to another team page, so the login can't be used to bounce people elsewhere. */
+const ERRORS: Record<string, string> = {
+  not_on_team: "That Google account isn't on the team list. Ask the Boss to add it, or pick another account.",
+  unverified: "Google hasn't verified that account's email address, so it can't be used here.",
+  google_declined: 'Google sign-in was cancelled.',
+  expired: 'That sign-in took too long or came from another tab. Try again.',
+  google_failed: "Google sign-in didn't go through. Try again.",
+  not_configured: "Team sign-in isn't switched on yet on this site.",
+};
+
+/** Only ever go on to another team page. The server checks this too. */
 function nextPath(): string {
   const next = new URLSearchParams(window.location.search).get('next') ?? '';
   return /^\/team\/[A-Za-z0-9/_-]*$/.test(next) ? next : '/team/arc2-runs';
@@ -27,39 +36,25 @@ export default function TeamLogin() {
   usePageMeta({ title: 'Team sign-in', description: 'Sign in to the ARC Mutants team pages.', noindex: true });
   const [, navigate] = useLocation();
   const session = useTeamSession();
-  const signIn = useSignIn();
-  const [phrase, setPhrase] = useState('');
+  const error = new URLSearchParams(window.location.search).get('error');
 
   useEffect(() => {
     if (session.data?.signedIn) navigate(nextPath(), { replace: true });
   }, [session.data?.signedIn, navigate]);
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    if (phrase.trim()) signIn.mutate(phrase, { onSuccess: () => navigate(nextPath(), { replace: true }) });
-  };
-
   return (
     <div className="max-w-sm mx-auto px-4 py-16">
       <h1 className="text-2xl font-bold mb-2">Team sign-in</h1>
       <p className="text-sm text-muted-foreground mb-6">
-        For the ARC Mutants team. Use the passphrase the Boss gave you; it keeps you signed in on
-        this browser for two months.
+        For the ARC Mutants team. Sign in with the Google account the team knows you by.
       </p>
+      {error && <p className="text-sm text-destructive mb-4">{ERRORS[error] ?? ERRORS.google_failed}</p>}
       {session.data && !session.data.configured ? (
-        <p className="text-sm">Team sign-in isn't switched on yet on this site.</p>
+        <p className="text-sm">{ERRORS.not_configured}</p>
       ) : (
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="team-passphrase">Team passphrase</Label>
-            <Input id="team-passphrase" type="password" autoComplete="current-password" autoFocus
-                   value={phrase} onChange={(e) => setPhrase(e.target.value)} />
-          </div>
-          {signIn.error && <p className="text-sm text-destructive">{signIn.error.message}</p>}
-          <Button type="submit" disabled={signIn.isPending || !phrase.trim()}>
-            {signIn.isPending ? 'Signing in…' : 'Sign in'}
-          </Button>
-        </form>
+        <Button asChild>
+          <a href={googleSignInUrl(nextPath())}>Sign in with Google</a>
+        </Button>
       )}
     </div>
   );

@@ -5,10 +5,11 @@
  *          Mini's watcher publishes (scripts/arc2_runs/arc2_runs.py), the sign-in calls, the
  *          queries for the list and one run, saving a team note, and the one rule for which
  *          baseline a run is judged against (the team's choice beats the watcher's guess).
- *          Every call goes to /api/team (server/routes/teamRuns.ts), which needs the team
- *          cookie; a 401 surfaces as SignInRequired so pages can send people to sign in.
+ *          Runs live under /api/team (server/routes/teamRuns.ts) and need the team cookie,
+ *          which Google sign-in sets (/api/auth, server/routes/teamAuth.ts); a 401 surfaces as
+ *          SignInRequired so pages can send people to sign in.
  * SRP/DRY check: Pass - data only; pages in pages/team/. No other client code talks to
- *          /api/team.
+ *          /api/team or /api/auth.
  */
 
 import { useEffect } from 'react';
@@ -93,24 +94,20 @@ export function useSignInRedirect(error: unknown) {
 export function useTeamSession() {
   return useQuery({
     queryKey: ['team-session'],
-    queryFn: () => call<{ configured: boolean; signedIn: boolean }>('/api/team/session'),
+    queryFn: () => call<{ configured: boolean; signedIn: boolean; email: string | null; name: string | null }>('/api/auth/session'),
     staleTime: 60_000,
   });
 }
 
-export function useSignIn() {
-  const client = useQueryClient();
-  return useMutation({
-    mutationFn: (passphrase: string) =>
-      call<{ signedIn: boolean }>('/api/team/session', { method: 'POST', body: JSON.stringify({ passphrase }) }),
-    onSuccess: () => client.invalidateQueries({ queryKey: ['team-session'] }),
-  });
+/** Google sign-in is a full-page trip (the server sends the browser to Google and back). */
+export function googleSignInUrl(next: string): string {
+  return `/api/auth/google?next=${encodeURIComponent(next)}`;
 }
 
 export function useSignOut() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: () => call<{ signedIn: boolean }>('/api/team/session', { method: 'DELETE' }),
+    mutationFn: () => call<{ signedIn: boolean }>('/api/auth/session', { method: 'DELETE' }),
     onSuccess: () => client.clear(),
   });
 }
@@ -136,7 +133,7 @@ export function useArc2Run(key: string) {
 export function useSaveNote(key: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (fields: { baseline: string; note: string; by: string }) =>
+    mutationFn: (fields: { baseline: string; note: string }) =>
       call<{ note: TeamRunNote }>(`/api/team/arc2-runs/${encodeURIComponent(key)}/note`,
         { method: 'POST', body: JSON.stringify(fields) }),
     onSuccess: () => {
