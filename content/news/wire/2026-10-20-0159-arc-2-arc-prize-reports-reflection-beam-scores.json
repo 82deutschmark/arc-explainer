@@ -1,0 +1,47 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-20T05:29:31Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC Prize reports verified Reflection Beam scores and costs",
+  "id": "2026-10-20-0159-arc-2-arc-prize-reports-reflection-beam-scores",
+  "personIds": [],
+  "publishedAt": "2026-10-20T05:59:57Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2",
+        "social-2112230540283658499"
+      ],
+      "text": "ARC Prize reported verified Reflection Beam 1.0 scores of 23.5% on ARC-AGI-2 at $0.61 per task and 74.0% on ARC-AGI-1 at $0.31 per task."
+    },
+    {
+      "sourceIds": [
+        "social-2112230540283658499",
+        "social-2112230541730689510"
+      ],
+      "text": "The post says the best scores use xhigh reasoning. On ARC-AGI-2, high reasoning reached 20.0% at lower cost; ARC-AGI-3 results are pending."
+    }
+  ],
+  "since": "2026-10-19T05:27:00Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T05:59:04Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    },
+    {
+      "accessedAt": "2026-10-19T18:04:44.564405Z",
+      "id": "social-2112230540283658499",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2112230540283658499"
+    },
+    {
+      "accessedAt": "2026-10-19T18:04:44.564405Z",
+      "id": "social-2112230541730689510",
+      "title": "ARC Prize — research post",
+      "url": "https://x.com/arcprize/status/2112230541730689510"
+    }
+  ],
+  "teamIds": []
+}
