@@ -11,7 +11,7 @@
  *          plan (docs/2026-10-19-arc2-hard-set-synthetic-data-plan.md) reads these notes, so keep the
  *          wording honest: nothing here is an answer key the models were denied.
  *          19-Oct-2026, Claude Opus 5.5 Medium: the spiral note is now 'checked' (a coded rule reproduces every
- *          pair; it adds the corner step the first note missed), repair-the-lines, marble corridors, jigsaw and follow-the-trail are
+ *          pair; it adds the corner step the first note missed), repair-the-lines, marble corridors, jigsaw, follow-the-trail and fill-the-chain are
  *          'checked' (coded rules reproduce every pair; each note gained the detail the first one missed), and the leaky-boxes note is 'partial' (leaks
  *          bend where they meet, which the first note missed). Both found while building the generators.
  * SRP/DRY check: Pass — mirrors shared/featuredPuzzles.ts (standalone constants, no dependencies);
@@ -120,14 +120,14 @@ export const ARC2_HARD_SET_NOTES: Record<string, Arc2HardSetNote> = {
   '8b7bacbf': {
     id: '8b7bacbf',
     nickname: 'Fill the chain',
-    confidence: 'partial',
+    confidence: 'checked',
     bullets: [
       'Find the one-of-a-kind squares: a color that appears exactly once. Each is a paint marker.',
       'Each marker sits at the end of a long winding line.',
-      'The line runs along and touches hollow shapes: diamonds and boxes. Shapes can also touch each other, making a chain.',
-      'Every hollow shape linked to a marker\'s line, directly or through the chain, gets its inside filled with that marker\'s color.',
-      'Shapes not linked to any marker stay hollow.',
-      'Honest note: this rule fills the right shapes in four of the six pairs and is off by one shape in the other two, so what counts as linked when two shapes only touch at a corner is the part I am not sure of.',
+      'Every hollow shape the line touches gets its inside filled with that marker\'s color.',
+      'The line carries on out of a touched shape through any other piece of the same line that touches it, and it carries on straight across a place where another marker\'s line crosses it.',
+      'A shape is one ring around one hole. Two shapes that only touch at a corner are two shapes, and touching a filled shape does not fill a shape: only the line does.',
+      'Shapes the line never reaches stay hollow.',
     ],
     whereModelsBreak:
       'The models get the fill idea and then decide which shapes are linked by eye: Gemini 3 Deep Think split the test grid into a left half and a right half and gave each half a marker. The chain has to be traced; halves are a guess.',
