@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-20T09:59:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "matu997 closes on ARC-2 gold places",
+  "id": "2026-10-20-0602-arc-2-matu997-closes-on-gold-line",
+  "personIds": [],
+  "publishedAt": "2026-10-20T10:02:08Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "matu997 gained 9.73 points to reach 64.31, climbing from 22nd to 17th on the public ARC-2 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The team now sits 0.41 behind the gold line. The last of the 16 gold places stands at 64.72."
+    }
+  ],
+  "since": "2026-10-19T09:57:28Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T10:01:37Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17017585"
+  ]
+}
