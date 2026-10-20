@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-20T13:30:20Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Trian jumps from 1,941st to 36th on ARC-2",
+  "id": "2026-10-20-0959-arc-2-trian-jumps-to-thirty-sixth",
+  "personIds": [],
+  "publishedAt": "2026-10-20T13:59:50Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Trian gained 21.25 points to reach 46.53, moving from 1,941st to 36th on the public ARC-AGI-2 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The jump puts Trian inside the top 100 in a field of 3,089 teams."
+    }
+  ],
+  "since": "2026-10-19T13:27:50Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T13:59:14Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16558875"
+  ]
+}
