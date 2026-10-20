@@ -15,9 +15,11 @@ PURPOSE: The ARC-AGI-2 runs record (Son asked for an ARC-2 version of the ARC-3 
 
   tick      one pass (launchd ai.bubba.arc2-runs-watch, every 15 minutes): read the submission list and
             the team's notes, collect source and output for new submissions, write up to a few Claude
-            notes, publish every run whose document changed. Read-only on Kaggle.
+            notes, publish every run whose document changed, post each new submission to #arc-2 once.
+            Read-only on Kaggle.
   process   <key> [--renote]  redo one run (and its note) and publish it.
   list      print the registry.
+  preview   <key>  print the #arc-2 post a run would get, without sending it.
 
   Evidence and notes are only gathered for submissions since NOTES_SINCE (the October push); earlier
   ones are recorded with their description and score only.
@@ -35,6 +37,7 @@ import hashlib
 import json
 import os
 import sys
+import subprocess
 import traceback
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -53,6 +56,14 @@ REGISTRY = STATE / "registry.json"
 SUMMARIES = STATE / "summaries"
 NOTES_SINCE = os.environ.get("ARC2_RUNS_NOTES_SINCE", "2026-10-01")
 MAX_NOTES_PER_TICK = int(os.environ.get("ARC2_RUNS_NOTES_PER_TICK", "4"))
+# Each new submission gets a short plain-English post in the team's #arc-2 Discord channel (the Boss,
+# 19-Oct-2026: "something that automatically fires every time we submit"). Sent as Bubba through OpenClaw,
+# as the ARC Daily relay does. It waits for Claude's note so the post can carry its verdict, but never
+# longer than NOTE_WAIT_MIN after the score lands.
+OPENCLAW = "/Users/macmini/Library/pnpm/openclaw"
+ANNOUNCE_TARGET = os.environ.get("ARC2_RUNS_ANNOUNCE", "channel:1557872403034673164")
+NOTE_WAIT_MIN = 45
+PAGE = "https://arc.markbarney.net/team/arc2-runs"
 WHO = {"jcole75": "Jack Cole", "markbarney": "Boss", "sonphamorg": "Son", "scizical": "Ronen"}
 KAGGLE_FIELDS = ("submittedAt", "submittedBy", "description", "status", "publicScore", "error", "kernelRef",
                  "scriptVersionId", "url")
@@ -278,6 +289,90 @@ def publish(entry: dict, doc: dict) -> bool:
     return True
 
 
+# --- the #arc-2 post -----------------------------------------------------------------------------------
+
+def _minutes_since(iso: str | None) -> float:
+    if not iso:
+        return 0.0
+    return (datetime.now(timezone.utc) - datetime.fromisoformat(iso.replace("Z", "+00:00"))).total_seconds() / 60
+
+
+def announcement(entry: dict, entries: dict, notes: dict) -> str:
+    """The post: who, what they changed (their words), the score against its baseline and the team best,
+    Claude's verdict, and the link. Plain sentences; Discord caps a message at 2,000 characters."""
+    when = (entry.get("submittedAt") or "")[11:16]
+    desc = entry.get("description") or "(no description on Kaggle)"
+    desc = desc if len(desc) <= 500 else desc[:497] + "..."
+    lines = [f"**{entry.get('who')}** submitted to ARC-AGI-2 at {when} UTC:", f"> {desc}"]
+    if entry.get("status") == "error":
+        lines.append(f"It failed on Kaggle{': ' + entry['error'][:200] if entry.get('error') else ''}. No score.")
+    else:
+        score = entry["publicScore"]
+        earlier = [e["publicScore"] for e in entries.values()
+                   if e.get("status") == "complete" and e.get("publicScore") is not None
+                   and (e.get("submittedAt") or "") < entry["submittedAt"]]
+        best_before = max(earlier) if earlier else None
+        base_key, base_why = baseline_for(entry, notes.get(entry["key"]))
+        base = entries.get(base_key) if base_key else None
+        parts = [f"Public score **{score:.2f}**"]
+        if base and base.get("publicScore") is not None:
+            d = score - base["publicScore"]
+            how = "above" if d > 0 else "below" if d < 0 else "level with"
+            guessed = " (going by the score its description mentions)" if base_why.startswith("guessed") else ""
+            parts.append(f"{abs(d):.2f} {how} the {base['publicScore']:.2f} run it builds on{guessed}" if d else
+                         f"level with the {base['publicScore']:.2f} run it builds on{guessed}")
+        lines.append(", ".join(parts) + ".")
+        if best_before is None or score > best_before:
+            lines.append("**New team best.**")
+        else:
+            lines.append(f"Team best is still {best_before:.2f}.")
+    path = SUMMARIES / f"{entry['key']}.json"
+    note = json.loads(path.read_text()) if path.exists() else None
+    if note and note.get("state") == "done":
+        md = note.get("markdown") or ""
+        at = md.find("## Verdict")
+        verdict = " ".join(l.strip("-* ").strip() for l in md[at + 10:].splitlines() if l.strip()) if at != -1 else ""
+        if verdict:
+            lines.append(f"Claude's read: {verdict[:600]}")
+    lines.append(f"Full record: <{PAGE}/{entry['key']}>")
+    return "\n".join(lines)[:1990]
+
+
+def announce(notes: dict) -> None:
+    """Post each new submission once, after it is scored (or failed) and its note is in or overdue."""
+    with locked_registry() as data:
+        if "announceSince" not in data:
+            # First pass with posting on: everything already submitted is history, not news.
+            data["announceSince"] = now_iso()
+            log(f"posting new submissions to #arc-2 from {data['announceSince']}")
+            return
+        since = data["announceSince"]
+    entries = load_registry()["runs"]
+    for key, entry in sorted(entries.items(), key=lambda kv: kv[1].get("submittedAt") or ""):
+        if entry.get("announced") or (entry.get("submittedAt") or "") < since[:19]:
+            continue
+        if entry.get("status") not in ("complete", "error"):
+            continue
+        with locked_registry() as data:
+            data["runs"][key].setdefault("finalSeenAt", now_iso())
+            entry = data["runs"][key]
+        path = SUMMARIES / f"{key}.json"
+        note_state = json.loads(path.read_text()).get("state") if path.exists() else None
+        waiting_for_note = (entry.get("status") == "complete" and eligible(entry) and note_state not in ("done", "failed")
+                            and _minutes_since(entry.get("finalSeenAt")) < NOTE_WAIT_MIN)
+        if waiting_for_note:
+            continue
+        text = announcement(entry, entries, notes)
+        sent = subprocess.run([OPENCLAW, "message", "send", "--channel", "discord", "--target", ANNOUNCE_TARGET,
+                               "--message", text], capture_output=True, text=True, timeout=120)
+        if sent.returncode != 0:
+            log(f"{key}: posting to #arc-2 failed: {sent.stderr.strip()[:300]}")
+            continue
+        with locked_registry() as data:
+            data["runs"][key].update(announced=True, announcedAt=now_iso())
+        log(f"{key}: posted to #arc-2")
+
+
 # --- commands ------------------------------------------------------------------------------------------
 
 def ssd_ready() -> None:
@@ -331,6 +426,10 @@ def cmd_tick(args) -> int:
                 sent += publish(entries[key], doc)
             except Exception as exc:
                 log(f"{key}: failed: {exc}\n{traceback.format_exc(limit=3)}")
+        try:
+            announce(notes)
+        except Exception as exc:
+            log(f"posting to #arc-2 failed: {exc}")
         log(f"tick done: {len(entries)} runs, {sent} published, {MAX_NOTES_PER_TICK - budget} notes written")
     return 0
 
@@ -343,6 +442,12 @@ def cmd_process(args) -> int:
     entries = load_registry()["runs"]
     doc, _ = build_document(entries[args.key], entries, site_api.get_notes(), allow_note=True, force_note=args.renote)
     publish(entries[args.key], doc)
+    return 0
+
+
+def cmd_preview(args) -> int:
+    entries = load_registry()["runs"]
+    print(announcement(entries[args.key], entries, site_api.get_notes()))
     return 0
 
 
@@ -362,8 +467,10 @@ def main(argv=None) -> int:
     p.add_argument("key")
     p.add_argument("--renote", action="store_true")
     sub.add_parser("list")
+    v = sub.add_parser("preview")
+    v.add_argument("key")
     args = ap.parse_args(argv)
-    return {"tick": cmd_tick, "process": cmd_process, "list": cmd_list}[args.cmd](args)
+    return {"tick": cmd_tick, "process": cmd_process, "list": cmd_list, "preview": cmd_preview}[args.cmd](args)
 
 
 if __name__ == "__main__":

@@ -7,13 +7,14 @@
  *          pages only) or the runs list. When it sends someone back here, ?error= says why, in
  *          plain words. Unlisted and noindex: nothing on the public site links here.
  *          (The first version, earlier the same day, used a shared passphrase.)
+ *          Styled as the runs screen (components/teamRuns/terminal.tsx).
  * SRP/DRY check: Pass - sign-in page only; the Google round trip is server/routes/teamAuth.ts,
- *          the session check server/middleware/teamSession.ts. shadcn Button.
+ *          the session check server/middleware/teamSession.ts.
  */
 
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { Button } from '@/components/ui/button';
+import { Screen, T } from '@/components/teamRuns/terminal';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { googleSignInUrl, useTeamSession } from '@/components/teamRuns/teamRunsApi';
 
@@ -43,19 +44,19 @@ export default function TeamLogin() {
   }, [session.data?.signedIn, navigate]);
 
   return (
-    <div className="max-w-sm mx-auto px-4 py-16">
-      <h1 className="text-2xl font-bold mb-2">Team sign-in</h1>
-      <p className="text-sm text-muted-foreground mb-6">
-        For the ARC Mutants team. Sign in with the Google account the team knows you by.
-      </p>
-      {error && <p className="text-sm text-destructive mb-4">{ERRORS[error] ?? ERRORS.google_failed}</p>}
-      {session.data && !session.data.configured ? (
-        <p className="text-sm">{ERRORS.not_configured}</p>
-      ) : (
-        <Button asChild>
-          <a href={googleSignInUrl(nextPath())}>Sign in with Google</a>
-        </Button>
-      )}
-    </div>
+    <Screen>
+      <div className="max-w-[520px] mx-auto mt-16 p-3" style={{ border: `1px solid ${T.rule}`, background: T.panel }}>
+        <div className="mb-2 pb-1 font-bold" style={{ color: T.amber, borderBottom: `1px solid ${T.amber}` }}>ARC MUTANTS · TEAM SIGN-IN</div>
+        <p className="mb-3" style={{ color: T.dim }}>Sign in with the Google account the team knows you by.</p>
+        {error && <p className="mb-3" style={{ color: T.down }}>{ERRORS[error] ?? ERRORS.google_failed}</p>}
+        {session.data && !session.data.configured ? (
+          <p>{ERRORS.not_configured}</p>
+        ) : (
+          <a href={googleSignInUrl(nextPath())} className="inline-block px-3 py-1 font-bold" style={{ background: T.amber, color: T.bg }}>
+            SIGN IN WITH GOOGLE ▸
+          </a>
+        )}
+      </div>
+    </Screen>
   );
 }

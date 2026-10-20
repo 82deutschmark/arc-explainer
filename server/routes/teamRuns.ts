@@ -41,7 +41,7 @@ const COMPETITION = 'arc-2';
 const RUN_KEY = /^[0-9]{1,15}$/;
 /** A run document carries a log excerpt and a code diff; anything bigger is a bug upstream. */
 const MAX_DOCUMENT_BYTES = 4 * 1024 * 1024;
-/** Fields the index needs. The log, the code diff and Claude's full note stay on the run page. */
+/** Fields the index needs. The log and the code diff stay on the run page. */
 const INDEX_FIELDS = [
   'key', 'submittedAt', 'submittedBy', 'who', 'description', 'status', 'publicScore', 'kernel',
   'proposedBaseline', 'output', 'publishedAt',
@@ -119,7 +119,10 @@ router.get(
         if (!doc) return null;
         const row: JsonObject = Object.fromEntries(INDEX_FIELDS.map((f) => [f, doc[f] ?? null]));
         const summary = isObject(doc.summary) ? doc.summary : null;
-        row.summary = summary ? { state: summary.state ?? null, baselineKey: summary.baselineKey ?? null } : null;
+        // The note's text rides along so the list can show its verdict and search it; notes are short.
+        row.summary = summary
+          ? { state: summary.state ?? null, baselineKey: summary.baselineKey ?? null, markdown: summary.markdown ?? null }
+          : null;
         row.note = notes[runKey] ?? null;
         return row;
       })
