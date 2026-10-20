@@ -5,8 +5,10 @@
  *          "more stats", "more searchable", "more data-dense"). Everything here is counted or
  *          read straight from the submissions Kaggle reports; nothing is estimated:
  *          - the team best and when it was set, and which submissions set a new team best;
- *          - per person: submissions, best score, latest;
+ *          - the top public scores (the candidates for the team's two final picks on Kaggle);
  *          - submissions in the last seven days;
+ *          Not who submitted: that is only whose Kaggle account carried it, and Jack submits
+ *          everything from 20-Oct-2026 on (the Boss), so per-person figures were dropped.
  *          - a section of Claude's note (the verdict is the one-line read on the list);
  *          - the filter and search the list applies, kept in the page address so a filtered
  *            view can be shared.
@@ -31,14 +33,6 @@ export function newBestKeys(rows: RunRow[]): Set<string> {
   return keys;
 }
 
-export interface PersonStats {
-  who: string;
-  count: number;
-  scoredCount: number;
-  best: RunRow | null;
-  latest: RunRow;
-}
-
 export interface TeamStats {
   total: number;
   scoredCount: number;
@@ -46,24 +40,14 @@ export interface TeamStats {
   lastWeek: number;
   best: RunRow | null;
   latest: RunRow | null;
-  people: PersonStats[];
 }
 
-const better = (a: RunRow | null, r: RunRow) => (scored(r) && (!a || r.publicScore! > a.publicScore!) ? r : a);
-
 export function teamStats(rows: RunRow[], now = Date.now()): TeamStats {
-  const people = new Map<string, PersonStats>();
   let best: RunRow | null = null;
   let latest: RunRow | null = null;
   for (const r of rows) {
-    best = better(best, r);
+    if (scored(r) && (!best || r.publicScore! > best.publicScore!)) best = r;
     if (!latest || r.submittedAt > latest.submittedAt) latest = r;
-    const p = people.get(r.who) ?? { who: r.who, count: 0, scoredCount: 0, best: null, latest: r };
-    p.count += 1;
-    if (scored(r)) p.scoredCount += 1;
-    p.best = better(p.best, r);
-    if (r.submittedAt > p.latest.submittedAt) p.latest = r;
-    people.set(r.who, p);
   }
   return {
     total: rows.length,
@@ -72,8 +56,14 @@ export function teamStats(rows: RunRow[], now = Date.now()): TeamStats {
     lastWeek: rows.filter((r) => now - Date.parse(r.submittedAt) < 7 * 86_400_000).length,
     best,
     latest,
-    people: [...people.values()].sort((a, b) => b.latest.submittedAt.localeCompare(a.latest.submittedAt)),
   };
+}
+
+/** The highest public scores, best first (ties: the earlier one first, as it was there first). */
+export function topRuns(rows: RunRow[], n: number): RunRow[] {
+  return rows.filter(scored)
+    .sort((a, b) => b.publicScore! - a.publicScore! || a.submittedAt.localeCompare(b.submittedAt))
+    .slice(0, n);
 }
 
 /** One "## Heading" section of Claude's note, as plain text (bullets joined), or null. */
@@ -95,13 +85,12 @@ export type Sort = 'newest' | 'score';
 
 export interface RunFilter {
   q: string;
-  who: string;      // '' = everyone
   since: Since;
   show: Show;
   sort: Sort;
 }
 
-export const DEFAULT_FILTER: RunFilter = { q: '', who: '', since: 'all', show: 'all', sort: 'newest' };
+export const DEFAULT_FILTER: RunFilter = { q: '', since: 'all', show: 'all', sort: 'newest' };
 
 export function readFilter(search: string): RunFilter {
   const p = new URLSearchParams(search);
@@ -109,7 +98,6 @@ export function readFilter(search: string): RunFilter {
     (allowed as readonly string[]).includes(p.get(key) ?? '') ? (p.get(key) as T) : fallback;
   return {
     q: p.get('q') ?? '',
-    who: p.get('who') ?? '',
     since: pick('since', ['all', '7d', '30d'] as const, 'all'),
     show: pick('show', ['all', 'scored', 'best', 'failed', 'noted'] as const, 'all'),
     sort: pick('sort', ['newest', 'score'] as const, 'newest'),
@@ -128,7 +116,7 @@ export function writeFilter(f: RunFilter): string {
 
 /** Everything a search can match on: the run's words, the team's note, Claude's note, the notebook. */
 function haystack(r: RunRow): string {
-  return [r.key, r.who, r.submittedBy, r.description, r.note?.note, r.summary?.markdown, r.kernel?.ref, r.status]
+  return [r.key, r.description, r.note?.note, r.summary?.markdown, r.kernel?.ref, r.status]
     .filter(Boolean).join(' ').toLowerCase();
 }
 
@@ -136,7 +124,6 @@ export function applyFilter(rows: RunRow[], f: RunFilter, bestKeys: Set<string>,
   const words = f.q.toLowerCase().split(/\s+/).filter(Boolean);
   const window = f.since === '7d' ? 7 : f.since === '30d' ? 30 : null;
   const out = rows.filter((r) => {
-    if (f.who && r.who !== f.who) return false;
     if (window && now - Date.parse(r.submittedAt) > window * 86_400_000) return false;
     if (f.show === 'scored' && !scored(r)) return false;
     if (f.show === 'best' && !bestKeys.has(r.key)) return false;

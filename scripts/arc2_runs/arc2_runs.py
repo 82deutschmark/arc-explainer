@@ -298,12 +298,13 @@ def _minutes_since(iso: str | None) -> float:
 
 
 def announcement(entry: dict, entries: dict, notes: dict) -> str:
-    """The post: who, what they changed (their words), the score against its baseline and the team best,
+    """The post: what changed (the submitter's words), the score against its baseline and the team best,
     Claude's verdict, and the link. Plain sentences; Discord caps a message at 2,000 characters."""
     when = (entry.get("submittedAt") or "")[11:16]
     desc = entry.get("description") or "(no description on Kaggle)"
     desc = desc if len(desc) <= 500 else desc[:497] + "..."
-    lines = [f"**{entry.get('who')}** submitted to ARC-AGI-2 at {when} UTC:", f"> {desc}"]
+    # Not who submitted: that's only whose Kaggle account carried it (Jack submits everything, 20-Oct-2026).
+    lines = [f"**New ARC-AGI-2 submission** at {when} UTC:", f"> {desc}"]
     if entry.get("status") == "error":
         lines.append(f"It failed on Kaggle{': ' + entry['error'][:200] if entry.get('error') else ''}. No score.")
     else:

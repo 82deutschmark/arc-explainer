@@ -5,7 +5,7 @@
  *          financial terminal." So these pages are a dark, monospaced trading screen whatever
  *          the site theme: amber labels, green up, red down, hairline rules, no rounded cards,
  *          no intro prose. This file holds the palette and the few building blocks (pane, stat,
- *          bracket toggle, person code) both pages use, so they can't drift apart.
+ *          bracket toggle, signed change, UTC stamp) both pages use, so they can't drift apart.
  * SRP/DRY check: Pass - presentation primitives only; no data. Used by pages/team/Arc2Runs.tsx,
  *          Arc2Run.tsx and ScoreTimeline.tsx.
  */
@@ -25,9 +25,6 @@ export const T = {
   hover: '#161b22',
   mono: "'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace",
 } as const;
-
-/** Bright mid tones that read on the dark screen, one per person. */
-export const PERSON_PALETTE = ['#58a6ff', '#f0883e', '#3fb950', '#d2a8ff', '#e3b341', '#8b949e'];
 
 /** The page shell: full-bleed dark screen, monospace. */
 export function Screen({ children }: { children: ReactNode }) {
@@ -71,12 +68,6 @@ export function Bracket({ on, onClick, children, title }: { on: boolean; onClick
       [{children}]
     </button>
   );
-}
-
-/** "Jack Cole" -> JC, "Son" -> SON: short codes for dense columns. */
-export function personCode(who: string): string {
-  const words = who.trim().split(/\s+/);
-  return (words.length > 1 ? words.map((w) => w[0]).join('') : who.slice(0, 4)).toUpperCase();
 }
 
 /** Signed change, coloured: green up, red down. */

@@ -4,7 +4,7 @@
  * PURPOSE: /team/arc2-runs/:key, one ARC-AGI-2 Kaggle submission in full, team only, on the
  *          same dark terminal screen as the list (the Boss: "think much more like a financial
  *          terminal"). Top to bottom:
- *          - a quote line: submission, who, time, score, change against its baseline, whether it
+ *          - a quote line: submission, time, score, change against its baseline, whether it
  *            set a new team best, the notebook; previous/next run;
  *          - the submitter's own words;
  *          - BASELINE: the run it is judged against and why, the later runs built on this one,
@@ -30,7 +30,7 @@ import {
   utcStamp, type RunRow, type TeamRunNote,
 } from '@/components/teamRuns/teamRunsApi';
 import { newBestKeys, scored } from '@/components/teamRuns/runStats';
-import { Bracket, Delta, Pane, Screen, T, personCode, stamp } from '@/components/teamRuns/terminal';
+import { Bracket, Delta, Pane, Screen, T, stamp } from '@/components/teamRuns/terminal';
 
 const GUESS = '__guess__';
 const field = { background: T.bg, color: T.text, border: `1px solid ${T.rule}`, fontFamily: T.mono } as const;
@@ -71,7 +71,7 @@ function NoteForm({ runKey, note, proposed, earlier }: {
           <option value="none">none</option>
           {earlier.map((r) => (
             <option key={r.key} value={r.key}>
-              {stamp(r.submittedAt)} {personCode(r.who).padEnd(4)} {scoreText(r.publicScore).padStart(6)}  {r.description.slice(0, 70)}
+              {stamp(r.submittedAt)} {scoreText(r.publicScore).padStart(6)}  {r.description.slice(0, 80)}
             </option>
           ))}
         </select>
@@ -124,7 +124,7 @@ export default function Arc2Run() {
   const builtOn = rows.filter((r) => effectiveBaseline(r.proposedBaseline, r.note).key === run.key);
   const runLink = (r: RunRow, label: string) => (
     <Link href={`/team/arc2-runs/${r.key}`} className="hover:underline" style={{ color: T.link }}>
-      [{label} {personCode(r.who)} {scored(r) ? scoreText(r.publicScore) : r.status.toUpperCase()}]
+      [{label} {scored(r) ? scoreText(r.publicScore) : r.status.toUpperCase()}]
     </Link>
   );
 
@@ -145,7 +145,6 @@ export default function Arc2Run() {
         </span>
         <span className="text-[16px]"><Delta value={delta} /> <span style={{ color: T.dim }}>vs {baseRun ? scoreText(baseRun.publicScore) : '—'}</span></span>
         {isBest && <span style={{ color: T.up }}>▲ NEW TEAM BEST</span>}
-        <span><span style={{ color: T.amber }}>WHO </span>{run.who}</span>
         <span><span style={{ color: T.amber }}>TIME </span>{stamp(run.submittedAt)}Z</span>
         {run.kernel?.url && (
           <span><span style={{ color: T.amber }}>NB </span>
@@ -219,7 +218,7 @@ export default function Arc2Run() {
           <pre className="max-h-[640px] overflow-auto px-2 py-1 text-[11.5px] leading-[1.4] whitespace-pre-wrap break-all">{run.log.text}</pre>
         ) : <div className="px-2 pb-1.5" style={{ color: T.dim }}>NO LOG KEPT.</div>)}
       </Pane>
-      <div className="mt-1 text-[11px]" style={{ color: T.dim }}>Submitted {utcStamp(run.submittedAt)} by {run.who} ({run.submittedBy}).</div>
+      <div className="mt-1 text-[11px]" style={{ color: T.dim }}>Submitted {utcStamp(run.submittedAt)} from the {run.submittedBy} Kaggle account.</div>
     </Screen>
   );
 }
