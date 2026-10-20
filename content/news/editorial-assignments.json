@@ -731,5 +731,31 @@
     ],
     "instructions": "Select unused approved First Flight stock. Mark, Son and Keith are present in the closing seven-account ARC3 roster. The trio is a subset; fantasy equipment does not establish methods. Compose exact closing scores/time, inspect and attach to routine Early X post.",
     "verificationNotes": "Original approval date preserved. Clean base inspected; flight across snowy canyon differs from yesterday’s hangar and citadel interior. Two Yorkies; established Mark/Son/Keith subset, no Jack Cole."
+  },
+  {
+    "id": "oct20-late-night-watch-stock",
+    "competition": "arc-3",
+    "createdAt": "2026-10-20T21:57:30Z",
+    "expiresAt": "2026-10-20T23:30:00Z",
+    "title": "Unused Night Watch stock for October 20 Late",
+    "targetEditionId": "2026-10-20-evening-arc-3",
+    "placement": "edition-artwork",
+    "status": "pending",
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "artworkGenerationRecord": "2026-10-19-tufa-citadel-v5-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": []
+    },
+    "instructions": "Desk stock selection under ART_DESK: use unused reviewed Night Watch, freshly composed from the final Late brief, while Tufa leads Chen. Machines and spiders are editorial fantasy, with no human riders depicted. Cover Tufa, Chen, Turducken and NVARC3 with sourced current race context.",
+    "verificationNotes": "Native base visually inspected this run: five mascots, two racks, distant rival machines, no human identities. No supporting roster condition required for machine-only metaphors.",
+    "subjectNames": [
+      "Tufa Labs",
+      "Yi-Chia Chen"
+    ]
   }
 ]

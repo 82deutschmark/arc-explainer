@@ -84,44 +84,24 @@
     "whyItMatters": "Consequential organizer result. Separate from Kaggle standings. Standard-harness API incompletion is essential context; primary results introduction says 91.2% on v2 while its table and announcement say 91.3%."
   },
   {
-    "author": "arcprize",
-    "authorName": "ARC Prize",
-    "category": "research",
-    "checkedAt": "2026-10-14T10:08:23.209225+00:00",
+    "author": "alin8020",
+    "authorName": "Alan Lin",
+    "category": "community",
+    "checkedAt": "2026-10-20T15:03:40Z",
     "competitions": [
       "arc-3"
     ],
-    "id": "2110060578530001231",
-    "identitySourceUrl": "https://arcprize.org",
-    "importance": 3,
+    "id": "2112527934141469043",
+    "identitySourceUrl": "https://x.com/alin8020",
+    "importance": 2,
     "personIds": [],
-    "postedAt": "2026-10-13T17:30:19Z",
-    "storyUrl": "https://arcprize.org/results/deepseek-v4-1-flash",
-    "summary": "ARC Prize’s October 13 announcement reports DeepSeek V4.1 Flash at about 3% with its provider adapter and below 1% with the standard harness. The original linked verified-results table, refreshed October 14, gives a matched Low-reasoning comparison of 3.26% versus 0.35%; its headline best configurations differ in reasoning level. Organizer model evaluation, separate from Kaggle team submissions.",
-    "threadId": "2110060578530001231",
-    "url": "https://x.com/arcprize/status/2110060578530001231",
-    "visibility": "public",
-    "whyItMatters": "Public original read without sign-in in the in-app browser; linked primary results table independently read. Organizer evaluation, separate from Kaggle team standings."
-  },
-  {
-    "author": "arcprize",
-    "authorName": "ARC Prize",
-    "category": "standings",
-    "checkedAt": "2026-10-14T18:03:44Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2110031207601979715",
-    "identitySourceUrl": "https://arcprize.org",
-    "importance": 3,
-    "personIds": [],
-    "postedAt": "2026-10-13T15:33:37Z",
+    "postedAt": "2026-10-20T12:54:43Z",
     "storyUrl": null,
-    "summary": "ARC Prize announces Tufa Labs reclaimed first on the ARC-AGI-3 public Kaggle board with roughly 69%, up from roughly 56%. This is the author’s dated October 13 observation; refresh standings before publication.",
-    "threadId": "2110031207601979715",
-    "url": "https://x.com/arcprize/status/2110031207601979715",
+    "summary": "Alan Lin discusses the previously published ARC-AGI-3 standard/provider-adapter results and argues that retaining reasoning between steps matters when choosing a harness.",
+    "threadId": "2112527934141469043",
+    "url": "https://x.com/alin8020/status/2112527934141469043",
     "visibility": "public",
-    "whyItMatters": "Organizer confirmation of a consequential team result already covered in the newspaper’s morning/afternoon reporting; no methods disclosed."
+    "whyItMatters": "Fresh public commentary on existing results. Treat as Lin’s interpretation, not a new evaluation or proof that reasoning retention alone caused the difference."
   },
   {
     "author": "gklambauer",
@@ -412,5 +392,25 @@
     "url": "https://x.com/FakePsyho/status/2111851337130668414",
     "visibility": "public",
     "whyItMatters": "Author-reported contamination check; does not independently establish absence of training exposure."
+  },
+  {
+    "author": "FakePsyho",
+    "authorName": "Psyho",
+    "category": "research",
+    "checkedAt": "2026-10-18T17:05:46.925Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2111850705094930809",
+    "identitySourceUrl": "https://x.com/FakePsyho",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-18T16:03:39.000Z",
+    "storyUrl": null,
+    "summary": "Psyho reports full-run costs of $700 for Sol 6.1 and $60 for Luna 6, and estimates about $1,000 for Sonnet 5.5 and $4,000 for Astra 6. Says testing uses xhigh and may reduce generous action limits to lower cost.",
+    "threadId": "2111842926917550193",
+    "url": "https://x.com/FakePsyho/status/2111850705094930809",
+    "visibility": "public",
+    "whyItMatters": "Separates reported completed costs from forecasts; no logs, scores or reproducible release verified."
   }
 ]

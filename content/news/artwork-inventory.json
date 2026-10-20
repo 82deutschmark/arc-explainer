@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-20T14:17:22Z",
+  "updatedAt": "2026-10-20T22:01:00Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -659,10 +659,13 @@
       "generationRecord": "2026-10-19-tufa-citadel-v5-base",
       "src": "/news-images/2026-10-19-tufa-citadel-v5-base.webp",
       "title": "Tufa Citadel — The Night Watch",
-      "status": "reviewed-reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-20-evening-arc-3"
+      ],
       "xAttachments": [],
-      "selectionNote": "Boss-requested extra interior view with NVARC3 siege engine under construction and Turducken flying low. Visually reviewed native generation. Editorial fantasy; no current score overlay. The user-approved v2 remains the commissioned lead."
+      "selectionNote": "Unused reviewed Night Watch reserve selected October 20 Late. Clean base and closing score footer visually inspected; all five spiders, two racks and riderless competitor machines remain visible. Machines are editorial fantasy. No new native generation.",
+      "artworkId": "2026-10-20-evening-arc-3-361502253d-footer"
     }
   ],
   "existingXPosts": [

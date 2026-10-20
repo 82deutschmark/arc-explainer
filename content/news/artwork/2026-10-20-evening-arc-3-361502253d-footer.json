@@ -1,0 +1,49 @@
+{
+  "articleId": "2026-10-20-evening-arc-3",
+  "briefSha256": "74de336620a8ee553d53019f92deaaa28261a5bdeb84b3da72b50a0dee96222c",
+  "dataAsOf": "2026-10-20T21:31:16Z",
+  "generationRecord": "2026-10-19-tufa-citadel-v5-base",
+  "headline": "rellik13 leaps to 28th as ARC3’s leaders hold",
+  "historyChart": null,
+  "id": "2026-10-20-evening-arc-3-361502253d-footer",
+  "image": {
+    "alt": "AI editorial fantasy: five spider mascots install two racks inside Tufa’s citadel; outside, a riderless mechanical Turducken flies above NVARC3’s green siege construction site and a rabbit-banner stronghold. ARC-AGI-3 public scores: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49. October 20, 2026, 5:31 PM EDT.",
+    "artworkId": "2026-10-20-evening-arc-3-361502253d-footer",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 20, 2026 · 5:31 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "src": "/news-images/2026-10-20-evening-arc-3-361502253d-footer.webp"
+  },
+  "imageSha256": "ee920a7f3344a59faffc2cf6497f11f1ab304be94aadbc3c41d190a276384e1e",
+  "kind": "edition-composition",
+  "layout": "separate-footer-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "926a097348ab04e3f0a1e2e3945febb97647070120522b373907f95fb223bb72",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1,
+  "compositionReview": "Clean Night Watch base inspected; all five spiders and two racks retained. Current deterministic score and masthead panels moved to separate footer to preserve full scene. No human riders depicted."
+}

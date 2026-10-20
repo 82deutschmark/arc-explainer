@@ -1,5 +1,311 @@
 [
   {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-20T19:58:24Z",
+    "competitions": [],
+    "id": "2112631641277628812",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T19:46:48Z",
+    "storyUrl": "https://emergentmind.com/vistas",
+    "summary": "Mazur replies with a rainbow emoji to @BinxNet praising his AI-generated vistas gallery.",
+    "threadId": "2112531399991300560",
+    "url": "https://x.com/mhmazur/status/2112631641277628812",
+    "visibility": "public",
+    "whyItMatters": "Routine organizer capture; light community colour, no benchmark or competition result."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ",
+    "category": "standings",
+    "checkedAt": "2026-10-20T21:04:21Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112574890427732164",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 1,
+    "personIds": [
+      "itsu"
+    ],
+    "postedAt": "2026-10-20T16:01:18Z",
+    "storyUrl": null,
+    "summary": "Itsu replies to their ARC-AGI-2 Kaggle-share post: “As I was saying that, now sixth.” The root says ゴイサギ (a bird pun) and links the ARC-AGI-2 contest.",
+    "threadId": "2112492388908450135",
+    "url": "https://x.com/iiiiitsu_ne/status/2112574890427732164",
+    "visibility": "public",
+    "whyItMatters": "Fresh attributed standings reaction; this is not an independently verified leaderboard rank, score, medal or roster change."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "banter",
+    "checkedAt": "2026-10-20T15:04:55Z",
+    "competitions": [],
+    "id": "2112559041830613109",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T14:58:19Z",
+    "storyUrl": "https://emergentmind.com/vistas",
+    "summary": "In a reply to Ben Sharpe suggesting replacing the Roku screensaver with his own vistas, Mazur jokes that it is on his mind but there is not enough time in the day.",
+    "threadId": "2112531399991300560",
+    "url": "https://x.com/mhmazur/status/2112559041830613109",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture before selection: light personal-project banter; no ARC result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T13:59:57Z",
+    "competitions": [],
+    "id": "2112531702384042101",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T13:09:41Z",
+    "storyUrl": "https://emergentmind.com",
+    "summary": "Replying to a question about his arXiv tooling, Mazur says one of his projects is an AI research assistant for arXiv and links Emergent Mind.",
+    "threadId": "2112317078669578347",
+    "url": "https://x.com/mhmazur/status/2112531702384042101",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture: general AI project context; no ARC score, contest milestone or new benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T13:59:57Z",
+    "competitions": [],
+    "id": "2112531413404688612",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T13:08:32Z",
+    "storyUrl": "https://emergentmind.com/vistas",
+    "summary": "Fourth media-only follow-up with animated examples in Mazur’s vista-gallery thread. No accompanying text or benchmark claim.",
+    "threadId": "2112531399991300560",
+    "url": "https://x.com/mhmazur/status/2112531413404688612",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture: general AI project context; no ARC score, contest milestone or new benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T13:59:57Z",
+    "competitions": [],
+    "id": "2112531409969861101",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T13:08:31Z",
+    "storyUrl": "https://emergentmind.com/vistas",
+    "summary": "Third media-only follow-up with animated examples in Mazur’s vista-gallery thread. No accompanying text or benchmark claim.",
+    "threadId": "2112531399991300560",
+    "url": "https://x.com/mhmazur/status/2112531409969861101",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture: general AI project context; no ARC score, contest milestone or new benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T13:59:57Z",
+    "competitions": [],
+    "id": "2112531406274310592",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T13:08:30Z",
+    "storyUrl": "https://emergentmind.com/vistas",
+    "summary": "Second media-only follow-up with animated examples in Mazur’s vista-gallery thread. No accompanying text or benchmark claim.",
+    "threadId": "2112531399991300560",
+    "url": "https://x.com/mhmazur/status/2112531406274310592",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture: general AI project context; no ARC score, contest milestone or new benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T13:59:57Z",
+    "competitions": [],
+    "id": "2112531403032191134",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T13:08:30Z",
+    "storyUrl": "https://emergentmind.com/vistas",
+    "summary": "First media-only follow-up with animated examples in Mazur’s vista-gallery thread. No accompanying text or benchmark claim.",
+    "threadId": "2112531399991300560",
+    "url": "https://x.com/mhmazur/status/2112531403032191134",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture: general AI project context; no ARC score, contest milestone or new benchmark result."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T13:59:57Z",
+    "competitions": [],
+    "id": "2112531399991300560",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T13:08:29Z",
+    "storyUrl": "https://emergentmind.com/vistas",
+    "summary": "Mazur shares a gallery of 50 animated vistas he says were created with Opus 5.5, inspired by a Roku screensaver. He describes slow scrolling scenes and changing art styles.",
+    "threadId": "2112531399991300560",
+    "url": "https://x.com/mhmazur/status/2112531399991300560",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture: general AI project context; no ARC score, contest milestone or new benchmark result."
+  },
+  {
+    "author": "alin8020",
+    "authorName": "Alan Lin",
+    "category": "community",
+    "checkedAt": "2026-10-20T15:03:45Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2112528242351440088",
+    "identitySourceUrl": "https://x.com/alin8020",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-20T12:55:56Z",
+    "storyUrl": null,
+    "summary": "Lin’s follow-up links ARC Prize’s Argon announcement, Astra results page, scoring methodology and vendor documentation about preserving reasoning context.",
+    "threadId": "2112527934141469043",
+    "url": "https://x.com/alin8020/status/2112528242351440088",
+    "visibility": "public",
+    "whyItMatters": "Source follow-up retained with the root; edition desk should verify causal wording against primary evidence before reuse."
+  },
+  {
+    "author": "alin8020",
+    "authorName": "Alan Lin",
+    "category": "community",
+    "checkedAt": "2026-10-20T15:03:40Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2112527934141469043",
+    "identitySourceUrl": "https://x.com/alin8020",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-20T12:54:43Z",
+    "storyUrl": null,
+    "summary": "Alan Lin discusses the previously published ARC-AGI-3 standard/provider-adapter results and argues that retaining reasoning between steps matters when choosing a harness.",
+    "threadId": "2112527934141469043",
+    "url": "https://x.com/alin8020/status/2112527934141469043",
+    "visibility": "public",
+    "whyItMatters": "Fresh public commentary on existing results. Treat as Lin’s interpretation, not a new evaluation or proof that reasoning retention alone caused the difference."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "community",
+    "checkedAt": "2026-10-20T15:01:50.159Z",
+    "competitions": [],
+    "id": "2112502788618137626",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 1,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-20T11:14:47Z",
+    "storyUrl": "https://github.com/Graphify-Labs/graphify",
+    "summary": "Replying to a question about agents relearning project context, Puget points to Graphify as one of several tools.",
+    "threadId": null,
+    "url": "https://x.com/JFPuget/status/2112502788618137626",
+    "visibility": "public",
+    "whyItMatters": "General agent-workflow context from an ARC contender; no performance claim."
+  },
+  {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "community",
+    "checkedAt": "2026-10-20T15:01:50.159Z",
+    "competitions": [],
+    "id": "2112497709177290844",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 1,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-20T10:54:36Z",
+    "storyUrl": null,
+    "summary": "Replying to a suggestion to inspect checks rather than agent-written code, Puget says that approach cannot detect overengineering.",
+    "threadId": null,
+    "url": "https://x.com/JFPuget/status/2112497709177290844",
+    "visibility": "public",
+    "whyItMatters": "Attributed workflow caution; no ARC scoring claim."
+  },
+  {
+    "author": "iiiiitsu_ne",
+    "authorName": "イツ",
+    "category": "banter",
+    "checkedAt": "2026-10-20T15:03:15Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112492388908450135",
+    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
+    "importance": 1,
+    "personIds": [
+      "itsu"
+    ],
+    "postedAt": "2026-10-20T10:33:28Z",
+    "storyUrl": null,
+    "summary": "Itsu posts the Japanese word ゴイサギ (black-crowned night heron), #kaggle, and an ARC-AGI-2 competition link.",
+    "threadId": null,
+    "url": "https://x.com/iiiiitsu_ne/status/2112492388908450135",
+    "visibility": "public",
+    "whyItMatters": "Cryptic bird reference; no explicit score, rank or medal in the actual post. Do not infer a standings claim from the pun."
+  },
+  {
+    "author": "MindsAI_Jack",
+    "authorName": "Jack Cole",
+    "category": "community",
+    "checkedAt": "2026-10-20T15:01:35.970Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112491181200330865",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "importance": 1,
+    "personIds": [
+      "jack-cole"
+    ],
+    "postedAt": "2026-10-20T10:28:40Z",
+    "storyUrl": null,
+    "summary": "Cole thanks Dries Smit for a supportive reply about his addition to the ARC-2 team.",
+    "threadId": "2112303089198022857",
+    "url": "https://x.com/MindsAI_Jack/status/2112491181200330865",
+    "visibility": "public",
+    "whyItMatters": "Small reaction to an already reported team announcement; does not establish a new roster change."
+  },
+  {
     "author": "gklambauer",
     "authorName": "Günter Klambauer",
     "category": "research",
