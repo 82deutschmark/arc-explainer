@@ -1,0 +1,34 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-20T07:59:45Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Tufa Labs says its GB300 racks are live in Stockholm",
+  "id": "2026-10-20-0400-arc-3-tufa-labs-racks-live-stockholm",
+  "personIds": [],
+  "publishedAt": "2026-10-20T08:00:38Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "social-2112165331292602740",
+        "board-arc-3"
+      ],
+      "text": "Tufa Labs says two NVIDIA GB300 NVL72 racks are live in Stockholm, crediting DELTA for installation and T.Loop for hosting. The post links a deployment video."
+    }
+  ],
+  "since": "2026-10-19T07:57:14Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T08:00:04Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-19T15:05:50.864780Z",
+      "id": "social-2112165331292602740",
+      "title": "Tufa Labs — community post",
+      "url": "https://x.com/tufalabs/status/2112165331292602740"
+    }
+  ],
+  "teamIds": []
+}
