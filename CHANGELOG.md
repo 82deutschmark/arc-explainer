@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.154.3  Oct 20, 2026
+
+- **Keep unsupported score complaints out of the news selection** (Author: GPT-6.1 Sol / Codex). Remove discussion 750981 from the live Kaggle discussion export after the Boss challenged its news value. The discussion and edition guides now require substantive evidence before promoting suspected scoring or hardware changes, distinguish public-to-hidden generalization from repeat-run variation, and prohibit diagnosing overfitting without evidence. The private source remains on the watchlist; published editions and evidence stay archived. Refresh the export through the existing helper, which also expires one older lead outside its seven-day window.
+
 ### Version 9.154.2  Oct 20, 2026
 
 - **Team Turducken's picture includes the whole ARC3 crew** (Author: GPT-6 / Codex). Replace the older trio on About and About the Paper with the approved seven-character mechanical-turkey flight image, using shared artwork metadata so the two placements agree. Correct October 20's ARC3 Early illustration to the same complete crew, retaining its original standings and time and archiving a separate artwork revision. The art-desk guide now requires the full crew for current Turducken team pictures. Earlier artwork and X send history remain preserved.

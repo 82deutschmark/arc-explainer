@@ -37,6 +37,17 @@ before publishing their updated summaries, and keep genuinely unavailable new re
 
 Use `paper-lead` for substantive releases, reproducible methods, organizer clarifications, consequential contest issues or significant competitor statements after reading their source. An unanswered question can be useful reporting context without proving its premise. A proposal is not a rule change, and notebook-display speculation is not a verified leaderboard score. Routine help questions, recruiting, minor banter and the paper’s own promotion can remain on the broader watchlist. The edition writer makes the final editorial selection.
 
+**Score complaints need evidence before becoming news.** An isolated score drop or a question
+about changed hardware or scoring belongs in `watch-only`. First establish what is being
+compared: public-game tests versus hidden-game submissions, or repeated submissions on the
+same evaluation set. Public-game tuning can fail to generalize; repeated agent runs can also
+vary in sampled decisions, actions and allocation of the time budget. Identical notebook code,
+a full runtime and keep-alive moves do not establish identical execution. These are possible
+explanations, not a diagnosis that a contestant overfit. Promote a claimed infrastructure issue
+only with an organizer clarification or substantive corroboration that examines these alternatives,
+such as a controlled reproduction or independently documented failures. Attribution and a
+"not confirmed" disclaimer do not by themselves make a routine troubleshooting question newsworthy.
+
 ## Personal updates and edition evidence
 
 ```sh

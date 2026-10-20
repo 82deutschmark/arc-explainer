@@ -172,6 +172,11 @@ section cites valid `sourceIds` (`board` for the leaderboard).
 - **Fact check.** Validation checks the format and the fixed stats; it cannot certify prose. Check
   every number, comparison, identity and causal claim in the headline, dek, sections and Discord
   text against the cited evidence. Public medal bands are provisional. Omit what you cannot check.
+- **Score complaints.** Apply the evidence threshold in [DISCUSSIONS.md](DISCUSSIONS.md#inventory-contract)
+  before selecting a troubleshooting thread for the issue. Distinguish public-to-hidden
+  generalization from repeat-run variation. A participant's suspicion about hardware or scoring
+  does not earn edition space merely because it is attributed and labelled unconfirmed; do not
+  replace that suspicion with an unsupported diagnosis of overfitting either.
 - **intakeReview** has exactly one record per intake item: `covered`, `held`, `carried` or
   `not-selected`. A covered wire story or feature must be cited in a section. An editorial
   assignment cannot be `not-selected`: cover it substantively, or hold or carry it with a concrete
