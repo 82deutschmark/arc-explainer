@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-20T01:29:08Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC-2 gold cutoff rises, leaving okiek outside",
+  "id": "2026-10-19-2158-arc-2-gold-cutoff-rises-okiek-outside",
+  "personIds": [],
+  "publishedAt": "2026-10-20T01:58:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line rose 2.91 in the past day to 64.72. okiek is now 17th at 63.47, 1.25 short of the last gold place."
+    }
+  ],
+  "since": "2026-10-19T01:26:31Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T01:57:56Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16942017"
+  ]
+}

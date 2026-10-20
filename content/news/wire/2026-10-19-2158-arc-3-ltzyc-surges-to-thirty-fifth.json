@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-20T01:29:06Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "_LT_zyc surges from 696th to 35th on ARC-3",
+  "id": "2026-10-19-2158-arc-3-ltzyc-surges-to-thirty-fifth",
+  "personIds": [],
+  "publishedAt": "2026-10-20T01:58:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "_LT_zyc gained 6.24 to reach 36.00, moving from 696th to 35th on the ARC-AGI-3 public board."
+    }
+  ],
+  "since": "2026-10-19T01:26:30Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T01:57:56Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16370456"
+  ]
+}

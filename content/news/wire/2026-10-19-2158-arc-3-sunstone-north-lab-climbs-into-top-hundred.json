@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-20T01:29:06Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Sunstone North Lab jumps from 1,394th to 82nd",
+  "id": "2026-10-19-2158-arc-3-sunstone-north-lab-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-20T01:58:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Sunstone North Lab gained 7.45 to reach 33.59, moving from 1,394th to 82nd on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The climb puts the team inside the top 100, with the public gold line at 37.98."
+    }
+  ],
+  "since": "2026-10-19T01:26:30Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T01:57:56Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17077369"
+  ]
+}
