@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-20T03:59:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "kazuhiro3381 climbs from 650th to 65th on ARC-3",
+  "id": "2026-10-20-0004-arc-3-kazuhiro3381-climbs-to-sixty-fifth",
+  "personIds": [],
+  "publishedAt": "2026-10-20T04:04:25Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "kazuhiro3381 gained 4.10 points to reach 33.96, moving from 650th to 65th on the ARC-AGI-3 public board."
+    }
+  ],
+  "since": "2026-10-19T03:56:48Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T04:04:02Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17026108"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-20T03:59:23Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "agent intern&s climbs 430 places into ARC-2 top 100",
+  "id": "2026-10-20-0004-arc-2-agent-interns-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-20T04:04:25Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "agent intern&s climbed from 514th to 84th on the ARC-AGI-2 public board, reaching 34.86 after a 3.47-point gain."
+    }
+  ],
+  "since": "2026-10-19T03:56:49Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T04:04:02Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16774511"
+  ]
+}

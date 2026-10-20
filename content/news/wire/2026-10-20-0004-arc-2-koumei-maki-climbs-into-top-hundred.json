@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-20T03:59:23Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Koumei Maki climbs 503 places into ARC-2 top 100",
+  "id": "2026-10-20-0004-arc-2-koumei-maki-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-20T04:04:25Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Koumei Maki climbed from 597th to 94th on the ARC-AGI-2 public board, reaching 33.75 after a 2.64-point gain."
+    }
+  ],
+  "since": "2026-10-19T03:56:49Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T04:04:02Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17019051"
+  ]
+}
