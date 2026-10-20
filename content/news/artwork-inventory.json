@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-19T22:24:09.293376+00:00",
+  "updatedAt": "2026-10-20T10:02:48.381403+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -435,8 +435,10 @@
       "generationRecord": "2026-10-18-turducken-first-flight-v1-base",
       "src": "/news-images/2026-10-18-turducken-first-flight-v1-base.webp",
       "title": "Turducken First Flight",
-      "status": "approved-unused-reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-20-morning-arc-3"
+      ],
       "xAttachments": [],
       "discordShares": [
         {
@@ -450,7 +452,8 @@
       ],
       "approvedBy": "mark-barney",
       "approvedAt": "2026-10-18T19:17:34.889371Z",
-      "selectionNote": "Boss-approved native episode. Preserve clean source; future illustrated editions use fresh score/time overlays and record actual article and X uses. Discord sharing alone does not consume an article reserve."
+      "selectionNote": "Unused approved First Flight selected for October 20 Early. Closing seven-account ARC3 roster includes pictured Mark/Son/Keith subset. Clean source and finished 5:59 AM EDT overlays visually inspected; characters/action unobscured. Fantasy equipment.",
+      "artworkId": "2026-10-20-morning-arc-3-d05a1f1a92"
     },
     {
       "id": "2026-10-18-turducken-full-crew-codex-v1",

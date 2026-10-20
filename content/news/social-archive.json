@@ -1,5 +1,212 @@
 [
   {
+    "author": "gklambauer",
+    "authorName": "Günter Klambauer",
+    "category": "research",
+    "checkedAt": "2026-10-20T09:07:52.970Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112450218700722262",
+    "identitySourceUrl": "https://x.com/gklambauer",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-20T07:45:54Z",
+    "storyUrl": "https://arxiv.org/abs/2610.26834",
+    "summary": "Klambauer announces KronLSTM and links the new Kronecker Delta Rule paper. The authors propose a targeted association update for recurrent linear attention, report competitive long-context performance, and link open-source code and models. No ARC score is reported.",
+    "threadId": null,
+    "url": "https://x.com/gklambauer/status/2112450218700722262",
+    "visibility": "public",
+    "whyItMatters": "Research lead discovered in fses91’s separate Reposts feed. The primary arXiv abstract was checked independently; architecture claims remain attributed, and no Kaggle roster identity is inferred."
+  },
+  {
+    "author": "tufalabs",
+    "authorName": "Tufa Labs",
+    "category": "community",
+    "checkedAt": "2026-10-20T08:04:27.974Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112448682239091178",
+    "identitySourceUrl": "https://tufalabs.ai",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-20T07:39:47.000Z",
+    "storyUrl": null,
+    "summary": "Tufa Labs says Dominique Garmier and Andrin Rehmann will attend NVIDIA GTC Berlin this week and invites attendees to arrange a meeting through the lab.",
+    "threadId": null,
+    "url": "https://x.com/tufalabs/status/2112448682239091178",
+    "visibility": "public",
+    "whyItMatters": "New public team activity from the leaders of both ARC boards; no score or research-method claim."
+  },
+  {
+    "author": "mikeknoop",
+    "authorName": "Mike Knoop",
+    "category": "community",
+    "checkedAt": "2026-10-20T05:01:25.540526Z",
+    "competitions": [],
+    "id": "2112405349412262308",
+    "identitySourceUrl": "https://x.com/arcprize",
+    "importance": 1,
+    "personIds": [
+      "mike-knoop"
+    ],
+    "postedAt": "2026-10-20T04:47:36Z",
+    "storyUrl": null,
+    "summary": "Knoop challenges Rohit Krishnan’s prediction that judgment and taste will remain hard to generalize. He says asking interesting open questions has not been formalized, but believes it could be made tractable if formalized. This is an attributed research opinion, not a benchmark result.",
+    "threadId": "2112384103865798984",
+    "url": "https://x.com/mikeknoop/status/2112405349412262308",
+    "visibility": "public",
+    "whyItMatters": "Organizer commentary relevant to open-ended discovery and evaluating interesting questions. Actual reply and expanded parent read in signed-in Chrome; no subscriber restriction on either."
+  },
+  {
+    "author": "bogoconic1",
+    "authorName": "Geremie Yeo",
+    "category": "community",
+    "checkedAt": "2026-10-20T08:04:59.477Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112380776130158997",
+    "identitySourceUrl": "https://www.kaggle.com/yeoyunsianggeremie",
+    "importance": 1,
+    "personIds": [
+      "geremie-yeo"
+    ],
+    "postedAt": "2026-10-20T03:09:57.000Z",
+    "storyUrl": null,
+    "summary": "Geremie Yeo says he will attend the PyTorch conference on October 20 and 21.",
+    "threadId": null,
+    "url": "https://x.com/bogoconic1/status/2112380776130158997",
+    "visibility": "public",
+    "whyItMatters": "Contender community colour; no standings change claimed."
+  },
+  {
+    "author": "signulll",
+    "authorName": "signüll",
+    "category": "community",
+    "checkedAt": "2026-10-20T04:05:47.528062Z",
+    "competitions": [],
+    "id": "2112373149614403607",
+    "identitySourceUrl": "https://x.com/signulll",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-20T02:39:39Z",
+    "storyUrl": null,
+    "summary": "The author contrasts the old process of navigating Google results and ads with present AI-assisted information seeking, and wonders what the next few years will bring.",
+    "threadId": null,
+    "url": "https://x.com/signulll/status/2112373149614403607",
+    "visibility": "public",
+    "whyItMatters": "Captured because newly visible in Matt Mazur’s Reposts inventory. Original public post read. Repost action time is unknown; this is attributed general AI commentary, not an ARC result."
+  },
+  {
+    "author": "AInebosuke",
+    "authorName": "ねぼすけAI",
+    "category": "standings",
+    "checkedAt": "2026-10-20T04:05:47.528062Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112365916717801674",
+    "identitySourceUrl": "https://nebosukeai.com/",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-20T02:10:55Z",
+    "storyUrl": null,
+    "summary": "Translation of original Japanese: I improved my best score, though only a little. Following ARC3, I am aiming for the gold-medal band in ARC2 too. The Kaggle share text says rank 40.",
+    "threadId": null,
+    "url": "https://x.com/AInebosuke/status/2112365916717801674",
+    "visibility": "public",
+    "whyItMatters": "Original Japanese read on actual public post. Direct X → nebosukeai.com → Kaggle isakatsuyoshi link verified, plus reciprocal Kaggle → X link. Public ARC2 board independently shows rank 40, 44.44, team 復活の混テキスト; gold is an ambition, not an awarded medal."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T01:58:19.948256Z",
+    "competitions": [],
+    "id": "2112358565994488048",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T01:41:42Z",
+    "storyUrl": null,
+    "summary": "Mazur offers his arXiv paper-content collection and analysis APIs to potential collaborators, replying to Burny.",
+    "threadId": "2112317078669578347",
+    "url": "https://x.com/mhmazur/status/2112358565994488048",
+    "visibility": "public",
+    "whyItMatters": "Public research collaboration lead; no new ARC result or competition claim."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T00:58:20.822412Z",
+    "competitions": [],
+    "id": "2112341510285074932",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 1,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T00:33:56Z",
+    "storyUrl": null,
+    "summary": "Mazur asks Dave Martin when he expects to launch Crafd, in reply to a side-business progress update.",
+    "threadId": "2112268784560157182",
+    "url": "https://x.com/mhmazur/status/2112341510285074932",
+    "visibility": "public",
+    "whyItMatters": "Organizer capture for completeness; unrelated to ARC and not a news lead."
+  },
+  {
+    "author": "aimalysheva",
+    "authorName": "Sasha Malysheva",
+    "category": "community",
+    "checkedAt": "2026-10-20T04:05:47.528062Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112316361825251787",
+    "identitySourceUrl": "https://x.com/aimalysheva",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-19T22:54:00Z",
+    "storyUrl": null,
+    "summary": "Malysheva says the Mostik offsite prompted a stricter documentation habit: anything that came up twice should go into a document, so the team retains what it learned together.",
+    "threadId": null,
+    "url": "https://x.com/aimalysheva/status/2112316361825251787",
+    "visibility": "public",
+    "whyItMatters": "Attributed team-working colour; no benchmark result or score claim. Full actual public post read in signed-in Chrome."
+  },
+  {
+    "author": "MindsAI_Jack",
+    "authorName": "Jack Cole",
+    "category": "community",
+    "checkedAt": "2026-10-20T04:05:47.528062Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112303089198022857",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "importance": 2,
+    "personIds": [
+      "jack-cole",
+      "mark-barney"
+    ],
+    "postedAt": "2026-10-19T22:01:15Z",
+    "storyUrl": null,
+    "summary": "Cole publicly confirms joining Mark Barney’s ARC-AGI-2 team, says he is excited, and says they will work hard through the last two weeks because the competition is strong. His quote contains Barney’s public ARC2 team announcement.",
+    "threadId": null,
+    "url": "https://x.com/MindsAI_Jack/status/2112303089198022857",
+    "visibility": "public",
+    "whyItMatters": "New first-person team confirmation. Signed-in Chrome original post read; public post has no subscriber restriction. Exact public roster also shows jcole75 with markbarney, sonphamorg and scizical in ARC Mutants; this does not establish a joining date or score contribution."
+  },
+  {
     "author": "82deutschmark",
     "authorName": "Mark Barney",
     "category": "community",

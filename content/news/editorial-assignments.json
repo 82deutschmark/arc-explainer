@@ -707,5 +707,29 @@
       "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
     ],
     "instructions": "Mark commissioned a substantial special Tufa article for the October 19 evening front page and held the edition while it was prepared. Publish the supplied validated Tufa dispatch, then prepare the scheduled edition so this feature is protected above the ARC3 recap. Preserve the existing separate Jack Cole/ARC Mutants ARC2 feature. Use only the reviewed v2 INTERIOR illustration: inside the immense Tufa data citadel, two racks being moved into place, looking out over competition far below. v1 exterior composition was rejected. Full hardware specs and source distinctions are already in the manuscript. Refresh closing standings/rosters and publication time; keep dated observations explicit. Nvidia platform specifications are not an audited Tufa configuration, and rack installation is not proven to have caused existing scores. Puget article was WITHDRAWN by Mark and remains private background: do not publish its draft or his private reaction. Mark explicitly authorized handoff to the paused evening edition for publication after this work. Follow normal validation, edition artwork composition/inspection and routine send-once X process, with this commissioned feature and selected image leading its announcement where supported. Latest explicit direction: headline the feature “A sneak peek inside the Tufa Citadel”. Retain the concise, timestamped YouTube-film summary and clickable original video source. User approved v2 as the lead; three additional citadel views are optional reserves still being prepared and must not delay publication. The October 9 compute quotation was rechecked on the public logged-out original post."
+  },
+  {
+    "id": "oct20-early-first-flight-art",
+    "competition": "arc-3",
+    "createdAt": "2026-10-18T19:17:34.889371Z",
+    "selectedAt": "2026-10-20T10:00:59.097422+00:00",
+    "expiresAt": "2026-10-20T14:00:00Z",
+    "title": "First Flight for October 20 Early edition",
+    "status": "pending",
+    "targetEditionId": "2026-10-20-morning-arc-3",
+    "placement": "edition-artwork",
+    "artworkGenerationRecord": "2026-10-18-turducken-first-flight-v1-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": []
+    },
+    "teamIds": [
+      "15486995",
+      "15499660",
+      "15605182"
+    ],
+    "instructions": "Select unused approved First Flight stock. Mark, Son and Keith are present in the closing seven-account ARC3 roster. The trio is a subset; fantasy equipment does not establish methods. Compose exact closing scores/time, inspect and attach to routine Early X post.",
+    "verificationNotes": "Original approval date preserved. Clean base inspected; flight across snowy canyon differs from yesterday’s hangar and citadel interior. Two Yorkies; established Mark/Son/Keith subset, no Jack Cole."
   }
 ]

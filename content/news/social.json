@@ -124,6 +124,90 @@
     "whyItMatters": "Organizer confirmation of a consequential team result already covered in the newspaper’s morning/afternoon reporting; no methods disclosed."
   },
   {
+    "author": "gklambauer",
+    "authorName": "Günter Klambauer",
+    "category": "research",
+    "checkedAt": "2026-10-20T09:07:52.970Z",
+    "competitions": [
+      "arc-2",
+      "arc-3"
+    ],
+    "id": "2112450218700722262",
+    "identitySourceUrl": "https://x.com/gklambauer",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-20T07:45:54Z",
+    "storyUrl": "https://arxiv.org/abs/2610.26834",
+    "summary": "Klambauer announces KronLSTM and links the new Kronecker Delta Rule paper. The authors propose a targeted association update for recurrent linear attention, report competitive long-context performance, and link open-source code and models. No ARC score is reported.",
+    "threadId": null,
+    "url": "https://x.com/gklambauer/status/2112450218700722262",
+    "visibility": "public",
+    "whyItMatters": "Research lead discovered in fses91’s separate Reposts feed. The primary arXiv abstract was checked independently; architecture claims remain attributed, and no Kaggle roster identity is inferred."
+  },
+  {
+    "author": "AInebosuke",
+    "authorName": "ねぼすけAI",
+    "category": "standings",
+    "checkedAt": "2026-10-20T04:05:47.528062Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112365916717801674",
+    "identitySourceUrl": "https://nebosukeai.com/",
+    "importance": 2,
+    "personIds": [],
+    "postedAt": "2026-10-20T02:10:55Z",
+    "storyUrl": null,
+    "summary": "Translation of original Japanese: I improved my best score, though only a little. Following ARC3, I am aiming for the gold-medal band in ARC2 too. The Kaggle share text says rank 40.",
+    "threadId": null,
+    "url": "https://x.com/AInebosuke/status/2112365916717801674",
+    "visibility": "public",
+    "whyItMatters": "Original Japanese read on actual public post. Direct X → nebosukeai.com → Kaggle isakatsuyoshi link verified, plus reciprocal Kaggle → X link. Public ARC2 board independently shows rank 40, 44.44, team 復活の混テキスト; gold is an ambition, not an awarded medal."
+  },
+  {
+    "author": "mhmazur",
+    "authorName": "Matt Mazur",
+    "category": "community",
+    "checkedAt": "2026-10-20T01:58:19.948256Z",
+    "competitions": [],
+    "id": "2112358565994488048",
+    "identitySourceUrl": "https://mattmazur.com/contact/",
+    "importance": 2,
+    "personIds": [
+      "matt-mazur"
+    ],
+    "postedAt": "2026-10-20T01:41:42Z",
+    "storyUrl": null,
+    "summary": "Mazur offers his arXiv paper-content collection and analysis APIs to potential collaborators, replying to Burny.",
+    "threadId": "2112317078669578347",
+    "url": "https://x.com/mhmazur/status/2112358565994488048",
+    "visibility": "public",
+    "whyItMatters": "Public research collaboration lead; no new ARC result or competition claim."
+  },
+  {
+    "author": "MindsAI_Jack",
+    "authorName": "Jack Cole",
+    "category": "community",
+    "checkedAt": "2026-10-20T04:05:47.528062Z",
+    "competitions": [
+      "arc-2"
+    ],
+    "id": "2112303089198022857",
+    "identitySourceUrl": "https://www.kaggle.com/jcole75",
+    "importance": 2,
+    "personIds": [
+      "jack-cole",
+      "mark-barney"
+    ],
+    "postedAt": "2026-10-19T22:01:15Z",
+    "storyUrl": null,
+    "summary": "Cole publicly confirms joining Mark Barney’s ARC-AGI-2 team, says he is excited, and says they will work hard through the last two weeks because the competition is strong. His quote contains Barney’s public ARC2 team announcement.",
+    "threadId": null,
+    "url": "https://x.com/MindsAI_Jack/status/2112303089198022857",
+    "visibility": "public",
+    "whyItMatters": "New first-person team confirmation. Signed-in Chrome original post read; public post has no subscriber restriction. Exact public roster also shows jcole75 with markbarney, sonphamorg and scizical in ARC Mutants; this does not establish a joining date or score contribution."
+  },
+  {
     "author": "82deutschmark",
     "authorName": "Mark Barney",
     "category": "community",
@@ -328,89 +412,5 @@
     "url": "https://x.com/FakePsyho/status/2111851337130668414",
     "visibility": "public",
     "whyItMatters": "Author-reported contamination check; does not independently establish absence of training exposure."
-  },
-  {
-    "author": "FakePsyho",
-    "authorName": "Psyho",
-    "category": "research",
-    "checkedAt": "2026-10-18T17:05:46.925Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2111850705094930809",
-    "identitySourceUrl": "https://x.com/FakePsyho",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-18T16:03:39.000Z",
-    "storyUrl": null,
-    "summary": "Psyho reports full-run costs of $700 for Sol 6.1 and $60 for Luna 6, and estimates about $1,000 for Sonnet 5.5 and $4,000 for Astra 6. Says testing uses xhigh and may reduce generous action limits to lower cost.",
-    "threadId": "2111842926917550193",
-    "url": "https://x.com/FakePsyho/status/2111850705094930809",
-    "visibility": "public",
-    "whyItMatters": "Separates reported completed costs from forecasts; no logs, scores or reproducible release verified."
-  },
-  {
-    "author": "FakePsyho",
-    "authorName": "Psyho",
-    "category": "research",
-    "checkedAt": "2026-10-18T18:18:02.594443Z",
-    "competitions": [
-      "arc-3"
-    ],
-    "id": "2111842926917550193",
-    "identitySourceUrl": "https://x.com/FakePsyho",
-    "importance": 2,
-    "personIds": [],
-    "postedAt": "2026-10-18T15:32:44.000Z",
-    "storyUrl": null,
-    "summary": "Psyho says a nearly finished PuzzleScript benchmark selects 40 games from over 300, uses Codex/Claude Code harnesses with code generation prohibited, and keeps the game set private. The author says generous action limits already allow some saturation while models remain inefficient.",
-    "threadId": "2111842926917550193",
-    "url": "https://x.com/FakePsyho/status/2111842926917550193",
-    "visibility": "public",
-    "whyItMatters": "Potential benchmark-development story; author claims, not an official ARC release or independently verified score."
-  },
-  {
-    "author": "iiiiitsu_ne",
-    "authorName": "イツ (Itsu)",
-    "category": "standings",
-    "checkedAt": "2026-10-18T18:18:02.594443Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2111748324072276193",
-    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
-    "importance": 2,
-    "personIds": [
-      "itsu"
-    ],
-    "postedAt": "2026-10-18T09:16:49.000Z",
-    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
-    "summary": "Replying after NT congratulates them on passing 70, Itsu says they do not yet know how to improve beyond 70 and will keep trying.",
-    "threadId": "2111746277256110582",
-    "url": "https://x.com/iiiiitsu_ne/status/2111748324072276193",
-    "visibility": "public",
-    "whyItMatters": "Attributed contender reaction, with thread context; no method or new official result established."
-  },
-  {
-    "author": "iiiiitsu_ne",
-    "authorName": "イツ (Itsu)",
-    "category": "standings",
-    "checkedAt": "2026-10-18T15:07:57.357Z",
-    "competitions": [
-      "arc-2"
-    ],
-    "id": "2111746277256110582",
-    "identitySourceUrl": "https://www.kaggle.com/nisshokuitsuki",
-    "importance": 2,
-    "personIds": [
-      "itsu"
-    ],
-    "postedAt": "2026-10-18T09:08:41.000Z",
-    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2",
-    "summary": "Itsu says they strongly expect to fall from rank eight on the private leaderboard, and perhaps on the public board too. This is their expectation, not a private result. The post links ARC-AGI-2.",
-    "threadId": "2111746277256110582",
-    "url": "https://x.com/iiiiitsu_ne/status/2111746277256110582",
-    "visibility": "public",
-    "whyItMatters": "New first-person reaction from a top-ten contender; distinguish the rank mentioned at posting from later board observations."
   }
 ]

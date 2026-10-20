@@ -1,0 +1,48 @@
+{
+  "articleId": "2026-10-20-morning-arc-3",
+  "briefSha256": "bb3350f2cefb8205ca1460e0d0049927620f5543afba41ff14ad8ce109896eac",
+  "dataAsOf": "2026-10-20T09:59:57Z",
+  "generationRecord": "2026-10-18-turducken-first-flight-v1-base",
+  "headline": "wkdrbwnd1 leaps to 26th as ARC-3’s gold chase gathers pace",
+  "historyChart": null,
+  "id": "2026-10-20-morning-arc-3-d05a1f1a92",
+  "image": {
+    "alt": "AI editorial illustration: Mark Barney, Son Pham and yellow black-capped Keith Tyser fly a mechanical turkey containing a chicken containing a duck across a snowy canyon, with two Yorkies. The trio is a subset of Team Turducken. ARC-3 public panel: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49; October 20, 2026, 5:59 AM EDT.",
+    "artworkId": "2026-10-20-morning-arc-3-d05a1f1a92",
+    "caption": "AI-generated editorial illustration: First Flight. Pictured members are a subset of Team Turducken; machinery is fantasy. Score panel: Oct 20, 2026 · 5:59 AM EDT; provisional public standings.",
+    "src": "/news-images/2026-10-20-morning-arc-3-d05a1f1a92.webp"
+  },
+  "imageSha256": "24c1a1c3d73cd48e51d7cca8354c64ec7a49419236e1a261afd610a7389be7c9",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "20db9542a7ee9759c75c37ca706fc42d218dadc0b440fcea7b4bff836e5d9f45",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}
