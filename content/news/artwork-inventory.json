@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-20T10:09:42.002839+00:00",
+  "updatedAt": "2026-10-20T14:17:22Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -459,7 +459,7 @@
       ],
       "approvedBy": "mark-barney",
       "approvedAt": "2026-10-18T19:17:34.889371Z",
-      "selectionNote": "Unused approved First Flight selected for October 20 Early. Closing seven-account ARC3 roster includes pictured Mark/Son/Keith subset. Clean source and finished 5:59 AM EDT overlays visually inspected; characters/action unobscured. Fantasy equipment.",
+      "selectionNote": "Unused approved First Flight selected for October 20 Early. Closing seven-account ARC3 roster includes pictured Mark/Son/Keith subset. Clean source and finished 5:59 AM EDT overlays visually inspected; characters/action unobscured. Fantasy equipment. October 20: replaced on the Early edition by the approved full-crew flight at the Boss’s request; original artwork and X attachment remain historical records. Do not select this trio as a current Team Turducken picture.",
       "artworkId": "2026-10-20-morning-arc-3-d05a1f1a92"
     },
     {
@@ -546,7 +546,8 @@
     },
     {
       "articleUses": [
-        "2026-10-18-special-turducken-takes-third"
+        "2026-10-18-special-turducken-takes-third",
+        "2026-10-20-morning-arc-3"
       ],
       "artworkId": "2026-10-18-evening-arc-3-preview-242980a95d",
       "discordShares": [
@@ -561,7 +562,7 @@
       ],
       "generationRecord": "2026-10-18-turducken-whole-crew-flight-v1-base",
       "id": "2026-10-18-turducken-whole-crew-flight-v1",
-      "selectionNote": "Human-commissioned new seven-character flight episode. Existing first-flight stock has only three characters. Clean native source and finished 10:56 PM EDT overlays inspected; all seven crew and both Yorkies visible.",
+      "selectionNote": "Human-commissioned new seven-character flight episode. Existing first-flight stock has only three characters. Clean native source and finished 10:56 PM EDT overlays inspected; all seven crew and both Yorkies visible. October 20: Boss-requested correction uses the full crew for the Early edition and both current website team pictures. All seven avatars and both Yorkies inspected; original Early score/time panel retained. No X resend.",
       "src": "/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp",
       "status": "published-on-special-front-page",
       "title": "Team Turducken — The Whole Crew Takes Flight",
@@ -572,6 +573,18 @@
           "verifiedAt": "2026-10-19T03:17:46.335105+00:00",
           "artworkId": "2026-10-18-evening-arc-3-preview-242980a95d",
           "attachmentSha256": "d295352a3b7420400b9bb44df6ad4873780b1fff9c34c9233f97e26bc28881a4"
+        }
+      ],
+      "websiteUses": [
+        "/about",
+        "/news/staff"
+      ],
+      "articleRevisions": [
+        {
+          "articleId": "2026-10-20-morning-arc-3",
+          "artworkId": "2026-10-20-morning-arc-3-d25579cb91",
+          "replacedArtworkId": "2026-10-20-morning-arc-3-d05a1f1a92",
+          "revisionId": "2026-10-20-morning-arc-3-artwork-revision-1"
         }
       ]
     },

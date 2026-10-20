@@ -1,10 +1,10 @@
 /**
  * Author: GPT-6 / Codex; Cascade (OpenAI)
- * Date: 2026-10-07; 2026-10-15 (Claude Opus 5.5 Low: the team's turducken harness picture under the title)
+ * Date: 2026-10-20 (complete seven-character Team Turducken picture)
  * PURPOSE: About page describing ARC Explainer’s mission, accessibility goals, and key contributors,
- * including the latest ReArc Bench spotlight content and curated references. Human ARC
+ * including the shared complete ARC3 team artwork, ReArc Bench spotlight and curated references. Human ARC
  * uses a full-page link to its separately built app hosted within ARC Explainer.
- * SRP/DRY check: Pass — single-responsibility About view reusing shared components (revalidated 2025-12-30).
+ * SRP/DRY check: Pass — About view reuses shared components and arc3TeamArtwork.ts (revalidated 2026-10-20).
  */
 
 import React from 'react';
@@ -12,6 +12,7 @@ import { Github, ExternalLink, Sparkles } from 'lucide-react';
 import { EmojiMosaicAccent } from '@/components/browser/EmojiMosaicAccent';
 import { ReferenceMaterial } from '@/components/browser/ReferenceMaterial';
 import { usePageMeta } from '@/hooks/usePageMeta';
+import { ARC3_TEAM_ARTWORK } from '@shared/arc3TeamArtwork';
 
 export default function About() {
   usePageMeta({
@@ -70,12 +71,12 @@ export default function About() {
           </div>
         </div>
 
-        {/* The team, 15-Oct-2026: art supplied by the Boss. */}
+        {/* Complete ARC3 crew, using the approved seven-character flight illustration. */}
         <figure className="mb-8 border border-slate-700 rounded-lg overflow-hidden bg-slate-900/70">
-          <a href="/turducken-harness.jpg">
-            <img src="/turducken-harness.jpg" alt="Illustration: the team rides a giant robot turkey built from graphics cards over snowy castles at sunset, with a robot chicken, a duck in sunglasses and two terriers in goggles aboard." width={1672} height={941} className="w-full h-auto block" />
+          <a href={ARC3_TEAM_ARTWORK.src}>
+            <img src={ARC3_TEAM_ARTWORK.src} alt={ARC3_TEAM_ARTWORK.alt} width={ARC3_TEAM_ARTWORK.width} height={ARC3_TEAM_ARTWORK.height} className="w-full h-auto block" />
           </a>
-          <figcaption className="px-4 py-3 text-sm text-slate-300 italic">Son &amp; Mark &amp; Ronen flying our turducken harness up to third place on the ARC-AGI-3 board, 15 October 2026.</figcaption>
+          <figcaption className="px-4 py-3 text-sm text-slate-300 italic">{ARC3_TEAM_ARTWORK.caption}</figcaption>
         </figure>
 
         {/* Main Content Grid */}

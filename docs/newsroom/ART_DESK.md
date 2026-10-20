@@ -29,6 +29,12 @@ held in reserve is tracked in data, not prose: `content/news/artwork-inventory.j
   with opaque visors (no names, likenesses or headcount implied). Other contenders appear only with
   their own verified reference. Never guess a face from a name or avatar; never depict anyone not
   in the fresh roster; the machines are metaphors, not claims about hardware or spending.
+- **Team Turducken pictures include the whole ARC3 crew.** For the team's current picture and
+  future Turducken-focused illustrations, show Mark, Son, Keith, DZ, NT, Choryu and Herminator
+  standing in for Ronen together on the mechanical turkey, with both Yorkies. Use the approved
+  `2026-10-18-turducken-whole-crew-flight-v1-base` for the current team picture. The earlier
+  three-character First Flight and hangar are historical episodes; do not select them as a
+  current team picture. Check the full cast in [CHARACTERS.md](CHARACTERS.md) before publishing.
 - **The future scene.** When new art is needed after stock is used, the Boss's concept is two GPU
   forts on neighbouring high ground (Tufa with Dries, Chen's rabbits) while top-five and top-ten
   challengers haul GPU siege towers, rams and carts uphill; the leaders' towers drawn about a fifth

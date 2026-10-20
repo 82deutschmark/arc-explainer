@@ -1,0 +1,53 @@
+{
+  "articleId": "2026-10-20-morning-arc-3",
+  "briefSha256": "8fbb6f9bfe019b0057ca2357e49ba49eb4963f027f96dafe722101f8e4a23d38",
+  "compositionReview": "Visually inspected final full-size composition: all seven approved crew and exactly two Yorkies are visible aboard the mechanical turkey. Corner score panel and masthead cover only background; original closing scores and 5:59 AM EDT observation time match the archived edition.",
+  "dataAsOf": "2026-10-20T09:59:57Z",
+  "generationRecord": "2026-10-18-turducken-whole-crew-flight-v1-base",
+  "headline": "wkdrbwnd1 leaps to 26th as ARC-3’s gold chase gathers pace",
+  "historyChart": null,
+  "id": "2026-10-20-morning-arc-3-d25579cb91",
+  "image": {
+    "alt": "AI editorial illustration: Team Turducken’s full crew—Mark, Son, Keith’s yellow mascot, DZ with her pink bunny, NT the banana kitten, Choryu’s MRI-display character and Herminator standing in for Ronen—flies the nested mechanical turkey, chicken and duck over a snowy canyon, with two Yorkies. ARC-3 public score panel: Tufa Labs first, 68.91; Yi-Chia Chen second, 67.49; October 20, 2026, 5:59 AM EDT.",
+    "artworkId": "2026-10-20-morning-arc-3-d25579cb91",
+    "caption": "AI-generated editorial illustration: Team Turducken — The Whole Crew Takes Flight. All seven commissioned characters and both Yorkies; machinery is fantasy. Image corrected October 20. Original score panel: Oct 20, 2026 · 5:59 AM EDT; provisional public standings.",
+    "src": "/news-images/2026-10-20-morning-arc-3-d25579cb91.webp"
+  },
+  "imageSha256": "255732f413a76ccd1f82fbab8aa736ea139f451ec807fd545a6ad68111d97596",
+  "kind": "edition-composition",
+  "layout": "corner-overlays-v1",
+  "leadGap": {
+    "current": 1.42,
+    "extends": false,
+    "previous": 1.42
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "rawSha256": "a870278b160b0c632d7428eaa2b508fdf470b4e03ddf0f376e8d61ce6c45ff37",
+  "rows": [
+    {
+      "name": "Tufa Labs",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Yi-Chia Chen",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 67.49,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    }
+  ],
+  "supportingCastReview": {
+    "checkedAt": "2026-10-20T14:16:17Z",
+    "result": "All seven required handles are present in the archived closing roster for ARC3 team 15605182. Approved avatars: Mark, Son, Keith, DZ, NT, Choryu and Herminator for Ronen; two owner-supplied Yorkies."
+  },
+  "trigger": "editor-commissioned-leading-scene",
+  "version": 1
+}

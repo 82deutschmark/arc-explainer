@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.154.2  Oct 20, 2026
+
+- **Team Turducken's picture includes the whole ARC3 crew** (Author: GPT-6 / Codex). Replace the older trio on About and About the Paper with the approved seven-character mechanical-turkey flight image, using shared artwork metadata so the two placements agree. Correct October 20's ARC3 Early illustration to the same complete crew, retaining its original standings and time and archiving a separate artwork revision. The art-desk guide now requires the full crew for current Turducken team pictures. Earlier artwork and X send history remain preserved.
+
 ### Version 9.154.1  Oct 20, 2026
 
 - **ARC-AGI-2 runs screen: board and final-pick view instead of per-person figures** (Author: Claude Opus 5.5 Low). What: the per-person book, person filter, person colours and WHO column are gone; in their place are our public-board rank in the stat strip, a BOARD pane (our score against the gold, silver and bronze lines) and a TOP 10 pane (our highest public scores, the candidates for the two final picks). The #arc-2 post no longer names the submitter. Why: the Boss: "we don't care who does the sub... Jack will do all subs going forward"; the submitter is only whose Kaggle account carried the run. How: `runStats.ts` drops people and adds `topRuns`; `ScoreTimeline.tsx` draws one colour with new team bests in green; `Arc2Runs.tsx` reads the board through the public leaderboard's `useKaggleBoard`; `Arc2Run.tsx` and `scripts/arc2_runs/arc2_runs.py` stop naming the submitter; `tests/teamRunStats.test.ts` updated.
