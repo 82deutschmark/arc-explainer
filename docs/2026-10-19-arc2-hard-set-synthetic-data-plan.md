@@ -7,6 +7,8 @@ PURPOSE: Plan for Claude Opus 5.5 to build the synthetic ARC-AGI-2 training set 
   one-experiment-a-day cadence, generating from notes that are not solvers). Companion pages:
   /arc2/hard-set (the puzzles, every recorded attempt, the plain-language notes) and
   /arc2/hard-set/findings (why they are hard). Notes live in shared/arc2HardSet.ts.
+  20-Oct-2026, Claude Opus 5.5 Medium: section 7 added for the Boss-approved change (build by
+  difficulty tier, separate sets per tier, score only on a never-copied holdout) and the holdout chosen.
 SRP/DRY check: Pass - points at the pages, the notes file and the team repos instead of copying them.
 -->
 
@@ -103,6 +105,8 @@ SSD is not mounted, stop and say so).
 
 ## 4. The ruler and the loop
 
+- **Superseded on 20-Oct-2026 for decisions: see section 7.** Decisions are scored on the holdout;
+  the split below stays as a record.
 - **One honest ruler, written once:** solve rate on the public eval set split into (a) the eighteen
   hard-set puzzles (never trained on) and (b) the other 102, scored with the official two-attempt
   union rule (`arc-agi-benchmarking` scoring; this repo's `/scoring` page explains it). (a) is the
@@ -130,3 +134,44 @@ SSD is not mounted, stop and say so).
 - Where the generator package lives: the team repo (`sonpham-org/autoresearch-arena`, proposed) or
   Jack's repo. The data location on the SSD is not in question.
 - Whether Jack wants the JSONL row format or plain task JSON; the plan assumes both.
+
+## 7. Tiers and the scoring holdout (approved 20-Oct-2026)
+
+Source: Bubba's hand-off note `~/bubba-workspace/docs/2026-10-20-arc2-tiered-synthetic-datasets.md`.
+The Boss approved Jack Cole's recommendation in #arc-2 at 09:52 ET on 20-Oct-2026.
+
+- **Every tier, not only never-solved.** Jack's report tiers every eval test output by how often his
+  27B and Flash-Next runs solve it: never, rare, sometimes, usually, always
+  (`jcole75/arc2026` `docs/experiments/unsolved_puzzles_20261019.md`, pipeline `scripts/unsolved_atlas/`).
+  New families are drawn from all tiers.
+- **One set per tier**, so training mixes tiers on purpose, weighted toward rare and sometimes.
+  The eleven families built so far come from never-solved puzzles, so they form the "never" tier.
+- **Training-set tiers need re-runs.** Nearly every ARC-2 training task in Jack's report was run one
+  to three times, so its "never" label there is thin. Re-run those before treating them as hard.
+- **Shared code base.** The Boss chose Jack's `arc2026` as the shared code and research base
+  (consolidation in jcole75/arc2026 pull request 1, under review). The generator package moves there
+  once that lands; until then it stays in `autoresearch-arena/arc2/synth_hardset/`.
+
+**The scoring holdout.** It contains 28 eval tasks. Decisions are scored only on these. No family may
+copy them or be modelled on them.
+
+It starts from Jack's holdout30 (`jcole75/arc2026` `data/arc2_holdout30_task_ids.json`). Exposure was
+checked on 20-Oct-2026:
+
+- Two of the thirty had already been modelled: jigsaw (446ef5d2) and marble corridors (9bbf930d).
+  Both are dropped, which leaves 28.
+- Five waiting-list puzzles fall inside the holdout: e12f9a14, abc82100, d35bdbdc, 88bcf3b4 and
+  16b78196. They are frozen and will never get a generator.
+- `build.py` refuses any family modelled on a holdout task.
+- **Base model.** Our 4B base is Sorokin's original NVARC checkpoint, which trained on public eval,
+  holdout included. Arms still compare fairly on the same base. A clean holdout reading needs Jack's
+  93k checkpoint, which never trained on holdout30.
+
+The 28 task ids:
+
+16b78196, 16de56c4, 221dfab4, 247ef758, 2d0172a1, 332f06d7, 36a08778, 3dc255db, 409aa875, 4a21e3da,
+4c416de3, 53fb4810, 581f7754, 62593bfd, 7666fa5d, 78332cb0, 7b0280bc, 7b3084d4, 88bcf3b4, 8f215267,
+9385bd28, abc82100, b6f77b65, c7f57c3e, d35bdbdc, dd6b8c4b, e12f9a14, f560132c.
+
+The same list is `HOLDOUT` in `arc2/synth_hardset/families/__init__.py`. The ruler reports it as
+holdout28, and past runs were rescored from their saved per-task scores.
