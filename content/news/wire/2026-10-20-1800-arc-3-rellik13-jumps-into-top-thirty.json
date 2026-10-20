@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-20T21:31:16Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "rellik13 jumps from 263rd to 28th on ARC-3",
+  "id": "2026-10-20-1800-arc-3-rellik13-jumps-into-top-thirty",
+  "personIds": [],
+  "publishedAt": "2026-10-20T22:00:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "rellik13 gained 4.75 points to reach 36.55, rising from 263rd to 28th."
+    }
+  ],
+  "since": "2026-10-19T21:28:41Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-20T22:00:12Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16706087"
+  ]
+}
