@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-21T13:33:01Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "NguyenThanhNhan surges into ARC-2 gold at 16th",
+  "id": "2026-10-21-0957-arc-2-nguyenthanhnan-into-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-21T13:57:32Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "NguyenThanhNhan gained 13.89 points to reach 65.97, climbing from 30th to 16th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "That move carries the team into the 16 gold places, where it now sits on the cutoff score."
+    }
+  ],
+  "since": "2026-10-20T13:30:20Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T13:57:04Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15938245"
+  ]
+}
