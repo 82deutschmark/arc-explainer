@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.154.4  Oct 20, 2026
+
+- **Mark's unlisted “what the hell are you working on?” page** (Author: GPT-6.1 Sol / Codex). Add a standalone personal update explaining ARC3, Team Turducken’s dated public third place, work with Son Pham and the team, and Friday’s Boston summit. Include a newly commissioned Mark/Yorkies/cybernetic-poultry illustration and the approved full-crew flight. The page requests no indexing and is absent from navigation, sitemap and news feeds; anyone with the link can read it. Implementation and source dates: `docs/2026-10-20-mark-personal-update-plan.md`.
+
 ### Version 9.154.3  Oct 20, 2026
 
 - **Keep unsupported score complaints out of the news selection** (Author: GPT-6.1 Sol / Codex). Remove discussion 750981 from the live Kaggle discussion export after the Boss challenged its news value. The discussion and edition guides now require substantive evidence before promoting suspected scoring or hardware changes, distinguish public-to-hidden generalization from repeat-run variation, and prohibit diagnosing overfitting without evidence. The private source remains on the watchlist; published editions and evidence stay archived. Refresh the export through the existing helper, which also expires one older lead outside its seven-day window.

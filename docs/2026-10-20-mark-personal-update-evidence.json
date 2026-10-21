@@ -1,0 +1,46 @@
+{
+  "competition": "arc-prize-2026-arc-agi-3",
+  "fetched": "2026-10-21T00:01:32Z",
+  "teams": 4556,
+  "ourTeamId": "15605182",
+  "rows": [
+    [
+      1,
+      "15486995",
+      "Tufa Labs",
+      "2026-10-20 12:46:26",
+      68.91,
+      169,
+      "dlorah,driessmit1,infinitecreativity,jeroencottaar,pressman1,stefano1283",
+      1,
+      68.91
+    ],
+    [
+      2,
+      "15499660",
+      "Yi-Chia Chen",
+      "2026-10-19 21:54:54",
+      67.49,
+      36,
+      "threerabbits",
+      2,
+      67.49
+    ],
+    [
+      3,
+      "15605182",
+      "Team Turducken",
+      "2026-10-19 14:32:04",
+      52.82,
+      204,
+      "dzjiann,keithtyser,markbarney,mitubant,ngyzly,scizical,sonphamorg",
+      3,
+      52.82
+    ]
+  ],
+  "leaderboardUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+  "eventUrl": "https://arcprize.org/events/research-summit-2026",
+  "eventDate": "2026-10-23",
+  "eventCity": "Boston, Massachusetts",
+  "personalPlans": "Mark supplied the travel plans directly in this chat."
+}

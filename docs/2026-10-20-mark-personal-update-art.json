@@ -1,0 +1,18 @@
+{
+  "author": "GPT-6.1 Sol / Codex",
+  "createdAt": "2026-10-21T00:07:30.950Z",
+  "purpose": "Mark's owner-commissioned unlisted personal update",
+  "tool": "built-in image_gen.imagegen",
+  "toolArguments": {
+    "prompt": "Use case: illustration-story. Asset type: wide hero illustration for Mark Barney's personal ARC Explainer update. Input 1 is Mark's established cyber-engineer avatar: preserve recognizable beard and outrageous dense GPU headgear, many little cyan/amber multicolored displays and cables. Input 2 is owner-approved Mark with exactly two Yorkies: preserve both dogs, their tan/silver coats, ears and little cybernetic goggles, Mark's muscular tattooed mechanic styling. Input 3 is the approved full seven-character Team Turducken flying machine and cast; preserve their identities in the background if shown. Create a DISTINCT new episode: Mark in foreground on the open forward maintenance deck of the flying mechanical turkey/chicken/duck craft, holding a compact glowing ARC pixel-grid diagnostic panel while exactly two Yorkies sit at his feet supervising. Around them a friendly cybernetic chicken and a cybernetic turkey help with tools. Son, recognizable from the third image with dense black GPU helmet and wide visor, works at the cockpit behind Mark. All other five established crew characters from third image visible as small background crew: Keith yellow black-cap mascot, blonde chibi DZ with pink bunny, NT orange banana-costumed kitten, Choryu grayscale MRI-display head, Herminator cobalt/silver blue-plumed knight. Flying low above snowy GPU Valley, late afternoon warm sunlight, cinematic highly detailed painted graphic-novel illustration, beautiful readable composition, clear faces, joyful absurd engineering adventure, wide landscape. Main emphasis Mark, two Yorkies, cybernetic chickens/turkeys. No text, logos, ranks, medals, numeric scores, watermarks. No copied typography/tattoos from input two. Fictional machinery and team avatars, not a real hardware photo.",
+    "referenced_image_paths": [
+      "client/public/news-images/references/2026-10-12-mark-barney-reference-1-v1.webp",
+      "client/public/news-images/references/mark-yorkies-owner-2026-10-15.png",
+      "client/public/news-images/2026-10-18-turducken-whole-crew-flight-v1-base.webp"
+    ],
+    "transparent_background": false
+  },
+  "source": "client/public/notes/mark-october-2026/mark-and-the-cybernetic-flock.webp",
+  "review": "Inspected native 1672x941 output. Mark's beard, dense GPU headgear and colorful displays recognizable. Exactly two Yorkies in foreground with little cybernetic gear; cybernetic chicken and turkey flank Mark. Son visible in cockpit. Keith, DZ, NT, Choryu and Herminator visible behind. No score labels, logos or text. Distinct sunset maintenance-deck episode. Equipment and avatars are illustrative fantasy.",
+  "sha256": "f14828bad731cd5736a43361c21b75186b8290a688570f66b60f1a806b4ed31b"
+}
