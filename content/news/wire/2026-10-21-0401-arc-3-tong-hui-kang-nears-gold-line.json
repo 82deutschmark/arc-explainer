@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-21T07:32:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Tong Hui Kang reaches 20th, just outside ARC-3 gold",
+  "id": "2026-10-21-0401-arc-3-tong-hui-kang-nears-gold-line",
+  "personIds": [],
+  "publishedAt": "2026-10-21T08:01:46Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Tong Hui Kang gained 3.93 points to reach 37.92, climbing from 63rd to 20th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The gold line held at 37.98, leaving the 19th-place cutoff 0.06 ahead of Kang. The public board remains provisional."
+    }
+  ],
+  "since": "2026-10-20T07:29:42Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T08:01:18Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15823039"
+  ]
+}
