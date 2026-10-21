@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-21T16:03:22Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Tatu Helander climbs 335 places to 66th on ARC-2",
+  "id": "2026-10-21-1205-arc-2-tatu-helander-climbs-to-sixty-sixth",
+  "personIds": [],
+  "publishedAt": "2026-10-21T16:05:15Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Tatu Helander climbed 335 places, from 401st to 66th, at 37.64 (+5.83)."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The latest board extends Helander’s previously reported climb, with his position improving further."
+    }
+  ],
+  "since": "2026-10-20T16:00:38Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T16:04:49Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17125820"
+  ]
+}
