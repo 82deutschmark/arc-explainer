@@ -757,5 +757,28 @@
       "Tufa Labs",
       "Yi-Chia Chen"
     ]
+  },
+  {
+    "id": "oct21-early-threshold-stock",
+    "competition": "arc-3",
+    "createdAt": "2026-10-19T22:15:16Z",
+    "selectedAt": "2026-10-21T10:02:23.162119+00:00",
+    "expiresAt": "2026-10-21T14:00:00Z",
+    "title": "The Threshold reserve for October 21 Early",
+    "status": "pending",
+    "targetEditionId": "2026-10-21-morning-arc-3",
+    "placement": "edition-artwork",
+    "artworkGenerationRecord": "2026-10-19-tufa-citadel-v4-base",
+    "artworkConditions": {
+      "leaderTeamId": "15486995",
+      "rivalTeamId": "15499660",
+      "requiredPersonIds": []
+    },
+    "teamIds": [
+      "15486995",
+      "15499660"
+    ],
+    "instructions": "Select unused reviewed Threshold reserve with current scores. Wide balcony threshold camera and warm sunrise palette differ from Night Watch close installation view. Four spider mascots, two racks, riderless Turducken and green siege construction are editorial fantasy; no human roster depiction. Keep strongest sporting news in headline.",
+    "verificationNotes": "Original stock record date preserved; selectedAt is edition selection. Native scene inspected; no identifiable rival faces. Tufa leads Chen, Turducken third and NVARC3 tenth in closing evidence."
   }
 ]

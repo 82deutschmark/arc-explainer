@@ -1,5 +1,45 @@
 [
   {
+    "author": "JFPuget",
+    "authorName": "Jean-François Puget",
+    "category": "banter",
+    "checkedAt": "2026-10-21T09:08:14.425184Z",
+    "competitions": [],
+    "id": "2112824730331828364",
+    "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+    "importance": 1,
+    "personIds": [
+      "jean-francois-puget"
+    ],
+    "postedAt": "2026-10-21T08:34:04Z",
+    "storyUrl": null,
+    "summary": "Puget disputes a description of LLMs as only matrix multiplications, emphasizing the role of nonlinear operations. Commentary on a quoted consciousness argument; no ARC result claimed.",
+    "threadId": null,
+    "url": "https://x.com/JFPuget/status/2112824730331828364",
+    "visibility": "public",
+    "whyItMatters": "General AI commentary from a watched contender; background colour only."
+  },
+  {
+    "author": "Ilpeiris",
+    "authorName": "Isuru Lakmal",
+    "category": "community",
+    "checkedAt": "2026-10-21T08:06:28.554463Z",
+    "competitions": [
+      "arc-3"
+    ],
+    "id": "2112688323680711022",
+    "identitySourceUrl": "https://x.com/Ilpeiris/status/2112688323680711022",
+    "importance": 1,
+    "personIds": [],
+    "postedAt": "2026-10-20T23:32:02Z",
+    "storyUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3",
+    "summary": "Isuru Lakmal shared a claimed rank of 1713 and linked the ARC Prize 2026 ARC-AGI-3 competition. The link resolves to the contest landing page, not a team or roster.",
+    "threadId": null,
+    "url": "https://x.com/Ilpeiris/status/2112688323680711022",
+    "visibility": "public",
+    "whyItMatters": "Low-priority participant discovery lead only; exact Kaggle identity, team ID and score remain unresolved. No medal or score-gain claim."
+  },
+  {
     "author": "mhmazur",
     "authorName": "Matt Mazur",
     "category": "banter",

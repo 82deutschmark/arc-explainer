@@ -649,10 +649,13 @@
       "generationRecord": "2026-10-19-tufa-citadel-v4-base",
       "src": "/news-images/2026-10-19-tufa-citadel-v4-base.webp",
       "title": "Tufa Citadel — The Threshold",
-      "status": "reviewed-reserve",
-      "articleUses": [],
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-21-morning-arc-3"
+      ],
       "xAttachments": [],
-      "selectionNote": "Boss-requested extra interior view with NVARC3 siege engine under construction and Turducken flying low. Visually reviewed native generation. Editorial fantasy; no current score overlay. The user-approved v2 remains the commissioned lead."
+      "selectionNote": "Unused reviewed Threshold reserve selected October 21 Early. Warm balcony camera differs from previous Night Watch. Four spider faces, two racks and riderless machines inspected; fresh 5:32 AM EDT overlays clear. Editorial fantasy.",
+      "artworkId": "2026-10-21-morning-arc-3-97628f0408"
     },
     {
       "id": "2026-10-19-tufa-citadel-v5",
