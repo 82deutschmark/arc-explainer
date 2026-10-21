@@ -13,6 +13,10 @@
  * - Maintains square aspect ratio via aspect-ratio CSS property
  * - Container can be any size - grid adapts automatically
  * 
+ * 2026-10-21 (Claude Opus 5.5): optional diffMask rings the cells that differ from an
+ * expected grid in white (not an ARC colour), for the team eval pages' expected-vs-answer view.
+ * Without it the grid renders exactly as before.
+ *
  * SRP/DRY check: Pass - Just renders grids, lets CSS handle the scaling
  * shadcn/ui: N/A - Pure CSS Grid implementation
  */
@@ -23,6 +27,8 @@ interface TinyGridProps {
   grid: number[][];
   className?: string;
   style?: React.CSSProperties;
+  /** Cells to mark as wrong, same shape as grid (true = differs). */
+  diffMask?: boolean[][];
 }
 
 // ARC color palette
@@ -42,7 +48,8 @@ const ARC_COLORS: Record<number, string> = {
 export const TinyGrid: React.FC<TinyGridProps> = ({
   grid,
   className = '',
-  style = {}
+  style = {},
+  diffMask
 }) => {
   if (!grid || !Array.isArray(grid) || grid.length === 0) return null;
 
@@ -82,7 +89,10 @@ export const TinyGrid: React.FC<TinyGridProps> = ({
             backgroundColor: ARC_COLORS[cell] || '#000000',
             aspectRatio: '1',
             width: '100%',
-            height: '100%'
+            height: '100%',
+            ...(diffMask?.[Math.floor(index / cols)]?.[index % cols]
+              ? { boxShadow: 'inset 0 0 0 2px #ffffff' }
+              : {})
           }}
         />
       ))}

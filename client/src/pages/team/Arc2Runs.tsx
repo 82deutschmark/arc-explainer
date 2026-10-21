@@ -18,6 +18,8 @@
  *          - the blotter: one row per submission, newest first, one line each (WRAP shows the
  *            whole text): time, score, change against its baseline, the baseline, the
  *            submitter's own words, Claude's verdict, the notebook. Click a row for the run.
+ *          2026-10-21 (Claude Opus 5.5): an [EVAL RUNS] link in the title bar to /team/arc2-evals,
+ *          the team's model-evaluation runs and their reasoning traces.
  * SRP/DRY check: Pass - list view only. Figures and filters in components/teamRuns/runStats.ts,
  *          the chart in ScoreTimeline.tsx, palette and primitives in terminal.tsx, data and the
  *          baseline rule in teamRunsApi.ts; the board comes from the public leaderboard's own
@@ -25,7 +27,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ago, useKaggleBoard, type BoardModel, type Medal } from '@/components/kaggleLeaderboard/boardData';
@@ -137,6 +139,7 @@ export default function Arc2Runs() {
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-2 pb-1" style={{ borderBottom: `1px solid ${T.amber}` }}>
         <span className="font-bold" style={{ color: T.amber }}>ARC-AGI-2 RUNS</span>
         <span style={{ color: T.dim }}>ARC MUTANTS · KAGGLE PUBLIC BOARD · TEAM ONLY</span>
+        <Link href="/team/arc2-evals" className="hover:underline" style={{ color: T.link }}>[EVAL RUNS ▸]</Link>
         <span className="ml-auto" style={{ color: T.dim }}>
           UPD {lastPublish ? `${stamp(lastPublish)}Z` : '—'} · {session.data?.email ?? ''}{' '}
           <button className="hover:underline" style={{ color: T.link }}

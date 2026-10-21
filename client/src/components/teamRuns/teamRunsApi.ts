@@ -8,8 +8,11 @@
  *          Runs live under /api/team (server/routes/teamRuns.ts) and need the team cookie,
  *          which Google sign-in sets (/api/auth, server/routes/teamAuth.ts); a 401 surfaces as
  *          SignInRequired so pages can send people to sign in.
- * SRP/DRY check: Pass - data only; pages in pages/team/. No other client code talks to
- *          /api/team or /api/auth.
+ *          2026-10-21 (Claude Opus 5.5): `call` is exported for the eval runs' data module
+ *          (components/teamEvals/teamEvalsApi.ts), and the sign-in redirect keeps the page's query
+ *          (an eval run link's ?o=<output>) so a signed-out teammate lands back on the same output.
+ * SRP/DRY check: Pass - data only; pages in pages/team/. The only other client code that talks
+ *          to /api/team is teamEvalsApi.ts, through this file's `call` and sign-in helpers.
  */
 
 import { useEffect } from 'react';
@@ -72,7 +75,8 @@ export interface RunDocument extends Omit<RunRow, 'note'> {
 
 export class SignInRequired extends Error {}
 
-async function call<T>(url: string, init?: RequestInit): Promise<T> {
+/** Fetch a team API route; a 401 from the team sign-in becomes SignInRequired. */
+export async function call<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, { credentials: 'same-origin', ...init,
     headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) } });
   const body = await res.json().catch(() => null);
@@ -81,12 +85,13 @@ async function call<T>(url: string, init?: RequestInit): Promise<T> {
   return body.data as T;
 }
 
-/** Sends a signed-out visitor to /team/login, then back to the page they wanted. */
+/** Sends a signed-out visitor to /team/login, then back to the page (and query) they wanted. */
 export function useSignInRedirect(error: unknown) {
   const [, navigate] = useLocation();
   useEffect(() => {
     if (error instanceof SignInRequired) {
-      navigate(`/team/login?next=${encodeURIComponent(window.location.pathname)}`, { replace: true });
+      const here = `${window.location.pathname}${window.location.search}`;
+      navigate(`/team/login?next=${encodeURIComponent(here)}`, { replace: true });
     }
   }, [error, navigate]);
 }

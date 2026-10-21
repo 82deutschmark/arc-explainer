@@ -8,6 +8,9 @@
  *          plain words. Unlisted and noindex: nothing on the public site links here.
  *          (The first version, earlier the same day, used a shared passphrase.)
  *          Styled as the runs screen (components/teamRuns/terminal.tsx).
+ *          2026-10-21 (Claude Opus 5.5): ?next= may carry dots and a plain query, so a link to
+ *          one output of an eval run (/team/arc2-evals/<key>?o=<output>) survives sign-in;
+ *          same pattern as the server's safeNext.
  * SRP/DRY check: Pass - sign-in page only; the Google round trip is server/routes/teamAuth.ts,
  *          the session check server/middleware/teamSession.ts.
  */
@@ -27,10 +30,11 @@ const ERRORS: Record<string, string> = {
   not_configured: "Team sign-in isn't switched on yet on this site.",
 };
 
-/** Only ever go on to another team page. The server checks this too. */
+/** Only ever go on to another team page (no "."/".." or empty segments). The server checks this too. */
+const TEAM_PAGE = /^\/team(?:\/[A-Za-z0-9_-][A-Za-z0-9._-]*)*\/?(?:\?[A-Za-z0-9=&_.-]*)?$/;
 function nextPath(): string {
   const next = new URLSearchParams(window.location.search).get('next') ?? '';
-  return /^\/team\/[A-Za-z0-9/_-]*$/.test(next) ? next : '/team/arc2-runs';
+  return TEAM_PAGE.test(next) ? next : '/team/arc2-runs';
 }
 
 export default function TeamLogin() {
