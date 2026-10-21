@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-21T06:02:12Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Youssef Nader moves into ARC-2 gold places at 11th",
+  "id": "2026-10-21-0203-arc-2-youssef-nader-enters-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-21T06:03:34Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Youssef Nader moved from 18th to 11th, gaining 8.48 points to reach 70.56 and enter the 16 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold cutoff rose 1.25 in the past day to 65.97. ibyyue is first outside gold, 17th at 65.56 and 0.41 short."
+    }
+  ],
+  "since": "2026-10-20T05:59:34Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T06:03:11Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16095234",
+    "16684035"
+  ]
+}
