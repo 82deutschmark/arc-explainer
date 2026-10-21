@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.155.2  Oct 21, 2026
+
+- **Family note rewritten: what Team Turducken actually does** (Author: Claude Opus 5.5 Low). What: the unlisted note for Boss's friends and family (`client/public/notes/mark-october-2026/index.html`, first drafted by Codex on an unmerged branch) now opens with a live replay of a real person playing a public ARC3 game, explains the harness, coaching how the model thinks, Son's expert-pruning "lobotomy" (with an animated illustration), why the work runs on downloadable models like Qwen, and lessons for people new to AI tools. Why: Boss asked for a politer, more specific and better-designed page without the dates-and-receipts block. How: one standalone static page with inline replay data and canvas drawing; the cybernetic portrait was dropped and the crew cartoon kept small. Plan: `docs/2026-10-21-family-note-rewrite-plan.md`.
+
 ### Version 9.155.1  Oct 21, 2026
 
 - **Backup wire runs on Claude Haiku 5.5 and catches Codex running out of credits** (Author: Claude Opus 5.5 Low). What: the backup desk's wire shifts now use Claude Haiku 5.5 (credited "Claude Haiku 5.5, backup wire desk"); editions stay on Claude Sonnet 5.5. The wire backup now steps in when Codex has not *finished* a wire shift for two and a half hours, not only when it has not *started* one. Why: Codex is out of credits for the week; a Codex run that starts and dies still logged as started, so the old check would have left the wire uncovered all week. How: `scripts/newsroom_fallback.sh` picks the model per job and checks the Codex wire job's memory note, which Codex rewrites at the end of every finished shift; `shared/newsWriters.json`, `shared/news.ts`, `shared/newsStaff.ts` add the Haiku writer; `docs/newsroom/FALLBACK.md` and `README.md` updated; `tests/integration/news.test.ts` checks the Haiku writer.
