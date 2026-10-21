@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-21T17:33:32Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "katlun jumps from 1,257th to 69th on ARC-2",
+  "id": "2026-10-21-1402-arc-2-katlun-climbs-into-top-seventy",
+  "personIds": [],
+  "publishedAt": "2026-10-21T18:02:20Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "katlun gained 7.64 to reach 37.50, climbing from 1,257th to 69th on the ARC-2 board."
+    }
+  ],
+  "since": "2026-10-20T17:30:49Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T18:01:57Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16794268"
+  ]
+}

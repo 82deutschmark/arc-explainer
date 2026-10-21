@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-21T17:33:30Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Tong Hui Kang climbs to 20th, just outside ARC-3 gold",
+  "id": "2026-10-21-1402-arc-3-tong-hui-kang-nears-gold-places",
+  "personIds": [],
+  "publishedAt": "2026-10-21T18:02:20Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Tong Hui Kang gained 3.93 to reach 37.92, moving from 67th to 20th on the ARC-3 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The last of 19 gold places is at 37.98, leaving him 0.06 short."
+    }
+  ],
+  "since": "2026-10-20T17:30:47Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T18:01:57Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15823039"
+  ]
+}
