@@ -42,5 +42,24 @@
   "eventUrl": "https://arcprize.org/events/research-summit-2026",
   "eventDate": "2026-10-23",
   "eventCity": "Boston, Massachusetts",
-  "personalPlans": "Mark supplied the travel plans directly in this chat."
+  "personalPlans": "Mark supplied the travel plans directly in this chat.",
+  "historyRevision": {
+    "checkedAt": "2026-10-21T00:16:56.015199+00:00",
+    "recognition": {
+      "url": "https://arcprize.org/blog/arc-prize-2025-results-analysis",
+      "title": "ARC Prize 2025 Results & Analysis",
+      "author": "Mike Knoop",
+      "publishedAt": "2025-12-05",
+      "section": "Wrapping Up 2025",
+      "fact": "Thanks Mark Barney and Simon Strandgaard for ongoing efforts to build tools, answer questions, and be a resource to the community."
+    },
+    "repositoryHistory": {
+      "readme": "README.md",
+      "about": "client/src/pages/About.tsx",
+      "earliestRecordedCommit": "275eb14e",
+      "date": "2025-07-01",
+      "note": "Repository history documents the code; not treated as the start date for all personal project/community activity."
+    },
+    "firstPersonAccount": "Mark supplied more than a year and a half of project work, hosting weekly chats, meeting Son via ARC Discord, shared ARC3/GPU/coding-agent enthusiasm, organic collaboration, and first time competing on a team."
+  }
 }
