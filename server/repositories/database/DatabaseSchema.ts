@@ -9,6 +9,8 @@ SRP/DRY check: Pass - verified community-games schema changes are additive and k
 2026-10-05 (Claude Opus 5.5): added kaggle_board_documents for the public /kaggle-leaderboard page.
 2026-10-19 (Claude Opus 5.5 Low): added team_run_documents, team_run_notes and team_run_note_log
          for the team-only ARC-AGI-2 runs record (TeamRunRepository).
+2026-10-21 (Claude Opus 5.5): added team_eval_runs and team_eval_traces for the team-only
+         ARC-AGI-2 eval runs and their per-output reasoning traces (TeamEvalRepository).
 */
 
 import { Pool, PoolClient } from 'pg';
@@ -47,6 +49,7 @@ export class DatabaseSchema {
       await this.createKaggleLeaderboardSnapshotsTable(client);
       await this.createKaggleBoardDocumentsTable(client);
       await this.createTeamRunTables(client);
+      await this.createTeamEvalTables(client);
       // community_games / community_game_sessions removed 2026-08-30: the catalog is now
       // mirrored from arc3.sonpham.net (the source of truth) rather than stored here, and
       // the submission pipeline that wrote these tables is gone. Anonymous human-play
@@ -646,6 +649,36 @@ export class DatabaseSchema {
         note TEXT,
         updated_by VARCHAR(80),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+  }
+
+  /**
+   * The team-only ARC-AGI-2 eval runs (2026-10-21): our model-evaluation box runs, not Kaggle
+   * submissions. team_eval_runs holds one JSON document per run (config, summary, one row per
+   * output); team_eval_traces one JSON document per output of a run (the puzzle, both answers,
+   * the full reasoning). Both are written by the eval box with ARC2_EVAL_UPLOAD_TOKEN and
+   * overwritten in place, like team_run_documents. TEXT, not JSONB: served verbatim and never
+   * queried by content.
+   */
+  private static async createTeamEvalTables(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS team_eval_runs (
+        competition VARCHAR(32) NOT NULL,
+        run_key VARCHAR(100) NOT NULL,
+        body TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (competition, run_key)
+      )
+    `);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS team_eval_traces (
+        competition VARCHAR(32) NOT NULL,
+        run_key VARCHAR(100) NOT NULL,
+        output_key VARCHAR(16) NOT NULL,
+        body TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (competition, run_key, output_key)
       )
     `);
   }

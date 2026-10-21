@@ -20,6 +20,9 @@ PURPOSE: Google sign-in for the team-only pages, mounted at /api/auth. The same 
          Settings (Railway): GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, TEAM_EMAILS,
          TEAM_SESSION_SECRET, and GOOGLE_REDIRECT_URI (the address registered with Google;
          defaults to this host's /api/auth/google/callback).
+         2026-10-21 (Claude Opus 5.5): the page to return to may carry dots and a plain query
+         (an eval run's /team/arc2-evals/<key>?o=<output>); "." and ".." segments, empty
+         segments and anything else outside the team pages are still refused.
 SRP/DRY check: Pass - the Google round trip only. The session itself lives in
          middleware/teamSession.ts; responses via formatResponse and express-rate-limit as
          elsewhere.
@@ -47,10 +50,17 @@ function redirectUri(req: Request): string {
   return process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
 }
 
+/**
+ * A team page, with an optional plain query. Each path segment starts with a letter, digit, "_"
+ * or "-", so there are no "." / ".." or empty ("//") segments; the query has no "/", ":" or "%".
+ * The client's TeamLogin.tsx uses the same pattern.
+ */
+const TEAM_PAGE = /^\/team(?:\/[A-Za-z0-9_-][A-Za-z0-9._-]*)*\/?(?:\?[A-Za-z0-9=&_.-]*)?$/;
+
 /** Only ever return to a team page, so sign-in can't be used to bounce people elsewhere. */
 export function safeNext(value: unknown): string {
   const next = typeof value === 'string' ? value : '';
-  return /^\/team\/[A-Za-z0-9/_-]*$/.test(next) ? next : '/team/arc2-runs';
+  return TEAM_PAGE.test(next) ? next : '/team/arc2-runs';
 }
 
 const loginPage = (reason: string) => `/team/login?error=${encodeURIComponent(reason)}`;

@@ -7,6 +7,8 @@
  *          2026-09-18 (Claude Opus 5): mounts the token-gated /api/arc3/dataset router.
  *          2026-10-19 (Claude Opus 5.5 Low): mounts /api/team, the team-only runs record, and
  *          /api/auth, its Google sign-in.
+ *          2026-10-21 (Claude Opus 5.5): mounts the team-only ARC-AGI-2 eval runs (teamEvals) at
+ *          /api/team beside the runs record.
  * SRP/DRY check: Pass - route registration only.
  */
 
@@ -51,6 +53,7 @@ import arc3MirrorRouter from "./routes/arc3Mirror";
 import arc3HumanPlayRouter from "./routes/arc3HumanPlay";
 import kaggleRouter from "./routes/kaggle";
 import teamRunsRouter from "./routes/teamRuns";
+import teamEvalsRouter from "./routes/teamEvals";
 import teamAuthRouter from "./routes/teamAuth";
 
 // Import middleware
@@ -132,6 +135,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/kaggle", kaggleRouter);
   // Team-only Kaggle runs record, behind the team sign-in (2026-10-19).
   app.use("/api/team", teamRunsRouter);
+  // Team-only ARC-AGI-2 eval runs and their reasoning traces (2026-10-21).
+  app.use("/api/team", teamEvalsRouter);
   // Google sign-in for the team pages, as on the AutoResearchArena (2026-10-19).
   app.use("/api/auth", teamAuthRouter);
 
