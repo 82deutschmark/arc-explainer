@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-21T09:32:34Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ibyyue slips out of ARC-2 gold places",
+  "id": "2026-10-21-0602-arc-2-ibyyue-slips-out-of-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-21T10:02:21Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "ibyyue dropped from 14th to 17th on the public ARC-2 board, with its score unchanged at 65.56."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The 16th-place gold line rose to 65.97, leaving ibyyue 0.41 short of the final gold place."
+    }
+  ],
+  "since": "2026-10-20T09:29:56Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T10:01:48Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16684035"
+  ]
+}
