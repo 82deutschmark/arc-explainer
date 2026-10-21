@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-21T12:02:50Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "kusui26 climbs into ARC-2 top 100",
+  "id": "2026-10-21-0805-arc-2-kusui26-enters-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-21T12:05:35Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "kusui26 climbed 960 places, from 1,050th to 90th, with a score of 34.44 (+4.30)."
+    }
+  ],
+  "since": "2026-10-20T12:00:11Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T12:04:53Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15498948"
+  ]
+}

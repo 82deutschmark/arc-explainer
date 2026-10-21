@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-21T12:02:49Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Abstraction Lab & MindsAI climbs into ARC-3 top 100",
+  "id": "2026-10-21-0805-arc-3-abstraction-lab-mindsai-enters-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-21T12:05:35Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Abstraction Lab & MindsAI gained 2.98 to reach 33.78, moving from 464th to 78th."
+    }
+  ],
+  "since": "2026-10-20T12:00:09Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-21T12:04:53Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15490570"
+  ]
+}
