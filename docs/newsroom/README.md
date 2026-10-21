@@ -19,7 +19,7 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 | Research | Codex, GPT-6.1 Sol | every hour (full shifts 3, 5, 11 am, 5, 11 pm) | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md), [DISCUSSIONS.md](DISCUSSIONS.md) | nothing public |
 | Personal briefing | Codex, GPT-6.1 Sol | 5:30 am, 5:30 pm | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md) | nothing public |
 | Afternoon X recap | Codex, GPT-6.1 Sol | 2:20 pm | newsroom checkout, read-only | [X_POSTING.md](X_POSTING.md) | one afternoon X post |
-| Backup desk | Claude Sonnet 5.5 (launchd `com.arcdaily.fallback`) | 6:50 am/pm; wire checks 9:40 am, 12:40, 3:40, 9:40 pm | fallback checkout | [FALLBACK.md](FALLBACK.md) | only what Codex missed |
+| Backup desk | Claude Sonnet 5.5 editions, Claude Haiku 5.5 wire (launchd `com.arcdaily.fallback`) | 6:50 am/pm; wire checks 9:40 am, 12:40, 3:40, 9:40 pm | fallback checkout | [FALLBACK.md](FALLBACK.md) | only what Codex missed |
 | Desk relay | launchd `ai.bubba.arc-daily-announce` | every 10 minutes | `~/bubba-workspace/tools/arc_daily_announce.py` | this page | Discord: edition announcements and alarms |
 | Leaderboard collector | launchd `com.arc3.leaderboard` | every 30 minutes | `~/GitHub/arc-daily-collector` | this page | uploads both boards to the site |
 | Check-in | Claude Sonnet 5.5 (Claude app scheduled task "ARC Daily check-in") | about 7:05 am, after the morning edition | fallback checkout, read-only except the fixes it lists | [CHECKIN.md](CHECKIN.md) | a daily report in `~/bubba-workspace/reports/arc-daily-checkins/`, one Discord line |

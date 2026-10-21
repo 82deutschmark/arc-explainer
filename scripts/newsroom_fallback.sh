@@ -1,10 +1,11 @@
 #!/bin/bash
-# Author: Claude Opus 5.5; Claude Opus 5.5 Max
+# Author: Claude Opus 5.5; Claude Opus 5.5 Max; Claude Opus 5.5 Low
 # Date: 2026-10-10; 15-October-2026 (Sonnet 5.5, Discord reports, self-recovery, wider wire trigger,
-#       missing-contest cover, rehearsal mode)
+#       missing-contest cover, rehearsal mode); 21-October-2026 (Haiku 5.5 on the wire, and the wire
+#       steps in when Codex stops finishing shifts, e.g. out of credits, not only when it stops starting)
 # PURPOSE: The ARC Daily Digest's backup desk. A launchd agent (com.arcdaily.fallback) runs this
 # after each Codex job; it does nothing when Codex delivered. When an edition contest is missing,
-# or the Codex wire desk is signed out or has stopped running, it runs Claude Sonnet 5.5 headless
+# or the Codex wire desk is signed out or has stopped finishing shifts, it runs Claude headless
 # through the Boss's Claude Code subscription (claude.ai sign-in, never a paid API key) in its own
 # checkout, following the same newsroom docs (docs/newsroom/FALLBACK.md says how it differs).
 # Every step in and every outcome is reported to the Digest's Discord channel through the desk relay
@@ -22,7 +23,12 @@ CLAUDE=/Users/macmini/.local/bin/claude
 CODEX="/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
 CODEX_DB="$HOME/.codex/sqlite/codex-dev.db"
 RELAY=/Users/macmini/bubba-workspace/tools/arc_daily_announce.py
-MODEL=claude-sonnet-5-5
+# Editions are the paper's long reporting job and get Sonnet; the short wire shifts get Haiku.
+# Each model's writer ID is the same string (shared/newsWriters.json lists both).
+if [ "$JOB" = wire ]; then MODEL=claude-haiku-5-5; MODEL_NAME="Claude Haiku 5.5"; else MODEL=claude-sonnet-5-5; MODEL_NAME="Claude Sonnet 5.5"; fi
+# Codex rewrites each job's memory note at the end of every shift it finishes. A run that dies early
+# (out of credits, crashed) still shows up as started in its run ledger but never touches this note.
+WIRE_NOTE="$HOME/.codex/automations/arc-daily-digest-wire-desk/memory.md"
 LOGS="$HOME/Library/Logs/arc-daily-fallback"
 DAY=$(TZ=America/New_York date +%F)
 STAMP=$(TZ=America/New_York date +%F-%H%M)
@@ -79,9 +85,15 @@ elif [ "$JOB" = wire ]; then
   if ! "$CODEX" login status >/dev/null 2>&1; then
     REASON="Codex is signed out"
   else
-    AGE=$(( $(date +%s) - $(codex_last_start arc-daily-digest-wire-desk) ))
-    # The wire runs every two hours; two and a half hours without a start means Codex is not running it.
-    [ "$AGE" -gt 9000 ] && REASON="Codex has not started a wire run for $(( AGE / 60 )) minutes"
+    # The wire runs every two hours; two and a half hours without a finished shift means Codex is
+    # not covering it (stopped scheduling, or starting and failing, as when its weekly credits run out).
+    FINISHED=$(/usr/bin/stat -f %m "$WIRE_NOTE" 2>/dev/null || echo 0)
+    AGE=$(( $(date +%s) - FINISHED ))
+    STARTED=$(( $(date +%s) - $(codex_last_start arc-daily-digest-wire-desk) ))
+    if [ "$AGE" -gt 9000 ]; then
+      if [ "$STARTED" -gt 9000 ]; then REASON="Codex has not started a wire run for $(( STARTED / 60 )) minutes"
+      else REASON="Codex starts wire runs but has not finished one for $(( AGE / 60 )) minutes (out of credits?)"; fi
+    fi
   fi
   [ -n "$REASON" ] || { echo "Codex is running the wire; nothing to do."; exit 0; }
   [ "$(codex_running arc-daily-digest-wire-desk)" -gt 0 ] && { echo "A Codex wire run is in progress; leaving it alone."; exit 0; }
@@ -119,13 +131,13 @@ else
   RULES="Publication is authorized: publish, commit and push following those docs."
 fi
 if [ "$JOB" = wire ]; then
-  TASK="Run one wire desk shift ($REASON). Read docs/newsroom/FALLBACK.md, then docs/newsroom/WIRE_DESK.md, and follow WIRE_DESK.md with the backup changes FALLBACK.md lists."
+  TASK="Run one wire desk shift ($REASON). Read docs/newsroom/FALLBACK.md, then docs/newsroom/WIRE_DESK.md, and follow WIRE_DESK.md with the backup changes FALLBACK.md lists. Your writer ID is $MODEL."
 else
-  TASK="Cover today's $JOB edition ($REASON): publish only the contests that are not on the site yet. Read docs/newsroom/FALLBACK.md, then AGENTS.md and docs/newsroom/REPORTER.md, and follow REPORTER.md with the backup changes FALLBACK.md lists."
+  TASK="Cover today's $JOB edition ($REASON): publish only the contests that are not on the site yet. Read docs/newsroom/FALLBACK.md, then AGENTS.md and docs/newsroom/REPORTER.md, and follow REPORTER.md with the backup changes FALLBACK.md lists. Your writer ID is $MODEL."
 fi
 
-[ "$MODE" = --rehearse ] || tell "Codex missed the $LABEL ($REASON). Claude Sonnet 5.5 is covering it now."
-"$CLAUDE" -p "$TASK $RULES You are the ARC Daily Digest backup desk, Claude Sonnet 5.5, running unattended in $CHECKOUT on branch claude/newsroom-fallback. Today's Eastern date is $DAY. Keep every brief, draft and plan you write in $WORK. End with one plain line starting OUTCOME: saying what you published (with links) or the exact reason you could not." \
+[ "$MODE" = --rehearse ] || tell "Codex missed the $LABEL ($REASON). $MODEL_NAME is covering it now."
+"$CLAUDE" -p "$TASK $RULES You are the ARC Daily Digest backup desk, $MODEL_NAME, running unattended in $CHECKOUT on branch claude/newsroom-fallback. Today's Eastern date is $DAY. Keep every brief, draft and plan you write in $WORK. End with one plain line starting OUTCOME: saying what you published (with links) or the exact reason you could not." \
   --model "$MODEL" --permission-mode bypassPermissions --max-turns 150 --output-format text | tee "$WORK/claude-output.txt"
 STATUS=${PIPESTATUS[0]}
 echo "=== $(date) claude exited $STATUS"

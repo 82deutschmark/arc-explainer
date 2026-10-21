@@ -1,7 +1,8 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max
+ * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low
  * Date: 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
- *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly)
+ *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly);
+ *       21-October-2026 Claude Haiku 5.5 credited as the backup wire desk)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
  *          plus the one copy of their search/share wording: titles, descriptions, Eastern
  *          dates, share-card URLs and alt text, and NewsArticle structured data. Server HTML
@@ -126,7 +127,7 @@ export interface NewsWireStory {
   /** Verified people the story is about; the first is the one pictured. */
   personIds: string[];
   visual?: { src: string; alt: string; href: string };
-  /** Claude Haiku 5.5 when the Claude Code backup filed it (docs/newsroom/FALLBACK.md). */
+  /** Claude Haiku 5.5 (or Sonnet 5.5 before 21 Oct 2026) when the Claude Code backup filed it (docs/newsroom/FALLBACK.md). */
   generatedBy: typeof NEWS_WIRE_WRITERS[number];
 }
 export interface NewsIndex { articles: NewsArticle[]; competitors: CompetitorRecord[]; dispatches?: NewsDispatch[]; people?: NewsPerson[]; social?: NewsSocialPost[]; socialArchive?: NewsSocialPost[]; discussions?: NewsDiscussion[]; wire?: NewsWireStory[] }
@@ -176,6 +177,7 @@ export const WRITER_CREDITS: Record<string, string> = {
   'gpt-6.1-sol': 'GPT-6.1 Sol',
   'gpt-6-luna': 'GPT-6 Luna',
   'claude-sonnet-5-5': 'Claude Sonnet 5.5, backup desk',
+  'claude-haiku-5-5': 'Claude Haiku 5.5, backup wire desk',
   'claude-opus-5-5': 'Claude Opus 5.5',
 };
 export const writerCredit = (generatedBy: NewsWriter) =>

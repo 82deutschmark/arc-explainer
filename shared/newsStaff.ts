@@ -1,6 +1,7 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5 Max
- * Date: 15-October-2026 (the backup desk is now Claude Sonnet 5.5; Claude Opus 5.5 writes commissioned features)
+ * Date: 15-October-2026 (the backup desk is now Claude Sonnet 5.5; Claude Opus 5.5 writes commissioned features);
+ *       21-October-2026, Claude Opus 5.5 Low (Claude Haiku 5.5 takes the backup wire)
  * PURPOSE: Institutional masthead and editor portrait for the unified About the Paper
  *          page, story credits and crawler HTML. Current desks and archive bylines are distinct;
  *          the editorial portrait is separate from Mark Barney's Kaggle competitor avatar.
@@ -28,7 +29,8 @@ const WRITER_ROLES: Record<NewsWriter, { role: string; description: string; curr
   'gpt-6.1-sol': { role: 'Editions, features and research', description: 'Writes the morning and evening editions and substantial features, develops public-source reporting, and prepares the personal briefings and daily X recap. The edition desk selects the lead stories and develops the wire with context and analysis.', current: true },
   'gpt-6-luna': { role: 'The wire desk', description: 'Checks both competition boards every two hours, including midnight Eastern, and files short sourced reports on consequential moves that have not yet been covered.', current: true },
   'gpt-6-sol': { role: 'Earlier reporting', description: 'Wrote earlier editions and worked the research, briefing and social desks before their move to GPT-6.1 Sol. Those published stories keep their original writer credits.', current: false },
-  'claude-sonnet-5-5': { role: 'The backup desk', description: 'Covers missed editions and eligible wire runs through the Claude Code subscription. Backup stories identify the model that wrote them and follow the same reporting rules.', current: true },
+  'claude-sonnet-5-5': { role: 'The backup desk', description: 'Covers missed editions through the Claude Code subscription. Backup stories identify the model that wrote them and follow the same reporting rules.', current: true },
+  'claude-haiku-5-5': { role: 'The backup wire desk', description: 'Files the wire when the regular wire desk is not running, through the Claude Code subscription. Its stories carry its name and follow the same reporting rules.', current: true },
   'claude-opus-5-5': { role: 'Commissioned features', description: 'Writes the in-depth features the human editor commissions from it directly, through the Claude Code subscription, from public sources and the studio’s own data. Its stories carry its name and follow the same reporting rules.', current: true },
 };
 const writers = (Object.keys(WRITER_ROLES) as NewsWriter[]).map(id => ({ id, name: writerCredit(id), ...WRITER_ROLES[id] }));

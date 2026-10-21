@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-19
+ * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
+ * Date: 2026-10-19; 2026-10-21 (Haiku backup wire writer)
  * PURPOSE: Verify public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
  *          RSS checks cover the newest 40 editions; the sitemap checks the whole archive,
@@ -359,6 +359,7 @@ it('credits every writer the newsroom tools may publish as (one list in shared/n
   for (const id of new Set([...NEWS_EDITION_WRITERS, ...NEWS_WIRE_WRITERS])) expect(WRITER_CREDITS[id], id).toBeTruthy();
   expect(NEWS_EDITION_WRITERS).toContain('claude-sonnet-5-5');
   expect(NEWS_WIRE_WRITERS).toContain('claude-sonnet-5-5');
+  expect(NEWS_WIRE_WRITERS).toContain('claude-haiku-5-5');
 });
 // The content check: run before pushing news changes. The live site would leave out anything listed here.
 it('loads every committed news file and ledger record without leaving anything out', async () => {
