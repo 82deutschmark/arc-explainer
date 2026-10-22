@@ -1,4 +1,10 @@
 # New entries at the top, use proper SemVer!
+
+## 9.157.6 — 2026-10-22
+
+- Published the editor-requested Railway outage service note using the official 21:08 UTC status and saved an evening-edition assignment. Distinguishes filing from deployment and partial recovery from resolution.
+- Recorded verified recap configuration, the problem-finder model sign-in check and restored Kaggle feed authentication in the repair plan.
+- Author: GPT-6.1 Sol / Codex.
 #
 # One line, one file, two people: check the version at the top before adding an entry.
 # On 31-Aug two branches numbered in parallel — one continued 7.10.0 -> 7.11.0 while the
