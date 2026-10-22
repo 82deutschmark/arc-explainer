@@ -10,6 +10,7 @@
  * Handles optimistic UI states with skeleton loaders during analysis/saving.
  * UPDATED (2025-10-22T00:00:00Z) by gpt-5-codex: Restored September's warm honeyglass panels, apricot hover states,
  * and jewel-toned badges so nested grids inherit the aurora glow from AnalysisResultCard.
+ * 2026-10-22 (Claude Opus 5.5 Low): compare mode no longer shows the "N/M correct" count before a vote.
  * SRP/DRY check: Pass - Single responsibility (grid display), reuses PuzzleGrid component
  * shadcn/ui: Pass - Uses shadcn Badge/Button components
  */
@@ -140,7 +141,7 @@ export const AnalysisResultGrid: React.FC<AnalysisResultGridProps> = ({
             className="flex w-full items-center justify-between rounded-t-3xl px-4 py-3 text-left transition-colors hover:bg-amber-100/70 dark:hover:bg-violet-900/40"
           >
             <div className="flex flex-wrap items-center gap-2">
-              <h5 className="text-sm font-semibold text-amber-900 dark:text-emerald-200">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
+              <h5 className="text-sm font-semibold text-amber-900 dark:text-emerald-200">Multi-Test Results ({predictedGrids?.length || 0} predictions, {expectedOutputGrids.length} tests{!eloMode && multiTestStats.totalCount > 0 ? ` • ${multiTestStats.correctCount}/${multiTestStats.totalCount} correct` : ''})</h5>
               {!eloMode && (result.multiTestAllCorrect !== undefined || result.allPredictionsCorrect !== undefined || multiTestStats.totalCount > 0) && (
                 <Badge
                   variant="outline"
