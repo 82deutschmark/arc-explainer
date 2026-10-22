@@ -8,6 +8,10 @@
  *          2026-10-09 (Claude Opus 5.5): archives the early 2025 experiments from navigation:
  *          Elo compare, puzzle DB, test-a-solution, debate, discussion, explanation feedback
  *          and the ML & Kaggle readiness page. Their routes still serve by direct link.
+ *          2026-10-22 (Claude Opus 5.5 Low): ARC 1 & 2 menu now leads with puzzle explanations
+ *          (puzzle browser, Can You Spot Slop?, explanation ratings) and the kids' emoji game;
+ *          drops last year's leftovers (Poetiq, LLM Council, model comparison, trading cards,
+ *          LLM reasoning, duplicate resource hub). Their routes still serve by direct link.
  * SRP/DRY check: Pass — maintains one navigation configuration with full-page links where needed.
  */
 /**
@@ -58,7 +62,6 @@ import {
   Archive,
   Brain,
   CircuitBoard,
-  Code,
   Database,
   ExternalLink,
   Gamepad2,
@@ -66,11 +69,9 @@ import {
   Github,
   Grid3X3,
   Info,
-  Layers,
   Search,
   Trophy,
   Users,
-  Wallet,
   Worm,
   Zap,
   BookOpen,
@@ -262,28 +263,43 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
     description: 'Puzzle-era analysis, scoring, and datasets',
     sections: [
       {
-        label: 'Learn & Play',
-        items: [{
-          type: 'link', title: 'Human ARC', href: '/human-arc/', fullPage: true,
-          icon: Users, description: 'Try ARC puzzles and compare your reasoning with AI',
-        }],
-      },
-      {
-        label: 'Analysis',
+        // 2026-10-22: puzzle explanations lead again. The 9-Oct archive pass hid them, but
+        // they are what people outside the site keep asking for ("what is the rule here?").
+        label: 'Puzzle Explanations',
         items: [
           {
             type: 'link',
-            title: 'Analytics',
-            href: '/analytics',
-            icon: Database,
-            description: 'Model performance analytics across the puzzle datasets',
+            title: 'Browse Puzzles',
+            href: '/browser',
+            icon: Search,
+            description: 'Every ARC-1 and ARC-2 puzzle, with AI explanations and human notes',
           },
           {
             type: 'link',
-            title: 'Model Comparison',
-            href: '/model-comparison',
-            icon: Layers,
-            description: 'Side-by-side model results on the same tasks',
+            title: 'Can You Spot Slop?',
+            href: '/elo',
+            icon: Users,
+            description: 'Two AI explanations, one puzzle: pick the better one and spot the confident nonsense',
+          },
+          {
+            type: 'link',
+            title: 'Explanation Ratings',
+            href: '/explanation-feedback',
+            icon: Brain,
+            description: 'What people said when they judged AI explanations helpful or not',
+          },
+        ],
+      },
+      {
+        label: 'Play',
+        items: [
+          {
+            type: 'link', title: 'Human ARC', href: '/human-arc/', fullPage: true,
+            icon: Users, description: 'Try ARC puzzles and compare your reasoning with AI',
+          },
+          {
+            type: 'link', title: 'Space Force (for kids)', href: '/human-arc/space-force', fullPage: true,
+            icon: Gamepad2, description: 'ARC puzzles with emojis instead of colors, built to show kids',
           },
         ],
       },
@@ -306,6 +322,13 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
           },
           {
             type: 'link',
+            title: 'Analytics',
+            href: '/analytics',
+            icon: Database,
+            description: 'Model performance analytics across the puzzle datasets',
+          },
+          {
+            type: 'link',
             title: 'RE-ARC',
             href: '/re-arc',
             icon: CircuitBoard,
@@ -321,33 +344,7 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
         ],
       },
       {
-        label: 'Explore',
-        items: [
-          {
-            type: 'link',
-            title: 'Resource Hub',
-            href: '/home',
-            icon: Grid3X3,
-            description: 'Games, guides, human puzzles and results archives',
-          },
-          {
-            type: 'link',
-            title: 'LLM Council',
-            href: '/council',
-            icon: Users,
-            description: 'Multi-model consensus evaluation with 3-stage deliberation',
-          },
-          {
-            type: 'link',
-            title: 'Poetiq Solver',
-            href: '/poetiq',
-            icon: Code,
-            description: 'Help verify the Poetiq code-generation solver with your API key',
-          },
-        ],
-      },
-      {
-        label: 'Reading & Collections',
+        label: 'About',
         items: [
           {
             type: 'link',
@@ -355,27 +352,6 @@ const navigationItems: (NavItem & { markerBefore?: string })[] = [
             href: '/about',
             icon: Info,
             description: 'Learn about this project and acknowledgments',
-          },
-          {
-            type: 'link',
-            title: 'LLM Reasoning',
-            href: '/llm-reasoning',
-            icon: Brain,
-            description: 'Plain-language explainer of how AI pattern matching differs from human thinking',
-          },
-          {
-            type: 'link',
-            title: 'Cards',
-            href: '/trading-cards',
-            icon: Wallet,
-            description: 'Named puzzles as collectible trading cards with performance stats',
-          },
-          {
-            type: 'link',
-            title: 'People',
-            href: '/hall-of-fame',
-            icon: Users,
-            description: 'Notable ARC contributors and researchers as trading cards',
           },
         ],
       },
