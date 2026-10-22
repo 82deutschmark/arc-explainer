@@ -1,0 +1,51 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-22T16:06:15Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "rellik13 climbs from 29th to 21st on ARC-3, just short of gold, with Lohit Siriki on its roster",
+  "id": "2026-10-22-1241-arc-3-rellik13-climbs-near-gold",
+  "personIds": [
+    "lohit-siriki"
+  ],
+  "publishedAt": "2026-10-22T16:41:30Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-lohit-siriki-roster-0"
+      ],
+      "text": "rellik13 gained 1.42 to 37.97 on the ARC-AGI-3 public board, moving from 29th to 21st. The gold line, the score at the last gold place, stands at 38.20, so the team is just short of it."
+    },
+    {
+      "sourceIds": [
+        "person-lohit-siriki-fact-0",
+        "person-lohit-siriki-roster-0"
+      ],
+      "text": "ARC Prize named Lohit Siriki third-place qualifying open-source winner of the ARC-AGI-3 Milestone 2 prize on October 1, 2026. The public roster lists his account on rellik13; a roster lists accounts and does not show who did the work. Public standings are provisional."
+    }
+  ],
+  "since": "2026-10-21T16:03:20Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-22T16:40:43Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-13T03:15:37.495573+00:00",
+      "id": "person-lohit-siriki-fact-0",
+      "title": "ARC Prize — official Milestone 2 winners",
+      "url": "https://x.com/arcprize/status/2105737436450201734"
+    },
+    {
+      "accessedAt": "2026-10-20T21:31:16Z",
+      "id": "person-lohit-siriki-roster-0",
+      "title": "Dated ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ],
+  "teamIds": [
+    "16706087"
+  ]
+}
