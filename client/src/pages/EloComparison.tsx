@@ -1,25 +1,25 @@
 /**
  * EloComparison.tsx
  *
- * Author: Claude Opus 5.5 Low (redesign); original by Claude Code using Sonnet 4, 15-Sep-2025
+ * Author: Claude Opus 5.5 Low (rebuilt from scratch); original by Claude Code using Sonnet 4, 15-Sep-2025
  * Date: 2026-10-22
  * PURPOSE: "Can You Spot Slop?" at /elo and /elo/:taskId (also /compare). Two anonymous AI
  *          explanations of the same ARC puzzle; the visitor reads both, checks them against the
  *          grids, and votes A, B or both bad. Votes feed the Elo ratings on /elo/leaderboard and the
  *          results modal then reveals the models and the right answer.
- *          2026-10-22 redesign: the old page put the vote above the explanations (people were asked
- *          to judge before reading), stacked oversized centred gradient cards, and repeated the
- *          instructions three times. Now: a plain left-aligned header with the puzzle controls, the
- *          puzzle (training pairs, then each test input beside A's and B's answers), the two
- *          explanations side by side, and a vote bar pinned to the bottom of the screen that
- *          collapses to a status line once a vote is cast.
- *          Some explanations in the database came from models shown the correct answer and asked
- *          only to explain it (the site's original mode); others solved blind. Which one was not
- *          recorded per explanation, so the copy says "some".
- * SRP and DRY check: Pass - vote and pair logic unchanged and still in useEloComparison /
- *          useEloVoting; grids reuse PuzzleGrid and TrainingPairGallery, explanations reuse
- *          AnalysisResultCard in eloMode (which hides model identity and correctness); this page
- *          only lays them out.
+ *          Layout is a dense terminal sheet, everything judged in one screen:
+ *            - one thin top bar: title, puzzle ID, jump box, random / featured / leaderboard;
+ *            - two explanation columns (A, B), each opening with that model's answer grid and then
+ *              its own words;
+ *            - a puzzle panel on the right (sticky on desktop, first on mobile) with the training
+ *              pairs and the test input as real grids at a fixed cell size, so they read as grids
+ *              without taking the page;
+ *            - a slim vote bar pinned to the bottom that collapses once a vote is cast.
+ *          2026-10-22 rebuild: the first redesign kept a marketing header and the puzzle-page
+ *          gallery, whose cards overflowed and pushed both explanations below the fold.
+ * SRP and DRY check: Pass - pair and vote logic stay in useEloComparison / useEloVoting; grids are
+ *          the shared TinyGrid; each explanation column is SlopExplanationColumn; this page only
+ *          lays them out.
  * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
@@ -27,24 +27,19 @@ import { setPageTitle } from '@/hooks/usePageMeta';
 import React, { useState } from 'react';
 import { useParams, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, RotateCcw, Trophy, Shuffle, ArrowRight } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
-// Reuse existing components
-import { PuzzleGrid } from '@/components/puzzle/PuzzleGrid';
-import { TrainingPairGallery } from '@/components/puzzle/examples/TrainingPairGallery';
-import { AnalysisResultCard } from '@/components/puzzle/AnalysisResultCard';
+import { TinyGrid } from '@/components/puzzle/TinyGrid';
 import { EloVoteResultsModal } from '@/components/elo/EloVoteResultsModal';
 import { FeaturedPuzzlesEloEntry } from '@/components/elo/FeaturedPuzzlesEloEntry';
+import { SlopExplanationColumn, SlopSideChip, SLOP_SIDE_STYLE } from '@/components/elo/SlopExplanationColumn';
 
-// Hooks for comparison functionality
 import { useEloComparison } from '@/hooks/useEloComparison';
 import { useModelLeaderboards } from '@/hooks/useModelLeaderboards';
+import { useEloVoting } from '@/hooks/useEloVoting';
 
-// Types
 import type { ARCExample } from '@shared/types';
 import { ComparisonOutcome } from '../../../shared/types';
-import { useEloVoting } from '@/hooks/useEloVoting';
 
 /**
  * The prediction an explanation made for one test case. Explanations were stored in several
@@ -68,59 +63,47 @@ function getPredictionForTest(explanation: any, testIdx: number): number[][] | n
   return null;
 }
 
-/** Side labels. A and B get distinct, non-purple accents that read in light and dark. */
-const SIDE_STYLE = {
-  A: { chip: 'bg-sky-600 text-white', rule: 'border-sky-600', text: 'text-sky-700 dark:text-sky-300' },
-  B: { chip: 'bg-orange-600 text-white', rule: 'border-orange-600', text: 'text-orange-700 dark:text-orange-300' },
-} as const;
-
-function SideChip({ side }: { side: 'A' | 'B' }) {
+/**
+ * A grid at a fixed cell size with 1px grid lines, capped so its longest side stays within
+ * `maxPx`. Every grid on the page shares the same rule, so sizes compare honestly.
+ */
+function SheetGrid({ grid, maxPx = 150, maxCell = 14 }: { grid: number[][]; maxPx?: number; maxCell?: number }) {
+  const rows = grid?.length || 0;
+  const cols = grid?.[0]?.length || 0;
+  if (!rows || !cols) return <div className="font-mono text-[11px] text-muted-foreground">empty</div>;
+  const cell = Math.max(3, Math.min(maxCell, Math.floor(maxPx / Math.max(rows, cols))));
   return (
-    <span className={`inline-flex h-6 w-6 items-center justify-center rounded-sm text-sm font-bold ${SIDE_STYLE[side].chip}`}>
-      {side}
-    </span>
-  );
-}
-
-function GridSlot({ label, grid, side }: { label: string; grid: number[][] | null; side?: 'A' | 'B' }) {
-  return (
-    <div className="flex min-w-0 flex-col items-start gap-2">
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {side && <SideChip side={side} />}
-        {label}
-      </div>
-      {grid ? (
-        <PuzzleGrid grid={grid} title={`${grid[0]?.length || 0}×${grid.length || 0}`} showEmojis={false} compact />
-      ) : (
-        <div className="rounded-sm border border-dashed px-4 py-6 text-sm text-muted-foreground">No answer given</div>
-      )}
+    <div className="shrink-0" style={{ width: cols * cell + cols + 1 }}>
+      <TinyGrid grid={grid} style={{ gap: 1, padding: 1, background: '#4b5563' }} />
     </div>
   );
 }
 
+function GridCaption({ children }: { children: React.ReactNode }) {
+  return <div className="mb-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{children}</div>;
+}
+
+const dims = (grid: number[][] | null | undefined) => (grid?.length ? `${grid[0]?.length ?? 0}×${grid.length}` : '');
+
 export default function EloComparison() {
   const { taskId } = useParams<{ taskId?: string }>();
-  const finalPuzzleId = taskId;
   const [inputPuzzleId, setInputPuzzleId] = useState('');
 
   React.useEffect(() => {
-    setPageTitle(finalPuzzleId ? `Can You Spot Slop? - Puzzle ${finalPuzzleId}` : 'Can You Spot Slop?');
-  }, [finalPuzzleId]);
+    setPageTitle(taskId ? `Can You Spot Slop? - Puzzle ${taskId}` : 'Can You Spot Slop?');
+  }, [taskId]);
 
   const [votingState, setVotingState] = useState<'ready' | 'submitting' | 'voted'>('ready');
   const [showResultsModal, setShowResultsModal] = useState(false);
   const [currentOutcome, setCurrentOutcome] = useState<ComparisonOutcome | null>(null);
 
   // Random pair when no puzzle ID is given, otherwise a pair for that puzzle
-  const { comparisonData, isLoading, error, refetch, sessionId } = useEloComparison(finalPuzzleId);
+  const { comparisonData, isLoading, error, refetch, sessionId } = useEloComparison(taskId);
   const { submitVote, isSubmitting, voteError, voteResult, enhanceVoteResult } = useEloVoting();
-
-  // Model accuracy for the results modal
   const { accuracyStats: leaderboardData } = useModelLeaderboards();
 
   const handleVote = async (outcome: 'A_WINS' | 'B_WINS' | 'BOTH_BAD') => {
     if (!comparisonData) return;
-
     try {
       setVotingState('submitting');
       setCurrentOutcome(outcome);
@@ -137,27 +120,14 @@ export default function EloComparison() {
         leaderboardData?.modelAccuracyRankings?.find((model: any) => model.modelName === modelName);
 
       // The modal shows the first test case: right answer beside each model's prediction
-      const firstTestOutput = comparisonData.puzzle.test[0]?.output ?? [];
-      const firstPrediction = (explanation: any) => {
-        const grids = (explanation.predictedOutputGrids || []).filter(
-          (grid: unknown): grid is number[][] => Array.isArray(grid),
-        );
-        if (grids.length === 0 && explanation.predictedOutputGrid) grids.push(explanation.predictedOutputGrid);
-        return grids[0] || [];
-      };
+      const firstPrediction = (explanation: any) => getPredictionForTest(explanation, 0) ?? [];
 
       enhanceVoteResult(basicResult, {
-        correctAnswerGrid: firstTestOutput,
+        correctAnswerGrid: comparisonData.puzzle.test[0]?.output ?? [],
         predictionA: firstPrediction(comparisonData.explanationA),
         predictionB: firstPrediction(comparisonData.explanationB),
-        modelA: {
-          name: comparisonData.explanationA.modelName,
-          accuracy: getModelAccuracy(comparisonData.explanationA.modelName),
-        },
-        modelB: {
-          name: comparisonData.explanationB.modelName,
-          accuracy: getModelAccuracy(comparisonData.explanationB.modelName),
-        },
+        modelA: { name: comparisonData.explanationA.modelName, accuracy: getModelAccuracy(comparisonData.explanationA.modelName) },
+        modelB: { name: comparisonData.explanationB.modelName, accuracy: getModelAccuracy(comparisonData.explanationB.modelName) },
         outcome,
       });
 
@@ -181,193 +151,192 @@ export default function EloComparison() {
     if (inputPuzzleId.trim()) window.location.href = `/elo/${inputPuzzleId.trim()}`;
   };
 
+  // Top bar is the same in every state, so loading and errors don't jump the layout
+  const topBar = (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider">
+      <span className="font-bold">Can you spot slop?</span>
+      {comparisonData?.puzzleId && (
+        <Link href={`/puzzle/${comparisonData.puzzleId}`} className="normal-case text-muted-foreground hover:text-foreground hover:underline">
+          puzzle {comparisonData.puzzleId}
+        </Link>
+      )}
+      <span className="hidden normal-case tracking-normal text-muted-foreground xl:inline">
+        Two anonymous models explain the same puzzle. Some were shown the answer. Pick the one that gets it.
+      </span>
+      <div className="ml-auto flex items-center gap-1">
+        <form onSubmit={handlePuzzleIdSubmit} className="flex items-center">
+          <input
+            type="text"
+            value={inputPuzzleId}
+            onChange={(e) => setInputPuzzleId(e.target.value)}
+            placeholder="puzzle id"
+            aria-label="Jump to a puzzle by ID"
+            className="h-6 w-28 border bg-background px-1.5 font-mono text-[11px] normal-case focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+          <button type="submit" disabled={!inputPuzzleId.trim()} className="h-6 border border-l-0 px-2 hover:bg-muted disabled:opacity-40">
+            go
+          </button>
+        </form>
+        <button onClick={() => (window.location.href = '/elo')} className="h-6 px-2 hover:bg-muted">random</button>
+        <div className="[&_button]:h-6 [&_button]:px-2 [&_button]:text-[11px]">
+          <FeaturedPuzzlesEloEntry />
+        </div>
+        <Link href="/elo/leaderboard" className="flex h-6 items-center px-2 hover:bg-muted">leaderboard</Link>
+      </div>
+    </div>
+  );
+
   if (isLoading) {
     return (
-      <div className="mx-auto flex min-h-[400px] max-w-7xl items-center gap-2 px-4 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        Picking a puzzle and two explanations…
+      <div className="w-full">
+        {topBar}
+        <div className="flex items-center gap-2 px-3 py-6 font-mono text-xs text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> picking a puzzle and two explanations…
+        </div>
       </div>
     );
   }
 
   if (error || !comparisonData) {
     return (
-      <div className="mx-auto max-w-7xl space-y-4 px-4 py-10">
-        <Alert variant="destructive">
-          <AlertDescription>
+      <div className="w-full">
+        {topBar}
+        <div className="space-y-2 px-3 py-6 font-mono text-xs">
+          <p className="text-destructive">
             {error?.message || 'Could not load a pair of explanations.'}
-            {finalPuzzleId ? ' This puzzle may not have two explanations with answers yet.' : ''}
-          </AlertDescription>
-        </Alert>
-        <div className="flex gap-2">
-          <Button onClick={() => refetch()} variant="outline">
-            <RotateCcw className="mr-2 h-4 w-4" /> Try again
-          </Button>
-          {finalPuzzleId && (
-            <Button onClick={() => (window.location.href = '/elo')} variant="outline">
-              <Shuffle className="mr-2 h-4 w-4" /> Random puzzle
-            </Button>
-          )}
+            {taskId ? ' This puzzle may not have two explanations with answers yet.' : ''}
+          </p>
+          <div className="flex gap-3">
+            <button onClick={() => refetch()} className="underline">try again</button>
+            {taskId && <button onClick={() => (window.location.href = '/elo')} className="underline">random puzzle</button>}
+          </div>
         </div>
       </div>
     );
   }
 
-  const { puzzle, puzzleId, explanationA, explanationB } = comparisonData;
+  const { puzzle, explanationA, explanationB } = comparisonData;
   const testCount = puzzle.test.length;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-32 pt-7 sm:pt-10">
-      {/* Header: what this is, and the puzzle controls */}
-      <header className="flex flex-col gap-6 border-b pb-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-3xl space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">ARC 1 &amp; 2 · Can you spot slop?</p>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Two models explain the same puzzle. Which one actually gets it?</h1>
-          <p className="text-lg leading-relaxed text-muted-foreground">
-            Both explanations sound sure of themselves. Some of these models were even shown the right answer and asked only
-            to explain why it is right, and still could not. Read both, check them against the grids, then vote. The model
-            names and the right answer stay hidden until you do.
-          </p>
-        </div>
+    <div className="w-full pb-14">
+      {topBar}
 
-        <div className="flex flex-col gap-2 lg:items-end">
-          <form onSubmit={handlePuzzleIdSubmit} className="flex items-center gap-2">
-            <input
-              type="text"
-              value={inputPuzzleId}
-              onChange={(e) => setInputPuzzleId(e.target.value)}
-              placeholder="Puzzle ID, e.g. 3d588dc9"
-              aria-label="Jump to a puzzle by ID"
-              className="h-9 w-56 rounded-md border bg-background px-3 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <Button type="submit" variant="outline" size="sm" disabled={!inputPuzzleId.trim()}>
-              Go
-            </Button>
-          </form>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => (window.location.href = '/elo')}>
-              <Shuffle className="mr-2 h-4 w-4" /> Random puzzle
-            </Button>
-            <FeaturedPuzzlesEloEntry />
-            <Link href="/elo/leaderboard">
-              <Button variant="ghost" size="sm">
-                <Trophy className="mr-2 h-4 w-4" /> Leaderboard
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* The puzzle */}
-      <section className="space-y-5 py-8">
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h2 className="text-xl font-semibold">The puzzle</h2>
-          <Link href={`/puzzle/${puzzleId}`} className="font-mono text-sm text-muted-foreground hover:text-foreground hover:underline">
-            {puzzleId}
-          </Link>
-          <span className="text-sm text-muted-foreground">
-            Work out the rule from the {puzzle.train.length} example{puzzle.train.length === 1 ? '' : 's'}.
-          </span>
-        </div>
-        <TrainingPairGallery trainExamples={puzzle.train} showHeader={false} />
-      </section>
-
-      {/* Test input(s) beside each side's answer */}
-      <section className="space-y-5 border-t py-8">
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h2 className="text-xl font-semibold">{testCount > 1 ? 'The tests' : 'The test'}</h2>
-          <span className="text-sm text-muted-foreground">
-            {testCount > 1 ? `${testCount} test inputs, ` : 'The test input, '}and what each model said it becomes.
-          </span>
-        </div>
-
-        {puzzle.test.map((testCase: ARCExample, testIndex: number) => (
-          <div key={testIndex} className="space-y-3">
-            {testCount > 1 && (
-              <p className="text-sm font-medium text-muted-foreground">
-                Test {testIndex + 1} of {testCount}
-              </p>
-            )}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-              <GridSlot label="Test input" grid={testCase.input} />
-              <GridSlot label="A's answer" grid={getPredictionForTest(explanationA, testIndex)} side="A" />
-              <GridSlot label="B's answer" grid={getPredictionForTest(explanationB, testIndex)} side="B" />
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* The two explanations */}
-      <section className="space-y-5 border-t py-8">
-        <h2 className="text-xl font-semibold">The explanations</h2>
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {([['A', explanationA], ['B', explanationB]] as const).map(([side, explanation]) => (
-            <div key={side} className={`min-w-0 space-y-3 border-t-4 pt-3 ${SIDE_STYLE[side].rule}`}>
-              <div className="flex items-center gap-2">
-                <SideChip side={side} />
-                <h3 className={`text-lg font-semibold ${SIDE_STYLE[side].text}`}>Explanation {side}</h3>
+      <div className="grid grid-cols-1 gap-3 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(300px,26rem)]">
+        {/* Explanations: each opens with that model's answer, then its own words */}
+        {(['A', 'B'] as const).map((side) => {
+          const explanation = side === 'A' ? explanationA : explanationB;
+          return (
+            <div key={side} className="min-w-0 space-y-2 lg:order-none order-1">
+              <div className={`flex flex-wrap gap-3 border-t-2 bg-card px-2 py-2 ${SLOP_SIDE_STYLE[side].rule}`}>
+                {puzzle.test.map((_: ARCExample, testIndex: number) => {
+                  const prediction = getPredictionForTest(explanation, testIndex);
+                  return (
+                    <div key={testIndex}>
+                      <GridCaption>
+                        <span className="inline-flex items-center gap-1">
+                          <SlopSideChip side={side} /> answer{testCount > 1 ? ` · test ${testIndex + 1}` : ''} {dims(prediction)}
+                        </span>
+                      </GridCaption>
+                      {prediction ? (
+                        <SheetGrid grid={prediction} maxPx={180} />
+                      ) : (
+                        <div className="font-mono text-[11px] text-muted-foreground">no answer given</div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              <AnalysisResultCard
-                modelKey={explanation.modelName}
-                result={explanation}
-                model={undefined}
-                testCases={puzzle.test}
-                eloMode={true}
-              />
+              <SlopExplanationColumn side={side} explanation={explanation} />
             </div>
-          ))}
-        </div>
-      </section>
+          );
+        })}
 
-      {/* Vote bar: pinned to the bottom so the vote comes after reading; collapses once cast */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* The puzzle: first on mobile, a sticky side panel on desktop */}
+        <aside className="order-first min-w-0 lg:order-none">
+          <div className="space-y-3 border bg-card p-2 lg:sticky lg:top-2 lg:max-h-[calc(100vh-4rem)] lg:overflow-auto">
+            <div>
+              <div className="mb-1 flex items-baseline justify-between font-mono text-[11px] uppercase tracking-wider">
+                <span className="font-semibold">Test</span>
+                <span className="text-muted-foreground">what should it become?</span>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {puzzle.test.map((testCase: ARCExample, testIndex: number) => (
+                  <div key={testIndex}>
+                    <GridCaption>
+                      {testCount > 1 ? `test ${testIndex + 1} · ` : ''}input {dims(testCase.input)}
+                    </GridCaption>
+                    <SheetGrid grid={testCase.input} maxPx={180} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t pt-2">
+              <div className="mb-1 font-mono text-[11px] font-semibold uppercase tracking-wider">
+                Examples <span className="font-normal text-muted-foreground">({puzzle.train.length})</span>
+              </div>
+              <div className="space-y-2">
+                {puzzle.train.map((example: ARCExample, index: number) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <span className="w-3 shrink-0 font-mono text-[10px] text-muted-foreground">{index + 1}</span>
+                    <SheetGrid grid={example.input} maxPx={150} />
+                    <span className="font-mono text-xs text-muted-foreground">→</span>
+                    <SheetGrid grid={example.output} maxPx={150} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <p className="px-3 font-mono text-[10px] text-muted-foreground">
+        Built September 2025 by Claude Code on Sonnet 4; rebuilt October 2026 by Claude Opus 5.5.
+      </p>
+
+      {/* Vote bar: pinned to the bottom; collapses to next steps once a vote is cast */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur">
+        <div className="flex items-center justify-between gap-3 px-3 py-1.5">
           {votingState === 'ready' && (
             <>
-              <p className="text-sm font-medium">Which explanation actually understands the puzzle?</p>
-              <div className="grid grid-cols-3 gap-2 sm:flex">
-                <Button onClick={() => handleVote('A_WINS')} disabled={isSubmitting} className="bg-sky-600 text-white hover:bg-sky-700">
+              <span className="hidden font-mono text-[11px] uppercase tracking-wider text-muted-foreground sm:inline">
+                which one actually understands it?
+              </span>
+              <div className="grid flex-1 grid-cols-3 gap-1.5 sm:flex sm:flex-none">
+                <Button size="sm" onClick={() => handleVote('A_WINS')} disabled={isSubmitting} className={`rounded-none ${SLOP_SIDE_STYLE.A.button}`}>
                   A is better
                 </Button>
-                <Button onClick={() => handleVote('BOTH_BAD')} disabled={isSubmitting} variant="outline">
+                <Button size="sm" variant="outline" onClick={() => handleVote('BOTH_BAD')} disabled={isSubmitting} className="rounded-none">
                   Both are slop
                 </Button>
-                <Button onClick={() => handleVote('B_WINS')} disabled={isSubmitting} className="bg-orange-600 text-white hover:bg-orange-700">
+                <Button size="sm" onClick={() => handleVote('B_WINS')} disabled={isSubmitting} className={`rounded-none ${SLOP_SIDE_STYLE.B.button}`}>
                   B is better
                 </Button>
               </div>
             </>
           )}
-
           {votingState === 'submitting' && (
-            <p className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Recording your vote…
-            </p>
+            <span className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" /> recording vote…
+            </span>
           )}
-
           {votingState === 'voted' && (
             <>
-              <p className="text-sm font-medium">Vote recorded. The models and the right answer are in the results.</p>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setShowResultsModal(true)}>
-                  See results
+              <span className="font-mono text-[11px] uppercase tracking-wider">vote recorded</span>
+              <div className="flex gap-1.5">
+                <Button size="sm" variant="outline" className="rounded-none" onClick={() => setShowResultsModal(true)}>
+                  See who it was
                 </Button>
-                <Button onClick={handleNextComparison}>
-                  Next puzzle <ArrowRight className="ml-2 h-4 w-4" />
+                <Button size="sm" className="rounded-none" onClick={handleNextComparison}>
+                  Next puzzle →
                 </Button>
               </div>
             </>
           )}
-
-          {voteError && (
-            <p className="text-sm text-destructive">Could not record the vote: {voteError.message}</p>
-          )}
+          {voteError && <span className="font-mono text-[11px] text-destructive">vote failed: {voteError.message}</span>}
         </div>
       </div>
-
-      <p className="pt-2 text-xs text-muted-foreground">
-        Built September 2025 by Claude Code on Sonnet 4; redesigned October 2026 by Claude Opus 5.5.
-      </p>
 
       {voteResult && currentOutcome && (
         <EloVoteResultsModal
