@@ -30,6 +30,11 @@ with a Mac notification if the relay cannot post. Logs and the run's working fil
 `~/Library/Logs/arc-daily-fallback/`. If an earlier backup run left unfinished changes, the runner
 saves them to a dated `rescue-…` folder there, reports it, and starts clean.
 
+When the Codex wire job is deliberately paused, the same scheduled Claude wire checks provide
+coverage. The relay labels this as scheduled coverage during a pause, rather than a missed Codex
+run. It does not resume Codex or add shifts. A paused research desk has no browser-free substitute;
+the paper must retain its honest saved-source dates.
+
 By hand: `scripts/newsroom_fallback.sh morning` (still does nothing if Codex delivered), or
 `scripts/newsroom_fallback.sh morning --rehearse` to run the whole job without publishing anything.
 

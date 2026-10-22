@@ -15,9 +15,9 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 |---|---|---|---|---|---|
 | Early edition | Codex, GPT-6.1 Sol | 6:00 am | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; optional unsent X draft |
 | Late edition | Codex, GPT-6.1 Sol | 6:00 pm | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; optional unsent X draft |
-| Wire | Codex, GPT-6 Luna | every two hours, on the even hour | wire checkout | [WIRE_DESK.md](WIRE_DESK.md) | wire stories |
+| Wire | Codex, GPT-6 Luna | **paused; scheduled Claude wire checks cover it** | wire checkout | [WIRE_DESK.md](WIRE_DESK.md) | wire stories |
 | Research | Codex, GPT-6.1 Sol | **paused by Mark; do not resume automatically** | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md), [DISCUSSIONS.md](DISCUSSIONS.md) | nothing public |
-| Personal briefing | Codex, GPT-6.1 Sol | 5:30 am, 5:30 pm | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md) | nothing public |
+| Personal briefing | Codex, GPT-6.1 Sol | **paused** | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md) | nothing public |
 | Afternoon X recap | Codex, GPT-6.1 Sol | 2:20 pm | newsroom checkout, read-only | [X_POSTING.md](X_POSTING.md) | one afternoon X post |
 | Backup desk | Claude Sonnet 5.5 editions, Claude Haiku 5.5 wire (launchd `com.arcdaily.fallback`) | 6:50 am/pm; wire checks 9:40 am, 12:40, 3:40, 9:40 pm | fallback checkout | [FALLBACK.md](FALLBACK.md) | only what Codex missed |
 | Desk relay | launchd `ai.bubba.arc-daily-announce` | every 10 minutes | `~/bubba-workspace/tools/arc_daily_announce.py` | this page | Discord: edition announcements and alarms |

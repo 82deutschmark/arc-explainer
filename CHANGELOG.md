@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.157.4  Oct 22, 2026
+
+- **Distinguish paused desks from failed shifts** (Author: GPT-6.1 Sol / Codex). The backup wire now describes a deliberately paused Codex job as scheduled Claude coverage, rather than repeatedly saying Codex missed it. Update the desk map and check-in checks to honor paused recurring jobs, compare expected edition IDs with the live archive after an outage, and verify exact-source publication history before declaring an announcement missed. No schedules or delivery permissions change. Validation: shell syntax and read-only scheduler status inspection.
+
 ### Version 9.157.3  Oct 22, 2026
 
 - **Three commissioned model reports: DeepSeek Flash 1017, Beam 1.0 and Muse Spark Open** (Author: GPT-6.1 Sol / Codex). Publish full sourced dispatches and original charts of the ARC Prize semi-private scores and task costs. Explain DeepSeek high-effort partial coverage, distinguish lab-reported software results and harness settings from verified ARC tests, and preserve the absence of ARC3 results. Each report links primary releases, exact checkpoint documentation and the evaluation data checked October 22. Raw source snapshots and hashes remain in the private editorial archive.

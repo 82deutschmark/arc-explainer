@@ -1,8 +1,9 @@
 #!/bin/bash
-# Author: Claude Opus 5.5; Claude Opus 5.5 Max; Claude Opus 5.5 Low
+# Author: Claude Opus 5.5; Claude Opus 5.5 Max; Claude Opus 5.5 Low; GPT-6.1 Sol / Codex
 # Date: 2026-10-10; 15-October-2026 (Sonnet 5.5, Discord reports, self-recovery, wider wire trigger,
 #       missing-contest cover, rehearsal mode); 21-October-2026 (Haiku 5.5 on the wire, and the wire
-#       steps in when Codex stops finishing shifts, e.g. out of credits, not only when it stops starting)
+#       steps in when Codex stops finishing shifts, e.g. out of credits, not only when it stops starting);
+#       22-October-2026 (GPT-6.1 Sol / Codex: label deliberate pauses as scheduled backup coverage)
 # PURPOSE: The ARC Daily Digest's backup desk. A launchd agent (com.arcdaily.fallback) runs this
 # after each Codex job; it does nothing when Codex delivered. When an edition contest is missing,
 # or the Codex wire desk is signed out or has stopped finishing shifts, it runs Claude headless
@@ -57,6 +58,9 @@ codex_running() {
 codex_last_start() {
   /usr/bin/sqlite3 -readonly "$CODEX_DB" "select coalesce(max(created_at), 0) / 1000 from automation_runs where automation_id='$1'" 2>/dev/null || echo 0
 }
+codex_status() {
+  /usr/bin/sqlite3 -readonly "$CODEX_DB" "select status from automations where id='$1'" 2>/dev/null || echo UNKNOWN
+}
 # Edition files for today on main: one per contest, e.g. 2026-10-15-morning-arc-3.json.
 published_contests() {
   git ls-tree --name-only origin/main content/news/articles/ | grep -E "/$DAY-$JOB-arc-[23]\.json$" | sed -E 's/.*-(arc-[23])\.json$/\1/'
@@ -82,7 +86,10 @@ if [ "$MODE" = --rehearse ]; then
   REASON="rehearsal requested"
 elif [ "$JOB" = wire ]; then
   # A quiet board legitimately files nothing, so the wire backs up only when Codex is not running it at all.
-  if ! "$CODEX" login status >/dev/null 2>&1; then
+  WIRE_STATUS=$(codex_status arc-daily-digest-wire-desk)
+  if [ "$WIRE_STATUS" = PAUSED ]; then
+    REASON="the Codex wire desk is intentionally paused"
+  elif ! "$CODEX" login status >/dev/null 2>&1; then
     REASON="Codex is signed out"
   else
     # The wire runs every two hours; two and a half hours without a finished shift means Codex is
@@ -136,7 +143,13 @@ else
   TASK="Cover today's $JOB edition ($REASON): publish only the contests that are not on the site yet. Read docs/newsroom/FALLBACK.md, then AGENTS.md and docs/newsroom/REPORTER.md, and follow REPORTER.md with the backup changes FALLBACK.md lists. Your writer ID is $MODEL."
 fi
 
-[ "$MODE" = --rehearse ] || tell "Codex missed the $LABEL ($REASON). $MODEL_NAME is covering it now."
+if [ "$MODE" != --rehearse ]; then
+  if [ "$JOB" = wire ] && [ "${WIRE_STATUS:-}" = PAUSED ]; then
+    tell "$MODEL_NAME is running the scheduled wire shift while the Codex wire desk is paused."
+  else
+    tell "Codex missed the $LABEL ($REASON). $MODEL_NAME is covering it now."
+  fi
+fi
 "$CLAUDE" -p "$TASK $RULES You are the ARC Daily Digest backup desk, $MODEL_NAME, running unattended in $CHECKOUT on branch claude/newsroom-fallback. Today's Eastern date is $DAY. Keep every brief, draft and plan you write in $WORK. End with one plain line starting OUTCOME: saying what you published (with links) or the exact reason you could not." \
   --model "$MODEL" --permission-mode bypassPermissions --max-turns 150 --output-format text | tee "$WORK/claude-output.txt"
 STATUS=${PIPESTATUS[0]}
