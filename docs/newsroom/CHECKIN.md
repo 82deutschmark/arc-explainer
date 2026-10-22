@@ -1,6 +1,6 @@
 # The morning check-in
 
-Author: Claude Opus 5.5 Low · 15 October 2026 · at the Boss's request: the editions land while he
+Authors: Claude Opus 5.5 Low · 15 October 2026; GPT-6.1 Sol / Codex · 22 October 2026 · at the Boss's request: the editions land while he
 sleeps, so a Discord alarm alone helps no one. Claude has to look, fix what it safely can, and
 report. The Boss is around in the evenings, so one morning run is enough.
 
@@ -29,14 +29,25 @@ the newsroom or wire checkouts, the Codex job settings or database (read only), 
    (`created_at` is milliseconds): for each active job in table `automations`, count the runs in
    the window against its schedule, and read `inbox_summary` for anything blocked, failed, skipped
    or refused. A run stuck `IN_PROGRESS` for more than two hours is a problem. The two paused
-   one-off jobs are expected to stay paused.
+   one-off jobs are expected to stay paused. Read each recurring job's actual `status` too:
+   deliberately paused research, briefing or wire jobs are not missed shifts. Never resume them.
+   Explain the resulting coverage limit separately from a service failure.
 4. **Wire.** The newest file in `content/news/wire/` on `origin/main`: there should be one for
-   most two-hour shifts (a quiet shift may file nothing; the run summary says so).
+   most active Codex two-hour shifts (a quiet shift may file nothing; the run summary says so).
+   While Codex is paused, compare against the four scheduled Claude wire checks in README.md.
 5. **Site and boards.** `https://arc.markbarney.net/api/news/health` (status ok, nothing skipped)
-   and `/api/news/markets` (each board's `fetched` under 75 minutes old).
+   and `/api/news/markets` (each board's `fetched` under 75 minutes old). A healthy response does
+   not prove a recent Git push is live: compare the expected edition IDs on `origin/main` with
+   `/api/news`, and check the actual current article links. Report an outage/build backlog
+   separately from missing source files; never announce recovery on a health response alone.
 6. **Plumbing.** The relay's state file `~/bubba-workspace/state/arc-daily-announced.json` should be
    under 20 minutes old with no open `alarms`; the collector log
    `~/GitHub/arc-daily-collector/job.log` should end with two "push ok" lines from the last hour.
+7. **Research coverage.** Read the saved feed markers, not the briefing's run time. Distinguish
+   intentionally paused collection from an incomplete feed. Repost inventories marked partial
+   have no reliable action dates and are not failed dated-feed scans. If someone reports a missed
+   announcement, search the existing archive, wire and editions by exact source ID and model
+   checkpoint before saying it was never covered. A stale window cannot establish no new news.
 
 ## What you may fix
 
