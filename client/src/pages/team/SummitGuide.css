@@ -1,0 +1,56 @@
+/* Author: GPT-6 / Codex
+ * Date: 2026-10-22
+ * PURPOSE: Responsive, scoped field-notebook styling for the private summit guide.
+ * SRP/DRY check: Pass - no global overrides; existing UI primitives retain their behavior.
+ */
+.summit-guide{--sg-ink:#182c34;--sg-muted:#536971;--sg-line:#cbd5d5;--sg-paper:#f5f3eb;--sg-accent:#17635d;max-width:1320px;margin:16px auto 40px;padding:28px 30px;background:var(--sg-paper);color:var(--sg-ink);border:1px solid var(--sg-line);border-radius:4px;font-family:system-ui,sans-serif;line-height:1.6;color-scheme:light}
+.summit-kicker{display:flex;align-items:center;gap:8px;font:11px ui-monospace,monospace;letter-spacing:.09em;color:var(--sg-accent)}
+.summit-kicker span{margin-left:auto;color:var(--sg-muted)}
+.summit-heading h1{font:600 clamp(28px,4vw,42px)/1.15 Georgia,serif;margin:18px 0 8px;letter-spacing:-.02em}
+.summit-heading>p{max-width:800px;font-size:15px;color:var(--sg-muted);margin:0 0 15px}
+.summit-event{display:flex;flex-wrap:wrap;gap:8px 24px;font:11px ui-monospace,monospace;color:var(--sg-muted)}
+.summit-guide a{color:var(--sg-accent);text-decoration:underline;text-underline-offset:3px}
+.summit-tabs{display:flex;gap:24px;border-bottom:1px solid var(--sg-line);margin:24px 0 20px;overflow-x:auto}
+.summit-tabs button{white-space:nowrap;padding:0 0 10px;font-size:13px;font-weight:600;color:var(--sg-muted);border-bottom:3px solid transparent}
+.summit-tabs button[aria-current]{color:var(--sg-accent);border-color:var(--sg-accent)}
+.summit-controls{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.summit-search{display:flex;align-items:center;gap:7px;flex:1;min-width:200px;position:relative;border:1px solid #a4b5b7;background:#fffdf7;padding:0 10px}
+.summit-search input{background:transparent;border:0;border-radius:0;box-shadow:none;color:var(--sg-ink);height:42px;padding:8px 4px}
+.summit-search kbd{font-size:12px;color:var(--sg-muted)}
+.summit-lenses{display:flex;gap:2px;border:1px solid var(--sg-line);padding:3px}
+.summit-lenses button{padding:5px 12px;font-size:12px}
+.summit-lenses button[aria-pressed=true]{background:var(--sg-accent);color:white}
+.summit-filter-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:12px 0;font:11px ui-monospace,monospace;color:var(--sg-muted)}
+.summit-filter-row label{display:flex;gap:7px;align-items:center}
+.summit-filter-row select{max-width:200px;padding:5px 3px;color:var(--sg-ink);background:transparent;border-bottom:1px solid #97a9ab;font-family:inherit}
+.summit-filter-row>span{margin-left:auto}
+.summit-directory{display:grid;grid-template-columns:310px minmax(0,1fr);border-top:1px solid var(--sg-line)}
+.summit-list{border-right:1px solid var(--sg-line);max-height:850px;overflow:auto;position:sticky;top:10px;align-self:start}
+.summit-person-row{width:100%;display:flex;gap:12px;align-items:center;text-align:left;padding:14px 12px;border-bottom:1px solid #dde2de;border-left:3px solid transparent}
+.summit-person-row:hover{background:#e9ede5}.summit-person-row[aria-pressed=true]{background:#e1ebe4;border-left-color:var(--sg-accent)}
+.summit-initials{flex-shrink:0;display:grid;place-items:center;width:34px;height:34px;border:1px solid #b6c6c2;color:var(--sg-accent);font:12px Georgia,serif;background:#f8f7ef}
+.summit-person-row strong{display:block;font-size:13px;font-weight:650}.summit-person-row small{display:block;font-size:11px;color:var(--sg-muted);line-height:1.4;margin-top:3px}
+.summit-row-flags{display:flex;gap:4px;margin-left:auto;color:var(--sg-accent);flex-shrink:0}
+.summit-person-detail{padding:22px 30px 28px;min-width:0;scroll-margin-top:12px}
+.summit-detail-top{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;font:9px ui-monospace,monospace;letter-spacing:.04em;color:var(--sg-muted)}
+.summit-detail-top>div{display:flex}.summit-detail-top button{font-size:11px;border-radius:2px;color:var(--sg-accent)}
+.summit-detail-top button[aria-pressed=true]{background:#dbe8df}
+.summit-person-detail h2{font:600 32px/1.2 Georgia,serif;margin:13px 0 5px}.summit-role{font-size:13px;color:var(--sg-muted)}
+.summit-topics{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 22px}.summit-topics button{font:10px ui-monospace,monospace;color:var(--sg-accent);border-bottom:1px dotted #8aadaa;padding-bottom:2px}
+.summit-person-detail section{margin-top:24px}.summit-guide h3{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sg-muted);margin-bottom:8px}
+.summit-person-detail section p{font-size:14px;line-height:1.7;margin:0 0 9px}
+.summit-connection{padding:15px 17px;border:1px solid var(--sg-line);background:#edf0e7}
+.summit-connection p{display:flex;gap:12px}.summit-connection b{flex:0 0 32px;font:11px ui-monospace,monospace;padding-top:4px;color:var(--sg-accent)}
+.summit-question{border-left:3px solid #bb8b37;padding:3px 0 3px 17px}.summit-question p{font:19px/1.5 Georgia,serif!important}.summit-question small{font-size:12px;display:block;color:var(--sg-muted)}
+.summit-mlst-note{border-top:1px solid var(--sg-line);padding-top:16px}.summit-sources{display:flex;flex-wrap:wrap;gap:9px 18px;font-size:12px}.summit-sources a{display:inline-flex;gap:5px;align-items:center;overflow-wrap:anywhere}
+.summit-personal label{display:block;font-size:12px;font-weight:600;margin-bottom:8px}.summit-personal textarea{width:100%;min-height:90px;background:#fffdf7;border:1px solid var(--sg-line);padding:10px;font-size:13px;border-radius:2px;color:var(--sg-ink)}
+.summit-personal small{display:block;font-size:10px;line-height:1.5;color:var(--sg-muted);margin-top:4px}
+.summit-footnote,.summit-reminder{font-size:11px;color:var(--sg-muted);line-height:1.6;margin-top:20px}.summit-reminder{padding-top:16px;border-top:1px solid var(--sg-line);font-style:italic}
+.summit-empty{padding:24px 14px;font-size:13px}.summit-empty p{margin-bottom:12px}.summit-alert{font-size:13px;color:#864214;border:1px solid #c69865;padding:10px;margin-bottom:12px}
+.summit-reading{max-width:970px;margin:auto;padding:10px 0 18px}.summit-reading>h2{font:600 26px Georgia,serif;margin:12px 0}.summit-reading>p{font-size:14px;max-width:800px;margin-bottom:16px}.summit-reading blockquote{font:21px/1.65 Georgia,serif;border-left:3px solid #b08743;padding:10px 20px;margin:20px 0 28px}
+.summit-theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;margin-top:22px}.summit-theme-grid section,.summit-work-points section{border-top:1px solid var(--sg-line);padding:20px 0}.summit-theme-grid p,.summit-work-points p{font-size:14px;line-height:1.7}
+.summit-theme-people{display:flex;gap:8px 16px;flex-wrap:wrap;margin-top:12px}.summit-theme-people button{color:var(--sg-accent);font-size:12px;text-decoration:underline;text-underline-offset:3px}
+.summit-terms{margin:20px 0 26px}.summit-terms>div{display:grid;grid-template-columns:170px 1fr;gap:20px;border-top:1px solid var(--sg-line);padding:13px 0;font-size:13px}.summit-terms dt{font-weight:650}.summit-sign-in{max-width:600px;padding:40px}.summit-sign-in h1{font:30px Georgia,serif;margin:16px 0}.summit-sign-in p{margin:12px 0}
+.summit-guide :focus-visible{outline:2px solid var(--sg-accent);outline-offset:3px}
+@media(max-width:760px){.summit-guide{margin:8px 0;padding:20px 14px;border-left:0;border-right:0}.summit-kicker{font-size:9px;letter-spacing:.02em}.summit-kicker span{font-size:8px}.summit-tabs{gap:18px}.summit-tabs button{font-size:11px}.summit-event{font-size:10px}.summit-directory{grid-template-columns:1fr}.summit-list{position:static;border-right:0;border-bottom:2px solid var(--sg-accent);max-height:280px}.summit-person-row{padding:10px 7px}.summit-person-detail{padding:20px 3px}.summit-person-detail h2{font-size:29px}.summit-theme-grid{grid-template-columns:1fr}.summit-filter-row{gap:8px}.summit-filter-row select{max-width:170px}.summit-lenses{width:100%;justify-content:space-around}.summit-lenses button{flex:1}.summit-terms>div{grid-template-columns:1fr;gap:5px}.summit-reading blockquote{font-size:18px}.summit-detail-top{font-size:8px}.summit-heading>p{font-size:13px}}
+@media print{.summit-guide{border:0;margin:0;padding:0;max-width:none}.summit-tabs,.summit-controls,.summit-filter-row,.summit-list,.summit-detail-top>div,.summit-personal{display:none}.summit-directory{display:block}.summit-person-detail{padding:12px 0}.summit-guide a{color:inherit}.summit-question{break-inside:avoid}}

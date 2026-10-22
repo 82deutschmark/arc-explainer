@@ -17,6 +17,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.158.0  Oct 22, 2026
+
+- **Private summit conversation notebook** (Author: GPT-6 / Codex). Add the unlisted `/team/summit-2026` page: selected people and their work, Mark/Son connections, conversation starters, verified MLST appearances versus shared themes, and a short explanation of the team's work. Search, interest filters and device-local notes/bookmarks support use on a phone. Reuse team Google sign-in and the existing admin publication guard. The guide itself lives in the database, outside this public repository and client bundles; noindex metadata keeps the route out of discovery. Plan: `docs/2026-10-22-summit-guide-plan.md`.
+
 ### Version 9.157.5  Oct 22, 2026
 
 - **Keep the afternoon recap a bounded X publishing job** (Author: GPT-6.1 Sol / Codex). Remove research browsing, feed scans, identity discovery and new-source ingestion from the recap. Prepare its board evidence once, save an honest handoff and use the browser only to verify the account, prevent duplicates, post and confirm the send, within six minutes and ten browser calls. Research remains paused. Posting remains the intended result when available; uncertain sends stay protected.
