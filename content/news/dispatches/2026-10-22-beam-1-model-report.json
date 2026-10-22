@@ -1,0 +1,99 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "editorNote": "Model report checked October 22, 2026. Reflection released Beam on October 16. ARC Prize scores are semi-private evaluations, not Kaggle team standings.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Beam’s coding launch meets a tougher grid test: 23.5% on ARC-AGI-2",
+  "id": "2026-10-22-beam-1-model-report",
+  "image": {
+    "alt": "Beam ARC-AGI-1 and ARC-AGI-2 semi-private scores rise across low, medium, high and xhigh reasoning, with task costs shown for ARC-AGI-2.",
+    "caption": "ARC Daily Digest chart from ARC Prize semi-private data checked October 22, 2026. ARC-AGI-2 task costs range from about ten to sixty-one cents. No ARC-AGI-3 result is listed.",
+    "src": "/news-images/2026-10-22-reflection-beam-1-0-verified-results.png"
+  },
+  "publishedAt": "2026-10-22T19:41:06.625278+00:00",
+  "sections": [
+    {
+      "heading": "What the verified result says",
+      "sourceIds": [
+        "result",
+        "v1",
+        "data",
+        "release"
+      ],
+      "text": "Reflection’s first open-weight model, Beam 1.0, scores 23.5% on ARC-AGI-2 at xhigh reasoning and 74.0% on ARC-AGI-1 at the same setting. ARC Prize’s recorded costs are about 61 cents per ARC-AGI-2 task and 31 cents per ARC-AGI-1 task. The two scores describe substantially different levels of success on two different benchmarks; the older set’s result should not stand in for the newer one. Reflection released the weights on October 16, and this report checks the verified rows on October 22. The page’s release date does not establish the precise publication time of the new evaluations. Beam’s ARC-AGI-2 result leaves considerable room for improvement, even as its launch focuses on coding and sustained agent work."
+    },
+    {
+      "heading": "The useful setting may be below the headline setting",
+      "sourceIds": [
+        "result",
+        "v1",
+        "data"
+      ],
+      "text": "ARC-AGI-2 rises from 2.8% at low reasoning to 6.4% at medium, 20.0% at high and 23.5% at xhigh. The corresponding task costs are about $0.10, $0.18, $0.35 and $0.61. Most of the improvement in that ladder arrives before the last setting: high retains a 20% score at roughly 43% lower recorded cost than xhigh. Moving to xhigh buys about three and a half additional percentage points. That is a concrete budget choice, not evidence that either setting is always preferable. The accompanying ARC-AGI-1 ladder is 45.0%, 55.7%, 67.7% and 74.0%. Anyone reproducing Beam should specify the effort setting rather than quote “Beam’s score” as though it were a fixed property independent of inference configuration."
+    },
+    {
+      "heading": "Why the software claims and the ARC result can coexist",
+      "sourceIds": [
+        "card",
+        "policy",
+        "release"
+      ],
+      "text": "Reflection’s model card reports 80.1% on Terminal Bench 2.1, 81.6% on SWE-bench Verified and 43.3% on DeepSWE v1.1 for the BF16 release. These are the developer’s reported evaluations. They do not convert into an ARC score. ARC Prize’s policy evaluates ARC-AGI-1 and ARC-AGI-2 as direct task-to-answer-grid prediction, without an agent harness or client-side tools. Software agents can inspect files, run programs and use execution feedback; these ARC runs ask a different question. Reflection also reports roughly 1.3 billion sandboxes across major reinforcement-learning runs, evaluation and ablations. That is a company-described training operation, not an independently audited count in this report. The evidence supports separate judgments about software workflows and grid-rule generalization; one benchmark’s strength does not erase the other’s limitation."
+    },
+    {
+      "heading": "The release is an engineering stack, not only a checkpoint",
+      "sourceIds": [
+        "card",
+        "release"
+      ],
+      "text": "Beam uses a sparse mixture of experts, with about 501 billion total parameters and 23 billion active per token, a one-million-token context window, and text input and output. Reflection releases BF16, FP8 and NVFP4 weights under Apache 2.0 and also offers a speculative-decoding drafter. Its Mirror CLI provides an inspectable agent environment, and the launch describes integrations for serving, fine-tuning and reinforcement learning. Reflection says Beam was trained with Mirror while also supporting other harnesses. That is relevant to teams interested in modifying the agent as well as the weights. It does not establish that the best coding harness transfers unchanged to ARC. Nor does “23 billion active” mean the entire model has the storage footprint of a dense 23-billion-parameter checkpoint: routing fewer experts for a token and storing the full expert pool are different requirements."
+    },
+    {
+      "heading": "Where Beam belongs in the current ARC picture",
+      "sourceIds": [
+        "data",
+        "card",
+        "result"
+      ],
+      "text": "In the same ARC Prize ARC-AGI-2 snapshot, Muse Spark Open reaches 57.5% at xhigh and DeepSeek Flash 1017 reaches 78.1% at maximum. Their recorded costs are about $0.73 and $0.16 per task respectively, versus Beam’s $0.61. These are comparisons of the published configurations and retail-priced runs, not a controlled study of why the architectures differ. Beam therefore has no accuracy or cost lead over these two alternatives on this particular evaluation. Its inspectable weights and tooling can still make it a research candidate, especially for an experiment that changes the task interface or training recipe. That prospect needs a measured follow-up rather than a promised gain. No ARC-AGI-3 result is listed for Beam. Its text-only interface also makes any future treatment of game frames an explicit harness decision; a missing interactive score means unmeasured, not zero."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "result",
+      "title": "ARC Prize verified Beam 1.0 results",
+      "url": "https://arcprize.org/results/reflection-beam-1-0"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "v1",
+      "title": "ARC Prize ARC-AGI-1 semi-private evaluation data",
+      "url": "https://arcprize.org/media/data/leaderboard/v1.json"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "data",
+      "title": "ARC Prize machine-readable ARC-AGI-2 semi-private evaluations, checked October 22",
+      "url": "https://arcprize.org/media/data/leaderboard/v2.json"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "policy",
+      "title": "ARC Prize verified testing policy: direct grid prediction, dataset split and retail costs",
+      "url": "https://arcprize.org/policy"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "card",
+      "title": "Reflection official Beam model card",
+      "url": "https://reflection.ai/beam-model-card"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "release",
+      "title": "Reflection October 16 Beam release and open tooling",
+      "url": "https://reflection.ai/blog/beam-is-available"
+    }
+  ]
+}

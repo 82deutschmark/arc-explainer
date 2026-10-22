@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-22T19:36:52Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "Aneesh & Yash gain 7.36 points and climb from 41st to 34th on ARC-2",
+  "id": "2026-10-22-1541-arc-2-aneesh-yash-gains-to-34th",
+  "personIds": [],
+  "publishedAt": "2026-10-22T19:41:18Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Aneesh & Yash gained 7.36 points to reach 53.33, moving from 41st to 34th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The public standings are provisional and medals are decided on the private board. The gold line stands at 66.53, so the team remains outside the medal places for now."
+    }
+  ],
+  "since": "2026-10-21T19:33:55Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-22T19:40:39Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15796569"
+  ]
+}

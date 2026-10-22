@@ -1,0 +1,109 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-2",
+  "editorNote": "Model report checked October 22, 2026. Release dates and result-check dates are distinct. Scores below are ARC Prize semi-private evaluations, separate from the Kaggle competition.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "DeepSeek Flash 1017 reaches 78.1% on ARC-AGI-2, with a coverage warning behind the effort curve",
+  "id": "2026-10-22-deepseek-flash-1017-model-report",
+  "image": {
+    "alt": "ARC Prize semi-private scores for DeepSeek Flash 1017 at none, low, high and maximum effort, with the high variant flagged for incomplete coverage.",
+    "caption": "ARC Daily Digest chart from ARC Prize data checked October 22, 2026. High has partial coverage; its cost excludes unrecorded attempts. Costs are per task at recorded retail rates. No ARC-AGI-3 result is listed.",
+    "src": "/news-images/2026-10-22-deepseek-v4-1-flash-1017-verified-results.png"
+  },
+  "publishedAt": "2026-10-22T19:41:06.625278+00:00",
+  "sections": [
+    {
+      "heading": "The verified gain",
+      "sourceIds": [
+        "result",
+        "previous",
+        "data"
+      ],
+      "text": "DeepSeek V4.1 Flash 1017 raises the September checkpoint’s best ARC-AGI-2 score from 72.9% to 78.1% at maximum reasoning: roughly five percentage points of improvement. ARC Prize records about 16 cents per task for the new maximum setting, against about 13 cents for the earlier one. The new checkpoint’s best ARC-AGI-1 figure is 94.5% at high effort; maximum effort scores 93.5% there. Those are different configurations, so the two headline bests should not be presented as one run. DeepSeek released 1017 on October 17. This report checks the verified results on October 22; the release date displayed on the results page does not establish when the evaluation rows first appeared. Among the three models in this series, DeepSeek has the strongest ARC-AGI-2 result."
+    },
+    {
+      "heading": "Read the coverage note before reading the curve",
+      "sourceIds": [
+        "result",
+        "models"
+      ],
+      "text": "The ARC-AGI-2 ladder is 2.1% with reasoning disabled, 73.6% at low, 68.6% at high and 78.1% at maximum. The dip at high is easy to turn into an overthinking story, but ARC Prize’s model metadata explicitly marks that variant as having partial dataset coverage. It says scores use the full catalog denominators while costs include recorded usage only and exclude unrecorded attempts. A published aggregate with missing coverage cannot isolate the effect of extra thinking. Nor does the note identify the missing attempts’ counterfactual answers. The chart therefore marks high with a warning rather than drawing a smooth performance law through it. For practical comparison, retain the coverage qualification alongside the checkpoint, effort and dataset; a score without those conditions conceals the most consequential limitation in this release’s ARC evidence."
+    },
+    {
+      "heading": "Better ARC accuracy is not automatically a cheaper ARC run",
+      "sourceIds": [
+        "release",
+        "data",
+        "policy"
+      ],
+      "text": "DeepSeek describes 1017 as completing tasks faster and with shorter outputs, and calls the broader update a performance-and-cost improvement. Its release announcement emphasizes project creation and reinforcement learning with self-feedback. That claim needs to stay attached to the workloads on which the company makes it. In ARC Prize’s recorded maximum-effort ARC-AGI-2 runs, cost rises from roughly $0.129 to $0.163 per task, about a quarter more, while accuracy improves. The low setting costs about $0.134 and scores 73.6%, offering a different point on the tradeoff. ARC Prize uses retail pricing, not the lab’s internal GPU cost, and its policy uses a single run rather than averaging repeats. These observations support a useful accuracy gain; they do not establish cheaper inference for every workload or a universal efficiency win."
+    },
+    {
+      "heading": "What DeepSeek says changed outside ARC",
+      "sourceIds": [
+        "card",
+        "release"
+      ],
+      "text": "The model card reports DeepSWE v1.1 improving from 74.2 to 77.0, Terminal-Bench 4.0 from 31.2 to 42.3, and ProgramBench from 20.3 to 29.1. These are DeepSeek-published comparisons, not additional ARC Prize verification. The card names Mini-SWE-V2 for DeepSWE and Claude Code for Terminal-Bench 4.0. The launch’s project demonstrations include a Godot Portal recreation and 3D scenes; they illustrate the intended end-to-end development use, but are selected demonstrations. The broader research story is an update aimed at carrying a project through execution and feedback, with shorter output as part of the objective. Neither a software benchmark nor a polished demonstration substitutes for testing an unfamiliar grid rule. Conversely, the ARC score alone does not measure the model’s ability to build, debug and ship a repository."
+    },
+    {
+      "heading": "Open weights, protocol fidelity, and the unanswered ARC3 question",
+      "sourceIds": [
+        "card",
+        "recipe",
+        "result"
+      ],
+      "text": "The checkpoint is available under MIT terms with a one-million-token context recommendation. DeepSeek’s card says there is no Jinja-format chat template and points instead to its reference encoder. Its maintained deepseek-recipe toolkit converts common request formats into DeepSeek conversations and parses thinking, tool calls and images. That matters for reproduction: a wrapper that drops reasoning or misplaces tool content changes the system under test. A serious follow-up should hold the task set and harness fixed, verify the actual checkpoint, and record coverage, failures, token use and cost before attributing differences to the model. This is a proposed experiment, not a run performed for this report. ARC Prize lists no ARC-AGI-3 score for 1017. The September model’s separate interactive results cannot be carried over to this checkpoint. A grid-prediction gain is promising evidence for that task, while interactive exploration remains an open question."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "result",
+      "title": "ARC Prize verified DeepSeek V4.1 Flash 1017 results",
+      "url": "https://arcprize.org/results/deepseek-v4-1-flash-1017"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "previous",
+      "title": "ARC Prize verified September DeepSeek V4.1 Flash results",
+      "url": "https://arcprize.org/results/deepseek-v4-1-flash"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "data",
+      "title": "ARC Prize machine-readable ARC-AGI-2 semi-private evaluations, checked October 22",
+      "url": "https://arcprize.org/media/data/leaderboard/v2.json"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "models",
+      "title": "ARC Prize model metadata, including the DeepSeek high-effort coverage qualification",
+      "url": "https://arcprize.org/media/data/models.json"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "policy",
+      "title": "ARC Prize verified testing policy: direct grid prediction, dataset split and retail costs",
+      "url": "https://arcprize.org/policy"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "release",
+      "title": "DeepSeek October 17 release announcement",
+      "url": "https://api-docs.deepseek.com/news/news261017/"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "card",
+      "title": "DeepSeek V4.1 Flash 1017 official model card",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017"
+    },
+    {
+      "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+      "id": "recipe",
+      "title": "DeepSeek official request-encoding and output-parsing toolkit",
+      "url": "https://github.com/deepseek-ai/deepseek-recipe"
+    }
+  ]
+}
