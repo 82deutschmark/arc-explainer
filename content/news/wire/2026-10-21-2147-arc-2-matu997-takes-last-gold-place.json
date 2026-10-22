@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-22T01:34:35Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "matu997 takes the last ARC-2 gold place as the line rises to 66.53",
+  "id": "2026-10-21-2147-arc-2-matu997-takes-last-gold-place",
+  "personIds": [],
+  "publishedAt": "2026-10-22T01:47:25Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "matu997 moved from 18th to 16th at 66.53, gaining 2.22, and now holds the last of the 16 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line itself rose 0.97 in the past day to 66.53. NguyenThanhNhan, 17th at 65.97, is 0.56 short and is the first team outside gold."
+    }
+  ],
+  "since": "2026-10-21T01:31:44Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-22T01:46:36Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17017585",
+    "15938245"
+  ]
+}
