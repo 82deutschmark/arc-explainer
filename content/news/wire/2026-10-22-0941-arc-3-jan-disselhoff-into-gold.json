@@ -1,0 +1,62 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-22T13:35:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Jan Disselhoff climbs from 52nd to 17th, into ARC-3 gold places",
+  "id": "2026-10-22-0941-arc-3-jan-disselhoff-into-gold",
+  "personIds": [
+    "jan-disselhoff"
+  ],
+  "publishedAt": "2026-10-22T13:41:33Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3",
+        "person-jan-disselhoff-roster-0"
+      ],
+      "text": "Jan Disselhoff gained 3.60 to 38.37 on the ARC-AGI-3 public board, moving from 52nd to 17th and into the gold places. The line at 19th, the last of 19 gold places, rose 0.22 in the past day to 38.20."
+    },
+    {
+      "sourceIds": [
+        "person-jan-disselhoff-archive-0",
+        "person-jan-disselhoff-archive-1"
+      ],
+      "text": "Jan Disselhoff was ARC Prize 2024 champion with the ARChitects and runner-up in 2025 with the same team. Public standings are provisional, so this is a move on the board, not a settled medal."
+    }
+  ],
+  "since": "2026-10-21T13:32:59Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-22T13:40:32Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jan-disselhoff-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jan-disselhoff-archive-1",
+      "title": "ARC Prize — 2024 results",
+      "url": "https://arcprize.org/competitions/2024"
+    },
+    {
+      "accessedAt": "2026-10-21T22:34:16Z",
+      "id": "person-jan-disselhoff-roster-0",
+      "title": "ARC-2 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+    }
+  ],
+  "teamIds": [
+    "15501006"
+  ],
+  "visual": {
+    "alt": "Jan Disselhoff’s Kaggle profile picture",
+    "href": "/news/people/jan-disselhoff",
+    "src": "/news-images/people/jan-disselhoff.webp"
+  }
+}

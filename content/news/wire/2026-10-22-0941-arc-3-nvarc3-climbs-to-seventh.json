@@ -1,0 +1,63 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-22T13:35:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "NVARC3 climbs from 10th to 7th on ARC-3, with 2025 champion Ivan Sorokin on its roster",
+  "id": "2026-10-22-0941-arc-3-nvarc3-climbs-to-seventh",
+  "personIds": [
+    "ivan-sorokin",
+    "jean-francois-puget"
+  ],
+  "publishedAt": "2026-10-22T13:41:33Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "NVARC3 gained 1.96 to 45.90 on the ARC-AGI-3 public board, moving from 10th to 7th."
+    },
+    {
+      "sourceIds": [
+        "person-ivan-sorokin-archive-0",
+        "person-jean-francois-puget-archive-0",
+        "person-ivan-sorokin-roster-0"
+      ],
+      "text": "The public roster lists Ivan Sorokin, the 2025 ARC Prize champion with NVARC, and Jean-François Puget, also credited with NVARC for that title. A roster lists accounts; it does not show who did the work."
+    }
+  ],
+  "since": "2026-10-21T13:32:59Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-22T13:40:32Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-jean-francois-puget-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-09T21:30:00Z",
+      "id": "person-ivan-sorokin-archive-0",
+      "title": "ARC Prize — 2025 results",
+      "url": "https://arcprize.org/competitions/2025"
+    },
+    {
+      "accessedAt": "2026-10-22T10:35:32Z",
+      "id": "person-ivan-sorokin-roster-0",
+      "title": "ARC-3 public roster observation",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    }
+  ],
+  "teamIds": [
+    "15770880"
+  ],
+  "visual": {
+    "alt": "Ivan Sorokin, from his 2025 NVARC Hall of Fame card",
+    "href": "/news/people/ivan-sorokin",
+    "src": "/news-images/people/ivan-sorokin.webp"
+  }
+}
