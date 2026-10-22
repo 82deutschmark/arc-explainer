@@ -4,6 +4,7 @@
  * Updated: 2025-12-25 - Added BYOK support for production environment
  * PURPOSE: Coordinates the Puzzle Examiner page layout, orchestrating data fetching, controls, and result surfaces.
  * SRP/DRY check: Pass - verified the page keeps orchestration concerns separated from child components that render UI.
+ * 2026-10-22 (Claude Opus 5.5 Low): Human Insights banner hidden on puzzles H-ARC has no page for.
  * Page title changes reuse setPageTitle so document, social and structured-data titles stay aligned.
  */
 
@@ -12,6 +13,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'wouter';
 import { Loader2, ChevronDown, Brain } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
+import { getHumanArcUrl } from '@shared/utils/humanArc';
 import { DEFAULT_EMOJI_SET } from '@/lib/spaceEmojis';
 import type { EmojiSet } from '@/lib/spaceEmojis';
 import { requiresUserApiKey } from '@/lib/environmentPolicy';
@@ -553,9 +555,10 @@ export default function PuzzleExaminer() {
           )}
         </div>
 
-        {/* Human Insights Banner - Above Analysis Results */}
+        {/* Human Insights Banner - only where H-ARC has human explanations (ARC-1 tasks) */}
+        {getHumanArcUrl(taskId) && (
         <a
-          href={`https://arc-visualizations.github.io/${taskId}.html`}
+          href={getHumanArcUrl(taskId)!}
           target="_blank"
           rel="noopener noreferrer"
           className="block mb-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300/60 hover:border-amber-400 hover:bg-gradient-to-r hover:from-amber-100 hover:to-orange-100 rounded-lg transition-all duration-300 group"
@@ -571,6 +574,7 @@ export default function PuzzleExaminer() {
             </span>
           </div>
         </a>
+        )}
 
         {/* Analysis Results (PERFORMANCE-OPTIMIZED with progressive loading) */}
         {(allResults.length > 0 || isAnalyzing || isLoadingSummaries || highlightedExplanationData) && (

@@ -6,6 +6,7 @@
  * PURPOSE: Displays puzzle title, source badges, and action buttons (emoji toggle, solver links).
  * Extracted from PuzzleExaminer lines 238-324 to follow SRP.
  * 
+ * 2026-10-22 (Claude Opus 5.5 Low): Human Insights button only shows for puzzles H-ARC covers.
  * SRP/DRY check: Pass - Single responsibility (header display and controls)
  * DaisyUI: Pass - Uses DaisyUI badge, btn, and select components
  */
@@ -15,6 +16,7 @@ import { Link } from 'wouter';
 import { Hash, Eye, Rocket, RefreshCw, ExternalLink, Palette, Users, Brain } from 'lucide-react';
 import { getPuzzleName } from '@shared/utils/puzzleNames';
 import { getSynapsomorphyArcUrl } from '@shared/utils/synapsomorphy';
+import { getHumanArcUrl } from '@shared/utils/humanArc';
 import { EMOJI_SET_INFO, type EmojiSet } from '@/lib/spaceEmojis';
 
 interface PuzzleHeaderProps {
@@ -48,6 +50,8 @@ export function PuzzleHeader({
   isAnalyzing
 }: PuzzleHeaderProps) {
   const puzzleName = getPuzzleName(taskId);
+  // H-ARC only has human explanations for ARC-1 tasks; null hides the button elsewhere.
+  const humanArcUrl = getHumanArcUrl(taskId);
   const synapsomorphyUrl = getSynapsomorphyArcUrl(
     taskId,
     source && ['ARC1', 'ARC1-Eval', 'ARC2', 'ARC2-Eval'].includes(source as string)
@@ -180,8 +184,9 @@ export function PuzzleHeader({
         </Link>
 
         {/* Human Insights Button */}
+        {humanArcUrl && (
         <a
-          href={`https://arc-visualizations.github.io/${taskId}.html`}
+          href={humanArcUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-md btn-outline border-2 border-amber-400/60 hover:border-amber-500 hover:bg-amber-50 text-amber-700 font-semibold rounded-lg flex items-center"
@@ -190,6 +195,7 @@ export function PuzzleHeader({
           <Brain className="h-4 w-4 mr-2" />
           💡 Human Insights
         </a>
+        )}
 
         {synapsomorphyUrl && (
           <a
