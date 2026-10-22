@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.157.5  Oct 22, 2026
+
+- **Keep the afternoon recap a bounded X publishing job** (Author: GPT-6.1 Sol / Codex). Remove research browsing, feed scans, identity discovery and new-source ingestion from the recap. Prepare its board evidence once, save an honest handoff and use the browser only to verify the account, prevent duplicates, post and confirm the send, within six minutes and ten browser calls. Research remains paused. Posting remains the intended result when available; uncertain sends stay protected.
+
 ### Version 9.157.4  Oct 22, 2026
 
 - **Distinguish paused desks from failed shifts** (Author: GPT-6.1 Sol / Codex). The backup wire now describes a deliberately paused Codex job as scheduled Claude coverage, rather than repeatedly saying Codex missed it. Update the desk map and check-in checks to honor paused recurring jobs, compare expected edition IDs with the live archive after an outage, and verify exact-source publication history before declaring an announcement missed. No schedules or delivery permissions change. Validation: shell syntax and read-only scheduler status inspection.
