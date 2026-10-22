@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.157.3  Oct 22, 2026
+
+- **Three commissioned model reports: DeepSeek Flash 1017, Beam 1.0 and Muse Spark Open** (Author: GPT-6.1 Sol / Codex). Publish full sourced dispatches and original charts of the ARC Prize semi-private scores and task costs. Explain DeepSeek high-effort partial coverage, distinguish lab-reported software results and harness settings from verified ARC tests, and preserve the absence of ARC3 results. Each report links primary releases, exact checkpoint documentation and the evaluation data checked October 22. Raw source snapshots and hashes remain in the private editorial archive.
+
 ### Version 9.157.2  Oct 22, 2026
 
 - **Bound scheduled Digest publishing and detach X from deployment waits** (Author: GPT-6.1 Sol / Codex). Early and Late jobs now use fresh board feeds and the saved public archive, with no browser research or image generation, one optional approved-stock composition, a fixed freshness check and optional unsent X drafts. Research remains paused. Add `newsroom_x.py --draft-only` so a draft never waits twenty minutes for Railway; preserve protected sends and the normal sender's live-link gate. Update the reviewed prompts and newsroom guides. Validation: newsroom Python tests and news content tests. Plan: `docs/2026-10-22-digest-publishing-and-model-reports-plan.md`.
