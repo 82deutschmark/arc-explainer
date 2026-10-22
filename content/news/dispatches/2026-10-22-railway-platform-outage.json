@@ -1,0 +1,40 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Mark Barney requested this service note after reporting that Railway’s outage had prevented site builds. Platform status below is dated; an available website does not establish that deployment service has fully recovered.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Railway platform outage delays publication as build recovery continues",
+  "id": "2026-10-22-railway-platform-outage",
+  "publishedAt": "2026-10-22T21:35:10.769136+00:00",
+  "sections": [
+    {
+      "heading": "Recovery remains partial",
+      "sourceIds": [
+        "railway"
+      ],
+      "text": "Railway’s platform outage remained open in its October 22 update at 21:08 UTC (5:08 pm Eastern). Hobby builds had resumed, joining Pro and Enterprise, but deployments could still take longer to complete. Free and Trial builds were next in the recovery sequence; new signups remained paused. Railway had reported its API restored at 17:00 UTC. It also said API tokens and Project Tokens created before the security incident remained invalidated. The company’s status page is the source for these platform-wide claims."
+    },
+    {
+      "heading": "What this means for the Digest",
+      "sourceIds": [
+        "news",
+        "railway"
+      ],
+      "text": "The editor reports that the outage held up builds of this site, delaying the arrival of committed articles. Today’s morning editions and the three new model reports are now visible on the news page. The evening edition remains scheduled for 6 pm Eastern. Filing the edition and seeing it deployed are separate steps: continuing platform delays could still postpone its appearance. We will treat publication as confirmed only when the actual article is served."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-22T21:35:10.769136+00:00",
+      "id": "railway",
+      "title": "Railway Platform Outage — official status, October 22, 21:08 UTC update",
+      "url": "https://status.railway.com/incident/QH8L8B3E"
+    },
+    {
+      "accessedAt": "2026-10-22T21:35:10.769136+00:00",
+      "id": "news",
+      "title": "The ARC Daily Digest — published news and model reports",
+      "url": "https://arc.markbarney.net/news"
+    }
+  ]
+}

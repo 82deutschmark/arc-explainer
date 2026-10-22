@@ -1,4 +1,10 @@
 # New entries at the top, use proper SemVer!
+
+## 9.157.6 — 2026-10-22
+
+- Published the editor-requested Railway outage service note using the official 21:08 UTC status and saved an evening-edition assignment. Distinguishes filing from deployment and partial recovery from resolution.
+- Recorded verified recap configuration, the problem-finder model sign-in check and restored Kaggle feed authentication in the repair plan.
+- Author: GPT-6.1 Sol / Codex.
 #
 # One line, one file, two people: check the version at the top before adding an entry.
 # On 31-Aug two branches numbered in parallel — one continued 7.10.0 -> 7.11.0 while the
@@ -14,6 +20,10 @@
 ### Version 9.158.0  Oct 22, 2026
 
 - **ARC-2 runs API: every internal run kind on the team eval pages** (Author: Claude Opus 5.5). What: the team eval store now takes every internal ARC-AGI-2 run, not only scored panels. A version 2 run document names its `kind`: `accuracy` (as before: rows plus a trace per output) or `speed` / `kernel` / `profile` (arms compared side by side: each arm's status, config and env chips, numeric metrics such as decode tok/s over a window, lanes, KV pool and step ms, and per-family profile ms). `/team/arc2-evals` lists accuracy runs as before and the other kinds in a second table (each arm's headline metric, best in green, failed arms in red, verdict, box cost); their run page shows the question and verdict, the arms table (best per row, ratio to the baseline arm, failed arms' reasons), the profile table by kernel family, notes and folded arm details. The run header also shows kind, author, env switches, machine and links; long chip values are clipped. Why: Son, 21-Oct: one official, documented API for publishing all internal runs (accuracy with traces, serving speed and lever A/Bs, kernel benches, profiles) that Jack and Keith can use too. How: `server/routes/teamEvals.ts` checks version (1 or 2) and kind (accuracy needs `rows`; the others need 1-64 uniquely named arms with ok/failed/skipped status and number-or-null metrics) and adds the token-checked `GET /api/team/arc2-evals/machine/schema`; the PUT reply names the kind and page. `TeamEvalRepository.listRuns` adds kind, author, box, verdict, headline and arm names/statuses/metrics. Client: `teamEvalsApi.ts` types, `armStats.ts` (metric labels and directions, rows, best, baseline, ratios, digits), `ArmsView.tsx`, `Arc2Evals.tsx`, `Arc2Eval.tsx`, `Chips.tsx`. No new tables or secrets (same `ARC2_EVAL_UPLOAD_TOKEN`). Tests: `tests/teamEvals.test.ts`, `tests/teamArmStats.test.ts`. Plan: `docs/2026-10-21-arc2-runs-api-plan.md`. Publisher reference and stdlib client: `docs/RUNS_API.md` and `tools/arc2runs/arc2runs.py` in the team's arc2026 repository.
+
+### Version 9.157.5  Oct 22, 2026
+
+- **Keep the afternoon recap a bounded X publishing job** (Author: GPT-6.1 Sol / Codex). Remove research browsing, feed scans, identity discovery and new-source ingestion from the recap. Prepare its board evidence once, save an honest handoff and use the browser only to verify the account, prevent duplicates, post and confirm the send, within six minutes and ten browser calls. Research remains paused. Posting remains the intended result when available; uncertain sends stay protected.
 
 ### Version 9.157.4  Oct 22, 2026
 

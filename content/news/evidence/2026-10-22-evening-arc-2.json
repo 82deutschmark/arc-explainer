@@ -1,0 +1,8100 @@
+{
+  "accessedAt": "2026-10-22T22:00:08Z",
+  "articleId": "2026-10-22-evening-arc-2",
+  "baselineSnapshot": {
+    "bronze": 31.81,
+    "gold": 66.53,
+    "silver": 32.64,
+    "t": "2026-10-21T21:34:10Z",
+    "teams": 3136,
+    "top": 88.06
+  },
+  "baselineTargetAt": "2026-10-21T22:00:00Z",
+  "briefSha256": "d64fd431eeefa97212a3d638d6e57b4547d12bce2c55b7d833128f3185f78a38",
+  "closingSnapshot": {
+    "bronze": 31.81,
+    "gold": 66.53,
+    "silver": 32.64,
+    "t": "2026-10-22T21:37:08Z",
+    "teams": 3176,
+    "top": 88.06
+  },
+  "comparisons": {
+    "15486728": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        33.89,
+        103
+      ],
+      "start": [
+        "2026-10-21T12:32:53Z",
+        33.89,
+        97
+      ]
+    },
+    "15486939": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        79.72,
+        4
+      ],
+      "start": [
+        "2026-10-21T10:02:37Z",
+        79.72,
+        4
+      ]
+    },
+    "15487246": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        34.44,
+        96
+      ],
+      "start": [
+        "2026-10-21T15:03:14Z",
+        32.36,
+        196
+      ]
+    },
+    "15495422": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        35.56,
+        85
+      ],
+      "start": [
+        "2026-10-21T15:03:14Z",
+        32.64,
+        168
+      ]
+    },
+    "15501171": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        84.72,
+        2
+      ],
+      "start": [
+        "2026-10-19T10:57:33Z",
+        84.72,
+        2
+      ]
+    },
+    "15507730": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        21.67,
+        2039
+      ],
+      "start": [
+        "2026-10-21T21:34:10Z",
+        21.67,
+        2014
+      ]
+    },
+    "15526034": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        68.75,
+        13
+      ],
+      "start": null
+    },
+    "15789060": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        80.83,
+        3
+      ],
+      "start": [
+        "2026-10-20T08:29:50Z",
+        80.83,
+        3
+      ]
+    },
+    "15962641": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        34.86,
+        93
+      ],
+      "start": [
+        "2026-10-21T12:32:53Z",
+        33.06,
+        130
+      ]
+    },
+    "16297545": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        72.5,
+        9
+      ],
+      "start": [
+        "2026-10-21T15:03:14Z",
+        72.5,
+        8
+      ]
+    },
+    "16373916": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        75.56,
+        5
+      ],
+      "start": [
+        "2026-10-20T12:30:14Z",
+        75.56,
+        5
+      ]
+    },
+    "16397467": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        33.06,
+        137
+      ],
+      "start": [
+        "2026-10-21T18:33:39Z",
+        31.94,
+        284
+      ]
+    },
+    "16461211": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        75.14,
+        6
+      ],
+      "start": [
+        "2026-10-21T15:03:14Z",
+        75.14,
+        6
+      ]
+    },
+    "16559402": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        72.92,
+        7
+      ],
+      "start": null
+    },
+    "16671221": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        72.64,
+        8
+      ],
+      "start": [
+        "2026-10-21T15:03:14Z",
+        72.64,
+        7
+      ]
+    },
+    "16756524": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        88.06,
+        1
+      ],
+      "start": [
+        "2026-10-09T05:21:54Z",
+        88.06,
+        1
+      ]
+    },
+    "16767874": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        33.89,
+        105
+      ],
+      "start": [
+        "2026-10-21T12:32:53Z",
+        33.47,
+        109
+      ]
+    },
+    "16768245": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        71.81,
+        10
+      ],
+      "start": [
+        "2026-10-21T15:03:14Z",
+        71.81,
+        9
+      ]
+    },
+    "16838707": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        38.19,
+        66
+      ],
+      "start": [
+        "2026-10-21T21:34:10Z",
+        37.78,
+        65
+      ]
+    },
+    "17023174": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        39.31,
+        62
+      ],
+      "start": [
+        "2026-10-21T17:03:28Z",
+        39.31,
+        61
+      ]
+    },
+    "17101761": {
+      "end": [
+        "2026-10-22T21:37:08Z",
+        53.47,
+        33
+      ],
+      "start": [
+        "2026-10-21T21:34:10Z",
+        49.86,
+        39
+      ]
+    }
+  },
+  "competitorFacts": [
+    {
+      "checkedAt": "2026-10-09T03:23:31Z",
+      "sourceId": "fact-15486728-0",
+      "sourceTitle": "Mithil A Vakde — Kaggle mdlARC model",
+      "sourceUrl": "https://www.kaggle.com/models/mithilavakde/mdlarc",
+      "teamId": "15486728",
+      "text": "The Kaggle account mithilavakde publishes a model called mdlARC under the displayed name Mithil A Vakde."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15486939-0",
+      "sourceTitle": "ARC-AGI-3 public team roster",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "teamId": "15486939",
+      "text": "The observed nvbanana roster contains cpmpml and darraghdog. Those two handles also appear in NVARC3 on the ARC-AGI-3 board; these remain separate competition entries."
+    },
+    {
+      "checkedAt": "2026-10-09T03:23:31Z",
+      "sourceId": "fact-15486939-1",
+      "sourceTitle": "Jean-François Puget — public professional profile",
+      "sourceUrl": "https://github.com/jfpuget",
+      "teamId": "15486939",
+      "text": "Jean-François Puget’s public GitHub profile identifies him as CPMP and links directly to the Kaggle account cpmpml."
+    },
+    {
+      "checkedAt": "2026-10-09T03:23:31Z",
+      "sourceId": "fact-15486939-2",
+      "sourceTitle": "NVIDIA — Jean-Francois Puget author biography",
+      "sourceUrl": "https://developer.nvidia.com/blog/author/jeanfrancoispuget/",
+      "teamId": "15486939",
+      "text": "NVIDIA’s author biography describes Jean-Francois Puget as a director and individual contributor whose team advances agentic AI and showcases NVIDIA tools and expertise in Kaggle competitions."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15507730-0",
+      "sourceTitle": "The ARChitects — 2025 team solution",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025",
+      "teamId": "15507730",
+      "text": "The ARChitects’ own 2025 solution write-up credits Jan Disselhoff under the Kaggle handle insanitycheck, alongside David Hartmann (dvhrtm) and Daniel Franzen (dfranzen)."
+    },
+    {
+      "checkedAt": "2026-10-08T03:38:00Z",
+      "sourceId": "fact-15507730-1",
+      "sourceTitle": "The ARChitects — 2025 technical report",
+      "sourceUrl": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/",
+      "teamId": "15507730",
+      "text": "The team’s 2025 technical report lists Jan Disselhoff at Johannes Gutenberg University Mainz."
+    },
+    {
+      "checkedAt": "2026-10-09T03:23:31Z",
+      "sourceId": "fact-15526034-0",
+      "sourceTitle": "ARC-AGI-2 observed public roster",
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "teamId": "15526034",
+      "text": "The ARC-AGI-2 roster observed on 8 October 2026 includes keithtyser. This observation does not establish a joining date."
+    },
+    {
+      "checkedAt": "2026-10-19T18:01:43.005825Z",
+      "sourceId": "fact-17023174-0",
+      "sourceTitle": "Separate ARC2 and ARC3 team entries — dated public roster evidence",
+      "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+      "teamId": "17023174",
+      "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+    }
+  ],
+  "cutoffAt": "2026-10-22T22:00:00Z",
+  "discussionThreads": [
+    {
+      "author": "anlthms",
+      "authorName": "Anil Thomas",
+      "bodyRead": true,
+      "checkedAt": "2026-10-20T09:06:49.161Z",
+      "commentCount": 16,
+      "competition": "arc-2",
+      "decision": "paper-lead",
+      "id": "750546",
+      "latestActivityAt": "2026-10-20T08:54:23Z",
+      "personIds": [],
+      "postedAt": "2026-10-18T19:43:49Z",
+      "reason": "New competitor claim with essential caveat preserved; current replies verified in logged-out Newest view. Recipe still unresolved.",
+      "sourceId": "discussion-arc-2-750546",
+      "summary": "mikelou1 reports an 87% local Qwen run under time constraints at roughly four-L4 speed (October 20 03:00 UTC). At 06:26 UTC the same author explicitly says 87% likely will not transfer, would be surprised by even 80%, and hopes for roughly 75%; those are expectations, not a submitted result. A later reply at 08:54 UTC says they are not very concerned about overfit because they get few runs. Other participants discuss throughput and the local-to-leaderboard gap. No complete recipe or independently verified new leaderboard score was supplied.",
+      "title": "Qwen3.8 or something else?",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750546",
+      "visibility": "public"
+    },
+    {
+      "author": "cpmpml",
+      "authorName": "CPMP",
+      "bodyRead": true,
+      "checkedAt": "2026-10-19T09:06:20.189Z",
+      "commentCount": 8,
+      "competition": "arc-2",
+      "decision": "paper-lead",
+      "id": "750234",
+      "latestActivityAt": "2026-10-18T21:58:10Z",
+      "personIds": [],
+      "postedAt": "2026-10-17T11:52:10Z",
+      "reason": "Prior verified public staff explanation re-read; latest acknowledgment read, without independent measurement of the billing claim.",
+      "sourceId": "discussion-arc-2-750234",
+      "summary": "Kaggle Staff member Dustin says dataset download time does not count toward submission runtime. He explains that the live interactive quota display is an estimate and final usage corrects to container runtime when the session stops; data added while a container is running consumes quota. The staff explanation is publicly readable. Expanded CPMP acknowledgment says he had not checked the final adjustment and assumes staff is right; this is not independent confirmation.",
+      "title": "Are datasets download time include din submission sunning time?",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/750234",
+      "visibility": "public"
+    },
+    {
+      "author": "atelierzoe",
+      "authorName": "Atelier Zoe",
+      "bodyRead": true,
+      "checkedAt": "2026-10-19T02:35:17.947516Z",
+      "commentCount": 33,
+      "competition": "arc-2",
+      "decision": "paper-lead",
+      "id": "748082",
+      "latestActivityAt": "2026-10-18T07:31:31Z",
+      "personIds": [],
+      "postedAt": "2026-10-10T14:47:28Z",
+      "reason": "Expanded mikelou1 branch read in Chrome and independently while logged out; public visibility established.",
+      "sourceId": "discussion-arc-2-748082",
+      "summary": "mikelou1 reports a score of 66% (about 60% local validation) in an expanded reply. Earlier replies deny using an NVARC ensemble and describe a kernel issue behind a lower result. The exact Qwen model variant and full recipe remain undisclosed. The current board independently shows the same entry at 66.39 and rank 13; the comment does not prove which change caused that gain.",
+      "title": "Qwen3.8-27B / Flash-Next: ARC-AGI-2 results within Kaggle’s compute limits?",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/748082",
+      "visibility": "public"
+    },
+    {
+      "author": "herbison",
+      "authorName": "Dustin",
+      "bodyRead": true,
+      "checkedAt": "2026-10-17T09:06:00.169Z",
+      "commentCount": 27,
+      "competition": "arc-2",
+      "decision": "paper-lead",
+      "id": "747515",
+      "latestActivityAt": "2026-10-16T20:12:30Z",
+      "personIds": [],
+      "postedAt": "2026-10-08T22:04:06Z",
+      "reason": "New Kaggle staff queue estimate verified in signed-in Chrome and logged-out public view.",
+      "sourceId": "discussion-arc-2-747515",
+      "summary": "In an October 16 reply, Kaggle staff member Dustin says ARC-2 queue delay has fallen to about three to five hours and most waiting is now actual submission runtime. He estimates turnaround below a day. Later participants still ask about long saves and runs; the staff estimate is dated, not a live service guarantee.",
+      "title": "Update on \"Kaggle Error\" Submissions & Queue Delays",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/747515",
+      "visibility": "public"
+    }
+  ],
+  "editorialIntake": [],
+  "events": [
+    {
+      "from": 59.17,
+      "id": "16153654",
+      "name": "mtg",
+      "rankFrom": 25,
+      "rankTo": 24,
+      "t": "2026-10-21T22:34:16Z",
+      "to": 62.08
+    },
+    {
+      "from": 42.36,
+      "id": "17078907",
+      "name": "Varstern 6037",
+      "rankFrom": 52,
+      "rankTo": 50,
+      "t": "2026-10-21T23:04:19Z",
+      "to": 43.19
+    },
+    {
+      "from": 33.47,
+      "id": "17150543",
+      "name": "Jay Gautam",
+      "rankFrom": 111,
+      "rankTo": 96,
+      "t": "2026-10-21T23:04:19Z",
+      "to": 34.03
+    },
+    {
+      "from": 32.08,
+      "id": "16381399",
+      "name": "Yuvraj #2",
+      "rankFrom": 279,
+      "rankTo": 90,
+      "t": "2026-10-22T04:04:53Z",
+      "to": 34.86
+    },
+    {
+      "from": 31.39,
+      "id": "15505316",
+      "name": "Hu Xingyu",
+      "rankFrom": 570,
+      "rankTo": 434,
+      "t": "2026-10-22T05:04:59Z",
+      "to": 31.53
+    },
+    {
+      "from": 30.56,
+      "id": "17013522",
+      "name": "Cherie01",
+      "rankFrom": 992,
+      "rankTo": 418,
+      "t": "2026-10-22T06:35:08Z",
+      "to": 31.67
+    },
+    {
+      "from": 31.53,
+      "id": "17129793",
+      "name": "parkera",
+      "rankFrom": 431,
+      "rankTo": 103,
+      "t": "2026-10-22T07:35:14Z",
+      "to": 33.61
+    },
+    {
+      "from": 31.94,
+      "id": "16632789",
+      "name": "in blue",
+      "rankFrom": 297,
+      "rankTo": 139,
+      "t": "2026-10-22T07:35:14Z",
+      "to": 32.78
+    },
+    {
+      "from": 32.36,
+      "id": "15487246",
+      "name": "Giba",
+      "rankFrom": 199,
+      "rankTo": 93,
+      "t": "2026-10-22T08:05:17Z",
+      "to": 34.44
+    },
+    {
+      "from": 68.33,
+      "id": "15526034",
+      "name": "ARC Raiders",
+      "rankFrom": 13,
+      "rankTo": 13,
+      "t": "2026-10-22T08:35:22Z",
+      "to": 68.75
+    },
+    {
+      "from": 27.78,
+      "id": "16907614",
+      "name": "Ruslan Guseynov",
+      "rankFrom": 1880,
+      "rankTo": 50,
+      "t": "2026-10-22T10:35:33Z",
+      "to": 43.33
+    },
+    {
+      "from": 54.31,
+      "id": "16616584",
+      "name": "yuritosci",
+      "rankFrom": 32,
+      "rankTo": 31,
+      "t": "2026-10-22T11:35:40Z",
+      "to": 55.69
+    },
+    {
+      "from": 49.86,
+      "id": "17101761",
+      "name": "codjjj",
+      "rankFrom": 39,
+      "rankTo": 33,
+      "t": "2026-10-22T11:35:40Z",
+      "to": 53.47
+    },
+    {
+      "from": 31.94,
+      "id": "16397467",
+      "name": "Yaro Perventsev",
+      "rankFrom": 287,
+      "rankTo": 136,
+      "t": "2026-10-22T11:35:40Z",
+      "to": 33.06
+    },
+    {
+      "from": 37.78,
+      "id": "16838707",
+      "name": "Sho Okiyama M.D., Aillis CEO",
+      "rankFrom": 66,
+      "rankTo": 66,
+      "t": "2026-10-22T12:05:44Z",
+      "to": 38.19
+    },
+    {
+      "from": 32.64,
+      "id": "15495422",
+      "name": "tf",
+      "rankFrom": 174,
+      "rankTo": 85,
+      "t": "2026-10-22T12:05:44Z",
+      "to": 35.56
+    },
+    {
+      "from": 33.47,
+      "id": "16767874",
+      "name": "T0m0t0m0 W",
+      "rankFrom": 114,
+      "rankTo": 104,
+      "t": "2026-10-22T12:05:44Z",
+      "to": 33.89
+    },
+    {
+      "from": 71.67,
+      "id": "16559402",
+      "name": "Domdolus Tolus",
+      "rankFrom": 10,
+      "rankTo": 7,
+      "t": "2026-10-22T12:35:54Z",
+      "to": 72.92
+    },
+    {
+      "from": 30.97,
+      "id": "16081721",
+      "name": "lin xiang sun1145",
+      "rankFrom": 667,
+      "rankTo": 416,
+      "t": "2026-10-22T13:36:00Z",
+      "to": 31.81
+    },
+    {
+      "from": 45.83,
+      "id": "17052013",
+      "name": "Lee Minseung",
+      "rankFrom": 43,
+      "rankTo": 37,
+      "t": "2026-10-22T17:06:19Z",
+      "to": 50.42
+    },
+    {
+      "from": 28.89,
+      "id": "17080218",
+      "name": "Diogenes's cask",
+      "rankFrom": 1696,
+      "rankTo": 417,
+      "t": "2026-10-22T18:06:27Z",
+      "to": 31.81
+    },
+    {
+      "from": 33.06,
+      "id": "15962641",
+      "name": "KaggleARC",
+      "rankFrom": 135,
+      "rankTo": 93,
+      "t": "2026-10-22T20:37:00Z",
+      "to": 34.86
+    }
+  ],
+  "intakeReview": [
+    {
+      "disposition": "covered",
+      "id": "wire-2026-10-22-0941-arc-2-ruslan-guseynov-into-top-fifty",
+      "reason": "Reviews the dated wire observation alongside the closing evidence; preserves its own comparison window and corrects any overbroad medal inference."
+    },
+    {
+      "disposition": "covered",
+      "id": "wire-2026-10-22-1241-arc-2-yuvraj-2-climbs-to-ninety-second",
+      "reason": "Reviews the dated wire observation alongside the closing evidence; preserves its own comparison window and corrects any overbroad medal inference."
+    },
+    {
+      "disposition": "covered",
+      "id": "wire-2026-10-22-1541-arc-2-aneesh-yash-gains-to-34th",
+      "reason": "Reviews the dated wire observation alongside the closing evidence; preserves its own comparison window and corrects any overbroad medal inference."
+    },
+    {
+      "disposition": "covered",
+      "id": "wire-2026-10-22-1541-arc-2-giba-climbs-101-places-to-95th",
+      "reason": "Reviews the dated wire observation alongside the closing evidence; preserves its own comparison window and corrects any overbroad medal inference."
+    },
+    {
+      "disposition": "covered",
+      "id": "dispatch-2026-10-22-beam-1-model-report",
+      "reason": "Summarizes the saved October 22 model evaluation, distinguishing semi-private results from Kaggle standings and dating the report."
+    },
+    {
+      "disposition": "covered",
+      "id": "dispatch-2026-10-22-deepseek-flash-1017-model-report",
+      "reason": "Summarizes the saved October 22 model evaluation, distinguishing semi-private results from Kaggle standings and dating the report."
+    },
+    {
+      "disposition": "covered",
+      "id": "dispatch-2026-10-22-muse-spark-open-model-report",
+      "reason": "Summarizes the saved October 22 model evaluation, distinguishing semi-private results from Kaggle standings and dating the report."
+    }
+  ],
+  "latestAt": "2026-10-22T21:37:08Z",
+  "observations": {
+    "15486728": {
+      "members": [
+        "mithilavakde"
+      ],
+      "name": "Mithil A Vakde",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "15486939": {
+      "members": [
+        "cpmpml",
+        "darraghdog"
+      ],
+      "name": "nvbanana",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "15487246": {
+      "members": [
+        "titericz"
+      ],
+      "name": "Giba",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "15495422": {
+      "members": [
+        "tfukuhara"
+      ],
+      "name": "tf",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "15501171": {
+      "members": [
+        "threerabbits"
+      ],
+      "name": "Yi-Chia Chen",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "15507730": {
+      "members": [
+        "insanitycheck"
+      ],
+      "name": "Jan Disselhoff",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "15526034": {
+      "members": [
+        "dzjiann",
+        "keithtyser",
+        "mitubant",
+        "ngyzly"
+      ],
+      "name": "ARC Raiders",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "15789060": {
+      "members": [
+        "cookizesong",
+        "jiaxibi0220",
+        "xiezejian",
+        "yuhuake240506",
+        "zhangsongxin"
+      ],
+      "name": "rabbithole",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "15962641": {
+      "members": [
+        "arunodhayan",
+        "aryabhattadey",
+        "madarshbb",
+        "vaibhav486"
+      ],
+      "name": "KaggleARC",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16297545": {
+      "members": [
+        "nisshokuitsuki"
+      ],
+      "name": "ｶﾎｳｼｭｳｾｲ",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16373916": {
+      "members": [
+        "majkel1337"
+      ],
+      "name": "Majkel1337",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16397467": {
+      "members": [
+        "yaroslavperventsev"
+      ],
+      "name": "Yaro Perventsev",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16461211": {
+      "members": [
+        "dawkopi"
+      ],
+      "name": "Dawid Kopiczko",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16559402": {
+      "members": [
+        "alwintheodoric",
+        "billyanggara",
+        "darrenamadeusmartin",
+        "rinnnntt",
+        "yassirramadhan"
+      ],
+      "name": "Domdolus Tolus",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16671221": {
+      "members": [
+        "albertruehlman"
+      ],
+      "name": "ALbert RUehlman",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16756524": {
+      "members": [
+        "driessmit1",
+        "jeroencottaar",
+        "pressman1",
+        "stefano1283"
+      ],
+      "name": "Tufa Labs",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16767874": {
+      "members": [
+        "t0m0t0m0w"
+      ],
+      "name": "T0m0t0m0 W",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16768245": {
+      "members": [
+        "deepdreamer"
+      ],
+      "name": "_hans",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "16838707": {
+      "members": [
+        "shookiyama"
+      ],
+      "name": "Sho Okiyama M.D., Aillis CEO",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "17023174": {
+      "members": [
+        "jcole75",
+        "markbarney",
+        "scizical",
+        "sonphamorg"
+      ],
+      "name": "ARC Mutants",
+      "observedAt": "2026-10-22T21:37:08Z"
+    },
+    "17101761": {
+      "members": [
+        "codjjj",
+        "gravity20",
+        "li325040229"
+      ],
+      "name": "codjjj",
+      "observedAt": "2026-10-22T21:37:08Z"
+    }
+  },
+  "people": [
+    {
+      "id": "yi-chia-chen",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T18:53:30Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "threerabbits",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15501171",
+          "teamName": "Yi-Chia Chen"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-09T18:53:27Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "threerabbits",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15499660",
+          "teamName": "Yi-Chia Chen"
+        }
+      ],
+      "name": "Yi-Chia Chen",
+      "sources": [
+        {
+          "sourceId": "person-yi-chia-chen-identity-0",
+          "text": "Verified kaggle account: threerabbits"
+        },
+        {
+          "sourceId": "person-yi-chia-chen-fact-0",
+          "text": "Yi-Chia Chen’s Kaggle profile lists her as a Competitions Master and a double-degree student at National Taiwan University and Waseda University."
+        },
+        {
+          "sourceId": "person-yi-chia-chen-fact-1",
+          "text": "Yi-Chia Chen authored a Kaggle write-up for a third-place solution in Eedi — Mining Misconceptions in Mathematics."
+        },
+        {
+          "sourceId": "person-yi-chia-chen-fact-2",
+          "text": "Yi-Chia Chen’s public Kaggle account is threerabbits. The profile lists she/her pronouns and displays an avatar of two rabbits."
+        },
+        {
+          "sourceId": "person-yi-chia-chen-roster-0",
+          "text": "threerabbits observed in Yi-Chia Chen (arc-prize-2026-arc-agi-2, team 15501171) between 2026-10-09T18:53:30Z and 2026-10-22T10:35:33Z."
+        },
+        {
+          "sourceId": "person-yi-chia-chen-roster-1",
+          "text": "threerabbits observed in Yi-Chia Chen (arc-prize-2026-arc-agi-3, team 15499660) between 2026-10-09T18:53:27Z and 2026-10-22T10:35:32Z."
+        }
+      ],
+      "teamIds": [
+        "15501171"
+      ]
+    },
+    {
+      "id": "jean-francois-puget",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T18:53:30Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "cpmpml",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15486939",
+          "teamName": "nvbanana"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-09T18:53:27Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "cpmpml",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15770880",
+          "teamName": "NVARC3"
+        }
+      ],
+      "name": "Jean-François Puget (CPMP)",
+      "sources": [
+        {
+          "sourceId": "person-jean-francois-puget-identity-0",
+          "text": "Verified kaggle account: cpmpml"
+        },
+        {
+          "sourceId": "person-jean-francois-puget-identity-1",
+          "text": "Verified x account: JFPuget"
+        },
+        {
+          "sourceId": "person-jean-francois-puget-fact-0",
+          "text": "Jean-François Puget’s public GitHub profile identifies him as CPMP and links directly to the Kaggle account cpmpml."
+        },
+        {
+          "sourceId": "person-jean-francois-puget-fact-1",
+          "text": "NVIDIA’s author biography describes Jean-Francois Puget as a director and individual contributor whose team advances agentic AI and showcases NVIDIA tools and expertise in Kaggle competitions."
+        },
+        {
+          "sourceId": "person-jean-francois-puget-archive-0",
+          "text": "ARC Prize 2025 champion · NVARC"
+        },
+        {
+          "sourceId": "person-jean-francois-puget-archive-1",
+          "text": "ARC Prize 2024 paper award runner-up · A 2D nGPT Model for ARC Prize"
+        },
+        {
+          "sourceId": "person-jean-francois-puget-roster-0",
+          "text": "cpmpml observed in nvbanana (arc-prize-2026-arc-agi-2, team 15486939) between 2026-10-09T18:53:30Z and 2026-10-22T10:35:33Z."
+        },
+        {
+          "sourceId": "person-jean-francois-puget-roster-1",
+          "text": "cpmpml observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-09T18:53:27Z and 2026-10-22T10:35:32Z."
+        }
+      ],
+      "teamIds": [
+        "15486939"
+      ]
+    },
+    {
+      "id": "jack-cole",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T18:53:30Z",
+          "lastObservedAt": "2026-10-19T09:57:28Z",
+          "memberHandle": "jcole75",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15487968",
+          "teamName": "Jack Cole"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-09T18:53:27Z",
+          "lastObservedAt": "2026-10-19T17:58:18Z",
+          "memberHandle": "jcole75",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15490570",
+          "teamName": "Abstraction Lab & MindsAI"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-19T17:58:20Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "jcole75",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "17023174",
+          "teamName": "ARC Mutants"
+        }
+      ],
+      "name": "Jack Cole",
+      "sources": [
+        {
+          "sourceId": "person-jack-cole-identity-0",
+          "text": "Verified kaggle account: jcole75"
+        },
+        {
+          "sourceId": "person-jack-cole-identity-1",
+          "text": "Verified x account: MindsAI_Jack"
+        },
+        {
+          "sourceId": "person-jack-cole-fact-0",
+          "text": "ARC Prize credits Jack Cole as adviser and reviewer for StochasticGoose @ Tufa Labs, the first-place agent in the 2025 ARC-AGI-3 Preview competition, whose lead developer was Dries Smit."
+        },
+        {
+          "sourceId": "person-jack-cole-fact-1",
+          "text": "ARC Prize’s 2025 results list “Don’t throw the baby out with the bathwater: How and why deep learning for ARC” by J. Cole and M. Osman among the paper award honorable mentions."
+        },
+        {
+          "sourceId": "person-jack-cole-fact-2",
+          "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+        },
+        {
+          "sourceId": "person-jack-cole-archive-0",
+          "text": "ARC Prize 2025 third place · MindsAI & Tufa Labs"
+        },
+        {
+          "sourceId": "person-jack-cole-archive-1",
+          "text": "ARC Prize 2024 · MindsAI top score, not prize-eligible"
+        },
+        {
+          "sourceId": "person-jack-cole-roster-0",
+          "text": "jcole75 observed in Jack Cole (arc-prize-2026-arc-agi-2, team 15487968) between 2026-10-09T18:53:30Z and 2026-10-19T09:57:28Z."
+        },
+        {
+          "sourceId": "person-jack-cole-roster-1",
+          "text": "jcole75 observed in Abstraction Lab & MindsAI (arc-prize-2026-arc-agi-3, team 15490570) between 2026-10-09T18:53:27Z and 2026-10-19T17:58:18Z."
+        },
+        {
+          "sourceId": "person-jack-cole-roster-2",
+          "text": "jcole75 observed in ARC Mutants (arc-prize-2026-arc-agi-2, team 17023174) between 2026-10-19T17:58:20Z and 2026-10-22T10:35:33Z."
+        }
+      ],
+      "teamIds": [
+        "17023174"
+      ]
+    },
+    {
+      "id": "mithil-a-vakde",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T18:53:30Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "mithilavakde",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15486728",
+          "teamName": "Mithil A Vakde"
+        }
+      ],
+      "name": "Mithil A Vakde",
+      "sources": [
+        {
+          "sourceId": "person-mithil-a-vakde-identity-0",
+          "text": "Verified kaggle account: mithilavakde"
+        },
+        {
+          "sourceId": "person-mithil-a-vakde-fact-0",
+          "text": "The Kaggle account mithilavakde publishes a model called mdlARC under the displayed name Mithil A Vakde."
+        },
+        {
+          "sourceId": "person-mithil-a-vakde-roster-0",
+          "text": "mithilavakde observed in Mithil A Vakde (arc-prize-2026-arc-agi-2, team 15486728) between 2026-10-09T18:53:30Z and 2026-10-22T10:35:33Z."
+        }
+      ],
+      "teamIds": [
+        "15486728"
+      ]
+    },
+    {
+      "id": "keith-tyser",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T18:53:30Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "keithtyser",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15526034",
+          "teamName": "ARC Raiders"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-09T18:53:27Z",
+          "lastObservedAt": "2026-10-12T10:04:19Z",
+          "memberHandle": "keithtyser",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15508513",
+          "teamName": "keithtyser"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-12T15:34:52Z",
+          "lastObservedAt": "2026-10-16T21:50:59Z",
+          "memberHandle": "keithtyser",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "16447222",
+          "teamName": "ARC Slayers"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-18T18:55:34Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "keithtyser",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15605182",
+          "teamName": "Team Turducken"
+        }
+      ],
+      "name": "Keith Tyser",
+      "sources": [
+        {
+          "sourceId": "person-keith-tyser-identity-0",
+          "text": "Verified kaggle account: keithtyser"
+        },
+        {
+          "sourceId": "person-keith-tyser-identity-1",
+          "text": "Verified x account: chiefkeitht"
+        },
+        {
+          "sourceId": "person-keith-tyser-fact-0",
+          "text": "Keith Tyser describes his work as AI/ML engineering and data science on his professional website."
+        },
+        {
+          "sourceId": "person-keith-tyser-roster-0",
+          "text": "keithtyser observed in ARC Raiders (arc-prize-2026-arc-agi-2, team 15526034) between 2026-10-09T18:53:30Z and 2026-10-22T10:35:33Z."
+        },
+        {
+          "sourceId": "person-keith-tyser-roster-1",
+          "text": "keithtyser observed in keithtyser (arc-prize-2026-arc-agi-3, team 15508513) between 2026-10-09T18:53:27Z and 2026-10-12T10:04:19Z."
+        },
+        {
+          "sourceId": "person-keith-tyser-roster-2",
+          "text": "keithtyser observed in ARC Slayers (arc-prize-2026-arc-agi-3, team 16447222) between 2026-10-12T15:34:52Z and 2026-10-16T21:50:59Z."
+        },
+        {
+          "sourceId": "person-keith-tyser-roster-3",
+          "text": "keithtyser observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-18T18:55:34Z and 2026-10-22T10:35:32Z."
+        }
+      ],
+      "teamIds": [
+        "15526034"
+      ]
+    },
+    {
+      "id": "dries-smit",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T18:53:30Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "driessmit1",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "16756524",
+          "teamName": "Tufa Labs"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-09T18:53:27Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "driessmit1",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15486995",
+          "teamName": "Tufa Labs"
+        }
+      ],
+      "name": "Dries Smit",
+      "sources": [
+        {
+          "sourceId": "person-dries-smit-identity-0",
+          "text": "Verified kaggle account: driessmit1"
+        },
+        {
+          "sourceId": "person-dries-smit-fact-0",
+          "text": "Tufa Labs lists Dries Smit as an AI researcher working on reinforcement learning, multi-agent systems and large language models."
+        },
+        {
+          "sourceId": "person-dries-smit-fact-1",
+          "text": "ARC Prize lists Dries Smit as lead developer of StochasticGoose @ Tufa Labs, which won the 2025 ARC-AGI-3 Preview competition."
+        },
+        {
+          "sourceId": "person-dries-smit-archive-0",
+          "text": "ARC-AGI-3 Preview 2025 winner · StochasticGoose @ Tufa Labs"
+        },
+        {
+          "sourceId": "person-dries-smit-archive-1",
+          "text": "ARC Prize 2025 third place · MindsAI & Tufa Labs"
+        },
+        {
+          "sourceId": "person-dries-smit-roster-0",
+          "text": "driessmit1 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T18:53:30Z and 2026-10-22T10:35:33Z."
+        },
+        {
+          "sourceId": "person-dries-smit-roster-1",
+          "text": "driessmit1 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T18:53:27Z and 2026-10-22T10:35:32Z."
+        }
+      ],
+      "teamIds": [
+        "16756524"
+      ]
+    },
+    {
+      "id": "jeroen-cottaar",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T18:53:30Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "jeroencottaar",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "16756524",
+          "teamName": "Tufa Labs"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-09T18:53:27Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "jeroencottaar",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15486995",
+          "teamName": "Tufa Labs"
+        }
+      ],
+      "name": "Jeroen Cottaar",
+      "sources": [
+        {
+          "sourceId": "person-jeroen-cottaar-identity-0",
+          "text": "Verified kaggle account: jeroencottaar"
+        },
+        {
+          "sourceId": "person-jeroen-cottaar-fact-0",
+          "text": "Tufa Labs lists Jeroen Cottaar as an AI researcher, with research interests including Bayesian inference and program synthesis."
+        },
+        {
+          "sourceId": "person-jeroen-cottaar-roster-0",
+          "text": "jeroencottaar observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T18:53:30Z and 2026-10-22T10:35:33Z."
+        },
+        {
+          "sourceId": "person-jeroen-cottaar-roster-1",
+          "text": "jeroencottaar observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T18:53:27Z and 2026-10-22T10:35:32Z."
+        }
+      ],
+      "teamIds": [
+        "16756524"
+      ]
+    },
+    {
+      "id": "jan-disselhoff",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T18:53:30Z",
+          "lastObservedAt": "2026-10-21T22:34:16Z",
+          "memberHandle": "insanitycheck",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15507730",
+          "teamName": "Jan Disselhoff"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-09T18:53:27Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "insanitycheck",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15501006",
+          "teamName": "Jan Disselhoff"
+        }
+      ],
+      "name": "Jan Disselhoff",
+      "sources": [
+        {
+          "sourceId": "person-jan-disselhoff-identity-0",
+          "text": "Verified kaggle account: insanitycheck"
+        },
+        {
+          "sourceId": "person-jan-disselhoff-fact-0",
+          "text": "The ARChitects’ own 2025 solution write-up credits Jan Disselhoff under the Kaggle handle insanitycheck, alongside David Hartmann (dvhrtm) and Daniel Franzen (dfranzen)."
+        },
+        {
+          "sourceId": "person-jan-disselhoff-fact-1",
+          "text": "The team’s 2025 technical report lists Jan Disselhoff at Johannes Gutenberg University Mainz."
+        },
+        {
+          "sourceId": "person-jan-disselhoff-archive-0",
+          "text": "ARC Prize 2025 runner-up · the ARChitects"
+        },
+        {
+          "sourceId": "person-jan-disselhoff-archive-1",
+          "text": "ARC Prize 2024 champion · the ARChitects"
+        },
+        {
+          "sourceId": "person-jan-disselhoff-roster-0",
+          "text": "insanitycheck observed in Jan Disselhoff (arc-prize-2026-arc-agi-2, team 15507730) between 2026-10-09T18:53:30Z and 2026-10-21T22:34:16Z."
+        },
+        {
+          "sourceId": "person-jan-disselhoff-roster-1",
+          "text": "insanitycheck observed in Jan Disselhoff (arc-prize-2026-arc-agi-3, team 15501006) between 2026-10-09T18:53:27Z and 2026-10-22T10:35:32Z."
+        }
+      ],
+      "teamIds": [
+        "15507730"
+      ]
+    },
+    {
+      "id": "isaiahp",
+      "memberships": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-09T22:23:52Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "pressman1",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15486995",
+          "teamName": "Tufa Labs"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-09T22:23:53Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "pressman1",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "16756524",
+          "teamName": "Tufa Labs"
+        }
+      ],
+      "name": "Isaiah Pressman",
+      "sources": [
+        {
+          "sourceId": "person-isaiahp-identity-0",
+          "text": "Verified kaggle account: pressman1"
+        },
+        {
+          "sourceId": "person-isaiahp-fact-0",
+          "text": "ARC Prize’s 2025 results list MindsAI third; the final Kaggle leaderboard lists pressman1 (displayed as IsaiahP) on that MindsAI & Tufa Labs team with jcole75, driessmit1, moeosman and michaelhodel."
+        },
+        {
+          "sourceId": "person-isaiahp-fact-1",
+          "text": "IsaiahP’s pressman1 Kaggle profile links directly to GitHub IsaiahPressman and LinkedIn isaiah-pressman-b4b431221, confirming the full name Isaiah Pressman."
+        },
+        {
+          "sourceId": "person-isaiahp-fact-2",
+          "text": "Tufa describes Isaiah Pressman as a research engineer focused on self-play reinforcement learning and large-scale deep learning training."
+        },
+        {
+          "sourceId": "person-isaiahp-fact-3",
+          "text": "In his July 18, 2026 Tufa write-up, Isaiah Pressman reports first place in Kaggle’s Orbit Wars competition using self-play reinforcement learning."
+        },
+        {
+          "sourceId": "person-isaiahp-archive-0",
+          "text": "ARC Prize 2025 third place · MindsAI & Tufa Labs"
+        },
+        {
+          "sourceId": "person-isaiahp-roster-0",
+          "text": "pressman1 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-09T22:23:52Z and 2026-10-22T10:35:32Z."
+        },
+        {
+          "sourceId": "person-isaiahp-roster-1",
+          "text": "pressman1 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-09T22:23:53Z and 2026-10-22T10:35:33Z."
+        }
+      ],
+      "teamIds": [
+        "16756524"
+      ]
+    },
+    {
+      "id": "mark-barney",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-11T20:02:55Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "markbarney",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "17023174",
+          "teamName": "ARC Mutants"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-11T20:02:53Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "markbarney",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15605182",
+          "teamName": "Team Turducken"
+        }
+      ],
+      "name": "Mark Barney",
+      "sources": [
+        {
+          "sourceId": "person-mark-barney-identity-0",
+          "text": "Verified kaggle account: markbarney"
+        },
+        {
+          "sourceId": "person-mark-barney-fact-0",
+          "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+        },
+        {
+          "sourceId": "person-mark-barney-roster-0",
+          "text": "markbarney observed in ARC Mutants (arc-prize-2026-arc-agi-2, team 17023174) between 2026-10-11T20:02:55Z and 2026-10-22T10:35:33Z."
+        },
+        {
+          "sourceId": "person-mark-barney-roster-1",
+          "text": "markbarney observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-11T20:02:53Z and 2026-10-22T10:35:32Z."
+        }
+      ],
+      "teamIds": [
+        "17023174"
+      ]
+    },
+    {
+      "id": "son-pham",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-11T20:02:55Z",
+          "lastObservedAt": "2026-10-12T15:34:53Z",
+          "memberHandle": "sonphamorg",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15605185",
+          "teamName": "Son Pham"
+        },
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-11T20:02:53Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "sonphamorg",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15605182",
+          "teamName": "Team Turducken"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-12T21:36:52Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "sonphamorg",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "17023174",
+          "teamName": "ARC Mutants"
+        }
+      ],
+      "name": "Son Pham",
+      "sources": [
+        {
+          "sourceId": "person-son-pham-identity-0",
+          "text": "Verified kaggle account: sonphamorg"
+        },
+        {
+          "sourceId": "person-son-pham-fact-0",
+          "text": "On 19 October 2026, Mark Barney announced Jack Cole joining ARC Mutants for ARC-AGI-2. The public ARC2 roster lists jcole75, markbarney, scizical and sonphamorg under team 17023174. Team Turducken (ARC-AGI-3 team 15605182) is a separate entry; this announcement does not add Jack to that ARC3 team."
+        },
+        {
+          "sourceId": "person-son-pham-roster-0",
+          "text": "sonphamorg observed in Son Pham (arc-prize-2026-arc-agi-2, team 15605185) between 2026-10-11T20:02:55Z and 2026-10-12T15:34:53Z."
+        },
+        {
+          "sourceId": "person-son-pham-roster-1",
+          "text": "sonphamorg observed in Team Turducken (arc-prize-2026-arc-agi-3, team 15605182) between 2026-10-11T20:02:53Z and 2026-10-22T10:35:32Z."
+        },
+        {
+          "sourceId": "person-son-pham-roster-2",
+          "text": "sonphamorg observed in ARC Mutants (arc-prize-2026-arc-agi-2, team 17023174) between 2026-10-12T21:36:52Z and 2026-10-22T10:35:33Z."
+        }
+      ],
+      "teamIds": [
+        "17023174"
+      ]
+    },
+    {
+      "id": "darragh-hanley",
+      "memberships": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-13T17:12:19Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "darraghdog",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15770880",
+          "teamName": "NVARC3"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-13T17:12:23Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "darraghdog",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "15486939",
+          "teamName": "nvbanana"
+        }
+      ],
+      "name": "Darragh Hanley",
+      "sources": [
+        {
+          "sourceId": "person-darragh-hanley-identity-0",
+          "text": "Verified kaggle account: darraghdog"
+        },
+        {
+          "sourceId": "person-darragh-hanley-identity-1",
+          "text": "Verified x account: gonedarragh"
+        },
+        {
+          "sourceId": "person-darragh-hanley-fact-0",
+          "text": "Darragh’s Kaggle profile links to his GitHub profile, which displays the full name Darragh Hanley."
+        },
+        {
+          "sourceId": "person-darragh-hanley-fact-1",
+          "text": "NVIDIA describes Darragh Hanley as a senior LLM technologist working on autonomous reasoning and multi-agent collaboration, and a Kaggle Grandmaster with a peak worldwide rank of fourth."
+        },
+        {
+          "sourceId": "person-darragh-hanley-roster-0",
+          "text": "darraghdog observed in NVARC3 (arc-prize-2026-arc-agi-3, team 15770880) between 2026-10-13T17:12:19Z and 2026-10-22T10:35:32Z."
+        },
+        {
+          "sourceId": "person-darragh-hanley-roster-1",
+          "text": "darraghdog observed in nvbanana (arc-prize-2026-arc-agi-2, team 15486939) between 2026-10-13T17:12:23Z and 2026-10-22T10:35:33Z."
+        }
+      ],
+      "teamIds": [
+        "15486939"
+      ]
+    },
+    {
+      "id": "stefano-viel",
+      "memberships": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-13T17:12:19Z",
+          "lastObservedAt": "2026-10-22T10:35:32Z",
+          "memberHandle": "stefano1283",
+          "season": "2026",
+          "sourceTitle": "ARC-3 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "15486995",
+          "teamName": "Tufa Labs"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-13T17:12:23Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "stefano1283",
+          "season": "2026",
+          "sourceTitle": "ARC-2 public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "16756524",
+          "teamName": "Tufa Labs"
+        }
+      ],
+      "name": "Stefano Viel",
+      "sources": [
+        {
+          "sourceId": "person-stefano-viel-identity-0",
+          "text": "Verified kaggle account: stefano1283"
+        },
+        {
+          "sourceId": "person-stefano-viel-identity-1",
+          "text": "Verified x account: Stefan0Vl"
+        },
+        {
+          "sourceId": "person-stefano-viel-fact-0",
+          "text": "Stefano Viel’s Kaggle profile lists him as a research scientist at Tufa Labs and links to his GitHub, LinkedIn and X accounts."
+        },
+        {
+          "sourceId": "person-stefano-viel-fact-1",
+          "text": "Tufa’s biography says Stefano Viel earned a master’s in data science at EPFL; his stated research interests include reinforcement learning, environment design and synthetic data."
+        },
+        {
+          "sourceId": "person-stefano-viel-roster-0",
+          "text": "stefano1283 observed in Tufa Labs (arc-prize-2026-arc-agi-3, team 15486995) between 2026-10-13T17:12:19Z and 2026-10-22T10:35:32Z."
+        },
+        {
+          "sourceId": "person-stefano-viel-roster-1",
+          "text": "stefano1283 observed in Tufa Labs (arc-prize-2026-arc-agi-2, team 16756524) between 2026-10-13T17:12:23Z and 2026-10-22T10:35:33Z."
+        }
+      ],
+      "teamIds": [
+        "16756524"
+      ]
+    },
+    {
+      "id": "itsu",
+      "memberships": [
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-14T09:44:10Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "nisshokuitsuki",
+          "season": "2026",
+          "sourceTitle": "Public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "16297545",
+          "teamName": "ｶﾎｳｼｭｳｾｲ"
+        }
+      ],
+      "name": "イツ (Itsu)",
+      "sources": [
+        {
+          "sourceId": "person-itsu-identity-0",
+          "text": "Verified kaggle account: nisshokuitsuki"
+        },
+        {
+          "sourceId": "person-itsu-identity-1",
+          "text": "Verified x account: iiiiitsu_ne"
+        },
+        {
+          "sourceId": "person-itsu-roster-0",
+          "text": "nisshokuitsuki observed in ｶﾎｳｼｭｳｾｲ (arc-prize-2026-arc-agi-2, team 16297545) between 2026-10-14T09:44:10Z and 2026-10-22T10:35:33Z."
+        }
+      ],
+      "teamIds": [
+        "16297545"
+      ]
+    },
+    {
+      "id": "dawid-kopiczko",
+      "memberships": [
+        {
+          "competition": "arc-3",
+          "competitionId": "arc-prize-2026-arc-agi-3",
+          "firstObservedAt": "2026-10-14T09:44:09Z",
+          "lastObservedAt": "2026-10-14T09:44:09Z",
+          "memberHandle": "dawkopi",
+          "season": "2026",
+          "sourceTitle": "Public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+          "teamId": "16439788",
+          "teamName": "Dawid Kopiczko"
+        },
+        {
+          "competition": "arc-2",
+          "competitionId": "arc-prize-2026-arc-agi-2",
+          "firstObservedAt": "2026-10-14T09:44:10Z",
+          "lastObservedAt": "2026-10-22T10:35:33Z",
+          "memberHandle": "dawkopi",
+          "season": "2026",
+          "sourceTitle": "Public roster observation",
+          "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+          "teamId": "16461211",
+          "teamName": "Dawid Kopiczko"
+        }
+      ],
+      "name": "Dawid Kopiczko",
+      "sources": [
+        {
+          "sourceId": "person-dawid-kopiczko-identity-0",
+          "text": "Verified kaggle account: dawkopi"
+        },
+        {
+          "sourceId": "person-dawid-kopiczko-identity-1",
+          "text": "Verified x account: dawkopi"
+        },
+        {
+          "sourceId": "person-dawid-kopiczko-roster-0",
+          "text": "dawkopi observed in Dawid Kopiczko (arc-prize-2026-arc-agi-3, team 16439788) between 2026-10-14T09:44:09Z and 2026-10-14T09:44:09Z."
+        },
+        {
+          "sourceId": "person-dawid-kopiczko-roster-1",
+          "text": "dawkopi observed in Dawid Kopiczko (arc-prize-2026-arc-agi-2, team 16461211) between 2026-10-14T09:44:10Z and 2026-10-22T10:35:33Z."
+        }
+      ],
+      "teamIds": [
+        "16461211"
+      ]
+    }
+  ],
+  "scoreHistory": {
+    "15486728": [
+      [
+        "2026-10-08T02:12:40Z",
+        33.89,
+        25
+      ],
+      [
+        "2026-10-08T02:42:42Z",
+        33.89,
+        26
+      ],
+      [
+        "2026-10-08T19:50:39Z",
+        33.89,
+        27
+      ],
+      [
+        "2026-10-09T02:51:37Z",
+        33.89,
+        28
+      ],
+      [
+        "2026-10-09T11:22:22Z",
+        33.89,
+        29
+      ],
+      [
+        "2026-10-09T23:24:14Z",
+        33.89,
+        30
+      ],
+      [
+        "2026-10-10T01:24:30Z",
+        33.89,
+        31
+      ],
+      [
+        "2026-10-10T05:29:25Z",
+        33.89,
+        32
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        33.89,
+        34
+      ],
+      [
+        "2026-10-11T02:31:21Z",
+        33.89,
+        35
+      ],
+      [
+        "2026-10-11T16:32:36Z",
+        33.89,
+        36
+      ],
+      [
+        "2026-10-11T19:02:49Z",
+        33.89,
+        37
+      ],
+      [
+        "2026-10-11T20:02:55Z",
+        33.89,
+        38
+      ],
+      [
+        "2026-10-11T21:03:03Z",
+        33.89,
+        39
+      ],
+      [
+        "2026-10-11T22:33:11Z",
+        33.89,
+        40
+      ],
+      [
+        "2026-10-12T00:03:21Z",
+        33.89,
+        41
+      ],
+      [
+        "2026-10-12T10:04:20Z",
+        33.89,
+        42
+      ],
+      [
+        "2026-10-12T12:04:34Z",
+        33.89,
+        43
+      ],
+      [
+        "2026-10-12T13:04:39Z",
+        33.89,
+        44
+      ],
+      [
+        "2026-10-12T13:34:42Z",
+        33.89,
+        45
+      ],
+      [
+        "2026-10-12T16:04:57Z",
+        33.89,
+        46
+      ],
+      [
+        "2026-10-12T16:35:00Z",
+        33.89,
+        47
+      ],
+      [
+        "2026-10-12T19:06:31Z",
+        33.89,
+        48
+      ],
+      [
+        "2026-10-12T20:06:43Z",
+        33.89,
+        49
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        33.89,
+        51
+      ],
+      [
+        "2026-10-12T22:06:56Z",
+        33.89,
+        52
+      ],
+      [
+        "2026-10-12T22:36:59Z",
+        33.89,
+        53
+      ],
+      [
+        "2026-10-13T04:38:47Z",
+        33.89,
+        54
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        33.89,
+        55
+      ],
+      [
+        "2026-10-13T12:11:48Z",
+        33.89,
+        56
+      ],
+      [
+        "2026-10-13T17:12:23Z",
+        33.89,
+        57
+      ],
+      [
+        "2026-10-13T18:42:37Z",
+        33.89,
+        58
+      ],
+      [
+        "2026-10-13T20:12:49Z",
+        33.89,
+        59
+      ],
+      [
+        "2026-10-14T05:13:43Z",
+        33.89,
+        60
+      ],
+      [
+        "2026-10-14T06:13:50Z",
+        33.89,
+        61
+      ],
+      [
+        "2026-10-14T12:14:24Z",
+        33.89,
+        62
+      ],
+      [
+        "2026-10-14T13:14:30Z",
+        33.89,
+        63
+      ],
+      [
+        "2026-10-15T01:15:44Z",
+        33.89,
+        64
+      ],
+      [
+        "2026-10-15T01:45:48Z",
+        33.89,
+        65
+      ],
+      [
+        "2026-10-15T02:45:54Z",
+        33.89,
+        66
+      ],
+      [
+        "2026-10-15T15:47:54Z",
+        33.89,
+        67
+      ],
+      [
+        "2026-10-15T16:17:57Z",
+        33.89,
+        68
+      ],
+      [
+        "2026-10-15T17:18:05Z",
+        33.89,
+        70
+      ],
+      [
+        "2026-10-16T13:20:08Z",
+        33.89,
+        72
+      ],
+      [
+        "2026-10-16T16:20:27Z",
+        33.89,
+        73
+      ],
+      [
+        "2026-10-16T17:20:33Z",
+        33.89,
+        74
+      ],
+      [
+        "2026-10-16T23:51:13Z",
+        33.89,
+        75
+      ],
+      [
+        "2026-10-17T04:21:42Z",
+        33.89,
+        76
+      ],
+      [
+        "2026-10-17T04:51:45Z",
+        33.89,
+        77
+      ],
+      [
+        "2026-10-17T05:51:50Z",
+        33.89,
+        78
+      ],
+      [
+        "2026-10-17T08:52:08Z",
+        33.89,
+        79
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        33.89,
+        80
+      ],
+      [
+        "2026-10-17T20:53:21Z",
+        33.89,
+        81
+      ],
+      [
+        "2026-10-17T22:53:34Z",
+        33.89,
+        82
+      ],
+      [
+        "2026-10-18T02:23:54Z",
+        33.89,
+        83
+      ],
+      [
+        "2026-10-18T04:54:09Z",
+        33.89,
+        84
+      ],
+      [
+        "2026-10-18T06:54:20Z",
+        33.89,
+        85
+      ],
+      [
+        "2026-10-18T12:24:51Z",
+        33.89,
+        86
+      ],
+      [
+        "2026-10-18T15:25:11Z",
+        33.89,
+        87
+      ],
+      [
+        "2026-10-18T19:55:55Z",
+        33.89,
+        88
+      ],
+      [
+        "2026-10-19T01:26:31Z",
+        33.89,
+        89
+      ],
+      [
+        "2026-10-19T13:27:50Z",
+        33.89,
+        90
+      ],
+      [
+        "2026-10-19T16:28:10Z",
+        33.89,
+        91
+      ],
+      [
+        "2026-10-20T00:59:04Z",
+        33.89,
+        92
+      ],
+      [
+        "2026-10-20T12:30:14Z",
+        33.89,
+        93
+      ],
+      [
+        "2026-10-20T13:00:17Z",
+        33.89,
+        94
+      ],
+      [
+        "2026-10-20T16:00:38Z",
+        33.89,
+        95
+      ],
+      [
+        "2026-10-20T21:01:14Z",
+        33.89,
+        96
+      ],
+      [
+        "2026-10-21T12:32:53Z",
+        33.89,
+        97
+      ],
+      [
+        "2026-10-21T23:04:19Z",
+        33.89,
+        98
+      ],
+      [
+        "2026-10-22T04:04:53Z",
+        33.89,
+        99
+      ],
+      [
+        "2026-10-22T08:05:17Z",
+        33.89,
+        100
+      ],
+      [
+        "2026-10-22T10:35:33Z",
+        33.89,
+        101
+      ],
+      [
+        "2026-10-22T12:05:44Z",
+        33.89,
+        102
+      ],
+      [
+        "2026-10-22T20:37:00Z",
+        33.89,
+        103
+      ]
+    ],
+    "15486939": [
+      [
+        "2026-10-08T02:12:40Z",
+        76.67,
+        4
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        77.08,
+        4
+      ],
+      [
+        "2026-10-17T00:21:15Z",
+        79.17,
+        4
+      ],
+      [
+        "2026-10-21T10:02:37Z",
+        79.72,
+        4
+      ]
+    ],
+    "15487246": [
+      [
+        "2026-10-08T02:12:40Z",
+        31.53,
+        279
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        31.53,
+        284
+      ],
+      [
+        "2026-10-08T19:50:39Z",
+        31.53,
+        285
+      ],
+      [
+        "2026-10-09T02:51:37Z",
+        31.53,
+        286
+      ],
+      [
+        "2026-10-09T04:21:48Z",
+        31.53,
+        287
+      ],
+      [
+        "2026-10-09T06:21:58Z",
+        31.53,
+        288
+      ],
+      [
+        "2026-10-09T08:52:10Z",
+        31.53,
+        289
+      ],
+      [
+        "2026-10-09T09:52:14Z",
+        31.53,
+        290
+      ],
+      [
+        "2026-10-09T11:22:22Z",
+        31.53,
+        291
+      ],
+      [
+        "2026-10-09T17:23:09Z",
+        31.53,
+        292
+      ],
+      [
+        "2026-10-10T01:24:30Z",
+        31.53,
+        293
+      ],
+      [
+        "2026-10-10T03:29:09Z",
+        31.53,
+        295
+      ],
+      [
+        "2026-10-10T05:29:25Z",
+        31.53,
+        296
+      ],
+      [
+        "2026-10-10T06:29:31Z",
+        31.53,
+        298
+      ],
+      [
+        "2026-10-10T09:29:45Z",
+        31.53,
+        299
+      ],
+      [
+        "2026-10-10T10:29:50Z",
+        31.53,
+        300
+      ],
+      [
+        "2026-10-20T16:30:42Z",
+        32.36,
+        190
+      ],
+      [
+        "2026-10-20T21:01:14Z",
+        32.36,
+        191
+      ],
+      [
+        "2026-10-21T05:32:09Z",
+        32.36,
+        192
+      ],
+      [
+        "2026-10-21T07:32:22Z",
+        32.36,
+        194
+      ],
+      [
+        "2026-10-21T12:32:53Z",
+        32.36,
+        195
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        32.36,
+        196
+      ],
+      [
+        "2026-10-22T04:04:53Z",
+        32.36,
+        197
+      ],
+      [
+        "2026-10-22T07:35:14Z",
+        32.36,
+        199
+      ],
+      [
+        "2026-10-22T08:05:17Z",
+        34.44,
+        93
+      ],
+      [
+        "2026-10-22T10:35:33Z",
+        34.44,
+        94
+      ],
+      [
+        "2026-10-22T12:05:44Z",
+        34.44,
+        95
+      ],
+      [
+        "2026-10-22T20:37:00Z",
+        34.44,
+        96
+      ]
+    ],
+    "15495422": [
+      [
+        "2026-10-08T02:12:40Z",
+        32.64,
+        90
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        32.64,
+        91
+      ],
+      [
+        "2026-10-08T19:50:39Z",
+        32.64,
+        92
+      ],
+      [
+        "2026-10-09T02:51:37Z",
+        32.64,
+        93
+      ],
+      [
+        "2026-10-09T04:21:48Z",
+        32.64,
+        94
+      ],
+      [
+        "2026-10-09T06:21:58Z",
+        32.64,
+        95
+      ],
+      [
+        "2026-10-09T11:22:22Z",
+        32.64,
+        96
+      ],
+      [
+        "2026-10-10T01:24:30Z",
+        32.64,
+        97
+      ],
+      [
+        "2026-10-10T05:29:25Z",
+        32.64,
+        98
+      ],
+      [
+        "2026-10-10T09:29:45Z",
+        32.64,
+        99
+      ],
+      [
+        "2026-10-10T10:29:50Z",
+        32.64,
+        100
+      ],
+      [
+        "2026-10-10T14:30:14Z",
+        32.64,
+        101
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        32.64,
+        102
+      ],
+      [
+        "2026-10-11T14:32:25Z",
+        32.64,
+        103
+      ],
+      [
+        "2026-10-11T19:02:49Z",
+        32.64,
+        104
+      ],
+      [
+        "2026-10-11T20:02:55Z",
+        32.64,
+        105
+      ],
+      [
+        "2026-10-11T21:03:03Z",
+        32.64,
+        106
+      ],
+      [
+        "2026-10-11T22:33:11Z",
+        32.64,
+        107
+      ],
+      [
+        "2026-10-12T00:03:21Z",
+        32.64,
+        108
+      ],
+      [
+        "2026-10-12T10:04:20Z",
+        32.64,
+        109
+      ],
+      [
+        "2026-10-12T12:04:34Z",
+        32.64,
+        110
+      ],
+      [
+        "2026-10-12T13:04:39Z",
+        32.64,
+        111
+      ],
+      [
+        "2026-10-12T13:34:42Z",
+        32.64,
+        112
+      ],
+      [
+        "2026-10-12T16:04:57Z",
+        32.64,
+        113
+      ],
+      [
+        "2026-10-12T16:35:00Z",
+        32.64,
+        114
+      ],
+      [
+        "2026-10-12T19:06:31Z",
+        32.64,
+        115
+      ],
+      [
+        "2026-10-12T20:06:43Z",
+        32.64,
+        116
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        32.64,
+        118
+      ],
+      [
+        "2026-10-13T00:37:11Z",
+        32.64,
+        119
+      ],
+      [
+        "2026-10-13T03:07:26Z",
+        32.64,
+        120
+      ],
+      [
+        "2026-10-13T04:38:47Z",
+        32.64,
+        121
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        32.64,
+        122
+      ],
+      [
+        "2026-10-13T06:08:57Z",
+        32.64,
+        123
+      ],
+      [
+        "2026-10-13T12:11:48Z",
+        32.64,
+        124
+      ],
+      [
+        "2026-10-13T17:12:23Z",
+        32.64,
+        125
+      ],
+      [
+        "2026-10-13T18:42:37Z",
+        32.64,
+        126
+      ],
+      [
+        "2026-10-13T20:12:49Z",
+        32.64,
+        127
+      ],
+      [
+        "2026-10-14T06:13:50Z",
+        32.64,
+        128
+      ],
+      [
+        "2026-10-14T12:14:24Z",
+        32.64,
+        129
+      ],
+      [
+        "2026-10-14T19:45:10Z",
+        32.64,
+        130
+      ],
+      [
+        "2026-10-15T01:45:48Z",
+        32.64,
+        131
+      ],
+      [
+        "2026-10-15T02:45:54Z",
+        32.64,
+        132
+      ],
+      [
+        "2026-10-15T15:17:51Z",
+        32.64,
+        133
+      ],
+      [
+        "2026-10-15T15:47:54Z",
+        32.64,
+        134
+      ],
+      [
+        "2026-10-15T16:17:57Z",
+        32.64,
+        135
+      ],
+      [
+        "2026-10-15T17:18:05Z",
+        32.64,
+        136
+      ],
+      [
+        "2026-10-16T13:20:08Z",
+        32.64,
+        138
+      ],
+      [
+        "2026-10-16T14:50:17Z",
+        32.64,
+        139
+      ],
+      [
+        "2026-10-16T17:20:33Z",
+        32.64,
+        140
+      ],
+      [
+        "2026-10-16T18:20:39Z",
+        32.64,
+        141
+      ],
+      [
+        "2026-10-17T01:21:25Z",
+        32.64,
+        142
+      ],
+      [
+        "2026-10-17T04:51:45Z",
+        32.64,
+        143
+      ],
+      [
+        "2026-10-17T05:51:50Z",
+        32.64,
+        144
+      ],
+      [
+        "2026-10-17T08:52:08Z",
+        32.64,
+        145
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        32.64,
+        146
+      ],
+      [
+        "2026-10-17T18:23:05Z",
+        32.64,
+        147
+      ],
+      [
+        "2026-10-17T20:53:21Z",
+        32.64,
+        148
+      ],
+      [
+        "2026-10-18T02:23:54Z",
+        32.64,
+        149
+      ],
+      [
+        "2026-10-18T06:54:20Z",
+        32.64,
+        150
+      ],
+      [
+        "2026-10-18T09:54:37Z",
+        32.64,
+        151
+      ],
+      [
+        "2026-10-18T12:24:51Z",
+        32.64,
+        153
+      ],
+      [
+        "2026-10-18T15:25:11Z",
+        32.64,
+        154
+      ],
+      [
+        "2026-10-18T19:55:55Z",
+        32.64,
+        155
+      ],
+      [
+        "2026-10-19T00:26:25Z",
+        32.64,
+        156
+      ],
+      [
+        "2026-10-19T14:57:59Z",
+        32.64,
+        157
+      ],
+      [
+        "2026-10-19T16:28:10Z",
+        32.64,
+        158
+      ],
+      [
+        "2026-10-20T00:59:04Z",
+        32.64,
+        159
+      ],
+      [
+        "2026-10-20T02:29:14Z",
+        32.64,
+        160
+      ],
+      [
+        "2026-10-20T12:30:14Z",
+        32.64,
+        161
+      ],
+      [
+        "2026-10-20T13:00:17Z",
+        32.64,
+        162
+      ],
+      [
+        "2026-10-20T16:00:38Z",
+        32.64,
+        163
+      ],
+      [
+        "2026-10-20T21:01:14Z",
+        32.64,
+        164
+      ],
+      [
+        "2026-10-21T07:32:22Z",
+        32.64,
+        166
+      ],
+      [
+        "2026-10-21T12:32:53Z",
+        32.64,
+        167
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        32.64,
+        168
+      ],
+      [
+        "2026-10-22T04:04:53Z",
+        32.64,
+        169
+      ],
+      [
+        "2026-10-22T07:35:14Z",
+        32.64,
+        171
+      ],
+      [
+        "2026-10-22T08:05:17Z",
+        32.64,
+        172
+      ],
+      [
+        "2026-10-22T10:35:33Z",
+        32.64,
+        173
+      ],
+      [
+        "2026-10-22T11:35:40Z",
+        32.64,
+        174
+      ],
+      [
+        "2026-10-22T12:05:44Z",
+        35.56,
+        85
+      ]
+    ],
+    "15501171": [
+      [
+        "2026-10-08T02:12:40Z",
+        77.22,
+        3
+      ],
+      [
+        "2026-10-13T17:42:26Z",
+        82.64,
+        2
+      ],
+      [
+        "2026-10-14T16:14:47Z",
+        83.89,
+        2
+      ],
+      [
+        "2026-10-19T10:57:33Z",
+        84.72,
+        2
+      ]
+    ],
+    "15507730": [
+      [
+        "2026-10-08T02:12:40Z",
+        14.17,
+        1585
+      ],
+      [
+        "2026-10-08T17:50:19Z",
+        14.17,
+        1586
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        14.17,
+        1637
+      ],
+      [
+        "2026-10-08T20:20:42Z",
+        14.17,
+        1639
+      ],
+      [
+        "2026-10-08T20:50:44Z",
+        14.17,
+        1640
+      ],
+      [
+        "2026-10-08T21:50:51Z",
+        14.17,
+        1641
+      ],
+      [
+        "2026-10-08T22:20:54Z",
+        14.17,
+        1644
+      ],
+      [
+        "2026-10-08T22:50:56Z",
+        14.17,
+        1645
+      ],
+      [
+        "2026-10-08T23:20:59Z",
+        14.17,
+        1647
+      ],
+      [
+        "2026-10-08T23:51:01Z",
+        14.17,
+        1649
+      ],
+      [
+        "2026-10-09T00:21:04Z",
+        14.17,
+        1651
+      ],
+      [
+        "2026-10-09T00:51:06Z",
+        14.17,
+        1652
+      ],
+      [
+        "2026-10-09T01:21:27Z",
+        14.17,
+        1653
+      ],
+      [
+        "2026-10-09T03:21:39Z",
+        14.17,
+        1655
+      ],
+      [
+        "2026-10-09T03:51:42Z",
+        14.17,
+        1656
+      ],
+      [
+        "2026-10-09T04:21:48Z",
+        14.17,
+        1658
+      ],
+      [
+        "2026-10-09T06:21:58Z",
+        14.17,
+        1659
+      ],
+      [
+        "2026-10-09T06:52:00Z",
+        14.17,
+        1660
+      ],
+      [
+        "2026-10-09T07:22:03Z",
+        14.17,
+        1663
+      ],
+      [
+        "2026-10-09T07:52:05Z",
+        14.17,
+        1664
+      ],
+      [
+        "2026-10-09T08:22:07Z",
+        14.17,
+        1665
+      ],
+      [
+        "2026-10-09T08:52:10Z",
+        14.17,
+        1666
+      ],
+      [
+        "2026-10-09T09:52:14Z",
+        14.17,
+        1667
+      ],
+      [
+        "2026-10-09T16:22:51Z",
+        18.33,
+        1633
+      ],
+      [
+        "2026-10-09T18:53:30Z",
+        18.33,
+        1635
+      ],
+      [
+        "2026-10-09T19:53:39Z",
+        18.33,
+        1636
+      ],
+      [
+        "2026-10-09T20:53:45Z",
+        18.33,
+        1638
+      ],
+      [
+        "2026-10-09T21:23:47Z",
+        18.33,
+        1640
+      ],
+      [
+        "2026-10-09T22:23:53Z",
+        18.33,
+        1641
+      ],
+      [
+        "2026-10-09T22:54:10Z",
+        18.33,
+        1640
+      ],
+      [
+        "2026-10-09T23:24:14Z",
+        18.33,
+        1641
+      ],
+      [
+        "2026-10-10T00:54:21Z",
+        18.33,
+        1642
+      ],
+      [
+        "2026-10-10T01:24:30Z",
+        18.33,
+        1644
+      ],
+      [
+        "2026-10-10T01:59:01Z",
+        18.33,
+        1646
+      ],
+      [
+        "2026-10-10T02:29:03Z",
+        18.33,
+        1647
+      ],
+      [
+        "2026-10-10T02:59:06Z",
+        18.33,
+        1649
+      ],
+      [
+        "2026-10-10T03:29:09Z",
+        18.33,
+        1651
+      ],
+      [
+        "2026-10-10T03:59:11Z",
+        18.33,
+        1653
+      ],
+      [
+        "2026-10-10T04:59:17Z",
+        18.33,
+        1654
+      ],
+      [
+        "2026-10-10T05:29:25Z",
+        18.33,
+        1655
+      ],
+      [
+        "2026-10-10T05:59:28Z",
+        18.33,
+        1657
+      ],
+      [
+        "2026-10-10T06:29:31Z",
+        18.33,
+        1659
+      ],
+      [
+        "2026-10-10T06:59:34Z",
+        18.33,
+        1661
+      ],
+      [
+        "2026-10-10T08:59:43Z",
+        18.33,
+        1662
+      ],
+      [
+        "2026-10-10T16:30:24Z",
+        18.33,
+        1663
+      ],
+      [
+        "2026-10-10T17:00:27Z",
+        18.33,
+        1664
+      ],
+      [
+        "2026-10-10T17:30:29Z",
+        18.33,
+        1666
+      ],
+      [
+        "2026-10-10T18:00:32Z",
+        18.33,
+        1670
+      ],
+      [
+        "2026-10-10T19:00:38Z",
+        18.33,
+        1672
+      ],
+      [
+        "2026-10-10T20:00:43Z",
+        18.33,
+        1674
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        18.33,
+        1675
+      ],
+      [
+        "2026-10-10T22:30:57Z",
+        18.33,
+        1677
+      ],
+      [
+        "2026-10-10T23:01:00Z",
+        18.33,
+        1678
+      ],
+      [
+        "2026-10-11T01:31:15Z",
+        18.33,
+        1679
+      ],
+      [
+        "2026-10-11T02:01:18Z",
+        18.33,
+        1680
+      ],
+      [
+        "2026-10-11T02:31:21Z",
+        18.33,
+        1681
+      ],
+      [
+        "2026-10-11T03:01:23Z",
+        18.33,
+        1686
+      ],
+      [
+        "2026-10-11T03:31:26Z",
+        18.33,
+        1687
+      ],
+      [
+        "2026-10-11T05:31:36Z",
+        18.33,
+        1688
+      ],
+      [
+        "2026-10-11T06:01:39Z",
+        18.33,
+        1689
+      ],
+      [
+        "2026-10-11T07:01:44Z",
+        18.33,
+        1690
+      ],
+      [
+        "2026-10-11T07:31:47Z",
+        18.33,
+        1693
+      ],
+      [
+        "2026-10-11T08:01:50Z",
+        18.33,
+        1696
+      ],
+      [
+        "2026-10-11T08:31:53Z",
+        18.33,
+        1699
+      ],
+      [
+        "2026-10-11T09:01:55Z",
+        18.33,
+        1701
+      ],
+      [
+        "2026-10-11T09:31:58Z",
+        18.33,
+        1702
+      ],
+      [
+        "2026-10-11T10:32:03Z",
+        18.33,
+        1703
+      ],
+      [
+        "2026-10-11T11:02:06Z",
+        18.33,
+        1704
+      ],
+      [
+        "2026-10-11T16:02:33Z",
+        18.33,
+        1706
+      ],
+      [
+        "2026-10-11T16:32:36Z",
+        18.33,
+        1708
+      ],
+      [
+        "2026-10-11T17:02:38Z",
+        18.33,
+        1709
+      ],
+      [
+        "2026-10-11T17:32:41Z",
+        18.33,
+        1710
+      ],
+      [
+        "2026-10-11T20:33:00Z",
+        18.33,
+        1712
+      ],
+      [
+        "2026-10-11T21:03:03Z",
+        18.33,
+        1713
+      ],
+      [
+        "2026-10-11T22:33:11Z",
+        18.33,
+        1715
+      ],
+      [
+        "2026-10-11T23:03:14Z",
+        18.33,
+        1716
+      ],
+      [
+        "2026-10-11T23:33:17Z",
+        18.33,
+        1718
+      ],
+      [
+        "2026-10-12T00:03:21Z",
+        18.33,
+        1721
+      ],
+      [
+        "2026-10-12T00:33:24Z",
+        18.33,
+        1722
+      ],
+      [
+        "2026-10-12T01:33:30Z",
+        18.33,
+        1725
+      ],
+      [
+        "2026-10-12T02:03:32Z",
+        18.33,
+        1727
+      ],
+      [
+        "2026-10-12T02:33:35Z",
+        18.33,
+        1730
+      ],
+      [
+        "2026-10-12T03:33:40Z",
+        18.33,
+        1731
+      ],
+      [
+        "2026-10-12T04:33:46Z",
+        18.33,
+        1733
+      ],
+      [
+        "2026-10-12T05:03:49Z",
+        18.33,
+        1734
+      ],
+      [
+        "2026-10-12T05:33:52Z",
+        18.33,
+        1736
+      ],
+      [
+        "2026-10-12T06:03:55Z",
+        18.33,
+        1737
+      ],
+      [
+        "2026-10-12T06:33:58Z",
+        18.33,
+        1739
+      ],
+      [
+        "2026-10-12T07:04:02Z",
+        20.42,
+        1725
+      ],
+      [
+        "2026-10-12T07:34:05Z",
+        20.42,
+        1729
+      ],
+      [
+        "2026-10-12T08:04:08Z",
+        20.42,
+        1730
+      ],
+      [
+        "2026-10-12T08:34:11Z",
+        20.42,
+        1732
+      ],
+      [
+        "2026-10-12T09:04:14Z",
+        20.42,
+        1735
+      ],
+      [
+        "2026-10-12T11:34:31Z",
+        20.42,
+        1736
+      ],
+      [
+        "2026-10-12T13:04:39Z",
+        20.42,
+        1738
+      ],
+      [
+        "2026-10-12T13:34:42Z",
+        20.42,
+        1739
+      ],
+      [
+        "2026-10-12T14:04:45Z",
+        20.42,
+        1740
+      ],
+      [
+        "2026-10-12T14:34:47Z",
+        20.42,
+        1742
+      ],
+      [
+        "2026-10-12T15:34:53Z",
+        20.42,
+        1744
+      ],
+      [
+        "2026-10-12T16:04:57Z",
+        20.42,
+        1746
+      ],
+      [
+        "2026-10-12T16:35:00Z",
+        20.42,
+        1748
+      ],
+      [
+        "2026-10-12T17:05:18Z",
+        20.42,
+        1749
+      ],
+      [
+        "2026-10-12T17:35:36Z",
+        20.42,
+        1750
+      ],
+      [
+        "2026-10-12T18:05:39Z",
+        20.42,
+        1751
+      ],
+      [
+        "2026-10-12T19:36:40Z",
+        20.42,
+        1750
+      ],
+      [
+        "2026-10-12T20:06:43Z",
+        20.42,
+        1751
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        20.42,
+        1752
+      ],
+      [
+        "2026-10-12T21:06:50Z",
+        20.42,
+        1753
+      ],
+      [
+        "2026-10-12T23:37:05Z",
+        21.67,
+        1737
+      ],
+      [
+        "2026-10-13T00:37:11Z",
+        21.67,
+        1738
+      ],
+      [
+        "2026-10-13T01:07:13Z",
+        21.67,
+        1739
+      ],
+      [
+        "2026-10-13T01:37:16Z",
+        21.67,
+        1740
+      ],
+      [
+        "2026-10-13T02:37:22Z",
+        21.67,
+        1742
+      ],
+      [
+        "2026-10-13T03:07:26Z",
+        21.67,
+        1744
+      ],
+      [
+        "2026-10-13T03:38:21Z",
+        21.67,
+        1745
+      ],
+      [
+        "2026-10-13T04:38:47Z",
+        21.67,
+        1746
+      ],
+      [
+        "2026-10-13T06:08:57Z",
+        21.67,
+        1747
+      ],
+      [
+        "2026-10-13T06:39:44Z",
+        21.67,
+        1748
+      ],
+      [
+        "2026-10-13T07:11:07Z",
+        21.67,
+        1750
+      ],
+      [
+        "2026-10-13T07:41:22Z",
+        21.67,
+        1754
+      ],
+      [
+        "2026-10-13T08:11:25Z",
+        21.67,
+        1755
+      ],
+      [
+        "2026-10-13T08:41:28Z",
+        21.67,
+        1756
+      ],
+      [
+        "2026-10-13T09:11:31Z",
+        21.67,
+        1759
+      ],
+      [
+        "2026-10-13T09:41:34Z",
+        21.67,
+        1760
+      ],
+      [
+        "2026-10-13T10:41:39Z",
+        21.67,
+        1761
+      ],
+      [
+        "2026-10-13T13:11:54Z",
+        21.67,
+        1763
+      ],
+      [
+        "2026-10-13T14:42:03Z",
+        21.67,
+        1765
+      ],
+      [
+        "2026-10-13T15:12:06Z",
+        21.67,
+        1767
+      ],
+      [
+        "2026-10-13T16:12:12Z",
+        21.67,
+        1769
+      ],
+      [
+        "2026-10-13T16:42:15Z",
+        21.67,
+        1771
+      ],
+      [
+        "2026-10-13T17:12:23Z",
+        21.67,
+        1772
+      ],
+      [
+        "2026-10-13T17:42:26Z",
+        21.67,
+        1773
+      ],
+      [
+        "2026-10-13T18:12:30Z",
+        21.67,
+        1774
+      ],
+      [
+        "2026-10-13T19:42:46Z",
+        21.67,
+        1775
+      ],
+      [
+        "2026-10-13T20:12:49Z",
+        21.67,
+        1776
+      ],
+      [
+        "2026-10-13T21:42:57Z",
+        21.67,
+        1777
+      ],
+      [
+        "2026-10-13T22:43:04Z",
+        21.67,
+        1778
+      ],
+      [
+        "2026-10-13T23:43:09Z",
+        21.67,
+        1780
+      ],
+      [
+        "2026-10-14T00:43:16Z",
+        21.67,
+        1781
+      ],
+      [
+        "2026-10-14T01:13:19Z",
+        21.67,
+        1782
+      ],
+      [
+        "2026-10-14T02:13:25Z",
+        21.67,
+        1783
+      ],
+      [
+        "2026-10-14T03:13:31Z",
+        21.67,
+        1784
+      ],
+      [
+        "2026-10-14T04:13:37Z",
+        21.67,
+        1786
+      ],
+      [
+        "2026-10-14T04:43:40Z",
+        21.67,
+        1787
+      ],
+      [
+        "2026-10-14T05:13:43Z",
+        21.67,
+        1789
+      ],
+      [
+        "2026-10-14T05:43:46Z",
+        21.67,
+        1791
+      ],
+      [
+        "2026-10-14T06:13:50Z",
+        21.67,
+        1792
+      ],
+      [
+        "2026-10-14T06:43:52Z",
+        21.67,
+        1794
+      ],
+      [
+        "2026-10-14T07:43:58Z",
+        21.67,
+        1797
+      ],
+      [
+        "2026-10-14T08:14:01Z",
+        21.67,
+        1800
+      ],
+      [
+        "2026-10-14T08:44:04Z",
+        21.67,
+        1801
+      ],
+      [
+        "2026-10-14T09:14:07Z",
+        21.67,
+        1803
+      ],
+      [
+        "2026-10-14T09:44:10Z",
+        21.67,
+        1805
+      ],
+      [
+        "2026-10-14T10:14:13Z",
+        21.67,
+        1806
+      ],
+      [
+        "2026-10-14T10:44:15Z",
+        21.67,
+        1808
+      ],
+      [
+        "2026-10-14T11:14:18Z",
+        21.67,
+        1809
+      ],
+      [
+        "2026-10-14T13:14:30Z",
+        21.67,
+        1811
+      ],
+      [
+        "2026-10-14T15:14:41Z",
+        21.67,
+        1810
+      ],
+      [
+        "2026-10-14T15:44:44Z",
+        21.67,
+        1811
+      ],
+      [
+        "2026-10-14T18:15:00Z",
+        21.67,
+        1812
+      ],
+      [
+        "2026-10-14T18:45:04Z",
+        21.67,
+        1811
+      ],
+      [
+        "2026-10-14T19:15:07Z",
+        21.67,
+        1812
+      ],
+      [
+        "2026-10-14T19:45:10Z",
+        21.67,
+        1813
+      ],
+      [
+        "2026-10-14T20:45:16Z",
+        21.67,
+        1814
+      ],
+      [
+        "2026-10-14T22:15:26Z",
+        21.67,
+        1816
+      ],
+      [
+        "2026-10-14T22:45:29Z",
+        21.67,
+        1817
+      ],
+      [
+        "2026-10-14T23:15:32Z",
+        21.67,
+        1819
+      ],
+      [
+        "2026-10-15T00:15:38Z",
+        21.67,
+        1820
+      ],
+      [
+        "2026-10-15T01:15:44Z",
+        21.67,
+        1821
+      ],
+      [
+        "2026-10-15T01:45:48Z",
+        21.67,
+        1822
+      ],
+      [
+        "2026-10-15T02:15:51Z",
+        21.67,
+        1823
+      ],
+      [
+        "2026-10-15T03:46:00Z",
+        21.67,
+        1826
+      ],
+      [
+        "2026-10-15T04:46:51Z",
+        21.67,
+        1828
+      ],
+      [
+        "2026-10-15T05:16:54Z",
+        21.67,
+        1830
+      ],
+      [
+        "2026-10-15T06:17:00Z",
+        21.67,
+        1831
+      ],
+      [
+        "2026-10-15T06:47:03Z",
+        21.67,
+        1833
+      ],
+      [
+        "2026-10-15T08:47:14Z",
+        21.67,
+        1835
+      ],
+      [
+        "2026-10-15T09:17:17Z",
+        21.67,
+        1836
+      ],
+      [
+        "2026-10-15T10:17:23Z",
+        21.67,
+        1838
+      ],
+      [
+        "2026-10-15T11:17:28Z",
+        21.67,
+        1839
+      ],
+      [
+        "2026-10-15T11:47:31Z",
+        21.67,
+        1840
+      ],
+      [
+        "2026-10-15T12:17:34Z",
+        21.67,
+        1841
+      ],
+      [
+        "2026-10-15T12:47:37Z",
+        21.67,
+        1842
+      ],
+      [
+        "2026-10-15T13:17:40Z",
+        21.67,
+        1843
+      ],
+      [
+        "2026-10-15T13:47:43Z",
+        21.67,
+        1844
+      ],
+      [
+        "2026-10-15T15:17:51Z",
+        21.67,
+        1846
+      ],
+      [
+        "2026-10-15T16:17:57Z",
+        21.67,
+        1847
+      ],
+      [
+        "2026-10-15T17:18:05Z",
+        21.67,
+        1848
+      ],
+      [
+        "2026-10-15T18:18:12Z",
+        21.67,
+        1849
+      ],
+      [
+        "2026-10-15T18:48:16Z",
+        21.67,
+        1850
+      ],
+      [
+        "2026-10-15T19:18:19Z",
+        21.67,
+        1853
+      ],
+      [
+        "2026-10-15T19:48:22Z",
+        21.67,
+        1854
+      ],
+      [
+        "2026-10-15T21:18:31Z",
+        21.67,
+        1856
+      ],
+      [
+        "2026-10-15T23:48:47Z",
+        21.67,
+        1857
+      ],
+      [
+        "2026-10-16T00:18:50Z",
+        21.67,
+        1858
+      ],
+      [
+        "2026-10-16T01:18:56Z",
+        21.67,
+        1855
+      ],
+      [
+        "2026-10-16T01:48:59Z",
+        21.67,
+        1856
+      ],
+      [
+        "2026-10-16T04:49:16Z",
+        21.67,
+        1857
+      ],
+      [
+        "2026-10-16T05:49:22Z",
+        21.67,
+        1858
+      ],
+      [
+        "2026-10-16T06:19:25Z",
+        21.67,
+        1859
+      ],
+      [
+        "2026-10-16T07:49:34Z",
+        21.67,
+        1860
+      ],
+      [
+        "2026-10-16T08:19:37Z",
+        21.67,
+        1861
+      ],
+      [
+        "2026-10-16T08:49:40Z",
+        21.67,
+        1862
+      ],
+      [
+        "2026-10-16T09:49:46Z",
+        21.67,
+        1864
+      ],
+      [
+        "2026-10-16T10:19:49Z",
+        21.67,
+        1865
+      ],
+      [
+        "2026-10-16T13:50:11Z",
+        21.67,
+        1866
+      ],
+      [
+        "2026-10-16T14:50:17Z",
+        21.67,
+        1867
+      ],
+      [
+        "2026-10-16T17:20:33Z",
+        21.67,
+        1869
+      ],
+      [
+        "2026-10-16T18:20:39Z",
+        21.67,
+        1871
+      ],
+      [
+        "2026-10-16T18:50:42Z",
+        21.67,
+        1872
+      ],
+      [
+        "2026-10-16T19:20:45Z",
+        21.67,
+        1873
+      ],
+      [
+        "2026-10-16T19:50:49Z",
+        21.67,
+        1874
+      ],
+      [
+        "2026-10-16T22:21:04Z",
+        21.67,
+        1875
+      ],
+      [
+        "2026-10-16T22:51:07Z",
+        21.67,
+        1877
+      ],
+      [
+        "2026-10-16T23:21:10Z",
+        21.67,
+        1878
+      ],
+      [
+        "2026-10-17T00:21:15Z",
+        21.67,
+        1880
+      ],
+      [
+        "2026-10-17T01:21:25Z",
+        21.67,
+        1881
+      ],
+      [
+        "2026-10-17T01:51:27Z",
+        21.67,
+        1883
+      ],
+      [
+        "2026-10-17T02:21:30Z",
+        21.67,
+        1884
+      ],
+      [
+        "2026-10-17T02:51:33Z",
+        21.67,
+        1885
+      ],
+      [
+        "2026-10-17T04:51:45Z",
+        21.67,
+        1888
+      ],
+      [
+        "2026-10-17T05:21:48Z",
+        21.67,
+        1889
+      ],
+      [
+        "2026-10-17T07:21:59Z",
+        21.67,
+        1890
+      ],
+      [
+        "2026-10-17T08:22:05Z",
+        21.67,
+        1891
+      ],
+      [
+        "2026-10-17T08:52:08Z",
+        21.67,
+        1893
+      ],
+      [
+        "2026-10-17T10:22:16Z",
+        21.67,
+        1894
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        21.67,
+        1895
+      ],
+      [
+        "2026-10-17T13:22:34Z",
+        21.67,
+        1896
+      ],
+      [
+        "2026-10-17T16:22:53Z",
+        21.67,
+        1897
+      ],
+      [
+        "2026-10-17T18:53:07Z",
+        21.67,
+        1898
+      ],
+      [
+        "2026-10-17T19:53:14Z",
+        21.67,
+        1900
+      ],
+      [
+        "2026-10-17T20:23:17Z",
+        21.67,
+        1902
+      ],
+      [
+        "2026-10-17T20:53:21Z",
+        21.67,
+        1904
+      ],
+      [
+        "2026-10-17T21:53:28Z",
+        21.67,
+        1905
+      ],
+      [
+        "2026-10-17T22:53:34Z",
+        21.67,
+        1906
+      ],
+      [
+        "2026-10-18T01:23:49Z",
+        21.67,
+        1907
+      ],
+      [
+        "2026-10-18T01:53:52Z",
+        21.67,
+        1909
+      ],
+      [
+        "2026-10-18T02:53:57Z",
+        21.67,
+        1911
+      ],
+      [
+        "2026-10-18T03:54:03Z",
+        21.67,
+        1913
+      ],
+      [
+        "2026-10-18T04:24:06Z",
+        21.67,
+        1914
+      ],
+      [
+        "2026-10-18T04:54:09Z",
+        21.67,
+        1916
+      ],
+      [
+        "2026-10-18T05:54:14Z",
+        21.67,
+        1917
+      ],
+      [
+        "2026-10-18T06:24:17Z",
+        21.67,
+        1919
+      ],
+      [
+        "2026-10-18T06:54:20Z",
+        21.67,
+        1921
+      ],
+      [
+        "2026-10-18T07:24:23Z",
+        21.67,
+        1923
+      ],
+      [
+        "2026-10-18T08:54:32Z",
+        21.67,
+        1924
+      ],
+      [
+        "2026-10-18T10:24:40Z",
+        21.67,
+        1925
+      ],
+      [
+        "2026-10-18T10:54:43Z",
+        21.67,
+        1926
+      ],
+      [
+        "2026-10-18T11:24:46Z",
+        21.67,
+        1928
+      ],
+      [
+        "2026-10-18T12:24:51Z",
+        21.67,
+        1929
+      ],
+      [
+        "2026-10-18T15:55:15Z",
+        21.67,
+        1930
+      ],
+      [
+        "2026-10-18T16:55:22Z",
+        21.67,
+        1931
+      ],
+      [
+        "2026-10-18T17:55:28Z",
+        21.67,
+        1933
+      ],
+      [
+        "2026-10-18T19:25:53Z",
+        21.67,
+        1934
+      ],
+      [
+        "2026-10-18T21:26:05Z",
+        21.67,
+        1936
+      ],
+      [
+        "2026-10-18T23:26:19Z",
+        21.67,
+        1937
+      ],
+      [
+        "2026-10-19T00:26:25Z",
+        21.67,
+        1938
+      ],
+      [
+        "2026-10-19T00:56:28Z",
+        21.67,
+        1940
+      ],
+      [
+        "2026-10-19T01:56:34Z",
+        21.67,
+        1941
+      ],
+      [
+        "2026-10-19T02:26:38Z",
+        21.67,
+        1942
+      ],
+      [
+        "2026-10-19T03:56:49Z",
+        21.67,
+        1944
+      ],
+      [
+        "2026-10-19T04:26:53Z",
+        21.67,
+        1945
+      ],
+      [
+        "2026-10-19T05:27:00Z",
+        21.67,
+        1946
+      ],
+      [
+        "2026-10-19T05:57:03Z",
+        21.67,
+        1947
+      ],
+      [
+        "2026-10-19T07:27:13Z",
+        21.67,
+        1950
+      ],
+      [
+        "2026-10-19T07:57:16Z",
+        21.67,
+        1951
+      ],
+      [
+        "2026-10-19T09:27:24Z",
+        21.67,
+        1952
+      ],
+      [
+        "2026-10-19T09:57:28Z",
+        21.67,
+        1955
+      ],
+      [
+        "2026-10-19T10:27:30Z",
+        21.67,
+        1956
+      ],
+      [
+        "2026-10-19T10:57:33Z",
+        21.67,
+        1957
+      ],
+      [
+        "2026-10-19T15:58:06Z",
+        21.67,
+        1959
+      ],
+      [
+        "2026-10-19T19:28:30Z",
+        21.67,
+        1961
+      ],
+      [
+        "2026-10-19T19:58:33Z",
+        21.67,
+        1962
+      ],
+      [
+        "2026-10-19T20:58:39Z",
+        21.67,
+        1963
+      ],
+      [
+        "2026-10-19T21:28:43Z",
+        21.67,
+        1964
+      ],
+      [
+        "2026-10-19T21:58:46Z",
+        21.67,
+        1965
+      ],
+      [
+        "2026-10-19T22:28:49Z",
+        21.67,
+        1966
+      ],
+      [
+        "2026-10-19T23:58:58Z",
+        21.67,
+        1968
+      ],
+      [
+        "2026-10-20T00:59:04Z",
+        21.67,
+        1969
+      ],
+      [
+        "2026-10-20T02:59:17Z",
+        21.67,
+        1970
+      ],
+      [
+        "2026-10-20T03:29:20Z",
+        21.67,
+        1972
+      ],
+      [
+        "2026-10-20T04:29:26Z",
+        21.67,
+        1973
+      ],
+      [
+        "2026-10-20T04:59:29Z",
+        21.67,
+        1974
+      ],
+      [
+        "2026-10-20T05:29:31Z",
+        21.67,
+        1975
+      ],
+      [
+        "2026-10-20T05:59:34Z",
+        21.67,
+        1976
+      ],
+      [
+        "2026-10-20T06:29:37Z",
+        21.67,
+        1977
+      ],
+      [
+        "2026-10-20T06:59:40Z",
+        21.67,
+        1978
+      ],
+      [
+        "2026-10-20T09:59:59Z",
+        21.67,
+        1979
+      ],
+      [
+        "2026-10-20T12:00:11Z",
+        21.67,
+        1981
+      ],
+      [
+        "2026-10-20T17:30:49Z",
+        21.67,
+        1982
+      ],
+      [
+        "2026-10-20T18:00:52Z",
+        21.67,
+        1983
+      ],
+      [
+        "2026-10-20T20:01:05Z",
+        21.67,
+        1984
+      ],
+      [
+        "2026-10-20T21:01:14Z",
+        21.67,
+        1985
+      ],
+      [
+        "2026-10-20T22:31:24Z",
+        21.67,
+        1986
+      ],
+      [
+        "2026-10-21T02:01:47Z",
+        21.67,
+        1987
+      ],
+      [
+        "2026-10-21T02:31:50Z",
+        21.67,
+        1988
+      ],
+      [
+        "2026-10-21T04:02:00Z",
+        21.67,
+        1989
+      ],
+      [
+        "2026-10-21T04:32:03Z",
+        21.67,
+        1987
+      ],
+      [
+        "2026-10-21T05:02:06Z",
+        21.67,
+        1990
+      ],
+      [
+        "2026-10-21T06:02:12Z",
+        21.67,
+        1991
+      ],
+      [
+        "2026-10-21T06:32:16Z",
+        21.67,
+        1992
+      ],
+      [
+        "2026-10-21T07:02:19Z",
+        21.67,
+        1991
+      ],
+      [
+        "2026-10-21T08:32:28Z",
+        21.67,
+        1993
+      ],
+      [
+        "2026-10-21T09:02:31Z",
+        21.67,
+        1995
+      ],
+      [
+        "2026-10-21T10:02:37Z",
+        21.67,
+        1996
+      ],
+      [
+        "2026-10-21T10:32:41Z",
+        21.67,
+        1997
+      ],
+      [
+        "2026-10-21T11:02:44Z",
+        21.67,
+        1999
+      ],
+      [
+        "2026-10-21T13:33:01Z",
+        21.67,
+        2000
+      ],
+      [
+        "2026-10-21T14:03:04Z",
+        21.67,
+        2001
+      ],
+      [
+        "2026-10-21T17:33:32Z",
+        21.67,
+        2003
+      ],
+      [
+        "2026-10-21T18:33:39Z",
+        21.67,
+        2005
+      ],
+      [
+        "2026-10-21T19:03:48Z",
+        21.67,
+        2006
+      ],
+      [
+        "2026-10-21T19:33:55Z",
+        21.67,
+        2008
+      ],
+      [
+        "2026-10-21T20:03:58Z",
+        21.67,
+        2010
+      ],
+      [
+        "2026-10-21T20:34:01Z",
+        21.67,
+        2011
+      ],
+      [
+        "2026-10-21T21:04:06Z",
+        21.67,
+        2013
+      ],
+      [
+        "2026-10-21T21:34:10Z",
+        21.67,
+        2014
+      ],
+      [
+        "2026-10-21T23:34:23Z",
+        21.67,
+        2015
+      ],
+      [
+        "2026-10-22T00:34:29Z",
+        21.67,
+        2016
+      ],
+      [
+        "2026-10-22T01:04:32Z",
+        21.67,
+        2017
+      ],
+      [
+        "2026-10-22T04:04:53Z",
+        21.67,
+        2018
+      ],
+      [
+        "2026-10-22T05:04:59Z",
+        21.67,
+        2019
+      ],
+      [
+        "2026-10-22T07:05:11Z",
+        21.67,
+        2021
+      ],
+      [
+        "2026-10-22T08:05:17Z",
+        21.67,
+        2023
+      ],
+      [
+        "2026-10-22T09:05:25Z",
+        21.67,
+        2022
+      ],
+      [
+        "2026-10-22T10:05:30Z",
+        21.67,
+        2023
+      ],
+      [
+        "2026-10-22T12:35:54Z",
+        21.67,
+        2024
+      ],
+      [
+        "2026-10-22T13:05:57Z",
+        21.67,
+        2025
+      ],
+      [
+        "2026-10-22T14:06:03Z",
+        21.67,
+        2026
+      ],
+      [
+        "2026-10-22T14:36:07Z",
+        21.67,
+        2027
+      ],
+      [
+        "2026-10-22T16:06:17Z",
+        21.67,
+        2028
+      ],
+      [
+        "2026-10-22T17:06:19Z",
+        21.67,
+        2030
+      ],
+      [
+        "2026-10-22T17:36:23Z",
+        21.67,
+        2031
+      ],
+      [
+        "2026-10-22T18:36:31Z",
+        21.67,
+        2032
+      ],
+      [
+        "2026-10-22T19:06:35Z",
+        21.67,
+        2033
+      ],
+      [
+        "2026-10-22T19:36:52Z",
+        21.67,
+        2035
+      ],
+      [
+        "2026-10-22T20:06:56Z",
+        21.67,
+        2036
+      ],
+      [
+        "2026-10-22T21:07:04Z",
+        21.67,
+        2038
+      ],
+      [
+        "2026-10-22T21:37:08Z",
+        21.67,
+        2039
+      ]
+    ],
+    "15526034": [
+      [
+        "2026-10-08T02:12:40Z",
+        47.22,
+        9
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        58.75,
+        7
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        58.75,
+        8
+      ],
+      [
+        "2026-10-11T08:01:50Z",
+        60,
+        8
+      ],
+      [
+        "2026-10-12T04:33:46Z",
+        62.08,
+        8
+      ],
+      [
+        "2026-10-13T04:08:38Z",
+        64.58,
+        7
+      ],
+      [
+        "2026-10-13T07:41:22Z",
+        64.58,
+        8
+      ],
+      [
+        "2026-10-13T09:41:34Z",
+        64.58,
+        9
+      ],
+      [
+        "2026-10-15T13:17:40Z",
+        64.58,
+        10
+      ],
+      [
+        "2026-10-15T15:47:54Z",
+        65,
+        10
+      ],
+      [
+        "2026-10-15T20:48:28Z",
+        65,
+        11
+      ],
+      [
+        "2026-10-17T09:52:13Z",
+        68.33,
+        7
+      ],
+      [
+        "2026-10-18T07:54:26Z",
+        68.33,
+        8
+      ],
+      [
+        "2026-10-18T10:54:43Z",
+        68.33,
+        9
+      ],
+      [
+        "2026-10-19T14:57:59Z",
+        68.33,
+        11
+      ],
+      [
+        "2026-10-21T04:32:03Z",
+        68.33,
+        12
+      ],
+      [
+        "2026-10-21T18:33:39Z",
+        68.33,
+        13
+      ],
+      [
+        "2026-10-22T08:35:22Z",
+        68.75,
+        13
+      ]
+    ],
+    "15789060": [
+      [
+        "2026-10-08T02:12:40Z",
+        80.56,
+        2
+      ],
+      [
+        "2026-10-13T17:42:26Z",
+        80.56,
+        3
+      ],
+      [
+        "2026-10-20T08:29:50Z",
+        80.83,
+        3
+      ]
+    ],
+    "15962641": [
+      [
+        "2026-10-08T02:12:40Z",
+        31.39,
+        286
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        31.39,
+        291
+      ],
+      [
+        "2026-10-08T19:50:39Z",
+        31.39,
+        292
+      ],
+      [
+        "2026-10-09T02:51:37Z",
+        31.39,
+        293
+      ],
+      [
+        "2026-10-09T04:21:48Z",
+        31.39,
+        294
+      ],
+      [
+        "2026-10-09T06:21:58Z",
+        31.39,
+        295
+      ],
+      [
+        "2026-10-09T08:52:10Z",
+        31.39,
+        296
+      ],
+      [
+        "2026-10-09T09:52:14Z",
+        31.39,
+        297
+      ],
+      [
+        "2026-10-09T11:22:22Z",
+        31.39,
+        298
+      ],
+      [
+        "2026-10-09T12:52:30Z",
+        31.39,
+        299
+      ],
+      [
+        "2026-10-09T17:23:09Z",
+        31.39,
+        300
+      ],
+      [
+        "2026-10-19T22:58:52Z",
+        32.22,
+        265
+      ],
+      [
+        "2026-10-20T00:59:04Z",
+        32.22,
+        266
+      ],
+      [
+        "2026-10-20T02:29:14Z",
+        32.22,
+        267
+      ],
+      [
+        "2026-10-20T12:30:14Z",
+        32.22,
+        268
+      ],
+      [
+        "2026-10-20T13:00:17Z",
+        32.22,
+        269
+      ],
+      [
+        "2026-10-20T14:30:27Z",
+        32.22,
+        270
+      ],
+      [
+        "2026-10-20T16:30:42Z",
+        32.22,
+        271
+      ],
+      [
+        "2026-10-20T21:01:14Z",
+        32.22,
+        272
+      ],
+      [
+        "2026-10-21T07:32:22Z",
+        33.06,
+        129
+      ],
+      [
+        "2026-10-21T12:32:53Z",
+        33.06,
+        130
+      ],
+      [
+        "2026-10-22T04:04:53Z",
+        33.06,
+        131
+      ],
+      [
+        "2026-10-22T07:35:14Z",
+        33.06,
+        132
+      ],
+      [
+        "2026-10-22T08:05:17Z",
+        33.06,
+        133
+      ],
+      [
+        "2026-10-22T10:35:33Z",
+        33.06,
+        134
+      ],
+      [
+        "2026-10-22T12:05:44Z",
+        33.06,
+        135
+      ],
+      [
+        "2026-10-22T20:37:00Z",
+        34.86,
+        93
+      ]
+    ],
+    "16297545": [
+      [
+        "2026-10-08T02:12:40Z",
+        32.22,
+        153
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        32.22,
+        154
+      ],
+      [
+        "2026-10-08T19:50:39Z",
+        32.22,
+        155
+      ],
+      [
+        "2026-10-09T02:51:37Z",
+        32.22,
+        156
+      ],
+      [
+        "2026-10-09T04:21:48Z",
+        32.22,
+        157
+      ],
+      [
+        "2026-10-09T06:21:58Z",
+        32.22,
+        158
+      ],
+      [
+        "2026-10-09T11:22:22Z",
+        32.22,
+        159
+      ],
+      [
+        "2026-10-09T14:22:38Z",
+        32.22,
+        160
+      ],
+      [
+        "2026-10-10T01:24:30Z",
+        32.22,
+        161
+      ],
+      [
+        "2026-10-10T03:29:09Z",
+        32.22,
+        163
+      ],
+      [
+        "2026-10-10T05:29:25Z",
+        32.22,
+        164
+      ],
+      [
+        "2026-10-10T09:29:45Z",
+        32.22,
+        165
+      ],
+      [
+        "2026-10-10T10:29:50Z",
+        32.22,
+        166
+      ],
+      [
+        "2026-10-10T14:30:14Z",
+        32.22,
+        167
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        32.22,
+        168
+      ],
+      [
+        "2026-10-10T23:01:00Z",
+        32.22,
+        169
+      ],
+      [
+        "2026-10-11T08:01:50Z",
+        32.22,
+        170
+      ],
+      [
+        "2026-10-11T09:01:55Z",
+        32.22,
+        171
+      ],
+      [
+        "2026-10-11T14:32:25Z",
+        32.22,
+        172
+      ],
+      [
+        "2026-10-11T15:32:30Z",
+        32.5,
+        111
+      ],
+      [
+        "2026-10-11T19:02:49Z",
+        32.5,
+        112
+      ],
+      [
+        "2026-10-11T21:03:03Z",
+        32.5,
+        113
+      ],
+      [
+        "2026-10-11T22:33:11Z",
+        32.5,
+        114
+      ],
+      [
+        "2026-10-12T00:03:21Z",
+        32.5,
+        115
+      ],
+      [
+        "2026-10-12T10:04:20Z",
+        32.5,
+        116
+      ],
+      [
+        "2026-10-12T12:04:34Z",
+        36.53,
+        30
+      ],
+      [
+        "2026-10-12T13:34:42Z",
+        36.53,
+        31
+      ],
+      [
+        "2026-10-12T16:04:57Z",
+        36.53,
+        32
+      ],
+      [
+        "2026-10-12T16:35:00Z",
+        36.53,
+        33
+      ],
+      [
+        "2026-10-12T19:06:31Z",
+        36.53,
+        34
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        36.53,
+        36
+      ],
+      [
+        "2026-10-12T22:06:56Z",
+        36.53,
+        37
+      ],
+      [
+        "2026-10-13T04:08:38Z",
+        36.53,
+        38
+      ],
+      [
+        "2026-10-13T04:38:47Z",
+        36.53,
+        39
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        36.53,
+        40
+      ],
+      [
+        "2026-10-13T09:11:31Z",
+        36.53,
+        41
+      ],
+      [
+        "2026-10-13T12:11:48Z",
+        36.53,
+        42
+      ],
+      [
+        "2026-10-13T17:12:23Z",
+        36.53,
+        43
+      ],
+      [
+        "2026-10-13T18:42:37Z",
+        36.53,
+        44
+      ],
+      [
+        "2026-10-13T20:12:49Z",
+        36.53,
+        45
+      ],
+      [
+        "2026-10-14T01:43:22Z",
+        36.53,
+        46
+      ],
+      [
+        "2026-10-14T05:43:46Z",
+        39.03,
+        35
+      ],
+      [
+        "2026-10-14T06:13:50Z",
+        39.03,
+        36
+      ],
+      [
+        "2026-10-14T09:44:10Z",
+        39.03,
+        37
+      ],
+      [
+        "2026-10-15T01:45:48Z",
+        39.03,
+        38
+      ],
+      [
+        "2026-10-15T07:47:09Z",
+        42.08,
+        28
+      ],
+      [
+        "2026-10-15T11:17:28Z",
+        42.08,
+        29
+      ],
+      [
+        "2026-10-15T16:17:57Z",
+        42.08,
+        30
+      ],
+      [
+        "2026-10-15T17:18:05Z",
+        42.08,
+        31
+      ],
+      [
+        "2026-10-15T17:48:08Z",
+        42.08,
+        32
+      ],
+      [
+        "2026-10-16T00:48:54Z",
+        42.08,
+        33
+      ],
+      [
+        "2026-10-16T04:19:14Z",
+        42.08,
+        34
+      ],
+      [
+        "2026-10-16T09:49:46Z",
+        59.17,
+        14
+      ],
+      [
+        "2026-10-18T06:54:20Z",
+        59.17,
+        15
+      ],
+      [
+        "2026-10-18T07:24:23Z",
+        59.17,
+        16
+      ],
+      [
+        "2026-10-18T07:54:26Z",
+        70.28,
+        6
+      ],
+      [
+        "2026-10-18T08:54:32Z",
+        70.28,
+        7
+      ],
+      [
+        "2026-10-18T10:54:43Z",
+        70.28,
+        8
+      ],
+      [
+        "2026-10-19T14:57:59Z",
+        70.28,
+        10
+      ],
+      [
+        "2026-10-20T09:29:56Z",
+        72.5,
+        5
+      ],
+      [
+        "2026-10-20T12:30:14Z",
+        72.5,
+        6
+      ],
+      [
+        "2026-10-20T19:31:02Z",
+        72.5,
+        7
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        72.5,
+        8
+      ],
+      [
+        "2026-10-22T12:35:54Z",
+        72.5,
+        9
+      ]
+    ],
+    "16373916": [
+      [
+        "2026-10-08T02:12:40Z",
+        48.33,
+        8
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        48.33,
+        9
+      ],
+      [
+        "2026-10-10T16:00:21Z",
+        48.33,
+        10
+      ],
+      [
+        "2026-10-11T17:02:38Z",
+        48.33,
+        11
+      ],
+      [
+        "2026-10-12T09:34:17Z",
+        52.5,
+        9
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        52.5,
+        10
+      ],
+      [
+        "2026-10-12T22:06:56Z",
+        52.5,
+        11
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        52.5,
+        12
+      ],
+      [
+        "2026-10-13T06:08:57Z",
+        62.08,
+        9
+      ],
+      [
+        "2026-10-13T09:41:34Z",
+        62.08,
+        10
+      ],
+      [
+        "2026-10-15T13:17:40Z",
+        68.19,
+        7
+      ],
+      [
+        "2026-10-17T09:52:13Z",
+        68.19,
+        8
+      ],
+      [
+        "2026-10-18T07:54:26Z",
+        68.19,
+        9
+      ],
+      [
+        "2026-10-18T10:54:43Z",
+        71.81,
+        6
+      ],
+      [
+        "2026-10-20T09:29:56Z",
+        71.81,
+        7
+      ],
+      [
+        "2026-10-20T12:30:14Z",
+        75.56,
+        5
+      ]
+    ],
+    "16397467": [
+      [
+        "2026-10-08T02:12:40Z",
+        31.94,
+        168
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        31.94,
+        169
+      ],
+      [
+        "2026-10-08T19:50:39Z",
+        31.94,
+        170
+      ],
+      [
+        "2026-10-09T02:51:37Z",
+        31.94,
+        171
+      ],
+      [
+        "2026-10-09T04:21:48Z",
+        31.94,
+        172
+      ],
+      [
+        "2026-10-09T06:21:58Z",
+        31.94,
+        173
+      ],
+      [
+        "2026-10-09T08:52:10Z",
+        31.94,
+        174
+      ],
+      [
+        "2026-10-09T09:52:14Z",
+        31.94,
+        175
+      ],
+      [
+        "2026-10-09T11:22:22Z",
+        31.94,
+        176
+      ],
+      [
+        "2026-10-09T17:23:09Z",
+        31.94,
+        177
+      ],
+      [
+        "2026-10-09T21:23:47Z",
+        31.94,
+        178
+      ],
+      [
+        "2026-10-10T01:24:30Z",
+        31.94,
+        179
+      ],
+      [
+        "2026-10-10T03:29:09Z",
+        31.94,
+        181
+      ],
+      [
+        "2026-10-10T05:29:25Z",
+        31.94,
+        182
+      ],
+      [
+        "2026-10-10T06:29:31Z",
+        31.94,
+        184
+      ],
+      [
+        "2026-10-10T09:29:45Z",
+        31.94,
+        185
+      ],
+      [
+        "2026-10-10T10:29:50Z",
+        31.94,
+        186
+      ],
+      [
+        "2026-10-10T14:30:14Z",
+        31.94,
+        187
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        31.94,
+        189
+      ],
+      [
+        "2026-10-10T23:01:00Z",
+        31.94,
+        190
+      ],
+      [
+        "2026-10-11T09:01:55Z",
+        31.94,
+        191
+      ],
+      [
+        "2026-10-11T13:32:19Z",
+        31.94,
+        192
+      ],
+      [
+        "2026-10-11T14:32:25Z",
+        31.94,
+        193
+      ],
+      [
+        "2026-10-11T16:32:36Z",
+        31.94,
+        194
+      ],
+      [
+        "2026-10-11T19:02:49Z",
+        31.94,
+        195
+      ],
+      [
+        "2026-10-11T21:03:03Z",
+        31.94,
+        196
+      ],
+      [
+        "2026-10-11T21:33:05Z",
+        31.94,
+        197
+      ],
+      [
+        "2026-10-11T22:33:11Z",
+        31.94,
+        198
+      ],
+      [
+        "2026-10-12T00:03:21Z",
+        31.94,
+        200
+      ],
+      [
+        "2026-10-12T13:04:39Z",
+        31.94,
+        201
+      ],
+      [
+        "2026-10-12T13:34:42Z",
+        31.94,
+        202
+      ],
+      [
+        "2026-10-12T16:04:57Z",
+        31.94,
+        203
+      ],
+      [
+        "2026-10-12T16:35:00Z",
+        31.94,
+        204
+      ],
+      [
+        "2026-10-12T19:06:31Z",
+        31.94,
+        205
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        31.94,
+        207
+      ],
+      [
+        "2026-10-12T21:36:52Z",
+        31.94,
+        208
+      ],
+      [
+        "2026-10-13T00:37:11Z",
+        31.94,
+        209
+      ],
+      [
+        "2026-10-13T03:07:26Z",
+        31.94,
+        210
+      ],
+      [
+        "2026-10-13T04:38:47Z",
+        31.94,
+        211
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        31.94,
+        212
+      ],
+      [
+        "2026-10-13T06:08:57Z",
+        31.94,
+        213
+      ],
+      [
+        "2026-10-13T07:41:22Z",
+        31.94,
+        214
+      ],
+      [
+        "2026-10-13T12:11:48Z",
+        31.94,
+        215
+      ],
+      [
+        "2026-10-13T17:12:23Z",
+        31.94,
+        216
+      ],
+      [
+        "2026-10-13T18:42:37Z",
+        31.94,
+        217
+      ],
+      [
+        "2026-10-13T20:12:49Z",
+        31.94,
+        218
+      ],
+      [
+        "2026-10-14T03:13:31Z",
+        31.94,
+        219
+      ],
+      [
+        "2026-10-14T05:13:43Z",
+        31.94,
+        220
+      ],
+      [
+        "2026-10-14T05:43:46Z",
+        31.94,
+        221
+      ],
+      [
+        "2026-10-14T06:13:50Z",
+        31.94,
+        222
+      ],
+      [
+        "2026-10-14T08:44:04Z",
+        31.94,
+        224
+      ],
+      [
+        "2026-10-14T12:14:24Z",
+        31.94,
+        225
+      ],
+      [
+        "2026-10-14T19:45:10Z",
+        31.94,
+        226
+      ],
+      [
+        "2026-10-14T20:15:13Z",
+        31.94,
+        227
+      ],
+      [
+        "2026-10-14T21:15:20Z",
+        31.94,
+        229
+      ],
+      [
+        "2026-10-14T22:15:26Z",
+        31.94,
+        230
+      ],
+      [
+        "2026-10-15T01:15:44Z",
+        31.94,
+        231
+      ],
+      [
+        "2026-10-15T01:45:48Z",
+        31.94,
+        232
+      ],
+      [
+        "2026-10-15T06:17:00Z",
+        31.94,
+        233
+      ],
+      [
+        "2026-10-15T08:47:14Z",
+        31.94,
+        234
+      ],
+      [
+        "2026-10-15T15:17:51Z",
+        31.94,
+        235
+      ],
+      [
+        "2026-10-15T15:47:54Z",
+        31.94,
+        236
+      ],
+      [
+        "2026-10-15T17:18:05Z",
+        31.94,
+        238
+      ],
+      [
+        "2026-10-16T13:20:08Z",
+        31.94,
+        240
+      ],
+      [
+        "2026-10-16T14:50:17Z",
+        31.94,
+        241
+      ],
+      [
+        "2026-10-16T16:50:30Z",
+        31.94,
+        242
+      ],
+      [
+        "2026-10-16T17:20:33Z",
+        31.94,
+        243
+      ],
+      [
+        "2026-10-17T00:21:15Z",
+        31.94,
+        244
+      ],
+      [
+        "2026-10-17T01:21:25Z",
+        31.94,
+        245
+      ],
+      [
+        "2026-10-17T04:51:45Z",
+        31.94,
+        246
+      ],
+      [
+        "2026-10-17T05:51:50Z",
+        31.94,
+        247
+      ],
+      [
+        "2026-10-17T06:21:53Z",
+        31.94,
+        248
+      ],
+      [
+        "2026-10-17T08:52:08Z",
+        31.94,
+        251
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        31.94,
+        253
+      ],
+      [
+        "2026-10-17T15:52:50Z",
+        31.94,
+        254
+      ],
+      [
+        "2026-10-17T16:52:55Z",
+        31.94,
+        255
+      ],
+      [
+        "2026-10-17T18:23:05Z",
+        31.94,
+        257
+      ],
+      [
+        "2026-10-17T20:53:21Z",
+        31.94,
+        258
+      ],
+      [
+        "2026-10-18T01:23:49Z",
+        31.94,
+        259
+      ],
+      [
+        "2026-10-18T07:24:23Z",
+        31.94,
+        260
+      ],
+      [
+        "2026-10-18T09:54:37Z",
+        31.94,
+        261
+      ],
+      [
+        "2026-10-18T12:24:51Z",
+        31.94,
+        262
+      ],
+      [
+        "2026-10-18T15:25:11Z",
+        31.94,
+        263
+      ],
+      [
+        "2026-10-18T20:56:02Z",
+        31.94,
+        264
+      ],
+      [
+        "2026-10-18T23:26:19Z",
+        31.94,
+        265
+      ],
+      [
+        "2026-10-19T00:26:25Z",
+        31.94,
+        266
+      ],
+      [
+        "2026-10-19T14:57:59Z",
+        31.94,
+        267
+      ],
+      [
+        "2026-10-19T15:28:03Z",
+        31.94,
+        268
+      ],
+      [
+        "2026-10-19T16:28:10Z",
+        31.94,
+        269
+      ],
+      [
+        "2026-10-19T22:28:49Z",
+        31.94,
+        270
+      ],
+      [
+        "2026-10-19T22:58:52Z",
+        31.94,
+        271
+      ],
+      [
+        "2026-10-20T00:59:04Z",
+        31.94,
+        272
+      ],
+      [
+        "2026-10-20T02:29:14Z",
+        31.94,
+        273
+      ],
+      [
+        "2026-10-20T12:30:14Z",
+        31.94,
+        274
+      ],
+      [
+        "2026-10-20T13:00:17Z",
+        31.94,
+        275
+      ],
+      [
+        "2026-10-20T14:30:27Z",
+        31.94,
+        276
+      ],
+      [
+        "2026-10-20T16:30:42Z",
+        31.94,
+        277
+      ],
+      [
+        "2026-10-20T21:01:14Z",
+        31.94,
+        278
+      ],
+      [
+        "2026-10-21T07:32:22Z",
+        31.94,
+        279
+      ],
+      [
+        "2026-10-21T12:32:53Z",
+        31.94,
+        280
+      ],
+      [
+        "2026-10-21T13:02:57Z",
+        31.94,
+        281
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        31.94,
+        282
+      ],
+      [
+        "2026-10-21T18:33:39Z",
+        31.94,
+        284
+      ],
+      [
+        "2026-10-22T07:35:14Z",
+        31.94,
+        286
+      ],
+      [
+        "2026-10-22T10:35:33Z",
+        31.94,
+        287
+      ],
+      [
+        "2026-10-22T11:35:40Z",
+        33.06,
+        136
+      ],
+      [
+        "2026-10-22T12:05:44Z",
+        33.06,
+        137
+      ]
+    ],
+    "16461211": [
+      [
+        "2026-10-08T02:12:40Z",
+        55,
+        7
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        58.47,
+        8
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        62.92,
+        7
+      ],
+      [
+        "2026-10-12T10:34:25Z",
+        63.06,
+        7
+      ],
+      [
+        "2026-10-13T04:08:38Z",
+        63.06,
+        8
+      ],
+      [
+        "2026-10-13T07:41:22Z",
+        66.25,
+        7
+      ],
+      [
+        "2026-10-14T21:15:20Z",
+        66.67,
+        7
+      ],
+      [
+        "2026-10-15T07:47:09Z",
+        66.67,
+        8
+      ],
+      [
+        "2026-10-15T13:17:40Z",
+        66.67,
+        9
+      ],
+      [
+        "2026-10-16T02:49:05Z",
+        67.22,
+        8
+      ],
+      [
+        "2026-10-17T09:52:13Z",
+        67.22,
+        9
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        67.22,
+        10
+      ],
+      [
+        "2026-10-18T07:54:26Z",
+        67.22,
+        11
+      ],
+      [
+        "2026-10-19T14:57:59Z",
+        70.83,
+        9
+      ],
+      [
+        "2026-10-20T09:29:56Z",
+        70.83,
+        10
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        75.14,
+        6
+      ]
+    ],
+    "16559402": [
+      [
+        "2026-10-12T16:04:57Z",
+        51.67,
+        10
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        51.67,
+        11
+      ],
+      [
+        "2026-10-12T22:06:56Z",
+        51.67,
+        12
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        51.67,
+        13
+      ],
+      [
+        "2026-10-13T09:41:34Z",
+        65.14,
+        8
+      ],
+      [
+        "2026-10-15T07:47:09Z",
+        66.81,
+        7
+      ],
+      [
+        "2026-10-15T13:17:40Z",
+        66.81,
+        8
+      ],
+      [
+        "2026-10-16T02:49:05Z",
+        66.81,
+        9
+      ],
+      [
+        "2026-10-17T09:52:13Z",
+        66.81,
+        10
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        66.81,
+        11
+      ],
+      [
+        "2026-10-18T07:54:26Z",
+        66.81,
+        12
+      ],
+      [
+        "2026-10-19T14:57:59Z",
+        71.53,
+        7
+      ],
+      [
+        "2026-10-20T09:29:56Z",
+        71.53,
+        8
+      ],
+      [
+        "2026-10-20T19:31:02Z",
+        71.53,
+        9
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        71.67,
+        10
+      ],
+      [
+        "2026-10-22T12:35:54Z",
+        72.92,
+        7
+      ]
+    ],
+    "16671221": [
+      [
+        "2026-10-08T02:12:40Z",
+        66.81,
+        5
+      ],
+      [
+        "2026-10-09T00:51:06Z",
+        67.36,
+        6
+      ],
+      [
+        "2026-10-15T03:46:00Z",
+        69.31,
+        6
+      ],
+      [
+        "2026-10-18T07:54:26Z",
+        69.31,
+        7
+      ],
+      [
+        "2026-10-18T08:54:32Z",
+        70.56,
+        6
+      ],
+      [
+        "2026-10-18T10:54:43Z",
+        70.56,
+        7
+      ],
+      [
+        "2026-10-19T08:57:22Z",
+        71.39,
+        7
+      ],
+      [
+        "2026-10-19T14:57:59Z",
+        71.39,
+        8
+      ],
+      [
+        "2026-10-20T09:29:56Z",
+        71.39,
+        9
+      ],
+      [
+        "2026-10-20T19:31:02Z",
+        72.64,
+        6
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        72.64,
+        7
+      ],
+      [
+        "2026-10-22T12:35:54Z",
+        72.64,
+        8
+      ]
+    ],
+    "16756524": [
+      [
+        "2026-10-08T02:12:40Z",
+        83.61,
+        1
+      ],
+      [
+        "2026-10-09T05:21:54Z",
+        88.06,
+        1
+      ]
+    ],
+    "16767874": [
+      [
+        "2026-10-09T08:52:10Z",
+        32.22,
+        169
+      ],
+      [
+        "2026-10-09T11:22:22Z",
+        32.22,
+        170
+      ],
+      [
+        "2026-10-10T01:24:30Z",
+        32.22,
+        171
+      ],
+      [
+        "2026-10-10T03:29:09Z",
+        32.22,
+        173
+      ],
+      [
+        "2026-10-10T05:29:25Z",
+        32.22,
+        174
+      ],
+      [
+        "2026-10-10T09:29:45Z",
+        32.22,
+        175
+      ],
+      [
+        "2026-10-10T10:29:50Z",
+        32.22,
+        176
+      ],
+      [
+        "2026-10-10T14:30:14Z",
+        32.22,
+        177
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        32.22,
+        178
+      ],
+      [
+        "2026-10-10T23:01:00Z",
+        32.22,
+        179
+      ],
+      [
+        "2026-10-11T09:01:55Z",
+        32.22,
+        180
+      ],
+      [
+        "2026-10-11T14:32:25Z",
+        32.22,
+        181
+      ],
+      [
+        "2026-10-11T19:02:49Z",
+        32.22,
+        182
+      ],
+      [
+        "2026-10-11T21:03:03Z",
+        32.22,
+        183
+      ],
+      [
+        "2026-10-11T22:33:11Z",
+        32.22,
+        184
+      ],
+      [
+        "2026-10-12T00:03:21Z",
+        32.22,
+        185
+      ],
+      [
+        "2026-10-12T13:04:39Z",
+        32.22,
+        186
+      ],
+      [
+        "2026-10-12T13:34:42Z",
+        32.22,
+        187
+      ],
+      [
+        "2026-10-12T16:04:57Z",
+        32.22,
+        188
+      ],
+      [
+        "2026-10-12T16:35:00Z",
+        32.22,
+        189
+      ],
+      [
+        "2026-10-12T19:06:31Z",
+        32.22,
+        190
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        32.22,
+        192
+      ],
+      [
+        "2026-10-12T21:36:52Z",
+        32.22,
+        193
+      ],
+      [
+        "2026-10-13T00:37:11Z",
+        32.22,
+        194
+      ],
+      [
+        "2026-10-13T03:07:26Z",
+        32.22,
+        195
+      ],
+      [
+        "2026-10-13T04:38:47Z",
+        32.22,
+        196
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        32.22,
+        197
+      ],
+      [
+        "2026-10-13T06:08:57Z",
+        32.22,
+        198
+      ],
+      [
+        "2026-10-13T07:41:22Z",
+        32.22,
+        199
+      ],
+      [
+        "2026-10-13T12:11:48Z",
+        32.22,
+        200
+      ],
+      [
+        "2026-10-13T17:12:23Z",
+        32.22,
+        201
+      ],
+      [
+        "2026-10-13T18:42:37Z",
+        32.22,
+        202
+      ],
+      [
+        "2026-10-13T20:12:49Z",
+        32.22,
+        203
+      ],
+      [
+        "2026-10-14T03:13:31Z",
+        32.22,
+        204
+      ],
+      [
+        "2026-10-14T06:13:50Z",
+        32.22,
+        205
+      ],
+      [
+        "2026-10-14T08:44:04Z",
+        32.22,
+        206
+      ],
+      [
+        "2026-10-14T12:14:24Z",
+        32.22,
+        207
+      ],
+      [
+        "2026-10-14T19:45:10Z",
+        32.22,
+        208
+      ],
+      [
+        "2026-10-14T20:15:13Z",
+        32.22,
+        209
+      ],
+      [
+        "2026-10-14T21:15:20Z",
+        32.22,
+        211
+      ],
+      [
+        "2026-10-15T01:45:48Z",
+        32.22,
+        212
+      ],
+      [
+        "2026-10-15T15:17:51Z",
+        32.22,
+        213
+      ],
+      [
+        "2026-10-15T15:47:54Z",
+        32.22,
+        214
+      ],
+      [
+        "2026-10-15T16:17:57Z",
+        32.22,
+        215
+      ],
+      [
+        "2026-10-15T17:18:05Z",
+        32.22,
+        216
+      ],
+      [
+        "2026-10-16T13:20:08Z",
+        32.22,
+        218
+      ],
+      [
+        "2026-10-16T14:50:17Z",
+        32.22,
+        219
+      ],
+      [
+        "2026-10-16T17:20:33Z",
+        32.22,
+        220
+      ],
+      [
+        "2026-10-16T18:20:39Z",
+        32.22,
+        221
+      ],
+      [
+        "2026-10-17T00:21:15Z",
+        32.22,
+        222
+      ],
+      [
+        "2026-10-17T01:21:25Z",
+        32.22,
+        223
+      ],
+      [
+        "2026-10-17T04:51:45Z",
+        32.22,
+        224
+      ],
+      [
+        "2026-10-17T05:51:50Z",
+        32.22,
+        225
+      ],
+      [
+        "2026-10-17T06:21:53Z",
+        32.22,
+        226
+      ],
+      [
+        "2026-10-17T08:52:08Z",
+        32.22,
+        229
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        32.22,
+        231
+      ],
+      [
+        "2026-10-17T16:52:55Z",
+        32.22,
+        232
+      ],
+      [
+        "2026-10-17T18:23:05Z",
+        32.22,
+        234
+      ],
+      [
+        "2026-10-17T20:53:21Z",
+        32.22,
+        235
+      ],
+      [
+        "2026-10-18T01:23:49Z",
+        32.22,
+        236
+      ],
+      [
+        "2026-10-18T06:54:20Z",
+        33.47,
+        95
+      ],
+      [
+        "2026-10-18T12:24:51Z",
+        33.47,
+        96
+      ],
+      [
+        "2026-10-18T15:25:11Z",
+        33.47,
+        97
+      ],
+      [
+        "2026-10-18T19:55:55Z",
+        33.47,
+        98
+      ],
+      [
+        "2026-10-19T01:26:31Z",
+        33.47,
+        99
+      ],
+      [
+        "2026-10-19T13:27:50Z",
+        33.47,
+        100
+      ],
+      [
+        "2026-10-19T14:57:59Z",
+        33.47,
+        101
+      ],
+      [
+        "2026-10-19T16:28:10Z",
+        33.47,
+        102
+      ],
+      [
+        "2026-10-20T00:59:04Z",
+        33.47,
+        103
+      ],
+      [
+        "2026-10-20T02:29:14Z",
+        33.47,
+        104
+      ],
+      [
+        "2026-10-20T12:30:14Z",
+        33.47,
+        105
+      ],
+      [
+        "2026-10-20T13:00:17Z",
+        33.47,
+        106
+      ],
+      [
+        "2026-10-20T16:00:38Z",
+        33.47,
+        107
+      ],
+      [
+        "2026-10-20T21:01:14Z",
+        33.47,
+        108
+      ],
+      [
+        "2026-10-21T12:32:53Z",
+        33.47,
+        109
+      ],
+      [
+        "2026-10-21T23:04:19Z",
+        33.47,
+        110
+      ],
+      [
+        "2026-10-22T04:04:53Z",
+        33.47,
+        111
+      ],
+      [
+        "2026-10-22T07:35:14Z",
+        33.47,
+        112
+      ],
+      [
+        "2026-10-22T08:05:17Z",
+        33.47,
+        113
+      ],
+      [
+        "2026-10-22T10:35:33Z",
+        33.47,
+        114
+      ],
+      [
+        "2026-10-22T12:05:44Z",
+        33.89,
+        104
+      ],
+      [
+        "2026-10-22T20:37:00Z",
+        33.89,
+        105
+      ]
+    ],
+    "16768245": [
+      [
+        "2026-10-08T02:12:40Z",
+        60.42,
+        6
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        64.58,
+        6
+      ],
+      [
+        "2026-10-09T00:51:06Z",
+        67.64,
+        5
+      ],
+      [
+        "2026-10-10T11:59:58Z",
+        69.03,
+        5
+      ],
+      [
+        "2026-10-14T01:43:22Z",
+        69.31,
+        5
+      ],
+      [
+        "2026-10-15T14:47:49Z",
+        71.81,
+        5
+      ],
+      [
+        "2026-10-20T09:29:56Z",
+        71.81,
+        6
+      ],
+      [
+        "2026-10-20T12:30:14Z",
+        71.81,
+        7
+      ],
+      [
+        "2026-10-20T19:31:02Z",
+        71.81,
+        8
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        71.81,
+        9
+      ],
+      [
+        "2026-10-22T12:35:54Z",
+        71.81,
+        10
+      ]
+    ],
+    "16838707": [
+      [
+        "2026-10-10T14:30:14Z",
+        32.92,
+        60
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        32.92,
+        61
+      ],
+      [
+        "2026-10-11T02:31:21Z",
+        32.92,
+        62
+      ],
+      [
+        "2026-10-11T14:32:25Z",
+        32.92,
+        63
+      ],
+      [
+        "2026-10-11T19:02:49Z",
+        32.92,
+        64
+      ],
+      [
+        "2026-10-11T20:02:55Z",
+        32.92,
+        65
+      ],
+      [
+        "2026-10-11T21:03:03Z",
+        32.92,
+        66
+      ],
+      [
+        "2026-10-11T22:33:11Z",
+        32.92,
+        67
+      ],
+      [
+        "2026-10-12T00:03:21Z",
+        32.92,
+        68
+      ],
+      [
+        "2026-10-12T10:04:20Z",
+        32.92,
+        69
+      ],
+      [
+        "2026-10-12T12:04:34Z",
+        32.92,
+        70
+      ],
+      [
+        "2026-10-12T13:04:39Z",
+        32.92,
+        71
+      ],
+      [
+        "2026-10-12T13:34:42Z",
+        32.92,
+        72
+      ],
+      [
+        "2026-10-12T16:04:57Z",
+        32.92,
+        73
+      ],
+      [
+        "2026-10-12T16:35:00Z",
+        32.92,
+        74
+      ],
+      [
+        "2026-10-12T19:06:31Z",
+        32.92,
+        75
+      ],
+      [
+        "2026-10-12T20:06:43Z",
+        32.92,
+        76
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        32.92,
+        78
+      ],
+      [
+        "2026-10-12T22:06:56Z",
+        32.92,
+        79
+      ],
+      [
+        "2026-10-13T03:07:26Z",
+        32.92,
+        80
+      ],
+      [
+        "2026-10-13T04:38:47Z",
+        32.92,
+        81
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        32.92,
+        82
+      ],
+      [
+        "2026-10-13T06:08:57Z",
+        32.92,
+        83
+      ],
+      [
+        "2026-10-13T12:11:48Z",
+        32.92,
+        84
+      ],
+      [
+        "2026-10-13T17:12:23Z",
+        32.92,
+        85
+      ],
+      [
+        "2026-10-13T17:42:26Z",
+        32.92,
+        86
+      ],
+      [
+        "2026-10-13T18:42:37Z",
+        32.92,
+        87
+      ],
+      [
+        "2026-10-13T20:12:49Z",
+        32.92,
+        88
+      ],
+      [
+        "2026-10-14T03:13:31Z",
+        33.61,
+        63
+      ],
+      [
+        "2026-10-14T06:13:50Z",
+        33.61,
+        64
+      ],
+      [
+        "2026-10-14T12:14:24Z",
+        33.61,
+        65
+      ],
+      [
+        "2026-10-15T01:15:44Z",
+        33.61,
+        66
+      ],
+      [
+        "2026-10-15T01:45:48Z",
+        33.61,
+        67
+      ],
+      [
+        "2026-10-15T02:45:54Z",
+        33.61,
+        68
+      ],
+      [
+        "2026-10-15T15:17:51Z",
+        33.61,
+        69
+      ],
+      [
+        "2026-10-15T15:47:54Z",
+        33.61,
+        70
+      ],
+      [
+        "2026-10-15T16:17:57Z",
+        33.61,
+        71
+      ],
+      [
+        "2026-10-15T17:18:05Z",
+        36.11,
+        57
+      ],
+      [
+        "2026-10-15T19:48:22Z",
+        36.11,
+        58
+      ],
+      [
+        "2026-10-16T13:20:08Z",
+        36.11,
+        59
+      ],
+      [
+        "2026-10-16T14:50:17Z",
+        37.36,
+        50
+      ],
+      [
+        "2026-10-16T16:20:27Z",
+        37.36,
+        51
+      ],
+      [
+        "2026-10-16T17:20:33Z",
+        37.36,
+        52
+      ],
+      [
+        "2026-10-17T04:51:45Z",
+        37.36,
+        53
+      ],
+      [
+        "2026-10-17T05:51:50Z",
+        37.36,
+        54
+      ],
+      [
+        "2026-10-17T08:52:08Z",
+        37.36,
+        55
+      ],
+      [
+        "2026-10-17T16:52:55Z",
+        37.36,
+        56
+      ],
+      [
+        "2026-10-17T23:53:40Z",
+        37.36,
+        57
+      ],
+      [
+        "2026-10-18T04:54:09Z",
+        37.36,
+        58
+      ],
+      [
+        "2026-10-18T06:54:20Z",
+        37.36,
+        59
+      ],
+      [
+        "2026-10-18T14:55:07Z",
+        37.36,
+        60
+      ],
+      [
+        "2026-10-18T22:26:12Z",
+        37.36,
+        61
+      ],
+      [
+        "2026-10-19T16:28:10Z",
+        37.36,
+        62
+      ],
+      [
+        "2026-10-20T11:00:04Z",
+        37.36,
+        63
+      ],
+      [
+        "2026-10-20T13:00:17Z",
+        37.36,
+        64
+      ],
+      [
+        "2026-10-20T14:00:24Z",
+        37.78,
+        61
+      ],
+      [
+        "2026-10-20T16:00:38Z",
+        37.78,
+        62
+      ],
+      [
+        "2026-10-21T09:32:34Z",
+        37.78,
+        63
+      ],
+      [
+        "2026-10-21T17:03:28Z",
+        37.78,
+        64
+      ],
+      [
+        "2026-10-21T21:34:10Z",
+        37.78,
+        65
+      ],
+      [
+        "2026-10-22T10:35:33Z",
+        37.78,
+        66
+      ],
+      [
+        "2026-10-22T12:05:44Z",
+        38.19,
+        66
+      ]
+    ],
+    "17023174": [
+      [
+        "2026-10-08T02:12:40Z",
+        30.97,
+        565
+      ],
+      [
+        "2026-10-08T19:20:36Z",
+        30.97,
+        571
+      ],
+      [
+        "2026-10-08T20:20:42Z",
+        30.97,
+        572
+      ],
+      [
+        "2026-10-08T23:20:59Z",
+        30.97,
+        573
+      ],
+      [
+        "2026-10-08T23:51:01Z",
+        30.97,
+        574
+      ],
+      [
+        "2026-10-09T00:21:04Z",
+        30.97,
+        575
+      ],
+      [
+        "2026-10-09T00:51:06Z",
+        30.97,
+        576
+      ],
+      [
+        "2026-10-09T02:51:37Z",
+        30.97,
+        577
+      ],
+      [
+        "2026-10-09T04:21:48Z",
+        30.97,
+        578
+      ],
+      [
+        "2026-10-09T09:52:14Z",
+        30.97,
+        579
+      ],
+      [
+        "2026-10-09T12:52:30Z",
+        30.97,
+        580
+      ],
+      [
+        "2026-10-09T17:23:09Z",
+        30.97,
+        582
+      ],
+      [
+        "2026-10-09T20:53:45Z",
+        30.97,
+        583
+      ],
+      [
+        "2026-10-10T01:24:30Z",
+        30.97,
+        584
+      ],
+      [
+        "2026-10-10T03:29:09Z",
+        30.97,
+        586
+      ],
+      [
+        "2026-10-10T04:29:15Z",
+        30.97,
+        587
+      ],
+      [
+        "2026-10-10T05:29:25Z",
+        30.97,
+        588
+      ],
+      [
+        "2026-10-10T06:29:31Z",
+        30.97,
+        591
+      ],
+      [
+        "2026-10-10T06:59:34Z",
+        30.97,
+        592
+      ],
+      [
+        "2026-10-10T07:29:36Z",
+        30.97,
+        593
+      ],
+      [
+        "2026-10-10T09:29:45Z",
+        30.97,
+        594
+      ],
+      [
+        "2026-10-10T10:29:50Z",
+        30.97,
+        595
+      ],
+      [
+        "2026-10-10T14:30:14Z",
+        30.97,
+        596
+      ],
+      [
+        "2026-10-10T22:00:54Z",
+        30.97,
+        597
+      ],
+      [
+        "2026-10-10T23:31:03Z",
+        30.97,
+        598
+      ],
+      [
+        "2026-10-11T03:01:23Z",
+        30.97,
+        599
+      ],
+      [
+        "2026-10-11T07:31:47Z",
+        30.97,
+        600
+      ],
+      [
+        "2026-10-11T08:01:50Z",
+        30.97,
+        604
+      ],
+      [
+        "2026-10-11T09:01:55Z",
+        30.97,
+        605
+      ],
+      [
+        "2026-10-11T11:02:06Z",
+        30.97,
+        606
+      ],
+      [
+        "2026-10-11T13:32:19Z",
+        30.97,
+        607
+      ],
+      [
+        "2026-10-11T17:02:38Z",
+        30.97,
+        608
+      ],
+      [
+        "2026-10-11T19:02:49Z",
+        30.97,
+        609
+      ],
+      [
+        "2026-10-11T21:03:03Z",
+        30.97,
+        610
+      ],
+      [
+        "2026-10-11T22:33:11Z",
+        30.97,
+        611
+      ],
+      [
+        "2026-10-12T00:03:21Z",
+        30.97,
+        614
+      ],
+      [
+        "2026-10-12T01:03:27Z",
+        30.97,
+        615
+      ],
+      [
+        "2026-10-12T06:33:58Z",
+        30.97,
+        616
+      ],
+      [
+        "2026-10-12T07:34:05Z",
+        30.97,
+        617
+      ],
+      [
+        "2026-10-12T08:04:08Z",
+        30.97,
+        618
+      ],
+      [
+        "2026-10-12T09:04:14Z",
+        30.97,
+        619
+      ],
+      [
+        "2026-10-12T09:34:17Z",
+        30.97,
+        620
+      ],
+      [
+        "2026-10-12T13:04:39Z",
+        30.97,
+        621
+      ],
+      [
+        "2026-10-12T13:34:42Z",
+        30.97,
+        622
+      ],
+      [
+        "2026-10-12T16:04:57Z",
+        30.97,
+        623
+      ],
+      [
+        "2026-10-12T19:06:31Z",
+        30.97,
+        624
+      ],
+      [
+        "2026-10-12T20:36:46Z",
+        30.97,
+        626
+      ],
+      [
+        "2026-10-13T00:37:11Z",
+        30.97,
+        627
+      ],
+      [
+        "2026-10-13T02:37:22Z",
+        30.97,
+        628
+      ],
+      [
+        "2026-10-13T03:07:26Z",
+        30.97,
+        629
+      ],
+      [
+        "2026-10-13T04:08:38Z",
+        30.97,
+        630
+      ],
+      [
+        "2026-10-13T04:38:47Z",
+        30.97,
+        631
+      ],
+      [
+        "2026-10-13T05:08:51Z",
+        30.97,
+        633
+      ],
+      [
+        "2026-10-13T06:08:57Z",
+        30.97,
+        634
+      ],
+      [
+        "2026-10-13T06:39:44Z",
+        30.97,
+        636
+      ],
+      [
+        "2026-10-13T07:11:07Z",
+        30.97,
+        637
+      ],
+      [
+        "2026-10-13T07:41:22Z",
+        30.97,
+        638
+      ],
+      [
+        "2026-10-13T09:41:34Z",
+        30.97,
+        640
+      ],
+      [
+        "2026-10-13T13:11:54Z",
+        30.97,
+        641
+      ],
+      [
+        "2026-10-13T14:42:03Z",
+        30.97,
+        642
+      ],
+      [
+        "2026-10-13T17:12:23Z",
+        30.97,
+        643
+      ],
+      [
+        "2026-10-13T20:12:49Z",
+        30.97,
+        644
+      ],
+      [
+        "2026-10-14T00:43:16Z",
+        30.97,
+        645
+      ],
+      [
+        "2026-10-14T02:13:25Z",
+        30.97,
+        646
+      ],
+      [
+        "2026-10-14T03:13:31Z",
+        30.97,
+        648
+      ],
+      [
+        "2026-10-14T03:43:34Z",
+        30.97,
+        649
+      ],
+      [
+        "2026-10-14T04:13:37Z",
+        30.97,
+        651
+      ],
+      [
+        "2026-10-14T04:43:40Z",
+        30.97,
+        652
+      ],
+      [
+        "2026-10-14T05:13:43Z",
+        30.97,
+        654
+      ],
+      [
+        "2026-10-14T05:43:46Z",
+        30.97,
+        657
+      ],
+      [
+        "2026-10-14T06:13:50Z",
+        30.97,
+        658
+      ],
+      [
+        "2026-10-14T08:44:04Z",
+        30.97,
+        659
+      ],
+      [
+        "2026-10-14T09:14:07Z",
+        30.97,
+        660
+      ],
+      [
+        "2026-10-14T14:14:35Z",
+        30.97,
+        661
+      ],
+      [
+        "2026-10-14T14:44:38Z",
+        30.97,
+        662
+      ],
+      [
+        "2026-10-14T15:14:41Z",
+        30.97,
+        661
+      ],
+      [
+        "2026-10-14T15:44:44Z",
+        30.97,
+        662
+      ],
+      [
+        "2026-10-14T18:45:04Z",
+        30.97,
+        661
+      ],
+      [
+        "2026-10-14T19:45:10Z",
+        30.97,
+        663
+      ],
+      [
+        "2026-10-14T21:15:20Z",
+        30.97,
+        664
+      ],
+      [
+        "2026-10-14T22:15:26Z",
+        30.97,
+        665
+      ],
+      [
+        "2026-10-14T23:15:32Z",
+        30.97,
+        667
+      ],
+      [
+        "2026-10-15T01:15:44Z",
+        30.97,
+        668
+      ],
+      [
+        "2026-10-15T01:45:48Z",
+        30.97,
+        669
+      ],
+      [
+        "2026-10-15T04:16:03Z",
+        30.97,
+        670
+      ],
+      [
+        "2026-10-15T06:17:00Z",
+        30.97,
+        671
+      ],
+      [
+        "2026-10-15T06:47:03Z",
+        30.97,
+        672
+      ],
+      [
+        "2026-10-15T15:47:54Z",
+        30.97,
+        673
+      ],
+      [
+        "2026-10-15T16:48:00Z",
+        30.97,
+        674
+      ],
+      [
+        "2026-10-15T17:18:05Z",
+        30.97,
+        677
+      ],
+      [
+        "2026-10-15T17:48:08Z",
+        30.97,
+        678
+      ],
+      [
+        "2026-10-15T18:48:16Z",
+        30.97,
+        679
+      ],
+      [
+        "2026-10-16T01:48:59Z",
+        30.97,
+        680
+      ],
+      [
+        "2026-10-16T04:19:14Z",
+        30.97,
+        681
+      ],
+      [
+        "2026-10-16T05:49:22Z",
+        30.97,
+        682
+      ],
+      [
+        "2026-10-16T06:49:28Z",
+        30.97,
+        683
+      ],
+      [
+        "2026-10-16T13:20:08Z",
+        30.97,
+        685
+      ],
+      [
+        "2026-10-16T14:50:17Z",
+        30.97,
+        686
+      ],
+      [
+        "2026-10-16T16:50:30Z",
+        30.97,
+        687
+      ],
+      [
+        "2026-10-16T17:20:33Z",
+        30.97,
+        688
+      ],
+      [
+        "2026-10-16T17:50:36Z",
+        30.97,
+        690
+      ],
+      [
+        "2026-10-16T20:50:54Z",
+        30.97,
+        691
+      ],
+      [
+        "2026-10-17T00:21:15Z",
+        30.97,
+        693
+      ],
+      [
+        "2026-10-17T01:21:25Z",
+        30.97,
+        695
+      ],
+      [
+        "2026-10-17T04:51:45Z",
+        30.97,
+        696
+      ],
+      [
+        "2026-10-17T05:51:50Z",
+        30.97,
+        697
+      ],
+      [
+        "2026-10-17T06:21:53Z",
+        30.97,
+        698
+      ],
+      [
+        "2026-10-17T08:52:08Z",
+        30.97,
+        700
+      ],
+      [
+        "2026-10-17T10:22:16Z",
+        30.97,
+        701
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        30.97,
+        702
+      ],
+      [
+        "2026-10-17T18:23:05Z",
+        30.97,
+        705
+      ],
+      [
+        "2026-10-17T18:53:07Z",
+        30.97,
+        706
+      ],
+      [
+        "2026-10-17T19:23:11Z",
+        30.97,
+        708
+      ],
+      [
+        "2026-10-17T19:53:14Z",
+        30.97,
+        709
+      ],
+      [
+        "2026-10-17T20:53:21Z",
+        30.97,
+        712
+      ],
+      [
+        "2026-10-18T01:23:49Z",
+        30.97,
+        714
+      ],
+      [
+        "2026-10-18T04:24:06Z",
+        30.97,
+        715
+      ],
+      [
+        "2026-10-18T05:54:14Z",
+        30.97,
+        716
+      ],
+      [
+        "2026-10-18T07:24:23Z",
+        30.97,
+        718
+      ],
+      [
+        "2026-10-18T12:24:51Z",
+        30.97,
+        719
+      ],
+      [
+        "2026-10-18T15:25:11Z",
+        30.97,
+        720
+      ],
+      [
+        "2026-10-18T16:55:22Z",
+        30.97,
+        721
+      ],
+      [
+        "2026-10-18T17:55:28Z",
+        30.97,
+        722
+      ],
+      [
+        "2026-10-18T19:55:55Z",
+        30.97,
+        723
+      ],
+      [
+        "2026-10-18T20:56:02Z",
+        30.97,
+        725
+      ],
+      [
+        "2026-10-18T21:26:05Z",
+        30.97,
+        726
+      ],
+      [
+        "2026-10-18T23:26:19Z",
+        30.97,
+        728
+      ],
+      [
+        "2026-10-19T00:26:25Z",
+        30.97,
+        729
+      ],
+      [
+        "2026-10-19T05:27:00Z",
+        30.97,
+        730
+      ],
+      [
+        "2026-10-19T10:57:33Z",
+        39.31,
+        55
+      ],
+      [
+        "2026-10-19T15:58:06Z",
+        39.31,
+        56
+      ],
+      [
+        "2026-10-20T11:00:04Z",
+        39.31,
+        57
+      ],
+      [
+        "2026-10-20T13:00:17Z",
+        39.31,
+        58
+      ],
+      [
+        "2026-10-20T16:00:38Z",
+        39.31,
+        59
+      ],
+      [
+        "2026-10-21T09:32:34Z",
+        39.31,
+        60
+      ],
+      [
+        "2026-10-21T17:03:28Z",
+        39.31,
+        61
+      ],
+      [
+        "2026-10-22T10:35:33Z",
+        39.31,
+        62
+      ]
+    ],
+    "17101761": [
+      [
+        "2026-10-16T14:50:17Z",
+        32.78,
+        105
+      ],
+      [
+        "2026-10-16T17:20:33Z",
+        32.78,
+        106
+      ],
+      [
+        "2026-10-16T18:20:39Z",
+        32.78,
+        107
+      ],
+      [
+        "2026-10-17T01:21:25Z",
+        32.78,
+        108
+      ],
+      [
+        "2026-10-17T04:21:42Z",
+        32.78,
+        109
+      ],
+      [
+        "2026-10-17T04:51:45Z",
+        32.78,
+        110
+      ],
+      [
+        "2026-10-17T05:51:50Z",
+        32.78,
+        111
+      ],
+      [
+        "2026-10-17T08:52:08Z",
+        32.78,
+        112
+      ],
+      [
+        "2026-10-17T11:22:22Z",
+        32.78,
+        113
+      ],
+      [
+        "2026-10-17T18:23:05Z",
+        32.78,
+        114
+      ],
+      [
+        "2026-10-17T20:53:21Z",
+        32.78,
+        115
+      ],
+      [
+        "2026-10-17T22:53:34Z",
+        36.53,
+        65
+      ],
+      [
+        "2026-10-17T23:53:40Z",
+        36.53,
+        66
+      ],
+      [
+        "2026-10-18T04:54:09Z",
+        36.53,
+        67
+      ],
+      [
+        "2026-10-18T06:54:20Z",
+        36.53,
+        68
+      ],
+      [
+        "2026-10-19T16:28:10Z",
+        36.53,
+        69
+      ],
+      [
+        "2026-10-19T21:28:43Z",
+        36.53,
+        70
+      ],
+      [
+        "2026-10-20T12:00:11Z",
+        36.53,
+        71
+      ],
+      [
+        "2026-10-20T13:00:17Z",
+        36.53,
+        72
+      ],
+      [
+        "2026-10-20T16:00:38Z",
+        49.86,
+        36
+      ],
+      [
+        "2026-10-21T13:02:57Z",
+        49.86,
+        37
+      ],
+      [
+        "2026-10-21T15:03:14Z",
+        49.86,
+        38
+      ],
+      [
+        "2026-10-21T21:34:10Z",
+        49.86,
+        39
+      ],
+      [
+        "2026-10-22T11:35:40Z",
+        53.47,
+        33
+      ]
+    ]
+  },
+  "socialPosts": [
+    {
+      "author": "arcprize",
+      "authorName": "ARC Prize",
+      "category": "research",
+      "checkedAt": "2026-10-19T18:04:44.564405Z",
+      "competitions": [
+        "arc-2",
+        "arc-3"
+      ],
+      "id": "2112230540283658499",
+      "identitySourceUrl": "https://arcprize.org",
+      "importance": 3,
+      "personIds": [],
+      "postedAt": "2026-10-19T17:12:58Z",
+      "sourceId": "social-2112230540283658499",
+      "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+      "summary": "ARC Prize reports verified Reflection Beam 1.0 scores: ARC-AGI-2 23.5% at $0.61/task and ARC-AGI-1 74.0% at $0.31/task. Best scores use xhigh reasoning; high reaches 20.0% on ARC-AGI-2 at about 43% lower cost.",
+      "threadId": "2112230540283658499",
+      "url": "https://x.com/arcprize/status/2112230540283658499",
+      "visibility": "public",
+      "whyItMatters": "New official model evaluation. Linked result page independently read in Chrome: semi-private best scores match. This is benchmark evaluation, not a Kaggle team score."
+    },
+    {
+      "author": "gklambauer",
+      "authorName": "Günter Klambauer",
+      "category": "research",
+      "checkedAt": "2026-10-20T09:07:52.970Z",
+      "competitions": [
+        "arc-2",
+        "arc-3"
+      ],
+      "id": "2112450218700722262",
+      "identitySourceUrl": "https://x.com/gklambauer",
+      "importance": 2,
+      "personIds": [],
+      "postedAt": "2026-10-20T07:45:54Z",
+      "sourceId": "social-2112450218700722262",
+      "storyUrl": "https://arxiv.org/abs/2610.26834",
+      "summary": "Klambauer announces KronLSTM and links the new Kronecker Delta Rule paper. The authors propose a targeted association update for recurrent linear attention, report competitive long-context performance, and link open-source code and models. No ARC score is reported.",
+      "threadId": null,
+      "url": "https://x.com/gklambauer/status/2112450218700722262",
+      "visibility": "public",
+      "whyItMatters": "Research lead discovered in fses91’s separate Reposts feed. The primary arXiv abstract was checked independently; architecture claims remain attributed, and no Kaggle roster identity is inferred."
+    },
+    {
+      "author": "AInebosuke",
+      "authorName": "ねぼすけAI",
+      "category": "standings",
+      "checkedAt": "2026-10-20T04:05:47.528062Z",
+      "competitions": [
+        "arc-2"
+      ],
+      "id": "2112365916717801674",
+      "identitySourceUrl": "https://nebosukeai.com/",
+      "importance": 2,
+      "personIds": [],
+      "postedAt": "2026-10-20T02:10:55Z",
+      "sourceId": "social-2112365916717801674",
+      "storyUrl": null,
+      "summary": "Translation of original Japanese: I improved my best score, though only a little. Following ARC3, I am aiming for the gold-medal band in ARC2 too. The Kaggle share text says rank 40.",
+      "threadId": null,
+      "url": "https://x.com/AInebosuke/status/2112365916717801674",
+      "visibility": "public",
+      "whyItMatters": "Original Japanese read on actual public post. Direct X → nebosukeai.com → Kaggle isakatsuyoshi link verified, plus reciprocal Kaggle → X link. Public ARC2 board independently shows rank 40, 44.44, team 復活の混テキスト; gold is an ambition, not an awarded medal."
+    },
+    {
+      "author": "MindsAI_Jack",
+      "authorName": "Jack Cole",
+      "category": "community",
+      "checkedAt": "2026-10-20T04:05:47.528062Z",
+      "competitions": [
+        "arc-2"
+      ],
+      "id": "2112303089198022857",
+      "identitySourceUrl": "https://www.kaggle.com/jcole75",
+      "importance": 2,
+      "personIds": [
+        "jack-cole",
+        "mark-barney"
+      ],
+      "postedAt": "2026-10-19T22:01:15Z",
+      "sourceId": "social-2112303089198022857",
+      "storyUrl": null,
+      "summary": "Cole publicly confirms joining Mark Barney’s ARC-AGI-2 team, says he is excited, and says they will work hard through the last two weeks because the competition is strong. His quote contains Barney’s public ARC2 team announcement.",
+      "threadId": null,
+      "url": "https://x.com/MindsAI_Jack/status/2112303089198022857",
+      "visibility": "public",
+      "whyItMatters": "New first-person team confirmation. Signed-in Chrome original post read; public post has no subscriber restriction. Exact public roster also shows jcole75 with markbarney, sonphamorg and scizical in ARC Mutants; this does not establish a joining date or score contribution."
+    },
+    {
+      "author": "82deutschmark",
+      "authorName": "Mark Barney",
+      "category": "community",
+      "checkedAt": "2026-10-19T18:20:47.341882+00:00",
+      "competitions": [
+        "arc-2"
+      ],
+      "id": "2112247067913457944",
+      "identitySourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-19-arc-mutants-public-rosters.json",
+      "importance": 2,
+      "personIds": [
+        "mark-barney",
+        "jack-cole"
+      ],
+      "postedAt": "2026-10-19T18:18:39Z",
+      "sourceId": "social-2112247067913457944",
+      "storyUrl": null,
+      "summary": "Mark Barney publicly welcomes Jack Cole to his ARC-AGI-2 team, using a Professor X metaphor, and states an ambition to reach gold. The post has ARC Mutants artwork. The announcement explicitly concerns ARC2; it does not add Cole to ARC3 Team Turducken.",
+      "threadId": null,
+      "url": "https://x.com/82deutschmark/status/2112247067913457944",
+      "visibility": "public",
+      "whyItMatters": "Fresh public first-person confirmation supporting the commissioned ARC Mutants dispatch. Gold is an ambition, not an awarded medal."
+    },
+    {
+      "author": "arcprize",
+      "authorName": "ARC Prize",
+      "category": "research",
+      "checkedAt": "2026-10-19T18:04:44.564405Z",
+      "competitions": [
+        "arc-2",
+        "arc-3"
+      ],
+      "id": "2112230541730689510",
+      "identitySourceUrl": "https://arcprize.org",
+      "importance": 2,
+      "personIds": [],
+      "postedAt": "2026-10-19T17:12:59Z",
+      "sourceId": "social-2112230541730689510",
+      "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+      "summary": "ARC Prize says Beam costs use Baseten pricing of $1.30 input and $4.30 output per million tokens. ARC-AGI-3 results are pending.",
+      "threadId": "2112230540283658499",
+      "url": "https://x.com/arcprize/status/2112230541730689510",
+      "visibility": "public",
+      "whyItMatters": "Keeps the cost basis and absence of ARC-AGI-3 results explicit."
+    },
+    {
+      "author": "arcprize",
+      "authorName": "ARC Prize",
+      "category": "research",
+      "checkedAt": "2026-10-19T18:04:44.564405Z",
+      "competitions": [
+        "arc-2",
+        "arc-3"
+      ],
+      "id": "2112230543379095621",
+      "identitySourceUrl": "https://arcprize.org",
+      "importance": 2,
+      "personIds": [],
+      "postedAt": "2026-10-19T17:12:59Z",
+      "sourceId": "social-2112230543379095621",
+      "storyUrl": "https://arcprize.org/results/reflection-beam-1-0",
+      "summary": "ARC Prize links its leaderboard, public reproduction repository, testing policy and full Beam 1.0 results.",
+      "threadId": "2112230540283658499",
+      "url": "https://x.com/arcprize/status/2112230543379095621",
+      "visibility": "public",
+      "whyItMatters": "Primary follow-up with reproducibility and policy links; group with the Beam announcement."
+    },
+    {
+      "author": "tufalabs",
+      "authorName": "Tufa Labs",
+      "category": "community",
+      "checkedAt": "2026-10-19T15:05:50.864780Z",
+      "competitions": [
+        "arc-2",
+        "arc-3"
+      ],
+      "id": "2112165331292602740",
+      "identitySourceUrl": "https://tufalabs.ai",
+      "importance": 2,
+      "personIds": [],
+      "postedAt": "2026-10-19T12:53:51Z",
+      "sourceId": "social-2112165331292602740",
+      "storyUrl": null,
+      "summary": "Tufa says its two NVIDIA GB300 NVL72 racks are live in Stockholm; credits DELTA for installation and T.Loop for hosting and links a deployment video. Actual public post read.",
+      "threadId": null,
+      "url": "https://x.com/tufalabs/status/2112165331292602740",
+      "visibility": "public",
+      "whyItMatters": "Contender infrastructure announcement; no evidence here ties this equipment to a specific score or competition run."
+    },
+    {
+      "author": "JFPuget",
+      "authorName": "Jean-François Puget",
+      "category": "community",
+      "checkedAt": "2026-10-19T15:05:50.864780Z",
+      "competitions": [
+        "arc-2"
+      ],
+      "id": "2112118534129987833",
+      "identitySourceUrl": "https://arc.markbarney.net/api/contributors",
+      "importance": 2,
+      "personIds": [
+        "jean-francois-puget"
+      ],
+      "postedAt": "2026-10-19T09:47:54Z",
+      "sourceId": "social-2112118534129987833",
+      "storyUrl": null,
+      "summary": "Puget says AI agents now run all his training experiments, while he still reads their harness code. He says agents tend to overengineer, retain unnecessary compatibility code and require human direction. Actual public post expanded and read.",
+      "threadId": null,
+      "url": "https://x.com/JFPuget/status/2112118534129987833",
+      "visibility": "public",
+      "whyItMatters": "First-person account of a competitor’s research workflow; no new ARC score claimed."
+    }
+  ],
+  "sourceSha256": "1c19a93f76df91d0e871014f210689af3ba0db417b592df650b510348b1a369b",
+  "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+  "wireIntake": {
+    "dispatches": [
+      {
+        "commissionedBy": "mark-barney",
+        "competition": "arc-2",
+        "editorNote": "Model report checked October 22, 2026. Reflection released Beam on October 16. ARC Prize scores are semi-private evaluations, not Kaggle team standings.",
+        "generatedBy": "gpt-6.1-sol",
+        "headline": "Beam’s coding launch meets a tougher grid test: 23.5% on ARC-AGI-2",
+        "id": "2026-10-22-beam-1-model-report",
+        "image": {
+          "alt": "Beam ARC-AGI-1 and ARC-AGI-2 semi-private scores rise across low, medium, high and xhigh reasoning, with task costs shown for ARC-AGI-2.",
+          "caption": "ARC Daily Digest chart from ARC Prize semi-private data checked October 22, 2026. ARC-AGI-2 task costs range from about ten to sixty-one cents. No ARC-AGI-3 result is listed.",
+          "src": "/news-images/2026-10-22-reflection-beam-1-0-verified-results.png"
+        },
+        "publishedAt": "2026-10-22T19:41:06.625278+00:00",
+        "sections": [
+          {
+            "heading": "What the verified result says",
+            "sourceIds": [
+              "result",
+              "v1",
+              "data",
+              "release"
+            ],
+            "text": "Reflection’s first open-weight model, Beam 1.0, scores 23.5% on ARC-AGI-2 at xhigh reasoning and 74.0% on ARC-AGI-1 at the same setting. ARC Prize’s recorded costs are about 61 cents per ARC-AGI-2 task and 31 cents per ARC-AGI-1 task. The two scores describe substantially different levels of success on two different benchmarks; the older set’s result should not stand in for the newer one. Reflection released the weights on October 16, and this report checks the verified rows on October 22. The page’s release date does not establish the precise publication time of the new evaluations. Beam’s ARC-AGI-2 result leaves considerable room for improvement, even as its launch focuses on coding and sustained agent work."
+          },
+          {
+            "heading": "The useful setting may be below the headline setting",
+            "sourceIds": [
+              "result",
+              "v1",
+              "data"
+            ],
+            "text": "ARC-AGI-2 rises from 2.8% at low reasoning to 6.4% at medium, 20.0% at high and 23.5% at xhigh. The corresponding task costs are about $0.10, $0.18, $0.35 and $0.61. Most of the improvement in that ladder arrives before the last setting: high retains a 20% score at roughly 43% lower recorded cost than xhigh. Moving to xhigh buys about three and a half additional percentage points. That is a concrete budget choice, not evidence that either setting is always preferable. The accompanying ARC-AGI-1 ladder is 45.0%, 55.7%, 67.7% and 74.0%. Anyone reproducing Beam should specify the effort setting rather than quote “Beam’s score” as though it were a fixed property independent of inference configuration."
+          },
+          {
+            "heading": "Why the software claims and the ARC result can coexist",
+            "sourceIds": [
+              "card",
+              "policy",
+              "release"
+            ],
+            "text": "Reflection’s model card reports 80.1% on Terminal Bench 2.1, 81.6% on SWE-bench Verified and 43.3% on DeepSWE v1.1 for the BF16 release. These are the developer’s reported evaluations. They do not convert into an ARC score. ARC Prize’s policy evaluates ARC-AGI-1 and ARC-AGI-2 as direct task-to-answer-grid prediction, without an agent harness or client-side tools. Software agents can inspect files, run programs and use execution feedback; these ARC runs ask a different question. Reflection also reports roughly 1.3 billion sandboxes across major reinforcement-learning runs, evaluation and ablations. That is a company-described training operation, not an independently audited count in this report. The evidence supports separate judgments about software workflows and grid-rule generalization; one benchmark’s strength does not erase the other’s limitation."
+          },
+          {
+            "heading": "The release is an engineering stack, not only a checkpoint",
+            "sourceIds": [
+              "card",
+              "release"
+            ],
+            "text": "Beam uses a sparse mixture of experts, with about 501 billion total parameters and 23 billion active per token, a one-million-token context window, and text input and output. Reflection releases BF16, FP8 and NVFP4 weights under Apache 2.0 and also offers a speculative-decoding drafter. Its Mirror CLI provides an inspectable agent environment, and the launch describes integrations for serving, fine-tuning and reinforcement learning. Reflection says Beam was trained with Mirror while also supporting other harnesses. That is relevant to teams interested in modifying the agent as well as the weights. It does not establish that the best coding harness transfers unchanged to ARC. Nor does “23 billion active” mean the entire model has the storage footprint of a dense 23-billion-parameter checkpoint: routing fewer experts for a token and storing the full expert pool are different requirements."
+          },
+          {
+            "heading": "Where Beam belongs in the current ARC picture",
+            "sourceIds": [
+              "data",
+              "card",
+              "result"
+            ],
+            "text": "In the same ARC Prize ARC-AGI-2 snapshot, Muse Spark Open reaches 57.5% at xhigh and DeepSeek Flash 1017 reaches 78.1% at maximum. Their recorded costs are about $0.73 and $0.16 per task respectively, versus Beam’s $0.61. These are comparisons of the published configurations and retail-priced runs, not a controlled study of why the architectures differ. Beam therefore has no accuracy or cost lead over these two alternatives on this particular evaluation. Its inspectable weights and tooling can still make it a research candidate, especially for an experiment that changes the task interface or training recipe. That prospect needs a measured follow-up rather than a promised gain. No ARC-AGI-3 result is listed for Beam. Its text-only interface also makes any future treatment of game frames an explicit harness decision; a missing interactive score means unmeasured, not zero."
+          }
+        ],
+        "sourceId": "dispatch-2026-10-22-beam-1-model-report",
+        "sources": [
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "result",
+            "title": "ARC Prize verified Beam 1.0 results",
+            "url": "https://arcprize.org/results/reflection-beam-1-0"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "v1",
+            "title": "ARC Prize ARC-AGI-1 semi-private evaluation data",
+            "url": "https://arcprize.org/media/data/leaderboard/v1.json"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "data",
+            "title": "ARC Prize machine-readable ARC-AGI-2 semi-private evaluations, checked October 22",
+            "url": "https://arcprize.org/media/data/leaderboard/v2.json"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "policy",
+            "title": "ARC Prize verified testing policy: direct grid prediction, dataset split and retail costs",
+            "url": "https://arcprize.org/policy"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "card",
+            "title": "Reflection official Beam model card",
+            "url": "https://reflection.ai/beam-model-card"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "release",
+            "title": "Reflection October 16 Beam release and open tooling",
+            "url": "https://reflection.ai/blog/beam-is-available"
+          }
+        ]
+      },
+      {
+        "commissionedBy": "mark-barney",
+        "competition": "arc-2",
+        "editorNote": "Model report checked October 22, 2026. Release dates and result-check dates are distinct. Scores below are ARC Prize semi-private evaluations, separate from the Kaggle competition.",
+        "generatedBy": "gpt-6.1-sol",
+        "headline": "DeepSeek Flash 1017 reaches 78.1% on ARC-AGI-2, with a coverage warning behind the effort curve",
+        "id": "2026-10-22-deepseek-flash-1017-model-report",
+        "image": {
+          "alt": "ARC Prize semi-private scores for DeepSeek Flash 1017 at none, low, high and maximum effort, with the high variant flagged for incomplete coverage.",
+          "caption": "ARC Daily Digest chart from ARC Prize data checked October 22, 2026. High has partial coverage; its cost excludes unrecorded attempts. Costs are per task at recorded retail rates. No ARC-AGI-3 result is listed.",
+          "src": "/news-images/2026-10-22-deepseek-v4-1-flash-1017-verified-results.png"
+        },
+        "publishedAt": "2026-10-22T19:41:06.625278+00:00",
+        "sections": [
+          {
+            "heading": "The verified gain",
+            "sourceIds": [
+              "result",
+              "previous",
+              "data"
+            ],
+            "text": "DeepSeek V4.1 Flash 1017 raises the September checkpoint’s best ARC-AGI-2 score from 72.9% to 78.1% at maximum reasoning: roughly five percentage points of improvement. ARC Prize records about 16 cents per task for the new maximum setting, against about 13 cents for the earlier one. The new checkpoint’s best ARC-AGI-1 figure is 94.5% at high effort; maximum effort scores 93.5% there. Those are different configurations, so the two headline bests should not be presented as one run. DeepSeek released 1017 on October 17. This report checks the verified results on October 22; the release date displayed on the results page does not establish when the evaluation rows first appeared. Among the three models in this series, DeepSeek has the strongest ARC-AGI-2 result."
+          },
+          {
+            "heading": "Read the coverage note before reading the curve",
+            "sourceIds": [
+              "result",
+              "models"
+            ],
+            "text": "The ARC-AGI-2 ladder is 2.1% with reasoning disabled, 73.6% at low, 68.6% at high and 78.1% at maximum. The dip at high is easy to turn into an overthinking story, but ARC Prize’s model metadata explicitly marks that variant as having partial dataset coverage. It says scores use the full catalog denominators while costs include recorded usage only and exclude unrecorded attempts. A published aggregate with missing coverage cannot isolate the effect of extra thinking. Nor does the note identify the missing attempts’ counterfactual answers. The chart therefore marks high with a warning rather than drawing a smooth performance law through it. For practical comparison, retain the coverage qualification alongside the checkpoint, effort and dataset; a score without those conditions conceals the most consequential limitation in this release’s ARC evidence."
+          },
+          {
+            "heading": "Better ARC accuracy is not automatically a cheaper ARC run",
+            "sourceIds": [
+              "release",
+              "data",
+              "policy"
+            ],
+            "text": "DeepSeek describes 1017 as completing tasks faster and with shorter outputs, and calls the broader update a performance-and-cost improvement. Its release announcement emphasizes project creation and reinforcement learning with self-feedback. That claim needs to stay attached to the workloads on which the company makes it. In ARC Prize’s recorded maximum-effort ARC-AGI-2 runs, cost rises from roughly $0.129 to $0.163 per task, about a quarter more, while accuracy improves. The low setting costs about $0.134 and scores 73.6%, offering a different point on the tradeoff. ARC Prize uses retail pricing, not the lab’s internal GPU cost, and its policy uses a single run rather than averaging repeats. These observations support a useful accuracy gain; they do not establish cheaper inference for every workload or a universal efficiency win."
+          },
+          {
+            "heading": "What DeepSeek says changed outside ARC",
+            "sourceIds": [
+              "card",
+              "release"
+            ],
+            "text": "The model card reports DeepSWE v1.1 improving from 74.2 to 77.0, Terminal-Bench 4.0 from 31.2 to 42.3, and ProgramBench from 20.3 to 29.1. These are DeepSeek-published comparisons, not additional ARC Prize verification. The card names Mini-SWE-V2 for DeepSWE and Claude Code for Terminal-Bench 4.0. The launch’s project demonstrations include a Godot Portal recreation and 3D scenes; they illustrate the intended end-to-end development use, but are selected demonstrations. The broader research story is an update aimed at carrying a project through execution and feedback, with shorter output as part of the objective. Neither a software benchmark nor a polished demonstration substitutes for testing an unfamiliar grid rule. Conversely, the ARC score alone does not measure the model’s ability to build, debug and ship a repository."
+          },
+          {
+            "heading": "Open weights, protocol fidelity, and the unanswered ARC3 question",
+            "sourceIds": [
+              "card",
+              "recipe",
+              "result"
+            ],
+            "text": "The checkpoint is available under MIT terms with a one-million-token context recommendation. DeepSeek’s card says there is no Jinja-format chat template and points instead to its reference encoder. Its maintained deepseek-recipe toolkit converts common request formats into DeepSeek conversations and parses thinking, tool calls and images. That matters for reproduction: a wrapper that drops reasoning or misplaces tool content changes the system under test. A serious follow-up should hold the task set and harness fixed, verify the actual checkpoint, and record coverage, failures, token use and cost before attributing differences to the model. This is a proposed experiment, not a run performed for this report. ARC Prize lists no ARC-AGI-3 score for 1017. The September model’s separate interactive results cannot be carried over to this checkpoint. A grid-prediction gain is promising evidence for that task, while interactive exploration remains an open question."
+          }
+        ],
+        "sourceId": "dispatch-2026-10-22-deepseek-flash-1017-model-report",
+        "sources": [
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "result",
+            "title": "ARC Prize verified DeepSeek V4.1 Flash 1017 results",
+            "url": "https://arcprize.org/results/deepseek-v4-1-flash-1017"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "previous",
+            "title": "ARC Prize verified September DeepSeek V4.1 Flash results",
+            "url": "https://arcprize.org/results/deepseek-v4-1-flash"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "data",
+            "title": "ARC Prize machine-readable ARC-AGI-2 semi-private evaluations, checked October 22",
+            "url": "https://arcprize.org/media/data/leaderboard/v2.json"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "models",
+            "title": "ARC Prize model metadata, including the DeepSeek high-effort coverage qualification",
+            "url": "https://arcprize.org/media/data/models.json"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "policy",
+            "title": "ARC Prize verified testing policy: direct grid prediction, dataset split and retail costs",
+            "url": "https://arcprize.org/policy"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "release",
+            "title": "DeepSeek October 17 release announcement",
+            "url": "https://api-docs.deepseek.com/news/news261017/"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "card",
+            "title": "DeepSeek V4.1 Flash 1017 official model card",
+            "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "recipe",
+            "title": "DeepSeek official request-encoding and output-parsing toolkit",
+            "url": "https://github.com/deepseek-ai/deepseek-recipe"
+          }
+        ]
+      },
+      {
+        "commissionedBy": "mark-barney",
+        "competition": "arc-2",
+        "editorNote": "Model report checked October 22, 2026. Meta released Muse Spark Open on October 15. This is the open checkpoint, not an inherited result for a closed Muse model.",
+        "generatedBy": "gpt-6.1-sol",
+        "headline": "Muse Spark Open reaches 57.5% on ARC-AGI-2: capable open weights, a costly top setting",
+        "id": "2026-10-22-muse-spark-open-model-report",
+        "image": {
+          "alt": "Muse Spark Open scores across four reasoning settings: its best ARC-AGI-2 score is 57.5% at xhigh while ARC-AGI-1 reaches 89.0%.",
+          "caption": "ARC Daily Digest chart from ARC Prize semi-private data checked October 22, 2026. The final effort increase adds ten points on ARC-AGI-2 and half a point on ARC-AGI-1. No ARC-AGI-3 result is listed.",
+          "src": "/news-images/2026-10-22-meta-muse-spark-open-verified-results.png"
+        },
+        "publishedAt": "2026-10-22T19:41:06.625278+00:00",
+        "sections": [
+          {
+            "heading": "A verified result for the open checkpoint",
+            "sourceIds": [
+              "result",
+              "data",
+              "v1",
+              "release"
+            ],
+            "text": "Muse Spark Open reaches 57.5% on ARC-AGI-2 and 89.0% on ARC-AGI-1 at xhigh reasoning in ARC Prize’s semi-private evaluations. The recorded per-task costs are about 73 cents and 29 cents respectively. That places it clearly above Beam 1.0 on this grid test, while below DeepSeek Flash 1017’s best ARC-AGI-2 result. Meta released this open checkpoint on October 15; the results here were checked on October 22. The release date shown beside the model is not a timestamp proving when the verified rows first went live. The distinction between this checkpoint and closed Muse versions matters throughout the report: shared branding does not establish identical weights, post-training or benchmark behavior."
+          },
+          {
+            "heading": "What the extra thinking buys",
+            "sourceIds": [
+              "result",
+              "data",
+              "v1"
+            ],
+            "text": "Muse Spark Open’s ARC-AGI-2 scores are 12.2% at low, 27.5% at medium, 47.5% at high and 57.5% at xhigh. Its ARC-AGI-1 scores at those settings are 58.5%, 77.7%, 88.5% and 89.0%. The final increase in effort therefore adds only half a point on the older benchmark but ten points on ARC-AGI-2. The harder set is still sensitive to the extra inference configuration even when the older score has nearly flattened. ARC-AGI-2 cost rises from about $0.11 to $0.25, $0.62 and $0.73 across that ladder. At the top, roughly seventeen percent more recorded spending than high accompanies ten additional percentage points. Those are observations from the published runs, not a guarantee that another task mix will deliver the same marginal return."
+          },
+          {
+            "heading": "What Meta actually opened",
+            "sourceIds": [
+              "spec",
+              "release",
+              "license"
+            ],
+            "text": "Meta describes Muse Spark Open as a native multimodal mixture-of-experts model with 816 billion total parameters, 42 billion active, and a context window of 1,048,576 tokens. Its documentation lists text, images, audio and video as inputs, with text output. The weights make self-hosting and adaptation possible, but the total expert pool still sets a very large memory requirement. Meta’s launch highlights running the model across two M5 Ultra Mac Studios, alongside conventional hosted and GPU deployment paths. That is a vendor-described configuration, not hardware measured for this report. The release uses the custom Muse Model License with limited commercial terms; it should not be casually described as an Apache- or MIT-licensed release. Meta also says the open version received additional safety post-training for standalone use. Openness here is a concrete deployment choice with its own conditions, rather than a claim that every Muse variant is interchangeable."
+          },
+          {
+            "heading": "Read the wider benchmark table with its methodology",
+            "sourceIds": [
+              "benchmarks",
+              "methodology",
+              "policy"
+            ],
+            "text": "Meta’s product table lists 76.4 on Terminal-Bench 2.1 with the Terminus 2 agent, 60 on DeepSWE 1.1, and 89.2 on MCP-Atlas at xhigh reasoning. Its methodology report explains that the comparison mixes official benchmark-provider results, internal evaluations and some competitors’ self-reported figures. For DeepSWE, it uses each model’s preferred or reported harness; Muse Spark Open’s entry uses Muse Code. For Terminal-Bench, Beam’s figure is self-reported with the harness unspecified in Meta’s account. These distinctions prevent the table from being read as one fully controlled experiment. They also explain why an agentic coding number should retain its harness label. Meta’s agent and perception claims may be useful context for the release, but they remain separate evidence from ARC Prize’s direct grid-prediction test."
+          },
+          {
+            "heading": "What the result changes, and what remains open",
+            "sourceIds": [
+              "data",
+              "spec",
+              "result"
+            ],
+            "text": "The ARC result establishes a meaningful rule-generalization capability for a downloadable Meta checkpoint. It does not establish a new lead among the models examined here: DeepSeek Flash 1017 scores higher on ARC-AGI-2 at a substantially lower recorded task cost. Nor does parameter count by itself explain that ordering. Different training, inference settings and serving prices remain part of the comparison. For researchers, Muse Spark Open’s distinctive question is whether access to the multimodal weights and controllable serving stack can produce a better task-specific system. That requires testing the exact checkpoint and harness, and recording what adaptation changes. ARC Prize currently lists no ARC-AGI-3 result for Muse Spark Open; native perception is not an interactive-game score. Its ARC-AGI-1 and ARC-AGI-2 results should stand on their own while that question remains unmeasured."
+          }
+        ],
+        "sourceId": "dispatch-2026-10-22-muse-spark-open-model-report",
+        "sources": [
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "result",
+            "title": "ARC Prize verified Muse Spark Open results",
+            "url": "https://arcprize.org/results/meta-muse-spark-open"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "data",
+            "title": "ARC Prize machine-readable ARC-AGI-2 semi-private evaluations, checked October 22",
+            "url": "https://arcprize.org/media/data/leaderboard/v2.json"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "v1",
+            "title": "ARC Prize ARC-AGI-1 semi-private evaluation data",
+            "url": "https://arcprize.org/media/data/leaderboard/v1.json"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "policy",
+            "title": "ARC Prize verified testing policy: direct grid prediction, dataset split and retail costs",
+            "url": "https://arcprize.org/policy"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "spec",
+            "title": "Meta Muse Spark Open architecture, modalities and deployment documentation",
+            "url": "https://dev.meta.ai/docs/muse-spark-open"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "release",
+            "title": "Meta October 15 Muse Spark Open release announcement",
+            "url": "https://research.meta.ai/blog/muse-spark-open"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "license",
+            "title": "Official Muse Spark Open weights and Muse Model License",
+            "url": "https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "benchmarks",
+            "title": "Meta Muse Spark Open product benchmark table",
+            "url": "https://dev.meta.ai/models/muse-spark-open"
+          },
+          {
+            "accessedAt": "2026-10-22T19:41:05.625152+00:00",
+            "id": "methodology",
+            "title": "Meta Muse Spark Open evaluation methodology, October 2026",
+            "url": "https://research.meta.ai/static/muse-spark-open-evaluation-methodology"
+          }
+        ]
+      }
+    ],
+    "limitations": [],
+    "previousEditionId": "2026-10-22-morning-arc-2",
+    "since": "2026-10-22T10:00:00Z",
+    "through": "2026-10-22T22:00:00Z",
+    "wireStories": [
+      {
+        "competition": "arc-2",
+        "dataAsOf": "2026-10-22T13:36:00Z",
+        "generatedBy": "gpt-6-luna",
+        "headline": "Ruslan Guseynov jumps from 1880th to 50th on ARC-2",
+        "id": "2026-10-22-0941-arc-2-ruslan-guseynov-into-top-fifty",
+        "personIds": [],
+        "publishedAt": "2026-10-22T13:41:33Z",
+        "sections": [
+          {
+            "sourceIds": [
+              "board-arc-2"
+            ],
+            "text": "Ruslan Guseynov gained 15.55 to 43.33 on the ARC-AGI-2 public board, moving from 1880th to 50th."
+          },
+          {
+            "sourceIds": [
+              "board-arc-2"
+            ],
+            "text": "The score sits well below the ARC-2 gold line of 66.53 at 16th. Public standings are provisional."
+          }
+        ],
+        "since": "2026-10-21T13:33:01Z",
+        "sourceId": "wire-2026-10-22-0941-arc-2-ruslan-guseynov-into-top-fifty",
+        "sources": [
+          {
+            "accessedAt": "2026-10-22T13:40:32Z",
+            "id": "board-arc-2",
+            "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+            "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+          }
+        ],
+        "teamIds": [
+          "16907614"
+        ]
+      },
+      {
+        "competition": "arc-2",
+        "dataAsOf": "2026-10-22T16:06:17Z",
+        "generatedBy": "claude-haiku-5-5",
+        "headline": "Yuvraj #2 climbs 185 places on ARC-2, from 277th to 92nd",
+        "id": "2026-10-22-1241-arc-2-yuvraj-2-climbs-to-ninety-second",
+        "personIds": [],
+        "publishedAt": "2026-10-22T16:41:31Z",
+        "sections": [
+          {
+            "sourceIds": [
+              "board-arc-2"
+            ],
+            "text": "Yuvraj #2 gained 2.78 to 34.86 on the ARC-AGI-2 public board, climbing 185 places from 277th to 92nd in the past day."
+          },
+          {
+            "sourceIds": [
+              "board-arc-2"
+            ],
+            "text": "The team is now inside the top 100. Public standings are provisional, so this is a move on the board, not a settled medal."
+          }
+        ],
+        "since": "2026-10-21T16:03:22Z",
+        "sourceId": "wire-2026-10-22-1241-arc-2-yuvraj-2-climbs-to-ninety-second",
+        "sources": [
+          {
+            "accessedAt": "2026-10-22T16:40:43Z",
+            "id": "board-arc-2",
+            "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+            "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+          }
+        ],
+        "teamIds": [
+          "16381399"
+        ]
+      },
+      {
+        "competition": "arc-2",
+        "dataAsOf": "2026-10-22T19:36:52Z",
+        "generatedBy": "claude-haiku-5-5",
+        "headline": "Aneesh & Yash gain 7.36 points and climb from 41st to 34th on ARC-2",
+        "id": "2026-10-22-1541-arc-2-aneesh-yash-gains-to-34th",
+        "personIds": [],
+        "publishedAt": "2026-10-22T19:41:18Z",
+        "sections": [
+          {
+            "sourceIds": [
+              "board-arc-2"
+            ],
+            "text": "Aneesh & Yash gained 7.36 points to reach 53.33, moving from 41st to 34th on the ARC-AGI-2 public board."
+          },
+          {
+            "sourceIds": [
+              "board-arc-2"
+            ],
+            "text": "The public standings are provisional and medals are decided on the private board. The gold line stands at 66.53, so the team remains outside the medal places for now."
+          }
+        ],
+        "since": "2026-10-21T19:33:55Z",
+        "sourceId": "wire-2026-10-22-1541-arc-2-aneesh-yash-gains-to-34th",
+        "sources": [
+          {
+            "accessedAt": "2026-10-22T19:40:39Z",
+            "id": "board-arc-2",
+            "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+            "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+          }
+        ],
+        "teamIds": [
+          "15796569"
+        ]
+      },
+      {
+        "competition": "arc-2",
+        "dataAsOf": "2026-10-22T19:36:52Z",
+        "generatedBy": "claude-haiku-5-5",
+        "headline": "Giba climbs 101 places on ARC-2, from 196th to 95th",
+        "id": "2026-10-22-1541-arc-2-giba-climbs-101-places-to-95th",
+        "personIds": [],
+        "publishedAt": "2026-10-22T19:41:18Z",
+        "sections": [
+          {
+            "sourceIds": [
+              "board-arc-2"
+            ],
+            "text": "Giba climbed 101 places, moving from 196th to 95th at 34.44, a gain of 2.08 on the ARC-AGI-2 public board."
+          },
+          {
+            "sourceIds": [
+              "board-arc-2"
+            ],
+            "text": "The jump brings the team into the top 100 of the public board. The gold line stands at 66.53, and the public standings are provisional while medals are decided on the private board."
+          }
+        ],
+        "since": "2026-10-21T19:33:55Z",
+        "sourceId": "wire-2026-10-22-1541-arc-2-giba-climbs-101-places-to-95th",
+        "sources": [
+          {
+            "accessedAt": "2026-10-22T19:40:39Z",
+            "id": "board-arc-2",
+            "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+            "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+          }
+        ],
+        "teamIds": [
+          "15487246"
+        ]
+      }
+    ]
+  }
+}
