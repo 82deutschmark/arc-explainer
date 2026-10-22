@@ -6,6 +6,10 @@ file are folded into the workflow below; one-off orders now live in
 `content/news/editorial-assignments.json` and the picture stock in its data files. Read
 [README.md](README.md) first for the desks, folders and permissions.
 
+For scheduled Early and Late runs, follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md). Its
+browser-free publishing route overrides discovery, new artwork and X sending below. This guide
+remains the reporting and evidence contract, and the route for explicitly commissioned manual work.
+
 ## Who, when and what is authorized
 
 The scheduled **GPT-6.1 Sol** run is the journalist, on the signed-in Codex subscription: no paid

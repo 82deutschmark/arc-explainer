@@ -1,11 +1,13 @@
-# Author: Claude Opus 5.5
-# Date: 2026-10-09
+# Author: Claude Opus 5.5; GPT-6.1 Sol / Codex
+# Date: 2026-10-22
 # PURPOSE: The wire desk helper (scripts/newsroom_wire.py) and the edition post (scripts/newsroom_x.py
 # --edition): a brief built from a small market digest offers leads, sources, people and pictures;
 # validation accepts a story whose figures all come from the brief and rejects invented or rounded
 # figures, overclaims, spelled-out figures, unoffered pictures, unknown teams or people and stale
 # briefs; publication is immutable and marks its leads covered; the edition post is labeled Early
 # or Late, fits X and waits for its link.
+# Draft-only CLI coverage checks that scheduled editions never wait on deployment and retain
+# the existing protection for an already attempted or completed send.
 # SRP/DRY check: Pass — exercises the production helpers against temporary content directories.
 import copy
 import json
@@ -14,6 +16,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).parents[1] / 'scripts'))
 import newsroom as n
 import newsroom_wire as wire
@@ -175,6 +178,34 @@ class EditionPostTests(unittest.TestCase):
         answers = [False, False, True]
         self.assertTrue(x.wait_until_live('u', patience=60, interval=30, check=lambda url: answers.pop(0), sleep=lambda seconds: None))
         self.assertFalse(x.wait_until_live('u', patience=60, interval=30, check=lambda url: False, sleep=lambda seconds: None))
+
+    def test_draft_only_cli_never_checks_live_site(self):
+        with tempfile.TemporaryDirectory() as root:
+            outbox = Path(root) / 'edition.json'
+            post = {'state': 'draft', 'link': 'https://example.com/news/edition'}
+            with patch.object(x, 'edition_post', return_value=post), patch.object(x, 'prepare_media'), patch.object(x, 'wait_until_live', side_effect=AssertionError('network check is forbidden')):
+                self.assertEqual(x.main(['--edition', 'morning', '--draft-only', '--output', str(outbox)]), 0)
+            self.assertEqual(json.loads(outbox.read_text())['state'], 'draft')
+
+    def test_normal_cli_retains_link_gate(self):
+        with tempfile.TemporaryDirectory() as root:
+            outbox = Path(root) / 'edition.json'
+            post = {'state': 'draft', 'link': 'https://example.com/news/edition'}
+            with patch.object(x, 'edition_post', return_value=post), patch.object(x, 'prepare_media'), patch.object(x, 'wait_until_live', return_value=False) as check:
+                self.assertEqual(x.main(['--edition', 'morning', '--output', str(outbox)]), 2)
+                check.assert_called_once_with(post['link'])
+            self.assertEqual(json.loads(outbox.read_text())['state'], 'waiting')
+
+    def test_draft_only_preserves_send_once_outbox(self):
+        with tempfile.TemporaryDirectory() as root:
+            outbox = Path(root) / 'edition.json'
+            for state in ('posting', 'posted'):
+                original = json.dumps({'state': state, 'message': 'reviewed copy'})
+                outbox.write_text(original)
+                with self.assertRaises(SystemExit), patch.object(x, 'edition_post') as prepare:
+                    x.main(['--edition', 'morning', '--draft-only', '--output', str(outbox)])
+                prepare.assert_not_called()
+                self.assertEqual(outbox.read_text(), original)
 
 
 if __name__ == '__main__':
