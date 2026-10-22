@@ -1,6 +1,6 @@
 /**
- * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-11
+ * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
+ * Date: 2026-10-22
  * PURPOSE: Centralized public route descriptions and indexing policy for server HTML,
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
@@ -419,6 +419,7 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/poetiq', 'Poetiq ARC solver', 'Explore the Poetiq ARC solver workflow.', true],
   ['/puzzle/beetree', 'Beetree ARC solver', 'Start a Beetree ARC solver session.', true],
   ['/worm-arena/live', 'Live Worm Arena match', 'Watch a live language-model Snake match.', true],
+  ['/team/summit-2026', 'Boston field notes', 'Private team conversation guide.', true],
   ['/team/login', 'Team sign-in', 'Sign in to the ARC Mutants team pages.', true],
   ['/team/arc2-runs', 'ARC-AGI-2 runs (team)', 'Team-only record of ARC Mutants submissions.', true],
   ['/team/arc2-evals', 'ARC-AGI-2 eval runs (team)', 'Team-only record of ARC Mutants model evaluation runs.', true],

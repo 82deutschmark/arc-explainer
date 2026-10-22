@@ -1,6 +1,6 @@
 /*
-Author: GPT-5.2
-Date: 2026-02-04
+Author: GPT-6 / Codex; GPT-5.2
+Date: 2026-10-22
 PURPOSE: Database schema initialization and migration utilities for ARC Explainer (PostgreSQL).
          Creates tables for all feature areas and applies additive migrations on startup so
          older installs can be upgraded without manual SQL steps.
@@ -50,6 +50,7 @@ export class DatabaseSchema {
       await this.createKaggleBoardDocumentsTable(client);
       await this.createTeamRunTables(client);
       await this.createTeamEvalTables(client);
+      await this.createTeamGuideTable(client);
       // community_games / community_game_sessions removed 2026-08-30: the catalog is now
       // mirrored from arc3.sonpham.net (the source of truth) rather than stored here, and
       // the submission pipeline that wrote these tables is gone. Anonymous human-play
@@ -681,6 +682,11 @@ export class DatabaseSchema {
         PRIMARY KEY (competition, run_key, output_key)
       )
     `);
+  }
+
+  /** Private reference documents; the public application contains only their rendering code. */
+  private static async createTeamGuideTable(client: PoolClient): Promise<void> {
+    await client.query("CREATE TABLE IF NOT EXISTS team_guides (guide_key VARCHAR(80) PRIMARY KEY, body TEXT NOT NULL, updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP)");
   }
 
   private static async createKaggleLeaderboardSnapshotsTable(client: PoolClient): Promise<void> {
