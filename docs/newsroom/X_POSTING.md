@@ -29,6 +29,15 @@ permanent article link and 280-character limit; omit an optional mention if need
 These rules apply to future drafts. Preserve every `posting`/`posted` outbox and
 existing announcement; a copy preference does not authorize a replacement send.
 
+## Scheduled edition handoffs
+
+Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): save an optional unsent
+outbox with `scripts/newsroom_x.py --edition <morning|evening> --draft-only --output <outbox>`,
+leave existing outboxes untouched, and finish. This option makes no link check and never waits
+for a deployment. It does not authorize a send or certify that an article is live. An explicitly
+authorized later sender must perform the live-link and account/attachment checks below. The
+authorization for the separate afternoon recap is unchanged.
+
 ## Edition posts (Early edition, Late edition)
 
 The Boss asked on 9 October 2026 for a post whenever an edition comes out, labeled "Early

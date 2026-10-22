@@ -6,6 +6,10 @@ file are folded into the principles below. What pictures exist, where each has r
 held in reserve is tracked in data, not prose: `content/news/artwork-inventory.json` and the
 `reusableScenes` in `content/news/visual-identities.json`.
 
+Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): one plan, approved
+reusable stock only, no generation or new commission, and publish verified text if no suitable
+stock is returned. The illustration requirement below does not delay these scheduled issues.
+
 ## Principles (the Boss's standing art direction, 12–14 October 2026)
 
 - **Every front page has a picture.** Each Early and Late issue publishes at least one finished

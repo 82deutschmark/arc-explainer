@@ -11,6 +11,10 @@
 # 9.x ones. Renumbered to 9.3.0 / 9.4.0 on 01-Sep; the commits that introduced them still
 # reference the old numbers.
 
+### Version 9.157.2  Oct 22, 2026
+
+- **Bound scheduled Digest publishing and detach X from deployment waits** (Author: GPT-6.1 Sol / Codex). Early and Late jobs now use fresh board feeds and the saved public archive, with no browser research or image generation, one optional approved-stock composition, a fixed freshness check and optional unsent X drafts. Research remains paused. Add `newsroom_x.py --draft-only` so a draft never waits twenty minutes for Railway; preserve protected sends and the normal sender's live-link gate. Update the reviewed prompts and newsroom guides. Validation: newsroom Python tests and news content tests. Plan: `docs/2026-10-22-digest-publishing-and-model-reports-plan.md`.
+
 ### Version 9.157.1  Oct 22, 2026
 
 - **"Can You Spot Slop?" rebuilt from scratch as a dense one-screen sheet** (Author: Claude Opus 5.5 Low). What: `/elo` drops the headline-and-pitch header and the puzzle-page gallery (whose cards overflowed and pushed both explanations below the fold). Now: one thin mono top bar (title, puzzle ID linking to the full puzzle, jump box, random, featured, leaderboard); explanations A and B side by side, each opening with that model's answer grid and then its pattern, strategy, hints, claimed confidence and folded raw reasoning; the puzzle (test input, then the training pairs input → output) in a sticky right-hand panel as real grids at a fixed cell size with grid lines; a slim vote bar pinned to the bottom. Why: Boss: the 9.157.0 redesign still looked like a marketing page and let the grids take the screen. How: `client/src/pages/EloComparison.tsx` rewritten (vote and pair logic unchanged); new `client/src/components/elo/SlopExplanationColumn.tsx` replaces AnalysisResultCard on this page only; grids are the shared `TinyGrid`.

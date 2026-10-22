@@ -1,12 +1,14 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-13
+# Date: 2026-10-22
 # PURPOSE: Prepare afternoon X evidence and edition announcements with the current article's
 # reviewed custom artwork as the lead attachment. Save exact image bytes for browser posting;
 # the browser journalist verifies and sends once, while this helper never sends to X.
 # Reconstruct archived roster/history evidence so reused scenes and charts remain verifiable.
 # 09-Oct-2026 (Claude Opus 5.5): --edition drafts the post announcing a published edition, labeled
 # "Early edition" (6 am) or "Late edition" (6 pm) at the Boss's request, and waits until its link opens.
+# --draft-only prepares the same protected edition outbox without network checks or waiting,
+# so scheduled publishing can finish independently of X and a Railway deployment.
 # SRP/DRY check: Pass — reuses newsroom evidence, artwork validation and immutable asset writes.
 """Prepare an afternoon X draft and evidence, or an edition announcement. This helper never posts to X."""
 import argparse
@@ -153,12 +155,15 @@ def daily_post(brief):
             'baselineAt': {competition: board['baselineAt'] for competition, board in ready}, 'failures': failures}
 
 
-if __name__ == '__main__':
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', required=True)
     parser.add_argument('--brief-output', help='Save fresh board evidence for the evening desk (afternoon recap)')
     parser.add_argument('--edition', choices=['morning', 'evening'], help='Draft the post for this published edition instead')
-    args = parser.parse_args()
+    parser.add_argument('--draft-only', action='store_true', help='With --edition, save the draft without checking or waiting for the live site')
+    args = parser.parse_args(argv)
+    if args.draft_only and not args.edition:
+        parser.error('--draft-only requires --edition')
     target = Path(args.output)
     if target.exists() and json.loads(target.read_text()).get('state') in ('posting', 'posted'):
         raise SystemExit('Existing send attempt or post: inspect its state instead of replacing it.')
@@ -169,11 +174,11 @@ if __name__ == '__main__':
         prepare_media(post, target)
         # Save the draft before the wait, so an interrupted run leaves the text behind.
         write(target, post)
-        if post['state'] == 'draft' and not wait_until_live(post['link']):
+        if post['state'] == 'draft' and not args.draft_only and not wait_until_live(post['link']):
             post.update(state='waiting', reason='The article link did not open within 20 minutes of the run; nothing was posted.')
             write(target, post)
         print(json.dumps(post, ensure_ascii=False, indent=2))
-        raise SystemExit(0 if post['state'] == 'draft' else 2)
+        return 0 if post['state'] == 'draft' else 2
     if not args.brief_output:
         parser.error('--brief-output is required for the afternoon recap')
     # Before 6 pm, the shared helper returns actual afternoon observations and marks
@@ -184,3 +189,8 @@ if __name__ == '__main__':
     post['boardBriefPath'] = str(Path(args.brief_output).resolve())
     write(target, post)
     print(json.dumps(post, ensure_ascii=False, indent=2))
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
