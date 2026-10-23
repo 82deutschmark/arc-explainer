@@ -119,6 +119,7 @@ export const SOCIAL_META_NAMES = ['og:image:width', 'og:image:height', 'article:
 export function clientRouteMeta(value: string): RouteMetaTags {
   const route = redirectPath(value) || normalizePath(value);
   if (Object.hasOwn(ROUTE_META_TAGS, route)) return completeMeta(ROUTE_META_TAGS[route]);
+  if (/^\/summit\/[A-Za-z0-9_-]{43}$/.test(route)) return completeMeta({ title: 'Boston field notes | ARC Explainer', description: 'Summit conversation notebook.', url: `${SITE_ORIGIN}${route}`, noindex: true });
   const game = route.match(/^\/arc3\/games\/([a-z0-9_-]+)$/);
   const puzzle = route.match(/^\/puzzle\/([A-Za-z0-9_-]{1,128})$/);
   const play = route.match(/^\/arc3\/play\/([A-Za-z0-9_.-]{1,64})$/);
@@ -135,7 +136,8 @@ export function clientRouteMeta(value: string): RouteMetaTags {
     ...(news ? { imageAlt: NEWS_SECTION_CARD_ALT, imageWidth: NEWS_CARD_WIDTH, imageHeight: NEWS_CARD_HEIGHT } : {}) });
 }
 export function isDynamicAppRoute(route: string): boolean {
-  return /^\/(?:discussion|elo|test-solution|debate|council)\/[^/]+$/.test(route)
+  return /^\/summit\/[A-Za-z0-9_-]{43}$/.test(route)
+    || /^\/(?:discussion|elo|test-solution|debate|council)\/[^/]+$/.test(route)
     || /^\/puzzle\/(?:saturn|grover|beetree|poetiq)\/[^/]+$/.test(route)
     || /^\/task\/[^/]+(?:\/efficiency)?$/.test(route)
     || /^\/worm-arena\/live\/[^/]+$/.test(route)

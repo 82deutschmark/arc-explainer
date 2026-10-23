@@ -13,6 +13,7 @@ import router from '../server/routes/teamGuide';
 import { teamGuideRepository } from '../server/repositories/TeamGuideRepository';
 import { summitGuideSchema, selectSummitPeople, type SummitGuide, type SummitSelection } from '../shared/summitGuide';
 import { ROUTE_META_TAGS } from '../shared/routes';
+import { clientRouteMeta, isDynamicAppRoute } from '../shared/seo';
 import { sitemapUrls } from '../server/services/seo/pageContent';
 
 const guide: SummitGuide = {
@@ -68,8 +69,9 @@ test('publication validates the document and does not claim a database failure s
   const unavailable = await fetch(origin + '/api/team/machine/summit-2026', { method: 'PUT', headers, body: JSON.stringify(guide) });
   expect(unavailable.status).toBe(503);
   put.mockResolvedValue(true);
+  vi.spyOn(teamGuideRepository, 'ensureShareKey').mockResolvedValue('a'.repeat(43));
   const success = await fetch(origin + '/api/team/machine/summit-2026', { method: 'PUT', headers, body: JSON.stringify(guide) });
-  expect(success.status).toBe(200); expect((await success.json()).data).toEqual({ published: true, people: 1 });
+  expect(success.status).toBe(200); expect((await success.json()).data).toEqual({ published: true, people: 1, sharePath: '/summit/' + 'a'.repeat(43) });
 });
 test('source links and cross references must be valid', () => {
   expect(summitGuideSchema.safeParse(guide).success).toBe(true);
@@ -91,4 +93,29 @@ test('familiar people stay out of new connections and thematic overlap is not an
 test('the private route is noindex and absent from the public sitemap', () => {
   expect(ROUTE_META_TAGS['/team/summit-2026'].noindex).toBe(true);
   expect(sitemapUrls()).not.toContain('https://arc.markbarney.net/team/summit-2026');
+});
+
+test('a complete share link works without a cookie and does not cache the guide', async () => {
+  const shareKey = 'a'.repeat(43);
+  vi.spyOn(teamGuideRepository, 'get').mockImplementation(async key => key.endsWith('-share-key') ? shareKey : JSON.stringify(guide));
+  const response = await fetch(origin + '/api/team/shared/summit-2026/' + shareKey);
+  expect(response.status).toBe(200);
+  expect(response.headers.get('cache-control')).toBe('private, no-store');
+  expect(response.headers.get('x-robots-tag')).toContain('noindex');
+  expect(response.headers.get('referrer-policy')).toBe('no-referrer');
+  expect((await response.json()).data.people[0].name).toBe('René Example');
+  expect(isDynamicAppRoute('/summit/' + shareKey)).toBe(true);
+  expect(clientRouteMeta('/summit/' + shareKey).noindex).toBe(true);
+  expect(sitemapUrls().some(url => url.includes('/summit/'))).toBe(false);
+});
+test('missing, malformed and incorrect share keys do not reveal the document', async () => {
+  const read = vi.spyOn(teamGuideRepository, 'get').mockResolvedValue('a'.repeat(43));
+  for (const key of ['short', 'b'.repeat(43)]) {
+    const response = await fetch(origin + '/api/team/shared/summit-2026/' + key);
+    expect(response.status).toBe(404);
+    expect(await response.text()).not.toContain('René');
+  }
+  expect(read.mock.calls.every(([key]) => key === 'summit-2026-share-key')).toBe(true);
+  read.mockResolvedValue(null);
+  expect((await fetch(origin + '/api/team/shared/summit-2026/' + 'a'.repeat(43))).status).toBe(404);
 });

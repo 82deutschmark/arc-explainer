@@ -2,11 +2,12 @@
  * Author: GPT-6 / Codex
  * Date: 2026-10-22
  * PURPOSE: Unlisted summit field notes: people, their work, natural questions and MLST
- *          connections. Loads private content only through team authentication. Personal
- *          bookmarks, met flags and notes stay on this browser, scoped to its signed-in user.
+ *          connections. Loads runtime content through a share link or team authentication. Personal
+ *          bookmarks, met flags and notes stay on this browser, scoped to its reader link or signed-in user.
  * SRP/DRY check: Pass - shared document contract; existing query/auth and UI primitives.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Bookmark, Check, ExternalLink, LockKeyhole, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -75,10 +76,10 @@ function Notebook({ guide, userKey }: { guide: Guide; userKey: string }) {
   }
   return <main className="summit-guide">
     <header className="summit-heading">
-      <div className="summit-kicker"><LockKeyhole size={13} aria-hidden="true" /> PRIVATE TEAM NOTEBOOK <span>23 OCT 2026 / CAMBRIDGE</span></div>
+      <div className="summit-kicker"><LockKeyhole size={13} aria-hidden="true" /> SHARE-ONLY NOTEBOOK <span>23 OCT 2026 / CAMBRIDGE</span></div>
       <h1>{guide.title}</h1>
       <p>{guide.intro}</p>
-      <div className="summit-event"><a href={guide.event.url} target="_blank" rel="noopener noreferrer">{guide.event.location} ↗</a><span>{guide.event.time}</span><span>First pass · checked {new Date(guide.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' })}</span></div>
+      <div className="summit-event"><a href={guide.event.url} target="_blank" rel="noopener noreferrer">{guide.event.location} ↗</a><span>{guide.event.time}</span><span>Research checked {new Date(guide.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' })}</span></div>
     </header>
     <nav className="summit-tabs" aria-label="Guide sections">
       {([['people', 'People to meet'], ['mlst', 'The MLST connections'], ['work', 'Talking about our work']] as const).map(([id, label]) => <button key={id} aria-current={tab === id ? 'page' : undefined} onClick={() => setTab(id)}>{label}</button>)}
@@ -92,7 +93,7 @@ function Notebook({ guide, userKey }: { guide: Guide; userKey: string }) {
       <div className="summit-filter-row">
         <label>Show <select aria-label="Show people" value={view} onChange={event => setView(event.target.value as SummitSelection['view'])}><option value="new">New connections</option><option value="all">Everyone in this guide</option><option value="saved">Saved</option><option value="mlst">Verified MLST guests</option><option value="met">People I met</option></select></label>
         <label>Interest <select aria-label="Filter by interest" value={topic} onChange={event => setTopic(event.target.value)}><option value="">All interests</option>{topics.map(value => <option key={value}>{value}</option>)}</select></label>
-        <span aria-live="polite">{people.length} people</span>
+        <span aria-live="polite">{people.length} {people.length === 1 ? 'person' : 'people'}</span>
       </div>
       <div className="summit-directory">
         <aside className="summit-list" aria-label="Attendees">
@@ -111,7 +112,7 @@ function Notebook({ guide, userKey }: { guide: Guide; userKey: string }) {
           <section className="summit-personal"><label htmlFor="summit-note">Something to remember</label><textarea id="summit-note" value={personal.notes[person.id] ?? ''} maxLength={5000} onChange={event => setPersonal(previous => ({ ...previous, notes: { ...previous.notes, [person.id]: event.target.value } }))} placeholder="What interested them? What did we promise to send?" /><small>Notes, saves and met marks stay in this browser. They do not sync to the other person’s device.</small></section>
         </article>}
       </div>
-      <p className="summit-footnote">Registration is not a guarantee of attendance. This is a selected first pass, not a directory of all 127 registrations. Familiar people are kept out of “New connections.”</p>
+      <p className="summit-footnote">Registration is not a guarantee of attendance. This guide highlights selected people from the 127 registrations. Familiar people are kept out of “New connections.”</p>
     </>}
     {tab === 'mlst' && <div className="summit-reading"><h2>Start with the ideas</h2><p>{guide.mlst.intro}</p><SourceLinks sources={guide.mlst.sources} /><div className="summit-theme-grid">{guide.mlst.themes.map(theme => <section key={theme.title}><h3>{theme.title}</h3><p>{theme.explanation}</p><div className="summit-theme-people">{theme.people.map(id => <button key={id} onClick={() => openPerson(id)}>{guide.people.find(item => item.id === id)?.name} →</button>)}</div></section>)}</div><p className="summit-footnote">“Verified MLST appearance” links to an identified episode or show entry. “Shared topic” means a research connection; it does not claim the person appeared on the show. Some publisher links require membership.</p></div>}
     {tab === 'work' && <div className="summit-reading"><h2>A natural introduction</h2><blockquote>{guide.ourWork.introduction}</blockquote><div className="summit-work-points">{guide.ourWork.points.map(point => <section key={point.title}><h3>{point.title}</h3><p>{point.explanation}</p></section>)}</div><h2>Useful words, ordinary meanings</h2><dl className="summit-terms">{guide.ourWork.terms.map(item => <div key={item.term}><dt>{item.term}</dt><dd>{item.meaning}</dd></div>)}</dl><SourceLinks sources={guide.ourWork.sources} /></div>}
@@ -119,7 +120,7 @@ function Notebook({ guide, userKey }: { guide: Guide; userKey: string }) {
   </main>;
 }
 
-export default function SummitGuide() {
+function TeamSummitGuide() {
   usePageMeta({ title: 'Boston field notes | ARC Explainer', description: 'Private team conversation guide.', canonicalPath: '/team/summit-2026', noindex: true });
   const session = useTeamSession();
   const result = useQuery({ queryKey: ['private-summit-guide'], queryFn: () => call<Guide>('/api/team/summit-2026'), enabled: !!session.data?.signedIn, retry: false, staleTime: 60_000, gcTime: 0 });
@@ -129,4 +130,21 @@ export default function SummitGuide() {
   if (result.error) return <div className="summit-guide" role="alert"><p>{result.error.message}</p><Button onClick={() => result.refetch()}>Try again</Button></div>;
   if (!result.data) return <div className="summit-guide" role="status">Loading the conversation guide…</div>;
   return <Notebook key={session.data.email ?? 'team'} guide={result.data} userKey={session.data.email ?? 'team'} />;
+}
+
+function SharedSummitGuide({ shareKey }: { shareKey: string }) {
+  usePageMeta({ title: 'Boston field notes | ARC Explainer', description: 'Summit conversation notebook.', canonicalPath: '/summit/' + shareKey, noindex: true });
+  useEffect(() => {
+    const meta = document.createElement('meta');
+    meta.name = 'referrer'; meta.content = 'no-referrer'; document.head.appendChild(meta);
+    return () => meta.remove();
+  }, []);
+  const result = useQuery({ queryKey: ['shared-summit-guide', shareKey], queryFn: () => call<Guide>('/api/team/shared/summit-2026/' + encodeURIComponent(shareKey)), retry: false, staleTime: 60_000, gcTime: 0 });
+  if (result.error) return <div className="summit-guide" role="alert"><h1>Boston field notes</h1><p>This share link could not be opened. Check that you have the complete link.</p><Button onClick={() => result.refetch()}>Try again</Button></div>;
+  if (!result.data) return <div className="summit-guide" role="status">Loading the conversation guide…</div>;
+  return <Notebook key={shareKey} guide={result.data} userKey={shareKey} />;
+}
+export default function SummitGuide() {
+  const [shared, params] = useRoute('/summit/:shareKey');
+  return shared && params ? <SharedSummitGuide shareKey={params.shareKey} /> : <TeamSummitGuide />;
 }
