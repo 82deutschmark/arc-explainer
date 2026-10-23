@@ -71,7 +71,7 @@ test('publication validates the document and does not claim a database failure s
   put.mockResolvedValue(true);
   vi.spyOn(teamGuideRepository, 'ensureShareKey').mockResolvedValue('a'.repeat(43));
   const success = await fetch(origin + '/api/team/machine/summit-2026', { method: 'PUT', headers, body: JSON.stringify(guide) });
-  expect(success.status).toBe(200); expect((await success.json()).data).toEqual({ published: true, people: 1, sharePath: '/summit/' + 'a'.repeat(43) });
+  expect(success.status).toBe(200); expect((await success.json()).data).toEqual({ published: true, people: 1, sharePath: '/notes1023' });
 });
 test('source links and cross references must be valid', () => {
   expect(summitGuideSchema.safeParse(guide).success).toBe(true);
@@ -118,4 +118,14 @@ test('missing, malformed and incorrect share keys do not reveal the document', a
   expect(read.mock.calls.every(([key]) => key === 'summit-2026-share-key')).toBe(true);
   read.mockResolvedValue(null);
   expect((await fetch(origin + '/api/team/shared/summit-2026/' + 'a'.repeat(43))).status).toBe(404);
+});
+
+test('the memorable notes1023 address reads without any cookie or key and stays unlisted', async () => {
+  vi.spyOn(teamGuideRepository, 'get').mockResolvedValue(JSON.stringify(guide));
+  const response = await fetch(origin + '/api/team/notes1023');
+  expect(response.status).toBe(200);
+  expect((await response.json()).data.people[0].name).toBe('René Example');
+  expect(response.headers.get('cache-control')).toBe('private, no-store');
+  expect(ROUTE_META_TAGS['/notes1023'].noindex).toBe(true);
+  expect(sitemapUrls()).not.toContain('https://arc.markbarney.net/notes1023');
 });
