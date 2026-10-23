@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-20T22:07:33.409659+00:00",
+  "updatedAt": "2026-10-23T00:32:46.159674+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -676,6 +676,29 @@
       ],
       "selectionNote": "Unused reviewed Night Watch reserve selected October 20 Late. Clean base and closing score footer visually inspected; all five spiders, two racks and riderless competitor machines remain visible. Machines are editorial fantasy. No new native generation.",
       "artworkId": "2026-10-20-evening-arc-3-361502253d-footer"
+    },
+    {
+      "id": "2026-10-22-arc3-lights-out-scoring-hall-v1",
+      "generationRecord": "2026-10-22-arc3-lights-out-scoring-hall-v1",
+      "src": "/news-images/2026-10-22-arc3-lights-out-scoring-hall-v1.png",
+      "title": "Lights Out at the Scoring Hall",
+      "competition": "arc-3",
+      "status": "published-with-commissioned-dispatch",
+      "articleUses": [
+        "2026-10-22-arc3-scoring-blackout-breaking"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1487216946171609220",
+          "messageId": "1562986657941299221",
+          "postedAt": "2026-10-23T00:30:58.849Z",
+          "attachmentFilename": "arc3-lights-out-preview.png",
+          "attachmentSha256": "1d384c37c0f43f4ea3a285b9c951ad0db1c6585ff075b0155125442f8a65e76d",
+          "purpose": "Human-requested Discord preview before public publication."
+        }
+      ],
+      "selectionNote": "Direct human request for breaking-story art and Discord-first preview. Native image and one cast correction inspected; fresh roster checked. No scores depicted."
     }
   ],
   "existingXPosts": [
