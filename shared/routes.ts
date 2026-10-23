@@ -419,6 +419,7 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/poetiq', 'Poetiq ARC solver', 'Explore the Poetiq ARC solver workflow.', true],
   ['/puzzle/beetree', 'Beetree ARC solver', 'Start a Beetree ARC solver session.', true],
   ['/worm-arena/live', 'Live Worm Arena match', 'Watch a live language-model Snake match.', true],
+  ['/notes1023', 'Boston field notes', 'Summit conversation notebook.', true],
   ['/team/summit-2026', 'Boston field notes', 'Private team conversation guide.', true],
   ['/team/login', 'Team sign-in', 'Sign in to the ARC Mutants team pages.', true],
   ['/team/arc2-runs', 'ARC-AGI-2 runs (team)', 'Team-only record of ARC Mutants submissions.', true],

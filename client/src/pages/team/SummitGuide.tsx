@@ -132,19 +132,21 @@ function TeamSummitGuide() {
   return <Notebook key={session.data.email ?? 'team'} guide={result.data} userKey={session.data.email ?? 'team'} />;
 }
 
-function SharedSummitGuide({ shareKey }: { shareKey: string }) {
-  usePageMeta({ title: 'Boston field notes | ARC Explainer', description: 'Summit conversation notebook.', canonicalPath: '/summit/' + shareKey, noindex: true });
+function SharedSummitGuide({ shareKey }: { shareKey?: string }) {
+  usePageMeta({ title: 'Boston field notes | ARC Explainer', description: 'Summit conversation notebook.', canonicalPath: shareKey ? '/summit/' + shareKey : '/notes1023', noindex: true });
   useEffect(() => {
     const meta = document.createElement('meta');
     meta.name = 'referrer'; meta.content = 'no-referrer'; document.head.appendChild(meta);
     return () => meta.remove();
   }, []);
-  const result = useQuery({ queryKey: ['shared-summit-guide', shareKey], queryFn: () => call<Guide>('/api/team/shared/summit-2026/' + encodeURIComponent(shareKey)), retry: false, staleTime: 60_000, gcTime: 0 });
+  const result = useQuery({ queryKey: ['shared-summit-guide', shareKey], queryFn: () => call<Guide>(shareKey ? '/api/team/shared/summit-2026/' + encodeURIComponent(shareKey) : '/api/team/notes1023'), retry: false, staleTime: 60_000, gcTime: 0 });
   if (result.error) return <div className="summit-guide" role="alert"><h1>Boston field notes</h1><p>This share link could not be opened. Check that you have the complete link.</p><Button onClick={() => result.refetch()}>Try again</Button></div>;
   if (!result.data) return <div className="summit-guide" role="status">Loading the conversation guide…</div>;
-  return <Notebook key={shareKey} guide={result.data} userKey={shareKey} />;
+  return <Notebook key={shareKey} guide={result.data} userKey={shareKey ?? 'notes1023'} />;
 }
 export default function SummitGuide() {
+  const [plain] = useRoute('/notes1023');
   const [shared, params] = useRoute('/summit/:shareKey');
+  if (plain) return <SharedSummitGuide />;
   return shared && params ? <SharedSummitGuide shareKey={params.shareKey} /> : <TeamSummitGuide />;
 }

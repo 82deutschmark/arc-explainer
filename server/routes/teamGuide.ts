@@ -1,7 +1,7 @@
 /**
  * Author: GPT-6 / Codex
  * Date: 2026-10-22
- * PURPOSE: Serve an unlisted reference guide through an unguessable share link or existing team sign-in. Publishing
+ * PURPOSE: Serve the unlisted notebook at a memorable address, preserving older links. Publishing
  *          uses the existing machine admin token. No private document enters Git or assets.
  * SRP/DRY check: Pass - shared validation, existing authentication, separate repository.
  */
@@ -23,6 +23,14 @@ router.get('/summit-2026', requireTeamSession, asyncHandler(async (_req: Request
   const document = await teamGuideRepository.get(key);
   res.set('X-Robots-Tag', 'noindex, nofollow');
   if (!document) return res.status(404).json(formatResponse.error('guide_unavailable', 'The conversation guide has not been published yet.'));
+  return res.type('json').send(JSON.stringify(formatResponse.success(JSON.parse(document))));
+}));
+
+// A memorable unlisted address, as requested; reading needs no account or token.
+router.get('/notes1023', asyncHandler(async (_req: Request, res: Response) => {
+  res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'private, no-store', 'Referrer-Policy': 'no-referrer' });
+  const document = await teamGuideRepository.get(key);
+  if (!document) return res.status(404).json(formatResponse.error('guide_unavailable', 'The guide has not been published yet.'));
   return res.type('json').send(JSON.stringify(formatResponse.success(JSON.parse(document))));
 }));
 
@@ -49,8 +57,6 @@ router.put('/machine/summit-2026', summitPublisherGuard,
     const stored = await teamGuideRepository.put(key, JSON.stringify(checked.data));
     res.set('Cache-Control', 'private, no-store');
     if (!stored) return res.status(503).json(formatResponse.error('database_unavailable', 'The guide could not be saved.'));
-    const shareKey = await teamGuideRepository.ensureShareKey(key);
-    if (!shareKey) return res.status(503).json(formatResponse.error('database_unavailable', 'The share link could not be created.'));
-    return res.json(formatResponse.success({ published: true, people: checked.data.people.length, sharePath: '/summit/' + shareKey }));
+    return res.json(formatResponse.success({ published: true, people: checked.data.people.length, sharePath: '/notes1023' }));
   }));
 export default router;
