@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-23T13:31:43Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "Rick surges from 1051st to 51st on ARC-AGI-2",
+  "id": "2026-10-23-0941-arc-2-rick-climbs-to-fifty-first",
+  "personIds": [],
+  "publishedAt": "2026-10-23T13:41:27Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Rick gained 13.33 to reach 43.75 on the ARC-AGI-2 public board, moving from 1051st to 51st in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "It is the largest single-day gain on that board in this update, and the team now sits well inside the top 100 with the gold line held at 66.53 for the 16th gold place."
+    }
+  ],
+  "since": "2026-10-22T13:05:57Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-23T13:40:41Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16861695"
+  ]
+}

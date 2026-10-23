@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-23T13:31:42Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "Abstraction Lab & MindsAI climbs from 78th to 23rd on ARC-AGI-3",
+  "id": "2026-10-23-0941-arc-3-abstraction-lab-mindsai-climbs-to-twenty-third",
+  "personIds": [],
+  "publishedAt": "2026-10-23T13:41:27Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Abstraction Lab & MindsAI gained 4.05 to reach 37.83 on the ARC-AGI-3 public board, moving from 78th to 23rd in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The team is now outside the gold places, which are held at 19 with the gold line at 38.20, so it is close to the cutoff."
+    }
+  ],
+  "since": "2026-10-22T13:05:56Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-23T13:40:41Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15490570"
+  ]
+}
