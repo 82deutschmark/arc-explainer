@@ -84,6 +84,7 @@ export async function metaTagInjector(req: Request, res: Response, next: NextFun
     const tags = await withLiveStandings(normalizePath(req.path), resolved.tags);
     const html = await fs.readFile(path.join(process.cwd(), 'dist/public/index.html'), 'utf8');
     res.status(status).set('Cache-Control', 'no-cache');
+    if (/^\/summit\//.test(req.path)) res.set({ 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'private, no-store' });
     if (tags.noindex) res.set('X-Robots-Tag', 'noindex, follow');
     res.type('html').send(injectPageHtml(html, tags));
   } catch (error) {

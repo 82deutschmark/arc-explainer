@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.1  Oct 22, 2026
+
+- **Summit notebook opens from a share-only link** (Author: GPT-6 / Codex). Add a stable, random reader URL that needs no Google sign-in. Keep publication authenticated and attendee content outside public source and assets. Shared pages remain out of navigation and sitemaps, with noindex, no-store and no-referrer policies; notes stay on each device. A stronger research pass improves selected unfamiliar guests' work summaries, verified MLST connections and conversation questions. Plan: `docs/2026-10-22-summit-share-plan.md`.
+
+
 ## 9.157.6 — 2026-10-22
 
 - Published the editor-requested Railway outage service note using the official 21:08 UTC status and saved an evening-edition assignment. Distinguishes filing from deployment and partial recovery from resolution.

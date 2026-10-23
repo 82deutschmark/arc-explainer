@@ -1,10 +1,11 @@
 /**
  * Author: GPT-6 / Codex
  * Date: 2026-10-22
- * PURPOSE: Serve an unlisted reference guide through existing team sign-in. Publishing
+ * PURPOSE: Serve an unlisted reference guide through an unguessable share link or existing team sign-in. Publishing
  *          uses the existing machine admin token. No private document enters Git or assets.
  * SRP/DRY check: Pass - shared validation, existing authentication, separate repository.
  */
+import { timingSafeEqual } from 'node:crypto';
 import { Router, json, type Request, type Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { requireTeamSession } from '../middleware/teamSession';
@@ -25,6 +26,19 @@ router.get('/summit-2026', requireTeamSession, asyncHandler(async (_req: Request
   return res.type('json').send(JSON.stringify(formatResponse.success(JSON.parse(document))));
 }));
 
+// Possession of the unlisted URL grants reading; no account or sign-in is needed.
+router.get('/shared/summit-2026/:shareKey', asyncHandler(async (req: Request, res: Response) => {
+  res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'private, no-store', 'Referrer-Policy': 'no-referrer' });
+  const supplied = String(req.params.shareKey);
+  const expected = /^[A-Za-z0-9_-]{43}$/.test(supplied) ? await teamGuideRepository.get(key + '-share-key') : null;
+  if (!expected || expected.length !== supplied.length || !timingSafeEqual(Buffer.from(expected), Buffer.from(supplied))) {
+    return res.status(404).json(formatResponse.error('guide_unavailable', 'This share link is unavailable.'));
+  }
+  const document = await teamGuideRepository.get(key);
+  if (!document) return res.status(404).json(formatResponse.error('guide_unavailable', 'The guide has not been published yet.'));
+  return res.type('json').send(JSON.stringify(formatResponse.success(JSON.parse(document))));
+}));
+
 router.put('/machine/summit-2026', summitPublisherGuard,
   rateLimit({ windowMs: 60_000, max: 20, standardHeaders: true, legacyHeaders: false }),
   json({ limit: '512kb' }), asyncHandler(async (req: Request, res: Response) => {
@@ -35,6 +49,8 @@ router.put('/machine/summit-2026', summitPublisherGuard,
     const stored = await teamGuideRepository.put(key, JSON.stringify(checked.data));
     res.set('Cache-Control', 'private, no-store');
     if (!stored) return res.status(503).json(formatResponse.error('database_unavailable', 'The guide could not be saved.'));
-    return res.json(formatResponse.success({ published: true, people: checked.data.people.length }));
+    const shareKey = await teamGuideRepository.ensureShareKey(key);
+    if (!shareKey) return res.status(503).json(formatResponse.error('database_unavailable', 'The share link could not be created.'));
+    return res.json(formatResponse.success({ published: true, people: checked.data.people.length, sharePath: '/summit/' + shareKey }));
   }));
 export default router;

@@ -190,6 +190,7 @@ function Router() {
         <Route path="/team/arc2-runs" component={Arc2Runs} />
         <Route path="/team/arc2-runs/:key" component={Arc2Run} />
         <Route path="/team/summit-2026" component={SummitGuide} />
+        <Route path="/summit/:shareKey" component={SummitGuide} />
         <Route path="/team/arc2-evals" component={Arc2Evals} />
         <Route path="/team/arc2-evals/:key" component={Arc2Eval} />
         <Route path="/kaggle-leaderboard/arc-2"><KaggleLeaderboard key="arc-2" competitionKey="arc-2" /></Route>
