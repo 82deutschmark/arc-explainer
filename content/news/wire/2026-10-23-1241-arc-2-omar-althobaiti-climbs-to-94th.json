@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-23T16:35:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Omar Althobaiti climbs from 1450th to 94th on ARC-AGI-2",
+  "id": "2026-10-23-1241-arc-2-omar-althobaiti-climbs-to-94th",
+  "personIds": [],
+  "publishedAt": "2026-10-23T16:41:16Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Omar Althobaiti gained 5.28 to reach 35.00, moving from 1450th to 94th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The climb moves the team into the top 100 of the board. Public standings remain provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-22T16:06:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-23T16:40:32Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17144153"
+  ]
+}

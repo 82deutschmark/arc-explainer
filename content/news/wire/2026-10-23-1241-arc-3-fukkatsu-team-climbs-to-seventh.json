@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-23T16:35:19Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "復活の混テキスト climbs from 9th to 7th on ARC-AGI-3",
+  "id": "2026-10-23-1241-arc-3-fukkatsu-team-climbs-to-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-23T16:41:16Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "復活の混テキスト gained 1.71 to reach 46.82, moving from 9th to 7th on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The team had already reached sixth in an earlier story this month, so this is a fresh move up the board rather than a repeat. Public standings remain provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-22T16:06:15Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-23T16:40:32Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16569113"
+  ]
+}

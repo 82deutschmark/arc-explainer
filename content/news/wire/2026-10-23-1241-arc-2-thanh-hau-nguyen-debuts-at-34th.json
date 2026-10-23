@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-23T16:35:21Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Thanh Hau Nguyen debuts at 34th on ARC-AGI-2 with 54.72",
+  "id": "2026-10-23-1241-arc-2-thanh-hau-nguyen-debuts-at-34th",
+  "personIds": [],
+  "publishedAt": "2026-10-23T16:41:16Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Thanh Hau Nguyen is new to the ARC-AGI-2 public board and entered at 34th with 54.72 points."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "A debut at 34th puts the entry in the middle of the chase for medals. Public standings remain provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-22T16:06:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-23T16:40:32Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17166527"
+  ]
+}
