@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-23T00:32:46.159674+00:00",
+  "updatedAt": "2026-10-23T00:36:03.031478+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -687,7 +687,16 @@
       "articleUses": [
         "2026-10-22-arc3-scoring-blackout-breaking"
       ],
-      "xAttachments": [],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2113429074647322970",
+          "verifiedAt": "2026-10-23T00:36:03.031478+00:00",
+          "artworkId": "2026-10-22-arc3-lights-out-scoring-hall-v1",
+          "attachmentSha256": "1d384c37c0f43f4ea3a285b9c951ad0db1c6585ff075b0155125442f8a65e76d",
+          "postedBy": "human",
+          "originalUrl": "https://x.com/82deutschmark/status/2113428927779856680"
+        }
+      ],
       "discordShares": [
         {
           "channelId": "1487216946171609220",
