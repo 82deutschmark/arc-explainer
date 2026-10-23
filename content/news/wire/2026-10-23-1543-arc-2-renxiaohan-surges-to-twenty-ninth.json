@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-23T19:35:43Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "renxiaohan surges from 840th to 29th on ARC-AGI-2",
+  "id": "2026-10-23-1543-arc-2-renxiaohan-surges-to-twenty-ninth",
+  "personIds": [],
+  "publishedAt": "2026-10-23T19:43:46Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "renxiaohan gained 26.11 points to reach 56.94 on ARC-AGI-2, moving from 840th to 29th in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The score now sits high on the board, while the gold line, the score at 16th, held at 66.53 on the same board. Public standings are provisional and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-22T19:06:35Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-23T19:43:01Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16091670"
+  ]
+}

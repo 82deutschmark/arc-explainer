@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-23T19:35:43Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "KaggleARC climbs 37 places to 98th on ARC-AGI-2",
+  "id": "2026-10-23-1543-arc-2-kaggle-arc-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-23T19:43:47Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "KaggleARC climbed 37 places, from 135th to 98th, with a score of 34.86, up 1.80 in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move takes KaggleARC inside the top 100 on a board of 3,223 teams."
+    }
+  ],
+  "since": "2026-10-22T19:06:35Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-23T19:43:01Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15962641"
+  ]
+}
