@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-23T01:38:27Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "Lee Minseung gains 4.59 to climb to 37th on ARC-2",
+  "id": "2026-10-22-2142-arc-2-lee-minseung-gains-to-37th",
+  "personIds": [],
+  "publishedAt": "2026-10-23T01:42:44Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Lee Minseung moved from 43rd to 37th on ARC-2, gaining 4.59 points to reach 50.42."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold places on this board still start at 66.53, so the climb is a move up the table rather than a medal threat for now."
+    }
+  ],
+  "since": "2026-10-22T01:34:35Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-23T01:42:17Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17052013"
+  ]
+}
