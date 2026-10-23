@@ -1,13 +1,12 @@
 # Author: Claude Opus 5.5; GPT-6.1 Sol / Codex
-# Date: 2026-10-22
+# Date: 2026-10-22 (head-editor completion and no-polling regressions)
 # PURPOSE: The wire desk helper (scripts/newsroom_wire.py) and the edition post (scripts/newsroom_x.py
 # --edition): a brief built from a small market digest offers leads, sources, people and pictures;
 # validation accepts a story whose figures all come from the brief and rejects invented or rounded
 # figures, overclaims, spelled-out figures, unoffered pictures, unknown teams or people and stale
 # briefs; publication is immutable and marks its leads covered; the edition post is labeled Early
-# or Late, fits X and waits for its link.
-# Draft-only CLI coverage checks that scheduled editions never wait on deployment and retain
-# the existing protection for an already attempted or completed send.
+# or Late, fits X and never waits for deployment. Human confirmation completes an existing
+# outbox without network access, fresh preparation or an extra send; completed sends stay protected.
 # SRP/DRY check: Pass — exercises the production helpers against temporary content directories.
 import copy
 import json
@@ -174,27 +173,44 @@ class EditionPostTests(unittest.TestCase):
             self.assertNotIn('ARC-AGI-2:', early['message'])
             self.assertLessEqual(x.x_weight(early['message'], early['link']), 280)
 
-    def test_waits_for_the_link(self):
-        answers = [False, False, True]
-        self.assertTrue(x.wait_until_live('u', patience=60, interval=30, check=lambda url: answers.pop(0), sleep=lambda seconds: None))
-        self.assertFalse(x.wait_until_live('u', patience=60, interval=30, check=lambda url: False, sleep=lambda seconds: None))
-
-    def test_draft_only_cli_never_checks_live_site(self):
+    def test_all_edition_drafts_finish_without_network_or_sleep(self):
         with tempfile.TemporaryDirectory() as root:
             outbox = Path(root) / 'edition.json'
             post = {'state': 'draft', 'link': 'https://example.com/news/edition'}
-            with patch.object(x, 'edition_post', return_value=post), patch.object(x, 'prepare_media'), patch.object(x, 'wait_until_live', side_effect=AssertionError('network check is forbidden')):
-                self.assertEqual(x.main(['--edition', 'morning', '--draft-only', '--output', str(outbox)]), 0)
-            self.assertEqual(json.loads(outbox.read_text())['state'], 'draft')
+            for flags in ([], ['--draft-only']):
+                with patch.object(x, 'edition_post', return_value=post), patch.object(x, 'prepare_media'), patch('urllib.request.urlopen', side_effect=AssertionError('network forbidden')), patch('time.sleep', side_effect=AssertionError('sleep forbidden')):
+                    self.assertEqual(x.main(['--edition', 'morning', '--output', str(outbox), *flags]), 0)
+                self.assertEqual(json.loads(outbox.read_text())['state'], 'draft')
 
-    def test_normal_cli_retains_link_gate(self):
+    def test_human_confirmation_needs_no_browser_or_new_draft(self):
         with tempfile.TemporaryDirectory() as root:
             outbox = Path(root) / 'edition.json'
-            post = {'state': 'draft', 'link': 'https://example.com/news/edition'}
-            with patch.object(x, 'edition_post', return_value=post), patch.object(x, 'prepare_media'), patch.object(x, 'wait_until_live', return_value=False) as check:
-                self.assertEqual(x.main(['--edition', 'morning', '--output', str(outbox)]), 2)
-                check.assert_called_once_with(post['link'])
-            self.assertEqual(json.loads(outbox.read_text())['state'], 'waiting')
+            for state in ('draft', 'waiting', 'posting'):
+                outbox.write_text(json.dumps({'state': state, 'account': '82deutschmark', 'message': 'reviewed copy', 'media': {'sha256': 'saved'}}))
+                with patch.object(x, 'prepare', side_effect=AssertionError('no preparation')), patch.object(x, 'edition_post', side_effect=AssertionError('no new draft')), patch('urllib.request.urlopen', side_effect=AssertionError('network forbidden')):
+                    self.assertEqual(x.main(['--record-human-post', '--output', str(outbox)]), 0)
+                saved = json.loads(outbox.read_text())
+                self.assertEqual(saved['state'], 'posted')
+                self.assertEqual(saved['completionSource'], 'human-confirmation')
+                self.assertEqual(saved['media']['sha256'], 'saved')
+                original = outbox.read_bytes()
+                x.record_human_post(outbox)
+                self.assertEqual(outbox.read_bytes(), original)
+
+    def test_human_confirmation_records_only_a_supplied_account_url(self):
+        with tempfile.TemporaryDirectory() as root:
+            outbox = Path(root) / 'edition.json'
+            outbox.write_text(json.dumps({'state': 'draft', 'account': '82deutschmark'}))
+            original = outbox.read_bytes()
+            with self.assertRaises(ValueError):
+                x.record_human_post(outbox, 'https://x.com/another-account/status/123')
+            self.assertEqual(outbox.read_bytes(), original)
+            url = 'https://x.com/82deutschmark/status/123'
+            self.assertEqual(x.record_human_post(outbox, url)['url'], url)
+            original = outbox.read_bytes()
+            with self.assertRaises(ValueError):
+                x.record_human_post(outbox, 'https://x.com/82deutschmark/status/456')
+            self.assertEqual(outbox.read_bytes(), original)
 
     def test_draft_only_preserves_send_once_outbox(self):
         with tempfile.TemporaryDirectory() as root:

@@ -1,5 +1,7 @@
 # The morning check-in
 
+Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
+
 Authors: Claude Opus 5.5 Low · 15 October 2026; GPT-6.1 Sol / Codex · 22 October 2026 · at the Boss's request: the editions land while he
 sleeps, so a Discord alarm alone helps no one. Claude has to look, fix what it safely can, and
 report. The Boss is around in the evenings, so one morning run is enough.

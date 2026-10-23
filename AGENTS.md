@@ -36,6 +36,10 @@
 > `SOCIAL_DESK.md`, `X_POSTING.md`, `ART_DESK.md`, `FALLBACK.md`). Standing rules live in those
 > guides, one-off orders in `content/news/editorial-assignments.json` (they expire), and each Codex
 > job's short instruction in `docs/newsroom/automation-prompts/`.
+> **Head editor's completion order (22-Oct-2026):** every newsroom assistant follows
+> `docs/newsroom/FINISHING.md`. A successful push ends publication; the editor saying they
+> posted ends the send; one verification only; no deployment polling or work after completion.
+> This overrides the older generic slow-down/ultrathink language below for newsroom work.
 
 > **Required newspaper checkouts — do not delete (Boss, 12-Oct-2026):** these are permanent
 > infrastructure for The ARC Daily Digest, not duplicate or abandoned development checkouts:

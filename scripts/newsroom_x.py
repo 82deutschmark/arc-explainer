@@ -1,14 +1,14 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-# Date: 2026-10-22
+# Date: 2026-10-22 (head editor: stop at completion; no deployment polling)
 # PURPOSE: Prepare afternoon X evidence and edition announcements with the current article's
 # reviewed custom artwork as the lead attachment. Save exact image bytes for browser posting;
 # the browser journalist verifies and sends once, while this helper never sends to X.
 # Reconstruct archived roster/history evidence so reused scenes and charts remain verifiable.
 # 09-Oct-2026 (Claude Opus 5.5): --edition drafts the post announcing a published edition, labeled
-# "Early edition" (6 am) or "Late edition" (6 pm) at the Boss's request, and waits until its link opens.
-# --draft-only prepares the same protected edition outbox without network checks or waiting,
-# so scheduled publishing can finish independently of X and a Railway deployment.
+# "Early edition" (6 am) or "Late edition" (6 pm) at the Boss's request.
+# Edition drafts never check deployments. --record-human-post records the editor's confirmation
+# locally, without browser verification, preparing another draft or sending anything.
 # SRP/DRY check: Pass — reuses newsroom evidence, artwork validation and immutable asset writes.
 """Prepare an afternoon X draft and evidence, or an edition announcement. This helper never posts to X."""
 import argparse
@@ -16,9 +16,7 @@ from datetime import datetime
 from io import BytesIO
 import json
 from pathlib import Path
-import time
-import urllib.error
-import urllib.request
+import re
 from newsroom import prepare, stamp, write, load, ET, SITE, ROOT, UTC
 from newsroom_artwork import validate_attachment, public_file, file_sha, immutable
 from PIL import Image
@@ -94,24 +92,24 @@ def edition_post(edition, day, root=ROOT):
     return post
 
 
-def link_is_live(url):
-    """True once the deployed site serves the article (the server answers 404 for an unknown edition)."""
-    try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'ARC-Daily-newsroom'}), timeout=20) as response:
-            return response.status == 200
-    except (urllib.error.URLError, TimeoutError):
-        return False
-
-
-def wait_until_live(url, patience=1200, interval=30, check=link_is_live, sleep=time.sleep):
-    """The site redeploys a few minutes after the push; post only once the link opens, so X draws its card."""
-    waited = 0
-    while not check(url):
-        if waited >= patience:
-            return False
-        sleep(interval)
-        waited += interval
-    return True
+def record_human_post(target, url=None):
+    """The editor's explicit confirmation completes a send; never open X to prove it again."""
+    post = load(target)
+    if url and not re.fullmatch(r'https://(?:x\.com|twitter\.com)/' +
+                               re.escape(post['account']) + r'/status/\d+', url):
+        raise ValueError('post URL must identify this outbox account on X')
+    if post.get('state') == 'posted':
+        if url and post.get('url') != url:
+            raise ValueError('completed outbox is protected; preserve its recorded URL')
+        return post
+    if post.get('state') not in ('draft', 'waiting', 'posting'):
+        raise ValueError('human confirmation requires an existing draft or send attempt')
+    post.update(state='posted', completionSource='human-confirmation',
+                confirmedAt=datetime.now(UTC).isoformat())
+    if url:
+        post['url'] = url
+    write(target, post)
+    return post
 
 
 def daily_post(brief):
@@ -160,11 +158,20 @@ def main(argv=None):
     parser.add_argument('--output', required=True)
     parser.add_argument('--brief-output', help='Save fresh board evidence for the evening desk (afternoon recap)')
     parser.add_argument('--edition', choices=['morning', 'evening'], help='Draft the post for this published edition instead')
-    parser.add_argument('--draft-only', action='store_true', help='With --edition, save the draft without checking or waiting for the live site')
+    parser.add_argument('--draft-only', action='store_true', help='Compatibility flag: all edition drafts skip live-site checks')
+    parser.add_argument('--record-human-post', action='store_true', help='Record an explicit human send confirmation locally and exit; never opens X')
+    parser.add_argument('--post-url', help='Optional X URL supplied with the human confirmation; never fetches it')
     args = parser.parse_args(argv)
+    target = Path(args.output)
+    if args.record_human_post:
+        if args.edition or args.draft_only or args.brief_output:
+            parser.error('--record-human-post cannot prepare another draft')
+        print(json.dumps(record_human_post(target, args.post_url), ensure_ascii=False, indent=2))
+        return 0
+    if args.post_url:
+        parser.error('--post-url requires --record-human-post')
     if args.draft_only and not args.edition:
         parser.error('--draft-only requires --edition')
-    target = Path(args.output)
     if target.exists() and json.loads(target.read_text()).get('state') in ('posting', 'posted'):
         raise SystemExit('Existing send attempt or post: inspect its state instead of replacing it.')
     if args.edition:
@@ -172,11 +179,8 @@ def main(argv=None):
         # Preserve the reviewed text/source metadata if attachment preparation is interrupted.
         write(target, post)
         prepare_media(post, target)
-        # Save the draft before the wait, so an interrupted run leaves the text behind.
+        # Publication ends at the push. Preparing a social draft must never poll a deployment.
         write(target, post)
-        if post['state'] == 'draft' and not args.draft_only and not wait_until_live(post['link']):
-            post.update(state='waiting', reason='The article link did not open within 20 minutes of the run; nothing was posted.')
-            write(target, post)
         print(json.dumps(post, ensure_ascii=False, indent=2))
         return 0 if post['state'] == 'draft' else 2
     if not args.brief_output:

@@ -7,6 +7,9 @@ over the browser, new-art and X-send steps in REPORTER.md, ART_DESK.md and X_POS
 guides still define the reporting, evidence, artwork and send-once contracts. Manual research
 commissioned by Mark is separate work. The recurring research desk remains paused.
 
+Follow the [head editor's completion order](FINISHING.md). A successful push finishes
+publication; no deployment check follows it. Human send confirmation needs no browser proof.
+
 ## Bound the work
 
 - Use the signed-in Codex subscription, the existing model and one agent. No browser, web search,
@@ -51,7 +54,7 @@ After the push, optional X preparation uses `python3.13 scripts/newsroom_x.py --
 This saves the normal text and exact edition artwork attachment without an HTTP link check or
 deployment wait. An outbox already present is left alone, especially `posting` or `posted`.
 The draft has not been sent; report that plainly. A future explicitly authorized sender must
-check the link, account, compose attachment and send-once state under X_POSTING.md before sending.
+check the account, compose attachment and send-once state under X_POSTING.md before sending.
 
 The scheduled edition does not open X, post, retry an older outbox, send Discord messages or
 wait for Railway. The existing relay handles Discord after the article is live. An optional

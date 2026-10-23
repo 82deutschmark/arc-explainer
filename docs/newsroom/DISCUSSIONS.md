@@ -1,5 +1,7 @@
 # Kaggle discussion desk
 
+Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
+
 Author: GPT-6.1 Sol / Codex · 12 October 2026
 
 The Boss wants to hear about new Kaggle discussion activity while the newspaper selects worthwhile stories. At his 12 October request, the existing research automation performs a full pass of both ARC competition boards **twice daily, at 5 am and 5 pm America/New_York**. Its 11 am and 11 pm shifts continue X research without another full discussion scan. The personal briefings at 5:30 am and 5:30 pm read the separate discussion digest; edition reporters refresh relevant original threads before use. No duplicate discussion automation is needed.

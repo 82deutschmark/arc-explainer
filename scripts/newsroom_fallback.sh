@@ -3,7 +3,7 @@
 # Date: 2026-10-10; 15-October-2026 (Sonnet 5.5, Discord reports, self-recovery, wider wire trigger,
 #       missing-contest cover, rehearsal mode); 21-October-2026 (Haiku 5.5 on the wire, and the wire
 #       steps in when Codex stops finishing shifts, e.g. out of credits, not only when it stops starting);
-#       22-October-2026 (GPT-6.1 Sol / Codex: label deliberate pauses as scheduled backup coverage)
+#       22-October-2026 (GPT-6.1 Sol / Codex: paused coverage; enforce head-editor completion order)
 # PURPOSE: The ARC Daily Digest's backup desk. A launchd agent (com.arcdaily.fallback) runs this
 # after each Codex job; it does nothing when Codex delivered. When an edition contest is missing,
 # or the Codex wire desk is signed out or has stopped finishing shifts, it runs Claude headless
@@ -142,6 +142,9 @@ if [ "$JOB" = wire ]; then
 else
   TASK="Cover today's $JOB edition ($REASON): publish only the contests that are not on the site yet. Read docs/newsroom/FALLBACK.md, then AGENTS.md and docs/newsroom/REPORTER.md, and follow REPORTER.md with the backup changes FALLBACK.md lists. Your writer ID is $MODEL."
 fi
+
+# The shared completion order applies before every Claude desk task, including manual rescues.
+TASK="Read docs/newsroom/FINISHING.md first and obey the head editor: one verification, no deployment polling, stop at completion. $TASK"
 
 if [ "$MODE" != --rehearse ]; then
   if [ "$JOB" = wire ] && [ "${WIRE_STATUS:-}" = PAUSED ]; then

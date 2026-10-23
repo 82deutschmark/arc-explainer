@@ -1,5 +1,7 @@
 # The ARC Daily Digest wire desk
 
+Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
+
 Author: Claude Opus 5.5 · 9 October 2026 · for GPT-6 Luna and any assistant running the wire.
 Updated 15 October 2026 by Claude Opus 5.5 Max: the no-refiling rule and the standing editorial direction
 moved here from the job instruction; the job's own instruction lives in `automation-prompts/`.

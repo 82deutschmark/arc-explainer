@@ -7,6 +7,10 @@ the configuration conversation.
 This is the map. Every desk reads it first. The rules each desk follows live in one guide per
 desk (below); the Codex job instructions only point at them, so a rule is written once.
 
+Every desk must follow the [head editor's completion order](FINISHING.md): verify once,
+finish publishing at the successful push, accept human send confirmation, and stop. The
+rule applies to manual work as well as scheduled shifts and overrides older wait instructions.
+
 ## The desks
 
 All times America/New_York. Codex is the engine; Claude is the backup and the plumbing.

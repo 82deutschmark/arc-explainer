@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.2  Oct 22, 2026
+
+- **Head editor: finish the job and stop** (Author: GPT-6.1 Sol / Codex). Remove the X helper’s twenty-minute deployment polling loop for all edition drafts. Add local-only human post confirmation with protected completed outboxes. Every desk and the Claude runner now load one shared completion order: one verification, successful push ends publication, human send confirmation ends browser work, and a stop order ends all tool calls. No schedules, models or paused-desk states change. Validation: focused newsroom Python regressions and shell syntax. Plan: `docs/2026-10-22-newsroom-completion-plan.md`.
+
 ### Version 9.158.1  Oct 22, 2026
 
 - **Summit notebook opens from a share-only link** (Author: GPT-6 / Codex). Add a stable, random reader URL that needs no Google sign-in. Keep publication authenticated and attendee content outside public source and assets. Shared pages remain out of navigation and sitemaps, with noindex, no-store and no-referrer policies; notes stay on each device. A stronger research pass improves selected unfamiliar guests' work summaries, verified MLST connections and conversation questions. Plan: `docs/2026-10-22-summit-share-plan.md`.

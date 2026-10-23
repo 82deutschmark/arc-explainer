@@ -1,5 +1,9 @@
 # ARC Daily Digest posts on X
 
+Follow the [head editor's completion order](FINISHING.md) for every manual or scheduled post.
+One success result ends an authorized send. The editor saying they posted ends it immediately;
+record that confirmation locally without opening X, adding a reply or fetching the post URL.
+
 The active afternoon recap posts once at 2:20 pm from the signed-in Chrome account
 `82deutschmark`, using the browser only for account checks and sending (no X API). Scheduled
 Early and Late editions save optional drafts under SCHEDULED_EDITIONS.md; they do not browse
@@ -36,15 +40,15 @@ Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): save a
 outbox with `scripts/newsroom_x.py --edition <morning|evening> --draft-only --output <outbox>`,
 leave existing outboxes untouched, and finish. This option makes no link check and never waits
 for a deployment. It does not authorize a send or certify that an article is live. An explicitly
-authorized later sender must perform the live-link and account/attachment checks below. The
+authorized later sender must perform the account/attachment checks below. The
 authorization for the separate afternoon recap is unchanged.
 
 ## Edition posts (Early edition, Late edition)
 
 The Boss asked on 9 October 2026 for a post whenever an edition comes out, labeled "Early
-edition" (the 6 am issue) or "Late edition" (the 6 pm issue). The edition run sends it itself,
-after it has published and pushed, with the same send-once rules as the afternoon recap. This
-routine post is authorized; the Discord draft rules are unchanged.
+edition" (the 6 am issue) or "Late edition" (the 6 pm issue). Scheduled runs now save drafts
+only; a separate direct human instruction authorizes a manual send. The same send-once
+rules apply as for the afternoon recap.
 
 **Boss's artwork rule, 12 October 2026:** a good reviewed custom image should lead the
 post. For an illustrated edition, upload the finished illustration as the post's image,
@@ -63,18 +67,20 @@ an extra post. An edition without custom artwork keeps the normal text/link anno
    with reviewed, evidence-bound custom artwork leads; ARC-3 leads when both have art or
    neither does. The helper validates that artwork against the archived edition and saves
    a PNG attachment beside the outbox. Its `media` object records the exact local `path`,
-   attachment `sha256`, original asset/hash, artwork ID, `alt` and `caption`. It then waits up to 20
-   minutes for the article link to open on the redeployed site. If the
-   link never opens, the outbox says `waiting` and nothing is posted; report it.
+   attachment `sha256`, original asset/hash, artwork ID, `alt` and `caption`. It returns the
+   draft immediately, with no live-link check, deployment wait or polling. A site build after
+   a successful push is expected; it does not reopen the publishing assignment.
 3. When the outbox state is `draft`: confirm the account is `82deutschmark` and look at its recent
    posts for this edition's post (an existing one completes the job; save its URL). If `media`
    is present, inspect its PNG, verify its saved hash, upload `media.path` through the browser's
    file picker and add `media.alt` as image description. Confirm the compose preview shows
    the intended illustration with readable current overlays before sending. Save the exact
    text and attachment metadata and set the state to `posting`, post it once, verify the text
-   and attached illustration on the profile, then save its
+   and attached illustration in one success result, then save its
    permanent URL and completion time and set the state to `posted`. An existing `posting` or
-   `posted` state is never overwritten; an uncertain send is checked on the profile before any retry.
+   `posted` state is never overwritten; an uncertain send gets one profile check before any retry.
+   If the editor says they already posted, use `--record-human-post --output <outbox>` and stop
+   without browser verification. Add `--post-url` only for a URL the editor supplied.
 4. The helper supplies the initial text. Apply the editorial review above before moving
    a draft to `posting`: choose this issue's news, check recent copy and use mentions only
    when useful. Save the exact reviewed text and any chosen handles in the draft outbox;

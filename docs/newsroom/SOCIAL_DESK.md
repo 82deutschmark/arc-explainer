@@ -1,5 +1,7 @@
 # ARC Daily Digest research desk (social and discussions)
 
+Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
+
 Authors: GPT-6.1 Sol / Codex (9–14 October 2026); reorganized by Claude Opus 5.5 Max on
 15 October 2026 at the Boss's request, folding in the rules that had lived only in the research
 job's instruction. Read [README.md](README.md) first.

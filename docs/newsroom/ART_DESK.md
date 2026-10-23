@@ -1,5 +1,7 @@
 # Native illustrations for the ARC Daily Digest
 
+Every assistant follows the [head editor’s completion order](FINISHING.md): verify once, accept human completion, and stop; no deployment polling.
+
 Authors: GPT-6.1 Sol / Codex (12–14 October 2026); reorganized by Claude Opus 5.5 Max on
 15 October 2026 at the Boss's request. The dated art directions that used to sit on top of this
 file are folded into the principles below. What pictures exist, where each has run and which are
