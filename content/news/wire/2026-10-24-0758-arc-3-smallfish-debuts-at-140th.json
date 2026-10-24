@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-24T11:41:04Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Smallfish debuts at 140th on ARC-AGI-3",
+  "id": "2026-10-24-0758-arc-3-smallfish-debuts-at-140th",
+  "personIds": [],
+  "publishedAt": "2026-10-24T11:58:11Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Smallfish is new to the ARC-AGI-3 public board, entering at 140th with 33.10."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The board added 61 teams in the past day, and one new team reached the top 500."
+    }
+  ],
+  "since": "2026-10-23T11:22:33Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T11:57:30Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17185006"
+  ]
+}

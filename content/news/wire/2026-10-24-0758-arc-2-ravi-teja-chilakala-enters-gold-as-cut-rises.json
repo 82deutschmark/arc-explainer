@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-24T11:41:07Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Ravi Teja Chilakala moves into ARC-2 gold at 13th",
+  "id": "2026-10-24-0758-arc-2-ravi-teja-chilakala-enters-gold-as-cut-rises",
+  "personIds": [],
+  "publishedAt": "2026-10-24T11:58:11Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Ravi Teja Chilakala gained 13.47 to reach 69.44, moving from 29th to 13th and into the 16 provisional gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line rose 2.22 in the past day to 68.75. Sakayori Lab is first outside gold, 17th at 68.06, 0.69 short."
+    }
+  ],
+  "since": "2026-10-23T11:23:47Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T11:57:30Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17021430",
+    "16442485"
+  ]
+}
