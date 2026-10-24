@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-24T05:40:10Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "in blue climbs from 742nd to 31st on ARC-AGI-3",
+  "id": "2026-10-24-0158-arc-3-in-blue-climbs-to-thirty-first",
+  "personIds": [],
+  "publishedAt": "2026-10-24T05:58:31Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "in blue gained 7.04 to reach 36.87 on the ARC-AGI-3 public board, moving from 742nd to 31st in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "That climb puts in blue among the board's top 31 teams. Public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-23T05:09:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T05:57:55Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16429632"
+  ]
+}
