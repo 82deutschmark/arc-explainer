@@ -8,7 +8,9 @@ wait for deployment, repeatedly prove completion, or keep improving a finished t
   local validation, or one visible result. Recheck only after an actual failure or conflicting
   evidence. Do not inspect the same result on the profile, permanent page and screenshots.
 - **A successful push finishes publication.** The site builds asynchronously. Report the
-  intended story URL and stop; do not poll the page, API, deployment service or image URL.
+  intended story URL; do not poll the page, API, deployment service or image URL. When the
+  assignment includes X or Discord distribution, complete that separate authorized step once
+  and then stop. A completed push does not cancel the required announcement.
   Deployment investigation requires a separate explicit assignment from the editor.
 - **The editor's confirmation finishes the send.** “I posted it,” “I tweeted it,” or equivalent
   is sufficient. Do not open the browser to verify, obtain a URL, add an image, edit, reply or

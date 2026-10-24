@@ -6,8 +6,8 @@ record that confirmation locally without opening X, adding a reply or fetching t
 
 The active afternoon recap posts once at 2:20 pm from the signed-in Chrome account
 `82deutschmark`, using the browser only for account checks and sending (no X API). Scheduled
-Early and Late editions save optional drafts under SCHEDULED_EDITIONS.md; they do not browse
-or send. A direct human instruction can authorize a separate manual announcement.
+Early and Late editions send one routine announcement under SCHEDULED_EDITIONS.md, with browser
+access limited to account/duplicate checks, composition, sending and one success result.
 (Reorganized 15 October 2026 by Claude Opus 5.5 Max: the recap moved from 2 pm to 2:20 pm so it never
 shares the browser with the hourly organizer scan, and it now reads the research archive rather than
 repeating the research desk's searches.)
@@ -36,19 +36,19 @@ existing announcement; a copy preference does not authorize a replacement send.
 
 ## Scheduled edition handoffs
 
-Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): save an optional unsent
-outbox with `scripts/newsroom_x.py --edition <morning|evening> --draft-only --output <outbox>`,
-leave existing outboxes untouched, and finish. This option makes no link check and never waits
-for a deployment. It does not authorize a send or certify that an article is live. An explicitly
-authorized later sender must perform the account/attachment checks below. The
-authorization for the separate afternoon recap is unchanged.
+Scheduled editions follow [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md): prepare the outbox with
+`scripts/newsroom_x.py --edition <morning|evening> --output <outbox>`, then complete the authorized
+edition-post procedure below. A draft is an intermediate state, not a finished announcement.
+Preserve existing `posting`/`posted` outboxes and human send confirmations. The helper makes no
+link check and never waits for deployment; a successful push is enough to proceed with the
+announcement. `--draft-only` remains available for an explicitly requested draft-only task, not
+the normal scheduled edition. The separate afternoon recap is unchanged.
 
 ## Edition posts (Early edition, Late edition)
 
 The Boss asked on 9 October 2026 for a post whenever an edition comes out, labeled "Early
-edition" (the 6 am issue) or "Late edition" (the 6 pm issue). Scheduled runs now save drafts
-only; a separate direct human instruction authorizes a manual send. The same send-once
-rules apply as for the afternoon recap.
+edition" (the 6 am issue) or "Late edition" (the 6 pm issue). Scheduled runs are authorized and
+expected to send that announcement once. The same send-once rules apply as for the afternoon recap.
 
 **Boss's artwork rule, 12 October 2026:** a good reviewed custom image should lead the
 post. For an illustrated edition, upload the finished illustration as the post's image,

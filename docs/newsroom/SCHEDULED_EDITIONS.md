@@ -1,25 +1,29 @@
 # Scheduled editions: publish from the feeds and archive
 
-Author: GPT-6.1 Sol / Codex · 22 October 2026 · requested by Mark after the usage audit.
+Author: GPT-6.1 Sol / Codex · 23 October 2026 · sending restored at Mark's direction.
 
 This is the complete route for the scheduled Early and Late edition jobs. It takes precedence
-over the browser, new-art and X-send steps in REPORTER.md, ART_DESK.md and X_POSTING.md. Those
-guides still define the reporting, evidence, artwork and send-once contracts. Manual research
+over the research-browser and new-art steps in REPORTER.md and ART_DESK.md. X_POSTING.md defines
+the authorized routine edition announcement. Those guides still define the reporting,
+evidence, artwork and send-once contracts. Manual research
 commissioned by Mark is separate work. The recurring research desk remains paused.
 
 Follow the [head editor's completion order](FINISHING.md). A successful push finishes
-publication; no deployment check follows it. Human send confirmation needs no browser proof.
+publication; no deployment check follows it. Complete the authorized distribution below as a
+separate step. Human send confirmation needs no browser proof.
 
 ## Bound the work
 
-- Use the signed-in Codex subscription, the existing model and one agent. No browser, web search,
-  social or discussion discovery, new portraits, ImageGen, paid API or deployment polling.
+- Use the signed-in Codex subscription, the existing model and one agent. Browser access is only
+  for the routine X account/duplicate checks, composition, send and one success result. No web
+  search, social or discussion discovery, new portraits, ImageGen, paid API or deployment polling.
 - Read this guide, the edition's short memory note and the prepared brief. Open other guides only
   for a specific command or contract you need. Do not read entire research directories or replay
   old browser sessions. The brief's public sources, notebook and intake are the reporting archive.
-- Aim to finish in twelve minutes. After eight minutes, drop optional artwork and X preparation
-  that has not started; finish the validated articles and push. Do not begin optional work after
-  twelve minutes. A real evidence or Git failure is reported; never bypass a gate to meet a clock.
+- Aim to finish publication in twelve minutes. After eight minutes, drop optional artwork that
+  has not started; finish the validated articles and push. Do not begin optional work after
+  twelve minutes. Then complete the required, bounded distribution step below. A real evidence
+  or Git failure is reported; never bypass a gate to meet a clock.
 - Prepare once, then perform one final fixed-endpoint freshness check. If the eligible cutoff
   observation changed, re-prepare once and revise the affected copy and artwork. If it keeps
   changing, report that contest's failure and publish the other ready contest. No refresh loop.
@@ -45,22 +49,35 @@ publication; no deployment check follows it. Human send confirmation needs no br
    Follow REPORTER.md sections 6 and 7 for validation, immutable publication, exact-file staging,
    `git diff --check`, commit and safe fetch/rebase/push to `origin HEAD:main`. One race retry is
    allowed. Preserve immutable editions and evidence; never rewrite a published issue.
+   If today's edition already exists, leave it unchanged and continue with its distribution
+   state below; an existing article does not establish that its X announcement was sent.
 
-## Finish independently of X or a deployment
+## Send the edition announcements
 
-After the push, optional X preparation uses `python3.13 scripts/newsroom_x.py --edition morning
---draft-only --output /Users/macmini/bubba-workspace/reports/arc-daily-x/YYYY-MM-DD-early-edition.json`
+After the push, prepare the routine X announcement with `python3.13 scripts/newsroom_x.py --edition morning
+--output /Users/macmini/bubba-workspace/reports/arc-daily-x/YYYY-MM-DD-early-edition.json`
 (Late: `--edition evening`, `YYYY-MM-DD-late-edition.json`). Use the current Eastern date.
 This saves the normal text and exact edition artwork attachment without an HTTP link check or
-deployment wait. An outbox already present is left alone, especially `posting` or `posted`.
-The draft has not been sent; report that plainly. A future explicitly authorized sender must
-check the account, compose attachment and send-once state under X_POSTING.md before sending.
+deployment wait. Read an existing outbox first; preserve `posting` and `posted` states and any
+human confirmation. A saved `draft` is preparation for sending, not completion of the job.
 
-The scheduled edition does not open X, post, retry an older outbox, send Discord messages or
-wait for Railway. The existing relay handles Discord after the article is live. An optional
-draft or image failure never blocks publication of verified articles. No extra retry task is created.
+Follow X_POSTING.md's edition-post procedure: confirm @82deutschmark and check for this edition's
+existing post, review the copy and exact attachment, save `posting`, send once, verify one success
+result, then record the URL and `posted`. Browser work is limited to six minutes and ten tool
+calls; no research feeds, discovery or deployment wait. If login, CAPTCHA, attachment failure or
+the bound prevents a confirmed send, preserve the outbox and report the concrete blocker. An
+uncertain send gets the one duplicate check defined in X_POSTING.md; never resend blindly.
 
-Finish with each pushed article URL (or exact failure), picture outcome, X draft path or protected
-outbox state, and each assignment's outcome. Replace memory.md with a short current note of at
+Discord sends are authorized in **#arc3-rollout-feed** (`channel:1550165647911034940`). The
+existing desk relay owns routine edition announcements and its send-once ledger; let that path
+deliver them, without a second manual copy or a deployment check. A necessary short desk status
+or failure notice may be sent through
+`python3.13 /Users/macmini/bubba-workspace/tools/arc_daily_announce.py --alert "<status>"`.
+Do not send a routine status on every successful run. A distribution failure does not undo
+publication or start a retry task. Do not backfill older edition posts as part of this shift.
+
+Finish with each pushed article URL (or exact failure), picture outcome, X post URL or concrete
+send blocker and protected outbox state, Discord relay/status outcome, and each assignment's
+outcome. Replace memory.md with a short current note of at
 most forty lines. Report Git publication separately from live-site availability; this job does
 not check the deployment.

@@ -17,8 +17,8 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 
 | Desk | Who | When | Folder | Follows | May publish or send |
 |---|---|---|---|---|---|
-| Early edition | Codex, GPT-6.1 Sol | 6:00 am | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; optional unsent X draft |
-| Late edition | Codex, GPT-6.1 Sol | 6:00 pm | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; optional unsent X draft |
+| Early edition | Codex, GPT-6.1 Sol | 6:00 am | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
+| Late edition | Codex, GPT-6.1 Sol | 6:00 pm | newsroom checkout | [SCHEDULED_EDITIONS.md](SCHEDULED_EDITIONS.md) | both contests' editions; one routine X post; Discord through the relay |
 | Wire | Codex, GPT-6 Luna | **paused; scheduled Claude wire checks cover it** | wire checkout | [WIRE_DESK.md](WIRE_DESK.md) | wire stories |
 | Research | Codex, GPT-6.1 Sol | **paused by Mark; do not resume automatically** | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md), [DISCUSSIONS.md](DISCUSSIONS.md) | nothing public |
 | Personal briefing | Codex, GPT-6.1 Sol | **paused** | newsroom checkout, read-only | [SOCIAL_DESK.md](SOCIAL_DESK.md) | nothing public |
@@ -28,8 +28,9 @@ All times America/New_York. Codex is the engine; Claude is the backup and the pl
 | Leaderboard collector | launchd `com.arc3.leaderboard` | every 30 minutes | `~/GitHub/arc-daily-collector` | this page | uploads both boards to the site |
 | Check-in | Claude Sonnet 5.5 (Claude app scheduled task "ARC Daily check-in") | about 7:05 am, after the morning edition | fallback checkout, read-only except the fixes it lists | [CHECKIN.md](CHECKIN.md) | a daily report in `~/bubba-workspace/reports/arc-daily-checkins/`, one Discord line |
 
-The scheduled editions use the bounded, browser-free [publishing route](SCHEDULED_EDITIONS.md);
-their X handoffs are drafts only. Research stays paused until Mark explicitly resumes it.
+The scheduled editions use the bounded [publishing route](SCHEDULED_EDITIONS.md), then send one
+routine X announcement. Browser access is only for that send; Discord uses the existing relay.
+Research stays paused until Mark explicitly resumes it.
 The two editions, the wire and the backup push to `main`; the site redeploys itself on every push
 (never poll the deployment). Research, briefings and the X recap never change the repository.
 
@@ -92,7 +93,8 @@ uses its own log folder instead). Big downloads belong on `/Volumes/Samsung 9100
   news file (`GET /api/news/health`), a leaderboard more than 75 minutes old (editions and the
   wire refuse data over 90 minutes old), or the site not answering for half an hour. It posts
   once when a problem starts and once when it clears. The backup desk reports through it too.
-  All Digest messages go to that channel; desks send nothing to Discord themselves.
+  All Digest messages go to that channel. The relay owns edition announcements; edition desks
+  may use its `--alert` sender for necessary status/failure notices without duplicating an edition.
 - The site leaves out an invalid news file instead of failing (`server/services/news/newsStore.ts`).
   Before pushing code that touches news, run the content check:
   `npx vitest run tests/integration/news.test.ts tests/newsFrontPage.test.ts` and

@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.4  Oct 23, 2026
+
+- **Restore edition announcements on X and Discord** (Author: GPT-6.1 Sol / Codex). At Mark's direction, Early and Late jobs again send one routine X announcement after publication; a draft alone is not completion. Permit Discord distribution through the existing relay and necessary desk notices through its sender. Keep the send-once records, bounded browser use, paused research and no deployment polling. Align both saved automation prompts and the newsroom guides; schedules and models stay unchanged. Validation: prompt/config equality and local documentation checks. Plan: `docs/2026-10-23-restore-edition-announcements-plan.md`.
+
 ### Version 9.158.3  Oct 22, 2026
 
 - **Memorable summit notes URL** (Author: GPT-6 / Codex). Serve the notebook directly at `/notes1023` without a sign-in or random key. Keep it unlisted and noindex, reuse the existing runtime document and preserve older links. Publisher responses now return the simple address. Validation: focused guide tests and production build. Plan: `docs/2026-10-22-summit-simple-url-plan.md`.
