@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-24T21:46:03Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Sakayori Lab slips out of ARC-2 gold places",
+  "id": "2026-10-24-1756-arc-2-sakayori-lab-slips-out-of-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-24T21:56:16Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Sakayori Lab fell from 14th to 17th at 68.06, with its score unchanged in the past day. That leaves the team just outside the 16 gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line rose 2.22 to 68.75, putting Sakayori Lab 0.69 short. The standings remain provisional, with medals decided on the private board."
+    }
+  ],
+  "since": "2026-10-23T21:39:11Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T21:55:44Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16442485"
+  ]
+}
