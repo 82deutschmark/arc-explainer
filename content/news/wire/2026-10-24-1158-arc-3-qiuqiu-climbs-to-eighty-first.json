@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-24T15:42:29Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "qiuqiu jumps from 963rd to 81st on ARC-3",
+  "id": "2026-10-24-1158-arc-3-qiuqiu-climbs-to-eighty-first",
+  "personIds": [],
+  "publishedAt": "2026-10-24T15:58:39Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "qiuqiu gained 4.72 to reach 33.77, moving from 963rd to 81st on the ARC-AGI-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move takes qiuqiu from outside the top 500 into the top 100."
+    }
+  ],
+  "since": "2026-10-23T15:35:12Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T15:57:56Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16770418"
+  ]
+}

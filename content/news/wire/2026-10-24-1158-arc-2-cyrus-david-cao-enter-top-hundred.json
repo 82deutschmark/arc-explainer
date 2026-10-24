@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-24T15:42:31Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Cyrus and David Cao climb into ARC-2 top 100",
+  "id": "2026-10-24-1158-arc-2-cyrus-david-cao-enter-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-24T15:58:39Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Cyrus climbed 211 places, from 305th to 94th, at 35.42 (+3.48). David Cao moved 59 places, from 147th to 88th, at 35.97 (+3.19)."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Both moves carry their teams from outside the top 100 to inside it on the ARC-AGI-2 public board."
+    }
+  ],
+  "since": "2026-10-23T15:35:13Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T15:57:56Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16863130",
+    "16396458"
+  ]
+}
