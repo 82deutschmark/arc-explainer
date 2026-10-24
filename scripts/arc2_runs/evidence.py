@@ -10,6 +10,11 @@ PURPOSE: Turns what Kaggle gives us about an ARC-AGI-2 run into what people and 
   - a guessed baseline: descriptions usually name the run they build on by its public score
     ("the 39.31 serving"), so the newest earlier submission with a score the description mentions.
   Sizes are capped so a run document stays well under the site's 4 MB limit.
+  24-October-2026, Claude Opus 5.5 Medium: a submission with a blank Kaggle description (Son's, the
+  23rd) got no baseline, so no diff, and Claude's note had nothing to judge. Now a blank description
+  falls back to the notebook's opening markdown note for the text, and to the submitter's previous
+  scored submission for the baseline (a score named in the notebook note usually belongs to someone
+  else's notebook, so it is not used for the guess).
 SRP/DRY check: Pass - pure text work, no Kaggle or site calls.
 """
 from __future__ import annotations
@@ -39,6 +44,25 @@ def notebook_code(source: str) -> str:
         text = "".join(cell.get("source") or []) if isinstance(cell.get("source"), list) else str(cell.get("source") or "")
         parts.append(f"# ===== cell {i} =====\n{text.rstrip()}\n")
     return "\n".join(parts)
+
+
+MAX_INTRO = 1_200  # characters of a notebook's opening note used when Kaggle has no description
+
+
+def notebook_intro(source: str) -> str:
+    """The notebook's first markdown cell, which is where people describe a run when they leave
+    Kaggle's description blank. Empty for plain scripts or notebooks without one."""
+    try:
+        nb = json.loads(source)
+    except (json.JSONDecodeError, TypeError):
+        return ""
+    for cell in nb.get("cells", []) if isinstance(nb, dict) else []:
+        if cell.get("cell_type") == "markdown":
+            src = cell.get("source") or ""
+            text = ("".join(src) if isinstance(src, list) else str(src)).strip()
+            if text:
+                return text if len(text) <= MAX_INTRO else text[:MAX_INTRO].rstrip() + " …"
+    return ""
 
 
 HUNK_RE = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
@@ -99,7 +123,14 @@ SCORE_RE = re.compile(r"(?<![\d.])(\d{1,2}\.\d{2})(?![\d.])")
 
 
 def guess_baseline(run: dict, earlier: list[dict]) -> dict | None:
-    """{key, reason} for the newest earlier submission whose score the description mentions."""
+    """{key, reason} for the newest earlier submission whose score the description mentions; with no
+    description at all, the same submitter's newest earlier scored submission."""
+    if not (run.get("description") or "").strip():
+        for other in sorted(earlier, key=lambda r: r["submittedAt"] or "", reverse=True):
+            if other.get("submittedBy") == run.get("submittedBy") and other.get("publicScore") is not None:
+                return {"key": other["key"],
+                        "reason": "guessed: no description on Kaggle, so the submitter's previous scored run"}
+        return None
     mentioned = set(SCORE_RE.findall(run.get("description") or ""))
     if not mentioned:
         return None

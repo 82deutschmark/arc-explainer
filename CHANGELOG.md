@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.7  Oct 24, 2026
+
+- **ARC-2 runs record: blank Kaggle descriptions no longer starve Claude's note** (Author: Claude Opus 5.5 Medium). Son's last two ARC-2 submissions went in with an empty Kaggle description. The watcher guesses a run's baseline only from a score named in the description, so these got no baseline, no code diff, and a note that could only say it had nothing to judge. Now, when the description is blank, the run page and Claude's brief show the notebook's opening markdown note (labelled as such), and the baseline guess falls back to the same submitter's previous scored submission. Only Son's four blank-description runs change baseline. Both October runs were reprocessed and republished; the newer one's note now compares it against Son's previous submission and names the two changes it bundled. Files: `scripts/arc2_runs/evidence.py`, `scripts/arc2_runs/arc2_runs.py`. The watcher runs from this checkout, so it is live on the Mac Mini already.
+
 ### Version 9.158.6  Oct 24, 2026
 
 - **Newsroom map matches the live desks** (Author: Claude Sonnet 5.5). The map in `docs/newsroom/README.md` said the wire, research and personal briefing desks were paused, but the Codex automations table shows all three active with runs today. Corrected those rows and two stray "research remains paused" lines, and pointed readers at the live status as the source of truth. Docs only.

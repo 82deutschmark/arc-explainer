@@ -26,6 +26,8 @@ PURPOSE: The ARC-AGI-2 runs record (Son asked for an ARC-2 version of the ARC-3 
   Data lands on the Samsung SSD under data/arc2-runs/<submission>/ (refuses to run if it is not
   mounted); state in ~/bubba-workspace/state/arc2-runs/. Run it with the Kaggle venv's Python
   (~/.kaggle-venv/bin/python3.13), which has the kaggle package.
+  24-October-2026, Claude Opus 5.5 Medium: a run with a blank Kaggle description shows the notebook's
+  opening note instead (marked as such) on the page and in Claude's brief; see evidence.py.
 SRP/DRY check: Pass - orchestration only: Kaggle in kaggle_read.py, text work in evidence.py, the note in
   impact.py, the site in site_client.py. Shape follows arc-3's tools/kaggle_runs/kaggle_runs.py.
 """
@@ -199,8 +201,18 @@ def baseline_for(entry: dict, note: dict | None) -> tuple[str | None, str]:
     return None, "no baseline found in the description"
 
 
+def description_of(entry: dict) -> str:
+    """Kaggle's description, else the notebook's opening note (labelled), else empty."""
+    if (entry.get("description") or "").strip():
+        return entry["description"]
+    p = run_dir(entry["key"]) / "source.txt"
+    intro = evidence.notebook_intro(p.read_text()) if p.exists() else ""
+    return f"(No description on Kaggle. The notebook's opening note:) {intro}" if intro else ""
+
+
 def public_run(entry: dict) -> dict:
-    return {"key": entry["key"], "who": entry.get("who"), **{f: entry.get(f) for f in KAGGLE_FIELDS}}
+    return {"key": entry["key"], "who": entry.get("who"), **{f: entry.get(f) for f in KAGGLE_FIELDS},
+            "description": description_of(entry)}
 
 
 def note_signature(entry: dict, base_key: str | None, diff: bool, run_log: bool, base_log: bool) -> str:
