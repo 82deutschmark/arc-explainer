@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-24T19:43:11Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Laureano Arcanio climbs to 30th on ARC-AGI-2",
+  "id": "2026-10-24-1605-arc-2-laureano-arcanio-climbs-to-thirtieth",
+  "personIds": [],
+  "publishedAt": "2026-10-24T20:05:11Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Laureano Arcanio gained 21.94 points to reach 59.44, moving from 74th to 30th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts Arcanio among the board’s top 30 as the contest’s public standings continue to shift."
+    }
+  ],
+  "since": "2026-10-23T19:35:43Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T20:04:42Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15630222"
+  ]
+}
