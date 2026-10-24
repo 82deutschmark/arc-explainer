@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.5  Oct 23, 2026
+
+- **MIT meetup photo dispatch and heroic cartoon** (Author: GPT-6.1 Sol / Codex). Publish Mark's lighthearted account of meeting Tufa's Dries Smit, two unnamed ARC3 puzzle masters and Matt Mazur with Son Pham at MIT. Preserve the unchanged full-resolution photo and badge reference, archive the cyberpunk photo variants and updated Dries avatar, and lead with the editor-approved navy-and-pink heroic cartoon. Validation: dispatch contract, original-byte preservation and artwork hashes. Plan and exact prompts: `docs/2026-10-23-mit-group-photo-review-plan.json` and the artwork records.
+
 ### Version 9.158.4  Oct 23, 2026
 
 - **Restore edition announcements on X and Discord** (Author: GPT-6.1 Sol / Codex). At Mark's direction, Early and Late jobs again send one routine X announcement after publication; a draft alone is not completion. Permit Discord distribution through the existing relay and necessary desk notices through its sender. Keep the send-once records, bounded browser use, paused research and no deployment polling. Align both saved automation prompts and the newsroom guides; schedules and models stay unchanged. Validation: prompt/config equality and local documentation checks. Plan: `docs/2026-10-23-restore-edition-announcements-plan.md`.

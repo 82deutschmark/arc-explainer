@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "id": "2026-10-23-dries-smit-character-v2-preview",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "character-reference",
+  "subjectId": "dries-smit",
+  "rawSrc": "/news-images/references/2026-10-23-dries-smit-character-v2-preview.png",
+  "prompt": "Use case: identity-preserve / stylized-concept.\nAsset type: updated reusable full-body Dries Smit cyber-engineer avatar for The ARC Daily Digest; human review candidate.\nImage 1 is the identity and real body-proportion reference: ONLY the VERY TALL man on the EXTREME LEFT of the supplied group photo. The user explicitly identifies that man as Dries Smit and asks to improve his existing avatar based on his actual appearance. Do not depict any of the other four people.\nImage 2 is the established avatar COSTUME AND ART STYLE reference. Make a new sibling version of this character: keep the dark graphite cyber-engineer suit, small square GREEN GRID eyepiece over his RIGHT eye, cyan/green illuminated tubes, fan-cooled graphics-card backpack and unbranded graphics card in his hands, but improve his likeness and proportions from the real photograph.\nShow ONE full-body person alone, head to boots entirely in frame, on a pale warm cream studio background with subtle ground shadow. He is very tall, long-legged, lean, naturally proportioned with a longer torso and limbs, NOT stocky or superhero muscular. Preserve the photographed man's real youthful clean-shaven face, soft jaw, swept brown hair with natural fringe, friendly broad natural smile, and distinctive approachable expression. Facial likeness comes from the extreme-left real man, not the generic face of the old illustration. Slight three-quarter stance, relaxed friendly engineer holding a single unbranded GPU at waist/chest height, two natural hands with correct fingers.\nPolished detailed painterly 3D comic editorial rendering matching the established character. More true to the real person while retaining recognizable costume continuity. Keep headgear small enough to see his hair and most of his face. The right-eye eyepiece can cover only that one eye; show the smile clearly.\nNo other people, no animals, no text, no card frame, no badges, no labels, no logos, no watermark. Cybernetic hardware is a playful editorial costume.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-23-mit-arc-group-original.png",
+      "role": "Owner-identified actual likeness and very tall body proportions of the extreme-left man."
+    },
+    {
+      "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp",
+      "role": "Established cyber-engineer costume and rendering style only."
+    }
+  ],
+  "reviewStatus": "revision-requested",
+  "review": "Editor liked the likeness but requested a more creative helmet and less face obstruction from the eyepiece. Preserved as revision history; do not activate as a reusable reference.",
+  "toolOutput": "exec-e5f1eef9-d86d-4448-85e3-669aa52a176f.png",
+  "rawSha256": "0887445393bdae062716cc16d4b29035ac116f84ad94727a9a7da190456ab0a3"
+}

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "id": "2026-10-23-mit-arc-group-cyberpunk-v1",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-24T03:30:55Z",
+  "rawSrc": "/news-images/2026-10-23-mit-arc-group-cyberpunk-v1.png",
+  "rawSha256": "1a4e1a57fb9c9971af4f90948dc02855248a3958d5f1b7795a72bfcb6a567d24",
+  "prompt": "Use case: identity-preserve.\nAsset type: editorial cyberpunk photo edit for The ARC Daily Digest, submitted for human approval.\nImage 1 is the EDIT TARGET: the original real group photograph at an ARC event at MIT. Image 2 is ONLY a costume continuity reference for the tall man on the extreme left; it is not an extra person and its illustrated face must NOT replace the photographed face.\n\nCreate a lightly but unmistakably cybernetically enhanced PHOTOGRAPH of this exact scene. Preserve the original 4:3 landscape composition, all FIVE foreground people, the exact left-to-right order, poses, hands, body builds, relative heights, faces, recognizable hairstyles, glasses, genuine smiles and friendly candid mood. The man at the extreme left is particularly tall; preserve his tall long-limbed proportions. Keep all five actual faces visibly identifiable, unobscured eyes where possible, natural skin texture, no beautification or invented facial features.\n\nCostumes, left to right:\n1. Very tall man in pale green sweatshirt: tasteful graphite exosuit panels over his clothing, cyan and green piping, a compact green-grid monocle over his RIGHT eye and a modest GPU backpack inspired by reference 2. His actual brown hair, face and smile come from the photo.\n2. Dark-haired man with rectangular glasses and striped polo: one of the TWO mysterious ARC3 puzzle masters. Give him sophisticated, beautiful, highly advanced graphite/iridescent cybernetic equipment, fine blue-violet circuitry, neural ear/temple interfaces, articulated shoulder hardware, translucent floating geometric puzzle-grid interfaces near his shoulder and wrist, no readable symbols. Keep his glasses and entire smiling face.\n3. Fair-haired man with glasses and grey cardigan: the OTHER puzzle master. Equally more high-tech than everyone else, complementary elegant dark-silver tech mantle and layered neural crown that leaves his hair/face visible, delicate cyan-gold circuitry and subtle hovering geometric grid instruments. Both middle puzzle masters have noticeably the most advanced gear, clever and enigmatic, friendly not sinister.\n4. Second from right, smiling East Asian man with black rectangular glasses and dark blazer: black cyber-engineer jacket, small dense GPU modules on shoulders, blue illuminated temple frame integrated with his own glasses, and subtle wrist interface. Preserve his real face and smile.\n5. Extreme right, tall dark-haired man in black shirt: refined charcoal cyberpunk jacket with slim metallic collar, amber/cyan tech seams, compact earpiece and forearm module. Preserve his face, relaxed posture and smile.\n\nBackground: retain the real MIT indoor event room, perspective, exposed ceiling beams, windows, tables, red chairs and background attendees. Tastefully augment the beams with cyan light channels, add a few transparent abstract ARC-like colored puzzle grids and restrained future-lab details. Preserve the daylight and warm room light; cinematic teal accents without turning the whole photo dark or neon. Tech should look physically present and integrated with realistic shadows/reflections. Editorial fantasy costume, not a claim about real hardware.\nDo not add, remove, duplicate or reposition foreground people. No helmets hiding faces, no masks, no weapons, no combat armor, no huge robots, no animals. Do not invent badge text. No headline, captions, names, scores, readable new words, logos or watermark. Keep the original scene recognizable as a group photo with tasteful cybernetic upgrades.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-23-mit-arc-group-original.png",
+      "sha256": "6c44000b3f9b29da5111214bd45fa4d19439b40b572854c4c1634f352d27c448",
+      "role": "Edit target, original photo and identities supplied by Mark Barney."
+    },
+    {
+      "src": "/news-images/references/2026-10-12-dries-smit-character-v1-base.webp",
+      "role": "Existing Dries costume continuity only; actual likeness comes from original photo."
+    }
+  ],
+  "reviewStatus": "revision-requested",
+  "review": "Visually inspected: all five foreground people in original order; recognizable smiles and glasses; very tall Dries at left with green eyepiece and GPU rig; two middle puzzle masters with advanced holographic/circuit gear; Son second from right; Matt at right. Room, daylight and red chairs retained. AI costume edit shown for editor review; publication held. Some hand poses shifted by the edit.",
+  "toolOutput": "exec-4d9b66ba-8c80-416a-bb8d-97fc3c29b596.png",
+  "editorFeedback": "Editor liked the preview and requested more cybernetic equipment on everyone, plus a more creative open-faced Dries helmet with less eye obstruction."
+}

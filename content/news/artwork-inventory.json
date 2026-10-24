@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-23T00:36:03.031478+00:00",
+  "updatedAt": "2026-10-24T03:46:16.800698+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -708,6 +708,17 @@
         }
       ],
       "selectionNote": "Direct human request for breaking-story art and Discord-first preview. Native image and one cast correction inspected; fresh roster checked. No scores depicted."
+    },
+    {
+      "id": "2026-10-23-mit-arc-heroic-cartoon-v1",
+      "generationRecord": "2026-10-23-mit-arc-heroic-cartoon-v1",
+      "src": "/news-images/2026-10-23-mit-arc-heroic-cartoon-v1.png",
+      "status": "approved-for-publication",
+      "articleUses": [
+        "2026-10-23-mit-arc-meetup"
+      ],
+      "xAttachments": [],
+      "selectionNote": "Mark selected this exact badge-themed heroic cartoon for the MIT photo dispatch and its separate X announcement. Original photo and earlier variants preserved."
     }
   ],
   "existingXPosts": [

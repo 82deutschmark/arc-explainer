@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "id": "2026-10-23-dries-smit-character-v3",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "purpose": "character-reference",
+  "subjectId": "dries-smit",
+  "generatedAt": "2026-10-24T03:35:11Z",
+  "rawSrc": "/news-images/references/2026-10-23-dries-smit-character-v3.png",
+  "prompt": "Use case: identity-preserve.\nEDIT the existing full-body Dries cyber-engineer avatar (image 1). Image 2 is the original real photograph; the EXTREME LEFT very tall man is the only real likeness reference. Preserve the improved recognizable face, friendly smile, real swept brown hair, very tall lean long-limbed physique, full-body pose, hands holding GPU, detailed dark exosuit, green/cyan tubes, backpack and cream background. Make ONE requested design revision: replace the ordinary headset and bulky eye-covering green monocle with a much more CREATIVE OPEN-FACED HELMET.\nDesign a sophisticated asymmetric skeletal neural helmet: beautifully articulated titanium/graphite structure wrapping the back and sides of his head, an elevated split crest made of small translucent emerald processor fins and elegant cyan fiber-optic arches, mechanical hinges above the ears, finely engineered antenna/sensor prongs angled BACKWARD. This must read as an inventive bespoke cybernetic helmet, not just headphones and not a crown.\nKeep the FRONT completely OPEN so BOTH REAL EYES, brows, nose, cheeks, jaw and entire smiling mouth are visibly uncovered. Show his brown hair/fringe through the open crest. REMOVE the opaque rectangular grid eyepatch. Replace it with a tiny transparent green HUD lens projected BESIDE his right temple, outside the contour of the eye and cheek, so neither eye is obscured. Preserve the green identity accent in the side sensor and helmet fins.\nKeep the existing polished painterly 3D comic style, warm light, cream background, one person only, head and feet fully inside the frame with a little margin above the new helmet. No extra characters, text, names, logos, card frame, watermark, weapons, face mask, face visor or facial implants. Identity, body, pose and outfit remain consistent; revise only the headgear as requested.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-23-dries-smit-character-v2-preview.png",
+      "role": "Edit target; photographed likeness, tall physique, pose and established costume."
+    },
+    {
+      "src": "/news-images/references/2026-10-23-mit-arc-group-original.png",
+      "role": "Original user-supplied real likeness: extreme-left man, identified by Mark Barney."
+    }
+  ],
+  "reviewStatus": "awaiting-human-approval",
+  "review": "Visually inspected: tall lean full-body Dries with recognizable smile, swept brown hair, inventive open-faced crest helmet, both eyes visible and a small transparent green side display instead of the opaque eyepatch. GPU costume and cream background retained. Publication and active reference replacement held for the editor.",
+  "parentRecord": "2026-10-23-dries-smit-character-v2-preview",
+  "toolOutput": "exec-80237c5e-42e0-44be-a0ab-3364ae8ea927.png",
+  "rawSha256": "e6e3e3cd49534376d54e0eeee292a437b76144a33ef3842d430e0fa576e05d20"
+}

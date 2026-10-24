@@ -1,0 +1,63 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Photo and identifications supplied by Mark Barney, who commissioned and approved this illustration. Cybernetic equipment, heroic costumes and the futuristic setting are editorial fantasy.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Meeting Tufa, the mystery puzzle masters and Matt at MIT",
+  "id": "2026-10-23-mit-arc-meetup",
+  "image": {
+    "alt": "Heroic cyberpunk cartoon inspired by the MIT group photo, left to right: Dries Smit, two unnamed ARC3 puzzle masters, Son Pham and Matt Mazur. Navy and vivid pink puzzle architecture echoes the event badge; all five faces are visible.",
+    "caption": "The ARC crowd at MIT, October 23, 2026, reimagined as cyberpunk research heroes. AI editorial cartoon inspired by the group photo and summit badge supplied by Mark Barney. The original photograph is linked below.",
+    "src": "/news-images/2026-10-23-mit-arc-heroic-cartoon-v1.png"
+  },
+  "publishedAt": "2026-10-24T03:46:16.800698+00:00",
+  "sections": [
+    {
+      "sourceIds": [
+        "editor-photo",
+        "summit",
+        "arc-prize-team"
+      ],
+      "text": "We got to meet the competition from Tufa Labs, the advanced ARC3 puzzle masters who shall remain nameless, and Matt Mazur, who heads testing at ARC Prize. It was a great thrill to meet everyone in person at the ARC gathering at MIT."
+    },
+    {
+      "sourceIds": [
+        "editor-photo",
+        "tufa-team"
+      ],
+      "text": "From left to right in the photo: Tufa’s Dries Smit, the two mysterious puzzle masters, Son Pham and Matt. Dries, as it turns out, is very tall. The puzzle masters’ names will remain a puzzle."
+    },
+    {
+      "sourceIds": [
+        "editor-photo"
+      ],
+      "text": "For our customary cyberpunk cartoon, everybody gets extra gear. The puzzle masters get the most advanced equipment, naturally. The summit badge supplies the pink puzzle shapes and midnight-blue setting. The smiles are real; the cybernetics were added afterward."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T03:33:32Z",
+      "id": "editor-photo",
+      "title": "Original group photo supplied by Mark Barney, October 23; people and positions identified by the editor",
+      "url": "https://arc.markbarney.net/news-images/references/2026-10-23-mit-arc-group-original.png"
+    },
+    {
+      "accessedAt": "2026-10-24T03:33:32Z",
+      "id": "summit",
+      "title": "ARC Prize Research Summit 2026 — October 23, hosted in collaboration with MIT",
+      "url": "https://arcprize.org/events/research-summit-2026"
+    },
+    {
+      "accessedAt": "2026-10-24T03:33:32Z",
+      "id": "tufa-team",
+      "title": "Tufa Labs — Dries Smit, AI researcher",
+      "url": "https://tufalabs.ai/team/"
+    },
+    {
+      "accessedAt": "2026-10-24T03:33:32Z",
+      "id": "arc-prize-team",
+      "title": "ARC Prize Foundation team — Matt Mazur, Model Testing & Analysis",
+      "url": "https://arcprize.org/about"
+    }
+  ]
+}

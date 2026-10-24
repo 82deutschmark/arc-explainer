@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "id": "2026-10-23-mit-arc-group-cyberpunk-v2",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-24T03:37:18Z",
+  "rawSrc": "/news-images/2026-10-23-mit-arc-group-cyberpunk-v2.png",
+  "prompt": "Use case: identity-preserve.\nEDIT TARGET = image 1, the already cyberpunk-enhanced FIVE-person group photograph. Image 2 is the revised Dries avatar, a HEADGEAR DESIGN REFERENCE ONLY for the very tall man at the extreme left. Image 3 is the original real photograph, the absolute identity, face, smile, body-proportion and room reference for all five people.\nMake the requested NEXT VERSION: everybody gets visibly MORE cybernetic equipment, while preserving all five actual faces, friendly smiles, real hair, glasses, original left-to-right order, very tall Dries at left, relative heights and builds, camera view, group spacing and the recognizable MIT room. Keep a PHOTOGRAPHIC finish; do not turn the group into cartoons.\n\nEXTREME LEFT / DRIES: replace the face-obscuring square green eyepatch with the inventive OPEN-FACED HELMET design from image 2: skeletal titanium/graphite head shell, translucent emerald processor-fin crest, cyan curved fiberoptic ribs, intricate ear modules and backward sensor prongs. Both eyes, eyebrows, nose, cheeks and entire smile clearly VISIBLE. Green HUD is a very small transparent side display at the temple, outside the eye, not an eyepatch. Preserve his actual photographed face/hair, not the illustrated avatar's face. Add denser integrated backpack circuitry, shoulder tool modules, fiber-optic chest routes and mechanical arm/leg braces, still showing the green sweatshirt and tan trousers.\nSECOND FROM LEFT, glasses/dark hair: keep face/glasses fully visible. Upgrade the puzzle-master suit with nested articulated collar and shoulder assemblies, intricate iridescent violet neural side modules above/behind the ears, forearm gauntlets with fine light traces, a layered translucent geometric puzzle console floating above one wrist and small non-weapon sensor devices hovering beside shoulder. Most advanced gear.\nCENTER, light hair/glasses: keep face/glasses visible. Elaborate silver/gold/cyan puzzle-master crown and open-face neural ring, layered high-tech mantle, intricate chest processor modules, sophisticated glowing circuit forearms and nested 3D holographic puzzle-lattice above palm. He and the second man are the TWO most technologically advanced figures. Their equipment looks a generation ahead, beautiful and mysterious, not sinister.\nSECOND FROM RIGHT / SON: substantially more visible black/cobalt cyber-engineer gear: open-faced GPU neural headband behind his real glasses, compact processor modules around the back of the head, elegant angular shoulder exoskeletons, fiberoptic jacket panels, articulated forearm and finger overlays and slim leg braces. Keep his actual smiling face fully visible and his blazer/check shirt recognizable.\nEXTREME RIGHT / MATT: more intricate charcoal/amber/cyan cyber suit, open-faced angular neural headgear around temples and back of crown, sophisticated layered shoulder/collar equipment, detailed chest circuits and compact sensor array, articulated forearm and thigh/shin exoskeletons. His actual smile, eyes, hair and body remain recognizable.\n\nGive all five distinctly visible head, torso and limb upgrades. Add realistic tiny hardware details, bolts, circuit nodes, cables, luminous inlays and physically attached equipment, but no overwhelming bulk. No face masks or dark visors. Keep every face clear and near-identical to the original photograph. Original hands stay anatomically correct; avoid changing their poses further.\nBACKGROUND: preserve the room, ceiling beams, daylight windows, tables, red chairs and background attendees. Increase the future-lab enhancement moderately: integrated luminous circuit channels in the ceiling, a few floating translucent abstract colored puzzle grids, practical glowing bench modules. Natural warm daylight plus blue-green/amber accent light. No darkness or smoky nightclub, no logos or new readable text.\nNo added foreground people, duplicates, animals, weapons, battle props, labels, headlines, names, scores or watermarks. Cybernetics are playful editorial fantasy. Keep the same landscape 4:3 composition and realistic group-photo identity.",
+  "references": [
+    {
+      "src": "/news-images/2026-10-23-mit-arc-group-cyberpunk-v1.png",
+      "role": "Edit target; first reviewed cyberpunk group version."
+    },
+    {
+      "src": "/news-images/references/2026-10-23-dries-smit-character-v3.png",
+      "role": "Revised open-faced helmet design for Dries only."
+    },
+    {
+      "src": "/news-images/references/2026-10-23-mit-arc-group-original.png",
+      "role": "Unchanged original photo and owner-identified faces, proportions and room."
+    }
+  ],
+  "reviewStatus": "awaiting-human-approval",
+  "review": "Visually inspected: all five people recognizable in original order and relative heights; Dries has the new open-faced processor-fin helmet and both eyes visible; all five have more elaborate torso, head and limb equipment. The two middle puzzle masters retain the most intricate neural/holographic equipment. Smiles, glasses, daylight room and red chairs remain. Some hand poses differ from original. Revised preview shown to editor; no publication or active avatar replacement yet.",
+  "parentRecord": "2026-10-23-mit-arc-group-cyberpunk-v1",
+  "toolOutput": "exec-1c7954c7-e28e-4671-b390-7d27ae29737a.png",
+  "rawSha256": "436fcc9801e06d0a142a4e3e61f37b80ade415f005d55830708a987090b9a775"
+}
