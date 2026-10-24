@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-24T17:42:44Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Cà Rốt Production jumps from 740th to 91st on ARC-3",
+  "id": "2026-10-24-1356-arc-3-ca-rot-production-enters-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-24T17:56:39Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Cà Rốt Production added 3.75 points to reach 33.62, rising from 740th to 91st in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move carries the team into the board’s top 100, a sharp change in position among 4,780 teams."
+    }
+  ],
+  "since": "2026-10-23T17:35:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T17:56:23Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17150208"
+  ]
+}
