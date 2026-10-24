@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-24T01:39:43Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "Bao Loc Pham climbs from 844th to 22nd on ARC-AGI-2",
+  "id": "2026-10-23-2141-arc-2-bao-loc-pham-climbs-to-twenty-second",
+  "personIds": [],
+  "publishedAt": "2026-10-24T01:41:21Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Bao Loc Pham gained 32.78 points to reach 63.61 on ARC-AGI-2, moving from 844th to 22nd in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line, the score at 16th, rose to 67.50 in the past day, so the team is still outside the gold places. Public standings are provisional and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-23T01:38:27Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T01:40:52Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16535014"
+  ]
+}
