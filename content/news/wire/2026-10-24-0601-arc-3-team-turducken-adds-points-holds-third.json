@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-24T09:40:35Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Team Turducken adds 3.20 points and holds third on ARC-3",
+  "id": "2026-10-24-0601-arc-3-team-turducken-adds-points-holds-third",
+  "personIds": [],
+  "publishedAt": "2026-10-24T10:01:56Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Team Turducken gained 3.20 to reach 56.02, holding third on the ARC-3 public board."
+    }
+  ],
+  "since": "2026-10-23T09:19:05Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T10:01:22Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15605182"
+  ]
+}

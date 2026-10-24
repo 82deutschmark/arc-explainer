@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-24T09:40:36Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC-2 gold line rises as Enes Kulak closes in",
+  "id": "2026-10-24-0601-arc-2-gold-line-rises-enes-kulak-nears",
+  "personIds": [],
+  "publishedAt": "2026-10-24T10:01:55Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The score needed for the last of 16 provisional ARC-2 gold places rose 1.53 in the past day to 68.06."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Enes Kulak is 17th at 66.11, 1.95 short of that line."
+    }
+  ],
+  "since": "2026-10-23T09:19:06Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T10:01:22Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17037977"
+  ]
+}
