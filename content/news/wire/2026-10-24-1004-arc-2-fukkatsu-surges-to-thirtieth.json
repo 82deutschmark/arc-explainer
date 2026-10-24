@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-24T13:41:32Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "復活の混テキスト climbs from 49th to 30th on ARC-2",
+  "id": "2026-10-24-1004-arc-2-fukkatsu-surges-to-thirtieth",
+  "personIds": [],
+  "publishedAt": "2026-10-24T14:04:55Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "復活の混テキスト gained 13.89 to reach 58.33, moving from 49th to 30th."
+    }
+  ],
+  "since": "2026-10-23T13:31:43Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-24T14:03:59Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16569125"
+  ]
+}
