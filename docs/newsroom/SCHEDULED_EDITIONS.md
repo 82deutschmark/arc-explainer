@@ -6,7 +6,7 @@ This is the complete route for the scheduled Early and Late edition jobs. It tak
 over the research-browser and new-art steps in REPORTER.md and ART_DESK.md. X_POSTING.md defines
 the authorized routine edition announcement. Those guides still define the reporting,
 evidence, artwork and send-once contracts. Manual research
-commissioned by Mark is separate work. The recurring research desk remains paused.
+commissioned by Mark is separate work. The recurring research desk runs on its own schedule.
 
 Follow the [head editor's completion order](FINISHING.md). A successful push finishes
 publication; no deployment check follows it. Complete the authorized distribution below as a

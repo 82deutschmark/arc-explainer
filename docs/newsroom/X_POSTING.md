@@ -137,7 +137,7 @@ methods, motives, affiliations, quotes, hardware claims or final medals.
 
 ## Keep the recap bounded
 
-The research desk remains paused. This job publishes; it does not replace research collection.
+The research desk runs separately. This job publishes; it does not replace research collection.
 Use the helper's current board brief and at most the newest saved public handoff when needed.
 Do not open watched feeds, Replies, Reposts, search results, individual research posts, or other
 people's profiles. Do not discover identities, ingest new research, generate artwork or follow

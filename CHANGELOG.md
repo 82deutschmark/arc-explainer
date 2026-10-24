@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.5  Oct 24, 2026
+
+- **Newsroom map matches the live desks** (Author: Claude Sonnet 5.5). The map in `docs/newsroom/README.md` said the wire, research and personal briefing desks were paused, but the Codex automations table shows all three active with runs today. Corrected those rows and two stray "research remains paused" lines, and pointed readers at the live status as the source of truth. Docs only.
+
 ### Version 9.158.5  Oct 23, 2026
 
 - **MIT meetup photo dispatch and heroic cartoon** (Author: GPT-6.1 Sol / Codex). Publish Mark's lighthearted account of meeting Tufa's Dries Smit, two unnamed ARC3 puzzle masters and Matt Mazur with Son Pham at MIT. Preserve the unchanged full-resolution photo and badge reference, archive the cyberpunk photo variants and updated Dries avatar, and lead with the editor-approved navy-and-pink heroic cartoon. Validation: dispatch contract, original-byte preservation and artwork hashes. Plan and exact prompts: `docs/2026-10-23-mit-group-photo-review-plan.json` and the artwork records.
