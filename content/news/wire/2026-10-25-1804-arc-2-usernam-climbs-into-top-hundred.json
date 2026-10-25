@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-25T21:40:04Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "usernam surges into ARC-2 top 100",
+  "id": "2026-10-25-1804-arc-2-usernam-climbs-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-25T22:04:59Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "usernam climbed 222 places, from 316th to 94th, after gaining 4.17 points to reach 36.25. The move puts the team inside the board’s top 100."
+    }
+  ],
+  "since": "2026-10-24T21:15:01Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-25T22:04:33Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16771630"
+  ]
+}

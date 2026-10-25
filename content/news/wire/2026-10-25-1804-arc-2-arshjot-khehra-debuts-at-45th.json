@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-25T21:40:04Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Arshjot Khehra debuts 45th on ARC-2",
+  "id": "2026-10-25-1804-arc-2-arshjot-khehra-debuts-at-45th",
+  "personIds": [],
+  "publishedAt": "2026-10-25T22:04:59Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Arshjot Khehra appeared on the board in 45th place with a score of 52.50, making the newcomer’s first reported position an immediate entry near the top of the standings."
+    }
+  ],
+  "since": "2026-10-24T21:15:01Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-25T22:04:33Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16784541"
+  ]
+}
