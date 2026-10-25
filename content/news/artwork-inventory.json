@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-24T03:50:52.806847+00:00",
+  "updatedAt": "2026-10-25T18:02:10.561469Z",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -726,6 +726,32 @@
         }
       ],
       "selectionNote": "Mark selected this exact badge-themed heroic cartoon for the MIT photo dispatch and its separate X announcement. Original photo and earlier variants preserved."
+    },
+    {
+      "id": "2026-10-24-gpu-valley-thaw-full-crew-v1-base",
+      "generationRecord": "2026-10-24-gpu-valley-thaw-full-crew-v1-base",
+      "src": "/news-images/2026-10-24-gpu-valley-thaw-full-crew-v1-base.webp",
+      "title": "The Valley Thaws (original near-equal citadels)",
+      "competition": "arc-3",
+      "status": "prepared-held-stale-leader-premise",
+      "articleUses": [],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Preserved original commission. Chen overtook Tufa; use edited successor for October 25."
+    },
+    {
+      "id": "2026-10-25-gpu-valley-chen-leads-v2-base",
+      "generationRecord": "2026-10-25-gpu-valley-chen-leads-v2-base",
+      "src": "/news-images/2026-10-25-gpu-valley-chen-leads-v2-base.webp",
+      "title": "The Valley Thaws — Chen Takes the Lead",
+      "competition": "arc-3",
+      "status": "published-on-front-page",
+      "articleUses": [
+        "2026-10-25-morning-arc-3"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Mark requested the new Valley scene. One native citadel edit reflects Chen first. All current ten camps and exact rosters verified."
     }
   ],
   "existingXPosts": [

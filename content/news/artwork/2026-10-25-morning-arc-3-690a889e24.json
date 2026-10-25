@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "2026-10-25-morning-arc-3-690a889e24",
+  "kind": "edition-composition",
+  "articleId": "2026-10-25-morning-arc-3",
+  "headline": "Yi-Chia Chen takes the ARC3 lead from Tufa Labs at 71.48",
+  "briefSha256": "67e2a9ae37f872a88a679d6ba7badd1c57eca3f8887ecf9a2ca88292805689f1",
+  "dataAsOf": "2026-10-25T09:34:11Z",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": null,
+      "score": 71.48,
+      "scoreChange": null,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": -1,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "recorded-score-event",
+  "leadGap": {
+    "previous": null,
+    "current": 2.57,
+    "extends": false
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "layout": "header-footer-overlays-v1",
+  "historyChart": null,
+  "generationRecord": "2026-10-25-gpu-valley-chen-leads-v2-base",
+  "rawSha256": "4650ec49f9082c8226e7fbf1ec694779329717b3a08af68cc13a38f10f953a46",
+  "imageSha256": "ed9d8bf017d11f41cbfd884e54cdb01e6ea1cdaac0a8e11821d8b98f1232bc20",
+  "image": {
+    "src": "/news-images/2026-10-25-morning-arc-3-690a889e24.webp",
+    "alt": "AI editorial panorama: Chen’s two giant rabbits crown the larger citadel opposite Tufa’s five spiders and Dries; the full seven-character Turducken crew and two Yorkies fly over seven busy GPU workshops as snow thaws into streams and greenery. Original Early edition public standings: Chen first, Tufa second.",
+    "caption": "AI-generated editorial illustration: The Valley Thaws — Chen Takes the Lead. Updated at the editor’s request October 25; all ten leading ARC3 camps and the full Turducken crew. Score panel retains Oct 25, 2026 · 5:34 AM EDT observations; public standings are provisional. Machinery and citadel sizes are metaphors.",
+    "artworkId": "2026-10-25-morning-arc-3-690a889e24"
+  },
+  "compositionReview": "Visually inspected native scene; deterministic masthead and original-time score panel moved into separate header and footer bands so no character, dog, banner, workshop or landscape is covered. Native scene preserved in full.",
+  "compositionLayout": {
+    "sceneWidth": 1920,
+    "headerHeight": 145,
+    "footerHeight": 265,
+    "method": "Existing deterministic compositor graphics repositioned into external bands; no alteration of native scene."
+  }
+}

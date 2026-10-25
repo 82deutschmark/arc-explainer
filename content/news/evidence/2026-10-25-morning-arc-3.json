@@ -2,130 +2,13 @@
   "accessedAt": "2026-10-25T10:50:35Z",
   "articleId": "2026-10-25-morning-arc-3",
   "artwork": {
-    "articleId": "2026-10-25-morning-arc-3",
-    "briefSha256": "6f52164097b373bdd2824c85ee1b277c869b9b3ce198955c7b2e0456aa56fb6b",
-    "dataAsOf": "2026-10-25T09:34:11Z",
-    "generationRecord": "2026-10-13-digital-giant-bunnies-base",
-    "headline": "Yi-Chia Chen takes the ARC3 lead from Tufa Labs at 71.48",
-    "historyChart": {
-      "dataAsOf": "2026-10-25T09:34:11Z",
-      "leadObservedAt": "2026-10-09T03:51:41Z",
-      "series": [
-        {
-          "name": "Yi-Chia Chen @ Fields Model",
-          "points": [
-            [
-              "2026-10-04T18:30:56Z",
-              48.59,
-              2
-            ],
-            [
-              "2026-10-08T05:42:56Z",
-              55.77,
-              2
-            ],
-            [
-              "2026-10-09T03:51:41Z",
-              59.17,
-              1
-            ],
-            [
-              "2026-10-10T08:59:42Z",
-              62.96,
-              1
-            ],
-            [
-              "2026-10-12T05:33:50Z",
-              67.49,
-              1
-            ],
-            [
-              "2026-10-13T07:10:18Z",
-              67.49,
-              2
-            ],
-            [
-              "2026-10-22T04:34:54Z",
-              67.77,
-              2
-            ],
-            [
-              "2026-10-24T06:40:16Z",
-              68.21,
-              2
-            ],
-            [
-              "2026-10-25T07:03:54Z",
-              71.48,
-              1
-            ],
-            [
-              "2026-10-25T09:34:11Z",
-              71.48,
-              1
-            ]
-          ],
-          "teamId": "15499660"
-        },
-        {
-          "name": "Tufa Labs",
-          "points": [
-            [
-              "2026-10-04T18:30:56Z",
-              55.89,
-              1
-            ],
-            [
-              "2026-10-09T03:51:41Z",
-              55.89,
-              2
-            ],
-            [
-              "2026-10-09T04:21:45Z",
-              56.52,
-              2
-            ],
-            [
-              "2026-10-13T07:10:18Z",
-              68.91,
-              1
-            ],
-            [
-              "2026-10-25T07:03:54Z",
-              68.91,
-              2
-            ],
-            [
-              "2026-10-25T09:34:11Z",
-              68.91,
-              2
-            ]
-          ],
-          "teamId": "15486995"
-        }
-      ],
-      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
-    },
-    "id": "2026-10-25-morning-arc-3-e8e15a1254",
-    "image": {
-      "alt": "Editorial illustration for Yi-Chia Chen takes the ARC3 lead from Tufa Labs at 71.48. Yi-Chia Chen @ Fields Model: rank 1, score 71.48; Tufa Labs: rank 2, score 68.91.",
-      "artworkId": "2026-10-25-morning-arc-3-e8e15a1254",
-      "caption": "AI-generated editorial illustration. Score panel: Oct 25, 2026 · 5:34 AM EDT; provisional public standings. Characters and props are metaphors.",
-      "src": "/news-images/2026-10-25-morning-arc-3-e8e15a1254.webp"
-    },
-    "imageSha256": "f1c21ab5b1e739c9a79a4adb6a4e3de938e37b42bd1d15e5453aa3214575c346",
+    "version": 1,
+    "id": "2026-10-25-morning-arc-3-690a889e24",
     "kind": "edition-composition",
-    "layout": "corner-history-v2.1",
-    "leadGap": {
-      "current": 2.57,
-      "extends": false,
-      "previous": null
-    },
-    "personIds": [
-      "dries-smit",
-      "yi-chia-chen"
-    ],
-    "rawSha256": "81282ca9bed3cb82d2f34a7810bbd0e9c105bd74c67c1428e7a85dbb76f610a1",
+    "articleId": "2026-10-25-morning-arc-3",
+    "headline": "Yi-Chia Chen takes the ARC3 lead from Tufa Labs at 71.48",
+    "briefSha256": "67e2a9ae37f872a88a679d6ba7badd1c57eca3f8887ecf9a2ca88292805689f1",
+    "dataAsOf": "2026-10-25T09:34:11Z",
     "rows": [
       {
         "name": "Yi-Chia Chen @ Fields Model",
@@ -144,8 +27,34 @@
         "teamId": "15486995"
       }
     ],
-    "trigger": "editor-approved-reusable-scene",
-    "version": 1
+    "trigger": "recorded-score-event",
+    "leadGap": {
+      "previous": null,
+      "current": 2.57,
+      "extends": false
+    },
+    "personIds": [
+      "dries-smit",
+      "yi-chia-chen"
+    ],
+    "layout": "header-footer-overlays-v1",
+    "historyChart": null,
+    "generationRecord": "2026-10-25-gpu-valley-chen-leads-v2-base",
+    "rawSha256": "4650ec49f9082c8226e7fbf1ec694779329717b3a08af68cc13a38f10f953a46",
+    "imageSha256": "ed9d8bf017d11f41cbfd884e54cdb01e6ea1cdaac0a8e11821d8b98f1232bc20",
+    "image": {
+      "src": "/news-images/2026-10-25-morning-arc-3-690a889e24.webp",
+      "alt": "AI editorial panorama: Chen’s two giant rabbits crown the larger citadel opposite Tufa’s five spiders and Dries; the full seven-character Turducken crew and two Yorkies fly over seven busy GPU workshops as snow thaws into streams and greenery. Original Early edition public standings: Chen first, Tufa second.",
+      "caption": "AI-generated editorial illustration: The Valley Thaws — Chen Takes the Lead. Updated at the editor’s request October 25; all ten leading ARC3 camps and the full Turducken crew. Score panel retains Oct 25, 2026 · 5:34 AM EDT observations; public standings are provisional. Machinery and citadel sizes are metaphors.",
+      "artworkId": "2026-10-25-morning-arc-3-690a889e24"
+    },
+    "compositionReview": "Visually inspected native scene; deterministic masthead and original-time score panel moved into separate header and footer bands so no character, dog, banner, workshop or landscape is covered. Native scene preserved in full.",
+    "compositionLayout": {
+      "sceneWidth": 1920,
+      "headerHeight": 145,
+      "footerHeight": 265,
+      "method": "Existing deterministic compositor graphics repositioned into external bands; no alteration of native scene."
+    }
   },
   "baselineSnapshot": {
     "bronze": 30.92,
@@ -156,7 +65,7 @@
     "top": 68.91
   },
   "baselineTargetAt": "2026-10-25T00:00:00Z",
-  "briefSha256": "6f52164097b373bdd2824c85ee1b277c869b9b3ce198955c7b2e0456aa56fb6b",
+  "briefSha256": "67e2a9ae37f872a88a679d6ba7badd1c57eca3f8887ecf9a2ca88292805689f1",
   "closingSnapshot": {
     "bronze": 30.92,
     "gold": 38.22,
