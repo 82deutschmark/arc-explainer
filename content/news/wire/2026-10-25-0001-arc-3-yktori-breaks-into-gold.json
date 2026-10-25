@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-25T03:30:07Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "yktori jumps from 42nd into ARC-3 gold",
+  "id": "2026-10-25-0001-arc-3-yktori-breaks-into-gold",
+  "personIds": [],
+  "publishedAt": "2026-10-25T04:01:57Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "yktori gained 6.74 points to reach 42.77, climbing from 42nd to 11th."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move puts yktori inside the 19 gold places on the public board."
+    }
+  ],
+  "since": "2026-10-24T03:09:54Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-25T04:01:31Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16760837"
+  ]
+}
