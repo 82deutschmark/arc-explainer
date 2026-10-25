@@ -51,7 +51,14 @@ python3.13 scripts/newsroom_wire.py prepare --output /tmp/arc-wire-brief.json
 ```
 
 Read the whole brief. Each board under `boards` is `ready` or has an `error` (report it and
-work with the other board). A ready board has:
+work with the other board).
+
+For DNS or permission failures, first follow README.md's execution-access check: a restricted
+local command does not establish unavailable boards. The shared fetcher already retries
+temporary server errors once. Preserve the error category and use only the single authorized
+access recovery; do not loop or file from stale evidence.
+
+A ready board has:
 
 - `leads`: plain-fact lines about the past day: `leader` or `lead-change`, `gold-line`,
   `field`, `gain-<team>`, `climb-<team>`, `new-<team>`, `into-gold-<team>`,

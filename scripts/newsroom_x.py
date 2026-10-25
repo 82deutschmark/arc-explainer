@@ -193,7 +193,7 @@ def main(argv=None):
     post['boardBriefPath'] = str(Path(args.brief_output).resolve())
     write(target, post)
     print(json.dumps(post, ensure_ascii=False, indent=2))
-    return 0
+    return 0 if post['state'] == 'draft' else 2
 
 
 if __name__ == '__main__':

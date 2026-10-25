@@ -133,7 +133,11 @@ methods, motives, affiliations, quotes, hardware claims or final medals.
 5. Read the full brief. Personally check the proposed post's numbers and names.
    Comparisons use the previous calendar day's 6 pm Eastern observation. Missing
    comparisons stay unknown. One failed board must not stop the other. If both
-   fail, save the failure and stop without posting unverified standings.
+   fail, distinguish execution access from source failure as described in README.md before
+   saving the failure and stopping. A DNS error in a network-restricted execution does not
+   establish unavailable boards. One recovery after correcting authorized execution access is
+   allowed; do not repeat unchanged failing attempts. The helper exits nonzero when no usable
+   recap can be drafted. Preserve the failed attempt in the private archive before recovery.
 
 ## Keep the recap bounded
 
@@ -143,7 +147,8 @@ Do not open watched feeds, Replies, Reposts, search results, individual research
 people's profiles. Do not discover identities, ingest new research, generate artwork or follow
 links out of X. Previously saved source dates stay visible; stale coverage is not evidence of quiet.
 
-Prepare the board brief once. If both boards fail, save the failure and stop; do not substitute
+Prepare the board brief once. If execution access fails, apply the single authorized recovery
+described above; if both boards still fail, save the failure and stop. Do not substitute
 research browsing. Read and fact-check only the sections needed for the short recap. No optional
 mentions that require verification. Save the existing evening handoff format below from the brief
 and already verified public sources only. Empty `posts` arrays with honest limitations are valid.

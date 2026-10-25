@@ -25,7 +25,7 @@ from pathlib import Path
 import re
 import sys
 from newsroom import (ROOT, SITE, ET, UTC, stamp, iso, digest, encoded, load, write, text, web_source,
-                      contract_stamp, fetch, add_notebook_sources)
+                      contract_stamp, fetch, add_notebook_sources, board_failure)
 from newsroom_people import add_people_sources, read_people
 from newsroom_social import add_social_sources
 
@@ -329,10 +329,14 @@ def prepare(fetcher=fetch, actual_now=None, root=ROOT):
     except Exception as error:  # A failed fetch is reported per board below, never invented around.
         markets, result['sourceSha256'] = {'boards': {}}, None
         result['fetchError'] = str(error)
+        result['fetchFailure'] = board_failure(error, MARKETS_URL)
     for competition in ('arc-3', 'arc-2'):
         board = markets.get('boards', {}).get(competition)
         try:
             if not board:
+                if result.get('fetchFailure'):
+                    result['boards'][competition] = dict(result['fetchFailure'])
+                    continue
                 raise ValueError(result.get('fetchError') or 'no saved board in the market digest')
             result['boards'][competition] = board_brief(board, competition, actual_now, root)
         except Exception as error:

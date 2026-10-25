@@ -85,6 +85,15 @@ uses its own log folder instead). Big downloads belong on `/Volumes/Samsung 9100
 
 ## Checks and alarms
 
+- **Execution access is part of the job.** A networked desk needs permission to reach the two
+  exact board URLs and write its designated checkout/outbox. A local DNS or permission error
+  is an execution-access failure until checked; it does not prove the site is down. Check the
+  active execution permissions and use the already authorized network-enabled path, then make
+  one recovery attempt. Do not change DNS, disable protections, or refresh in a loop. The shared
+  fetcher retries temporary HTTP 429/502/503/504 and timeout failures once. A failed source stays
+  separate from the other contest; preserve real errors and never substitute stale evidence.
+  If an access failure remains, report the blocked command and execution restriction explicitly.
+
 - Every morning the check-in ([CHECKIN.md](CHECKIN.md)) looks over the editions, the Codex runs, the
   wire, the site, the boards and the plumbing, runs the backup desk or restarts a stopped service if needed, and writes its report
   to `~/bubba-workspace/reports/arc-daily-checkins/<date>.md`. Start there when asking how the paper is doing.

@@ -19,7 +19,9 @@ import json
 import math
 from pathlib import Path
 import re
+import socket
 import sys
+import urllib.error
 import urllib.request
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
@@ -202,11 +204,36 @@ def board_brief(board, competition, edition, now, actual_now, source_url, source
 
 
 def fetch(url):
-    with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'ARC-Daily-newsroom'}), timeout=30) as r:
-        raw = r.read(20_000_001)
+    for attempt in range(2):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'ARC-Daily-newsroom'}), timeout=30) as r:
+                raw = r.read(20_000_001)
+            break
+        except (urllib.error.URLError, TimeoutError) as error:
+            transient = (isinstance(error, urllib.error.HTTPError) and error.code in (429, 502, 503, 504)
+                         or isinstance(error, TimeoutError)
+                         or isinstance(getattr(error, 'reason', None), TimeoutError))
+            if attempt or not transient:
+                raise
+            print(f'Board request interrupted ({error}); retrying once.', file=sys.stderr)
     if len(raw) > 20_000_000:
         raise ValueError('board exceeds 20 MB limit')
     return json.loads(raw, parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value))), hashlib.sha256(raw).hexdigest()
+
+
+def board_failure(error, url):
+    """Describe observed failure without mistaking local access for a site outage."""
+    result = {'status': 'error', 'error': str(error), 'sourceUrl': url}
+    if isinstance(error, urllib.error.HTTPError):
+        result.update(errorKind='http', httpStatus=error.code,
+                      recovery='The server returned an HTTP error. Temporary 429/502/503/504 responses receive one retry; report the exact status if the request still fails.')
+    elif isinstance(getattr(error, 'reason', error), socket.gaierror):
+        result.update(errorKind='name-resolution', recovery='Hostname resolution failed in this execution environment; this does not establish a site outage. Check the active network permissions and use the authorized network-enabled execution path before retrying once. Do not change DNS or weaken security settings.')
+    elif isinstance(error, (PermissionError, urllib.error.URLError, TimeoutError)):
+        result.update(errorKind='access-or-transport', recovery='Check this execution environment’s filesystem/network permissions and the underlying error before attributing failure to the source.')
+    else:
+        result.update(errorKind='evidence', recovery='Check the evidence or content error; network retries cannot repair invalid or stale evidence.')
+    return result
 
 
 def add_notebook_sources(item, competition, actual_now, root=ROOT):
@@ -349,7 +376,7 @@ def prepare(edition, now=None, fetcher=fetch, actual_now=None, preview=False, wr
             add_people_sources(result['competitions'][comp], comp, actual_now, ROOT)
             add_edition_intake(result['competitions'][comp], comp, actual_now)
         except Exception as error:
-            result['competitions'][comp] = {'status': 'error', 'error': str(error), 'sourceUrl': url}
+            result['competitions'][comp] = board_failure(error, url)
     result['sha256'] = digest(result)
     return result
 

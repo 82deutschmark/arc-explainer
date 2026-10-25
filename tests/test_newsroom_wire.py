@@ -151,6 +151,15 @@ class WireDeskTests(unittest.TestCase):
 
 
 class EditionPostTests(unittest.TestCase):
+    def test_failed_recap_is_saved_and_returns_failure(self):
+        failed = {'version': 1, 'competitions': {'arc-3': {'status': 'error', 'error': 'network blocked'},
+                                               'arc-2': {'status': 'error', 'error': 'network blocked'}}}
+        with tempfile.TemporaryDirectory() as directory, patch.object(x, 'prepare', return_value=failed):
+            outbox = Path(directory) / 'outbox.json'
+            with patch.object(x, 'daily_post', return_value={'state': 'waiting', 'reason': 'No usable board evidence.'}):
+                self.assertEqual(x.main(['--output', str(outbox), '--brief-output', str(Path(directory) / 'brief.json')]), 2)
+            self.assertEqual(json.loads(outbox.read_text())['state'], 'waiting')
+
     def article(self, root, competition, headline, edition='evening'):
         path = Path(root) / 'content/news/articles' / f'2026-10-09-{edition}-{competition}.json'
         path.parent.mkdir(parents=True, exist_ok=True)

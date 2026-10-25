@@ -9,6 +9,9 @@ from pathlib import Path
 import tempfile
 import sys
 import unittest
+from unittest.mock import patch, MagicMock
+import socket
+import urllib.error
 
 sys.path.insert(0, str(Path(__file__).parents[1] / 'scripts'))
 
@@ -43,6 +46,25 @@ def draft(brief):
 
 
 class NewsroomTests(unittest.TestCase):
+    def test_transport_failure_is_not_reported_as_a_site_outage(self):
+        error = urllib.error.URLError(socket.gaierror(8, 'nodename nor servname provided'))
+        brief = n.prepare('evening', fetcher=lambda _: (_ for _ in ()).throw(error))
+        self.assertTrue(all(item['errorKind'] == 'name-resolution' for item in brief['competitions'].values()))
+        self.assertIn('does not establish a site outage', brief['competitions']['arc-3']['recovery'])
+
+    def test_board_fetch_recovers_one_gateway_failure_but_stays_bounded(self):
+        url = 'https://example.com/board'
+        error = urllib.error.HTTPError(url, 502, 'Bad Gateway', None, None)
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = b'{"latest":{}}'
+        with patch.object(n.urllib.request, 'urlopen', side_effect=[error, response]) as request:
+            self.assertEqual(n.fetch(url)[0], {'latest': {}})
+            self.assertEqual(request.call_count, 2)
+        with patch.object(n.urllib.request, 'urlopen', side_effect=error) as request:
+            with self.assertRaises(urllib.error.HTTPError):
+                n.fetch(url)
+            self.assertEqual(request.call_count, 2)
+
     @classmethod
     def setUpClass(cls):
         # Historical board fixtures must not consume today's independently checked social posts.

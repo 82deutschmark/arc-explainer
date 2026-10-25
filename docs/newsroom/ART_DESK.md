@@ -122,6 +122,14 @@ use a paid API or a stale illustration.
 
 ## Publish together
 
+Finish manual commissions with a clean handoff before a publishing shift: put experimental
+outputs and discarded variants in a dated private `reports/arc-daily-social/art-planning/`
+folder, and commit the approved public bases and provenance with their inventory entries.
+Do not leave untracked artwork or an `output/` directory in the publishing checkout. An
+unpublished commission is prepared stock, with its leader/cast conditions recorded; it does
+not require changing a published issue or sending a post. Preserve other people's unexpected
+work and stop on a real conflict.
+
 Stage the edition and evidence files with the new `content/news/artwork/` records, the new
 `client/public/news-images/` assets, any deliberately updated `visual-identities.json` and the
 updated `artwork-inventory.json`. Never overwrite an earlier edition or its images. The routine X

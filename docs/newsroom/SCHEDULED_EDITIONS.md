@@ -27,6 +27,9 @@ separate step. Human send confirmation needs no browser proof.
 - Prepare once, then perform one final fixed-endpoint freshness check. If the eligible cutoff
   observation changed, re-prepare once and revise the affected copy and artwork. If it keeps
   changing, report that contest's failure and publish the other ready contest. No refresh loop.
+- Before treating a DNS/permission failure as unavailable board evidence, follow README.md's
+  execution-access check. One recovery after restoring already authorized execution access is
+  allowed; do not repeat unchanged restricted commands or label the site down from a local error.
 
 ## Publish both contests
 
