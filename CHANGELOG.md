@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.8  Oct 26, 2026
+
+- **Focused ARC-2 capped-output gallery** (Author: GPT-6.1 Sol / Codex). Add `/arc2/capped` for the Boss to inspect Lattice's exact 22 always-capped test outputs across 20 tasks. Show selected test inputs, known solutions, dimensions and cell counts, expandable training examples and other tests, plus existing task/explanation links. Reuses the puzzle API and grid renderer; distinguishes the reported first-pass cohort from rerun statistics and preserves zero-based test indices. Files: `client/src/pages/Arc2Capped.tsx`, `client/src/App.tsx`. Plan: `docs/2026-10-26-arc2-capped-gallery-plan.md`.
+
 ### Version 9.158.7  Oct 25, 2026
 
 - **Review standout ARC-2 entrants, not just rank jumps** (Author: GPT-6.1 Sol / Codex). Verify the existing full ARC-2 board rather than duplicate it, file Nguyen’s uncovered score rise separately from already-published debut coverage, strengthen wire selection/source-check guidance, and queue a bounded evidence-led methods follow-up through the existing editorial intake. No automation, application code or schedule changes. Plan: `docs/plans/2026-10-25-arc2-board-and-wire-coverage.md`.

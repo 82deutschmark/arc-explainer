@@ -1,7 +1,7 @@
 /*
-Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
-Date: 2026-10-22
-PURPOSE: Client-side router for ARC Explainer. Centralizes route registrations across all
+Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
+Date: 26-October-2026
+PURPOSE: Registers the focused /arc2/capped cohort gallery. Client-side router for ARC Explainer. Centralizes route registrations across all
          feature areas (puzzles, streaming, admin tools, ARC3 community, RE-ARC, Worm Arena),
          including ARC3 review tooling and supporting newspaper people, community and method routes.
          Loads secondary route modules on demand so the front page does not download
@@ -85,6 +85,7 @@ const ModelDebate = lazy(() => import("@/pages/ModelDebate"));
 const LLMCouncil = lazy(() => import("@/pages/LLMCouncil"));
 const ModelComparisonPage = lazy(() => import("@/pages/ModelComparisonPage"));
 const HuggingFaceUnionAccuracy = lazy(() => import("@/pages/HuggingFaceUnionAccuracy"));
+const Arc2Capped = lazy(() => import("@/pages/Arc2Capped"));
 const Arc2HardSet = lazy(() => import("@/pages/Arc2HardSet"));
 const Arc2HardSetFindings = lazy(() => import("@/pages/Arc2HardSetFindings"));
 const About = lazy(() => import("@/pages/About"));
@@ -237,6 +238,7 @@ function Router() {
         <Route path="/council/:taskId" component={LLMCouncil} />
         <Route path="/model-comparison" component={ModelComparisonPage} />
         <Route path="/scoring" component={HuggingFaceUnionAccuracy} />
+        <Route path="/arc2/capped" component={Arc2Capped} />
         <Route path="/arc2/hard-set" component={Arc2HardSet} />
         <Route path="/arc2/hard-set/findings" component={Arc2HardSetFindings} />
         <Route path="/about" component={About} />
