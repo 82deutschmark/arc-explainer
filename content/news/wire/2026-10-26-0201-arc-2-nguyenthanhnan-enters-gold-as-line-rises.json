@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-26T05:41:22Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "NguyenThanhNhan enters ARC-2 gold as line rises",
+  "id": "2026-10-26-0201-arc-2-nguyenthanhnan-enters-gold-as-line-rises",
+  "personIds": [],
+  "publishedAt": "2026-10-26T06:01:50Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "NguyenThanhNhan gained 3.20 to move from 19th to 16th at 69.17, taking the last of the 16 public gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gold line rose 0.42 in the past day. ARC Raiders fell from 16th to 17th at 68.75, 0.42 short of the cutoff."
+    }
+  ],
+  "since": "2026-10-25T05:33:40Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T06:01:29Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15938245",
+    "15526034"
+  ]
+}
