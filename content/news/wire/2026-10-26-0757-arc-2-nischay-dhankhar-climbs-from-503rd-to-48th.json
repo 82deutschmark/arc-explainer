@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-26T11:42:01Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Nischay Dhankhar climbs from 503rd to 48th on ARC-2",
+  "id": "2026-10-26-0757-arc-2-nischay-dhankhar-climbs-from-503rd-to-48th",
+  "personIds": [],
+  "publishedAt": "2026-10-26T11:57:57Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Nischay Dhankhar gained 18.33 points to reach 49.72, moving from 503rd to 48th in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The gain moves the entry into the top 100 on the public board. Standings remain provisional."
+    }
+  ],
+  "since": "2026-10-25T11:34:25Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T11:57:05Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15903566"
+  ]
+}
