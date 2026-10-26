@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-26T17:42:44Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Trian rises from 49th to 38th on ARC-2",
+  "id": "2026-10-26-1401-arc-2-trian-climbs-to-thirty-eighth",
+  "personIds": [],
+  "publishedAt": "2026-10-26T18:01:11Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Trian added 6.95 points to reach 55.14, advancing from 49th to 38th in the past day."
+    }
+  ],
+  "since": "2026-10-25T17:37:45Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T18:00:39Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16558875"
+  ]
+}
