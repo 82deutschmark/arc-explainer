@@ -1,22 +1,20 @@
 /**
  * Author: GPT-6.1 Sol / Codex
  * Date: 26-October-2026
- * PURPOSE: Focused visual inspection of Lattice's 22 always-capped panel_v60 test outputs,
- *          grouped into 20 ARC-2 tasks. Reuses the puzzle API for actual examples and solutions,
- *          GridDisplay for grids/dimensions, and existing task pages for recorded explanations.
- * SRP/DRY check: Pass — cohort presentation only; no dataset copy, solver or grid-rendering logic.
+ * PURPOSE: Dense ARC-2 failure-inspection terminal: an API-backed cohort watchlist and
+ *          selected test/training inspector, reusing query keys, GridDisplay and task links.
+ * SRP/DRY check: Pass — presentation only; no copied dataset, solver or grid-rendering logic.
  */
 import React, { useState } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import { Link } from 'wouter';
-import { ArrowUpRight, Loader2 } from 'lucide-react';
-import { usePuzzle } from '@/hooks/usePuzzle';
+import { ArrowUpRight, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { GridDisplay } from '@/components/puzzle/grids/GridDisplay';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { ARCExample } from '@shared/types';
+import { Input } from '@/components/ui/input';
+import type { ARCExample, ARCTask } from '@shared/types';
+import './Arc2Capped.css';
 
 // Source: Lattice's 26-Oct-2026 channel report. Indices are zero-based test indices,
 // never attempt numbers or explanation IDs. Keep both selected tests for the two repeated tasks.
@@ -33,82 +31,87 @@ export const CAPPED_COHORT = [
   { id: 'e12f9a14', tests: [0, 1] }, { id: 'f560132c', tests: [0] },
 ];
 
-function ExamplePair({ example }: { example: ARCExample }) {
-  return (
-    <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2">
-      <GridDisplay grid={example.input} label="Input" sizeClass="w-full max-w-[300px]" className="min-w-0 w-full" />
-      {example.output?.length ? (
-        <GridDisplay grid={example.output} label="Known correct output" sizeClass="w-full max-w-[300px]" className="min-w-0 w-full" />
-      ) : <p className="text-sm text-muted-foreground">Known output unavailable.</p>}
-    </div>
-  );
-}
+const OUTPUTS = CAPPED_COHORT.flatMap(({ id, tests }) => tests.map(index => ({ id, index, key: `${id}-${index}` })));
+const dimensions = (grid?: number[][]) => grid?.length ? `${grid.length}×${grid[0]?.length ?? 0}` : '—';
+const cellCount = (grid?: number[][]) => grid?.reduce((total, row) => total + row.length, 0) ?? 0;
 
-function TaskCard({ id, tests }: { id: string; tests: number[] }) {
-  const { task, isLoadingTask, taskError } = usePuzzle(id);
-  const [showExamples, setShowExamples] = useState(false);
-  return (
-    <Card id={`task-${id}`} className="scroll-mt-24 overflow-hidden">
-      <CardHeader className="border-b bg-muted/30">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <CardTitle className="font-mono text-xl">{id}</CardTitle>
-          <Link href={`/task/${id}`} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-            Open task & explanations <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {tests.map(index => <Badge key={index} variant="outline">Capped test index {index} · test {index + 1}</Badge>)}
-          {task && <span className="text-sm text-muted-foreground">{task.train.length} training examples · {task.test.length} test outputs</span>}
-        </div>
-        {id === '13e47133' && <Link href="/task/13e47133?highlight=88511" className="text-sm text-primary hover:underline">Open the explanation linked in the discussion</Link>}
-      </CardHeader>
-      <CardContent className="space-y-6 pt-5">
-        {isLoadingTask && <p className="flex items-center gap-2 text-sm" role="status"><Loader2 className="h-4 w-4 animate-spin" /> Loading task grids…</p>}
-        {(taskError || (!isLoadingTask && !task)) && <Alert variant="destructive"><AlertDescription>Could not load this task. Use the task link above to inspect it.</AlertDescription></Alert>}
-        {task && <>
-          {tests.map(index => {
-            const example = task.test[index];
-            if (!example) return <Alert key={index} variant="destructive"><AlertDescription>Test index {index} is unavailable in this task.</AlertDescription></Alert>;
-            const cells = example.output?.reduce((total, row) => total + row.length, 0) ?? 0;
-            return <section key={index} id={`${id}-${index}`} className="space-y-3 scroll-mt-24">
-              <h3 className="font-semibold">Test {index + 1} <span className="font-normal text-muted-foreground">(index {index}) · {cells} output cells</span></h3>
-              <ExamplePair example={example} />
-            </section>;
-          })}
-          <Button variant="outline" aria-expanded={showExamples} aria-controls={`examples-${id}`} onClick={() => setShowExamples(open => !open)}>
-            {showExamples ? 'Hide' : 'Show'} training examples & other tests
-          </Button>
-          {showExamples && <div id={`examples-${id}`} className="space-y-6 border-t pt-5">
-            {task.train.map((example, index) => <section key={`train-${index}`} className="space-y-3">
-              <h3 className="font-semibold">Training example {index + 1}</h3><ExamplePair example={example} />
-            </section>)}
-            {task.test.map((example, index) => tests.includes(index) ? null : <section key={`test-${index}`} className="space-y-3">
-              <h3 className="font-semibold">Other test {index + 1} (index {index}) <span className="font-normal text-muted-foreground">— not in the reported always-capped list</span></h3>
-              <ExamplePair example={example} />
-            </section>)}
-          </div>}
-        </>}
-      </CardContent>
-    </Card>
-  );
+function ExamplePair({ example, compact = false }: { example: ARCExample; compact?: boolean }) {
+  return <div className={`terminal-pair ${compact ? 'terminal-pair-small' : ''}`}>
+    <GridDisplay grid={example.input} label="INPUT" sizeClass={compact ? "w-full max-w-[136px]" : "w-full max-w-[310px]"} className="terminal-grid" />
+    {example.output?.length ? <GridDisplay grid={example.output} label="KNOWN OUTPUT" sizeClass={compact ? "w-full max-w-[136px]" : "w-full max-w-[310px]"} className="terminal-grid" />
+      : <p className="terminal-muted">Known output unavailable.</p>}
+  </div>;
 }
 
 export default function Arc2Capped() {
-  usePageMeta({ title: 'ARC-2: the always-capped test outputs', description: 'Inspect the 22 test outputs across 20 ARC-2 tasks reported to hit the token cap in every FN panel run, with inputs, known solutions and task links.', canonicalPath: '/arc2/capped' });
-  return (
-    <main className="mx-auto max-w-5xl space-y-7 px-4 py-8">
-      <header className="space-y-4">
-        <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">ARC-2 · failure-mode inspection</p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">The answers that never arrived</h1>
-        <p className="max-w-3xl text-lg text-muted-foreground">22 test outputs. 20 tasks. A closer look at the puzzles behind the token-cap failures.</p>
-        <p className="max-w-3xl leading-relaxed">Lattice reported that these test outputs reached the 64k token cap in all eight FN first-pass runs on panel_v60. This is that specific reported cohort—not every no-grid failure, and not a claim that these tasks cannot be solved.</p>
-        <p className="max-w-3xl text-sm text-muted-foreground">Reported 26 October 2026. Each request answers one test output. The suffix in the discussion is a zero-based test index: index 0 means the first test, index 1 the second. Colored grids below are dataset inputs and known correct outputs, not model answers. Expand a task for its training examples and remaining tests.</p>
-        <nav aria-label="Jump to a task" className="flex flex-wrap gap-x-4 gap-y-2 border-y py-4">
-          {CAPPED_COHORT.map(({ id }) => <a key={id} href={`#task-${id}`} className="font-mono text-sm text-primary underline-offset-4 hover:underline">{id}</a>)}
-        </nav>
-      </header>
-      {CAPPED_COHORT.map(entry => <TaskCard key={entry.id} {...entry} />)}
-      <p className="text-sm text-muted-foreground"><Link href="/arc2/hard-set" className="text-primary hover:underline">Browse the broader ARC-2 hard set</Link> · Cohort membership is a snapshot of Lattice's report; task grids come from ARC Explainer's dataset.</p>
-    </main>
-  );
+  usePageMeta({ title: 'ARC-2 capped-output terminal', description: 'Inspect 22 always-capped ARC-2 test outputs in a compact task watchlist with grids, training examples and dimensions.', canonicalPath: '/arc2/capped' });
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<'task' | 'cells'>('task');
+  const [selectedKey, setSelectedKey] = useState(() => {
+    const hash = window.location.hash.slice(1);
+    return OUTPUTS.find(output => output.key === hash)?.key ?? OUTPUTS[0].key;
+  });
+  // Share the exact usePuzzle query keys/default fetcher, so visiting task pages reuses cached data.
+  const queries = useQueries({ queries: CAPPED_COHORT.map(({ id }) => ({ queryKey: [`/api/puzzle/task/${id}`] })) });
+  const tasks = new Map(CAPPED_COHORT.map(({ id }, i) => {
+    const response = queries[i].data as { success: boolean; data: ARCTask } | undefined;
+    return [id, response?.success ? response.data : undefined];
+  }));
+  const rows = OUTPUTS.map(output => ({ ...output, task: tasks.get(output.id) }));
+  const visible = rows.filter(row => `${row.id}:${row.index}`.includes(search.trim().toLowerCase()))
+    .sort((a, b) => sort === 'cells' ? cellCount(b.task?.test[b.index]?.output) - cellCount(a.task?.test[a.index]?.output) || a.key.localeCompare(b.key) : a.key.localeCompare(b.key));
+  const selected = rows.find(row => row.key === selectedKey) ?? rows[0];
+  const task = selected.task;
+  const example = task?.test[selected.index];
+  const selectedPosition = visible.findIndex(row => row.key === selected.key);
+  const query = queries[CAPPED_COHORT.findIndex(entry => entry.id === selected.id)];
+  function select(key: string) {
+    setSelectedKey(key);
+    window.history.replaceState(null, '', `#${key}`);
+  }
+  return <main className="arc2-terminal">
+    <header className="terminal-topline">
+      <div><span className="terminal-kicker">ARC / RESEARCH DESK</span><h1>CAP LIMIT <span>— OUTPUT INSPECTOR</span></h1></div>
+      <Link href="/arc2/hard-set">HARD SET <ArrowUpRight size={12} /></Link>
+    </header>
+    <div className="terminal-ticker" aria-label="Cohort summary">
+      <span><b>22</b> OUTPUTS</span><span><b>20</b> TASKS</span><span><b>64k</b> TOKEN CAP</span><span><b>8/8</b> FIRST-PASS RUNS CAPPED</span><span>FN · PANEL_V60</span><span>REPORTED 26 OCT 2026</span>
+    </div>
+    <p className="terminal-source">Lattice’s reported always-capped cohort, not all no-grid failures. One test output per request. Grids are dataset inputs and correct answers, not model predictions. Test indices start at 0.</p>
+    <div className="terminal-workspace">
+      <aside className="terminal-watchlist" aria-label="Capped output watchlist">
+        <div className="terminal-panel-title"><h2>01 / OUTPUT WATCHLIST</h2><span>{visible.length} / 22</span></div>
+        <div className="terminal-filters">
+          <Input aria-label="Find task or test index" placeholder="Find task / task:index" value={search} onChange={event => setSearch(event.target.value)} />
+          <select aria-label="Sort outputs" value={sort} onChange={event => setSort(event.target.value as 'task' | 'cells')}><option value="task">TASK ↑</option><option value="cells">CELLS ↓</option></select>
+        </div>
+        <div className="terminal-columns" aria-hidden="true"><span>TASK ID</span><span>IDX</span><span>OUT R×C</span><span>CELLS</span></div>
+        <div className="terminal-rows">
+          {visible.map(row => <button key={row.key} className={`terminal-row ${row.key === selected.key ? 'is-selected' : ''}`} onClick={() => select(row.key)} aria-label={`Inspect ${row.id} test index ${row.index}`} aria-pressed={row.key === selected.key}>
+            <span>{row.id}</span><span>{row.index}</span><span>{dimensions(row.task?.test[row.index]?.output)}</span><span>{row.task ? cellCount(row.task.test[row.index]?.output) : '…'}</span>
+          </button>)}
+          {!visible.length && <p className="terminal-empty">No matching task. Clear the search to see all 22 outputs.</p>}
+        </div>
+        <div className="terminal-watchlist-note">AMBER = SELECTED · R×C = ROWS × COLUMNS<br />CELL COUNTS DESCRIBE KNOWN OUTPUTS</div>
+      </aside>
+      <article className="terminal-inspector" aria-label="Selected output inspector">
+        <div className="terminal-panel-title"><h2>02 / TEST INSPECTOR</h2><div className="terminal-steppers">
+          <Button variant="ghost" size="icon" aria-label="Previous output" disabled={selectedPosition <= 0} onClick={() => select(visible[selectedPosition - 1].key)}><ChevronLeft size={15} /></Button>
+          <Button variant="ghost" size="icon" aria-label="Next output" disabled={selectedPosition < 0 || selectedPosition >= visible.length - 1} onClick={() => select(visible[selectedPosition + 1].key)}><ChevronRight size={15} /></Button>
+        </div></div>
+        <div className="terminal-task-heading"><h2>{selected.id}<span>:{selected.index}</span></h2><Link href={`/task/${selected.id}`}>TASK & EXPLANATIONS <ArrowUpRight size={13} /></Link></div>
+        <div className="terminal-facts"><span>TEST <b>{selected.index + 1}</b> / {task?.test.length ?? '—'}</span><span>IN <b>{dimensions(example?.input)}</b></span><span>OUT <b>{dimensions(example?.output)}</b></span><span>CELLS <b>{example ? cellCount(example.output) : '—'}</b></span><span>TRAIN <b>{task?.train.length ?? '—'}</b></span></div>
+        {selected.id === '13e47133' && <Link className="terminal-explanation" href="/task/13e47133?highlight=88511">DISCUSSION’S HIGHLIGHTED EXPLANATION ↗</Link>}
+        {query.isLoading && <p className="terminal-empty" role="status"><Loader2 className="animate-spin inline mr-2" size={14} />Loading dataset grids…</p>}
+        {(query.isError || (!query.isLoading && !example)) && <p className="terminal-empty" role="alert">Could not load this test. <button onClick={() => query.refetch()}>Retry</button> or open its task page.</p>}
+        {task && example && <>
+          <div className="terminal-selected-grids"><ExamplePair example={example} /></div>
+          <div className="terminal-panel-title"><h2>03 / TRAINING EXAMPLES</h2><span>{task.train.length} PAIRS</span></div>
+          <div className="terminal-training">{task.train.map((training, index) => <section key={index}><h3>TRAIN {String(index + 1).padStart(2, '0')}</h3><ExamplePair example={training} compact /></section>)}</div>
+          {task.test.length > 1 && <details key={selected.id} className="terminal-other-tests"><summary>OTHER TESTS IN THIS TASK ({task.test.length - 1})</summary><div className="terminal-training">{task.test.map((other, index) => index === selected.index ? null : <section key={index}><h3>TEST {index + 1} · INDEX {index} <span>{CAPPED_COHORT.find(entry => entry.id === selected.id)?.tests.includes(index) ? 'IN COHORT' : 'NOT IN COHORT'}</span></h3><ExamplePair example={other} compact /></section>)}</div></details>}
+        </>}
+      </article>
+    </div>
+    <footer className="terminal-footer"><span>COHORT SNAPSHOT / 26 OCT 2026 · DATA / ARC EXPLAINER</span><span>CAP FAILURE ≠ UNSOLVABLE TASK</span></footer>
+  </main>;
 }

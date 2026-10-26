@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.9  Oct 26, 2026
+
+- **ARC-2 capped-output research terminal** (Author: GPT-6.1 Sol / Codex). Replace the spacious gallery with a dense charcoal watchlist and focused grid inspector. Search task IDs/test indices, sort by output cells, step between outputs, and inspect training pairs without repeated card chrome. Preserve all 22 cohort outputs, dataset grids, provenance and highlighted task links; stack the panes on mobile. Files: `client/src/pages/Arc2Capped.tsx`, `client/src/pages/Arc2Capped.css`. Plan: `docs/2026-10-26-arc2-terminal-plan.md`.
+
 ### Version 9.158.8  Oct 26, 2026
 
 - **Focused ARC-2 capped-output gallery** (Author: GPT-6.1 Sol / Codex). Add `/arc2/capped` for the Boss to inspect Lattice's exact 22 always-capped test outputs across 20 tasks. Show selected test inputs, known solutions, dimensions and cell counts, expandable training examples and other tests, plus existing task/explanation links. Reuses the puzzle API and grid renderer; distinguishes the reported first-pass cohort from rerun statistics and preserves zero-based test indices. Registers matching server metadata so direct links return HTTP 200. Files: `client/src/pages/Arc2Capped.tsx`, `client/src/App.tsx`, `shared/routes.ts`. Plan: `docs/2026-10-26-arc2-capped-gallery-plan.md`.
