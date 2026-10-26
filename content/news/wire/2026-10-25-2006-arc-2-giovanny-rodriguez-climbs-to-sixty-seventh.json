@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-25T23:40:41Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Giovanny Rodríguez climbs to 67th on ARC-2",
+  "id": "2026-10-25-2006-arc-2-giovanny-rodriguez-climbs-to-sixty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-26T00:06:07Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Giovanny Rodríguez gained 10.00 to reach 41.53, moving from 456th to 67th on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The climb carries Rodríguez into the top 100 after starting the day outside it. Public standings remain provisional."
+    }
+  ],
+  "since": "2026-10-24T23:16:26Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T00:05:28Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15522325"
+  ]
+}
