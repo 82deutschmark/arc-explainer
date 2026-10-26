@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T15:42:28Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Sankalp rises from 503rd to 60th on ARC-3",
+  "id": "2026-10-26-1200-arc-3-sankalp-rises-to-sixtieth",
+  "personIds": [],
+  "publishedAt": "2026-10-26T16:00:43Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Sankalp gained 3.70 points to reach 34.59, moving from 503rd to 60th on the ARC-3 public board."
+    }
+  ],
+  "since": "2026-10-25T15:36:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T15:59:45Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15564282"
+  ]
+}
