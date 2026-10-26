@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-22
- * PURPOSE: Centralized public route descriptions and indexing policy for server HTML,
+ * Date: 26-October-2026
+ * PURPOSE: Registers the focused ARC-2 capped-output inspection page for successful server HTML.
+ *          Centralized public route descriptions and indexing policy for server HTML,
  *          browser navigation, discovery links and the generated sitemap. Analytics archive
  *          copy reports dated source metadata and mixed-run provenance without assuming a publication stop.
  *          Retires the obsolete model/trustworthiness leaderboard from public discovery.
@@ -419,6 +420,7 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/poetiq', 'Poetiq ARC solver', 'Explore the Poetiq ARC solver workflow.', true],
   ['/puzzle/beetree', 'Beetree ARC solver', 'Start a Beetree ARC solver session.', true],
   ['/worm-arena/live', 'Live Worm Arena match', 'Watch a live language-model Snake match.', true],
+  ['/arc2/capped', 'ARC-2: the always-capped test outputs', 'Inspect Lattice’s reported 22 always-capped test outputs across 20 ARC-2 tasks, with inputs, known solutions and task links.', true],
   ['/notes1023', 'Boston field notes', 'Summit conversation notebook.', true],
   ['/team/summit-2026', 'Boston field notes', 'Private team conversation guide.', true],
   ['/team/login', 'Team sign-in', 'Sign in to the ARC Mutants team pages.', true],

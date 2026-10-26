@@ -24,3 +24,5 @@ Reuse `usePuzzle` and the existing puzzle API, `GridDisplay`, `TrainingPairGalle
 ## Verification
 
 Production build passed; final frontend build passed after responsive-grid adjustment. Exact cohort validation passed against all 20 evaluation2 task files and 22 test indices. Browser checks rendered 20 task links and 22 selected sections; training expansion/collapse and task-anchor navigation passed. Desktop (1440px) and mobile (375px) screenshots inspected; mobile document width equals viewport and no selected grid crosses it. Local Vite emitted one development WebSocket connection warning, not an application error. Repository-wide TypeScript check fails in existing unrelated SnakeBench, ingest and test files; no errors reference the changed page or router.
+
+Live browser verification after the first deployment confirmed all selected grids and interactions, but caught HTTP 404 from the shared server metadata registry. Added the page to `shared/routes.ts` (unlisted/noindex) so direct links return HTTP 200 without altering unrelated routes.
