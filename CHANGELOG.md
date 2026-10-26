@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.7  Oct 25, 2026
+
+- **Review standout ARC-2 entrants, not just rank jumps** (Author: GPT-6.1 Sol / Codex). Verify the existing full ARC-2 board rather than duplicate it, file Nguyen’s uncovered score rise separately from already-published debut coverage, strengthen wire selection/source-check guidance, and queue a bounded evidence-led methods follow-up through the existing editorial intake. No automation, application code or schedule changes. Plan: `docs/plans/2026-10-25-arc2-board-and-wire-coverage.md`.
+
 ### Version 9.158.6  Oct 24, 2026
 
 - **Newsroom map matches the live desks** (Author: Claude Sonnet 5.5). The map in `docs/newsroom/README.md` said the wire, research and personal briefing desks were paused, but the Codex automations table shows all three active with runs today. Corrected those rows and two stray "research remains paused" lines, and pointed readers at the live status as the source of truth. Docs only.

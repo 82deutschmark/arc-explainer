@@ -78,6 +78,20 @@ Pick the one to three most consequential uncovered leads across both boards. Fol
 standing editorial direction in [REPORTER.md](REPORTER.md): a balanced paper led by the strongest
 verified development, in proportion to news value.
 
+Before choosing, review high-placing newcomers and improving teams with very few recorded
+submissions alongside the biggest rank jumps. The saved board’s submission count is context,
+not proof of a first-ever attempt, a particular model, private sharing or a known recipe.
+Check the existing wire archive: a covered debut does not cover a later consequential score
+gain, and a covered gain is not permission to repeat the debut. Do not let the same large
+rank-jump stories crowd out an uncovered strong entrant on either board.
+
+When a standout entrant warrants a methods follow-up, check the verified member’s linked
+public notebooks, discussions and repositories where reachable. Only publish what those
+sources establish. If no method is established, keep it unknown; an inaccessible page is not
+evidence that nothing public exists. Put an unresolved follow-up in the existing editorial
+assignment intake with source URLs and an expiry, so the research/edition desk can carry it
+forward. Do not change research schedules, contact entrants or send alerts from the wire.
+
 **Never refile the same move.** Before filing, compare exact team IDs and score-event observation
 times with the wire stories already published. A gain that stays in the rolling one-day window is
 not new; a later changed score or rank, or another consequential new fact, can justify a follow-up. A lead change, a

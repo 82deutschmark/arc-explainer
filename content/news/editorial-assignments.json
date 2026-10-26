@@ -795,5 +795,32 @@
       "https://arc.markbarney.net/news#2026-10-22-railway-platform-outage"
     ],
     "instructions": "Include a short service note about Railway’s ongoing platform outage and the editor-reported build delays. The validated dispatch 2026-10-22-railway-platform-outage contains the dated official 21:08 UTC update and current publication context. Use that saved report with its timestamp; do not add browsing or claim full platform recovery. Do not delay the edition waiting for deployment. Research remains paused."
+  },
+  {
+    "id": "arc2-standout-entrants-methods-followup",
+    "competition": "arc-2",
+    "createdAt": "2026-10-26T00:20:23Z",
+    "expiresAt": "2026-10-29T00:20:23Z",
+    "title": "Follow the evidence behind ARC-2 standout entrants",
+    "priority": "Editor-requested research follow-up",
+    "status": "pending",
+    "teamIds": [
+      "17166527",
+      "16784541"
+    ],
+    "personIds": [],
+    "subjectNames": [
+      "Thanh Hau Nguyen",
+      "Arshjot Khehra"
+    ],
+    "instructions": "The editor asks for useful snippets and stronger wire-desk research. Refresh the saved ARC-2 board, then inspect these verified roster accounts for public ARC-2 notebooks, competition discussions, write-ups and repositories. Report concrete accessible findings with links, dates and attribution; do not infer a shared recipe, model size, fine-tuning or hidden collaboration from scores or low submission counts. The wire already covered Nguyen’s debut on October 23 and Khehra’s debut on October 25; avoid refiling either. Nguyen’s later rise to 63.89 is a separate follow-up. Counts are recorded Kaggle submissions, not proof of first-ever attempts. If sources are unavailable or no method is established, say what was checked and keep the method unknown. Cover, hold or carry with a specific reason through the normal edition intake. No extra messages or entrant contact authorized.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/kaggle-leaderboard/arc-2",
+      "https://www.kaggle.com/thanhhau097a",
+      "https://www.kaggle.com/arshjot",
+      "https://arc.markbarney.net/news/wire#2026-10-23-1241-arc-2-thanh-hau-nguyen-debuts-at-34th",
+      "https://arc.markbarney.net/news/wire#2026-10-25-1804-arc-2-arshjot-khehra-debuts-at-45th"
+    ],
+    "verificationNotes": "Live markets feed and public wire index inspected October 25, 2026 EDT. Roster usernames are saved-board observations; method claims are not verified. Huikang page returned HTTP 403 to this assistant; our board is independently current."
   }
 ]
