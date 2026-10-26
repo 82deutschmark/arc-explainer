@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-26T03:41:08Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "insuperabilehart surges from 2,210th to 72nd on ARC-2",
+  "id": "2026-10-26-0004-arc-2-insuperabilehart-surges-to-seventy-second",
+  "personIds": [],
+  "publishedAt": "2026-10-26T04:04:05Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "insuperabilehart added 23.75 points to reach 40.42, vaulting from 2,210th to 72nd in the past day."
+    }
+  ],
+  "since": "2026-10-25T03:32:28Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T04:03:29Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16597340"
+  ]
+}
