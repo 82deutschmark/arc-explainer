@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-26T23:43:24Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "zhangzibo54 climbs to 23rd on ARC-3",
+  "id": "2026-10-26-1957-arc-3-zhangzibo54-climbs-to-twenty-third",
+  "personIds": [],
+  "publishedAt": "2026-10-26T23:57:45Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "zhangzibo54 gained 3.30 to reach 37.96, moving from 59th to 23rd on the ARC-3 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move carried the team into the top 25, a significant step toward the standings’ gold places."
+    }
+  ],
+  "since": "2026-10-25T23:40:39Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-26T23:57:10Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16557905"
+  ]
+}
