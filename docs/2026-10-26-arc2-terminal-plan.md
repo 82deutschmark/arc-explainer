@@ -12,7 +12,9 @@ Charcoal workspace, square borders, amber headings, cyan links, monospace identi
 - [x] Read repository guidance and inspect current gallery, data hooks and grid renderer.
 - [x] Implement and update changelog.
 - [x] Production build; verify real cohort, desktop/mobile layout, search/sort/selection and links.
-- [ ] Scoped push through existing deployment, live verification.
+- [x] Scoped push through existing deployment, live verification.
 
 ## Verification evidence
 Production build passed. All 22 references across 20 tasks validated against evaluation2 dataset files. Browser checks passed on measured 1440px desktop and 375px mobile CSS viewports: all API data loaded, search returns both 88bcf3b4 indices, cell sort descends 900→25, selection and next-output controls update grids, other-test disclosure opens/closes, highlighted explanation retained. No application console errors; mobile grid bounds stay within document width. TypeScript reports existing unrelated SnakeBench/ingest/test failures, none in the modified page. Screenshots: `/Volumes/Samsung 9100 SSD/data/arc2-terminal-desktop.png`, `arc2-terminal-mobile.png`. Preview tool unavailable, so used a temporary Vite configuration proxying real live read-only puzzle APIs; remove it and stop server after delivery.
+
+Live deployment `72f4242b-f8d6-4533-b272-ac6b6937f22c` succeeded for implementation commit `b7c2e02b`. Browser verification on the public URL confirms the terminal, all 22 output rows, working search and selected-grid updates, preserved task/highlight links, no application errors and usable 1440px/375px layouts. Live screenshots: `/Volumes/Samsung 9100 SSD/data/arc2-terminal-live.png` and `arc2-terminal-live-mobile.png`. Temporary preview config removed and preview process stopped. Shared main checkout left untouched.
