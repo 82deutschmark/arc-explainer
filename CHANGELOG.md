@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.1  Oct 27, 2026
+
+- **Google and Bing ownership verification** (Author: GPT-6 / Codex). Publish the verification files supplied by the owner’s signed-in webmaster accounts so the updated sitemap and public ARC3 pages can be submitted. These are public ownership proofs, not account credentials. Existing static delivery serves the exact bytes.
+
 ### Version 9.159.0  Oct 27, 2026
 
 - **Public approved ARC-3 games and searchable reference** (Author: GPT-6 / Codex). The existing gallery, Play entrance and Next navigation now select the lab's current Trainable originals. The lab's public projection reuses its exact-version approval and licensing rules without exposing team notes or identities. This commit includes 48 verified approved source files and their recorded PNGs as an availability snapshot; the live feed refreshes every five minutes. Exact source hashes are checked before serving, and version-specific addresses prevent older local games substituting for approved builds.
