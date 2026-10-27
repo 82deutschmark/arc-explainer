@@ -25,8 +25,14 @@ stock is returned. The illustration requirement below does not delay these sched
   both contests.
 - **Stock first.** Read `artwork-inventory.json` before any image work and use a suitable unused
   prepared scene before generating. Do not generate ahead while suitable stock is ready.
-- **Never reuse a finished picture.** Always compose from the clean native original with this
-  issue's scores and time; never paint over an earlier composed score panel.
+- **No repeated illustrations.** Every illustrated edition gets a fresh episode. Do not reuse
+  previously published artwork, including its clean base with new scores or a new crop. Check
+  previous article uses and Discord shares in the inventory before posting. Character reference
+  sheets may preserve identities; they are not permission to repeat an old scene.
+- **Discord first, without an approval hold.** For newly commissioned art, post the illustration
+  in `#arc3-rollout-feed` before attaching it to an article. Unless someone objects, proceed with
+  publication; do not wait for an explicit review approval. Keep the normal visual and factual
+  checks, and address any objection before publishing the questioned image.
 - **Accurate cast.** Characters and their references are frozen in [CHARACTERS.md](CHARACTERS.md)
   and `visual-identities.json`: Chen's two rabbits follow her owner photo; Tufa Labs' friendly
   spiders (five is an artistic choice, not a headcount) and Dries Smit only while the fresh Tufa

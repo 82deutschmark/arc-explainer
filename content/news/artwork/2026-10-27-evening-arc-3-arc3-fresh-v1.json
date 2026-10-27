@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "2026-10-27-evening-arc-3-arc3-fresh-v1",
+  "kind": "edition-composition",
+  "articleId": "2026-10-27-evening-arc-3",
+  "headline": "Yi-Chia Chen widens ARC3 lead as insuperabilehart enters gold",
+  "briefSha256": "850cff2e3e136995806049bc95ea644560c9a42383080449cb10fe6a09213131",
+  "dataAsOf": "2026-10-27T21:46:23Z",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": null,
+      "score": 75.56,
+      "scoreChange": null,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "boss-commissioned-fresh-illustration",
+  "leadGap": null,
+  "personIds": [],
+  "layout": "corner-overlays-v1",
+  "historyChart": null,
+  "generationRecord": "2026-10-27-arc3-higher-still-v1-base",
+  "rawSha256": "ae0f183eda5df983b180b300d60bdced602b359bf40b03a7043ff3b3c86f84f4",
+  "imageSha256": "00d99fbf5cbb00ae6a1c3a1d71ebc351ecb76f47439c9f74e0f962079ef0c0c8",
+  "image": {
+    "src": "/news-images/2026-10-27-evening-arc-3-arc3-fresh-v1.webp",
+    "alt": "AI editorial illustration: Chen’s two rabbits stand at a high snowy observatory while five Tufa spider mascots work on a lower telescope terrace.",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 27, 2026 · 5:46 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "artworkId": "2026-10-27-evening-arc-3-arc3-fresh-v1"
+  },
+  "compositionReview": "Visually inspected final full-size composition: fresh art and all pictured mascots remain visible. Existing deterministic corner graphics match archived closing ranks, scores and October 27, 2026 5:46 PM EDT observation; golden threshold gap remains open in ARC2. No overlay covers faces or essential action."
+}

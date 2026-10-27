@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-27T13:16:46.467068+00:00",
+  "updatedAt": "2026-10-27T22:25:01.780003+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -867,6 +867,52 @@
         }
       ],
       "selectionNote": "New episode commissioned October 27 to replace stale Lights Out artwork. Fresh observed ARC3 roster checked; entire Turducken crew and four ARChitects visible. No score, rank or extension outcome depicted. Published article files remain immutable."
+    },
+    {
+      "id": "2026-10-27-arc2-just-short-of-gold-v1",
+      "generationRecord": "2026-10-27-arc2-just-short-of-gold-v1-base",
+      "src": "/news-images/2026-10-27-arc2-just-short-of-gold-v1-base.webp",
+      "title": "Just Short of Gold",
+      "competition": "arc-2",
+      "status": "published-with-discord-first-edition-revision",
+      "articleUses": [
+        "2026-10-27-evening-arc-2"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564766399510093875",
+          "postedAt": "2026-10-27T22:23:02.114000+00:00",
+          "attachmentFilename": "exec-ad088cb1-a1ce-46b6-846d-feac0d9be7e6.png",
+          "purpose": "Boss-directed Discord-first fresh artwork; parent confirmed delivery and no objections before authorized article publication."
+        }
+      ],
+      "selectionNote": "Visually inspected: cyan extending bridge stops short of golden platform, three fluffy spider mascots on distant high stronghold, no people, rabbits, text or scores. New floating-grid canyon scene; no prior artwork reused.",
+      "artworkId": "2026-10-27-evening-arc-2-short-fresh-v1"
+    },
+    {
+      "id": "2026-10-27-arc3-higher-still-v1",
+      "generationRecord": "2026-10-27-arc3-higher-still-v1-base",
+      "src": "/news-images/2026-10-27-arc3-higher-still-v1-base.webp",
+      "title": "Higher Still",
+      "competition": "arc-3",
+      "status": "published-with-discord-first-edition-revision",
+      "articleUses": [
+        "2026-10-27-evening-arc-3"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564766404698316831",
+          "postedAt": "2026-10-27T22:23:03.393000+00:00",
+          "attachmentFilename": "exec-8fb6ce95-e874-4173-b967-35fc084d3444.png",
+          "purpose": "Boss-directed Discord-first fresh artwork; parent confirmed delivery and no objections before authorized article publication."
+        }
+      ],
+      "selectionNote": "Visually inspected final correction: exactly two correct rabbits, grey lop ears down and dark upright-eared broad white-blaze rabbit; exactly five black spider mascots on lower telescope terrace, riderless cyan rover through lower golden gateway. No people, text or scores. Entirely new observatory episode.",
+      "artworkId": "2026-10-27-evening-arc-3-arc3-fresh-v1"
     }
   ],
   "existingXPosts": [

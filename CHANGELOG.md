@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.11  Oct 27, 2026
+
+- **Fresh evening illustrations, Discord first** (Author: GPT-6.1 Sol / Codex). Add distinct new art to the October 27 ARC2 and ARC3 Late editions, preserving their original reporting, closing evidence and publication times in separate image-only revision records. Reuse the existing compositor for dated score graphics, archive native prompts/references and record inventory uses. Clarify no repeated illustrations and the Boss's Discord-first, objection-based publication direction without an explicit review hold. Plan: `docs/plans/2026-10-27-fresh-evening-art.md`.
+
 ### Version 9.158.10  Oct 27, 2026
 
 - **Recover the Early edition without discarding other work** (Author: GPT-6.1 Sol / Codex). Replace the morning job’s blanket dirty-checkout stop with conflict-aware preflight, preserving unrelated PDFs. Keep special-report proof files without scheduled cutoffs out of prior-edition boundary selection, while still rejecting broken scheduled evidence. Publish the missing ARC2 issue from its fixed morning observation and prepare newly commissioned incident art. Validation: intake regression, newsroom Python and news content suites. Plan: `docs/plans/2026-10-27-morning-edition-recovery.md`.
