@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.13  Oct 27, 2026
+
+- **Standing Giant Rabbits** (Author: GPT-6.1 Sol / Codex). Replace only the ARC3 evening image with the fresh sunrise-plaza scene: both owner-reference giants upright while the spiders, full Turducken crew and other participants look up. Archive native generation/correction provenance, Discord-first receipt and revision 3, preserving original reporting, scores and publication times.
+
 ### Version 9.158.12  Oct 27, 2026
 
 - **Owner-faithful Giant Rabbits** (Author: GPT-6.1 Sol / Codex). Replace only the October 27 evening ARC3 picture with a fresh colossal-rabbit cableway scene using the original owner photograph for ears and coat markings. Record the Discord-first receipt, immutable native provenance and image-only revision 2; retain all reporting, scores and publication times.

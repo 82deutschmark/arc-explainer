@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "id": "2026-10-27-evening-arc-3-615ddd6e3e",
+  "kind": "edition-composition",
+  "articleId": "2026-10-27-evening-arc-3",
+  "headline": "Yi-Chia Chen widens ARC3 lead as insuperabilehart enters gold",
+  "briefSha256": "e1004e892a5fe6f9bc9f3cb4afbce6a5d83de40084cddf41cd819a5e7377bff5",
+  "dataAsOf": "2026-10-27T21:46:23Z",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": null,
+      "score": 75.56,
+      "scoreChange": null,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "recorded-score-event",
+  "leadGap": {
+    "previous": 2.57,
+    "current": 6.65,
+    "extends": true
+  },
+  "personIds": [
+    "dries-smit",
+    "yi-chia-chen"
+  ],
+  "layout": "corner-overlays-v1",
+  "historyChart": null,
+  "generationRecord": "2026-10-27-arc3-when-giants-stand-v1-base",
+  "rawSha256": "6594b66e45ce72f078909a6947dfd0e7d0d3b2b2debdd145730c136085447f7a",
+  "imageSha256": "316564db64f3a76ef62b16483cc3037f5e277f83d89c3458b594d98f2264cf45",
+  "image": {
+    "src": "/news-images/2026-10-27-evening-arc-3-615ddd6e3e.webp",
+    "alt": "AI editorial illustration: two colossal owner-reference rabbits stand upright over a snowy sunrise plaza while five Tufa spider mascots, the full Turducken crew, both Yorkies and other engineers look up.",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 27, 2026 \u00b7 5:46 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "artworkId": "2026-10-27-evening-arc-3-615ddd6e3e"
+  },
+  "compositionReview": "Both rabbit heads and ears remain clear; dated score panel retains original October 27 5:46 PM EDT observation, Chen 75.56 and Tufa 68.91. Five spiders and full Turducken cast inspected in clean preview; finished overlays checked separately."
+}

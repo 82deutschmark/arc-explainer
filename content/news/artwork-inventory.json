@@ -921,7 +921,7 @@
       "src": "/news-images/2026-10-27-arc3-giants-above-valley-v1-base.webp",
       "title": "Giants Above the Valley",
       "competition": "arc-3",
-      "status": "published-with-discord-first-edition-revision",
+      "status": "historical-superseded-by-standing-giants",
       "articleUses": [
         "2026-10-27-evening-arc-3"
       ],
@@ -936,7 +936,31 @@
           "purpose": "Son-requested original-reference Giant Rabbits, posted by parent before article replacement; no objections received."
         }
       ],
-      "selectionNote": "Visually inspected tool result: two city-block-sized rabbits dwarf multi-storey cableway towers. Grey-brown lop has both ears down; dark-and-white companion has upright ears and broad irregular white face blaze/chest. Five distinct black spiders (roof, ladder, left ground, front cable coil, right ground). No text, scores, humans or extra animals. New blue-hour snowy cableway/ravine scene and fan crawler, not reused prior composition. Owner photo and original giant-scale image supplied as actual inputs."
+      "selectionNote": "Visually inspected tool result: two city-block-sized rabbits dwarf multi-storey cableway towers. Grey-brown lop has both ears down; dark-and-white companion has upright ears and broad irregular white face blaze/chest. Five distinct black spiders (roof, ladder, left ground, front cable coil, right ground). No text, scores, humans or extra animals. New blue-hour snowy cableway/ravine scene and fan crawler, not reused prior composition. Owner photo and original giant-scale image supplied as actual inputs.",
+      "supersededBy": "2026-10-27-arc3-when-giants-stand-v1-base"
+    },
+    {
+      "id": "2026-10-27-arc3-when-giants-stand-v1-base",
+      "generationRecord": "2026-10-27-arc3-when-giants-stand-v1-base",
+      "src": "/news-images/2026-10-27-arc3-when-giants-stand-v1-base.webp",
+      "title": "When the Giants Stand",
+      "competition": "arc-3",
+      "status": "published-with-discord-first-edition-revision",
+      "articleUses": [
+        "2026-10-27-evening-arc-3"
+      ],
+      "artworkId": "2026-10-27-evening-arc-3-615ddd6e3e",
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564769752449155174",
+          "postedAt": "2026-10-27T22:36:22.341Z",
+          "attachmentFilename": "2026-10-27-when-giants-stand-v1.png",
+          "purpose": "Son-requested standing giant rabbits; parent posted clean scene first and received no objections during window."
+        }
+      ],
+      "selectionNote": "Inspected native output: two colossal rabbits stand on hind legs, grey-brown lop ears down and dark-and-white companion ears upright with white face blaze. Five distinct black spiders, full seven-character Turducken crew, two Yorkies and anonymous green engineers look upward. New sunrise plaza episode; no text or scores."
     }
   ],
   "existingXPosts": [
