@@ -1,0 +1,204 @@
+{
+  "id": "2026-10-26-architects-superteam-enters-gold-editorial-revision-1",
+  "revisedAt": "2026-10-27T01:31:58.176738+00:00",
+  "reason": "Editor requested ARC2 standings, sports-focused copy, date-only score panel and a brief editor-in-chief reference; remove the PDF link and repeated personal credits.",
+  "previousCommit": "35282287",
+  "previousFeature": {
+    "commissionedBy": "mark-barney",
+    "competition": "arc-3",
+    "editorNote": "Commissioned by editor-in-chief Mark Barney. Barney met Sebastian Brodehl at the ARC gathering in Boston and sends him a personal shout-out. The reporting distinguishes the confirmed roster combination from a new solver score gain; the illustration uses each researcher’s verified avatar.",
+    "generatedBy": "gpt-6.1-sol",
+    "headline": "The 2026 ARChitects: the dream team comes together",
+    "id": "2026-10-26-architects-superteam-enters-gold",
+    "image": {
+      "alt": "The four 2026 ARChitects assemble a glowing citadel together. Left to right: David Hartmann as a fox, Jan Disselhoff as an orange cat, Daniel Franzen as a duck and Sebastian Brodehl as a mouse, all based on their verified avatars. Individual baseball-card panels name each and give dated historical credits.",
+      "caption": "The 2026 ARChitects: the dream team comes together. New AI editorial illustration using each member’s verified avatar and ARC Explainer’s established character references. Labels give historical honors and research credits; equipment is fantasy. Public standing: sixteenth, 38.85, observed October 26 at 8:43 pm Eastern.",
+      "src": "/news-images/2026-10-26-architects-dream-team-labeled.png"
+    },
+    "publishedAt": "2026-10-27T01:18:47.227162+00:00",
+    "sections": [
+      {
+        "heading": "Four familiar minds, one entry",
+        "sourceIds": [
+          "board-proof",
+          "merger-before",
+          "merger-after"
+        ],
+        "text": "The ARChitects are together for 2026. Daniel Franzen, Jan Disselhoff, David Hartmann and Sebastian Brodehl now share one ARC-AGI-3 entry, bringing the celebrated ARC team name into this season’s interactive contest with a four-person roster and a place inside the provisional gold band. At the saved 8:43 pm Eastern observation on October 26, they stand sixteenth among 4,877 teams. For followers who remember the ARChitects’ earlier campaigns, this is the evening’s people story: researchers with championship history and years of shared work are now on the same side of the current board.\n\nThe afternoon evidence makes the combination concrete. At 3:42 pm Eastern, Hartmann and Brodehl were listed together, while Franzen and Disselhoff still had separate entries. By 5:43 pm, all four accounts appeared under The ARChitects. The surviving entry is team 16032816, previously displayed as David Hartmann. That is a confirmed same-day roster combination, bracketed by two saved observations. It is not a claim to know the minute they clicked the merger button or how they will divide the work."
+      },
+      {
+        "heading": "The Mainz connection is more than paddock gossip",
+        "sourceIds": [
+          "mainz",
+          "paper-2021",
+          "fourth-account",
+          "editor-conversation",
+          "person-sebastian-brodehl-identity-0"
+        ],
+        "text": "The editor’s tip about a university connection leads to a real shared research history in Mainz, Germany. Johannes Gutenberg University’s Visual Computing page lists Disselhoff and Franzen among its academic staff and doctoral candidates, and Brodehl and Hartmann among its former doctoral students. The university record places all four in the same research-group story. It does not establish that they were classmates in the same year, but this is plainly more than four strangers finding each other on merger deadline day.\n\nThere is a particularly good piece of evidence for Sebastian’s place in that history: Hartmann, Franzen and Brodehl coauthored a 2021 paper on how neural activation patterns change during training. The published affiliation is the Visual Computing Group at Mainz. Their research collaboration predates this ARC3 entry by years.\n\nAnd a word from the editor’s own notebook: Mark Barney says he met Sebastian at the ARC event in Boston. “Awesome guy,” is the editor-in-chief’s verdict, with a personal shout-out for tonight’s feature. Sebastian’s own Kaggle avatar supplies our new character: the big-eared mouse in sunglasses, now wearing the team’s copper-and-ivory engineering gear. He belongs prominently in this four-person picture."
+      },
+      {
+        "heading": "A championship name—with the credits kept straight",
+        "sourceIds": [
+          "results-2024",
+          "results-2025",
+          "report-2025",
+          "archive-card",
+          "paper-2021"
+        ],
+        "text": "The ARChitects won the 2024 ARC Prize high-score contest and finished runner-up in 2025. Franzen and Disselhoff carry the earlier championship in the ARC Explainer archive; the 2025 report names Franzen, Disselhoff and Hartmann together. Hartmann’s recorded ARChitects honors begin with that runner-up campaign. Sebastian’s verified shared research history is another part of the story, rather than a reason to award him somebody else’s past result.\n\nThe three-person 2025 team also left something more useful than a trophy photograph: a detailed public technical report. It describes their efforts to improve an older solver while exploring a different approach, including experiments that did not work. Their final system used a model adapted to two-dimensional grids and repeatedly refined its guesses. Put simply, they tried alternative answers, reconsidered them and compared different views of a puzzle.\n\nThose methods belong to the published 2025 static-grid system. Tonight’s ARC3 contest asks an agent to interact with unfamiliar games, discover rules and choose actions over time. The historical report explains why the name draws attention; it does not disclose the method behind the current agent. The full-page illustration’s individual labels therefore use verified past honors and research credits, rather than invented present-day job titles."
+      },
+      {
+        "heading": "What sixteenth means—and what the earlier score already showed",
+        "sourceIds": [
+          "merger-before",
+          "merger-after",
+          "board-proof"
+        ],
+        "text": "There is one essential distinction behind the dramatic-looking leaderboard move. Before the combination, Franzen’s separate entry was already sixteenth at 38.85. Disselhoff’s entry stood eighteenth at 38.60, while the Hartmann–Brodehl entry was 798th at 29.83. After the rosters came together, the surviving entry showed sixteenth and 38.85. Its recorded increase from 29.83 is therefore not evidence of a newly improved solver: the combined score matches Franzen’s already recorded result.\n\nThat makes the story more interesting, not less. This is a team-building development involving established contenders, rather than a mystery nine-point breakthrough that the score history can explain by itself. The merger brings the four accounts together before the final stretch; any later performance improvement will need its own evidence.\n\nAt the dated evening observation, the provisional gold score is 38.20 and the band extends through nineteenth. The ARChitects sit 0.65 points above that score line. The place gives them something to defend as other teams improve. It is a public-board position, not a final medal, and earlier ARC Prize honors do not settle the outcome of a different competition."
+      },
+      {
+        "heading": "Deadline day reshapes the field around them",
+        "sourceIds": [
+          "deadline-3",
+          "deadline-2",
+          "merger-roundup",
+          "mainz",
+          "board-proof",
+          "giba-account",
+          "print-edition"
+        ],
+        "text": "The ARChitects are part of a broader reshuffling. Both official contest timelines set the team-merger deadline for October 26 at 11:59 pm UTC: 7:59 pm Eastern. Our desk compared full saved boards and narrowed the timing through the day’s archived wire and edition rosters. At least thirteen distinct entries across ARC3 and ARC2 show roster additions bracketed wholly inside October 26 Eastern. That is a documented lower bound, because the archive does not preserve a complete transaction history for every team.\n\nAmong the notable ARC3 changes, NVARC3 added the titericz account, displayed on Kaggle as Giba. Grigoriy Zatravkin’s entry expanded to include aizealotwu and deepdreamer. In ARC2, Khaotic Sethesis added cdeotte; the entry earlier displayed as Shin & Maciej & Natalia added sggpls and yuritosci. These are observed roster changes. They do not establish which newcomer wrote a particular component, and they are not evidence of a fresh score gain.\n\nFor tonight’s feature, the spotlight stays on the four researchers at the drafting table. The Mainz links are documented, the shared roster is confirmed and the ARChitects name is back on a current contender. The next chapter will be what this 2026 team builds together."
+      }
+    ],
+    "sources": [
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "board-proof",
+        "title": "ARC3 — saved October 26 roster, score history and provisional medal boundary",
+        "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-26-architects-roster-and-score.json"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "board",
+        "title": "ARC-AGI-3 public leaderboard and observed history",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "report-2025",
+        "title": "The ARChitects — authors’ 2025 technical report",
+        "url": "https://lambdalabsml.github.io/ARC2025_Solution_by_the_ARChitects/"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "results-2025",
+        "title": "ARC Prize — official 2025 results",
+        "url": "https://arcprize.org/competitions/2025"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "results-2024",
+        "title": "ARC Prize — official 2024 results",
+        "url": "https://arcprize.org/competitions/2024"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "archive-card",
+        "title": "ARC Explainer Hall of Fame — the ARChitects team card",
+        "url": "https://arc.markbarney.net/hall-of-fame#contributor-5"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "person-daniel-franzen-identity-0",
+        "title": "Daniel Franzen — verified author and Kaggle handle credits",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "person-jan-disselhoff-identity-0",
+        "title": "Jan Disselhoff — verified author and Kaggle handle credits",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "person-david-hartmann-identity-0",
+        "title": "David Hartmann — verified author and Kaggle handle credits",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2025/writeups/the-architects-solution-2025"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "fourth-account",
+        "title": "sbrodehl — Kaggle profile titled Sebastian Brodehl",
+        "url": "https://www.kaggle.com/sbrodehl"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "mainz",
+        "title": "Johannes Gutenberg University Mainz — Visual Computing group and alumni",
+        "url": "https://www.visualcomputing.informatik.uni-mainz.de/people/"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "paper-2021",
+        "title": "Hartmann, Franzen and Brodehl — 2021 research paper",
+        "url": "https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2021.642374/full"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "merger-before",
+        "title": "Saved ARC3 roster at 3:42 pm Eastern, October 26",
+        "url": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "merger-after",
+        "title": "Saved ARC3 roster at 5:43 pm Eastern, October 26",
+        "url": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1759-arc-3-the-architects-climb-to-sixteenth.json"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "deadline-3",
+        "title": "Kaggle ARC3 — official team-merger timeline",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/evaluation"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "deadline-2",
+        "title": "Kaggle ARC2 — official team-merger timeline",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/prizes"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "merger-roundup",
+        "title": "ARC Daily Digest research — dated before-and-after roster evidence",
+        "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-26-merger-deadline-rosters.json"
+      },
+      {
+        "accessedAt": "2026-10-27T01:15:44.952979+00:00",
+        "id": "editor-conversation",
+        "title": "Mark Barney — firsthand Boston encounter and shout-out, supplied while commissioning this feature on October 26",
+        "url": "https://arc.markbarney.net/news/staff"
+      },
+      {
+        "accessedAt": "2026-10-27T01:16:06.263620+00:00",
+        "id": "person-sebastian-brodehl-identity-0",
+        "title": "Sebastian Brodehl — own verified Kaggle account",
+        "url": "https://www.kaggle.com/sbrodehl"
+      },
+      {
+        "accessedAt": "2026-10-27T01:16:06.263620+00:00",
+        "id": "giba-account",
+        "title": "Giba — own Kaggle account titericz",
+        "url": "https://www.kaggle.com/titericz"
+      },
+      {
+        "accessedAt": "2026-10-27T01:18:47.227162+00:00",
+        "id": "print-edition",
+        "title": "Download the full-page evening feature — printable PDF",
+        "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-26-architects-evening-feature.pdf"
+      }
+    ]
+  },
+  "sourceEvidence": "/reports/arc-daily-gossip/2026-10-26-architects-both-contests.json"
+}

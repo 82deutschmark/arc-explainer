@@ -1,0 +1,103 @@
+{
+  "checkedAt": "2026-10-27T01:31:58.176738+00:00",
+  "dateEastern": "2026-10-26",
+  "competitions": {
+    "arc-2": {
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "observedAt": "2026-10-27T01:13:36Z",
+      "teamCount": 3383,
+      "rowCount": 3383,
+      "medalRanks": {
+        "gold": 16,
+        "silver": 169,
+        "bronze": 338
+      },
+      "snapshot": {
+        "t": "2026-10-27T01:13:36Z",
+        "teams": 3383,
+        "top": 88.06,
+        "gold": 69.44,
+        "silver": 32.78,
+        "bronze": 31.94
+      },
+      "rows": [
+        [
+          36,
+          "15607618",
+          "Daniel Franzen",
+          "2026-10-26 03:28:25",
+          57.64,
+          17,
+          "dfranzen",
+          35,
+          57.64
+        ],
+        [
+          2190,
+          "15507730",
+          "Jan Disselhoff",
+          "2026-10-12 21:36:37",
+          21.67,
+          8,
+          "insanitycheck",
+          2189,
+          21.67
+        ]
+      ],
+      "rowFields": [
+        "rank",
+        "teamId",
+        "name",
+        "lastSubmission",
+        "score",
+        "submissions",
+        "memberHandles",
+        "comparisonRank",
+        "comparisonScore"
+      ]
+    },
+    "arc-3": {
+      "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "observedAt": "2026-10-27T01:13:35Z",
+      "teamCount": 4878,
+      "rowCount": 4878,
+      "medalRanks": {
+        "gold": 19,
+        "silver": 243,
+        "bronze": 487
+      },
+      "snapshot": {
+        "t": "2026-10-27T01:13:35Z",
+        "teams": 4878,
+        "top": 71.48,
+        "gold": 38.2,
+        "silver": 32.29,
+        "bronze": 31
+      },
+      "rows": [
+        [
+          16,
+          "16032816",
+          "The ARChitects",
+          "2026-10-26 11:10:05",
+          38.85,
+          202,
+          "dfranzen,dvhrtm,insanitycheck,sbrodehl",
+          16,
+          38.85
+        ]
+      ],
+      "rowFields": [
+        "rank",
+        "teamId",
+        "name",
+        "lastSubmission",
+        "score",
+        "submissions",
+        "memberHandles",
+        "comparisonRank",
+        "comparisonScore"
+      ]
+    }
+  }
+}
