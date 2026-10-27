@@ -1,7 +1,7 @@
 /**
- * Author: GPT-6 / Codex; existing contributors credited below
+ * Author: GPT-6.1 Sol / Codex; existing contributors credited below
  * Date: 2026-10-27
- * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * PURPOSE: Identify Mark Barney's research, explanations and original-game collection as the site's search focus.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /**
@@ -364,8 +364,8 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
  * shared, with arc.markbarney.net as the preferred canonical origin for both.
  */
 const ROOT_META: Omit<RouteMetaTags, 'url'> = {
-  title: 'ARC Explainer — ARC-AGI-3 Games, Engine Guide and Research',
-  description: 'Play human-reviewed ARC-AGI-3 games, understand ARCEngine, explore official game guides and follow ARC Prize news and leaderboards.',
+  title: 'ARC Explainer — Mark Barney’s Research, Guides & Games',
+  description: 'Explore Mark Barney’s ARC research, ARCEngine explanations, human reasoning records, and collection of human-reviewed original games.',
   type: 'website',
   bodyHtml: `<main><h1>ARC Explainer</h1><p>Play human-reviewed original ARC-AGI-3 reasoning games in your browser, with no login required.</p><p><a href="/arc3/gallery">Browse and play our games</a> · <a href="/arc3">ARC-AGI-3 and ARCEngine explained</a></p><p>Teams on Kaggle are building agents for ARC-AGI-3, little games with no instructions, and solvers for ARC-AGI-2's grid puzzles. Both boards close on the same night.</p><p>We save the public leaderboard every half hour and keep score: see the <a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a>, the <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>, <a href="/arc-leaderboards">all ARC leaderboards</a> and the <a href="/news">ARC Daily Digest</a>, with its <a href="/news/wire">wire</a> of short stories on both boards.</p><p>Also here: <a href="/synthetic">how we got here</a>, our harness notes and practice games, plus <a href="/arc3/games">official game guides (spoilers)</a> and the <a href="/home">resource hub</a>.</p></main>`,
 };

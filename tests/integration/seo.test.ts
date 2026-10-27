@@ -1,7 +1,7 @@
 /**
- * Author: GPT-6 / Codex
+ * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-27
- * PURPOSE: Verify approved game discovery, existing article delivery and hostname indexing policy.
+ * PURPOSE: Verify research and collection sitemap targeting, continued game access, existing article delivery and hostname indexing policy.
  * SRP/DRY check: Pass — exercise actual registries, catalog and HTTP middleware.
  */
 /**
@@ -24,7 +24,6 @@ import { ROUTE_META_TAGS } from '../../shared/routes';
 import { REDIRECTS, SITE_ORIGIN, structuredData } from '../../shared/seo';
 import { getAllGames } from '../../shared/arc3Games';
 import { puzzleLoader } from '../../server/services/puzzleLoader';
-import { trainableSitemapUrls } from '../../server/services/seo/trainableSeo';
 import { Arc3TrainableCatalog, trainablePlayId } from '../../server/services/arc3Mirror/Arc3TrainableCatalog';
 import { generateSitemap, resolvePageMeta, sitemapUrls } from '../../server/services/seo/pageContent';
 import { generateMetaTags, injectPageHtml, metaTagInjector, seoRouting, seoHostPolicy } from '../../server/middleware/metaTagInjector';
@@ -198,12 +197,16 @@ describe('SEO delivery', () => {
     const response = await fetch(`${base}/sitemap.xml`);
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('xml');
-    expect(await response.text()).toBe(generateSitemap(new Map(), await trainableSitemapUrls()));
+    expect(await response.text()).toBe(generateSitemap(new Map()));
     const urls = sitemapUrls();
     expect(urls.length).toBe(new Set(urls).size);
     expect(urls).toContain(`${SITE_ORIGIN}/arc3/slippery-seven`);
     expect(urls).toContain(`${SITE_ORIGIN}/kaggle-leaderboard/arc-2`);
     expect(urls).not.toContain(`${SITE_ORIGIN}/arc3/mechanics`);
+    for (const route of ['/', '/about', '/arc3', '/arc3/gallery', '/arc3/games', '/arc3/hypotheses', '/human-records.html', '/news']) {
+      expect(urls).toContain(`${SITE_ORIGIN}${route}`);
+    }
+    expect(urls.some(url => /^\/(?:puzzle|arc3\/(?:play|games))\//.test(new URL(url).pathname))).toBe(false);
     for (const url of urls) {
       const route = new URL(url).pathname;
       if (route === '/human-arc/' || route === '/human-records.html') continue;
@@ -231,7 +234,7 @@ describe('SEO delivery', () => {
     for (const game of manifest.versions) {
       const route = `/arc3/play/${trainablePlayId(game)}`;
       expect(gallery).toContain(`href="${route}"`);
-      expect(sitemap).toContain(`${SITE_ORIGIN}${route}`);
+      expect(sitemap).not.toContain(`${SITE_ORIGIN}${route}`);
     }
     const game = manifest.versions[0];
     const route = `/arc3/play/${trainablePlayId(game)}`;

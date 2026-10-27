@@ -1,12 +1,12 @@
 /**
- * Author: GPT-6 / Codex
+ * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-27
- * PURPOSE: Add the current approved catalog to the existing HTML/sitemap delivery.
+ * PURPOSE: Render approved games and their collection using the existing catalog; individual games are not sitemap targets.
  * SRP/DRY check: Pass — uses the same manifest as the player, never a second approval list.
  */
 import { Arc3TrainableCatalog, trainablePlayId } from '../arc3Mirror/Arc3TrainableCatalog';
 import { approvedPlayMeta } from '../../../shared/arc3PlayMeta';
-import { completeMeta, escapeHtml as esc, SITE_ORIGIN } from '../../../shared/seo';
+import { completeMeta, escapeHtml as esc } from '../../../shared/seo';
 import { resolvePageMeta } from './pageContent';
 
 export async function resolvePublicPageMeta(route: string): Promise<ReturnType<typeof resolvePageMeta>> {
@@ -29,7 +29,4 @@ export async function resolvePublicPageMeta(route: string): Promise<ReturnType<t
   }).join('')}</ul></main>`;
   if (versions[0]) tags.image = approvedPlayMeta(trainablePlayId(versions[0]), versions[0].finalLabel || versions[0].gameId).image;
   return { status: 200, tags: completeMeta(tags) };
-}
-export async function trainableSitemapUrls(): Promise<string[]> {
-  return (await Arc3TrainableCatalog.manifest()).versions.map(v => `${SITE_ORIGIN}/arc3/play/${trainablePlayId(v)}`);
 }

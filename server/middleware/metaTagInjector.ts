@@ -1,7 +1,7 @@
 /**
- * Author: GPT-6 / Codex; existing contributors credited below
+ * Author: GPT-6.1 Sol / Codex; existing contributors credited below
  * Date: 2026-10-27
- * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * PURPOSE: Serve the research-focused sitemap without fetching or advertising individual approved-game URLs.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /**
@@ -21,7 +21,7 @@ import path from 'node:path';
 import type { RouteMetaTags } from '../../shared/routes';
 import { breadcrumbsHtml, completeMeta, discoveryHtml, escapeHtml as esc, INDEX_ROBOTS, normalizePath, redirectPath, socialMetaEntries, structuredData } from '../../shared/seo';
 import { generateSitemap, resolvePageMeta } from '../services/seo/pageContent';
-import { resolvePublicPageMeta, trainableSitemapUrls } from '../services/seo/trainableSeo';
+import { resolvePublicPageMeta } from '../services/seo/trainableSeo';
 import { SITE_ORIGIN } from '../../shared/seo';
 import { leaderboardLastmods, withLiveStandings } from '../services/seo/leaderboardSeo';
 
@@ -66,9 +66,9 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
   const route = normalizePath(req.path);
   if (route === '/sitemap.xml') {
     // The leaderboard pages are dated by their latest saved snapshot when the boards can be read.
-    Promise.all([leaderboardLastmods(), trainableSitemapUrls()]).then(([lastmods, games]) => {
+    leaderboardLastmods().then(lastmods => {
       res.setHeader('Cache-Control', 'public, max-age=3600');
-      res.type('application/xml').send(generateSitemap(lastmods, games));
+      res.type('application/xml').send(generateSitemap(lastmods));
     }).catch(next);
     return;
   }

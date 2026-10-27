@@ -3,6 +3,10 @@
 Author: GPT-6 / Codex
 Date: 2026-10-27
 
+Owner correction, later 27-Oct: individual games and puzzles are not SEO targets.
+`2026-10-27-research-seo-targeting-plan.md` supersedes the per-game sitemap work below;
+the existing research, explanation and original-game collection pages are the focus.
+
 Approved by the user: fix the audited issues using what exists, make current Trainable games and existing ARC3 information searchable, then commit and push.
 
 - Reuse the lab's `training_set` selection through a public metadata-only projection; keep research authentication and licensing exclusions.

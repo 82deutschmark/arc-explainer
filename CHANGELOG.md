@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.2  Oct 27, 2026
+
+- **Focus SEO on Mark's work** (Author: GPT-6.1 Sol / Codex). Remove individual ARC puzzle, official-game guide and approved-play addresses from the generated sitemap. Retain research, explanations, original-game collections, human reasoning records and authored editorial pages. The homepage metadata now identifies Mark Barney's work. Remove the per-game sitemap feed/helper so future approvals cannot repopulate individual URLs. Existing galleries, direct links and playable sources continue to work. Plan: `docs/2026-10-27-research-seo-targeting-plan.md`.
+- Validation: production build and 21 focused HTTP/catalog/metadata tests pass; sitemap exclusions and retained research destinations are checked alongside continued direct game/puzzle access. No browser use.
+
 ### Version 9.159.1  Oct 27, 2026
 
 - **Google and Bing ownership verification** (Author: GPT-6 / Codex). Publish the verification files supplied by the owner’s signed-in webmaster accounts so the updated sitemap and public ARC3 pages can be submitted. These are public ownership proofs, not account credentials. Existing static delivery serves the exact bytes.

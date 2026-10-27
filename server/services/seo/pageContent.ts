@@ -1,7 +1,7 @@
 /**
- * Author: GPT-6 / Codex; existing contributors credited below
+ * Author: GPT-6.1 Sol / Codex; existing contributors credited below
  * Date: 2026-10-27
- * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * PURPOSE: Promote authored research, explanations and collection pages without enumerating individual games or puzzles in the sitemap.
  * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
  */
 /**
@@ -96,15 +96,15 @@ export function sitemapUrls(): string[] {
     ...newsSitemapUrls(),
     ...Object.entries(ROUTE_META_TAGS).filter(([, tags]) => !tags.noindex).map(([, tags]) => tags.url),
     `${SITE_ORIGIN}/human-arc/`, `${SITE_ORIGIN}/human-records.html`,
-    ...getAllGames().map(game => `${SITE_ORIGIN}/arc3/games/${game.gameId}`),
-    ...puzzleLoader.getAvailablePuzzleIds().filter(id => /^[A-Za-z0-9_-]{1,128}$/.test(id)).map(id => `${SITE_ORIGIN}/puzzle/${id}`),
+    // Individual tasks remain accessible through their collections; search promotion
+    // belongs to the site's research, explanations and original-game collection.
   ])];
 }
 /**
  * Only pages with a real, recorded change time carry lastmod: ARC Daily URLs (publication and check
  * times) and, when the saved boards can be read, the leaderboard pages (their latest snapshot).
  */
-export function generateSitemap(extraLastmod: ReadonlyMap<string, string> = new Map(), extraUrls: string[] = []): string {
+export function generateSitemap(extraLastmod: ReadonlyMap<string, string> = new Map()): string {
   const lastmod = new Map([...newsSitemapEntries().filter(entry => entry.lastmod).map(entry => [entry.url, entry.lastmod!] as const), ...extraLastmod]);
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...new Set([...sitemapUrls(), ...extraUrls])].map(url => `  <url><loc>${esc(url)}</loc>${lastmod.has(url) ? `<lastmod>${esc(lastmod.get(url)!)}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls().map(url => `  <url><loc>${esc(url)}</loc>${lastmod.has(url) ? `<lastmod>${esc(lastmod.get(url)!)}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
 }
