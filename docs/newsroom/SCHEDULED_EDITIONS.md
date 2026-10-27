@@ -33,8 +33,13 @@ separate step. Human send confirmation needs no browser proof.
 
 ## Publish both contests
 
-1. Verify the designated newsroom checkout, branch, origin and clean state, then pull ff-only as
-   the job instruction says. Preserve unexpected work and stop on a conflict.
+1. Verify the designated newsroom checkout, branch and origin, then inspect Git status and any
+   in-progress merge/rebase. Preserve unrelated local work in place, including untracked PDFs
+   under `output/`; a nonempty status alone is not a blocker. Pull ff-only without resetting,
+   deleting or stashing other work. Continue if Git can update safely and the intended news files
+   do not overlap another writer’s changes. Stop only for an actual conflict, an in-progress Git
+   operation, or changes to files this shift must edit whose ownership cannot be established.
+   Stage exact intended paths, never `git add .` or another writer’s files.
 2. Run `python3.13 scripts/newsroom.py prepare --edition morning --writer gpt-6.1-sol --output
    /tmp/arc-daily-morning-brief.json` (use `evening` for Late). Never use `--preview` or `--now` in
    a scheduled run. Follow REPORTER.md sections 3 and 4: read the complete brief, respect its fixed

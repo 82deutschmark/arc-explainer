@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.10  Oct 27, 2026
+
+- **Recover the Early edition without discarding other work** (Author: GPT-6.1 Sol / Codex). Replace the morning job’s blanket dirty-checkout stop with conflict-aware preflight, preserving unrelated PDFs. Keep special-report proof files without scheduled cutoffs out of prior-edition boundary selection, while still rejecting broken scheduled evidence. Publish the missing ARC2 issue from its fixed morning observation and prepare newly commissioned incident art. Validation: intake regression, newsroom Python and news content suites. Plan: `docs/plans/2026-10-27-morning-edition-recovery.md`.
+
 ### Version 9.158.9  Oct 26, 2026
 
 - **ARC-2 capped-output research terminal** (Author: GPT-6.1 Sol / Codex). Replace the spacious gallery with a dense charcoal watchlist and focused grid inspector. Search task IDs/test indices, sort by output cells, step between outputs, and inspect training pairs without repeated card chrome. Preserve all 22 cohort outputs, dataset grids, provenance and highlighted task links; stack the panes on mobile. Files: `client/src/pages/Arc2Capped.tsx`, `client/src/pages/Arc2Capped.css`. Plan: `docs/2026-10-26-arc2-terminal-plan.md`.

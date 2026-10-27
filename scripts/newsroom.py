@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.13
 # Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 Max
-# Date: 15-October-2026 (writer IDs come from shared/newsWriters.json; backup desk is claude-sonnet-5-5)
+# Date: 27-October-2026 (special reports without edition cutoffs cannot block scheduled intake)
 # PURPOSE: Prepare auditable ARC Daily evidence, validate the scheduled writer's prose, and publish
 # immutable JSON articles, social dispatches, sourced people and competitor observations consumed by shared/news.ts.
 # 12-Oct-2026: selected public Kaggle discussion threads join the edition's dated source evidence.
@@ -312,6 +312,10 @@ def add_edition_intake(item, competition, actual_now, root=ROOT):
         if not proof_path.exists():
             continue
         proof = load(proof_path)
+        # Special reports share the article/evidence folders but are not edition boundaries.
+        # Keep a missing cutoff fatal for a scheduled edition: its evidence still needs repair.
+        if 'cutoffAt' not in proof and not re.fullmatch(r'\d{4}-\d{2}-\d{2}-(?:morning|evening)-arc-[23]', article['id']):
+            continue
         boundary_at = stamp(proof['cutoffAt'])
         if boundary_at < cutoff and (previous is None or boundary_at > stamp(previous_proof['cutoffAt'])):
             previous, previous_proof = article, proof

@@ -72,9 +72,10 @@ These are the Boss's standing instructions (12–14 October 2026), in force for 
 ## 1. Start
 
 1. Work only in `/Users/macmini/GitHub/arc-explainer-newsroom` on branch `codex/newsroom-publisher`
-   (origin `https://github.com/82deutschmark/arc-explainer.git`). If it has unexpected uncommitted
-   work, stop and report it. If the folder is missing, follow the narrow recovery in your job
-   instruction; never use another checkout.
+   (origin `https://github.com/82deutschmark/arc-explainer.git`). Follow SCHEDULED_EDITIONS.md’s
+   checkout preflight: preserve unrelated local work and continue safely; an untracked PDF does
+   not stop publication. Stop on an actual overlapping-file conflict or Git operation. If the
+   folder is missing, follow the narrow recovery in your job instruction; never use another checkout.
 2. `git pull --ff-only origin main`, then read this file, [ART_DESK.md](ART_DESK.md),
    [X_POSTING.md](X_POSTING.md), [VISUALS.md](VISUALS.md), [CHARACTERS.md](CHARACTERS.md) and
    `.agents/skills/competition-reporter/SKILL.md`.
@@ -135,7 +136,9 @@ gives it a distinct `-preview` ID; `--now` audits a historical cutoff). Read the
   source hash, observations, events, notebook facts, `people`, `socialPosts` and
   `discussionThreads` with their citable source IDs (`person-<id>-identity|fact|roster|archive-<n>`,
   `social-<postId>`, `discussion-arc-N-<id>`, `fact-<teamId>-<n>`).
-- **Intake.** Each contest's brief has `intake`: every wire story and dispatch since the previous
+- **Intake.** Special reports without an edition cutoff are not prior edition boundaries; their
+  evidence stays intact. A scheduled edition missing its required cutoff still fails validation.
+  Each contest's brief has `intake`: every wire story and dispatch since the previous
   edition's cutoff (the Early edition therefore includes the preceding evening and the overnight
   wire), items earlier marked `held` or `carried`, and the open `editorialAssignments`. An
   assignment ends at its `expiresAt`, or 72 hours after `createdAt` when none is set. A front-page
