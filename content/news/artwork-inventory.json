@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-27T01:47:22.647062+00:00",
+  "updatedAt": "2026-10-27T01:50:43.441244+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -804,7 +804,15 @@
           "attachmentSha256": "2ed36934b5ebc50389abe87131d54f8d0fd1d238b2f2156e403df1c6b1336e99"
         }
       ],
-      "discordShares": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564455883293859910",
+          "postedAt": "2026-10-27T01:49:10.207596+00:00",
+          "attachmentFilename": "2026-10-26-architects-dream-team-labeled-v2.png",
+          "purpose": "Editor explicitly requested articles and images in the rollout feed; sent once with delivery receipt."
+        }
+      ],
       "selectionNote": "Editor requested removal of discovery clock times. Native date-only text edit inspected; prior picture remains historical. Approved for the explicitly requested image-led X feature post."
     },
     {
@@ -817,7 +825,15 @@
         "2026-10-26-flash-next-cleared-for-arc-prize"
       ],
       "xAttachments": [],
-      "discordShares": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564455942878404628",
+          "postedAt": "2026-10-27T01:49:24.201886+00:00",
+          "attachmentFilename": "2026-10-26-flash-next-green-light.webp",
+          "purpose": "Editor explicitly requested articles and images in the rollout feed; sent once with delivery receipt."
+        }
+      ],
       "selectionNote": "Editor explicitly commissioned separate article and image. Bell-ringing robot scene and correct text visually reviewed; no real person or official seal depicted."
     }
   ],
