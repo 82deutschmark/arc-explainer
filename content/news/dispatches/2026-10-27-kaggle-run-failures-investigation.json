@@ -1,0 +1,186 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Commissioned morning lead. Initial reporting October 26 Eastern; focused follow-up October 27. The editor competes with Team Turducken; its claims receive the same scrutiny as every other team. A focused follow-up check of the staff threads, timeline and organizer feeds on 27 October at 09:04 UTC found no new remedy or deadline change; source dates below are the dates each source was last read.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Kaggle admits run problems. Who gives teams their lost week back?",
+  "id": "2026-10-27-kaggle-run-failures-investigation",
+  "publishedAt": "2026-10-27T10:51:15Z",
+  "sections": [
+    {
+      "heading": "The clock is still running",
+      "sourceIds": [
+        "staff-oct26",
+        "timeline",
+        "cpmp-demand",
+        "staff-oct23",
+        "initial-cache-fix"
+      ],
+      "text": "Kaggle has acknowledged run problems. What affected teams still need is a fair way back into the contest. With November 2 approaching, competitors are reporting failed submissions, long waits and zeros that tell them little about whether their agents played at all. The question for Kaggle and ARC Prize is now bigger than fixing a cache: who gets another attempt, and who gets their lost time back?\n\nOn Monday evening, Kaggle staff member María Cruz said engineers were investigating “broader platform issues affecting runs here.” She also asked competitors to stop supplying individual submission IDs or tagging engineers for now, citing limited capacity. No recovery estimate accompanied the message.\n\nThis was not the first acknowledgment. On October 22, engineer Dustin said regional dataset caches had been unstable and that he believed repairs had restored stability. Cruz confirmed the following day that cache trouble had caused slow reads and startup timeouts, while some runs were still affected. Monday’s update leaves the wider investigation open."
+    },
+    {
+      "heading": "The forum has receipts",
+      "sourceIds": [
+        "cpmp-demand",
+        "cpmp-48-hours",
+        "derrick-diagnostics",
+        "huynh-fairness",
+        "staff-oct26",
+        "aquaursareads",
+        "shehab-repeat"
+      ],
+      "text": "The forum mood is a mix of frustration, improvised repairs and requests for someone to explain the result. Ravi Ramakrishnan’s central loading-issues thread showed thirty-five votes when checked. CPMP’s separate mount-error thread had more than a dozen. Those are signs of attention, not a census of affected teams.\n\nCPMP reported failures before model loading even began, demanded a replacement submission and later said his team had been unable to submit for forty-eight hours. Derrick Goh wanted to know whether his agent initialized, took actions or stopped early. Huynh described spending development time building safeguards around infrastructure trouble. These competitors are asking whether they got a fair test.\n\nYes. AquaUrsa Research reported checkpoint reads growing from about five minutes to thirty-five with the same configuration. Its tests found plain file reads were already slow before importing the model software. That is stronger evidence of a loading problem than a disappointing game score, although the team could not isolate the network from the storage service.\n\nShehab Anwer supplied a dated comparison in which the same saved notebook version scored normally and later returned zero twice. We have read those reports; we have not independently reproduced the teams’ measurements or inspected Kaggle’s private execution records."
+    },
+    {
+      "heading": "Some rescores have begun. Who gets included?",
+      "sourceIds": [
+        "rescores-running",
+        "mount-repair",
+        "new-region",
+        "failed-submissions-staff",
+        "huynh-fairness",
+        "son-reruns",
+        "workaround",
+        "son-fairness-ack"
+      ],
+      "text": "Some rescores had started. In a reply on October 24, Dustin said earlier rescores were running and he would see whether he could include submissions affected by the remaining bad cache entries afterward. That is a substantive answer, buried in a troubleshooting branch. It deserves daylight.\n\nIt is not a published promise to rerun every suspect submission. The messages reviewed do not provide a complete eligible incident window, a list of included runs, a completion timetable or an explanation of how competitors will recognize a rerun. Within the same exchange, Dustin described a new issue in another region’s cache. A repair in one region did not amount to an all-clear.\n\nThis is the fairness question a zero-only rescue could miss. Son Pham called for reruns of notebooks scoring zero during the incident, if resources allow. Huynh raised a broader objection: teams that kept their agents alive may still have lost useful solving time and produced a depressed, nonzero result. In an overnight reply, Pham accepted that point and said he was unsure of the best remedy.\n\nWill Kaggle assess those runs too? What evidence would qualify them? The public replies reviewed do not settle either question. A score above zero cannot, by itself, certify that a run was healthy; equally, a low score cannot prove it was damaged."
+    },
+    {
+      "heading": "Will ARC Prize extend the deadline?",
+      "sourceIds": [
+        "timeline",
+        "organizer-calendar",
+        "staff-oct26"
+      ],
+      "text": "No extension decision was found in the public sources reviewed for this report. The published final deadline remains November 2 at 11:59 pm UTC. The rules explicitly reserve the organizers’ right to change the timeline. They have room to act; competitors need to know whether they will.\n\nThe incident statements we found came from Kaggle staff. We found no ARC Prize statement in the reviewed threads, website or sampled organizer feeds setting out a remedy for lost development days. That is the limit of this search, not proof that no statement exists elsewhere. Neither organization has been contacted by this desk for this draft.\n\nARC Prize should explain whether it is considering extra time, when a decision will come and how it will treat teams whose development was interrupted. A rerun can recover a score. It cannot recreate every experiment a team never got to conduct."
+    },
+    {
+      "heading": "What teams can try, and what the Digest will follow",
+      "sourceIds": [
+        "workaround",
+        "cpmp-demand",
+        "derrick-diagnostics",
+        "staff-oct26",
+        "rescores-running",
+        "timeline"
+      ],
+      "text": "There are useful leads, not a universal cure. Pathik Patel reports that allowing longer for his model server to start recovered a run from zero to a positive score. Goh also reported improvement after extending his startup wait. Those experiences may help teams with that particular failure. They do not fix a mount that fails before code starts, and they do not establish the cause of a late system error.\n\nThe practical question remains: will Kaggle provide basic execution facts—whether the model started, games began, actions were accepted and why the run ended—so teams can distinguish a broken attempt from an agent that lost? Goh asked for that distinction directly. The reviewed staff updates do not supply it for the reported cases.\n\nThe ARC Daily Digest will keep tracking the answers competitors need: a reliable service update, the scope and outcome of reruns, replacement attempts, treatment of affected nonzero scores and ARC Prize’s deadline decision. We will report recoveries as readily as failures. Right now, the platform acknowledgment is on the record. The complete plan for making affected competitors whole is not."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-27T06:05:44.209064+00:00",
+      "id": "staff-oct26",
+      "title": "María Cruz, Kaggle Staff — broader platform investigation, October 26",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545231"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "staff-oct23",
+      "title": "María Cruz, Kaggle Staff — regional cache failures and continuing zero-score reports",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3543749"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "initial-cache-fix",
+      "title": "Dustin, Kaggle Staff — cache stability and feasibility of reruns",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/751344#3543186"
+    },
+    {
+      "accessedAt": "2026-10-27T06:05:44.209064+00:00",
+      "id": "mount-repair",
+      "title": "Dustin, Kaggle Staff — remaining bad cache entries cleared",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543815"
+    },
+    {
+      "accessedAt": "2026-10-27T06:05:44.209064+00:00",
+      "id": "rescores-running",
+      "title": "Dustin, Kaggle Staff — earlier rescores running; further cases under consideration",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543925"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "new-region",
+      "title": "Dustin, Kaggle Staff — a different region has a new cache issue",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543941"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "cpmp-demand",
+      "title": "CPMP — Model mount error, first-hand failure and replacement demand",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "cpmp-48-hours",
+      "title": "CPMP — still unable to submit after forty-eight hours",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3544023"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "aquaursareads",
+      "title": "AquaUrsa Research — plain file reads slow before model software starts",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631#3542775"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "derrick-diagnostics",
+      "title": "Derrick Goh — asks for execution diagnostics, not hidden answers",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "huynh-fairness",
+      "title": "Van-Phuc Huynh — asks that affected nonzero runs be considered too",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3544781"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "son-reruns",
+      "title": "Son Pham — requests reruns of zero-score notebooks during the incident",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545267"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "shehab-repeat",
+      "title": "Shehab Anwer — reports the same saved notebook scoring normally then zero twice",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3544607"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "workaround",
+      "title": "Pathik Patel — longer startup allowance reportedly recovered a run; replies debate remaining lost time",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753007"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "failed-submissions-staff",
+      "title": "María Cruz — failed ARC3 runs escalated; rerunning affected submissions being evaluated",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751756#3543750"
+    },
+    {
+      "accessedAt": "2026-10-27T06:05:44.209064+00:00",
+      "id": "timeline",
+      "title": "Kaggle — current ARC-AGI-3 timeline and nine-hour notebook limits",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "organizer-calendar",
+      "title": "ARC Prize — 2026 competition dates",
+      "url": "https://arcprize.org/competitions/2026"
+    },
+    {
+      "accessedAt": "2026-10-27T02:22:21.090894+00:00",
+      "id": "organizer-latest",
+      "title": "ARC Prize — October 26 high-score post says one week remains",
+      "url": "https://x.com/arcprize/status/2114748830268944869"
+    },
+    {
+      "accessedAt": "2026-10-27T06:05:44.209064+00:00",
+      "id": "son-fairness-ack",
+      "title": "Son Pham — acknowledges the case for considering affected nonzero scores",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545340"
+    }
+  ]
+}
