@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "id": "2026-10-27-arc3-giants-above-valley-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-27T22:32:41.317179+00:00",
+  "toolOutput": "exec-d10d1a81-8fde-410f-b59c-07b7f8adc41f.png",
+  "rawSrc": "/news-images/2026-10-27-arc3-giants-above-valley-v1-base.webp",
+  "rawSha256": "20a4d8b7cdf9beb6f95d09c331a2a87c4431b99ec0d10418a773247039996acc",
+  "prompt": "Use case: illustration-story. Create ONE completely NEW wide 16:9 cinematic editorial illustration for the ARC Daily Digest, titled in metadata only 'Giants Above the Valley'. User specifically requests GIANT RABBIT FAITHFUL TO ORIGINAL REFERENCE. IMAGE 1 is the ORIGINAL OWNER PHOTO and has absolute authority for rabbit anatomy, faces, ear positions and fur markings. Exactly TWO rabbits: foreground grey-brown lop, round broad soft muzzle, subtle lighter grey muzzle, BOTH long ears FLOPPED DOWN beside cheeks; companion dark charcoal-brown and white rabbit, BOTH long dark ears UPRIGHT, dark patches surrounding eyes and broad irregular WHITE forehead-to-nose blaze, white cheeks and chest. Match the owner photo precisely, not generic cartoon rabbits. IMAGE 2 is ONLY reference for spectacular COLOSSAL SCALE, tiny city architecture, tactile fur, intricate modest GPU collars and polished painterly 3D comic style. Do NOT reuse its camera, scene, tram, crane, Dries or composition. The new rabbits must be city-block-sized, heads and bodies towering above multi-storey towers, not normal-sized rabbits standing on a terrace. Preserve believable rabbit bodies and natural paws, not anthropomorphic people; charming calm expressions and recognizable owner-photo identities.\nEntirely new episode: a snow-covered MOUNTAIN CABLEWAY BASIN viewed from a low wide three-quarter angle across a deep ravine at crisp moonlit blue-hour with amber lights. Two COLOSSAL rabbits rest on adjacent enormous high snow shelves behind a miniature city of intricate brass-and-cyan cableway towers; the grey lop leans forward curiously with one giant paw gently beside a tiny cableway terminal, upright-eared companion sits alert beside it. Tiny lit cabins hanging below their chins, several rooflines dwarfed by a single rabbit paw, and distant small terraces make the gigantic scale absolutely undeniable. Architectural miniatures are detailed, not toy proportions of ordinary-sized rabbits. Giant rabbits occupy main center and left of frame; both faces large, unobscured and readable. Their fitted small decorative GPU collars/harness trim are fantasy callbacks to image2; never conceal coats, ears or faces.\nIn lower right on a separate comparatively tiny mountain shelf, exactly FIVE separate countable friendly fluffy BLACK SPIDER mascots with large expressive WHITE eyes build a new black-and-brass fan-powered cable-lift crawler. One on its roof, one on a short ladder, one by the front wheel, two on ground with a cable coil. All five fully separated silhouettes and no sixth spider. No humans or extra animals. Machinery is editorial metaphor, not a claim about actual hardware or spending; no winners podium, medals or trophy. This commission illustrates the giant rabbit identity, not invented new race measurements.\nRich tactile fur, glittering snow, elegant warm-lit engineering and deep teal alpine atmosphere, sophisticated warm sporting humor, high detail. Native clean art only: NO TEXT, WORDS, LETTERS, NUMBERS, SCORES, LOGOS, LABELS, FLAGS, BORDERS or WATERMARKS. Leave upper-right sky and lower-left snow relatively calm for later editorial graphics. Avoid observatory telescopes, clocks, scoring halls, old tram or crane scene. New composition, giant scale and owner-faithful rabbits are highest priorities.",
+  "references": [
+    {
+      "src": "/news-images/references/yi-chia-chen-bunnies-owner-2026-10-12.png",
+      "sha256": "3a912289a5a3c8fa761101b8bd2517e97ebed934cb2714ba20d2dde79101cfaf",
+      "role": "Authoritative owner-photo rabbit identity."
+    },
+    {
+      "src": "/news-images/2026-10-13-digital-giant-bunnies-base.webp",
+      "sha256": "81282ca9bed3cb82d2f34a7810bbd0e9c105bd74c67c1428e7a85dbb76f610a1",
+      "role": "Giant scale and style only; new cableway scene."
+    }
+  ],
+  "inputImages": [
+    "yi-chia-chen-bunnies-owner-2026-10-12.png",
+    "2026-10-13-digital-giant-bunnies-base.webp"
+  ],
+  "review": "Visually inspected tool result: two city-block-sized rabbits dwarf multi-storey cableway towers. Grey-brown lop has both ears down; dark-and-white companion has upright ears and broad irregular white face blaze/chest. Five distinct black spiders (roof, ladder, left ground, front cable coil, right ground). No text, scores, humans or extra animals. New blue-hour snowy cableway/ravine scene and fan crawler, not reused prior composition. Owner photo and original giant-scale image supplied as actual inputs."
+}

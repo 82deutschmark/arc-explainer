@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "id": "2026-10-27-evening-arc-3-1678c4c0f2",
+  "kind": "edition-composition",
+  "articleId": "2026-10-27-evening-arc-3",
+  "headline": "Yi-Chia Chen widens ARC3 lead as insuperabilehart enters gold",
+  "briefSha256": "24be932c999f3095f92cb999539bee1485b77ed2e7e437ac143fd838bf4cc51f",
+  "dataAsOf": "2026-10-27T21:46:23Z",
+  "rows": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": null,
+      "score": 75.56,
+      "scoreChange": null,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": 0,
+      "score": 68.91,
+      "scoreChange": 0.0,
+      "teamId": "15486995"
+    }
+  ],
+  "trigger": "recorded-score-event",
+  "leadGap": {
+    "previous": 2.57,
+    "current": 6.65,
+    "extends": true
+  },
+  "personIds": [],
+  "layout": "corner-overlays-v1",
+  "historyChart": null,
+  "generationRecord": "2026-10-27-arc3-giants-above-valley-v1-base",
+  "rawSha256": "20a4d8b7cdf9beb6f95d09c331a2a87c4431b99ec0d10418a773247039996acc",
+  "imageSha256": "953e25f7a346e9ee8e368be5b88713676025f61db46da6903595971f5e866bbd",
+  "image": {
+    "src": "/news-images/2026-10-27-evening-arc-3-1678c4c0f2.webp",
+    "alt": "AI editorial illustration: two colossal rabbits matching the owner photo—a grey-brown lop with drooping ears and a dark-and-white upright-eared companion—tower over a snowy cableway valley; five Tufa spider mascots work below.",
+    "caption": "AI-generated editorial illustration. Score panel: Oct 27, 2026 · 5:46 PM EDT; provisional public standings. Characters and props are metaphors.",
+    "artworkId": "2026-10-27-evening-arc-3-1678c4c0f2"
+  },
+  "compositionReview": "Inspected finished overlay: both giant rabbit faces and ears remain unobstructed; five separate spiders; dated score panel retains original 5:46 PM EDT observation, Chen 75.56 and Tufa 68.91. Fresh cableway scene using owner photo, no reused episode."
+}

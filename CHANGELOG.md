@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.158.12  Oct 27, 2026
+
+- **Owner-faithful Giant Rabbits** (Author: GPT-6.1 Sol / Codex). Replace only the October 27 evening ARC3 picture with a fresh colossal-rabbit cableway scene using the original owner photograph for ears and coat markings. Record the Discord-first receipt, immutable native provenance and image-only revision 2; retain all reporting, scores and publication times.
+
 ### Version 9.158.11  Oct 27, 2026
 
 - **Fresh evening illustrations, Discord first** (Author: GPT-6.1 Sol / Codex). Add distinct new art to the October 27 ARC2 and ARC3 Late editions, preserving their original reporting, closing evidence and publication times in separate image-only revision records. Reuse the existing compositor for dated score graphics, archive native prompts/references and record inventory uses. Clarify no repeated illustrations and the Boss's Discord-first, objection-based publication direction without an explicit review hold. Plan: `docs/plans/2026-10-27-fresh-evening-art.md`.
