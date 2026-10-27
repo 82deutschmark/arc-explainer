@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-27T19:46:02Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "pensukesan climbs to 27th on ARC-3",
+  "id": "2026-10-27-1557-arc-3-pensukesan-climbs-to-twenty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-27T19:57:47Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "pensukesan gained 2.23 points to reach 37.22, rising from 55th to 27th on the public ARC-AGI-3 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The move lifts pensukesan into a higher tier of the public standings."
+    }
+  ],
+  "since": "2026-10-26T19:42:56Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-27T19:56:30Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16047765"
+  ]
+}

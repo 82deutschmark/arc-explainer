@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-27T19:46:04Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "poge0593 surges from 1,531st to 89th on ARC-2",
+  "id": "2026-10-27-1557-arc-2-poge0593-jumps-into-top-hundred",
+  "personIds": [],
+  "publishedAt": "2026-10-27T19:57:47Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "poge0593 gained 7.22 points to reach 36.94, climbing from 1,531st to 89th on the public ARC-AGI-2 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The rise carries the team into the top 100 in a single reported move."
+    }
+  ],
+  "since": "2026-10-26T19:42:57Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-27T19:56:30Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17024200"
+  ]
+}

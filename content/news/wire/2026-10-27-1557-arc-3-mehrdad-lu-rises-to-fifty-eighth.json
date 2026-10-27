@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-27T19:46:02Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Mehrdad_LU jumps to 58th on ARC-3",
+  "id": "2026-10-27-1557-arc-3-mehrdad-lu-rises-to-fifty-eighth",
+  "personIds": [],
+  "publishedAt": "2026-10-27T19:57:47Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Mehrdad_LU gained 3.50 points to reach 35.12, moving from 367th to 58th on the public ARC-AGI-3 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The rise brings Mehrdad_LU into the board's top 100."
+    }
+  ],
+  "since": "2026-10-26T19:42:56Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-27T19:56:30Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "17022599"
+  ]
+}
