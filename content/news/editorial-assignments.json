@@ -822,5 +822,50 @@
       "https://arc.markbarney.net/news/wire#2026-10-25-1804-arc-2-arshjot-khehra-debuts-at-45th"
     ],
     "verificationNotes": "Live markets feed and public wire index inspected October 25, 2026 EDT. Roster usernames are saved-board observations; method claims are not verified. Huikang page returned HTTP 403 to this assistant; our board is independently current."
+  },
+  {
+    "id": "oct27-early-kaggle-run-failures-investigation",
+    "competition": "arc-3",
+    "createdAt": "2026-10-27T02:26:24.630421+00:00",
+    "expiresAt": "2026-10-28T12:00:00Z",
+    "title": "Kaggle admits run problems. Who gives teams their lost week back?",
+    "priority": "Head editor explicitly commissioned this as the October 27 morning lead",
+    "status": "pending",
+    "targetEditionId": "2026-10-27-morning-arc-3",
+    "placement": "edition-lead",
+    "commissionedBy": "mark-barney",
+    "teamIds": [],
+    "personIds": [
+      "jean-francois-puget",
+      "son-pham"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-26-kaggle-run-failures/morning-lead-draft.json",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-26-kaggle-run-failures/investigation.json",
+    "sourceUrls": [
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545231",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3543749",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/751344#3543186",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543815",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543925",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3543941",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3544023",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631#3542775",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3544781",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3545267",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751598#3544607",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753007",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751756#3543750",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/timeline",
+      "https://arcprize.org/competitions/2026"
+    ],
+    "instructions": "LEAD the ARC3 morning article with this commissioned investigation; keep the approved headline unless a material new development changes it. Do not bury it under a board recap. The full nine-section manuscript is at manuscriptPath; the evidence and unanswered-question ledger are at researchPath. Read those explicitly commissioned handoffs. The source-backed community discussion export supplies discussion-arc-3-751598, -752147, -751631, -753007 and -751756 citations in the prepared brief. Integrate the prepared manuscript as the edition lead, then give normal fresh race coverage and cover ARC2 fully in its own article. This is an edition-lead assignment, not a reserved dispatch; no frontPageFeatureId is required.\n\nUse lively, confident newspaper prose centered on lost attempts, wasted development time and competitive fairness. Ask the questions competitors ask and provide the answers found: regional cache failures were acknowledged October 22-23; October 24 engineer Dustin explicitly said earlier rescores were running; October 26 Cruz says broader investigation continues and individual troubleshooting is capacity-constrained. Do not claim this is the first acknowledgment, that Kaggle knows nothing, or that no reruns exist. Distinguish mounting failure, slow loading, startup zero and late system error. Explain the unresolved criteria and timetable for reruns, COMPLETE/zero and nonzero cases, restored attempts, basic diagnostics and ARC Prize’s deadline decision. Current listed deadline is November 2 at 23:59 UTC, and the rules permit timeline changes. No organizer extension decision was found in reviewed public sources. No interview or request for comment was sent; never describe refusal or failure to answer us.\n\nInclude high-vote community testimony and substantive controls, including AquaUrsa plain-read tests, CPMP mount failures and Huynh’s argument that positive but impaired scores may deserve reruns too. Recovery reports belong beside failures. Votes are evidence of attention, not a count of harmed teams. Team Turducken receives the same scrutiny as all competitors; Mark is editor and competitor. Preserve the discussion-header/listing count discrepancies in evidence rather than turning them into a firm total.\n\nHourly watch kaggle-run-failures-developing-story checks at :35 and updates the private handoff for material news; use the newest dated update available before preparation. The scheduled edition remains bounded: use the committed public evidence and handoff, do not start fresh research or overwrite a published edition. If overnight information cannot be verified, state the last check date and exactly what remains unknown. Record this assignment as covered only when the investigation substantively leads the article.\n\nPUBLICATION HANDOFF: the fully sourced five-section feature-draft.json beside the manuscript contains the complete investigation and direct primary citations, already locally validated as a dispatch. It remains UNPUBLISHED. The story watch is authorized to refresh it and release this morning lead on its October 27 5:35 am Eastern pass: set publishedAt to actual release time, preserve the evidence check dates, validate/publish with newsroom.py, and change this assignment to placement front-page-feature with featureId matching plannedFeatureId only after the dispatch exists. Commit/push the intended feature, discussion export and assignment changes; no extra social announcement. The routine 6 am edition then carries that protected full feature above its fresh race recap. If that release did not occur, this explicitly commissioned prepared feature may be released from the saved, dated sources by the morning desk, followed by one re-prepare to ingest it. Do not invent a fresh research check or wait for deployment. Never set front-page-feature to a missing file. If no safe publication is possible, hold the assignment with the concrete reason and use verified discussion evidence for the strongest supportable lead.",
+    "subjectNames": [
+      "Kaggle",
+      "ARC Prize"
+    ],
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-26-kaggle-run-failures/feature-draft.json",
+    "plannedFeatureId": "2026-10-27-kaggle-run-failures-investigation"
   }
 ]
