@@ -1,3 +1,7 @@
+### Version 7.5.1  Oct 27, 2026
+
+- **Keep staging out of search** (GPT-6 / Codex). Send `X-Robots-Tag: noindex, nofollow` on every response from the staging hostname, before static files and API routes. Production hosts retain their existing indexing behavior. Validated through an actual Express response and the server build.
+
 # New entries at the top, use proper SemVer!
 
 ### Version 7.5.0  Jul 30, 2026

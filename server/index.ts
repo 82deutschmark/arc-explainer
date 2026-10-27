@@ -1,11 +1,12 @@
 /**
- * Author: gpt-5-codex
- * Date: 2025-10-16T00:00:00Z
- * PURPOSE: Bootstraps the Express server, wiring middleware, routes, static serving, and startup diagnostics.
+ * Author: GPT-6 / Codex; gpt-5-codex
+ * Date: 2026-10-27
+ * PURPOSE: Prevents staging indexing before static/API routing; bootstraps the Express server, wiring middleware, routes, static serving, and startup diagnostics.
  * SRP/DRY check: Pass — initialization and environment checks consolidated in a single entry point.
  */
 
 import 'dotenv/config';
+import { stagingSearchPolicy } from './middleware/stagingSearchPolicy';
 import express, { type Request, Response, NextFunction } from "express";
 import cors from 'cors';
 import { registerRoutes } from "./routes";
@@ -56,6 +57,7 @@ if (streamingConfig.frontendAdvertises && !streamingConfig.enabled) {
 }
 
 const app = express();
+app.use(stagingSearchPolicy);
 
 // Configure CORS - Allow all origins
 const corsOptions = {
