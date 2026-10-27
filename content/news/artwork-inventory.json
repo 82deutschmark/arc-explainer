@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-27T01:50:43.441244+00:00",
+  "updatedAt": "2026-10-27T13:16:46.467068+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -835,6 +835,38 @@
         }
       ],
       "selectionNote": "Editor explicitly commissioned separate article and image. Bell-ringing robot scene and correct text visually reviewed; no real person or official seal depicted."
+    },
+    {
+      "id": "2026-10-27-arc3-clock-keeps-running-v1",
+      "generationRecord": "2026-10-27-arc3-clock-keeps-running-v1",
+      "src": "/news-images/2026-10-27-arc3-clock-keeps-running-v1.png",
+      "title": "The Clock Keeps Running",
+      "competition": "arc-3",
+      "status": "published-on-x-and-discord",
+      "articleUses": [],
+      "relatedArticleIds": [
+        "2026-10-27-kaggle-run-failures-investigation",
+        "2026-10-27-morning-arc-3"
+      ],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2115070373280800960",
+          "postedAt": "2026-10-27T13:17:56.079339+00:00",
+          "artworkId": "2026-10-27-arc3-clock-keeps-running-v1",
+          "attachmentSha256": "53985d27a3f96c056e617ff848f9e7db1b652eb7499145f2fcc6c748a1862346",
+          "purpose": "Direct editor-requested fresh-art correction; original announcement preserved."
+        }
+      ],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1564628780239028285",
+          "replyToId": "1564594585248731321",
+          "attachmentSha256": "53985d27a3f96c056e617ff848f9e7db1b652eb7499145f2fcc6c748a1862346",
+          "purpose": "Mark-requested new incident illustration, all four ARChitects included; reply to original article announcement."
+        }
+      ],
+      "selectionNote": "New episode commissioned October 27 to replace stale Lights Out artwork. Fresh observed ARC3 roster checked; entire Turducken crew and four ARChitects visible. No score, rank or extension outcome depicted. Published article files remain immutable."
     }
   ],
   "existingXPosts": [
