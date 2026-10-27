@@ -2558,5 +2558,56 @@
       }
     ],
     "name": "Grigoriy Zatravkin"
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-27T01:16:06.263620+00:00",
+        "handle": "sbrodehl",
+        "platform": "kaggle",
+        "sourceTitle": "Sebastian Brodehl — own Kaggle profile with og:username sbrodehl",
+        "sourceUrl": "https://www.kaggle.com/sbrodehl",
+        "url": "https://www.kaggle.com/sbrodehl"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-27T01:16:06.263620+00:00",
+        "sourceTitle": "Mainz Visual Computing — people and alumni",
+        "sourceUrl": "https://www.visualcomputing.informatik.uni-mainz.de/people/",
+        "text": "Johannes Gutenberg University Mainz’s Visual Computing page lists Dr. Sebastian Brodehl among its former PhD students."
+      },
+      {
+        "checkedAt": "2026-10-27T01:16:06.263620+00:00",
+        "sourceTitle": "Frontiers — 2021 coauthored research paper",
+        "sourceUrl": "https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2021.642374/full",
+        "text": "David Hartmann, Daniel Franzen and Sebastian Brodehl coauthored the 2021 paper Studying the Evolution of Neural Activation Patterns During Training of Feed-Forward ReLU Networks, affiliated with the Visual Computing Group at Mainz."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "sebastian-brodehl",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-26T19:42:56Z",
+        "lastObservedAt": "2026-10-27T00:43:31Z",
+        "memberHandle": "sbrodehl",
+        "season": "2026",
+        "sourceTitle": "Dated ARChitects roster evidence; before name David Hartmann, after The ARChitects",
+        "sourceUrl": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-26-architects-roster-and-score.json",
+        "teamId": "16032816",
+        "teamName": "The ARChitects"
+      }
+    ],
+    "name": "Sebastian Brodehl",
+    "portrait": {
+      "alt": "Sebastian Brodehl’s Kaggle profile picture",
+      "checkedAt": "2026-10-27T01:16:06Z",
+      "kind": "kaggle",
+      "sourceTitle": "Sebastian Brodehl — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/sbrodehl",
+      "src": "/news-images/people/sebastian-brodehl.webp"
+    }
   }
 ]

@@ -1,0 +1,698 @@
+{
+  "researchedAt": "2026-10-27T01:12:32.078884+00:00",
+  "researchDayEastern": "2026-10-26",
+  "deadline": {
+    "arc-3": {
+      "dateUtc": "2026-10-26T23:59:00Z",
+      "dateEastern": "2026-10-26T19:59:00-04:00",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/overview/evaluation",
+      "finding": "Official Timeline names October 26 Team Merger Deadline; all deadlines 11:59 PM UTC unless otherwise stated.",
+      "checkedAt": "2026-10-27T01:12:32.078884+00:00"
+    },
+    "arc-2": {
+      "dateUtc": "2026-10-26T23:59:00Z",
+      "dateEastern": "2026-10-26T19:59:00-04:00",
+      "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/overview/prizes",
+      "finding": "Official Timeline names October 26 Team Merger Deadline; all deadlines 11:59 PM UTC unless otherwise stated.",
+      "checkedAt": "2026-10-27T01:12:32.078884+00:00"
+    }
+  },
+  "coverage": {
+    "currentBoards": {
+      "arc-2": {
+        "observedAt": "2026-10-27T00:43:33Z",
+        "teamCount": 3383,
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board"
+      },
+      "arc-3": {
+        "observedAt": "2026-10-27T00:43:31Z",
+        "teamCount": 4877,
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+      }
+    },
+    "baselineFullBoards": {
+      "arc-3": "2026-10-25T09:04:08Z",
+      "arc-2": "2026-10-25T09:04:10Z"
+    },
+    "narrowingEvidence": "All committed Oct25–26 wire evidence roster observations and edition observations; full Oct25 morning and current boards. Collector board-history holds current rosters and historical scores, not historical rosters.",
+    "limitations": [
+      "This identifies observed roster expansions, not exact Kaggle merge transactions or joining times.",
+      "At least thirteen entries have roster additions bracketed wholly within October26 Eastern. Broader additions lacking same-day baseline are candidates, not verified today.",
+      "Fresh multi-account entries absent in baseline are not evidence of a merger; they may be newly entered teams.",
+      "No merger is inferred just from a name change, rank jump, submission count or absent prior entry.",
+      "No affiliation, acclaim or contribution inferred from handles alone."
+    ]
+  },
+  "architects": {
+    "competition": "arc-prize-2026-arc-agi-3",
+    "survivingTeamId": "16032816",
+    "beforeAfter": [
+      {
+        "observedAt": "2026-10-26T19:42:56Z",
+        "sourcePath": "content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "sourceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "teams": {
+          "16384837": {
+            "isNew": false,
+            "members": [
+              "dfranzen"
+            ],
+            "name": "Daniel Franzen",
+            "rank": 16,
+            "rankThen": 16,
+            "score": 38.85,
+            "scoreThen": 38.85,
+            "submissions": 107,
+            "teamId": "16384837"
+          },
+          "15501006": {
+            "isNew": false,
+            "members": [
+              "insanitycheck"
+            ],
+            "name": "Jan Disselhoff",
+            "rank": 18,
+            "rankThen": 18,
+            "score": 38.6,
+            "scoreThen": 38.58,
+            "submissions": 42,
+            "teamId": "15501006"
+          },
+          "16032816": {
+            "isNew": false,
+            "members": [
+              "dvhrtm",
+              "sbrodehl"
+            ],
+            "name": "David Hartmann",
+            "rank": 798,
+            "rankThen": null,
+            "score": 29.83,
+            "scoreThen": null,
+            "submissions": 51,
+            "teamId": "16032816"
+          }
+        }
+      },
+      {
+        "observedAt": "2026-10-26T21:43:10Z",
+        "sourcePath": "content/news/wire-evidence/2026-10-26-1759-arc-3-the-architects-climb-to-sixteenth.json",
+        "sourceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1759-arc-3-the-architects-climb-to-sixteenth.json",
+        "teams": {
+          "16032816": {
+            "isNew": false,
+            "members": [
+              "dfranzen",
+              "dvhrtm",
+              "insanitycheck",
+              "sbrodehl"
+            ],
+            "name": "The ARChitects",
+            "rank": 16,
+            "rankThen": 798,
+            "score": 38.85,
+            "scoreThen": 29.83,
+            "submissions": 202,
+            "teamId": "16032816"
+          }
+        }
+      }
+    ],
+    "verifiedRosterTransition": "Before at 19:42:56Z: David Hartmann team16032816 had dvhrtm and sbrodehl; after at21:43:10Z The ARChitects has dfranzen,dvhrtm,insanitycheck,sbrodehl. Daniel and Jan accounts are additions in this observed transition. Sebastian was already with Hartmann before that transition.",
+    "sportingCorrection": "Daniel Franzen team16384837 already held16th/38.85 before combination; Jan team15501006 held18th/38.60; Hartmann team16032816 held798th/29.83. After combination surviving entry held16th/38.85. Do not describe surviving entry 9.02 increase as a verified new solver performance improvement; it equals Franzen pre-existing score.",
+    "mergeTimeBracketUtc": [
+      "2026-10-26T19:42:56Z",
+      "2026-10-26T21:43:10Z"
+    ]
+  },
+  "confirmedSameDayRosterAdditions": [
+    {
+      "competition": "arc-3",
+      "teamId": "16490178",
+      "before": {
+        "at": "2026-10-26T13:42:13Z",
+        "name": "Grigoriy Zatravkin",
+        "members": [
+          "florenciasolange",
+          "grigoriyzatravkin"
+        ],
+        "rank": 7,
+        "score": 47.19,
+        "source": "content/news/wire-evidence/2026-10-26-0956-arc-3-hongchendai-climbs-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0956-arc-3-hongchendai-climbs-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T15:42:28Z",
+        "name": "Grigoriy Zatravkin & co",
+        "members": [
+          "aizealotwu",
+          "deepdreamer",
+          "florenciasolange",
+          "grigoriyzatravkin"
+        ],
+        "rank": 7,
+        "score": 47.19,
+        "source": "content/news/wire-evidence/2026-10-26-1200-arc-3-sankalp-rises-to-sixtieth.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1200-arc-3-sankalp-rises-to-sixtieth.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "aizealotwu",
+        "deepdreamer"
+      ]
+    },
+    {
+      "competition": "arc-3",
+      "teamId": "15770880",
+      "before": {
+        "at": "2026-10-26T19:42:56Z",
+        "name": "NVARC3",
+        "members": [
+          "cpmpml",
+          "darraghdog",
+          "eladsarafian",
+          "galkaplun",
+          "sorokin",
+          "yeyinzhu"
+        ],
+        "rank": 6,
+        "score": 48.84,
+        "source": "content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T21:43:10Z",
+        "name": "NVARC3",
+        "members": [
+          "cpmpml",
+          "darraghdog",
+          "eladsarafian",
+          "galkaplun",
+          "sorokin",
+          "titericz",
+          "yeyinzhu"
+        ],
+        "rank": null,
+        "score": null,
+        "source": "content/news/evidence/2026-10-26-evening-arc-3.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/evidence/2026-10-26-evening-arc-3.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "titericz"
+      ]
+    },
+    {
+      "competition": "arc-3",
+      "teamId": "16916278",
+      "before": {
+        "at": "2026-10-26T17:42:42Z",
+        "name": "Charles Ran",
+        "members": [
+          "cranberry128"
+        ],
+        "rank": 190,
+        "score": 32.76,
+        "source": "content/news/wire-evidence/2026-10-26-1401-arc-3-kobq-jumps-to-seventy-sixth.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1401-arc-3-kobq-jumps-to-seventy-sixth.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T19:42:56Z",
+        "name": "Charles Ran",
+        "members": [
+          "cranberry128",
+          "rohanajwani"
+        ],
+        "rank": 191,
+        "score": 32.76,
+        "source": "content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "rohanajwani"
+      ]
+    },
+    {
+      "competition": "arc-3",
+      "teamId": "16916278",
+      "before": {
+        "at": "2026-10-26T19:42:56Z",
+        "name": "Charles Ran",
+        "members": [
+          "cranberry128",
+          "rohanajwani"
+        ],
+        "rank": 191,
+        "score": 32.76,
+        "source": "content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T21:43:10Z",
+        "name": "Charles Ran",
+        "members": [
+          "christophercameron",
+          "cranberry128",
+          "matinaghaei",
+          "rohanajwani"
+        ],
+        "rank": 190,
+        "score": 32.76,
+        "source": "content/news/wire-evidence/2026-10-26-1759-arc-3-the-architects-climb-to-sixteenth.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1759-arc-3-the-architects-climb-to-sixteenth.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "christophercameron",
+        "matinaghaei"
+      ]
+    },
+    {
+      "competition": "arc-3",
+      "teamId": "16459830",
+      "before": {
+        "at": "2026-10-26T05:41:20Z",
+        "name": "Giovanny Rodríguez",
+        "members": [
+          "giovannyrodrguez"
+        ],
+        "rank": 214,
+        "score": 32.54,
+        "source": "content/news/wire-evidence/2026-10-26-0201-arc-3-yi-chia-chen-extends-lead.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0201-arc-3-yi-chia-chen-extends-lead.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T07:41:34Z",
+        "name": "Giovanny Rodríguez",
+        "members": [
+          "arnavmishra02",
+          "giovannyrodrguez"
+        ],
+        "rank": 214,
+        "score": 32.54,
+        "source": "content/news/wire-evidence/2026-10-26-0403-arc-3-prabhav-semwal-climbs-to-seventy-first.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0403-arc-3-prabhav-semwal-climbs-to-seventy-first.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "arnavmishra02"
+      ]
+    },
+    {
+      "competition": "arc-3",
+      "teamId": "16246219",
+      "before": {
+        "at": "2026-10-26T05:41:20Z",
+        "name": "Lucky",
+        "members": [
+          "caoyupeng",
+          "lingyu07"
+        ],
+        "rank": 291,
+        "score": 31.93,
+        "source": "content/news/wire-evidence/2026-10-26-0201-arc-3-yi-chia-chen-extends-lead.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0201-arc-3-yi-chia-chen-extends-lead.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T07:41:34Z",
+        "name": "Lucky",
+        "members": [
+          "caoyupeng",
+          "lingyu07",
+          "tofearlessknight"
+        ],
+        "rank": 291,
+        "score": 31.93,
+        "source": "content/news/wire-evidence/2026-10-26-0403-arc-3-prabhav-semwal-climbs-to-seventy-first.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0403-arc-3-prabhav-semwal-climbs-to-seventy-first.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "tofearlessknight"
+      ]
+    },
+    {
+      "competition": "arc-3",
+      "teamId": "16246219",
+      "before": {
+        "at": "2026-10-26T11:41:59Z",
+        "name": "Lucky",
+        "members": [
+          "caoyupeng",
+          "lingyu07",
+          "tofearlessknight"
+        ],
+        "rank": 299,
+        "score": 31.93,
+        "source": "content/news/wire-evidence/2026-10-26-0757-arc-3-nvarc3-advances-to-sixth.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0757-arc-3-nvarc3-advances-to-sixth.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T13:42:13Z",
+        "name": "Lucky",
+        "members": [
+          "caoyupeng",
+          "hjx1024",
+          "lingyu07",
+          "tofearlessknight"
+        ],
+        "rank": 298,
+        "score": 31.93,
+        "source": "content/news/wire-evidence/2026-10-26-0956-arc-3-hongchendai-climbs-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0956-arc-3-hongchendai-climbs-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "hjx1024"
+      ]
+    },
+    {
+      "competition": "arc-3",
+      "teamId": "16032816",
+      "before": {
+        "at": "2026-10-26T19:42:56Z",
+        "name": "David Hartmann",
+        "members": [
+          "dvhrtm",
+          "sbrodehl"
+        ],
+        "rank": 798,
+        "score": 29.83,
+        "source": "content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-3-kirill-krasikov-breaks-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T21:43:10Z",
+        "name": "The ARChitects",
+        "members": [
+          "dfranzen",
+          "dvhrtm",
+          "insanitycheck",
+          "sbrodehl"
+        ],
+        "rank": null,
+        "score": null,
+        "source": "content/news/evidence/2026-10-26-evening-arc-3.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/evidence/2026-10-26-evening-arc-3.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "dfranzen",
+        "insanitycheck"
+      ]
+    },
+    {
+      "competition": "arc-2",
+      "teamId": "17166527",
+      "before": {
+        "at": "2026-10-26T07:41:35Z",
+        "name": "Thanh Hau Nguyen",
+        "members": [
+          "thanhhau097a"
+        ],
+        "rank": 26,
+        "score": 63.89,
+        "source": "content/news/wire-evidence/2026-10-26-0403-arc-2-rxe-rises-to-fifty-first.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0403-arc-2-rxe-rises-to-fifty-first.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T09:41:48Z",
+        "name": "ảc",
+        "members": [
+          "andy2709",
+          "locbaop",
+          "thanhhau097a"
+        ],
+        "rank": null,
+        "score": null,
+        "source": "content/news/evidence/2026-10-26-morning-arc-2.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/evidence/2026-10-26-morning-arc-2.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "andy2709",
+        "locbaop"
+      ]
+    },
+    {
+      "competition": "arc-2",
+      "teamId": "17166527",
+      "before": {
+        "at": "2026-10-26T17:42:44Z",
+        "name": "ảc",
+        "members": [
+          "andy2709",
+          "locbaop",
+          "thanhhau097a"
+        ],
+        "rank": 16,
+        "score": 69.17,
+        "source": "content/news/wire-evidence/2026-10-26-1401-arc-2-trian-climbs-to-thirty-eighth.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1401-arc-2-trian-climbs-to-thirty-eighth.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T19:42:57Z",
+        "name": "ảc",
+        "members": [
+          "andy2709",
+          "locbaop",
+          "minhtu123",
+          "thanhhau097a"
+        ],
+        "rank": 16,
+        "score": 69.17,
+        "source": "content/news/wire-evidence/2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "minhtu123"
+      ]
+    },
+    {
+      "competition": "arc-2",
+      "teamId": "16797706",
+      "before": {
+        "at": "2026-10-26T17:42:44Z",
+        "name": "Shin & Maciej & Natalia",
+        "members": [
+          "maciejsypetkowski",
+          "nataliajakowska",
+          "shiiin9"
+        ],
+        "rank": 23,
+        "score": 65.56,
+        "source": "content/news/wire-evidence/2026-10-26-1401-arc-2-trian-climbs-to-thirty-eighth.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1401-arc-2-trian-climbs-to-thirty-eighth.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T19:42:57Z",
+        "name": "Shin & Maciej & Natalia",
+        "members": [
+          "maciejsypetkowski",
+          "nataliajakowska",
+          "sggpls",
+          "shiiin9",
+          "yuritosci"
+        ],
+        "rank": 24,
+        "score": 65.56,
+        "source": "content/news/wire-evidence/2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "sggpls",
+        "yuritosci"
+      ]
+    },
+    {
+      "competition": "arc-2",
+      "teamId": "17101761",
+      "before": {
+        "at": "2026-10-26T11:42:01Z",
+        "name": "codjjj",
+        "members": [
+          "codjjj",
+          "gravity20",
+          "li325040229"
+        ],
+        "rank": 40,
+        "score": 54.44,
+        "source": "content/news/wire-evidence/2026-10-26-0757-arc-2-nischay-dhankhar-climbs-from-503rd-to-48th.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0757-arc-2-nischay-dhankhar-climbs-from-503rd-to-48th.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T13:42:14Z",
+        "name": "codjjj",
+        "members": [
+          "codjjj",
+          "gravity20",
+          "jakkma",
+          "li325040229",
+          "muumaoo"
+        ],
+        "rank": 40,
+        "score": 54.44,
+        "source": "content/news/wire-evidence/2026-10-26-0956-arc-2-richard-freinschlag-surges-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0956-arc-2-richard-freinschlag-surges-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "jakkma",
+        "muumaoo"
+      ]
+    },
+    {
+      "competition": "arc-2",
+      "teamId": "15648732",
+      "before": {
+        "at": "2026-10-26T17:42:44Z",
+        "name": "Khaotic Sethesis",
+        "members": [
+          "khahuras",
+          "sethmoudry"
+        ],
+        "rank": 47,
+        "score": 50.42,
+        "source": "content/news/wire-evidence/2026-10-26-1401-arc-2-trian-climbs-to-thirty-eighth.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1401-arc-2-trian-climbs-to-thirty-eighth.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T19:42:57Z",
+        "name": "Khaotic Sethesis",
+        "members": [
+          "cdeotte",
+          "khahuras",
+          "sethmoudry"
+        ],
+        "rank": 47,
+        "score": 50.42,
+        "source": "content/news/wire-evidence/2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "cdeotte"
+      ]
+    },
+    {
+      "competition": "arc-2",
+      "teamId": "16883591",
+      "before": {
+        "at": "2026-10-26T19:42:57Z",
+        "name": "Sajad Goudarzi",
+        "members": [
+          "sajadgoudarzi"
+        ],
+        "rank": 55,
+        "score": 45.42,
+        "source": "content/news/wire-evidence/2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1557-arc-2-megsub-rises-to-sixty-seventh.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T21:43:12Z",
+        "name": "Sajad Goudarzi",
+        "members": [
+          "sajadgoudarzi",
+          "samanehzamanifard"
+        ],
+        "rank": 55,
+        "score": 45.42,
+        "source": "content/news/wire-evidence/2026-10-26-1759-arc-2-lashen-learning-takes-gold-place.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1759-arc-2-lashen-learning-takes-gold-place.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "samanehzamanifard"
+      ]
+    },
+    {
+      "competition": "arc-2",
+      "teamId": "16781837",
+      "before": {
+        "at": "2026-10-26T13:42:14Z",
+        "name": "Sam-wiz",
+        "members": [
+          "samwiz"
+        ],
+        "rank": 63,
+        "score": 42.22,
+        "source": "content/news/wire-evidence/2026-10-26-0956-arc-2-richard-freinschlag-surges-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0956-arc-2-richard-freinschlag-surges-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T15:42:29Z",
+        "name": "Sam-wiz",
+        "members": [
+          "dolphyaggarwal",
+          "pranav1100",
+          "samwiz"
+        ],
+        "rank": 63,
+        "score": 42.22,
+        "source": "content/news/wire-evidence/2026-10-26-1200-arc-2-domdolus-tolus-moves-into-third.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1200-arc-2-domdolus-tolus-moves-into-third.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "dolphyaggarwal",
+        "pranav1100"
+      ]
+    },
+    {
+      "competition": "arc-2",
+      "teamId": "16980933",
+      "before": {
+        "at": "2026-10-26T13:42:14Z",
+        "name": "Netram Faran",
+        "members": [
+          "hitarthjain0",
+          "netramfaran",
+          "rabari9999",
+          "yeashusemwal"
+        ],
+        "rank": 146,
+        "score": 33.19,
+        "source": "content/news/wire-evidence/2026-10-26-0956-arc-2-richard-freinschlag-surges-into-top-hundred.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-0956-arc-2-richard-freinschlag-surges-into-top-hundred.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "after": {
+        "at": "2026-10-26T15:42:29Z",
+        "name": "Netram Faran",
+        "members": [
+          "hitarthjain0",
+          "khushboo1324",
+          "netramfaran",
+          "rabari9999",
+          "yeashusemwal"
+        ],
+        "rank": 144,
+        "score": 33.19,
+        "source": "content/news/wire-evidence/2026-10-26-1200-arc-2-domdolus-tolus-moves-into-third.json",
+        "publicEvidenceUrl": "https://github.com/82deutschmark/arc-explainer/blob/63deebb5/content/news/wire-evidence/2026-10-26-1200-arc-2-domdolus-tolus-moves-into-third.json",
+        "sourceType": "archived roster observation; not a merger log"
+      },
+      "added": [
+        "khushboo1324"
+      ]
+    }
+  ]
+}

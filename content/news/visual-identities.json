@@ -570,9 +570,46 @@
         }
       ],
       "status": "ready"
+    },
+    {
+      "id": "sebastian-brodehl",
+      "personId": "sebastian-brodehl",
+      "description": "Sebastian Brodehl — verified mouse avatar and commissioned engineering character",
+      "names": [
+        "Sebastian Brodehl",
+        "Brodehl"
+      ],
+      "identityNotes": [
+        "Preserve tan-grey mouse, enormous round pink ears, spiky brown hair, black sunglasses with blue lenses, friendly smile and stubble. New engineering costume is editorial fantasy."
+      ],
+      "provenance": "Own Kaggle profile identifies sbrodehl as Sebastian Brodehl; original avatar saved unchanged. The editor met Sebastian at Boston ARC event and commissioned a new character.",
+      "referenceType": "Verified avatar / individual portrait",
+      "references": [
+        {
+          "src": "/news-images/2026-10-26-sebastian-brodehl-hero-avatar.png",
+          "kind": "native-character",
+          "label": "Sebastian Brodehl — commissioned mouse cyber-engineer",
+          "role": "Match the ivory/copper armor, huge pink ears, spiky hair, blue-lensed glasses and friendly muzzle; editorial character derived from own Kaggle avatar.",
+          "sha256": "a3aeeeec12d269b0519c5319321b841c2118ec99f8b1da6c6ccd9fe4529d4dfa",
+          "generationRecord": "2026-10-26-sebastian-brodehl-hero-avatar",
+          "archivedAt": "2026-10-27T01:16:37.092510+00:00"
+        },
+        {
+          "archivedAt": "2026-10-27T01:16:06.263620+00:00",
+          "checkedAt": "2026-10-27T01:16:06.263620+00:00",
+          "kind": "kaggle-avatar",
+          "label": "Sebastian Brodehl’s own Kaggle mouse avatar",
+          "originalSrc": "/news-images/people/sebastian-brodehl.webp",
+          "role": "Authoritative Sebastian character identity; preserve mouse ears, hair, glasses, muzzle and smile.",
+          "sha256": "0b0e18a19c571252ba5a69dfefffaca86fb3ba8116bd286c188fd5a492501b5e",
+          "sourceUrl": "https://www.kaggle.com/sbrodehl",
+          "src": "/news-images/references/2026-10-26-sebastian-brodehl-kaggle-v1.png"
+        }
+      ],
+      "status": "ready"
     }
   ],
-  "updatedAt": "2026-10-18T19:17:34.889371Z",
+  "updatedAt": "2026-10-27T01:16:37.092510+00:00",
   "version": 1,
   "reusableScenes": [
     {

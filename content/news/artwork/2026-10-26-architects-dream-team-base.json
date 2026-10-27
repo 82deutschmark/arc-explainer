@@ -1,0 +1,40 @@
+{
+  "id": "2026-10-26-architects-dream-team-base",
+  "createdAt": "2026-10-27T01:16:37.092510+00:00",
+  "generator": "Codex built-in image_gen",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "prompt": "Create a spectacular NEW wide landscape cinematic editorial illustration for The ARC Daily Digest: THE 2026 ARCHITECTS DREAM TEAM COMES TOGETHER. Four established individual animal-avatar characters unite as a confident ingenious engineering crew, no extra people. Respectful heroic wit, intricate expensive painterly 3D cyberpunk-comic, charming expressive faces, beautiful night blue/cyan light with amber workshop lamps. This is NEW scene art, NOT a reproduction of the reference card and NOT a group of human men.\nREFERENCE ROLES: 1 archived ARC Explainer group card is STYLE ONLY: its intricate graphite/copper cybernetic engineer armor and cinematic research-lab mood. Do NOT copy its human faces, text, logos, layout or historical stats. 2 Jan Disselhoff individual avatar: orange CAT, pointed ears, dark beard, large square black glasses with blue lenses, burgundy undersuit. 3 David Hartmann individual avatar: golden-orange FOX, large upright ears, pale muzzle/chest, black nose, round dark sunglasses. 4 Daniel Franzen individual avatar: yellow DUCK, orange bill, broad black sunglasses. 5 Sebastian Brodehl's own Kaggle avatar: tan-grey MOUSE with HUGE round pink ears, spiky brown hair, slight beard/stubble, black sunglasses with blue lenses, friendly smile, ivory shirt collar. Sebastian must be DISTINCT from the cat and fox and get a particularly cool hero design: elegant copper/ivory cyber-engineer armor, a small luminous geometric drafting compass on wrist, large ears unobscured. Preserve all four individual identities and species. Exactly FOUR characters: cat, fox, duck, mouse.\nNEW COMPOSITION: The four assemble on a dramatic elevated architect's drafting platform in a vast futuristic workshop overlooking the fantastical GPU valley. Large luminous translucent geometric model of an imaginative four-tower research citadel rises on their central workbench, each character placing/aligning one component together. Mouse Sebastian in foreground right, fox David foreground left, cat Jan mid-left, duck Daniel mid-right; all full faces prominent and at comparable visual importance, all heads and both mouse ears clearly separate. Fine mechanical gloves appropriate to each character; flattering confident body language and fellowship. Clear visual narrative of four strengths coming together into one team. Beautiful sweeping bridge and gridlike blueprint light trails, no actual university building, no corporate logos. Machine hardware is editorial fantasy, not evidence of methods/spending. New silhouettes and camera with excellent visual storytelling, not a lineup or staff headshot.\nWide 16:9, leave quiet upper right and bottom edge for possible later typeset paper branding and dated score labels. NO TEXT, NO NUMBERS, NO LETTERS, no logos, no watermarks, no rank/score anywhere. This is a preview awaiting the editor's review; do not include a publication badge.",
+  "references": [
+    {
+      "src": "/ARChitechts.png",
+      "sha256": "f35b1b7935b73db2f2b37b8281e7845a6dd1bba8b6b0c161290df3be752be1fe"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-jan-disselhoff-reference-1-v1.webp",
+      "sha256": "0ad92e5d45f85823a3af0fcbfe1430501b967f5e1fec3ebfadfbb84bf9bb52f2"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-david-hartmann-reference-1-v1.webp",
+      "sha256": "83c5fd8efec1d74bd3552761cb11b34d0fbc0e78a6b52b488ae72f51c2a5fece"
+    },
+    {
+      "src": "/news-images/references/2026-10-12-daniel-franzen-reference-1-v1.webp",
+      "sha256": "469776ab05a8f5ea268ace6aa0686cf757044ce6684c03c9d8450d10514bfc49"
+    },
+    {
+      "src": "/news-images/references/2026-10-26-sebastian-brodehl-kaggle-v1.png",
+      "sha256": "0b0e18a19c571252ba5a69dfefffaca86fb3ba8116bd286c188fd5a492501b5e"
+    }
+  ],
+  "src": "/news-images/2026-10-26-architects-dream-team-base.png",
+  "sha256": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c",
+  "reviewedAt": "2026-10-27T01:16:37.092510+00:00",
+  "review": "Visually inspected. Group has exactly four distinct verified avatar characters, left to right fox David, cat Jan, duck Daniel, mouse Sebastian. All faces and mouse ears visible. Labeled version has correct four names, dated historical credits, team title and 8:43 PM EDT 16th/38.85 score badge. Individual mouse hero preserves Kaggle avatar identity and has no text. All equipment is editorial fantasy.",
+  "status": "reviewed-editor-preview",
+  "articleId": "2026-10-26-architects-superteam-enters-gold",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "rawSrc": "/news-images/2026-10-26-architects-dream-team-base.png",
+  "rawSha256": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "2026-10-26-architects-dream-team-labeled",
+  "createdAt": "2026-10-27T01:16:37.092510+00:00",
+  "generator": "Codex built-in image_gen",
+  "generatedBy": "gpt-6.1-sol",
+  "commissionedBy": "mark-barney",
+  "prompt": "Edit this approved four-character ARChitects illustration into a polished NEWSPAPER FEATURE / BASEBALL-CARD STYLE TEAM PLATE with legible expertly typeset graphic overlays. Preserve all four characters EXACTLY, their faces, glasses, clothing, position, workbench and luminous city. Do not redraw their identities or add characters. Input is a clean native original. Add tasteful graphite panels, fine copper borders, ivory typography and small cyan dividers consistent with the source; text must be crisp correctly spelled and easily readable. Extend canvas at bottom if needed so panels do not cover characters/faces or main architectural model. Keep a wide landscape finished feature plate. This is a layout/typography edit, not a new scene.\nTOP LEFT compact masthead on dark translucent panel: 'THE ARC DAILY DIGEST' and smaller 'EVENING FEATURE • 26 OCTOBER 2026'.\nTOP RIGHT compact team score badge: 'ARC-AGI-3' then '#16  |  38.85' then smaller 'Public board • 26 Oct, 8:43 PM EDT'.\nLOWER EDGE: add FOUR equally sized baseball-card name/contribution boxes, aligned left-to-right directly below the corresponding character. CRITICAL identity mapping: leftmost foreground FOX=David Hartmann; second/back orange bearded CAT=Jan Disselhoff; third yellow DUCK=Daniel Franzen; rightmost foreground MOUSE=Sebastian Brodehl. Each box has bold full name and two compact readable lines:\nBox1 'DAVID HARTMANN' / '2025 ARC Prize runner-up' / '2021 research coauthor'\nBox2 'JAN DISSELHOFF' / '2024 ARC Prize champion' / '2025 ARC Prize runner-up'\nBox3 'DANIEL FRANZEN' / '2024 ARC Prize champion' / '2025 ARC Prize runner-up'\nBox4 'SEBASTIAN BRODEHL' / 'Mainz research collaborator' / '2021 research coauthor'\nAbove or below the four boxes, a strong full-width TITLE BAR: 'THE 2026 ARChitects' with smaller deck 'THE DREAM TEAM COMES TOGETHER'. Keep capitalization ARChitects exact. Very small footer: 'Historical team honors and research credits • AI editorial illustration'. No additional claims or names. These contributions are verified historical credits; do not label any person's undisclosed current engineering role. Ensure EXACTLY four name boxes and all text correct. Final elegant editorial artwork, not gaudy sports logos.",
+  "references": [
+    {
+      "src": "/news-images/2026-10-26-architects-dream-team-base.png",
+      "sha256": "cfe1b551ad538b71b3fa3ebcb58bbac71b919e25f08f6c230fb2c3a045a7978c"
+    }
+  ],
+  "src": "/news-images/2026-10-26-architects-dream-team-labeled.png",
+  "sha256": "81ea1901fb04d2c835fab75a9f7737d7a3501c645ccd4d687bd902d319b23269",
+  "reviewedAt": "2026-10-27T01:16:37.092510+00:00",
+  "review": "Visually inspected. Group has exactly four distinct verified avatar characters, left to right fox David, cat Jan, duck Daniel, mouse Sebastian. All faces and mouse ears visible. Labeled version has correct four names, dated historical credits, team title and 8:43 PM EDT 16th/38.85 score badge. Individual mouse hero preserves Kaggle avatar identity and has no text. All equipment is editorial fantasy.",
+  "status": "reviewed-editor-preview",
+  "articleId": "2026-10-26-architects-superteam-enters-gold",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "rawSrc": "/news-images/2026-10-26-architects-dream-team-labeled.png",
+  "rawSha256": "81ea1901fb04d2c835fab75a9f7737d7a3501c645ccd4d687bd902d319b23269"
+}
