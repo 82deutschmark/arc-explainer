@@ -1,0 +1,92 @@
+{
+  "id": "2026-10-26-flash-next-cleared-for-arc-prize",
+  "date": "2026-10-26",
+  "edition": "evening",
+  "competition": "arc-2",
+  "headline": "Ring the bells: ARC Prize clears Flash Next for competition use",
+  "dek": "The ARC Prize team gives Qwen3.8-Flash-Next users a clear yes after a third-place ARC2 contender asked whether its license could put prize eligibility at risk.",
+  "publishedAt": "2026-10-27T01:47:22.647062+00:00",
+  "dataAsOf": "2026-10-27T01:13:36Z",
+  "baselineAt": null,
+  "generatedBy": "gpt-6.1-sol",
+  "coverageNote": "ARC Prize team clarification supplied by the editor-in-chief and read in its Discord conversation. Public-board figures are dated October 26; this is a news report, with no score movement inferred.",
+  "teamIds": [
+    "16559402"
+  ],
+  "stats": [
+    {
+      "teamId": "16559402",
+      "name": "Domdolus Tolus",
+      "rank": 3,
+      "score": 82.08,
+      "rankChange": null,
+      "scoreChange": null
+    }
+  ],
+  "discord": "Flash Next gets the green light: the ARC Prize team confirms Qwen3.8-Flash-Next is allowed for competition use, answering the prize-eligibility concern raised by ARC2 third-place contender Domdolus Tolus. https://arc.markbarney.net/news/2026-10-26-flash-next-cleared-for-arc-prize",
+  "sources": [
+    {
+      "id": "confirmation",
+      "title": "ARC Prize team — Flash Next clarification in ARC-AGI-1&2 general, October 26",
+      "url": "https://discord.com/channels/1237180803335720961/1237180803780448339",
+      "accessedAt": "2026-10-27T01:47:22.647062+00:00"
+    },
+    {
+      "id": "question",
+      "title": "Darren Amadeus Martin — prize eligibility question covering ARC2 and ARC3",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/752709",
+      "accessedAt": "2026-10-27T01:47:22.647062+00:00"
+    },
+    {
+      "id": "earlier-question",
+      "title": "Earlier ARC3 discussion of the Qwen3.8-Flash-Next license",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/745079",
+      "accessedAt": "2026-10-27T01:47:22.647062+00:00"
+    },
+    {
+      "id": "board",
+      "title": "October 26 ARC2 public leaderboard and roster",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "accessedAt": "2026-10-27T01:47:22.647062+00:00"
+    },
+    {
+      "id": "person-darren-amadeus-martin-identity-0",
+      "title": "Darren Amadeus Martin — own author-linked Kaggle account",
+      "url": "https://www.kaggle.com/darrenamadeusmartin",
+      "accessedAt": "2026-10-27T01:47:22.647062+00:00"
+    }
+  ],
+  "image": {
+    "src": "/news-images/2026-10-26-flash-next-green-light.webp",
+    "alt": "An original brass-and-ivory robot town crier rings a huge bell as green gates open before a celebrating crowd of puzzle-solving robots. Headline: Flash Next gets the green light. ARC Daily Digest editorial illustration.",
+    "caption": "Ring the bells: Flash Next gets the green light. New AI editorial illustration for the ARC Prize team’s October 26 competition-use clarification.",
+    "artworkId": "2026-10-26-flash-next-green-light"
+  },
+  "sections": [
+    {
+      "heading": "The answer is yes",
+      "text": "Qwen3.8-Flash-Next is allowed for competition use, the ARC Prize team has confirmed. For entrants worried that the model’s license could make their hard-won solutions ineligible for prizes, the answer from the organizers is a clear yes.\n\nReplying in the ARC Prize Discord, community lead Permaximum told the questioner: “You can use it. No problem.” When the Flash Next license concern was explicitly raised again, the reply was equally direct: “I said there’s no issue. It’s OK to use it.”",
+      "sourceIds": [
+        "confirmation"
+      ]
+    },
+    {
+      "heading": "A contender wanted to protect the team’s work",
+      "text": "The question came from GMDA60, who identified their ARC2 team as Domdolus Tolus. Its member Darren Amadeus Martin had posted a public Kaggle question asking about prize eligibility in both ARC-AGI-2 and ARC-AGI-3.\n\nThe stakes were substantial: Domdolus Tolus stands third on the October 26 ARC2 public board at 82.08. Martin’s post explained that teams had invested considerable effort in Flash Next pipelines and wanted a straightforward eligibility answer before the competition ended.\n\nThe concern arose from the relationship between Qwen’s Community License and the competitions’ open-source requirements. Earlier Kaggle discussion had left participants seeking an organizer’s clarification.",
+      "sourceIds": [
+        "question",
+        "earlier-question",
+        "board",
+        "person-darren-amadeus-martin-identity-0"
+      ]
+    },
+    {
+      "heading": "The clarification reaches beyond Discord",
+      "text": "Permaximum identified himself as part of the ARC Prize team and subsequently said he had taken the issue to Greg, the foundation’s president, who had confirmed it too. The questioner thanked him and explained that the repeated requests were about protecting teammates’ effort.\n\nThat is the news for teams following both contests: the ARC Prize team has cleared use of Flash Next. The clarification concerns competition eligibility; the competitions’ other requirements still apply.\n\nThis report has its own permanent address so entrants can share the clarification with colleagues and link it from the Kaggle discussions.",
+      "sourceIds": [
+        "confirmation",
+        "question"
+      ]
+    }
+  ]
+}

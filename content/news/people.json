@@ -2609,5 +2609,50 @@
       "sourceUrl": "https://www.kaggle.com/sbrodehl",
       "src": "/news-images/people/sebastian-brodehl.webp"
     }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-27T01:44:45.672194+00:00",
+        "handle": "darrenamadeusmartin",
+        "platform": "kaggle",
+        "sourceTitle": "Author-linked Kaggle profile on his public Flash Next eligibility question",
+        "sourceUrl": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2/discussion/752709",
+        "url": "https://www.kaggle.com/darrenamadeusmartin"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-27T01:44:45.672194+00:00",
+        "sourceTitle": "Domdolus Tolus — fifth-place solution write-up and author credits",
+        "sourceUrl": "https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/writeups/domdolus-tolus-solution",
+        "text": "Kaggle lists Darren Amadeus Martin among the authors of the Domdolus Tolus fifth-place NVIDIA Nemotron Model Reasoning Challenge write-up."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "darren-amadeus-martin",
+    "memberships": [
+      {
+        "competition": "arc-2",
+        "competitionId": "arc-prize-2026-arc-agi-2",
+        "firstObservedAt": "2026-10-27T01:13:36Z",
+        "lastObservedAt": "2026-10-27T01:13:36Z",
+        "memberHandle": "darrenamadeusmartin",
+        "season": "2026",
+        "sourceTitle": "ARC2 public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+        "teamId": "16559402",
+        "teamName": "Domdolus Tolus"
+      }
+    ],
+    "name": "Darren Amadeus Martin",
+    "portrait": {
+      "alt": "Darren Amadeus Martin’s Kaggle profile picture",
+      "checkedAt": "2026-10-27T01:44:46Z",
+      "kind": "kaggle",
+      "sourceTitle": "Darren Amadeus Martin — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
+      "src": "/news-images/people/darren-amadeus-martin.webp"
+    }
   }
 ]

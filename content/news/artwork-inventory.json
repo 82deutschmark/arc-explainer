@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-27T01:33:07.682696+00:00",
+  "updatedAt": "2026-10-27T01:47:22.647062+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -796,9 +796,29 @@
       "articleUses": [
         "2026-10-26-architects-superteam-enters-gold"
       ],
-      "xAttachments": [],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2114894152898928782",
+          "postedAt": "2026-10-27T01:37:53.590924+00:00",
+          "artworkId": "2026-10-26-architects-dream-team-labeled-v2",
+          "attachmentSha256": "2ed36934b5ebc50389abe87131d54f8d0fd1d238b2f2156e403df1c6b1336e99"
+        }
+      ],
       "discordShares": [],
       "selectionNote": "Editor requested removal of discovery clock times. Native date-only text edit inspected; prior picture remains historical. Approved for the explicitly requested image-led X feature post."
+    },
+    {
+      "id": "2026-10-26-flash-next-green-light",
+      "generationRecord": "2026-10-26-flash-next-green-light",
+      "src": "/news-images/2026-10-26-flash-next-green-light.webp",
+      "title": "Flash Next gets the green light",
+      "status": "published-with-commissioned-news",
+      "articleUses": [
+        "2026-10-26-flash-next-cleared-for-arc-prize"
+      ],
+      "xAttachments": [],
+      "discordShares": [],
+      "selectionNote": "Editor explicitly commissioned separate article and image. Bell-ringing robot scene and correct text visually reviewed; no real person or official seal depicted."
     }
   ],
   "existingXPosts": [
