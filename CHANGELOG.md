@@ -1,5 +1,12 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.0  Oct 27, 2026
+
+- **Public approved ARC-3 games and searchable reference** (Author: GPT-6 / Codex). The existing gallery, Play entrance and Next navigation now select the lab's current Trainable originals. The lab's public projection reuses its exact-version approval and licensing rules without exposing team notes or identities. This commit includes 48 verified approved source files and their recorded PNGs as an availability snapshot; the live feed refreshes every five minutes. Exact source hashes are checked before serving, and version-specific addresses prevent older local games substituting for approved builds.
+- Approved game pages now permit indexing, use their actual screenshots for sharing, have real gallery links, and appear in the generated sitemap. Legacy play bookmarks remain usable and unindexed. The full existing ARC-3/ARCEngine article renders from one shared component in both initial HTML and the browser. The homepage links directly to public games and the engine reference, with Son's site identified as the research lab. `/synthetic` leads to the public gallery.
+- Known production aliases redirect to the canonical domain; staging carries `noindex`. The independently deployed `arc3` staging branch also received its own early response policy (`2923b610`). Register the existing private ARC-2 hard-set routes as noindex, closing gaps found by route coverage. Update the historical audit test to check its current evidence links instead of removed downloads.
+- Validation: production build; 16 focused HTTP/catalog/SEO tests; all 48 production game payloads load in Python 3.13 and all 226 offered actions produce valid 64×64 palette frames. The broad TypeScript check still reports 12 existing diagnostics outside changed code. No game verdicts, browser publication checks or Railway credentials. Plan and refresh instructions: `docs/2026-10-27-public-trainable-seo-plan.md`.
+
 ### Version 9.158.13  Oct 27, 2026
 
 - **Standing Giant Rabbits** (Author: GPT-6.1 Sol / Codex). Replace only the ARC3 evening image with the fresh sunrise-plaza scene: both owner-reference giants upright while the spiders, full Turducken crew and other participants look up. Archive native generation/correction provenance, Discord-first receipt and revision 3, preserving original reporting, scores and publication times.

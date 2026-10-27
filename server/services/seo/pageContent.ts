@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
+/**
  * Author: GPT-6.1 Sol / Codex; Codex
  * Date: 2026-10-08
  * PURPOSE: Build crawler-readable public page summaries and official game guides from
@@ -10,6 +16,9 @@
  *          leaderboards hub; generateSitemap accepts extra real change times (leaderboard snapshots).
  * SRP/DRY check: Pass — gameLevels owns level grouping; no authored rules are changed.
  */
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import Arc3ReferenceContent from '../../../shared/Arc3ReferenceContent';
 import { ROUTE_META_TAGS, type RouteMetaTags } from '../../../shared/routes';
 import { SITE_ORIGIN, clientRouteMeta, completeMeta, escapeHtml as esc, isDynamicAppRoute } from '../../../shared/seo';
 import { getAllGames, type Arc3GameMetadata } from '../../../shared/arc3Games';
@@ -48,6 +57,7 @@ export function resolvePageMeta(route: string): { tags: RouteMetaTags; status: n
       tags.bodyHtml = `<main><h1>Model rankings retired</h1>${paragraphs(tags.description)}<p><a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/kaggle-leaderboard">Current Kaggle standings</a> · <a href="/analytics">Recorded puzzle results archive</a> · <a href="/home">Resource Hub</a></p></main>`;
       return { tags: completeMeta(tags), status: 410 };
     }
+    if (route === '/arc3') tags.bodyHtml = renderToStaticMarkup(React.createElement(Arc3ReferenceContent));
     if (route === '/arc3/games') {
       tags.bodyHtml = `<main><h1>ARC-AGI-3 Game Mechanics</h1><p>Guides to the 25 public demonstration games, plus separately labeled preview history. These are spoilers; the private competition games have different mechanics.</p><p><a href="/arc3/slippery-seven">The Slippery Seven</a> · <a href="/human-records.html">Human and AI results</a> · <a href="/arc3/games.md">Markdown reference</a></p><ul>${getAllGames().map((game: Arc3GameMetadata) => `<li>${gameLink(game.gameId)}${game.gameId === 'as66' ? ' (withdrawn preview)' : ''} — ${esc(game.simpleExplanation)}</li>`).join('')}</ul></main>`;
     }
@@ -94,7 +104,7 @@ export function sitemapUrls(): string[] {
  * Only pages with a real, recorded change time carry lastmod: ARC Daily URLs (publication and check
  * times) and, when the saved boards can be read, the leaderboard pages (their latest snapshot).
  */
-export function generateSitemap(extraLastmod: ReadonlyMap<string, string> = new Map()): string {
+export function generateSitemap(extraLastmod: ReadonlyMap<string, string> = new Map(), extraUrls: string[] = []): string {
   const lastmod = new Map([...newsSitemapEntries().filter(entry => entry.lastmod).map(entry => [entry.url, entry.lastmod!] as const), ...extraLastmod]);
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls().map(url => `  <url><loc>${esc(url)}</loc>${lastmod.has(url) ? `<lastmod>${esc(lastmod.get(url)!)}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...new Set([...sitemapUrls(), ...extraUrls])].map(url => `  <url><loc>${esc(url)}</loc>${lastmod.has(url) ? `<lastmod>${esc(lastmod.get(url)!)}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
 }

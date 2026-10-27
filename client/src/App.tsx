@@ -1,3 +1,9 @@
+/**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
 /*
 Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex
 Date: 26-October-2026
@@ -36,7 +42,6 @@ import RouteMetadata from "@/components/RouteMetadata";
 import DynamicFavicon from "@/components/DynamicFavicon";
 import NotFound from "@/pages/not-found";
 import Redirect from "@/components/Redirect";
-import SyntheticLanding from "@/pages/arc3-community/SyntheticLanding";
 import FinalStretchLanding from "@/pages/FinalStretchLanding";
 
 // Keep the current front door eager. Secondary pages are separate chunks; importing
@@ -174,7 +179,7 @@ function Router() {
             explanation, both hosts. /synthetic stays as an alias because it has been
             linked; the resource hub lives at /home. */}
         <Route path="/" component={FinalStretchLanding} />
-        <Route path="/synthetic" component={SyntheticLanding} />
+        <Route path="/synthetic"><Redirect to="/arc3/gallery" /></Route>
         <Route path="/home" component={LandingPage} />
         <Route path="/browser" component={PuzzleBrowser} />
         <Route path="/trading-cards" component={PuzzleTradingCards} />

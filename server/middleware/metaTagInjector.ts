@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
+/**
  * Author: GPT-6.1 Sol / Codex
  * Date: 2026-10-08
  * PURPOSE: Serve canonical URLs, generated sitemap, accurate HTTP status and initial
@@ -15,7 +21,21 @@ import path from 'node:path';
 import type { RouteMetaTags } from '../../shared/routes';
 import { breadcrumbsHtml, completeMeta, discoveryHtml, escapeHtml as esc, INDEX_ROBOTS, normalizePath, redirectPath, socialMetaEntries, structuredData } from '../../shared/seo';
 import { generateSitemap, resolvePageMeta } from '../services/seo/pageContent';
+import { resolvePublicPageMeta, trainableSitemapUrls } from '../services/seo/trainableSeo';
+import { SITE_ORIGIN } from '../../shared/seo';
 import { leaderboardLastmods, withLiveStandings } from '../services/seo/leaderboardSeo';
+
+/** Consolidate public aliases; staging remains fetchable but cannot enter search indexes. */
+export function seoHostPolicy(req: Request, res: Response, next: NextFunction): void {
+  const host = (req.get('host') || '').split(':')[0].toLowerCase();
+  if (host === 'arc-explainer-staging.up.railway.app') res.set('X-Robots-Tag', 'noindex, nofollow');
+  if (['arc3.markbarney.net', 'arc-explainer-production.up.railway.app'].includes(host)
+      && ['GET', 'HEAD'].includes(req.method)) {
+    res.redirect(308, `${SITE_ORIGIN}${req.originalUrl}`);
+    return;
+  }
+  next();
+}
 
 export function generateMetaTags(input: RouteMetaTags): string {
   const tags = completeMeta(input);
@@ -46,9 +66,9 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
   const route = normalizePath(req.path);
   if (route === '/sitemap.xml') {
     // The leaderboard pages are dated by their latest saved snapshot when the boards can be read.
-    leaderboardLastmods().then(lastmods => {
+    Promise.all([leaderboardLastmods(), trainableSitemapUrls()]).then(([lastmods, games]) => {
       res.setHeader('Cache-Control', 'public, max-age=3600');
-      res.type('application/xml').send(generateSitemap(lastmods));
+      res.type('application/xml').send(generateSitemap(lastmods, games));
     }).catch(next);
     return;
   }
@@ -72,7 +92,7 @@ export function seoRouting(req: Request, res: Response, next: NextFunction): voi
 export async function metaTagInjector(req: Request, res: Response, next: NextFunction): Promise<void> {
   if (!['GET', 'HEAD'].includes(req.method) || req.path === '/api' || req.path.startsWith('/api/')) return next();
   try {
-  const resolved = resolvePageMeta(normalizePath(req.path));
+  const resolved = await resolvePublicPageMeta(normalizePath(req.path));
   const { status } = resolved;
   // Match registered routes first: session/game identifiers may legitimately contain dots.
   // Missing scripts/images must never be answered with a successful HTML shell.
@@ -82,6 +102,7 @@ export async function metaTagInjector(req: Request, res: Response, next: NextFun
   }
     // Leaderboard pages carry the current top of their boards, so crawlers see fresh content.
     const tags = await withLiveStandings(normalizePath(req.path), resolved.tags);
+    if ((req.get('host') || '').split(':')[0] === 'arc-explainer-staging.up.railway.app') tags.noindex = true;
     const html = await fs.readFile(path.join(process.cwd(), 'dist/public/index.html'), 'utf8');
     res.status(status).set('Cache-Control', 'no-cache');
     if (req.path === '/notes1023' || /^\/summit\//.test(req.path)) res.set({ 'Referrer-Policy': 'no-referrer', 'Cache-Control': 'private, no-store' });

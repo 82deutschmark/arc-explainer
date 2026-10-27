@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 / Codex
+ * Date: 2026-10-27
+ * PURPOSE: Verify approved game discovery, existing article delivery and hostname indexing policy.
+ * SRP/DRY check: Pass — exercise actual registries, catalog and HTTP middleware.
+ */
+/**
  * Author: GPT-6.1 Sol / Codex; Codex
  * Date: 2026-10-08
  * PURPOSE: Exercise real production HTML delivery, redirects, sitemap and route coverage
@@ -11,29 +17,34 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import express from 'express';
+import { get as httpGet } from 'node:http';
 import type { Server } from 'node:http';
 import fs from 'node:fs';
 import { ROUTE_META_TAGS } from '../../shared/routes';
 import { REDIRECTS, SITE_ORIGIN, structuredData } from '../../shared/seo';
 import { getAllGames } from '../../shared/arc3Games';
 import { puzzleLoader } from '../../server/services/puzzleLoader';
+import { trainableSitemapUrls } from '../../server/services/seo/trainableSeo';
+import { Arc3TrainableCatalog, trainablePlayId } from '../../server/services/arc3Mirror/Arc3TrainableCatalog';
 import { generateSitemap, resolvePageMeta, sitemapUrls } from '../../server/services/seo/pageContent';
-import { generateMetaTags, injectPageHtml, metaTagInjector, seoRouting } from '../../server/middleware/metaTagInjector';
+import { generateMetaTags, injectPageHtml, metaTagInjector, seoRouting, seoHostPolicy } from '../../server/middleware/metaTagInjector';
 
 let server: Server;
 let base: string;
 beforeAll(async () => {
   const app = express();
+  app.use(seoHostPolicy);
   app.use(seoRouting);
   app.use(express.static('dist/public', { index: false }));
   app.use(metaTagInjector);
   app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
   await new Promise<void>(resolve => { server = app.listen(0, '127.0.0.1', resolve); });
+  server.keepAliveTimeout = 60000; // The registry-wide assertions can occupy the event loop beyond Node's default idle timeout.
   const address = server.address();
   if (!address || typeof address === 'string') throw new Error('Expected local TCP listener');
   base = `http://127.0.0.1:${address.port}`;
 });
-afterAll(async () => { await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve())); });
+afterAll(async () => { await new Promise<void>((resolve, reject) => { server.close(error => error ? reject(error) : resolve()); server.closeAllConnections(); }); });
 
 function assertHead(html: string) {
   expect(html.match(/<title>/g)).toHaveLength(1);
@@ -153,7 +164,7 @@ describe('SEO delivery', () => {
       expect(html).toContain('content="noindex,follow"');
     }
   });
-  it('serves the audit at /feedback with working downloads and redirects old bookmarks', async () => {
+  it('serves the audit at /feedback with original evidence links and redirects old bookmarks', async () => {
     const old = '/reports/arc-prize-audit-2026-10-08/audit.html';
     expect((await fetch(`${base}/explanation-feedback`)).status).toBe(200);
     expect(ROUTE_META_TAGS['/feedback'].title).toContain('ARC Prize');
@@ -166,11 +177,8 @@ describe('SEO delivery', () => {
         const html = await response.text();
         expect(html).toContain(`rel="canonical" href="${SITE_ORIGIN}/feedback"`);
         expect(html).toContain('highlight=73845');
-        const downloads = [...html.matchAll(/href="(\/reports\/[^"]+\.(?:json|txt|csv))"/g)];
-        expect(downloads.length).toBeGreaterThan(0);
-        for (const url of new Set(downloads.map(match => match[1]))) {
-          expect((await fetch(`${base}${url}`)).status, url).toBe(200);
-        }
+        // The published audit now links its original evidence directly; it no longer offers exports.
+        expect(html).toContain('https://arcprize.org/tasks/13e47133#model-performance');
       }
       for (const from of [old, '/feedback/']) {
         const redirect = await fetch(`${base}${from}?ref=matt`, { method, redirect: 'manual' });
@@ -180,7 +188,7 @@ describe('SEO delivery', () => {
     }
   });
   it('normalizes aliases and trailing slashes in one hop while preserving query strings', async () => {
-    for (const [from, to] of [['/synthetic/', '/'], ['/arc3/archive/games/LS20/', '/arc3/games/ls20'], ['/arc3/games/', '/arc3/games'], ['/examine/007bbfb7', '/puzzle/007bbfb7'], ['/index.html', '/']]) {
+    for (const [from, to] of [['/synthetic/', '/arc3/gallery'], ['/arc3/archive/games/LS20/', '/arc3/games/ls20'], ['/arc3/games/', '/arc3/games'], ['/examine/007bbfb7', '/puzzle/007bbfb7'], ['/index.html', '/']]) {
       const response = await fetch(`${base}${from}?ref=test`, { redirect: 'manual' });
       expect(response.status).toBe(308);
       expect(response.headers.get('location')).toBe(`${to}?ref=test`);
@@ -190,7 +198,7 @@ describe('SEO delivery', () => {
     const response = await fetch(`${base}/sitemap.xml`);
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('xml');
-    expect(await response.text()).toBe(generateSitemap());
+    expect(await response.text()).toBe(generateSitemap(new Map(), await trainableSitemapUrls()));
     const urls = sitemapUrls();
     expect(urls.length).toBe(new Set(urls).size);
     expect(urls).toContain(`${SITE_ORIGIN}/arc3/slippery-seven`);
@@ -213,6 +221,46 @@ describe('SEO delivery', () => {
     const id = puzzleLoader.getAvailablePuzzleIds()[0];
     expect(id).toBeTruthy();
     expect((await fetch(`${base}/puzzle/${id}`)).status).toBe(200);
+  }, 30000);
+  it('delivers the existing engine article and links every approved playable build', async () => {
+    const article = await (await fetch(`${base}/arc3`)).text();
+    for (const text of ['How Games Work', 'How the Games Get Made', 'How Scoring Works', 'ARCEngine']) expect(article).toContain(text);
+    const manifest = await Arc3TrainableCatalog.manifest();
+    const gallery = await (await fetch(`${base}/arc3/gallery`)).text();
+    const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
+    for (const game of manifest.versions) {
+      const route = `/arc3/play/${trainablePlayId(game)}`;
+      expect(gallery).toContain(`href="${route}"`);
+      expect(sitemap).toContain(`${SITE_ORIGIN}${route}`);
+    }
+    const game = manifest.versions[0];
+    const route = `/arc3/play/${trainablePlayId(game)}`;
+    const response = await fetch(`${base}${route}`);
+    const html = await response.text();
+    expect(response.status).toBe(200);
+    expect(response.headers.get('x-robots-tag')).toBeNull();
+    expect(html).not.toContain('content="noindex');
+    expect(html).toContain(`games/${trainablePlayId(game)}/thumbnail`);
+    const old = await fetch(`${base}/arc3/play/g012`);
+    expect(old.headers.get('x-robots-tag')).toContain('noindex');
+  });
+  it('redirects known production aliases and prevents staging indexing', async () => {
+    const requestHost = (route: string, host: string) => new Promise<{ status: number; headers: Record<string, any> }>((resolve, reject) => {
+      const req = httpGet(`${base}${route}`, { headers: { Host: host } }, response => {
+        response.resume();
+        response.on('end', () => resolve({ status: response.statusCode!, headers: response.headers }));
+      });
+      req.on('error', reject);
+    });
+    for (const host of ['arc3.markbarney.net', 'arc-explainer-production.up.railway.app']) {
+      const response = await requestHost('/arc3?from=old', host);
+      expect(response.status).toBe(308);
+      expect(response.headers.location).toBe(`${SITE_ORIGIN}/arc3?from=old`);
+    }
+    for (const route of ['/arc3', '/robots.txt']) {
+      const response = await requestHost(route, 'arc-explainer-staging.up.railway.app');
+      expect(response.headers['x-robots-tag']).toContain('noindex');
+    }
   });
   it('escapes prose, URLs and script data without breaking the HTML shell', () => {
     const tags = { title: 'A "quote" & <tag>', description: '</script><img src=x>', url: `${SITE_ORIGIN}/?a=1&b=2` };

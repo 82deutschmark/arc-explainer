@@ -1,3 +1,9 @@
+/**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
 /*
 Author: Claude Opus 5.5 Medium
 Date: 2026-10-16
@@ -205,7 +211,7 @@ export default function FinalStretchLanding() {
             </p>
             {/* No thesis about AI in the headline. See the header comment. */}
             <h1 className="text-[34px] sm:text-[44px] leading-[1.1] font-bold mb-6 tracking-[-0.5px]">
-              We're ARC Mutants now.
+              ARC Explainer
             </h1>
             <div className="text-[15px] leading-[1.75] space-y-4 mb-7" style={{ color: ARC.dim }}>
               <p>
@@ -214,12 +220,14 @@ export default function FinalStretchLanding() {
                 half hour.
               </p>
               <p>
-                Our ARC-AGI-3 work has moved to{' '}
+                Play our human-reviewed original ARC-AGI-3 games here, with no login required. The agent harness and research lab live on{' '}
                 <a href={ARC3_SITE} target="_blank" rel="noreferrer" className="underline" style={{ color: ARC.text }}>Son Pham's site</a>.
               </p>
             </div>
             <OurStandingCard model={model} loading={board.isLoading} />
             <div className="mt-7 flex flex-wrap items-center gap-4">
+              <Link href="/arc3/gallery" className="inline-block px-6 py-3 text-sm font-semibold bg-[#e0218a] text-white">Play our games →</Link>
+              <Link href="/arc3" className="text-sm underline">ARC-3 engine explained</Link>
               <Link href={ARC2.path}
                     className="inline-block px-6 h-[42px] leading-[42px] text-[13px] font-semibold tracking-[.5px] rounded-[4px]"
                     style={{ background: ARC.pink, color: '#fff' }}>

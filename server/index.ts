@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
+/**
  * Author: GPT-6.1 Sol / Codex; existing contributors
  * Date: 2026-10-07
  * PURPOSE: Bootstrap APIs, Human ARC and the host SPA, with canonical redirects and
@@ -23,7 +29,7 @@ import { logger } from './utils/logger.ts';
 import { resolveStreamingConfig } from '@shared/config/streaming';
 import { databaseMaintenance } from './maintenance/dbCleanup.js';
 import { syncContributors } from './scripts/seedContributors.ts';
-import { metaTagInjector, seoRouting } from './middleware/metaTagInjector.js';
+import { metaTagInjector, seoRouting, seoHostPolicy } from './middleware/metaTagInjector.js';
 import './services/poetiq/PoetiqAgentsRunner.ts';
 
 // Fix for ES modules and bundled code - get the actual current directory
@@ -61,6 +67,7 @@ if (streamingConfig.frontendAdvertises && !streamingConfig.enabled) {
 }
 
 const app = express();
+app.use(seoHostPolicy);
 
 // Human ARC is a separate frontend, mounted before either SPA catch-all.
 mountHumanArc(app);

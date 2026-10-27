@@ -1,3 +1,9 @@
+/**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
 /*
 Author: Codex (GPT-6), with existing contributors
 Date: 2026-10-07
@@ -171,6 +177,8 @@ SRP/DRY check: Pass — presentation and input only. Execution stays in usePyodi
          reviewed transitions; one local timer and lock also preserve native playback.
 */
 
+import { usePageMeta } from '@/hooks/usePageMeta';
+import { approvedPlayMeta } from '@shared/arc3PlayMeta';
 import { canonicalGameId, publicGameId } from '@shared/arc3PublicIds';
 import { usesAuthoredZKey, usesContributedRecovery } from '@shared/arc3ContributedControls';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -191,6 +199,7 @@ import type { Arc3MechanicEntry } from '@shared/arc3Mechanics';
 type GameState = 'idle' | 'playing' | 'won' | 'lost';
 
 interface MirroredGame {
+  label?: string;
   gameId: string;
   isLive: boolean;
   defaultFps: number;
@@ -384,6 +393,13 @@ export default function CommunityGamePlay() {
     () => catalog?.data?.games?.find((g) => g.gameId === gameId) ?? null,
     [catalog, gameId],
   );
+
+  const approvedMeta = meta?.category === 'trainable' && gameId
+    ? approvedPlayMeta(gameId, meta.label || gameId) : undefined;
+  usePageMeta(approvedMeta ? {
+    title: approvedMeta.title, description: approvedMeta.description, noindex: false,
+    canonicalPath: `/arc3/play/${gameId}`, image: { image: approvedMeta.image!, imageAlt: approvedMeta.imageAlt },
+  } : {});
 
   /** Which tasks anyone has ever played, so Next can prefer one nobody has touched. */
   const { data: stats } = useQuery<{ data: { games: { game_id: string }[] } }>({
@@ -1161,7 +1177,7 @@ export default function CommunityGamePlay() {
         }`}>
         <div className="w-full max-w-[500px] shrink-0">
         <Arc3Console
-          gameId={publicGameId(gameId ?? '')}
+          gameId={meta?.label || publicGameId(gameId ?? '')}
           levelLabel={levelLabel}
           up={ctl('ACTION1', '')}
           down={ctl('ACTION2', '')}

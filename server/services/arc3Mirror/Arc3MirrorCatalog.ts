@@ -1,3 +1,9 @@
+/**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
 /*
 Author: Codex (GPT-6), with existing contributors
 Date: 2026-09-30
@@ -118,6 +124,7 @@ SRP/DRY check: Pass -- reading/caching/stripping only, parameterised per source
          contract is unchanged.
 */
 
+import { Arc3TrainableCatalog } from './Arc3TrainableCatalog';
 import { createHash } from 'node:crypto';
 import { canonicalGameId } from '../../../shared/arc3PublicIds';
 import fs from 'fs/promises';
@@ -190,6 +197,8 @@ interface UpstreamEntry {
 
 /** What we expose. No field here describes play. */
 export interface MirroredGame {
+  label?: string;
+  approvedVersion?: string;
   gameId: string;
   className: string;
   /** The catalog this game came from. Not a spoiler -- it names the publisher, not the
@@ -620,7 +629,7 @@ export class Arc3MirrorCatalog {
     }
 
     ownerIndex = owners;
-    return merged;
+    return [...await Arc3TrainableCatalog.listGames(), ...merged];
   }
 
   static async getGame(gameId: string): Promise<MirroredGame | null> {
@@ -659,6 +668,10 @@ export class Arc3MirrorCatalog {
   static async getSource(
     gameId: string,
   ): Promise<{ gameId: string; sourceCode: string; className: string; sourceVersion: string } | null> {
+    if (/-[a-f0-9]{12}$/.test(gameId)) {
+      const approved = await Arc3TrainableCatalog.getSource(gameId);
+      if (approved) return approved;
+    }
     const game = await this.getGame(gameId);
     if (!game) return null;
     // getGame may have resolved a bare id to a build; every lookup below must use the id

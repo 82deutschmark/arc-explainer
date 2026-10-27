@@ -1,4 +1,10 @@
 /**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
+/**
  * Author: GPT-6 / Codex; GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
  * Date: 26-October-2026
  * PURPOSE: Registers the focused ARC-2 capped-output inspection page for successful server HTML.
@@ -132,9 +138,9 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
   },
 
   '/arc3/gallery': {
-    title: 'ARC-AGI-3 Tasks — play one, no instructions',
+    title: 'Play ARC-AGI-3 Games — Human-Reviewed Originals | ARC Explainer',
     description:
-      'Play community-made ARC-AGI-3 reasoning tasks without instructions. Explore the board, try actions and work out each task’s rules.',
+      'Play human-reviewed original ARC-AGI-3 reasoning games in your browser. Discover the rules through interaction. No login required.',
     url: 'https://arc.markbarney.net/arc3/gallery',
     // OUR game, not an official one. This was ls20-9607627b -- an ARC Prize Foundation
     // task -- so every share of this site led with somebody else's work as the picture.
@@ -358,10 +364,10 @@ export const ROUTE_META_TAGS: Record<string, RouteMetaTags> = {
  * shared, with arc.markbarney.net as the preferred canonical origin for both.
  */
 const ROOT_META: Omit<RouteMetaTags, 'url'> = {
-  title: 'ARC Prize 2026, the final stretch — live ARC-AGI-3 and ARC-AGI-2 leaderboards',
-  description: 'A countdown to the close of ARC Prize 2026 on Kaggle, the live ARC-AGI-3 medal race saved every half hour, and the newest ARC Daily wire stories on both boards.',
+  title: 'ARC Explainer — ARC-AGI-3 Games, Engine Guide and Research',
+  description: 'Play human-reviewed ARC-AGI-3 games, understand ARCEngine, explore official game guides and follow ARC Prize news and leaderboards.',
   type: 'website',
-  bodyHtml: `<main><h1>The last weeks of ARC Prize.</h1><p>Teams on Kaggle are building agents for ARC-AGI-3, little games with no instructions, and solvers for ARC-AGI-2's grid puzzles. Both boards close on the same night.</p><p>We save the public leaderboard every half hour and keep score: see the <a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a>, the <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>, <a href="/arc-leaderboards">all ARC leaderboards</a> and the <a href="/news">ARC Daily Digest</a>, with its <a href="/news/wire">wire</a> of short stories on both boards.</p><p>Also here: <a href="/synthetic">how we got here</a>, our harness notes and practice games, plus <a href="/arc3/games">official game guides (spoilers)</a> and the <a href="/home">resource hub</a>.</p></main>`,
+  bodyHtml: `<main><h1>ARC Explainer</h1><p>Play human-reviewed original ARC-AGI-3 reasoning games in your browser, with no login required.</p><p><a href="/arc3/gallery">Browse and play our games</a> · <a href="/arc3">ARC-AGI-3 and ARCEngine explained</a></p><p>Teams on Kaggle are building agents for ARC-AGI-3, little games with no instructions, and solvers for ARC-AGI-2's grid puzzles. Both boards close on the same night.</p><p>We save the public leaderboard every half hour and keep score: see the <a href="/kaggle-leaderboard">ARC-AGI-3 leaderboard</a>, the <a href="/kaggle-leaderboard/arc-2">ARC-AGI-2 leaderboard</a>, <a href="/arc-leaderboards">all ARC leaderboards</a> and the <a href="/news">ARC Daily Digest</a>, with its <a href="/news/wire">wire</a> of short stories on both boards.</p><p>Also here: <a href="/synthetic">how we got here</a>, our harness notes and practice games, plus <a href="/arc3/games">official game guides (spoilers)</a> and the <a href="/home">resource hub</a>.</p></main>`,
 };
 
 // Both hosts now render the same site. Share one preferred origin, including at root.
@@ -390,7 +396,7 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/cc', 'Claude Code guide for ARC', 'A guide to using Claude Code in ARC puzzle-analysis workflows.'],
   ['/llm-reasoning', 'Language-model reasoning on ARC puzzles', 'Explore how language models approach ARC puzzles and the tools used to examine their reasoning.'],
   ['/llm-reasoning/advanced', 'Advanced ARC reasoning tools', 'Explore advanced workflows for investigating language-model reasoning on ARC puzzles.'],
-  ['/arc3', 'ARC-AGI-3 explained', 'An introduction to the interactive ARC-AGI-3 benchmark, its games and the challenge of learning unfamiliar rules through actions.'],
+  ['/arc3', 'ARC-AGI-3 and ARCEngine Explained | ARC Explainer', 'Explore the ARC-AGI-3 game engine, actions, frames, game creation, validation and scoring in our existing reference guide. Play games and read detailed analyses.'],
   ['/arc3/hypotheses', 'What a model guesses from one game frame', 'Research on local-model hypotheses about unseen ARC-AGI-3 frames and the effects of LM Studio thinking controls.'],
   ['/re-arc/submissions', 'RE-ARC benchmark submissions', 'Explore submitted RE-ARC benchmark results and their verifiable evaluation records.'],
   ['/snakebench', 'SnakeBench on ARC Explainer', 'Explore the upstream SnakeBench project, where language models compete in Snake.'],
@@ -420,6 +426,8 @@ const ADDITIONAL_PAGES: [string, string, string, boolean?][] = [
   ['/poetiq', 'Poetiq ARC solver', 'Explore the Poetiq ARC solver workflow.', true],
   ['/puzzle/beetree', 'Beetree ARC solver', 'Start a Beetree ARC solver session.', true],
   ['/worm-arena/live', 'Live Worm Arena match', 'Watch a live language-model Snake match.', true],
+  ['/arc2/hard-set', 'ARC-2 hard set research', 'Team research on ARC-2 hard-set puzzles.', true],
+  ['/arc2/hard-set/findings', 'ARC-2 hard set findings', 'Team findings from ARC-2 hard-set research.', true],
   ['/arc2/capped', 'ARC-2: the always-capped test outputs', 'Inspect Lattice’s reported 22 always-capped test outputs across 20 ARC-2 tasks, with inputs, known solutions and task links.', true],
   ['/notes1023', 'Boston field notes', 'Summit conversation notebook.', true],
   ['/team/summit-2026', 'Boston field notes', 'Private team conversation guide.', true],

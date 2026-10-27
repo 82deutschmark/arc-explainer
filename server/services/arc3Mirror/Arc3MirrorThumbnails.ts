@@ -1,3 +1,9 @@
+/**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
 /*
 Author: Claude Opus 5
 Date: 2026-09-05
@@ -21,6 +27,7 @@ SRP/DRY check: Pass -- rendering/caching only; catalog + source fetch stay in
          reimplemented.
 */
 
+import { Arc3TrainableCatalog } from './Arc3TrainableCatalog';
 import { spawn } from 'child_process';
 import { createHash } from 'crypto';
 import fs from 'fs/promises';
@@ -165,6 +172,10 @@ export class Arc3MirrorThumbnails {
 
   /** Absolute path to a cached PNG, rendering it first if needed. Null if unrenderable. */
   static async getThumbnailPath(gameId: string, size: number): Promise<string | null> {
+    if (/-[a-f0-9]{12}$/.test(gameId)) {
+      const recorded = await Arc3TrainableCatalog.thumbnail(gameId, size);
+      if (recorded) return recorded;
+    }
     const game = await Arc3MirrorCatalog.getGame(gameId);
     if (!game) return null;
 

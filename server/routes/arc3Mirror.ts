@@ -1,3 +1,9 @@
+/**
+ * Author: GPT-6 / Codex; existing contributors credited below
+ * Date: 2026-10-27
+ * PURPOSE: Connect existing public play and reference delivery to approved games and crawlable URLs.
+ * SRP/DRY check: Pass — reuses the shared approval feed, mirror/player, content and metadata policy.
+ */
 /*
 Author: Claude Opus 5
 Date: 2026-08-30
@@ -21,6 +27,7 @@ SRP/DRY check: Pass -- HTTP layer only; all catalog behaviour lives in the servi
          responses use the shared formatResponse helper.
 */
 
+import { Arc3TrainableCatalog } from '../services/arc3Mirror/Arc3TrainableCatalog';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Router, type Request, type Response } from 'express';
@@ -36,7 +43,8 @@ const router = Router();
 router.get(
   '/games',
   asyncHandler(async (req: Request, res: Response) => {
-    const games = await Arc3MirrorCatalog.listGames();
+    const games = req.query.collection === 'trainable'
+      ? await Arc3TrainableCatalog.listGames() : await Arc3MirrorCatalog.listGames();
     const category = typeof req.query.category === 'string' ? req.query.category : null;
     const filtered = category ? games.filter((g) => g.category === category) : games;
     res.json(formatResponse.success({ games: filtered, total: filtered.length }));
