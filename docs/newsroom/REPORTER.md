@@ -238,6 +238,16 @@ Send the routine edition post on X under [X_POSTING.md](X_POSTING.md) (the custo
 The desk relay owns the routine Discord edition notice and send-once ledger. Do not duplicate
 that notice manually; necessary desk status/failure notices are authorized through its sender.
 
+**Special investigations (Mark, 28 October 2026):** publishing a special investigation includes
+one announcement with its permanent article link in **#arc3-rollout-feed**, through the same
+relay's `--alert` sender. Preserve a story-specific posted record before any retry; do not
+assume the scheduled-edition relay has announced a separately published feature. No extra X
+post is implied. A successful Git push confirms the release was submitted; do not describe a
+page as verified live unless it was actually checked. Scheduled jobs still stop after the push
+and their authorized distribution. When the editor reports a missing page, that is a separate
+troubleshooting assignment: check the exact URL, archive health and deployment receipt before
+changing content or blaming an archive limit.
+
 Finish with: each contest's article link, or the exact reason it was not published; the picture
 used and its link, or the concrete reason there is none; the X post URL or the outbox state; and
 each editorial assignment's outcome (covered, held or carried, with the reason).
