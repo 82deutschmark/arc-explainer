@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-28T19:19:07Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "Hiểu Vy climbs from 59th to 46th on ARC-2",
+  "id": "2026-10-28-1541-arc-2-hieu-vy-climbs-to-forty-sixth",
+  "personIds": [],
+  "publishedAt": "2026-10-28T19:41:22Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Hiểu Vy gained 9.16 to 53.33, moving from 59th to 46th on the ARC-AGI-2 public board in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The entry is listed under its own name. Standings remain provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-27T19:16:00Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T19:40:35Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "15618366"
+  ]
+}

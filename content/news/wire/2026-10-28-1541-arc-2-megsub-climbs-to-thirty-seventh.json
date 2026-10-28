@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-28T19:19:07Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "megsub climbs from 67th to 37th on ARC-2",
+  "id": "2026-10-28-1541-arc-2-megsub-climbs-to-thirty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-28T19:41:22Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "megsub gained 16.67 to 57.92, moving from 67th to 37th on the ARC-AGI-2 public board in the past day. This is a further move after the earlier report on this entry, which was based on an older score."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The entry is listed under its own name. Standings remain provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-27T19:16:00Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T19:40:35Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16487824"
+  ]
+}
