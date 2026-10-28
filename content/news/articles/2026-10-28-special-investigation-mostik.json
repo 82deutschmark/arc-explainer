@@ -6,10 +6,10 @@
   "headline": "Remember Mostik? The AI bridge-builders who once led ARC",
   "dek": "Sasha Malysheva’s team brought a surprising idea and an early lead to ARC-AGI-3. As the final days approach, we’re curious what the mathematicians might build next.",
   "publishedAt": "2026-10-28T15:06:39.135842+00:00",
-  "dataAsOf": "2026-10-28T18:18:58Z",
+  "dataAsOf": "2026-10-28T19:49:09Z",
   "baselineAt": null,
   "generatedBy": "gpt-6.1-sol",
-  "coverageNote": "Updated October 28 with independently checked historical board observations and a new rank chart. Exact earlier rank changes and Mostik’s future plans remain unknown. No request for comment was sent.",
+  "coverageNote": "Updated October 28 with independently checked board observations, the latest public standings and a rank chart. We contacted Mostik for comment and have not yet heard back.",
   "teamIds": [
     "15499660",
     "15486995",
@@ -43,7 +43,7 @@
     },
     {
       "name": "mostik.ai",
-      "rank": 2130,
+      "rank": 2134,
       "rankChange": null,
       "score": 7.51,
       "scoreChange": null,
@@ -140,7 +140,7 @@
       "id": "latest-board",
       "title": "ARC Daily collector — October 28 public leaderboard and saved history",
       "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
-      "accessedAt": "2026-10-28T17:48:54Z"
+      "accessedAt": "2026-10-28T19:49:09Z"
     },
     {
       "id": "rank-observations",
@@ -175,11 +175,11 @@
         "rank-observations",
         "latest-board"
       ],
-      "text": "Kaggle lists Mostik’s public leaderboard submission at 7.51 on August 30, and ARC Prize announced CSTL’s leading result on August 31. By September 6, another contender had reached the top: Daniel Franzen says he briefly took first before Tufa Labs passed him. That does not pin down the exact moment Mostik lost its lead.\n\nOur saved full-board snapshots show Mostik at 1,387th on October 12, 1,412th on October 13 and 1,497th on the evening of October 14. On October 28 it was 2,130th among 4,939 teams, with its public score still 7.51. The leader, Yi-Chia Chen, had reached 75.56. Those observations tell the story of a field moving at speed; they do not reveal Mostik’s private experiments or its plans.",
+      "text": "Kaggle lists Mostik’s public leaderboard submission at 7.51 on August 30, and ARC Prize announced CSTL’s leading result on August 31. By September 6, another contender had reached the top: Daniel Franzen says he briefly took first before Tufa Labs passed him. That does not pin down the exact moment Mostik lost its lead.\n\nOur saved full-board snapshots show Mostik at 1,387th on October 12, 1,412th on October 13 and 1,497th on the evening of October 14. On October 28 it was 2,134th among 4,940 teams, with its public score still 7.51. The leader, Yi-Chia Chen, had reached 75.56. Those observations tell the story of a field moving at speed; they do not reveal Mostik’s private experiments or its plans.",
       "image": {
         "src": "/news-images/2026-10-28-mostik-verified-rank-observations.png",
         "alt": "Five observed Mostik leaderboard ranks from October 12 to October 28, falling from 1,387th to 2,130th while its public score stays at 7.51.",
-        "caption": "Mostik’s public rank at five saved observations. Each point had a score of 7.51; gaps between observations are not reconstructed."
+        "caption": "Mostik’s public rank at five saved observations, ending October 28 at 2:18 p.m. Eastern. Each point had a score of 7.51; gaps between observations are not reconstructed."
       }
     },
     {
@@ -209,19 +209,13 @@
         "board",
         "bridge"
       ],
-      "text": "The final submission deadline is November 2. Could Mostik’s team bring its unusual ideas back to the ARC race before then? We don’t know, and a quiet public leaderboard cannot answer that question. But an inventive early leader, a team of mathematicians and a model-to-model bridge are more than enough reason to be curious.\n\nWe plan to ask Sasha and the team about the early run, how their bridge work has evolved and whether ARC remains on their horizon. We have not yet sent a request for comment.",
-      "image": {
-        "src": "/news-images/2026-10-28-mostik-sasha-editor-inset.webp",
-        "alt": "Editorial illustration of Mark Barney, with a notebook and two Yorkshire terriers, meeting Sasha Malysheva in a purple digital visor beside a glowing model-to-model bridge.",
-        "caption": "AI editorial illustration: editor-in-chief Mark Barney and his Yorkies imagine asking Sasha Malysheva what comes next. The scene is illustrative; no interview has taken place.",
-        "layout": "inset"
-      }
+      "text": "The final submission deadline is November 2. Could Mostik’s team bring its unusual ideas back to the ARC race before then? We don’t know, and a quiet public leaderboard cannot answer that question. But an inventive early leader, a team of mathematicians and a model-to-model bridge are more than enough reason to be curious.\n\nWe contacted Mostik for comment about the early run, how its bridge work has evolved and whether ARC remains on its horizon. We have not yet heard back."
     }
   ],
   "image": {
-    "src": "/news-images/2026-10-28-mostik-empty-team-scoreboard.webp",
+    "src": "/news-images/2026-10-28-mostik-scoreboard-1949z.webp",
     "alt": "The Mostik team appears as empty purple silhouettes in the positions of their launch photograph, overlooking the ARC competition valley, with Team Turducken, Tufa spiders and Chen’s rabbits. The scoreboard shows dated public standings.",
-    "caption": "AI editorial illustration based on Mostik’s launch photograph. Scoreboard: October 28, 2026, 01:48 PM Eastern; public standings. The characters and silhouettes are artistic metaphors.",
-    "artworkId": "2026-10-28-mostik-empty-team-scoreboard"
+    "caption": "AI editorial illustration based on Mostik’s launch photograph. Scoreboard: October 28, 2026, 03:49 PM Eastern; public standings. The characters and silhouettes are artistic metaphors.",
+    "artworkId": "2026-10-28-mostik-scoreboard-1949z"
   }
 }

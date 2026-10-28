@@ -1,0 +1,42 @@
+{
+  "id": "2026-10-28-mostik-scoreboard-1949z",
+  "kind": "editorial-composition",
+  "base": "/news-images/2026-10-28-mostik-empty-team-base.webp",
+  "output": "/news-images/2026-10-28-mostik-scoreboard-1949z.webp",
+  "scoreboardObservation": "2026-10-28T19:49:09Z",
+  "rows": [
+    [
+      1,
+      "15499660",
+      "Yi-Chia Chen @ Fields Model",
+      "2026-10-27 18:36:57",
+      75.56,
+      44
+    ],
+    [
+      2,
+      "15486995",
+      "Tufa Labs",
+      "2026-10-27 08:46:34",
+      68.91,
+      174
+    ],
+    [
+      3,
+      "15605182",
+      "Team Turducken",
+      "2026-10-28 02:41:11",
+      56.02,
+      213
+    ],
+    [
+      2134,
+      "16364346",
+      "mostik.ai",
+      "2026-09-06 16:33:00",
+      7.51,
+      47
+    ]
+  ],
+  "review": "Reviewed original illustration and updated programmatic scoreboard. The public observation time is shown on the screen."
+}
