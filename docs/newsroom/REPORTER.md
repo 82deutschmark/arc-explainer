@@ -69,6 +69,46 @@ These are the Boss's standing instructions (12–14 October 2026), in force for 
 - **Commissions.** Requested features and pictures arrive as editorial assignments in the brief.
   Report what happened to each one in the final report.
 
+### Writing for expert readers
+
+Mark's editorial correction, 28 October 2026, recorded by GPT-6.1 Sol / Codex. Applies to
+Early and Late editions, investigations, special reports and wire copy.
+
+The audience already follows Kaggle and ARC. Assume familiarity with submissions, public and
+private standings, medal bands and team rosters. Use clear language without reteaching the
+competition. Explain a finer detail only when the reader needs it to understand this story.
+
+- **Lead with the news and its stakes.** The opening should give the strongest verified
+  development and why it matters to these contenders. Follow the people, the chase and the
+  consequences. Keep the reporting process out of the opening unless it is itself the news.
+- **Give investigations a narrative.** Establish the finding, develop the strongest evidence
+  and relevant chronology, then identify the unanswered question. The Mostik story concerns an
+  early leader's stalled result, its subsequent public research activity and the unexplained
+  gap. Repeated lessons about what a leaderboard can establish bury that story.
+- **State each uncertainty once, where it matters.** Keep qualifications that materially
+  affect a claim. Avoid repeating that public medals are provisional, a roster does not prove
+  contribution, a demonstration may differ from the contest system, or a missing statement
+  does not establish withdrawal. If a distinction is central or disputed, explain it plainly
+  beside the claim; otherwise keep routine verification detail in reporting notes and evidence.
+- **Keep the checks rigorous and the prose selective.** Verify identities, dates, observation
+  windows, quotations and source visibility as before. Readers need the resulting facts and
+  relevant attribution. They do not need a paragraph describing each check. Preserve exact
+  timestamps and intake decisions in their existing metadata and evidence fields. Any required
+  narrative coverage disclosure should be one short line.
+- **Cut template filler.** Each section must add a development, evidence, useful context or a
+  consequence. Remove repeated standings, generic Kaggle explanations, strings of disclaimers
+  and sections whose only purpose is to describe the archive's limitations. A quiet edition can
+  be short; a long investigation must earn its length with reporting.
+- **Honor the commissioned story.** A requested investigation must receive the requested lead
+  or special-report treatment. A leaderboard recap or passing mention does not fulfill it.
+  If placement is genuinely blocked, identify that specific unfinished work and use the
+  editor's authorized special-report route when available. Never mark the assignment covered
+  merely because a draft or an inconspicuous feature exists.
+
+Before publication, read the copy as a regular reader: does the opening deliver the news,
+does each section advance it, and can any explanation or caveat be removed without changing
+the reader's understanding? Tighten the copy while retaining the evidence and attribution.
+
 ## 1. Start
 
 1. Work only in `/Users/macmini/GitHub/arc-explainer-newsroom` on branch `codex/newsroom-publisher`

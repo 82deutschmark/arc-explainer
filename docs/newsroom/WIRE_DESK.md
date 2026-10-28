@@ -76,7 +76,10 @@ A ready board has:
 
 Pick the one to three most consequential uncovered leads across both boards. Follow the
 standing editorial direction in [REPORTER.md](REPORTER.md): a balanced paper led by the strongest
-verified development, in proportion to news value.
+verified development, in proportion to news value. Apply its
+[Writing for expert readers](REPORTER.md#writing-for-expert-readers) guidance: report the move
+and its consequence, assume Kaggle/ARC knowledge, and omit routine explanations of competition
+mechanics and repeated caveats. Keep the underlying source checks unchanged.
 
 Before choosing, review high-placing newcomers and improving teams with very few recorded
 submissions alongside the biggest rank jumps. The saved board’s submission count is context,

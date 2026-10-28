@@ -44,10 +44,12 @@ separate step. Human send confirmation needs no browser proof.
    /tmp/arc-daily-morning-brief.json` (use `evening` for Late). Never use `--preview` or `--now` in
    a scheduled run. Follow REPORTER.md sections 3 and 4: read the complete brief, respect its fixed
    cutoff, use each ready contest's own evidence, and account for every intake item and assignment.
-3. Write one sourced article per ready contest. Use the fresh board feeds and committed public
+3. Apply [Writing for expert readers](REPORTER.md#writing-for-expert-readers): lead with the
+   news and stakes, assume Kaggle/ARC knowledge, and cut repeated caveats and verification prose.
+   Write one sourced article per ready contest. Use the fresh board feeds and committed public
    sources in the brief. Date any reused research; do not call an old post a fresh announcement.
-   State that social/discussion research was not refreshed. An unverified lead is held with its
-   reason, not researched inside this job. One contest's error does not block the other.
+   State in one short line that social/discussion research was not refreshed. An unverified lead
+   is held with its reason, not researched inside this job. One contest's error does not block the other.
 4. Optional picture: one art-plan call for the lead article. Use only a returned `reuseBase` with
    an already approved generation record and valid current cast. Compose, inspect and attach once
    using ART_DESK.md. If no reusable job is returned, generation would be needed, or a condition
