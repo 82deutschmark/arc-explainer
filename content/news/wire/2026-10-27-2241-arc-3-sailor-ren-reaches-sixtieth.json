@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-28T02:16:59Z",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "Sailor Ren climbs from 930th to 60th on ARC-3",
+  "id": "2026-10-27-2241-arc-3-sailor-ren-reaches-sixtieth",
+  "personIds": [],
+  "publishedAt": "2026-10-28T02:41:27Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Sailor Ren gained 5.67 to reach 35.09, moving from 930th to 60th on the ARC-AGI-3 public leaderboard in the past day. The advance brings the team into the top 100; the provisional gold cutoff stands at 38.22."
+    }
+  ],
+  "since": "2026-10-27T02:13:42Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T02:40:32Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16940833"
+  ]
+}
