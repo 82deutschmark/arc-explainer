@@ -1,0 +1,71 @@
+{
+  "competition": "arc-prize-2026-arc-agi-3",
+  "teamId": "16364346",
+  "description": "Recorded full public-board snapshots, not interpolated.",
+  "observations": [
+    {
+      "fetched": "2026-10-12T18:35:41Z",
+      "row": [
+        1387,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4214
+    },
+    {
+      "fetched": "2026-10-13T09:41:33Z",
+      "row": [
+        1412,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4232
+    },
+    {
+      "fetched": "2026-10-14T09:44:09Z",
+      "row": [
+        1469,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4275
+    },
+    {
+      "fetched": "2026-10-14T21:45:21Z",
+      "row": [
+        1497,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4299
+    },
+    {
+      "fetched": "2026-10-28T18:18:58Z",
+      "row": [
+        2130,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4939
+    }
+  ],
+  "historicalContext": {
+    "arcPrizeAnnouncement": "https://x.com/arcprize/status/2094455012432957926",
+    "franzenAccount": "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md"
+  }
+}

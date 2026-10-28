@@ -1,0 +1,288 @@
+{
+  "id": "2026-10-28-mostik-editorial-revision-2",
+  "revisedAt": "2026-10-28T18:24:17.284909+00:00",
+  "reason": "Editor requested independent historical verification and a more curious, welcoming story.",
+  "previousArticle": {
+    "id": "2026-10-28-special-investigation-mostik",
+    "date": "2026-10-28",
+    "edition": "morning",
+    "competition": "arc-3",
+    "headline": "What happened to Mostik? The early ARC leader the field left behind",
+    "dek": "Sasha Malysheva’s team led with 7.51 and a provocative idea: let AI models share their internal reasoning. As the competition surged ahead, its public score stood still.",
+    "publishedAt": "2026-10-28T15:06:39.135842+00:00",
+    "dataAsOf": "2026-10-28T17:48:54Z",
+    "baselineAt": null,
+    "generatedBy": "gpt-6.1-sol",
+    "coverageNote": "Updated October 28 with a later public-board snapshot, the editor’s leaderboard graphic and a new illustration. The reason for Mostik’s stalled score remains unknown; no request for comment was sent.",
+    "teamIds": [
+      "15499660",
+      "15486995",
+      "15605182",
+      "16364346"
+    ],
+    "stats": [
+      {
+        "name": "Yi-Chia Chen @ Fields Model",
+        "rank": 1,
+        "rankChange": null,
+        "score": 75.56,
+        "scoreChange": null,
+        "teamId": "15499660"
+      },
+      {
+        "name": "Tufa Labs",
+        "rank": 2,
+        "rankChange": null,
+        "score": 68.91,
+        "scoreChange": null,
+        "teamId": "15486995"
+      },
+      {
+        "name": "Team Turducken",
+        "rank": 3,
+        "rankChange": null,
+        "score": 56.02,
+        "scoreChange": null,
+        "teamId": "15605182"
+      },
+      {
+        "name": "mostik.ai",
+        "rank": 2130,
+        "rankChange": null,
+        "score": 7.51,
+        "scoreChange": null,
+        "teamId": "16364346"
+      }
+    ],
+    "discord": "Special investigation: What happened to Mostik? An early ARC leader’s score held steady while the field surged. We examine the race, its model-bridging idea and the questions for Sasha Malysheva. https://arc.markbarney.net/news/2026-10-28-special-investigation-mostik",
+    "sources": [
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "organizer-cstl",
+        "title": "ARC Prize — August 31 CSTL high score announcement",
+        "url": "https://x.com/arcprize/status/2094455012432957926"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "founder-alias",
+        "title": "Sasha Malysheva — September 2 former CSTL identification",
+        "url": "https://x.com/aimalysheva/status/2095276258888503494"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "launch",
+        "title": "Sasha Malysheva — September 2 Mostik launch",
+        "url": "https://x.com/aimalysheva/status/2095232794792255848"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "board",
+        "title": "Kaggle — ARC-AGI-3 public leaderboard, filtered to Mostik",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "collector",
+        "title": "Digest collector — dated public board record",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "milestone-one",
+        "title": "ARC Prize — Milestone 1 results, July 6",
+        "url": "https://arcprize.org/blog/arc-prize-2026-milestone-1"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "competition",
+        "title": "ARC Prize — 2026 ARC-AGI-3 competition and milestone dates",
+        "url": "https://arcprize.org/competitions/2026/arc-agi-3"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "milestone-two",
+        "title": "ARC Prize — October 1 Milestone 2 winners",
+        "url": "https://x.com/arcprize/status/2105737436450201734"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "bridge",
+        "title": "Mostik — technical account of bridging internal states",
+        "url": "https://mostik.ai/read-more"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "wired",
+        "title": "WIRED — September 2 interview with Mostik",
+        "url": "https://www.wired.com/story/russian-startup-mostik-ai-models-communication/"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "offsite",
+        "title": "Sasha Malysheva — October 12 team brainstorm",
+        "url": "https://x.com/aimalysheva/status/2109661765722079371"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "recent-research",
+        "title": "Sasha Malysheva — October 26 research commentary",
+        "url": "https://x.com/aimalysheva/status/2114763738192760985"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "franzen",
+        "title": "Daniel Franzen — own Milestone 2 solution write-up",
+        "url": "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md"
+      },
+      {
+        "accessedAt": "2026-10-28T10:02:15.789014+00:00",
+        "id": "release-board",
+        "title": "Early edition collector observation",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+      },
+      {
+        "id": "latest-board",
+        "title": "ARC Daily collector — October 28 public leaderboard and saved history",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "accessedAt": "2026-10-28T17:48:54Z"
+      },
+      {
+        "id": "editor-chart",
+        "title": "Leaderboard evolution graphic — editor-supplied comparison of current top 30",
+        "url": "https://arc.markbarney.net/news-images/2026-10-28-arc3-leaderboard-evolution-editor-chart.png",
+        "accessedAt": "2026-10-28T17:48:54Z"
+      }
+    ],
+    "sections": [
+      {
+        "heading": "An early lead, then a long silence on the board",
+        "sourceIds": [
+          "organizer-cstl",
+          "founder-alias",
+          "launch",
+          "latest-board"
+        ],
+        "text": "When Sasha Malysheva introduced Mostik, her team had just made a splash: ARC Prize had announced a 7.51 score for the team then called CSTL, and she claimed first place. The mathematicians had an intriguing idea about letting AI models share their internal reasoning. Then the contest moved on.\n\nOn October 28, Mostik still had 7.51, now ranked 2,130 of 4,939 teams on the public board. Yi-Chia Chen led on 75.56, Tufa Labs followed on 68.91, and Team Turducken was third on 56.02. Mostik remained listed with 47 recorded entries. Its score matched the figure announced on August 31; the board alone cannot tell us what the team tried privately or why it stopped improving publicly."
+      },
+      {
+        "heading": "How the field ran away",
+        "sourceIds": [
+          "organizer-cstl",
+          "franzen",
+          "latest-board",
+          "editor-chart"
+        ],
+        "text": "The race changed fast after Mostik’s launch. Daniel Franzen’s own write-up says a model upgrade briefly put him first on September 6 before Tufa overtook him. By October 4, the Digest’s earliest saved public snapshot put the leader at 55.89 and the gold line at 33.19; by October 28 those figures were 75.56 and 38.22. The field grew from 3,683 to 4,939 teams over those observations.\n\nThe editor-supplied evolution graphic shows a steep late-September and October climb among the current top 30. It does not plot Mostik, and its underlying submission history has not been independently verified. The Digest’s own saved series begins October 4; it cannot establish exactly when Mostik lost the lead or reconstruct every earlier submission.",
+        "image": {
+          "src": "/news-images/2026-10-28-arc3-leaderboard-evolution-editor-chart.png",
+          "alt": "Line graph of public scores over time for teams in the current top 30, showing a sharp rise in late September and October. Mostik is not included.",
+          "caption": "Editor-supplied leaderboard evolution graphic of the top 30 as of October 28. Mostik is not included; the underlying submission series has not been independently verified."
+        }
+      },
+      {
+        "heading": "The idea that made Mostik interesting",
+        "sourceIds": [
+          "launch",
+          "bridge",
+          "wired"
+        ],
+        "text": "Mostik’s proposal was to let a large model pass internal states directly to a smaller model, instead of writing an explanation for the smaller model to read. In the company’s demonstration, a GLM-5.2 model reads the prompt and a Qwen-3.5 model produces the answer; the bridge is trained while the two underlying models stay frozen. The attraction is clear: preserve more of the larger model’s computation while making the output cheaper.\n\nMalysheva described an experiment with 80% of frontier-model accuracy at 20 times the speed; Mostik’s technical page presents a different comparison against a model matched for score. Neither is an ARC result. The public material does not establish that this demonstration was the system behind the 7.51 competition score."
+      },
+      {
+        "heading": "The team kept talking about research",
+        "sourceIds": [
+          "offsite",
+          "recent-research",
+          "milestone-two"
+        ],
+        "text": "Malysheva described a Mostik team brainstorm on October 12 and discussed latent communication research on October 26. Those posts show continuing research activity, not a new ARC score. Mostik was not among the three Milestone 2 award recipients announced October 1; the award required qualifying open-source solutions, so that alone does not explain what happened to its entry."
+      },
+      {
+        "heading": "The question for Sasha",
+        "sourceIds": [
+          "launch",
+          "bridge",
+          "board"
+        ],
+        "text": "Is Mostik still working on ARC-AGI-3? What produced its early result, and did latent bridging play a part? What happened when the field’s scores began climbing, and could that approach evolve into a stronger agent?\n\nThose are questions for the team, not conclusions to draw from a quiet leaderboard. No request for comment was sent for this article; the reason for the stalled public score remains unknown."
+      }
+    ],
+    "image": {
+      "src": "/news-images/2026-10-28-mostik-empty-team-scoreboard.webp",
+      "alt": "The Mostik team appears as empty purple silhouettes in the positions of their launch photograph, overlooking the ARC competition valley, with Team Turducken, Tufa spiders and Chen’s rabbits. The scoreboard shows dated public standings.",
+      "caption": "AI editorial illustration based on Mostik’s launch photograph. Scoreboard: October 28, 2026, 01:48 PM Eastern; public standings. The characters and silhouettes are artistic metaphors.",
+      "artworkId": "2026-10-28-mostik-empty-team-scoreboard"
+    }
+  },
+  "observations": [
+    {
+      "fetched": "2026-10-12T18:35:41Z",
+      "row": [
+        1387,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4214
+    },
+    {
+      "fetched": "2026-10-13T09:41:33Z",
+      "row": [
+        1412,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4232
+    },
+    {
+      "fetched": "2026-10-14T09:44:09Z",
+      "row": [
+        1469,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4275
+    },
+    {
+      "fetched": "2026-10-14T21:45:21Z",
+      "row": [
+        1497,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4299
+    },
+    {
+      "fetched": "2026-10-28T18:18:58Z",
+      "row": [
+        2130,
+        "16364346",
+        "mostik.ai",
+        "2026-09-06 16:33:00",
+        7.51,
+        47
+      ],
+      "teams": 4939
+    }
+  ],
+  "kaggleTeamSubmissions": "55898931, 2026-08-30 19:46:19.293000 UTC, public score 7.51; endpoint returns public leaderboard submission, not all team attempts.",
+  "earliestCollectorHistory": {
+    "t": "2026-10-04T18:30:56Z",
+    "teams": 3683,
+    "top": 55.89,
+    "gold": 33.19,
+    "silver": 29.37,
+    "bronze": 27.28
+  }
+}
