@@ -51,6 +51,7 @@ export default function NewsArticle() {
           <div className="news-prose">{article.sections.map((section, index) => <section key={index}>
             {section.heading && <h2>{section.heading}</h2>}
             <p>{section.text}</p>
+            {section.image && <figure className="news-edition-art"><a href={section.image.src}><img src={section.image.src} alt={section.image.alt} loading="lazy" /></a><figcaption>{section.image.caption}</figcaption></figure>}
             {!!section.sourceIds.length && <div className="news-section-sources">{section.sourceIds.map(id => {
               const source = article.sources.find(item => item.id === id);
               return source ? <a key={id} href={source.url}>{source.title} ↗</a> : null;
