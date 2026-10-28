@@ -1,0 +1,36 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-28T13:18:15Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "ảc jumps into ARC-2 gold places as Lashen Learning drops out",
+  "id": "2026-10-28-0941-arc-2-ac-enters-gold-lashen-out",
+  "personIds": [],
+  "publishedAt": "2026-10-28T13:41:49Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "ảc moved from 17th to 13th on the ARC-AGI-2 public board, gaining 2.36 points to reach 71.53 and taking a place in the gold places."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Lashen Learning fell from 16th to 18th at 69.44, unchanged, and is now outside the gold places. The gold line, the score of the last gold place, stands at 69.72."
+    }
+  ],
+  "since": "2026-10-27T13:15:00Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T13:40:32Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "17166527",
+    "17054447"
+  ]
+}

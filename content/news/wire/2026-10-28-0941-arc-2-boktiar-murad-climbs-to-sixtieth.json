@@ -1,0 +1,44 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-28T13:18:15Z",
+  "generatedBy": "claude-haiku-5-5",
+  "headline": "Md Boktiar Mahbub Murad climbs from 92nd to 60th on ARC-2",
+  "id": "2026-10-28-0941-arc-2-boktiar-murad-climbs-to-sixtieth",
+  "personIds": [
+    "md-boktiar-mahbub-murad"
+  ],
+  "publishedAt": "2026-10-28T13:41:49Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2",
+        "person-md-boktiar-mahbub-murad-identity-0"
+      ],
+      "text": "Md Boktiar Mahbub Murad gained 8.47 points to reach 45.00, moving from 92nd to 60th on the ARC-AGI-2 public board in the past day."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The entry is listed under the competitor's own name. Standings remain provisional, and medals are decided on the private board."
+    }
+  ],
+  "since": "2026-10-27T13:15:00Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T13:40:32Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    },
+    {
+      "accessedAt": "2026-10-13T17:35:03Z",
+      "id": "person-md-boktiar-mahbub-murad-identity-0",
+      "title": "mbmmurad — own public profile",
+      "url": "https://www.kaggle.com/mbmmurad"
+    }
+  ],
+  "teamIds": [
+    "15487512"
+  ]
+}
