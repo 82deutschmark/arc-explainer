@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex
- * Date: 2026-10-12
- * PURPOSE: Permanent ARC Daily article view with evidence timestamps, linked section
+ * Date: 2026-10-28
+ * PURPOSE: Permanent ARC Daily article view including the complete reserved feature and cover,
+ *          with evidence timestamps, linked section
  *          sources, box scores and competition-scoped competitor links.
  *          08-Oct-2026: head metadata and share card from shared/news.ts; visible
  *          publication and source labels use dates while exact times stay in evidence.
@@ -10,11 +11,12 @@
  *          under the byline; roster names in the rail carry their faces too.
  * SRP/DRY check: Pass — reads the shared news archive; no derived standings or invented facts.
  */
+import { DispatchPreview } from '@/components/news/NewsDispatch';
 import { StoryFeature, TeamPeople } from '@/components/news/NewsPeople';
 import { Link, useParams } from 'wouter';
 import { useMemo } from 'react';
 import { SITE_ORIGIN } from '@shared/seo';
-import { competitorPath, featuredPerson, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
+import { competitorPath, editionFeature, featuredPerson, writerCredit, articleStructuredData, articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT } from '@shared/news';
 import { KAGGLE_COMPETITIONS } from '@shared/kaggleCompetitions';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { ArticleArchive, EditionArtwork, EditionLabel, NewsPaper, NewsStatus, newsDate, sortedArticles, useNews } from '@/components/news/NewsDesk';
@@ -26,6 +28,7 @@ export default function NewsArticle() {
   const { articleId } = useParams<{ articleId: string }>();
   const query = useNews();
   const article = query.data?.articles.find(item => item.id === articleId);
+  const feature = article ? editionFeature(article, query.data?.dispatches) : undefined;
   const jsonLd = useMemo(() => article ? articleStructuredData(article, SITE_ORIGIN) : undefined, [article]);
   const missing = !!query.data && !article;
   // Same title, description, card and article fields as the server-rendered head.
@@ -45,7 +48,8 @@ export default function NewsArticle() {
         <p className="news-dek">{article.dek}</p>
         <p className="news-byline">The ARC Daily Digest sports desk <span>· {writerCredit(article.generatedBy)} · <time dateTime={article.publishedAt}>{newsDate(article.date)}</time></span></p>
       </header>
-      <EditionArtwork article={article} lead />
+      {feature && <DispatchPreview dispatch={feature} lead people={query.data?.people} />}
+      <EditionArtwork article={article} lead={!feature} />
       <div className="news-article-grid">
         <div>
           <div className="news-prose">{article.sections.map((section, index) => <section key={index}>

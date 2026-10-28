@@ -183,7 +183,9 @@ gives it a distinct `-preview` ID; `--now` audits a historical cutoff). Read the
   wire), items earlier marked `held` or `carried`, and the open `editorialAssignments`. An
   assignment ends at its `expiresAt`, or 72 hours after `createdAt` when none is set. A front-page
   feature assignment sets the protected `articleBase.frontPageFeatureId`; preserve it, develop and
-  cite the feature, and the front page prints it in full above the recap.
+  cite the feature, and both the front page and the permanent edition URL print it in full,
+  including its cover and sources, above the recap. Do not treat a front-page-only appearance as
+  completion of an illustrated edition: the link used in its announcement must carry the full feature.
 
 ## 4. Write the issue
 

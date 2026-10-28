@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba)
- * Date: 2026-10-12
- * PURPOSE: Server-readable newspaper, illustrated article and notebook HTML plus genuine NewsArticle
+ * Date: 2026-10-28
+ * PURPOSE: Server-readable newspaper, full reserved features on edition permalinks,
+ *          illustrated article and notebook HTML plus genuine NewsArticle
  *          metadata, archive sitemap URLs and RSS, all from the committed newsroom store.
  *          08-Oct-2026: per-article share cards and Open Graph article fields; the front
  *          page and notebook are CollectionPages listing their entries; readable Eastern
@@ -24,7 +25,7 @@
 import { type RouteMetaTags, ROUTE_META_TAGS } from '../../../shared/routes';
 import {
   type NewsArticle, type NewsDispatch, type CompetitorRecord, type NewsStat, newsArticlePath, competitorPath, NEWS_NAME, articleStructuredData,
-  articleTitle, articleDescription, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit,
+  articleTitle, articleDescription, editionFeature, articleCardPath, articleCardAlt, competitionName, editionLabel, newsDate, writerCredit,
   competitorTitle, competitorDescription, NEWS_CARD_WIDTH, NEWS_CARD_HEIGHT,
   type NewsPerson, type NewsSocialPost, type NewsDiscussion, type NewsWireStory, personPath, peopleForTeam, wirePath, sectionCardAlt, sectionCardPath, frontPageSocialPosts, chronologicalSocialPosts, recentDiscussions,
 } from '../../../shared/news';
@@ -37,7 +38,7 @@ export const boardPath = (competition: string) => competition === 'arc-2' ? '/ka
 const cardFor = (articles: NewsArticle[]) => ({ image: `${SITE_ORIGIN}${sectionCardPath(articles)}`, imageAlt: sectionCardAlt(articles) });
 const articleLink = (article: NewsArticle) => `<a href="${newsArticlePath(article.id)}">${esc(article.headline)}</a>`;
 const sourceList = (article: NewsArticle) => `<ol>${article.sources.map(source => `<li id="source-${esc(source.id)}"><a href="${esc(source.url)}">${esc(source.title)}</a></li>`).join('')}</ol>`;
-const illustrationHtml = (article: NewsArticle) => article.image ? `<figure><img src="${esc(article.image.src)}" alt="${esc(article.image.alt)}"/><figcaption>${esc(article.image.caption)}</figcaption></figure>` : '';
+const illustrationHtml = (article: Pick<NewsDispatch, 'image'>) => article.image ? `<figure><img src="${esc(article.image.src)}" alt="${esc(article.image.alt)}"/><figcaption>${esc(article.image.caption)}</figcaption></figure>` : '';
 const newlineText = (text: string) => text.split(/\n\n+/).map(paragraph => `<p>${esc(paragraph)}</p>`).join('');
 const timeTag = (value: string, withTime = true) => `<time datetime="${esc(value)}">${esc(newsDate(value, withTime))}</time>`;
 const kicker = (article: NewsArticle) => `${esc(competitionName(article.competition))} · ${esc(editionLabel(article))} · ${timeTag(article.date, false)}`;
@@ -52,12 +53,18 @@ function collection(tags: RouteMetaTags, items: { name: string; path: string }[]
       itemListElement: items.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, url: `${SITE_ORIGIN}${item.path}` })) },
   }] };
 }
-export function newsArticleMeta(article: NewsArticle): RouteMetaTags {
+/** The full dispatch, including its own art and sources, stays identical across server views. */
+function dispatchHtml(dispatch: NewsDispatch): string {
+  return `<article id="${esc(dispatch.id)}"><p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p><h2>${esc(dispatch.headline)}</h2>${illustrationHtml(dispatch)}${dispatch.sections.map(section => `${section.heading ? `<h3>${esc(section.heading)}</h3>` : ''}${newlineText(section.text)}`).join('')}${dispatch.interpretation ? `<p><strong>The ARC Daily Digest’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`;
+}
+export function newsArticleMeta(article: NewsArticle, dispatches: NewsDispatch[] = []): RouteMetaTags {
   const url = `${SITE_ORIGIN}${newsArticlePath(article.id)}`;
   const jsonLd = articleStructuredData(article, SITE_ORIGIN);
+  const feature = editionFeature(article, dispatches);
   const bodyHtml = `<main><article><p>${kicker(article)}</p>
     <h1>${esc(article.headline)}</h1><p>${esc(article.dek)}</p>${illustrationHtml(article)}<p>ARC Daily sports desk · ${esc(writerCredit(article.generatedBy))}</p>
     <p>Published ${timeTag(article.publishedAt, false)}. Board date ${timeTag(article.dataAsOf, false)}. Exact source observations remain in the archived reporting data.</p>
+    ${feature ? dispatchHtml(feature) : ''}
     ${article.sections.map(section => `${section.heading ? `<h2>${esc(section.heading)}</h2>` : ''}${newlineText(section.text)}<p>${section.sourceIds.map(id => { const source = article.sources.find(source => source.id === id)!; return `<a href="${esc(source.url)}">${esc(source.title)}</a>`; }).join(' · ')}</p>`).join('')}
     <h2>From the box score</h2><table><thead><tr><th>Team</th><th>Rank</th><th>Score</th><th>Rank change</th><th>Score change</th></tr></thead><tbody>${article.stats.map(stat => `<tr><td><a href="${competitorPath(`${article.competition}-${stat.teamId}`)}">${esc(stat.name)}</a></td><td>${stat.rank}</td><td>${stat.score}</td><td>${rankChange(stat)}</td><td>${scoreChange(stat)}</td></tr>`).join('')}</tbody></table>
     <p>${esc(article.coverageNote)}</p><p><a href="${boardPath(article.competition)}">Full live ${esc(competitionName(article.competition))} box score</a> · <a href="/news">The ARC Daily Digest front page</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/api/news/${esc(article.id)}/evidence">Archived reporting data</a></p>
@@ -118,9 +125,9 @@ function frontPageMeta(articles: NewsArticle[], dispatches: NewsDispatch[], wire
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news'], ...cardFor(articles) });
   const posts = frontPageSocialPosts(social);
   const socialHtml = posts.length ? `<section><h2>From X</h2><p>Research and reactions around the contests</p>${posts.map(post => `<article><h3><a href="${esc(post.url)}">${esc(post.authorName)} · @${esc(post.author)}</a></h3><p>${esc(post.summary)}</p>${post.postedAt ? `<p>${timeTag(post.postedAt, false)}</p>` : ''}</article>`).join('')}<a href="/news/community#tweet-archive">Browse the collected tweet archive</a></section>` : '';
-  const dispatchHtml = dispatches.map(dispatch => `<article id="${esc(dispatch.id)}"><p>${esc(competitionName(dispatch.competition))} · ${timeTag(dispatch.publishedAt)}${dispatch.generatedBy ? ` · ${esc(writerCredit(dispatch.generatedBy))}` : ''}</p><h2>${esc(dispatch.headline)}</h2>${dispatch.image ? `<figure><img src="${esc(dispatch.image.src)}" alt="${esc(dispatch.image.alt)}"/><figcaption>${esc(dispatch.image.caption)}</figcaption></figure>` : ''}${dispatch.sections.map(section => `<p>${esc(section.text)}</p>`).join('')}${dispatch.interpretation ? `<p><strong>The ARC Daily Digest’s take:</strong> ${esc(dispatch.interpretation)}</p>` : ''}${dispatch.commissionedBy ? editorCreditHtml(dispatch.editorNote) : ''}<p>${dispatch.sources.map(source => `<a href="${esc(source.url)}">${esc(source.title)}</a>`).join(' · ')}</p></article>`).join('');
+  const dispatchesHtml = dispatches.map(dispatchHtml).join('');
   return { ...tags, jsonLd: collection(tags, [...dispatches.map(dispatch => ({ name: dispatch.headline, path: `/news#${dispatch.id}` })), ...articles.map(article => ({ name: article.headline, path: newsArticlePath(article.id) }))]),
-    bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Early (6 am) and late (6 pm Eastern) editions from both Kaggle competitions, short wire stories through the day, and the live public boards: leaders, medal lines, the past day's movers and where past prize winners stand, all from recorded leaderboard observations and cited sources.</p><p><a href="/news/wire">The wire</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="${NEWS_STAFF_PATH}">About the Paper</a></p>${socialHtml}${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${discussions.length ? discussionsHtml(recentDiscussions(discussions).slice(0, 3)) : ''}${dispatchHtml}${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3>${illustrationHtml(article)}<p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
+    bodyHtml: `<main><h1>${NEWS_NAME}: ARC-AGI-3 and ARC-AGI-2 contest reporting</h1><p>Early (6 am) and late (6 pm Eastern) editions from both Kaggle competitions, short wire stories through the day, and the live public boards: leaders, medal lines, the past day's movers and where past prize winners stand, all from recorded leaderboard observations and cited sources.</p><p><a href="/news/wire">The wire</a> · <a href="/kaggle-leaderboard#medal-race">ARC-AGI-3 medal race graphic</a> · <a href="/kaggle-leaderboard#score-history">ARC-AGI-3 score history</a> · <a href="/kaggle-leaderboard/arc-2#medal-race">ARC-AGI-2 leaderboard</a> · <a href="/arc-leaderboards">All ARC leaderboards</a> · <a href="/human-records.html">Human and AI game records</a> · <a href="/arc3/games">Public game guides</a> · <a href="/hall-of-fame">Illustrated ARC Hall of Fame cards</a> · <a href="https://discord.gg/9b77dPAmcA">ARC Discord</a> · <a href="/news/competitors">Competitor notebook</a> · <a href="/news/feed.xml">RSS feed</a> · <a href="${NEWS_STAFF_PATH}">About the Paper</a></p>${socialHtml}${wire.length ? `<h2>What's news</h2><ul>${wire.slice(0, 8).map(story => `<li><a href="${wirePath(story.id)}">${esc(story.headline)}</a> (${esc(competitionName(story.competition))})</li>`).join('')}</ul>` : ''}${discussions.length ? discussionsHtml(recentDiscussions(discussions).slice(0, 3)) : ''}${dispatchesHtml}${articles.length ? `<h2>Latest editions</h2>${articles.map(article => `<article><p>${kicker(article)}</p><h3>${articleLink(article)}</h3>${illustrationHtml(article)}<p>${esc(article.dek)}</p></article>`).join('')}` : '<p>The first edition is being prepared.</p>'}</main>` };
 }
 function notebookMeta(competitors: CompetitorRecord[], articles: NewsArticle[]): RouteMetaTags {
   const tags = completeMeta({ ...ROUTE_META_TAGS['/news/competitors'], ...cardFor(articles) });
@@ -144,7 +151,7 @@ export function resolveNewsMeta(route: string): { tags: RouteMetaTags; status: n
   const profile = route.match(/^\/news\/competitors\/([a-z0-9-]+)$/);
   if (profile) { const record = competitors.find(record => record.id === profile[1]); if (record) return { status: 200, tags: competitorMeta(record, articles, people) }; }
   const article = articles.find(article => newsArticlePath(article.id) === route);
-  if (article) return { status: 200, tags: newsArticleMeta(article) };
+  if (article) return { status: 200, tags: newsArticleMeta(article, dispatches) };
   return { status: 404, tags: completeMeta({ title: `Page not found | ${NEWS_NAME}`, description: 'This newspaper page could not be found. Visit The ARC Daily Digest for current coverage.', url: `${SITE_ORIGIN}${route}`, noindex: true }) };
 }
 const latest = (values: string[]) => values.reduce<string | undefined>((max, value) => !max || value > max ? value : max, undefined);

@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.3  Oct 28, 2026
+
+- **Full illustrated features on edition links** (Author: GPT-6.1 Sol / Codex). The October 28 announcement linked to a short closing recap because only the front page resolved its reserved feature. Render the complete commissioned story, cover, caption and sources on the existing permanent edition URL too, in both React and initial server HTML. Reuse one dispatch view and one feature selector; preserve immutable reporting and evidence. Plan: `docs/plans/2026-10-28-edition-feature-permalink.md`.
+- Validation: 30 news rendering/HTTP checks, 69 newsroom Python checks and production build pass. The full TypeScript check reports 12 existing diagnostics outside the changed files.
+
 ### Version 9.159.2  Oct 27, 2026
 
 - **Focus SEO on Mark's work** (Author: GPT-6.1 Sol / Codex). Remove individual ARC puzzle, official-game guide and approved-play addresses from the generated sitemap. Retain research, explanations, original-game collections, human reasoning records and authored editorial pages. The homepage metadata now identifies Mark Barney's work. Remove the per-game sitemap feed/helper so future approvals cannot repopulate individual URLs. Existing galleries, direct links and playable sources continue to work. Plan: `docs/2026-10-27-research-seo-targeting-plan.md`.

@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-12
- * PURPOSE: Render the rebuilt ARC Daily Digest front page and wire page with the committed news
+ * Date: 2026-10-28
+ * PURPOSE: Verify the full reserved feature and cover on edition permalinks, and render
+ *          the rebuilt ARC Daily Digest front page and wire page with the committed news
  *          archive and a populated market digest, so every live section (ticker, board, movers,
  *          past winners, What's News, notebook columns) runs against real-shaped data; and render
  *          it again with no digest to prove a board outage leaves the reporting standing.
@@ -16,9 +17,10 @@ import React, { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
-import { Router } from 'wouter';
+import { Router, Route } from 'wouter';
 import { afterEach, expect, test, vi } from 'vitest';
 import News from '../client/src/pages/News';
+import NewsArticle from '../client/src/pages/NewsArticle';
 import NewsWire from '../client/src/pages/NewsWire';
 import NewsCommunity from '../client/src/pages/NewsCommunity';
 import { newsArticleMeta } from '../server/services/news/newsPresentation';
@@ -54,7 +56,7 @@ function render(page: React.ComponentType, path: string, index: NewsIndex, paylo
   client.setQueryData(['/api/news'], index);
   if (payload) client.setQueryData(['/api/news/markets'], payload);
   return renderToStaticMarkup(createElement(QueryClientProvider, { client },
-    createElement(HelmetProvider, {}, createElement(Router, { ssrPath: path, children: createElement(page) }))));
+    createElement(HelmetProvider, {}, createElement(Router, { ssrPath: path, children: page === NewsArticle ? createElement(Route, { path: "/news/:articleId", component: page }) : createElement(page) }))));
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -140,5 +142,38 @@ test('an edition-bound illustration runs with its headline and dated caption', (
     expect(html).toContain(`src="${art.image.src}"`);
     expect(html).toContain(art.headline);
     expect(html).toContain(art.image.caption);
+  }
+});
+
+
+test('the evening permalink includes its complete feature and cover before the closing recap', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const article = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
+  const feature = index.dispatches!.find(item => item.id === article.frontPageFeatureId)!;
+  expect(feature.image).toBeDefined();
+  const html = render(NewsArticle, `/news/${article.id}`, index);
+  expect(html).toContain(`src="${feature.image!.src}"`);
+  expect(html).toContain(feature.image!.caption);
+  // Every feature section and original source must survive the actual linked page, not just /news.
+  for (const section of feature.sections) expect(html).toContain(section.text.slice(0, 40).replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
+  for (const source of feature.sources) expect(html).toContain(`href="${source.url}"`);
+  expect(html).toContain(article.sections[1].text.slice(0, 40));
+  expect(html.indexOf(feature.sections.at(-1)!.text.slice(0, 40)))
+    .toBeLessThan(html.indexOf(article.sections[1].text.slice(0, 40)));
+  expect(html.match(new RegExp(`id="${feature.id}"`, 'g'))).toHaveLength(1);
+});
+
+test('missing or unrelated reserved features leave the ordinary edition readable', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const original = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
+  const feature = index.dispatches!.find(item => item.id === original.frontPageFeatureId)!;
+  for (const replacement of [undefined, { ...feature, competition: 'arc-2' as const }]) {
+    const input = { ...index, articles: [original], dispatches: replacement ? [replacement] : [] };
+    const html = render(NewsArticle, `/news/${original.id}`, input);
+    expect(html).toContain(original.sections[1].text.slice(0, 40));
+    expect(html).not.toContain(`id="${feature.id}"`);
+    expect(html).not.toContain('Dispatch not found');
   }
 });

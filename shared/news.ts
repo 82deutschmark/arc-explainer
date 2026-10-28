@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low
- * Date: 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
+ * Date: 28-October-2026 (GPT-6.1 Sol: share reserved features across edition views); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
  *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly);
  *       21-October-2026 Claude Haiku 5.5 credited as the backup wire desk)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
@@ -62,6 +62,12 @@ export interface NewsDispatch {
   commissionedBy?: 'mark-barney';
   editorNote?: string;
   image?: { src: string; alt: string; caption: string };
+}
+/** Resolve the same immutable feature for the front page, permalink and initial HTML. */
+export function editionFeature(article: NewsArticle, dispatches: NewsDispatch[] = []): NewsDispatch | undefined {
+  return article.frontPageFeatureId
+    ? dispatches.find(dispatch => dispatch.id === article.frontPageFeatureId && dispatch.competition === article.competition)
+    : undefined;
 }
 /**
  * A person's face on the newspaper. 'hall-of-fame' is a square crop of their own ARC Explainer

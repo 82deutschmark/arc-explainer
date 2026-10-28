@@ -1,7 +1,8 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Low
- * Date: 2026-10-19; 2026-10-21 (Haiku backup wire writer)
- * PURPOSE: Verify public news delivery, search-readable articles, evidence and rejection
+ * Date: 2026-10-28 (reserved feature permalink regression); 2026-10-19; 2026-10-21 (Haiku backup wire writer)
+ * PURPOSE: Verify complete illustrated feature delivery through permanent edition URLs,
+ *          public news delivery, search-readable articles, evidence and rejection
  *          of missing identities and invalid citations using the committed launch issues.
  *          RSS checks cover the newest 40 editions; the sitemap checks the whole archive,
  *          so normal archive growth does not produce a false publication failure.
@@ -251,7 +252,7 @@ it('serves sourced dispatches and their artwork in front-page API and crawler te
   expect(dispatch).toBeDefined();
   const html = await (await fetch(`${base}/news`)).text();
   expect(html).toContain(escapeHtml(dispatch.headline));
-  expect(html).toContain(escapeHtml(dispatch.sections[0].text));
+  for (const paragraph of dispatch.sections[0].text.split(/\n\n+/)) expect(html).toContain(escapeHtml(paragraph));
   expect(html).toContain(dispatch.image!.src);
   for (const source of dispatch.sources) expect(html).toContain(escapeHtml(source.url));
   const sitemap = await (await fetch(`${base}/sitemap.xml`)).text();
@@ -401,4 +402,23 @@ it('leaves out one bad edition, dispatch or ledger record and keeps the rest of 
     `people.json#${first.id}`, 'people.json#no-accounts', `people.json#${second.id}`, 'social.json',
   ].sort());
   fs.rmSync(directory, { recursive: true, force: true });
+});
+
+
+it('serves the reserved evening feature and cover in the permanent edition’s initial HTML', async () => {
+  const index = getNewsIndex();
+  const article = index.articles.find(item => item.id === '2026-10-28-evening-arc-3')!;
+  const feature = index.dispatches!.find(item => item.id === article.frontPageFeatureId)!;
+  const response = await fetch(`${base}/news/${article.id}`);
+  expect(response.status).toBe(200);
+  const html = await response.text();
+  expect(html).toContain(`src="${feature.image!.src}"`);
+  expect(html).toContain(escapeHtml(feature.image!.caption));
+  for (const section of feature.sections) {
+    for (const paragraph of section.text.split(/\n\n+/)) expect(html).toContain(escapeHtml(paragraph));
+  }
+  for (const source of feature.sources) expect(html).toContain(`href="${escapeHtml(source.url)}"`);
+  expect(html).toContain(escapeHtml(article.sections[1].text));
+  expect(html.indexOf(escapeHtml(feature.sections.at(-1)!.text.split(/\n\n+/)[0])))
+    .toBeLessThan(html.indexOf(escapeHtml(article.sections[1].text)));
 });

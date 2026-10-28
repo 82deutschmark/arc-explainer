@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 Sol / Codex; Claude Opus 5.5
- * Date: 2026-10-12
+ * Date: 2026-10-28 (reserved feature shared with edition permalinks)
  * PURPOSE: The ARC Daily Digest's front page above the fold, laid out like a broadsheet: the
  *          terminal ticker of both boards, a prominent public X strip, then three columns: What's News (the wire), the lead
  *          stories (the latest ARC-AGI-3 report printed in full, the ARC-AGI-2 report under it)
@@ -14,38 +14,14 @@
  */
 import { Link } from 'wouter';
 import type { NewsIndex, NewsDispatch, NewsArticle, NewsCompetition, NewsPerson } from '@shared/news';
-import { competitionName, competitorPath, newsDate, newsArticlePath, featuredPerson, editionLabel, personForXHandle, personPath, writerCredit, frontPageSocialPosts } from '@shared/news';
+import { competitorPath, newsDate, newsArticlePath, editionFeature, editionLabel, personForXHandle, personPath, frontPageSocialPosts } from '@shared/news';
 import type { MarketsPayload } from '@shared/newsMarkets';
 import { StoryPreview, sortedArticles } from './NewsDesk';
 import { BoardTable, MarketTicker, marketBoards } from './NewsMarkets';
-import { PersonPortrait, StoryFeature } from './NewsPeople';
+import { PersonPortrait } from './NewsPeople';
 import { WhatsNews } from './NewsWire';
-import { NewsEditorCredit } from './NewsEditorCredit';
+import { DispatchArt, DispatchPreview } from './NewsDispatch';
 import { FromKaggleBoards } from './NewsSources';
-
-function DispatchArt({ dispatch, lead = false }: { dispatch: NewsDispatch; lead?: boolean }) {
-  return dispatch.image ? <figure className="news-dispatch-art"><a href={dispatch.image.src} aria-label="Open the full editorial illustration"><img src={dispatch.image.src} alt={dispatch.image.alt} loading={lead ? 'eager' : 'lazy'} /></a><figcaption>{dispatch.image.caption}</figcaption></figure> : null;
-}
-
-export function DispatchPreview({ dispatch, lead = false, people = [] }: { dispatch: NewsDispatch; lead?: boolean; people?: NewsPerson[] }) {
-  return <article id={dispatch.id} className={`news-story news-dispatch${lead ? ' news-lead' : ''}`}>
-    <div className="news-kicker"><span>{competitionName(dispatch.competition)}</span><span>{dispatch.commissionedBy ? 'Commissioned analysis' : 'From the contenders'}</span></div>
-    <h2><a href={`#${dispatch.id}`}>{dispatch.headline}</a></h2>
-    <div className="news-byline"><time dateTime={dispatch.publishedAt}>{newsDate(dispatch.publishedAt, true)}</time>{dispatch.generatedBy && <> · {writerCredit(dispatch.generatedBy)}</>}</div>
-    <DispatchArt dispatch={dispatch} lead={lead} />
-    {dispatch.sections.map((section, index) => <section key={index}>
-      {section.heading && <h3>{section.heading}</h3>}
-      <p className="news-dispatch-text">{section.text}</p>
-      <div className="news-section-sources">{section.sourceIds.map(id => {
-        const source = dispatch.sources.find(item => item.id === id);
-        return source ? <a key={id} href={source.url} target="_blank" rel="noopener noreferrer">{source.title} ↗</a> : null;
-      })}</div>
-    </section>)}
-    <StoryFeature person={featuredPerson(dispatch, people)} competition={dispatch.competition} />
-    {dispatch.interpretation && <p className="news-dispatch-take"><strong>The ARC Daily Digest’s take</strong> {dispatch.interpretation}</p>}
-    {dispatch.commissionedBy && <NewsEditorCredit note={dispatch.editorNote} />}
-  </article>;
-}
 
 /** The newest story for one contest (edition or dispatch), then its earlier headlines. */
 function CompetitionDesk({ articles, dispatches, competition, lead = false, people }: { articles: NewsArticle[]; dispatches: NewsDispatch[]; competition: NewsCompetition; lead?: boolean; people: NewsPerson[] }) {
@@ -57,9 +33,7 @@ function CompetitionDesk({ articles, dispatches, competition, lead = false, peop
   if (!first) return <p className="news-muted">No published coverage yet. <Link href={competition === 'arc-3' ? '/kaggle-leaderboard' : '/kaggle-leaderboard/arc-2'}>Open the live board →</Link></p>;
   // Same-day artwork keeps its dated caption when an edition succeeds a dispatch.
   const companionArt = 'article' in first ? dispatches.find(dispatch => dispatch.competition === competition && dispatch.image && newsDate(dispatch.publishedAt) === newsDate(first.publishedAt)) : undefined;
-  const reservedFeatureId = 'article' in first ? first.article.frontPageFeatureId : undefined;
-  const reservedFeature = reservedFeatureId
-    ? dispatches.find(dispatch => dispatch.id === reservedFeatureId && dispatch.competition === competition) : undefined;
+  const reservedFeature = 'article' in first ? editionFeature(first.article, dispatches) : undefined;
   return <div className={`news-desk${lead ? ' is-lead' : ''}`}>
     {reservedFeature && <DispatchPreview dispatch={reservedFeature} lead={lead} people={people} />}
     {'article' in first
