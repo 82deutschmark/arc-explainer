@@ -869,5 +869,48 @@
     "plannedFeatureId": "2026-10-27-kaggle-run-failures-investigation",
     "publicationOwner": "the-arc-daily-morning-edition",
     "handoffUpdatedAt": "2026-10-27T03:02:13.701166+00:00"
+  },
+  {
+    "id": "oct28-early-mostik-investigation",
+    "competition": "arc-3",
+    "createdAt": "2026-10-28T04:17:51.861879Z",
+    "expiresAt": "2026-10-29T12:00:00Z",
+    "title": "What happened to Mostik? The early ARC leader still sitting at 7.51",
+    "priority": "Head editor commissioned investigation for October 28 morning edition",
+    "status": "pending",
+    "targetEditionId": "2026-10-28-morning-arc-3",
+    "placement": "front-page-feature",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "16364346"
+    ],
+    "personIds": [],
+    "subjectNames": [
+      "Mostik",
+      "mostik.ai",
+      "CSTL",
+      "Sasha Malysheva"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-mostik-investigation/article.txt",
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-mostik-investigation/feature-draft.json",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-mostik-investigation/investigation.json",
+    "plannedFeatureId": "2026-10-28-mostik-investigation",
+    "publicationOwner": "the-arc-daily-morning-edition",
+    "sourceUrls": [
+      "https://x.com/arcprize/status/2094455012432957926",
+      "https://x.com/aimalysheva/status/2095276258888503494",
+      "https://x.com/aimalysheva/status/2095232794792255848",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "https://arcprize.org/blog/arc-prize-2026-milestone-1",
+      "https://arcprize.org/competitions/2026/arc-agi-3",
+      "https://x.com/arcprize/status/2105737436450201734",
+      "https://mostik.ai/read-more",
+      "https://www.wired.com/story/russian-startup-mostik-ai-models-communication/",
+      "https://x.com/aimalysheva/status/2109661765722079371",
+      "https://x.com/aimalysheva/status/2114763738192760985",
+      "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md"
+    ],
+    "instructions": "Mark explicitly commissions this new Mostik investigation for the October 28 Early edition; this supersedes the older instruction to keep Mostik only as background. Use the prepared, dispatch-validated feature and editor-handoff.json in the same private folder. Before the first prepare call, inspect whether content/news/dispatches/2026-10-28-mostik-investigation.json exists. If absent, set the draft publishedAt to actual release time, refresh its current board figure from the normal edition feed, keep historical observations dated, validate and dispatch-publish. Preserve any already published feature. Only once that feature exists, set featureId to its ID on this assignment, then prepare so the full feature appears with the morning ARC3 recap. Do not substitute a brief mention or a box-score row for the commissioned article; mark covered only when substantively included. Keep the ARC2 edition and normal balanced race reporting. This is prepared commissioned research; no browser investigation, new art hunt, outreach, extra send or automation changes are requested in the scheduled shift. Source findings: ARC Prize announced CSTL at 7.51 on August 31; Malysheva explicitly identified former CSTL as Mostik September 2. Milestone 1 ended June 30, Milestone 2 September 30. Current entry still exists at 7.51; October founder posts show activity. Do not claim withdrawal, disqualification, company closure, proven bridge failure or commercial pivot. The cause of the stalled public score remains unknown. No request for comment was sent; never write declined to comment. Exact contest recipe is undisclosed in reviewed sources; the GLM/Qwen demonstration is not established as the contest configuration. Eight-account roster and company headcount are different measures. Refresh current rank once; retain dated live/collector differences as observations. Text publication should not wait for artwork. Normal successful push completes release; no deployment polling."
   }
 ]
