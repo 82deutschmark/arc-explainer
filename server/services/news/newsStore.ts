@@ -48,7 +48,7 @@ export const newsArticleSchema = z.object({
   id: safeId, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), edition: z.enum(['morning', 'evening']), competition,
   frontPageFeatureId: safeId.optional(),
   image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.webp$/), alt: text.max(700), caption: text.max(700), artworkId: safeId }).strict().optional(),
-  headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1), image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: text.max(700), caption: text.max(700) }).strict().optional() })).min(1),
+  headline: text.max(240), dek: text.max(700), sections: z.array(z.object({ heading: text.optional(), text, sourceIds: z.array(z.string()).min(1), image: z.object({ src: z.string().regex(/^\/news-images\/[a-z0-9-]+\.(png|jpg|webp)$/), alt: text.max(700), caption: text.max(700), layout: z.literal("inset").optional() }).strict().optional() })).min(1),
   teamIds: z.array(z.string().regex(/^\d+$/)), sources: z.array(z.object({ id: text, title: text, url: webUrl, accessedAt: stamp })).min(1),
   publishedAt: stamp, dataAsOf: stamp, baselineAt: stamp.nullable(), generatedBy: z.enum(NEWS_EDITION_WRITERS),
   stats: z.array(z.object({ teamId: z.string().regex(/^\d+$/), name: text, rank: z.number().int().positive(), score: z.number().finite(), rankChange: z.number().int().nullable(), scoreChange: z.number().finite().nullable() })),

@@ -34,7 +34,7 @@ export const NEWS_EDITION_WRITERS = NEWS_WRITER_IDS.edition as [string, ...strin
 export const NEWS_WIRE_WRITERS = NEWS_WRITER_IDS.wire as [string, ...string[]];
 export type NewsWriter = string;
 export interface NewsSource { id: string; title: string; url: string; accessedAt: string }
-export interface NewsSection { heading?: string; text: string; sourceIds: string[]; image?: { src: string; alt: string; caption: string } }
+export interface NewsSection { heading?: string; text: string; sourceIds: string[]; image?: { src: string; alt: string; caption: string; layout?: "inset" } }
 export interface NewsStat { teamId: string; name: string; rank: number; score: number; rankChange: number | null; scoreChange: number | null }
 /** Native editorial art with an immutable, edition-bound composition record. */
 export interface NewsIllustration { src: string; alt: string; caption: string; artworkId: string }

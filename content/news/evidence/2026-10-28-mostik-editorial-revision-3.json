@@ -1,0 +1,226 @@
+{
+  "id": "2026-10-28-mostik-editorial-revision-3",
+  "revisedAt": "2026-10-28T18:26:13.508085+00:00",
+  "reason": "Editor commissioned a smaller illustration of the planned request for comment.",
+  "previousArticle": {
+    "id": "2026-10-28-special-investigation-mostik",
+    "date": "2026-10-28",
+    "edition": "morning",
+    "competition": "arc-3",
+    "headline": "Remember Mostik? The AI bridge-builders who once led ARC",
+    "dek": "Sasha Malysheva’s team brought a surprising idea and an early lead to ARC-AGI-3. As the final days approach, we’re curious what the mathematicians might build next.",
+    "publishedAt": "2026-10-28T15:06:39.135842+00:00",
+    "dataAsOf": "2026-10-28T18:18:58Z",
+    "baselineAt": null,
+    "generatedBy": "gpt-6.1-sol",
+    "coverageNote": "Updated October 28 with independently checked historical board observations and a new rank chart. Exact earlier rank changes and Mostik’s future plans remain unknown. No request for comment was sent.",
+    "teamIds": [
+      "15499660",
+      "15486995",
+      "15605182",
+      "16364346"
+    ],
+    "stats": [
+      {
+        "name": "Yi-Chia Chen @ Fields Model",
+        "rank": 1,
+        "rankChange": null,
+        "score": 75.56,
+        "scoreChange": null,
+        "teamId": "15499660"
+      },
+      {
+        "name": "Tufa Labs",
+        "rank": 2,
+        "rankChange": null,
+        "score": 68.91,
+        "scoreChange": null,
+        "teamId": "15486995"
+      },
+      {
+        "name": "Team Turducken",
+        "rank": 3,
+        "rankChange": null,
+        "score": 56.02,
+        "scoreChange": null,
+        "teamId": "15605182"
+      },
+      {
+        "name": "mostik.ai",
+        "rank": 2130,
+        "rankChange": null,
+        "score": 7.51,
+        "scoreChange": null,
+        "teamId": "16364346"
+      }
+    ],
+    "discord": "Remember Mostik? Sasha Malysheva’s mathematicians led ARC early and built a surprising bridge between AI models. With the finish approaching, we look back at their idea and wonder what comes next. https://arc.markbarney.net/news/2026-10-28-special-investigation-mostik",
+    "sources": [
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "organizer-cstl",
+        "title": "ARC Prize — August 31 CSTL high score announcement",
+        "url": "https://x.com/arcprize/status/2094455012432957926"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "founder-alias",
+        "title": "Sasha Malysheva — September 2 former CSTL identification",
+        "url": "https://x.com/aimalysheva/status/2095276258888503494"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "launch",
+        "title": "Sasha Malysheva — September 2 Mostik launch",
+        "url": "https://x.com/aimalysheva/status/2095232794792255848"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "board",
+        "title": "Kaggle — ARC-AGI-3 public leaderboard, filtered to Mostik",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "collector",
+        "title": "Digest collector — dated public board record",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "milestone-one",
+        "title": "ARC Prize — Milestone 1 results, July 6",
+        "url": "https://arcprize.org/blog/arc-prize-2026-milestone-1"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "competition",
+        "title": "ARC Prize — 2026 ARC-AGI-3 competition and milestone dates",
+        "url": "https://arcprize.org/competitions/2026/arc-agi-3"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "milestone-two",
+        "title": "ARC Prize — October 1 Milestone 2 winners",
+        "url": "https://x.com/arcprize/status/2105737436450201734"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "bridge",
+        "title": "Mostik — technical account of bridging internal states",
+        "url": "https://mostik.ai/read-more"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "wired",
+        "title": "WIRED — September 2 interview with Mostik",
+        "url": "https://www.wired.com/story/russian-startup-mostik-ai-models-communication/"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "offsite",
+        "title": "Sasha Malysheva — October 12 team brainstorm",
+        "url": "https://x.com/aimalysheva/status/2109661765722079371"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "recent-research",
+        "title": "Sasha Malysheva — October 26 research commentary",
+        "url": "https://x.com/aimalysheva/status/2114763738192760985"
+      },
+      {
+        "accessedAt": "2026-10-28T04:17:13.712034Z",
+        "id": "franzen",
+        "title": "Daniel Franzen — own Milestone 2 solution write-up",
+        "url": "https://github.com/da-fr/arc-agi-3-solution/blob/main/WRITEUP.md"
+      },
+      {
+        "accessedAt": "2026-10-28T10:02:15.789014+00:00",
+        "id": "release-board",
+        "title": "Early edition collector observation",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+      },
+      {
+        "id": "latest-board",
+        "title": "ARC Daily collector — October 28 public leaderboard and saved history",
+        "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "accessedAt": "2026-10-28T17:48:54Z"
+      },
+      {
+        "id": "rank-observations",
+        "title": "Mostik’s observed rank history — saved full-board records and October 28 snapshot",
+        "url": "https://arc.markbarney.net/news-data/2026-10-28-mostik-rank-observations.json",
+        "accessedAt": "2026-10-28T18:24:17.284909+00:00"
+      },
+      {
+        "id": "team-submission",
+        "title": "Kaggle — Mostik team leaderboard and public submission",
+        "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+        "accessedAt": "2026-10-28T18:24:17.284909+00:00"
+      }
+    ],
+    "sections": [
+      {
+        "heading": "A little bridge and a big first impression",
+        "sourceIds": [
+          "launch",
+          "founder-alias",
+          "organizer-cstl",
+          "wired"
+        ],
+        "text": "At the beginning of September, a team of Russian mathematicians arrived with a curious proposition: what if AI models could share more than words? Their startup was called Mostik—“little bridge”—and their ARC-AGI-3 team, previously known as CSTL, had just reached first place.\n\nSasha Malysheva introduced a group of 15 people, including 12 PhDs and Fields Medalist Stanislav Smirnov. Their early result of 7.51 turned heads. With the final days of the competition approaching, it is natural to wonder: what might this inventive team do next?"
+      },
+      {
+        "heading": "How the race changed",
+        "sourceIds": [
+          "organizer-cstl",
+          "franzen",
+          "team-submission",
+          "rank-observations",
+          "latest-board"
+        ],
+        "text": "Kaggle lists Mostik’s public leaderboard submission at 7.51 on August 30, and ARC Prize announced CSTL’s leading result on August 31. By September 6, another contender had reached the top: Daniel Franzen says he briefly took first before Tufa Labs passed him. That does not pin down the exact moment Mostik lost its lead.\n\nOur saved full-board snapshots show Mostik at 1,387th on October 12, 1,412th on October 13 and 1,497th on the evening of October 14. On October 28 it was 2,130th among 4,939 teams, with its public score still 7.51. The leader, Yi-Chia Chen, had reached 75.56. Those observations tell the story of a field moving at speed; they do not reveal Mostik’s private experiments or its plans.",
+        "image": {
+          "src": "/news-images/2026-10-28-mostik-verified-rank-observations.png",
+          "alt": "Five observed Mostik leaderboard ranks from October 12 to October 28, falling from 1,387th to 2,130th while its public score stays at 7.51.",
+          "caption": "Mostik’s public rank at five saved observations. Each point had a score of 7.51; gaps between observations are not reconstructed."
+        }
+      },
+      {
+        "heading": "What if models could talk without words?",
+        "sourceIds": [
+          "launch",
+          "bridge",
+          "wired"
+        ],
+        "text": "The idea behind the company is wonderfully strange. Instead of a large model writing out advice for a smaller model, Mostik trains a bridge that passes information from the larger model’s internal state directly to the smaller one. The large model reads the problem; the small one writes the answer. Both underlying models stay frozen.\n\nIn Mostik’s published demonstration, GLM-5.2 is the sender and Qwen-3.5 is the receiver. The company says its bridge closed half the accuracy gap between them; compared with a single model matched for the same score, it reports using 2.5 times less compute. Those are the company’s comparisons, not ARC scores. WIRED reported that the team used its approach for the early ARC lead, while also saying the contest details were withheld. The exact competition system remains undisclosed."
+      },
+      {
+        "heading": "The mathematicians behind the bridge",
+        "sourceIds": [
+          "wired",
+          "launch",
+          "bridge",
+          "offsite",
+          "recent-research"
+        ],
+        "text": "Malysheva told WIRED that her interest in mathematics took off after her brother challenged her with Olympiad problems; she later studied in St. Petersburg. Smirnov, Mostik’s chief scientist, brings a Fields Medal and a mathematician’s interest in how reasoning works.\n\nMostik’s research page describes experiments in teaching smaller models through the bridge and giving them specialized skills—early work, the company says, rather than finished results. Malysheva has continued to discuss the team and latent-communication research in public. There may be plenty more to the story than a single competition entry."
+      },
+      {
+        "heading": "A late surprise?",
+        "sourceIds": [
+          "competition",
+          "board",
+          "bridge"
+        ],
+        "text": "The final submission deadline is November 2. Could Mostik’s team bring its unusual ideas back to the ARC race before then? We don’t know, and a quiet public leaderboard cannot answer that question. But an inventive early leader, a team of mathematicians and a model-to-model bridge are more than enough reason to be curious.\n\nWe would love to hear from Sasha and the team about the early run, how their bridge work has evolved and whether ARC remains on their horizon. No request for comment has yet been sent."
+      }
+    ],
+    "image": {
+      "src": "/news-images/2026-10-28-mostik-empty-team-scoreboard.webp",
+      "alt": "The Mostik team appears as empty purple silhouettes in the positions of their launch photograph, overlooking the ARC competition valley, with Team Turducken, Tufa spiders and Chen’s rabbits. The scoreboard shows dated public standings.",
+      "caption": "AI editorial illustration based on Mostik’s launch photograph. Scoreboard: October 28, 2026, 01:48 PM Eastern; public standings. The characters and silhouettes are artistic metaphors.",
+      "artworkId": "2026-10-28-mostik-empty-team-scoreboard"
+    }
+  }
+}
