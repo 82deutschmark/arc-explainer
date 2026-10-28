@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-10-28T21:33:28Z",
+  "id": "2026-10-28-beyond-the-ceiling-cover-v1-base",
+  "inputImages": [
+    "exec-3cc9a010-b794-400d-91e5-66996a7339a4.png"
+  ],
+  "kind": "native-generation",
+  "prompt": "Edit this exact approved editorial illustration by adding polished newspaper typography and a few precise environmental labels. Keep the architecture, all robot subjects, staircase, composition, warm/cool light and drawing style unchanged. Turn the quiet black bottom strip into a handsome editorial cover overlay: small gold uppercase masthead 'THE ARC DAILY DIGEST' at left; large elegant ivory headline 'BEYOND THE CEILING'; smaller ivory subhead 'Harder tests reveal the gaps'; compact right-aligned kicker 'SPECIAL EVENING EDITION' and '28 OCTOBER 2026'. Add very small restrained engraved brass signs aligned to the scene: 'ARC-1' above the low glass-ceiling chamber, 'ARC-2' beside the base of the colorful rising staircase, 'ARC-3' beside the distant open arch. These are conceptual metaphor labels, not numerical axes. Add tiny understated bottom-right credit 'AI editorial illustration'. No scores, percentages, ranks, equation or fabricated plot. Keep every letter crisp, correctly spelled, legible. Avoid oversized headline covering artwork; typography stays mainly in the existing lower strip. Preserve original image aspect ratio and image quality.",
+  "rawSha256": "c26ed79c26edba79feeb70c7f21a5e81119d8b29367d7b6822c097681ae987a5",
+  "rawSrc": "/news-images/2026-10-28-beyond-the-ceiling-cover-v1-base.webp",
+  "references": [],
+  "review": "Inspected the finished native overlay once: crowded robots under the ARC-1 glass ceiling; separated robots on ARC-2 tile staircase; ARC-3 open arch. Correct headline, subhead, date, masthead and AI illustration credit. Faces and action remain clear. No real people, scores, numeric chart, rank or team claims. Labels are metaphorical, as the article caption explains. Earlier unlabelled native base supplied as the actual edit target; no further generation after the editor paused art.",
+  "tool": "image_gen.imagegen",
+  "toolOutput": "exec-6061b977-8d23-4292-94b9-92258a50396c.png",
+  "version": 1
+}

@@ -961,6 +961,27 @@
         }
       ],
       "selectionNote": "Inspected native output: two colossal rabbits stand on hind legs, grey-brown lop ears down and dark-and-white companion ears upright with white face blaze. Five distinct black spiders, full seven-character Turducken crew, two Yorkies and anonymous green engineers look upward. New sunrise plaza episode; no text or scores."
+    },
+    {
+      "id": "2026-10-28-beyond-the-ceiling-cover-v1-base",
+      "generationRecord": "2026-10-28-beyond-the-ceiling-cover-v1-base",
+      "src": "/news-images/2026-10-28-beyond-the-ceiling-cover-v1-base.webp",
+      "title": "Beyond the Ceiling",
+      "competition": "arc-3",
+      "status": "published-with-commissioned-feature",
+      "articleUses": [
+        "2026-10-28-beyond-arc1-ceiling"
+      ],
+      "xAttachments": [],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565116420172550365",
+          "postedAt": "2026-10-28T21:33:53.413Z",
+          "purpose": "Head editor commissioned special evening edition and desk coordination; selected native cover preview before feature publication."
+        }
+      ],
+      "selectionNote": "Conceptual cover selected after editor paused further art. Visually checked all labels, date, headline and AI illustration credit. No named people or contest scores. Other character experiments held and excluded."
     }
   ],
   "existingXPosts": [

@@ -1,0 +1,132 @@
+{
+  "commissionedBy": "mark-barney",
+  "competition": "arc-3",
+  "editorNote": "Special evening feature commissioned by Mark Barney. Reporting refreshed October 28 from the original organizer posts, their public discussion and ARC Prize’s own result and benchmark pages. Broader ARC-1/2 trends lead; both Kaggle races receive separate closing reports.",
+  "generatedBy": "gpt-6.1-sol",
+  "headline": "The gaps hiding under ARC-1’s ceiling",
+  "id": "2026-10-28-beyond-arc1-ceiling",
+  "image": {
+    "alt": "AI editorial illustration: puzzle-solving robots crowd under an ARC-1 glass ceiling, spread out on an ARC-2 staircase and face an open ARC-3 landscape.",
+    "caption": "Beyond the Ceiling — AI editorial illustration for the October 28 special evening feature. The chambers and staircase are a metaphor for tests revealing different abilities, not a data chart or a forecast.",
+    "src": "/news-images/2026-10-28-beyond-the-ceiling-cover-v1-base.webp"
+  },
+  "publishedAt": "2026-10-28T21:34:28.517717+00:00",
+  "sections": [
+    {
+      "heading": "The gap behind the tie",
+      "sourceIds": [
+        "greg",
+        "comparison",
+        "results"
+      ],
+      "text": "Two AI systems can get the same mark on ARC-1 and finish more than twenty points apart on ARC-2. That is the striking finding in the comparison ARC Prize published on Wednesday—and the reason Greg Kamradt thinks the older puzzle format still has more to tell us.\n\nThe official results give a concrete example. Kimi K3 and GPT-5.4 Pro, at the tested settings, both scored just under 95 percent on ARC-1. On ARC-2, Kimi scored about 60 percent and GPT-5.4 Pro about 83 percent. The first test makes them look evenly matched. The second opens a gap of twenty-three points.\n\nAn easier test can run out of room before the systems taking it run out of differences. Once strong models are getting nearly everything right, another good result tells us less about what separates them. ARC-2 gives those differences somewhere to show up."
+    },
+    {
+      "heading": "The pattern matters as much as the gap",
+      "sourceIds": [
+        "comparison",
+        "greg",
+        "arc2-design",
+        "mazur"
+      ],
+      "text": "There is another side to the story. Across the models ARC Prize compared, good ARC-1 scores generally went with good ARC-2 scores. The points followed a smooth curve. Stronger performance on the older test usually carried over to the harder one.\n\nThose two findings belong together. The tests share a broad pattern, yet the harder one can still separate systems that look tied. Think of an exam that tells you which students are doing well but no longer tells you much about the differences among the best students. A tougher exam can reveal those differences without testing a completely unrelated subject.\n\nARC-2 also asks more of the solver. Its puzzles can require several rules to work together, a symbol to carry a meaning, or the right rule to change with the situation. Kamradt's point is that this extended the life of the original ARC idea: a small colored grid can still ask a harder question.\n\nThis chart does not tell us how fast AI will improve next month. Matt Mazur made that distinction in the discussion: it compares scores across tests. It is not a forecast of progress over time."
+    },
+    {
+      "heading": "Which puzzles are doing the work?",
+      "sourceIds": [
+        "difficulty",
+        "jack-ceiling",
+        "jack-items",
+        "greg"
+      ],
+      "text": "Kamradt's next suggestion is more interesting than another overall ranking. He wants to use the accumulated results to work out how difficult the individual public ARC-1 and ARC-2 puzzles are. Jack Cole raised the problem of top scores bunching together and suggested looking more closely at individual tasks too.\n\nThat could turn a league table into a more useful account of what models can and cannot do. Two systems might finish with the same total while solving different puzzles. One might manage a difficult combination of rules that defeats the other. The total would hide that difference; the puzzle-by-puzzle record could expose it.\n\nThere is a further question worth asking: which puzzles actually separate the strongest systems? A puzzle almost everyone fails is hard, but it may tell us little about the differences between them. The useful next test needs challenges that reveal something.\n\nThese are proposals for further work. Kamradt explicitly said there are no plans for an ARC-2.5 release. The news is the direction of the conversation: better use of the tests and results already in hand."
+    },
+    {
+      "heading": "ARC-3 adds the experience of finding out",
+      "sourceIds": [
+        "arc3-design",
+        "arc3-comparison",
+        "progression"
+      ],
+      "text": "ARC-3 takes that search into a different setting. The system has to act, see what happened and learn how an unfamiliar game works. It must discover useful moves and change its approach as it goes, rather than only supply the missing answer to a puzzle.\n\nThat gives the people building and testing these systems more to inspect. A final mark tells them how the run ended. The play itself can show whether the system noticed a useful clue, repeated a bad move or learned something it could use later.\n\nARC Prize also reported a broad link between stronger ARC-2 and ARC-3 results, with exceptions. The interesting thread running through all three tests is how to keep revealing differences as systems improve. ARC-2 makes the puzzles more demanding. ARC-3 lets us watch a system try to find its way through something new."
+    },
+    {
+      "heading": "A higher mark still has a price",
+      "sourceIds": [
+        "results",
+        "difficulty",
+        "comparison",
+        "progression"
+      ],
+      "text": "For the Kaggle teams, there is a practical reason to care about all this. They need to know which changes make a system more capable, where it still gets stuck and what the improvement costs.\n\nThe tied-score example has a useful second detail. The official table lists the GPT-5.4 Pro result at more than ten times Kimi K3's cost per ARC-2 puzzle. The higher score reveals a real difference in the published results, but it is not a comparison at an equal budget. A team working within competition limits has to care about both. These model evaluations are separate from the Kaggle contest standings.\n\nThe desk's reading of Wednesday's discussion is that ARC's next useful story may be hiding inside the scores we already have: the puzzles that separate close rivals, the strengths concealed by a shared total, and the point at which a test stops giving us enough room to see.\n\nThe aim is to keep asking questions that let a better system show what it can do."
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "greg",
+      "title": "Greg Kamradt — October 28 interpretation of ARC-1/2 progression",
+      "url": "https://x.com/GregKamradt/status/2115476334151655838"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "comparison",
+      "title": "ARC Prize — October 28 comparison across the ARC tests",
+      "url": "https://x.com/arcprize/status/2115475078175395986"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "results",
+      "title": "ARC Prize — verified results table, checked October 28",
+      "url": "https://arcprize.org/leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "arc2-design",
+      "title": "ARC Prize — what ARC-AGI-2 was designed to test",
+      "url": "https://arcprize.org/arc-agi/2"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "difficulty",
+      "title": "Greg Kamradt — proposal to rank public tasks by difficulty",
+      "url": "https://x.com/GregKamradt/status/2115502318401769866"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "jack-ceiling",
+      "title": "Jack Cole — ceiling effects on the ARC tests",
+      "url": "https://x.com/MindsAI_Jack/status/2115501712425226426"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "jack-items",
+      "title": "Jack Cole — suggestion to study individual tasks",
+      "url": "https://x.com/MindsAI_Jack/status/2115515337378824533"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "mazur",
+      "title": "Matt Mazur — score relationship is not a time trend",
+      "url": "https://x.com/mhmazur/status/2115519809349980307"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "progression",
+      "title": "ARC Prize — future tests and distinguishing stronger systems",
+      "url": "https://x.com/arcprize/status/2115475082881446215"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "arc3-design",
+      "title": "ARC Prize — learning through action in ARC-AGI-3",
+      "url": "https://arcprize.org/arc-agi/3"
+    },
+    {
+      "accessedAt": "2026-10-28T21:32:12.973433+00:00",
+      "id": "arc3-comparison",
+      "title": "ARC Prize — ARC-2/3 relationship and an exception",
+      "url": "https://x.com/arcprize/status/2115475080293548370"
+    }
+  ]
+}

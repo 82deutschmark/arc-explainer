@@ -915,5 +915,40 @@
     "featureId": "2026-10-28-mostik-investigation",
     "verificationNotes": "Full investigation published as a separately dated special report at the head editor’s explicit request; its later publication time puts it ahead of the morning recap. Original feature and edition preserved.",
     "specialArticleId": "2026-10-28-special-investigation-mostik"
+  },
+  {
+    "id": "oct28-evening-broader-arc-trends",
+    "competition": "arc-3",
+    "createdAt": "2026-10-28T21:35:11.129739+00:00",
+    "expiresAt": "2026-10-29T02:00:00Z",
+    "title": "Special evening lead: The gaps hiding under ARC-1’s ceiling",
+    "priority": "Head editor explicitly commissioned this evening feature",
+    "status": "pending",
+    "targetEditionId": "2026-10-28-evening-arc-3",
+    "placement": "front-page-feature",
+    "commissionedBy": "mark-barney",
+    "featureId": "2026-10-28-beyond-arc1-ceiling",
+    "plannedFeatureId": "2026-10-28-beyond-arc1-ceiling",
+    "publicationOwner": "arc-agi-3-evening-leaderboard-recap",
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-broader-trends/feature-draft.json",
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-broader-trends/article.txt",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-28-broader-trends/editor-notes.json",
+    "teamIds": [],
+    "personIds": [
+      "jack-cole"
+    ],
+    "subjectNames": [
+      "Greg Kamradt",
+      "ARC Prize",
+      "Matt Mazur",
+      "Jack Cole"
+    ],
+    "sourceUrls": [
+      "https://x.com/arcprize/status/2115475078175395986",
+      "https://x.com/GregKamradt/status/2115476334151655838",
+      "https://x.com/GregKamradt/status/2115502318401769866",
+      "https://arcprize.org/leaderboard"
+    ],
+    "instructions": "Mark commissioned the special October 28 evening edition and corrected the angle: broad ARC-1/2 trends, the differences concealed by tied older scores, the useful next step of studying individual puzzles, and ARC-3 as learning through action. Plain English for normal readers; no math lecture or software jargon. The immutable feature is already published with its selected Beyond the Ceiling conceptual cover. Preserve it and reserve it IN FULL above the ARC3 evening recap using the protected frontPageFeatureId. Do not reduce it to a passing mention. Headline/dek/first section should foreground the feature, citing dispatch-2026-10-28-beyond-arc1-ceiling; second section must provide substantial fresh ARC3 race reporting. Publish a separate full ARC2 closing report. Prepare at/after 6 pm normally and preserve the cutoff, with one final freshness check. Do not use the 5:19 preview as closing evidence. Keep this assignment pending until preparation/inclusion; mark covered only when full front-page reservation and substantive citation are present. The editor paused further art after rejecting the arbitrary three-person workshop casting. Use the selected reviewed conceptual cover, not the Measuring Room or unreviewed Turducken experiment. No additional generation. Read evening-editor-handoff.json in the private folder for exact feature-led routine X copy and attachment; the X helper does not follow dispatch art automatically. The normal single routine evening X announcement is the only public announcement requested; preserve send-once outbox state. Discord preview already sent once, message 1565116420172550365, so do not duplicate it. Let normal relay own routine edition notices. A successful push completes publication; no deployment checks. No automation or app-code changes."
   }
 ]
