@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-29T19:42:49.891641+00:00",
+  "updatedAt": "2026-10-29T20:02:38.376573+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1016,7 +1016,9 @@
       "generationRecord": "2026-10-29-xz-enters-scoring-hall-v1",
       "src": "/news-images/2026-10-29-xz-enters-scoring-hall-v1.webp",
       "status": "discord-preview-delivered-prepared-evening",
-      "articleUses": [],
+      "articleUses": [
+        "2026-10-29-special-early-evening-xz"
+      ],
       "xAttachments": [],
       "discordShares": [
         {

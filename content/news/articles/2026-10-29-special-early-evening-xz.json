@@ -1,0 +1,194 @@
+{
+  "id": "2026-10-29-special-early-evening-xz",
+  "date": "2026-10-29",
+  "edition": "evening",
+  "competition": "arc-3",
+  "headline": "Eleven entries, fourth place: the cat on Turducken’s tail",
+  "dek": "Eleven public entries, a previous Kaggle win and an unfamiliar cat just behind third place. An early evening special.",
+  "publishedAt": "2026-10-29T20:02:30.033949+00:00",
+  "dataAsOf": "2026-10-29T19:52:15Z",
+  "baselineAt": "2026-10-28T21:49:27Z",
+  "generatedBy": "gpt-6.1-sol",
+  "coverageNote": "Early evening special, published separately from the scheduled 6 pm closing report. Board observed October 29 at 3:52 pm Eastern and checked again before publication. Profile, history and selected public discussion reporting were checked earlier October 29; social/discussion discovery was not refreshed for this release. Entry counts describe the public board only. Public standings are provisional.",
+  "teamIds": [
+    "15499660",
+    "15486995",
+    "15605182",
+    "15487093",
+    "16021367"
+  ],
+  "stats": [
+    {
+      "name": "Yi-Chia Chen @ Fields Model",
+      "rank": 1,
+      "rankChange": 0,
+      "score": 75.56,
+      "scoreChange": 0.0,
+      "teamId": "15499660"
+    },
+    {
+      "name": "Tufa Labs",
+      "rank": 2,
+      "rankChange": null,
+      "score": 70.02,
+      "scoreChange": null,
+      "teamId": "15486995"
+    },
+    {
+      "name": "Team Turducken",
+      "rank": 3,
+      "rankChange": 0,
+      "score": 56.02,
+      "scoreChange": 0.0,
+      "teamId": "15605182"
+    },
+    {
+      "name": "xz",
+      "rank": 4,
+      "rankChange": null,
+      "score": 52.95,
+      "scoreChange": null,
+      "teamId": "15487093"
+    },
+    {
+      "name": "the last dance 🕺",
+      "rank": 5,
+      "rankChange": -1,
+      "score": 51.51,
+      "scoreChange": 0.0,
+      "teamId": "16021367"
+    }
+  ],
+  "sources": [
+    {
+      "id": "person-xz-identity-0",
+      "title": "xz — own Kaggle profile, checked October 29",
+      "url": "https://www.kaggle.com/xiaoz259",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "history",
+      "title": "xz — Kaggle competition history, checked October 29",
+      "url": "https://www.kaggle.com/xiaoz259/competitions",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "winning-writeup",
+      "title": "Read xz’s first-place solution — September 2, 2026",
+      "url": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/writeups/1st-place-solution",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "github",
+      "title": "Explore xz’s public reference code",
+      "url": "https://github.com/xz259/Kaggle-AI-Agent-Security-1st-Place-Solution",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "xz-startup",
+      "title": "xz — October 25 startup report, current text and October 29 replies",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752485",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "current-discussion",
+      "title": "October 29 public discussion: xz, Jeroen Cottaar and Yi-Chia Chen on current run conditions",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "staff-incident",
+      "title": "María Cruz — October 27 broader investigation/capacity statement",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3545843",
+      "accessedAt": "2026-10-29T16:55:43.190811+00:00"
+    },
+    {
+      "id": "incident-report",
+      "title": "The ARC Daily Digest — October 27 investigation into Kaggle run failures",
+      "url": "https://arc.markbarney.net/news/2026-10-27-morning-arc-3",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "early",
+      "title": "The ARC Daily Digest — October 29 Early edition",
+      "url": "https://arc.markbarney.net/news/2026-10-29-morning-arc-3",
+      "accessedAt": "2026-10-29T18:34:07.598282+00:00"
+    },
+    {
+      "id": "board",
+      "title": "ARC-AGI-3 public leaderboard and observed history — October 29 early evening",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "accessedAt": "2026-10-29T20:01:22.978725+00:00"
+    },
+    {
+      "id": "person-jeroen-cottaar-identity-0",
+      "title": "Jeroen Cottaar — verified Kaggle account",
+      "url": "https://www.kaggle.com/jeroencottaar",
+      "accessedAt": "2026-10-09T19:23:29Z"
+    },
+    {
+      "id": "person-yi-chia-chen-identity-0",
+      "title": "Yi-Chia Chen — verified Kaggle account",
+      "url": "https://www.kaggle.com/threerabbits",
+      "accessedAt": "2026-10-09T17:16:30Z"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "An entrance behind third place",
+      "sourceIds": [
+        "board",
+        "early",
+        "person-xz-identity-0",
+        "history"
+      ],
+      "text": "Team Turducken has a cat problem.\n\nA cream face, blue eyes and an expression of magnificent indifference have appeared just behind third place on the ARC-AGI-3 public leaderboard. At the early evening check, xz remained fourth on 52.95, a little over three points behind Turducken. The public entry counter said eleven.\n\nThat is an entrance worth a second look. Chen and Tufa still occupy the first two places; Turducken now has another contender close behind. The last dance sits just below xz, so the cat has company on both sides.\n\nOur Early edition reported the arrival at fourth. The saved history supplies a useful correction to the impression of somebody materializing from nowhere: xz already had a recorded ARC-3 score of 28.41 in early October. Thursday brought the first observation of 52.95 in our collection, not a verified timestamp for the submission that produced it.\n\nEleven is the board’s entry count. It tells us nothing about the number of experiments, abandoned runs or hours behind those entries. But it gives the public result a striking calling card."
+    },
+    {
+      "heading": "Read the form book",
+      "sourceIds": [
+        "person-xz-identity-0",
+        "history",
+        "winning-writeup",
+        "github"
+      ],
+      "text": "The account is xiaoz259 on Kaggle, displayed simply as xz. Its avatar is doing most of the public-facing work. The competition history supplies the form book.\n\nWhen checked on October 29, the profile listed a Competitions Master ranked fifteenth, with one gold medal, three silvers and five bronzes. The gold came from first place among 4,186 teams in AI Agent Security – Multi-Step Tool Attacks.\n\nThere are silver finishes in Jane Street’s market-data forecasting contest, the second AI Mathematical Olympiad Progress Prize and NFL Big Data Bowl prediction. Earlier ARC campaigns are there too: 341st in 2024 and 602nd in 2025. Those are different contests, with different fields and tests, but they establish that this is an experienced competitor returning to ARC.\n\nThe profile directly links to GitHub account xz259, where an agent-security solution and a model reverse-engineering project are public. The reviewed self-linked profiles establish no real name, gender or nationality. For now, the name on the work is xz.\n\nThe personal biography is thin. The competitive résumé has substance."
+    },
+    {
+      "heading": "Go straight to the winner",
+      "sourceIds": [
+        "winning-writeup",
+        "github"
+      ],
+      "text": "There is a first-place solution sitting behind that cat avatar. xz published it on September 2 after winning AI Agent Security – Multi-Step Tool Attacks. For the technical story, go straight to the winner: the full write-up and public reference code are linked below.\n\nThe ARC agent behind this fourth-place arrival still has its own story to tell."
+    },
+    {
+      "heading": "The same troubled scoring hall",
+      "sourceIds": [
+        "xz-startup",
+        "current-discussion",
+        "staff-incident",
+        "incident-report",
+        "person-jeroen-cottaar-identity-0",
+        "person-yi-chia-chen-identity-0"
+      ],
+      "text": "Fourth place has not insulated xz from the submission troubles occupying the rest of the paddock.\n\nIn a thread begun October 25, xz reports server startup taking anywhere from ten minutes to an hour, with slower-starting instances also appearing to deliver lower throughput. Earlier mounting trouble, the post says, was resolved. The remaining cause is unclear.\n\nOn Thursday, xz was comparing notes with other competitors about whether conditions had returned to normal. One practical detail: starting games at the ten-minute mark, then periodically sending RESET while waiting for the server.\n\nTufa’s Jeroen Cottaar described a different way of examining the lost time. His team believes roughly forty minutes are disappearing before the notebook itself starts, based on container uptime and total run duration. Yi-Chia Chen reported fluctuating scores while saying she could not separate infrastructure effects from ordinary run variation.\n\nThese are competitors’ observations, with different tests and different limits. Kaggle’s October 27 response said broader issues were under investigation and that capacity for individual investigations was constrained.\n\nThat is the revealing part of this otherwise sparse public portrait. The unfamiliar contender at the sharp end is also in the discussion, trying to work out where the time goes. A fourth-place result and uncertainty about run conditions can coexist."
+    },
+    {
+      "heading": "The next entry",
+      "sourceIds": [
+        "board",
+        "current-discussion",
+        "early"
+      ],
+      "text": "With Monday’s deadline approaching, the immediate race is close enough to make another improvement matter. At the early evening check, Turducken’s 56.02 left xz 3.07 points behind; the last dance, on 51.51, was only 1.44 behind xz.\n\nThose are public-board positions. The private leaderboard will decide the final placing. For the competition desk, the live question is whether xz can turn this arrival into another move before the close.\n\nThe technical questions can wait for evidence: what changed, how reliably it worked, and how much of each run was available for solving games. The profile and security write-up give us some history. The discussion gives us a competitor willing to share the frustrating parts. The ARC breakthrough itself is still to be explained.\n\nOur illustrator has made the entrance literal: a giant cream cat in a GPU vest, fluffy tail filling the scoring hall, while the established cast looks up from its machinery. The damaged screen displays fourth place.\n\nThe public counter says eleven. The next entry has an audience."
+    }
+  ],
+  "discord": "The cat on Turducken’s tail. xz remains fourth at 52.95, about three points behind Turducken, with eleven public entries. Meet the quiet Kaggle winner behind the giant cat. The ARC Daily Digest · Early evening edition · October 29. https://arc.markbarney.net/news/2026-10-29-special-early-evening-xz",
+  "image": {
+    "src": "/news-images/2026-10-29-xz-enters-scoring-hall-v1.webp",
+    "alt": "A gigantic cream-faced blue-eyed fluffy cat wearing a restrained GPU vest enters the scoring hall. Tall Dries, five spiders, Chen’s two rabbits, Puget and Ivan, seven Turducken crew members and two Yorkies all look warily toward it. A damaged screen shows 4, the cat icon and xz.",
+    "caption": "The cat enters the scoring hall. xz’s arrival at fourth place, October 29.",
+    "artworkId": "2026-10-29-xz-enters-scoring-hall-v1"
+  }
+}

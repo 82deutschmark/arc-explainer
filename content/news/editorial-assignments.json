@@ -992,7 +992,7 @@
     "expiresAt": "2026-10-30T02:00:00Z",
     "title": "Eleven entries, fourth place: the cat on Turducken’s tail",
     "priority": "Head editor explicitly commissioned the deeper evening lead and new scoring-hall illustration",
-    "status": "pending",
+    "status": "covered",
     "targetEditionId": "2026-10-29-special-early-evening-xz",
     "placement": "manual-early-evening-special",
     "commissionedBy": "mark-barney",
@@ -1045,6 +1045,9 @@
       "releaseAt": "2026-10-29T16:00:00-04:00",
       "articleId": "2026-10-29-special-early-evening-xz",
       "noReactionCheckRequired": true
-    }
+    },
+    "coveredBy": "2026-10-29-special-early-evening-xz",
+    "coveredAt": "2026-10-29T20:02:30.033949+00:00",
+    "articleUrl": "https://arc.markbarney.net/news/2026-10-29-special-early-evening-xz"
   }
 ]
