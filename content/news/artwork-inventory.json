@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-29T20:02:38.376573+00:00",
+  "updatedAt": "2026-10-29T20:09:13.623020+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1015,11 +1015,20 @@
       "id": "2026-10-29-xz-enters-scoring-hall-v1",
       "generationRecord": "2026-10-29-xz-enters-scoring-hall-v1",
       "src": "/news-images/2026-10-29-xz-enters-scoring-hall-v1.webp",
-      "status": "discord-preview-delivered-prepared-evening",
+      "status": "published-and-distributed",
       "articleUses": [
         "2026-10-29-special-early-evening-xz"
       ],
-      "xAttachments": [],
+      "xAttachments": [
+        {
+          "articleId": "2026-10-29-special-early-evening-xz",
+          "url": "https://x.com/82deutschmark/status/2115897936764887332",
+          "postedAt": "2026-10-29T20:06:17.234Z",
+          "sha256": "e8a7a7250f6d5f28778556115bccb1394a9a345e35e5781b4188d815932552c5",
+          "alt": "A gigantic cream-faced blue-eyed fluffy cat wearing a restrained GPU vest enters the scoring hall. Tall Dries, five spiders, Chen’s two rabbits, Puget and Ivan, seven Turducken crew members and two Yorkies all look warily toward it. A damaged screen shows 4, the cat icon and xz.",
+          "visualReview": "Exact giant-cat image and article text reviewed in composer; posted image and alt confirmed in success result."
+        }
+      ],
       "discordShares": [
         {
           "channelId": "1550165647911034940",
@@ -1028,9 +1037,18 @@
           "postedAt": "2026-10-29T18:31:58.294761+00:00",
           "attachmentSha256": "e8a7a7250f6d5f28778556115bccb1394a9a345e35e5781b4188d815932552c5",
           "purpose": "Head-editor commissioned xz evening feature, exact finished art delivered before any X. Await any human reaction."
+        },
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565456236609020006",
+          "url": "https://discord.com/channels/@me/1550165647911034940/1565456236609020006",
+          "postedAt": "2026-10-29T20:04:13.023364+00:00",
+          "attachmentSha256": "e8a7a7250f6d5f28778556115bccb1394a9a345e35e5781b4188d815932552c5",
+          "articleId": "2026-10-29-special-early-evening-xz",
+          "purpose": "4 pm early evening launch with actual special-article link; Boss explicitly approved X without reactions."
         }
       ],
-      "targetEditionId": "2026-10-29-evening-arc-3",
+      "targetEditionId": "2026-10-29-special-early-evening-xz",
       "selectionNote": "Inspected the finished wide native cover. One enormous cream-and-white cat has the avatar’s round flat face, blue eyes, pink nose, exposed fluffy ruff, modest GPU vest and huge plume tail. Five spiders, tall Dries, two correctly marked Chen rabbits, Puget and Ivan, seven distinct Turducken crew and two Yorkies are visible, all turned warily toward the cat. Broken display clearly shows 4, cat icon and xz; no other scores invented. Headline, date and AI credit legible. Editorial fantasy about a fourth-place arrival, not a factual outage scene, hardware account or breed identification."
     },
     {
