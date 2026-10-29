@@ -1,0 +1,29 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-29T13:51:18Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Anil Thomas advances to 47th on ARC-2",
+  "id": "2026-10-29-1001-arc-2-anil-thomas-advances-to-forty-seventh",
+  "personIds": [],
+  "publishedAt": "2026-10-29T14:01:46Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Anil Thomas gained 8.61 to reach 55.00, moving from 57th to 47th on the public ARC-AGI-2 board."
+    }
+  ],
+  "since": "2026-10-28T13:48:18Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T14:01:02Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16893334"
+  ]
+}

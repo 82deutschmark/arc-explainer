@@ -1,0 +1,29 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T13:51:17Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Fighting Gold climbs to 38th on ARC-3",
+  "id": "2026-10-29-1001-arc-3-fighting-gold-climbs-to-thirty-eighth",
+  "personIds": [],
+  "publishedAt": "2026-10-29T14:01:46Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Fighting Gold gained 3.05 to reach 36.46, climbing from 134th to 38th on the public ARC-AGI-3 board."
+    }
+  ],
+  "since": "2026-10-28T13:48:17Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T14:01:02Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16623996"
+  ]
+}
