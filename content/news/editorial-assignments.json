@@ -1049,5 +1049,79 @@
     "coveredBy": "2026-10-29-special-early-evening-xz",
     "coveredAt": "2026-10-29T20:02:30.033949+00:00",
     "articleUrl": "https://arc.markbarney.net/news/2026-10-29-special-early-evening-xz"
+  },
+  {
+    "id": "oct30-last-dance-team-feature",
+    "competition": "arc-3",
+    "createdAt": "2026-10-29T21:16:32.579264Z",
+    "expiresAt": "2026-10-31T02:00:00Z",
+    "title": "The Last Dance: reserved full illustrated feature for October 30 Early",
+    "priority": "Boss-requested next-day team feature",
+    "status": "pending",
+    "commissionedBy": "mark-barney",
+    "targetEditionId": "2026-10-30-morning-arc-3",
+    "placement": "front-page-feature",
+    "featureId": "2026-10-29-last-dance-takes-the-floor",
+    "teamIds": [
+      "16021367"
+    ],
+    "personIds": [
+      "fses91",
+      "lukas-aichberger",
+      "mykyta-ielanskyi"
+    ],
+    "subjectNames": [
+      "the last dance 🕺",
+      "Florian Sestak",
+      "Lukas Aichberger",
+      "Mykyta Ielanskyi"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-feature-planning/last-dance-feature.txt",
+    "handoffPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-feature-planning/last-dance-editor-handoff.json",
+    "instructions": "Reserve the complete existing illustrated Last Dance dispatch for October 30 ARC3 Early at 6 am Eastern. It was already pushed on October 29; tomorrow is its front-page feature placement, not first publication. Use featureId through the normal protected front-page-feature mechanism, foreground the story in the edition headline/dek, cite its dispatch source and include the full feature on the permanent edition link. Read the saved handoff and notes. Fresh October 30 standings belong in the surrounding race report; preserve the dispatch’s original reporting, source times and reviewed breakdance cover. Reuse of this existing feature and its cover is explicitly commissioned by the Boss; no new image generation. Keep gklambauer ownership unresolved, the fourth masked dancer fictional, and the generic Kaggle goose out of personal-avatar claims. October 29 Late must CARRY this reservation, even if the dispatch enters normal intake; do not close it as covered before its target edition. Do not send or schedule a standalone Last Dance X post today. Tomorrow’s ordinary edition announcement follows the standing distribution procedure; no additional post is commissioned. The exact Discord cover preview already has a receipt: do not repeat it. Mark covered only after substantive target-edition inclusion, or leave a concrete held/carried reason.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/news/2026-10-29-last-dance-takes-the-floor",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "https://www.kaggle.com/lukasaichberger"
+    ],
+    "verificationNotes": "Direct Boss instruction on October 29 to keep the feature for another day, tomorrow or similar, retain notes and investigate other teams. Target selected as October 30 Early using the existing edition schedule; no automation created. Three verified identities and one unresolved handle are documented in the frozen research and character library."
+  },
+  {
+    "id": "oct29-next-team-feature-research",
+    "competition": "arc-3",
+    "createdAt": "2026-10-29T21:16:32.579264Z",
+    "expiresAt": "2026-11-03T12:00:00Z",
+    "title": "Next team profiles: yktori, mtg and the uncovered front runners",
+    "priority": "Boss-requested reporting slate",
+    "status": "pending",
+    "commissionedBy": "mark-barney",
+    "placement": "research-desk",
+    "teamIds": [
+      "16760837",
+      "16153655",
+      "16490178",
+      "16569113",
+      "16132261",
+      "16958599",
+      "15488763"
+    ],
+    "subjectNames": [
+      "yktori",
+      "mtg",
+      "Grigoriy Zatravkin & co",
+      "復活の混テキスト",
+      "artificialagencylab.com",
+      "Majkel1337",
+      "AquaUrsa Research"
+    ],
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-feature-planning/next-team-feature-slate.json",
+    "instructions": "The Boss requested an audit of other teams needing investigation after reserving Last Dance for October 30 Early. The saved dated slate audits substantive features, people records and portrait inventory against the top 25. Priority order: yktori (sixth in October 29 4:52 pm board), mtg (seventh), Grigoriy Zatravkin & co (ninth), 復活の混テキスト (tenth), artificialagencylab.com (eleventh), Majkel1337 (twelfth), AquaUrsa Research (sixteenth). Refresh current ranks before any new story. Initial primary profile reporting for yktori and mtg is in initial-profile-reporting.json beside the slate. yktori has one displayed silver and four bronzes; mtg and Majkel race on both ARC boards. Develop sourced sports/celebrity profiles: prior competitions, actual public discussions, collaborations, verified identities and stated next steps. These are reporting leads, not seven completed manuscripts or a demand to cram them into one issue. Carry/hold the research item explicitly when no substantive new reporting is ready. No outreach, standalone X send or new automation is authorized. Existing xz coverage belongs to team 15487093, now named faster machine is all you need; do not create a duplicate dossier for the rename. Do not use a generic Kaggle goose as a personal avatar.",
+    "sourceUrls": [
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "https://www.kaggle.com/yktori/competitions",
+      "https://www.kaggle.com/michaeltgao/competitions",
+      "https://artificialagencylab.com/"
+    ],
+    "verificationNotes": "Read-only inventory audit plus primary-profile research; detailed source links and remaining tasks are saved in the private handoff. Snapshot 2026-10-29T20:52:21Z, 4,972 teams. Portrait gap means none saved in inventory, not none available online."
   }
 ]

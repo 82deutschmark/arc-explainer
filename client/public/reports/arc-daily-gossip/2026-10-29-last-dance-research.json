@@ -508,5 +508,21 @@
       7,
       48.84
     ]
-  ]
+  ],
+  "rowColumnsCorrection": {
+    "checkedAt": "2026-10-29T21:16:32.579264Z",
+    "columns": [
+      "rank",
+      "teamId",
+      "teamName",
+      "lastSubmission",
+      "score",
+      "submissionCount",
+      "memberHandles",
+      "rankAtStartOfDay",
+      "scoreAtStartOfDay"
+    ],
+    "note": "The original rowColumns metadata mislabelled the final two fields as memberCount and numericScore. They are start-of-UTC-day comparison rank and score, as documented by KaggleBoardRow in shared/types.ts. Original row values and published reporting are preserved; the four-account roster is established by the comma-separated memberHandles field.",
+    "scope": "Metadata correction only; no change to the observed source row, article claims or artwork."
+  }
 }
