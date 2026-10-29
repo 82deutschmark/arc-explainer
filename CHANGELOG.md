@@ -1,5 +1,9 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.8  Oct 29, 2026
+
+- **Hold the xz feature for the editor’s read-through** (Author: GPT-6.1 Sol / Codex). Save the revised 901-word sports column and full giant-cat illustration in the private evening handoff, and carry an explicit review hold in the one-off assignment. The feature, its announcements and the conditional Kaggle thank-you await the editor’s review; normal verified closing reports can continue. Draft format and intake checked; no article publication or external send.
+
 ### Version 9.159.7  Oct 29, 2026
 
 - **Every reported person gets a player card** (Author: GPT-6.1 Sol / Codex). Expand “In this story” into compact Hall of Fame-inspired cards for all named or person-cited subjects, including reserved feature and recap coverage. Keep rosters separate, deduplicate without a face cap, and resolve title-case Xz to the verified cat avatar on the existing morning story.
