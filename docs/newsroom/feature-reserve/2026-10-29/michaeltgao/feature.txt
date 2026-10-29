@@ -1,0 +1,61 @@
+HELD FOR A LATER EDITION — NO X POST
+Reporting file prepared 2026-10-29T23:31:25.134047Z
+Board observation: October29,6:52pm Eastern. Refresh before release.
+
+Michael’s double bill: mtg keeps crashing ARC’s front row
+
+Twice back into the front row
+
+The name is three letters. The October record is considerably louder. mtg, the ARC entry whose only listed Kaggle account is michaeltgao, has twice fought its way back to third on the ARC-AGI-3 public board. On 9 October, a score improvement carried it from eighth to third. On 16 October, another carried it from sixth to third. That is a contender with a proven habit of reappearing near the front when the crowd starts looking elsewhere.
+
+At the 29 October evening snapshot, mtg stands seventh among 4,975 teams, on 50.37. Seventh in that field deserves a spotlight. It also supplies the tension: the same score that briefly held third is now holding seventh. The opposition has kept advancing. Michael's entry is still in the leading company, with the final submission deadline approaching.
+
+Sources: arc3-board, michael-profile, arc2026
+
+For now, the billing is Michael
+
+Michael’s own Kaggle profile gives us a first name: Michael. It lists an account created in late March 2026 and currently shows the two ARC contests as its active competitions. The public competition page does not display a completed competition history. That is the account's visible record, not a claim that its owner arrived without experience.
+
+The profile supplies no fuller biography or verified external identity link. Michael is the public name, mtg the competition billing, and michaeltgao the account readers can follow. Any help outside the listed roster remains unknown. The sporting résumé already has two returns to third and a second campaign gathering pace.
+
+Sources: michael-profile, michael-results, arc3-board, arc2-board
+
+The other arena is heating up
+
+There is a second campaign to watch. The same account is listed on a separate mtg entry in ARC-AGI-2, where it stands 22nd among 3,519 teams on 69.31. The two contests have separate score histories. ARC Prize describes ARC-2 as its static reasoning contest and ARC-3 as its interactive one; a good position in one is not a score that can simply be carried into the other.
+
+Michael’s recent ARC-2 trajectory gives the double bill its kick. The observed score rose from 62.08 to 65.83 on 26 October, then to 69.31 on 27 October. That second improvement briefly brought mtg to 17th. By the 29 October snapshot it was 22nd without a reduction in its displayed score. The current last provisional gold position is 17th, at 70.14. This is an active chase, not an award already settled.
+
+Sources: arc2-board, arc3-board, arc2026
+
+Keep a seat for the next reveal
+
+The two campaigns now have different rhythms. In the saved ARC-3 history, mtg's displayed best score has remained at 50.37 since 16 October. In ARC-2, the late-October improvements are much fresher. Those observations tell us where the points moved; they do not tell us which model Michael uses, how Michael divides time between the contests, or what the next submission might contain.
+
+That unanswered part is the reporting assignment. A first-person solution account could explain the two returns to third and the later ARC-2 push. A public release could show whether the entries share an approach. Until one is available, the sporting case is already strong enough: two demanding contests, one listed account, and repeated appearances in serious company.
+
+ARC Prize's calendar lists 2 November for submissions and 4 December for results. For now, seventh on ARC-3 and a chase just outside ARC-2's provisional gold band make Michael worth following into the finish. The three-letter name has earned more than a passing line in the standings.
+
+Sources: arc3-board, arc2-board, arc2026, michael-profile
+
+SOURCE FILE
+arc3-board — ARC-AGI-3 public leaderboard and dated observed history
+https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board
+Checked 2026-10-29T22:52:35Z
+
+arc2-board — ARC-AGI-2 public leaderboard and dated observed history
+https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board
+Checked 2026-10-29T22:52:37Z
+
+michael-profile — Michael — own Kaggle profile
+https://www.kaggle.com/michaeltgao
+Checked 2026-10-29T23:24:17.895841Z
+
+michael-results — Michael — own Kaggle competition record
+https://www.kaggle.com/michaeltgao/competitions
+Checked 2026-10-29T23:24:17.895841Z
+
+arc2026 — ARC Prize 2026 — tracks and calendar
+https://arcprize.org/competitions/2026
+Checked 2026-10-29T23:24:17.895841Z
+

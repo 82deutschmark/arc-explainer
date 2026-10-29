@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "id": "2026-10-29-majkel1337-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:28:46.609028+00:00",
+  "toolOutput": "exec-1177570d-706c-466d-88fb-ee1d8179f5b1.png",
+  "rawSrc": "/news-images/references/2026-10-29-majkel1337-avatar-v1-base.webp",
+  "rawSha256": "5074c6a917931490eccd5541b6492bf38c053d5eabf8c8666c346ea7283bd1b0",
+  "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Input image is the account owner's publicly linked GitHub geometric peach identicon, a graphic reference only, not a human face. Subject: an original charismatic copper-and-cream FOX esports card-game champion with upright ears, confident bright eyes, peach geometric angular brow markings loosely echoing that identicon, and an elegant dark charcoal racing blazer with copper lapels and crisp red/yellow/cyan/blue square ARC panels. Compact adult anthropomorphic fox stands in a showman's three-quarter pose on a glowing ARC grid, fanning exactly three entirely abstract square-backed cards with colorful geometric shapes, no suits/letters/creatures/logos. One copper tail visible. Cozy amber spotlights and dark art-deco arena beyond. No Pokemon or other franchise character, no money, no gambling imagery, no trophy or claimed medal. This mascot is editorial fiction; source establishes only the owner's geometric avatar graphic.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-input-1-github-avatar-original.png",
+      "kind": "generation-input",
+      "label": "Majkel1337 — copper fox — exact input 1",
+      "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+      "sha256": "aafe5be2561ec2d99ffb26049611817b1824b1b5416c30f86d1259d6583908fc"
+    }
+  ],
+  "inputImages": [
+    "github-avatar-original.png"
+  ],
+  "review": "Inspected one copper fox in charcoal/copper ARC blazer, peach geometric brow marks, one tail and exactly three abstract square-backed cards. No franchise creatures, personal likeness, words, scores or medals.",
+  "purpose": "character-reference",
+  "subjectId": "majkel1337-team",
+  "registeredAt": "2026-10-29T23:45:33Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Input image is the account owner's publicly linked GitHub geometric peach identicon, a graphic reference only, not a human face. Subject: an original charismatic copper-and-cream FOX esports card-game champion with upright ears, confident bright eyes, peach geometric angular brow markings loosely echoing that identicon, and an elegant dark charcoal racing blazer with copper lapels and crisp red/yellow/cyan/blue square ARC panels. Compact adult anthropomorphic fox stands in a showman's three-quarter pose on a glowing ARC grid, fanning exactly three entirely abstract square-backed cards with colorful geometric shapes, no suits/letters/creatures/logos. One copper tail visible. Cozy amber spotlights and dark art-deco arena beyond. No Pokemon or other franchise character, no money, no gambling imagery, no trophy or claimed medal. This mascot is editorial fiction; source establishes only the owner's geometric avatar graphic.",
+    "referenced_image_paths": [
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/majkel1337/github-avatar-original.png"
+    ],
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-majkel1337-avatar-v1-native.png",
+    "sha256": "59a828c0e3d1d840698680779dc4e07ba9e7a874f7dd8325b806ce70fca1ac6d",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-1177570d-706c-466d-88fb-ee1d8179f5b1.png",
+    "note": "Exact selected native PNG preserved byte-for-byte; rawSrc is the gallery WEBP conversion."
+  },
+  "inputArchiveMap": [
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/majkel1337/github-avatar-original.png",
+      "archivedSrc": "/news-images/references/2026-10-29-majkel1337-avatar-v1-input-1-github-avatar-original.png",
+      "sha256": "aafe5be2561ec2d99ffb26049611817b1824b1b5416c30f86d1259d6583908fc"
+    }
+  ],
+  "identityNotes": [
+    "Original fictional copper fox account mascot: peach geometric brow markings, charcoal/copper ARC blazer, one tail and three abstract square-backed cards.",
+    "The owner’s GitHub identicon supplies a graphic motif only. The fox is the newspaper’s invention, not an owner-selected fox or a human likeness of Michał Gromadzki. No franchise characters or implied gambling."
+  ],
+  "commissionAuthority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-majkel1337-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "held-for-later-edition",
+    "generatedAt": "2026-10-29T23:28:46.609028+00:00",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Input image is the account owner's publicly linked GitHub geometric peach identicon, a graphic reference only, not a human face. Subject: an original charismatic copper-and-cream FOX esports card-game champion with upright ears, confident bright eyes, peach geometric angular brow markings loosely echoing that identicon, and an elegant dark charcoal racing blazer with copper lapels and crisp red/yellow/cyan/blue square ARC panels. Compact adult anthropomorphic fox stands in a showman's three-quarter pose on a glowing ARC grid, fanning exactly three entirely abstract square-backed cards with colorful geometric shapes, no suits/letters/creatures/logos. One copper tail visible. Cozy amber spotlights and dark art-deco arena beyond. No Pokemon or other franchise character, no money, no gambling imagery, no trophy or claimed medal. This mascot is editorial fiction; source establishes only the owner's geometric avatar graphic.",
+      "referenced_image_paths": [
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/majkel1337/github-avatar-original.png"
+      ],
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-1177570d-706c-466d-88fb-ee1d8179f5b1.png",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/majkel1337/avatar-v1.png",
+    "sha256": "59a828c0e3d1d840698680779dc4e07ba9e7a874f7dd8325b806ce70fca1ac6d",
+    "references": [
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/majkel1337/github-avatar-original.png",
+        "sha256": "aafe5be2561ec2d99ffb26049611817b1824b1b5416c30f86d1259d6583908fc"
+      }
+    ],
+    "review": "Inspected one copper fox in charcoal/copper ARC blazer, peach geometric brow marks, one tail and exactly three abstract square-backed cards. No franchise creatures, personal likeness, words, scores or medals.",
+    "authority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+    "distribution": "No article publication, X or Discord send authorized for this held package."
+  },
+  "archiveNote": "Boss explicitly requested all completed artwork and notes be saved in the newsroom repository. This registration is art-only. Original generation-time distribution restrictions remain historical provenance; any later Discord cheat-sheet delivery is recorded separately. No X or article use is created here."
+}

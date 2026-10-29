@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "id": "2026-10-29-domdolus-tolus-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:48:00.703544+00:00",
+  "toolOutput": "exec-5b1176f7-09a2-46d0-bdd6-ca8b7fa3163b.png",
+  "rawSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-base.webp",
+  "rawSha256": "c05d8223627f0d31912db13ec217b630ebcce63e70c1c8b9a68b1a3a3798e852",
+  "prompt": "Use case: stylized-concept. Asset type: a finished team-feature illustration and reusable cast reference for the ARC Daily Digest, starring DARREN AMADEUS MARTIN'S DOMDOLUS TOLUS crew. Create ONE wide cinematic 2:1 polished 3D-comic superstar team entrance in a magnificent glowing ARC scoring hall, saturated square puzzle-grid floor, dramatic amber spotlights and midnight blue architecture. This is an ensemble for FIVE roster accounts shown by SIX figures because Darren's own chosen avatar contains TWO DOGS. Exactly FOUR adult-proportioned compact human/humanoid figures and exactly TWO dogs, all separated and fully visible, nothing cropped. No other people or animals. Input1 is Darren's own verified Kaggle avatar, TWO sleeping dogs; faithfully preserve the cream Labrador-type dog's floppy ears and warm cream coat and the second dark gray/black-and-white husky-type dog's white muzzle and face markings. Depict these two dogs alert, happy and charismatic side by side at the CENTER foreground on a slightly raised square ARC-grid plinth, wearing beautifully detailed dark racing harnesses with vividly colored square ARC puzzle panels, two distinct collars, no human Darren face anywhere. The two dogs TOGETHER represent Darren's one account. Input2 is Alwin Theodoric's own portrait: preserve his youthful adult face, round thin glasses, side-parted dark hair and friendly smile. Alwin stands just left behind the dogs in a beige-and-forest-green ARC-grid racer jacket, relaxed confident stance. Input3 is Muhammad Yassir Ramadhan's own portrait: preserve his dark parted hair, clean-shaven face and facial proportions. Yassir stands just right behind the dogs in a navy-and-copper ARC-grid racer jacket, friendly determined expression. FAR LEFT: one entirely ORIGINAL fictional opaque dark-blue helmet contender with electric cyan square visor, white/blue ARC outfit, representing Billy Anggara whose own profile has no personal portrait. FAR RIGHT: one entirely ORIGINAL fictional opaque amber-red helmet contender with dark faceless visor, red/violet ARC outfit, representing Tri Ardian Rinalda whose own profile has no personal portrait. These two masked figures are not claimed human likenesses. All four humanoids adult and roughly equal scale, full hands/shoes visible, charming compact approximately4.5-head-tall heroic proportions, respectful sports champions energy. In the background, five large softly glowing abstract square puzzle frames as decorative stage architecture, no scoreboards. A few plain books and colored square tiles beside the central plinth subtly evoke the team's documented historical human puzzle-solving work; no implied current technical recipe or literal hardware claim. Crisp vivid red blue yellow green cyan magenta orange white square ARC grids, rich fabric and fur texture, warm catchlights, striking readable six-figure composition. No generic Kaggle goose, no bananas, no cats, no birds, no sponsors, company logos, words, names, letters, numbers, ranks, scores, medals or watermark. Ignore all backgrounds from input photos. Preserve both dog identities, both supplied individual human identities and both clearly fictional masked stand-ins without blending them.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-1-darrenamadeusmartin-avatar-original.jpg",
+      "kind": "owner-reference",
+      "label": "Darren Amadeus Martin — unchanged own-avatar input",
+      "role": "Exact own-avatar photo of TWO dogs. The cream floppy-eared dog and dark/white husky together represent Darren’s ONE account. No human Darren face.",
+      "sha256": "504fa0a4ed2c216c7eb0bfbd8b5d12e628c742c88e858965a3e727d4b42dac49",
+      "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin"
+    },
+    {
+      "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-2-alwintheodoric-own-avatar.png",
+      "kind": "owner-reference",
+      "label": "Alwin Theodoric — unchanged own-avatar input",
+      "role": "Own individual portrait: preserve round glasses, side-parted dark hair and face. Alwin is the beige/green figure left-center.",
+      "sha256": "846e5190ca52ffead10f17e498f24e615c332bf83c7cce439dbeb920c2cd830a",
+      "sourceUrl": "https://www.kaggle.com/alwintheodoric"
+    },
+    {
+      "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-3-yassirramadhan-own-avatar.jpeg",
+      "kind": "owner-reference",
+      "label": "Muhammad Yassir Ramadhan — unchanged own-avatar input",
+      "role": "Own individual portrait: preserve clean-shaven face and parted dark hair. Yassir is the navy/copper figure right-center.",
+      "sha256": "1f571b7284e7685f46b9c92335dd90475416d41d34ea976e4e61f204c4f807aa",
+      "sourceUrl": "https://www.kaggle.com/yassirramadhan"
+    }
+  ],
+  "inputImages": [
+    "darrenamadeusmartin-avatar-original.jpg",
+    "alwintheodoric-own-avatar.png",
+    "yassirramadhan-own-avatar.jpeg"
+  ],
+  "review": "Inspected exactly four compact adult humanoids and exactly two dogs: Billy’s opaque blue/cyan stand-in far left, Alwin’s own face/glasses in beige/green left-center, Darren’s own cream floppy-eared dog and dark/white husky together center, Yassir’s own face in navy/copper right-center, and Tri’s opaque amber/red stand-in far right. Two dogs represent Darren’s ONE account, so six figures represent five accounts. Both humans follow their own individual photographs; Billy/Tri remain fictional masked figures. Whole cast/hands/shoes/paws visible, no scoreboard or readable names. Fantasy ARC streetwear and scoring hall.",
+  "purpose": "character-reference",
+  "subjectId": "domdolus-tolus",
+  "registeredAt": "2026-10-29T23:49:13Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: a finished team-feature illustration and reusable cast reference for the ARC Daily Digest, starring DARREN AMADEUS MARTIN'S DOMDOLUS TOLUS crew. Create ONE wide cinematic 2:1 polished 3D-comic superstar team entrance in a magnificent glowing ARC scoring hall, saturated square puzzle-grid floor, dramatic amber spotlights and midnight blue architecture. This is an ensemble for FIVE roster accounts shown by SIX figures because Darren's own chosen avatar contains TWO DOGS. Exactly FOUR adult-proportioned compact human/humanoid figures and exactly TWO dogs, all separated and fully visible, nothing cropped. No other people or animals. Input1 is Darren's own verified Kaggle avatar, TWO sleeping dogs; faithfully preserve the cream Labrador-type dog's floppy ears and warm cream coat and the second dark gray/black-and-white husky-type dog's white muzzle and face markings. Depict these two dogs alert, happy and charismatic side by side at the CENTER foreground on a slightly raised square ARC-grid plinth, wearing beautifully detailed dark racing harnesses with vividly colored square ARC puzzle panels, two distinct collars, no human Darren face anywhere. The two dogs TOGETHER represent Darren's one account. Input2 is Alwin Theodoric's own portrait: preserve his youthful adult face, round thin glasses, side-parted dark hair and friendly smile. Alwin stands just left behind the dogs in a beige-and-forest-green ARC-grid racer jacket, relaxed confident stance. Input3 is Muhammad Yassir Ramadhan's own portrait: preserve his dark parted hair, clean-shaven face and facial proportions. Yassir stands just right behind the dogs in a navy-and-copper ARC-grid racer jacket, friendly determined expression. FAR LEFT: one entirely ORIGINAL fictional opaque dark-blue helmet contender with electric cyan square visor, white/blue ARC outfit, representing Billy Anggara whose own profile has no personal portrait. FAR RIGHT: one entirely ORIGINAL fictional opaque amber-red helmet contender with dark faceless visor, red/violet ARC outfit, representing Tri Ardian Rinalda whose own profile has no personal portrait. These two masked figures are not claimed human likenesses. All four humanoids adult and roughly equal scale, full hands/shoes visible, charming compact approximately4.5-head-tall heroic proportions, respectful sports champions energy. In the background, five large softly glowing abstract square puzzle frames as decorative stage architecture, no scoreboards. A few plain books and colored square tiles beside the central plinth subtly evoke the team's documented historical human puzzle-solving work; no implied current technical recipe or literal hardware claim. Crisp vivid red blue yellow green cyan magenta orange white square ARC grids, rich fabric and fur texture, warm catchlights, striking readable six-figure composition. No generic Kaggle goose, no bananas, no cats, no birds, no sponsors, company logos, words, names, letters, numbers, ranks, scores, medals or watermark. Ignore all backgrounds from input photos. Preserve both dog identities, both supplied individual human identities and both clearly fictional masked stand-ins without blending them.",
+    "referenced_image_paths": [
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/darrenamadeusmartin-avatar-original.jpg",
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/alwintheodoric-own-avatar.png",
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/yassirramadhan-own-avatar.jpeg"
+    ],
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-native.png",
+    "sha256": "9ae80de01175c0c37dfc1e1b4ebe3d1111f0a3f2c1fa62ded45d114002a0d91e",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-5b1176f7-09a2-46d0-bdd6-ca8b7fa3163b.png",
+    "note": "Exact selected native PNG, byte-for-byte; rawSrc is the gallery WEBP."
+  },
+  "inputArchiveMap": [
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/darrenamadeusmartin-avatar-original.jpg",
+      "archivedSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-1-darrenamadeusmartin-avatar-original.jpg",
+      "sha256": "504fa0a4ed2c216c7eb0bfbd8b5d12e628c742c88e858965a3e727d4b42dac49",
+      "handle": "darrenamadeusmartin",
+      "name": "Darren Amadeus Martin",
+      "role": "Exact own-avatar photo of TWO dogs. The cream floppy-eared dog and dark/white husky together represent Darren’s ONE account. No human Darren face."
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/alwintheodoric-own-avatar.png",
+      "archivedSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-2-alwintheodoric-own-avatar.png",
+      "sha256": "846e5190ca52ffead10f17e498f24e615c332bf83c7cce439dbeb920c2cd830a",
+      "handle": "alwintheodoric",
+      "name": "Alwin Theodoric",
+      "role": "Own individual portrait: preserve round glasses, side-parted dark hair and face. Alwin is the beige/green figure left-center."
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/yassirramadhan-own-avatar.jpeg",
+      "archivedSrc": "/news-images/references/2026-10-29-domdolus-tolus-avatar-v1-input-3-yassirramadhan-own-avatar.jpeg",
+      "sha256": "1f571b7284e7685f46b9c92335dd90475416d41d34ea976e4e61f204c4f807aa",
+      "handle": "yassirramadhan",
+      "name": "Muhammad Yassir Ramadhan",
+      "role": "Own individual portrait: preserve clean-shaven face and parted dark hair. Yassir is the navy/copper figure right-center."
+    }
+  ],
+  "identityNotes": [
+    "EXACTLY FIVE accounts shown by SIX figures: four adult humanoids plus Darren’s TWO dogs together. Never count the dogs as two people or substitute an invented human Darren.",
+    "Left-to-right: Billy Anggara = fictional opaque blue/cyan helmet; Alwin Theodoric = own face/glasses, beige/green; Darren Amadeus Martin = cream floppy-eared dog AND dark/white husky together at center; Muhammad Yassir Ramadhan = own face, navy/copper; Tri Ardian Rinalda = fictional opaque amber/red helmet.",
+    "Billy and Tri have generic Kaggle default avatars, so both helmeted figures are explicit newspaper fiction rather than personal likenesses. Alwin and Yassir follow their separate own photos. Dogs follow Darren’s own avatar.",
+    "DomdolusTolus has separate ARC2 team16559402 and ARC3 team16534961. Recheck the exact current five-account roster in the intended contest before later scenes; no current score or method is encoded by the fantasy clothing or background."
+  ],
+  "commissionAuthority": "Boss directly commissioned Darren Amadeus Martin and his team's write-up/artwork and explicitly required all artwork to be committed with notes. No X post.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-domdolus-tolus-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "held-for-later-edition",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: a finished team-feature illustration and reusable cast reference for the ARC Daily Digest, starring DARREN AMADEUS MARTIN'S DOMDOLUS TOLUS crew. Create ONE wide cinematic 2:1 polished 3D-comic superstar team entrance in a magnificent glowing ARC scoring hall, saturated square puzzle-grid floor, dramatic amber spotlights and midnight blue architecture. This is an ensemble for FIVE roster accounts shown by SIX figures because Darren's own chosen avatar contains TWO DOGS. Exactly FOUR adult-proportioned compact human/humanoid figures and exactly TWO dogs, all separated and fully visible, nothing cropped. No other people or animals. Input1 is Darren's own verified Kaggle avatar, TWO sleeping dogs; faithfully preserve the cream Labrador-type dog's floppy ears and warm cream coat and the second dark gray/black-and-white husky-type dog's white muzzle and face markings. Depict these two dogs alert, happy and charismatic side by side at the CENTER foreground on a slightly raised square ARC-grid plinth, wearing beautifully detailed dark racing harnesses with vividly colored square ARC puzzle panels, two distinct collars, no human Darren face anywhere. The two dogs TOGETHER represent Darren's one account. Input2 is Alwin Theodoric's own portrait: preserve his youthful adult face, round thin glasses, side-parted dark hair and friendly smile. Alwin stands just left behind the dogs in a beige-and-forest-green ARC-grid racer jacket, relaxed confident stance. Input3 is Muhammad Yassir Ramadhan's own portrait: preserve his dark parted hair, clean-shaven face and facial proportions. Yassir stands just right behind the dogs in a navy-and-copper ARC-grid racer jacket, friendly determined expression. FAR LEFT: one entirely ORIGINAL fictional opaque dark-blue helmet contender with electric cyan square visor, white/blue ARC outfit, representing Billy Anggara whose own profile has no personal portrait. FAR RIGHT: one entirely ORIGINAL fictional opaque amber-red helmet contender with dark faceless visor, red/violet ARC outfit, representing Tri Ardian Rinalda whose own profile has no personal portrait. These two masked figures are not claimed human likenesses. All four humanoids adult and roughly equal scale, full hands/shoes visible, charming compact approximately4.5-head-tall heroic proportions, respectful sports champions energy. In the background, five large softly glowing abstract square puzzle frames as decorative stage architecture, no scoreboards. A few plain books and colored square tiles beside the central plinth subtly evoke the team's documented historical human puzzle-solving work; no implied current technical recipe or literal hardware claim. Crisp vivid red blue yellow green cyan magenta orange white square ARC grids, rich fabric and fur texture, warm catchlights, striking readable six-figure composition. No generic Kaggle goose, no bananas, no cats, no birds, no sponsors, company logos, words, names, letters, numbers, ranks, scores, medals or watermark. Ignore all backgrounds from input photos. Preserve both dog identities, both supplied individual human identities and both clearly fictional masked stand-ins without blending them.",
+      "referenced_image_paths": [
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/darrenamadeusmartin-avatar-original.jpg",
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/alwintheodoric-own-avatar.png",
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/yassirramadhan-own-avatar.jpeg"
+      ],
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-5b1176f7-09a2-46d0-bdd6-ca8b7fa3163b.png",
+    "review": "Inspected exactly four compact adult humanoids and exactly two dogs: Billy’s opaque blue/cyan stand-in far left, Alwin’s own face/glasses in beige/green left-center, Darren’s own cream floppy-eared dog and dark/white husky together center, Yassir’s own face in navy/copper right-center, and Tri’s opaque amber/red stand-in far right. Two dogs represent Darren’s ONE account, so six figures represent five accounts. Both humans follow their own individual photographs; Billy/Tri remain fictional masked figures. Whole cast/hands/shoes/paws visible, no scoreboard or readable names. Fantasy ARC streetwear and scoring hall.",
+    "authority": "Boss directly commissioned Darren Amadeus Martin and his team's write-up/artwork and explicitly required all artwork to be committed with notes. No X post.",
+    "generatedAt": "2026-10-29T23:48:00.703544+00:00",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/avatar-v1.png",
+    "sha256": "9ae80de01175c0c37dfc1e1b4ebe3d1111f0a3f2c1fa62ded45d114002a0d91e",
+    "references": [
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/darrenamadeusmartin-avatar-original.jpg",
+        "sha256": "504fa0a4ed2c216c7eb0bfbd8b5d12e628c742c88e858965a3e727d4b42dac49"
+      },
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/alwintheodoric-own-avatar.png",
+        "sha256": "846e5190ca52ffead10f17e498f24e615c332bf83c7cce439dbeb920c2cd830a"
+      },
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-darren-martin/yassirramadhan-own-avatar.jpeg",
+        "sha256": "1f571b7284e7685f46b9c92335dd90475416d41d34ea976e4e61f204c4f807aa"
+      }
+    ]
+  },
+  "archiveNote": "Ninth Boss-commissioned team artwork. Preserve six-figure/five-account mapping. Registration adds no article, reusable scene, X or Discord send."
+}

@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.12  Oct 29, 2026
+
+- **Save every commissioned contender artwork** (Author: GPT-6.1 Sol / Codex). Preserve the complete set of nine selected character illustrations, exact native outputs and generation arguments, owner-reference originals, explicit cast mappings and gallery/inventory notes. Keep the NVIDIA duo as art only, as the editor requested.
+- **Meet Darren Amadeus Martin and Domdolus Tolus.** Save the completed sports feature on the five students’ shared fifth-place Nemotron gold, ARC2 climb and publicly stated closing focus. His two-dog avatar leads the finished team image; Alwin and Yassir follow their own portraits, with fictional masked stand-ins for Billy and Tri. Retain the seven earlier features in the committed later-edition reserve. The editor-authorized illustrated cheat sheets reach the rollout feed with send-once receipts; X remains held.
+
 ### Version 9.159.11  Oct 29, 2026
 
 - **Book The Last Dance for tomorrow’s Early edition** (Author: GPT-6.1 Sol / Codex). Reserve the full existing illustrated team feature for October 30 at 6 am Eastern through the scheduled desk’s editorial intake. Preserve its October 29 reporting and permanent link, save the complete manuscript/research handoff, and hold a standalone X announcement.

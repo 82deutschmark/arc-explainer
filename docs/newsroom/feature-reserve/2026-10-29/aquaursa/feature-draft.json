@@ -1,0 +1,116 @@
+{
+  "headline": "AquaUrsa breaks into the big league — and keeps a little mystery",
+  "sections": [
+    {
+      "heading": "The contender who came charging out of the pack",
+      "text": "Some competitors enter with a famous face. AquaUrsa Research arrived with a laboratory name and a spectacular jump. Our October 15 observation caught the entry moving from 467th to fourteenth as its score rose from 30.21 to 38.97. Two days later, another improvement took it to thirteenth. That is how you earn a place in the conversation: make the standings clerk reach for a fresh sheet.\n\nThe October 29 evening board placed AquaUrsa sixteenth among 4,975 ARC3 teams, still on 39.69. Its observed history even includes twelfth on October 18, at that same score. The distinction matters. A changing place can reflect rivals passing, rather than a competitor suddenly playing worse. AquaUrsa had fought its way into the leading group; the rest of the field was fighting back.",
+      "sourceIds": [
+        "arc3-board"
+      ]
+    },
+    {
+      "heading": "The name on the door is still the public identity",
+      "text": "Who is behind that billing? The account’s public profile offers AquaUrsa Research, the handle aquaursaresearch and a March 25, 2026 joining date. It supplies no biography or direct external identity link. The ARC3 roster lists that one account. That establishes the entry we are following; it cannot establish how many people may have helped behind the scenes.\n\nIts competition tab displays two active entries, this year’s ARC3 and ARC2. The separate ARC2 board listed AquaUrsa far lower in the field, with one recorded submission, in the evening snapshot. No older completed competition record was displayed in the profile we checked. This season already supplies a breakout story. The account keeps the rest of its biography out of the spotlight, leaving readers to follow its performances and public comments.",
+      "sourceIds": [
+        "profile",
+        "competitions",
+        "arc3-board",
+        "arc2-board"
+      ]
+    },
+    {
+      "heading": "A racing rival who brought measurements to the paddock",
+      "text": "Their public voice is easier to find than their biography. In Derrick Goh’s debugging discussion on October 22, AquaUrsa described model-loading reads that had slowed from about five minutes to thirty-five despite unchanged model versions and launch arrangements. The account compared workers, checked ordinary file reads before loading the machine-learning software, and posted the differences for others to examine.\n\nIt was an unusually useful contribution to a frustrated paddock: measurements with qualifications attached. AquaUrsa said the tests pointed toward the remote read path, while explicitly leaving open whether the delay lay in the network or the storage system. That is their reported evidence, rather than an independent verdict on Kaggle’s machinery. The thread’s author thanked them and asked the practical question every stranded competitor wanted answered: what could they try next?",
+      "sourceIds": [
+        "read-tests",
+        "full-thread"
+      ]
+    },
+    {
+      "heading": "First a proposed guard, then a successful run",
+      "text": "AquaUrsa returned later that day with a proposed startup guard. While the model server loaded, it would send a RESET every five minutes to keep game activity going. The account initially labelled the mechanism locally tested, with a complete submission still unvalidated. That caution belongs in the story alongside the ingenuity.\n\nThe next morning’s update advanced the evidence. AquaUrsa reported that the guarded submission had completed successfully and produced a score in its expected range after a startup lasting roughly forty-six minutes. It also described the price: loading still consumed the nine-hour budget, and those RESETs still counted as actions. A workaround had helped one reported run finish; the clock had not disappeared. Across four public comments, readers can follow the investigation from measurements to a proposal to a qualified result.",
+      "sourceIds": [
+        "proposed-guard",
+        "successful-guard",
+        "discussion-profile"
+      ]
+    },
+    {
+      "heading": "Lucky and good — and racing under its own name",
+      "text": "There is a little character in this account, too. Answering a team-up invitation on October 22, AquaUrsa wished for being “lucky and good” and said it was not planning a team merge for this contest. That is a dated public choice, not a promise about every future collaboration. It is also the kind of paddock banter that makes a handle begin to feel like a competitor.\n\nThe public code tab offers a Nemotron inference-stack utility notebook. It is another research lead, not proof of the current ARC3 recipe or a confirmed result in the maths contest suggested by its title. A new submission date or post-contest project has not been announced in the material reviewed here. For now, the next act belongs to the account that made the climb: an intriguing name near the front, a useful voice among rivals, and plenty left for the scoreboards to reveal.",
+      "sourceIds": [
+        "merge-reply",
+        "notebook",
+        "arc3-board"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "arc3-board",
+      "title": "ARC3 public board and observed October score events",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "arc2-board",
+      "title": "ARC2 public board and separate AquaUrsa entry",
+      "url": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-2/board",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "profile",
+      "title": "AquaUrsa Research — own public Kaggle profile",
+      "url": "https://www.kaggle.com/aquaursaresearch",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "competitions",
+      "title": "AquaUrsa Research — public competition history",
+      "url": "https://www.kaggle.com/aquaursaresearch/competitions",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "discussion-profile",
+      "title": "AquaUrsa Research — all four public comments",
+      "url": "https://www.kaggle.com/aquaursaresearch/discussion",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "read-tests",
+      "title": "AquaUrsa — October22 plain-file-read observations",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631#3542775",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "proposed-guard",
+      "title": "AquaUrsa — October22 locally tested startup workaround",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631#3542907",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "merge-reply",
+      "title": "AquaUrsa — October22 reply to team-up invitation",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631#3543061",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "successful-guard",
+      "title": "AquaUrsa — October23 successful-submission update",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631#3543292",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "full-thread",
+      "title": "Derrick Goh’s public debugging thread and follow-ups",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/751631",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    },
+    {
+      "id": "notebook",
+      "title": "AquaUrsa — public Nemotron utility notebook",
+      "url": "https://www.kaggle.com/code/aquaursaresearch/aimo3-nemotron-nano-vllm-stack",
+      "accessedAt": "2026-10-29T23:20:24.063600Z"
+    }
+  ]
+}

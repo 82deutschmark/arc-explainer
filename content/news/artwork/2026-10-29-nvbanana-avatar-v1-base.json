@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "id": "2026-10-29-nvbanana-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:42:17.615785+00:00",
+  "toolOutput": "exec-836c5dcc-d64e-46ac-8d15-4564d0251b57.png",
+  "rawSrc": "/news-images/references/2026-10-29-nvbanana-avatar-v1-base.webp",
+  "rawSha256": "d59122a80960c65907dcb60cf0ffcc4c451048652bdaa05170fc8f9af51e52bf",
+  "prompt": "Use case: stylized-concept. Asset type: reusable two-contender team avatar for the ARC Daily Digest's ARC2 nvbanana profile. Reference1 is Jean-François Puget's own single-person Hall-of-Fame cyber-engineer character. Preserve his swept dark-brown hair, strong brown beard, blue-green eyes, stern-friendly face, cyan-lit helmet and dense signature shoulder GPU armor. Discard ALL printed words, rank/score/team labels, logos and framing from reference1. Reference2 is Darragh Hanley's actual owner-selected Kaggle avatar: a painterly cobalt-and-gold swirling starry sky. It is NOT his human face. Depict Hanley's account as an ORIGINAL fictional adult-proportioned celestial contender, with a fully opaque midnight-blue helmet whose faceplate is a beautiful swirling golden-cobalt galaxy with no human facial features, blue-gold ARC racer armor and a short star-patterned scarf. Exactly TWO separate compact adult-proportioned full-body figures standing side by side as a formidable friendly esports duo on a luminous ARC puzzle-grid floor in a grand soft-focus scoring hall. Puget on left in his recognizable cyan cyber-engineer gear, one hand on waist and other open in confident greeting; cosmic Hanley avatar on right holds one small floating multicolor square ARC tile. Their gear has saturated red green cyan yellow blue magenta orange white and black square puzzle patches. NVIDIA-green accent lights as editorial fantasy, no company logos or literal spending/hardware claims. A subtle small curved golden banana-shaped ornament stands on the podium edge, playful nod to team name, no extra character. Warm amber arena rimlights, cool blue fill, very polished detailed cinematic 3D comic style. Preserve subject separation, all boots and hands inside frame. No third figure, no person hidden behind them, no words, letters, labels, numerals, medals, ranks, scores, logos or watermark. The right-hand celestial figure is explicitly an account-avatar adaptation and never a claimed likeness of Hanley.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+      "kind": "generation-input",
+      "label": "nvbanana — ARC2 duo artwork — exact input 1",
+      "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+      "sha256": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37"
+    },
+    {
+      "src": "/news-images/references/2026-10-29-nvbanana-avatar-v1-input-2-darraghdog-avatar-original.jpeg",
+      "kind": "generation-input",
+      "label": "nvbanana — ARC2 duo artwork — exact input 2",
+      "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+      "sha256": "45dd1a2da3fcbdd071b0275748d79a336b311be76e4d76e3abfa691654bd554d"
+    }
+  ],
+  "inputImages": [
+    "2026-10-12-jean-francois-puget-reference-1-v1.png",
+    "darraghdog-avatar-original.jpeg"
+  ],
+  "review": "Inspected exactly two full-body characters: Puget’s bearded cyan-lit cyber-engineer on left and a completely opaque blue/gold spiral celestial avatar for Hanley on right. Hanley’s source is his own painting avatar, not a human face. One tiny banana ornament, no score, rank, company logo, letter or third character. No NVIDIA feature publication commissioned; retain art for later use.",
+  "purpose": "character-reference",
+  "subjectId": "nvbanana-arc2-team",
+  "registeredAt": "2026-10-29T23:45:33Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: reusable two-contender team avatar for the ARC Daily Digest's ARC2 nvbanana profile. Reference1 is Jean-François Puget's own single-person Hall-of-Fame cyber-engineer character. Preserve his swept dark-brown hair, strong brown beard, blue-green eyes, stern-friendly face, cyan-lit helmet and dense signature shoulder GPU armor. Discard ALL printed words, rank/score/team labels, logos and framing from reference1. Reference2 is Darragh Hanley's actual owner-selected Kaggle avatar: a painterly cobalt-and-gold swirling starry sky. It is NOT his human face. Depict Hanley's account as an ORIGINAL fictional adult-proportioned celestial contender, with a fully opaque midnight-blue helmet whose faceplate is a beautiful swirling golden-cobalt galaxy with no human facial features, blue-gold ARC racer armor and a short star-patterned scarf. Exactly TWO separate compact adult-proportioned full-body figures standing side by side as a formidable friendly esports duo on a luminous ARC puzzle-grid floor in a grand soft-focus scoring hall. Puget on left in his recognizable cyan cyber-engineer gear, one hand on waist and other open in confident greeting; cosmic Hanley avatar on right holds one small floating multicolor square ARC tile. Their gear has saturated red green cyan yellow blue magenta orange white and black square puzzle patches. NVIDIA-green accent lights as editorial fantasy, no company logos or literal spending/hardware claims. A subtle small curved golden banana-shaped ornament stands on the podium edge, playful nod to team name, no extra character. Warm amber arena rimlights, cool blue fill, very polished detailed cinematic 3D comic style. Preserve subject separation, all boots and hands inside frame. No third figure, no person hidden behind them, no words, letters, labels, numerals, medals, ranks, scores, logos or watermark. The right-hand celestial figure is explicitly an account-avatar adaptation and never a claimed likeness of Hanley.",
+    "referenced_image_paths": [
+      "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/arc2-third/darraghdog-avatar-original.jpeg"
+    ],
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-nvbanana-avatar-v1-native.png",
+    "sha256": "ce58000172179eb30c312393d51120700dc27cb16fc6859571fa054d815187ad",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-836c5dcc-d64e-46ac-8d15-4564d0251b57.png",
+    "note": "Exact selected native PNG preserved byte-for-byte; rawSrc is the gallery WEBP conversion."
+  },
+  "inputArchiveMap": [
+    {
+      "originalPath": "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+      "archivedSrc": "/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+      "sha256": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/arc2-third/darraghdog-avatar-original.jpeg",
+      "archivedSrc": "/news-images/references/2026-10-29-nvbanana-avatar-v1-input-2-darraghdog-avatar-original.jpeg",
+      "sha256": "45dd1a2da3fcbdd071b0275748d79a336b311be76e4d76e3abfa691654bd554d"
+    }
+  ],
+  "identityNotes": [
+    "Jean-François Puget at left: established bearded cyan-lit cyber-engineer from his own individual Hall-of-Fame character. Darragh Hanley’s account at right: original opaque blue/gold spiral celestial figure adapted from his own painting avatar.",
+    "Hanley’s painting is not his human face. Keep the celestial figure completely opaque, with no invented facial features; preserve Puget’s established individual character.",
+    "Exactly two characters and a tiny banana ornament. This is ARC2 team 15486939, not NVARC3 or the full NVIDIA staff. No NVIDIA article has been commissioned; preserve artwork only."
+  ],
+  "commissionAuthority": "Boss explicitly instructed that all finished artwork including NVIDIA be committed and saved with notes; no NVIDIA write-up.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-nvbanana-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "saved-art-only",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: reusable two-contender team avatar for the ARC Daily Digest's ARC2 nvbanana profile. Reference1 is Jean-François Puget's own single-person Hall-of-Fame cyber-engineer character. Preserve his swept dark-brown hair, strong brown beard, blue-green eyes, stern-friendly face, cyan-lit helmet and dense signature shoulder GPU armor. Discard ALL printed words, rank/score/team labels, logos and framing from reference1. Reference2 is Darragh Hanley's actual owner-selected Kaggle avatar: a painterly cobalt-and-gold swirling starry sky. It is NOT his human face. Depict Hanley's account as an ORIGINAL fictional adult-proportioned celestial contender, with a fully opaque midnight-blue helmet whose faceplate is a beautiful swirling golden-cobalt galaxy with no human facial features, blue-gold ARC racer armor and a short star-patterned scarf. Exactly TWO separate compact adult-proportioned full-body figures standing side by side as a formidable friendly esports duo on a luminous ARC puzzle-grid floor in a grand soft-focus scoring hall. Puget on left in his recognizable cyan cyber-engineer gear, one hand on waist and other open in confident greeting; cosmic Hanley avatar on right holds one small floating multicolor square ARC tile. Their gear has saturated red green cyan yellow blue magenta orange white and black square puzzle patches. NVIDIA-green accent lights as editorial fantasy, no company logos or literal spending/hardware claims. A subtle small curved golden banana-shaped ornament stands on the podium edge, playful nod to team name, no extra character. Warm amber arena rimlights, cool blue fill, very polished detailed cinematic 3D comic style. Preserve subject separation, all boots and hands inside frame. No third figure, no person hidden behind them, no words, letters, labels, numerals, medals, ranks, scores, logos or watermark. The right-hand celestial figure is explicitly an account-avatar adaptation and never a claimed likeness of Hanley.",
+      "referenced_image_paths": [
+        "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/arc2-third/darraghdog-avatar-original.jpeg"
+      ],
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-836c5dcc-d64e-46ac-8d15-4564d0251b57.png",
+    "review": "Inspected exactly two full-body characters: Puget’s bearded cyan-lit cyber-engineer on left and a completely opaque blue/gold spiral celestial avatar for Hanley on right. Hanley’s source is his own painting avatar, not a human face. One tiny banana ornament, no score, rank, company logo, letter or third character. No NVIDIA feature publication commissioned; retain art for later use.",
+    "authority": "Boss explicitly instructed that all finished artwork including NVIDIA be committed and saved with notes; no NVIDIA write-up.",
+    "generatedAt": "2026-10-29T23:42:17.615785+00:00",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/arc2-third/avatar-v1.png",
+    "sha256": "ce58000172179eb30c312393d51120700dc27cb16fc6859571fa054d815187ad",
+    "references": [
+      {
+        "path": "/Users/macmini/GitHub/arc-explainer-newsroom/client/public/news-images/references/2026-10-12-jean-francois-puget-reference-1-v1.png",
+        "sha256": "31624a78552734a0884d434c296c27d44a57e37930c7fdb1a612aa35f5970f37"
+      },
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/arc2-third/darraghdog-avatar-original.jpeg",
+        "sha256": "45dd1a2da3fcbdd071b0275748d79a336b311be76e4d76e3abfa691654bd554d"
+      }
+    ]
+  },
+  "archiveNote": "Boss explicitly requested all completed artwork and notes be saved in the newsroom repository. This registration is art-only. Original generation-time distribution restrictions remain historical provenance; any later Discord cheat-sheet delivery is recorded separately. No X or article use is created here."
+}

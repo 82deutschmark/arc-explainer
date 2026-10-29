@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "id": "2026-10-29-artificial-agency-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:30:01.966347+00:00",
+  "toolOutput": "exec-0a041b18-c02c-4898-9fe6-0f27ecec9d5d.png",
+  "rawSrc": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-base.webp",
+  "rawSha256": "cbdd1a4b4c219fe1a5d9a1e987c1a2a9ac2466a5333e427ec997653526cde44c",
+  "prompt": "Use case: stylized-concept. Asset type: reusable team character portrait for the ARC Daily Digest. Input 1: Richard Csaky's own labelled lab-site portrait; preserve his short dark cropped textured hair, clean-shaven face, gray-green eyes and angular face. Input 2: Côme Chevalier's own labelled lab-site portrait; preserve his longer tousled brown hair, brown eyes, moustache and short facial stubble. They are two separately verified lab members, not interchangeable faces. Create ONE square highly polished cinematic 3D comic portrait of EXACTLY TWO compact adult men standing side by side in full-body friendly superstar entrance poses on a glowing square ARC-grid floor in a beautiful softly blurred scoring hall. Richard at left wears a navy researcher-racer jacket with electric violet and blue square ARC puzzle panels and holds a small luminous abstract square puzzle frame; Côme at right wears a charcoal engineering-racer jacket with warm orange and teal ARC-grid panels, one glove raised in a friendly salute. Contemporary original esports outfits, no suits from source photos, no realistic hardware claims. Individual recognizable faces, mature adult proportions, full hands and shoes inside frame, no touching or overlapping faces. Both smile with restrained confidence, warm amber rimlights, tasteful vivid saturated puzzle colors, intricate fabric materials. No other people, no lab mice or brain imagery, no invented company logos, words, letters, numerals, score, ranks or medals. These are respectful fictional costumes for a two-person lab avatar.",
+  "references": [
+    {
+      "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-1-richard-csaky-own-site.webp",
+      "kind": "generation-input",
+      "label": "Artificial Agency Lab — Richard and Côme — exact input 1",
+      "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+      "sha256": "e10a95f2ecaf2503819575fa3866b23f2e9c2808c6720d2ac11cb59a0a507360"
+    },
+    {
+      "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-2-come-chevalier-own-site.webp",
+      "kind": "generation-input",
+      "label": "Artificial Agency Lab — Richard and Côme — exact input 2",
+      "role": "Exact unchanged image supplied to the selected native generation. Follow the team mapping notes; contact-sheet labels are reference metadata, not a team photograph.",
+      "sha256": "e94a2ce9bbe2e1376e25c357a854c74624586ec7b2d5a4e4aefb8d0d6c69bbf6"
+    }
+  ],
+  "inputImages": [
+    "richard-csaky-own-site.webp",
+    "come-chevalier-own-site.webp"
+  ],
+  "review": "Inspected exactly two full-body adult men. Richard left has short textured dark hair, clean-shaven source-defined face and blue/violet ARC suit; Côme right has longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove. Source-defined lab roles only; no inferred cmechevalier account mapping. Hands/boots clear, no text or scores.",
+  "purpose": "character-reference",
+  "subjectId": "artificial-agency-team",
+  "registeredAt": "2026-10-29T23:45:33Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: reusable team character portrait for the ARC Daily Digest. Input 1: Richard Csaky's own labelled lab-site portrait; preserve his short dark cropped textured hair, clean-shaven face, gray-green eyes and angular face. Input 2: Côme Chevalier's own labelled lab-site portrait; preserve his longer tousled brown hair, brown eyes, moustache and short facial stubble. They are two separately verified lab members, not interchangeable faces. Create ONE square highly polished cinematic 3D comic portrait of EXACTLY TWO compact adult men standing side by side in full-body friendly superstar entrance poses on a glowing square ARC-grid floor in a beautiful softly blurred scoring hall. Richard at left wears a navy researcher-racer jacket with electric violet and blue square ARC puzzle panels and holds a small luminous abstract square puzzle frame; Côme at right wears a charcoal engineering-racer jacket with warm orange and teal ARC-grid panels, one glove raised in a friendly salute. Contemporary original esports outfits, no suits from source photos, no realistic hardware claims. Individual recognizable faces, mature adult proportions, full hands and shoes inside frame, no touching or overlapping faces. Both smile with restrained confidence, warm amber rimlights, tasteful vivid saturated puzzle colors, intricate fabric materials. No other people, no lab mice or brain imagery, no invented company logos, words, letters, numerals, score, ranks or medals. These are respectful fictional costumes for a two-person lab avatar.",
+    "referenced_image_paths": [
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/richard-csaky-own-site.webp",
+      "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/come-chevalier-own-site.webp"
+    ],
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-native.png",
+    "sha256": "731711ac5ea9622ea829430efa7dc1ecfb7cbda448480b7aa3a34d99202bd2c1",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-0a041b18-c02c-4898-9fe6-0f27ecec9d5d.png",
+    "note": "Exact selected native PNG preserved byte-for-byte; rawSrc is the gallery WEBP conversion."
+  },
+  "inputArchiveMap": [
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/richard-csaky-own-site.webp",
+      "archivedSrc": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-1-richard-csaky-own-site.webp",
+      "sha256": "e10a95f2ecaf2503819575fa3866b23f2e9c2808c6720d2ac11cb59a0a507360"
+    },
+    {
+      "originalPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/come-chevalier-own-site.webp",
+      "archivedSrc": "/news-images/references/2026-10-29-artificial-agency-avatar-v1-input-2-come-chevalier-own-site.webp",
+      "sha256": "e94a2ce9bbe2e1376e25c357a854c74624586ec7b2d5a4e4aefb8d0d6c69bbf6"
+    }
+  ],
+  "identityNotes": [
+    "Richard Csaky left: short textured dark hair, clean-shaven face, blue/violet ARC suit. Côme Chevalier right: longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove.",
+    "Their separately labelled own-lab portraits establish the two faces and documented lab roles. Costumes and grid staging are editorial fiction.",
+    "The exact cmechevalier-to-Côme account mapping remains unresolved. This team illustration credits the independently documented lab members, not an inferred account mapping."
+  ],
+  "commissionAuthority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-artificial-agency-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "held-for-later-edition",
+    "generatedAt": "2026-10-29T23:30:01.966347+00:00",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: reusable team character portrait for the ARC Daily Digest. Input 1: Richard Csaky's own labelled lab-site portrait; preserve his short dark cropped textured hair, clean-shaven face, gray-green eyes and angular face. Input 2: Côme Chevalier's own labelled lab-site portrait; preserve his longer tousled brown hair, brown eyes, moustache and short facial stubble. They are two separately verified lab members, not interchangeable faces. Create ONE square highly polished cinematic 3D comic portrait of EXACTLY TWO compact adult men standing side by side in full-body friendly superstar entrance poses on a glowing square ARC-grid floor in a beautiful softly blurred scoring hall. Richard at left wears a navy researcher-racer jacket with electric violet and blue square ARC puzzle panels and holds a small luminous abstract square puzzle frame; Côme at right wears a charcoal engineering-racer jacket with warm orange and teal ARC-grid panels, one glove raised in a friendly salute. Contemporary original esports outfits, no suits from source photos, no realistic hardware claims. Individual recognizable faces, mature adult proportions, full hands and shoes inside frame, no touching or overlapping faces. Both smile with restrained confidence, warm amber rimlights, tasteful vivid saturated puzzle colors, intricate fabric materials. No other people, no lab mice or brain imagery, no invented company logos, words, letters, numerals, score, ranks or medals. These are respectful fictional costumes for a two-person lab avatar.",
+      "referenced_image_paths": [
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/richard-csaky-own-site.webp",
+        "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/come-chevalier-own-site.webp"
+      ],
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-0a041b18-c02c-4898-9fe6-0f27ecec9d5d.png",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/avatar-v1.png",
+    "sha256": "731711ac5ea9622ea829430efa7dc1ecfb7cbda448480b7aa3a34d99202bd2c1",
+    "references": [
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/richard-csaky-own-site.webp",
+        "sha256": "e10a95f2ecaf2503819575fa3866b23f2e9c2808c6720d2ac11cb59a0a507360"
+      },
+      {
+        "path": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/artificial-agency/come-chevalier-own-site.webp",
+        "sha256": "e94a2ce9bbe2e1376e25c357a854c74624586ec7b2d5a4e4aefb8d0d6c69bbf6"
+      }
+    ],
+    "review": "Inspected exactly two full-body adult men. Richard left has short textured dark hair, clean-shaven source-defined face and blue/violet ARC suit; Côme right has longer tousled brown hair, moustache/stubble, orange/teal ARC suit and raised glove. Source-defined lab roles only; no inferred cmechevalier account mapping. Hands/boots clear, no text or scores.",
+    "authority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+    "distribution": "No article publication, X or Discord send authorized for this held package."
+  },
+  "archiveNote": "Boss explicitly requested all completed artwork and notes be saved in the newsroom repository. This registration is art-only. Original generation-time distribution restrictions remain historical provenance; any later Discord cheat-sheet delivery is recorded separately. No X or article use is created here."
+}

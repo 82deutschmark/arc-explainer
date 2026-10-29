@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "id": "2026-10-29-aquaursa-avatar-v1-base",
+  "kind": "native-generation",
+  "tool": "image_gen.imagegen",
+  "generatedAt": "2026-10-29T23:28:46.605980+00:00",
+  "toolOutput": "exec-1e747f8e-ed40-4d4d-8c81-38c1882056f3.png",
+  "rawSrc": "/news-images/references/2026-10-29-aquaursa-avatar-v1-base.webp",
+  "rawSha256": "d96682c0423db96e8067b3fec8e839eb886e7ae27a914eba00f251e9a08a1f45",
+  "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Subject: one original charming powerful AQUAMARINE POLAR BEAR esports mascot with translucent frosty aqua fur tips, friendly intelligent dark eyes and a broad bear muzzle, standing proudly on a small dark ARC-grid plinth. The bear wears a fitted navy high-collar racing/lab jacket with luminous aqua seams and vivid square puzzle-grid panels, chunky black-and-cyan boots, and sleek round engineer goggles pushed up on forehead, no glasses over eyes. One paw holds a small transparent square puzzle tile, other paw on hip, calm independent champion's stance. Ocean-blue light and abstract underwater caustics blend with a softly blurred grand scoring-hall backdrop, warm amber sparks. Distinctly a bear with rounded ears, no bird features. Do not put a computer/server or a literal workaround in this image.",
+  "references": [],
+  "inputImages": [],
+  "review": "Inspected one friendly white/aqua polar bear with engineer goggles on forehead, navy ARC jacket, one held puzzle tile and both boots. Original fictional account mascot; no generic goose or invented human face.",
+  "purpose": "character-reference",
+  "subjectId": "aquaursa-team",
+  "registeredAt": "2026-10-29T23:45:33Z",
+  "toolArguments": {
+    "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Subject: one original charming powerful AQUAMARINE POLAR BEAR esports mascot with translucent frosty aqua fur tips, friendly intelligent dark eyes and a broad bear muzzle, standing proudly on a small dark ARC-grid plinth. The bear wears a fitted navy high-collar racing/lab jacket with luminous aqua seams and vivid square puzzle-grid panels, chunky black-and-cyan boots, and sleek round engineer goggles pushed up on forehead, no glasses over eyes. One paw holds a small transparent square puzzle tile, other paw on hip, calm independent champion's stance. Ocean-blue light and abstract underwater caustics blend with a softly blurred grand scoring-hall backdrop, warm amber sparks. Distinctly a bear with rounded ears, no bird features. Do not put a computer/server or a literal workaround in this image.",
+    "transparent_background": false
+  },
+  "nativeOriginal": {
+    "src": "/news-images/references/2026-10-29-aquaursa-avatar-v1-native.png",
+    "sha256": "056bef0962c5bc0d39f3a73590b0214cc9a32fbb807eed40043c7ffb167ba57f",
+    "toolOutputPath": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-1e747f8e-ed40-4d4d-8c81-38c1882056f3.png",
+    "note": "Exact selected native PNG preserved byte-for-byte; rawSrc is the gallery WEBP conversion."
+  },
+  "inputArchiveMap": [],
+  "identityNotes": [
+    "Original fictional white/aqua polar bear mascot, goggles on forehead, navy ARC jacket, held puzzle tile and visible boots.",
+    "The generic Kaggle goose is not a personal avatar. The bear is an original newspaper mascot, not a verified individual, company emblem or owner-selected likeness."
+  ],
+  "commissionAuthority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+  "archiveState": "saved-character-reference; no article publication",
+  "originalGenerationProvenance": {
+    "id": "2026-10-29-aquaursa-avatar-v1",
+    "purpose": "held-character-reference",
+    "state": "held-for-later-edition",
+    "generatedAt": "2026-10-29T23:28:46.605980+00:00",
+    "tool": "image_gen.imagegen",
+    "toolArguments": {
+      "prompt": "Use case: stylized-concept. Asset type: reusable fictional esports account mascot for the ARC Daily Digest. One polished square cinematic 3D-comic character portrait, adult-proportioned compact full-body figure, sharp readable silhouette and warm arena rim light, highly detailed premium animated-film materials, striking original design. Keep entire character inside frame, clean margins. ARC puzzle colors are saturated red, blue, yellow, green, magenta, cyan, orange, white and black squares. No words, letters, numerals, ranks, scores, logos, watermark, generic Kaggle goose or other people. This is original editorial fiction, not a human likeness or a claim about a competitor's physical appearance, methods, hardware or spending. Subject: one original charming powerful AQUAMARINE POLAR BEAR esports mascot with translucent frosty aqua fur tips, friendly intelligent dark eyes and a broad bear muzzle, standing proudly on a small dark ARC-grid plinth. The bear wears a fitted navy high-collar racing/lab jacket with luminous aqua seams and vivid square puzzle-grid panels, chunky black-and-cyan boots, and sleek round engineer goggles pushed up on forehead, no glasses over eyes. One paw holds a small transparent square puzzle tile, other paw on hip, calm independent champion's stance. Ocean-blue light and abstract underwater caustics blend with a softly blurred grand scoring-hall backdrop, warm amber sparks. Distinctly a bear with rounded ears, no bird features. Do not put a computer/server or a literal workaround in this image.",
+      "transparent_background": false
+    },
+    "nativeOutput": "/Users/macmini/.codex/generated_images/01a1891c-2868-7202-8425-4e98c9e664d3/exec-1e747f8e-ed40-4d4d-8c81-38c1882056f3.png",
+    "selectedImage": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-team-profiles/aquaursa/avatar-v1.png",
+    "sha256": "056bef0962c5bc0d39f3a73590b0214cc9a32fbb807eed40043c7ffb167ba57f",
+    "references": [],
+    "review": "Inspected one friendly white/aqua polar bear with engineer goggles on forehead, navy ARC jacket, one held puzzle tile and both boots. Original fictional account mascot; no generic goose or invented human face.",
+    "authority": "Direct Boss commission in this chat: proper sports-star features and cool avatars, saved for later editions; no X post yet.",
+    "distribution": "No article publication, X or Discord send authorized for this held package."
+  },
+  "archiveNote": "Boss explicitly requested all completed artwork and notes be saved in the newsroom repository. This registration is art-only. Original generation-time distribution restrictions remain historical provenance; any later Discord cheat-sheet delivery is recorded separately. No X or article use is created here."
+}
