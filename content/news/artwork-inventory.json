@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-29T16:29:06.514790+00:00",
+  "updatedAt": "2026-10-29T16:33:39.847851+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -987,11 +987,18 @@
       "id": "2026-10-29-open-endedness-cover-v1",
       "generationRecord": "2026-10-29-open-endedness-cover-v1",
       "src": "/news-images/2026-10-29-open-endedness-cover-v1.webp",
-      "status": "reviewed-special-afternoon-cover",
+      "status": "published-and-posted",
       "articleUses": [
         "2026-10-29-special-afternoon-open-endedness"
       ],
-      "xAttachments": [],
+      "xAttachments": [
+        {
+          "url": "https://x.com/82deutschmark/status/2115844321522143520",
+          "postedAt": "2026-10-29T16:33:39.847851+00:00",
+          "artworkId": "2026-10-29-open-endedness-cover-v1",
+          "attachmentSha256": "3664107d58dca6f6914f65954c830dbe94e5f82a651714302fcd5a879c3eba57"
+        }
+      ],
       "note": "Head editor explicitly commissioned new conceptual ARC-grid artwork; no suitable unused stock matched this subject."
     }
   ],
