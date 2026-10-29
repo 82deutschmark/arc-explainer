@@ -1,6 +1,6 @@
 /**
  * Author: GPT-6.1 Sol / Codex; GPT-6 / Codex; GPT-6 Sol / Codex; Claude Opus 5.5 (Bubba); Claude Opus 5.5 Max; Claude Opus 5.5 Low
- * Date: 29-October-2026 (GPT-6.1 Sol: all reported subjects and sourced editorial portraits); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
+ * Date: 29-October-2026 (GPT-6.1 Sol: all reported subjects, sourced editorial portraits and early-evening specials); 15-October-2026 (writer IDs moved to shared/newsWriters.json; backup desk is Claude Sonnet 5.5;
  *       later that day Claude Opus 5.5 credited for features the editor commissions from it directly);
  *       21-October-2026 Claude Haiku 5.5 credited as the backup wire desk)
  * PURPOSE: Shared public contract for sourced ARC Daily articles and edition-bound art, people, roster history and public social records,
@@ -215,8 +215,9 @@ export const competitorPath = (id: string) => `/news/competitors/${id}`;
 export const competitionName = (key: NewsCompetition) => KAGGLE_COMPETITIONS[key].label;
 /** The 6 am issue is the early edition and the 6 pm issue the late edition; the data keeps morning/evening. */
 export const editionName = (edition: NewsEdition) => edition === 'morning' ? 'Early' : 'Late';
-/** Edition kicker as printed on the page and the card; launch previews say so. */
-export const editionLabel = (article: NewsArticle) => article.id.endsWith('-preview') ? 'Launch preview' : `${editionName(article.edition)} edition`;
+/** Manual early-evening specials have their own label; routine 6 pm issues keep Late edition. */
+export const editionLabel = (article: NewsArticle) => article.id.endsWith('-preview') ? 'Launch preview'
+  : article.id.includes('-special-early-evening-') ? 'Early evening edition' : `${editionName(article.edition)} edition`;
 
 /** Newspaper dates are Eastern. Date-only edition labels must not roll back a day. */
 export function newsDate(value: string, withTime = false): string {

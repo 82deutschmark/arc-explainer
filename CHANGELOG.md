@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.9  Oct 29, 2026
+
+- **Approve xz’s 4 pm early evening special** (Author: GPT-6.1 Sol / Codex). Retarget the one-off commission to a distinct early-evening article, replace the prior-method summary with a short source teaser, and simplify the fantasy-art caption. Save the editor’s explicit approval, Discord-first/X sequence with the reaction wait waived, fresh-score instructions and protected delivery paths. Label early-evening specials correctly in browser and initial HTML; preserve routine 6 pm issues. Plan: `docs/plans/2026-10-29-xz-early-evening-release.md`.
+- Validation:33 focused news checks,70 newsroom Python checks and production build pass. One-time current-chat release is scheduled for October29,4 pm Eastern; the article and announcements remain unpublished until then.
+
 ### Version 9.159.8  Oct 29, 2026
 
 - **Hold the xz feature for the editor’s read-through** (Author: GPT-6.1 Sol / Codex). Save the revised 901-word sports column and full giant-cat illustration in the private evening handoff, and carry an explicit review hold in the one-off assignment. The feature, its announcements and the conditional Kaggle thank-you await the editor’s review; normal verified closing reports can continue. Draft format and intake checked; no article publication or external send.

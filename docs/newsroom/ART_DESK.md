@@ -35,6 +35,10 @@ stock is returned. The illustration requirement below does not delay these sched
   the illustration. Follow [Discord image delivery](#discord-image-delivery-before-x) below.
   Newly commissioned art can be shared before article publication as a labelled preview with its
   intended link. Before the X announcement, check for any person’s reaction as described below.
+- **Captions describe the scene.** For the paper’s obvious fantasy illustrations, the editor
+  asked on October 29 to omit repetitive “AI editorial illustration” disclaimers from captions
+  and announcements. Date any pictured standings when needed; preserve native generation
+  provenance internally.
 - **Accurate cast.** Characters and their references are frozen in [CHARACTERS.md](CHARACTERS.md)
   and `visual-identities.json`: Chen's two rabbits follow her owner photo; Tufa Labs' friendly
   spiders (five is an artistic choice, not a headcount) and Dries Smit only while the fresh Tufa

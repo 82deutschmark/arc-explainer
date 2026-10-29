@@ -329,8 +329,9 @@ A short sourced dispatch can update the front page between editions, separate fr
 issue: JSON with `id`, `competition`, `publishedAt` (the real publication time), `headline`,
 `sections` and `sources`, plus `generatedBy` (`gpt-6.1-sol` for this desk), optional
 `interpretation` (shown as the desk's take) and optional `image` (`src`, `alt`, `caption`; the
-asset must already be in `client/public/news-images/`; captions identify AI artwork and date any
-standings). A commissioned dispatch records `commissionedBy: "mark-barney"` and may carry a short
+asset must already be in `client/public/news-images/`; captions describe the scene and date any
+standings; obvious fantasy illustrations do not need repetitive AI disclaimers, per the Boss
+on October 29). A commissioned dispatch records `commissionedBy: "mark-barney"` and may carry a short
 `editorNote`. Validate and publish with `python3.13 scripts/newsroom.py dispatch-validate --draft …`
 and `dispatch-publish --draft …`; dispatch IDs are immutable. A scheduled run publishes a dispatch
 only when its job or an editorial assignment calls for one.

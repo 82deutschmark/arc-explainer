@@ -200,6 +200,16 @@ test('the morning sidebar includes xz and Chen with the correct sourced portrait
   expect(newsPersonSchema.safeParse({ ...chen, editorialPortrait: { ...chen.editorialPortrait!, sourceUrl: 'https://www.kaggle.com/xiaoz259' } }).success).toBe(false);
 });
 
+test('the commissioned four o’clock special is an early evening edition in browser and initial HTML', () => {
+  vi.stubGlobal('React', React);
+  const index = getNewsIndex();
+  const article = { ...index.articles.find(item => item.id === '2026-10-29-morning-arc-3')!, id: '2026-10-29-special-early-evening-xz', edition: 'evening' as const };
+  const html = render(NewsArticle, `/news/${article.id}`, { ...index, articles: [article] });
+  expect(html).toContain('Early evening edition');
+  expect(newsArticleMeta(article).bodyHtml).toContain('Early evening edition');
+  expect(html).not.toContain('Launch preview');
+});
+
 test('all reported subjects survive deduplication across a feature and recap, without a face cap', () => {
   vi.stubGlobal('React', React);
   const index = getNewsIndex();
