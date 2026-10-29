@@ -1,0 +1,35 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T07:50:37Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ForbeniusNorm surges from 635th to 49th on ARC-3",
+  "id": "2026-10-29-0356-arc-3-forbeniusnorm-surges-to-forty-ninth",
+  "personIds": [],
+  "publishedAt": "2026-10-29T07:56:07Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "ForbeniusNorm gained 5.19 points to reach 35.81, vaulting from 635th to 49th on the public ARC-AGI-3 board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The jump carries ForbeniusNorm into a prominent position on the ARC-3 board."
+    }
+  ],
+  "since": "2026-10-28T07:47:37Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T07:55:29Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "15487205"
+  ]
+}
