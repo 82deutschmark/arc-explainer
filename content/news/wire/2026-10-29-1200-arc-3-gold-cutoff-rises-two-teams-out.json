@@ -1,0 +1,36 @@
+{
+  "competition": "arc-3",
+  "dataAsOf": "2026-10-29T15:51:30Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "ARC-3 gold cutoff rises as two teams fall outside",
+  "id": "2026-10-29-1200-arc-3-gold-cutoff-rises-two-teams-out",
+  "personIds": [],
+  "publishedAt": "2026-10-29T16:00:38Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "The ARC-3 gold line rose 0.76 in the past day to 38.98, with 19th the last gold place. Nhan Duc Nguyen is 20th at 38.84, 0.14 short."
+    },
+    {
+      "sourceIds": [
+        "board-arc-3"
+      ],
+      "text": "Advaith Vecham is now 21st at 38.22, also outside the gold places. Both teams held the same score as their ranks shifted."
+    }
+  ],
+  "since": "2026-10-28T15:48:37Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T16:00:04Z",
+      "id": "board-arc-3",
+      "title": "ARC-AGI-3 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard"
+    }
+  ],
+  "teamIds": [
+    "16958955",
+    "16253766"
+  ]
+}
