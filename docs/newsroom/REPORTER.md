@@ -278,7 +278,7 @@ once. Abort and report a conflict in unrelated files. Do not check the deploymen
 
 For an illustrated edition or commissioned feature, first deliver the finished image, summary
 and article link to Discord under [ART_DESK.md](ART_DESK.md#discord-image-delivery-before-x),
-then check for the Boss’s approving reaction before the authorized X post under
+then check for any person’s reaction before the authorized X post under
 [X_POSTING.md](X_POSTING.md). No reaction means hold the X draft. The text-only relay does not
 deliver artwork. The relay retains ownership of routine edition text notices and their send-once
 ledger; do not duplicate those manually.

@@ -29,12 +29,12 @@ stock is returned. The illustration requirement below does not delay these sched
   previously published artwork, including its clean base with new scores or a new crop. Check
   previous article uses and Discord shares in the inventory before posting. Character reference
   sheets may preserve identities; they are not permission to repeat an old scene.
-- **Discord first, then the Boss’s go-ahead for X.** Every illustrated edition or commissioned feature,
+- **Discord first, then any person’s reaction greenlights X.** Every illustrated edition or commissioned feature,
   including manual afternoon specials and finished stock compositions, delivers its reviewed image
   and story link to `#arc3-rollout-feed` before its X post. A text-only relay notice does not deliver
   the illustration. Follow [Discord image delivery](#discord-image-delivery-before-x) below.
   Newly commissioned art can be shared before article publication as a labelled preview with its
-  intended link. Before the X announcement, obtain the Boss’s positive reaction as described below.
+  intended link. Before the X announcement, check for any person’s reaction as described below.
 - **Accurate cast.** Characters and their references are frozen in [CHARACTERS.md](CHARACTERS.md)
   and `visual-identities.json`: Chen's two rabbits follow her owner photo; Tufa Labs' friendly
   spiders (five is an artistic choice, not a headcount) and Dries Smit only while the fresh Tufa
@@ -150,12 +150,12 @@ in REPORTER.md; a good image does not replace a substantive, sourced story.
    before retrying. A different clean-base preview does not deliver the finished composition.
 3. Before X, check reactions on that exact Discord preview:
    `openclaw message reactions --channel discord --target channel:1550165647911034940 --message-id "<saved message ID>" --json`.
-   Require a 👍, ✅ or ❤️ from the Boss (Discord user `293569238386606080`), or his explicit
-   written go-ahead. A count without a verified reacting user, another person’s reaction, silence,
-   and the bot’s own reaction do not count. If the result does not identify who reacted, inspect
-   the reaction’s user list through Discord before treating it as approval.
-4. Save `approval` in the X outbox with the preview message ID, image SHA-256, approving user,
-   emoji or written confirmation, and actual check time. Only confirmed delivery plus this
+   Any emoji reaction by any person on that exact preview greenlights the X announcement;
+   it need not be from the Boss or use a particular emoji. Silence and the posting bot’s own
+   reaction do not count. Record the returned reaction evidence; if it cannot distinguish a
+   person from the posting bot, inspect the reaction user list before treating it as approval.
+4. Save `approval` in the X outbox with the preview message ID, image SHA-256, reacting user when exposed,
+   emoji/reaction evidence or written confirmation, and actual check time. Only confirmed delivery plus this
    approval permits `draft` → `posting`. A changed image or materially changed story needs a new
    preview and approval. An explicit instruction from the Boss can waive the wait for that release.
    If no qualifying reaction is present, or Discord is unavailable, keep X in `draft` with

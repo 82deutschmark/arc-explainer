@@ -607,9 +607,42 @@
         }
       ],
       "status": "ready"
+    },
+    {
+      "id": "xz",
+      "personId": "xz",
+      "names": [
+        "xz"
+      ],
+      "status": "ready",
+      "description": "xz’s cream-faced blue-eyed fluffy Kaggle cat, introduced as a giant cyber-vest newcomer.",
+      "referenceType": "Verified Kaggle avatar; head-editor commissioned cyber character",
+      "identityNotes": [
+        "Preserve round flat cream/apricot face, blue eyes, pink nose, white ruff and solemn expression from exact avatar.",
+        "Face remains completely exposed. Modest dark GPU vest, natural fur, enormous fluffy tail. Giant scale is an editorial choice.",
+        "Himalayan-like appearance is an uncertain visual description, not a verified pedigree or owner fact."
+      ],
+      "provenance": "Public Kaggle profile xiaoz259 directly matches ARC3 roster. Mark supplied the same avatar and specified giant scale, GPU vest and recognisable face on October 29.",
+      "references": [
+        {
+          "kind": "kaggle-avatar",
+          "label": "Frozen xz Kaggle avatar",
+          "originalSrc": "/news-images/people/xz.webp",
+          "src": "/news-images/references/2026-10-29-xz-kaggle-cat-v1.webp",
+          "sourceUrl": "https://www.kaggle.com/xiaoz259",
+          "sha256": "75f131d82d2d3f21b54c0d22550c797974eb9cdbd08b29282299b2bac8321d68",
+          "archivedAt": "2026-10-29T18:31:05.562338+00:00",
+          "role": "Authoritative cat face and fur; no inferred real name or gender."
+        }
+      ],
+      "teamIds": {
+        "arc-3": [
+          "15487093"
+        ]
+      }
     }
   ],
-  "updatedAt": "2026-10-27T01:16:37.092510+00:00",
+  "updatedAt": "2026-10-29T18:31:05.562338+00:00",
   "version": 1,
   "reusableScenes": [
     {

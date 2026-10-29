@@ -39,7 +39,7 @@ existing announcement; a copy preference does not authorize a replacement send.
 Before **any illustrated X announcement**, including a manually commissioned special feature,
 complete [ART_DESK.md's Discord image delivery](ART_DESK.md#discord-image-delivery-before-x).
 The X outbox must reference a confirmed receipt for the finished attachment and story link in
-`#arc3-rollout-feed`, plus the Boss’s positive reaction or explicit written go-ahead under that
+`#arc3-rollout-feed`, plus any person’s reaction or explicit written go-ahead under that
 procedure, before changing to `posting`. A text-only relay notice, an intended send or
 a clean-base preview is insufficient. Without approval, keep X in `draft` with
 `awaiting-discord-approval`; do not poll or schedule a retry. If delivery fails, report it.

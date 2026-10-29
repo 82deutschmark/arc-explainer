@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.6  Oct 29, 2026
+
+- **Prepare xz’s illustrated evening profile** (Author: GPT-6.1 Sol / Codex). Verify the competitor’s profile, previous results, eleven-entry record and public infrastructure discussion; add the own-avatar portrait and frozen character reference. Prepare the editor’s giant-cat scoring-hall cover with inspected native provenance, send it to Discord, and reserve the researched feature for the evening desk’s fresh closing evidence.
+- **Any person’s Discord reaction greenlights X** (Author: GPT-6.1 Sol / Codex). Apply the editor’s correction: any emoji reaction from any person on the exact preview suffices, rather than a prescribed emoji from the Boss. Preserve the delivery receipt, bot-self-reaction exclusion, no-reaction draft hold and existing sends.
+
 ### Version 9.159.5  Oct 29, 2026
 
 - **Boss reaction approves illustrated X announcements** (Author: GPT-6.1 Sol / Codex). Require the Boss’s positive reaction on the exact Discord preview, or explicit written go-ahead, before X. Record the reacting user and image alongside the delivery receipt; silence, anonymous counts and other users do not authorize a send. Missing approval leaves a saved draft without polling or creating an automation. Existing posts stay intact.

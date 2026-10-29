@@ -984,5 +984,52 @@
     "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-open-endedness/feature-draft.json",
     "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-open-endedness/article.txt",
     "instructions": "Publish as the separately dated special afternoon feature with its full cover and original sources. One image-led X announcement explicitly authorized. Completed manual commission; preserve normal Early/Late jobs and do not repeat this special announcement."
+  },
+  {
+    "id": "oct29-evening-xz-profile",
+    "competition": "arc-3",
+    "createdAt": "2026-10-29T18:35:07.050334+00:00",
+    "expiresAt": "2026-10-30T02:00:00Z",
+    "title": "Eleven entries, fourth place: xz arrives on Turducken’s tail",
+    "priority": "Head editor explicitly commissioned the deeper evening lead and new scoring-hall illustration",
+    "status": "pending",
+    "targetEditionId": "2026-10-29-evening-arc-3",
+    "placement": "edition-lead",
+    "commissionedBy": "mark-barney",
+    "teamIds": [
+      "15487093",
+      "15605182",
+      "15486995",
+      "15499660",
+      "15770880"
+    ],
+    "personIds": [
+      "xz"
+    ],
+    "subjectNames": [
+      "xz",
+      "xiaoz259",
+      "Team Turducken"
+    ],
+    "featureDraftPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/feature-draft.json",
+    "manuscriptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/article.txt",
+    "researchPath": "/Users/macmini/bubba-workspace/reports/arc-daily-social/editorial/2026-10-29-xz-challenge/research-notes.json",
+    "plannedFeatureId": "2026-10-29-xz-cat-on-turduckens-tail",
+    "publicationOwner": "arc-agi-3-evening-leaderboard-recap",
+    "sourceUrls": [
+      "https://www.kaggle.com/xiaoz259",
+      "https://www.kaggle.com/xiaoz259/competitions",
+      "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/writeups/1st-place-solution",
+      "https://github.com/xz259/Kaggle-AI-Agent-Security-1st-Place-Solution",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752485",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843",
+      "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/752147#3545843",
+      "https://arc.markbarney.net/news/2026-10-27-morning-arc-3",
+      "https://arc.markbarney.net/news/2026-10-29-morning-arc-3",
+      "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board"
+    ],
+    "artworkGenerationRecord": "2026-10-29-xz-enters-scoring-hall-v1",
+    "discordPreviewReceiptPath": "/Users/macmini/bubba-workspace/reports/arc-daily-x/2026-10-29-xz-evening-preview-discord.json",
+    "instructions": "The editor commissioned a substantive xz profile for October 29 Late edition, with the giant cream-faced blue-eyed cat entering the troubled scoring hall. This must advance the morning story, not repeat the overnight rank jump. Read feature-draft.json, research-notes.json and evening-editor-handoff.json at the saved paths. Complete 828-word draft has passed dispatch-validate; exact native artwork and avatar references are committed. Refresh the 6 pm race in the normal edition brief and use the latest already-researched incident handoff. The 14:22 afternoon preview is not closing evidence. Keep profile/previous-win reporting dated. All selected current discussion bodies were publicly readable logged out on October 29; timestamps and checks in research-notes.json. No new browser research required in scheduled shift.\n\nBefore the first scheduled prepare, inspect whether the planned dispatch file exists. If absent, set actual publishedAt and update affected score/closing language in the prepared feature; retain source check times. Validate and dispatch-publish. Only after it exists, set placement front-page-feature and featureId to the published dispatch, then prepare/reprepare once so the FULL illustrated feature leads both front page and permanent evening edition URL. Mark covered only after substantive inclusion. Give ARC2 its normal full closing report. If safe release fails, hold with concrete reason, preserve all drafts.\n\nReporting: public board lists eleven entries, not zero. Saved score 28.41 existed early October; 52.95/4th first observed October 29 09:20:48 UTC. The exact submission time is unknown. Profile: competition Master, rank15 observed, 1 gold/3 silver/5 bronze; first of4186 AI Agent Security and earlier ARC2024 rank341/1427, ARC2025 rank602/1455. Own-profile link verifies GitHub xz259. No real name/gender or full current ARC recipe established. Do not equate the prior winning method with this ARC system. xz’s no-previous-submission comment concerns a comparison in an infrastructure discussion; do not treat it as no contest history. Cottaar describes an approximate40-minute pre-notebook loss using controlled probes; Chen cannot separate infra from ordinary variance. Attribute these observations; no diagnosis of score gains or assertion all problems fixed. Older rescores-running and investigation statements remain dated. Do not invent an extension or promise reruns.\n\nArtwork: selected finished /news-images/2026-10-29-xz-enters-scoring-hall-v1.webp. Exact cat-avatar face, natural plume tail, modest GPU vest, Dries tall, 5spiders, 2correct bunnies, Puget/Ivan, 7Turducken crew and2Yorkies all eyeing cat. Native screen says4/xz, observed at14:22EDT. This is editorial fantasy. If closing rank changes, explicitly date illustration to the arrival at fourth; do not pass it off as the latest board or silently edit published art. No additional generation in the scheduled run. Attach this cover to the FEATURE, not just an unrelated recap.\n\nDiscord preview with exact image was sent once; receipt path is in this assignment/handoff. Do not send another identical preview. The authorized routine Late X announcement must lead this feature and upload the saved finished PNG from the original native path in the receipt (not a generic preview card). Check reactions on the exact Discord message: ANY human emoji reaction greenlights the X send; not restricted to Boss. Without one, keep draft with awaiting-discord-approval and stop; no monitor or polling. Preserve any existing posted routine outbox. No extra X announcement. Routine Discord relay and no-deployment-polling rules remain. No changes to automations or application code."
   }
 ]

@@ -2654,5 +2654,68 @@
       "sourceUrl": "https://www.kaggle.com/darrenamadeusmartin",
       "src": "/news-images/people/darren-amadeus-martin.webp"
     }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T18:24:45.054449+00:00",
+        "handle": "xiaoz259",
+        "platform": "kaggle",
+        "sourceTitle": "xz — own public Kaggle profile",
+        "sourceUrl": "https://www.kaggle.com/xiaoz259",
+        "url": "https://www.kaggle.com/xiaoz259"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T18:24:45.054449+00:00",
+        "sourceTitle": "xz — public Kaggle profile, October 29, 2026",
+        "sourceUrl": "https://www.kaggle.com/xiaoz259",
+        "text": "Kaggle profile lists Competitions Master, one gold medal, three silver medals and five bronze medals; observed October 29, 2026."
+      },
+      {
+        "checkedAt": "2026-10-29T18:24:45.054449+00:00",
+        "sourceTitle": "xz — Kaggle competition history",
+        "sourceUrl": "https://www.kaggle.com/xiaoz259/competitions",
+        "text": "Kaggle competition history lists first of 4,186 teams in AI Agent Security – Multi-Step Tool Attacks."
+      },
+      {
+        "checkedAt": "2026-10-29T18:24:45.054449+00:00",
+        "sourceTitle": "xz — prior ARC competition results",
+        "sourceUrl": "https://www.kaggle.com/xiaoz259/competitions",
+        "text": "Kaggle competition history lists 341st of 1,427 in ARC Prize 2024 and 602nd of 1,455 in ARC Prize 2025."
+      },
+      {
+        "checkedAt": "2026-10-29T18:24:45.054449+00:00",
+        "sourceTitle": "xz — September 2, 2026 winning write-up",
+        "sourceUrl": "https://www.kaggle.com/competitions/ai-agent-security-multi-step-tool-attacks/writeups/1st-place-solution",
+        "text": "Published a first-place agent-security solution on September 2, 2026, describing throughput optimization under a fixed replay budget. This is a separate competition, not an ARC method disclosure."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "xz",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T18:22:02Z",
+        "lastObservedAt": "2026-10-29T18:22:02Z",
+        "memberHandle": "xiaoz259",
+        "season": "2026",
+        "sourceTitle": "ARC-3 public roster observed October 29, 2026",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "15487093",
+        "teamName": "xz"
+      }
+    ],
+    "name": "xz",
+    "portrait": {
+      "alt": "xz’s Kaggle profile picture",
+      "checkedAt": "2026-10-29T18:24:45Z",
+      "kind": "kaggle",
+      "sourceTitle": "xz — Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/xiaoz259",
+      "src": "/news-images/people/xz.webp"
+    }
   }
 ]
