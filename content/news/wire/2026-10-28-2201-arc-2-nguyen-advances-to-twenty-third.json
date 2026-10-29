@@ -1,0 +1,35 @@
+{
+  "competition": "arc-2",
+  "dataAsOf": "2026-10-29T01:49:59Z",
+  "generatedBy": "gpt-6-luna",
+  "headline": "Nguyen advances to 23rd on ARC-2",
+  "id": "2026-10-28-2201-arc-2-nguyen-advances-to-twenty-third",
+  "personIds": [],
+  "publishedAt": "2026-10-29T02:01:23Z",
+  "sections": [
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "Nguyen gained 6.95 to reach 68.89, moving from 30th to 23rd on the ARC-AGI-2 public board."
+    },
+    {
+      "sourceIds": [
+        "board-arc-2"
+      ],
+      "text": "The move puts the team seven places outside the 16 gold positions; the gold line is 70.14."
+    }
+  ],
+  "since": "2026-10-28T01:46:57Z",
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T02:00:48Z",
+      "id": "board-arc-2",
+      "title": "ARC-AGI-2 public leaderboard: saved board and the past day's changes",
+      "url": "https://arc.markbarney.net/kaggle-leaderboard/arc-2"
+    }
+  ],
+  "teamIds": [
+    "16600664"
+  ]
+}
