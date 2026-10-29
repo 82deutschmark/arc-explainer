@@ -2350,11 +2350,65 @@
         "sourceTitle": "JKU — Mykyta Ielanskyi research profile",
         "sourceUrl": "https://research.jku.at/en/persons/mykyta-ielanskyi/",
         "text": "Johannes Kepler University Linz lists Mykyta Ielanskyi at its Institute for Machine Learning. Its research record credits him and Lukas Aichberger together on a 2026 paper about reward redistribution for reasoning models."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Lukas Aichberger — own biography and research directions",
+        "sourceUrl": "https://raw.githubusercontent.com/AIchberger/AIchberger/main/README.md",
+        "text": "His own research biography records an AI PhD co-supervised by Sepp Hochreiter and Yarin Gal, work with OATML at Oxford and reasoning/post-training work at Apple."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "EuroSkills 2016 — official results, Mobile Robotics page 15",
+        "sourceUrl": "https://spain-skills.es/images/competiciones/euroskills2016/06_Results_per_skill_competition-2.pdf",
+        "text": "EuroSkills 2016 official Mobile Robotics results list Lukas Aichberger and Florian Müller fifth for Austria; this is separate from Kaggle."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — directly linked GitHub identity",
+        "sourceUrl": "https://github.com/fses91",
+        "text": "The Kaggle profile directly links github.com/fses91 and linkedin.com/in/florian-sestak; the linked GitHub identifies its owner as Florian Sestak."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — completed Kaggle competitions and medals",
+        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+        "text": "His Kaggle completed-results page records silver for 38/4463 in Santander Value Prediction Challenge and bronze results in NFL Helmet Assignment (90/825), Jigsaw Unintended Bias (163/3165, shared entry) and Porto Seguro (364/5156)."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — own research biography",
+        "sourceUrl": "https://raw.githubusercontent.com/fses91/fses91.github.io/main/_pages/about.md",
+        "text": "His own research biography identifies him as an AI PhD candidate at JKU Linz supervised by Günter Klambauer."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Mykyta Ielanskyi — own Kaggle identity and research role",
+        "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+        "text": "His Kaggle profile names Mykyta Ielanskyi and identifies his role as Research Scientist at IML JKU."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "JKU — Ielanskyi and coauthors’ Outstanding Paper Award",
+        "sourceUrl": "https://research.jku.at/en/prizes/outstanding-paper-award-at-iclr-2026-workshop-on-logical-reasonin/",
+        "text": "JKU records him among the recipients of the April 23, 2026 Outstanding Paper Award at the ICLR 2026 Workshop on Logical Reasoning of Large Language Models for From Natural Language to Exact Cover: A Neuro-Symbolic Approach to Zebra Puzzles."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Ielanskyi, Schweighofer, Aichberger and Hochreiter — RREDCoT",
+        "sourceUrl": "https://arxiv.org/abs/2606.06475",
+        "text": "He is first author of RREDCoT, with Kajetan Schweighofer, Lukas Aichberger and Sepp Hochreiter."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "gklambauer — own Kaggle profile; no real name or personal portrait supplied",
+        "sourceUrl": "https://www.kaggle.com/gklambauer",
+        "text": "The Kaggle account supplies no real name or personal portrait. Its default Kaggle goose is not a personal likeness. No direct account link confirming ownership by professor Günter Klambauer was found in this focused investigation."
       }
     ],
     "firstObservedAt": "2026-10-08T03:42:46Z",
     "id": "arc-3-16021367",
-    "lastObservedAt": "2026-10-29T09:50:51Z",
+    "lastObservedAt": "2026-10-29T19:22:11Z",
     "members": [
       "dwellement0baser",
       "fses91",

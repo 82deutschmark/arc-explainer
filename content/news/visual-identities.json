@@ -640,9 +640,130 @@
           "15487093"
         ]
       }
+    },
+    {
+      "description": "Four compact adult ARC-grid breakdancers: three verified identities and an explicitly fictional masked stand-in for gklambauer.",
+      "id": "last-dance",
+      "identityNotes": [
+        "Reference-sheet order: Lukas (blue/navy), Florian (orange/red, black cap and sunglasses), Mykyta (cyan/green, reddish beard), fictional opaque helmet (purple/yellow).",
+        "The fourth figure is an anonymous fictional stand-in for the roster handle, NOT a verified likeness of Günter Klambauer.",
+        "Retain colorful square ARC-grid streetwear and compact adult scale; no claim about actual height or dance ability.",
+        "Recheck all four exact roster handles before using the complete team."
+      ],
+      "includePeople": [
+        "fses91",
+        "lukas-aichberger",
+        "mykyta-ielanskyi"
+      ],
+      "names": [
+        "the last dance 🕺",
+        "The Last Dance"
+      ],
+      "provenance": "Commissioned by Mark Barney October 29. Own Kaggle portraits read in Chrome and frozen individually. gklambauer has no verified real name or likeness; never use the default Kaggle goose as a character identity.",
+      "referenceType": "Native editorial team character sheet with verified individual inputs",
+      "references": [
+        {
+          "generationRecord": "2026-10-29-last-dance-character-sheet-v1-base",
+          "kind": "native-character",
+          "label": "The Last Dance — four-dancer character sheet",
+          "role": "Use all four distinct editorial figures. Preserve Lukas, Florian and Mykyta from their individual sources; fourth helmet is entirely fictional. Do not assign it a human name.",
+          "sha256": "17dd264bfd3d616070f50c00c81a9c69fbfca73150670cedcd4b535778cde254",
+          "src": "/news-images/references/2026-10-29-last-dance-character-sheet-v1-base.webp"
+        }
+      ],
+      "status": "ready",
+      "teamIds": {
+        "arc-3": [
+          "16021367"
+        ]
+      }
+    },
+    {
+      "description": "Lukas Aichberger — own verified Kaggle reference for The Last Dance.",
+      "id": "lukas-aichberger",
+      "identityNotes": [
+        "Swept brown hair, clean-shaven youthful face, blue-gray eyes; navy hoodie and blue-dominant ARC-grid costume."
+      ],
+      "names": [
+        "Lukas Aichberger"
+      ],
+      "personId": "lukas-aichberger",
+      "provenance": "Own Kaggle profile read and portrait downloaded through the browser asset tool on October 29, 2026.",
+      "referenceType": "Own verified Kaggle avatar",
+      "references": [
+        {
+          "archivedAt": "2026-10-29T19:41:08.261436+00:00",
+          "kind": "kaggle",
+          "label": "Lukas Aichberger — frozen own profile picture",
+          "role": "Preserve this individual identity only; editorial ARC-grid costumes come from the team character sheet.",
+          "sha256": "d19b4a538177a431bd8d57205a51013f7ec66343a1568cb2d79ec62df517eeca",
+          "sourceUrl": "https://www.kaggle.com/lukasaichberger",
+          "src": "/news-images/references/2026-10-29-lukas-aichberger-kaggle-v1.jpg"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Florian Sestak — own verified Kaggle reference for The Last Dance.",
+      "id": "fses91",
+      "identityNotes": [
+        "Black baseball cap, dark sunglasses, short dark facial stubble; orange/red ARC-grid costume. Ignore the novelty shark and mountain background."
+      ],
+      "names": [
+        "Florian Sestak"
+      ],
+      "personId": "fses91",
+      "provenance": "Own Kaggle profile read and portrait downloaded through the browser asset tool on October 29, 2026.",
+      "referenceType": "Own verified Kaggle avatar",
+      "references": [
+        {
+          "archivedAt": "2026-10-29T19:41:08.261436+00:00",
+          "kind": "kaggle",
+          "label": "Florian Sestak — frozen own profile picture",
+          "role": "Preserve this individual identity only; editorial ARC-grid costumes come from the team character sheet.",
+          "sha256": "3e511e00cb067dc6840bfc236d1d3d98eb648fd8c6c05a2ea963c3fa54cf5c60",
+          "sourceUrl": "https://www.kaggle.com/fses91",
+          "src": "/news-images/references/2026-10-29-florian-sestak-kaggle-v1.png"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "Mykyta Ielanskyi — own verified Kaggle reference for The Last Dance.",
+      "id": "mykyta-ielanskyi",
+      "identityNotes": [
+        "Tousled light-brown hair and full reddish-brown beard; cyan/green ARC-grid costume."
+      ],
+      "names": [
+        "Mykyta Ielanskyi"
+      ],
+      "personId": "mykyta-ielanskyi",
+      "provenance": "Own Kaggle profile read and portrait downloaded through the browser asset tool on October 29, 2026.",
+      "referenceType": "Own verified Kaggle avatar",
+      "references": [
+        {
+          "archivedAt": "2026-10-29T19:41:08.261436+00:00",
+          "kind": "kaggle",
+          "label": "Mykyta Ielanskyi — frozen own profile picture",
+          "role": "Preserve this individual identity only; editorial ARC-grid costumes come from the team character sheet.",
+          "sha256": "682588e5ee017bcea1dfcd0b4c28ecf0af2bf6c4982136497537cbc873a3ec6a",
+          "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+          "src": "/news-images/references/2026-10-29-mykyta-ielanskyi-kaggle-v1.jpg"
+        }
+      ],
+      "status": "ready"
+    },
+    {
+      "description": "A real name and individual likeness for the fourth Last Dance account remain unverified.",
+      "id": "last-dance-gklambauer-likeness",
+      "names": [
+        "gklambauer"
+      ],
+      "reason": "Default Kaggle goose is generic. Team scene uses an explicitly fictional masked stand-in; no verified real-person portrait.",
+      "status": "pending"
     }
   ],
-  "updatedAt": "2026-10-29T18:31:05.562338+00:00",
+  "updatedAt": "2026-10-29T19:41:08.261436+00:00",
   "version": 1,
   "reusableScenes": [
     {

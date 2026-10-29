@@ -2310,7 +2310,7 @@
   {
     "accounts": [
       {
-        "checkedAt": "2026-10-14T10:07:47.955742+00:00",
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
         "handle": "fses91",
         "platform": "kaggle",
         "sourceTitle": "Own profile and direct account links",
@@ -2326,7 +2326,26 @@
         "url": "https://x.com/fses91"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — directly linked GitHub identity",
+        "sourceUrl": "https://github.com/fses91",
+        "text": "The Kaggle profile directly links github.com/fses91 and linkedin.com/in/florian-sestak; the linked GitHub identifies its owner as Florian Sestak."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — completed Kaggle competitions and medals",
+        "sourceUrl": "https://www.kaggle.com/fses91/competitions",
+        "text": "His Kaggle completed-results page records silver for 38/4463 in Santander Value Prediction Challenge and bronze results in NFL Helmet Assignment (90/825), Jigsaw Unintended Bias (163/3165, shared entry) and Porto Seguro (364/5156)."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Florian Sestak — own research biography",
+        "sourceUrl": "https://raw.githubusercontent.com/fses91/fses91.github.io/main/_pages/about.md",
+        "text": "His own research biography identifies him as an AI PhD candidate at JKU Linz supervised by Günter Klambauer."
+      }
+    ],
     "hallOfFame": [],
     "id": "fses91",
     "memberships": [
@@ -2334,7 +2353,7 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-14T09:44:09Z",
-        "lastObservedAt": "2026-10-29T09:50:51Z",
+        "lastObservedAt": "2026-10-29T19:22:11Z",
         "memberHandle": "fses91",
         "season": "2026",
         "sourceTitle": "Public roster observation",
@@ -2343,12 +2362,20 @@
         "teamName": "the last dance 🕺"
       }
     ],
-    "name": "fses91"
+    "name": "Florian Sestak",
+    "portrait": {
+      "alt": "Florian Sestak’s own Kaggle profile picture",
+      "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+      "kind": "kaggle",
+      "sourceTitle": "Florian Sestak — own Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/fses91",
+      "src": "/news-images/people/fses91.webp"
+    }
   },
   {
     "accounts": [
       {
-        "checkedAt": "2026-10-14T10:07:47.955742+00:00",
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
         "handle": "lukasaichberger",
         "platform": "kaggle",
         "sourceTitle": "Own profile and direct account links",
@@ -2364,7 +2391,20 @@
         "url": "https://x.com/aichberger"
       }
     ],
-    "facts": [],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Lukas Aichberger — own biography and research directions",
+        "sourceUrl": "https://raw.githubusercontent.com/AIchberger/AIchberger/main/README.md",
+        "text": "His own research biography records an AI PhD co-supervised by Sepp Hochreiter and Yarin Gal, work with OATML at Oxford and reasoning/post-training work at Apple."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "EuroSkills 2016 — official results, Mobile Robotics page 15",
+        "sourceUrl": "https://spain-skills.es/images/competiciones/euroskills2016/06_Results_per_skill_competition-2.pdf",
+        "text": "EuroSkills 2016 official Mobile Robotics results list Lukas Aichberger and Florian Müller fifth for Austria; this is separate from Kaggle."
+      }
+    ],
     "hallOfFame": [],
     "id": "lukas-aichberger",
     "memberships": [
@@ -2372,7 +2412,7 @@
         "competition": "arc-3",
         "competitionId": "arc-prize-2026-arc-agi-3",
         "firstObservedAt": "2026-10-14T09:44:09Z",
-        "lastObservedAt": "2026-10-29T09:50:51Z",
+        "lastObservedAt": "2026-10-29T19:22:11Z",
         "memberHandle": "lukasaichberger",
         "season": "2026",
         "sourceTitle": "Public roster observation",
@@ -2383,10 +2423,10 @@
     ],
     "name": "Lukas Aichberger",
     "portrait": {
-      "alt": "Lukas Aichberger’s Kaggle profile picture",
-      "checkedAt": "2026-10-14T10:08:35Z",
+      "alt": "Lukas Aichberger’s own Kaggle profile picture",
+      "checkedAt": "2026-10-29T19:41:08.261436+00:00",
       "kind": "kaggle",
-      "sourceTitle": "Lukas Aichberger — Kaggle profile picture",
+      "sourceTitle": "Lukas Aichberger — own Kaggle profile picture",
       "sourceUrl": "https://www.kaggle.com/lukasaichberger",
       "src": "/news-images/people/lukas-aichberger.webp"
     }
@@ -2725,5 +2765,99 @@
       "sourceUrl": "https://www.kaggle.com/xiaoz259",
       "src": "/news-images/people/xz.webp"
     }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "handle": "dwellement0baser",
+        "platform": "kaggle",
+        "sourceTitle": "Own Kaggle profile; name remains a handle where unconfirmed",
+        "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+        "url": "https://www.kaggle.com/dwellement0baser"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Mykyta Ielanskyi — own Kaggle identity and research role",
+        "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+        "text": "His Kaggle profile names Mykyta Ielanskyi and identifies his role as Research Scientist at IML JKU."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "JKU — Ielanskyi and coauthors’ Outstanding Paper Award",
+        "sourceUrl": "https://research.jku.at/en/prizes/outstanding-paper-award-at-iclr-2026-workshop-on-logical-reasonin/",
+        "text": "JKU records him among the recipients of the April 23, 2026 Outstanding Paper Award at the ICLR 2026 Workshop on Logical Reasoning of Large Language Models for From Natural Language to Exact Cover: A Neuro-Symbolic Approach to Zebra Puzzles."
+      },
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "Ielanskyi, Schweighofer, Aichberger and Hochreiter — RREDCoT",
+        "sourceUrl": "https://arxiv.org/abs/2606.06475",
+        "text": "He is first author of RREDCoT, with Kajetan Schweighofer, Lukas Aichberger and Sepp Hochreiter."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "mykyta-ielanskyi",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T19:22:11Z",
+        "lastObservedAt": "2026-10-29T19:22:11Z",
+        "memberHandle": "dwellement0baser",
+        "season": "2026",
+        "sourceTitle": "Public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16021367",
+        "teamName": "the last dance 🕺"
+      }
+    ],
+    "name": "Mykyta Ielanskyi",
+    "portrait": {
+      "alt": "Mykyta Ielanskyi’s own Kaggle profile picture",
+      "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+      "kind": "kaggle",
+      "sourceTitle": "Mykyta Ielanskyi — own Kaggle profile picture",
+      "sourceUrl": "https://www.kaggle.com/dwellement0baser",
+      "src": "/news-images/people/mykyta-ielanskyi.webp"
+    }
+  },
+  {
+    "accounts": [
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "handle": "gklambauer",
+        "platform": "kaggle",
+        "sourceTitle": "Own Kaggle profile; name remains a handle where unconfirmed",
+        "sourceUrl": "https://www.kaggle.com/gklambauer",
+        "url": "https://www.kaggle.com/gklambauer"
+      }
+    ],
+    "facts": [
+      {
+        "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+        "sourceTitle": "gklambauer — own Kaggle profile; no real name or personal portrait supplied",
+        "sourceUrl": "https://www.kaggle.com/gklambauer",
+        "text": "The Kaggle account supplies no real name or personal portrait. Its default Kaggle goose is not a personal likeness. No direct account link confirming ownership by professor Günter Klambauer was found in this focused investigation."
+      }
+    ],
+    "hallOfFame": [],
+    "id": "gklambauer",
+    "memberships": [
+      {
+        "competition": "arc-3",
+        "competitionId": "arc-prize-2026-arc-agi-3",
+        "firstObservedAt": "2026-10-29T19:22:11Z",
+        "lastObservedAt": "2026-10-29T19:22:11Z",
+        "memberHandle": "gklambauer",
+        "season": "2026",
+        "sourceTitle": "Public roster observation",
+        "sourceUrl": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+        "teamId": "16021367",
+        "teamName": "the last dance 🕺"
+      }
+    ],
+    "name": "gklambauer"
   }
 ]

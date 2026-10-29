@@ -22,9 +22,9 @@ Puget and Sorokin already have separate frozen Hall of Fame character references
 use both when their exact handles match NVARC3's fresh ARC-3 roster. Mark requests
 NVIDIA-green GPU siege equipment and accents for them. Add reference-ready top-five
 and top-ten competitors to future scenes, including Son/Mark's saved cyber-engineer
-avatars where their current entry belongs. The Last Dance's current roster is known,
-but its members have no mapped individual character references in the saved ledger
-yet; obtain their own verified references first. Ronen has no verified human likeness;
+avatars where their current entry belongs. The Last Dance now has three verified individual
+references and a fictional fourth-account stand-in (October 29), described below.
+Ronen has no verified human likeness;
 use only the explicitly approved fictional stand-ins described below. Preserve the
 existing characters and prepared scenes while filling gaps.
 
@@ -80,6 +80,24 @@ The approved academy scene supplies original superhero roles, not franchise cost
 designs or actor likenesses. Keep ARC2’s digital campus separate from ARC3’s snowy
 Turducken setting. All equipment and powers are editorial fantasy, not evidence of
 hardware, methods or team headcount. Generation alone does not authorize publication.
+
+## The Last Dance’s commissioned dancers — 29 October 2026
+
+Use `2026-10-29-last-dance-character-sheet-v1-base.webp` for the four distinct costumes.
+Left to right: Lukas Aichberger in navy/blue ARC grids; Florian Sestak (`fses91`) in
+orange/red grids, black cap and sunglasses; Mykyta Ielanskyi (`dwellement0baser`) in
+cyan/green grids with his reddish beard; a fictional purple/yellow dancer with an opaque
+helmet for `gklambauer`. The first three follow their own frozen Kaggle portraits.
+The fourth account has no confirmed real name or individual portrait: **the generic Kaggle
+goose supplies no character identity**. Do not identify its owner as Günter Klambauer
+without a direct account link, and do not turn the helmet into a claimed human likeness.
+
+The compact adult scale, ARC-grid streetwear and breakdance moves are editorial fantasy.
+The scoring-hall feature is `2026-10-29-last-dance-scoring-hall-v1-base.webp`; it has been
+used for the October 29 team profile. Reuse the character references for new episodes,
+not that published composition. Check the exact four handles against ARC3 team `16021367`
+before casting the full team. The registry, native records and individual source pictures
+are saved with the gallery.
 
 ## Team Turducken’s commissioned crew
 

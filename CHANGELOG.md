@@ -1,5 +1,10 @@
 # New entries at the top, use proper SemVer!
 
+### Version 9.159.10  Oct 29, 2026
+
+- **The Last Dance takes the floor** (Author: GPT-6.1 Sol / Codex). Publish the editor-commissioned sports feature on ARC3’s fifth-place team: Florian Sestak’s verified identity and Kaggle medals, Lukas Aichberger’s robotics and research history, Mykyta Ielanskyi’s reasoning-paper award, and their Linz research connections. Preserve the unresolved ownership of `gklambauer` rather than assigning a name or treating the default goose as a personal avatar.
+- Add three own-profile portraits, a reusable four-dancer reference sheet and a new scoring-hall breakdance cover. The fourth character is an explicitly fictional masked stand-in. Save dated roster/history evidence and source-backed notebook facts; validate the feature, people ledger and character library.
+
 ### Version 9.159.9  Oct 29, 2026
 
 - **Approve xz’s 4 pm early evening special** (Author: GPT-6.1 Sol / Codex). Retarget the one-off commission to a distinct early-evening article, replace the prior-method summary with a short source teaser, and simplify the fantasy-art caption. Save the editor’s explicit approval, Discord-first/X sequence with the reaction wait waived, fresh-score instructions and protected delivery paths. Label early-evening specials correctly in browser and initial HTML; preserve routine 6 pm issues. Plan: `docs/plans/2026-10-29-xz-early-evening-release.md`.

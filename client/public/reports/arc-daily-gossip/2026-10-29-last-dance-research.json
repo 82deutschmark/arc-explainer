@@ -1,0 +1,512 @@
+{
+  "artDirection": "AI editorial fantasy: no height, wardrobe, dancing or hardware claims; fourth member masked pending verified likeness.",
+  "boardSource": "https://arc.markbarney.net/api/kaggle/arc-prize-2026-arc-agi-3/board",
+  "checkedAt": "2026-10-29T19:41:08.261436+00:00",
+  "cliCheck": {
+    "checkedAt": "2026-10-29T19:39:55Z",
+    "command": "kaggle competitions leaderboard -c arc-prize-2026-arc-agi-3 --show --page-size 10",
+    "result": "The Last Dance fifth, 51.51; same top-ten order as recorded board."
+  },
+  "competitionId": "arc-prize-2026-arc-agi-3",
+  "currentRow": [
+    5,
+    "16021367",
+    "the last dance 🕺",
+    "2026-10-28 17:35:15",
+    51.51,
+    94,
+    "dwellement0baser,fses91,gklambauer,lukasaichberger",
+    4,
+    51.51
+  ],
+  "fieldSize": 4971,
+  "history": {
+    "name": "the last dance 🕺",
+    "pts": [
+      [
+        "2026-10-04T18:30:56Z",
+        32.82,
+        24
+      ],
+      [
+        "2026-10-05T04:33:06Z",
+        32.82,
+        26
+      ],
+      [
+        "2026-10-05T05:05:52Z",
+        39.3,
+        3
+      ],
+      [
+        "2026-10-07T04:11:19Z",
+        39.3,
+        4
+      ],
+      [
+        "2026-10-09T05:21:52Z",
+        39.3,
+        5
+      ],
+      [
+        "2026-10-09T17:23:04Z",
+        39.3,
+        6
+      ],
+      [
+        "2026-10-11T11:02:05Z",
+        42.55,
+        5
+      ],
+      [
+        "2026-10-12T16:04:55Z",
+        43.64,
+        4
+      ],
+      [
+        "2026-10-13T07:41:20Z",
+        43.64,
+        5
+      ],
+      [
+        "2026-10-15T15:47:53Z",
+        43.64,
+        6
+      ],
+      [
+        "2026-10-16T02:19:01Z",
+        43.64,
+        7
+      ],
+      [
+        "2026-10-16T08:19:36Z",
+        49.85,
+        3
+      ],
+      [
+        "2026-10-16T17:20:31Z",
+        49.85,
+        4
+      ],
+      [
+        "2026-10-19T02:56:40Z",
+        49.85,
+        5
+      ],
+      [
+        "2026-10-25T07:03:54Z",
+        50.69,
+        4
+      ],
+      [
+        "2026-10-28T02:47:04Z",
+        51.51,
+        4
+      ],
+      [
+        "2026-10-29T09:20:48Z",
+        51.51,
+        5
+      ]
+    ]
+  },
+  "identities": [
+    {
+      "facts": [
+        [
+          "His own research biography records an AI PhD co-supervised by Sepp Hochreiter and Yarin Gal, work with OATML at Oxford and reasoning/post-training work at Apple.",
+          "lukas-career"
+        ],
+        [
+          "EuroSkills 2016 official Mobile Robotics results list Lukas Aichberger and Florian Müller fifth for Austria; this is separate from Kaggle.",
+          "euroskills-results"
+        ]
+      ],
+      "handle": "lukasaichberger",
+      "id": "lukas-aichberger",
+      "name": "Lukas Aichberger"
+    },
+    {
+      "facts": [
+        [
+          "The Kaggle profile directly links github.com/fses91 and linkedin.com/in/florian-sestak; the linked GitHub identifies its owner as Florian Sestak.",
+          "florian-github"
+        ],
+        [
+          "His Kaggle completed-results page records silver for 38/4463 in Santander Value Prediction Challenge and bronze results in NFL Helmet Assignment (90/825), Jigsaw Unintended Bias (163/3165, shared entry) and Porto Seguro (364/5156).",
+          "florian-results"
+        ],
+        [
+          "His own research biography identifies him as an AI PhD candidate at JKU Linz supervised by Günter Klambauer.",
+          "florian-research"
+        ]
+      ],
+      "handle": "fses91",
+      "id": "fses91",
+      "name": "Florian Sestak"
+    },
+    {
+      "facts": [
+        [
+          "His Kaggle profile names Mykyta Ielanskyi and identifies his role as Research Scientist at IML JKU.",
+          "person-mykyta-ielanskyi-identity-0"
+        ],
+        [
+          "JKU records him among the recipients of the April 23, 2026 Outstanding Paper Award at the ICLR 2026 Workshop on Logical Reasoning of Large Language Models for From Natural Language to Exact Cover: A Neuro-Symbolic Approach to Zebra Puzzles.",
+          "mykyta-award"
+        ],
+        [
+          "He is first author of RREDCoT, with Kajetan Schweighofer, Lukas Aichberger and Sepp Hochreiter.",
+          "rredcot"
+        ]
+      ],
+      "handle": "dwellement0baser",
+      "id": "mykyta-ielanskyi",
+      "name": "Mykyta Ielanskyi"
+    },
+    {
+      "facts": [
+        [
+          "The Kaggle account supplies no real name or personal portrait. Its default Kaggle goose is not a personal likeness. No direct account link confirming ownership by professor Günter Klambauer was found in this focused investigation.",
+          "gklambauer-profile"
+        ]
+      ],
+      "handle": "gklambauer",
+      "id": "gklambauer",
+      "name": "gklambauer"
+    }
+  ],
+  "name": "the last dance 🕺",
+  "observedAt": "2026-10-29T19:22:11Z",
+  "profileDiscussionCoverage": {
+    "dwellement0baser": "Profile exposes no public discussion tab.",
+    "fses91": "Read all 30 public discussion entries across both pages, followed relevant ARC3 and 2019 Santander originals.",
+    "gklambauer": "Read both public discussion comments; neither establishes a real name.",
+    "lukasaichberger": "Profile shows hidden sections and no public discussion tab."
+  },
+  "rowColumns": [
+    "rank",
+    "teamId",
+    "teamName",
+    "submissionDate",
+    "score",
+    "submissions",
+    "memberHandles",
+    "memberCount",
+    "numericScore"
+  ],
+  "season": "2026",
+  "socialEvidence": [
+    {
+      "reportedAs": "Historical attributed recollection; not a current result.",
+      "url": "https://www.linkedin.com/posts/g%C3%BCnter-klambauer-1b73293a_arcagi3-arcprize-agi-activity-7477586448917925888-2NHX",
+      "visibility": "public without sign-in via web reader"
+    },
+    {
+      "reportedAs": "Historical milestone statement.",
+      "url": "https://www.linkedin.com/posts/florian-sestak_arcagi3-arcagi-arcprize-activity-7508443475131043841-vsVg",
+      "visibility": "public without sign-in via web reader"
+    }
+  ],
+  "sources": [
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "board",
+      "title": "Kaggle ARC3 — public leaderboard",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "roster-evidence",
+      "title": "ARC Daily Digest — October 29 roster, board history and research evidence",
+      "url": "https://arc.markbarney.net/reports/arc-daily-gossip/2026-10-29-last-dance-research.json"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "person-fses91-identity-0",
+      "title": "Florian Sestak — own Kaggle profile and direct GitHub/LinkedIn links",
+      "url": "https://www.kaggle.com/fses91"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-github",
+      "title": "Florian Sestak — directly linked GitHub identity",
+      "url": "https://github.com/fses91"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-results",
+      "title": "Florian Sestak — completed Kaggle competitions and medals",
+      "url": "https://www.kaggle.com/fses91/competitions"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-2019",
+      "title": "Florian Sestak — April 7, 2019 Santander discussion",
+      "url": "https://www.kaggle.com/competitions/santander-customer-transaction-prediction/discussion/88230#509266"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-2018",
+      "title": "Florian Sestak — January 25, 2018 Log Scale Targets discussion",
+      "url": "https://www.kaggle.com/competitions/recruit-restaurant-visitor-forecasting/discussion/48273"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-arc3",
+      "title": "Florian Sestak — October 11 ARC3 discussion reply",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/748277#3536895"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-first-milestone",
+      "title": "Florian Sestak and Günter Klambauer — public account of the first ARC3 milestone",
+      "url": "https://www.linkedin.com/posts/g%C3%BCnter-klambauer-1b73293a_arcagi3-arcprize-agi-activity-7477586448917925888-2NHX"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-second-milestone",
+      "title": "Florian Sestak — public second-milestone top-ten statement",
+      "url": "https://www.linkedin.com/posts/florian-sestak_arcagi3-arcagi-arcprize-activity-7508443475131043841-vsVg"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-research",
+      "title": "Florian Sestak — own research biography",
+      "url": "https://raw.githubusercontent.com/fses91/fses91.github.io/main/_pages/about.md"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "florian-career",
+      "title": "Florian Sestak — own career record",
+      "url": "https://raw.githubusercontent.com/fses91/fses91.github.io/main/assets/json/resume.json"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "lam-slide",
+      "title": "LaM-SLidE — Sestak and coauthors’ paper",
+      "url": "https://arxiv.org/abs/2502.12128"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "bifork",
+      "title": "Bi-FORK — October 8, 2026 paper",
+      "url": "https://arxiv.org/abs/2610.12449"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "person-lukas-aichberger-identity-0",
+      "title": "Lukas Aichberger — own Kaggle account",
+      "url": "https://www.kaggle.com/lukasaichberger"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "lukas-career",
+      "title": "Lukas Aichberger — own biography and research directions",
+      "url": "https://raw.githubusercontent.com/AIchberger/AIchberger/main/README.md"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "lukas-linkedin",
+      "title": "Lukas Aichberger — own career and competition history",
+      "url": "https://at.linkedin.com/in/lukas-aichberger/de"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "euroskills-results",
+      "title": "EuroSkills 2016 — official results, Mobile Robotics page 15",
+      "url": "https://spain-skills.es/images/competiciones/euroskills2016/06_Results_per_skill_competition-2.pdf"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "school-robotics",
+      "title": "HTL Neufelden — Aichberger and Müller’s national runner-up result",
+      "url": "https://www.htl-neufelden.at/page/70/"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "rim",
+      "title": "Aichberger and Hochreiter — Reasoning in Memory, May 28, 2026",
+      "url": "https://arxiv.org/abs/2605.30343"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "person-mykyta-ielanskyi-identity-0",
+      "title": "Mykyta Ielanskyi — own Kaggle identity and research role",
+      "url": "https://www.kaggle.com/dwellement0baser"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "mykyta-results",
+      "title": "Mykyta Ielanskyi — own Kaggle competition history",
+      "url": "https://www.kaggle.com/dwellement0baser/competitions"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "mykyta-award",
+      "title": "JKU — Ielanskyi and coauthors’ Outstanding Paper Award",
+      "url": "https://research.jku.at/en/prizes/outstanding-paper-award-at-iclr-2026-workshop-on-logical-reasonin/"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "mykyta-biography",
+      "title": "TU Wien — award announcement and Mykyta Ielanskyi’s research biography",
+      "url": "https://informatics.tuwien.ac.at/news/3170"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "rredcot",
+      "title": "Ielanskyi, Schweighofer, Aichberger and Hochreiter — RREDCoT",
+      "url": "https://arxiv.org/abs/2606.06475"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "quam",
+      "title": "Schweighofer, Aichberger, Ielanskyi, Klambauer and Hochreiter — QUAM, NeurIPS 2023",
+      "url": "https://arxiv.org/abs/2307.03217"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "gklambauer-profile",
+      "title": "gklambauer — own Kaggle profile; no real name or personal portrait supplied",
+      "url": "https://www.kaggle.com/gklambauer"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "gklambauer-discussion",
+      "title": "gklambauer — two public Kaggle discussion comments",
+      "url": "https://www.kaggle.com/gklambauer/discussion"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "klambauer-jku",
+      "title": "JKU — Professor Günter Klambauer’s research and scientific competition record",
+      "url": "https://www.jku.at/institut-fuer-machine-learning/ueber-uns/team/univ-prof-mag-dr-guenter-klambauer/"
+    },
+    {
+      "accessedAt": "2026-10-29T19:39:44.995Z",
+      "id": "kronlstm",
+      "title": "Klambauer and coauthors — KronLSTM, October 19, 2026",
+      "url": "https://arxiv.org/abs/2610.26834"
+    }
+  ],
+  "teamId": "16021367",
+  "unresolved": [
+    "No direct public account crosslink confirming that Kaggle gklambauer belongs to Günter Klambauer. His supervisor/coauthor connection is independently established.",
+    "No public disclosure of the next ARC3 submission or a promised release date found in the focused sources."
+  ],
+  "visibility": "Kaggle discussions, public GitHub/academic sources and publicly readable LinkedIn posts used. Signed-in X profile observations preserved privately; no unverified subscriber material used in the article.",
+  "events": [
+    {
+      "t": "2026-10-05T05:05:52Z",
+      "id": "16021367",
+      "name": "the last dance 🕺",
+      "from": 32.82,
+      "to": 39.3,
+      "rankFrom": 26,
+      "rankTo": 3
+    },
+    {
+      "t": "2026-10-11T11:02:05Z",
+      "id": "16021367",
+      "name": "the last dance 🕺",
+      "from": 39.3,
+      "to": 42.55,
+      "rankFrom": 6,
+      "rankTo": 5
+    },
+    {
+      "t": "2026-10-12T16:04:55Z",
+      "id": "16021367",
+      "name": "the last dance 🕺",
+      "from": 42.55,
+      "to": 43.64,
+      "rankFrom": 5,
+      "rankTo": 4
+    },
+    {
+      "t": "2026-10-16T08:19:36Z",
+      "id": "16021367",
+      "name": "the last dance 🕺",
+      "from": 43.64,
+      "to": 49.85,
+      "rankFrom": 7,
+      "rankTo": 3
+    },
+    {
+      "t": "2026-10-25T07:03:54Z",
+      "id": "16021367",
+      "name": "the last dance 🕺",
+      "from": 49.85,
+      "to": 50.69,
+      "rankFrom": 5,
+      "rankTo": 4
+    },
+    {
+      "t": "2026-10-28T02:47:04Z",
+      "id": "16021367",
+      "name": "the last dance 🕺",
+      "from": 50.69,
+      "to": 51.51,
+      "rankFrom": 4,
+      "rankTo": 4
+    }
+  ],
+  "supportingCastObservations": [
+    [
+      1,
+      "15499660",
+      "Yi-Chia Chen @ Fields Model",
+      "2026-10-28 19:32:27",
+      75.56,
+      45,
+      "threerabbits",
+      1,
+      75.56
+    ],
+    [
+      2,
+      "15486995",
+      "Tufa Labs",
+      "2026-10-28 22:47:05",
+      70.02,
+      175,
+      "dlorah,driessmit1,infinitecreativity,jeroencottaar,pressman1,stefano1283",
+      2,
+      68.91
+    ],
+    [
+      3,
+      "15605182",
+      "Team Turducken",
+      "2026-10-28 02:41:11",
+      56.02,
+      213,
+      "dzjiann,keithtyser,markbarney,mitubant,ngyzly,scizical,sonphamorg",
+      3,
+      56.02
+    ],
+    [
+      4,
+      "15487093",
+      "xz",
+      "2026-10-28 23:48:59",
+      52.95,
+      11,
+      "xiaoz259",
+      1264,
+      28.41
+    ],
+    [
+      8,
+      "15770880",
+      "NVARC3",
+      "2026-10-28 21:50:01",
+      49.54,
+      76,
+      "cpmpml,darraghdog,eladsarafian,galkaplun,sorokin,titericz,yeyinzhu",
+      7,
+      48.84
+    ]
+  ]
+}

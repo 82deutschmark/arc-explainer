@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-29T18:35:07.050334+00:00",
+  "updatedAt": "2026-10-29T19:42:49.891641+00:00",
   "editorDirection": "Use suitable unused prepared episodes before generating more. Mark explicitly commissioned three additional GPU Valley reserves on October 14 and authorized anonymous GPU-covered NVIDIA supporting crew. Preserve exact recognizable individual references and all originals. Track article uses, X attachments and Discord preview shares separately.",
   "images": [
     {
@@ -1030,6 +1030,64 @@
       ],
       "targetEditionId": "2026-10-29-evening-arc-3",
       "selectionNote": "Inspected the finished wide native cover. One enormous cream-and-white cat has the avatar’s round flat face, blue eyes, pink nose, exposed fluffy ruff, modest GPU vest and huge plume tail. Five spiders, tall Dries, two correctly marked Chen rabbits, Puget and Ivan, seven distinct Turducken crew and two Yorkies are visible, all turned warily toward the cat. Broken display clearly shows 4, cat icon and xz; no other scores invented. Headline, date and AI credit legible. Editorial fantasy about a fourth-place arrival, not a factual outage scene, hardware account or breed identification."
+    },
+    {
+      "articleUses": [],
+      "discordShares": [],
+      "episode": "Four distinct compact adult dancers. Three own-avatar identities plus a fictional opaque-helmet stand-in for unverified gklambauer.",
+      "generationRecord": "2026-10-29-last-dance-character-sheet-v1-base",
+      "id": "2026-10-29-last-dance-character-sheet-v1",
+      "selectionNote": "Manual head-editor commission, native generation and one local visual review. Scene used once; character sheet may guide fresh future episodes. Costumes, dance and scale are fiction.",
+      "src": "/news-images/references/2026-10-29-last-dance-character-sheet-v1-base.webp",
+      "status": "character-reference",
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "note": "Three verified identities; fourth helmet is a fictional stand-in. Do not turn generic Kaggle goose into an avatar or assign Günter Klambauer ownership without a direct link. Refresh every other pictured team before future new scenes.",
+        "requiredRosterHandles": {
+          "16021367": [
+            "dwellement0baser",
+            "fses91",
+            "gklambauer",
+            "lukasaichberger"
+          ]
+        }
+      },
+      "title": "The Last Dance — recurring cast",
+      "xAttachments": []
+    },
+    {
+      "articleUses": [
+        "2026-10-29-last-dance-takes-the-floor"
+      ],
+      "discordShares": [
+        {
+          "channelId": "1550165647911034940",
+          "messageId": "1565451359678111784",
+          "postedAt": "2026-10-29T19:44:50.577859+00:00",
+          "attachmentSha256": "0031678bc48b34e29d1105bce13d97feead86a99cbccf3dc83aa315ea11ad289",
+          "purpose": "Head-editor commissioned team feature: finished scene and intended article link delivered once before publication push."
+        }
+      ],
+      "episode": "New scoring-hall ARC-grid breakdance cypher with the established contender audience.",
+      "generationRecord": "2026-10-29-last-dance-scoring-hall-v1-base",
+      "id": "2026-10-29-last-dance-scoring-hall-v1",
+      "selectionNote": "Manual head-editor commission, native generation and one local visual review. Scene used once; character sheet may guide fresh future episodes. Costumes, dance and scale are fiction.",
+      "src": "/news-images/2026-10-29-last-dance-scoring-hall-v1-base.webp",
+      "status": "published-feature",
+      "supportingCastConditions": {
+        "competition": "arc-3",
+        "note": "Three verified identities; fourth helmet is a fictional stand-in. Do not turn generic Kaggle goose into an avatar or assign Günter Klambauer ownership without a direct link. Refresh every other pictured team before future new scenes.",
+        "requiredRosterHandles": {
+          "16021367": [
+            "dwellement0baser",
+            "fses91",
+            "gklambauer",
+            "lukasaichberger"
+          ]
+        }
+      },
+      "title": "The Last Dance Takes the Floor",
+      "xAttachments": []
     }
   ],
   "existingXPosts": [
